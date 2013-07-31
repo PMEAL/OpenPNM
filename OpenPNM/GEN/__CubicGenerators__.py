@@ -85,7 +85,7 @@ class Cubic(GenericGenerator):
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('error')
 
-        Np = self._Nx*self._Nx*self._Nx
+        Np = self._Nx*self._Ny*self._Nz
         Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
         
         #Instantiate object(correct terminology?)
