@@ -45,3 +45,4 @@ import numpy as np
 from __GenericGenerator__ import GenericGenerator
 from __CubicGenerators__ import Cubic
 from __DelaunayGenerator__ import Delaunay
+from __CustomGenerator__ import Custom
