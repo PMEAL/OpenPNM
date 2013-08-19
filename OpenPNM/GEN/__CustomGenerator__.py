@@ -48,6 +48,7 @@ class Custom(GenericGenerator):
     """
     
     def __init__(self,  image_shape = [],
+                        image_diameter = [],
                         lattice_spacing = [],
                         **kwargs):
 
