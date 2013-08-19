@@ -47,7 +47,7 @@ class Custom(GenericGenerator):
         - Check for correct divisions
     """
     
-    def __init__(self,  network_image = [],
+    def __init__(self,  image_shape = [],
                         lattice_spacing = [],
                         **kwargs):
 
@@ -55,9 +55,9 @@ class Custom(GenericGenerator):
         self._logger.debug("Execute constructor")
         self._logger.info("Import image containing custom network shape")
         
-        self._net_img = network_image
+        self._net_img = image_shape
         self._Lc = lattice_spacing
-        [self._Nx, self._Ny, self._Nz] = np.shape(network_image)
+        [self._Nx, self._Ny, self._Nz] = np.shape(image_shape)
         Np = self._Nx*self._Ny*self._Nz
         Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
         
@@ -75,13 +75,14 @@ class Custom(GenericGenerator):
         img = self._net_img
         Np = np.sum(img)
         img_ind = np.ravel_multi_index(np.nonzero(img), dims=np.shape(img), order='F')
-        self._net.pore_properties['voxel_index'] = img_ind
-        temp = np.zeros(np.prod(np.shape(img),),dtype=np.int32)
+        
+        temp = np.prod(np.shape(img))*np.ones(np.prod(np.shape(img),),dtype=np.int32)
         temp[img_ind] = np.r_[0:np.size(img_ind)]
-        self._net.pore_properties['voxel_map'] = temp
+        self._voxel_to_pore_map = temp
+        
         self._net.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(img)))
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
-        self._net.pore_properties['numbering'] = np.arange(0,Np,dtype=np.int16)
+        self._net.pore_properties['numbering'] = np.arange(0,Np,dtype=np.int32)
         
         self._logger.debug("generate_pores: End of method")
         
@@ -109,32 +110,49 @@ class Custom(GenericGenerator):
         connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
         
         #Remove throats to non-active pores
-        img_ind = self._net.pore_properties['voxel_index']
+        img_ind = np.ravel_multi_index(np.nonzero(img), dims=np.shape(img), order='F')
         temp0 = np.in1d(connections[:,0],img_ind)
         temp1 = np.in1d(connections[:,1],img_ind)
         tind = temp0*temp1
         connections = connections[tind]
-        self._net.throat_properties['connections'] = self._net.pore_properties['voxel_map'][connections]
+        
+        self._net.throat_properties['connections'] = self._voxel_to_pore_map[connections]
         self._net.throat_properties['type'] = np.zeros(np.sum(tind))
         self._net.throat_properties['numbering'] = np.arange(0,np.sum(tind))
         self._logger.debug("generate_throats: End of method")
+#        
+#    def generate_pore_seed(self,img1):
+#        generate_pore_prop(im_seed,'seed')
+#        
+#    def generate_pore_diameter(self,img2):
+#        generate_pore_prop(img,'diameter')
         
-    def add_pore_prop_from_img(self,img,prop_name):
+    def generate_pore_property_from_image(self,img,prop_name):
         r"""
-        Generate the throats (connections, numbering and types)
+        Add pore properties based on image location and value
         """
-        
-        Nx = np.shape(img)[0]
-        Ny = np.shape(img)[1]
-        Nz = np.shape(img)[2]
-        Np = Nx*Ny*Nz
-        
-        self._net.pore_properties[prop_name] = np.zeros((Np,))
+        self._logger.info("add_pore_prop_from_img: Add pore properties")
         
         
+        if prop_name not in self._net.pore_properties.keys():
+            self._net.pore_properties[prop_name] = np.zeros(self._net.get_num_pores(),dtype=img.dtype)
+            
+        img_crd = np.nonzero(img) #Find image locations to add
+        img_ind = np.ravel_multi_index(img_crd, dims=np.shape(img), order='F')
+        vox_map = self._voxel_to_pore_map[img_ind] #Find pore number mapping
+        self._net.pore_properties[prop_name][vox_map] = np.array(img[img_crd],dtype=img.dtype)
         
+        self._logger.debug("add_pore_prop_from_img: End of method")
         
         
 if __name__ == '__main__':
-    test=Cubic(loggername='TestCubic')
+    test=Custom(loggername='TestCustom')
     test.generate()
+    
+    
+    
+    
+    
+    
+    
+    
