@@ -299,7 +299,6 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
             rows=self.get_num_throats()
             self.throat_properties[name] = sp.ones((rows,columns),dtype=dtype)*default
 
-
     def get_num_pores(self,ptype=[0,1,2,3,4,5,6]):
         r"""
         Returns the number of pores of the specified type
@@ -399,13 +398,13 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
         except:
             self.create_adjacency_matrix() 
             neighborPs = self._adjmatrix_lil.rows[[Pnum]]
-        #All the empty lists must be removedto maintain data type after hstack (numpy bug?)
+        #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
         neighborPs = [x for x in neighborPs if x]
         if flatten and neighborPs:
             neighborPs = np.hstack(neighborPs)
             #Remove references to input pores and duplicates
             neighborPs = np.unique(neighborPs[~np.in1d(neighborPs,Pnum)])
-        return neighborPs
+        return np.array(neighborPs)
 
     def get_neighbor_throats(self,Pnum,ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6],flatten=True):
         #Written by Jeff Gostick (jeff@gostick.ca)
