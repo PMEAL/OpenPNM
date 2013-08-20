@@ -433,7 +433,7 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
         neighborTs = [x for x in neighborTs if x]
         if flatten and neighborTs:
             neighborTs = np.unique(np.hstack(neighborTs))
-        return neighborTs
+        return np.array(neighborTs)
 
     def get_neighbor_pores_props(self,Pnum,ptype=[0,1,2,3,4,5,6],flatten=True):
         r"""
