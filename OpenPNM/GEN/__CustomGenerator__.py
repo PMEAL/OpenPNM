@@ -58,7 +58,11 @@ class Custom(GenericGenerator):
         
         self._net_img = image_shape
         self._Lc = lattice_spacing
-        [self._Nx, self._Ny, self._Nz] = np.shape(image_shape)
+        if np.ndim(image_shape)==3:
+            [self._Nx, self._Ny, self._Nz] = np.shape(image_shape)
+        else:
+            [self._Nx, self._Ny] = np.shape(image_shape)
+            self._Nz = 1
         Np = self._Nx*self._Ny*self._Nz
         Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
         
@@ -94,7 +98,7 @@ class Custom(GenericGenerator):
         self._logger.info("generate_throats: Define connections between pores")
         
         img = self._net_img
-        [Nx, Ny, Nz] = np.shape(img)
+        [Nx, Ny, Nz] = [self._Nx, self._Ny, self._Nz]
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
         
