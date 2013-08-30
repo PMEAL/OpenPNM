@@ -18,9 +18,9 @@ import scipy.ndimage as spim
 tmp = spim.imread('C:\Users\Jeff\Pictures\Picture2.tif')
 tmp = tmp[35:105,:,3]==0
 #plt.imshow(tmp)
-img = np.kron(np.ones((2,1,1)),tmp) #Make image deeper
+img = np.kron(np.ones((3,1,1)),tmp) #Make image deeper
 img = np.transpose(img,axes=[1,2,0])
-img = tmp
+#img = tmp
 
 params = {
 #'domain_size': [0.001,0.001,0.0004],  #physical network size [meters]
