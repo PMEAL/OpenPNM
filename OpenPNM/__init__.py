@@ -111,15 +111,12 @@ __extras_require__ = {
 # __all__ = ['BAS']
 
 
-import scipy as sp
-import numpy as np
-
-
 
 import BAS
 import NET
 import GEN
 import IO
+import PHYS
 import ALG
 import IMG
 import GUI
