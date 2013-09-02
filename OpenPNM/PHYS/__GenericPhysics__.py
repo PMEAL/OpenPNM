@@ -34,6 +34,9 @@ class GenericPhysics(OpenPNM.BAS.OpenPNMbase):
         self._net = net
         
     def Washburn(self):
+        r'''
+        this uses the Washburn equation to relate pore size to entry pressure
+        '''
         self._net.throat_properties['Pc_entry'] = -4*0.072*np.cos(np.radians(105))/self._net.throat_properties['diameter']
         
 
