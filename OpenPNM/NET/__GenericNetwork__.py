@@ -366,7 +366,7 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
         Parameters
         ----------
 
-        Pnum1 , Pnum2 : int
+        Pnum1, Pnum2 : int
 
         Returns
         -------
