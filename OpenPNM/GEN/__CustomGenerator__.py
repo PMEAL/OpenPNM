@@ -131,6 +131,11 @@ class Custom(GenericGenerator):
 #        
 #    def generate_pore_diameter(self,img2):
 #        generate_pore_prop(img,'diameter')
+    def add_boundares(self):
+        r"""
+        TO DO: Impliment some sort of boundary pore finding
+        """
+        self._logger.debug("add_boundaries: Nothing yet")
         
     def generate_pore_property_from_image(self,img,prop_name):
         r"""
