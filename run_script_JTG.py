@@ -29,9 +29,7 @@ params = {
 }
 
 start=clock()
-gn = OpenPNM.GEN.Cubic(loglevel=10,**params)
-gn.generate()
-pn = gn.get_net()
+pn = OpenPNM.GEN.Cubic(loglevel=10,**params).generate()
 
 #pn = OpenPNM.GEN.Delaunay(loglevel=10,**params).generate()
 
