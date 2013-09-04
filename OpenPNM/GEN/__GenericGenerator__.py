@@ -100,6 +100,7 @@ class GenericGenerator(OpenPNM.BAS.OpenPNMbase):
         self.calc_throat_volumes()
         self._net.update()
         self._logger.debug("\t end of self.generate()")
+        return self._net  
         
     def generate_pores(self):
         r"""
