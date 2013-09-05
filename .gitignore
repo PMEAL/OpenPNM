@@ -33,5 +33,10 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+<<<<<<< HEAD
 snippets/
 *.vtk
+=======
+*.vtk
+snippets/
+>>>>>>> develop
