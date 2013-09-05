@@ -341,43 +341,23 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
             Nt = 0
         return Nt
 
-    def get_connected_pores(self,Tnums=[],flatten=True):
+    def get_connected_pores(self,tlist=[]):
         r"""
         Return a list of pores connected to a list of throats
 
         Parameters
         ----------
-        Tnums: list or ndarray
-            List of throats ID numbers
-        flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique pore ID numbers 
-            is returned. If flatten is False the returned array contains 
-            arrays of neighboring pores for each input throat, in the order 
-            they were sent.            
+
+        tlist : list
+            list of throats e.g. [1],[1,2,3],[10:20]
 
         Returns
         -------
-        Ps : 1D array (if flatten is True) or ndarray of arrays (if flatten is 
-            False)
-
-        Examples
-        --------
-        >>> Tnums = [0,1]
-        >>> Ps = pn.get_connected_pores(Tnums) 
-        >>> Ps
-        array([  0,   2, 920])
-        
-        >>> Tnums = [0,1]
-        >>> Ps = pn.get_connected_pores(Tnums,flatten=False) 
-        >>> Ps
-        array([[  0, 920],
-               [  0,   2]])                 
+        plist : ndarray
+            Returns an ndarray with two colums and the number of rows
+            corresponding to the number of throats handed over.
         """
-        Ps = self.throat_properties["connections"][Tnums]
-#        Ps = [np.asarray(x) for x in Ps if x]
-        if flatten:
-            Ps = np.unique(np.hstack(Ps))
-        return Ps
+        return self.throat_properties["connections"][tlist]
 
     def get_connecting_throat(self,P1,P2):
         r"""
@@ -385,6 +365,7 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
 
         Parameters
         ----------
+
         Pnum1 , Pnum2 : int
 
         Returns
@@ -394,95 +375,67 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
         """
         return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
-    def get_neighbor_pores(self,Pnums,flatten=True):
+    def get_neighbor_pores(self,Pnum,ptype=[0,1,2,3,4,5,6],flatten=True):
+        #Written by Jeff Gostick (jeff@gostick.ca)
         r"""
         Returns a list of neighboring pores
         
         Parameters
         ----------
-        Pnums : list or ndarray
-            ID numbers of pores whose neighbors are sought
-        flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique pore ID numbers 
-            is returned with the input pores (Pnum) removed. If flatten is 
-            False the returned array contains arrays of neighboring pores for 
-            each input pore, in the order they were sent.
+
+        Pnum : list
         
         Returns
         -------
-        neighborPs : 1D array (if flatten is True) or ndarray of arrays (is
-            flatten if False)
-            
-        Examples
-        --------
-        >>> Pnums = [0,1]
-        >>> Ps = pn.get_neighbor_pores(Pnums)
-        >>> Ps
-        array([  2,   3, 920, 921])
-        
-        >>> Pnums = [0,1]
-        >>> Ps = pn.get_neighbor_pores(Pnums,flatten=False)
-        >>> Ps
-        array([[  1,   2, 920],
-               [  0,   3, 921]]) 
+        neighborPs : int
+            If flatten is True (default) a 1D array of unique pore ID numbers 
+            is returned with the input pores (Pnum) removed. If flatten is 
+            False the returned 1D array contains a list of neighboring pores for 
+            each input pore, in the order they were sent.
         """
         try:
-            neighborPs = self._adjmatrix._lil.rows[[Pnums]]
+            neighborPs = self._adjmatrix._lil.rows[[Pnum]]
         except:
             self.create_adjacency_matrix() 
-            neighborPs = self._adjmatrix_lil.rows[[Pnums]]
+            neighborPs = self._adjmatrix_lil.rows[[Pnum]]
         #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-        neighborPs = [np.asarray(x) for x in neighborPs if x]
+        neighborPs = [x for x in neighborPs if x]
         if flatten and neighborPs:
             neighborPs = np.hstack(neighborPs)
             #Remove references to input pores and duplicates
-            neighborPs = np.unique(neighborPs[~np.in1d(neighborPs,Pnums)])
+            neighborPs = np.unique(neighborPs[~np.in1d(neighborPs,Pnum)])
         return np.array(neighborPs)
 
-    def get_neighbor_throats(self,Pnums,flatten=True):
+    def get_neighbor_throats(self,Pnum,ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6],flatten=True):
+        #Written by Jeff Gostick (jeff@gostick.ca)
         r"""
         Returns a list of neighboring throats
         
         Parameters
         ----------
-        Pnums : list or ndarray
-            ID numbers of pores whose neighbors are sought
-        flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique throat ID numbers 
-            is returned. If flatten is False the returned array contains arrays 
-            of neighboring throat ID numbers for each input pore, in the order 
-            they were sent.
+
+        Pnum : list
         
         Returns
         -------
-        neighborTs : 1D array (if flatten is True) or ndarray of arrays (if
-            flatten if False)
-            
-        Examples
-        --------
-        >>> Pnums = [0,1]
-        >>> Ts = pn.get_neighbor_throats(Pnums)
-        >>> Ts
-        array([    0,     1,     2, 83895, 83896])
-        
-        >>> Pnums = [0,1]
-        >>> Ts = pn.get_neighbor_throats(Pnums,flatten=False)
-        >>> Ts
-        array([[    0,     1,     2],
-               [    2, 83895, 83896]])
+        neighborTs : int
+            If flatten is True (default) a 1D array of unique throat ID numbers 
+            is returned. If flatten is False the returned 1D array contains a 
+            list of neighboring throats for each input pore, in the order they 
+            were sent.
         """
         try:
-            neighborTs = self._incmatrix._lil.rows[[Pnums]]
+            neighborTs = self._incmatrix._lil.rows[[Pnum]]
         except:
             self.create_incidence_matrix(sprsfmt='lil')
-            neighborTs = self._incmatrix._lil.rows[[Pnums]]
+            neighborTs = self._incmatrix._lil.rows[[Pnum]]
         #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-        neighborTs = [np.asarray(x) for x in neighborTs if x]
+        neighborTs = [x for x in neighborTs if x]
         if flatten and neighborTs:
             neighborTs = np.unique(np.hstack(neighborTs))
         return np.array(neighborTs)
 
-    def get_neighbor_pores_props(self,Pnum,flatten=True):
+    def get_neighbor_pores_props(self,Pnum,ptype=[0,1,2,3,4,5,6],flatten=True):
         r"""
         Nothing yet, but this will return the specified property rather than
         just the ID numbers
