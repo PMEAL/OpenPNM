@@ -54,19 +54,6 @@ pn.pore_properties['core_shell']=np.array(tmp<6,dtype=np.int8)*1 + np.array(tmp=
 #pn = OpenPNM.GEN.Cubic(loglevel=20,**params).generate()
 #pn = OpenPNM.GEN.Delaunay(loglevel=10,**params).generate()
 
-#import scipy.spatial as sptl
-#vn = sptl.Voronoi((0.5 + np.transpose(np.nonzero(img))))
-#pts = np.sum((vn.vertices<np.shape(img))*(vn.vertices>0),axis=1)==3
-#coords = np.array(np.floor(vn.vertices[pts]),dtype=np.int32)
-#img = np.zeros(np.shape(img),dtype=bool)
-#img[coords.T[0],coords.T[1],coords.T[2]]=True
-#plt.imshow(img[:,:,20]+imgsld[:,:,20]*0.5,interpolation='none')
-
-#img2 = img*~imgsld
-#pn.add_pore_prop_from_img(img*1,'type')
-#gn.add_pore_prop_from_img(imgsld*2,'type')
-#pn.add_pore_prop_from_img(~img*3,'type')
-
 pn.throat_properties['Pc_entry'] = -4*0.072*np.cos(np.radians(105))/pn.throat_properties['diameter']  #This should be set somewhere else
 inlets = [200]
 #outlets = [pn.get_num_pores()-1]
