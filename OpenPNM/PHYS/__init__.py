@@ -33,5 +33,4 @@ Submodules
     
 """
 
-from __GenericPhysics__ import GenericPhysics
-from __CapillaryPressure__ import CapillaryPressure
+from CapillaryPressure import *
