@@ -54,12 +54,13 @@ pn.pore_properties['core_shell']=np.array(tmp<6,dtype=np.int8)*1 + np.array(tmp=
 #pn = OpenPNM.GEN.Cubic(loglevel=20,**params).generate()
 #pn = OpenPNM.GEN.Delaunay(loglevel=10,**params).generate()
 
-pn.throat_properties['Pc_entry'] = -4*0.072*np.cos(np.radians(105))/pn.throat_properties['diameter']  #This should be set somewhere else
+pn.throat_properties['Pc_entry'] = OpenPNM.PHYS.CapillaryPressure.Washburn(pn,sigma,theta)
+pn.throat_properties['Pc_entry']= -4*0.072*np.cos(np.radians(105))/pn.throat_properties['diameter']  #This should be set somewhere else
 inlets = [200]
 #outlets = [pn.get_num_pores()-1]
 #exp1 = OpenPNM.ALG.InvasionPercolationAlgorithm(pn, loglevel = 10, npts=100, inlets=inlets, outlets=outlets).run()
-exp2 = OpenPNM.ALG.OrdinaryPercolationAlgorithm(pn, npts=10, inv_sites=inlets).run()
-pn.update()
+#exp2 = OpenPNM.ALG.OrdinaryPercolationAlgorithm(pn, npts=10, inv_sites=inlets).run()
+#pn.update()
 
 #Write network to vtk file for visualization in Paraview
 #import os
