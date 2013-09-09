@@ -47,7 +47,7 @@ class Custom(GenericGenerator):
         - Check for correct divisions
     """
     
-    def __init__(self,  image_shape = [],
+    def __init__(self,  image_domain = [],
                         image_diameter = [],
                         lattice_spacing = [],
                         **kwargs):
@@ -56,12 +56,12 @@ class Custom(GenericGenerator):
         self._logger.debug("Execute constructor")
         self._logger.info("Import image containing custom network shape")
         
-        self._net_img = image_shape
+        self._net_img = image_domain
         self._Lc = lattice_spacing
-        if np.ndim(image_shape)==3:
-            [self._Nx, self._Ny, self._Nz] = np.shape(image_shape)
+        if np.ndim(image_domain)==3:
+            [self._Nx, self._Ny, self._Nz] = np.shape(image_domain)
         else:
-            [self._Nx, self._Ny] = np.shape(image_shape)
+            [self._Nx, self._Ny] = np.shape(image_domain)
             self._Nz = 1
         Np = self._Nx*self._Ny*self._Nz
         Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
