@@ -1,6 +1,15 @@
-.. _userguide_index:
+.. _devguide_index:
 
 **************************************************
-*OpenPNM* User's Guid
+*OpenPNM* Developer Guide
 **************************************************
+
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   sphinx_intro.rst
+   developer_guide.rst
 
