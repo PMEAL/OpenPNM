@@ -70,6 +70,8 @@ Contents:
    :maxdepth: 2
 
    docInstall.rst
+   userguide/index.rst
+   devguide/index.rst
    docOpenPNM.rst
 
 .. todolist::
