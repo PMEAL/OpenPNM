@@ -209,7 +209,7 @@ class InvasionPercolationAlgorithmTiming(InvasionPercolationAlgorithm):
     r"""   
     
     Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
-    
+
     Parameters
     ----------
     inlets : list of integers (default: [0])
@@ -218,11 +218,43 @@ class InvasionPercolationAlgorithmTiming(InvasionPercolationAlgorithm):
         list of outlet nodes
     end_condition : string('breaktrhough')
         choice between 'breakthrough' and 'total'
-            
+        
+    Input Network:
+    ----------
+    The algorithm expects a pore network with the following pore properties:
+      
+    +-----------+----------+--------+-----------------+
+    | name      | dtype    | shape  | notes           |
+    +===========+==========+========+=================+
+    | volume    | float 64 | (Np, ) |                 |
+    +-----------+----------+--------+-----------------+
+    | diameter  | float 64 | (Np, ) |                 |
+    +-----------+----------+--------+-----------------+
+    | numbering | int 32   | (Np, ) |                 |
+    +-----------+----------+--------+-----------------+
+    | coords    | float 64 | (Np,3) |                 |
+    +-----------+----------+--------+-----------------+
+    | type      | int 32   | (Np, ) |                 |
+    +-----------+----------+--------+-----------------+
+	
+    
+    and throat properties:
+    
+    +-------------+----------+--------+-----------------+
+    | name        | dtype    | shape  | notes           |
+    +=============+==========+========+=================+
+    | diameter    | float 64 | (Np, ) |                 |
+    +-------------+----------+--------+-----------------+
+    | numbering   | int 32   | (Np, ) |                 |
+    +-------------+----------+--------+-----------------+
+    | connections | int 32   | (Np,2) |                 |
+    +-------------+----------+--------+-----------------+
+    | type        | int 32   | (Np, ) |                 |
+    +-------------+----------+--------+-----------------+
+                  
     Examples
     --------
-    
-    
+        
     TODO:
     1)  Currently requires all clusters to start out with identical flow rates, currently a value of 1 unit of volume per unit of time
     2)  Currently requires cap volume function to be a linear function of pressure. Things will get a bit more complicated if we shouldn't assume this.
@@ -624,7 +656,7 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"    
     #sp.random.seed(1)
-    pn = OpenPNM.GEN.Cubic(domain_size=[200,1,20],lattice_spacing=1,btype = [0,1,0]).generate()
+    pn = OpenPNM.GEN.Cubic(domain_size=[10,10,10],lattice_spacing=1,btype = [0,1,0]).generate()
     #pn = OpenPNM.GEN.Delaunay(domain_size=[30,30,10],num_pores = 5000 ,btype = [1,1,0]).generate()
     print "+"*50
     print "Sample generated at t =",clock()-start,"seconds."
