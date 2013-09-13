@@ -34,3 +34,5 @@ nosetests.xml
 .project
 .pydevproject
 snippets/
+*.vtk
+OpenPNM/IO/viewer_JTG.pvsm
