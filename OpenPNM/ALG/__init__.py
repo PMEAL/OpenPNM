@@ -42,6 +42,5 @@ Submodules
 
 from __GenericAlgorithm__ import GenericAlgorithm
 from __InvasionPercolationAlgorithm__ import InvasionPercolationAlgorithm
-from __InvasionPercolationAlgorithm__ import InvasionPercolationAlgorithmTiming
 from __OrdinaryPercolationAlgorithm__ import OrdinaryPercolationAlgorithm
 from __FicksLawDiffusion__ import FicksLawDiffusion 
