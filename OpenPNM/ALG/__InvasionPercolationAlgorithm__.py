@@ -24,188 +24,8 @@ import itertools
 
 from __GenericAlgorithm__ import GenericAlgorithm
 
+
 class InvasionPercolationAlgorithm(GenericAlgorithm):
-    r"""   
-    
-    Invasion_Percolation - Class to run IP algorithm on constructed networks
-    
-    Parameters
-    ----------
-    inlets : list of integers (default: [0])
-        list of inlet nodes
-    outlets : list of integers (default: [1])
-        list of outlet nodes
-    end_condition : string('breaktrhough')
-        choice between 'breakthrough' and 'total'
-            
-    Examples
-    --------
-    
-    
-    TODO:
-    """
-    
-    def __init__(self,net=OpenPNM.NET.GenericNetwork,inlets=[0],outlets=[1],end_condition='breakthrough',**kwords):
-        r"""
-        
-        """
-        super(InvasionPercolationAlgorithm,self).__init__(net = net,**kwords)
-        self._logger.info("Create IP Algorithm Object")
-        self._logger.info("\t end condition: "+end_condition)
-        self.inlets = inlets
-        self.outlets = outlets
-        self.end_condition = end_condition
-        self.counter = 0
-
-    def _do_outer_iteration_stage(self):
-        r"""
-        Executes the outer iteration stage
-        """
-        self._logger.info("Outer Iteration Stage ")
-        self.pseq = 1
-        self.tseq = 1
-        self._setup_for_IP()
-        self._condition_update()
-        #self.Tinv = np.zeros(self._net.get_num_throats())
-        while self.condition:
-            self._do_one_outer_iteration()
-        self._net.set_pore_property(name="IP_Pinv",ndarray=self.Pinv,columns=None)
-        self._net.set_throat_property(name="IP_Tinv",ndarray=self.Tinv,columns=None)
-        self._net.set_pore_property(name="IP_Pseq",ndarray=self.Psequence,columns=None)
-        self._net.set_throat_property(name="IP_Tseq",ndarray=self.Tsequence,columns=None)
-
-    def _do_one_outer_iteration(self):
-        r"""
-        One iteration of an outer iteration loop for an algorithm 
-        (e.g. time or parametric study)
-        """
-        if (sp.mod(self.counter,500)==False):
-            self._logger.info("Outer Iteration (counter = "+str(self.counter)+")")
-        self._update_network_state()
-        self._do_inner_iteration_stage()
-        self._condition_update()
-        self.counter += 1
-#        if np.mod(self.counter,100)==0:
-#            print 'on a multiple of 100'
-#            print self.counter
-#            print len(np.nonzero(self.Tinv)[0])
-#            print len(self.Tinv)
-     
-    def _do_inner_iteration_stage(self):
-        r"""
-        Executes the inner iteration stage
-        """
-        self._logger.debug("  Inner Iteration Stage: ")        
-        
-        self.plast = len(np.nonzero(self.Pinv)[0])
-        for i in np.unique(self.Pinv[self.Pinv>0]):
-            self.current_cluster = i
-            self._do_one_inner_iteration()
-        self.pnew = len(np.nonzero(self.Pinv)[0])
-        self.tseq += 1
-        if self.pnew>self.plast:
-            self.pseq += 1
-      
-
-    def _do_one_inner_iteration(self):
-        r"""
-        Executes one inner iteration
-        """
-        self._logger.debug("    Inner Iteration")
-        #if self.plists[self.current_cluster-1]!=0:                    
-        neighbors = self._net.get_neighbor_throats(self.plists[self.current_cluster-1])
-        for j in neighbors:
-            if (j not in self.tlists[self.current_cluster-1]):
-                heapq.heappush(self.tpoints[self.current_cluster-1],(self._net.throat_properties['Pc_entry'][j],j))
-                self.tlists[self.current_cluster-1].append(j)
-        tinvade = heapq.heappop(self.tpoints[self.current_cluster-1])[1]
-        self.Tsequence[tinvade] = self.tseq
-        Pores = self._net.get_connected_pores(tinvade)
-        if np.in1d(Pores,np.nonzero(self.Pinv)[0]).all():
-            clusterNumber = min(self.Pinv[Pores])
-            self.Tinv[tinvade] = clusterNumber
-            if self.Pinv[Pores[0]]!=self.Pinv[Pores[1]] :
-                maxCluster = np.max(self.Pinv[Pores])
-                self.Pinv[np.where(self.Pinv==maxCluster)[0]] = clusterNumber
-                self.Tinv[np.where(self.Tinv==maxCluster)[0]] = clusterNumber
-                if self.current_cluster==clusterNumber:
-                    self.plists[clusterNumber-1] = self.plists[maxCluster-1]
-                self.plists[maxCluster-1] = 0                               
-                self.tlists[clusterNumber-1] = self.tlists[clusterNumber-1] + self.tlists[maxCluster-1]
-                self.tlists[maxCluster-1] = []
-                self.tpoints[clusterNumber-1] = heapq.merge(self.tpoints[clusterNumber-1],self.tpoints[maxCluster-1])
-                self.tpoints[clusterNumber-1] = list(k for k,v in itertools.groupby(self.tpoints[clusterNumber-1]))
-                self.tpoints[maxCluster-1] = []
-        else:
-            self.Tinv[tinvade] = self.current_cluster
-            self.NewPore = Pores[self.Pinv[Pores][:,0]==0]
-            self.plists[self.current_cluster-1] = self.NewPore
-            self.Pinv[self.NewPore] = self.current_cluster
-            self.Psequence[self.NewPore] = self.pseq 
-
-        
-    def _setup_for_IP(self):
-        r"""
-        Determines cluster labelling and condition for completion
-        """
-        # if empty, add Pc_entry to throat_properties
-        tdia = self._net.throat_properties['diameter']
-        # calculate Pc_entry from diameters
-        surface_tension = 0.486
-        contact_angle = 180
-        Pc_entry = -4*surface_tension*np.cos(np.deg2rad(contact_angle))/(tdia/1000/1000)  
-        self._net.set_throat_property(name="Pc_entry",ndarray=Pc_entry,columns=None)
-        # Creating an array for invaded Pores(Np long, 0 for uninvaded, cluster number for inaveded)
-        self.Pinv = np.zeros((self._net.get_num_pores(),1),dtype=np.int32)
-        # Creating an array for invaded throats(Nt long, 0 for uninvaded, cluster number for inaveded)
-        self.Tinv = np.zeros((self._net.get_num_throats(),1),dtype=np.int32)
-        # Creating an array for tracking invaded Pores(Np long, 0 for uninvaded,sequence for inaveded)
-        self.Psequence = np.zeros((self._net.get_num_pores(),1),dtype=np.int32)
-        # Creating an array for tracking invaded throats(Nt long, 0 for uninvaded,sequence for inaveded)
-        self.Tsequence = np.zeros((self._net.get_num_throats(),1),dtype=np.int32)
-        # Creating an array for tracking the last invaded pore in each cluster.
-        # its length is equal to the maximum number of possible clusters.
-        self.plists = np.zeros((len(self.inlets),1),dtype=np.int32)
-        # Iterator variables for sequences and cluster numbers
-        clusterNumber = 1
-        # Creating an empty list to store the list of potential throats for invasion in each cluster.
-        # its length is equal to the maximum number of possible clusters. 
-        self.tlists = []
-        # Creating a list for each cluster to store both potential throat and corresponding throat value
-        self.tpoints = []
-        # Initializing invasion percolation for each possible cluster
-        for i in self.inlets:
-            self.Pinv[i] = clusterNumber
-            interface_throat_numbers = self._net.get_neighbor_throats(np.where(self.Pinv==clusterNumber)[0])
-            interface_throat_pressures = self._net.throat_properties["Pc_entry"][interface_throat_numbers]            
-            Interface= zip(interface_throat_pressures,interface_throat_numbers)
-            heapq.heapify(Interface)
-            self.tlists.append(interface_throat_numbers.tolist())
-            tinvade = heapq.heappop(Interface)[1]
-            self.tpoints.append(Interface)
-            self.Tinv[tinvade] = clusterNumber            
-            self.Tsequence[tinvade] = self.tseq
-            self.Pores = self._net.get_connected_pores(tinvade)
-            self.NewPore = self.Pores[self.Pinv[self.Pores][:,0]==0]
-            self.plists[clusterNumber-1] = self.NewPore
-            self.Pinv[self.NewPore] = clusterNumber
-            self.Psequence[self.NewPore] = self.pseq
-            clusterNumber += 1
-        self.tseq += 1
-        self.pseq += 1
-            
-    def _condition_update(self):
-        if self.end_condition == 'breakthrough':
-            self.condition = self.NewPore not in self.outlets
-        elif self.end_condition == 'total':
-            self.condition = not self.Tinv.all()
-        
-    def _update_network_state(self):
-        r"""
-        This does nothing
-        """
-
-class InvasionPercolationAlgorithmTiming(InvasionPercolationAlgorithm):
     r"""   
     
     Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
@@ -273,7 +93,7 @@ class InvasionPercolationAlgorithmTiming(InvasionPercolationAlgorithm):
         super(InvasionPercolationAlgorithm,self).__init__(net = net,**kwords)
         self._logger.info("Create IP Algorithm Object")
         self._logger.info("\t end condition: "+end_condition)
-        self.inlets = inlets
+        self.inlets = inlets 
         if sp.size(inlets) == 1:
             self.inlets = [inlets]
         self.outlets = outlets
@@ -644,7 +464,12 @@ class InvasionPercolationAlgorithmTiming(InvasionPercolationAlgorithm):
                 self._logger.info(self.sim_time)
                 self.condition = 0
         elif self.end_condition == 'total':
-            self.condition = not self.Tinv.all()            
+            self.condition = not self.Tinv.all()    
+    
+    def _update_network_state(self):
+        r"""
+        This does nothing
+        """
             
             
 if __name__ =="__main__":
@@ -670,20 +495,23 @@ if __name__ =="__main__":
         
     
     print "- * Define inlet and outlet faces"
-    inlets = sp.nonzero(pn.pore_properties['type']==1)[0]
-    outlets = sp.nonzero(pn.pore_properties['type']==6)[0]
-    inlets2 = sp.unique((inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
-                       inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
-                       inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
-                       inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
-                       inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))]))
-    print inlets2
+    #inlets = sp.nonzero(pn.pore_properties['type']==1)[0]
+    #outlets = sp.nonzero(pn.pore_properties['type']==6)[0]
+    #inlets2 = sp.unique((inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
+    #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
+    #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
+    #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
+    #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))]))
+    #print inlets2
+    inlets = [1,2,3]
+    outlets = [6,7,8]    
+    
     #print "- * assign random pore and throat diameters"
     #pn.pore_properties['diameter'] = sp.random.rand(pn.get_num_pores(),1)
     #pn.throat_properties['diameter'] = sp.random.rand(pn.get_num_throats(),1)
     
     print "- * Run Invasion percolation algorithm"
-    IP = InvasionPercolationAlgorithmTiming(net=pn,inlets=inlets2,outlets=outlets,loglevel=20,loggername="TestInvPercAlg")
+    IP = InvasionPercolationAlgorithm(net=pn,inlets=inlets,outlets=outlets,loglevel=10,loggername="TestInvPercAlg")
     IP.run()
     print "+"*50
     print "IP completed at t =",clock()-start,"seconds."
