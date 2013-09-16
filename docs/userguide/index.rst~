@@ -1,6 +1,13 @@
 .. _userguide_index:
 
 **************************************************
-*OpenPNM* User's Guid
+*OpenPNM* User Guide
 **************************************************
 
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+   
+   docInstall.rst
+   
