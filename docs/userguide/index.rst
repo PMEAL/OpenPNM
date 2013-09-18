@@ -27,3 +27,10 @@
 
 
 
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+   
+   ../docInstall.rst
+   first_steps.rst
