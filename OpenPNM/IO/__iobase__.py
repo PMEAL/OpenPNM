@@ -126,5 +126,6 @@ class NetToVtp2(NetToVtp):
         #text = str(pn.getNumThroats())
         self._f.write(str(self._net.get_num_throats()))
         self._f.write('" NumberOfStrips="0" NumberOfPolys="0">\n')        
-        
+
+#test comment        
     
