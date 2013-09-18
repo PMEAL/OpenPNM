@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ===============================================================================
 Network Architecture and Data Storage Formats
 ===============================================================================
@@ -34,3 +35,8 @@ This seed is used in the specified statistical distribution to obtain pore (and 
 
 **'type'**
 The *'type'* property is 
+=======
+***********************************************************
+Network Storage
+***********************************************************
+>>>>>>> d146c589e0056a78ac82f110702baa04766c5c7b
