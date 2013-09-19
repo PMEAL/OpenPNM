@@ -13,4 +13,6 @@ Contents:
    getting_started.rst
    network_storage.rst
    network_generators.rst
+   physics.rst
    algorithms.rst
+   visualization.rst
