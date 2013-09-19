@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import OpenPNM
 import scipy as sp
-import scipy.sparse as sprs
+import scipy.io
 import numpy as np
+import os, glob
 
 class NetToVtp(OpenPNM.BAS.OpenPNMbase):
     r"""
@@ -30,7 +31,7 @@ class NetToVtp(OpenPNM.BAS.OpenPNMbase):
     Create and store a basic network.
     >>> import OpenPNM as PNM
     >>> net = PNM.GEN.SimpleCubic(divisions = [40,40,20],shape=[0.,4.,0.,4.,0.,2.]).generate()
-    >>> PNM.IO.
+    >>> PNM.IO.NetToVtp(net=net,filename = 'testvtp.vtp')
     
     """
     
@@ -125,7 +126,101 @@ class NetToVtp2(NetToVtp):
         self._f.write('" NumberOfVerts="0" NumberOfLines="')
         #text = str(pn.getNumThroats())
         self._f.write(str(self._net.get_num_throats()))
-        self._f.write('" NumberOfStrips="0" NumberOfPolys="0">\n')        
-
-#test comment        
+        self._f.write('" NumberOfStrips="0" NumberOfPolys="0">\n')     
+        
+class ImportMat(OpenPNM.BAS.OpenPNMbase):
+    r"""
+    ImportDataFromMat - Class for interacting with Matlab files with .mat suffix
     
+    Parameters
+    ----------
+    filename : str
+        name of file to read from
+    path : str
+        location of file
+    loglevel : int
+        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+    
+    Attributes
+    ----------
+    
+    self.pore_properties : dictionary (string, ndarray)
+        dictionary containing all pore properties.
+        The following properties are created automatically
+            - numbering    (int)
+    self.throat_properties : dictionary (string, ndarray)
+        dictionary containing all throat properties.
+        The following properties are created automatically
+            - numbering     (int)
+            - connections   (int,int)   random integers
+    self._num_pores : int
+        Number of pores
+    self._num_throats : int
+        Number of throats
+    self._needs_update : bool
+        flag if the things need to be updated.
+    
+    
+    Examples
+    --------
+    
+    To read in a .mat file with pore network information
+    
+    >>> import OpenPNM as PNM
+    >>> matfile = PNM.IO.ImportMat(filename='example_network',path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles')
+    >>> 
+    ==================================================
+    = Overview of network properties
+    --------------------------------------------------
+    Basic properties of the network
+    - Number of pores:    10
+    - Number of throats:  20
+    Pore properties:
+        numbering   int64     (10,)
+    Throat properties:
+        connections int64     (20, 2)
+        numbering   int64     (20,)
+    --------------------------------------------------
+
+  
+    """
+    def __init__(self,**kwargs):
+        r"""
+        
+        """
+        super(ImportMat,self).__init__(**kwargs)
+        if 'filename' in kwargs.keys():
+            self._filename = kwargs['filename']
+        else:
+            self._filename = 'example_network'
+        if 'path' in kwargs.keys():
+            self._path=kwargs['path']
+        else:
+            self._path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles'
+        self._logger.debug("Import from .mat file")
+        #Read in the file
+        filepath = os.path.join(self._path,self._filename)
+        self._dictionary=scipy.io.loadmat(filepath)
+    
+    def getvarnames(self):
+        r"""
+        Returns variable names in the matfile
+        """
+        keys = self._dictionary.keys()  
+        return keys
+        
+    def getvar(self,varname):
+        r"""
+        Returns a specific variable from the matfile        
+        """
+        var = self._dictionary[varname]
+        return var
+
+    def getdict(self):
+        r"""
+        Returns the matfile as a dictionary
+        """
+        dictionary = self._dictionary
+        return dictionary
+        
+        
