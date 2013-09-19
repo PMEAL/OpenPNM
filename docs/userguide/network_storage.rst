@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ===============================================================================
 Network Architecture and Data Storage Formats
 ===============================================================================
@@ -24,6 +23,10 @@ And similarly for throats, one gets the following:
 
 Most of these are self explanatory, but a few are deserving of careful explanation.  
 
+
+.. literalinclude:: ../../OpenPNM/NET/GenericNetwork.py
+   :pyobject: 
+
 **'numbering'**
 The *'numbering'* property in both pore and throat arrays is simply an enumerated list from 0 to Np or Nt.  These numbers correspond to the pore or throat number, which may seem redundant this also happens to to corresond the location in the array.  Numbering is useful in some cases where boolean arrays are used to select a subset of pores (or throats).  The boolean mask can be input into the numbering property to produce a list of pore (or throat) numbers where the condition is true.  
 
@@ -39,4 +42,4 @@ The *'type'* property is
 ***********************************************************
 Network Storage
 ***********************************************************
->>>>>>> d146c589e0056a78ac82f110702baa04766c5c7b
+

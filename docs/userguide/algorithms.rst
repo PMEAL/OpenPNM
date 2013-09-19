@@ -14,3 +14,8 @@ Algorithms Supplied with OpenPNM
 - Permeability
    - Darcy
    - Klinkenburger Slip-flow (TODO)
+
+-------------------------------------------------------------------------------
+Writing Custom Algorithms
+-------------------------------------------------------------------------------
+- See developers guide
