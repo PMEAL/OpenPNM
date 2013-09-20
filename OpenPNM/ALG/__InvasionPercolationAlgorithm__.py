@@ -481,7 +481,7 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"    
     #sp.random.seed(1)
-    pn = OpenPNM.GEN.Cubic(domain_size=[10,10,10],lattice_spacing=1,btype = [0,1,0]).generate()
+    pn = OpenPNM.GEN.Cubic(domain_size=[10,10,10],lattice_spacing=1.0,btype = [0,1,0]).generate()
     #pn = OpenPNM.GEN.Delaunay(domain_size=[30,30,10],num_pores = 5000 ,btype = [1,1,0]).generate()
     print "+"*50
     print "Sample generated at t =",clock()-start,"seconds."
