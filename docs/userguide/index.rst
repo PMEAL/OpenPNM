@@ -3,34 +3,16 @@
 *******************************************************************************
 **OpenPNM User Guide**
 *******************************************************************************
-.. toctree::
-   :maxdepth: 3
-
-    getting_started.rst
-    network_storage.rst
-    algorithms.rst
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    
    ../docInstall.rst
-   first_steps.rst
+   getting_started.rst
+   network_storage.rst
+   network_generators.rst
+   physics.rst
+   algorithms.rst
+   visualization.rst
