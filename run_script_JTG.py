@@ -13,9 +13,9 @@ from time import clock
 params = {
 #'domain_size': [0.001,0.001,0.0004],  #physical network size [meters]
 'divisions': [20,20,20], #Number of pores in each direction
-'lattice_spacing': 1,  #spacing between pores [meters]
+'lattice_spacing': 1.0,  #spacing between pores [meters]
 #'num_pores': 1000, #This is used for random networks where spacing is irrelevant
-'btype': [1,1,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
+'btype': [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 #The following parameters are for the statistical functions used to generate
 #pore and throat size distributions.  See scipy.stats for options and parameters.
 'psd_dist': 'weibull_min',  #distribution to be used
