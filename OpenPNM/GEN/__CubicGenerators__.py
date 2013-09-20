@@ -151,34 +151,37 @@ class Cubic(GenericGenerator):
         self.add_opposing_boundaries(face=3,periodic=self._btype[1]) #y faces
         self.add_opposing_boundaries(face=1,periodic=self._btype[2]) #z faces
         
-        #Add 'coords' to boundaries
-        pnum_dif = self._net.get_num_pores()-pnum_orig
-        self._net.pore_properties['coords']=np.append(self._net.pore_properties['coords'],np.zeros((pnum_dif,3)),0)
-        boundary_pore_list = self._net.get_connected_pores(self._net.throat_properties['type']>0) 
-        for i in boundary_pore_list:
-            if i[0] >= pnum_orig:
-                self._net.pore_properties['coords'][i[0]] = self._net.pore_properties['coords'][i[1]]
-            if i[1] >= pnum_orig:
-                self._net.pore_properties['coords'][i[1]] = self._net.pore_properties['coords'][i[0]]
-        face1pores = np.nonzero(self._net.pore_properties['type']==1)[0]
-        face2pores = np.nonzero(self._net.pore_properties['type']==2)[0]
-        face3pores = np.nonzero(self._net.pore_properties['type']==3)[0]
-        face4pores = np.nonzero(self._net.pore_properties['type']==4)[0]
-        face5pores = np.nonzero(self._net.pore_properties['type']==5)[0]
-        face6pores = np.nonzero(self._net.pore_properties['type']==6)[0]
-        for i in face1pores:
-            self._net.pore_properties['coords'][i][2] += -self._Lc
-        for i in face2pores:
-            self._net.pore_properties['coords'][i][0] += -self._Lc
-        for i in face3pores:
-            self._net.pore_properties['coords'][i][1] += -self._Lc
-        for i in face4pores:
-            self._net.pore_properties['coords'][i][1] += self._Lc
-        for i in face5pores:
-            self._net.pore_properties['coords'][i][0] += self._Lc
-        for i in face6pores:
-            self._net.pore_properties['coords'][i][2] += self._Lc
-        self._net.pore_properties['coords'][self._net.pore_properties['type']==1]
+        pnum_added = self._net.get_num_pores() - pnum_orig
+        self._net.pore_properties['coords'] = np.concatenate((self._net.pore_properties['coords'],np.zeros((pnum_added,3))),axis=0)
+#        #Add 'coords' to boundaries
+#        pnum_dif = self._net.get_num_pores()-pnum_orig
+#        self._net.pore_properties['coords']=np.append(self._net.pore_properties['coords'],np.zeros((pnum_dif,3)),0)
+#        boundary_pore_list = self._net.get_connected_pores(self._net.throat_properties['type']>0,flatten=True)
+#        print boundary_pore_list
+#        for i in boundary_pore_list:
+#            if i[0] >= pnum_orig:
+#                self._net.pore_properties['coords'][i[0]] = self._net.pore_properties['coords'][i[1]]
+#            if i[1] >= pnum_orig:
+#                self._net.pore_properties['coords'][i[1]] = self._net.pore_properties['coords'][i[0]]
+#        face1pores = np.nonzero(self._net.pore_properties['type']==1)[0]
+#        face2pores = np.nonzero(self._net.pore_properties['type']==2)[0]
+#        face3pores = np.nonzero(self._net.pore_properties['type']==3)[0]
+#        face4pores = np.nonzero(self._net.pore_properties['type']==4)[0]
+#        face5pores = np.nonzero(self._net.pore_properties['type']==5)[0]
+#        face6pores = np.nonzero(self._net.pore_properties['type']==6)[0]
+#        for i in face1pores:
+#            self._net.pore_properties['coords'][i][2] += -self._Lc
+#        for i in face2pores:
+#            self._net.pore_properties['coords'][i][0] += -self._Lc
+#        for i in face3pores:
+#            self._net.pore_properties['coords'][i][1] += -self._Lc
+#        for i in face4pores:
+#            self._net.pore_properties['coords'][i][1] += self._Lc
+#        for i in face5pores:
+#            self._net.pore_properties['coords'][i][0] += self._Lc
+#        for i in face6pores:
+#            self._net.pore_properties['coords'][i][2] += self._Lc
+#        self._net.pore_properties['coords'][self._net.pore_properties['type']==1]
         #Update network
         self._net.update()
         
@@ -202,7 +205,7 @@ class Cubic(GenericGenerator):
         coordperi = [-1, Lz-Lc/2, Lx-Lc/2, Ly-Lc/2, Lc/2, Lc/2, Lc/2]
         NpFace = [-1, Nx*Ny, Ny*Nz, Nx*Nz, Nx*Nz, Ny*Nz, Nx*Ny]
 
-        #Extract pore numbers from opposing faces of the netowrk
+        #Extract pore numbers from opposing faces of the network
         tpore1 = self._net.pore_properties['numbering'][self._net.pore_properties['coords'][:,col[face]]==coord[face]]
         tpore2 = self._net.pore_properties['numbering'][self._net.pore_properties['coords'][:,col[face]]==coordperi[face]]
     
