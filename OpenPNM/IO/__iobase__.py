@@ -130,36 +130,17 @@ class NetToVtp2(NetToVtp):
         
 class ImportMat(OpenPNM.BAS.OpenPNMbase):
     r"""
-    ImportDataFromMat - Class for interacting with Matlab files with .mat suffix
+    ImportMat - Class for interacting with Matlab files with .mat suffix
     
     Parameters
     ----------
+    
     filename : str
         name of file to read from
     path : str
         location of file
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    
-    Attributes
-    ----------
-    
-    self.pore_properties : dictionary (string, ndarray)
-        dictionary containing all pore properties.
-        The following properties are created automatically
-            - numbering    (int)
-    self.throat_properties : dictionary (string, ndarray)
-        dictionary containing all throat properties.
-        The following properties are created automatically
-            - numbering     (int)
-            - connections   (int,int)   random integers
-    self._num_pores : int
-        Number of pores
-    self._num_throats : int
-        Number of throats
-    self._needs_update : bool
-        flag if the things need to be updated.
-    
     
     Examples
     --------
@@ -168,20 +149,8 @@ class ImportMat(OpenPNM.BAS.OpenPNMbase):
     
     >>> import OpenPNM as PNM
     >>> matfile = PNM.IO.ImportMat(filename='example_network',path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles')
-    >>> 
-    ==================================================
-    = Overview of network properties
-    --------------------------------------------------
-    Basic properties of the network
-    - Number of pores:    10
-    - Number of throats:  20
-    Pore properties:
-        numbering   int64     (10,)
-    Throat properties:
-        connections int64     (20, 2)
-        numbering   int64     (20,)
-    --------------------------------------------------
-
+    >>> pore_volumes = matfile.getvar('pvolumes')
+    
   
     """
     def __init__(self,**kwargs):
