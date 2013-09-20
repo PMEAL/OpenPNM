@@ -223,7 +223,7 @@ class Cubic(GenericGenerator):
             conns = np.vstack((tpore1,tpore2)).T
             #Add elements to throat lists
             self._net.throat_properties['connections'] = np.concatenate((self._net.throat_properties['connections'],conns),axis=0)
-            self._net.throat_properties['numbering'] = np.concatenate(self._net.throat_properties['numbering'],np.arange((Nt,Nt+NpFace[face]),dtype=np.int32),axis=0)
+            self._net.throat_properties['numbering'] = np.concatenate((self._net.throat_properties['numbering'],np.arange(Nt,Nt+NpFace[face],dtype=np.int32)),axis=0)
             self._net.throat_properties['type'] = np.concatenate((self._net.throat_properties['type'],np.ones(NpFace[face],dtype=np.int8)*face),axis=0)
         else:
             #If not periodic, then
