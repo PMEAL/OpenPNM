@@ -37,11 +37,20 @@ Submodules
    :members:
    :undoc-members:
    :show-inheritance:
+   
+.. autoclass:: ALG.OrdinaryPercolation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: ALG.FicksLawDiffusion
+   :members:
+   :undoc-members:
+   :show-inheritance:
     
 """
 
 from __GenericAlgorithm__ import GenericAlgorithm
 from __InvasionPercolationAlgorithm__ import InvasionPercolationAlgorithm
-from __InvasionPercolationAlgorithm__ import InvasionPercolationAlgorithmTiming
-from __OrdinaryPercolationAlgorithm__ import OrdinaryPercolationAlgorithm
+from __OrdinaryPercolation__ import OrdinaryPercolation
 from __FicksLawDiffusion__ import FicksLawDiffusion 
