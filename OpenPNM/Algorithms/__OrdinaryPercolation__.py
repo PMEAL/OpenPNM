@@ -9,7 +9,7 @@
 module __OrdinaryPercolation__: Ordinary Percolation Algorithm
 ========================================================================
 
-.. warning:: The classes of this module should be loaded through the 'ALG.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
 
 """
 
@@ -42,7 +42,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     """
     
-    def __init__(self,net=OpenPNM.NET.GenericNetwork(),npts=25,inv_sites=[0],**kwargs):
+    def __init__(self,net=OpenPNM.Network.GenericNetwork(),npts=25,inv_sites=[0],**kwargs):
         r"""
         
         """

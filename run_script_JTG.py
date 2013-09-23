@@ -29,14 +29,14 @@ params = {
 }
 
 start=clock()
-pn = OpenPNM.GEN.Cubic(loglevel=10,**params).generate()
+pn = OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
 
-#pn = OpenPNM.GEN.Delaunay(loglevel=10,**params).generate()
+#pn = OpenPNM.Generators.Delaunay(loglevel=10,**params).generate()
 
 pn.throat_properties['Pc_entry'] = -4*0.072*np.cos(np.radians(105))/pn.throat_properties['diameter']  #This should be set somewhere else
 inlets = [0]
-#exp1 = OpenPNM.ALG.InvasionPercolation(pn, loglevel = 10, npts=100, inlets=inlets, outlets=outlets).run()
-exp2 = OpenPNM.ALG.OrdinaryPercolation(pn, loglevel = 10, npts=50, inv_sites=inlets).run()
+#exp1 = OpenPNM.Algorithms.InvasionPercolation(pn, loglevel = 10, npts=100, inlets=inlets, outlets=outlets).run()
+exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, loglevel = 10, npts=50, inv_sites=inlets).run()
 pn.update()
 
 #Write network to vtk file for visualization in Paraview
@@ -45,5 +45,5 @@ OpenPNM.IO.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\
 
 print clock()-start,"seconds."
 
-#vis = OpenPNM.VIS.Vis2D()
+#vis = OpenPNM.Algorithms.Vis2D()
 #vis.overview(pn)

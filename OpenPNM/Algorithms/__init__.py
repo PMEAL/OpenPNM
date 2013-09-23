@@ -3,10 +3,10 @@
 # License: TBD.
 r"""
 **************************************************************************
-:mod:`OpenPNM.ALG`: Algorithms on Networks
+:mod:`OpenPNM.Algorithms`: Algorithms on Networks
 **************************************************************************
 
-.. module:: OpenPNM.ALG
+.. module:: OpenPNM.Algorithms
 
 Contents
 --------
@@ -19,7 +19,7 @@ This submodule contains all algorithms actiong on a pore network.
 Import
 ------
 >>> import OpenPNM as PNM
->>> tmp=PNM.ALG.GenericAlgorithm()
+>>> tmp=PNM.Algorithms.GenericAlgorithm()
 
 
 Submodules
@@ -28,22 +28,22 @@ Submodules
 
  None                            --- No subpackages at the moment
 
-.. autoclass:: ALG.GenericAlgorithm
+.. autoclass:: Algorithms.GenericAlgorithm
    :members:
    :undoc-members:
    :show-inheritance:
        
-.. autoclass:: ALG.InvasionPercolation
+.. autoclass:: Algorithms.InvasionPercolation
    :members:
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: ALG.OrdinaryPercolation
+.. autoclass:: Algorithms.OrdinaryPercolation
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: ALG.FickianDiffusion
+.. autoclass:: Algorithms.FickianDiffusion
    :members:
    :undoc-members:
    :show-inheritance:
