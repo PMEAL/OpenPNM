@@ -7,7 +7,7 @@ Created on Tue Jun 11 10:50:28 2013
 module __FickianDiffusion__: Fick's Law Diffusion
 ========================================================================
 
-.. warning:: The classes of this module should be loaded through the 'ALG.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
 
 """
 
@@ -66,7 +66,7 @@ class FickianDiffusion(GenericAlgorithm):
         
     """
     
-    def __init__(self,net=OpenPNM.NET.GenericNetwork(),loglevel=10,Alg='None',Pressure=[0],Psequence=[0],Pinvaded=[],**kwargs):
+    def __init__(self,net=OpenPNM.Network.GenericNetwork(),loglevel=10,Alg='None',Pressure=[0],Psequence=[0],Pinvaded=[],**kwargs):
         r"""
         Initializing the class
         """

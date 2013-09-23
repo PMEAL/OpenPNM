@@ -10,7 +10,7 @@
 module __GenericGenerator__: Base class to construct pore networks
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'GEN.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
 
 """
 
@@ -20,7 +20,7 @@ import numpy as np
 import scipy.sparse as sprs
 import scipy.stats as spst
 
-class GenericGenerator(OpenPNM.BAS.OpenPNMbase):
+class GenericGenerator(OpenPNM.Base.OpenPNMbase):
     r"""
     GenericGenerator - Base class to construct pore networks
     
@@ -36,7 +36,7 @@ class GenericGenerator(OpenPNM.BAS.OpenPNMbase):
         
     Attributes
     ----------
-        net :   OpenPNM.NET.GenericNetwork
+        net :   OpenPNM.Network.GenericNetwork
             Initialized network
         
             
@@ -47,7 +47,7 @@ class GenericGenerator(OpenPNM.BAS.OpenPNMbase):
     and throats execute
     
     >>> import OpenPNM as PNM
-    >>> net=PNM.GEN.GenericGenerator().generate()
+    >>> net=PNM.Generators.GenericGenerator().generate()
     >>> OpenPNM.IO.NetToVtp(net)   
     This generates the following network:
     

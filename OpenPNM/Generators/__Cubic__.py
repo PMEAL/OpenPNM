@@ -2,7 +2,7 @@
 module __Cubic__: Generate simple cubic networks
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'GEN.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
 
 """
 
@@ -37,7 +37,7 @@ class Cubic(GenericGenerator):
         
        import pylab as pl
        import OpenPNM
-       gen = OpenPNM.GEN.Cubic()
+       gen = OpenPNM.Generators.Cubic()
        net = gen.generate()
        pl.spy(net._adjmatrix)
        pl.show()
@@ -89,7 +89,7 @@ class Cubic(GenericGenerator):
         Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
         
         #Instantiate object(correct terminology?)
-        self._net=OpenPNM.NET.GenericNetwork(num_pores=Np, num_throats=Nt)
+        self._net=OpenPNM.Network.GenericNetwork(num_pores=Np, num_throats=Nt)
     
     def generate_pores(self):
         r"""
