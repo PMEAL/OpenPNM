@@ -6,7 +6,7 @@
 
 
 """
-module __OrdinaryPercolationAlgorithm__: Ordinary Percolation Algorithm
+module __OrdinaryPercolation__: Ordinary Percolation Algorithm
 ========================================================================
 
 .. warning:: The classes of this module should be loaded through the 'ALG.__init__.py' file.
@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 
 from __GenericAlgorithm__ import GenericAlgorithm
 
-class OrdinaryPercolationAlgorithm(GenericAlgorithm):
+class OrdinaryPercolation(GenericAlgorithm):
     r"""
     Calculates a capillary pressure curve by looping through a list
     of capillary pressures and calling the PCpoint function

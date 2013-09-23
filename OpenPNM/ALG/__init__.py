@@ -38,7 +38,7 @@ Submodules
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: ALG.OrdinaryPercolationAlgorithm
+.. autoclass:: ALG.OrdinaryPercolation
    :members:
    :undoc-members:
    :show-inheritance:
@@ -52,5 +52,5 @@ Submodules
 
 from __GenericAlgorithm__ import GenericAlgorithm
 from __InvasionPercolationAlgorithm__ import InvasionPercolationAlgorithm
-from __OrdinaryPercolationAlgorithm__ import OrdinaryPercolationAlgorithm
+from __OrdinaryPercolation__ import OrdinaryPercolation
 from __FicksLawDiffusion__ import FicksLawDiffusion 
