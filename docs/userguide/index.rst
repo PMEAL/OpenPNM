@@ -9,10 +9,9 @@ Contents:
 .. toctree::
    :maxdepth: 3
    
-   ../docInstall.rst
    getting_started.rst
-   network_storage.rst
-   network_generators.rst
+   data_storage.rst
+   generators.rst
    physics.rst
    algorithms.rst
    visualization.rst

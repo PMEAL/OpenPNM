@@ -38,7 +38,12 @@ Submodules
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: ALG.InvasionPercolationAlgorithmTiming
+.. autoclass:: ALG.OrdinaryPercolationAlgorithm
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: ALG.FicksLawDiffusion
    :members:
    :undoc-members:
    :show-inheritance:

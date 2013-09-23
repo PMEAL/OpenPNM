@@ -39,8 +39,8 @@ class InvasionPercolationAlgorithm(GenericAlgorithm):
     end_condition : string('breaktrhough')
         choice between 'breakthrough' and 'total'
         
-    Input Network:
-    ----------
+    Input Network
+    -------------
     The algorithm expects a pore network with the following pore properties:
       
     +-----------+----------+--------+-----------------+

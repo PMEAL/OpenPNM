@@ -33,14 +33,13 @@ class OrdinaryPercolationAlgorithm(GenericAlgorithm):
     Parameters
     ----------
     
-    npts: number of simulation steps (pressures); default 25
+    npts: int
+        number of simulation steps (pressures); default 25
 
-    inv_sites: invasion pores i.e. [1,2,3,4,10]; default = 0
+    inv_sites: array_like
+        invasion pores i.e. [1,2,3,4,10]; default = 0
     
-    Dependencies:
-        - 
-    Creates:
-        - 
+
     """
     
     def __init__(self,net=OpenPNM.NET.GenericNetwork(),npts=25,inv_sites=[0],**kwargs):

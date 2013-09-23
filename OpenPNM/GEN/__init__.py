@@ -33,10 +33,21 @@ Classes
    :undoc-members:
    :show-inheritance:
        
-.. autoclass:: SimpleCubicGenerator
+.. autoclass:: Cubic
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. autoclass:: Delaunay
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Custom
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
 """
 
 import scipy as sp
