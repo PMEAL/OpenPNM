@@ -86,7 +86,7 @@ class InvasionPercolationAlgorithm(GenericAlgorithm):
         
     """
     
-    def __init__(self,net=OpenPNM.NET.GenericNetwork,inlets=[0],outlets=[1],end_condition='breakthrough',**kwords):
+    def __init__(self,net=OpenPNM.NET.GenericNetwork,inlets=[0],outlets=[1],report=20,end_condition='breakthrough',**kwords):
         r"""
         
         """
@@ -94,17 +94,23 @@ class InvasionPercolationAlgorithm(GenericAlgorithm):
         self._logger.info("Create IP Algorithm Object")
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets 
+        self._outlets = outlets
         if sp.size(inlets) == 1:
             self._inlets = [inlets]
-        self._outlets = outlets
+        if sp.size(outlets) == 1:
+            self._outlets = [outlets]
         self._end_condition = end_condition
         self._counter = 0
         self._condition = 1
+        self._rough_increment = report
+        if report == 0:
+            self._rough_increment = 100
 
     def _setup_for_IP(self):
         r"""
         Determines cluster labelling and condition for completion
         """
+        self._clock_start = clock()
         self._logger.debug( '+='*25)
         self._logger.debug( 'INITIAL SETUP (STEP 1)')
         # if empty, add Pc_entry to throat_properties
@@ -210,12 +216,24 @@ class InvasionPercolationAlgorithm(GenericAlgorithm):
         self._logger.debug( self._cluster_data['haines_throat'])
         self._logger.debug( 'max throat cap volumes')
         self._logger.debug( self._Tvol_coef*self._net.throat_properties["Pc_entry"])
-        self._logger.debug( '+='*25)
-        
         
         self._tseq += 1
         self._pseq += 1
-
+        # Calculate the distance between the inlet and outlet pores
+        self._outlet_position = np.average(self._net.pore_properties['coords'][self._outlets],0)
+        inlet_position = np.average(self._net.pore_properties['coords'][self._inlets],0)
+        dist_sqrd = (self._outlet_position-inlet_position)*(self._outlet_position-inlet_position)
+        self._initial_distance = np.sqrt(dist_sqrd[0]+dist_sqrd[1]+dist_sqrd[2])
+        self._logger.debug( 'initial distance')
+        self._logger.debug( self._initial_distance)
+        self._current_distance = self._initial_distance
+        self._percent_complete = np.round((self._initial_distance-self._current_distance)/self._initial_distance*100, decimals = 1)
+        self._logger.info( 'percent complete')
+        self._logger.info( self._percent_complete)
+        self._rough_complete = 0
+        print '     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds'
+        self._logger.debug( '+='*25)
+        
     def _do_outer_iteration_stage(self):
         r"""
         Executes the outer iteration stage
@@ -446,6 +464,22 @@ class InvasionPercolationAlgorithm(GenericAlgorithm):
         self._logger.debug(self._cluster_data['haines_time'])
             
     def _condition_update(self):
+         # Calculate the distance between the new pore and outlet pores
+        newpore_position = self._net.pore_properties['coords'][self._NewPore]
+        dist_sqrd = (self._outlet_position-newpore_position)*(self._outlet_position-newpore_position)
+        newpore_distance = np.sqrt(dist_sqrd[0]+dist_sqrd[1]+dist_sqrd[2])
+        self._logger.debug( 'newpore distance')
+        self._logger.debug( newpore_distance)
+        if newpore_distance < self._current_distance:
+            self._percent_complete = np.round((self._initial_distance-newpore_distance)/self._initial_distance*100, decimals = 1)
+            self._logger.info( 'percent complete')
+            self._logger.info( self._percent_complete)
+            self._current_distance = newpore_distance
+            if self._end_condition == 'breakthrough':
+                if self._percent_complete > self._rough_complete + self._rough_increment:
+                    self._rough_complete = np.floor(self._percent_complete/self._rough_increment)*self._rough_increment
+                    print '     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds'
+        # Determine if a new breakthrough position has occured
         if self._end_condition == 'breakthrough':
             if self._NewPore in self._outlets:
                 self._logger.info( ' ')
@@ -462,7 +496,8 @@ class InvasionPercolationAlgorithm(GenericAlgorithm):
                 self._logger.info( 'SIMULATION FINISHED; no more active clusters')
                 self._logger.info('at time')
                 self._logger.info(self._sim_time)
-                self._condition = 0
+                self._condition = 0 
+                print '     IP algorithm at 100% completion at ',np.int(np.round(clock())),' seconds'
         elif self._end_condition == 'total':
             self._condition = not self._Tinv.all()    
     
@@ -474,17 +509,16 @@ class InvasionPercolationAlgorithm(GenericAlgorithm):
             
 if __name__ =="__main__":
     
-    from time import clock
-    start=clock()
+    clock()
     print "="*50
     print "= Example: Create random network and run an invasion\n= percolation algorithm"
     print "-"*50
     print "- * generate a simple cubic network"    
     #sp.random.seed(1)
-    pn = OpenPNM.GEN.Cubic(domain_size=[10,10,10],lattice_spacing=1.0,btype = [0,1,0]).generate()
+    pn = OpenPNM.GEN.Cubic(domain_size=[50,50,15],lattice_spacing=1.0,btype = [0,1,0]).generate()
     #pn = OpenPNM.GEN.Delaunay(domain_size=[30,30,10],num_pores = 5000 ,btype = [1,1,0]).generate()
     print "+"*50
-    print "Sample generated at t =",clock()-start,"seconds."
+    print "Sample generated at t =",clock(),"seconds."
     print "+"*50
     #print "- * Assign pore volumes"
     #pore_volumes=sp.random.rand(pn.get_num_pores())
@@ -493,32 +527,29 @@ if __name__ =="__main__":
     print '- * Assign boundary pore volumes = 0'
     pn.pore_properties['diameter'][pn.pore_properties['type']>0] = 0
         
-    
     print "- * Define inlet and outlet faces"
-    #inlets = sp.nonzero(pn.pore_properties['type']==1)[0]
-    #outlets = sp.nonzero(pn.pore_properties['type']==6)[0]
+    inlets = sp.nonzero(pn.pore_properties['type']==1)[0]
+    outlets = sp.nonzero(pn.pore_properties['type']==6)[0]
     #inlets2 = sp.unique((inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
     #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
     #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
     #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
     #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))]))
-    #print inlets2
-    inlets = [1,2,3]
-    outlets = [6,7,8]    
+    #print inlets2  
     
     #print "- * assign random pore and throat diameters"
     #pn.pore_properties['diameter'] = sp.random.rand(pn.get_num_pores(),1)
     #pn.throat_properties['diameter'] = sp.random.rand(pn.get_num_throats(),1)
     
     print "- * Run Invasion percolation algorithm"
-    IP = InvasionPercolationAlgorithm(net=pn,inlets=inlets,outlets=outlets,loglevel=10,loggername="TestInvPercAlg")
+    IP = InvasionPercolationAlgorithm(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
     IP.run()
     print "+"*50
-    print "IP completed at t =",clock()-start,"seconds."
+    print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP.vtp"
     OpenPNM.IO.NetToVtp(net = pn,filename="IP.vtp")
     
     print "="*50
-    print "Program Finished at t = ",clock()-start,"seconds."
+    print "Program Finished at t = ",clock(),"seconds."
     print "="*50
