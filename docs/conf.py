@@ -30,17 +30,21 @@ sys.path.append(os.path.abspath('../bin'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo',
-	      'sphinx.ext.coverage', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig',
-	      'sphinx.ext.viewcode',
-#	      'matplotlib.sphinxext.mathmpl',
-	      'matplotlib.sphinxext.only_directives',
-	      'matplotlib.sphinxext.plot_directive',
-#	      'matplotlib.sphinxext.ipython_directive',
-	      'matplotlib.sphinxext.ipython_console_highlighting',
-	      'sphinx.ext.inheritance_diagram',
-	      'sphinx.ext.graphviz',
-	      'numpydoc']
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.doctest',
+              'sphinx.ext.todo',
+              'sphinx.ext.coverage',
+              'sphinx.ext.pngmath',
+              'sphinx.ext.ifconfig',
+              'sphinx.ext.viewcode',
+              'matplotlib.sphinxext.mathmpl',
+              'matplotlib.sphinxext.only_directives',
+              'matplotlib.sphinxext.plot_directive',
+#              'matplotlib.sphinxext.ipython_directive',
+#              'matplotlib.sphinxext.ipython_console_highlighting',
+              'sphinx.ext.inheritance_diagram',
+              'sphinx.ext.graphviz',
+              'numpydoc']
 [extensions]
 todo_include_todos=True
 	      
@@ -127,7 +131,7 @@ html_theme = 'default'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = 'logosmall.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -326,4 +330,3 @@ latex_preamble = r'''
 
 # If false, no module index is generated.
 latex_use_modindex = True
-

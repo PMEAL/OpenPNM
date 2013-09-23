@@ -4,10 +4,10 @@
 
 r"""
 *********************************************************************************
-:mod:`OpenPNM.GEN` -- All classes related the creation of geometric pore networks
+:mod:`OpenPNM.Generators` -- All classes related the creation of geometric pore networks
 *********************************************************************************
 
-.. module:: OpenPNM.GEN
+.. module:: OpenPNM.Generators
 
 Contents
 --------
@@ -16,7 +16,7 @@ The OpenPNM package imports all the functions from the top level modules.
 Import
 ------
 >>> import OpenPNM as PNM
->>> tmp=PNM.GEN.GenericGenerator()
+>>> tmp=PNM.Generators.Generic()
 
 
 Submodules
@@ -33,16 +33,27 @@ Classes
    :undoc-members:
    :show-inheritance:
        
-.. autoclass:: SimpleCubicGenerator
+.. autoclass:: Cubic
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. autoclass:: Delaunay
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Custom
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
 """
 
 import scipy as sp
 import numpy as np
 
 from __GenericGenerator__ import GenericGenerator
-from __CubicGenerators__ import Cubic
-from __DelaunayGenerator__ import Delaunay
-from __CustomGenerator__ import Custom
+from __Cubic__ import Cubic
+from __Delaunay__ import Delaunay
+from __Custom__ import Custom

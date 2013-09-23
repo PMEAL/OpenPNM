@@ -6,10 +6,10 @@
 
 
 """
-module __OrdinaryPercolationAlgorithm__: Ordinary Percolation Algorithm
+module __OrdinaryPercolation__: Ordinary Percolation Algorithm
 ========================================================================
 
-.. warning:: The classes of this module should be loaded through the 'ALG.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
 
 """
 
@@ -21,68 +21,38 @@ import matplotlib.pyplot as plt
 
 from __GenericAlgorithm__ import GenericAlgorithm
 
-class OrdinaryPercolationAlgorithm(GenericAlgorithm):
-    r"""   
+class OrdinaryPercolation(GenericAlgorithm):
+    r"""
+    Calculates a capillary pressure curve by looping through a list
+    of capillary pressures and calling the PCpoint function
     
-    OrdinaryPercolationAlgorithm - Class to run OP algorithm on constructed networks
-    
+    This function produces a plist called 'invpc' which contains the
+    pressure at which a given pore was invaded. This list can be useful for
+    reproducing the simulation for plotting or determining late pore filling.
+
     Parameters
     ----------
     
-    end_condition : choice between 'full_curve' and 'satn_value'
-            
-    Examples
-    --------
+    npts: int
+        number of simulation steps (pressures); default 25
+
+    inv_sites: array_like
+        invasion pores i.e. [1,2,3,4,10]; default = 0
     
-    
-    TODO:
+
     """
     
-    def __init__(self,net=OpenPNM.NET.GenericNetwork(),**kwargs):
+    def __init__(self,net=OpenPNM.Network.GenericNetwork(),npts=25,inv_sites=[0],**kwargs):
         r"""
         
         """
-        super(OrdinaryPercolationAlgorithm,self).__init__(net = net,**kwargs)
-        self._logger.debug("Create OP Algorithm Object")
-        self.counter = 0
-        self._setup(**kwargs)
+        super(OrdinaryPercolation,self).__init__(net = net,**kwargs)
+        self._logger.debug("Create Drainage Percolation Algorithm Object")
+        self._npts = npts
+        self._inv_src = inv_sites
+        self._setup()
         
-    def _setup(self,npts=25,inv_faces=[],inv_sites=[]):
-        r"""
-        Calculates a capillary pressure curve by looping through a list
-        of capillary pressures and calling the PCpoint function
-        
-        This function produces a plist called 'invpc' which contains the
-        pressure at which a given pore was invaded. This list can be useful for
-        reproducing the simulation for plotting or determining late pore filling.
-
-        Parameters
-        ----------
-        
-        npts: number of simulation steps (pressures); default 25
-        
-        inv_faces: invasion faces i.e. [1] or [1,2]; default [] but errors if inv_sites is also empty
-
-        inv_sites: invasion pores i.e. [1,2,3,4,10]; default [] but errors if inv_faces is also empty
-        
-        Dependencies:
-            - 
-        Creates:
-            - 
-        """
-        self._OP = 0
-        self._ALOP = 0
-        #Interpret input values to create invasion source list        
-        if((np.size(inv_faces) + np.size(inv_sites)) == 0 ):
-            self._logger.info("No invasion sites specfied, performing Ordinary Percolation")
-            self._OP = 1
-        elif np.size(inv_faces) > 0:
-            self._ALOP = 1
-            self._inv_src = np.in1d(self._net.pore_properties['type'],inv_faces)
-        elif np.size(inv_sites) > 0:
-            self._ALOP = 1
-            self._inv_src = np.in1d(self._net.pore_properties['numbering'],inv_sites)
-        
+    def _setup(self):
         #Create a pore and throat list to store inv_val at which each is invaded
         self._net.pore_properties['Pc_invaded'] = np.zeros(self._net.get_num_pores(),np.float)
         self._net.throat_properties['Pc_invaded'] = np.zeros(self._net.get_num_throats(),np.float)
@@ -91,7 +61,8 @@ class OrdinaryPercolationAlgorithm(GenericAlgorithm):
         #Determine the invasion pressures to apply
         min_p = np.min(self._net.throat_properties['Pc_entry'])
         max_p = np.max(self._net.throat_properties['Pc_entry'])
-        self._inv_points = np.linspace(min_p,max_p,npts)
+        self._inv_points = np.logspace(np.log10(min_p),np.log10(max_p),self._npts)
+        print self._inv_points
         
     def _do_outer_iteration_stage(self):
         #Generate curve from points
@@ -132,14 +103,8 @@ class OrdinaryPercolationAlgorithm(GenericAlgorithm):
         clusters = sprs.csgraph.connected_components(self._net._adjmatrix_csr)[1]
         #Clean up (not invaded = -2, invaded >0)
         clusters = (clusters[0:]>=0)*(clusters[0:]+1)
-        if self._ALOP == 1:
-            #Identify clusters connected to invasion sites
-            inj_clusters = self._inv_src*clusters
-        elif self._OP == 1:
-            #Determine which pores are actually invaded
-            temp1 = self._net.throat_properties['invaded']*((self._net.throat_properties['connections'][:,0]+1)-1)
-            temp2 = self._net.throat_properties['invaded']*((self._net.throat_properties['connections'][:,1]+1)-1)
-            inj_clusters = np.append(self._net.pore_properties['numbering'][temp1[temp1>=0]],self._net.pore_properties['numbering'][temp2[temp2>=0]])
+        #Identify clusters connected to invasion sites
+        inj_clusters = np.in1d(self._inv_src,self._net.pore_properties['numbering'][clusters>0])
         #Trim non-connected clusters
         inv_clusters2 = sp.zeros([np.size(clusters,0)],np.int32)
         inv_clusters2[np.in1d(clusters,inj_clusters)] = 1
