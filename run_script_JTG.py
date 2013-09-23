@@ -10,31 +10,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from time import clock
 
-<<<<<<< HEAD
-import scipy.ndimage as spim
-img = np.random.rand(60,60,60)>0.0005
-img = spim.distance_transform_edt(img)<=4
-
-import scipy.ndimage as spim
-tmp = spim.imread('C:\Users\Jeff\Pictures\Picture2.tif')
-tmp = tmp[35:105,:,3]==0
-#plt.imshow(tmp)
-img = np.kron(np.ones((3,1,1)),tmp) #Make image deeper
-img = np.transpose(img,axes=[1,2,0])
-#img = tmp
-
-=======
->>>>>>> develop
 params = {
 #'domain_size': [0.001,0.001,0.0004],  #physical network size [meters]
-'divisions': [60,60,60], #Number of pores in each direction
-'lattice_spacing': 1,  #spacing between pores [meters]
+'divisions': [20,20,20], #Number of pores in each direction
+'lattice_spacing': 1.0,  #spacing between pores [meters]
 #'num_pores': 1000, #This is used for random networks where spacing is irrelevant
-<<<<<<< HEAD
-'image_shape': img,
-=======
->>>>>>> develop
-'btype': [1,1,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
+'btype': [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 #The following parameters are for the statistical functions used to generate
 #pore and throat size distributions.  See scipy.stats for options and parameters.
 'psd_dist': 'weibull_min',  #distribution to be used
@@ -48,64 +29,21 @@ params = {
 }
 
 start=clock()
-<<<<<<< HEAD
-gn = OpenPNM.GEN.Custom(loglevel=10,**params)
-gn.generate()
-pn = gn.get_net()
-#gn.generate_pore_property_from_image(np.array((imgsld),dtype=np.int8),'rand')
-=======
-pn = OpenPNM.GEN.Cubic(loglevel=10,**params).generate()
+pn = OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
 
-#pn = OpenPNM.GEN.Delaunay(loglevel=10,**params).generate()
->>>>>>> develop
+#pn = OpenPNM.Generators.Delaunay(loglevel=10,**params).generate()
 
-neighborPs = pn.get_neighbor_pores(np.r_[0:pn.get_num_pores()],flatten=False)
-tmp = np.zeros((pn.get_num_pores(),))
-for i in np.r_[0:pn.get_num_pores()]:
-    tmp[i] = np.size(neighborPs[i])
-pn.pore_properties['core_shell']=np.array(tmp<6,dtype=np.int8)*1 + np.array(tmp==6,dtype=np.int8)*2
-
-<<<<<<< HEAD
-#pn = OpenPNM.GEN.Cubic(loglevel=20,**params).generate()
-#pn = OpenPNM.GEN.Delaunay(loglevel=10,**params).generate()
-
-#import scipy.spatial as sptl
-#vn = sptl.Voronoi((0.5 + np.transpose(np.nonzero(img))))
-#pts = np.sum((vn.vertices<np.shape(img))*(vn.vertices>0),axis=1)==3
-#coords = np.array(np.floor(vn.vertices[pts]),dtype=np.int32)
-#img = np.zeros(np.shape(img),dtype=bool)
-#img[coords.T[0],coords.T[1],coords.T[2]]=True
-#plt.imshow(img[:,:,20]+imgsld[:,:,20]*0.5,interpolation='none')
-
-#img2 = img*~imgsld
-#pn.add_pore_prop_from_img(img*1,'type')
-#gn.add_pore_prop_from_img(imgsld*2,'type')
-#pn.add_pore_prop_from_img(~img*3,'type')
-
-pn.throat_properties['Pc_entry'] = -4*0.072*np.cos(np.radians(105))/pn.throat_properties['diameter']  #This should be set somewhere else
-inlets = [200]
-#outlets = [pn.get_num_pores()-1]
-#exp1 = OpenPNM.ALG.InvasionPercolationAlgorithm(pn, loglevel = 10, npts=100, inlets=inlets, outlets=outlets).run()
-exp2 = OpenPNM.ALG.OrdinaryPercolationAlgorithm(pn, npts=10, inv_sites=inlets).run()
-pn.update()
-
-#Write network to vtk file for visualization in Paraview
-#import os
-#OpenPNM.IO.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
-=======
 pn.throat_properties['Pc_entry'] = -4*0.072*np.cos(np.radians(105))/pn.throat_properties['diameter']  #This should be set somewhere else
 inlets = [0]
-outlets = pn.get_num_pores()
-#exp1 = OpenPNM.ALG.InvasionPercolationAlgorithm(pn, loglevel = 10, npts=100, inlets=inlets, outlets=outlets).run()
-exp2 = OpenPNM.ALG.OrdinaryPercolationAlgorithm(pn, npts=50, inv_sites=inlets).run()
+#exp1 = OpenPNM.Algorithms.InvasionPercolation(pn, loglevel = 10, npts=100, inlets=inlets, outlets=outlets).run()
+exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, loglevel = 10, npts=50, inv_sites=inlets).run()
 pn.update()
 
 #Write network to vtk file for visualization in Paraview
 import os
 OpenPNM.IO.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
->>>>>>> develop
 
 print clock()-start,"seconds."
 
-#vis = OpenPNM.VIS.Vis2D()
+#vis = OpenPNM.Algorithms.Vis2D()
 #vis.overview(pn)

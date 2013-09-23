@@ -3,10 +3,10 @@
 # License: TBD.
 r"""
 **************************************************************************
-:mod:`OpenPNM.ALG`: Algorithms on Networks
+:mod:`OpenPNM.Algorithms`: Algorithms on Networks
 **************************************************************************
 
-.. module:: OpenPNM.ALG
+.. module:: OpenPNM.Algorithms
 
 Contents
 --------
@@ -19,7 +19,7 @@ This submodule contains all algorithms actiong on a pore network.
 Import
 ------
 >>> import OpenPNM as PNM
->>> tmp=PNM.ALG.GenericAlgorithm()
+>>> tmp=PNM.Algorithms.GenericAlgorithm()
 
 
 Submodules
@@ -28,12 +28,22 @@ Submodules
 
  None                            --- No subpackages at the moment
 
-.. autoclass:: ALG.GenericAlgorithm
+.. autoclass:: Algorithms.GenericAlgorithm
    :members:
    :undoc-members:
    :show-inheritance:
        
-.. autoclass:: ALG.InvasionPercolationAlgorithm
+.. autoclass:: Algorithms.InvasionPercolation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Algorithms.OrdinaryPercolation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: Algorithms.FickianDiffusion
    :members:
    :undoc-members:
    :show-inheritance:
@@ -41,7 +51,6 @@ Submodules
 """
 
 from __GenericAlgorithm__ import GenericAlgorithm
-from __InvasionPercolationAlgorithm__ import InvasionPercolationAlgorithm
-from __InvasionPercolationAlgorithm__ import InvasionPercolationAlgorithmTiming
-from __OrdinaryPercolationAlgorithm__ import OrdinaryPercolationAlgorithm
-from __FicksLawDiffusion__ import FicksLawDiffusion 
+from __InvasionPercolation__ import InvasionPercolation
+from __OrdinaryPercolation__ import OrdinaryPercolation
+from __FickianDiffusion__ import FickianDiffusion 
