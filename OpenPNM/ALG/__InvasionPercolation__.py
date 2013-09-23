@@ -7,7 +7,7 @@
 #from __future__ import print_function
 
 """
-module __InvasionPercolationAlgorithm__: Invasion Percolation Algorithm
+module __InvasionPercolation__: Invasion Percolation Algorithm
 ========================================================================
 
 .. warning:: The classes of this module should be loaded through the 'ALG.__init__.py' file.
@@ -25,7 +25,7 @@ import itertools
 from __GenericAlgorithm__ import GenericAlgorithm
 
 
-class InvasionPercolationAlgorithm(GenericAlgorithm):
+class InvasionPercolation(GenericAlgorithm):
     r"""   
     
     Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
@@ -90,7 +90,7 @@ class InvasionPercolationAlgorithm(GenericAlgorithm):
         r"""
         
         """
-        super(InvasionPercolationAlgorithm,self).__init__(net = net,**kwords)
+        super(InvasionPercolation,self).__init__(net = net,**kwords)
         self._logger.info("Create IP Algorithm Object")
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets 
@@ -542,7 +542,7 @@ if __name__ =="__main__":
     #pn.throat_properties['diameter'] = sp.random.rand(pn.get_num_throats(),1)
     
     print "- * Run Invasion percolation algorithm"
-    IP = InvasionPercolationAlgorithm(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
+    IP = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
     IP.run()
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
