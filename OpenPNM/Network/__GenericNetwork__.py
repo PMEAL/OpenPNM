@@ -21,12 +21,11 @@ import scipy as sp
 import scipy.sparse as sprs
 import matplotlib as mpl
 
-class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
+class GenericNetwork(OpenPNM.Base.OpenPNMbase):
     r"""
     GenericNetwork - Base topology class for pore networks
     
-    This class contains the basic functionality for
-    storage and manipulation of pore networks.
+    This class contains the basic functionality for storaging and querying pore network data.
     
     Parameters
     ----------
@@ -57,49 +56,7 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
         flag if the things need to be updated.
     
     
-    Examples
-    --------
-    
-    To reserve space for a network with the default number of pores
-    and throats execute
-    
-    >>> import OpenPNM as PNM
-    >>> net=PNM.NET.GenericNetwork()
-    >>> net.print_overview()
-    ==================================================
-    = Overview of network properties
-    --------------------------------------------------
-    Basic properties of the network
-    - Number of pores:    10
-    - Number of throats:  20
-    Pore properties:
-        numbering   int64     (10,)
-    Throat properties:
-        connections int64     (20, 2)
-        numbering   int64     (20,)
-    --------------------------------------------------
 
-    The following example plots the default adjacency matrix:
-    
-    .. plot::
-        
-        import pylab as pl
-        import OpenPNM
-        net = OpenPNM.NET.GenericNetwork()
-        net.create_adjacency_matrix()
-        pl.spy(net._adjmatrix)
-        pl.show()
-    
-    The following code plots the adjacency matrix colored by a throat property.
-    
-    .. plot::
-        
-        import pylab as pl
-        import OpenPNM
-        net = OpenPNM.NET.GenericNetwork()
-        net.create_adjacency_matrix(tprop="numbering")
-        pl.spy(net._adjmatrix)
-        pl.show()
     
     I have included the class attributes on the same level as
     the devs. This had a weird side effect:
@@ -108,51 +65,47 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
     I have corrected this by initializing the everyting in the constructor
     again. This seems to have solved the problem, but I am not sure why.
     """
-    pore_properties =   {}
-    throat_properties = {}
-    _needs_update = True
+    
 
     def __init__(self,**kwords):
-        r"""
-        Default constructor of the basic network class
-
-        FIXME: fix occurence of duplicate throats
-        """
+        r'''
+        This is the abstract constructor of the basic network class.  
+        
+        '''
+        
         super(GenericNetwork,self).__init__(**kwords)
         self._logger.debug("Method: Constructor")
 
         self.pore_properties = {}
         self.throat_properties = {}
 
-        self._logger.debug("- Creating default Properties")
+        self._logger.info("- Creating default pore properties")
+        
+        self._logger.info("  - numbering")
+        self.declare_pore_property('numbering',dtype=sp.int64,columns=1,default=0)
 
-        self._logger.debug("  - numbering (pore property)")
-        self.declare_pore_property('numbering',dtype=int,columns=1,default=0)
-
-        self._logger.debug("  - coords (pore property), rand array")
+        self._logger.info("  - coords")
         self.declare_pore_property("coords",dtype=float,columns=3,default=0)
 
-        self._logger.debug("  - type (pore property), zero array")
-        self.declare_pore_property("type",dtype=int,columns=1,default=1)
+        self._logger.info("  - type")
+        self.declare_pore_property("type",dtype=sp.int8,columns=1,default=1)
 
-        self._logger.debug("  - numbering (throat property)")
-        self.declare_throat_property(name="numbering",dtype=int,columns=1,default=1)
+        '''r
+        FIXME: fix occurence of duplicate throats
+        '''
+        self._logger.info("- Creating default throat properties")
+        
+        self._logger.info("  - numbering")
+        self.declare_throat_property(name="numbering",dtype=sp.int8,columns=1,default=1)
 
-        self._logger.debug("  - connections (throat property), rand array")
+        self._logger.info("  - connections")
         self.declare_throat_property(name="connections",dtype=int,columns=2,default=0)
-        #self.throat_properties["connections"] = sp.random.random_integers(0,num_pores-1,[num_throats,2])
 
-        self._logger.debug("  - type (throat property)")
-        self.declare_throat_property(name="type",dtype=int,columns=1,default=1)
+        self._logger.info("  - type")
+        self.declare_throat_property(name="type",dtype=sp.int8,columns=1,default=1)
         #self.throat_properties["type"] = sp.arange(0,num_throats,1).reshape(num_throats,1)
-
-        self._logger.debug("  ...done")
-
-
-
-        #self.update()
-
-        self._logger.debug("Constructor completed")
+        
+        self._logger.info("Constructor completed")
 
     def create_adjacency_matrix(self,tprop='none',sprsfmt='all',dropzeros=True,diag=False,sym=True):
         r"""
@@ -174,11 +127,13 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
 
         Returns
         -------
-        adj_mat : Returns adjacency matrix in specified format for private use
+        adj_mat : sparse_matrix, optional
+            Returns adjacency matrix in specified format for private use
         
         Notes
         -----
-
+        This can return the specified sparse matrix, but will always write the generated matrix to the network object
+        
         Examples
         --------
         >>> print 'nothing yet'
@@ -306,8 +261,8 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
         Parameters
         ----------
 
-        ptype : list
-            list of desired pore types e.g. [1],[1,2,3]
+        ptype : array_like, optional
+            list of desired pore types to count
 
         Returns
         -------
@@ -327,8 +282,8 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
         Parameters
         ----------
 
-        ttype : list
-            list of desired throat types e.g. [1],[1,2,3]
+        ttype : array_like, optional
+            list of desired throat types to count
 
         Returns
         -------
@@ -341,23 +296,43 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
             Nt = 0
         return Nt
 
-    def get_connected_pores(self,tlist=[]):
+    def get_connected_pores(self,Tnums=[],flatten=True):
         r"""
         Return a list of pores connected to a list of throats
 
         Parameters
         ----------
-
-        tlist : list
-            list of throats e.g. [1],[1,2,3],[10:20]
+        Tnums: array_like
+            List of throats ID numbers
+        flatten : boolean, optional
+            If flatten is True (default) a 1D array of unique pore ID numbers 
+            is returned. If flatten is False the returned array contains 
+            arrays of neighboring pores for each input throat, in the order 
+            they were sent.            
 
         Returns
         -------
-        plist : ndarray
-            Returns an ndarray with two colums and the number of rows
-            corresponding to the number of throats handed over.
+        Ps : 1D array (if flatten is True) or ndarray of arrays (if flatten is 
+            False)
+
+        Examples
+        --------
+        >>> Tnums = [0,1]
+        >>> Ps = pn.get_connected_pores(Tnums) 
+        >>> Ps
+        array([  0,   2, 920])
+        
+        >>> Tnums = [0,1]
+        >>> Ps = pn.get_connected_pores(Tnums,flatten=False) 
+        >>> Ps
+        array([[  0, 920],
+               [  0,   2]])                 
         """
-        return self.throat_properties["connections"][tlist]
+        Ps = self.throat_properties["connections"][Tnums]
+#        Ps = [np.asarray(x) for x in Ps if x]
+        if flatten:
+            Ps = np.unique(np.hstack(Ps))
+        return Ps
 
     def get_connecting_throat(self,P1,P2):
         r"""
@@ -365,7 +340,6 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
 
         Parameters
         ----------
-
         Pnum1 , Pnum2 : int
 
         Returns
@@ -375,67 +349,95 @@ class GenericNetwork(OpenPNM.BAS.OpenPNMbase):
         """
         return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
-    def get_neighbor_pores(self,Pnum,ptype=[0,1,2,3,4,5,6],flatten=True):
-        #Written by Jeff Gostick (jeff@gostick.ca)
+    def get_neighbor_pores(self,Pnums,flatten=True):
         r"""
         Returns a list of neighboring pores
         
         Parameters
         ----------
-
-        Pnum : list
+        Pnums : array_like
+            ID numbers of pores whose neighbors are sought
+        flatten : boolean, optional
+            If flatten is True (default) a 1D array of unique pore ID numbers 
+            is returned with the input pores (Pnum) removed. If flatten is 
+            False the returned array contains arrays of neighboring pores for 
+            each input pore, in the order they were sent.
         
         Returns
         -------
-        neighborPs : int
-            If flatten is True (default) a 1D array of unique pore ID numbers 
-            is returned with the input pores (Pnum) removed. If flatten is 
-            False the returned 1D array contains a list of neighboring pores for 
-            each input pore, in the order they were sent.
+        neighborPs : 1D array (if flatten is True) or ndarray of arrays (is
+            flatten if False)
+            
+        Examples
+        --------
+        >>> Pnums = [0,1]
+        >>> Ps = pn.get_neighbor_pores(Pnums)
+        >>> Ps
+        array([  2,   3, 920, 921])
+        
+        >>> Pnums = [0,1]
+        >>> Ps = pn.get_neighbor_pores(Pnums,flatten=False)
+        >>> Ps
+        array([[  1,   2, 920],
+               [  0,   3, 921]]) 
         """
         try:
-            neighborPs = self._adjmatrix._lil.rows[[Pnum]]
+            neighborPs = self._adjmatrix._lil.rows[[Pnums]]
         except:
             self.create_adjacency_matrix() 
-            neighborPs = self._adjmatrix_lil.rows[[Pnum]]
+            neighborPs = self._adjmatrix_lil.rows[[Pnums]]
         #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-        neighborPs = [x for x in neighborPs if x]
+        neighborPs = [np.asarray(x) for x in neighborPs if x]
         if flatten and neighborPs:
             neighborPs = np.hstack(neighborPs)
             #Remove references to input pores and duplicates
-            neighborPs = np.unique(neighborPs[~np.in1d(neighborPs,Pnum)])
+            neighborPs = np.unique(neighborPs[~np.in1d(neighborPs,Pnums)])
         return np.array(neighborPs)
 
-    def get_neighbor_throats(self,Pnum,ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6],flatten=True):
-        #Written by Jeff Gostick (jeff@gostick.ca)
+    def get_neighbor_throats(self,Pnums,flatten=True):
         r"""
         Returns a list of neighboring throats
         
         Parameters
         ----------
-
-        Pnum : list
+        Pnums : array_like
+            ID numbers of pores whose neighbors are sought
+        flatten : boolean, optional
+            If flatten is True (default) a 1D array of unique throat ID numbers 
+            is returned. If flatten is False the returned array contains arrays 
+            of neighboring throat ID numbers for each input pore, in the order 
+            they were sent.
         
         Returns
         -------
-        neighborTs : int
-            If flatten is True (default) a 1D array of unique throat ID numbers 
-            is returned. If flatten is False the returned 1D array contains a 
-            list of neighboring throats for each input pore, in the order they 
-            were sent.
+        neighborTs : 1D array (if flatten is True) or ndarray of arrays (if
+            flatten if False)
+            
+        Examples
+        --------
+        >>> Pnums = [0,1]
+        >>> Ts = pn.get_neighbor_throats(Pnums)
+        >>> Ts
+        array([    0,     1,     2, 83895, 83896])
+        
+        >>> Pnums = [0,1]
+        >>> Ts = pn.get_neighbor_throats(Pnums,flatten=False)
+        >>> Ts
+        array([[    0,     1,     2],
+               [    2, 83895, 83896]])
         """
         try:
-            neighborTs = self._incmatrix._lil.rows[[Pnum]]
+            neighborTs = self._incmatrix._lil.rows[[Pnums]]
         except:
             self.create_incidence_matrix(sprsfmt='lil')
-            neighborTs = self._incmatrix._lil.rows[[Pnum]]
+            neighborTs = self._incmatrix._lil.rows[[Pnums]]
         #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-        neighborTs = [x for x in neighborTs if x]
+        neighborTs = [np.asarray(x) for x in neighborTs if x]
         if flatten and neighborTs:
             neighborTs = np.unique(np.hstack(neighborTs))
-        return neighborTs
+        return np.array(neighborTs)
 
-    def get_neighbor_pores_props(self,Pnum,ptype=[0,1,2,3,4,5,6],flatten=True):
+    def get_neighbor_pores_props(self,Pnum,flatten=True):
         r"""
         Nothing yet, but this will return the specified property rather than
         just the ID numbers

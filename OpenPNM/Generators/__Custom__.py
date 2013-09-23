@@ -1,8 +1,8 @@
 """
-module __CubicGenerators__: Generate simple cubic networks
+module __Cubic__: Generate simple cubic networks
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'GEN.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
 
 """
 
@@ -37,7 +37,7 @@ class Custom(GenericGenerator):
         
        import pylab as pl
        import OpenPNM
-       gen = OpenPNM.GEN.Cubic()
+       gen = OpenPNM.Generators.Cubic()
        net = gen.generate()
        pl.spy(net._adjmatrix)
        pl.show()
@@ -48,6 +48,7 @@ class Custom(GenericGenerator):
     """
     
     def __init__(self,  image_shape = [],
+                        image_diameter = [],
                         lattice_spacing = [],
                         **kwargs):
 
@@ -57,12 +58,16 @@ class Custom(GenericGenerator):
         
         self._net_img = image_shape
         self._Lc = lattice_spacing
-        [self._Nx, self._Ny, self._Nz] = np.shape(image_shape)
+        if np.ndim(image_shape)==3:
+            [self._Nx, self._Ny, self._Nz] = np.shape(image_shape)
+        else:
+            [self._Nx, self._Ny] = np.shape(image_shape)
+            self._Nz = 1
         Np = self._Nx*self._Ny*self._Nz
         Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
         
         #Instantiate object
-        self._net=OpenPNM.NET.GenericNetwork(num_pores=Np, num_throats=Nt)
+        self._net=OpenPNM.Network.GenericNetwork(num_pores=Np, num_throats=Nt)
     
     def generate_pores(self):
         r"""
@@ -93,7 +98,7 @@ class Custom(GenericGenerator):
         self._logger.info("generate_throats: Define connections between pores")
         
         img = self._net_img
-        [Nx, Ny, Nz] = np.shape(img)
+        [Nx, Ny, Nz] = [self._Nx, self._Ny, self._Nz]
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
         

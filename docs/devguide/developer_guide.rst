@@ -64,17 +64,17 @@ directory is `sfepy/`, which has the following contents:
    * - `TOP`
      - Storage and manipulations of network topoologies and data stored on them.
      -
-   * - `GEN`
+   * - `Generators`
      - Generators for pore networks. (Random cubic, image based, Voronoi). Should also contain
        a mapper of the pore network back on the segmented image.
      -
-   * - `ALG`
+   * - `Algorithms`
      - Module containing all algorithmic classes for networks.
      -
    * - `IO`
      - Input output routines
      -
-   * - `VISU`
+   * - `Visualization`
      - Mayavi-based post-processing modules (`postproc.py`)
      -   
    * - `interactive/`

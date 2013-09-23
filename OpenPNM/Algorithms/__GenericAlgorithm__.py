@@ -10,7 +10,7 @@
 module __GenericAlgorithm__: Base class to construct pore networks
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'ALG.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
 
 """
 
@@ -22,13 +22,13 @@ from time import clock
 import heapq
 import itertools
 
-class GenericAlgorithm(OpenPNM.BAS.OpenPNMbase):
+class GenericAlgorithm(OpenPNM.Base.OpenPNMbase):
     r"""
     GenericAlgorithm - Base class to execute algorithms
     
     Parameters
     ----------
-    net : Descendent of OpenPNM.NET.GenericNetwork
+    net : Descendent of OpenPNM.Network.GenericNetwork
         A valid network for this algorithm
     
     
@@ -41,13 +41,13 @@ class GenericAlgorithm(OpenPNM.BAS.OpenPNMbase):
     and throats execute
     
     >>> import OpenPNM as PNM
-    >>> net=PNM.ALG.GenericAlgorithm()
+    >>> net=PNM.Algorithms.GenericAlgorithm()
     
     
     .. note:: In development
     """
     
-    def __init__(self,net=OpenPNM.NET.GenericNetwork,**kwords):
+    def __init__(self,net=OpenPNM.Network.GenericNetwork,**kwords):
         r"""
         Initialize
         """
