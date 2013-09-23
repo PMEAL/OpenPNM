@@ -5,7 +5,7 @@ import scipy.io
 import numpy as np
 import os, glob
 
-class NetToVtp(OpenPNM.BAS.OpenPNMbase):
+class NetToVtp(OpenPNM.Base.OpenPNMbase):
     r"""
     NetToVtp - Export a network as VTK VTP file
     
@@ -14,7 +14,7 @@ class NetToVtp(OpenPNM.BAS.OpenPNMbase):
     Parameters
     ----------
     
-    net : OpenPNM.NET.GenericNetwork
+    net : OpenPNM.Network.GenericNetwork
         Pore network
     filename : sring
         Filename
@@ -30,7 +30,7 @@ class NetToVtp(OpenPNM.BAS.OpenPNMbase):
     
     Create and store a basic network.
     >>> import OpenPNM as PNM
-    >>> net = PNM.GEN.SimpleCubic(divisions = [40,40,20],shape=[0.,4.,0.,4.,0.,2.]).generate()
+    >>> net = PNM.Generators.SimpleCubic(divisions = [40,40,20],shape=[0.,4.,0.,4.,0.,2.]).generate()
     >>> PNM.IO.NetToVtp(net=net,filename = 'testvtp.vtp')
     
     """
@@ -128,7 +128,7 @@ class NetToVtp2(NetToVtp):
         self._f.write(str(self._net.get_num_throats()))
         self._f.write('" NumberOfStrips="0" NumberOfPolys="0">\n')     
         
-class ImportMat(OpenPNM.BAS.OpenPNMbase):
+class ImportMat(OpenPNM.Base.OpenPNMbase):
     r"""
     ImportMat - Class for interacting with Matlab files with .mat suffix
     

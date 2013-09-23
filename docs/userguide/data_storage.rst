@@ -54,7 +54,7 @@ To reserve space for a network with the default number of pores
 and throats execute
 
 >>> import OpenPNM as PNM
->>> net=PNM.NET.GenericNetwork()
+>>> net=PNM.Network.GenericNetwork()
 >>> net.print_overview()
 ==================================================
 = Overview of network properties
@@ -75,7 +75,7 @@ The following example plots the default adjacency matrix:
     
     import pylab as pl
     import OpenPNM
-    net = OpenPNM.GEN.Cubic().generate()
+    net = OpenPNM.Generators.Cubic().generate()
     net.create_adjacency_matrix()
     pl.spy(net._adjmatrix)
     pl.show()

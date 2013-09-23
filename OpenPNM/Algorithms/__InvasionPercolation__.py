@@ -10,7 +10,7 @@
 module __InvasionPercolation__: Invasion Percolation Algorithm
 ========================================================================
 
-.. warning:: The classes of this module should be loaded through the 'ALG.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
 
 """
 
@@ -86,7 +86,7 @@ class InvasionPercolation(GenericAlgorithm):
         
     """
     
-    def __init__(self,net=OpenPNM.NET.GenericNetwork,inlets=[0],outlets=[1],report=20,end_condition='breakthrough',**kwords):
+    def __init__(self,net=OpenPNM.Network.GenericNetwork,inlets=[0],outlets=[1],report=20,end_condition='breakthrough',**kwords):
         r"""
         
         """
@@ -515,8 +515,8 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"    
     #sp.random.seed(1)
-    pn = OpenPNM.GEN.Cubic(domain_size=[50,50,15],lattice_spacing=1.0,btype = [0,1,0]).generate()
-    #pn = OpenPNM.GEN.Delaunay(domain_size=[30,30,10],num_pores = 5000 ,btype = [1,1,0]).generate()
+    pn = OpenPNM.Generators.Cubic(domain_size=[50,50,15],lattice_spacing=1.0,btype = [0,1,0]).generate()
+    #pn = OpenPNM.Generators.Delaunay(domain_size=[30,30,10],num_pores = 5000 ,btype = [1,1,0]).generate()
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
     print "+"*50
