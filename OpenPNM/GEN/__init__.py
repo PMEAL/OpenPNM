@@ -16,7 +16,7 @@ The OpenPNM package imports all the functions from the top level modules.
 Import
 ------
 >>> import OpenPNM as PNM
->>> tmp=PNM.GEN.GenericGenerator()
+>>> tmp=PNM.GEN.Generic()
 
 
 Submodules
@@ -54,6 +54,6 @@ import scipy as sp
 import numpy as np
 
 from __GenericGenerator__ import GenericGenerator
-from __CubicGenerators__ import Cubic
-from __DelaunayGenerator__ import Delaunay
-from __CustomGenerator__ import Custom
+from __Cubic__ import Cubic
+from __Delaunay__ import Delaunay
+from __Custom__ import Custom

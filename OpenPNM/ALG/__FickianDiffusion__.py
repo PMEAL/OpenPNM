@@ -4,7 +4,7 @@ Created on Tue Jun 11 10:50:28 2013
 
 @author: Mahmoudreza Aghighi
 
-module __FicksLawDiffusion__: Fick's Law Diffusion
+module __FickianDiffusion__: Fick's Law Diffusion
 ========================================================================
 
 .. warning:: The classes of this module should be loaded through the 'ALG.__init__.py' file.
@@ -17,10 +17,10 @@ import scipy.sparse as sprs
 import scipy.sparse.linalg as splin
 from __GenericAlgorithm__ import GenericAlgorithm
 
-class FicksLawDiffusion(GenericAlgorithm):
+class FickianDiffusion(GenericAlgorithm):
     r"""   
     
-    FicksLawDiffusion - Class to run Fick's law mass transfer diffusion on constructed networks
+    FickianDiffusion - Class to run Fick's law mass transfer diffusion on constructed networks
     
                         It returns conecentration gradient inside the network.
                         An invasion algorithm should be used before running diffusion calculations.
@@ -70,7 +70,7 @@ class FicksLawDiffusion(GenericAlgorithm):
         r"""
         Initializing the class
         """
-        super(FicksLawDiffusion,self).__init__(net = net,**kwargs)
+        super(FickianDiffusion,self).__init__(net = net,**kwargs)
         self._logger.info("Create Fick's Diffusion Algorithm Object")
         self.Alg = Alg
         self.Pressure = Pressure

@@ -46,7 +46,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         r"""
         
         """
-        super(OrdinaryPercolationAlgorithm,self).__init__(net = net,**kwargs)
+        super(OrdinaryPercolation,self).__init__(net = net,**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
         self._npts = npts
         self._inv_src = inv_sites

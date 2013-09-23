@@ -33,7 +33,7 @@ Submodules
    :undoc-members:
    :show-inheritance:
        
-.. autoclass:: ALG.InvasionPercolationAlgorithm
+.. autoclass:: ALG.InvasionPercolation
    :members:
    :undoc-members:
    :show-inheritance:
@@ -43,7 +43,7 @@ Submodules
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: ALG.FicksLawDiffusion
+.. autoclass:: ALG.FickianDiffusion
    :members:
    :undoc-members:
    :show-inheritance:
@@ -51,6 +51,6 @@ Submodules
 """
 
 from __GenericAlgorithm__ import GenericAlgorithm
-from __InvasionPercolationAlgorithm__ import InvasionPercolationAlgorithm
+from __InvasionPercolation__ import InvasionPercolation
 from __OrdinaryPercolation__ import OrdinaryPercolation
-from __FicksLawDiffusion__ import FicksLawDiffusion 
+from __FickianDiffusion__ import FickianDiffusion 
