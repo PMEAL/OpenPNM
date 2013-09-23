@@ -3,7 +3,7 @@ r"""
 :mod:`OpenPNM.PHYS`: Pore Scale Physics for Networks
 **************************************************************************
 
-.. module:: OpenPNM.PHYS
+.. module:: OpenPNM.Physics
 
 Contents
 --------
@@ -16,7 +16,7 @@ This submodule contains all pore scale physics models applied to a pore network.
 Import
 ------
 >>> import OpenPNM as PNM
->>> tmp=PNM.PHYS.GenericPhysics()
+>>> tmp=PNM.Physics.GenericPhysics()
 
 
 Submodules
@@ -25,7 +25,7 @@ Submodules
 
  None                            --- No subpackages at the moment
 
-.. autoclass:: PHYS.GenericPhysics
+.. autoclass:: Physics.GenericPhysics
    :members:
    :undoc-members:
    :show-inheritance:

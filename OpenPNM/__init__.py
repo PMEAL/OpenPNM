@@ -85,6 +85,11 @@ Package Documentation
    :undoc-members:
    :show-inheritance:
 
+.. automodule:: Physics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 .. automodule:: GUI
    :members:
    :undoc-members:
@@ -112,6 +117,7 @@ import Network
 import Generators
 import Algorithms
 import Visualization
+import Physics
 import IO
 import IMG
 import GUI
