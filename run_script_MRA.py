@@ -38,7 +38,7 @@ OP = OpenPNM.ALG.OrdinaryPercolationAlgorithm(pn, npts=100, inv_faces=[1])
 OP.run()
 P = 0.04
 pn.set_pore_property('INVADED PORES',np.multiply(np.ones(pn.get_num_pores()),pn.pore_properties['Pc_invaded']<P))
-MT = OpenPNM.ALG.FicksLawDiffusion(pn,Alg='OP',Pressure=[P])
+MT = OpenPNM.ALG.FickianDiffusion(pn,Alg='OP',Pressure=[P])
 
 "FOR None"
 #list1=range(401,492)
