@@ -1,5 +1,5 @@
 """
-module __DelaunayGenerator__: Generate random networks based on Delaunay Tessellations
+module __Delaunay__: Generate random networks based on Delaunay Tessellations
 ==========================================================
 
 .. warning:: The classes of this module should be loaded through the 'GEN.__init__.py' file.

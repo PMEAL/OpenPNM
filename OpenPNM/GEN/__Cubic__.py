@@ -1,5 +1,5 @@
 """
-module __CubicGenerators__: Generate simple cubic networks
+module __Cubic__: Generate simple cubic networks
 ==========================================================
 
 .. warning:: The classes of this module should be loaded through the 'GEN.__init__.py' file.
