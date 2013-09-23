@@ -3,7 +3,7 @@ Network Architecture and Data Storage Formats
 ===============================================================================
 OpenPNM utilizes the object oriented capacities of Python.  The code is built upon the idea that a network is an object.  A network object contains both the data that describes the network properties, and the tools, functions, or methods needed to access this data in ways applicable to the pore network modeling paradigm.  One key feature of this object is that it is completely agnostic about the type of network it describes; a random, cubic or another netowrk topology is stored in exactly the same manner.  The most important repercussion of this choice is the fact that all physical algorithms (such as diffusion or drainage) operating on the netowrk can be fully generic, and the fact that all methods that read and write network property data can be fully generic as well.  
 
-As the name suggests, pore network modeling borrows signifcantly from the fiels of network and graph theory.  During the development of OpenPNM, it was considered whether existing network tools (such as graph-tools and networkX) should be used to store the network topology.  It was decided that storage of network property data could be handled very efficiently using 1D arrays, which allowed for a high degree of code vectorization.  Fortuitously, Scipy released a version that contained the 'compressed sparse graph' library, which contained numerous graph algorithms.  The CSGraph libary requires adjacency matrices in a compressed sparse storage scheme, which happens to be how OpenPNM stores network connections.  
+As the name suggests, pore network modeling borrows signifcantly from the fields of network and graph theory.  During the development of OpenPNM, it was considered whether existing network tools (such as graph-tools and networkX) should be used to store the network topology.  It was decided that storage of network property data could be handled very efficiently using 1D arrays, which allowed for a high degree of code vectorization.  Fortuitously, Scipy released a version that contained the 'compressed sparse graph' library, which contained numerous graph algorithms.  The CSGraph libary requires adjacency matrices in a compressed sparse storage scheme, which happens to be how OpenPNM stores network connections.  
 
 -------------------------------------------------------------------------------
 Network Data Storage
@@ -18,28 +18,67 @@ Assuming a pore network called 'pn', the pore properties are stored as Python di
 ['diameter', 'numbering', 'volume', 'seed', 'coords', 'Pc_invaded', 'type']
 
 And similarly for throats, one gets the following:
+
 >>> pn.throat_properties.keys()
 ['volume', 'diameter', 'numbering', 'connections', 'length', 'seed', 'Pc_invaded', 'Pc_entry', 'type']
 
-Most of these are self explanatory, but a few are deserving of careful explanation.  
+A complete list of the default predefined pore and throat properties is given below:
 
+**Common Pore and Throat Properties**
 
-.. literalinclude:: ../../OpenPNM/NET/GenericNetwork.py
-   :pyobject: 
+*'numbering'*: blah
 
-**'numbering'**
-The *'numbering'* property in both pore and throat arrays is simply an enumerated list from 0 to Np or Nt.  These numbers correspond to the pore or throat number, which may seem redundant this also happens to to corresond the location in the array.  Numbering is useful in some cases where boolean arrays are used to select a subset of pores (or throats).  The boolean mask can be input into the numbering property to produce a list of pore (or throat) numbers where the condition is true.  
+*'type'*: blah
 
-**'coords'**
-The spatial location of each pore body is given by this *'coords'* property.  Each element in this array is 3 columns wide, containing the x, y and z components of the pore location in Cartesean coordinates.  
+**Throat Specific Properties**
 
-**'seed'**
-This seed is used in the specified statistical distribution to obtain pore (and throat) sizes.  In the simplest case, seed is selected randomly for each pore, and each throat receives the smaller of it's neighbors seeds.  This property can be generated in more complex manner to include spatial correlations or other features.  
+*'connections'*: blah
 
-**'type'**
-The *'type'* property is 
-=======
-***********************************************************
+**Pore Specific Properties**
+
+*'coords'*: blah
+
+*******************************************************************************
 Network Storage
-***********************************************************
+*******************************************************************************
+
+
+
+
+
+
+Examples
+--------
+
+To reserve space for a network with the default number of pores
+and throats execute
+
+>>> import OpenPNM as PNM
+>>> net=PNM.NET.GenericNetwork()
+>>> net.print_overview()
+==================================================
+= Overview of network properties
+--------------------------------------------------
+Basic properties of the network
+- Number of pores:    10
+- Number of throats:  20
+Pore properties:
+    numbering   int64     (10,)
+Throat properties:
+    connections int64     (20, 2)
+    numbering   int64     (20,)
+--------------------------------------------------
+
+The following example plots the default adjacency matrix:
+
+.. plot::
+    
+    import pylab as pl
+    import OpenPNM
+    net = OpenPNM.GEN.Cubic().generate()
+    net.create_adjacency_matrix()
+    pl.spy(net._adjmatrix)
+    pl.show()
+
+
 
