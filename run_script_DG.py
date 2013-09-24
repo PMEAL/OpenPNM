@@ -28,17 +28,15 @@ params = {
 'tsd_scale': 2e-5  #controls maximum throat size
 }
 # Test Comment
+
 start=clock()
-pn1 = OpenPNM.GEN.Cubic(loglevel=10,**params).generate()
-pn2 = OpenPNM.GEN.Cubic(loglevel=10,**params).generate()
+pn1 = OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
+
 
 # throat_properties: Volume
 # throat_properties: Diameter
 # throat_properties: Numbering
 # throat_properties: Generate connections
-size_of_sparse_1 = np.max(pn1.throat_properties['connections'])
-full_sparse = np.zeros(np.repeat(size_of_sparse_1,2))   # We are attempting to convert the ijv into a binary sparse to make the connections.
-
 # throat_properties: Length
 # throat_properties: Seed
 # throat_properties: Type
