@@ -14,6 +14,14 @@ The first thing you must do is tell Spyder to import the OpenPNM code so you hav
 .. code-block:: Python
    import OpenPNM
 
+This imports the OpenPNM package with all it's algorithms and data storage functions.
+
+Next, you'll want to generate a network.  This is accomplished by first creating a generator, which we'll call gn1:
+
+.. code-block:: Python
+   gn1 = OpenPNM.Generators.Cubic()
+   
+   
 
 
 
