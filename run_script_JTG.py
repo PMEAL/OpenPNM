@@ -7,7 +7,6 @@ Created on Fri Mar 08 09:43:02 2013
 
 import OpenPNM
 import numpy as np
-import matplotlib.pyplot as plt
 from time import clock
 
 params = {

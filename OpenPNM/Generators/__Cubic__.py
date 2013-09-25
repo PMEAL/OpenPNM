@@ -31,20 +31,9 @@ class Cubic(GenericGenerator):
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
         
     Examples
-    --------
-    
-    .. plot::
-        
-       import pylab as pl
-       import OpenPNM
-       gen = OpenPNM.Generators.Cubic()
-       net = gen.generate()
-       pl.spy(net._adjmatrix)
-       pl.show()
-    
-    TODO:
-        - Check for 3D shape
-        - Check for correct divisions
+    --------    
+    >>>print 'none yet'
+
     """
     
     def __init__(self,  domain_size = [],
@@ -52,7 +41,6 @@ class Cubic(GenericGenerator):
                         lattice_spacing = [],
                         **kwargs
                       ):
-
         super(Cubic,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
         self._logger.info("Find network dimensions")
