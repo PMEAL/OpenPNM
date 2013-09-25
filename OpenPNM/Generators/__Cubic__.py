@@ -11,7 +11,7 @@ import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.stats as spst
-import numexpr as ne
+#import numexpr as ne
 from time import clock
 
 from __GenericGenerator__ import GenericGenerator
@@ -45,8 +45,9 @@ class Cubic(GenericGenerator):
         self._logger.debug("Execute constructor")
         self._logger.info("Find network dimensions")
         #Parse the given network size variables
-        if domain_size and lattice_spacing and not divisions:
+        if domain_size and lattice_spacing and not divisions:           
             self._Lc = lattice_spacing
+            # Subtract all of the xyz terms for N and L by a value of 2 to compensate for boundary addition, re-add later.
             self._Nx = int(domain_size[0]/self._Lc)
             self._Ny = int(domain_size[1]/self._Lc)
             self._Nz = int(domain_size[2]/self._Lc)
@@ -54,6 +55,7 @@ class Cubic(GenericGenerator):
             self._Ly = domain_size[1]
             self._Lz = domain_size[2]
         elif divisions and lattice_spacing and not domain_size:
+            print divisions
             self._Lc = lattice_spacing
             self._Nx = divisions[0]
             self._Ny = divisions[1]
@@ -77,8 +79,8 @@ class Cubic(GenericGenerator):
         Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
         
         #Instantiate object(correct terminology?)
-        self._net=OpenPNM.Network.GenericNetwork(num_pores=Np, num_throats=Nt)
-    
+        self._net= OpenPNM.Network.GenericNetwork(num_pores=Np, num_throats=Nt),
+
     def generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
@@ -124,7 +126,25 @@ class Cubic(GenericGenerator):
         self._net.throat_properties['type'] = np.zeros(np.shape(tpore1),dtype=np.int8)
         self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
         self._logger.debug("generate_throats: End of method")
+    
+    def generate_boundary(self):
+        r'''
+        Generate the pores for the boundary layer. This function should be called a total of 3 times with different coordinates for x and y.
+        '''
         
+        # No equivalent of case switch statements. Need to rewrite more elegantly using a dictionary.
+        
+        if boundary[0] and boundary[1] and not boundary[2]:
+            print boundary,"XYPlane"
+            # This is the X and Y plane boundary
+        elif boundary[0] and not boundary[1] and boundary[2]:
+            print boundary,"XZPlane"
+            # This is the X and Z plane boundary
+        elif not boundary[0] and boundary[1] and boundary[2]:
+            print boundary,"YZPlane"
+            # This is the Y and Z plane boundary    
+
+    '''        
     def add_boundaries(self):
         self._logger.debug("add_boundaries: Start of method")
         #Remove all items pertaining to previously defined boundaries (if any)
@@ -237,7 +257,7 @@ class Cubic(GenericGenerator):
             
         self._logger.debug("add_opposing_boundaries: End of method")
         
-        
+      '''  
 if __name__ == '__main__':
     test=Cubic(lattice_spacing=1.0,domain_size=[3,3,3],loggername='TestCubic')
     pn = test.generate()
