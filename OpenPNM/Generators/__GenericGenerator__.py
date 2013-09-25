@@ -91,7 +91,8 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         self.generate_pores()
         self.generate_throats()
         self._net.update()
-        self.add_boundaries()
+        self.generate_boundary()
+        #self.add_boundaries()
         self.generate_pore_seeds()
         self.generate_throat_seeds()
         self.generate_pore_diameters()
@@ -114,6 +115,14 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         Generate the throats (numbering and types)
         """
         self._logger.error("generate_throats: not implemented")
+        
+    def generate_boundary(self):
+        r"""
+        This calls generate_throats and pores once again to create Nx*Ny*1...Nx*1*Nz....1*Ny*Nz sized layers.
+        A script for translating this boundary in space will modify all of the parameters that are calculated with the pores and throats are generated. 
+        An additional script for stitching will append the larger pore network to include these extra layers after they have been translated.
+        """
+        self._logger.error("generate_bounaries: not implemented")
         
     def generate_throat_type(self):
         self._logger.info("update_throat_type: Start of method")
