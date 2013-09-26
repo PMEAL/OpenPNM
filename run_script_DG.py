@@ -6,7 +6,7 @@ Created on Thu Sep 26 15:35:56 2013
 """
 
 import OpenPNM
-import numpy as np
+import scipy as sp
 from time import clock
 
 params = {
@@ -28,12 +28,16 @@ params = {
 }
 
 start=clock()
-pn = OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
+#pn = OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
 
 boundaries = sp.array(sp.repeat(params,6)) # Creates a list of 
 temp = params['divisions']
-mult = -1*(eye(3)-1) # This creates the compliment of an eye matrix
 number_of_sides = 6
+mult = -1*(sp.eye(number_of_sides/2)-1) # This creates the compliment of an eye matrix
 
-for i in range(number_of_sides):
-    boundaries[i]['divisions'] = temp*mult[i % 3,:]
+for i in range(3):
+    boundary_dims = (temp*mult[i % 3,:]) + sp.eye(3)[i % 3,:]
+    boundaries[i]['divisions'] = boundary_dims.tolist()
+    print boundaries[i]['divisions']
+
+OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
