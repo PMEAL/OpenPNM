@@ -7,7 +7,7 @@ class NETTest(unittest.TestCase):
     import scipy as sp
 
     self.sp = sp
-    self.pn = OpenPNM.NET.BaseNet()
+    self.pn = OpenPNM.Network.BaseNet()
 
   def test_property_assignment(self):
     N = self.sp.rand(10,123)

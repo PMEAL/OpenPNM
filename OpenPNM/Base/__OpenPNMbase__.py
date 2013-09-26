@@ -10,7 +10,7 @@
 module __OpenPNMbase__: contains OpenPNM base classes
 =====================================================
 
-.. warning:: The classes of this module should be loaded through the 'BAS.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Base.__init__.py' file.
 
 Logging:
 --------
@@ -21,7 +21,7 @@ add somefunctionality to change this.
 Examples:
 ---------
 >>> import OpenPNM 
->>> tmp=PNM.BAS.testinheritance()
+>>> tmp=PNM.Base.testinheritance()
 
 """
 
@@ -37,7 +37,7 @@ _logging.basicConfig(level=_logging.CRITICAL,
 
 class OpenPNMbase(object):
     r"""
-    .. class::`OpenPNM.BAS.OpenPNMbase` -- Base class for OpenPNM
+    .. class::`OpenPNM.Base.OpenPNMbase` -- Base class for OpenPNM
     
     
     Base class with a few bells and whistles. Mainly output on screen, logging
