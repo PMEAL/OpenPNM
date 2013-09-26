@@ -33,10 +33,6 @@ class GenericPhysics(OpenPNM.Base.OpenPNMbase):
         self._logger.debug("Construct class")
         self._net = net
         
-    def Washburn(self):
-        self._net.throat_properties['Pc_entry'] = -4*0.46*np.cos(np.radians(140))/self._net.throat_properties['diameter']
-        
-
 if __name__ =="__main__":
     test = GenericPhysics(loggername="TestGenericPhys")
     test.run()

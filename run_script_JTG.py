@@ -12,7 +12,7 @@ from time import clock
 
 params = {
 #'domain_size': [0.001,0.001,0.0004],  #physical network size [meters]
-'divisions': [20,20,20], #Number of pores in each direction
+'divisions': [10,10,10], #Number of pores in each direction
 'lattice_spacing': 1.0,  #spacing between pores [meters]
 #'num_pores': 1000, #This is used for random networks where spacing is irrelevant
 'btype': [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
@@ -33,10 +33,10 @@ pn = OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
 
 #pn = OpenPNM.Generators.Delaunay(loglevel=10,**params).generate()
 
-pn.throat_properties['Pc_entry'] = -4*0.072*np.cos(np.radians(105))/pn.throat_properties['diameter']  #This should be set somewhere else
+pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure.Washburn(pn,0.072,110)
 inlets = [0]
-#exp1 = OpenPNM.Algorithms.InvasionPercolation(pn, loglevel = 10, npts=100, inlets=inlets, outlets=outlets).run()
-exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, loglevel = 10, npts=50, inv_sites=inlets).run()
+#exp1 = OpenPNM.Algorithms.InvasionPercolation(pn, loglevel=10, npts=100, inlets=inlets, outlets=outlets).run()
+exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, loglevel=10, npts=50, inv_sites=inlets).run()
 pn.update()
 
 #Write network to vtk file for visualization in Paraview
