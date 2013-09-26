@@ -1,8 +1,8 @@
 """
-module __DelaunayGenerator__: Generate random networks based on Delaunay Tessellations
+module __Delaunay__: Generate random networks based on Delaunay Tessellations
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'GEN.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
 
 """
 
@@ -36,7 +36,7 @@ class Delaunay(GenericGenerator):
         
        import pylab as pl
        import OpenPNM
-       gen = OpenPNM.GEN.Cubic()
+       gen = OpenPNM.Generators.Cubic()
        net = gen.generate()
        pl.spy(net._adjmatrix)
        pl.show()
@@ -54,7 +54,7 @@ class Delaunay(GenericGenerator):
         self.domain_size = kwargs['domain_size']
         self.num_pores = kwargs['num_pores']
         #Instantiate the network
-        self._net=OpenPNM.NET.GenericNetwork(num_pores=self.num_pores)
+        self._net=OpenPNM.Network.GenericNetwork(num_pores=self.num_pores)
     
     def generate_pores(self):
         r"""

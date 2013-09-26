@@ -1,13 +1,17 @@
 .. _userguide_index:
 
-**************************************************
-*OpenPNM* User Guide
-**************************************************
+*******************************************************************************
+**OpenPNM User Guide**
+*******************************************************************************
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    
-   ../docInstall.rst
-   first_steps.rst
+   getting_started.rst
+   data_storage.rst
+   generators.rst
+   physics.rst
+   algorithms.rst
+   visualization.rst

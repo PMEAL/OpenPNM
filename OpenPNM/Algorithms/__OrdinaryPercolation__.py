@@ -6,10 +6,10 @@
 
 
 """
-module __OrdinaryPercolationAlgorithm__: Ordinary Percolation Algorithm
+module __OrdinaryPercolation__: Ordinary Percolation Algorithm
 ========================================================================
 
-.. warning:: The classes of this module should be loaded through the 'ALG.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
 
 """
 
@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 
 from __GenericAlgorithm__ import GenericAlgorithm
 
-class OrdinaryPercolationAlgorithm(GenericAlgorithm):
+class OrdinaryPercolation(GenericAlgorithm):
     r"""
     Calculates a capillary pressure curve by looping through a list
     of capillary pressures and calling the PCpoint function
@@ -33,21 +33,20 @@ class OrdinaryPercolationAlgorithm(GenericAlgorithm):
     Parameters
     ----------
     
-    npts: number of simulation steps (pressures); default 25
+    npts: int
+        number of simulation steps (pressures); default 25
 
-    inv_sites: invasion pores i.e. [1,2,3,4,10]; default = 0
+    inv_sites: array_like
+        invasion pores i.e. [1,2,3,4,10]; default = 0
     
-    Dependencies:
-        - 
-    Creates:
-        - 
+
     """
     
-    def __init__(self,net=OpenPNM.NET.GenericNetwork(),npts=25,inv_sites=[0],**kwargs):
+    def __init__(self,net=OpenPNM.Network.GenericNetwork(),npts=25,inv_sites=[0],**kwargs):
         r"""
         
         """
-        super(OrdinaryPercolationAlgorithm,self).__init__(net = net,**kwargs)
+        super(OrdinaryPercolation,self).__init__(net = net,**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
         self._npts = npts
         self._inv_src = inv_sites
