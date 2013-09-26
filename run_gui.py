@@ -1,6 +1,7 @@
 import flow_gui
-from OpenPNM import GUI
+import OpenPNM
 
-flow_gui.add_source(GUI.Network)
-flow_gui.add_source(GUI.Algorithms)
+
+flow_gui.add_source(OpenPNM.GUI.network)
+flow_gui.add_source(OpenPNM.GUI.algorithm)
 flow_gui.run()
