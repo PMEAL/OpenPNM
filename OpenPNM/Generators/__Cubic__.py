@@ -11,7 +11,7 @@ import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.stats as spst
-import numexpr as ne
+#import numexpr as ne
 from time import clock
 
 from __GenericGenerator__ import GenericGenerator
