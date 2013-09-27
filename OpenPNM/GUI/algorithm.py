@@ -16,4 +16,5 @@ def InvasionPercolation(network, end_condition='breakthrough',timing='ON',report
     outlets = network.pore_properties['numbering'][mask]
     IP = OpenPNM.Algorithms.InvasionPercolation(network, inlets=inlets, outlets=outlets, end_condition=end_condition, timing=timing, report=report)
     IP.run()
+    OpenPNM.IO.NetToVtp(net=network)
     return {'network': network}
