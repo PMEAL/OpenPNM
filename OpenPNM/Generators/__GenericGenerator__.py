@@ -48,7 +48,7 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
     
     >>> import OpenPNM as PNM
     >>> net=PNM.Generators.GenericGenerator().generate()
-    >>> OpenPNM.IO.NetToVtp(net)   
+    >>> OpenPNM.Visualization.NetToVtp(net)   
     This generates the following network:
     
     """

@@ -121,4 +121,4 @@ if __name__ == '__main__':
     inlets = np.nonzero(pn.pore_properties['type']==1)[0]
     outlets = np.nonzero(pn.pore_properties['type']==6)[0]
     OpenPNM.Algorithms.InvasionPercolation(net=pn,inlets=inlets,outlets=outlets).run()
-    OpenPNM.IO.NetToVtp(net=pn)
+    OpenPNM.Visualization.NetToVtp(net=pn)
