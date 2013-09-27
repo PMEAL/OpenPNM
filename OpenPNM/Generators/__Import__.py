@@ -59,7 +59,6 @@ class MatFile(GenericGenerator):
         Initialize
         """
         super(MatFile,self).__init__(**kwargs)
-        self._logger.debug("Method: Constructor")
         self._mat=OpenPNM.IO.ImportMat(filename=filename,path=path)
         self._Np=np.size(self._mat.getvar('pnumbering'))
         self._Nt=np.size(self._mat.getvar('tnumbering'))
@@ -73,13 +72,13 @@ class MatFile(GenericGenerator):
         self._logger.debug('Writing pore volumes')
         self._net.pore_properties['volume']=np.reshape(self._mat.getvar('pvolume'),(self._Np))
         self._logger.debug('Writing pore seeds')
-        self._net.throat_properties['seed']=np.zeros((self._Np),dtype=np.float)
+        self._net.pore_properties['seed']=np.zeros((self._Np),dtype=np.float)
         self._logger.debug('Writing pore diameters')
         self._net.pore_properties['diameter']=np.reshape(self._mat.getvar('pdiameter'),(self._Np))
         self._logger.debug('Writing pore numbering')
         self._net.pore_properties['numbering']=np.reshape(self._mat.getvar('pnumbering'),(self._Np))
         self._logger.debug('Writing pore type')
-        self._net.pore_properties['types']=np.reshape(self._mat.getvar('ptype'),(self._Np))
+        self._net.pore_properties['type']=np.reshape(self._mat.getvar('ptype'),(self._Np))
         self._logger.debug('Writing pore coordinates')
         self._net.pore_properties['coords']=self._mat.getvar('pcoords')
         
@@ -95,7 +94,7 @@ class MatFile(GenericGenerator):
         self._logger.debug('Writing throat type')
         self._net.throat_properties['type']=np.reshape(self._mat.getvar('ttype'),(self._Nt))
         self._logger.debug('Writing throat volumes')
-        self._net.pore_properties['volume']=np.zeros((self._Nt),dtype=np.float)
+        self._net.throat_properties['volume']=np.zeros((self._Nt),dtype=np.float)
         self._logger.debug('Writing throat connections')
         self._net.throat_properties['connections']=self._mat.getvar('tconnections')
         
@@ -117,5 +116,6 @@ class MatFile(GenericGenerator):
         return self._net  
 
 if __name__ == '__main__':
-    self=MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles')
-    pn = self.generate()
+    self=MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles',loglevel=10)
+    pn=self.generate()
+    OpenPNM.IO.NetToVtp(net=pn)
