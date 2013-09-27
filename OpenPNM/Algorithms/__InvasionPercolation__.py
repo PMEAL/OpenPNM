@@ -475,27 +475,28 @@ class InvasionPercolation(GenericAlgorithm):
                         self._cluster_data['vol_coef'][self._current_cluster-1] = self._cluster_data['vol_coef'][self._current_cluster-1]+self._Tvol_coef[j]
         # Find next Haines Jump info
         # Make sure you are not re-invading a throat
-        while self._Tinv[self._tpoints[self._current_cluster-1][0][1]] > 0:
-            if self._tpoints[self._current_cluster-1] == []:
-                self._logger.debug( 'making cluster ')
-                self._logger.debug(self._current_cluster)
-                self._logger.debug('inactive due to tpoints = [] ')
-                self._cluster_data['active'][self._current_cluster-1] = 0
+        if self._tpoints[self._current_cluster-1] != []:
+            while self._Tinv[self._tpoints[self._current_cluster-1][0][1]] > 0:
+                if self._tpoints[self._current_cluster-1] == []:
+                    self._logger.debug( 'making cluster ')
+                    self._logger.debug(self._current_cluster)
+                    self._logger.debug('inactive due to tpoints = [] ')
+                    self._cluster_data['active'][self._current_cluster-1] = 0
+                    if self._timing:
+                        self._cluster_data['haines_time'][self._current_cluster-1] = 100000000000000000000000000000000
+                    break
+                tremove = heapq.heappop(self._tpoints[self._current_cluster-1])[1]
                 if self._timing:
-                    self._cluster_data['haines_time'][self._current_cluster-1] = 100000000000000000000000000000000
-                break
-            tremove = heapq.heappop(self._tpoints[self._current_cluster-1])[1]
+                    self._cluster_data['vol_coef'][self._current_cluster-1] = self._cluster_data['vol_coef'][self._current_cluster-1]-self._Tvol_coef[tremove]
+            next_throat = self._tpoints[self._current_cluster-1][0][1]
+            self._cluster_data['haines_throat'][self._current_cluster-1] = next_throat
             if self._timing:
-                self._cluster_data['vol_coef'][self._current_cluster-1] = self._cluster_data['vol_coef'][self._current_cluster-1]-self._Tvol_coef[tremove]
-        next_throat = self._tpoints[self._current_cluster-1][0][1]
-        self._cluster_data['haines_throat'][self._current_cluster-1] = next_throat
-        if self._timing:
-            self._cluster_data['haines_pressure'][self._current_cluster-1] = self._tpoints[self._current_cluster-1][0][0]
-            self._cluster_data['cap_volume'][self._current_cluster-1] = self._cluster_data['haines_pressure'][self._current_cluster-1]*self._cluster_data['vol_coef'][self._current_cluster-1]
+                self._cluster_data['haines_pressure'][self._current_cluster-1] = self._tpoints[self._current_cluster-1][0][0]
+                self._cluster_data['cap_volume'][self._current_cluster-1] = self._cluster_data['haines_pressure'][self._current_cluster-1]*self._cluster_data['vol_coef'][self._current_cluster-1]
             
-            # Calculate the new Haines jump time
-            self._logger.debug( 'haines time before last stage:')
-            self._logger.debug( self._cluster_data['haines_time'])
+                # Calculate the new Haines jump time
+                self._logger.debug( 'haines time before last stage:')
+                self._logger.debug( self._cluster_data['haines_time'])
         if self._tpoints[self._current_cluster-1] == []:
             self._logger.debug('making cluster ')
             self._logger.debug(self._current_cluster)
