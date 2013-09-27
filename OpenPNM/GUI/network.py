@@ -1,9 +1,9 @@
 from __future__ import absolute_import
 import numpy as np
-from .. import Generators
+import OpenPNM
 
 def Cubic(divisions=[10,10,10], lattice_spacing=.0005, loglevel=20, btype=[0,0,0], C=0.9, D=2.09e-9):
-  gn = Generators.Cubic(divisions=divisions, lattice_spacing=lattice_spacing, loglevel=loglevel, btype=btype)
+  gn = OpenPNM.Generators.Cubic(divisions=divisions, lattice_spacing=lattice_spacing, loglevel=loglevel, btype=btype)
   pn = gn.generate()
   setattr(pn,"Total_Conc",C)
   setattr(pn,"Diff_Coefficient",D)
@@ -20,3 +20,11 @@ def Cubic(divisions=[10,10,10], lattice_spacing=.0005, loglevel=20, btype=[0,0,0
   pn.pore_properties['outlets']=np.zeros((pn.get_num_pores(),),dtype=np.int8)
   pn.pore_properties['outlets'][0]=1
   return {'network': pn}
+  
+def Import(import_file = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles\\large_network.mat'):
+    sections = import_file.split('\\')
+    filename = sections[np.size(sections,0)-1]
+    path = sections[0:(np.size(sections,0)-1)].join('\\')
+    pn = OpenPNM.Generators()
+    
+    
