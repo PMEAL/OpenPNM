@@ -21,10 +21,21 @@ def Cubic(divisions=[10,10,10], lattice_spacing=.0005, loglevel=20, btype=[0,0,0
   pn.pore_properties['outlets'][0]=1
   return {'network': pn}
   
-def Import(import_file = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles\\large_network.mat'):
+def Import(import_file = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles\\large_network'):
     sections = import_file.split('\\')
     filename = sections[np.size(sections,0)-1]
+    sections[np.size(sections,0)-1] = ''
     path = sections[0:(np.size(sections,0)-1)].join('\\')
-    pn = OpenPNM.Generators()
+    print filename
+    print path
+    pn = OpenPNM.Generators.MatFile(filename=str(filename),path=str(path))
+    return {'network': pn}
     
     
+if __name__ == '__main__':    
+    import flow_gui
+    
+    flow_gui.add_source(OpenPNM.GUI.network)
+    flow_gui.add_source(OpenPNM.GUI.poreproperty)
+    flow_gui.add_source(OpenPNM.GUI.algorithm)
+    flow_gui.run()

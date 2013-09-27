@@ -174,6 +174,8 @@ class ImportMat(OpenPNM.Base.OpenPNMbase):
             self._path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles'
         self._logger.debug("Import from .mat file")
         #Read in the file
+        print self._path
+        print self._filename
         filepath = os.path.join(self._path,self._filename)
         self._dictionary=scipy.io.loadmat(filepath)
     
