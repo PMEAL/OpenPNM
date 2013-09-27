@@ -118,4 +118,7 @@ class MatFile(GenericGenerator):
 if __name__ == '__main__':
     self=MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles',loglevel=10)
     pn=self.generate()
+    inlets = np.nonzero(pn.pore_properties['type']==1)[0]
+    outlets = np.nonzero(pn.pore_properties['type']==6)[0]
+    OpenPNM.Algorithms.InvasionPercolation(net=pn,inlets=inlets,outlets=outlets).run()
     OpenPNM.IO.NetToVtp(net=pn)
