@@ -89,6 +89,6 @@ pn.set_pore_property(name = 'coordx', ndarray=xcoord)
 pn.set_pore_property(name = 'coordy', ndarray=ycoord)
 pn.set_pore_property(name = 'coordz', ndarray=ycoord*0)
 
-import OpenPNM.IO as IO
-IO.NetToVtp(net = pn)
+import OpenPNM.Visualization as Vis
+Vis.NetToVtp(net = pn)
 

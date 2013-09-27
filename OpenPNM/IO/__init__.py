@@ -25,5 +25,4 @@ Submodules
 
 """
 
-from __iobase__ import NetToVtp
 from __iobase__ import ImportMat

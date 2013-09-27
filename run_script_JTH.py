@@ -51,7 +51,7 @@ print "+"*50
 print "IP completed at t =",clock()-start,"seconds."
 print "+"*50
 print "- * Save output to IP.vtp"
-OpenPNM.IO.NetToVtp(net = pn,filename="IP.vtp")
+OpenPNM.Visualization.NetToVtp(net = pn,filename="IP.vtp")
 
 print "="*50
 print "Program Finished at t = ",clock()-start,"seconds."
