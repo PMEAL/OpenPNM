@@ -28,7 +28,11 @@ def Import(import_file = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles\\l
     path = sections[0:(np.size(sections,0)-1)].join('\\')
     print filename
     print path
-    pn = OpenPNM.Generators.MatFile(filename=str(filename),path=str(path))
+    pn = OpenPNM.Generators.MatFile(filename=str(filename),path=str(path)).generate()
+    pn.pore_properties['inlets']=np.zeros((pn.get_num_pores(),),dtype=np.int8)
+    pn.pore_properties['inlets'][0]=1
+    pn.pore_properties['outlets']=np.zeros((pn.get_num_pores(),),dtype=np.int8)
+    pn.pore_properties['outlets'][0]=1
     return {'network': pn}
     
     
