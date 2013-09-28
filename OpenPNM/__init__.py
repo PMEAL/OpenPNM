@@ -113,7 +113,6 @@ import Generators
 import Algorithms
 import Visualization
 import IO
-import IMG
 import GUI
 
 
