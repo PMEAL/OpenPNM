@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import OpenPNM
+from  OpenPNM.Base import OpenPNMbase
 import scipy as sp
 import scipy.io
 import numpy as np
@@ -7,7 +7,7 @@ import os
 
 
          
-class ImportMat(OpenPNM.Base.OpenPNMbase):
+class ImportMat(OpenPNMbase):
     r"""
     ImportMat - Class for interacting with Matlab files with .mat suffix
     
@@ -26,8 +26,8 @@ class ImportMat(OpenPNM.Base.OpenPNMbase):
     
     To read in a .mat file with pore network information
     
-    >>> import OpenPNM as PNM
-    >>> matfile = PNM.IO.ImportMat(filename='example_network',path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles')
+    >>> import OpenPNM
+    >>> matfile = OpenPNM.Base.ImportMat(filename='example_network',path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles')
     >>> pore_volumes = matfile.getvar('pvolumes')
     
   
@@ -76,4 +76,4 @@ class ImportMat(OpenPNM.Base.OpenPNMbase):
 if __name__ == '__main__':
     filename = 'example_network'
     path = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles'
-    mat = ImportMat(filename=filename,path=path,loggername="TestImport")
+    mat = ImportMat(filename=filename,path=path,loggername="TestImport",loglevel=10)
