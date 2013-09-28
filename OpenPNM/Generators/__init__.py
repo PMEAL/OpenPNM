@@ -57,3 +57,4 @@ from __GenericGenerator__ import GenericGenerator
 from __Cubic__ import Cubic
 from __Delaunay__ import Delaunay
 from __Custom__ import Custom
+from __Import__ import MatFile

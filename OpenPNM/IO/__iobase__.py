@@ -35,11 +35,12 @@ class NetToVtp(OpenPNM.Base.OpenPNMbase):
     
     """
     
-    def __init__(self,net = None, filename = 'testvtp.vtp'):
+    def __init__(self,net = None, filename = 'testvtp.vtp',scaling_factor=1):
         super(NetToVtp,self).__init__()
         
         self._f = open(filename,'w')
         self._net=net
+        self._scaling_factor = scaling_factor
         
         self.write_vtk_header()
         self.write_vtk_points()
@@ -62,14 +63,15 @@ class NetToVtp(OpenPNM.Base.OpenPNMbase):
         self._f.write('" NumberOfStrips="0" NumberOfPolys="0">\n')
     
     def write_vtk_points(self):
+        sf = self._scaling_factor
         self._f.write('<Points>\n')
         self._f.write('<DataArray type="Float32" NumberOfComponents="3" format="ascii">\n')
         for i in range(self._net.get_num_pores()):
-            self._f.write(str(self._net.pore_properties['coords'][i,0]))
+            self._f.write(str(self._net.pore_properties['coords'][i,0]*sf))
             self._f.write(' ')
-            self._f.write(str(self._net.pore_properties['coords'][i,1]))
+            self._f.write(str(self._net.pore_properties['coords'][i,1]*sf))
             self._f.write(' ')
-            self._f.write(str(self._net.pore_properties['coords'][i,2]))
+            self._f.write(str(self._net.pore_properties['coords'][i,2]*sf))
             self._f.write('\n')
         self._f.write('\n</DataArray>\n</Points>\n')
     
@@ -87,6 +89,7 @@ class NetToVtp(OpenPNM.Base.OpenPNMbase):
         self._f.write('\n</DataArray>\n</Lines>\n')
     
     def write_point_data(self):
+        sf = self._scaling_factor
         pore_keys = self._net.pore_properties.keys()
         num_pore_keys = sp.size(pore_keys)
         self._f.write('<PointData Scalars="pore_data">\n')
@@ -98,7 +101,10 @@ class NetToVtp(OpenPNM.Base.OpenPNMbase):
                 shape =  np.shape(self._net.pore_properties[pore_keys[j]])
                 if np.size(shape) == 1:
                     for i in range(self._net.get_num_pores()):
-                        self._f.write(str(self._net.pore_properties[pore_keys[j]][i]))
+                        if np.dtype(self._net.pore_properties[pore_keys[j]][0])=='float64':
+                            self._f.write(str(self._net.pore_properties[pore_keys[j]][i]*sf))
+                        else:
+                            self._f.write(str(self._net.pore_properties[pore_keys[j]][i]))
                         self._f.write(' ')
                 else:
                     for i in range(self._net.get_num_pores()):
@@ -168,6 +174,8 @@ class ImportMat(OpenPNM.Base.OpenPNMbase):
             self._path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles'
         self._logger.debug("Import from .mat file")
         #Read in the file
+        print self._path
+        print self._filename
         filepath = os.path.join(self._path,self._filename)
         self._dictionary=scipy.io.loadmat(filepath)
     
@@ -192,4 +200,7 @@ class ImportMat(OpenPNM.Base.OpenPNMbase):
         dictionary = self._dictionary
         return dictionary
         
-        
+if __name__ == '__main__':
+    filename = 'example_network'
+    path = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles'
+    mat = ImportMat(filename=filename,path=path,loggername="TestImport")

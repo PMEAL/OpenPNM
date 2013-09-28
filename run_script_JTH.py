@@ -45,7 +45,7 @@ print inlets2
 #pn.throat_properties['diameter'] = sp.random.rand(pn.get_num_throats(),1)
 
 print "- * Run Invasion percolation algorithm"
-IP = OpenPNM.Algorithms.InvasionPercolationAlgorithmTiming(net=pn,inlets=inlets2[1],outlets=outlets,loglevel=20,loggername="TestInvPercAlg")
+IP = OpenPNM.Algorithms.InvasionPercolation(net=pn,inlets=inlets2[1],outlets=outlets,loglevel=20,loggername="TestInvPercAlg")
 IP.run()
 print "+"*50
 print "IP completed at t =",clock()-start,"seconds."
