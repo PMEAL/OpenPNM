@@ -28,8 +28,9 @@ params = {
 }
 
 start=clock()
-#pn = OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
+pn = OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
 
+'''
 boundaries = sp.array(sp.repeat(params,6)) # Creates a list of 
 temp = params['divisions']
 number_of_sides = 6
@@ -41,3 +42,4 @@ for i in range(3):
     print boundaries[i]['divisions']
 
 OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
+'''
