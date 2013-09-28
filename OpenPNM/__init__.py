@@ -36,8 +36,6 @@ Subpackages
        a mapper of the pore network back on the segmented image.
    * - :mod:`OpenPNM.Algorithsm`
      - Module containing all algorithmic classes for networks.
-   * - `IO`
-     - Input output routines
    * - `Visualization`
      - vtk-based post-processing modules (`postproc.py`)   
 
@@ -112,7 +110,7 @@ import Network
 import Generators
 import Algorithms
 import Visualization
-import IO
+import IMG
 import GUI
 
 

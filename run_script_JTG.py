@@ -40,7 +40,7 @@ pn.update()
 
 #Write network to vtk file for visualization in Paraview
 import os
-OpenPNM.IO.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
+OpenPNM.Visualization.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
 
 print clock()-start,"seconds."
 

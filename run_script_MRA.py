@@ -53,6 +53,6 @@ MT = OpenPNM.Algorithms.FickianDiffusion(pn,Alg='OP',Pressure=[P])
 
 MT.run()
 #Write network to vtk file for visualization in Paraview
-OpenPNM.IO.NetToVtp(net = pn,filename="MassTransfer.vtp")
+OpenPNM.Visualization.NetToVtp(net = pn,filename="MassTransfer.vtp")
 
 print clock()-start,"seconds."

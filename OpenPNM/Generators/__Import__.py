@@ -59,7 +59,7 @@ class MatFile(GenericGenerator):
         Initialize
         """
         super(MatFile,self).__init__(**kwargs)
-        self._mat=OpenPNM.IO.ImportMat(filename=filename,path=path)
+        self._mat=OpenPNM.Base.ImportMat(filename=filename,path=path)
         self._Np=np.size(self._mat.getvar('pnumbering'))
         self._Nt=np.size(self._mat.getvar('tnumbering'))
         self._net=OpenPNM.Network.GenericNetwork(num_pores=self._Np, num_throats=self._Nt)
@@ -121,4 +121,4 @@ if __name__ == '__main__':
     inlets = np.nonzero(pn.pore_properties['type']==1)[0]
     outlets = np.nonzero(pn.pore_properties['type']==6)[0]
     OpenPNM.Algorithms.InvasionPercolation(net=pn,inlets=inlets,outlets=outlets).run()
-    OpenPNM.IO.NetToVtp(net=pn)
+    OpenPNM.Visualization.NetToVtp(net=pn)
