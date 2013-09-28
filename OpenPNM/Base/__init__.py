@@ -37,3 +37,4 @@ Classes
 
 from __OpenPNMbase__ import OpenPNMbase
 from __OpenPNMbase__ import testinheritance
+from __io__ import ImportMat
