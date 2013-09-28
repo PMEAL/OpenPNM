@@ -89,9 +89,10 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         """
         self._logger.debug("self.generate()")
         self.generate_pores()
+        self.generate_boundary_pores()
         self.generate_throats()
         self._net.update()
-        self.add_boundaries()
+        #self.add_boundaries()
         self.generate_pore_seeds()
         self.generate_throat_seeds()
         self.generate_pore_diameters()

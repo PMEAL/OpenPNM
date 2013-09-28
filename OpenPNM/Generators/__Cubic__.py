@@ -90,12 +90,28 @@ class Cubic(GenericGenerator):
         Lc = self._Lc
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
-        a = np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T
+        #a = np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T
         self._net.pore_properties['coords'] = Lc*(0.5 + np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T)
         self._net.pore_properties['numbering'] = ind
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
         
         self._logger.debug("generate_pores: End of method")
+        
+    def generate_boundary_pores(self):
+        r"""
+        Generate the boundary pores (coordinates, numbering, and types)
+        """
+        self._logger.info("generate_boundary_pores: Create all the boundaries that enclose the previous operation.")
+        Bx = self.Nx
+        By = self.Ny
+        Bz = self.Nz
+        Lc = self.Lc
+        Np = Bx*By*Bz
+        start_numbering = self._net.pore_properties['numbering']
+        self._net.pore_properties['numbering'] = np.concatenate(start_numbering,np.arange(start_numbering.max(),start_numbering.max()+Np))
+        # Coordinates are going to be quite challenging for the pores because 
+        # they need to be translated and then concatenated onto the existing [coordinates] list. 
+        self._logger.debug("generate_boundary_pores: End of method")
         
     def generate_throats(self):
         r"""
@@ -124,7 +140,7 @@ class Cubic(GenericGenerator):
         self._net.throat_properties['type'] = np.zeros(np.shape(tpore1),dtype=np.int8)
         self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
         self._logger.debug("generate_throats: End of method")
-        
+'''
     def add_boundaries(self):
         self._logger.debug("add_boundaries: Start of method")
         #Remove all items pertaining to previously defined boundaries (if any)
@@ -237,7 +253,7 @@ class Cubic(GenericGenerator):
             
         self._logger.debug("add_opposing_boundaries: End of method")
         
-        
+'''
 if __name__ == '__main__':
     test=Cubic(lattice_spacing=1.0,domain_size=[3,3,3],loggername='TestCubic')
     pn = test.generate()
