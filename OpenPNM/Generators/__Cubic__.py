@@ -90,7 +90,7 @@ class Cubic(GenericGenerator):
         Lc = self._Lc
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
-        #a = np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T
+        
         self._net.pore_properties['coords'] = Lc*(0.5 + np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T)
         self._net.pore_properties['numbering'] = ind
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
@@ -102,13 +102,23 @@ class Cubic(GenericGenerator):
         Generate the boundary pores (coordinates, numbering, and types)
         """
         self._logger.info("generate_boundary_pores: Create all the boundaries that enclose the previous operation.")
-        Bx = self.Nx
-        By = self.Ny
-        Bz = self.Nz
-        Lc = self.Lc
-        Np = Bx*By*Bz
-        start_numbering = self._net.pore_properties['numbering']
-        self._net.pore_properties['numbering'] = np.concatenate(start_numbering,np.arange(start_numbering.max(),start_numbering.max()+Np))
+        Nx = self._Nx
+        Ny = self._Ny
+        Nz = self._Nz
+        Lc = self._Lc
+        
+        number_of_sides = 6
+        mult = 1-np.eye(3)
+
+        for i in range(number_of_sides):
+            B = ((Nx,Ny,Nz)*mult[i % 3,:]) + sp.eye(3)[i % 3,:]
+            Bx = B[0]
+            By = B[1]
+            Bz = B[2]
+            Np = Bx*By*Bz
+            start_numbering = self._net.pore_properties['numbering']
+            self._net.pore_properties['numbering'] = np.concatenate((start_numbering,np.arange(start_numbering.max(),start_numbering.max()+Np)))
+            self._net.pore_properties['type'] = i+1
         # Coordinates are going to be quite challenging for the pores because 
         # they need to be translated and then concatenated onto the existing [coordinates] list. 
         self._logger.debug("generate_boundary_pores: End of method")
