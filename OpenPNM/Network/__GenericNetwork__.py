@@ -349,14 +349,16 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         """
         return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
-    def get_neighbor_pores(self,Pnums,flatten=True):
+    def get_neighbor_pores(self,Pnums,Ptype=[0,1,2,3,4,5,6],flatten=True):
         r"""
-        Returns a list of neighboring pores
+        Returns a list of pores neighboring the given pore(s)
         
         Parameters
         ----------
         Pnums : array_like
-            ID numbers of pores whose neighbors are sought
+            ID numbers of pores whose neighbors are sought.
+        Ptype : array_like
+            Type of pores to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore ID numbers 
             is returned with the input pores (Pnum) removed. If flatten is 
@@ -365,9 +367,9 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         
         Returns
         -------
-        neighborPs : 1D array (if flatten is True) or ndarray of arrays (is
+        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if
             flatten if False)
-            
+        
         Examples
         --------
         >>> Pnums = [0,1]
@@ -379,29 +381,37 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         >>> Ps = pn.get_neighbor_pores(Pnums,flatten=False)
         >>> Ps
         array([[  1,   2, 920],
-               [  0,   3, 921]]) 
+               [  0,   3, 921]])
         """
         try:
             neighborPs = self._adjmatrix._lil.rows[[Pnums]]
         except:
             self.create_adjacency_matrix() 
             neighborPs = self._adjmatrix_lil.rows[[Pnums]]
-        #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-        neighborPs = [np.asarray(x) for x in neighborPs if x]
-        if flatten and neighborPs:
-            neighborPs = np.hstack(neighborPs)
+        if flatten:
+            #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
+            neighborPs = [sp.asarray(x) for x in neighborPs if x]
+            neighborPs = sp.hstack(neighborPs)
             #Remove references to input pores and duplicates
-            neighborPs = np.unique(neighborPs[~np.in1d(neighborPs,Pnums)])
+            neighborPs = sp.unique(neighborPs[~np.in1d(neighborPs,Pnums)])
+            #Remove pores of the wrong type
+            neighborPs = neighborPs[sp.in1d(self.pore_properties['type'][neighborPs],Ptype)]
+        else:
+            for i in range(0,sp.shape(Pnums)[0]):
+                ans = sp.array(sp.where(sp.in1d(self.pore_properties['type'][neighborPs[i]],Ptype)))[0]
+                neighborPs[i] = sp.array(neighborPs[i])[ans]
         return np.array(neighborPs)
 
-    def get_neighbor_throats(self,Pnums,flatten=True):
+    def get_neighbor_throats(self,Pnums,Ttype=[0,1,2,3,4,5,6],flatten=True):
         r"""
-        Returns a list of neighboring throats
+        Returns a list of throats neighboring the given pore(s)
         
         Parameters
         ----------
         Pnums : array_like
             ID numbers of pores whose neighbors are sought
+        Ttype : array_like
+            Type of throats to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique throat ID numbers 
             is returned. If flatten is False the returned array contains arrays 
@@ -431,11 +441,51 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         except:
             self.create_incidence_matrix(sprsfmt='lil')
             neighborTs = self._incmatrix._lil.rows[[Pnums]]
-        #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-        neighborTs = [np.asarray(x) for x in neighborTs if x]
         if flatten and neighborTs:
+            #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
+            neighborTs = [np.asarray(x) for x in neighborTs if x]
             neighborTs = np.unique(np.hstack(neighborTs))
+            #Remove throats of the wrong type
+            neighborTs = neighborTs[sp.in1d(self.throat_properties['type'][neighborTs],Ttype)]
+        else:
+            for i in range(0,sp.shape(Pnums)[0]):
+                ans = sp.array(sp.where(sp.in1d(self.throat_properties['type'][neighborTs[i]],Ttype)))[0]
+                neighborTs[i] = sp.array(neighborTs[i])[ans]
         return np.array(neighborTs)
+        
+    def get_num_neighbors(self,Pnums,Ptype=[0,1,2,3,4,5,6]):
+        r"""
+        Returns an ndarray containing the number of pores for each element in Pnums
+        
+        Parameters
+        ----------
+        Pnums : array_like
+            ID numbers of pores whose neighbors are sought
+        Ptype : array_like
+            Type of throats to be returne
+        
+        Returns
+        -------
+        num_neighbors : 1D array with number of neighbors in each element
+            
+        Examples
+        --------
+        >>> Pnum = [0,1]
+        >>> Nn = pn.get_num_neighbors(Pnum)
+        >>> Nn
+        array([3, 4], dtype=int8)
+        
+        >>> Pnum = range(0,pn.get_num_pores())
+        >>> Nn = pn.get_num_neighbors(Pnum)
+        >>> Nn
+        array([3, 4, 4, ..., 4, 4, 3], dtype=int8)
+        >>> pn.pore_properties['num_neighbors'] = Nn
+        """
+        neighborPs = self.get_neighbor_pores(Pnums,Ptype,flatten=False)
+        num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
+        for i in range(0,sp.shape(num)[0]):
+            num[i] = sp.size(neighborPs[i])
+        return num
 
     def get_neighbor_pores_props(self,Pnum,flatten=True):
         r"""
