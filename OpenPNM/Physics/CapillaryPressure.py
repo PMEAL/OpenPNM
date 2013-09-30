@@ -10,13 +10,12 @@
 module __GenericPhysics__: Base class to define pore scale physics
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Physics.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Physics/__init__.py' file.
 
 """
 
 import OpenPNM
 import scipy as sp
-import numpy as np
 
 def Washburn(network,sigma,theta):
     r"""
@@ -37,7 +36,7 @@ def Washburn(network,sigma,theta):
     -----
     This is the most basic approach to calcualing entry pressure and is suitable for highly non-wetting invading fluids in most materials.  
     """
-    return -4*sigma*np.cos(np.radians(theta))/network.throat_properties['diameter']
+    return -4*sigma*sp.cos(sp.radians(theta))/network.throat_properties['diameter']
     
 def Purcell(network,sigma,theta,r_toroid):
     r"""
@@ -54,8 +53,8 @@ def Purcell(network,sigma,theta,r_toroid):
     theta : float
         Contact angle formed by a droplet of the invading fluid and solid surface, measured through the defending fluid phase.  Angle must be given in degrees.
     
-    radii : float
-        The radius of the solid 
+    r_toroid : float or array_like
+        The radius of the solid
     Notes
     -----
     This approach accounts for the converging-diverging nature of many throat types.  Advancing the meniscus beyond the apex of the toroid requires an increase in capillary pressure beyond that for a cylindical tube of the same radius.
@@ -90,4 +89,4 @@ def Morrow(network,sigma,theta):
     -----
     Morrow and Mason compared the Purcell toroid to experimental data on various sized monodisperse PTFE beads.  They found that data could be approximated decently by simply scaling the contact angle by 2/3.
     """
-    return -4*sigma*np.cos(np.radians(2/3*(180-theta))/network.throat_properties['diameter']
+    return -4*sigma*sp.cos(sp.radians(2/3*(180-theta)))/network.throat_properties['diameter']
