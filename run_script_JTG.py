@@ -39,8 +39,8 @@ exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, loglevel = 10, npts=50, inv_si
 pn.update()
 
 #Write network to vtk file for visualization in Paraview
-import os
-OpenPNM.Visualization.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
+#import os
+#OpenPNM.Visualization.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
 
 print clock()-start,"seconds."
 
