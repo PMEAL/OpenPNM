@@ -110,7 +110,7 @@ import Network
 import Generators
 import Algorithms
 import Visualization
-import IMG
+#import IMG
 import GUI
 
 

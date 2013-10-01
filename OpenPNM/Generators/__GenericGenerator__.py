@@ -48,8 +48,6 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
     
     >>> import OpenPNM as PNM
     >>> net=PNM.Generators.GenericGenerator().generate()
-    >>> OpenPNM.Visualization.NetToVtp(net)   
-    This generates the following network:
     
     """
     pore_properties   = {}
@@ -91,7 +89,7 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         self.generate_pores()
         self.generate_throats()
         self._net.update()
-        self.add_boundaries()
+#        self.add_boundaries()
         self.generate_pore_seeds()
         self.generate_throat_seeds()
         self.generate_pore_diameters()
@@ -106,14 +104,26 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
     def generate_pores(self):
         r"""
         Generate the pores (numbering, types and coordinates)
+        
+        This method is not implemented in the GenericGenerator and must be sub-classed to produce desired network topology        
         """
         self._logger.error("generate_pores: not implemented")
         
     def generate_throats(self):        
         r"""
         Generate the throats (numbering and types)
+
+        This method is not implemented in the GenericGenerator and must be sub-classed to produce desired network topology.
         """
         self._logger.error("generate_throats: not implemented")
+        
+    def add_boundaries(self):
+        r"""
+        Add boundary pores around network (numbering and types)
+
+        This method is not implemented in the GenericGenerator and must be sub-classed to produce desired network topology.
+        """
+        self._logger.error("add_boundaries: not implemented")        
         
     def generate_throat_type(self):
         self._logger.info("update_throat_type: Start of method")
@@ -122,7 +132,7 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
 
     def generate_pore_seeds(self):
         r"""
-        Assigns random seed to pores
+        Assigns random seed to pores 
         """
         self._logger.info("generate_pore_seeds: Assign each pore a random seed")
         Np = self._net.get_num_pores()
@@ -141,7 +151,7 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         
     def generate_pore_diameters(self):
         r"""
-        Calculates pore diameter from given statisical distribution
+        Calculates pore diameter from given statisical distribution using the random seeds provided by generate_pore_seeds()
         """
         self._logger.info("generate_pore_diameters: Generate pore diameter from "+self._psd_dist+" distribution")
         prob_fn = getattr(spst,self._psd_dist)
@@ -153,7 +163,7 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
 
     def generate_throat_diameters(self):
         r"""
-        Calculates throat diameter from given statisical distribution
+        Calculates throat diameter from given statisical distribution using the random seeds provided by generate_throat_seeds()
         """
         self._logger.info("generate_throat_diameters: Generate throat diameter from "+self._tsd_dist+" distribution")
         prob_fn = getattr(spst,self._tsd_dist)
@@ -163,7 +173,7 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         
     def calc_pore_volumes(self):
         r"""
-        Calculates pore volume
+        Calculates pore volume from diameter assuming a spherical pore
         """
         self._logger.info("calc_pore_volumes: Setting pore volumes assuming cubic bodies")
         #Set internal pore volumes to 1
@@ -174,7 +184,7 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         
     def calc_throat_volumes(self):
         r"""
-        Calculates throat volume from diameter and length
+        Calculates throat volume from diameter and length assuming a cylindrical pore of constant cross-section
         """
         self._logger.info("calc_throat_volumes: Setting throat volumes assuming square cross-section")
         #Set internal pore volumes to 1
@@ -207,9 +217,6 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         if np.sum(self._net.throat_properties['length']<0):
             self._logger.warning("calc_throat_lengths: Some negative throat lengths exist, some pores overlap!")
         self._logger.debug("calc_throat_lengths: End of method")
-        
-    def add_boundaries(self):
-        self._logger.error("add_boundaries: not implemented")
         
     def get_net(self):
         r"""
