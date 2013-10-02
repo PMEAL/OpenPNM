@@ -82,13 +82,13 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         self._logger.info("- Creating default pore properties")
         
         self._logger.info("  - numbering")
-        self.declare_pore_property('numbering',dtype=sp.int64,columns=1,default=0)
+        self.new_pore_property('numbering',dtype=sp.int64,columns=1,default=0)
 
         self._logger.info("  - coords")
-        self.declare_pore_property("coords",dtype=float,columns=3,default=0)
+        self.new_pore_property("coords",dtype=float,columns=3,default=0)
 
         self._logger.info("  - type")
-        self.declare_pore_property("type",dtype=sp.int8,columns=1,default=1)
+        self.new_pore_property("type",dtype=sp.int8,columns=1,default=1)
 
         '''r
         FIXME: fix occurence of duplicate throats
@@ -96,13 +96,13 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         self._logger.info("- Creating default throat properties")
         
         self._logger.info("  - numbering")
-        self.declare_throat_property(name="numbering",dtype=sp.int8,columns=1,default=1)
+        self.new_throat_property(name="numbering",dtype=sp.int8,columns=1,default=1)
 
         self._logger.info("  - connections")
-        self.declare_throat_property(name="connections",dtype=int,columns=2,default=0)
+        self.new_throat_property(name="connections",dtype=int,columns=2,default=0)
 
         self._logger.info("  - type")
-        self.declare_throat_property(name="type",dtype=sp.int8,columns=1,default=1)
+        self.new_throat_property(name="type",dtype=sp.int8,columns=1,default=1)
         #self.throat_properties["type"] = sp.arange(0,num_throats,1).reshape(num_throats,1)
         
         self._logger.info("Constructor completed")
@@ -226,7 +226,7 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
             self._incmatrix_lil = self._incmatrix.tolil()
             self._incmatrix._lil = self._incmatrix.tolil()
 
-    def declare_pore_property( self,name="NewName",dtype=float,columns=1,default=0.):
+    def new_pore_property( self,name="NewName",dtype=float,columns=1,default=0.):
         r"""
         Create a pore property and reserve storage space
 
@@ -235,33 +235,83 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
               This has several implications on the linear algebra operations within
               our code.
         """
-        self._logger.debug("declare_pore_property")
+        self._logger.debug("new_pore_property")
         if name in self.pore_properties.keys():
             self._logger.error("This pore property is already declared")
         else:
             rows=self.get_num_pores()
             self.pore_properties[name] = sp.ones((rows,columns),dtype=dtype)*default
 
-    def declare_throat_property( self,name="NewName",dtype=float,columns=1,default=0.):
+    def new_throat_property( self,name="NewName",dtype=float,columns=1,default=0.):
         r"""
         Create a throat property and reserve storage space
 
         """
-        self._logger.debug("declare_pore_property")
+        self._logger.debug("new_pore_property")
         if name in self.throat_properties.keys():
             self._logger.error("This throat property is already declared")
         else:
             rows=self.get_num_throats()
             self.throat_properties[name] = sp.ones((rows,columns),dtype=dtype)*default
+            
+    def set_pore_property(self,name="something",ndarray=None,columns=None):
+        r"""
+        Overrite an existing pore property
+        """
+        self._logger.debug("Method: set_pore_property")
+        if (ndarray==None):
+            if(columns==None):
+                self.pore_properties[name] = sp.zeros(self.get_num_pores())
+            else:
+                self.pore_properties[name] = sp.zeros([self.get_num_pores(),columns])
+        elif (type(ndarray)==sp.ndarray):
+            self.pore_properties[name]     = ndarray
+        else:
+            self._logger.error("Error: expected type: scipy.ndarray")
 
-    def get_num_pores(self,ptype=[0,1,2,3,4,5,6]):
+        if (self.pore_properties[name].shape[0]!=self.get_num_pores()):
+            self._logger.error("Error: wrong length of the array")
+        self._needs_update=True
+
+    def set_throat_property(self,name="something",ndarray=None,columns=None):
+        r"""
+        Overrite an existing throat property
+        """
+        self._logger.debug("Method: set_throat_property")
+        if (ndarray==None):
+            if(columns==None):
+                self.throat_properties[name] = sp.zeros(self.get_num_throats())
+            else:
+                self.throat_properties[name] = sp.zeros([self.get_num_throats(),columns])
+        elif (type(ndarray)==sp.ndarray):
+            self.throat_properties[name]     = ndarray
+        else:
+            self._logger.error("Error: expected type: scipy.ndarray")
+
+        if (self.throat_properties[name].shape[0]!=self.get_num_throats()):
+            self._logger.error("Error: wrong length of the array")
+        self._needs_update=True
+        
+    def get_pore_property(self,name='foo'):
+        r""""
+        Returns the requested pore property        
+        """
+        return 'foo'
+
+    def get_throat_property(self,name='foo'):
+        r""""
+        Returns the requested throat property
+        """        
+        return 'foo'
+
+    def get_num_pores(self,Ptype=[0,1,2,3,4,5,6]):
         r"""
         Returns the number of pores of the specified type
         
         Parameters
         ----------
 
-        ptype : array_like, optional
+        Ptype : array_like, optional
             list of desired pore types to count
 
         Returns
@@ -270,19 +320,19 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
             
         """
         try:
-            Np = np.sum(np.in1d(self.pore_properties['type'],ptype))
+            Np = np.sum(np.in1d(self.pore_properties['type'],Ptype))
         except:
             Np = 0
         return Np
 
-    def get_num_throats(self,ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6]):
+    def get_num_throats(self,Ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6]):
         r"""
         Return the number of throats of the specified type
         
         Parameters
         ----------
 
-        ttype : array_like, optional
+        Ttype : array_like, optional
             list of desired throat types to count
 
         Returns
@@ -291,7 +341,7 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         
         """
         try:
-            Nt = np.sum(np.in1d(self.throat_properties['type'],ttype))
+            Nt = np.sum(np.in1d(self.throat_properties['type'],Ttype))
         except:
             Nt = 0
         return Nt
@@ -345,7 +395,7 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         Returns
         -------
         Tnum : int
-            Returns throat ID number
+            Returns throat ID number, or empty array if pores are not connected
         """
         return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
@@ -495,51 +545,13 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         TODO: Impliment
         """
         
-    def get_neighbor_throat_props(self,Pnum,ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6],flatten=True):
+    def get_neighbor_throat_props(self,Pnums,Ttype=[0,1,2,3,4,5,6],flatten=True):
         r"""
         Nothing yet, but this will return the specified property rather than
         just the ID numbers
         
         TODO: Impliment
         """
-
-    def set_pore_property(self,name="something",ndarray=None,columns=None):
-        r"""
-        Create a new pore property or overrite an existing one.
-        """
-        self._logger.debug("Method: set_pore_property")
-        if (ndarray==None):
-            if(columns==None):
-                self.pore_properties[name] = sp.zeros(self.get_num_pores())
-            else:
-                self.pore_properties[name] = sp.zeros([self.get_num_pores(),columns])
-        elif (type(ndarray)==sp.ndarray):
-            self.pore_properties[name]     = ndarray
-        else:
-            self._logger.error("Error: expected type: scipy.ndarray")
-
-        if (self.pore_properties[name].shape[0]!=self.get_num_pores()):
-            self._logger.error("Error: wrong length of the array")
-        self._needs_update=True
-
-    def set_throat_property(self,name="something",ndarray=None,columns=None):
-        r"""
-        Create a new throat property or overrite an existing one.
-        """
-        self._logger.debug("Method: set_throat_property")
-        if (ndarray==None):
-            if(columns==None):
-                self.throat_properties[name] = sp.zeros(self.get_num_throats())
-            else:
-                self.throat_properties[name] = sp.zeros([self.get_num_throats(),columns])
-        elif (type(ndarray)==sp.ndarray):
-            self.throat_properties[name]     = ndarray
-        else:
-            self._logger.error("Error: expected type: scipy.ndarray")
-
-        if (self.throat_properties[name].shape[0]!=self.get_num_throats()):
-            self._logger.error("Error: wrong length of the array")
-        self._needs_update=True
 
     def check_basic(self):
         r"""
