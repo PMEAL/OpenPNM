@@ -2,11 +2,10 @@
 Pore Scale Physicis
 ===============================================================================
 
-.. contents:: Table of Contents
-
 -------------------------------------------------------------------------------
 General Usage
 -------------------------------------------------------------------------------
+In OpenPNM each physical process is given its own class(? - file), and within each class any number of models/equations can be defined by simply adding the appropriate method/equations.  This setup was designed to facilitate easy editability of the physics models which can be highly varied.  
 
 -------------------------------------------------------------------------------
 Capillary Pressure
@@ -15,11 +14,17 @@ Capillary Pressure
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Washburn
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+The Washburn equation, often refered to as the Young-Laplace equation, is the most commonly used means to relate throat size to capillary entry pressure.
 
+.. math::
+
+  P_c = {\frac{-4 \sigma cos(\theta)}{D}}
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Purcell Toroid
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+The Purcell toroid is a more sophisticated means of relating throat size to capillary entry pressure that accounts for the converging-diverging nature of throats.  This model can lead to significantly increased entry pressures, especially for neutrally wetting systems.  
+
 
 -------------------------------------------------------------------------------
 Flow

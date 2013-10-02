@@ -1,10 +1,10 @@
-*******************************************************************************
+===============================================================================
 Getting Started
-*******************************************************************************
+===============================================================================
 
-===============================================================================
+-------------------------------------------------------------------------------
 Example: Working with Scripts
-===============================================================================
+-------------------------------------------------------------------------------
 1.  Open Spyder
 2.  In Spyder, select the 'Browse a Working Directory' button and locate your OpenPNM folder and select.  Also click the 'Set as console's working directory' button.
 3.  Open a new blank .py file in the editor window if there is not one already.  
@@ -37,7 +37,9 @@ The same generator can be used to create another network:
    
 This network will be identical in most asepcts but will have different pore and throat sizes due the different random seeds used.  This functionality is useful for running simulations on multiple realizations for the same network for statistical significance.  
 
-
+-------------------------------------------------------------------------------
+Example: Querying the Network
+-------------------------------------------------------------------------------
 
 
 
