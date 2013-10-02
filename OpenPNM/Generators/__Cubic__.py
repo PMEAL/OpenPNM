@@ -36,8 +36,8 @@ class Cubic(GenericGenerator):
 
     """
     
-    def __init__(self,  domain_size = [],
-                        divisions = [],
+    def __init__(self,  domain_size = [1,1,1],
+                        divisions = [10,10,10],
                         lattice_spacing = [],
                         **kwargs
                       ):
@@ -68,7 +68,7 @@ class Cubic(GenericGenerator):
             self._Nz = divisions[2]
             self._Lx = self._Nx*self._Lc
             self._Ly = self._Ny*self._Lc
-            self._Lz = self._Nz*self._Lcp
+            self._Lz = self._Nz*self._Lc
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('error')
