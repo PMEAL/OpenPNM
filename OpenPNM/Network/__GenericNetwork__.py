@@ -81,30 +81,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         self._logger.info("- Creating default pore properties")
         
-        self._logger.info("  - numbering")
-        self.new_pore_property('numbering',dtype=sp.int64,columns=1,default=0)
-
-        self._logger.info("  - coords")
-        self.new_pore_property("coords",dtype=float,columns=3,default=0)
-
-        self._logger.info("  - type")
-        self.new_pore_property("type",dtype=sp.int8,columns=1,default=1)
-
-        '''r
-        FIXME: fix occurence of duplicate throats
-        '''
-        self._logger.info("- Creating default throat properties")
-        
-        self._logger.info("  - numbering")
-        self.new_throat_property(name="numbering",dtype=sp.int8,columns=1,default=1)
-
-        self._logger.info("  - connections")
-        self.new_throat_property(name="connections",dtype=int,columns=2,default=0)
-
-        self._logger.info("  - type")
-        self.new_throat_property(name="type",dtype=sp.int8,columns=1,default=1)
-        #self.throat_properties["type"] = sp.arange(0,num_throats,1).reshape(num_throats,1)
-        
         self._logger.info("Constructor completed")
 
     def create_adjacency_matrix(self,tprop='none',sprsfmt='all',dropzeros=True,diag=False,sym=True):
