@@ -221,7 +221,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
     def translate_coordinates(net,displacement=[0,0,0]):
         net.pore_properties['coords'] = net.pore_properties['coords'] + displacement
         
-    def scale_coordiantes(net,scale=[1,1,1]):
+    def scale_coordinates(net,scale=[1,1,1]):
         net.pore_properties['coords'] = net.pore_properties['coords']*scale 
         
     def get_net(self):
