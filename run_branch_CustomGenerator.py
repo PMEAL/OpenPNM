@@ -34,7 +34,7 @@ params = {
 }
 
 start=clock()
-pn = OpenPNM.GEN.Custom(loglevel=10,**params).generate()
+pn = OpenPNM.Geometry.Custom(loglevel=10,**params).generate()
 
 #pn.throat_properties['Pc_entry'] = -4*0.072*np.cos(np.radians(105))/pn.throat_properties['diameter']  #This should be set somewhere else
 #inlets = [0]
