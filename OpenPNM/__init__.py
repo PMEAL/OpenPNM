@@ -27,17 +27,15 @@ Subpackages
 
    * - Name
      - Description
-   * - :mod:`OpenPNM.Base`
+   * - :mod:`OpenPNM.Utilities`
      - common utilities and classes used by most of the of the modules
    * - :mod:`OpenPNM.Network`
      - Storage and manipulations of network topoologies and data stored on them.
-   * - :mod:`OpenPNM.Generators`
-     - Generators for pore networks. (Random cubic, image based, Voronoi). Should also contain
+   * - :mod:`OpenPNM.Geometry`
+     - Geometry for pore networks. (Random cubic, image based, Voronoi). Should also contain
        a mapper of the pore network back on the segmented image.
    * - :mod:`OpenPNM.Algorithsm`
      - Module containing all algorithmic classes for networks.
-   * - `IO`
-     - Input output routines
    * - `Visualization`
      - vtk-based post-processing modules (`postproc.py`)   
 
@@ -75,12 +73,17 @@ Package Documentation
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: Generators
+.. automodule:: Geometry
    :members:
    :undoc-members:
    :show-inheritance:
 
 .. automodule:: Algorithms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: Physics
    :members:
    :undoc-members:
    :show-inheritance:
@@ -107,13 +110,12 @@ __extras_require__ = {
 # __all__ = ['Base']
 
 
-import Base
+import Utilities
 import Network
-import Generators
+import Geometry
 import Algorithms
 import Visualization
-import IO
-import IMG
+import Physics
 import GUI
 
 

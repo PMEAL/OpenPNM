@@ -2,7 +2,7 @@
 module __Cubic__: Generate simple cubic networks
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 
@@ -14,9 +14,9 @@ import scipy.stats as spst
 import numexpr as ne
 from time import clock
 
-from __GenericGenerator__ import GenericGenerator
+from __GenericGeometry__ import GenericGeometry
 
-class Cubic(GenericGenerator):
+class Cubic(GenericGeometry):
     r"""
     Cubic - Class to create a basic cubic network
     
@@ -31,28 +31,16 @@ class Cubic(GenericGenerator):
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
         
     Examples
-    --------
-    
-    .. plot::
-        
-       import pylab as pl
-       import OpenPNM
-       gen = OpenPNM.Generators.Cubic()
-       net = gen.generate()
-       pl.spy(net._adjmatrix)
-       pl.show()
-    
-    TODO:
-        - Check for 3D shape
-        - Check for correct divisions
+    --------    
+    >>>print 'none yet'
+
     """
     
-    def __init__(self,  domain_size = [],
-                        divisions = [],
+    def __init__(self,  domain_size = [1,1,1],
+                        divisions = [10,10,10],
                         lattice_spacing = [],
                         **kwargs
                       ):
-
         super(Cubic,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
         self._logger.info("Find network dimensions")
@@ -80,7 +68,7 @@ class Cubic(GenericGenerator):
             self._Nz = divisions[2]
             self._Lx = self._Nx*self._Lc
             self._Ly = self._Ny*self._Lc
-            self._Lz = self._Nz*self._Lcp
+            self._Lz = self._Nz*self._Lc
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('error')

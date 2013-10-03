@@ -37,7 +37,7 @@ _logging.basicConfig(level=_logging.CRITICAL,
 
 class OpenPNMbase(object):
     r"""
-    .. class::`OpenPNM.Base.OpenPNMbase` -- Base class for OpenPNM
+    .. class::`OpenPNM.Utilities.OpenPNMbase` -- Base class for OpenPNM
     
     
     Base class with a few bells and whistles. Mainly output on screen, logging

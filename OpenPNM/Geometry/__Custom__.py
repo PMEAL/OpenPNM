@@ -2,7 +2,7 @@
 module __Cubic__: Generate simple cubic networks
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 
@@ -14,9 +14,9 @@ import scipy.stats as spst
 import scipy.ndimage as spim
 from time import clock
 
-from __GenericGenerator__ import GenericGenerator
+from __GenericGeometry__ import GenericGeometry
 
-class Custom(GenericGenerator):
+class Custom(GenericGeometry):
     r"""
     Cubic - Class to create a basic cubic network
     
@@ -37,7 +37,7 @@ class Custom(GenericGenerator):
         
        import pylab as pl
        import OpenPNM
-       gen = OpenPNM.Generators.Cubic()
+       gen = OpenPNM.Geometry.Cubic()
        net = gen.generate()
        pl.spy(net._adjmatrix)
        pl.show()
