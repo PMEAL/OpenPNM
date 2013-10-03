@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from  OpenPNM.Base import OpenPNMbase
+from  OpenPNM.Utilities import OpenPNMbase
 import scipy as sp
 import scipy.io
 import numpy as np
@@ -27,7 +27,7 @@ class ImportMat(OpenPNMbase):
     To read in a .mat file with pore network information
     
     >>> import OpenPNM
-    >>> matfile = OpenPNM.Base.ImportMat(filename='example_network',path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles')
+    >>> matfile = OpenPNM.Utilities.ImportMat(filename='example_network',path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles')
     >>> pore_volumes = matfile.getvar('pvolumes')
     
   

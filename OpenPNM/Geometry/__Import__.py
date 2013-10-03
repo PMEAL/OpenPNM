@@ -9,7 +9,7 @@
 module __GenericGenerator__: Base class to construct pore networks
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 
@@ -50,7 +50,7 @@ class MatFile(GenericGenerator):
     To import the example_network.mat file in your LocalFiles folder
     
     >>> import OpenPNM as PNM
-    >>> net=PNM.Generators.MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles').generate()
+    >>> net=PNM.Geometry.MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles').generate()
     
     """
     def __init__(self, filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles', **kwargs):
@@ -59,7 +59,7 @@ class MatFile(GenericGenerator):
         Initialize
         """
         super(MatFile,self).__init__(**kwargs)
-        self._mat=OpenPNM.Base.ImportMat(filename=filename,path=path)
+        self._mat=OpenPNM.Utilities.ImportMat(filename=filename,path=path)
         self._Np=np.size(self._mat.getvar('pnumbering'))
         self._Nt=np.size(self._mat.getvar('tnumbering'))
         self._net=OpenPNM.Network.GenericNetwork(num_pores=self._Np, num_throats=self._Nt)

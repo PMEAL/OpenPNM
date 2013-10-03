@@ -1,7 +1,7 @@
 ===============================================================================
 Network Geometry
 ===============================================================================
-The network generation module in OpenPNM contains methods for generating networks of various topologies and geometries (such as Cubic and Delaunay), importing networks generated using other code (such as extraction from 3D tomographic imges), and altering existing networks (such as merging networks).  These functions are all housed under the Generators module.
+The network generation module in OpenPNM contains methods for generating networks of various topologies and geometries (such as Cubic and Delaunay), importing networks generated using other code (such as extraction from 3D tomographic imges), and altering existing networks (such as merging networks).  These functions are all housed under the Geometry module.
 
 -------------------------------------------------------------------------------
 Generating Geometry
@@ -12,7 +12,7 @@ Generic Generator
 *******************************************************************************
 The GenericGenerator base class takes advantage of the object-oriented nature of Python by using inheritance.  There are three main components to inheritance as used here.  
 
-Firstly, the GenericGenerator class contains methods that will likely be used by all methods regardless of topology (such as generate_pore_seeds).  Every network inherits these methods and *can* use them if desired.  For instance, generator_pore_seeds can be used "as is" to assign a random number to each pore for subsequent use in pore size distribution calculations (i.e. generate_pore_diameters).  Alternatively, if the user wishes to use a more complex method to generate random seens (for instance with spatial correlation), then they are free to over-write or sub-class this method.  The procedure for accomplishing this is outlined Writing Custom Generators section below.  
+Firstly, the GenericGenerator class contains methods that will likely be used by all methods regardless of topology (such as generate_pore_seeds).  Every network inherits these methods and *can* use them if desired.  For instance, generator_pore_seeds can be used "as is" to assign a random number to each pore for subsequent use in pore size distribution calculations (i.e. generate_pore_diameters).  Alternatively, if the user wishes to use a more complex method to generate random seens (for instance with spatial correlation), then they are free to over-write or sub-class this method.  The procedure for accomplishing this is outlined Writing Custom Geometry section below.  
 
 The second aspect to inheritance is that sub-classed methods have the same name and black-box functionality as the generic methods.  The enables a truly generic generation scheme that always calls the same methods but acheives different results depending on which methods have been overwritten.  
 
@@ -20,29 +20,29 @@ The third component to inheritance are the methods that *must* be sub-classed.  
 
 The generic generator contains numerous methods and default values.
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.generate_pores()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.generate_pores()
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.generate_throats()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.generate_throats()
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.add_boundaries()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.add_boundaries()
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.generate_pore_seeds()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.generate_pore_seeds()
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.generate_throat_seeds()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.generate_throat_seeds()
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.generate_pore_diameters()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.generate_pore_diameters()
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.generate_throat_diameters()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.generate_throat_diameters()
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.calc_pore_volumes()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.calc_pore_volumes()
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.calc_throat_lengths()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.calc_throat_lengths()
 
-.. automethod:: OpenPNM.Generators.GenericGenerator.calc_throat_volumes()
+.. automethod:: OpenPNM.Geometry.GenericGenerator.calc_throat_volumes()
 
 
 -------------------------------------------------------------------------------
-Generators
+Geometry
 -------------------------------------------------------------------------------
 OpenPNM includes a number of generators for producing the most common network geometry types.  
 
@@ -73,7 +73,7 @@ The Custom network generator accepts a binary 3D (or 2D) image with some pattern
    img[10,10,10] = 0
    img = spim.distance_transform_edt(img)
    img = img<=5
-   pn = OpenPNM.Generators.Custom(image_shape=img).generate()
+   pn = OpenPNM.Geometry.Custom(image_shape=img).generate()
    
 This will generate a spherical network with cubic-lattice connectivity.  All pore and throat properties will be generated from the methods inherited from GenericGenerator.  It is possible to specify custom properties to overwrite those produced by the generic methods.  For instance, if pore sizes are larger near the surface than near the core of the sphere this can be calculated externally, stored in an image of the desired shape, and then imported into the network as follows:
 
@@ -85,7 +85,7 @@ This will generate a spherical network with cubic-lattice connectivity.  All por
    img[10,10,10] = 0
    img = spim.distance_transform_edt(img)
    img = img<=5
-   pn = OpenPNM.Generators.Custom(image_shape=img).generate()
+   pn = OpenPNM.Geometry.Custom(image_shape=img).generate()
 
 
 *******************************************************************************

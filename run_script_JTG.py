@@ -12,10 +12,10 @@ from time import clock
 
 params = {
 #'domain_size': [0.001,0.001,0.0004],  #physical network size [meters]
-'divisions': [10,10,10], #Number of pores in each direction
-'lattice_spacing': 1.0,  #spacing between pores [meters]
+#'divisions': [10,10,10], #Number of pores in each direction
+#'lattice_spacing': 1.0,  #spacing between pores [meters]
 #'num_pores': 1000, #This is used for random networks where spacing is irrelevant
-'btype': [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
+#'btype': [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 #The following parameters are for the statistical functions used to generate
 #pore and throat size distributions.  See scipy.stats for options and parameters.
 'psd_dist': 'weibull_min',  #distribution to be used
@@ -29,9 +29,9 @@ params = {
 }
 
 start=clock()
-pn = OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
+pn = OpenPNM.Geometry.Cubic(loglevel=10,**params).generate()
 
-#pn = OpenPNM.Generators.Delaunay(loglevel=10,**params).generate()
+#pn = OpenPNM.Geometry.Delaunay(loglevel=10,**params).generate()
 
 pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure.Washburn(pn,0.072,110)
 inlets = [0]
@@ -40,8 +40,8 @@ exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, loglevel=10, npts=50, inv_site
 pn.update()
 
 #Write network to vtk file for visualization in Paraview
-import os
-OpenPNM.IO.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
+#import os
+#OpenPNM.Visualization.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
 
 print clock()-start,"seconds."
 
