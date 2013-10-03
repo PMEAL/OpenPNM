@@ -21,7 +21,7 @@ Next, you'll want to generate a network.  This is accomplished by first creating
 
 .. code-block:: python
    
-   gn1 = OpenPNM.Generators.Cubic()
+   gn1 = OpenPNM.Geometry.Cubic()
    
 Now a generator has been initialized (with default parameters) and is ready to start spawning networks.  This can be achieved by:
 

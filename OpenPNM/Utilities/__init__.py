@@ -3,10 +3,10 @@
 # License: TBD.
 r"""
 *************************************************************************
-:mod:`OpenPNM.Base` -- base classes, helpers and all homeless functions
+:mod:`OpenPNM.Utilities` -- base classes, helpers and all homeless functions
 *************************************************************************
 
-.. module:: OpenPNM.Base 
+.. module:: OpenPNM.Utilities 
 
 Contents
 ========

@@ -2,7 +2,7 @@
 module __Cubic__: Generate simple cubic networks
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 

@@ -20,7 +20,7 @@ C = 0.9
 D = 2.09e-9
 divisions=[10,10,10]
 lattice_spacing=.0005
-pn = OpenPNM.Generators.Cubic(divisions=[10,10,10],lattice_spacing=.0005,loglevel=20,btype = [0,0,0]).generate()
+pn = OpenPNM.Geometry.Cubic(divisions=[10,10,10],lattice_spacing=.0005,loglevel=20,btype = [0,0,0]).generate()
 setattr(pn,"Total_Conc",C)
 setattr(pn,"Diff_Coefficient",D)
 setattr(pn,"divisions",divisions)

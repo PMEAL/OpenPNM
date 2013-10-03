@@ -21,7 +21,7 @@ import scipy as sp
 import scipy.sparse as sprs
 import matplotlib as mpl
 
-class GenericNetwork(OpenPNM.Base.OpenPNMbase):
+class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     r"""
     GenericNetwork - Base topology class for pore networks
     

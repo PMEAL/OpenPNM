@@ -4,10 +4,10 @@
 
 r"""
 *********************************************************************************
-:mod:`OpenPNM.Generators` -- All classes related the creation of geometric pore networks
+:mod:`OpenPNM.Geometry` -- All classes related the creation of geometric pore networks
 *********************************************************************************
 
-.. module:: OpenPNM.Generators
+.. module:: OpenPNM.Geometry
 
 Contents
 --------
@@ -16,7 +16,7 @@ The OpenPNM package imports all the functions from the top level modules.
 Import
 ------
 >>> import OpenPNM as PNM
->>> tmp=PNM.Generators.Generic()
+>>> tmp=PNM.Geometry.Generic()
 
 
 Submodules

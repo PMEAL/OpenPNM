@@ -61,7 +61,7 @@ To examine the properties of a network, start by generating a small network of 3
 
 .. code-block:: Python
    import OpenPNM
-   pn = OpenPNM.Generators.Cubic(divisions=[3,3,3]).generate()
+   pn = OpenPNM.Geometry.Cubic(divisions=[3,3,3]).generate()
 
 This creates a cubic network with 27 pores and 54 throats.  A quick summary of the network data can be had by typing:
 

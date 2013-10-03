@@ -18,7 +18,7 @@ import OpenPNM
 import scipy as sp
 import numpy as np
 
-class GenericPhysics(OpenPNM.Base.OpenPNMbase):
+class GenericPhysics(OpenPNM.Utilities.OpenPNMbase):
     r"""
 
 

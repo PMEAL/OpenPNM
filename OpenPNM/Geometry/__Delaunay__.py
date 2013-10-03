@@ -2,7 +2,7 @@
 module __Delaunay__: Generate random networks based on Delaunay Tessellations
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 
@@ -36,7 +36,7 @@ class Delaunay(GenericGenerator):
         
        import pylab as pl
        import OpenPNM
-       gen = OpenPNM.Generators.Cubic()
+       gen = OpenPNM.Geometry.Cubic()
        net = gen.generate()
        pl.spy(net._adjmatrix)
        pl.show()
