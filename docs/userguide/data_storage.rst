@@ -139,7 +139,7 @@ The 'type' property is used by OpenPNM to differentiate between internal pores a
 *******************************************************************************
 Common Pore & Throat Properties
 *******************************************************************************
-The GenericGenerator includes several methods that produce some additional pore and throat properties beyond the mandatory ones described above.  These including this like 'diameter' and 'volume'.  
+The GenericGeometry class includes several methods that produce some additional pore and throat properties beyond the mandatory ones described above.  These including this like 'diameter' and 'volume'.  
 
 
 *******************************************************************************
@@ -162,6 +162,8 @@ The OpenPNM network object not only stores the network data, but also contains n
 .. automethod:: OpenPNM.Network.GenericNetwork.get_neighbor_pores()
 
 .. automethod:: OpenPNM.Network.GenericNetwork.get_neighbor_throats()
+
+.. automethod:: OpenPNM.Network.GenericNetwork.get_num_neighbors()
 
 .. automethod:: OpenPNM.Network.GenericNetwork.get_connected_pores()
 

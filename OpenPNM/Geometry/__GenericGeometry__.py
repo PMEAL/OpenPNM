@@ -7,7 +7,7 @@
 #from __future__ import print_function
 
 """
-module __GenericGenerator__: Base class to construct pore networks
+module __GenericGeometry__: Base class to construct pore networks
 ==================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
@@ -20,9 +20,9 @@ import numpy as np
 import scipy.sparse as sprs
 import scipy.stats as spst
 
-class GenericGenerator(OpenPNM.Utilities.OpenPNMbase):
+class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
     r"""
-    GenericGenerator - Base class to construct pore networks
+    GenericGeometry - Base class to construct pore networks
     
     This class contains the interface definition for the construction
     of networks
@@ -47,7 +47,7 @@ class GenericGenerator(OpenPNM.Utilities.OpenPNMbase):
     and throats execute
     
     >>> import OpenPNM as PNM
-    >>> net=PNM.Geometry.GenericGenerator().generate()
+    >>> net=PNM.Geometry.GenericGeometry().generate()
     
     """
     pore_properties   = {}
@@ -67,7 +67,7 @@ class GenericGenerator(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Initialize
         """
-        super(GenericGenerator,self).__init__(**kwargs)
+        super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
         
         #Set statistical distribution info
@@ -105,7 +105,7 @@ class GenericGenerator(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Generate the pores (numbering, types and coordinates)
         
-        This method is not implemented in the GenericGenerator and must be sub-classed to produce desired network topology        
+        This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology        
         """
         self._logger.error("generate_pores: not implemented")
         
@@ -113,7 +113,7 @@ class GenericGenerator(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Generate the throats (numbering and types)
 
-        This method is not implemented in the GenericGenerator and must be sub-classed to produce desired network topology.
+        This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
         """
         self._logger.error("generate_throats: not implemented")
         
@@ -121,7 +121,7 @@ class GenericGenerator(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Add boundary pores around network (numbering and types)
 
-        This method is not implemented in the GenericGenerator and must be sub-classed to produce desired network topology.
+        This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
         """
         self._logger.error("add_boundaries: not implemented")        
         
@@ -216,7 +216,7 @@ class GenericGenerator(OpenPNM.Utilities.OpenPNMbase):
         #Perform check for unphysical throat lengths
         if np.sum(self._net.throat_properties['length']<0):
             self._logger.warning("calc_throat_lengths: Some negative throat lengths exist, some pores overlap!")
-        self._logger.debug("calc_throat_lengths: End of method")
+        self._logger.debug("calc_throat_lengths: End of method")       
         
     def get_net(self):
         r"""
@@ -225,5 +225,5 @@ class GenericGenerator(OpenPNM.Utilities.OpenPNMbase):
         return self._net
 
 if __name__ == '__main__':
-    test=GenericGenerator(loggername="TestGenerator")        
+    test=GenericGeometry(loggername="TestGenerator")        
 
