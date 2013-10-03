@@ -201,6 +201,27 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         if sprsfmt == 'lil' or sprsfmt == 'all':
             self._incmatrix_lil = self._incmatrix.tolil()
             self._incmatrix._lil = self._incmatrix.tolil()
+            
+    def get_num_pores(self,Ptype=[0,1,2,3,4,5,6]):
+        r"""
+        Returns the number of pores of the specified type
+        
+        Parameters
+        ----------
+
+        Ptype : array_like, optional
+            list of desired pore types to count
+
+        Returns
+        -------
+        Np : int
+            
+        """
+        try:
+            Np = np.sum(np.in1d(self.pore_properties['type'],Ptype))
+        except:
+            Np = 0
+        return Np
 
     def get_num_throats(self,Ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6]):
         r"""
@@ -414,13 +435,17 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             num[i] = sp.size(neighborPs[i])
         return num
 
-    def get_neighbor_pores_props(self,Pnum,flatten=True):
+    def get_neighbor_pores_props(self,Pprop,Pnums,Ptype=[0,1,2,3,4,5,6],flatten=True):
         r"""
-        Nothing yet, but this will return the specified property rather than
-        just the ID numbers
-        
-        TODO: Impliment
+        Return the desired property for the requested pore ID numbers
+
         """
+        neighborPs = self.get_neighbor_pores(Pnums,Ptype,flatten)
+        if flatten:
+            propPs = self.pore_properties[Pprop][neighborPs]
+        else:
+            propPs = self.pore_properties[Pprop][neighborPs]
+        return propPs
         
     def get_neighbor_throat_props(self,Pnums,Ttype=[0,1,2,3,4,5,6],flatten=True):
         r"""
