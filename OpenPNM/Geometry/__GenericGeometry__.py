@@ -216,7 +216,13 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         #Perform check for unphysical throat lengths
         if np.sum(self._net.throat_properties['length']<0):
             self._logger.warning("calc_throat_lengths: Some negative throat lengths exist, some pores overlap!")
-        self._logger.debug("calc_throat_lengths: End of method")       
+        self._logger.debug("calc_throat_lengths: End of method")     
+        
+    def translate_coordinates(net,displacement=[0,0,0]):
+        net.pore_properties['coords'] = net.pore_properties['coords'] + displacement
+        
+    def scale_coordiantes(net,scale=[1,1,1]):
+        net.pore_properties['coords'] = net.pore_properties['coords']*scale 
         
     def get_net(self):
         r"""
