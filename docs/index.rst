@@ -1,11 +1,9 @@
-.. FCSTpython documentation master file, created by
+.. OpenPNM documentation master file, created by
    sphinx-quickstart on Thu Nov 29 11:31:33 2012.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
    
-**************************************
+*******************************************************************************
 OpenPNM: Pore Network Models in Python
-**************************************
+*******************************************************************************
 
 
 
