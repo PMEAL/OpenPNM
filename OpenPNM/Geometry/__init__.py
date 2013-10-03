@@ -28,7 +28,7 @@ Submodules
 Classes
 -------
     
-.. autoclass:: GenericGenerator
+.. autoclass:: GenericGeometry
    :members:
    :undoc-members:
    :show-inheritance:
@@ -53,7 +53,7 @@ Classes
 import scipy as sp
 import numpy as np
 
-from __GenericGenerator__ import GenericGenerator
+from __GenericGeometry__ import GenericGeometry
 from __Cubic__ import Cubic
 from __Delaunay__ import Delaunay
 from __Custom__ import Custom

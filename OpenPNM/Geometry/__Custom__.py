@@ -14,9 +14,9 @@ import scipy.stats as spst
 import scipy.ndimage as spim
 from time import clock
 
-from __GenericGenerator__ import GenericGenerator
+from __GenericGeometry__ import GenericGeometry
 
-class Custom(GenericGenerator):
+class Custom(GenericGeometry):
     r"""
     Cubic - Class to create a basic cubic network
     

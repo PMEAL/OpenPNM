@@ -6,7 +6,7 @@
 #from __future__ import print_function
 
 """
-module __GenericGenerator__: Base class to construct pore networks
+module __GenericGeometry__: Base class to construct pore networks
 ==================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
@@ -18,9 +18,9 @@ import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.stats as spst
-from __GenericGenerator__ import GenericGenerator
+from __GenericGeometry__ import GenericGeometry
 
-class MatFile(GenericGenerator):
+class MatFile(GenericGeometry):
     r"""
     MatFile - constructs a pore network from a perfectly formatted .mat file (MATLAB)
     

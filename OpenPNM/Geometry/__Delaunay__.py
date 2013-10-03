@@ -13,9 +13,9 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 
-from __GenericGenerator__ import GenericGenerator
+from __GenericGeometry__ import GenericGeometry
 
-class Delaunay(GenericGenerator):
+class Delaunay(GenericGeometry):
     r"""
     Delaunay - Class to create a random network based on the Delaunay tessellation
     

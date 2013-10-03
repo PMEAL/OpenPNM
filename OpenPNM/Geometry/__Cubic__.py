@@ -14,9 +14,9 @@ import scipy.stats as spst
 import numexpr as ne
 from time import clock
 
-from __GenericGenerator__ import GenericGenerator
+from __GenericGeometry__ import GenericGeometry
 
-class Cubic(GenericGenerator):
+class Cubic(GenericGeometry):
     r"""
     Cubic - Class to create a basic cubic network
     
