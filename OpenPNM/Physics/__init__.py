@@ -33,4 +33,10 @@ Submodules
     
 """
 
-from CapillaryPressure import *
+from __GenericPhysics__     import GenericPhysics
+from __CapillaryPressure__  import CapillaryPressure
+from __MassTransport__      import MassTransport
+from __HeatConduction__     import HeatConduction
+from __FluidFlow__          import FluidFlow
+from __Multiphase__         import Multiphase
+from __Thermo__             import Thermo
