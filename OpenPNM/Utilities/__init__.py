@@ -2,9 +2,9 @@
 # Copyright (c) 2013, OpenPNM
 # License: TBD.
 r"""
-*************************************************************************
+*******************************************************************************
 :mod:`OpenPNM.Utilities` -- base classes, helpers and all homeless functions
-*************************************************************************
+*******************************************************************************
 
 .. module:: OpenPNM.Utilities 
 
@@ -38,3 +38,4 @@ Classes
 from __OpenPNMbase__ import OpenPNMbase
 from __OpenPNMbase__ import testinheritance
 from __io__ import ImportMat
+from __io__ import SaveNetwork

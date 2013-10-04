@@ -73,6 +73,27 @@ class ImportMat(OpenPNMbase):
         dictionary = self._dictionary
         return dictionary
         
+class SaveNetwork(OpenPNMbase):
+    def __init__(self, **kwargs):
+#        self._logger.debug("Write network to file")
+        print 'init'
+        
+    def tocsv(self,net,path='',filename='network'):
+        #Write pore info        
+        Xp = net.pore_properties['numbering']
+        Xp[0] = 'numbering'
+        for prop in net.pore_properties.keys():
+            if sp.shape(sp.shape(net.pore_properties[prop]))==(1,):
+                Xp = sp.vstack((Xp,net.pore_properties[prop]))
+        if path=='':
+            path = os.path.abspath('')+'\\LocalFiles\\'
+        sp.savetxt(path+'\\'+filename+'_pores'+'.csv',Xp.transpose())
+        #Write throat info
+#        Xt = net.pore_throat['numbering']        
+#        for prop in net.throat_properties.keys():
+#            Xt = sp.vstack((Xt,net.throat_properties[prop]))
+#        sp.savetxt(path+filename+'.csv',Xp)
+        
 if __name__ == '__main__':
     filename = 'example_network'
     path = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles'
