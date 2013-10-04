@@ -45,7 +45,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     again. This seems to have solved the problem, but I am not sure why.
     """
     
-
     def __init__(self,**kwords):
         r'''
         This is the abstract constructor of the basic network class.  
@@ -72,6 +71,9 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         self.incidence_matrix['coo'] = {}
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
+        
+        #Initialize Constants dictionary
+        self.const = {}
         
         self._logger.info("Constructor completed")
 
@@ -233,7 +235,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             Nt = 0
         return Nt
 
-    def get_connected_pores(self,Tnums=[],flatten=True):
+    def get_connected_pores(self,Tnums=[],flatten=False):
         r"""
         Return a list of pores connected to a list of throats
 
