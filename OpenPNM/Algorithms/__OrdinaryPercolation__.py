@@ -100,7 +100,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Fill adjacency matrix with invasion state info
         self._net.create_adjacency_matrix('invaded',sprsfmt='csr',dropzeros=True)
         #This step seems to be very slow!
-        clusters = sprs.csgraph.connected_components(self._net._adjmatrix_csr)[1]
+        clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['invaded'])[1]
         #Clean up (not invaded = -2, invaded >0)
         clusters = (clusters[0:]>=0)*(clusters[0:]+1)
         #Identify clusters connected to invasion sites
