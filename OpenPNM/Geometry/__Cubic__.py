@@ -237,6 +237,19 @@ class Cubic(GenericGeometry):
             
         self._logger.debug("add_opposing_boundaries: End of method")
         
+    def generate_pore_diameters(self):
+        r"""
+        Calculates pore diameter from given statisical distribution using the random seeds provided by generate_pore_seeds()
+        """
+        self._logger.info("generate_pore_diameters: Generate pore diameter from "+self._psd_dist+" distribution")
+        prob_fn = getattr(spst,self._psd_dist)
+        P = prob_fn(self._psd_shape,loc=self._psd_loc,scale=self._psd_scale)
+        self._net.pore_properties['diameter'] = P.ppf(self._net.pore_properties['seed'])
+        #Set boundadry pores to size 0
+        self._net.pore_properties['diameter'][self._net.pore_properties['type']>0] = 0
+        mask = self._net.pore_properties['diameter']>=self._Lc
+        self._net.pore_properties['diameter'][mask] = self._Lc*0.99
+        self._logger.debug("generate_pore_diameters: End of method")
         
 if __name__ == '__main__':
     test=Cubic(lattice_spacing=1.0,domain_size=[3,3,3],loggername='TestCubic')
