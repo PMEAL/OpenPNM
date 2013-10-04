@@ -195,18 +195,6 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._logger.info("calc_throat_lengths: Determine throat length from distance between pores")
         #Initialize throat_property['length']
         self._net.throat_properties['length'] = np.zeros_like(self._net.throat_properties['type'])
-        #Find length of throats
-        Lx = 0.001
-        Ly = 0.001
-        Lz = 0.0004
-        poffset = np.array([[ 0.,  0.,  0.],
-                            [ 0.,  0.,  Lz],
-                            [ Lx,  0.,  0.],
-                            [ 0.,  Ly,  0.],
-                            [ 0., -Ly,  0.],
-                            [-Lx,  0.,  0.],
-                            [ 0.,  0., -Lz]])
-        T1 = self._net.throat_properties['type']
         C1 = self._net.pore_properties['coords'][self._net.throat_properties['connections'][:,0]]
         C2 = self._net.pore_properties['coords'][self._net.throat_properties['connections'][:,1]]
         E = np.sqrt(np.sum((C1-C2)**2,axis=1))  #Euclidean distance between pores
@@ -218,10 +206,10 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             self._logger.warning("calc_throat_lengths: Some negative throat lengths exist, some pores overlap!")
         self._logger.debug("calc_throat_lengths: End of method")     
         
-    def translate_coordinates(net,displacement=[0,0,0]):
+    def translate_coordinates(self,net,displacement=[0,0,0]):
         net.pore_properties['coords'] = net.pore_properties['coords'] + displacement
         
-    def scale_coordinates(net,scale=[1,1,1]):
+    def scale_coordinates(self,net,scale=[1,1,1]):
         net.pore_properties['coords'] = net.pore_properties['coords']*scale 
         
     def get_net(self):
