@@ -51,12 +51,18 @@ class Delaunay(GenericGeometry):
         """
         super(Delaunay,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
-        self.domain_size = kwargs['domain_size']
-        self.num_pores = kwargs['num_pores']
         #Instantiate the network
-        self._net=OpenPNM.Network.GenericNetwork(num_pores=self.num_pores)
+        self._net=OpenPNM.Network.GenericNetwork()
+
+    def _generate_setup(self, **params):
+        r"""
+        Perform applicable preliminary checks and calculations required for generation
+        """
+        self._logger.debug("generate_setup: Perform preliminary calculations")
+        self.domain_size = params['domain_size']
+        self.num_pores = params['num_pores']
     
-    def generate_pores(self):
+    def _generate_pores(self):
         r"""
         Generate the pores with numbering scheme.
         """
@@ -70,7 +76,7 @@ class Delaunay(GenericGeometry):
         self._net.pore_properties['type']= np.zeros((Np,))
         self._logger.debug("generate_pores: End of method")
         
-    def generate_throats(self):
+    def _generate_throats(self):
         r"""
         Generate the throats (connections, numbering and types)
         """
@@ -105,7 +111,7 @@ class Delaunay(GenericGeometry):
         self._net.throat_properties['numbering'] = np.arange(0,np.size(adjmat.row))
         self._logger.debug("generate_throats: End of method")
         
-    def add_boundaries(self):
+    def _add_boundaries(self):
         r"""
         This is an alternative means of adding boundaries
         """
@@ -173,14 +179,14 @@ class Delaunay(GenericGeometry):
         self._net.throat_properties['numbering'] = np.r_[0:np.size(self._net.throat_properties['type'])]
         self._logger.debug("add_boundaries: end of method")
     
-    def add_boundaries_old(self):
+    def _add_boundaries_old(self):
         self._logger.info("add_boundaries_old: Start of method")
         
         self.add_opposing_boundaries(btype=[2,5])
         self.add_opposing_boundaries(btype=[3,4])
         self.add_opposing_boundaries(btype=[1,6])    
         
-    def add_opposing_boundaries(self,btype=[1,6]):
+    def _add_opposing_boundaries(self,btype=[1,6]):
         r"""
         btype indicates which two boundaries are being added by type
         """

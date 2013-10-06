@@ -47,27 +47,36 @@ class Template(GenericGeometry):
         - Check for correct divisions
     """
     
-    def __init__(self,  **kwargs):
+    def __init__(self, **kwargs):
 
         super(Template,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
         self._logger.info("Import template containing custom network shape")
+        r"""
+        Perform applicable preliminary checks and calculations required for generation
+        """
+        self._logger.debug("generate_setup: Perform preliminary calculations")        
+
+        #Instantiate object
+        self._net=OpenPNM.Network.GenericNetwork()   
+    
+    def _generate_setup(self, **params):
+        r"""
         
-        self._template = kwargs['template']
-        self._Lc = kwargs['lattice_spacing']
+        """
+        self._template = params['template']
+        self._Lc = params['lattice_spacing']
         if np.ndim(self._template)==3:
             [self._Nx, self._Ny, self._Nz] = np.shape(self._template)
         else:
             [self._Nx, self._Ny] = np.shape(self._template)
             self._Nz = 1
         
-        #Instantiate object
-        self._net=OpenPNM.Network.GenericNetwork()
-    
-    def generate_pores(self):
+    def _generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
         """
+        
         self._logger.info("generate_pores: Create specified number of pores")
         Lc = self._Lc
         
@@ -86,7 +95,7 @@ class Template(GenericGeometry):
         
         self._logger.debug("generate_pores: End of method")
         
-    def generate_throats(self):
+    def _generate_throats(self):
         r"""
         Generate the throats (connections, numbering and types)
         """
@@ -120,12 +129,6 @@ class Template(GenericGeometry):
         self._net.throat_properties['type'] = np.zeros(np.sum(tind))
         self._net.throat_properties['numbering'] = np.arange(0,np.sum(tind))
         self._logger.debug("generate_throats: End of method")
-#        
-#    def generate_pore_seed(self,img1):
-#        generate_pore_prop(im_seed,'seed')
-#        
-#    def generate_pore_diameter(self,img2):
-#        generate_pore_prop(img,'diameter')
     def add_boundares(self):
         r"""
         TO DO: Impliment some sort of boundary pore finding
