@@ -36,50 +36,49 @@ class Cubic(GenericGeometry):
 
     """
     
-    def __init__(self,  domain_size = [1,1,1],
-                        divisions = [10,10,10],
-                        lattice_spacing = [],
-                        **kwargs
-                      ):
+    def __init__(self, **kwargs):
         super(Cubic,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
-        self._logger.info("Find network dimensions")
+        
+        #Instantiate pore network object
+        self._net=OpenPNM.Network.GenericNetwork()
+
+    def _generate_setup(self, **params):
+        r"""
+        Perform applicable preliminary checks and calculations required for generation
+        """
+        self._logger.debug("generate_setup: Perform preliminary calculations")
         #Parse the given network size variables
-        if domain_size and lattice_spacing and not divisions:
-            self._Lc = lattice_spacing
-            self._Nx = int(domain_size[0]/self._Lc)
-            self._Ny = int(domain_size[1]/self._Lc)
-            self._Nz = int(domain_size[2]/self._Lc)
-            self._Lx = domain_size[0]
-            self._Ly = domain_size[1]
-            self._Lz = domain_size[2]
-        elif divisions and lattice_spacing and not domain_size:
-            self._Lc = lattice_spacing
-            self._Nx = divisions[0]
-            self._Ny = divisions[1]
-            self._Nz = divisions[2]
+        self._logger.info("Find network dimensions")
+        if params['domain_size'] and params['lattice_spacing'] and not params['divisions']:
+            self._Lc = params['lattice_spacing']
+            self._Nx = int(params['domain_size'][0]/self._Lc)
+            self._Ny = int(params['domain_size'][1]/self._Lc)
+            self._Nz = int(params['domain_size'][2]/self._Lc)
+            self._Lx = params['domain_size'][0]
+            self._Ly = params['domain_size'][1]
+            self._Lz = params['domain_size'][2]
+        elif params['divisions'] and params['lattice_spacing'] and not params['domain_size']:
+            self._Lc = params['lattice_spacing']
+            self._Nx = params['divisions'][0]
+            self._Ny = params['divisions'][1]
+            self._Nz = params['divisions'][2]
             self._Lx = self._Nx*self._Lc
             self._Ly = self._Ny*self._Lc
             self._Lz = self._Nz*self._Lc
-        elif domain_size and divisions and not lattice_spacing:
-            self._Lc = np.min(np.array(domain_size)/np.array(divisions))
-            self._Nx = divisions[0]
-            self._Ny = divisions[1]
-            self._Nz = divisions[2]
+        elif params['domain_size'] and params['divisions'] and not params['lattice_spacing']:
+            self._Lc = np.min(np.array(params['domain_size'])/np.array(params['divisions']))
+            self._Nx = params['divisions'][0]
+            self._Ny = params['divisions'][1]
+            self._Nz = params['divisions'][2]
             self._Lx = self._Nx*self._Lc
             self._Ly = self._Ny*self._Lc
             self._Lz = self._Nz*self._Lc
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('error')
-
-        Np = self._Nx*self._Ny*self._Nz
-        Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
-        
-        #Instantiate object(correct terminology?)
-        self._net=OpenPNM.Network.GenericNetwork(num_pores=Np, num_throats=Nt)
     
-    def generate_pores(self):
+    def _generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
         """
@@ -97,7 +96,7 @@ class Cubic(GenericGeometry):
         
         self._logger.debug("generate_pores: End of method")
         
-    def generate_throats(self):
+    def _generate_throats(self):
         r"""
         Generate the throats (connections, numbering and types)
         """
@@ -125,7 +124,10 @@ class Cubic(GenericGeometry):
         self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
         self._logger.debug("generate_throats: End of method")
         
-    def add_boundaries(self):
+    def _add_boundaries(self):
+        r"""
+        Add boundaries to network 
+        """
         self._logger.debug("add_boundaries: Start of method")
         #Remove all items pertaining to previously defined boundaries (if any)
         Np = self._net.get_num_pores([0])
@@ -184,7 +186,10 @@ class Cubic(GenericGeometry):
         
         self._logger.debug("add_boundaries: End of method")
         
-    def add_opposing_boundaries(self,face,periodic=0):
+    def _add_opposing_boundaries(self,face,periodic=0):
+        r"""
+        Add boundaries by adding opposing faces, one pair at a time.
+        """
         self._logger.debug("add_opposing_boundaries: Start of method")
         
         Nx = self._Nx
@@ -237,19 +242,6 @@ class Cubic(GenericGeometry):
             
         self._logger.debug("add_opposing_boundaries: End of method")
         
-    def generate_pore_diameters(self):
-        r"""
-        Calculates pore diameter from given statisical distribution using the random seeds provided by generate_pore_seeds()
-        """
-        self._logger.info("generate_pore_diameters: Generate pore diameter from "+self._psd_dist+" distribution")
-        prob_fn = getattr(spst,self._psd_dist)
-        P = prob_fn(self._psd_shape,loc=self._psd_loc,scale=self._psd_scale)
-        self._net.pore_properties['diameter'] = P.ppf(self._net.pore_properties['seed'])
-        #Set boundadry pores to size 0
-        self._net.pore_properties['diameter'][self._net.pore_properties['type']>0] = 0
-        mask = self._net.pore_properties['diameter']>=self._Lc
-        self._net.pore_properties['diameter'][mask] = self._Lc*0.99
-        self._logger.debug("generate_pore_diameters: End of method")
         
 if __name__ == '__main__':
     test=Cubic(lattice_spacing=1.0,domain_size=[3,3,3],loggername='TestCubic')
