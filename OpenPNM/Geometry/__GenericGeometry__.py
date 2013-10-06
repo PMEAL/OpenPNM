@@ -33,7 +33,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         
     """
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         
         r"""
         Initialize
@@ -141,7 +141,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._net.pore_properties['diameter'][self._net.pore_properties['type']>0] = 0
         self._logger.debug("generate_pore_diameters: End of method")
 
-    def __generate_throat_diameters(self,tsd_info):
+    def _generate_throat_diameters(self,tsd_info):
         r"""
         
         Notes
@@ -154,7 +154,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._net.throat_properties['diameter'] = P.ppf(self._net.throat_properties['seed'])
         self._logger.debug("generate_throat_diameters: End of method")
         
-    def calc_pore_volumes(self):
+    def _calc_pore_volumes(self):
         r"""
         Calculates pore volume from diameter assuming a spherical pore
         """
