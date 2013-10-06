@@ -18,7 +18,7 @@ from __GenericGeometry__ import GenericGeometry
 
 class Template(GenericGeometry):
     r"""
-    Cubic - Class to create a basic cubic network
+    Template - Class to create a basic cubic network
     
     Parameters
     ----------
@@ -60,8 +60,11 @@ class Template(GenericGeometry):
         self._Lc = lattice_spacing
         if np.ndim(image_shape)==3:
             [self._Nx, self._Ny, self._Nz] = np.shape(image_shape)
+        self._template = params['template']
+        if np.ndim(params['template'])==3:
+            [self._Nx, self._Ny, self._Nz] = np.shape(params['template'])
         else:
-            [self._Nx, self._Ny] = np.shape(image_shape)
+            [self._Nx, self._Ny] = np.shape(params['template'])
             self._Nz = 1
         Np = self._Nx*self._Ny*self._Nz
         Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
@@ -77,7 +80,7 @@ class Template(GenericGeometry):
         Lc = self._Lc
         
         #Find non-zero elements in image
-        img = self._net_img
+        img = self._template
         Np = np.sum(img)
         img_ind = np.ravel_multi_index(np.nonzero(img), dims=np.shape(img), order='F')
         
@@ -97,7 +100,7 @@ class Template(GenericGeometry):
         """
         self._logger.info("generate_throats: Define connections between pores")
         
-        img = self._net_img
+        img = self._template
         [Nx, Ny, Nz] = [self._Nx, self._Ny, self._Nz]
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
@@ -142,16 +145,16 @@ class Template(GenericGeometry):
         if prop_name not in self._net.pore_properties.keys():
             self._net.pore_properties[prop_name] = np.zeros(self._net.get_num_pores(),dtype=img.dtype)
             
-        img_crd = np.nonzero(img) #Find image locations to add
-        img_ind = np.ravel_multi_index(img_crd, dims=np.shape(img), order='F')
+        img_coord = np.nonzero(img) #Find image locations to add
+        img_ind = np.ravel_multi_index(img_coord, dims=np.shape(img), order='F')
         vox_map = self._voxel_to_pore_map[img_ind] #Find pore number mapping
-        self._net.pore_properties[prop_name][vox_map] = np.array(img[img_crd],dtype=img.dtype)
+        self._net.pore_properties[prop_name][vox_map] = np.array(img[img_coord],dtype=img.dtype)
         
         self._logger.debug("add_pore_prop_from_img: End of method")
         
         
 if __name__ == '__main__':
-    test=Custom(loggername='TestComplexCubic')
+    test=Template(loggername='TestTemplate')
     test.generate()
     
     
