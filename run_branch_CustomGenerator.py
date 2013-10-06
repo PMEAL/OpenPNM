@@ -12,7 +12,7 @@ from time import clock
 
 import scipy.ndimage as spim
 img = spim.imread('C:\Users\jeff\Dropbox\Flash Sync\Code\Git\OpenPNM\snippets\CL.jpg')
-img = img[:,:,0]<30
+img = img[0:100,0:100,0]<30
 
 params = {
 #'domain_size': [0.001,0.001,0.0004],  #physical network size [meters]
@@ -20,7 +20,7 @@ params = {
 'lattice_spacing': 1,  #spacing between pores [meters]
 #'num_pores': 1000, #This is used for random networks where spacing is irrelevant
 'btype': [1,1,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
-'image_domain': img,
+'template': img,
 #The following parameters are for the statistical functions used to generate
 #pore and throat size distributions.  See scipy.stats for options and parameters.
 'psd_dist': 'weibull_min',  #distribution to be used
@@ -34,7 +34,7 @@ params = {
 }
 
 start=clock()
-pn = OpenPNM.Geometry.Custom(loglevel=10,**params).generate()
+pn = OpenPNM.Geometry.Template(loglevel=10,**params).generate()
 
 #pn.throat_properties['Pc_entry'] = -4*0.072*np.cos(np.radians(105))/pn.throat_properties['diameter']  #This should be set somewhere else
 #inlets = [0]
