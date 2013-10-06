@@ -12,8 +12,8 @@ from time import clock
 
 params = {
 'domain_size'       : [0.001,0.001,0.0004],  #physical network size [meters]
-'divisions'         : [10,10,10], #Number of pores in each direction
-'lattice_spacing'   : [],  #spacing between pores [meters]
+'divisions'         : [], #Number of pores in each direction
+'lattice_spacing'   : [.0001],  #spacing between pores [meters]
 'num_pores'         : 1000, #This is used for random networks where spacing is irrelevant
 'psd_info'          : {'name'  : 'weibull_min',
                        'shape' : 1.5,
@@ -27,7 +27,7 @@ params = {
 }
 
 start=clock()
-pn = OpenPNM.Geometry.Delaunay().generate(**params)
+pn = OpenPNM.Geometry.Cubic().generate(**params)
 
 #pn = OpenPNM.Geometry.Delaunay(loglevel=10,**params).generate()
 

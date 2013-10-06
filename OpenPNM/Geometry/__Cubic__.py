@@ -43,34 +43,37 @@ class Cubic(GenericGeometry):
         #Instantiate pore network object
         self._net=OpenPNM.Network.GenericNetwork()
 
-    def _generate_setup(self, **params):
+    def _generate_setup(self,   domain_size = [],
+                                divisions = [3,3,3],
+                                lattice_spacing = [1],
+                                **params):
         r"""
         Perform applicable preliminary checks and calculations required for generation
         """
         self._logger.debug("generate_setup: Perform preliminary calculations")
         #Parse the given network size variables
         self._logger.info("Find network dimensions")
-        if params['domain_size'] and params['lattice_spacing'] and not params['divisions']:
-            self._Lc = params['lattice_spacing']
-            self._Nx = int(params['domain_size'][0]/self._Lc)
-            self._Ny = int(params['domain_size'][1]/self._Lc)
-            self._Nz = int(params['domain_size'][2]/self._Lc)
-            self._Lx = params['domain_size'][0]
-            self._Ly = params['domain_size'][1]
-            self._Lz = params['domain_size'][2]
-        elif params['divisions'] and params['lattice_spacing'] and not params['domain_size']:
-            self._Lc = params['lattice_spacing']
-            self._Nx = params['divisions'][0]
-            self._Ny = params['divisions'][1]
-            self._Nz = params['divisions'][2]
+        if domain_size and lattice_spacing and not divisions:
+            self._Lc = lattice_spacing[0]
+            self._Lx = domain_size[0]
+            self._Ly = domain_size[1]
+            self._Lz = domain_size[2]
+            self._Nx = int(self._Lx/self._Lc)
+            self._Ny = int(self._Ly/self._Lc)
+            self._Nz = int(self._Lz/self._Lc)
+        elif divisions and lattice_spacing and not domain_size:
+            self._Lc = lattice_spacing[0]
+            self._Nx = divisions[0]
+            self._Ny = divisions[1]
+            self._Nz = divisions[2]
             self._Lx = self._Nx*self._Lc
             self._Ly = self._Ny*self._Lc
             self._Lz = self._Nz*self._Lc
-        elif params['domain_size'] and params['divisions'] and not params['lattice_spacing']:
-            self._Lc = np.min(np.array(params['domain_size'])/np.array(params['divisions']))
-            self._Nx = params['divisions'][0]
-            self._Ny = params['divisions'][1]
-            self._Nz = params['divisions'][2]
+        elif domain_size and divisions and not lattice_spacing:
+            self._Lc = np.min(np.array(domain_size)/np.array(divisions))
+            self._Nx = divisions[0]
+            self._Ny = divisions[1]
+            self._Nz = divisions[2]
             self._Lx = self._Nx*self._Lc
             self._Ly = self._Ny*self._Lc
             self._Lz = self._Nz*self._Lc
