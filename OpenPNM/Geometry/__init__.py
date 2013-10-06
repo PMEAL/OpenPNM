@@ -55,6 +55,7 @@ import numpy as np
 
 from __GenericGeometry__ import GenericGeometry
 from __Cubic__ import Cubic
+from __Cubic2__ import Cubic2
 from __Delaunay__ import Delaunay
 from __Template__ import Template
 from __Import__ import MatFile
