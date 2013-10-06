@@ -1,8 +1,8 @@
 """
-module __Cubic__: Generate simple cubic networks
+module __Template__: Generate cubic networks from domain templates
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Geometry/__init__.py' file.
 
 """
 
@@ -16,7 +16,7 @@ from time import clock
 
 from __GenericGeometry__ import GenericGeometry
 
-class Custom(GenericGeometry):
+class Template(GenericGeometry):
     r"""
     Cubic - Class to create a basic cubic network
     
@@ -151,7 +151,7 @@ class Custom(GenericGeometry):
         
         
 if __name__ == '__main__':
-    test=Custom(loggername='TestCustom')
+    test=Custom(loggername='TestComplexCubic')
     test.generate()
     
     
