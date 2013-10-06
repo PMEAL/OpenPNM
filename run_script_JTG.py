@@ -18,7 +18,7 @@ params = {
 'psd_info'          : {'name'  : 'weibull_min',
                        'shape' : 1.5,
                        'loc'   : 6e-6,
-                       'scale' : 2e-5}, 
+                       'scale' : 2e-5},
 'tsd_info'          : {'name'  : 'weibull_min',
                        'shape' : 1.5,
                        'loc'   : 6e-6,
@@ -27,14 +27,14 @@ params = {
 }
 
 start=clock()
-pn = OpenPNM.Geometry.Cubic(loglevel=10).generate(**params)
+pn = OpenPNM.Geometry.Delaunay().generate(**params)
 
 #pn = OpenPNM.Geometry.Delaunay(loglevel=10,**params).generate()
 
 pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure().Washburn(pn,0.072,110)
 inlets = [0]
 #exp1 = OpenPNM.Algorithms.InvasionPercolation(pn, loglevel=10, npts=100, inlets=inlets, outlets=outlets).run()
-exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, loglevel=50, npts=50, inv_sites=inlets).run()
+exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, npts=50, inv_sites=inlets).run()
 pn.update()
 
 #Write network to vtk file for visualization in Paraview
