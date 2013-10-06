@@ -47,30 +47,22 @@ class Template(GenericGeometry):
         - Check for correct divisions
     """
     
-    def __init__(self,  image_domain = [],
-                        image_diameter = [],
-                        lattice_spacing = [],
-                        **kwargs):
+    def __init__(self,  **kwargs):
 
-        super(Custom,self).__init__(**kwargs)
+        super(Template,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
-        self._logger.info("Import image containing custom network shape")
+        self._logger.info("Import template containing custom network shape")
         
-        self._net_img = image_domain
-        self._Lc = lattice_spacing
-        if np.ndim(image_domain)==3:
-            [self._Nx, self._Ny, self._Nz] = np.shape(image_domain)
-        self._template = params['template']
-        if np.ndim(params['template'])==3:
-            [self._Nx, self._Ny, self._Nz] = np.shape(params['template'])
+        self._template = kwargs['template']
+        self._Lc = kwargs['lattice_spacing']
+        if np.ndim(self._template)==3:
+            [self._Nx, self._Ny, self._Nz] = np.shape(self._template)
         else:
-            [self._Nx, self._Ny] = np.shape(params['template'])
+            [self._Nx, self._Ny] = np.shape(self._template)
             self._Nz = 1
-        Np = self._Nx*self._Ny*self._Nz
-        Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
         
         #Instantiate object
-        self._net=OpenPNM.Network.GenericNetwork(num_pores=Np, num_throats=Nt)
+        self._net=OpenPNM.Network.GenericNetwork()
     
     def generate_pores(self):
         r"""
@@ -140,7 +132,7 @@ class Template(GenericGeometry):
         """
         self._logger.debug("add_boundaries: Nothing yet")
         
-    def generate_pore_property_from_image(self,img,prop_name):
+    def add_pore_property_from_template(self,template,prop_name):
         r"""
         Add pore properties based on image location and value
         """
@@ -148,12 +140,12 @@ class Template(GenericGeometry):
         
         
         if prop_name not in self._net.pore_properties.keys():
-            self._net.pore_properties[prop_name] = np.zeros(self._net.get_num_pores(),dtype=img.dtype)
+            self._net.pore_properties[prop_name] = np.zeros(self._net.get_num_pores(),dtype=template.dtype)
             
-        img_coord = np.nonzero(img) #Find image locations to add
-        img_ind = np.ravel_multi_index(img_coord, dims=np.shape(img), order='F')
-        vox_map = self._voxel_to_pore_map[img_ind] #Find pore number mapping
-        self._net.pore_properties[prop_name][vox_map] = np.array(img[img_coord],dtype=img.dtype)
+        coord = np.nonzero(template) #Find locations to add
+        ind = np.ravel_multi_index(coord, dims=np.shape(template), order='F')
+        vox_map = self._voxel_to_pore_map[ind] #Find pore number mapping
+        self._net.pore_properties[prop_name][vox_map] = np.array(template[coord],dtype=template.dtype)
         
         self._logger.debug("add_pore_prop_from_img: End of method")
         
