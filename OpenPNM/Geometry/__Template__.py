@@ -47,7 +47,7 @@ class Template(GenericGeometry):
         - Check for correct divisions
     """
     
-    def __init__(self,  image_shape = [],
+    def __init__(self,  image_domain = [],
                         image_diameter = [],
                         lattice_spacing = [],
                         **kwargs):
@@ -56,10 +56,10 @@ class Template(GenericGeometry):
         self._logger.debug("Execute constructor")
         self._logger.info("Import image containing custom network shape")
         
-        self._net_img = image_shape
+        self._net_img = image_domain
         self._Lc = lattice_spacing
-        if np.ndim(image_shape)==3:
-            [self._Nx, self._Ny, self._Nz] = np.shape(image_shape)
+        if np.ndim(image_domain)==3:
+            [self._Nx, self._Ny, self._Nz] = np.shape(image_domain)
         self._template = params['template']
         if np.ndim(params['template'])==3:
             [self._Nx, self._Ny, self._Nz] = np.shape(params['template'])
@@ -134,6 +134,11 @@ class Template(GenericGeometry):
 #        
 #    def generate_pore_diameter(self,img2):
 #        generate_pore_prop(img,'diameter')
+    def add_boundares(self):
+        r"""
+        TO DO: Impliment some sort of boundary pore finding
+        """
+        self._logger.debug("add_boundaries: Nothing yet")
         
     def generate_pore_property_from_image(self,img,prop_name):
         r"""
