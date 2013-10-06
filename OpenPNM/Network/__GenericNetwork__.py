@@ -36,13 +36,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
     
-    
-    I have included the class attributes on the same level as
-    the devs. This had a weird side effect:
-      * The first class instance works fine
-      * the second takes the same size as the first.
-    I have corrected this by initializing the everyting in the constructor
-    again. This seems to have solved the problem, but I am not sure why.
     """
     
     def __init__(self,**kwords):
