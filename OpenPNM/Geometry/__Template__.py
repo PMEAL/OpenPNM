@@ -47,29 +47,29 @@ class Template(GenericGeometry):
         - Check for correct divisions
     """
     
-    def __init__(self,  image_shape = [],
-                        image_diameter = [],
-                        lattice_spacing = [],
-                        **kwargs):
+    def __init__(self, **kwargs):
 
-        super(Custom,self).__init__(**kwargs)
+        super(Template,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
         self._logger.info("Import image containing custom network shape")
         
-        self._net_img = image_shape
-        self._Lc = lattice_spacing
-        if np.ndim(image_shape)==3:
-            [self._Nx, self._Ny, self._Nz] = np.shape(image_shape)
-        else:
-            [self._Nx, self._Ny] = np.shape(image_shape)
-            self._Nz = 1
-        Np = self._Nx*self._Ny*self._Nz
-        Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
-        
         #Instantiate object
-        self._net=OpenPNM.Network.GenericNetwork(num_pores=Np, num_throats=Nt)
+        self._net=OpenPNM.Network.GenericNetwork()
+
+    def _generate_setup(self, **params):
+        r"""
+        Perform applicable preliminary checks and calculations required for generation
+        """
+        self._logger.debug("generate_setup: Perform preliminary calculations")
+        self._net_img = params['image_shape']
+        self._Lc = params['lattice_spacing']
+        if np.ndim(params['image_shape'])==3:
+            [self._Nx, self._Ny, self._Nz] = np.shape(params['image_shape'])
+        else:
+            [self._Nx, self._Ny] = np.shape(params['image_shape'])
+            self._Nz = 1
     
-    def generate_pores(self):
+    def _generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
         """
@@ -91,7 +91,7 @@ class Template(GenericGeometry):
         
         self._logger.debug("generate_pores: End of method")
         
-    def generate_throats(self):
+    def _generate_throats(self):
         r"""
         Generate the throats (connections, numbering and types)
         """
@@ -125,14 +125,8 @@ class Template(GenericGeometry):
         self._net.throat_properties['type'] = np.zeros(np.sum(tind))
         self._net.throat_properties['numbering'] = np.arange(0,np.sum(tind))
         self._logger.debug("generate_throats: End of method")
-#        
-#    def generate_pore_seed(self,img1):
-#        generate_pore_prop(im_seed,'seed')
-#        
-#    def generate_pore_diameter(self,img2):
-#        generate_pore_prop(img,'diameter')
         
-    def generate_pore_property_from_image(self,img,prop_name):
+    def add_pore_property_from_image(self,img,prop_name):
         r"""
         Add pore properties based on image location and value
         """

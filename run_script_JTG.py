@@ -11,30 +11,30 @@ import matplotlib.pyplot as plt
 from time import clock
 
 params = {
-'domain_size'        : [0.001,0.001,0.0004],  #physical network size [meters]
-'divisions'          : [10,10,10], #Number of pores in each direction
-'lattice_spacing'    : [],  #spacing between pores [meters]
-'num_pores'          : 1000, #This is used for random networks where spacing is irrelevant
-'btype'              : [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
-'psd_info' : {'name' : 'weibull_min',
-              'shape': 1.5,
-              'loc'  : 6e-6,
-              'scale': 2e-5}, 
-'tsd_info' : {'name' : 'weibull_min',
-              'shape': 1.5,
-              'loc'  : 6e-6,
-              'scale': 2e-5},
+'domain_size'       : [0.001,0.001,0.0004],  #physical network size [meters]
+'divisions'         : [10,10,10], #Number of pores in each direction
+'lattice_spacing'   : [],  #spacing between pores [meters]
+'num_pores'         : 1000, #This is used for random networks where spacing is irrelevant
+'psd_info'          : {'name'  : 'weibull_min',
+                       'shape' : 1.5,
+                       'loc'   : 6e-6,
+                       'scale' : 2e-5}, 
+'tsd_info'          : {'name'  : 'weibull_min',
+                       'shape' : 1.5,
+                       'loc'   : 6e-6,
+                       'scale' : 2e-5},
+'btype'             : [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 }
 
 start=clock()
-pn = OpenPNM.Geometry.Cubic2().generate(**params)
+pn = OpenPNM.Geometry.Cubic(loglevel=10).generate(**params)
 
 #pn = OpenPNM.Geometry.Delaunay(loglevel=10,**params).generate()
 
 pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure().Washburn(pn,0.072,110)
 inlets = [0]
 #exp1 = OpenPNM.Algorithms.InvasionPercolation(pn, loglevel=10, npts=100, inlets=inlets, outlets=outlets).run()
-exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, loglevel=10, npts=50, inv_sites=inlets).run()
+exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, loglevel=50, npts=50, inv_sites=inlets).run()
 pn.update()
 
 #Write network to vtk file for visualization in Paraview
