@@ -11,7 +11,7 @@ Contents:
    
    getting_started.rst
    data_storage.rst
-   generators.rst
+   geometry.rst
    physics.rst
    algorithms.rst
    visualization.rst

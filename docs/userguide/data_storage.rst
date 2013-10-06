@@ -59,7 +59,7 @@ OpenPNM uses implied pore and throat numbering, meanin that the property for por
 
 To examine the properties of a network, start by generating a small network of 3-by-3-by-3 as follows:
 
-.. code-block:: Python
+.. code-block:: python
    import OpenPNM
    pn = OpenPNM.Geometry.Cubic(divisions=[3,3,3]).generate()
 
@@ -69,7 +69,7 @@ This creates a cubic network with 27 pores and 54 throats.  A quick summary of t
 
 The following output will be produced:
 
-.. code-block:: Python
+.. code-block:: python
 
     ==================================================
     Overview of network properties
