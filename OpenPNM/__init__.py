@@ -38,7 +38,7 @@ Subpackages
      - Module containing all algorithmic classes for networks.
    * - :mod:`OpenPNM.Physics`
      - Module containing pore scale physics models and equations.
-   * - :mod:`OpenPNM.sisualization`
+   * - :mod:`OpenPNM.Visualization`
      - Module for performing vtk-based post-processing routines.
 
 
@@ -67,7 +67,6 @@ Package Documentation
    :members:
    :undoc-members:
    :show-inheritance:
-
       
 .. automodule:: Network
    :members:
@@ -85,6 +84,11 @@ Package Documentation
    :show-inheritance:
 
 .. automodule:: Physics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: Visualization
    :members:
    :undoc-members:
    :show-inheritance:

@@ -7,50 +7,36 @@ r"""
 
 Contents
 --------
-The OpenPNM package imports all the functions from the top level modules. 
-
-.. note::
-    n/a
- 
-Import
-------
->>> import OpenPNM as PNM
->>> tmp=PNM.Geometry.GenericGeometry()
 
 
-Submodules
-----------
-::
-
- None                            --- No subpackages at the moment
- 
 Classes
 -------
     
 .. autoclass:: GenericGeometry
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
        
 .. autoclass:: Cubic
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
 
 .. autoclass:: Delaunay
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
    
 .. autoclass:: Template
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
    
 """
-
-import scipy as sp
-import numpy as np
 
 from __GenericGeometry__ import GenericGeometry
 from __Cubic__ import Cubic

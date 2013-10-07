@@ -62,7 +62,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'OpenPNM'
-copyright = u'2013, McGill, UofA, AFCC'
+copyright = u'2013, McGill, AFCC'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

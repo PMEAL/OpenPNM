@@ -19,7 +19,7 @@ import scipy as sp
 
 class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
     r"""
-    Methods in this class are used to determine the capillary entry pressure of throats from their geometric properties.  
+    Methods in this class are used to determine the capillary entry pressure of throats from their geometric and material properties.  
     """
     
     def __init__(self, **kwargs):
@@ -27,7 +27,7 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
         
     def Washburn(self,network,sigma,theta):
         r"""
-        Computers the throat capillary entry pressure assuming the throat is a cylindrical tube.
+        Computes the capillary entry pressure assuming the throat is a cylindrical tube.
         
         Parameters
         ----------
@@ -48,7 +48,7 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
         
     def Purcell(self,network,sigma,theta,r_toroid):
         r"""
-        Computers the throat capillary entry pressure assuming the throat is a toroid.
+        Computes the throat capillary entry pressure assuming the throat is a toroid.
         
         Parameters
         ----------
@@ -102,6 +102,6 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
             
         Notes
         -----
-        Morrow and Mason compared the Purcell toroid to experimental data on various sized monodisperse PTFE beads.  They found that data could be approximated decently by simply scaling the contact angle measured through the wetting phase by 2/3.  
+        Mason and Morrow compared the Purcell toroid to experimental data on various sized monodisperse PTFE beads.  They found that data could be approximated decently by simply scaling the contact angle measured through the wetting phase by 2/3.  
         """
         return -4*sigma*sp.cos(sp.radians(2/3*(180-theta)))/network.throat_properties['diameter']
