@@ -6,10 +6,10 @@
 #from __future__ import print_function
 
 """
-module __GenericGenerator__: Base class to construct pore networks
+module __GenericGeometry__: Base class to construct pore networks
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 
@@ -18,9 +18,9 @@ import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.stats as spst
-from __GenericGenerator__ import GenericGenerator
+from __GenericGeometry__ import GenericGeometry
 
-class MatFile(GenericGenerator):
+class MatFile(GenericGeometry):
     r"""
     MatFile - constructs a pore network from a perfectly formatted .mat file (MATLAB)
     
@@ -50,7 +50,7 @@ class MatFile(GenericGenerator):
     To import the example_network.mat file in your LocalFiles folder
     
     >>> import OpenPNM as PNM
-    >>> net=PNM.Generators.MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles').generate()
+    >>> net=PNM.Geometry.MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles').generate()
     
     """
     def __init__(self, filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles', **kwargs):
@@ -59,7 +59,7 @@ class MatFile(GenericGenerator):
         Initialize
         """
         super(MatFile,self).__init__(**kwargs)
-        self._mat=OpenPNM.IO.ImportMat(filename=filename,path=path)
+        self._mat=OpenPNM.Utilities.ImportMat(filename=filename,path=path)
         self._Np=np.size(self._mat.getvar('pnumbering'))
         self._Nt=np.size(self._mat.getvar('tnumbering'))
         self._net=OpenPNM.Network.GenericNetwork(num_pores=self._Np, num_throats=self._Nt)
@@ -121,4 +121,4 @@ if __name__ == '__main__':
     inlets = np.nonzero(pn.pore_properties['type']==1)[0]
     outlets = np.nonzero(pn.pore_properties['type']==6)[0]
     OpenPNM.Algorithms.InvasionPercolation(net=pn,inlets=inlets,outlets=outlets).run()
-    OpenPNM.IO.NetToVtp(net=pn)
+    OpenPNM.Visualization.NetToVtp(net=pn)

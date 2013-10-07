@@ -2,31 +2,24 @@
 module __Cubic__: Generate simple cubic networks
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Generators.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 
 import OpenPNM
 import scipy as sp
 import numpy as np
-import scipy.sparse as sprs
 import scipy.stats as spst
-import numexpr as ne
-from time import clock
 
-from __GenericGenerator__ import GenericGenerator
+from __GenericGeometry__ import GenericGeometry
 
-class Cubic(GenericGenerator):
+class Cubic(GenericGeometry):
     r"""
     Cubic - Class to create a basic cubic network
     
     Parameters
     ----------
     
-    domain_size : list with 3 float elements 
-        Shape of the cube [Lx,Ly,Lz]
-    lattice_spacing : list of three floats
-        Spacing between pore centers in each spatial directions
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
         
@@ -36,25 +29,33 @@ class Cubic(GenericGenerator):
 
     """
     
-    def __init__(self,  domain_size = [],
-                        divisions = [],
-                        lattice_spacing = [],
-                        **kwargs
-                      ):
+    def __init__(self, **kwargs):
         super(Cubic,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
-        self._logger.info("Find network dimensions")
+        
+        #Instantiate pore network object
+        self._net=OpenPNM.Network.GenericNetwork()
+
+    def _generate_setup(self,   domain_size = [],
+                                divisions = [3,3,3],
+                                lattice_spacing = [1],
+                                **params):
+        r"""
+        Perform applicable preliminary checks and calculations required for generation
+        """
+        self._logger.debug("generate_setup: Perform preliminary calculations")
         #Parse the given network size variables
+        self._logger.info("Find network dimensions")
         if domain_size and lattice_spacing and not divisions:
-            self._Lc = lattice_spacing
-            self._Nx = int(domain_size[0]/self._Lc)
-            self._Ny = int(domain_size[1]/self._Lc)
-            self._Nz = int(domain_size[2]/self._Lc)
+            self._Lc = lattice_spacing[0]
             self._Lx = domain_size[0]
             self._Ly = domain_size[1]
             self._Lz = domain_size[2]
+            self._Nx = int(self._Lx/self._Lc)
+            self._Ny = int(self._Ly/self._Lc)
+            self._Nz = int(self._Lz/self._Lc)
         elif divisions and lattice_spacing and not domain_size:
-            self._Lc = lattice_spacing
+            self._Lc = lattice_spacing[0]
             self._Nx = divisions[0]
             self._Ny = divisions[1]
             self._Nz = divisions[2]
@@ -68,18 +69,12 @@ class Cubic(GenericGenerator):
             self._Nz = divisions[2]
             self._Lx = self._Nx*self._Lc
             self._Ly = self._Ny*self._Lc
-            self._Lz = self._Nz*self._Lcp
+            self._Lz = self._Nz*self._Lc
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('error')
-
-        Np = self._Nx*self._Ny*self._Nz
-        Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
-        
-        #Instantiate object(correct terminology?)
-        self._net=OpenPNM.Network.GenericNetwork(num_pores=Np, num_throats=Nt)
     
-    def generate_pores(self):
+    def _generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
         """
@@ -97,7 +92,7 @@ class Cubic(GenericGenerator):
         
         self._logger.debug("generate_pores: End of method")
         
-    def generate_throats(self):
+    def _generate_throats(self):
         r"""
         Generate the throats (connections, numbering and types)
         """
@@ -125,7 +120,10 @@ class Cubic(GenericGenerator):
         self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
         self._logger.debug("generate_throats: End of method")
         
-    def add_boundaries(self):
+    def _add_boundaries(self):
+        r"""
+        Add boundaries to network 
+        """
         self._logger.debug("add_boundaries: Start of method")
         #Remove all items pertaining to previously defined boundaries (if any)
         Np = self._net.get_num_pores([0])
@@ -184,7 +182,10 @@ class Cubic(GenericGenerator):
         
         self._logger.debug("add_boundaries: End of method")
         
-    def add_opposing_boundaries(self,face,periodic=0):
+    def _add_opposing_boundaries(self,face,periodic=0):
+        r"""
+        Add boundaries by adding opposing faces, one pair at a time.
+        """
         self._logger.debug("add_opposing_boundaries: Start of method")
         
         Nx = self._Nx
