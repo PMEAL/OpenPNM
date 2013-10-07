@@ -18,33 +18,17 @@ from __GenericGeometry__ import GenericGeometry
 
 class Template(GenericGeometry):
     r"""
-    Template - Class to create a basic cubic network
+    Template - Class to create a cubic network with an arbitrary domain shape defined by a supplied template
     
     Parameters
     ----------
-    
-    domain_size : list with 3 float elements 
-        Shape of the cube [Lx,Ly,Lz]
-    lattice_spacing : list of three floats
-        Spacing between pore centers in each spatial directions
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
         
     Examples
     --------
+    >>> print 'none yet'
     
-    .. plot::
-        
-       import pylab as pl
-       import OpenPNM
-       gen = OpenPNM.Geometry.Cubic()
-       net = gen.generate()
-       pl.spy(net._adjmatrix)
-       pl.show()
-    
-    TODO:
-        - Check for 3D shape
-        - Check for correct divisions
     """
     
     def __init__(self, **kwargs):
@@ -81,15 +65,17 @@ class Template(GenericGeometry):
         Lc = self._Lc
         
         #Find non-zero elements in image
-        img = self._template
-        Np = np.sum(img)
-        img_ind = np.ravel_multi_index(np.nonzero(img), dims=np.shape(img), order='F')
+        template = self._template
+        Np = np.sum(template)
+        img_ind = np.ravel_multi_index(np.nonzero(template), dims=np.shape(template), order='F')
+        self._net.pore_properties['voxel_index'] = img_ind
         
-        temp = np.prod(np.shape(img))*np.ones(np.prod(np.shape(img),),dtype=np.int32)
+        #This voxel_to_pore map is messy but works
+        temp = np.prod(np.shape(template))*np.ones(np.prod(np.shape(template),),dtype=np.int32)
         temp[img_ind] = np.r_[0:np.size(img_ind)]
         self._voxel_to_pore_map = temp
         
-        self._net.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(img)))
+        self._net.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(template)))
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
         self._net.pore_properties['numbering'] = np.arange(0,Np,dtype=np.int32)
         
@@ -101,7 +87,7 @@ class Template(GenericGeometry):
         """
         self._logger.info("generate_throats: Define connections between pores")
         
-        img = self._template
+        template = self._template
         [Nx, Ny, Nz] = [self._Nx, self._Ny, self._Nz]
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
@@ -113,45 +99,66 @@ class Template(GenericGeometry):
         tpore2_2 = tpore1_2 + Nx
         tpore1_3 = ind[(ind%Np)<(Nx*Ny*(Nz-1))]
         tpore2_3 = tpore1_3 + Nx*Ny
-        tpore1 = np.hstack((tpore1_1,tpore1_2,tpore1_3))
-        tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
-        connections = np.vstack((tpore1,tpore2)).T
-        connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
+        tpore1 = sp.hstack((tpore1_1,tpore1_2,tpore1_3))
+        tpore2 = sp.hstack((tpore2_1,tpore2_2,tpore2_3))
+        connections = sp.vstack((tpore1,tpore2)).T
+        connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
         
         #Remove throats to non-active pores
-        img_ind = np.ravel_multi_index(np.nonzero(img), dims=np.shape(img), order='F')
-        temp0 = np.in1d(connections[:,0],img_ind)
-        temp1 = np.in1d(connections[:,1],img_ind)
+        img_ind = self._net.pore_properties['voxel_index']
+        temp0 = sp.in1d(connections[:,0],img_ind)
+        temp1 = sp.in1d(connections[:,1],img_ind)
         tind = temp0*temp1
         connections = connections[tind]
-        
+               
+        #Need a cleaner way to do this other than voxel_to_pore map...figure out later
         self._net.throat_properties['connections'] = self._voxel_to_pore_map[connections]
         self._net.throat_properties['type'] = np.zeros(np.sum(tind))
         self._net.throat_properties['numbering'] = np.arange(0,np.sum(tind))
         self._logger.debug("generate_throats: End of method")
-    def add_boundares(self):
+        
+    def _add_boundares(self):
         r"""
         TO DO: Impliment some sort of boundary pore finding
         """
         self._logger.debug("add_boundaries: Nothing yet")
         
-    def add_pore_property_from_template(self,template,prop_name):
+    def add_pore_property_from_template(self,net,template,prop_name):
         r"""
-        Add pore properties based on image location and value
-        """
-        self._logger.info("add_pore_prop_from_img: Add pore properties")
+        Add pore properties based on value stored at each location in the template array
         
-        
-        if prop_name not in self._net.pore_properties.keys():
-            self._net.pore_properties[prop_name] = np.zeros(self._net.get_num_pores(),dtype=template.dtype)
+        Parameters
+        ----------
+        net : Pore Network Object
+            The network to which the pore property should be added
             
-        coord = np.nonzero(template) #Find locations to add
-        ind = np.ravel_multi_index(coord, dims=np.shape(template), order='F')
-        vox_map = self._voxel_to_pore_map[ind] #Find pore number mapping
-        self._net.pore_properties[prop_name][vox_map] = np.array(template[coord],dtype=template.dtype)
+        template : array_like
+            The template array containing the pore property values at the desired locations
+            
+        prop_name : string
+            The name of the pore property being added
         
-        self._logger.debug("add_pore_prop_from_img: End of method")
+        Returns
+        -------
+        pore_prop : array_like, optional
+            The pore_property array extracted from the template image can be received if desire, but it is also written to the object's pore_property dictionary under the key prop_name.
         
+        Notes
+        -----
+        This method can lead to troubles if not executed in the right order.  For instance, if throat sizes are assigned during the generation stage based on neighboring pores sizes, then rewriting pore sizes with this method could invalidate the throat sizes.  Ideally, this method should be called by the generate_pore_sizes() step during the generate process to avoid the issue.  Alternatively, an update_throat_sizes() method could be written and called subsequent to calling this method.
+        
+        """
+        self._logger.info("add_pore_prop_from_template: Add pore properties")
+        
+        if prop_name not in net.pore_properties.keys():
+            net.pore_properties[prop_name] = np.zeros(net.get_num_pores(),dtype=template.dtype)
+        
+        pore_prop = sp.ravel(template)[net.pore_properties['voxel_index']]
+        net.pore_properties[prop_name] = pore_prop
+        
+        self._logger.debug("add_pore_prop_from_template: End of method")
+        
+        return pore_prop
         
 if __name__ == '__main__':
     test=Template(loggername='TestTemplate')
