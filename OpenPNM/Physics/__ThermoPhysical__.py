@@ -17,13 +17,14 @@ module __GenericPhysics__: Base class to define pore scale physics
 import OpenPNM
 import scipy as sp
 
-class Thermo(OpenPNM.Utilities.OpenPNMbase):
+class ThermoPhysical(OpenPNM.Utilities.OpenPNMbase):
     r"""
     Methods in this class are used to calculate the thermodynamic and physical properties of fluids in pores and throats.
     """
     
-    def __init__(self):
-        print 'init Multiphase'
+    def __init__(self,**kwargs):
+        super(ThermoPhysical,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
 
     def Antoine(self,network):
         r"""

@@ -22,8 +22,9 @@ class MassTransport(OpenPNM.Utilities.OpenPNMbase):
     Methods in this class are used to determine the diffusive conductivity of pores and throats from their geometric properties.
     """
     
-    def __init__(self):
-        print 'init MassTransfer'
+    def __init__(self,**kwargs):
+        super(MassTransport,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
 
     def Binary_Diff_In_a_Half_Pore_Throat_Half_Pore_Conduit(self,network,c=0,DAB=0):
         r"""

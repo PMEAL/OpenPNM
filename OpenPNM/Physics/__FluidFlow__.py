@@ -21,10 +21,11 @@ class FluidFlow(OpenPNM.Utilities.OpenPNMbase):
     r"""
     Methods in this class are used to determine the hydraulic conductivity of pores and throats from their geometric properties.
     """
-    def __init__(self):
-        print 'init Multiphase'
+    def __init__(self,**kwargs):
+        super(FluidFlow,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
 
-    def HagenPoiseuille(self,network):
+    def HagenPoiseuille(self,network,viscosity):
         r"""
         ---
         """

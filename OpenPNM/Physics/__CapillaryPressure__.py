@@ -22,8 +22,9 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
     Methods in this class are used to determine the capillary entry pressure of throats from their geometric and material properties.  
     """
     
-    def __init__(self, **kwargs):
-        print 'Physics.Capillary Pressure: Empty Init, Logger needed'
+    def __init__(self,**kwargs):
+        super(CapillaryPressure,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
         
     def Washburn(self,network,sigma,theta):
         r"""
@@ -42,8 +43,15 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
         
         Notes
         -----
+        The Washburn equation is:
+        
+        .. math::
+            P_c = -\frac{2\sigma(cos(\theta))}{r}
+
         This is the most basic approach to calcualing entry pressure and is suitable for highly non-wetting invading fluids in most materials.  
+        
         """
+        self._logger.info("Calculating throat entry capillary pressure using the Washburn equation")
         return -4*sigma*sp.cos(sp.radians(theta))/network.throat_properties['diameter']
         
     def Purcell(self,network,sigma,theta,r_toroid):
