@@ -73,10 +73,6 @@ class Cubic(GenericGenerator):
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('error')
         
-        self._Nx -= 2
-        self._Ny -= 2
-        self._Nz -= 2
-        
         Np = self._Nx*self._Ny*self._Nz
         Nt = 3*Np - self._Nx*self._Ny - self._Nx*self._Nz - self._Ny*self._Nz
         
@@ -100,15 +96,15 @@ class Cubic(GenericGenerator):
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
         
         self._logger.debug("generate_pores: End of method")
-        
+
     def generate_boundary_pores(self):
         r"""
         Generate the boundary pores (coordinates, numbering, and types)
         """
         self._logger.info("generate_boundary_pores: Create all the boundaries that enclose the previous operation.")
-        Nx = self._Nx+2
-        Ny = self._Ny+2
-        Nz = self._Nz+2
+        Nx = self._Nx
+        Ny = self._Ny
+        Nz = self._Nz
         
         number_of_sides = 6
         mult = 1-np.eye(3)
@@ -119,13 +115,12 @@ class Cubic(GenericGenerator):
             By = B[1]
             Bz = B[2]
             Np = Bx*By*Bz
-            start_numbering = self._net.pore_properties['numbering']
             start_type = self._net.pore_properties['type']
-            self._net.pore_properties['numbering'] = np.concatenate((start_numbering,np.arange(start_numbering.max(),start_numbering.max()+Np)))
             self._net.pore_properties['type'] = np.concatenate((start_type,np.repeat(i+1,Np)))
-
             # Coordinates are going to be quite challenging for the pores because 
             # they need to be translated and then concatenated onto the existing [coordinates] list.
+            
+        self._net.pore_properties['numbering'] = np.arange(self._net.pore_properties['type'].size)
         self._logger.debug("generate_boundary_pores: End of method")
         
     def generate_throats(self):
@@ -161,9 +156,9 @@ class Cubic(GenericGenerator):
         Generate the boundary throats that match up with the last layer of the pore network(Connections, numbering and types)
         """
         self._logger.info("generate_boundary_throats: Define connections between boundary pores")
-        Nx = self._Nx+2
-        Ny = self._Ny+2
-        Nz = self._Nz+2
+        Nx = self._Nx
+        Ny = self._Ny
+        Nz = self._Nz
         
         number_of_sides = 6
         mult = 1-np.eye(3)
@@ -174,11 +169,11 @@ class Cubic(GenericGenerator):
             By = B[1]
             Bz = B[2]
             Np = Bx*By*Bz
-            ind = np.arange(0,Np)
             start_type = self._net.throat_properties['type']
             self._net.throat_properties['type'] = np.concatenate((start_type,np.repeat(i+1,Np)))
-            
-            
+        
+        #start_numbering = self._net.throat_properties['type']
+        #self._net.throat_properties['numbering'] = np.arange(0,start_numbering.size)
         self._logger.debug("generate_boundary_throats: End of method")
         
 '''
