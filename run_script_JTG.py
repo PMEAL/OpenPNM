@@ -11,15 +11,17 @@ import matplotlib.pyplot as plt
 from time import clock
 
 import scipy.ndimage as spim
-img = spim.imread('C:\Users\jeff\Dropbox\Flash Sync\Code\Git\OpenPNM\snippets\CL.jpg')
-img = img[0:100,0:100,0]<30
+sphere = sp.ones((21,21,21),dtype=sp.bool8)
+sphere[11,11,11] = 0
+sphere = spim.distance_transform_edt(sphere)
+template = sphere<=5
 
 params = {
 'domain_size'           : [0.001,0.001,0.0004],  #physical network size [meters]
 'divisions'             : [], #Number of pores in each direction
 'lattice_spacing'       : [.0001],  #spacing between pores [meters]
 'num_pores'             : 1000, #This is used for random networks where spacing is irrelevant
-'template'              : img, #This is used for the Template based network generation
+'template'              : template, #This is used for the Template based network generation
 'psd_info'   : {'name'  : 'weibull_min', #Each statistical package takes different params, so send as dict
                 'shape' : 1.5,
                 'loc'   : 6e-6,
