@@ -18,6 +18,10 @@ import OpenPNM
 import scipy as sp
 
 class Thermo(OpenPNM.Utilities.OpenPNMbase):
+    r"""
+    Methods in this class are used to calculate the thermodynamic and physical properties of fluids in pores and throats.
+    """
+    
     def __init__(self):
         print 'init Multiphase'
 

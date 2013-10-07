@@ -18,6 +18,10 @@ import OpenPNM
 import scipy as sp
 
 class Multiphase(OpenPNM.Utilities.OpenPNMbase):
+    r"""
+    Methods in this class are used to track and calculate any pore and throat properties that are dependent on the phase and extent of filling.
+    """
+    
     def __init__(self):
         print 'init Multiphase'
 

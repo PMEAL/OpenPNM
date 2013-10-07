@@ -18,6 +18,10 @@ import OpenPNM
 import scipy as sp
 
 class MassTransport(OpenPNM.Utilities.OpenPNMbase):
+    r""""
+    Methods in this class are used to determine the diffusive conductivity of pores and throats from their geometric properties.
+    """
+    
     def __init__(self):
         print 'init MassTransfer'
 

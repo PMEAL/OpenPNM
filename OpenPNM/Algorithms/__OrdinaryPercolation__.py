@@ -24,9 +24,9 @@ from __GenericAlgorithm__ import GenericAlgorithm
 class OrdinaryPercolation(GenericAlgorithm):
     r"""
     Calculates a capillary pressure curve by looping through a list
-    of capillary pressures and calling the PCpoint function
+    of capillary pressures
     
-    This function produces a plist called 'invpc' which contains the
+    This function produces a pore_properties array called 'Pc_invaded' which contains the
     pressure at which a given pore was invaded. This list can be useful for
     reproducing the simulation for plotting or determining late pore filling.
 
@@ -37,7 +37,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         number of simulation steps (pressures); default 25
 
     inv_sites: array_like
-        invasion pores i.e. [1,2,3,4,10]; default = 0
+        invasion pores i.e. [1,2,3,4,10]; default = [0]
     
 
     """
@@ -90,10 +90,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         This function uses the scipy.csgraph module for the graph theory cluster
         labeling algorithm (connected_components)
         
-        Dependencies:
-            - 
-        Creates:
-            - 
         """
         #Generate a tlist containing boolean values for throat state
         self._net.throat_properties['invaded'] = self._net.throat_properties['Pc_entry']<inv_val

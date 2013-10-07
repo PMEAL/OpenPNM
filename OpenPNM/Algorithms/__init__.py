@@ -2,19 +2,18 @@
 # Copyright (c) 2013, OpenPNM
 # License: TBD.
 r"""
-**************************************************************************
+*******************************************************************************
 :mod:`OpenPNM.Algorithms`: Algorithms on Networks
-**************************************************************************
+*******************************************************************************
 
 .. module:: OpenPNM.Algorithms
 
 Contents
 --------
-This submodule contains all algorithms actiong on a pore network.
+This submodule contains algorithms for performing simulations on pore networks
 
 .. note::
-    The algorithms take a basenet as an argument in the constructor, this
-    seems to initialize a full object. Causing a lot of garbage to be written.
+    n/a
  
 Import
 ------

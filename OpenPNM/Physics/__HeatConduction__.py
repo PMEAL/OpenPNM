@@ -18,6 +18,10 @@ import OpenPNM
 import scipy as sp
 
 class HeatConduction(OpenPNM.Utilities.OpenPNMbase):
+    r"""
+    Methods in this class are used to determine the thermal conductivity of pores and throats from their geometric properties.  
+    """
+    
     def __init__(self):
         print 'init Multiphase'
 
