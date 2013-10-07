@@ -1,18 +1,18 @@
-===============================================================================
+*******************************************************************************
 Network Architecture and Data Storage Formats
-===============================================================================
+*******************************************************************************
 
 OpenPNM utilizes the object oriented capacities of Python.  The code is built upon the idea that a network is an object.  A network object contains both the data that describes the network properties, and the tools, functions, or methods needed to access this data in ways applicable to the pore network modeling paradigm.  One key feature of this object is that it is completely agnostic about the type of network it describes; a random, cubic or another netowrk topology is stored in exactly the same manner.  The most important repercussion of this choice is the fact that all physical algorithms (such as diffusion or drainage) operating on the network can be fully generic, and the all methods that read and write network property data can be fully generic as well.  
 
 As the name suggests, pore network modeling borrows signifcantly from the fields of network and graph theory.  During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as `graph-tool <http://graph-tool.skewed.de/>`_ and `NetworkX <http://networkx.github.io/>`_) should be used to store the network topology.  It was decided that storage of network property data could be handled very efficiently using 1D arrays, which allowed for a high degree of code vectorization.  Fortuitously, around the same time as this dicussion, Scipy started to include the 'compressed sparse graph' library, which contained numerous graph theory algorithms.  The CSGraph libary requires adjacency matrices in a compressed sparse storage scheme, which happens to be how OpenPNM stores network connections as descrbed below.
 
--------------------------------------------------------------------------------
+===============================================================================
 Network Architecture
--------------------------------------------------------------------------------
+===============================================================================
 
-*******************************************************************************
+-------------------------------------------------------------------------------
 Pore and Throat Numbering
-*******************************************************************************
+-------------------------------------------------------------------------------
 
 One of the main design principle of OpenPNM was to accomodate pore networks of arbitrary dimensionality and shape.  Cubic networks are commonly used in pore network modeling, with each pore connected to 6 or 26 neighbors.  The type of network *can* be represented as cubic matrices in numerical simulations, and this has the advantage that it is easily interpreted by human users.  Representing networks this way, however, clearly lacks generality.  Networks extracted from tomographic images, or generated using random pore placements connected by Delaunnay tesselations require a different approach.  OpenPNM uses network representation schemes borrowed from graph theory, such as adjacency and incidence matrices, that can be used to represent *all* network topologies. 
 
@@ -28,9 +28,9 @@ A network has a certain number of pores, *Np*, and a certain number of throats, 
 
 Each pore and throat in the network has a unique ID number.  In OpenPNM the ID number is *implied* by array element number, meaning that any information stored in element *i* of an array implicity applies to pore (or throat) *i*.  Or in other words, finding information about pore (or throat) 0 is accomplished by looking into element 0 of an array.  There is no correspondence between pore number and throat number, meaning that throat *i* may or may not connected with pore *i*.  Python uses 0-based array indexing so the ID numbers start at 0, which can be a source of confusion when representing connections using sparse representations,
 
-*******************************************************************************
+-------------------------------------------------------------------------------
 Adjacency Matrices
-*******************************************************************************
+-------------------------------------------------------------------------------
 
 When each pore has a unique ID number it is logical to store the network connectivity as a list pore ID numbers to which a given pore is connected.  Although it is possible to store these *lists* as a list-of-*lists*, graph theoreticians have devised an more elegant and powerful approach, which OpenPNM has adopted, called adjacency matrices.  An adjacency matrix is a 2D matrix of size *Np*-by-*Np*.  A value of 1 is placed at location (*i*, *j*) to indicate that pores *i* and *j* are connected.  In pore networks there is generally no difference between traversing from pore *i* to pore *j* or from pore *j* to pore *i*, so a 1 is also placed at location (*j*, *i*).  This means that determining which pores are connected directly to a given pore (say *i*) can be accomplished by finding the locations of non-zeros in row *i*.  In graph theory terminology this is deemed an *undirected* network, meaning that the *direction* of traversal is immaterial.  The adjacency matrix of an undirected network is symetric.  
 
@@ -40,19 +40,19 @@ One further optimization used by OpenPNM is to drop the V from the IJV format si
 
 In summary, when storing network connectivity as the upper triangular portion of an adjacency in the IJV sparse storage format, the end result is an *Nt*-by-2 list describing which pores are connected by a given throat.  These connections are a fundamental property associated with each throat in the same way as throat diameter or capillary entry pressure.  This highly distilled storage format minimized memory usage, allows for vectorization of the code, is the most efficient means of generating a sparse matrix, and corresponds perfectly with the storage of other throat properties using the ID number implicitly defined by the list element location. 
 
-*******************************************************************************
+-------------------------------------------------------------------------------
 Other Sparse Storage Schemes
-*******************************************************************************
+-------------------------------------------------------------------------------
 The IJV storage format corresponds perfectly with the way other throat data is stored in OpenPNM, however some tasks and queries are performed more efficiently using other storage formats.  OpenPNM converts between these formats internally as needed.  
 
-*******************************************************************************
+-------------------------------------------------------------------------------
 Incidence Matrices
-*******************************************************************************
+-------------------------------------------------------------------------------
 Another way to represent network connections is an incidence matrix.  This is similar to an adjacency matrix but rather than denoting which pores are connected to which, it denotes which pores are connected to which throats.  An incidence matrix is *Np*-by-*Nt* is size, with *Nt* nonzero elements.  The incidence matrix is useful for quickly querying which throats are connected to a given pore by finding the location of non-zero elements on a row.  Incidence matrices are generated as needed by OpenPNM internally for performing such queries, and the user does not usually interact with them.  
 
--------------------------------------------------------------------------------
+===============================================================================
 Network Data Storage
--------------------------------------------------------------------------------
+===============================================================================
 OpenPNM stores all pore and throat properties as Numpy ndarrays.  ndarrays are a numerical data type provided by the Numpy package (which is embedded in the Scipy package) that allow for the type of numerical manipulations that scientists and engineers expect, such as vectorization, slicing, boolean indexing and so on.  Pore properties are stored as arrays of size *Np*-by-*n), where *Np* is the number of pores in the network and *n* is almost always 1, (e.g. pore volume is stored as an *Np*-by-1 array), with a few expections (e.g. spatial coordinates are stored as *Np*-by-3 for 3-dimensional space).  Throat properties are almost always stored as *Nt*-by-*m* arrays where *Nt* is the number of throats in the network.  Again, *m* is almost always 1 with a notable exception being the connections property that is discussed in detail above. 
 
 OpenPNM uses implied pore and throat numbering, meanin that the property for pore (or throat) *i* is stored in element *i* of the corresponding property array.  (Aside: It is conceivable that an extra array called 'index' could be used to remove the implicitness of the numbering.  For instance *pore_index* = [0,2,1,3] would indicate that the properties for 'pore 2' are located in element 1.  Given a list of pore properties pore_props = [0.1, 0.2, 0.3 0.4], one could extract an ordered list as *pore_props*[*index*] = [0.1, 0.3, 0.2, 0.4].  This extra layer of indexing is confusing and makes it more difficult to setup vectorized and boolean masked statements.)
@@ -111,9 +111,9 @@ A quick way to find all properties currently stored in a dictionary is the .keys
 >>> pn.pore_properties.keys()
 ['diameter', 'numbering', 'volume', 'seed', 'coords', 'type']
 
-*******************************************************************************
+-------------------------------------------------------------------------------
 Mandatory Pore & Throat Properties
-*******************************************************************************
+-------------------------------------------------------------------------------
 The default setup of the Cubic generator produces a number of pore and throat properties based on commonly used assumptions.  Only a few of these properties are truly essential to defining the pore network.  
 
 **'connections' and 'coords'**
@@ -136,21 +136,21 @@ array([ 0,  3,  5,  6,  7,  9, 10, 12, 13, 14, 16, 17, 20, 21, 22])
 
 The 'type' property is used by OpenPNM to differentiate between internal pores and boundary pores (and throats).  A 'type' value of zero indicates an internal pore, and a value > 0 indicates a boundary pore.  Boundary pores are further distinguished by values between 1 and 6 to indicate on which boundary they lie: 1 and 6 for z-faces, 2 & 5 for x faces and 3 & 4 for y faces.  This convention was inspired by the number on dice, where opposite sides all add up to 7.  Obviously, this numbering boundary pores in this way implies a cubic network domain, which may not always be the case.  
 
-*******************************************************************************
+-------------------------------------------------------------------------------
 Common Pore & Throat Properties
-*******************************************************************************
+-------------------------------------------------------------------------------
 The GenericGeometry class includes several methods that produce some additional pore and throat properties beyond the mandatory ones described above.  These including this like 'diameter' and 'volume'.  
 
 
-*******************************************************************************
+-------------------------------------------------------------------------------
 Adding New Pore & Throat Properties
-*******************************************************************************
-
-
-
 -------------------------------------------------------------------------------
+
+
+
+===============================================================================
 Querying Network Data and Properties
--------------------------------------------------------------------------------
+===============================================================================
 
 The OpenPNM network object not only stores the network data, but also contains numerous methods for extracting information about the network from that data.  
 
