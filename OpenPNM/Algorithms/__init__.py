@@ -1,6 +1,3 @@
-# Author: Andreas Putz
-# Copyright (c) 2013, OpenPNM
-# License: TBD.
 r"""
 *******************************************************************************
 :mod:`OpenPNM.Algorithms`: Algorithms on Networks

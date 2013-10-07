@@ -9,10 +9,7 @@ module __Cubic__: Generate simple cubic networks
 import OpenPNM
 import scipy as sp
 import numpy as np
-import scipy.sparse as sprs
 import scipy.stats as spst
-import numexpr as ne
-from time import clock
 
 from __GenericGeometry__ import GenericGeometry
 
@@ -23,10 +20,6 @@ class Cubic(GenericGeometry):
     Parameters
     ----------
     
-    domain_size : list with 3 float elements 
-        Shape of the cube [Lx,Ly,Lz]
-    lattice_spacing : list of three floats
-        Spacing between pore centers in each spatial directions
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
         

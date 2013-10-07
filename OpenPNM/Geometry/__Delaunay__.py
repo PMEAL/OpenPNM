@@ -22,24 +22,12 @@ class Delaunay(GenericGeometry):
     Parameters
     ----------
     
-    domain_size : list with 3 float elements 
-        Shape of the domain [Dx, Dy, Dz]
-    num_pores :  integer
-        Number of randomly located pores
     loglevel : int
         Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
         
     Examples
     --------
-    
-    .. plot::
-        
-       import pylab as pl
-       import OpenPNM
-       gen = OpenPNM.Geometry.Cubic()
-       net = gen.generate()
-       pl.spy(net._adjmatrix)
-       pl.show()
+    >>> print 'nothing yet'
     
     TODO:
         

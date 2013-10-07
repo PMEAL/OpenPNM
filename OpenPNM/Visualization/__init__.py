@@ -1,14 +1,16 @@
-# Author: Andreas Putz
-# Copyright (c) 2013, OpenPNM
-# License: TBD.
 r"""
-**************************************************************************
-VIS: Network Visualisation
-**************************************************************************
+*******************************************************************************
+:mod:`OpenPNM.Visualization`: Network Visualization
+*******************************************************************************
+
+.. module:: OpenPNM.Visualization
 
 Contents
 --------
-The OpenPNM package imports all the functions from the top level modules. 
+tbd
+
+.. note::
+   n/a
  
 Import
 ------
@@ -25,5 +27,5 @@ Submodules
 
     
 """
-from __2D__ import Vis2D
-#from __output__ import NetToVtp
+from __GenericVisualization__ import GenericVisualization
+

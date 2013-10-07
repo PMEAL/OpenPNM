@@ -1,16 +1,8 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
-
 """
 module __GenericAlgorithm__: Base class to construct pore networks
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Algorithms/__init__.py' file.
 
 """
 
@@ -33,18 +25,13 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
     
     
     
-            
     Examples
     --------
+    >>> print 'nothing yet'
     
-    To reserve space for a network with the default number of pores
-    and throats execute
-    
-    >>> import OpenPNM as PNM
-    >>> net=PNM.Algorithms.GenericAlgorithm()
-    
-    
-    .. note:: In development
+    .. note:: 
+    n/a
+
     """
     
     def __init__(self,net=OpenPNM.Network.GenericNetwork,**kwords):

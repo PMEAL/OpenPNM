@@ -2,7 +2,7 @@
 Pore Scale Physics
 *******************************************************************************
 
-In OpenPNM each physical process is given its own class(? - file), and within each class any number of models/equations can be defined by simply adding the appropriate method/equations.  This setup was designed to facilitate easy editability of the physics models which can be highly varied.  
+In OpenPNM each physical process is given its own class, and within each class any number of models/equations can be defined by simply adding the appropriate method/equations.  This setup was designed to facilitate easy editability of the physics models which can be highly varied.  
 
 ===============================================================================
 Capillary Pressure
@@ -40,7 +40,7 @@ Heat Conduction
 Multiphase
 ===============================================================================
 
-.. autoclass:: OpenPNM.Physics.Mutiphase
+.. autoclass:: OpenPNM.Physics.Multiphase
    :members:
    :undoc-members:
 

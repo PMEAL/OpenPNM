@@ -15,8 +15,7 @@ module __OpenPNMbase__: contains OpenPNM base classes
 Logging:
 --------
 
-This module defines the logging format and defaults levels. We might want to 
-add somefunctionality to change this.
+This module defines the logging format.
 
 Examples:
 ---------
@@ -37,7 +36,7 @@ _logging.basicConfig(level=_logging.CRITICAL,
 
 class OpenPNMbase(object):
     r"""
-    .. class::`OpenPNM.Utilities.OpenPNMbase` -- Base class for OpenPNM
+    .. class:: `OpenPNM.Utilities.OpenPNMbase` -- Base class for OpenPNM
     
     
     Base class with a few bells and whistles. Mainly output on screen, logging

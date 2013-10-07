@@ -102,10 +102,11 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
 
     def _generate_pore_seeds(self):
         r"""
+        Assign random seed to pores
         
         Notes
         -----
-        Assigns random seed to pores
+        To reproduce an identical network it is necessary to set the seed of the random number generator
         """
         self._logger.info("generate_pore_seeds: Assign each pore a random seed")
         Np = self._net.get_num_pores()
@@ -116,10 +117,11 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
 
     def _generate_throat_seeds(self):
         r"""
+        Assigns random seeds to throats based on smaller of neighboring pores
         
         Notes
         -----
-        Assigns random seeds to throats based on smaller of neighboring pores
+        
         """
         self._logger.info("generate_throat_seeds: Assign each throat its smaller neighboring pore seed")
         self._net.throat_properties['seed'] = sp.amin(self._net.pore_properties['seed'][self._net.throat_properties['connections']],1)
@@ -128,6 +130,11 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
     def _generate_pore_diameters(self,psd_info):
         r"""
         Calculates pore diameter from given statisical distribution using the random seeds provided by generate_pore_seeds()
+        
+        Parameters
+        ----------
+        psd_info : dictionary
+            Contains 'key : value' pairs required by chosen distribution
         
         Notes
         -----
@@ -143,10 +150,16 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
 
     def _generate_throat_diameters(self,tsd_info):
         r"""
+        Calculates throat diameter from given statisical distribution using the random seeds provided by generate_throat_seeds()
+        
+        Parameters
+        ----------
+        tsd_info : dictionary
+            Contains 'key : value' pairs required by chosen distribution
         
         Notes
         -----
-        Calculates throat diameter from given statisical distribution using the random seeds provided by generate_throat_seeds()
+        
         """
         self._logger.info("generate_throat_diameters: Generate throat diameter from "+tsd_info['name']+" distribution")
         prob_fn = getattr(spst,tsd_info['name'])
@@ -201,11 +214,49 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._logger.debug("calc_throat_lengths: End of method")     
         
     def translate_coordinates(self,net,displacement=[0,0,0]):
+        r"""
+        Translate pore network coordinates by specified amount
+        
+        Parameters
+        ----------
+        net : OpenPNM Network Object
+            The network to which translation should be applied
+            
+        displacement : array_like
+            A vector containing the amount to translate in each dimension. [0,0,0] yeilds no translation.
+        
+        """
         net.pore_properties['coords'] = net.pore_properties['coords'] + displacement
         
     def scale_coordinates(self,net,scale=[1,1,1]):
-        net.pore_properties['coords'] = net.pore_properties['coords']*scale 
+        r"""
+        Scale pore network coordinates by specified amount
         
+        Parameters
+        ----------
+        net : OpenPNM Network Object
+            The network to which translation should be applied
+            
+        scale : array_like
+            A vector containing the amount to scale in each dimension.  [1,1,1] yeilds no scaling.
+            
+        """
+        net.pore_properties['coords'] = net.pore_properties['coords']*scale 
+
+    def stitch(self,net1,net2):
+        r"""
+        Stitch two networks together
+        
+        Parameters
+        ----------
+        net1 : OpenPNM Network Object
+            The network that is stiched to
+        
+        net2 : OpenPNM Network Object
+            The network that is stitched
+        
+        """
+        print 'not implemented yet'
 
 if __name__ == '__main__':
     test=GenericGeometry(loggername="TestGenerator")        
