@@ -1,7 +1,7 @@
 r"""
-**************************************************************************
-:mod:`OpenPNM.PHYS`: Pore Scale Physics for Networks
-**************************************************************************
+*******************************************************************************
+:mod:`OpenPNM.Physics`: Pore Scale Physics Models
+*******************************************************************************
 
 .. module:: OpenPNM.Physics
 
@@ -10,13 +10,12 @@ Contents
 This submodule contains all pore scale physics models applied to a pore network.
 
 .. note::
-    The algorithms take a basenet as an argument in the constructor, this
-    seems to initialize a full object. Causing a lot of garbage to be written.
+    none
  
 Import
 ------
->>> import OpenPNM as PNM
->>> tmp=PNM.Physics.GenericPhysics()
+>>> import OpenPNM
+>>> OpenPNM.Physics.GenericPhysics()
 
 
 Submodules
@@ -30,6 +29,35 @@ Submodules
    :undoc-members:
    :show-inheritance:
 
+.. autoclass:: Physics.CapillaryPressure
+   :members:
+   :undoc-members:
+   :show-inheritance:
+       
+.. autoclass:: Physics.FluidFlow
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Physics.MassTransport
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: Physics.HeatConduction
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Physics.Multiphase
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Physics.Thermo
+   :members:
+   :undoc-members:
+   :show-inheritance:
     
 """
 

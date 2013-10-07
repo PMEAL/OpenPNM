@@ -18,6 +18,9 @@ import OpenPNM
 import scipy as sp
 
 class FluidFlow(OpenPNM.Utilities.OpenPNMbase):
+    r"""
+    Methods in this class are used to determine the hydraulic conductivity of pores and throats from their geometric properties.
+    """
     def __init__(self):
         print 'init Multiphase'
 

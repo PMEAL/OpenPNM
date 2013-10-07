@@ -34,10 +34,12 @@ Subpackages
    * - :mod:`OpenPNM.Geometry`
      - Geometry for pore networks. (Random cubic, image based, Voronoi). Should also contain
        a mapper of the pore network back on the segmented image.
-   * - :mod:`OpenPNM.Algorithsm`
+   * - :mod:`OpenPNM.Algorithms`
      - Module containing all algorithmic classes for networks.
-   * - `Visualization`
-     - vtk-based post-processing modules (`postproc.py`)   
+   * - :mod:`OpenPNM.Physics`
+     - Module containing pore scale physics models and equations.
+   * - :mod:`OpenPNM.sisualization`
+     - Module for performing vtk-based post-processing routines.
 
 
  
@@ -56,13 +58,12 @@ Import
 Inheritance Diagram
 --------------------
 
-
 .. inheritance-diagram:: OpenPNM.Network.GenericNetwork
 
 Package Documentation
 ---------------------
 
-.. automodule:: Base
+.. automodule:: Utilities
    :members:
    :undoc-members:
    :show-inheritance:

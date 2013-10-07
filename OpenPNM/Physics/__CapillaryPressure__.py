@@ -18,15 +18,19 @@ import OpenPNM
 import scipy as sp
 
 class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
-    def __init__(self):
-        print 'init CapillaryPressure'
+    r"""
+    Methods in this class are used to determine the capillary entry pressure of throats from their geometric properties.  
+    """
+    
+    def __init__(self, **kwargs):
+        print 'Physics.Capillary Pressure: Empty Init, Logger needed'
         
     def Washburn(self,network,sigma,theta):
         r"""
         Computers the throat capillary entry pressure assuming the throat is a cylindrical tube.
         
-        Inputs
-        ------
+        Parameters
+        ----------
         network : OpenPNM Network Object
             The network to apply the calculation 
         
@@ -46,8 +50,8 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Computers the throat capillary entry pressure assuming the throat is a toroid.
         
-        Inputs
-        ------
+        Parameters
+        ----------
         network : OpenPNM Network Object
             The network to apply the calculation 
         
@@ -59,9 +63,16 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
         
         r_toroid : float or array_like
             The radius of the solid
+            
         Notes
         -----
-        This approach accounts for the converging-diverging nature of many throat types.  Advancing the meniscus beyond the apex of the toroid requires an increase in capillary pressure beyond that for a cylindical tube of the same radius.
+        This approach accounts for the converging-diverging nature of many throat types.  Advancing the meniscus beyond the apex of the toroid requires an increase in capillary pressure beyond that for a cylindical tube of the same radius. The details of this equation are described by Mason and Morrow [1]_, and explored by Gostick [2]_ in the context of a pore network model.
+
+        References
+        ----------
+        
+        .. [1] G. Mason, N. R. Morrow, Effect of contact angle on capillary displacement curvatures in pore throats formed by spheres. J. Colloid Interface Sci. 168, 130 (1994).
+        .. [2] J. Gostick, Random pore network modeling of fibrous PEMFC gas diffusion media using Voronoi and Delaunay tessellations. J. Electrochem. Soc. 160, F731 (2013).
         
         """
         #This seesm to work, but I wrote it quickly and lost track of the degree-radians conversions
@@ -78,8 +89,8 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Computes the throat capillary pressure using simplified version of the Purcell toroid
         
-        Inputs
-        ------
+        Parameters
+        ----------
         network : OpenPNM Network Object
             The network to apply the calculation 
         
@@ -91,6 +102,6 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
             
         Notes
         -----
-        Morrow and Mason compared the Purcell toroid to experimental data on various sized monodisperse PTFE beads.  They found that data could be approximated decently by simply scaling the contact angle by 2/3.
+        Morrow and Mason compared the Purcell toroid to experimental data on various sized monodisperse PTFE beads.  They found that data could be approximated decently by simply scaling the contact angle measured through the wetting phase by 2/3.  
         """
         return -4*sigma*sp.cos(sp.radians(2/3*(180-theta)))/network.throat_properties['diameter']
