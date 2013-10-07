@@ -24,14 +24,12 @@ class GenericPhysics(OpenPNM.Utilities.OpenPNMbase):
 
     """
     
-    def __init__(self,net=OpenPNM.Network.GenericNetwork,**kwords):
+    def __init__(self,**kwords):
         r"""
         Initialize
         """
         super(GenericPhysics,self).__init__(**kwords)
-        self.indent = ""
         self._logger.debug("Construct class")
-        self._net = net
         
 if __name__ =="__main__":
     test = GenericPhysics(loggername="TestGenericPhys")

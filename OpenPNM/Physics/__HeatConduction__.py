@@ -22,12 +22,14 @@ class HeatConduction(OpenPNM.Utilities.OpenPNMbase):
     Methods in this class are used to determine the thermal conductivity of pores and throats from their geometric properties.  
     """
     
-    def __init__(self):
-        print 'init Multiphase'
+    def __init__(self,**kwargs):
+        super(HeatConduction,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
 
-    def FourierConductiity(self,network):
+    def FourierConductivity(self,network,k):
         r"""
         ---
         """
+
         
         return

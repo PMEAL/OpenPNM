@@ -49,12 +49,12 @@ Submodules
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: Physics.Multiphase
+.. autoclass:: Physics.MultiPhase
    :members:
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: Physics.Thermo
+.. autoclass:: Physics.ThermoPhysical
    :members:
    :undoc-members:
    :show-inheritance:
@@ -66,5 +66,5 @@ from __CapillaryPressure__  import CapillaryPressure
 from __MassTransport__      import MassTransport
 from __HeatConduction__     import HeatConduction
 from __FluidFlow__          import FluidFlow
-from __Multiphase__         import Multiphase
-from __Thermo__             import Thermo
+from __MultiPhase__         import MultiPhase
+from __ThermoPhysical__     import ThermoPhysical

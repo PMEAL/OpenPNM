@@ -17,13 +17,14 @@ module __GenericPhysics__: Base class to define pore scale physics
 import OpenPNM
 import scipy as sp
 
-class Multiphase(OpenPNM.Utilities.OpenPNMbase):
+class MultiPhase(OpenPNM.Utilities.OpenPNMbase):
     r"""
     Methods in this class are used to track and calculate any pore and throat properties that are dependent on the phase and extent of filling.
     """
     
-    def __init__(self):
-        print 'init Multiphase'
+    def __init__(self,**kwargs):
+        super(MultiPhase,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
 
     def Conduit_Filled_State_Calculator(self,network):
         r"""
