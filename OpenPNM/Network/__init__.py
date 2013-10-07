@@ -3,14 +3,17 @@
 # License: TBD.
 r"""
 *****************************************************************************************
-:mod:`OpenPNM.NET`: All classes related to the logical network (storage and manipulation)
+:mod:`OpenPNM.Network`: All classes related to network storage
 *****************************************************************************************
 
-.. module:: OpenPNM.NET
+.. module:: OpenPNM.Network
 
 Contents
 --------
 The OpenPNM package imports all the functions from the top level modules. 
+
+.. note::
+    n/a
  
 Import
 ------

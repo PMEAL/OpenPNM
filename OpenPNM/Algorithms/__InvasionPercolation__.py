@@ -567,7 +567,7 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"    
     #sp.random.seed(1)
-    pn = OpenPNM.Generators.Cubic(domain_size=[50,50,15],lattice_spacing=1.0,btype = [0,0,0]).generate()
+    pn = OpenPNM.Geometry.Cubic(domain_size=[10,10,15],lattice_spacing=1.0,btype = [0,0,0]).generate()
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
     print "+"*50
@@ -600,14 +600,14 @@ if __name__ =="__main__":
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_timing.vtp"
-    OpenPNM.IO.NetToVtp(net = pn,filename="IP_timing.vtp")
+    OpenPNM.Visualization.NetToVtp(net = pn,filename="IP_timing.vtp")
     IP_notiming = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,timing='OFF',loglevel=30,loggername="TestInvPercAlg")
     IP_notiming.run()
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_notiming.vtp"
-    OpenPNM.IO.NetToVtp(net = pn,filename="IP_notiming.vtp")
+    OpenPNM.Visualization.NetToVtp(net = pn,filename="IP_notiming.vtp")
     
     print "="*50
     print "Program Finished at t = ",clock(),"seconds."

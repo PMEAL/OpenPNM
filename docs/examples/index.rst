@@ -1,7 +1,7 @@
-.. _userguide_index:
+.. _examples:
 
 *******************************************************************************
-**OpenPNM User Guide**
+**OpenPNM Examples**
 *******************************************************************************
 
 Contents:
@@ -9,9 +9,4 @@ Contents:
 .. toctree::
    :maxdepth: 3
    
-   getting_started.rst
-   data_storage.rst
-   geometry.rst
-   physics.rst
-   algorithms.rst
-   visualization.rst
+   cubic.rst

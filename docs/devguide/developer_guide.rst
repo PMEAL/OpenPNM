@@ -64,8 +64,8 @@ directory is `sfepy/`, which has the following contents:
    * - `TOP`
      - Storage and manipulations of network topoologies and data stored on them.
      -
-   * - `Generators`
-     - Generators for pore networks. (Random cubic, image based, Voronoi). Should also contain
+   * - `Geometry`
+     - Geometry for pore networks. (Random cubic, image based, Voronoi). Should also contain
        a mapper of the pore network back on the segmented image.
      -
    * - `Algorithms`

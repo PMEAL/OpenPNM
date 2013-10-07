@@ -21,7 +21,7 @@ Next, you'll want to generate a network.  This is accomplished by first creating
 
 .. code-block:: python
    
-   gn1 = OpenPNM.Generators.Cubic()
+   gn1 = OpenPNM.Geometry.Cubic()
    
 Now a generator has been initialized (with default parameters) and is ready to start spawning networks.  This can be achieved by:
 
@@ -37,7 +37,9 @@ The same generator can be used to create another network:
    
 This network will be identical in most asepcts but will have different pore and throat sizes due the different random seeds used.  This functionality is useful for running simulations on multiple realizations for the same network for statistical significance.  
 
-
+===============================================================================
+Example: Querying the Network
+===============================================================================
 
 
 
