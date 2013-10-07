@@ -106,37 +106,6 @@ class OpenPNMbase(object):
     def IOunpickle(self):
         self._logger.debug('UnPickle self')
         
-    def Sandbox_doc(self):
-        r"""
-        This is a place for Joe to test documentation.  This will be deleted 
-        once we get more of our refactoring done.
-        
-        Due to the presence of acute internal features, the pressure required 
-        to completely fill a pore with the non-wetting phase may be higher than
-        the pressure required for entry. The following expression is used to 
-        model the late pore filling phenomenon:
-            
-        .. math:: 
-            
-            s_{wp}=s^{*}_{wp} \left (\frac{P^{*}_{c}}{P_{c}} \right )^{\eta},\ P_{c}>P^{*}_{c}
-          
-        where :math:`\eta` is the filling exponent, :math:`s_{wp}` is the 
-        wetting phase saturation of a given pore at capillary pressure 
-        :math:`P_{c}`, and :math:`s^{*}_{wp}` is the wetting phase saturation
-        of the same pore at the capillary pressure, :math:`P^{*}_{c}`, corresponding
-        to first entry (breakthrough) of the non-wetting phase. The parameters 
-        :math:`{\eta}` and :math:`s^{*}_{wp}` are adjustable.        
-          
-        :math:`\text{Hallo}`
-        
-        Parameters
-        ---------- 
-        filename : string
-            name of the file to be written.
-            
-
-        """
-        self._logger.debug('Sandbox_doc self')
     def set_loglevel(self,level=20):
         r"""
         Sets the effective log level for this class
