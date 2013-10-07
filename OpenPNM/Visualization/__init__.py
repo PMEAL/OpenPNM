@@ -12,19 +12,19 @@ tbd
 .. note::
    n/a
  
-Import
-------
->>> import OpenPNM as PNM
->>> tmp=PNM.Visualization ....
 
+Classes
+-------
 
-Submodules
-----------
-::
-
- None                            --- No subpackages at the moment
-
-
+.. autoclass:: GenericVisualization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+    
+.. autoclass:: VTK
+   :members:
+   :undoc-members:
+   :show-inheritance:
     
 """
 from __GenericVisualization__ import GenericVisualization
