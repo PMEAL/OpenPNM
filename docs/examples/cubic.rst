@@ -49,19 +49,23 @@ Now a cubic network of 1000 pores is stored in the object named 'pn'.  To see wh
 This indicate all the pore and throat properties that are currently associated with the network.  You'll notice that they are exclusively geometric in nature, which is normal since no simulations have yet been run.  
 
 -------------------------------------------------------------------------------
-Performing Simulations
+Using Pore Scale Physics
 -------------------------------------------------------------------------------
 To perform a capillary pressure curve simualation we must first generate a throat property that describes the capillary pressure required for the non-wetting fluid to invade as a function of size, wettability, fluid properties and so on.  
 
 
+-------------------------------------------------------------------------------
+Running Simulations
+-------------------------------------------------------------------------------
 
 
 
 
 
 
-
-
+-------------------------------------------------------------------------------
+Visualizing with Paraview
+-------------------------------------------------------------------------------
 
 
 
