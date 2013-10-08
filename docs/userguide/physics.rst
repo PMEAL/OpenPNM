@@ -8,7 +8,7 @@ In OpenPNM each physical process is given its own class, and within each class a
 Capillary Pressure
 ===============================================================================
 
-.. autoclass:: OpenPNM.Physics.CapillaryPressure
+.. automodule:: OpenPNM.Physics.CapillaryPressure
    :members:
    :undoc-members:
 
@@ -16,7 +16,7 @@ Capillary Pressure
 Mass Transport
 ===============================================================================
 
-.. autoclass:: OpenPNM.Physics.MassTransport
+.. automodule:: OpenPNM.Physics.MassTransport
    :members:
    :undoc-members:
 
@@ -24,7 +24,7 @@ Mass Transport
 Fluid Flow
 ===============================================================================
 
-.. autoclass:: OpenPNM.Physics.FluidFlow
+.. automodule:: OpenPNM.Physics.FluidFlow
    :members:
    :undoc-members:
 
@@ -32,7 +32,7 @@ Fluid Flow
 Heat Conduction
 ===============================================================================
 
-.. autoclass:: OpenPNM.Physics.HeatConduction
+.. automodule:: OpenPNM.Physics.HeatConduction
    :members:
    :undoc-members:
 
@@ -40,7 +40,7 @@ Heat Conduction
 Multiphase
 ===============================================================================
 
-.. autoclass:: OpenPNM.Physics.Multiphase
+.. automodule:: OpenPNM.Physics.Multiphase
    :members:
    :undoc-members:
 
@@ -48,6 +48,6 @@ Multiphase
 Thermophysical Properties
 ===============================================================================
 
-.. autoclass:: OpenPNM.Physics.Thermo
+.. automodule:: OpenPNM.Physics.Thermo
    :members:
    :undoc-members:
