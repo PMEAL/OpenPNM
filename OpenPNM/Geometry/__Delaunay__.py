@@ -47,8 +47,12 @@ class Delaunay(GenericGeometry):
         Perform applicable preliminary checks and calculations required for generation
         """
         self._logger.debug("generate_setup: Perform preliminary calculations")
-        self.domain_size = params['domain_size']
-        self.num_pores = params['num_pores']
+        if params['domain_size'] and params['num_pores']:
+            self.domain_size = params['domain_size']
+            self.num_pores = params['num_pores']
+        else:            
+            self._logger.error("domain_size and num_pores must be specified")
+            raise Exception('domain_size and num_pores must be specified')
     
     def _generate_pores(self):
         r"""
