@@ -11,10 +11,10 @@ import matplotlib.pyplot as plt
 from time import clock
 
 import scipy.ndimage as spim
-sphere = sp.ones((21,21,21),dtype=sp.bool8)
-sphere[11,11,11] = 0
+sphere = sp.ones((51,51,51),dtype=sp.bool8)
+sphere[26,26,26] = 0
 sphere = spim.distance_transform_edt(sphere)
-template = sphere<=5
+template = sphere<20
 
 params = {
 'domain_size'           : [0.001,0.001,0.0004],  #physical network size [meters]
@@ -39,10 +39,10 @@ start=clock()
 pn = OpenPNM.Geometry.Template().generate(**params)
 
 pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure().Washburn(pn,0.072,110)
-inlets = [0]
+#inlets = [0]
 #exp1 = OpenPNM.Algorithms.InvasionPercolation(pn, loglevel=10, npts=100, inlets=inlets, outlets=outlets).run()
-exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, npts=50, inv_sites=inlets).run()
-pn.update()
+#exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, npts=50, inv_sites=inlets).run()
+#pn.update()
 
 #Write network to vtk file for visualization in Paraview
 #import os
