@@ -16,7 +16,7 @@ tbd
 Classes
 -------
 
-.. autoclass:: GenericVisualization
+.. autoclass:: Common
    :members:
    :undoc-members:
    :show-inheritance:
@@ -28,4 +28,5 @@ Classes
     
 """
 from __GenericVisualization__ import GenericVisualization
+from __Plots__ import Plots
 from __VTK__ import VTK
