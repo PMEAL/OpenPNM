@@ -17,26 +17,26 @@ sphere = spim.distance_transform_edt(sphere)
 template = sphere<20
 
 params = {
-'domain_size'               : [0.001,0.001,0.0004],  #physical network size [meters]
-'divisions'                 : [], #Number of pores in each direction
-'lattice_spacing'           : [.0001],  #spacing between pores [meters]
+'domain_size'               : [1,1,1],  #physical network size [meters]
+'divisions'                 : [10,10,10], #Number of pores in each direction
+'lattice_spacing'           : [],  #spacing between pores [meters]
 'num_pores'                 : 1000, #This is used for random networks where spacing is irrelevant
 'template'                  : template, #This is used for the Template based network generation
-'stats_pores'   :  {'name'  : 'weibull_min', #Each statistical package takes different params, so send as dict
+'stats_pores'   : {  'name' : 'weibull_min', #Each statistical package takes different params, so send as dict
                     'shape' : 1.5,
-                    'loc'   : 6e-6,
+                      'loc' : 6e-6,
                     'scale' : 2e-5},
-'stats_throats' :  {'name'  : 'weibull_min',
+'stats_throats' : {  'name' : 'weibull_min',
                     'shape' : 1.5,
-                    'loc'   : 6e-6,
+                      'loc' : 6e-6,
                     'scale' : 2e-5},
 'btype'                     : [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 }
 
 start=clock()
-#pn = OpenPNM.Geometry.Cubic().generate(**params)
+pn = OpenPNM.Geometry.Cubic().generate(**params)
 #pn = OpenPNM.Geometry.Delaunay().generate(**params)
-pn = OpenPNM.Geometry.Template().generate(**params)
+#pn = OpenPNM.Geometry.Template().generate(**params)
 
 pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure().Washburn(pn,0.072,110)
 #inlets = [0]
