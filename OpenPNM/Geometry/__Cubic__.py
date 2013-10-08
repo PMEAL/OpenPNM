@@ -72,7 +72,7 @@ class Cubic(GenericGeometry):
             self._Lz = self._Nz*self._Lc
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
-            raise Exception('error')
+            raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
     
     def _generate_pores(self):
         r"""
