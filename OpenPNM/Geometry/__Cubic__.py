@@ -63,7 +63,7 @@ class Cubic(GenericGeometry):
             self._Ly = self._Ny*self._Lc
             self._Lz = self._Nz*self._Lc
         elif domain_size and divisions and not lattice_spacing:
-            self._Lc = np.min(np.array(domain_size)/np.array(divisions))
+            self._Lc = np.min(np.array(domain_size,dtype=float)/np.array(divisions,dtype=float))
             self._Nx = divisions[0]
             self._Ny = divisions[1]
             self._Nz = divisions[2]
