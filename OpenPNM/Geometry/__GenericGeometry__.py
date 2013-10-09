@@ -49,7 +49,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
-#        self.add_boundaries()
+        self._add_boundaries()
         self._generate_pore_seeds()
         self._generate_throat_seeds()
         self._generate_pore_diameters(params['stats_pores'])
@@ -243,7 +243,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             A vector containing the amount to scale in each dimension.  [1,1,1] yeilds no scaling.
             
         """
-        net.pore_properties['coords'] = net.pore_properties['coords']*scale 
+        net.pore_properties['coords'] = net.pore_properties['coords']*scale
     
     @staticmethod
     def stitch(net1,net2):
