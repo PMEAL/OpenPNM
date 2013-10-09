@@ -52,8 +52,8 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
 #        self.add_boundaries()
         self._generate_pore_seeds()
         self._generate_throat_seeds()
-        self._generate_pore_diameters(params['psd_info'])
-        self._generate_throat_diameters(params['tsd_info'])
+        self._generate_pore_diameters(params['stats_pores'])
+        self._generate_throat_diameters(params['stats_throats'])
         self._calc_pore_volumes()
         self._calc_throat_lengths()
         self._calc_throat_volumes()
@@ -212,8 +212,9 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         if sp.sum(self._net.throat_properties['length']<0):
             self._logger.warning("calc_throat_lengths: Some negative throat lengths exist, some pores overlap!")
         self._logger.debug("calc_throat_lengths: End of method")     
-        
-    def translate_coordinates(self,net,displacement=[0,0,0]):
+
+    @staticmethod
+    def translate_coordinates(net,displacement=[0,0,0]):
         r"""
         Translate pore network coordinates by specified amount
         
@@ -227,8 +228,9 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         
         """
         net.pore_properties['coords'] = net.pore_properties['coords'] + displacement
-        
-    def scale_coordinates(self,net,scale=[1,1,1]):
+
+    @staticmethod
+    def scale_coordinates(net,scale=[1,1,1]):
         r"""
         Scale pore network coordinates by specified amount
         
@@ -242,8 +244,9 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             
         """
         net.pore_properties['coords'] = net.pore_properties['coords']*scale 
-
-    def stitch(self,net1,net2):
+    
+    @staticmethod
+    def stitch(net1,net2):
         r"""
         Stitch two networks together
         

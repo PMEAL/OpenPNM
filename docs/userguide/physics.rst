@@ -40,7 +40,7 @@ Heat Conduction
 Multiphase
 ===============================================================================
 
-.. autoclass:: OpenPNM.Physics.Multiphase
+.. autoclass:: OpenPNM.Physics.MultiPhase
    :members:
    :undoc-members:
 
@@ -48,6 +48,6 @@ Multiphase
 Thermophysical Properties
 ===============================================================================
 
-.. autoclass:: OpenPNM.Physics.Thermo
+.. autoclass:: OpenPNM.Physics.ThermoPhysical
    :members:
    :undoc-members:
