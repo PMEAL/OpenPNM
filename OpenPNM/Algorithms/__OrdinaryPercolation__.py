@@ -42,7 +42,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     """
     
-    def __init__(self,net=OpenPNM.Network.GenericNetwork(),npts=25,inv_sites=[0],**kwargs):
+    def __init__(self, net ,npts=25,inv_sites=[0],**kwargs):
         r"""
         
         """

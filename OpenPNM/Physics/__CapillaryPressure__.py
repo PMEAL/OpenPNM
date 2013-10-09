@@ -26,7 +26,7 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
         super(CapillaryPressure,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
         
-    def Washburn(self,network,sigma,theta):
+    def Washburn(self,net,sigma,theta):
         r"""
         Computes the capillary entry pressure assuming the throat is a cylindrical tube.
         
@@ -52,7 +52,7 @@ class CapillaryPressure(OpenPNM.Utilities.OpenPNMbase):
         
         """
         self._logger.info("Calculating throat entry capillary pressure using the Washburn equation")
-        return -4*sigma*sp.cos(sp.radians(theta))/network.throat_properties['diameter']
+        return -4*sigma*sp.cos(sp.radians(theta))/net.throat_properties['diameter']
         
     def Purcell(self,network,sigma,theta,r_toroid):
         r"""

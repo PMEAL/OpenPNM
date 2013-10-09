@@ -9,6 +9,7 @@ module __GenericVisualization__: Base class to visualize networks
 import OpenPNM
 import scipy as sp
 import numpy as np
+import os
 
 from __GenericVisualization__ import GenericVisualization
 
@@ -35,7 +36,7 @@ class VTK(GenericVisualization):
         super(VTK,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
        
-    def write(self,net=None, filename='testvtp.vtp', scaling_factor=1):
+    def write(self, net, filename='default.vtp', scaling_factor=1):
         r"""
         Write Network to a VTK file for visualizing in Paraview
         
@@ -49,9 +50,14 @@ class VTK(GenericVisualization):
         scaling_factor : int, optional
             Not sure what this does
         """
+        output_path = os.path.join( os.path.expanduser('~'), filename )
+
         self._logger.info("Writing VTK File...please wait")        
-        self._f = open(filename,'w')
+        self._f = open(output_path,'w')
         self._net=net
+
+        print( self._net )
+
         self._scaling_factor = scaling_factor
         
         self._write_vtk_header()
