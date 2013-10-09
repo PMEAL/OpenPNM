@@ -78,8 +78,11 @@ class Template(GenericGeometry):
         temp = np.prod(np.shape(template))*np.ones(np.prod(np.shape(template),),dtype=np.int32)
         temp[img_ind] = np.r_[0:np.size(img_ind)]
         self._voxel_to_pore_map = temp
-
-        self._net.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(template)))
+        
+        if self._Nz == 1:
+            self._net.pore_properties['coords'] = sp.hstack((Lc*(0.5 + np.transpose(np.nonzero(template))),np.zeros((Np,1))))
+        else:
+            self._net.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(template)))
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
         self._net.pore_properties['numbering'] = np.arange(0,Np,dtype=np.int32)
         
