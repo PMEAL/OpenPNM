@@ -12,11 +12,6 @@ This submodule contains all pore scale physics models applied to a pore network.
 .. note::
     none
  
-Import
-------
->>> import OpenPNM
->>> OpenPNM.Physics.GenericPhysics()
-
 
 Submodules
 ----------
@@ -24,47 +19,46 @@ Submodules
 
  None                            --- No subpackages at the moment
 
-.. autoclass:: Physics.GenericPhysics
+.. automodule:: Physics.GenericPhysics
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: Physics.CapillaryPressure
+.. automodule:: Physics.CapillaryPressure
    :members:
    :undoc-members:
    :show-inheritance:
        
-.. autoclass:: Physics.FluidFlow
+.. automodule:: Physics.FluidFlow
    :members:
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: Physics.MassTransport
+.. automodule:: Physics.MassTransport
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: Physics.HeatConduction
+.. automodule:: Physics.HeatConduction
    :members:
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: Physics.MultiPhase
+.. automodule:: Physics.MultiPhase
    :members:
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: Physics.ThermoPhysical
+.. automodule:: Physics.ThermoPhysical
    :members:
    :undoc-members:
    :show-inheritance:
     
 """
 
-from __GenericPhysics__     import GenericPhysics
-from __CapillaryPressure__  import CapillaryPressure
-from __MassTransport__      import MassTransport
-from __HeatConduction__     import HeatConduction
-from __FluidFlow__          import FluidFlow
-from __MultiPhase__         import MultiPhase
-from __ThermoPhysical__     import ThermoPhysical
+import CapillaryPressure    as CapillaryPressure
+import MassTransport        as MassTransport
+import HeatConduction       as HeatConduction
+import FluidFlow            as FluidFlow
+import MultiPhase           as MultiPhase
+import ThermoPhysical       as ThermoPhysical
