@@ -26,14 +26,28 @@ class VTK(OpenPNM.Utilities.OpenPNMbase):
     
     """
     
-    def __init__(self):
+    def __init__(self,**kwargs):
         r"""
         Initialize
         """
-        super(VTK,self).__init__()
-        
+        super(VTK,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
+       
     def write(self,net=None, filename='testvtp.vtp', scaling_factor=1):
+        r"""
+        Write Network to a VTK file for visualizing in Paraview
         
+        Parameters
+        ----------
+        net : OpenPNM Network Object
+        
+        filename : string
+            Full path to desired file location
+        
+        scaling_factor : int, optional
+            Not sure what this does
+        """
+        self._logger.info("Writing VTK File...please wait")        
         self._f = open(filename,'w')
         self._net=net
         self._scaling_factor = scaling_factor
