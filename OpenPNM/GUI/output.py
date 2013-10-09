@@ -1,5 +1,7 @@
 import os
+import OpenPNM
 
-def VTK(network, path=os.path.expanduser('~')):
-  print( "saved %s to %s" % (network, path) )
-  return
+def VTK(net, filename='new_network.vtp'):
+  filename = str(filename)
+  OpenPNM.Visualization.VTK().write( **locals() )
+  

@@ -1,5 +1,5 @@
 import OpenPNM
 
-def CapillaryPressureWashburn(network, sigma=0.072, theta=120):
-  network.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure().Washburn(**locals())
-  return {'network': network}
+def CapillaryPressureWashburn(net, sigma=0.072, theta=120):
+  net.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure().Washburn(**locals())
+  return {'net': net}
