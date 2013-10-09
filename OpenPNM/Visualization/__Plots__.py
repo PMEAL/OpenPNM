@@ -8,9 +8,10 @@ module __GenericVisualization__: Base class to visualize networks
 
 import OpenPNM
 import scipy as sp
-import numpy as np
 
-class Plots(OpenPNM.Utilities.OpenPNMbase):
+from __GenericVisualization__ import GenericVisualization
+
+class Plots(GenericVisualization):
     r"""
     Methods for plotting common information about pore networks
     
@@ -70,4 +71,30 @@ class Plots(OpenPNM.Utilities.OpenPNMbase):
         plt.xlabel('Throat Length [m]')
         plt.ylabel('Frequency')
         
+    @staticmethod
+    def Capillary_Pressure_Curve(net):
+        r"""
+        Plot drainage capillary pressure curve
+        
+        Parameters
+        ----------
+        net : OpenPNM Network Object
+            The network for which the graphs are desired
+            
+        """
+        try:
+            PcPoints = sp.unique(net.pore_properties['Pc_invaded'])
+        except:
+            raise Exception('Capillary pressure simulation has not been run')
+        import matplotlib.pyplot as plt
+        PcPoints = sp.unique(net.pore_properties['Pc_invaded'])
+        Snwp = sp.zeros_like(PcPoints)
+        Ps = sp.where(net.pore_properties['type']==0)
+        for i in range(1,sp.size(PcPoints)):
+            Pc = PcPoints[i]
+            Snwp[i] = sum((net.pore_properties['Pc_invaded'][Ps]<Pc)*(net.pore_properties['volume'][Ps]))/sum(net.pore_properties['volume'][Ps])
+        plt.plot(PcPoints,Snwp,'r.-')
+        plt.xlabel('Capillary Pressure')
+        plt.ylabel('Invading Fluid Saturation')
+        plt.show(block = False)
         

@@ -10,7 +10,9 @@ import OpenPNM
 import scipy as sp
 import numpy as np
 
-class VTK(OpenPNM.Utilities.OpenPNMbase):
+from __GenericVisualization__ import GenericVisualization
+
+class VTK(GenericVisualization):
     r"""
     writeVTK - Class for writing a VTK file
     
