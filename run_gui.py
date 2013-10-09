@@ -1,5 +1,5 @@
-import flow_gui
 import OpenPNM
+import flow_gui
 
 
 flow_gui.add_source(OpenPNM.GUI.network)

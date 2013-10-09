@@ -12,7 +12,7 @@ def Cubic(domain_size=[1,1,1], divisions=[10,10,10], lattice_spacing=[], stats_p
                       'loc' : 6e-6,
                     'scale' : 2e-5}
   pn = OpenPNM.Geometry.Cubic().generate(**locals())
-  return {'network': pn}
+  return {'net': pn}
   
 def Import(import_file = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles\\large_network'):
     sections = import_file.split('\\')
@@ -26,4 +26,4 @@ def Import(import_file = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles\\l
     pn.pore_properties['inlets'][0]=1
     pn.pore_properties['outlets']=np.zeros((pn.get_num_pores(),),dtype=np.int8)
     pn.pore_properties['outlets'][0]=1
-    return {'network': pn}
+    return {'net': pn}
