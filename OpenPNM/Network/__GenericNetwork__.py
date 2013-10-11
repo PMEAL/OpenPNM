@@ -24,9 +24,9 @@ import matplotlib as mpl
 class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     r"""
     GenericNetwork - Base topology class for pore networks
-    
+
     This class contains the basic functionality for storaging and querying pore network data.
-    
+
     Parameters
     ----------
     num_pores : int
@@ -35,26 +35,33 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Number of throats
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    
+
     """
-    
+
     def __init__(self,**kwords):
         r'''
-        This is the abstract constructor of the basic network class.  
-        
+        This is the abstract constructor of the basic network class.
+
         '''
-        
+
         super(GenericNetwork,self).__init__(**kwords)
         self._logger.debug("Method: Constructor")
-        
-        #Initializes regular dictionaries
+
+        #Initializes properties dictionaries
         self.pore_properties = {}
         self.throat_properties = {}
-        
+
+        #Initialize the conditions dictionaries
+        self.pore_conditions = {}
+        self.throat_conditions = {}
+
+        #Initialize constants dictionary
+        self.const = {}
+
         #This initializes the custom 'self-protecting' dictionary
 #        self.pore_properties = {}
 #        self.throat_properties = {}
-        
+
         #Initialize adjacency and incidence matrix dictionaries
         self.adjacency_matrix = {}
         self.incidence_matrix = {}
@@ -64,10 +71,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         self.incidence_matrix['coo'] = {}
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
-        
-        #Initialize Constants dictionary
-        self.const = {}
-        
+
         self._logger.info("Constructor completed")
 
     def create_adjacency_matrix(self,tprop='connections',sprsfmt='all',dropzeros=True,sym=True):
@@ -90,11 +94,11 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         -------
         adj_mat : sparse_matrix, optional
             Returns adjacency matrix in specified format for private use.
-        
+
         Notes
         -----
         This 'can' return the specified sparse matrix, but will always write the generated matrix to the network object
-        
+
         Examples
         --------
         >>> print 'nothing yet'
@@ -102,28 +106,28 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         self._logger.debug('create_adjacency_matrix: Start of method')
         Np   = self.get_num_pores()
         Nt   = self.get_num_throats()
-        
+
         if tprop == 'connections':
             dataset = np.ones(Nt)
         else:
             dataset = self.throat_properties[tprop]
-            
+
         if dropzeros:
             ind = dataset>0
         else:
             ind = np.ones_like(dataset,dtype=bool)
-            
+
         conn = self.throat_properties["connections"][ind]
         row  = conn[:,0]
         col  = conn[:,1]
         data = dataset[ind]
-        
+
         #Append row & col to each other, and data to itself
         if sym:
             row  = sp.append(row,conn[:,1])
             col  = sp.append(col,conn[:,0])
             data = sp.append(data,data)
-        
+
         temp = sprs.coo_matrix((data,(row,col)),(Np,Np))
         if sprsfmt == 'coo' or sprsfmt == 'all':
             self.adjacency_matrix['coo'][tprop] = temp
@@ -133,7 +137,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             self.adjacency_matrix['lil'][tprop] = temp.tolil()
         if sprsfmt != 'all':
             return self.adjacency_matrix[sprsfmt][tprop]
-        
+
     def create_incidence_matrix(self,tprop='connections',sprsfmt='all',dropzeros=True):
         r"""
 
@@ -146,7 +150,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Returns
         -------
         An incidence matrix (a cousin to the adjacency matrix, useful for finding throats of given a pore)
-        
+
         Notes
         -----
 
@@ -158,24 +162,24 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         Nt = self.get_num_throats()
         Np = self.get_num_pores()
-        
+
         if tprop == 'connections':
             dataset = np.ones(Nt)
         else:
             dataset = self.throat_properties[tprop]
-        
+
         if dropzeros:
             ind = dataset>0
         else:
             ind = np.ones_like(dataset,dtype=bool)
-        
+
         conn = self.throat_properties['connections'][ind]
         row  = conn[:,0]
         row = np.append(row,conn[:,1])
         col = self.throat_properties['numbering'][ind]
         col = np.append(col,col)
         data = np.append(dataset[ind],dataset[ind])
-        
+
         temp = sprs.coo.coo_matrix((data,(row,col)),(Np,Nt))
         if sprsfmt == 'coo' or sprsfmt == 'all':
             self.incidence_matrix['coo'][tprop] = temp
@@ -185,11 +189,11 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             self.incidence_matrix['lil'][tprop] = temp.tolil()
         if sprsfmt != 'all':
             return self.incidence_matrix[sprsfmt][tprop]
-            
+
     def get_num_pores(self,Ptype=[0,1,2,3,4,5,6]):
         r"""
         Returns the number of pores of the specified type
-        
+
         Parameters
         ----------
 
@@ -199,7 +203,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Returns
         -------
         Np : int
-            
+
         """
         try:
             Np = np.sum(np.in1d(self.pore_properties['type'],Ptype))
@@ -210,7 +214,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     def get_num_throats(self,Ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6]):
         r"""
         Return the number of throats of the specified type
-        
+
         Parameters
         ----------
 
@@ -220,7 +224,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Returns
         -------
         Nt : int
-        
+
         """
         try:
             Nt = np.sum(np.in1d(self.throat_properties['type'],Ttype))
@@ -237,28 +241,28 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Tnums: array_like
             List of throats ID numbers
         flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique pore ID numbers 
-            is returned. If flatten is False the returned array contains 
-            arrays of neighboring pores for each input throat, in the order 
-            they were sent.            
+            If flatten is True (default) a 1D array of unique pore ID numbers
+            is returned. If flatten is False the returned array contains
+            arrays of neighboring pores for each input throat, in the order
+            they were sent.
 
         Returns
         -------
-        Ps : 1D array (if flatten is True) or ndarray of arrays (if flatten is 
+        Ps : 1D array (if flatten is True) or ndarray of arrays (if flatten is
             False)
 
         Examples
         --------
         >>> Tnums = [0,1]
-        >>> Ps = pn.get_connected_pores(Tnums) 
+        >>> Ps = pn.get_connected_pores(Tnums)
         >>> Ps
         array([  0,   2, 920])
-        
+
         >>> Tnums = [0,1]
-        >>> Ps = pn.get_connected_pores(Tnums,flatten=False) 
+        >>> Ps = pn.get_connected_pores(Tnums,flatten=False)
         >>> Ps
         array([[  0, 920],
-               [  0,   2]])                 
+               [  0,   2]])
         """
         Ps = self.throat_properties['connections'][Tnums]
 #        Ps = [np.asarray(x) for x in Ps if x]
@@ -284,7 +288,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     def get_neighbor_pores(self,Pnums,Ptype=[0,1,2,3,4,5,6],flatten=True):
         r"""
         Returns a list of pores neighboring the given pore(s)
-        
+
         Parameters
         ----------
         Pnums : array_like
@@ -292,23 +296,23 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Ptype : array_like
             Type of pores to be returned
         flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique pore ID numbers 
-            is returned with the input pores (Pnum) removed. If flatten is 
-            False the returned array contains arrays of neighboring pores for 
+            If flatten is True (default) a 1D array of unique pore ID numbers
+            is returned with the input pores (Pnum) removed. If flatten is
+            False the returned array contains arrays of neighboring pores for
             each input pore, in the order they were sent.
-        
+
         Returns
         -------
         neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if
             flatten if False)
-        
+
         Examples
         --------
         >>> Pnums = [0,1]
         >>> Ps = pn.get_neighbor_pores(Pnums)
         >>> Ps
         array([  2,   3, 920, 921])
-        
+
         >>> Pnums = [0,1]
         >>> Ps = pn.get_neighbor_pores(Pnums,flatten=False)
         >>> Ps
@@ -318,7 +322,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         try:
             neighborPs = self.adjacency_matrix['lil']['connections'].rows[[Pnums]]
         except:
-            self.create_adjacency_matrix() 
+            self.create_adjacency_matrix()
             neighborPs = self.adjacency_matrix['lil']['connections'].rows[[Pnums]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
@@ -337,7 +341,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     def get_neighbor_throats(self,Pnums,Ttype=[0,1,2,3,4,5,6],flatten=True):
         r"""
         Returns a list of throats neighboring the given pore(s)
-        
+
         Parameters
         ----------
         Pnums : array_like
@@ -345,23 +349,23 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Ttype : array_like
             Type of throats to be returned
         flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique throat ID numbers 
-            is returned. If flatten is False the returned array contains arrays 
-            of neighboring throat ID numbers for each input pore, in the order 
+            If flatten is True (default) a 1D array of unique throat ID numbers
+            is returned. If flatten is False the returned array contains arrays
+            of neighboring throat ID numbers for each input pore, in the order
             they were sent.
-        
+
         Returns
         -------
         neighborTs : 1D array (if flatten is True) or ndarray of arrays (if
             flatten if False)
-            
+
         Examples
         --------
         >>> Pnums = [0,1]
         >>> Ts = pn.get_neighbor_throats(Pnums)
         >>> Ts
         array([    0,     1,     2, 83895, 83896])
-        
+
         >>> Pnums = [0,1]
         >>> Ts = pn.get_neighbor_throats(Pnums,flatten=False)
         >>> Ts
@@ -384,29 +388,29 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
                 ans = sp.array(sp.where(sp.in1d(self.throat_properties['type'][neighborTs[i]],Ttype)))[0]
                 neighborTs[i] = sp.array(neighborTs[i])[ans]
         return np.array(neighborTs)
-        
+
     def get_num_neighbors(self,Pnums,Ptype=[0,1,2,3,4,5,6]):
         r"""
         Returns an ndarray containing the number of pores for each element in Pnums
-        
+
         Parameters
         ----------
         Pnums : array_like
             ID numbers of pores whose neighbors are sought
         Ptype : array_like
             Type of throats to be returne
-        
+
         Returns
         -------
         num_neighbors : 1D array with number of neighbors in each element
-            
+
         Examples
         --------
         >>> Pnum = [0,1]
         >>> Nn = pn.get_num_neighbors(Pnum)
         >>> Nn
         array([3, 4], dtype=int8)
-        
+
         >>> Pnum = range(0,pn.get_num_pores())
         >>> Nn = pn.get_num_neighbors(Pnum)
         >>> Nn
@@ -430,14 +434,56 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         else:
             propPs = self.pore_properties[Pprop][neighborPs]
         return propPs
-        
+
     def get_neighbor_throat_props(self,Pnums,Ttype=[0,1,2,3,4,5,6],flatten=True):
         r"""
         Nothing yet, but this will return the specified property rather than
         just the ID numbers
-        
+
         TODO: Impliment
         """
+
+    def interpolate_pore_conditions(self,Tcond=None):
+        r"""
+        Determines a pore property as the average of it's neighboring throats
+
+        Parameters
+        ----------
+        Tcond : string
+            The name of the throat condition to be interpolated
+
+        Notes
+        -----
+        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+
+        """
+        self.pore_conditions[Tcond] = sp.zeros((self.get_num_pores()))
+        #Only interpolate conditions for internal pores, type=0
+        Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
+        nTs = self.get_neighbor_throats(Pnums,flatten=False)
+        for i in sp.r_[0:sp.shape(nTs)[0]]:
+            self.pore_conditions[Tcond][i] = sp.mean(self.throat_conditions[Tcond][nTs[i]])
+
+    def interpolate_throat_conditions(self,Pcond=None):
+        r"""
+        Determines a throat condition as the average of the conditions it's neighboring pores
+
+        Parameters
+        ----------
+        Pcond : string
+            The name of the throat condition to be interpolated
+
+        Notes
+        -----
+        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+
+        """
+        self.throat_conditions[Pcond] = sp.zeros((self.get_num_throats()))
+        #Interpolate values for all throats, including those leading to boundary
+        Tnums = sp.r_[0:self.get_num_throats()]
+        nPs = self.get_connected_pores(Tnums,flatten=False)
+        for i in sp.r_[0:sp.shape(nPs)[0]]:
+            self.throat_conditions[Pcond][i] = sp.mean(self.pore_conditions[Pcond][nPs[i]])
 
     def check_basic(self):
         r"""
@@ -457,7 +503,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         print "Basic properties of the network"
         print " - Number of pores:   ", self.get_num_pores()
         print " - Number of throats: ", self.get_num_throats()
-        
+
         print "="*72
         print "Pore Properties"
         print "-"*72
@@ -465,7 +511,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         print "-"*72
         for key in self.pore_properties:
             print key, "\t", "\t", self.pore_properties[key].dtype, "\t", self.pore_properties[key].shape, "\t", self.pore_properties[key].nbytes/1e6
-        
+
         print "="*72
         print "Throat Properties"
         print "-"*72
@@ -491,7 +537,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             print sprsfmt, ":\t", self.incidence_matrix[sprsfmt].keys()
 
         print "="*72
-        
+
     def __str__(self):
         r"""
         Print some basic properties
@@ -521,7 +567,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     def update(self):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
-        
+
 if __name__ == '__main__':
     test1=GenericNetwork(loggername='Test1')
     test2=GenericNetwork(loglevel=20,loggername='Test2')
