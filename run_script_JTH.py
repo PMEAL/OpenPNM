@@ -18,8 +18,8 @@ print "= Example: Create random network and run an invasion\n= percolation algor
 print "-"*50
 print "- * generate a simple cubic network"    
 #sp.random.seed(1)
-pn = OpenPNM.Generators.Cubic(divisions=[10,10,10],lattice_spacing=.0005,loglevel=20,btype = [0,0,0]).generate()
-#pn = OpenPNM.Generators.Delaunay(domain_size=[30,30,10],num_pores = 5000 ,btype = [1,1,0]).generate()
+pn = OpenPNM.Geometry.Cubic(divisions=[10,10,10],lattice_spacing=.0005,loglevel=20,btype = [0,0,0]).generate()
+#pn = OpenPNM.Geometry.Delaunay(domain_size=[30,30,10],num_pores = 5000 ,btype = [1,1,0]).generate()
 print "+"*50
 print "Sample generated at t =",clock()-start,"seconds."
 print "+"*50
@@ -51,7 +51,7 @@ print "+"*50
 print "IP completed at t =",clock()-start,"seconds."
 print "+"*50
 print "- * Save output to IP.vtp"
-OpenPNM.IO.NetToVtp(net = pn,filename="IP.vtp")
+OpenPNM.Visualization.NetToVtp(net = pn,filename="IP.vtp")
 
 print "="*50
 print "Program Finished at t = ",clock()-start,"seconds."

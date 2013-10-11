@@ -31,7 +31,7 @@ IP = OpenPNM.Algorithms.InvasionPercolation(net=pn,inlets=[inlets],outlets=outle
 IP.run()
 
 print "- * Save output to IP.vtp"
-OpenPNM.IO.NetToVtp(net = pn,filename="IP.vtp")
+OpenPNM.Visualization.NetToVtp(net = pn,filename="IP.vtp")
 
 print "="*50
 print "Delta T: ",clock()-start,"seconds."

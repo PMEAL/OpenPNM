@@ -21,7 +21,7 @@ import scipy as sp
 import scipy.sparse as sprs
 import matplotlib as mpl
 
-class GenericNetwork(OpenPNM.Base.OpenPNMbase):
+class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     r"""
     GenericNetwork - Base topology class for pore networks
     
@@ -36,37 +36,8 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
     
-    Attributes
-    ----------
-    
-    self.pore_properties : dictionary (string, ndarray)
-        dictionary containing all pore properties.
-        The following properties are created automatically
-            - numbering    (int)
-    self.throat_properties : dictionary (string, ndarray)
-        dictionary containing all throat properties.
-        The following properties are created automatically
-            - numbering     (int)
-            - connections   (int,int)   random integers
-    self._num_pores : int
-        Number of pores
-    self._num_throats : int
-        Number of throats
-    self._needs_update : bool
-        flag if the things need to be updated.
-    
-    
-
-    
-    I have included the class attributes on the same level as
-    the devs. This had a weird side effect:
-      * The first class instance works fine
-      * the second takes the same size as the first.
-    I have corrected this by initializing the everyting in the constructor
-    again. This seems to have solved the problem, but I am not sure why.
     """
     
-
     def __init__(self,**kwords):
         r'''
         This is the abstract constructor of the basic network class.  
@@ -75,64 +46,54 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         
         super(GenericNetwork,self).__init__(**kwords)
         self._logger.debug("Method: Constructor")
-
+        
+        #Initializes regular dictionaries
         self.pore_properties = {}
         self.throat_properties = {}
-
-        self._logger.info("- Creating default pore properties")
         
-        self._logger.info("  - numbering")
-        self.declare_pore_property('numbering',dtype=sp.int64,columns=1,default=0)
-
-        self._logger.info("  - coords")
-        self.declare_pore_property("coords",dtype=float,columns=3,default=0)
-
-        self._logger.info("  - type")
-        self.declare_pore_property("type",dtype=sp.int8,columns=1,default=1)
-
-        '''r
-        FIXME: fix occurence of duplicate throats
-        '''
-        self._logger.info("- Creating default throat properties")
+        #This initializes the custom 'self-protecting' dictionary
+#        self.pore_properties = {}
+#        self.throat_properties = {}
         
-        self._logger.info("  - numbering")
-        self.declare_throat_property(name="numbering",dtype=sp.int8,columns=1,default=1)
-
-        self._logger.info("  - connections")
-        self.declare_throat_property(name="connections",dtype=int,columns=2,default=0)
-
-        self._logger.info("  - type")
-        self.declare_throat_property(name="type",dtype=sp.int8,columns=1,default=1)
-        #self.throat_properties["type"] = sp.arange(0,num_throats,1).reshape(num_throats,1)
+        #Initialize adjacency and incidence matrix dictionaries
+        self.adjacency_matrix = {}
+        self.incidence_matrix = {}
+        self.adjacency_matrix['coo'] = {}
+        self.adjacency_matrix['csr'] = {}
+        self.adjacency_matrix['lil'] = {}
+        self.incidence_matrix['coo'] = {}
+        self.incidence_matrix['csr'] = {}
+        self.incidence_matrix['lil'] = {}
+        
+        #Initialize Constants dictionary
+        self.const = {}
         
         self._logger.info("Constructor completed")
 
-    def create_adjacency_matrix(self,tprop='none',sprsfmt='all',dropzeros=True,diag=False,sym=True):
+    def create_adjacency_matrix(self,tprop='connections',sprsfmt='all',dropzeros=True,sym=True):
         r"""
 
         Generates adjacency matricies in various sparse storage formats
 
         Parameters
         ----------
-        tprop : String
-            The throat property to enter into the i,j locations
-        sprsfmt : String
-            The sparse storage format to use
-        dropzeros : Boolean
-            Remove 0 elements from tprop, instead of creating 0-weighted link
-        diag : Boolean
-            blah
-        sym : Boolean
-            Makes the matrix symmetric about the diagonal
+        tprop : String, optional
+            The throat property to enter into the i,j locations. If no property is given 'connections' is used.
+        sprsfmt : String, optional
+            The sparse storage format to use. If none type is given, all are generated (coo, csr & lil)
+        dropzeros : Boolean, optional
+            Remove 0 elements from tprop, instead of creating 0-weighted links, the default is True.
+        sym : Boolean, optional
+            Makes the matrix symmetric about the diagonal, the default is true.
 
         Returns
         -------
         adj_mat : sparse_matrix, optional
-            Returns adjacency matrix in specified format for private use
+            Returns adjacency matrix in specified format for private use.
         
         Notes
         -----
-        This can return the specified sparse matrix, but will always write the generated matrix to the network object
+        This 'can' return the specified sparse matrix, but will always write the generated matrix to the network object
         
         Examples
         --------
@@ -142,7 +103,7 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         Np   = self.get_num_pores()
         Nt   = self.get_num_throats()
         
-        if tprop == 'none':
+        if tprop == 'connections':
             dataset = np.ones(Nt)
         else:
             dataset = self.throat_properties[tprop]
@@ -151,31 +112,29 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
             ind = dataset>0
         else:
             ind = np.ones_like(dataset,dtype=bool)
+            
         conn = self.throat_properties["connections"][ind]
         row  = conn[:,0]
         col  = conn[:,1]
         data = dataset[ind]
         
-        if diag:
-            print 'not implimenented yet'
-        
+        #Append row & col to each other, and data to itself
         if sym:
             row  = sp.append(row,conn[:,1])
             col  = sp.append(col,conn[:,0])
             data = sp.append(data,data)
         
-        self._adjmatrix = sprs.coo_matrix((data,(row,col)),(Np,Np))
+        temp = sprs.coo_matrix((data,(row,col)),(Np,Np))
         if sprsfmt == 'coo' or sprsfmt == 'all':
-            self._adjmatrix._coo = self._adjmatrix
-            self._adjmatrix_coo = self._adjmatrix
+            self.adjacency_matrix['coo'][tprop] = temp
         if sprsfmt == 'csr' or sprsfmt == 'all':
-            self._adjmatrix._csr = self._adjmatrix.tocsr()
-            self._adjmatrix_csr = self._adjmatrix.tocsr()
+            self.adjacency_matrix['csr'][tprop] = temp.tocsr()
         if sprsfmt == 'lil' or sprsfmt == 'all':
-            self._adjmatrix._lil = self._adjmatrix.tolil()
-            self._adjmatrix_lil = self._adjmatrix.tolil()
+            self.adjacency_matrix['lil'][tprop] = temp.tolil()
+        if sprsfmt != 'all':
+            return self.adjacency_matrix[sprsfmt][tprop]
         
-    def create_incidence_matrix(self,tprop='none',sprsfmt='all',dropzeros=True):
+    def create_incidence_matrix(self,tprop='connections',sprsfmt='all',dropzeros=True):
         r"""
 
         Creates an incidence matrix filled with specified throat values
@@ -200,7 +159,7 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         Nt = self.get_num_throats()
         Np = self.get_num_pores()
         
-        if tprop == 'none':
+        if tprop == 'connections':
             dataset = np.ones(Nt)
         else:
             dataset = self.throat_properties[tprop]
@@ -209,59 +168,32 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
             ind = dataset>0
         else:
             ind = np.ones_like(dataset,dtype=bool)
-        conn = self.throat_properties["connections"][ind]
+        
+        conn = self.throat_properties['connections'][ind]
         row  = conn[:,0]
         row = np.append(row,conn[:,1])
         col = self.throat_properties['numbering'][ind]
         col = np.append(col,col)
         data = np.append(dataset[ind],dataset[ind])
-        self._incmatrix = sprs.coo.coo_matrix((data,(row,col)),(Np,Nt))
+        
+        temp = sprs.coo.coo_matrix((data,(row,col)),(Np,Nt))
         if sprsfmt == 'coo' or sprsfmt == 'all':
-            self._incmatrix_coo = self._incmatrix
-            self._incmatrix._coo = self._incmatrix
+            self.incidence_matrix['coo'][tprop] = temp
         if sprsfmt == 'csr' or sprsfmt == 'all':
-            self._incmatrix_csr = self._incmatrix.tocsr()
-            self._incmatrix._csr = self._incmatrix.tocsr()
+            self.incidence_matrix['csr'][tprop] = temp.tocsr()
         if sprsfmt == 'lil' or sprsfmt == 'all':
-            self._incmatrix_lil = self._incmatrix.tolil()
-            self._incmatrix._lil = self._incmatrix.tolil()
-
-    def declare_pore_property( self,name="NewName",dtype=float,columns=1,default=0.):
-        r"""
-        Create a pore property and reserve storage space
-
-        .. note::
-            - At the moment this case with 1 row is seperately treated
-              This has several implications on the linear algebra operations within
-              our code.
-        """
-        self._logger.debug("declare_pore_property")
-        if name in self.pore_properties.keys():
-            self._logger.error("This pore property is already declared")
-        else:
-            rows=self.get_num_pores()
-            self.pore_properties[name] = sp.ones((rows,columns),dtype=dtype)*default
-
-    def declare_throat_property( self,name="NewName",dtype=float,columns=1,default=0.):
-        r"""
-        Create a throat property and reserve storage space
-
-        """
-        self._logger.debug("declare_pore_property")
-        if name in self.throat_properties.keys():
-            self._logger.error("This throat property is already declared")
-        else:
-            rows=self.get_num_throats()
-            self.throat_properties[name] = sp.ones((rows,columns),dtype=dtype)*default
-
-    def get_num_pores(self,ptype=[0,1,2,3,4,5,6]):
+            self.incidence_matrix['lil'][tprop] = temp.tolil()
+        if sprsfmt != 'all':
+            return self.incidence_matrix[sprsfmt][tprop]
+            
+    def get_num_pores(self,Ptype=[0,1,2,3,4,5,6]):
         r"""
         Returns the number of pores of the specified type
         
         Parameters
         ----------
 
-        ptype : array_like, optional
+        Ptype : array_like, optional
             list of desired pore types to count
 
         Returns
@@ -270,19 +202,19 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
             
         """
         try:
-            Np = np.sum(np.in1d(self.pore_properties['type'],ptype))
+            Np = np.sum(np.in1d(self.pore_properties['type'],Ptype))
         except:
             Np = 0
         return Np
 
-    def get_num_throats(self,ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6]):
+    def get_num_throats(self,Ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6]):
         r"""
         Return the number of throats of the specified type
         
         Parameters
         ----------
 
-        ttype : array_like, optional
+        Ttype : array_like, optional
             list of desired throat types to count
 
         Returns
@@ -291,12 +223,12 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         
         """
         try:
-            Nt = np.sum(np.in1d(self.throat_properties['type'],ttype))
+            Nt = np.sum(np.in1d(self.throat_properties['type'],Ttype))
         except:
             Nt = 0
         return Nt
 
-    def get_connected_pores(self,Tnums=[],flatten=True):
+    def get_connected_pores(self,Tnums=[],flatten=False):
         r"""
         Return a list of pores connected to a list of throats
 
@@ -328,7 +260,7 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         array([[  0, 920],
                [  0,   2]])                 
         """
-        Ps = self.throat_properties["connections"][Tnums]
+        Ps = self.throat_properties['connections'][Tnums]
 #        Ps = [np.asarray(x) for x in Ps if x]
         if flatten:
             Ps = np.unique(np.hstack(Ps))
@@ -345,18 +277,20 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         Returns
         -------
         Tnum : int
-            Returns throat ID number
+            Returns throat ID number, or empty array if pores are not connected
         """
         return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
-    def get_neighbor_pores(self,Pnums,flatten=True):
+    def get_neighbor_pores(self,Pnums,Ptype=[0,1,2,3,4,5,6],flatten=True):
         r"""
-        Returns a list of neighboring pores
+        Returns a list of pores neighboring the given pore(s)
         
         Parameters
         ----------
         Pnums : array_like
-            ID numbers of pores whose neighbors are sought
+            ID numbers of pores whose neighbors are sought.
+        Ptype : array_like
+            Type of pores to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore ID numbers 
             is returned with the input pores (Pnum) removed. If flatten is 
@@ -365,9 +299,9 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         
         Returns
         -------
-        neighborPs : 1D array (if flatten is True) or ndarray of arrays (is
+        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if
             flatten if False)
-            
+        
         Examples
         --------
         >>> Pnums = [0,1]
@@ -379,29 +313,37 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         >>> Ps = pn.get_neighbor_pores(Pnums,flatten=False)
         >>> Ps
         array([[  1,   2, 920],
-               [  0,   3, 921]]) 
+               [  0,   3, 921]])
         """
         try:
-            neighborPs = self._adjmatrix._lil.rows[[Pnums]]
+            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[Pnums]]
         except:
             self.create_adjacency_matrix() 
-            neighborPs = self._adjmatrix_lil.rows[[Pnums]]
-        #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-        neighborPs = [np.asarray(x) for x in neighborPs if x]
-        if flatten and neighborPs:
-            neighborPs = np.hstack(neighborPs)
+            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[Pnums]]
+        if flatten:
+            #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
+            neighborPs = [sp.asarray(x) for x in neighborPs if x]
+            neighborPs = sp.hstack(neighborPs)
             #Remove references to input pores and duplicates
-            neighborPs = np.unique(neighborPs[~np.in1d(neighborPs,Pnums)])
+            neighborPs = sp.unique(neighborPs[~np.in1d(neighborPs,Pnums)])
+            #Remove pores of the wrong type
+            neighborPs = neighborPs[sp.in1d(self.pore_properties['type'][neighborPs],Ptype)]
+        else:
+            for i in range(0,sp.shape(Pnums)[0]):
+                ans = sp.array(sp.where(sp.in1d(self.pore_properties['type'][neighborPs[i]],Ptype)))[0]
+                neighborPs[i] = sp.array(neighborPs[i])[ans]
         return np.array(neighborPs)
 
-    def get_neighbor_throats(self,Pnums,flatten=True):
+    def get_neighbor_throats(self,Pnums,Ttype=[0,1,2,3,4,5,6],flatten=True):
         r"""
-        Returns a list of neighboring throats
+        Returns a list of throats neighboring the given pore(s)
         
         Parameters
         ----------
         Pnums : array_like
             ID numbers of pores whose neighbors are sought
+        Ttype : array_like
+            Type of throats to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique throat ID numbers 
             is returned. If flatten is False the returned array contains arrays 
@@ -427,69 +369,75 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
                [    2, 83895, 83896]])
         """
         try:
-            neighborTs = self._incmatrix._lil.rows[[Pnums]]
+            neighborTs = self.incidence_matrix['lil']['connections'].rows[[Pnums]]
         except:
-            self.create_incidence_matrix(sprsfmt='lil')
-            neighborTs = self._incmatrix._lil.rows[[Pnums]]
-        #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-        neighborTs = [np.asarray(x) for x in neighborTs if x]
+            self.create_incidence_matrix()
+            neighborTs = self.incidence_matrix['lil']['connections'].rows[[Pnums]]
         if flatten and neighborTs:
+            #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
+            neighborTs = [np.asarray(x) for x in neighborTs if x]
             neighborTs = np.unique(np.hstack(neighborTs))
+            #Remove throats of the wrong type
+            neighborTs = neighborTs[sp.in1d(self.throat_properties['type'][neighborTs],Ttype)]
+        else:
+            for i in range(0,sp.shape(Pnums)[0]):
+                ans = sp.array(sp.where(sp.in1d(self.throat_properties['type'][neighborTs[i]],Ttype)))[0]
+                neighborTs[i] = sp.array(neighborTs[i])[ans]
         return np.array(neighborTs)
+        
+    def get_num_neighbors(self,Pnums,Ptype=[0,1,2,3,4,5,6]):
+        r"""
+        Returns an ndarray containing the number of pores for each element in Pnums
+        
+        Parameters
+        ----------
+        Pnums : array_like
+            ID numbers of pores whose neighbors are sought
+        Ptype : array_like
+            Type of throats to be returne
+        
+        Returns
+        -------
+        num_neighbors : 1D array with number of neighbors in each element
+            
+        Examples
+        --------
+        >>> Pnum = [0,1]
+        >>> Nn = pn.get_num_neighbors(Pnum)
+        >>> Nn
+        array([3, 4], dtype=int8)
+        
+        >>> Pnum = range(0,pn.get_num_pores())
+        >>> Nn = pn.get_num_neighbors(Pnum)
+        >>> Nn
+        array([3, 4, 4, ..., 4, 4, 3], dtype=int8)
+        >>> pn.pore_properties['num_neighbors'] = Nn
+        """
+        neighborPs = self.get_neighbor_pores(Pnums,Ptype,flatten=False)
+        num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
+        for i in range(0,sp.shape(num)[0]):
+            num[i] = sp.size(neighborPs[i])
+        return num
 
-    def get_neighbor_pores_props(self,Pnum,flatten=True):
+    def get_neighbor_pores_props(self,Pprop,Pnums,Ptype=[0,1,2,3,4,5,6],flatten=True):
+        r"""
+        Return the desired property for the requested pore ID numbers
+
+        """
+        neighborPs = self.get_neighbor_pores(Pnums,Ptype,flatten)
+        if flatten:
+            propPs = self.pore_properties[Pprop][neighborPs]
+        else:
+            propPs = self.pore_properties[Pprop][neighborPs]
+        return propPs
+        
+    def get_neighbor_throat_props(self,Pnums,Ttype=[0,1,2,3,4,5,6],flatten=True):
         r"""
         Nothing yet, but this will return the specified property rather than
         just the ID numbers
         
         TODO: Impliment
         """
-        
-    def get_neighbor_throat_props(self,Pnum,ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6],flatten=True):
-        r"""
-        Nothing yet, but this will return the specified property rather than
-        just the ID numbers
-        
-        TODO: Impliment
-        """
-
-    def set_pore_property(self,name="something",ndarray=None,columns=None):
-        r"""
-        Create a new pore property or overrite an existing one.
-        """
-        self._logger.debug("Method: set_pore_property")
-        if (ndarray==None):
-            if(columns==None):
-                self.pore_properties[name] = sp.zeros(self.get_num_pores())
-            else:
-                self.pore_properties[name] = sp.zeros([self.get_num_pores(),columns])
-        elif (type(ndarray)==sp.ndarray):
-            self.pore_properties[name]     = ndarray
-        else:
-            self._logger.error("Error: expected type: scipy.ndarray")
-
-        if (self.pore_properties[name].shape[0]!=self.get_num_pores()):
-            self._logger.error("Error: wrong length of the array")
-        self._needs_update=True
-
-    def set_throat_property(self,name="something",ndarray=None,columns=None):
-        r"""
-        Create a new throat property or overrite an existing one.
-        """
-        self._logger.debug("Method: set_throat_property")
-        if (ndarray==None):
-            if(columns==None):
-                self.throat_properties[name] = sp.zeros(self.get_num_throats())
-            else:
-                self.throat_properties[name] = sp.zeros([self.get_num_throats(),columns])
-        elif (type(ndarray)==sp.ndarray):
-            self.throat_properties[name]     = ndarray
-        else:
-            self._logger.error("Error: expected type: scipy.ndarray")
-
-        if (self.throat_properties[name].shape[0]!=self.get_num_throats()):
-            self._logger.error("Error: wrong length of the array")
-        self._needs_update=True
 
     def check_basic(self):
         r"""
@@ -503,22 +451,46 @@ class GenericNetwork(OpenPNM.Base.OpenPNMbase):
         Print some basic properties
         """
         self._logger.debug("Method: print_overview")
-        print "="*50
+        print "="*72
         print "= Overview of network properties"
-        print "-"*50
+        print "-"*72
         print "Basic properties of the network"
         print " - Number of pores:   ", self.get_num_pores()
         print " - Number of throats: ", self.get_num_throats()
-
-        print "Pore properties:"
+        
+        print "="*72
+        print "Pore Properties"
+        print "-"*72
+        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
+        print "-"*72
         for key in self.pore_properties:
-            print "\t", key,"\t", self.pore_properties[key].dtype, "\t", self.pore_properties[key].shape
-
-        print "Throat properties:"
+            print key, "\t", "\t", self.pore_properties[key].dtype, "\t", self.pore_properties[key].shape, "\t", self.pore_properties[key].nbytes/1e6
+        
+        print "="*72
+        print "Throat Properties"
+        print "-"*72
+        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
+        print "-"*72
         for key in self.throat_properties:
-            print "\t", key,"\t", self.throat_properties[key].dtype, "\t", self.throat_properties[key].shape
+            print key, "\t", "\t", self.throat_properties[key].dtype, "\t", self.throat_properties[key].shape, "\t", self.throat_properties[key].nbytes/1e6
 
-        print "-"*50
+        print "="*72
+        print "Adjacency Matrices"
+        print "-"*72
+        print 'FORMAT', "\t", 'PROPERTIES'
+        print "-"*72
+        for sprsfmt in self.adjacency_matrix.keys():
+            print sprsfmt, ":\t", self.adjacency_matrix[sprsfmt].keys()
+
+        print "="*72
+        print "Incidence Matrices"
+        print "-"*72
+        print 'FORMAT', "\t", 'PROPERTIES'
+        print "-"*72
+        for sprsfmt in self.incidence_matrix.keys():
+            print sprsfmt, ":\t", self.incidence_matrix[sprsfmt].keys()
+
+        print "="*72
         
     def __str__(self):
         r"""
