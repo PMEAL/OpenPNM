@@ -120,7 +120,7 @@ class InvasionPercolation(GenericAlgorithm):
         surface_tension = 0.486
         contact_angle = 180
         Pc_entry = -4*surface_tension*np.cos(np.deg2rad(contact_angle))/(tdia)#/1000/1000)  
-        self._net.set_throat_property(name="Pc_entry",ndarray=Pc_entry,columns=None)
+        self._net.throat_properties['Pc_entry']=np.array(Pc_entry,dtype=np.float)
         if self._timing:
             # calculate Volume_coef for each throat
             self._Tvol_coef = tdia*tdia*tdia*np.pi/6/Pc_entry
@@ -263,14 +263,14 @@ class InvasionPercolation(GenericAlgorithm):
         #self._Tinv = np.zeros(self._net.get_num_throats())
         while self._condition:
             self._do_one_outer_iteration()
-        self._net.set_pore_property(name="IP_Pinv",ndarray=self._Pinv,columns=None)
-        self._net.set_pore_property(name="IP_Pinv_original",ndarray=self._Pinv_original,columns=None)
-        self._net.set_throat_property(name="IP_Tinv",ndarray=self._Tinv,columns=None)
-        self._net.set_pore_property(name="IP_Pseq",ndarray=self._psequence,columns=None)
-        self._net.set_throat_property(name="IP_Tseq",ndarray=self._tsequence,columns=None)
+        self._net.pore_properties['IP_Pinv']=np.array(self._Pinv,dtype=np.int)
+        self._net.pore_properties['IP_Pinv_original']=np.array(self._Pinv_original,dtype=np.int)
+        self._net.throat_properties['IP_Tinv']=np.array(self._Tinv,dtype=np.int)
+        self._net.pore_properties['IP_Pseq']=np.array(self._psequence,dtype=np.int)
+        self._net.throat_properties['IP_Tseq']=np.array(self._tsequence,dtype=np.int)
         if self._timing:
-            self._net.set_pore_property(name="IP_Ptime",ndarray=self._Ptime,columns=None)
-            self._net.set_throat_property(name="IP_Ttime",ndarray=self._Ttime,columns=None)
+            self._net.pore_properties['IP_Ptime']=np.array(self._Ptime,dtype=np.float)
+            self._net.throat_properties['IP_Ttime']=np.array(self._Ttime,dtype=np.float)
 
     def _do_one_outer_iteration(self):
         r"""
@@ -567,7 +567,7 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"    
     #sp.random.seed(1)
-    pn = OpenPNM.Geometry.Cubic(domain_size=[10,10,15], lattice_spacing=1.0, btype=[0,0,0]).generate()
+    pn = OpenPNM.Geometry.Cubic().generate(domain_size=[10,10,15], lattice_spacing=1.0, btype=[0,0,0])
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
     print "+"*50
@@ -600,14 +600,14 @@ if __name__ =="__main__":
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_timing.vtp"
-    OpenPNM.Visualization.NetToVtp(net = pn,filename="IP_timing.vtp")
+    OpenPNM.Visualization.VTK(net = pn,filename="IP_timing.vtp")
     IP_notiming = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,timing='OFF',loglevel=30,loggername="TestInvPercAlg")
     IP_notiming.run()
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_notiming.vtp"
-    OpenPNM.Visualization.NetToVtp(net = pn,filename="IP_notiming.vtp")
+    OpenPNM.Visualization.VTK(net = pn,filename="IP_notiming.vtp")
     
     print "="*50
     print "Program Finished at t = ",clock(),"seconds."
