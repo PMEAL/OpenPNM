@@ -41,7 +41,15 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
         
-    def generate(self, **params):
+    def generate(self, stats_pores = {  'name' : 'weibull_min', 
+                                    'shape' : 1.5,
+                                      'loc' : 6e-6,
+                                    'scale' : 2e-5},
+                    stats_throats = {  'name' : 'weibull_min',
+                                    'shape' : 1.5,
+                                      'loc' : 6e-6,
+                                    'scale' : 2e-5},
+                            **params):
         r"""
         Generate the network
         """
@@ -52,8 +60,8 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._add_boundaries()
         self._generate_pore_seeds()
         self._generate_throat_seeds()
-        self._generate_pore_diameters(params['stats_pores'])
-        self._generate_throat_diameters(params['stats_throats'])
+        self._generate_pore_diameters(stats_pores)
+        self._generate_throat_diameters(stats_throats)
         self._calc_pore_volumes()
         self._calc_throat_lengths()
         self._calc_throat_volumes()
