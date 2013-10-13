@@ -141,44 +141,43 @@ class Cubic(GenericGeometry):
         
         pnum_added = self._net.get_num_pores() - pnum_orig
         self._net.pore_properties['coords'] = np.concatenate((self._net.pore_properties['coords'],np.zeros((pnum_added,3))),axis=0)
-#        #Add 'coords' to boundaries
-#        #   Generate an Nx2 array, named "boundary_pore_list" that names all 
-#        #   pairs of pores connected by boundary throats. 
-#        pnum_dif = self._net.get_num_pores()-pnum_orig
+        #Add 'coords' to boundaries
+        #   Generate an Nx2 array, named "boundary_pore_list" that names all 
+        #   pairs of pores connected by boundary throats. 
+        pnum_dif = self._net.get_num_pores()-pnum_orig
+        btlist = self._net.throat_properties['numbering'][self._net.throat_properties['type']>0]
 #        self._net.pore_properties['coords']=np.append(self._net.pore_properties['coords'],np.zeros((pnum_dif,3)),0)
-#        btlist = self._net.throat_properties['numbering'][self._net.throat_properties['type']>0]
-#        btnum = np.size(btlist)  
-#        boundary_pore_list = np.zeros((btnum,2),dtype=np.int32)
-#        for i in range(btnum):
-#            boundary_pore_list[i] = self._net.get_connected_pores(btlist[i])
-#        #   For each boundary pore in the pair, adopt the internal pore's coords
-#        for i in boundary_pore_list:
-#            if i[0] >= pnum_orig:
-#                self._net.pore_properties['coords'][i[0]] = self._net.pore_properties['coords'][i[1]]
-#            if i[1] >= pnum_orig:
-#                self._net.pore_properties['coords'][i[1]] = self._net.pore_properties['coords'][i[0]]
-#        #   Make lists of pores on each boundary
-#        face1pores = np.nonzero(self._net.pore_properties['type']==1)[0]
-#        face2pores = np.nonzero(self._net.pore_properties['type']==2)[0]
-#        face3pores = np.nonzero(self._net.pore_properties['type']==3)[0]
-#        face4pores = np.nonzero(self._net.pore_properties['type']==4)[0]
-#        face5pores = np.nonzero(self._net.pore_properties['type']==5)[0]
-#        face6pores = np.nonzero(self._net.pore_properties['type']==6)[0]
-#        #   Appropriately add or subtract a lattice constant from the appropriate
-#        #   dimention in the boundary pore's 'coords' value.
-#        for i in face1pores:
-#            self._net.pore_properties['coords'][i][2] += -self._Lc
-#        for i in face2pores:
-#            self._net.pore_properties['coords'][i][0] += -self._Lc
-#        for i in face3pores:
-#            self._net.pore_properties['coords'][i][1] += -self._Lc
-#        for i in face4pores:
-#            self._net.pore_properties['coords'][i][1] += self._Lc
-#        for i in face5pores:
-#            self._net.pore_properties['coords'][i][0] += self._Lc
-#        for i in face6pores:
-#            self._net.pore_properties['coords'][i][2] += self._Lc
-#        self._net.pore_properties['coords'][self._net.pore_properties['type']==1]
+        btnum = np.size(btlist)  
+        boundary_pore_list = np.zeros((btnum,2),dtype=np.int32)
+        for i in range(btnum):
+            boundary_pore_list[i] = self._net.get_connected_pores(btlist[i])
+        #   For each boundary pore in the pair, adopt the internal pore's coords
+        for i in boundary_pore_list:
+            if i[0] >= pnum_orig:
+                self._net.pore_properties['coords'][i[0]] = self._net.pore_properties['coords'][i[1]]
+            if i[1] >= pnum_orig:
+                self._net.pore_properties['coords'][i[1]] = self._net.pore_properties['coords'][i[0]]
+        #   Make lists of pores on each boundary
+        face1pores = np.nonzero(self._net.pore_properties['type']==1)[0]
+        face2pores = np.nonzero(self._net.pore_properties['type']==2)[0]
+        face3pores = np.nonzero(self._net.pore_properties['type']==3)[0]
+        face4pores = np.nonzero(self._net.pore_properties['type']==4)[0]
+        face5pores = np.nonzero(self._net.pore_properties['type']==5)[0]
+        face6pores = np.nonzero(self._net.pore_properties['type']==6)[0]
+        #   Appropriately add or subtract a lattice constant from the appropriate
+        #   dimention in the boundary pore's 'coords' value.
+        for i in face1pores:
+            self._net.pore_properties['coords'][i][2] += -self._Lc
+        for i in face2pores:
+            self._net.pore_properties['coords'][i][0] += -self._Lc
+        for i in face3pores:
+            self._net.pore_properties['coords'][i][1] += -self._Lc
+        for i in face4pores:
+            self._net.pore_properties['coords'][i][1] += self._Lc
+        for i in face5pores:
+            self._net.pore_properties['coords'][i][0] += self._Lc
+        for i in face6pores:
+            self._net.pore_properties['coords'][i][2] += self._Lc
         #Update network
         self._net.update()
         
