@@ -567,7 +567,7 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"    
     #sp.random.seed(1)
-    pn = OpenPNM.Geometry.Cubic(domain_size=[10,10,15],lattice_spacing=1.0,btype = [0,0,0]).generate()
+    pn = OpenPNM.Geometry.Cubic(domain_size=[10,10,15], lattice_spacing=1.0, btype=[0,0,0]).generate()
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
     print "+"*50
