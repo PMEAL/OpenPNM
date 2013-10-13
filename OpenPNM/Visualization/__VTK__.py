@@ -22,7 +22,10 @@ class VTK(GenericVisualization):
     
     Examples
     --------
-    >>> print 'nothing yet'
+    Create and store a basic network.
+    >>> import OpenPNM as PNM
+    >>> net = PNM.Generators.SimpleCubic(divisions = [40,40,20],shape=[0.,4.,0.,4.,0.,2.]).generate()
+    >>> PNM.Visualization.VTK(net=net,filename = 'testvtp.vtp')
     
     .. note:: 
     n/a

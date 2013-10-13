@@ -37,8 +37,8 @@ class Cubic(GenericGeometry):
         self._net=OpenPNM.Network.GenericNetwork()
 
     def _generate_setup(self,   domain_size = [],
-                                divisions = [3,3,3],
-                                lattice_spacing = [1],
+                                divisions = [],
+                                lattice_spacing = [],
                                 btype = [0,0,0],
                                 **params):
         r"""
@@ -49,29 +49,29 @@ class Cubic(GenericGeometry):
         self._logger.info("Find network dimensions")
         self._btype = btype
         if domain_size and lattice_spacing and not divisions:
-            self._Lc = lattice_spacing[0]
-            self._Lx = domain_size[0]
-            self._Ly = domain_size[1]
-            self._Lz = domain_size[2]
-            self._Nx = int(self._Lx/self._Lc)
-            self._Ny = int(self._Ly/self._Lc)
-            self._Nz = int(self._Lz/self._Lc)
+            self._Lc = np.float(lattice_spacing)
+            self._Lx = np.float(domain_size[0])
+            self._Ly = np.float(domain_size[1])
+            self._Lz = np.float(domain_size[2])
+            self._Nx = np.int(self._Lx/self._Lc)
+            self._Ny = np.int(self._Ly/self._Lc)
+            self._Nz = np.int(self._Lz/self._Lc)
         elif divisions and lattice_spacing and not domain_size:
-            self._Lc = lattice_spacing[0]
-            self._Nx = divisions[0]
-            self._Ny = divisions[1]
-            self._Nz = divisions[2]
-            self._Lx = self._Nx*self._Lc
-            self._Ly = self._Ny*self._Lc
-            self._Lz = self._Nz*self._Lc
+            self._Lc = np.float(lattice_spacing)
+            self._Nx = np.int(divisions[0])
+            self._Ny = np.int(divisions[1])
+            self._Nz = np.int(divisions[2])
+            self._Lx = np.float(self._Nx*self._Lc)
+            self._Ly = np.float(self._Ny*self._Lc)
+            self._Lz = np.float(self._Nz*self._Lc)
         elif domain_size and divisions and not lattice_spacing:
-            self._Lc = np.min(np.array(domain_size,dtype=float)/np.array(divisions,dtype=float))
-            self._Nx = divisions[0]
-            self._Ny = divisions[1]
-            self._Nz = divisions[2]
-            self._Lx = self._Nx*self._Lc
-            self._Ly = self._Ny*self._Lc
-            self._Lz = self._Nz*self._Lc
+            self._Lc = np.min(np.array(domain_size,dtype=np.float)/np.array(divisions,dtype=np.float))
+            self._Nx = np.int(divisions[0])
+            self._Ny = np.int(divisions[1])
+            self._Nz = np.int(divisions[2])
+            self._Lx = np.float(self._Nx*self._Lc)
+            self._Ly = np.float(self._Ny*self._Lc)
+            self._Lz = np.float(self._Nz*self._Lc)
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
@@ -88,7 +88,7 @@ class Cubic(GenericGeometry):
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
         a = np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T
-        self._net.pore_properties['coords'] = Lc*(0.5 + np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T)
+        self._net.pore_properties['coords'] = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self._net.pore_properties['numbering'] = ind
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
         
@@ -141,44 +141,43 @@ class Cubic(GenericGeometry):
         
         pnum_added = self._net.get_num_pores() - pnum_orig
         self._net.pore_properties['coords'] = np.concatenate((self._net.pore_properties['coords'],np.zeros((pnum_added,3))),axis=0)
-#        #Add 'coords' to boundaries
-#        #   Generate an Nx2 array, named "boundary_pore_list" that names all 
-#        #   pairs of pores connected by boundary throats. 
-#        pnum_dif = self._net.get_num_pores()-pnum_orig
+        #Add 'coords' to boundaries
+        #   Generate an Nx2 array, named "boundary_pore_list" that names all 
+        #   pairs of pores connected by boundary throats. 
+        pnum_dif = self._net.get_num_pores()-pnum_orig
+        btlist = self._net.throat_properties['numbering'][self._net.throat_properties['type']>0]
 #        self._net.pore_properties['coords']=np.append(self._net.pore_properties['coords'],np.zeros((pnum_dif,3)),0)
-#        btlist = self._net.throat_properties['numbering'][self._net.throat_properties['type']>0]
-#        btnum = np.size(btlist)  
-#        boundary_pore_list = np.zeros((btnum,2),dtype=np.int32)
-#        for i in range(btnum):
-#            boundary_pore_list[i] = self._net.get_connected_pores(btlist[i])
-#        #   For each boundary pore in the pair, adopt the internal pore's coords
-#        for i in boundary_pore_list:
-#            if i[0] >= pnum_orig:
-#                self._net.pore_properties['coords'][i[0]] = self._net.pore_properties['coords'][i[1]]
-#            if i[1] >= pnum_orig:
-#                self._net.pore_properties['coords'][i[1]] = self._net.pore_properties['coords'][i[0]]
-#        #   Make lists of pores on each boundary
-#        face1pores = np.nonzero(self._net.pore_properties['type']==1)[0]
-#        face2pores = np.nonzero(self._net.pore_properties['type']==2)[0]
-#        face3pores = np.nonzero(self._net.pore_properties['type']==3)[0]
-#        face4pores = np.nonzero(self._net.pore_properties['type']==4)[0]
-#        face5pores = np.nonzero(self._net.pore_properties['type']==5)[0]
-#        face6pores = np.nonzero(self._net.pore_properties['type']==6)[0]
-#        #   Appropriately add or subtract a lattice constant from the appropriate
-#        #   dimention in the boundary pore's 'coords' value.
-#        for i in face1pores:
-#            self._net.pore_properties['coords'][i][2] += -self._Lc
-#        for i in face2pores:
-#            self._net.pore_properties['coords'][i][0] += -self._Lc
-#        for i in face3pores:
-#            self._net.pore_properties['coords'][i][1] += -self._Lc
-#        for i in face4pores:
-#            self._net.pore_properties['coords'][i][1] += self._Lc
-#        for i in face5pores:
-#            self._net.pore_properties['coords'][i][0] += self._Lc
-#        for i in face6pores:
-#            self._net.pore_properties['coords'][i][2] += self._Lc
-#        self._net.pore_properties['coords'][self._net.pore_properties['type']==1]
+        btnum = np.size(btlist)  
+        boundary_pore_list = np.zeros((btnum,2),dtype=np.int32)
+        for i in range(btnum):
+            boundary_pore_list[i] = self._net.get_connected_pores(btlist[i])
+        #   For each boundary pore in the pair, adopt the internal pore's coords
+        for i in boundary_pore_list:
+            if i[0] >= pnum_orig:
+                self._net.pore_properties['coords'][i[0]] = self._net.pore_properties['coords'][i[1]]
+            if i[1] >= pnum_orig:
+                self._net.pore_properties['coords'][i[1]] = self._net.pore_properties['coords'][i[0]]
+        #   Make lists of pores on each boundary
+        face1pores = np.nonzero(self._net.pore_properties['type']==1)[0]
+        face2pores = np.nonzero(self._net.pore_properties['type']==2)[0]
+        face3pores = np.nonzero(self._net.pore_properties['type']==3)[0]
+        face4pores = np.nonzero(self._net.pore_properties['type']==4)[0]
+        face5pores = np.nonzero(self._net.pore_properties['type']==5)[0]
+        face6pores = np.nonzero(self._net.pore_properties['type']==6)[0]
+        #   Appropriately add or subtract a lattice constant from the appropriate
+        #   dimention in the boundary pore's 'coords' value.
+        for i in face1pores:
+            self._net.pore_properties['coords'][i][2] += -self._Lc
+        for i in face2pores:
+            self._net.pore_properties['coords'][i][0] += -self._Lc
+        for i in face3pores:
+            self._net.pore_properties['coords'][i][1] += -self._Lc
+        for i in face4pores:
+            self._net.pore_properties['coords'][i][1] += self._Lc
+        for i in face5pores:
+            self._net.pore_properties['coords'][i][0] += self._Lc
+        for i in face6pores:
+            self._net.pore_properties['coords'][i][2] += self._Lc
         #Update network
         self._net.update()
         
@@ -199,16 +198,15 @@ class Cubic(GenericGeometry):
         Lc = self._Lc
         Np = self._net.get_num_pores()
         Nt = self._net.get_num_throats()
-        
         col = [-1,2,0,1,1,0,2] #Column to use in coord
-        coord = [-1, Lc/2, Lc/2, Lc/2, Ly-Lc/2, Lx-Lc/2, Lz-Lc/2]
-        coordperi = [-1, Lz-Lc/2, Lx-Lc/2, Ly-Lc/2, Lc/2, Lc/2, Lc/2]
-        NpFace = [-1, Nx*Ny, Ny*Nz, Nx*Nz, Nx*Nz, Ny*Nz, Nx*Ny]
+        coord = np.array([-1, Lc/2, Lc/2, Lc/2, Ly-Lc/2, Lx-Lc/2, Lz-Lc/2],dtype=np.float)
+        coordperi = np.array([-1, Lz-Lc/2, Lx-Lc/2, Ly-Lc/2, Lc/2, Lc/2, Lc/2],dtype=np.float)
+        NpFace = np.array([-1, Nx*Ny, Ny*Nz, Nx*Nz, Nx*Nz, Ny*Nz, Nx*Ny],dtype=np.int)
 
         #Extract pore numbers from opposing faces of the network
-        tpore1 = self._net.pore_properties['numbering'][self._net.pore_properties['coords'][:,col[face]]==coord[face]]
-        tpore2 = self._net.pore_properties['numbering'][self._net.pore_properties['coords'][:,col[face]]==coordperi[face]]
-    
+        tpore1 = self._net.pore_properties['numbering'][np.abs(self._net.pore_properties['coords'][:,col[face]]-coord[face]) < np.min([Lx,Ly,Lz])/1000000]
+        tpore2 = self._net.pore_properties['numbering'][np.abs(self._net.pore_properties['coords'][:,col[face]]-coordperi[face]) < np.min([Lx,Ly,Lz])/1000000]
+
         if periodic:
             #If periodic simply link faces together
             conns = np.vstack((tpore1,tpore2)).T
@@ -242,5 +240,5 @@ class Cubic(GenericGeometry):
         
         
 if __name__ == '__main__':
-    test=Cubic(lattice_spacing=1.0,domain_size=[3,3,3],loggername='TestCubic')
-    pn = test.generate()
+    test=Cubic(loggername='TestCubic')
+    pn = test.generate(lattice_spacing=1.0,domain_size=[3,3,3], btype=[1,1,0])
