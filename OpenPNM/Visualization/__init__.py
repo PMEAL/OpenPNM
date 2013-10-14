@@ -11,7 +11,7 @@ tbd
 
 .. note::
    n/a
- 
+
 
 Classes
 -------
@@ -20,13 +20,14 @@ Classes
    :members:
    :undoc-members:
    :show-inheritance:
-    
+
 .. autoclass:: VTK
    :members:
    :undoc-members:
    :show-inheritance:
-    
+
 """
 from __GenericVisualization__ import GenericVisualization
 from __Plots__ import Plots
+from __VoxelImage__ import VoxelImage
 from __VTK__ import VTK
