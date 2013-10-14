@@ -14,37 +14,37 @@ from __GenericVisualization__ import GenericVisualization
 class Plots(GenericVisualization):
     r"""
     Methods for plotting common information about pore networks
-    
+
     Parameters
     ----------
-    
+
     Examples
     --------
     >>> print 'nothing yet'
-    
-    .. note:: 
+
+    .. note::
     n/a
-    
+
     """
-    
+
     def __init__(self,**kwargs):
         r"""
         Initialize
         """
         super(Plots,self).__init__(**kwargs)
         self._logger.debug("Construct Plots Class")
-        
+
     @staticmethod
     def overview(net):
         r"""
         Plot a montage of key network size distribution histograms
-        
+
         Parameters
         ----------
         net : OpenPNM Network Object
             The network for which the graphs are desired
-            
-        
+
+
         """
         import matplotlib.pyplot as plt
         #Print Pore and Throat size distributions
@@ -70,31 +70,30 @@ class Plots(GenericVisualization):
         plt.hist(net.throat_properties['length'][net.throat_properties['type']==0],25,facecolor='red')
         plt.xlabel('Throat Length [m]')
         plt.ylabel('Frequency')
-        
+
     @staticmethod
     def Capillary_Pressure_Curve(net):
         r"""
         Plot drainage capillary pressure curve
-        
+
         Parameters
         ----------
         net : OpenPNM Network Object
             The network for which the graphs are desired
-            
+
         """
         try:
-            PcPoints = sp.unique(net.pore_properties['Pc_invaded'])
+            PcPoints = sp.unique(net.pore_conditions['Pc_invaded'])
         except:
             raise Exception('Capillary pressure simulation has not been run')
         import matplotlib.pyplot as plt
-        PcPoints = sp.unique(net.pore_properties['Pc_invaded'])
+        PcPoints = sp.unique(net.pore_conditions['Pc_invaded'])
         Snwp = sp.zeros_like(PcPoints)
-        Ps = sp.where(net.pore_properties['type']==0)
+        Ps = sp.r_[0:net.get_num_pores([0])]
         for i in range(1,sp.size(PcPoints)):
             Pc = PcPoints[i]
-            Snwp[i] = sum((net.pore_properties['Pc_invaded'][Ps]<Pc)*(net.pore_properties['volume'][Ps]))/sum(net.pore_properties['volume'][Ps])
+            Snwp[i] = sum((net.pore_conditions['Pc_invaded'][Ps]<Pc)*(net.pore_properties['volume'][Ps]))/sum(net.pore_properties['volume'][Ps])
         plt.plot(PcPoints,Snwp,'r.-')
         plt.xlabel('Capillary Pressure')
         plt.ylabel('Invading Fluid Saturation')
         plt.show(block = False)
-        
