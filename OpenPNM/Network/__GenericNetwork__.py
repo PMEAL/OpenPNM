@@ -74,19 +74,19 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         self._logger.info("Constructor completed")
 
-    def create_adjacency_matrix(self,tprop='connections',sprsfmt='all',dropzeros=True,sym=True):
+    def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
         r"""
 
         Generates adjacency matricies in various sparse storage formats
 
         Parameters
         ----------
-        tprop : String, optional
-            The throat property to enter into the i,j locations. If no property is given 'connections' is used.
+        V : Dict, optional
+            The values in the {'key': value} pair specify the throat property (V) to enter into the I,J locations of the IJV sparse matrix. The 'key' is used to name the resulting adjacency matrix when storing it on the network. If no argument is received, throat_properties['connections'] is used.
         sprsfmt : String, optional
             The sparse storage format to use. If none type is given, all are generated (coo, csr & lil)
         dropzeros : Boolean, optional
-            Remove 0 elements from tprop, instead of creating 0-weighted links, the default is True.
+            Remove 0 elements from the values, instead of creating 0-weighted links, the default is True.
         sym : Boolean, optional
             Makes the matrix symmetric about the diagonal, the default is true.
 
@@ -101,16 +101,23 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         Examples
         --------
-        >>> print 'nothing yet'
+        >>> V = {'foo': pn.throat_properties['diameter']}
+        >>> pn.create_adjacency_matrix(V,'csr')
+        >>> print pn.adjacency_matrix['csr'].keys()
+        ['foo']
+
         """
         self._logger.debug('create_adjacency_matrix: Start of method')
         Np   = self.get_num_pores()
         Nt   = self.get_num_throats()
 
-        if tprop == 'connections':
-            dataset = np.ones(Nt)
+        if V:
+            dataset = V[V.keys()[0]]
+            tprop = V.keys()[0]
         else:
-            dataset = self.throat_properties[tprop]
+            dataset = np.ones(Nt)
+            tprop = 'connections'
+
 
         if dropzeros:
             ind = dataset>0
@@ -138,14 +145,23 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         if sprsfmt != 'all':
             return self.adjacency_matrix[sprsfmt][tprop]
 
-    def create_incidence_matrix(self,tprop='connections',sprsfmt='all',dropzeros=True):
+    def create_incidence_matrix(self,V=[],sprsfmt='all',dropzeros=True):
         r"""
 
         Creates an incidence matrix filled with specified throat values
 
         Parameters
         ----------
-        tname : The property of interest (i.e. diameter, volume, etc.)
+
+        V : Dict, optional
+            The values in the {'key': value} pair specify the throat property (V) to enter into the I,J locations of the IJV sparse matrix. The 'key' is used to name the resulting incidence matrix when storing it on the network. If no argument is received, throat_properties['connections'] is used.
+        sprsfmt : String, optional
+
+        sprsfmt : String, optional
+            The sparse storage format to use. If none type is given, all are generated (coo, csr & lil)
+
+        dropzeros : Boolean, optional
+            Remove 0 elements from values, instead of creating 0-weighted links, the default is True.
 
         Returns
         -------
@@ -163,10 +179,12 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Nt = self.get_num_throats()
         Np = self.get_num_pores()
 
-        if tprop == 'connections':
-            dataset = np.ones(Nt)
+        if V:
+            dataset = V[V.keys()[0]]
+            tprop = V.keys()[0]
         else:
-            dataset = self.throat_properties[tprop]
+            dataset = np.ones(Nt)
+            tprop = 'connections'
 
         if dropzeros:
             ind = dataset>0
@@ -377,7 +395,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         except:
             self.create_incidence_matrix()
             neighborTs = self.incidence_matrix['lil']['connections'].rows[[Pnums]]
-        if flatten and neighborTs:
+        if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborTs = [np.asarray(x) for x in neighborTs if x]
             neighborTs = np.unique(np.hstack(neighborTs))
@@ -422,26 +440,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         for i in range(0,sp.shape(num)[0]):
             num[i] = sp.size(neighborPs[i])
         return num
-
-    def get_neighbor_pores_props(self,Pprop,Pnums,Ptype=[0,1,2,3,4,5,6],flatten=True):
-        r"""
-        Return the desired property for the requested pore ID numbers
-
-        """
-        neighborPs = self.get_neighbor_pores(Pnums,Ptype,flatten)
-        if flatten:
-            propPs = self.pore_properties[Pprop][neighborPs]
-        else:
-            propPs = self.pore_properties[Pprop][neighborPs]
-        return propPs
-
-    def get_neighbor_throat_props(self,Pnums,Ttype=[0,1,2,3,4,5,6],flatten=True):
-        r"""
-        Nothing yet, but this will return the specified property rather than
-        just the ID numbers
-
-        TODO: Impliment
-        """
 
     def interpolate_pore_conditions(self,Tcond=None):
         r"""
@@ -521,9 +519,25 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             print key, "\t", "\t", self.throat_properties[key].dtype, "\t", self.throat_properties[key].shape, "\t", self.throat_properties[key].nbytes/1e6
 
         print "="*72
+        print "Pore Conditions"
+        print "-"*72
+        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
+        print "-"*72
+        for key in self.pore_conditions:
+            print key, "\t", "\t", self.pore_conditions[key].dtype, "\t", self.pore_conditions[key].shape, "\t", self.pore_conditions[key].nbytes/1e6
+
+        print "="*72
+        print "Throat Conditions"
+        print "-"*72
+        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
+        print "-"*72
+        for key in self.throat_conditions:
+            print key, "\t", "\t", self.throat_conditions[key].dtype, "\t", self.throat_conditions[key].shape, "\t", self.throat_conditions[key].nbytes/1e6
+
+        print "="*72
         print "Adjacency Matrices"
         print "-"*72
-        print 'FORMAT', "\t", 'PROPERTIES'
+        print 'FORMAT', "\t", 'VALUES'
         print "-"*72
         for sprsfmt in self.adjacency_matrix.keys():
             print sprsfmt, ":\t", self.adjacency_matrix[sprsfmt].keys()
@@ -531,7 +545,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         print "="*72
         print "Incidence Matrices"
         print "-"*72
-        print 'FORMAT', "\t", 'PROPERTIES'
+        print 'FORMAT', "\t", 'VALUES'
         print "-"*72
         for sprsfmt in self.incidence_matrix.keys():
             print sprsfmt, ":\t", self.incidence_matrix[sprsfmt].keys()
