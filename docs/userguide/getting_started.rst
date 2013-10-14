@@ -29,6 +29,12 @@ Now a generator has been initialized (with default parameters) and is ready to s
    
    pn1 = gn1.generate()
 
+To view the properties of pn1, use the print command:
+
+.. code-block:: python
+
+    print pn1
+
 The same generator can be used to create another network:
 
 .. code-block:: python

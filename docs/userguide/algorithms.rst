@@ -23,7 +23,7 @@ By default, the program assumes that clusters initially grow at initial rates, b
 *Cluster Volume Calculation*
 At each pore filling step, the subsequent filling step is anticipated by searching the cluster's interface for the lowest capillary pressure barrier. It is assumed that the entire cluster will reach the pressure of this capillary barrier before the cluster can advance (quasi-static flow). To reach this pressure, not only should all invaded pores be completely filled, but each interfacial meniscus should inflate to the radius of curvature associated with the capillary pressure.  Ideally, the shape of the throat, the local fluid/fluid surface tension, and a local contact angle should all factor in to the calculation of each inflated menisci' contribution to the cluster volume. However, for this version of the algorithm, the approximation is made that meniscus volume is a linear function of cluster capillary pressure, intersecting zero volume at zero pressure and the volume of a hemisphere with the throat's diameter at the throat's barrier capillary pressure.
 
-.. [1] ???
+.. [1] D Wilkinson and J F Willemsen 1983 J. Phys. A: Math. Gen. 16 3365 http://dx.doi.org/10.1088/0305-4470/16/14/028
 
 -------------------------------------------------------------------------------
 Access Limited Ordinary Percolation
