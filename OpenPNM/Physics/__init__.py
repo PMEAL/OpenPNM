@@ -56,9 +56,9 @@ Submodules
     
 """
 
-import CapillaryPressure    as CapillaryPressure
-import MassTransport        as MassTransport
-import HeatConduction       as HeatConduction
-import FluidFlow            as FluidFlow
-import MultiPhase           as MultiPhase
-import ThermoPhysical       as ThermoPhysical
+import CapillaryPressure
+import MassTransport
+import HeatConduction
+import FluidFlow
+import MultiPhase
+import ThermoPhysical
