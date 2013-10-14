@@ -1,10 +1,10 @@
-*******************************************************************************
+###############################################################################
 Network Geometry
-*******************************************************************************
+###############################################################################
 The Geometry module contains methods for:
 1. Generating networks of various topologies (such as Cubic and Delaunay)
 2. Importing networks generated using other code (such as extraction from 3D tomographic images)
-3. Altering existing the geometry networks (such as merging networks)
+3. Altering the geometry of existing networks (such as merging networks)
 
 ===============================================================================
 Generating Geometry
@@ -13,15 +13,15 @@ Generating Geometry
 -------------------------------------------------------------------------------
 Generic Geometry
 -------------------------------------------------------------------------------
-The GenericGeometry class takes advantage of the object-oriented nature of Python by using `inheritance <http://docs.python.org/2/tutorial/classes.html>`_.  There are three main components to inheritance as used here.  
+The GenericGeometry class takes advantage of the object-oriented nature of Python by using `inheritance <http://docs.python.org/2/tutorial/classes.html>`_.  There are three main components to inheritance as used here. (The following explanation assumes no knowledge of object orientation)
 
-Firstly, the GenericGeometry class contains methods that will likely be used by all methods regardless of topology.  Every network inherits these methods and *can* use them if desired.  For instance, generate_pore_seeds can be used "as is" to assign a random number to each pore for subsequent use in pore size distribution calculations (i.e. generate_pore_diameters).  Alternatively, if the user wishes to use a more complex method to generate random seeds (for instance with spatial correlation), then they are free to over-write or sub-class this method in their specific geometry class.  The procedure for accomplishing this is outlined in the Writing Custom Geometry section below.  
+Firstly, the GenericGeometry class contains methods that will likely be used by all methods regardless of topology.  Every network inherits these methods and *can* use them if desired.  For instance, :code:`generate_pore_seeds` can be used "as is" to assign a random number to each pore for subsequent use in pore size distribution calculations (i.e. :code:`generate_pore_diameters`).  Alternatively, if the user wishes to use a more complex method to generate random seeds (for instance with spatial correlation), then they are free to over-write or sub-class this method in their specific geometry class.  The procedure for accomplishing this is outlined in the Writing Custom Geometry section below.  
 
-The second component to inheritance as applied in OpenPNM is that some methods *must* be sub-classed.  Specifically, generate_pores() and generate_throats() are not implimented in GenericGeometry.  One of the main results of generate_pores is to dictate the spatial coordinates of the pore centers; generate_throats dictates which pores are connected to which neighbors.  A cubic network places pores in space and defines connections in a completely different way than a random network.  Thus, there is no generic or default way to generate different networks.  
+The second component to inheritance as applied in OpenPNM is that some methods *must* be sub-classed.  For instance, :code:`generate_pores` and :code:`generate_throats` are not implemented in GenericGeometry.  One of the main results of :code:`generate_pores` is to dictate the spatial coordinates of the pore centers; and :code:`generate_throats` dictates which pores are connected to which neighbors.  A cubic network places pores in space and defines connections in a completely different way than a random network.  Thus, there is no generic or default way to generate different networks.  
 
-And finally, all sub-classed methods have the same name and black-box functionality as the generic methods.  The enables a truly generic generation scheme (defined by the generate() method in GenericGeometry) that always calls the same methods but acheives different results depending on which methods have been sub-classed.  It should be pointed out however, that even the generate() method *can* be sub-classed if desired, so there is no need to adhere to the steps or order defined there.  
+And finally, all sub-classed methods have the same name and black-box functionality as the generic methods.  The enables a the generic generation scheme (defined by the :code:`generate` method in GenericGeometry) that always calls the same methods but achieves different results depending on which methods have been sub-classed.  It should be pointed out however, that even the :code:`generate` method *can* be sub-classed if desired, so there is no need to adhere to the steps or order defined there.  
 
-The generate() method provided in GenericGeometry contains the following methods in the order given below.  The first 4 of these methods are abstract or empty methods that *must* be subclassed by the specific Geometry class.  The remainder are actually implimented in the GenericGeometry class and perform the most basic or common version of their specific function.  Any of these can also be subclassed in each specific Geometry class. Moreover, if the methods or the order given below are unsuitable then the generate() method itself can be subclassed by a specific Geometry class.
+The :code:`generate` method provided in GenericGeometry contains the following methods which are executed in the order given below.  The first 4 of these methods are abstract or empty methods that *must* be sub-classed by the specific Geometry class.  The remainder are actually implemented in the GenericGeometry class and perform the most basic or common version of their specific function.  Any of these can also be sub-classed in each specific Geometry class. 
 
 .. automethod:: OpenPNM.Geometry.GenericGeometry._generate_setup
 
@@ -48,14 +48,18 @@ The generate() method provided in GenericGeometry contains the following methods
 -------------------------------------------------------------------------------
 Cubic
 -------------------------------------------------------------------------------
-The most common and basic type of pore network is based on cubic geometry, with cubic lattice-type connectivity between pores.  The Cubic geometry corresponds to simplest `Bravais Lattice <http://en.wikipedia.org/wiki/Bravais_lattice>`_ type, the Primitive Centered Cubic, pcc.  Each pore is connected to 6 neighbors (in 3D).
+The most common and basic type of pore network is based on cubic geometry, with cubic lattice-type connectivity between pores.  The Cubic geometry corresponds to simplest `Bravais lattice <http://en.wikipedia.org/wiki/Bravais_lattice>`_ type, the Primitive Centered Cubic, pcc.  Each pore is connected to 6 neighbors (in 3D).  One of the future aims of is to extend this CubicGeometry class to a more general  LatticeGeometry class that allows all possible Bravais lattice arrangements.  This 'bcc' structure, for instance, would allow for a network with higher porosity due to the closer packing.  
+
+The cubic geometry is very widely used throughout the pore network modeling community because it very straightforward to implement and analyzer, yet usually provides sufficient complexity for most situations.  
+
+see :ref:`cubic-example`.
 
 -------------------------------------------------------------------------------
 Template
 -------------------------------------------------------------------------------
-This is a varient of the Cubic network that allows for arbitrarily complex domain shapes such as spheres and cylinders, but still defines connections between pores based on lattice-type connectivity.  
+This is a variant of the Cubic network that allows for arbitrarily complex domain shapes such as spheres and cylinders, but still defines connections between pores based on lattice-type connectivity.  
 
-There are two main motivations for including this generator.  Firstly, it is the most straightforward way to generate unusual geometry of any shape.  Modeling the coking of catalyst particles of spherical or cylindrical shape can be accomplished with equal ease.  Secondly, some users will be more comfortable dealing with numerical matrices outside of OpenPNM and this generator allows them to store network data in a more human-friendly manner (i.e. in a series of matrices the same shape as the network).  For instance, it is possible to generate cubic networks this way if an image of a cube is provided.  
+There are two main motivations for including this generator.  Firstly, it is the most straightforward way to generate unusual geometry of any shape.  Modeling the coking of catalyst particles of spherical or cylindrical shape can be accomplished with equal ease.  Secondly, some users will be more comfortable dealing with numerical matrices outside of OpenPNM and this generator allows them to store network data in a more human-friendly manner (i.e. in a series of matrices the same shape as the network).  For instance, it is possible to generate cubic networks this way if a template of a cube is provided.  
 
 The Template geometry generator accepts a 3D or 2D ndarray with some pattern of 1's to define the network shape.  Generating a spherical network using this generator can be accomplished using the ndimage package in Scipy as follows:
 

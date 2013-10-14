@@ -2,18 +2,18 @@
 
 
 {% block rootrellink %}
-        <li><a href="{{ pathto('index') }}">home</a>|&nbsp;</li>
+        <li><a href="{{ pathto('index') }}">Start</a>|&nbsp;</li>
         <li><a href="{{ pathto('userguide/index') }}">Userguide</a>|&nbsp;</li>
         <li><a href="{{ pathto('examples/index') }}">Examples</a>|&nbsp;</li>
-        <li><a href="{{ pathto('devguide/index') }}">Development</a>|&nbsp;</li>
-        <li><a href="{{ pathto('search') }}">search</a>|&nbsp;</li>
+        <li><a href="{{ pathto('devguide/index') }}">Devguide</a>|&nbsp;</li>
+        <li><a href="{{ pathto('search') }}">Search</a>|&nbsp;</li>
 {% endblock %}
 
 
 {% block relbar1 %}
 
 <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
-<a href="{{ pathto('index') }}"><img src="{{
+<a href=http://openpnm.org><img src="{{
 pathto("_static/logo.png", 1) }}" border="0" alt="OpenPNM" width="60%" height="60%"/></a>
 </div>
 {{ super() }}
