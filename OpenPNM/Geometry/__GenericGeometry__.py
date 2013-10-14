@@ -22,25 +22,25 @@ import scipy.stats as spst
 class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
     r"""
     GenericGeometry - Base class to construct pore networks
-    
+
     This class contains the interface definition for the construction of networks
-    
+
     Parameters
     ----------
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    
-        
+
+
     """
 
     def __init__(self, **kwargs):
-        
+
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        
+
     def generate(self, stats_pores = {  'name' : 'weibull_min', 
                                     'shape' : 1.5,
                                       'loc' : 6e-6,
@@ -66,42 +66,42 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._calc_throat_lengths()
         self._calc_throat_volumes()
         self._logger.debug("\t end of self.generate()")
-        return self._net  
+        return self._net
 
     def _generate_setup(self,**params):
         r"""
         Perform applicable preliminary checks and calculations required for generation
-        
+
         Notes
         -----
-        This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology        
+        This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
         """
         self._logger.error("generation_setup: not implemented")
 
     def _generate_pores(self):
         r"""
         Generate the pores (numbering, types and coordinates)
-        
+
         Notes
         -----
-        This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology        
+        This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
         """
         self._logger.error("generate_pores: not implemented")
-        
-    def _generate_throats(self):        
+
+    def _generate_throats(self):
         r"""
         Generate the throats (numbering and types)
-        
+
         Notes
         -----
         This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
         """
         self._logger.error("generate_throats: not implemented")
-        
+
     def _add_boundaries(self):
         r"""
-        Add boundary pores around network (numbering and types)
-        
+        Add boundary pores around network (numbering and types), and create necessary throats
+
         Notes
         -----
         This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
@@ -110,43 +110,42 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
 
     def _generate_pore_seeds(self):
         r"""
-        Assign random seed to pores
-        
+        Assign random seed values to pores
+
         Notes
         -----
-        To reproduce an identical network it is necessary to set the seed of the random number generator
+        To reproduce an identical network it is necessary to set the seed of the random number generator.  This is accomplished using :code:`scipy.random.seed(<value>)`.
         """
         self._logger.info("generate_pore_seeds: Assign each pore a random seed")
         Np = self._net.get_num_pores()
         self._net.pore_properties['seed'] = sp.random.rand(Np)
-        #Set boundary pore to 1 (max possible value) so throats adopt seed from interal pore
-        self._net.pore_properties['seed'][self._net.pore_properties['type']>0] = 1
+        #Overwrite boundary pores with 0 so they don't get assigned values (This won't be necessary with the self-protecting dictionary is used)
+        self._net.pore_properties['seed'][self._net.pore_properties['type']>0] = 0
         self._logger.debug("generate_pore_seeds: End of method")
 
     def _generate_throat_seeds(self):
         r"""
-        Assigns random seeds to throats based on smaller of neighboring pores
-        
+        Assigns random seeds to throats by adopting the smaller of its neighboring pore seed values
+
         Notes
         -----
-        
+        For this step any boundary pores are assumed to have seed value of 1, which forces the throat to adopt the internal pore's seed.
         """
         self._logger.info("generate_throat_seeds: Assign each throat its smaller neighboring pore seed")
+        #Temporarily set boundary pore seeds to 1 to simplify throat seed assignment
+        self._net.pore_properties['seed'][self._net.pore_properties['type']>0] = 1
         self._net.throat_properties['seed'] = sp.amin(self._net.pore_properties['seed'][self._net.throat_properties['connections']],1)
+        #Set boundary pore seeds back to 0
+        self._net.pore_properties['seed'][self._net.pore_properties['type']>0] = 0
         self._logger.debug("generate_throat_seeds: End of method")
-        
+
     def _generate_pore_diameters(self,psd_info):
         r"""
-        Calculates pore diameter from given statisical distribution using the random seeds provided by generate_pore_seeds()
-        
-        Parameters
-        ----------
-        psd_info : dictionary
-            Contains 'key : value' pairs required by chosen distribution
-        
+        Calculates pore diameter from given statisical distribution using the random seed value for each pore
+
         Notes
         -----
-                
+
         """
         self._logger.info("generate_pore_diameters: Generate pore diameter from "+psd_info['name']+" distribution")
         prob_fn = getattr(spst,psd_info['name'])
@@ -158,23 +157,18 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
 
     def _generate_throat_diameters(self,tsd_info):
         r"""
-        Calculates throat diameter from given statisical distribution using the random seeds provided by generate_throat_seeds()
-        
-        Parameters
-        ----------
-        tsd_info : dictionary
-            Contains 'key : value' pairs required by chosen distribution
-        
+        Calculates throat diameter from given statisical distribution using the random seed value for each throat
+
         Notes
         -----
-        
+
         """
         self._logger.info("generate_throat_diameters: Generate throat diameter from "+tsd_info['name']+" distribution")
         prob_fn = getattr(spst,tsd_info['name'])
         P = prob_fn(tsd_info['shape'],loc=tsd_info['loc'],scale=tsd_info['scale'])
         self._net.throat_properties['diameter'] = P.ppf(self._net.throat_properties['seed'])
         self._logger.debug("generate_throat_diameters: End of method")
-        
+
     def _calc_pore_volumes(self):
         r"""
         Calculates pore volume from diameter assuming a spherical pore
@@ -185,27 +179,27 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         #Set boundary pore volumes to 0
         self._net.pore_properties['volume'][self._net.pore_properties['type']>0] = 0
         self._logger.debug("calc_pore_volumes: End of method")
-        
+
     def _calc_throat_volumes(self):
         r"""
         Calculates throat volume from diameter and length assuming a cylindrical pore of constant cross-section
-        
+
         Notes
         -----
-        
+        This calculation does not account for the overlap between the cylinder and spherical pore bodies, so volume is slightly over estimated.
         """
         self._logger.info("calc_throat_volumes: Setting throat volumes assuming square cross-section")
         #Set internal pore volumes to 1
         self._net.throat_properties['volume'] = self._net.throat_properties['length']*self._net.throat_properties['diameter']**2
         self._logger.debug("calc_throat_volumes: End of method")
-        
+
     def _calc_throat_lengths(self):
         r"""
-        Determine throat length from distance between pores
-        
+        Determine throat length from distance between pores minus the radius of each pore
+
         Notes
         -----
-        
+        There is a slight geometric inconsistancy here due to the overlap between the cylinder and the sphereical pore bodies.
         """
         self._logger.info("calc_throat_lengths: Determine throat length from distance between pores")
         #Initialize throat_property['length']
@@ -219,21 +213,21 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         #Perform check for unphysical throat lengths
         if sp.sum(self._net.throat_properties['length']<0):
             self._logger.warning("calc_throat_lengths: Some negative throat lengths exist, some pores overlap!")
-        self._logger.debug("calc_throat_lengths: End of method")     
+        self._logger.debug("calc_throat_lengths: End of method")
 
     @staticmethod
     def translate_coordinates(net,displacement=[0,0,0]):
         r"""
         Translate pore network coordinates by specified amount
-        
+
         Parameters
         ----------
         net : OpenPNM Network Object
             The network to which translation should be applied
-            
+
         displacement : array_like
             A vector containing the amount to translate in each dimension. [0,0,0] yeilds no translation.
-        
+
         """
         net.pore_properties['coords'] = net.pore_properties['coords'] + displacement
 
@@ -241,34 +235,34 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
     def scale_coordinates(net,scale=[1,1,1]):
         r"""
         Scale pore network coordinates by specified amount
-        
+
         Parameters
         ----------
         net : OpenPNM Network Object
             The network to which translation should be applied
-            
+
         scale : array_like
             A vector containing the amount to scale in each dimension.  [1,1,1] yeilds no scaling.
-            
+
         """
         net.pore_properties['coords'] = net.pore_properties['coords']*scale
-    
+
     @staticmethod
     def stitch(net1,net2):
         r"""
         Stitch two networks together
-        
+
         Parameters
         ----------
         net1 : OpenPNM Network Object
             The network that is stiched to
-        
+
         net2 : OpenPNM Network Object
             The network that is stitched
-        
+
         """
         print 'not implemented yet'
 
 if __name__ == '__main__':
-    test=GenericGeometry(loggername="TestGenerator")        
+    test=GenericGeometry(loggername="TestGenerator")
 
