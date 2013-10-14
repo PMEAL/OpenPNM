@@ -16,23 +16,23 @@ from __GenericGeometry__ import GenericGeometry
 class Cubic(GenericGeometry):
     r"""
     Cubic - Class to create a basic cubic network
-    
+
     Parameters
     ----------
-    
+
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-        
+
     Examples
-    --------    
+    --------
     >>>print 'none yet'
 
     """
-    
+
     def __init__(self, **kwargs):
         super(Cubic,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
-        
+
         #Instantiate pore network object
         self._net=OpenPNM.Network.GenericNetwork()
 
@@ -49,7 +49,7 @@ class Cubic(GenericGeometry):
         self._logger.info("Find network dimensions")
         self._btype = btype
         if domain_size and lattice_spacing and not divisions:
-            self._Lc = np.float(lattice_spacing)
+            self._Lc = np.float(lattice_spacing[0])
             self._Lx = np.float(domain_size[0])
             self._Ly = np.float(domain_size[1])
             self._Lz = np.float(domain_size[2])
@@ -57,7 +57,7 @@ class Cubic(GenericGeometry):
             self._Ny = np.int(self._Ly/self._Lc)
             self._Nz = np.int(self._Lz/self._Lc)
         elif divisions and lattice_spacing and not domain_size:
-            self._Lc = np.float(lattice_spacing)
+            self._Lc = np.float(lattice_spacing[0])
             self._Nx = np.int(divisions[0])
             self._Ny = np.int(divisions[1])
             self._Nz = np.int(divisions[2])
@@ -75,7 +75,7 @@ class Cubic(GenericGeometry):
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
-    
+
     def _generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
@@ -91,21 +91,21 @@ class Cubic(GenericGeometry):
         self._net.pore_properties['coords'] = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self._net.pore_properties['numbering'] = ind
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
-        
+
         self._logger.debug("generate_pores: End of method")
-        
+
     def _generate_throats(self):
         r"""
         Generate the throats (connections, numbering and types)
         """
         self._logger.info("generate_throats: Define connections between pores")
-        
+
         Nx = self._Nx
         Ny = self._Ny
-        Nz = self._Nz        
+        Nz = self._Nz
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
-        
+
         #Generate throats based on pattern of the adjacency matrix
         tpore1_1 = ind[(ind%Nx)<(Nx-1)]
         tpore2_1 = tpore1_1 + 1
@@ -121,10 +121,10 @@ class Cubic(GenericGeometry):
         self._net.throat_properties['type'] = np.zeros(np.shape(tpore1),dtype=np.int8)
         self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
         self._logger.debug("generate_throats: End of method")
-        
+
     def _add_boundaries(self):
         r"""
-        Add boundaries to network 
+        Add boundaries to network
         """
         self._logger.debug("add_boundaries: Start of method")
         #Remove all items pertaining to previously defined boundaries (if any)
@@ -138,16 +138,16 @@ class Cubic(GenericGeometry):
         self._add_opposing_boundaries(face=2,periodic=self._btype[0]) #x faces
         self._add_opposing_boundaries(face=3,periodic=self._btype[1]) #y faces
         self._add_opposing_boundaries(face=1,periodic=self._btype[2]) #z faces
-        
+
         pnum_added = self._net.get_num_pores() - pnum_orig
         self._net.pore_properties['coords'] = np.concatenate((self._net.pore_properties['coords'],np.zeros((pnum_added,3))),axis=0)
         #Add 'coords' to boundaries
-        #   Generate an Nx2 array, named "boundary_pore_list" that names all 
-        #   pairs of pores connected by boundary throats. 
+        #   Generate an Nx2 array, named "boundary_pore_list" that names all
+        #   pairs of pores connected by boundary throats.
         pnum_dif = self._net.get_num_pores()-pnum_orig
         btlist = self._net.throat_properties['numbering'][self._net.throat_properties['type']>0]
 #        self._net.pore_properties['coords']=np.append(self._net.pore_properties['coords'],np.zeros((pnum_dif,3)),0)
-        btnum = np.size(btlist)  
+        btnum = np.size(btlist)
         boundary_pore_list = np.zeros((btnum,2),dtype=np.int32)
         for i in range(btnum):
             boundary_pore_list[i] = self._net.get_connected_pores(btlist[i])
@@ -180,15 +180,15 @@ class Cubic(GenericGeometry):
             self._net.pore_properties['coords'][i][2] += self._Lc
         #Update network
         self._net.update()
-        
+
         self._logger.debug("add_boundaries: End of method")
-        
+
     def _add_opposing_boundaries(self,face,periodic=0):
         r"""
         Add boundaries by adding opposing faces, one pair at a time.
         """
         self._logger.debug("add_opposing_boundaries: Start of method")
-        
+
         Nx = self._Nx
         Ny = self._Ny
         Nz = self._Nz
@@ -223,9 +223,9 @@ class Cubic(GenericGeometry):
             self._net.throat_properties['connections'] = np.concatenate((self._net.throat_properties['connections'],conns),axis=0)
             self._net.throat_properties['numbering'] = np.concatenate((self._net.throat_properties['numbering'],np.arange(Nt,Nt+2*NpFace[face],dtype=np.int32)),axis=0)
             self._net.throat_properties['type'] = np.concatenate((self._net.throat_properties['type'],np.ones(NpFace[face],dtype=np.int8)*face),axis=0)
-            self._net.throat_properties['type'] = np.concatenate((self._net.throat_properties['type'],np.ones(NpFace[face],dtype=np.int8)*(7-face)),axis=0)            
+            self._net.throat_properties['type'] = np.concatenate((self._net.throat_properties['type'],np.ones(NpFace[face],dtype=np.int8)*(7-face)),axis=0)
             #Add new elements to pore lists
-            self._net.pore_properties['numbering'] = np.concatenate((self._net.pore_properties['numbering'],np.arange(Np,Np+2*NpFace[face],dtype=np.int32)),axis=0)       
+            self._net.pore_properties['numbering'] = np.concatenate((self._net.pore_properties['numbering'],np.arange(Np,Np+2*NpFace[face],dtype=np.int32)),axis=0)
             self._net.pore_properties['type'] = np.concatenate((self._net.pore_properties['type'],np.ones(NpFace[face],dtype=np.int8)*(face)),axis=0)
             self._net.pore_properties['type'] = np.concatenate((self._net.pore_properties['type'],np.ones(NpFace[face],dtype=np.int8)*(7-face)),axis=0)
             self._net.update()
@@ -234,11 +234,11 @@ class Cubic(GenericGeometry):
 #            pnum1 = self._net.get_neighbor_pores(bnum1,[0])
 #            pnum2 = self._net.get_neighbor_pores(bnum2,[0])
 #            self._net.pore_properties['coords'][bnum1] = self._net.pore_properties['coords'][pnum1] - []
-#            self._net.pore_properties['coords'][bnum2] = 
-            
+#            self._net.pore_properties['coords'][bnum2] =
+
         self._logger.debug("add_opposing_boundaries: End of method")
-        
-        
+
+
 if __name__ == '__main__':
     test=Cubic(loggername='TestCubic')
     pn = test.generate(lattice_spacing=1.0,domain_size=[3,3,3], btype=[1,1,0])
