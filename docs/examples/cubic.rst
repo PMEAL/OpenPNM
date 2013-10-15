@@ -2,7 +2,7 @@
 .. _cubic-example:
 
 ===============================================================================
-Generate and Use a Cubic Network
+Generate Cubic Network and Simulate a Drainage Capillary Pressure Curve
 ===============================================================================
 
 -------------------------------------------------------------------------------
@@ -19,11 +19,9 @@ Next, setup a dictionary containing all the desired network parameters.
 .. code-block:: python
 
     params = {
-    'domain_size'           : [0.001,0.001,0.0004],  #physical network size [meters]
+    'domain_size'           : [10,10,10],  #physical network size [meters]
     'divisions'             : [], #Number of pores in each direction
-    'lattice_spacing'       : [.0001],  #spacing between pores [meters]
-    'num_pores'             : 1000, #This is used for random networks where spacing is irrelevant
-    'template'              : template, #This is used for the Template based network generation
+    'lattice_spacing'       : [1],  #spacing between pores [meters]
     'psd_info'   : {'name'  : 'weibull_min', #Each statistical package takes different params, so send as dict
                     'shape' : 1.5,
                     'loc'   : 6e-6,
@@ -66,11 +64,38 @@ This method calculates the capillary entry pressure of each throat in the networ
 -------------------------------------------------------------------------------
 Running Simulations
 -------------------------------------------------------------------------------
+In order to run a drainage simulation it is necessary to specify the inlet sites from which the invasion of non-wetting fluid proceeds.  There are several possibilities here depending on what sort experiment is being simulated.  For mercury intrusion porosimetry (MIP), the non-wetting fluid invades the sample from all sides.  During the `generate()` step, boundary pores were added on all sides of the network and give a `'type'` value > 0 (0 indicates an internal pores).  To specify invasion from all faces, the inlets can be set to all boundary pores:
 
+.. code-block:: python
 
+	mask = pn.pore_properties['type']>0
+	inlets = pn.pore_properties['numbering'][mask]
 
+The simulation can be run as:
 
+.. code-block:: python
 
+	OpenPNM.Algorithms.OrdinaryPercolation(loglevel = 10).run(net = pn, npts = 50, inv_sites = inlets)
+	
+The resulting capillary pressure curve can be visualized by sending the network (pn) to the custom built plot command available in the Visualization module:
+
+.. code-block:: python
+
+	OpenPNM.Visualization.Plots.Capillary_Pressure_Curve(pn)
+
+The capillary pressure curve should like something like this:
+
+.. plot::
+	
+	import matplotlib.pyplot as plt
+	import OpenPNM
+	pn = OpenPNM.Geometry.Cubic(loglevel=10).generate()
+	OpenPNM.Physics.CapillaryPressure.Washburn(pn, sigma = 0.72, theta = 120)
+	mask = pn.pore_properties['type']>0
+	inlets = pn.pore_properties['numbering'][mask]
+	OpenPNM.Algorithms.OrdinaryPercolation(loglevel = 10).run(net = pn, npts = 50, inv_sites = inlets)
+	plt.hist(pn.pore_conditions['Pc_invaded'])
+   
 
 -------------------------------------------------------------------------------
 Visualizing with Paraview

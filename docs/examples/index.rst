@@ -4,9 +4,10 @@
 **OpenPNM Examples**
 ###############################################################################
 
-Contents:
+Available Examples:
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    
    cubic.rst
+   template.rst
