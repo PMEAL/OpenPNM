@@ -155,7 +155,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         V : Dict, optional
             The values in the {'key': value} pair specify the throat property (V) to enter into the I,J locations of the IJV sparse matrix. The 'key' is used to name the resulting incidence matrix when storing it on the network. If no argument is received, throat_properties['connections'] is used.
-        sprsfmt : String, optional
 
         sprsfmt : String, optional
             The sparse storage format to use. If none type is given, all are generated (coo, csr & lil)
@@ -216,11 +215,13 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         ----------
 
         Ptype : array_like, optional
-            list of desired pore types to count
+            List of desired pore types to count
 
         Returns
         -------
+
         Np : int
+            Returns the number of pores of the specified type
 
         """
         try:
@@ -256,7 +257,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         Parameters
         ----------
-        Tnums: array_like
+        Tnums : array_like
             List of throats ID numbers
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore ID numbers
@@ -295,6 +296,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Parameters
         ----------
         Pnum1 , Pnum2 : int
+            The pore numbers connected by the desired throat
 
         Returns
         -------
