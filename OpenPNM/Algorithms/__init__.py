@@ -49,4 +49,10 @@ Submodules
 from __GenericAlgorithm__ import GenericAlgorithm
 from __InvasionPercolation__ import InvasionPercolation
 from __OrdinaryPercolation__ import OrdinaryPercolation
-from __FickianDiffusion__ import FickianDiffusion 
+from __FickianDiffusion__ import FickianDiffusion
+from __Permeability__ import Permeability 
+from __FourierConduction__ import FourierConduction 
+from __ElectronConduction__ import ElectronConduction
+from __BoundaryConditions__ import BoundaryConditions 
+from __TransportsLinearSolver__ import TransportsLinearSolver
+   
