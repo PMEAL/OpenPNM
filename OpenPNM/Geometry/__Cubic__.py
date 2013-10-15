@@ -72,6 +72,14 @@ class Cubic(GenericGeometry):
             self._Lx = np.float(self._Nx*self._Lc)
             self._Ly = np.float(self._Ny*self._Lc)
             self._Lz = np.float(self._Nz*self._Lc)
+        elif not domain_size and not divisions and not lattice_spacing:
+            self._Lc = np.float(1)
+            self._Lx = np.float(3)
+            self._Ly = np.float(3)
+            self._Lz = np.float(3)
+            self._Nx = np.int(self._Lx/self._Lc)
+            self._Ny = np.int(self._Ly/self._Lc)
+            self._Nz = np.int(self._Lz/self._Lc)
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')

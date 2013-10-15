@@ -30,14 +30,14 @@ A network has a certain number of pores, *Np*, and a certain number of throats, 
 Pore and Throat Numbering
 -------------------------------------------------------------------------------
 
-Each pore and throat in the network has a unique ID number.  In OpenPNM the ID number is *implied* by array element number, meaning that any information stored in element *i* of an array implicitly applies to pore (or throat) *i*.  Or in other words, finding information about pore (or throat) *i* is accomplished by looking into element 0 of an array.  There is no correspondence between pore number and throat number, meaning that throat *i* may or may not be connected with pore *i*.  Python uses 0-based array indexing so the ID numbers start at 0, which can be a source of confusion when representing connections using sparse representations.  
+Each pore and throat in the network has a unique ID number.  In OpenPNM the ID number is *implied* by array element number, meaning that any information stored in element *i* of a pore (or throat) property array implicitly applies to pore (or throat) *i*.  Or in other words, finding information about pore (or throat) *i* is accomplished by looking into element *i* of an array.  There is no correspondence between pore number and throat number, meaning that throat *i* may or may not be connected with pore *i*.  Python uses 0-based array indexing so the ID numbers start at 0, which can be a source of confusion when representing connections using sparse representations.  
 
-.. sidebar:: Aside
+.. sidebar:: Development Topic: Removing Implicit Index Values
 
-	It is conceivable that an extra array called 'index' could be used to remove the implicitness of the numbering.  For instance :code:`'index' = [0,2,1,3]` would indicate that 'element 1' of each array contains the properties of 'pore 2'.  Given a list like :code:`pore_properties['size'] = [0.1, 0.2, 0.3 0.4]`, one could extract an ordered list as :code:`pore_properties['size']['index'] = [0.1, 0.3, 0.2, 0.4]`.  This extra layer of indexing is confusing and makes it more difficult to set up vectorized and boolean masked statements.  One point of confusion that may arise when using OpenPNM is the presence of the pore and throat 'numbering' property.  This property is simply a list of integers between 0 and *Np* or *Nt*.  Its purpose is to facilitate indexing into other property arrays.  For instance, a user can query all pores (or throats) larger than size R and receive a boolean array.  This boolean can then be used to mask the 'numbering' array and produce an array containing a subset of pore (or throat) ID numbers.  The subset can then be passed to algorithms and other methods, such as the inlets to an invasion percolation algorithm.  This approach is a matter of convenience only.  This could be avoided by generating an integer list between 0 and *Np* (or *Nt*) each time the 'numbering' property is used.  One further wrinkle to add is that the 'numbering' property *could* be used to remove the implicit IDs, and most of the code in OpenPNM would function properly, but there are certainly places where the code will break.  It might be a reasonable task for future releases to adapt the code to allow this.  
+	It is conceivable that an extra array called 'index' could be used to remove the implicitness of the numbering.  For instance ``index = [0,2,1,3]`` would indicate that 'element 1' of each array contains the properties of 'pore 2'.  Given a list like ``pore_properties['size'] = [0.1, 0.2, 0.3 0.4]``, one could extract an ordered list as ``pore_properties['size'][index] = [0.1, 0.3, 0.2, 0.4]``.  This extra layer of indexing is confusing and makes it more difficult to set up vectorized and boolean masked statements.  One point of confusion that may arise when using OpenPNM is the presence of the pore and throat 'numbering' property.  This property is simply a list of integers between 0 and *Np* or *Nt*.  Its purpose is to facilitate indexing into other property arrays.  For instance, a user can query all pores (or throats) larger than size R and receive a boolean array.  This boolean can then be used to mask the 'numbering' array and produce an array containing a subset of pore (or throat) ID numbers.  The subset can then be passed to algorithms and other methods, such as the inlets to an invasion percolation algorithm.  This approach is a matter of convenience only.  This could be avoided by generating an integer list between 0 and *Np* (or *Nt*) each time the 'numbering' property is used.  One further wrinkle to add is that the 'numbering' property *could* be used to remove the implicit IDs, and most of the code in OpenPNM would function properly, but there are certainly places where the code will break.  It might be a reasonable task for future releases to adapt the code to allow this.  
 	
 -------------------------------------------------------------------------------
-Internal vs. Boundary Pores and Throats
+'Internal' vs. 'Boundary'
 -------------------------------------------------------------------------------
 
 Internal pores and internal throats refer to the throats in which the physical processes occur.  Boundary pores are added to the network to enable numerical calculations that require boundary conditions.  For instance, to simulate diffusion across the network a concentration gradient is created by placing specified concentrations in the boundary pores (Dirichlet conditions).
@@ -51,34 +51,32 @@ Throats connecting an internal pore to a boundary pore are considered part of th
 .. note::
 
 	If surface or boundary effects are of interest, then they must be captured by creating a suitable arrangement of internal pores on the face of the physical domain.  It is not the role of the boundary pores to capture physical processes.  
+	
+.. sidebar:: In Depth: Adjacency and Incidence Matrices  
 
--------------------------------------------------------------------------------
-Adjacency Matrices
--------------------------------------------------------------------------------
+	*Adjacency Matrices*
 
-When each pore has a unique ID number it is logical to store the network connectivity as a list of the pores to  
-which a given pore is connected.  Graph theoreticians have devised an elegant and powerful approach for storing this information, which OpenPNM has adopted, called adjacency matrices.  An adjacency matrix is a 2D matrix of size *Np*-by-*Np*.  A value of 1 is placed at location (*i*, *j*) to indicate that pores *i* and *j* are connected.  In pore networks there is generally no difference between traversing from pore *i* to pore *j* or from pore *j* to pore *i*, so a 1 is also placed at location (*j*, *i*).  This means that determining which pores are connected directly to a given pore (say *i*) can be accomplished by finding the locations of non-zeros in row *i*.  In graph theory terminology this is deemed an *undirected* network, meaning that the *direction* of traversal is immaterial.  The adjacency matrix of an undirected network is symmetric.  Since the adjacency matrix is symmetric it is redundant to store the entire matrix when only the upper (or lower) triangular part is necessary.  
+	When each pore has a unique ID number it is logical to store the network connectivity as a list of the pores to  
+	which a given pore is connected.  Graph theoreticians have devised an elegant and powerful approach for storing this information, which OpenPNM has adopted, called adjacency matrices.  An adjacency matrix is a sparse 2D matrix of size *Np*-by-*Np*.  A value of 1 is placed at location (*i*, *j*) to indicate that pores *i* and *j* are connected.  In pore networks there is generally no difference between traversing from pore *i* to pore *j* or from pore *j* to pore *i*, so a 1 is also placed at location (*j*, *i*).  This means that determining which pores are connected directly to a given pore (say *i*) can be accomplished by finding the locations of non-zeros in row *i*.  In graph theory terminology this is deemed an *undirected* network, meaning that the *direction* of traversal is immaterial.  The adjacency matrix of an undirected network is symmetric.  Since the adjacency matrix is symmetric it is redundant to store the entire matrix when only the upper (or lower) triangular part is necessary.  
 
-Because pores are generally only connected to nearby pores, the number of throats per pore is a very small faction of the total number of throats.  This means that there are very few non-zero elements on each row, so the adjacency matrix is highly sparse.  This fact naturally lends itself to sparse storage schemes.  OpenPNM uses uses the IJV sparse storage scheme to store the upper triangular portion of the adjacency matrix.  The *IJV* scheme is simply an *Np*-by-3 array of the (*I*, *J*) coordinates of each non-zero element in the adjacency matrix, along with the corresponding non-zero value (*V*).  (The scipy.sparse module calls this the Coordinate or COO storage scheme, but it is more widely known as IJV).  For example, to denote a value of 1 on row 3 and column 7, the *IJV* storage scheme would include an entry IJV = [3, 7, 1].  Each non-zero element in the adjacency matrix corresponds to a row to the *IJV* array.  Moreover, the number of non-zeros in the upper triangular portion of the adjacency matrix is equal to the number of throats in the network, so the dimensions of the *IJV* array is *Nt*-by-3.  This is not a coincidence; a key feature of the adjacency matrix is that each non-zero element directly corresponds to a throat.  Because throat numbers are implicitly defined by their location in an array, then the IJV sparse storage scheme automatically assigns throat ID numbers when the IJV array is generated.  For instance, when scanning the adjacency matrix from left-to-right, top-to-bottom, the first non-zero element encountered (say at location [0,5]) would be assigned throat number 0, and stored as IJV[0] = [0,5,1].  
+	Because pores are generally only connected to nearby pores, the number of throats per pore is a very small faction of the total number of throats.  This means that there are very few non-zero elements on each row, so the adjacency matrix is highly sparse.  This fact naturally lends itself to sparse storage schemes.  OpenPNM uses uses the IJV sparse storage scheme to store the upper triangular portion of the adjacency matrix.  The *IJV* scheme is simply an *Np*-by-3 array of the (*I*, *J*) coordinates of each non-zero element in the adjacency matrix, along with the corresponding non-zero value (*V*).  (The scipy.sparse module calls this the Coordinate or COO storage scheme, but it is more widely known as IJV).  For example, to denote a value of 1 on row 3 and column 7, the *IJV* storage scheme would include an entry IJV = [3, 7, 1].  Each non-zero element in the adjacency matrix corresponds to a row to the *IJV* array.  Moreover, the number of non-zeros in the upper triangular portion of the adjacency matrix is equal to the number of throats in the network, so the dimensions of the *IJV* array is *Nt*-by-3.  This is not a coincidence; a key feature of the adjacency matrix is that each non-zero element directly corresponds to a throat.  Because throat numbers are implicitly defined by their location in an array, then the IJV sparse storage scheme automatically assigns throat ID numbers when the IJV array is generated.  For instance, when scanning the adjacency matrix from left-to-right, top-to-bottom, the first non-zero element encountered (say at location [0,5]) would be assigned throat number 0, and stored as IJV[0] = [0,5,1].  
 
-One further optimization used by OpenPNM is to drop the V from the IJV format since the non-zeros in the adjacency matrix are all 1.  This results in a *Nt*-by-2 array which is called *connections*.  Any desired throat property array can be appended as a third column to the *connections* array to fully specify the IJV format for use with the scipy.sparse or scipy.csgraph functions.  OpenPNM provides a routine for this operation (:code:`'fill_adjacency_matrix'`), which takes the desired throat property list to insert into *V* as an argument.  
+	One further optimization used by OpenPNM is to drop the V from the IJV format since the non-zeros in the adjacency matrix are all 1.  This results in a *Nt*-by-2 array which is called *connections*.  Any desired throat property array can be appended as a third column to the *connections* array to fully specify the IJV format for use with the scipy.sparse or scipy.csgraph functions.  OpenPNM provides a routine for this operation (``'fill_adjacency_matrix'``), which takes the desired throat property list to insert into *V* as an argument.  
 
-In summary, when storing network connectivity as the upper triangular portion of an adjacency in the IJV sparse storage format, the end result is an *Nt*-by-2 list describing which pores are connected by a given throat.  These connections are a fundamental property associated with each throat in the same way as throat diameter or capillary entry pressure.  This highly distilled storage format minimized memory usage, allows for vectorization of the code, is the most efficient means of generating a sparse matrix, and corresponds perfectly with the storage of other throat properties using the ID number implicitly defined by the list element location. 
+	In summary, when storing network connectivity as the upper triangular portion of an adjacency in the IJV sparse storage format, the end result is an *Nt*-by-2 list describing which pores are connected by a given throat.  These connections are a fundamental property associated with each throat in the same way as throat diameter or capillary entry pressure.  This highly distilled storage format minimized memory usage, allows for vectorization of the code, is the most efficient means of generating a sparse matrix, and corresponds perfectly with the storage of other throat properties using the ID number implicitly defined by the list element location. 
 
--------------------------------------------------------------------------------
-Other Sparse Storage Schemes
--------------------------------------------------------------------------------
-The IJV storage format corresponds perfectly with the way other throat data is stored in OpenPNM, however some tasks and queries are performed more efficiently using other storage formats.  OpenPNM converts between these formats internally as needed.  For instance, most linear solvers prefer the compressed-sparse-row (CSR) scheme.  Conveniently, the IJV format used by OpenPNM is the fastest way to generate sparse matrices, so conversion, or building of each required sparse format is very efficient.  OpenPNM uses the methods provided by scipy.sparse for these conversions so they are highly optimized and based on C.  OpenPNM contains a method for constructing sparse matrices (called fill_adjacency_matrix) which accepts the storage type as an argument (i.e. 'csr', 'lil', etc).  This method can generate these other formats very quickly since they all derive from the IJV ('coo') format.  For a discussion of sparse storage schemes and the respective merits, see this `Wikipedia article <http://en.wikipedia.org/wiki/Sparse_matrix>`_.
+	*Other Sparse Storage Schemes*
+	
+	The IJV storage format corresponds perfectly with the way other throat data is stored in OpenPNM, however some tasks and queries are performed more efficiently using other storage formats.  OpenPNM converts between these formats internally as needed.  For instance, most linear solvers prefer the compressed-sparse-row (CSR) scheme.  Conveniently, the IJV format used by OpenPNM is the fastest way to generate sparse matrices, so conversion, or building of each required sparse format is very efficient.  OpenPNM uses the methods provided by scipy.sparse for these conversions so they are highly optimized and based on C.  OpenPNM contains a method for constructing sparse matrices (called fill_adjacency_matrix) which accepts the storage type as an argument (i.e. 'csr', 'lil', etc).  This method can generate these other formats very quickly since they all derive from the IJV ('coo') format.  For a discussion of sparse storage schemes and the respective merits, see this `Wikipedia article <http://en.wikipedia.org/wiki/Sparse_matrix>`_.
 
--------------------------------------------------------------------------------
-Incidence Matrices
--------------------------------------------------------------------------------
-Another way to represent network connections is an incidence matrix.  This is similar to an adjacency matrix but rather than denoting which pores are connected to which, it denotes which pores are connected to which throats.  An incidence matrix is *Np*-by-*Nt* is size, with *Nt* non-zero elements.  The incidence matrix is useful for quickly querying which throats are connected to a given pore by finding the location of non-zero elements on a row.  Incidence matrices are generated as needed by OpenPNM internally for performing such queries, and the user does not usually interact with them.  
+	*Incidence Matrices*
+ 
+	Another way to represent network connections is an incidence matrix.  This is similar to an adjacency matrix but rather than denoting which pores are connected to which, it denotes which pores are connected to which throats.  An incidence matrix is *Np*-by-*Nt* is size, with *Nt* non-zero elements.  The incidence matrix is useful for quickly querying which throats are connected to a given pore by finding the location of non-zero elements on a row.  Incidence matrices are generated as needed by OpenPNM internally for performing such queries, and the user does not usually interact with them.  
 
 ===============================================================================
 Network Data Storage
 ===============================================================================
-OpenPNM stores two types of information about pores and throats: 'properties' and 'conditions'.  Properties include the geometric and structural aspects of the network, such as pore size and throat length.  Conditions include the thermo-physics and fluids related information such as liquid temperature and gas pressure.  The former information is created by the Geometry modules during network generation, while the latter is produced and altered by the Physics and Algorithm modules.  For instance, an algorithm might calculate the temperature in the network, then a method in the Physics module might use this temperature to calculate temperature dependent liquid viscosity.  There is one important difference between properties and conditions: properties are always vectors of length *Np* for :code:`pore_properties`) and *Nt* :code:`throat_properties`, while pore and throat conditions can be either vectors of *Np* and *Nt* respectively, *or* scalars.  The reasons and implications for this will be outlined below.
+OpenPNM stores two types of information about pores and throats: 'properties' and 'conditions'.  Properties include the geometric and structural aspects of the network, such as pore size and throat length.  Conditions include the thermo-physics and fluids related information such as liquid temperature and gas pressure.  The former information is created by the Geometry modules during network generation, while the latter is produced and altered by the Physics and Algorithm modules.  For instance, an algorithm might calculate the temperature in the network, then a method in the Physics module might use this temperature to calculate temperature dependent liquid viscosity.  There is one important difference between properties and conditions: properties are always vectors of length *Np* for ``pore_properties`` and *Nt* ``throat_properties``, while pore and throat conditions can be either vectors of *Np* and *Nt* respectively, *or* scalars.  The reasons and implications for this will be outlined below.
 
 -------------------------------------------------------------------------------
 Pore and Throat Properties
@@ -90,13 +88,15 @@ As mentioned above, OpenPNM uses implied pore and throat numbering, meaning that
 To examine the properties of a network, start by generating a small network of 3-by-3-by-3 as follows:
 
 .. code-block:: python
-   import OpenPNM
-   pn = OpenPNM.Geometry.Cubic().generate(divisions=[3,3,3],lattice_spacing=[1])
 
-This creates a cubic network with 27 pores and 54 throats.  A quick summary of the network data can be had by typing :code:`pn.overview`.  The following output will be produced:
+   >>> import OpenPNM
+   >>> pn = OpenPNM.Geometry.Cubic().generate(divisions=[3,3,3],lattice_spacing=[1])
+
+This creates a cubic network with 27 pores and 54 throats.  A quick summary of the network data can be displayed as follows:
 
 .. code-block:: python
 
+    >>> print pn  
     ==================================================
     Overview of network properties
     --------------------------------------------------
@@ -119,21 +119,19 @@ This creates a cubic network with 27 pores and 54 throats.  A quick summary of t
         length              float64             (54L,)              
         seed                float64             (54L,)              
         type                int8                (54L,) 
-        
+
+A more detailed description is available with ``pn.print_overview()``.		
+
 As can be seen, the default network generation produces several basic pore and throat properties.  Note that the length of the pore and throat property lists correspond to the number of pores and throats in the network (27 and 54 respectively).  Most of the data are stored in 1D arrays, with two exceptions.  The pore property 'coords' gives the spatial location of the pore center in 3D Cartesian coordinates, so each pore requires a set of X, Y and Z values.  The throat property 'connections' gives the ID numbers of the two pores it connects, or in other words it gives the IJ portion of the IJV sparse storage of the adjacency matrix.  
 
-These data arrays are stored as part of the network object using Python dictionaries.  A Python dictionary is a form of structured variable where each entry in the dictionary has a { 'key' : <value> } pair.  The 'key' is the name of the of the <value>, and the <value> can be any data type.  In OpenPNM the <values> are all ndarrays.  For example, to access the diameter of pores use:
+These data arrays are stored as part of the network object using Python dictionaries.  A Python dictionary is a form of structured variable where each entry in the dictionary has a { 'key' : <value> } pair.  The 'key' is the name of the of the <value>, and the <value> can be any data type.  In OpenPNM the <values> are all ndarrays.  For example, ``pn.pore_properties['diameter']`` will return the pore diameter values. Similarly, ``pn.throat_properties['diameter']`` returns the throat diameter values.
 
->>> pn.pore_properties['diameter']
+A quick way to find all properties currently stored in a dictionary is the ``.keys()`` method as follows:
 
-And similarly for throats:
-
->>> pn.throat_properties['diameter']
-
-A quick way to find all properties currently stored in a dictionary is the :code:`.keys()` method as follows:
-
->>> pn.pore_properties.keys()
-['diameter', 'numbering', 'volume', 'seed', 'coords', 'type']
+.. code-block:: python
+	
+	>>> print pn.pore_properties.keys()
+	['diameter', 'numbering', 'volume', 'seed', 'coords', 'type']
 
 .. note::
 	
@@ -142,26 +140,28 @@ A quick way to find all properties currently stored in a dictionary is the :code
 -------------------------------------------------------------------------------
 Pore and Throat Conditions
 -------------------------------------------------------------------------------
-Pore and throat conditions are very similar to the properties as described above, with one major exception.  'conditions' can be either a vector of length Np for pores (and Nt for throats), **or** they can be a scalar.  In the case of vector conditions (i.e. one value for each pore or throat) all of the considerations outlined above for 'properties' applies unchanged.  A scalar conditions assumes that this value applies to **all** pores or throats.  For instance, a applying a constant temperature to the network can be achieved with:
-
->>> pn.pore_conditions['temperature'] = 80.0
-
-Storing this information as a scalar provides significant memory savings by avoid the redundancy of specifying each pore to have the same temperature.  Fortunately, Numpy is very adapt at 'broadcasting' vectors and scalars together.  This means that a properly vectorized calculation can take a vector or a scalar without any changes to the code.  For instance, to calculate the molar density of the gas in the pores using the ideal gas law, we could write:
+Pore and throat conditions are very similar to the properties as described above, with one major exception.  'conditions' can be either a vector of length *Np* for pores (and *Nt* for throats), **or** they can be a scalar.  In the case of vector conditions (i.e. one value for each pore or throat) all of the considerations outlined above for 'properties' applies unchanged.  A scalar conditions assumes that this value applies to **all** pores or throats.  For instance, applying a constant temperature to the network can be achieved with:
 
 .. code-block:: python
 	
-	pn.pore_conditions['temperature'] = 80.1
-	pn.pore_conditions['pressure'] = 101325
-	gas_constant = 8.314
-	pn.pore_conditions['molar_density'] = pn.pore_conditions['pressure']/gas_constant/pn.pore_conditions['temperature']
+	>>> pn.pore_conditions['temperature'] = 80.0
+
+Storing this information as a scalar provides significant memory savings by avoiding the redundancy of specifying each pore to have the same temperature.  Fortunately, Numpy is very adapt at 'broadcasting' vectors and scalars together.  This means that a properly vectorized calculation can take a vector or a scalar without any changes to the code.  For instance, to calculate the molar density of the gas in the pores using the ideal gas law, we could write:
+
+.. code-block:: python
 	
-This calculation as shown ,with both temperature and pressure as scalars, would produce a scalar value of 'molar_density'.  If, however, either *or* both of 'temperature' and 'pressure' were vectors (i.e. a value for each pore), then the 'molar_density' would be calculated in *exactly* the same way, but the result would be a vector.  
+	>>> pn.pore_conditions['temperature'] = 80.1
+	>>> pn.pore_conditions['pressure'] = 101325
+	>>> gas_constant = 8.314
+	>>> pn.pore_conditions['molar_density'] = pn.pore_conditions['pressure']/gas_constant/pn.pore_conditions['temperature']
+	
+This calculation as shown, with both temperature and pressure as scalars, would produce a scalar value of 'molar_density'.  If, however, either *or* both of 'temperature' and 'pressure' were vectors (i.e. a value for each pore), then the 'molar_density' would be calculated in *exactly* the same way, but the result would be a vector.  
 
 **Special Features of the OpenPNM Dictionaries**
 
-The dictionaries used in OpenPNM have been sub-classed from the general Python implementation.  Since so many operations in OpenPNM depend on vectorized code, it is imperative that all :code:`pore_properties` arrays are a consistent length (and similarly for :code:`throat_properties`).  Pyhons native dictionary class has been extended to include a check for array shape prior to adding or overwriting arrays.  The *self-protecting* properties of this dictionary will be expanded in future releases as the develops.  
+The dictionaries used in OpenPNM have been sub-classed from the general Python implementation.  Since so many operations in OpenPNM depend on vectorized code, it is imperative that all ``pore_properties`` arrays are a consistent length (and similarly for ``throat_properties``).  Pyhons native dictionary class has been extended to include a check for array shape prior to adding or overwriting arrays.  The *self-protecting* properties of this dictionary will be expanded in future releases as the develops.  
 
-The :code:`pore_conditions` and :code:`throat_conditions` arrays are also written in dictionaries, but as mentioned above, scalar values are allowed.  The dictionary class in OpenPNM allows this, as well as allowing a scalar to be expanded to an *Np* or *Nt* vector.  It will not allow vectors of lengths other than these.  
+The ``pore_conditions`` and ``throat_conditions`` arrays are also written in dictionaries, but as mentioned above, scalar values are allowed.  The dictionary class in OpenPNM allows this, as well as allowing a scalar to be expanded to an *Np* or *Nt* vector.  It will not allow vectors of lengths other than these.  
 
 -------------------------------------------------------------------------------
 Mandatory Pore and Throat Properties
@@ -180,10 +180,10 @@ The 'numbering' array is actually somewhat redundant since pore and throat numbe
 
 .. code-block::
 
-	dia_mean = sp.mean(pn.pore_properties['diameter'])
-	mask = pn.pore_properties['diameter'] < dia_mean
-	small_pores = pn.pore_properties['numbering'][mask]
-	print small_pores
+	>>> dia_mean = sp.mean(pn.pore_properties['diameter'])
+	>>> mask = pn.pore_properties['diameter'] < dia_mean
+	>>> small_pores = pn.pore_properties['numbering'][mask]
+	>>> print small_pores
 	array([ 0,  3,  5,  6,  7,  9, 10, 12, 13, 14, 16, 17, 20, 21, 22])
 
 (Note that the pore diameters are assigned randomly, so different network realizations will have different 'small_pores' than those shown here)
@@ -222,9 +222,9 @@ Adding a new entry into either of the *properties* or *conditions* dictionaries 
 
 .. code-block:: python
 	
-	Nt = pn.get_num_throats()
-	values = sp.random.rand(Nt,)*5 + 1 # 1 < ratios < 5
-	pn.throat_properties['aspect_ratio'] = values
+	>>> Nt = pn.get_num_throats()
+	>>> values = sp.random.rand(Nt,)*5 + 1 # 1 < ratios < 5
+	>>> pn.throat_properties['aspect_ratio'] = values
 
 The length of the array generated here is *Nt*, so an aspect ratio is assigned to each throat.  Attempts to add entries of the wrong size would be intercepted by the dictionary class to prevent corruption of the network data.  
 
