@@ -16,7 +16,6 @@ module __GenericGeometry__: Base class to construct pore networks
 
 import OpenPNM
 import scipy as sp
-import scipy.sparse as sprs
 import scipy.stats as spst
 
 class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
@@ -41,15 +40,15 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
 
-    def generate(self, stats_pores = {  'name' : 'weibull_min', 
-                                    'shape' : 1.5,
-                                      'loc' : 6e-6,
-                                    'scale' : 2e-5},
-                    stats_throats = {  'name' : 'weibull_min',
-                                    'shape' : 1.5,
-                                      'loc' : 6e-6,
-                                    'scale' : 2e-5},
-                            **params):
+    def generate(self, stats_pores = {'name' : 'weibull_min',
+                                     'shape' : 1.5,
+                                       'loc' : 6e-6,
+                                     'scale' : 2e-5},
+                     stats_throats = {'name' : 'weibull_min',
+                                     'shape' : 1.5,
+                                       'loc' : 6e-6,
+                                     'scale' : 2e-5},
+                          **params):
         r"""
         Generate the network
         """
@@ -139,33 +138,34 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._net.pore_properties['seed'][self._net.pore_properties['type']>0] = 0
         self._logger.debug("generate_throat_seeds: End of method")
 
-    def _generate_pore_diameters(self,psd_info):
+    def _generate_pore_diameters(self,stats_pores):
         r"""
-        Calculates pore diameter from given statisical distribution using the random seed value for each pore
+        Calculate pore diameter from given statisical distribution using the random seed value for each pore
 
         Notes
         -----
+        The stats_pores dictionary contains the requisite information for the desired distribution.  Each distribution in the Scipy stats library takes slightly different parameters, so this dictionary allows flexibility to send the necessary information.
 
         """
-        self._logger.info("generate_pore_diameters: Generate pore diameter from "+psd_info['name']+" distribution")
-        prob_fn = getattr(spst,psd_info['name'])
-        P = prob_fn(psd_info['shape'],loc=psd_info['loc'],scale=psd_info['scale'])
+        self._logger.info("generate_pore_diameters: Generate pore diameter from "+stats_pores['name']+" distribution")
+        prob_fn = getattr(spst,stats_pores['name'])
+        P = prob_fn(stats_pores['shape'],loc=stats_pores['loc'],scale=stats_pores['scale'])
         self._net.pore_properties['diameter'] = P.ppf(self._net.pore_properties['seed'])
         #Set boundadry pores to size 0
         self._net.pore_properties['diameter'][self._net.pore_properties['type']>0] = 0
         self._logger.debug("generate_pore_diameters: End of method")
 
-    def _generate_throat_diameters(self,tsd_info):
+    def _generate_throat_diameters(self,stats_throats):
         r"""
-        Calculates throat diameter from given statisical distribution using the random seed value for each throat
+        Calculate throat diameter from given statisical distribution using the random seed value for each throat
 
         Notes
         -----
-
+        The stats_throats dictionary contains the requisite information for the desired distribution.  Each distribution in the Scipy stats library takes slightly different parameters, so this dictionary allows flexibility to send the necessary information.
         """
-        self._logger.info("generate_throat_diameters: Generate throat diameter from "+tsd_info['name']+" distribution")
-        prob_fn = getattr(spst,tsd_info['name'])
-        P = prob_fn(tsd_info['shape'],loc=tsd_info['loc'],scale=tsd_info['scale'])
+        self._logger.info("generate_throat_diameters: Generate throat diameter from "+stats_throats['name']+" distribution")
+        prob_fn = getattr(spst,stats_throats['name'])
+        P = prob_fn(stats_throats['shape'],loc=stats_throats['loc'],scale=stats_throats['scale'])
         self._net.throat_properties['diameter'] = P.ppf(self._net.throat_properties['seed'])
         self._logger.debug("generate_throat_diameters: End of method")
 
