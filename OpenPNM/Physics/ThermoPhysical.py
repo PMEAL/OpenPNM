@@ -8,16 +8,21 @@ module ThermoPhysics
 import OpenPNM
 import scipy as sp
 
-def Antoine(network):
+def Antoine(network,
+            A=8.07131,
+            B=1730.63,
+            C=233.426):
     r"""
     ----
     """
+    T = network.pore_properties['temperature']
+    P = 10**(A - B/(C+T)) *(1.01325e5/760)
+    return P
     
-    return 'nothing yet'
-    
-def RaoultsLaw(network):
+def HenrysLaw(network,Y):
     r"""
     ----
     """
-    
-    return 'nothing yet'
+    K = 4.31543175e9    
+    X = Y/K
+    return X
