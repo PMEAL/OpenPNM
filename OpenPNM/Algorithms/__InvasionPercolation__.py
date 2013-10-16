@@ -75,12 +75,14 @@ class InvasionPercolation(GenericAlgorithm):
         
     """
     
-    def __init__(self,net=OpenPNM.Network.GenericNetwork,inlets=[0],outlets=[1],end_condition='breakthrough',timing='ON',report=20,**kwords):
+    def __init__(self,**kwords):
         r"""
         
         """
-        super(InvasionPercolation,self).__init__(net = net,**kwords)
+        super(InvasionPercolation,self).__init__(**kwords)
         self._logger.info("Create IP Algorithm Object")
+        
+    def _setup(self, inlets=[0],outlets=[1],end_condition='breakthrough',timing='ON',report=20):
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets 
         self._outlets = outlets

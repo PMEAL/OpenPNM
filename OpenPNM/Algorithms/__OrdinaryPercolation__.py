@@ -41,17 +41,16 @@ class OrdinaryPercolation(GenericAlgorithm):
     Some info about OP?
     """
 
-    def __init__(self, net ,npts=25,inv_sites=[0],**kwargs):
+    def __init__(self, **kwargs):
         r"""
 
         """
-        super(OrdinaryPercolation,self).__init__(net = net,**kwargs)
+        super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
+
+    def _setup(self, npts=25, inv_sites=[0]):
         self._npts = npts
         self._inv_sites = inv_sites
-        self._setup()
-
-    def _setup(self):
         #Create a pore and throat list to store inv_val at which each is invaded
         self._net.pore_conditions['Pc_invaded'] = np.zeros(self._net.get_num_pores(),np.float)
         self._net.throat_conditions['Pc_invaded'] = np.zeros(self._net.get_num_throats(),np.float)

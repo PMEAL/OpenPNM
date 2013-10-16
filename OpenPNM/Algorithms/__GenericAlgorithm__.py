@@ -34,25 +34,37 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
 
     """
     
-    def __init__(self,net=OpenPNM.Network.GenericNetwork,**kwords):
+    def __init__(self,**kwords):
         r"""
         Initialize
         """
         super(GenericAlgorithm,self).__init__(**kwords)
         self.indent = ""
         self._logger.debug("Construct class")
-        self._net = net
+
         
-    def run(self):
+    def run(self,net,**params):
         r"""
         Main run command for the algorithm
         """
+        self._net = net        
+        self._setup(**params)
         self._logger.info(self.indent+"Execute run(): Basic version")
         indent=self.indent
         self.indent=self.indent + '  '
         self._do_outer_iteration_stage()
         self.indent=indent
         print self.indent, "-"*39
+        
+    def _setup(self, **params):
+        r"""
+        Perform applicable preliminary checks and calculations required for algorithm
+
+        Notes
+        -----
+        This method is not implemented in the GenericAlgorithm, and must be subclassed in each algorithm as necessary
+        """
+        self._logger.error("_setup: not implemented")
     
     def _do_one_outer_iteration(self):
         r"""
