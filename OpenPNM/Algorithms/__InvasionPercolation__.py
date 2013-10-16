@@ -42,47 +42,36 @@ class InvasionPercolation(GenericAlgorithm):
     Input Network
     -------------
     The algorithm expects a pore network with the following pore properties:
-      
-    +-----------+----------+--------+-----------------+
-    | name      | dtype    | shape  | notes           |
-    +===========+==========+========+=================+
-    | volume    | float 64 | (Np, ) |                 |
-    +-----------+----------+--------+-----------------+
-    | diameter  | float 64 | (Np, ) |                 |
-    +-----------+----------+--------+-----------------+
-    | numbering | int 32   | (Np, ) |                 |
-    +-----------+----------+--------+-----------------+
-    | coords    | float 64 | (Np,3) |                 |
-    +-----------+----------+--------+-----------------+
-    | type      | int 32   | (Np, ) |                 |
-    +-----------+----------+--------+-----------------+
-	
-    
+        volume, diameter, numbering, coords, type
     and throat properties:
+        diameter, numbering, connections, type
+        
+    Output
+    ------
+    The input network automatically gains pore conditions ::
     
-    +-------------+----------+--------+-----------------+
-    | name        | dtype    | shape  | notes           |
-    +=============+==========+========+=================+
-    | diameter    | float 64 | (Np, ) |                 |
-    +-------------+----------+--------+-----------------+
-    | numbering   | int 32   | (Np, ) |                 |
-    +-------------+----------+--------+-----------------+
-    | connections | int 32   | (Np,2) |                 |
-    +-------------+----------+--------+-----------------+
-    | type        | int 32   | (Np, ) |                 |
-    +-------------+----------+--------+-----------------+
-                  
+        IP_inv_final    : 0 for uninvaded, merged cluster number for invaded  
+        IP_inv_original : 0 for uninvaded, original cluster number for invaded  
+        IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
+        IP_inv_time     : 0 for uninvaded, simulation time for invaded  
+        
+    and throat conditions ::
+    
+        IP_inv          : 0 for uninvaded, merged cluster number for invaded  
+        IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
+        IP_inv_time     : 0 for uninvaded, simulation time for invaded  
+        
     Examples
     --------
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Geometry.Cubic().generate(domain_size=[3,3,3], lattice_spacing=[1.0], btype=[0,0,0])
+    >>> IP_timing = InvasionPercolation(net=pn,timing='ON')
         
-    TODO:
-    1)  Currently requires all clusters to start out with identical flow rates, currently a value of 1 unit of volume per unit of time
-    2)  Currently requires cap volume function to be a linear function of pressure. Things will get a bit more complicated if we shouldn't assume this.
-
-    Suggested Improvements:
-    a) Allow input of cluster flow-rates (condensation rates)
-    b) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
-    c) Allow for a non-linear relationship between pressure and throat-cap volume.
+    Suggested Improvements ::
+    
+        a) Allow input of cluster flow-rates (condensation rates)
+        b) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
+        c) Allow for a non-linear relationship between pressure and throat-cap volume.
         
     """
     
@@ -210,13 +199,6 @@ class InvasionPercolation(GenericAlgorithm):
                                             self._cluster_data['cap_volume'][clusterNumber-1])/self._cluster_data['flow_rate'][clusterNumber-1]
             # Record invaded throat
             self._cluster_data['haines_throat'][clusterNumber-1] = invaded_throat_info[1]
-            ##self._Tinv[tinvade] = clusterNumber            
-            ##self._tsequence[tinvade] = self._tseq
-            ##self.Pores = self._net.get_connected_pores(tinvade)
-            ##self._NewPore = self.Pores[self._Pinv[self.Pores][:,0]==0]
-            ##self.plists[clusterNumber-1] = self._NewPore
-            ##self._Pinv[self._NewPore] = clusterNumber
-            ##self._psequence[self._NewPore] = self._pseq
             clusterNumber += 1
         if self._timing:
             self._logger.debug( 'pore volumes')
@@ -263,14 +245,14 @@ class InvasionPercolation(GenericAlgorithm):
         #self._Tinv = np.zeros(self._net.get_num_throats())
         while self._condition:
             self._do_one_outer_iteration()
-        self._net.pore_properties['IP_Pinv']=np.array(self._Pinv,dtype=np.int)
-        self._net.pore_properties['IP_Pinv_original']=np.array(self._Pinv_original,dtype=np.int)
-        self._net.throat_properties['IP_Tinv']=np.array(self._Tinv,dtype=np.int)
-        self._net.pore_properties['IP_Pseq']=np.array(self._psequence,dtype=np.int)
-        self._net.throat_properties['IP_Tseq']=np.array(self._tsequence,dtype=np.int)
+        self._net.pore_conditions['IP_inv_final']=np.array(self._Pinv,dtype=np.int)
+        self._net.pore_conditions['IP_inv_original']=np.array(self._Pinv_original,dtype=np.int)
+        self._net.throat_conditions['IP_inv']=np.array(self._Tinv,dtype=np.int)
+        self._net.pore_conditions['IP_inv_seq']=np.array(self._psequence,dtype=np.int)
+        self._net.throat_conditions['IP_inv_seq']=np.array(self._tsequence,dtype=np.int)
         if self._timing:
-            self._net.pore_properties['IP_Ptime']=np.array(self._Ptime,dtype=np.float)
-            self._net.throat_properties['IP_Ttime']=np.array(self._Ttime,dtype=np.float)
+            self._net.pore_conditions['IP_inv_time']=np.array(self._Ptime,dtype=np.float)
+            self._net.throat_conditions['IP_inv_time']=np.array(self._Ttime,dtype=np.float)
 
     def _do_one_outer_iteration(self):
         r"""
@@ -283,11 +265,6 @@ class InvasionPercolation(GenericAlgorithm):
         self._do_inner_iteration_stage()
         self._condition_update()
         self._counter += 1
-#        if np.mod(self._counter,100)==0:
-#            self._logger.debug( 'on a multiple of 100'
-#            self._logger.debug( self._counter
-#            self._logger.debug( len(np.nonzero(self._Tinv)[0])
-#            self._logger.debug( len(self._Tinv)
      
     def _do_inner_iteration_stage(self):
         r"""
@@ -567,30 +544,17 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"    
     #sp.random.seed(1)
-    pn = OpenPNM.Geometry.Cubic().generate(domain_size=[10,10,15], lattice_spacing=[1.0], btype=[0,0,0])
+    pn = OpenPNM.Geometry.Cubic().generate(domain_size=[3,3,3], lattice_spacing=[1.0], btype=[0,0,0])
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
     print "+"*50
-    #print "- * Assign pore volumes"
-    #pore_volumes=sp.random.rand(pn.get_num_pores())
-    #pore_volumes[range(pn.get_num_pores([0]),pn.get_num_pores())]=0
-    #pn.set_pore_property(name='volume',ndarray=pore_volumes,columns = None)  
+    
     print '- * Assign boundary pore volumes = 0'
     pn.pore_properties['diameter'][pn.pore_properties['type']>0] = 0
         
     print "- * Define inlet and outlet faces"
     inlets = sp.nonzero(pn.pore_properties['type']==1)[0]
     outlets = sp.nonzero(pn.pore_properties['type']==6)[0]
-    #inlets2 = sp.unique((inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
-    #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
-    #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
-    #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))],
-    #                   inlets[sp.random.randint(sp.size(inlets,0))],inlets[sp.random.randint(sp.size(inlets,0))]))
-    #print inlets2  
-    
-    #print "- * assign random pore and throat diameters"
-    #pn.pore_properties['diameter'] = sp.random.rand(pn.get_num_pores(),1)
-    #pn.throat_properties['diameter'] = sp.random.rand(pn.get_num_throats(),1)
     
     print "- * Run Invasion percolation algorithm"
     #IP = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
@@ -600,14 +564,14 @@ if __name__ =="__main__":
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_timing.vtp"
-    OpenPNM.Visualization.VTK(net = pn,filename="IP_timing.vtp")
+    OpenPNM.Visualization.VTK().write(net = pn,filename="IP_timing.vtp")
     IP_notiming = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,timing='OFF',loglevel=30,loggername="TestInvPercAlg")
     IP_notiming.run()
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_notiming.vtp"
-    OpenPNM.Visualization.VTK(net = pn,filename="IP_notiming.vtp")
+    OpenPNM.Visualization.VTK().write(net = pn,filename="IP_notiming.vtp")
     
     print "="*50
     print "Program Finished at t = ",clock(),"seconds."

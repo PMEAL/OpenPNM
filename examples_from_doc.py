@@ -14,4 +14,8 @@ print pn
 pn.print_overview()
 print pn.pore_properties.keys()
 pn.pore_conditions['temperature'] = 80.0
+pn.pore_conditions['temperature'] = 80.1
+pn.pore_conditions['pressure'] = 101325
+gas_constant = 8.314
+pn.pore_conditions['molar_density'] = pn.pore_conditions['pressure']/gas_constant/pn.pore_conditions['temperature']
 pn.print_overview()

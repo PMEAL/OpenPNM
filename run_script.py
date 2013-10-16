@@ -48,8 +48,8 @@ exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, npts=50, inv_sites=inlets).run
 #import os
 #OpenPNM.Visualization.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
 
-print pn
-print clock()-start,"seconds."
+#print pn
+print clock(),"seconds."
 
 #vis = OpenPNM.Algorithms.Vis2D()
 #vis.overview(pn)
