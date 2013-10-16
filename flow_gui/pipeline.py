@@ -1,6 +1,6 @@
 import sip
 from PyQt4 import QtGui, QtCore
-from .magic import GenericModuleWidget
+from .module_loader import GenericModuleWidget
 from . import icons_rc
 
 VERSION = 0.1
@@ -83,6 +83,13 @@ class MainWindow(QtGui.QMainWindow):
     self.view.setHeaderHidden(True)
     self.view.selectionModel().selectionChanged.connect(self.update)
     self.view.setMinimumWidth(400)
+    self.view.setStyleSheet('''
+      QTreeView::indicator                { width: 16px; height: 16px }
+      QTreeView::indicator:checked        { background-image:url(":qrc/icons/tick.png") }
+      QTreeView::indicator:unchecked      { background-image:url(":qrc/icons/cross.png") }
+      QTreeView::indicator:indeterminate  { background-image:url(":qrc/icons/error.png") }
+      '''
+      )
     self.setCentralWidget(self.view)
 
     self.settings = QtGui.QDockWidget("Settings")
@@ -120,8 +127,11 @@ class MainWindow(QtGui.QMainWindow):
     self.simmenu = self.menubar.addMenu("&Simulation")
     self.helpmenu = self.menubar.addMenu("&Help")
 
-  def add_source(self, module, icon=None, shortcut=None):
-    module_name = module.__name__.rsplit('.')[-1]
+  def add_source(self, module, name=None, icon=None, shortcut=None):
+    if name:
+      module_name = name
+    else:
+      module_name = module.__name__.rsplit('.')[-1]
 
     def anonymous_build_method():
       parent_index, parent_item = self.selection()
