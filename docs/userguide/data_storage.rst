@@ -97,37 +97,37 @@ To examine the properties of a network, start by generating a small network of 3
    >>> import OpenPNM
    >>> pn = OpenPNM.Geometry.Cubic().generate(divisions=[3,3,3],lattice_spacing=[1])
 
-This creates a cubic network with 27 pores and 54 throats.  A quick summary of the network data can be displayed as follows:
+This creates a cubic network with 27 internal pores and 54 internal throats. Additionally, for every 3-by-3 face on the cube, a 3-by-3 set of boundary pores are created with individual boundary throats to corresponding internal pores.  A quick summary of the network data can be displayed as follows:
 
 .. code-block:: python
 
     >>> print pn  
     ==================================================
-    Overview of network properties
-    --------------------------------------------------
-    Basic properties of the network
-    - Number of pores:   27
-    - Number of throats: 54
+	Overview of network properties
+	--------------------------------------------------
+	Basic properties of the network
+	- Number of pores:   81
+	- Number of throats: 108
 
-    Pore properties:
-        diameter            float64             (27L,)              
-        numbering           int32               (27L,)              
-        volume              float64             (27L,)              
-        seed                float64             (27L,)              
-        coords              float64             (27L, 3L)           
-        type                int8                (27L,)              
-    Throat properties:
-        volume              float64             (54L,)              
-        diameter            float64             (54L,)              
-        numbering           int64               (54L,)              
-        connections         int32               (54L, 2L)           
-        length              float64             (54L,)              
-        seed                float64             (54L,)              
-        type                int8                (54L,) 
+	Pore properties:
+		diameter            float64             (81,)               
+		numbering           int32               (81,)               
+		volume              float64             (81,)               
+		seed                float64             (81,)               
+		coords              float64             (81, 3)             
+		type                int8                (81,)               
+	Throat properties:
+		volume              float64             (108,)              
+		diameter            float64             (108,)              
+		numbering           int32               (108,)              
+		connections         int32               (108, 2)            
+		length              float64             (108,)              
+		seed                float64             (108,)              
+		type                int8                (108,)  
 
 A more detailed description is available with ``pn.print_overview()``.		
 
-As can be seen, the default network generation produces several basic pore and throat properties.  Note that the length of the pore and throat property lists correspond to the number of pores and throats in the network (27 and 54 respectively).  Most of the data are stored in 1D arrays, with two exceptions.  The pore property 'coords' gives the spatial location of the pore center in 3D Cartesian coordinates, so each pore requires a set of X, Y and Z values.  The throat property 'connections' gives the ID numbers of the two pores it connects, or in other words it gives the IJ portion of the IJV sparse storage of the adjacency matrix.  
+As can be seen, the default network generation produces several basic pore and throat properties.  Note that the length of the pore and throat property lists correspond to the number of pores and throats in the network (81 and 108 respectively).  Most of the data are stored in 1D arrays, with two exceptions.  The pore property 'coords' gives the spatial location of the pore center in 3D Cartesian coordinates, so each pore requires a set of X, Y and Z values.  The throat property 'connections' gives the ID numbers of the two pores it connects, or in other words it gives the IJ portion of the IJV sparse storage of the adjacency matrix.  
 
 These data arrays are stored as part of the network object using Python dictionaries.  A Python dictionary is a form of structured variable where each entry in the dictionary has a { 'key' : <value> } pair.  The 'key' is the name of the of the <value>, and the <value> can be any data type.  In OpenPNM the <values> are all ndarrays.  For example, ``pn.pore_properties['diameter']`` will return the pore diameter values. Similarly, ``pn.throat_properties['diameter']`` returns the throat diameter values.
 

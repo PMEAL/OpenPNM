@@ -75,10 +75,6 @@ class InvasionPercolation(GenericAlgorithm):
     Examples
     --------
         
-    TODO:
-    1)  Currently requires all clusters to start out with identical flow rates, currently a value of 1 unit of volume per unit of time
-    2)  Currently requires cap volume function to be a linear function of pressure. Things will get a bit more complicated if we shouldn't assume this.
-
     Suggested Improvements:
     a) Allow input of cluster flow-rates (condensation rates)
     b) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
@@ -263,14 +259,14 @@ class InvasionPercolation(GenericAlgorithm):
         #self._Tinv = np.zeros(self._net.get_num_throats())
         while self._condition:
             self._do_one_outer_iteration()
-        self._net.pore_properties['IP_Pinv']=np.array(self._Pinv,dtype=np.int)
-        self._net.pore_properties['IP_Pinv_original']=np.array(self._Pinv_original,dtype=np.int)
-        self._net.throat_properties['IP_Tinv']=np.array(self._Tinv,dtype=np.int)
-        self._net.pore_properties['IP_Pseq']=np.array(self._psequence,dtype=np.int)
-        self._net.throat_properties['IP_Tseq']=np.array(self._tsequence,dtype=np.int)
+        self._net.pore_conditions['IP_inv_final']=np.array(self._Pinv,dtype=np.int)
+        self._net.pore_conditions['IP_inv_original']=np.array(self._Pinv_original,dtype=np.int)
+        self._net.throat_conditions['IP_inv']=np.array(self._Tinv,dtype=np.int)
+        self._net.pore_conditions['IP_inv_seq']=np.array(self._psequence,dtype=np.int)
+        self._net.throat_conditions['IP_inv_seq']=np.array(self._tsequence,dtype=np.int)
         if self._timing:
-            self._net.pore_properties['IP_Ptime']=np.array(self._Ptime,dtype=np.float)
-            self._net.throat_properties['IP_Ttime']=np.array(self._Ttime,dtype=np.float)
+            self._net.pore_conditions['IP_inv_time']=np.array(self._Ptime,dtype=np.float)
+            self._net.throat_conditions['IP_inv_time']=np.array(self._Ttime,dtype=np.float)
 
     def _do_one_outer_iteration(self):
         r"""
@@ -567,7 +563,7 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"    
     #sp.random.seed(1)
-    pn = OpenPNM.Geometry.Cubic().generate(domain_size=[10,10,15], lattice_spacing=[1.0], btype=[0,0,0])
+    pn = OpenPNM.Geometry.Cubic().generate(domain_size=[3,3,3], lattice_spacing=[1.0], btype=[0,0,0])
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
     print "+"*50
@@ -600,14 +596,14 @@ if __name__ =="__main__":
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_timing.vtp"
-    OpenPNM.Visualization.VTK(net = pn,filename="IP_timing.vtp")
+    OpenPNM.Visualization.VTK().write(net = pn,filename="IP_timing.vtp")
     IP_notiming = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,timing='OFF',loglevel=30,loggername="TestInvPercAlg")
     IP_notiming.run()
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_notiming.vtp"
-    OpenPNM.Visualization.VTK(net = pn,filename="IP_notiming.vtp")
+    OpenPNM.Visualization.VTK().write(net = pn,filename="IP_notiming.vtp")
     
     print "="*50
     print "Program Finished at t = ",clock(),"seconds."

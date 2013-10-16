@@ -45,7 +45,7 @@ class VTK(GenericVisualization):
         super(VTK,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
 
-    def write(self, net, filename='output.vtp', scaling_factor=1):
+    def write(self, net, filename='output.vtp'):
         r"""
         Write Network to a VTK file for visualizing in Paraview
 
@@ -56,19 +56,16 @@ class VTK(GenericVisualization):
         filename : string
             Full path to desired file location
 
-        scaling_factor : int, optional
-            Not sure what this does
         """
         output_path = os.path.join( os.path.expanduser('~'), filename )
+        print output_path
 
         self._logger.info("Writing VTK File...please wait")
         self._f = open(output_path,'w')
         self._net=net
 
         print( self._net )
-
-        self._scaling_factor = scaling_factor
-
+        
         self._write_vtk_header()
         self._write_vtk_points()
         self._write_vtk_connections()
@@ -89,15 +86,14 @@ class VTK(GenericVisualization):
         self._f.write('" NumberOfStrips="0" NumberOfPolys="0">\n')
 
     def _write_vtk_points(self):
-        sf = self._scaling_factor
         self._f.write('<Points>\n')
         self._f.write('<DataArray type="Float32" NumberOfComponents="3" format="ascii">\n')
         for i in range(self._net.get_num_pores()):
-            self._f.write(str(self._net.pore_properties['coords'][i,0]*sf))
+            self._f.write(str(self._net.pore_properties['coords'][i,0]))
             self._f.write(' ')
-            self._f.write(str(self._net.pore_properties['coords'][i,1]*sf))
+            self._f.write(str(self._net.pore_properties['coords'][i,1]))
             self._f.write(' ')
-            self._f.write(str(self._net.pore_properties['coords'][i,2]*sf))
+            self._f.write(str(self._net.pore_properties['coords'][i,2]))
             self._f.write('\n')
         self._f.write('\n</DataArray>\n</Points>\n')
 
@@ -115,7 +111,6 @@ class VTK(GenericVisualization):
         self._f.write('\n</DataArray>\n</Lines>\n')
 
     def _write_point_data(self):
-        sf = self._scaling_factor
         pore_keys = self._net.pore_properties.keys()
         num_pore_keys = sp.size(pore_keys)
         self._f.write('<PointData Scalars="pore_data">\n')
@@ -127,16 +122,36 @@ class VTK(GenericVisualization):
                 shape =  np.shape(self._net.pore_properties[pore_keys[j]])
                 if np.size(shape) == 1:
                     for i in range(self._net.get_num_pores()):
-                        if np.dtype(self._net.pore_properties[pore_keys[j]][0])=='float64':
-                            self._f.write(str(self._net.pore_properties[pore_keys[j]][i]*sf))
-                        else:
-                            self._f.write(str(self._net.pore_properties[pore_keys[j]][i]))
+                        self._f.write(str(self._net.pore_properties[pore_keys[j]][i]))
                         self._f.write(' ')
                 else:
                     for i in range(self._net.get_num_pores()):
                         self._f.write(str(self._net.pore_properties[pore_keys[j]][i][0]))
                         self._f.write(' ')
                 self._f.write('\n</DataArray>\n')
+        # again for pore_conditions
+        pore_keys = self._net.pore_conditions.keys()
+        num_pore_keys = sp.size(pore_keys)
+        for j in range(num_pore_keys):
+            self._f.write('<DataArray type="Float32" Name="')
+            self._f.write(pore_keys[j])
+            self._f.write('" format="ascii">\n')
+            size =  np.size(self._net.pore_conditions[pore_keys[j]])
+            if size == 1:
+                for i in range(self._net.get_num_pores()):
+                    self._f.write(str(self._net.pore_conditions[pore_keys[j]]))
+                    self._f.write(' ')
+            else:
+                shape =  np.shape(self._net.pore_conditions[pore_keys[j]])
+                if np.size(shape) == 1:
+                    for i in range(self._net.get_num_pores()):
+                        self._f.write(str(self._net.pore_conditions[pore_keys[j]][i]))
+                        self._f.write(' ')
+                else:
+                    for i in range(self._net.get_num_pores()):
+                        self._f.write(str(self._net.pore_conditions[pore_keys[j]][i][0]))
+                        self._f.write(' ')
+            self._f.write('\n</DataArray>\n')
         self._f.write('</PointData>\n')
 
     def _write_footer(self):
