@@ -58,13 +58,12 @@ class VTK(GenericVisualization):
 
         """
         output_path = os.path.join( os.path.expanduser('~'), filename )
-        print output_path
-
+        print '     ooooooooooooooooooooooooooooooooooooooooo'
+        print '      Writing VTK file:', output_path
+        print '     ooooooooooooooooooooooooooooooooooooooooo'
         self._logger.info("Writing VTK File...please wait")
         self._f = open(output_path,'w')
         self._net=net
-
-        print( self._net )
         
         self._write_vtk_header()
         self._write_vtk_points()
