@@ -3,14 +3,6 @@ import numpy as np
 import OpenPNM
 
 def Cubic(domain_size=[1,1,1], divisions=[10,10,10], lattice_spacing=[], stats_pores=None, stats_throats=None, btype=[0,0,0]):
-  stats_pores =   {  'name' : 'weibull_min', #Each statistical package takes different params, so send as dict
-                    'shape' : 1.5,
-                      'loc' : 6e-6,
-                    'scale' : 2e-5}
-  stats_throats = {  'name' : 'weibull_min',
-                    'shape' : 1.5,
-                      'loc' : 6e-6,
-                    'scale' : 2e-5}
   pn = OpenPNM.Geometry.Cubic().generate(**locals())
   return {'net': pn}
   
