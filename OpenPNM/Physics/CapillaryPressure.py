@@ -7,7 +7,7 @@ module CapillaryPressure
 
 import scipy as _sp
 
-def Washburn(net,sigma,theta):
+def Washburn(net,sigma=0.072,theta=120.0):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
@@ -17,10 +17,12 @@ def Washburn(net,sigma,theta):
         The network on which to apply the calculation
 
     sigma : float, array_like
-        Surface tension of the invading/defending fluid pair.  Units must be consistent with the throat size values, but SI is encouraged.
+        Surface tension of the invading/defending fluid pair.
+        Units must be consistent with the throat size values, but SI is encouraged.
 
     theta : float, array_like
-        Contact angle formed by a droplet of the invading fluid and solid surface, measured through the defending fluid phase.  Angle must be given in degrees.
+        Contact angle formed by a droplet of the invading fluid and solid surface, measured through the defending fluid phase.
+        Angle must be given in degrees.
 
     Notes
     -----
@@ -32,8 +34,18 @@ def Washburn(net,sigma,theta):
     This is the most basic approach to calcualing entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
+    try:
+        sigma = net.throat_conditions['surface_tension']
+    except:
+        net.throat_conditions['surface_tension'] = sigma
+    try:
+        theta = net.throat_conditions['contact_angle']
+    except:
+        net.throat_conditions['contact_angle'] = theta
+
     vals = -4*sigma*_sp.cos(_sp.radians(theta))/net.throat_properties['diameter']
     net.throat_conditions['Pc_entry'] = vals
+    return {'network': net}
 
 def Purcell(net,sigma,theta,r_toroid):
     r"""
