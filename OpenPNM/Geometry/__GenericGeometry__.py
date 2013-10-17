@@ -285,15 +285,17 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         # This will have functionality if we stitch boundaries rather than defining them after the fact. 
         net2.throat_properties['type'] = sp.repeat(edge,len(net2.throat_properties['type']))
         net1.throat_properties['type'] = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
-
-        net1.throat_properties['connections']
         
-        '''
-        Nx = self._Nx
-        Ny = self._Ny
-        Nz = self._Nz        
+
+        N1 = net1.pore_properties['divisions']
+        N2 = net2.pore_properties['divisions']
+        N = sp.vstack((N1,N2))
+        
+        Nx = sp.sum(N,0)[0]
+        Ny = sp.sum(N,0)[1]
+        Nz = sp.sum(N,0)[2]
         Np = Nx*Ny*Nz
-        ind = np.arange(0,Np)
+        ind = sp.arange(0,Np)
         
         #Generate throats based on pattern of the adjacency matrix
         tpore1_1 = ind[(ind%Nx)<(Nx-1)]
@@ -302,12 +304,18 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         tpore2_2 = tpore1_2 + Nx
         tpore1_3 = ind[(ind%Np)<(Nx*Ny*(Nz-1))]
         tpore2_3 = tpore1_3 + Nx*Ny
-        tpore1 = np.hstack((tpore1_1,tpore1_2,tpore1_3))
-        tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
-        connections = np.vstack((tpore1,tpore2)).T
-        connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
-        self._net.throat_properties['connections'] = connections
-        '''
+        tpore1 = sp.hstack((tpore1_1,tpore1_2,tpore1_3))
+        tpore2 = sp.hstack((tpore2_1,tpore2_2,tpore2_3))
+        connections = sp.vstack((tpore1,tpore2)).T
+        connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
+        net1.throat_properties['connections'] = connections
+        
+        I = net1.throat_properties['connections'][:,0]
+        J = net1.throat_properties['connections'][:,1]
+        V = sp.ones(len(net1.throat_properties['connections']))
+        A = sp.sparse.coo_matrix((V,(I,J))).todense()
+        print A
+        
         
         print "Stitch: Method Incomplete"
 
