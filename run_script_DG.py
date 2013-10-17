@@ -12,11 +12,6 @@ import scipy.ndimage as spim
 
 
 params = {
-'domain_size'           : [0.001,0.001,0.0004],  #physical network size [meters]
-'divisions'             : [], #Number of pores in each direction
-'lattice_spacing'       : [.0001],  #spacing between pores [meters]
-'num_pores'             : 1000, #This is used for random networks where spacing is irrelevant
-'template'              : template, #This is used for the Template based network generation
 'psd_info'   : {'name'  : 'weibull_min', #Each statistical package takes different params, so send as dict
                 'shape' : 1.5,
                 'loc'   : 6e-6,
@@ -28,18 +23,22 @@ params = {
 'btype'                 : [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 }
 
-pn = OpenPNM.Geometry.Cubic().generate(**params)
+specific_params_1 = {
+'divisions'             : [10,10,10], #Number of pores in each direction
+'lattice_spacing'       : [.01],  #spacing between pores [meters]
+}
 
-'''
-boundaries = sp.array(sp.repeat(params,6)) # Creates a list of 
-temp = params['divisions']
-number_of_sides = 6
-mult = -1*(sp.eye(number_of_sides/2)-1) # This creates the compliment of an eye matrix
+specific_params_2 = {
+'divisions'             : [20,20,20], #Number of pores in each direction
+'lattice_spacing'       : [.01],  #spacing between pores [meters]
+}
 
-for i in range(3):
-    boundary_dims = (temp*mult[i % 3,:]) + sp.eye(3)[i % 3,:]
-    boundaries[i]['divisions'] = boundary_dims.tolist()
-    print boundaries[i]['divisions']
+network1_props = dict(params.items() + specific_params_1.items())
+network2_props = dict(params.items() + specific_params_2.items())
 
-OpenPNM.Generators.Cubic(loglevel=10,**params).generate()
-'''
+pn1 = OpenPNM.Geometry.Cubic().generate(**network1_props)
+pn2 = OpenPNM.Geometry.Cubic().generate(**network2_props)
+
+OpenPNM.Geometry.GenericGeometry().translate_coordinates(pn2,displacement = [0,0,pn1.pore_properties['coords'][:,2].max()])
+OpenPNM.Geometry.GenericGeometry().stitch(pn1,pn2)
+

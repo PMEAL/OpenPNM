@@ -243,7 +243,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         """
         net.pore_properties['coords'] = net.pore_properties['coords']*scale 
 
-    def stitch(self,net1,net2):
+    def stitch(self,net1,net2,edge = 0):
         r"""
         Stitch two networks together
         
@@ -256,7 +256,36 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             The network that is stitched
         
         """
-        print 'not implemented yet'
+        
+        #manipulate all pore_properties. This mainly includes checks on the validity of coords, addition of numbering, and concatening conserved properties. 
+        net2.pore_properties['numbering'] = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
+        net1.pore_properties['numbering'] = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)        
+        #print net2.pore_properties['numbering']
+        
+        #The coordinates should have been translated by this point already using the "translate_coordinates" method. 
+        # Checks to ensure that the coordinates are properly translated: ...
+        
+        net1.pore_properties['coords'] = sp.concatenate((net1.pore_properties['coords'],net2.pore_properties['coords']),axis = 0)
+        
+        # All of these properties should be conserved when we stitch 2 networks. 
+        net1.pore_properties['volume'] = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
+        net1.pore_properties['seed'] = sp.concatenate((net1.pore_properties['seed'],net2.pore_properties['seed']),axis = 0)
+        net1.pore_properties['type'] = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
+        net1.pore_properties['diameter'] = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
+        
+        net1.throat_properties['numbering'] = len(net1.throat_properties['numbering']) + net2.throat_properties['numbering']
+        net1.throat_properties['numbering'] = sp.concatenate((net1.throat_properties['numbering'],net2.throat_properties['numbering']),axis=0)
+        
+        net1.throat_properties['volume'] = sp.concatenate((net1.throat_properties['volume'],net2.throat_properties['volume']),axis=0)
+        net1.throat_properties['diameter'] = sp.concatenate((net1.throat_properties['diameter'],net2.throat_properties['diameter']),axis=0)
+        net1.throat_properties['length'] = sp.concatenate((net1.throat_properties['length'],net2.throat_properties['length']),axis=0)
+        net1.throat_properties['seed'] = sp.concatenate((net1.throat_properties['seed'],net2.throat_properties['seed']),axis=0)
+        
+        net2.throat_properties['type'] = 
+        net1.throat_properties['type'] = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
+        net1.throat_properties['connections']
+        
+        print "Stitch: Method Incomplete"
 
 if __name__ == '__main__':
     test=GenericGeometry(loggername="TestGenerator")        
