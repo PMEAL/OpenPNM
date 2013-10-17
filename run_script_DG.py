@@ -29,7 +29,7 @@ specific_params_1 = {
 }
 
 specific_params_2 = {
-'divisions'             : [2,2,1], #Number of pores in each direction
+'divisions'             : [10,10,1], #Number of pores in each direction
 'lattice_spacing'       : [.01],  #spacing between pores [meters]
 }
 

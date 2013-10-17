@@ -73,7 +73,10 @@ class Cubic(GenericGeometry):
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('error')
-    
+        
+        self._net.pore_properties['domain_size'] = [self._Lx, self._Ly, self._Lz, self._Lc]
+        self._net.pore_properties['divisions'] = [self._Nx, self._Ny, self._Nz]
+        
     def _generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
