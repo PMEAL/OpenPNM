@@ -92,7 +92,9 @@ class Plots(GenericVisualization):
         Ps = sp.r_[0:net.get_num_pores([0])]
         for i in range(1,sp.size(PcPoints)):
             Pc = PcPoints[i]
-            Snwp[i] = sum((net.pore_conditions['Pc_invaded'][Ps]<Pc)*(net.pore_properties['volume'][Ps]))/sum(net.pore_properties['volume'][Ps])
+            OpenPNM.Physics.MultiPhase.late_pore_filling(net,Pc=Pc)
+            snwp = 1 - net.pore_conditions['satn_wp']
+            Snwp[i] = sum(snwp[Ps]*(net.pore_conditions['Pc_invaded'][Ps]<Pc)*(net.pore_properties['volume'][Ps]))/sum(net.pore_properties['volume'][Ps])
         plt.plot(PcPoints,Snwp,'r.-')
         plt.xlabel('Capillary Pressure')
         plt.ylabel('Invading Fluid Saturation')

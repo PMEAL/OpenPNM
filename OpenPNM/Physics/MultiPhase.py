@@ -48,7 +48,7 @@ def Apply_Phase_State_to_Conduit_Conductivity(network):
     C_wet[network.throat_properties['snwp']] = 1e-30
     return(C_wet)
 
-def Late_Pore_Filling(network,swpi=0.0,eta=1.0,Pc=0.0):
+def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     r"""
     Applies a late pore filling model to determine the fractional saturation of a pore
 
@@ -65,10 +65,15 @@ def Late_Pore_Filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     Pc : float, scalar
         The capillary pressure applied to the nonwetting phase
 
-    Notes
-    -----
+    .. warning:: If the values of eta and swpi are not already set in the network then the parmeters received by this function will be written to the network. All other calls to this function will use these values regardless of what parameters are received. These parameters must be overwritten or deleted explicity.
 
     """
+
+    try:    swpi = network.pore_conditions['swpi']
+    except: network.pore_conditions['swpi'] = swpi
+
+    try:    eta = network.pore_conditions['eta']
+    except: network.pore_conditions['eta'] = eta
 
     Pc_star = network.pore_conditions['Pc_invaded']
     swp = swpi*(Pc_star/Pc)**eta*(network.pore_conditions['Pc_invaded']<=Pc)
