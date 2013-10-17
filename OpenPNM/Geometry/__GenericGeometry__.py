@@ -259,7 +259,6 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             The network that is stitched
         
         """
-        
         #manipulate all pore_properties. This mainly includes checks on the validity of coords, addition of numbering, and concatening conserved properties. 
         net2.pore_properties['numbering']   = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
         net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)        
@@ -276,6 +275,8 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         net2.pore_properties['type']      = sp.repeat(edge,len(net2.pore_properties['type']))
         net1.pore_properties['type']        = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
         net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
+        
+        
         
         net1.throat_properties['numbering'] = len(net1.throat_properties['numbering']) + net2.throat_properties['numbering']
         net1.throat_properties['numbering'] = sp.concatenate((net1.throat_properties['numbering'],net2.throat_properties['numbering']),axis=0)
@@ -323,7 +324,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         I = net1.throat_properties['connections'][:,0]
         J = net1.throat_properties['connections'][:,1]
         V = sp.ones(len(net1.throat_properties['connections']))
-        A = sp.sparse.coo_matrix((V,(I,J))).todense()
+        net1.A = sp.sparse.coo_matrix((V,(I,J))).todense()
 
         
         

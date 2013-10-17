@@ -35,6 +35,8 @@ side_6 = {'divisions' : [4,4,1]}
 network_main = dict(params.items() + main_params.items())
 pn = OpenPNM.Geometry.Cubic().generate(**network_main)
 
+
+# This section would be a GREAT opportunity to implement "extract_sub_network" that finds a singular face, and stitches new boundries onto a surface. This shouldbe done instead of generating
 net_side1 = dict(params.items() + side_1.items())
 net_side2 = dict(params.items() + side_2.items())
 net_side3 = dict(params.items() + side_3.items())
