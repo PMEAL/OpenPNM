@@ -16,7 +16,7 @@ def Conduit_Filled_State_Calculator(network):
         network.pore_properties['swp'] = network.pore_properties['Pc_invaded']>p_val
         network.pore_properties['snwp'] = -network.pore_properties['swp']
     elif 'IP_Pseq' in network.pore_properties:
-        network.pore_properties['snwp'] = network.pore_properties['IP_Pseq']>p_val
+        network.pore_properties['swp'] = network.pore_properties['IP_Pseq']>p_val
         network.pore_properties['snwp'] = -network.pore_properties['swp']
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
     network.throat_properties['swp_conduits'] = -(-network.pore_properties['swp'][pores[:,0]]*-network.pore_properties['swp'][pores[:,1]])
@@ -48,9 +48,27 @@ def Apply_Phase_State_to_Conduit_Conductivity(network):
     C_wet[network.throat_properties['snwp']] = 1e-30
     return(C_wet)
 
+def full_pore_filling(network,Pc=0.0):
+    r"""
+    Determine the filled state of a pore based on given capillary pressure
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+
+    Pc : float, scalar
+        The capillary pressure applied to the nonwetting phase
+
+    Notes
+    -----
+    It is necessary that a capillary pressure curve has been run first, using the OrdinaryPercolation module.
+
+    """
+    network.pore_conditions['satn_wp'] = network.pore_conditions['Pc_invaded']>Pc
+
 def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     r"""
-    Applies a late pore filling model to determine the fractional saturation of a pore
+    Applies a late pore filling model to determine the fractional saturation of a pore based on the given capillary pressure
 
     Parameters
     ----------
