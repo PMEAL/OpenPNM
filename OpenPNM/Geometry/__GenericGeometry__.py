@@ -229,7 +229,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         Lc = net.pore_properties['domain_size'][3]
         N = net.pore_properties['divisions']
         ind = N[0]*N[1]*N[2]
-        net.pore_properties['coords'] = Lc*(0.5 + sp.array(displacement) + sp.array(sp.unravel_index(sp.arange(0,ind),dims=net.pore_properties['divisions'],order='F')).T)
+        net.pore_properties['coords'] = Lc*(0.5 + sp.array(sp.unravel_index(sp.arange(0,ind),dims=net.pore_properties['divisions'],order='F')).T) + sp.array(displacement)
         
     def scale_coordinates(self,net,scale=[1,1,1]):
         r"""
@@ -273,6 +273,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         # All of these properties should be conserved when we stitch 2 networks. 
         net1.pore_properties['volume']      = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
         net1.pore_properties['seed']        = sp.concatenate((net1.pore_properties['seed'],net2.pore_properties['seed']),axis = 0)
+        net2.pore_properties['type']      = sp.repeat(edge,len(net2.pore_properties['type']))
         net1.pore_properties['type']        = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
         net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
         
@@ -298,9 +299,6 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         Ny = sp.sum(N,0)[1]
         Nz = sp.sum(N,0)[2]
         
-        Nx = 5
-        Ny = 10
-        Nz = 15
         Np = Nx*Ny*Nz
         ind = sp.arange(0,Np)
         
@@ -326,10 +324,10 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         J = net1.throat_properties['connections'][:,1]
         V = sp.ones(len(net1.throat_properties['connections']))
         A = sp.sparse.coo_matrix((V,(I,J))).todense()
-        #print A
+
         
         
-        print "Stitch: Method Incomplete"
+        #print "Stitch: Method Incomplete"
 
 if __name__ == '__main__':
     test=GenericGeometry(loggername="TestGenerator")        
