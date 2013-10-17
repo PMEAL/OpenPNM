@@ -281,9 +281,33 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         net1.throat_properties['length'] = sp.concatenate((net1.throat_properties['length'],net2.throat_properties['length']),axis=0)
         net1.throat_properties['seed'] = sp.concatenate((net1.throat_properties['seed'],net2.throat_properties['seed']),axis=0)
         
-        net2.throat_properties['type'] = 
+        # We can define the type of the stitched network (net2) to have a value corresponding to an edge type.
+        # This will have functionality if we stitch boundaries rather than defining them after the fact. 
+        net2.throat_properties['type'] = sp.repeat(edge,len(net2.throat_properties['type']))
         net1.throat_properties['type'] = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
+
         net1.throat_properties['connections']
+        
+        '''
+        Nx = self._Nx
+        Ny = self._Ny
+        Nz = self._Nz        
+        Np = Nx*Ny*Nz
+        ind = np.arange(0,Np)
+        
+        #Generate throats based on pattern of the adjacency matrix
+        tpore1_1 = ind[(ind%Nx)<(Nx-1)]
+        tpore2_1 = tpore1_1 + 1
+        tpore1_2 = ind[(ind%(Nx*Ny))<(Nx*(Ny-1))]
+        tpore2_2 = tpore1_2 + Nx
+        tpore1_3 = ind[(ind%Np)<(Nx*Ny*(Nz-1))]
+        tpore2_3 = tpore1_3 + Nx*Ny
+        tpore1 = np.hstack((tpore1_1,tpore1_2,tpore1_3))
+        tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
+        connections = np.vstack((tpore1,tpore2)).T
+        connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
+        self._net.throat_properties['connections'] = connections
+        '''
         
         print "Stitch: Method Incomplete"
 

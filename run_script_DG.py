@@ -29,7 +29,7 @@ specific_params_1 = {
 }
 
 specific_params_2 = {
-'divisions'             : [20,20,20], #Number of pores in each direction
+'divisions'             : [2,2,1], #Number of pores in each direction
 'lattice_spacing'       : [.01],  #spacing between pores [meters]
 }
 
@@ -41,4 +41,6 @@ pn2 = OpenPNM.Geometry.Cubic().generate(**network2_props)
 
 OpenPNM.Geometry.GenericGeometry().translate_coordinates(pn2,displacement = [0,0,pn1.pore_properties['coords'][:,2].max()])
 OpenPNM.Geometry.GenericGeometry().stitch(pn1,pn2)
+
+# Can we add extra keys in the dictionary to return the input parmeters so we can access it for stitching?
 
