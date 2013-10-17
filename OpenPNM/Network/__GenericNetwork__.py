@@ -457,12 +457,15 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
 
         """
-        self.pore_conditions[Tcond] = sp.zeros((self.get_num_pores()))
-        #Only interpolate conditions for internal pores, type=0
-        Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
-        nTs = self.get_neighbor_throats(Pnums,flatten=False)
-        for i in sp.r_[0:sp.shape(nTs)[0]]:
-            self.pore_conditions[Tcond][i] = sp.mean(self.throat_conditions[Tcond][nTs[i]])
+        if sp.size(self.throat_conditions[Tcond])==1:
+            self.pore_conditions[Tcond] = self.throat_conditions[Tcond]
+        else:
+            self.pore_conditions[Tcond] = sp.zeros((self.get_num_pores()))
+            #Only interpolate conditions for internal pores, type=0
+            Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
+            nTs = self.get_neighbor_throats(Pnums,flatten=False)
+            for i in sp.r_[0:sp.shape(nTs)[0]]:
+                self.pore_conditions[Tcond][i] = sp.mean(self.throat_conditions[Tcond][nTs[i]])
 
     def interpolate_throat_conditions(self,Pcond=None):
         r"""
@@ -478,12 +481,15 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
 
         """
-        self.throat_conditions[Pcond] = sp.zeros((self.get_num_throats()))
-        #Interpolate values for all throats, including those leading to boundary
-        Tnums = sp.r_[0:self.get_num_throats()]
-        nPs = self.get_connected_pores(Tnums,flatten=False)
-        for i in sp.r_[0:sp.shape(nPs)[0]]:
-            self.throat_conditions[Pcond][i] = sp.mean(self.pore_conditions[Pcond][nPs[i]])
+        if sp.size(self.pore_conditions[Pcond])==1:
+            self.throat_conditions[Pcond] = self.pore_conditions[Pcond]
+        else:
+            self.throat_conditions[Pcond] = sp.zeros((self.get_num_throats()))
+            #Interpolate values for all throats, including those leading to boundary
+            Tnums = sp.r_[0:self.get_num_throats()]
+            nPs = self.get_connected_pores(Tnums,flatten=False)
+            for i in sp.r_[0:sp.shape(nPs)[0]]:
+                self.throat_conditions[Pcond][i] = sp.mean(self.pore_conditions[Pcond][nPs[i]])
 
     def check_basic(self):
         r"""
@@ -523,25 +529,25 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         print "="*72
         print "Pore Conditions"
         print "-"*72
-        #commented vv due to scalars not having dtype or shape attribute    
+        #commented vv due to scalars not having dtype or shape attribute
         print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
         print "-"*72
         for key in self.pore_conditions:
-            #commented vv due to scalars not having dtype or shape attribute  
+            #commented vv due to scalars not having dtype or shape attribute
             #print key, "\t", "\t", self.pore_conditions[key].dtype, "\t", self.pore_conditions[key].shape, "\t", self.pore_conditions[key].nbytes/1e6
             print key, "\t", "\t", np.array(self.pore_conditions[key]).dtype, "\t", np.array(self.pore_conditions[key]).shape, "\t", np.array(self.pore_conditions[key]).nbytes/1e6
 
         print "="*72
         print "Throat Conditions"
         print "-"*72
-        #commented vv due to scalars not having dtype or shape attribute        
+        #commented vv due to scalars not having dtype or shape attribute
         print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
         print "-"*72
         for key in self.throat_conditions:
-            #commented vv due to scalars not having dtype or shape attribute            
+            #commented vv due to scalars not having dtype or shape attribute
             #print key, "\t", "\t", self.throat_conditions[key].dtype, "\t", self.throat_conditions[key].shape, "\t", self.throat_conditions[key].nbytes/1e6
             print key, "\t", "\t", np.array(self.throat_conditions[key]).dtype, "\t", np.array(self.throat_conditions[key]).shape, "\t", np.array(self.throat_conditions[key]).nbytes/1e6
-            
+
         print "="*72
         print "Adjacency Matrices"
         print "-"*72
