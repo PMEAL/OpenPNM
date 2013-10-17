@@ -229,7 +229,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         Lc = net.pore_properties['domain_size'][3]
         N = net.pore_properties['divisions']
         ind = N[0]*N[1]*N[2]
-        net.pore_properties['coords'] = Lc*(0.5 + displacement + sp.array(sp.unravel_index(sp.arange(0,ind),dims=net.pore_properties['divisions'],order='F')).T)
+        net.pore_properties['coords'] = Lc*(0.5 + sp.array(displacement) + sp.array(sp.unravel_index(sp.arange(0,ind),dims=net.pore_properties['divisions'],order='F')).T)
         
     def scale_coordinates(self,net,scale=[1,1,1]):
         r"""
@@ -313,7 +313,6 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         tpore1_1 = ind[(ind%Nx)<(Nx-1)]
         tpore2_1 = tpore1_1 + 1
         tpore1_2 = ind[(ind%(Nx*Ny))<(Nx*(Ny-1))]
-        print tpore1_2
         tpore2_2 = tpore1_2 + Nx
         tpore1_3 = ind[(ind%Np)<(Nx*Ny*(Nz-1))]
         tpore2_3 = tpore1_3 + Nx*Ny
