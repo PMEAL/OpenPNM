@@ -66,19 +66,16 @@ class OrdinaryPercolation(GenericAlgorithm):
         for inv_val in self._inv_points:
             self._logger.info("Applying Pc = "+str(int(inv_val)))
             #Apply one applied pressure and determine invaded pores
-            mask = self._do_one_inner_iteration(inv_val)
+            pmask = self._do_one_inner_iteration(inv_val)
             #Store result of invasion step
-            self._net.pore_conditions['Pc_invaded'][(self._net.pore_conditions['Pc_invaded']==0)*(mask)] = inv_val
-            r"""
-            TODO:
-            Tracking the pressure at which each throat is invaded has not been
-            implimented yet.  This means that calculation of invaded volume is
-            based only on volume of the pores.
-            """
-#            invaded_pores = self._net.pore_properties['numbering'][inv_clusters>0]
-#            connected_throats = self._net.get_neighbor_throats(invaded_pores)
-#            self._net.throat_properties['Pc_invaded'][self._net.throat_properties['Pc_invaded']==0] = inv_val
-        del self._net.throat_properties['invaded']
+            self._net.pore_conditions['Pc_invaded'][(self._net.pore_conditions['Pc_invaded']==0)*(pmask)] = inv_val
+            #Determine Pc_invaded for throats as well
+            temp = self._net.throat_properties['connections']
+            tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._net.throat_conditions['Pc_entry']<inv_val)
+            self._net.throat_conditions['Pc_invaded'][(self._net.throat_conditions['Pc_invaded']==0)*(tmask)] = inv_val
+        #Remove temporary arrays and adjacency matrices
+        del self._net.throat_conditions['invaded']
+        del self._net.adjacency_matrix['csr']['invaded']
 
     def _do_one_inner_iteration(self,inv_val):
         r"""
