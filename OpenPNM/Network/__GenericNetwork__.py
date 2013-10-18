@@ -353,7 +353,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             #Remove pores of the wrong type
             neighborPs = neighborPs[sp.in1d(self.pore_properties['type'][neighborPs],Ptype)]
         else:
-            for i in range(0,sp.shape(Pnums)[0]):
+            for i in range(0,sp.size(Pnums)):
                 ans = sp.array(sp.where(sp.in1d(self.pore_properties['type'][neighborPs[i]],Ptype)))[0]
                 neighborPs[i] = sp.array(neighborPs[i])[ans]
         return np.array(neighborPs)
