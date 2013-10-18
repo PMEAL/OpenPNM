@@ -185,7 +185,7 @@ This calculation as shown, with both temperature and pressure as scalars, would 
 
 **Special Features of the OpenPNM Dictionaries**
 
-The dictionaries used in OpenPNM have been sub-classed from the general Python implementation.  Since so many operations in OpenPNM depend on vectorized code, it is imperative that all ``pore_properties`` arrays are a consistent length (and similarly for ``throat_properties``).  Pyhons native dictionary class has been extended to include a check for array shape prior to adding or overwriting arrays.  The *self-protecting* properties of this dictionary will be expanded in future releases as the develops.  
+The dictionaries used in OpenPNM have been sub-classed from the general Python implementation.  Since so many operations in OpenPNM depend on vectorized code, it is imperative that all ``pore_properties`` arrays are a consistent length (and similarly for ``throat_properties``).  Python's native dictionary class has been extended to include a check for array shape prior to adding or overwriting arrays.  The *self-protecting* properties of this dictionary will be expanded in future releases as the develops.  
 
 The ``pore_conditions`` and ``throat_conditions`` arrays are also written in dictionaries, but as mentioned above, scalar values are allowed.  The dictionary class in OpenPNM allows this, as well as allowing a scalar to be expanded to an *Np* or *Nt* vector.  It will not allow vectors of lengths other than these.  
 
@@ -202,44 +202,25 @@ The spatial position of each pore is obviously a defining feature of a given por
 
 The 'type' and 'numbering' properties are also considered mandatory since OpenPNM relies on these for various internal calculations and network queries.  
 
-The 'numbering' array is actually somewhat redundant since pore and throat numbers are implicitly defined by their array location.  This array is quite useful for boolean mask logic to find pores that meet a specific criteria.  For instance, to find all pores whose diameter is below average type:
+The 'numbering' array is actually somewhat redundant since pore and throat numbers are implicitly defined by their array location.  This array is quite useful for boolean mask logic to find pores that meet a specific criteria.  For instance, to find all pores whose positions are below the mean:
 
-.. code-block::
+.. code-block:: python
 
-	>>> dia_mean = sp.mean(pn.pore_properties['diameter'])
-	>>> mask = pn.pore_properties['diameter'] < dia_mean
-	>>> small_pores = pn.pore_properties['numbering'][mask]
-	>>> print small_pores
-	array([ 0,  3,  5,  6,  7,  9, 10, 12, 13, 14, 16, 17, 20, 21, 22])
+	>>> import scipy as sp
+	>>> z_mean = sp.mean(pn.pore_properties['coords'][:,2])
+	>>> mask = pn.pore_properties['coords'][:,2] < z_mean
+	>>> low_pores = pn.pore_properties['numbering'][mask]
+	>>> print low_pores
+	[ 0  1  2  3  4  5  6  7  8 27 28 29 36 37 38 45 46 47 54 55 56 63 64 65 66 67 68 69 70 71]
 
-(Note that the pore diameters are assigned randomly, so different network realizations will have different 'small_pores' than those shown here)
+The 'type' property is used by OpenPNM to differentiate between internal and boundary pores (and throats).  A 'type' value of zero indicates an internal pore, and a value > 0 indicates a boundary pore.  Boundary pores are further distinguished by values between 1 and 6 to indicate on which boundary they lie: 1 and 6 for z-faces, 2 & 5 for x-faces and 3 & 4 for y-faces.  This convention was inspired by the number on dice, where opposite sides all add up to 7.  Obviously, this numbering boundary pores in this way implies a cubic network domain, which may not always be the case. For example, let's determine on which faces the low_pores reside:
 
-The 'type' property is used by OpenPNM to differentiate between internal and boundary pores (and throats).  A 'type' value of zero indicates an internal pore, and a value > 0 indicates a boundary pore.  Boundary pores are further distinguished by values between 1 and 6 to indicate on which boundary they lie: 1 and 6 for z-faces, 2 & 5 for x-faces and 3 & 4 for y-faces.  This convention was inspired by the number on dice, where opposite sides all add up to 7.  Obviously, this numbering boundary pores in this way implies a cubic network domain, which may not always be the case.  Throats are by definition always internal to the network, but they also have a 'type' property.  If throats are connected to a boundary pore, then they adopt this pores type, otherwise they are 0.  
+.. code-block:: python
 
--------------------------------------------------------------------------------
-Common Pore and Throat Properties
--------------------------------------------------------------------------------
-The GenericGeometry class includes several methods that produce some additional pore and throat properties beyond the mandatory ones described above.  These including this like 'diameter' and 'volume'.  The docstrings for the methods in the GenericGenerator are provided below, with small blurbs about what properties are created at each step and how.  
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_pores()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_throats()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._add_boundaries()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_pore_seeds()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_throat_seeds()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_pore_diameters()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_throat_diameters()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._calc_pore_volumes()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._calc_throat_lengths()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._calc_throat_volumes()
+	>>> print pn.pore_properties['type'][low_pores]
+	[0 0 0 0 0 0 0 0 0 2 2 2 5 5 5 3 3 3 4 4 4 1 1 1 1 1 1 1 1 1]
+	
+Throats are by definition always internal to the network, but they also have a 'type' property.  If throats are connected to a boundary pore, then they adopt this pores type, otherwise they are 0.  
 
 -------------------------------------------------------------------------------
 Adding New Pore and Throat Dictionary Entries
@@ -249,7 +230,7 @@ Adding a new entry into either of the *properties* or *conditions* dictionaries 
 .. code-block:: python
 	
 	>>> Nt = pn.get_num_throats()
-	>>> values = sp.random.rand(Nt,)*5 + 1 # 1 < ratios < 5
+	>>> values = sp.random.rand(Nt,)*4 + 1 # 1 < ratios < 5
 	>>> pn.throat_properties['aspect_ratio'] = values
 
 The length of the array generated here is *Nt*, so an aspect ratio is assigned to each throat.  Attempts to add entries of the wrong size would be intercepted by the dictionary class to prevent corruption of the network data.  
@@ -258,25 +239,23 @@ The length of the array generated here is *Nt*, so an aspect ratio is assigned t
 Querying Network Data and Properties
 ===============================================================================
 
-The OpenPNM network object not only stores the network data, but also contains numerous methods for extracting information about the network from that data.  The docstrings from these methods is shown below.  They contain a short description of what each does, as well as the required inputs and resulting outputs where applicable.  
+The OpenPNM network object not only stores the network data, but also contains numerous methods for extracting information about the network from that data.  All networks have a basic set of commands, that are illustrated below:
 
+.. code-block:: python
 
-.. automethod:: OpenPNM.Network.GenericNetwork.get_num_pores()
-
-.. automethod:: OpenPNM.Network.GenericNetwork.get_num_throats()
-
-.. automethod:: OpenPNM.Network.GenericNetwork.get_neighbor_pores()
-
-.. automethod:: OpenPNM.Network.GenericNetwork.get_neighbor_throats()
-
-.. automethod:: OpenPNM.Network.GenericNetwork.get_num_neighbors()
-
-.. automethod:: OpenPNM.Network.GenericNetwork.get_connected_pores()
-
-.. automethod:: OpenPNM.Network.GenericNetwork.get_connecting_throat()
-
-.. automethod:: OpenPNM.Network.GenericNetwork.interpolate_pore_conditions()
-
-.. automethod:: OpenPNM.Network.GenericNetwork.interpolate_throat_conditions()
+	>>> print 'There are',pn.get_num_pores(),'pores in the network.'
+	There are 81 pores in the network.
+	>>> print 'There are',pn.get_num_throats(),'throats in the network.'
+	There are 108 throats in the network.
+	>>> print 'Pore 5 has the following neighbors:',pn.get_neighbor_pores(5)
+	Pore 5 has the following neighbors: [ 2  4  8 14 37 68]
+	>>> print 'Pore 5 has the following throats:',pn.get_neighbor_throats(5)
+	Pore 5 has the following throats: [ 6 11 14 15 64 95]
+	>>> print 'Pore 5 has',pn.get_num_neighbors(5),'neighbors.'
+	Pore 5 has [6] neighbors.
+	>>> print 'Throat 6 connects pore',pn.get_connected_pores(6)[0],'to pore',pn.get_connected_pores(6)[1],'.'
+	Throat 6 connects pore 2 to pore 5
+	>>> print 'Throat',pn.get_connecting_throat(0,1),'connects pore 0 to pore 1.'
+	Throat [0] connects pore 0 to pore 1.
 
 
