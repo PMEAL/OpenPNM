@@ -88,12 +88,22 @@ class Cubic(GenericGeometry):
         Lc = self._Lc
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
-        a = np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T
-        self._net.pore_properties['coords'] = Lc*(0.5 + np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T)
+        self._generate_coords(dom = (Nx,Ny,Nz), Lc = Lc)
+        self._net.pore_properties['coords'] = self._temp_coords
         self._net.pore_properties['numbering'] = ind
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
         
         self._logger.debug("generate_pores: End of method")
+        
+    def _generate_coords(self, dom = (0,0,0), Lc = 0):
+        r"""
+        Generate the coordinates (coordinates, lattice Lc)
+        """
+        self._logger.info("generate_coordinates by dimensions and lattice parameters: Create specified number of pores")
+        Np = dom[0]*dom[1]*dom[2]
+        ind = np.arange(0,Np)
+        self._temp_coords = Lc*(0.5 + np.array(np.unravel_index(ind, dims=(dom[0], dom[1], dom[2]), order='F')).T)
+        self._logger.debug("generate_coordinates: End of method")
         
     def _generate_throats(self):
         r"""
@@ -128,6 +138,45 @@ class Cubic(GenericGeometry):
         Add boundaries to network 
         """
         self._logger.debug("add_boundaries: Start of method")
+        
+        Nx = self._Nx
+        Ny = self._Ny
+        Nz = self._Nz 
+        Lc = self._Lc
+        Np = self._net.get_num_pores()
+        pts = self._net.pore_properties['coords']
+        
+        self._generate_coords(dom = (1,Ny,Nz),Lc = Lc)
+        ptsX = self._temp_coords
+        self._generate_coords(dom = (Nx,1,Nz),Lc = Lc)
+        ptsY = self._temp_coords
+        self._generate_coords(dom = (Nx,Ny,1),Lc = Lc)
+        ptsZ = self._temp_coords
+        
+        ptsX0 = ptsX + [pts[:,0].max(),0,0]
+        ptsY0 = ptsY + [0,pts[:,1].max(),0]
+        ptsZ0 = ptsZ + [0,0,pts[:,2].max()]
+        ptsXX = ptsX + [-1*pts[:,0].min(),0,0]
+        ptsYY = ptsY + [0,-1*pts[:,1].min(),0]
+        ptsZZ = ptsZ + [0,0,-1*pts[:,2].min()]
+        
+        pts = np.concatenate([pts,ptsX0,ptsXX,ptsY0,ptsYY,ptsZ0,ptsZZ])
+        #Perform tessellation
+        Tri = sptl.Delaunay(pts)
+        adjmat = sprs.lil_matrix((Np,Np),dtype=int)
+        for i in np.arange(0,np.shape(Tri.simplices)[0]):
+            #Keep only simplices that are fully in real domain
+            adjmat[Tri.simplices[i][Tri.simplices[i]<Np],Tri.simplices[i][Tri.simplices[i]<Np]] = 1
+        #Remove duplicate (lower triangle) and self connections (diagonal) 
+        #and convert to coo
+        adjmat = sprs.triu(adjmat,k=1,format="coo")
+        self._net.throat_properties['connections'] = np.vstack((adjmat.row, adjmat.col)).T
+        self._net.throat_properties['type'] = np.zeros_like(adjmat.row)
+        self._net.throat_properties['numbering'] = np.arange(0,np.size(adjmat.row))
+        
+        '''
+
+        
         #Remove all items pertaining to previously defined boundaries (if any)
         Np = self._net.get_num_pores([0])
         Nt = self._net.get_num_throats([0])
@@ -182,13 +231,14 @@ class Cubic(GenericGeometry):
         self._net.pore_properties['coords'][self._net.pore_properties['type']==1]
         #Update network
         self._net.update()
-        
+        '''
         self._logger.debug("add_boundaries: End of method")
         
     def _add_opposing_boundaries(self,face,periodic=0):
         r"""
         Add boundaries by adding opposing faces, one pair at a time.
         """
+        '''
         self._logger.debug("add_opposing_boundaries: Start of method")
         
         Nx = self._Nx
@@ -238,7 +288,7 @@ class Cubic(GenericGeometry):
             pnum2 = self._net.get_neighbor_pores(bnum2,[0])
 #            self._net.pore_properties['coords'][bnum1] = self._net.pore_properties['coords'][pnum1] - []
 #            self._net.pore_properties['coords'][bnum2] = 
-            
+         '''   
         self._logger.debug("add_opposing_boundaries: End of method")
         
         
