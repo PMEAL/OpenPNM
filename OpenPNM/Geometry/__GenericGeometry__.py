@@ -18,6 +18,9 @@ import OpenPNM
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.stats as spst
+import scipy.sparse as sprs
+import scipy.spatial as sptl
+import scipy.ndimage as spim
 
 class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
     r"""
@@ -243,7 +246,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         """
         net.pore_properties['coords'] = net.pore_properties['coords']*scale 
 
-    def stitch(self,net1,net2,edge = 0):
+    def concat_vals(self,net1,net2):
         r"""
         Stitch two networks together
         
@@ -256,15 +259,11 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             The network that is stitched
         
         """
+        '''
         #manipulate all pore_properties. This mainly includes checks on the validity of coords, addition of numbering, and concatening conserved properties. 
         net2.pore_properties['numbering']   = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
         net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)        
         #print net2.pore_properties['numbering']
-        
-        #The coordinates should have been translated by this point already using the "translate_coordinates" method. 
-        # Checks to ensure that the coordinates are properly translated: ...
-        # THIS NEEDS TO GO LAST
-        net1.pore_properties['coords']      = sp.concatenate((net1.pore_properties['coords'],net2.pore_properties['coords']),axis = 0)
         
         # All of these properties should be conserved when we stitch 2 networks. 
         net1.pore_properties['volume']      = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
@@ -272,12 +271,10 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         net2.pore_properties['type']        = sp.repeat(edge,len(net2.pore_properties['type']))
         net1.pore_properties['type']        = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
         net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
-        
-        
+        net1.pore_properties['coords']      = sp.concatenate((net1.pore_properties['coords'],net2.pore_properties['coords']),axis = 0)
         
         net1.throat_properties['numbering'] = len(net1.throat_properties['numbering']) + net2.throat_properties['numbering']
         net1.throat_properties['numbering'] = sp.concatenate((net1.throat_properties['numbering'],net2.throat_properties['numbering']),axis=0)
-        
         net1.throat_properties['volume']    = sp.concatenate((net1.throat_properties['volume'],net2.throat_properties['volume']),axis=0)
         net1.throat_properties['diameter']  = sp.concatenate((net1.throat_properties['diameter'],net2.throat_properties['diameter']),axis=0)
         net1.throat_properties['length']    = sp.concatenate((net1.throat_properties['length'],net2.throat_properties['length']),axis=0)
@@ -287,54 +284,38 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         # This will have functionality if we stitch boundaries rather than defining them after the fact. 
         net2.throat_properties['type']      = sp.repeat(edge,len(net2.throat_properties['type']))
         net1.throat_properties['type']      = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
-        
         '''
-        # Options to find Nearest neighbor - Delauney, k-NN, Voronoi...etc.
-        coord_mat = net1.pore_properties['coords']
-        euclid_mat = sp.zeros((len(coord_mat),len(coord_mat)))
-        for i in sp.arange(0,len(coord_mat)):
-            for j in sp.arange(0,len(coord_mat)):
-                a = coord_mat[[i]]
-                b = coord_mat[[j]]
-                temp = (a-b)**2
-                euclid_mat[i,j] = sp.sqrt(sp.dot(temp,temp.T))
         
-        net1.pore_properties['euclid'] = euclid_mat
+    def stitch_throats(self,pts_base,pts_add,psd,tsd,edge=0):
+        
+        pts = sp.concatenate([pts_base,pts_add])
 
-        N1 = net1.pore_properties['divisions']
-        N2 = net2.pore_properties['divisions']
-        N = sp.vstack((N1,N2))
+        Np = len(pts)
+        Tri = sptl.Delaunay(pts)
+        adjmat = sprs.lil_matrix((Np,Np),dtype=int)
+        for i in sp.arange(0,sp.shape(Tri.simplices)[0]):
+            #Keep only simplices that are fully in real domain
+            adjmat[Tri.simplices[i][Tri.simplices[i]<Np],Tri.simplices[i][Tri.simplices[i]<Np]] = 1
+        #Remove duplicate (lower triangle) and self connections (diagonal) 
+        #and convert to coo
+        adjmat = sprs.triu(adjmat,k=1,format="coo")
         
-        Nx = sp.sum(N,0)[0]
-        Ny = sp.sum(N,0)[1]
-        Nz = sp.sum(N,0)[2]
+        self._net.pore_properties['numbering'] = sp.arange(0,len(pts))
+        self._net.pore_properties['coords'] = pts
+        self._net.pore_properties['type'] = sp.repeat(0,len(pts))
+        self._generate_pore_seeds()
+        #self._net.pore_properties['type'] = sp.hstack((sp.repeat(0,len(pts_base)),sp.repeat(edge,len(pts_add))))
+        self._generate_pore_diameters(psd)
+        self._calc_pore_volumes()
         
-        Np = Nx*Ny*Nz
-        ind = sp.arange(0,Np)
+        self._net.throat_properties['connections'] = sp.vstack((adjmat.row, adjmat.col)).T
+        self._net.throat_properties['numbering'] = sp.arange(0,sp.size(adjmat.row))
+        self._net.throat_properties['type'] = sp.repeat(0,len(self._net.throat_properties['connections']))
+        self._generate_throat_seeds()
+        self._generate_throat_diameters(tsd)
+        self._calc_throat_lengths()
+        self._calc_throat_volumes()
         
-        #Generate throats based on pattern of the adjacency matrix, This is the exact code from the cubic script.
-        
-        # There are problems when we have the stitched network at a different size than the original network .
-        # My goal is to find all connecting neighbors in the unraveled index, but I want to concatenate the stack 
-            # to include the upper layer. 
-        
-        tpore1_1 = ind[(ind%Nx)<(Nx-1)]
-        tpore2_1 = tpore1_1 + 1
-        tpore1_2 = ind[(ind%(Nx*Ny))<(Nx*(Ny-1))]
-        tpore2_2 = tpore1_2 + Nx
-        tpore1_3 = ind[(ind%Np)<(Nx*Ny*(Nz-1))]
-        tpore2_3 = tpore1_3 + Nx*Ny
-        tpore1 = sp.hstack((tpore1_1,tpore1_2,tpore1_3))
-        tpore2 = sp.hstack((tpore2_1,tpore2_2,tpore2_3))
-        connections = sp.vstack((tpore1,tpore2)).T
-        connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
-        net1.throat_properties['connections'] = connections
-        
-        I = net1.throat_properties['connections'][:,0]
-        J = net1.throat_properties['connections'][:,1]
-        V = sp.ones(len(net1.throat_properties['connections']))
-        net1.A = sp.sparse.coo_matrix((V,(I,J))).todense()
-        '''
         
         
         #print "Stitch: Method Incomplete"

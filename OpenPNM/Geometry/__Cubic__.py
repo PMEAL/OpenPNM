@@ -10,6 +10,9 @@ import OpenPNM
 import scipy as sp
 import numpy as np
 import scipy.stats as spst
+import scipy.sparse as sprs
+import scipy.spatial as sptl
+import scipy.ndimage as spim
 
 from __GenericGeometry__ import GenericGeometry
 
@@ -46,6 +49,10 @@ class Cubic(GenericGeometry):
         self._logger.debug("generate_setup: Perform preliminary calculations")
         #Parse the given network size variables
         self._logger.info("Find network dimensions")
+        
+        self._psd = params['psd_info']
+        self._tsd = params['tsd_info']
+        
         if domain_size and lattice_spacing and not divisions:
             self._Lc = lattice_spacing[0]
             self._Lx = domain_size[0]
@@ -73,9 +80,6 @@ class Cubic(GenericGeometry):
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('error')
-        
-        self._net.pore_properties['domain_size'] = [self._Lx, self._Ly, self._Lz, self._Lc]
-        self._net.pore_properties['divisions'] = [self._Nx, self._Ny, self._Nz]
         
     def _generate_pores(self):
         r"""
@@ -160,20 +164,17 @@ class Cubic(GenericGeometry):
         ptsYY = ptsY + [0,-1*pts[:,1].min(),0]
         ptsZZ = ptsZ + [0,0,-1*pts[:,2].min()]
         
-        pts = np.concatenate([pts,ptsX0,ptsXX,ptsY0,ptsYY,ptsZ0,ptsZZ])
-        #Perform tessellation
-        Tri = sptl.Delaunay(pts)
-        adjmat = sprs.lil_matrix((Np,Np),dtype=int)
-        for i in np.arange(0,np.shape(Tri.simplices)[0]):
-            #Keep only simplices that are fully in real domain
-            adjmat[Tri.simplices[i][Tri.simplices[i]<Np],Tri.simplices[i][Tri.simplices[i]<Np]] = 1
-        #Remove duplicate (lower triangle) and self connections (diagonal) 
-        #and convert to coo
-        adjmat = sprs.triu(adjmat,k=1,format="coo")
-        self._net.throat_properties['connections'] = np.vstack((adjmat.row, adjmat.col)).T
-        self._net.throat_properties['type'] = np.zeros_like(adjmat.row)
-        self._net.throat_properties['numbering'] = np.arange(0,np.size(adjmat.row))
-        
+        self.stitch_throats(pts,ptsX0,self._psd,self._tsd,edge = 1)
+        pts = self._net.pore_properties['coords']
+        self.stitch_throats(pts,ptsY0,self._psd,self._tsd,edge = 2)
+        pts = self._net.pore_properties['coords']
+        self.stitch_throats(pts,ptsZ0,self._psd,self._tsd,edge = 3)
+        pts = self._net.pore_properties['coords']
+        self.stitch_throats(pts,ptsXX,self._psd,self._tsd,edge = 4)
+        pts = self._net.pore_properties['coords']
+        self.stitch_throats(pts,ptsYY,self._psd,self._tsd,edge = 5)
+        pts = self._net.pore_properties['coords']
+        self.stitch_throats(pts,ptsZZ,self._psd,self._tsd,edge = 6)
         '''
 
         
