@@ -52,7 +52,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
-        self._add_boundaries()
+        #self._add_boundaries()
         self._generate_pore_seeds()
         self._generate_throat_seeds()
         self._generate_pore_diameters(params['psd_info'])
@@ -60,8 +60,10 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._calc_pore_volumes()
         self._calc_throat_lengths()
         self._calc_throat_volumes()
+        #self._add_bound() # takes a base network. 
+        
         self._logger.debug("\t end of self.generate()")
-        return self._net  
+        return self._net
 
     def _generate_setup(self,**params):
         r"""
@@ -244,9 +246,31 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             A vector containing the amount to scale in each dimension.  [1,1,1] yeilds no scaling.
             
         """
-        net.pore_properties['coords'] = net.pore_properties['coords']*scale 
-
-    def concat_vals(self,net1,net2):
+        net.pore_properties['coords'] = net.pore_properties['coords']*scale
+    
+    def _generate_boundaries(self,**params):
+        r"""
+        This should generate boundary networks using the parameters passed to generate(), but lattice based on geometry. 
+        
+        Parameters
+        ----------
+        params = {
+        'psd_info'   : {'name'  :, #Each statistical package takes different params, so send as dict
+                'shape' : 
+                'loc'   : 
+                'scale' : },
+        'tsd_info'   : {'name'  : 
+                'shape' : 
+                'loc'   : 
+                'scale' : },
+        'btype'                 : 
+        'lattice_spacing'       : 
+        'divisions'             : 
+        }
+        """
+        self._logger.error("_generate_boundaries: not implemented")
+                
+    def stitch(self,net1,net2,edge = 0):
         r"""
         Stitch two networks together
         
@@ -259,7 +283,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             The network that is stitched
         
         """
-        '''
+
         #manipulate all pore_properties. This mainly includes checks on the validity of coords, addition of numbering, and concatening conserved properties. 
         net2.pore_properties['numbering']   = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
         net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)        
@@ -284,9 +308,9 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         # This will have functionality if we stitch boundaries rather than defining them after the fact. 
         net2.throat_properties['type']      = sp.repeat(edge,len(net2.throat_properties['type']))
         net1.throat_properties['type']      = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
-        '''
-        
-    def stitch_throats(self,pts_base,pts_add,psd,tsd,edge=0):
+
+        '''    
+    def stitch(self,pts_base,pts_add,psd,tsd,edge=0):
         
         pts = sp.concatenate([pts_base,pts_add])
 
@@ -319,7 +343,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         
         
         #print "Stitch: Method Incomplete"
-
+        '''
 if __name__ == '__main__':
     test=GenericGeometry(loggername="TestGenerator")        
 
