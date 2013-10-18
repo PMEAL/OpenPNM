@@ -107,7 +107,7 @@ OpenPNM stores two types of information about pores and throats: 'properties' an
 -------------------------------------------------------------------------------
 Pore and Throat Properties
 -------------------------------------------------------------------------------
-OpenPNM stores all pore and throat properties as Numpy ndarrays.  ndarrays are a numerical data type provided by the Numpy package (which is embedded in the Scipy package) that allow for the type of numerical manipulations that scientists and engineers expect, such as vectorization, slicing, boolean indexing and so on.  Pore properties are stored as arrays of size *Np*-by-*n), where *Np* is the number of pores in the network and *n* is almost always 1, (e.g. pore volume is stored as an *Np*-by-1 array), with a few expectations (e.g. spatial coordinates are stored as *Np*-by-3 for 3-dimensional space).  Throat properties are almost always stored as *Nt*-by-*m* arrays where *Nt* is the number of throats in the network.  Again, *m* is almost always 1 with a notable exception being the connections property that is discussed in detail above. 
+OpenPNM stores all pore and throat properties as Numpy ndarrays.  ndarrays are a numerical data type provided by the Numpy package (which is embedded in the Scipy package) that allow for the type of numerical manipulations that scientists and engineers expect, such as vectorization, slicing, boolean indexing and so on.  Pore properties are stored as arrays of size *Np*-by-*n, where *Np* is the number of pores in the network and *n* is almost always 1, (e.g. pore volume is stored as an *Np*-by-1 array), with a few exceptions (e.g. spatial coordinates are stored as *Np*-by-3 for 3-dimensional space).  Throat properties are almost always stored as *Nt*-by-*m* arrays where *Nt* is the number of throats in the network.  Again, *m* is almost always 1 with a notable exception being the connections property that is discussed in detail above. 
 
 As mentioned above, OpenPNM uses implied pore and throat numbering, meaning that the property for pore (or throat) *i* is stored in element *i* of the corresponding property array.  
 
@@ -115,15 +115,16 @@ To examine the properties of a network, start by generating a small network of 3
 
 .. code-block:: python
 
-   >>> import OpenPNM
-   >>> pn = OpenPNM.Geometry.Cubic().generate(divisions=[3,3,3],lattice_spacing=[1])
+   import OpenPNM
+   pn = OpenPNM.Geometry.Cubic().generate(divisions=[3,3,3],lattice_spacing=[1])
 
 This creates a cubic network with 27 internal pores and 54 internal throats. Additionally, for every 3-by-3 face on the cube, a 3-by-3 set of boundary pores are created with individual boundary throats to corresponding internal pores.  A quick summary of the network data can be displayed as follows:
 
 .. code-block:: python
 
-    >>> print pn  
-    ==================================================
+    print pn  
+    
+	==================================================
 	Overview of network properties
 	--------------------------------------------------
 	Basic properties of the network
@@ -156,7 +157,7 @@ A quick way to find all properties currently stored in a dictionary is the ``.ke
 
 .. code-block:: python
 	
-	>>> print pn.pore_properties.keys()
+	print pn.pore_properties.keys()
 	['diameter', 'numbering', 'volume', 'seed', 'coords', 'type']
 
 .. note::
@@ -170,22 +171,24 @@ Pore and throat conditions are very similar to the properties as described above
 
 .. code-block:: python
 	
-	>>> pn.pore_conditions['temperature'] = 80.0
+	pn.pore_conditions['temperature'] = 80.0
 
 Storing this information as a scalar provides significant memory savings by avoiding the redundancy of specifying each pore to have the same temperature.  Fortunately, Numpy is very adapt at 'broadcasting' vectors and scalars together.  This means that a properly vectorized calculation can take a vector or a scalar without any changes to the code.  For instance, to calculate the molar density of the gas in the pores using the ideal gas law, we could write:
 
 .. code-block:: python
 	
-	>>> pn.pore_conditions['temperature'] = 80.1
-	>>> pn.pore_conditions['pressure'] = 101325
-	>>> gas_constant = 8.314
-	>>> pn.pore_conditions['molar_density'] = pn.pore_conditions['pressure']/gas_constant/pn.pore_conditions['temperature']
+	pn.pore_conditions['temperature'] = 80.1
+	pn.pore_conditions['pressure'] = 101325
+	gas_constant = 8.314
+	pn.pore_conditions['molar_density'] = pn.pore_conditions['pressure']/gas_constant/pn.pore_conditions['temperature']
 	
 This calculation as shown, with both temperature and pressure as scalars, would produce a scalar value of 'molar_density'.  If, however, either *or* both of 'temperature' and 'pressure' were vectors (i.e. a value for each pore), then the 'molar_density' would be calculated in *exactly* the same way, but the result would be a vector.  
 
-**Special Features of the OpenPNM Dictionaries**
+.. Topic:: Upcoming Feature
 
-The dictionaries used in OpenPNM have been sub-classed from the general Python implementation.  Since so many operations in OpenPNM depend on vectorized code, it is imperative that all ``pore_properties`` arrays are a consistent length (and similarly for ``throat_properties``).  Python's native dictionary class has been extended to include a check for array shape prior to adding or overwriting arrays.  The *self-protecting* properties of this dictionary will be expanded in future releases as the develops.  
+	**Special Features of the OpenPNM Dictionaries**
+
+	The dictionaries used in OpenPNM have been sub-classed from the general Python implementation.  Since so many operations in OpenPNM depend on vectorized code, it is imperative that all ``pore_properties`` arrays are a consistent length (and similarly for ``throat_properties``).  Pythons native dictionary class has been extended to include a check for array shape prior to adding or overwriting arrays.  The *self-protecting* properties of this dictionary will be expanded in future releases as the develops.  
 
 The ``pore_conditions`` and ``throat_conditions`` arrays are also written in dictionaries, but as mentioned above, scalar values are allowed.  The dictionary class in OpenPNM allows this, as well as allowing a scalar to be expanded to an *Np* or *Nt* vector.  It will not allow vectors of lengths other than these.  
 
@@ -206,11 +209,11 @@ The 'numbering' array is actually somewhat redundant since pore and throat numbe
 
 .. code-block:: python
 
-	>>> import scipy as sp
-	>>> z_mean = sp.mean(pn.pore_properties['coords'][:,2])
-	>>> mask = pn.pore_properties['coords'][:,2] < z_mean
-	>>> low_pores = pn.pore_properties['numbering'][mask]
-	>>> print low_pores
+	dia_mean = sp.mean(pn.pore_properties['diameter'])
+	mask = pn.pore_properties['diameter'] < dia_mean
+	small_pores = pn.pore_properties['numbering'][mask]
+	print small_pores
+	
 	[ 0  1  2  3  4  5  6  7  8 27 28 29 36 37 38 45 46 47 54 55 56 63 64 65 66 67 68 69 70 71]
 
 The 'type' property is used by OpenPNM to differentiate between internal and boundary pores (and throats).  A 'type' value of zero indicates an internal pore, and a value > 0 indicates a boundary pore.  Boundary pores are further distinguished by values between 1 and 6 to indicate on which boundary they lie: 1 and 6 for z-faces, 2 & 5 for x-faces and 3 & 4 for y-faces.  This convention was inspired by the number on dice, where opposite sides all add up to 7.  Obviously, this numbering boundary pores in this way implies a cubic network domain, which may not always be the case. For example, let's determine on which faces the low_pores reside:
@@ -221,6 +224,30 @@ The 'type' property is used by OpenPNM to differentiate between internal and bou
 	[0 0 0 0 0 0 0 0 0 2 2 2 5 5 5 3 3 3 4 4 4 1 1 1 1 1 1 1 1 1]
 	
 Throats are by definition always internal to the network, but they also have a 'type' property.  If throats are connected to a boundary pore, then they adopt this pores type, otherwise they are 0.  
+-------------------------------------------------------------------------------
+Common Pore and Throat Properties
+-------------------------------------------------------------------------------
+The GenericGeometry class includes several methods that produce some additional pore and throat properties beyond the mandatory ones described above.  These including this like 'diameter' and 'volume'.  The docstrings for the methods in the GenericGenerator are provided below, with small blurbs about what properties are created at each step and how.  
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_pores()
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_throats()
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._add_boundaries()
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_pore_seeds()
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_throat_seeds()
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_pore_diameters()
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_throat_diameters()
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._calc_pore_volumes()
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._calc_throat_lengths()
+
+.. automethod:: OpenPNM.Geometry.GenericGeometry._calc_throat_volumes()
 
 -------------------------------------------------------------------------------
 Adding New Pore and Throat Dictionary Entries
@@ -229,17 +256,29 @@ Adding a new entry into either of the *properties* or *conditions* dictionaries 
 
 .. code-block:: python
 	
-	>>> Nt = pn.get_num_throats()
+	Nt = pn.get_num_throats()
 	>>> values = sp.random.rand(Nt,)*4 + 1 # 1 < ratios < 5
-	>>> pn.throat_properties['aspect_ratio'] = values
+	pn.throat_properties['aspect_ratio'] = values
 
-The length of the array generated here is *Nt*, so an aspect ratio is assigned to each throat.  Attempts to add entries of the wrong size would be intercepted by the dictionary class to prevent corruption of the network data.  
+The length of the array generated here is *Nt*, so an aspect ratio is assigned to each throat.  
+Attempts to add entries of the wrong size would be intercepted by the dictionary class to prevent corruption of the network data.  
 
 ===============================================================================
 Querying Network Data and Properties
 ===============================================================================
 
-The OpenPNM network object not only stores the network data, but also contains numerous methods for extracting information about the network from that data.  All networks have a basic set of commands, that are illustrated below:
+The OpenPNM network object not only stores the network data, but also contains numerous methods for extracting information about the network from that data.  
+A full listing of the available methods can be found in the :ref:`Network function reference <network_ref>`.  
+
+Two particularly useful methods are get_neighbor_pores and get_neighbor_throats.  
+Their functionality and applicability will be outlined here, which will also give insight to the usage of the other related methods.  
+
+In it's basic form `get_neighbor_pores(i)` returns the ID number of the pores directly connected to pore i.  
+This is useful for checking the status of a given pores neighbors
+
+
+This function however also takes a list of pores and returns a cumulative list of the neighbors
+
 
 .. code-block:: python
 
