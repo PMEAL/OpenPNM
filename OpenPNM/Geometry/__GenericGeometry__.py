@@ -304,18 +304,18 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._net.pore_properties['coords'] = pts
         self._net.pore_properties['type'] = sp.repeat(0,len(pts))
         self._generate_pore_seeds()
-        #self._net.pore_properties['type'] = sp.hstack((sp.repeat(0,len(pts_base)),sp.repeat(edge,len(pts_add))))
         self._generate_pore_diameters(psd)
         self._calc_pore_volumes()
         
         self._net.throat_properties['connections'] = sp.vstack((adjmat.row, adjmat.col)).T
         self._net.throat_properties['numbering'] = sp.arange(0,sp.size(adjmat.row))
-        self._net.throat_properties['type'] = sp.repeat(0,len(self._net.throat_properties['connections']))
+        self._net.throat_properties['type'] = sp.repeat(0,len(self._net.throat_properties['connections'])) # ISSUE WITH TYPE
         self._generate_throat_seeds()
         self._generate_throat_diameters(tsd)
         self._calc_throat_lengths()
         self._calc_throat_volumes()
         
+        #self._net.pore_properties['type'] = sp.hstack((sp.repeat(0,len(pts_base)),sp.repeat(edge,len(pts_add)))) # ISSUE WITH TYPE
         
         
         #print "Stitch: Method Incomplete"
