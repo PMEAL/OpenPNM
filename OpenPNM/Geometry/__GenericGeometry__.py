@@ -49,7 +49,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
-#        self.add_boundaries()
+        self._add_boundaries()
         self._generate_pore_seeds()
         self._generate_throat_seeds()
         self._generate_pore_diameters(params['psd_info'])
@@ -226,10 +226,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             A vector containing the amount to translate in each dimension. [0,0,0] yeilds no translation.
         
         """
-        Lc = net.pore_properties['domain_size'][3]
-        N = net.pore_properties['divisions']
-        ind = N[0]*N[1]*N[2]
-        net.pore_properties['coords'] = Lc*(0.5 + sp.array(sp.unravel_index(sp.arange(0,ind),dims=net.pore_properties['divisions'],order='F')).T) + sp.array(displacement)
+        net.pore_properties['coords'] = net.pore_properties['coords'] + displacement
         
     def scale_coordinates(self,net,scale=[1,1,1]):
         r"""
@@ -266,13 +263,13 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         
         #The coordinates should have been translated by this point already using the "translate_coordinates" method. 
         # Checks to ensure that the coordinates are properly translated: ...
-        
+        # THIS NEEDS TO GO LAST
         net1.pore_properties['coords']      = sp.concatenate((net1.pore_properties['coords'],net2.pore_properties['coords']),axis = 0)
         
         # All of these properties should be conserved when we stitch 2 networks. 
         net1.pore_properties['volume']      = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
         net1.pore_properties['seed']        = sp.concatenate((net1.pore_properties['seed'],net2.pore_properties['seed']),axis = 0)
-        net2.pore_properties['type']      = sp.repeat(edge,len(net2.pore_properties['type']))
+        net2.pore_properties['type']        = sp.repeat(edge,len(net2.pore_properties['type']))
         net1.pore_properties['type']        = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
         net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
         
@@ -291,6 +288,18 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         net2.throat_properties['type']      = sp.repeat(edge,len(net2.throat_properties['type']))
         net1.throat_properties['type']      = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
         
+        '''
+        # Options to find Nearest neighbor - Delauney, k-NN, Voronoi...etc.
+        coord_mat = net1.pore_properties['coords']
+        euclid_mat = sp.zeros((len(coord_mat),len(coord_mat)))
+        for i in sp.arange(0,len(coord_mat)):
+            for j in sp.arange(0,len(coord_mat)):
+                a = coord_mat[[i]]
+                b = coord_mat[[j]]
+                temp = (a-b)**2
+                euclid_mat[i,j] = sp.sqrt(sp.dot(temp,temp.T))
+        
+        net1.pore_properties['euclid'] = euclid_mat
 
         N1 = net1.pore_properties['divisions']
         N2 = net2.pore_properties['divisions']
@@ -325,7 +334,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         J = net1.throat_properties['connections'][:,1]
         V = sp.ones(len(net1.throat_properties['connections']))
         net1.A = sp.sparse.coo_matrix((V,(I,J))).todense()
-
+        '''
         
         
         #print "Stitch: Method Incomplete"
