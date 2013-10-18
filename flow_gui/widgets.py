@@ -111,6 +111,7 @@ class GenericIOWidget(QtGui.QWidget):
       widget.textEdited.connect(lambda: self.input_changed.emit(self.current_input()) )
 
     # elif isinstance(arg_value, GenericModuleWidget):
+    # ''' an attempt to allow very sophisticated imports '''
     #   widget = QtGui.QComboBox()
     #   widget.setModel(arg_value.item_model)
     #   widget.get = lambda: arg_value.item_model.item(widget.currentIndex()).data().toPyObject()
@@ -121,13 +122,19 @@ class GenericIOWidget(QtGui.QWidget):
       ''' if the input is iterable, attempt to capture its structure by creating a widget nest
       as we travel through the tree
       '''
-      widget = QtGui.QWidget()
-      widget.setLayout(QtGui.QHBoxLayout())
-      widget.sub_widgets = [self.create_widget(None, sub_value) for sub_value in arg_value]
-      widget.get = lambda: [sub_widget.get() for sub_widget in widget.sub_widgets]
+      if all([isinstance(inner, str) for inner in arg_value]):
+        widget = QtGui.QComboBox()
+        widget.addItems(arg_value)
+        widget.get = lambda: widget.currentIndex()
 
-      for sub_widget in widget.sub_widgets:
-        widget.layout().addWidget(sub_widget)
+      else:
+        widget = QtGui.QWidget()
+        widget.setLayout(QtGui.QHBoxLayout())
+        widget.sub_widgets = [self.create_widget(None, sub_value) for sub_value in arg_value]
+        widget.get = lambda: [sub_widget.get() for sub_widget in widget.sub_widgets]
+
+        for sub_widget in widget.sub_widgets:
+          widget.layout().addWidget(sub_widget)
 
     else:
       widget = QtGui.QLabel("%s." % type(arg_value))

@@ -7,7 +7,7 @@ module CapillaryPressure
 
 import scipy as _sp
 
-def Washburn(net,sigma,theta):
+def Washburn(net,sigma=0.072,theta=110):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
@@ -34,6 +34,7 @@ def Washburn(net,sigma,theta):
     """
     vals = -4*sigma*_sp.cos(_sp.radians(theta))/net.throat_properties['diameter']
     net.throat_conditions['Pc_entry'] = vals
+    return {'network':net}
 
 def Purcell(net,sigma,theta,r_toroid):
     r"""

@@ -23,15 +23,17 @@ class PipelineItem(QtGui.QStandardItem):
 
     self.main_window = main_window
 
-  def update(self, check_state):
-    self.setCheckState(check_state)
-    self.preview.setPlainText(
-      '\n\n'.join("{0}:\n{1}".format(key, value) for key, value in sorted(self.branch_properties().items())) )
-    self.main_window.update()
-
   @property
   def data_dict(self):
     return self.module_widget.content
+
+  def update(self, check_state):
+    self.setCheckState(check_state)
+
+    self.preview.setPlainText(
+      '\n\n'.join("{0}:\n{1}".format(key, value) for key, value in sorted(self.branch_properties().items())) )
+    
+    self.main_window.update()
 
   def branch_properties(self):
     item = self

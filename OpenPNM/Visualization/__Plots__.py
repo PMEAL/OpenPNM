@@ -35,7 +35,7 @@ class Plots(GenericVisualization):
         self._logger.debug("Construct Plots Class")
 
     @staticmethod
-    def overview(net):
+    def overview(net, fig=None):
         r"""
         Plot a montage of key network size distribution histograms
 
@@ -43,7 +43,8 @@ class Plots(GenericVisualization):
         ----------
         net : OpenPNM Network Object
             The network for which the graphs are desired
-
+        fig : Matplotlib figure object
+            The canvas on which to draw the plots
 
         """
         import matplotlib.pyplot as plt
