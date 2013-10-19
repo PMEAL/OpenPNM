@@ -34,14 +34,6 @@ def Washburn(net,sigma=0.072,theta=120.0):
     This is the most basic approach to calcualing entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
-    try:
-        sigma = net.throat_conditions['surface_tension']
-    except:
-        net.throat_conditions['surface_tension'] = sigma
-    try:
-        theta = net.throat_conditions['contact_angle']
-    except:
-        net.throat_conditions['contact_angle'] = theta
 
     vals = -4*sigma*_sp.cos(_sp.radians(theta))/net.throat_properties['diameter']
     net.throat_conditions['Pc_entry'] = vals
