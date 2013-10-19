@@ -536,8 +536,7 @@ class InvasionPercolation(GenericAlgorithm):
         r"""
         This does nothing
         """
-            
-            
+                     
 if __name__ =="__main__":
     
     clock()
@@ -560,15 +559,15 @@ if __name__ =="__main__":
     
     print "- * Run Invasion percolation algorithm"
     #IP = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
-    IP_timing = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,timing='ON',loglevel=30,loggername="TestInvPercAlg")
-    IP_timing.run()
+    IP_timing = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
+    IP_timing.run(pn,inlets=inlets,outlets=outlets,report=1,timing='ON')
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_timing.vtp"
     OpenPNM.Visualization.VTK().write(net = pn,filename="IP_timing.vtp")
-    IP_notiming = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,timing='OFF',loglevel=30,loggername="TestInvPercAlg")
-    IP_notiming.run()
+    IP_notiming = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
+    IP_notiming.run(pn,inlets=inlets,outlets=outlets,report=1,timing='OFF')
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
