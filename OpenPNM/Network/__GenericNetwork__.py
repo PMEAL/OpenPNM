@@ -588,9 +588,18 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         str_throat = "\nThroat properties:"
         for key, value in self.throat_properties.iteritems():
+            print key, value
             str_throat += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,value)
+            
+        str_pore_cond = "\nPore conditions:"
+        for key, value in self.pore_conditions.iteritems():
+            str_pore_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
 
-        return str_overview+str_pore+str_throat
+        str_throat_cond = "\nThroat conditions:"
+        for key, value in self.throat_conditions.iteritems():
+            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
+
+        return str_overview+str_pore+str_throat+str_pore_cond+str_throat_cond
 
     def update(self):
         self.create_adjacency_matrix()
