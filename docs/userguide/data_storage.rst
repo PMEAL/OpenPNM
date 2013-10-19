@@ -2,32 +2,22 @@
 Network Architecture and Data Storage
 ###############################################################################
 
-OpenPNM utilizes the object oriented capacities of Python by defining a network as an object.  
-A network object contains both the data that describes the network along with the tools, functions, or methods needed to access this data in ways applicable to the pore network modeling paradigm.  
-One key feature of this object is that it is completely agnostic about the type of network it describes; a random, cubic or another network topology is stored in exactly the same manner.  
-The most important repercussion of this choice is the fact that all operations performed on the network (such as diffusion or capillary drainage) can be fully generic.  
+OpenPNM utilizes the object oriented capacities of Python by defining a network as an object.  A network object contains both the data that describes the network along with the tools, functions, or methods needed to access this data in ways applicable to the pore network modeling paradigm.  One key feature of this object is that it is completely agnostic about the type of network it describes; a random, cubic or another network topology is stored in exactly the same manner.  
 The advantages of this are numerous:
 
 1. The OpenPNM framework can be applied to any network or situation
-2. Only one version of an algorithm or method needs to be developed then can be applied universally
-3. The commonality between network types becomes apparent 
+2. All operations performed on the network can be fully generic
+3. Only one version of an algorithm or method needs to be developed then can be applied universally
+4. The commonality between network types becomes apparent 
 
-As the name suggests, pore network modeling borrows significantly from the fields of network and graph theory.  
-During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as `graph-tool <http://graph-tool.skewed.de/>`_ and `NetworkX <http://networkx.github.io/>`_) should be used to store the network topology.  
-It was decided that storage of network property data could be handled very efficiently and transparently using simple 1D arrays, which allows for a high degree of code vectorization.  
-Fortuitously, around the same time as this discussion, Scipy started to include the 'compressed sparse graph' library, which contained numerous graph theory algorithms.  
-The CSGraph library requires adjacency matrices in a compressed sparse storage scheme, which happens to be how OpenPNM stores network connections as described below.
+As the name suggests, pore network modeling borrows significantly from the fields of network and graph theory.  During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as `graph-tool <http://graph-tool.skewed.de/>`_ and `NetworkX <http://networkx.github.io/>`_) should be used to store the network topology.  It was decided that storage of network property data could be handled very efficiently and transparently using simple 1D arrays, which allows for a high degree of code vectorization.  Fortuitously, around the same time as this discussion, Scipy started to include the 'compressed sparse graph' library, which contained numerous graph theory algorithms.  The CSGraph library requires adjacency matrices in a compressed sparse storage scheme, which happens to be how OpenPNM stores network connections as described below.
 
 ===============================================================================
 Network Architecture
 ===============================================================================
 
-One of the main design considerations of OpenPNM was to accommodate *all* pore networks (arbitrary dimensionality, connectivity, shape and so on).  
-Cubic networks are commonly used in pore network modeling, with each pore connected to 6 or 26 neighbors.  
-This type of network *can* be represented as cubic matrices in numerical simulations, and this has the advantage that it is easily interpreted by human users.  
-Representing networks this way, however, clearly lacks generality.  
-Networks extracted from tomographic images, or generated using random pore placements connected by Delaunay tessellations require a different approach.  
-OpenPNM uses network representation schemes borrowed from graph theory, such as adjacency and incidence matrices, that can be used to represent *all* network topologies. 
+One of the main design considerations of OpenPNM was to accommodate *all* pore networks (arbitrary dimensionality, connectivity, shape and so on).  Cubic networks are commonly used in pore network modeling, with each pore connected to 6 or 26 neighbors.  This type of network *can* be represented as cubic matrices in numerical simulations, and this has the advantage that it is easily interpreted by human users.  Representing networks this way, however, clearly lacks generality.  
+Networks extracted from tomographic images, or generated using random pore placements connected by Delaunay tessellations require a different approach.  OpenPNM uses network representation schemes borrowed from graph theory, such as adjacency and incidence matrices, that can be used to represent *all* network topologies. 
 
 The basic definitions used by OpenPNM are:
 
@@ -37,25 +27,19 @@ The basic definitions used by OpenPNM are:
 
 3. Two pores are connected by no more than one throat
 
-A network has a certain number of pores, *Np*, and a certain number of throats, *Nt*.  
-Typically, *Nt* > *Np* since most pores have more than 1 throat.  
-If every pore has 1 throat (e.g. the network forms a circular chain), then *Nt* = *Np* - 1.  
-Of course, *Nt* can be zero but this would not be a useful network.  
-It can be *unofficially* stated that a network should have at least 2 pores connected by at least 1 throat (*Np* > 1 and *Nt* > 0).  
+A network has a certain number of pores, *Np*, and a certain number of throats, *Nt*.  Typically, *Nt* > *Np* since most pores have more than 1 throat.  If every pore has 1 throat (e.g. the network forms a circular chain), then *Nt* = *Np* - 1.  
+Of course, *Nt* can be zero but this would not be a useful network.  It can be *unofficially* stated that a network should have at least 2 pores connected by at least 1 throat (*Np* > 1 and *Nt* > 0).  
 
 -------------------------------------------------------------------------------
 Pore and Throat Numbering
 -------------------------------------------------------------------------------
 
-Each pore and throat in the network has a unique ID number.  
-In OpenPNM the ID number is *implied* by array element number, meaning that any information stored in element *i* of a pore (or throat) property array implicitly applies to pore (or throat) *i*.  
-Or in other words, finding information about pore (or throat) *i* is accomplished by looking into element *i* of an array.  
-There is no correspondence between pore number and throat number, meaning that throat *i* may or may not be connected with pore *i*.  
-Python uses 0-based array indexing so the ID numbers start at 0, which can be a source of confusion when representing connections using sparse representations.  
+Each pore and throat in the network has a unique ID number.  In OpenPNM the ID number is *implied* by array element location, meaning that any information stored in element *i* of a pore (or throat) property array implicitly applies to pore (or throat) *i*.  Or in other words, finding information about pore (or throat) *i* is accomplished by looking into element *i* of an array.  There is no correspondence between pore number and throat number, meaning that throat *i* may or may not be connected with pore *i*.  Python uses 0-based array indexing so the ID numbers start at 0, which can be a source of confusion when representing connections using sparse representations.  This implicit numbering scheme provides for much easier vectorization of the code, since arrays can be compared with confidence that the elements coincide. 
+Furthermore, this format also allows for direct indexing based on ID number.  That is, given the ID number(s) for a pore(s), a user can directly lookup a desired property, without having to add a second step of finding where in an array the desired pore information is stored.  
 
-.. topic:: Development Topic: Removing Implicit Index Values
+.. Note:: The Meaning of the *numbering* property
 
-	It is conceivable that an extra array called 'index' could be used to remove the implicitness of the numbering.  For instance ``index = [0,2,1,3]`` would indicate that 'element 1' of each array contains the properties of 'pore 2'.  Given a list like ``pore_properties['size'] = [0.1, 0.2, 0.3 0.4]``, one could extract an ordered list as ``pore_properties['size'][index] = [0.1, 0.3, 0.2, 0.4]``.  This extra layer of indexing is confusing and makes it more difficult to set up vectorized and boolean masked statements.  One point of confusion that may arise when using OpenPNM is the presence of the pore and throat 'numbering' property.  This property is simply a list of integers between 0 and *Np* or *Nt*.  Its purpose is to facilitate indexing into other property arrays.  For instance, a user can query all pores (or throats) larger than size R and receive a boolean array.  This boolean can then be used to mask the 'numbering' array and produce an array containing a subset of pore (or throat) ID numbers.  The subset can then be passed to algorithms and other methods, such as the inlets to an invasion percolation algorithm.  This approach is a matter of convenience only.  This could be avoided by generating an integer list between 0 and *Np* (or *Nt*) each time the 'numbering' property is used.  One further wrinkle to add is that the 'numbering' property *could* be used to remove the implicit IDs, and most of the code in OpenPNM would function properly, but there are certainly places where the code will break.  It might be a reasonable task for future releases to adapt the code to allow this.  
+	One point of confusion that may arise when using OpenPNM is the presence of the pore and throat 'numbering' property.  This property is simply a list of integers between 0 and *Np* or *Nt*.  Its purpose is to facilitate indexing into other property arrays.  For instance, a user can query all pores (or throats) larger than size R and receive a boolean array.  This boolean can then be used to mask the 'numbering' array and produce an array containing a subset of pore (or throat) ID numbers.  The subset can then be passed to algorithms and other methods, such as the inlets to an invasion percolation algorithm.  This approach is a matter of convenience only.  This could be avoided by generating an integer list between 0 and *Np* (or *Nt*) each time the 'numbering' property is used.  
 	
 -------------------------------------------------------------------------------
 'Internal' vs. 'Boundary' Pores
@@ -63,7 +47,7 @@ Python uses 0-based array indexing so the ID numbers start at 0, which can be a 
 
 Internal pores and internal throats refer to the throats in which the physical processes occur.  Boundary pores are added to the network to enable numerical calculations that require boundary conditions.  For instance, to simulate diffusion across the network a concentration gradient is created by placing specified concentrations in the boundary pores (Dirichlet conditions).
 
-Boundary pores are not considered part of the physical network; they have no spatial extent thus no volume or length.  They also have no meaningful spatial location, however, for the purposes of visualization they are given coordinates that neighbor the internal pore to which they are connected.  It would be more precise to call them boundary *nodes*, but this leads to other confusions since their properties are stored along with the internal pores.  
+Boundary pores are not considered part of the physical network; they have no spatial extent thus no volume or length.  They also have no meaningful spatial location, however, for the purposes of visualization they are given coordinates that neighbor the internal pore to which they are connected.  It would be more precise to call them boundary *nodes*, but this leads to other confusions since their properties are stored along with the internal pores in `pore_properties` and `pore_conditions`. 
 
 Boundary pores are part of the logical network, thus their ID number and connectivity are vital.  Boundary pores are only connected to internal pores and they are not connected to each other.  Typically, a boundary pore only connects to a single internal pore, but there may be cases where this is not so, such as random networks.  This generally won't impact a simulation.  Internal pores can also be connected to more than one boundary pore.  This can occur when a pore is on an edge or corner of a network and is exposed to multiple boundaries, or can simply result from a confluence of connections, as might occur in a random network.  
 
@@ -158,7 +142,7 @@ A quick way to find all properties currently stored in a dictionary is the ``.ke
 .. code-block:: python
 	
 	print pn.pore_properties.keys()
-	['diameter', 'numbering', 'volume', 'seed', 'coords', 'type']
+		['diameter', 'numbering', 'volume', 'seed', 'coords', 'type']
 
 .. note::
 	
@@ -182,7 +166,7 @@ Storing this information as a scalar provides significant memory savings by avoi
 	gas_constant = 8.314
 	pn.pore_conditions['molar_density'] = pn.pore_conditions['pressure']/gas_constant/pn.pore_conditions['temperature']
 	
-This calculation as shown, with both temperature and pressure as scalars, would produce a scalar value of 'molar_density'.  If, however, either *or* both of 'temperature' and 'pressure' were vectors (i.e. a value for each pore), then the 'molar_density' would be calculated in *exactly* the same way, but the result would be a vector.  
+This calculation as shown, with both temperature and pressure as scalars, would produce a scalar value of 'molar_density'.  If, however, either *or* both of 'temperature' and 'pressure' were vectors (i.e. a value for each pore), then the 'molar_density' would be calculated in *exactly* the same way, but the result would be a vector.  The only caveat is that all vectors involved must be the same length.  
 
 .. Topic:: Upcoming Feature
 
@@ -229,26 +213,6 @@ Common Pore and Throat Properties
 -------------------------------------------------------------------------------
 The GenericGeometry class includes several methods that produce some additional pore and throat properties beyond the mandatory ones described above.  These including this like 'diameter' and 'volume'.  The docstrings for the methods in the GenericGenerator are provided below, with small blurbs about what properties are created at each step and how.  
 
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_pores()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_throats()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._add_boundaries()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_pore_seeds()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_throat_seeds()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_pore_diameters()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._generate_throat_diameters()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._calc_pore_volumes()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._calc_throat_lengths()
-
-.. automethod:: OpenPNM.Geometry.GenericGeometry._calc_throat_volumes()
-
 -------------------------------------------------------------------------------
 Adding New Pore and Throat Dictionary Entries
 -------------------------------------------------------------------------------
@@ -257,7 +221,7 @@ Adding a new entry into either of the *properties* or *conditions* dictionaries 
 .. code-block:: python
 	
 	Nt = pn.get_num_throats()
-	>>> values = sp.random.rand(Nt,)*4 + 1 # 1 < ratios < 5
+	values = sp.random.rand(Nt,)*4 + 1 # 1 < ratios < 5
 	pn.throat_properties['aspect_ratio'] = values
 
 The length of the array generated here is *Nt*, so an aspect ratio is assigned to each throat.  
