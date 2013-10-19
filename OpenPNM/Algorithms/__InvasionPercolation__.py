@@ -538,7 +538,9 @@ class InvasionPercolation(GenericAlgorithm):
         """
                      
 if __name__ =="__main__":
-    
+    print ''
+    print ''    
+    print '    ************Testing InvasionPercolation Algorithm**************'
     clock()
     print "="*50
     print "= Example: Create random network and run an invasion\n= percolation algorithm"
