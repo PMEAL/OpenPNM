@@ -7,7 +7,7 @@ module CapillaryPressure
 
 import scipy as _sp
 
-def Washburn(net,sigma=0.072,theta=120.0):
+def Washburn(net,fluid1,fluid2):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
@@ -16,13 +16,11 @@ def Washburn(net,sigma=0.072,theta=120.0):
     network : OpenPNM Network Object
         The network on which to apply the calculation
 
-    sigma : float, array_like
-        Surface tension of the invading/defending fluid pair.
-        Units must be consistent with the throat size values, but SI is encouraged.
+    wp : OpenPNM Fluid Object
+        Fluid dictionary for the wetting phase
 
-    theta : float, array_like
-        Contact angle formed by a droplet of the invading fluid and solid surface, measured through the defending fluid phase.
-        Angle must be given in degrees.
+    nwp : OpenPNM Fluid Object
+        Fluid dictionary for the non-wetting phase
 
     Notes
     -----
@@ -31,10 +29,11 @@ def Washburn(net,sigma=0.072,theta=120.0):
     .. math::
         P_c = -\frac{2\sigma(cos(\theta))}{r}
 
-    This is the most basic approach to calcualing entry pressure and is suitable for highly non-wetting invading fluids in most materials.
+    This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
-
+    sigma = fluid1['surface_tension'][fluid2['name']]
+    theta = fluid1['contact_angle'][fluid2['name']]
     vals = -4*sigma*_sp.cos(_sp.radians(theta))/net.throat_properties['diameter']
     net.throat_conditions['Pc_entry'] = vals
     return {'network': net}

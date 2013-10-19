@@ -15,9 +15,6 @@ sphere[26,26,26] = 0
 sphere = spim.distance_transform_edt(sphere)
 template  = sphere<20
 
-#img = spim.imread('C:\Users\Jeff\Dropbox\Flash Sync\Code\Git\OpenPNM\LocalFiles\CL.png')
-#template = img<255
-
 start=clock()
 
 params =     {'domain_size': [],  #physical network size [meters]
@@ -36,29 +33,28 @@ params =     {'domain_size': [],  #physical network size [meters]
                     'btype': [0,0,0]  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 }
 
+#Generate Network Geometry
 pn = OpenPNM.Geometry.Cubic(loglevel=10).generate(**params)
 #pn = OpenPNM.Geometry.Delaunay().generate(**params)
 #pn = OpenPNM.Geometry.Template().generate(**params)
 
-#Define the fluids
-air = {'name': 'wp'}
+#Define the Fluids and set their properties
+air = {'name': 'air'}
 air.update(OpenPNM.Fluids.Diffusivity.set_as(2.09e-5))
 air.update(OpenPNM.Fluids.Viscosity.set_as(1.73e-5))
 air.update(OpenPNM.Fluids.MolarDensity.set_as(40.90))
-water = {'name': 'nwp'}
+water = {'name': 'water'}
 water.update(OpenPNM.Fluids.Diffusivity.set_as(1.0e-20))
 water.update(OpenPNM.Fluids.Viscosity.set_as(1.0e-3))
 water.update(OpenPNM.Fluids.MolarDensity.set_as(5.56e4))
-air_water_interface = {'name': 'interface'}
+water.update(OpenPNM.Fluids.SurfaceTension.set_as(0.072,air))
+water.update(OpenPNM.Fluids.ContactAngle.set_as(110,air))
 
-
-
-#Set various network conditions
+#Apply Pore Scale Physics
 OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
 
-
 #Perform algorithms
-OpenPNM.Physics.CapillaryPressure.Washburn(pn)
+OpenPNM.Physics.CapillaryPressure.Washburn(pn,water,air)
 #inlets = sp.r_[0:pn.get_num_pores()]
 mask = pn.pore_properties['type']==2
 inlets = pn.pore_properties['numbering'][mask]

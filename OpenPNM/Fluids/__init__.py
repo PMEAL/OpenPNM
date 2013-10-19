@@ -26,4 +26,5 @@ import Viscosity
 import MolarDensity
 import Diffusivity
 import SurfaceTension
+import ContactAngle
 import VaporPressure
