@@ -22,7 +22,7 @@ Subpackages
 
 
 .. list-table:: OpenPNM submodule structure.
-   :widths: 10 80 
+   :widths: 10 80
    :header-rows: 1
 
    * - Name
@@ -42,15 +42,15 @@ Subpackages
      - Module for performing vtk-based post-processing routines.
 
 
- 
- 
+
+
 Utility tools
 -------------
 ::
 
  TODO                --- Todo
- 
- 
+
+
 Import
 ------
 >>> import OpenPNM as PNM
@@ -67,7 +67,7 @@ Package Documentation
    :members:
    :undoc-members:
    :show-inheritance:
-      
+
 .. automodule:: Network
    :members:
    :undoc-members:
@@ -117,6 +117,7 @@ __extras_require__ = {
 
 import Utilities
 import Network
+import Fluids
 import Geometry
 import Algorithms
 import Visualization
