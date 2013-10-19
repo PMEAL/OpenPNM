@@ -3,6 +3,17 @@
 import os
 import sys
 
-
-os.chdir('OpenPNM/Algorithms')
-os.system('python __InvasionPercolation__.py')
+#move to the OpenPNM directory
+os.chdir('OpenPNM')
+#go into each folder present
+OpenPNMfiles = os.listdir('.')
+for itemname in OpenPNMfiles:
+    if '.' not in itemname:
+    
+        os.chdir(itemname)
+        curdir = os.listdir('.')
+        for filename in curdir:
+            if filename[-3:]=='.py':
+                os.system('python '+filename)
+        os.chdir('..')
+    
