@@ -49,16 +49,13 @@ water = {'name': 'nwp'}
 water.update(OpenPNM.Fluids.Diffusivity.set_as(1.0e-20))
 water.update(OpenPNM.Fluids.Viscosity.set_as(1.0e-3))
 water.update(OpenPNM.Fluids.MolarDensity.set_as(5.56e4))
+air_water_interface = {'name': 'interface'}
+
 
 
 #Set various network conditions
-pn.pore_conditions['temperature']       = 353
-#OpenPNM.Physics.ThermoPhysical.SurfaceTension(pn,fluid1='water')
-#OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
-pn.throat_conditions['surface_tension'] = 0.072
-pn.throat_conditions['contact_angle']   = 120
-#pn.pore_conditions['swpi']              = 0
-#pn.pore_conditions['eta']               = 1
+OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
+
 
 #Perform algorithms
 OpenPNM.Physics.CapillaryPressure.Washburn(pn)
