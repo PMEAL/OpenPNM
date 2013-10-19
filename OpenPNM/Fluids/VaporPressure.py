@@ -7,7 +7,7 @@ module VaporPressure
 
 import scipy as _sp
 
-def set_vapor_pressure(Pv=3000):
+def set_as(Pv=3000):
     return {'vapor_pressure': Pv}
 
 def Antoine(A,B,C,T=298,P=101326):

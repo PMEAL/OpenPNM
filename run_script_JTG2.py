@@ -41,19 +41,20 @@ pn = OpenPNM.Geometry.Cubic(loglevel=10).generate(**params)
 #pn = OpenPNM.Geometry.Template().generate(**params)
 
 #Define the fluids
-air = {}
-air.update(OpenPNM.Fluids.Diffusivity.set_diffusivity(2.09e-5))
-air.update(OpenPNM.Fluids.Viscosity.set_viscosity(1.73e-5))
-air.update(OpenPNM.Fluids.MolarVolume.set_molar_volume(40.90))
-water = {}
-water.update(OpenPNM.Fluids.Diffusivity.set_diffusivity(1.0e-20))
-water.update(OpenPNM.Fluids.Viscosity.set_viscosity(1.0e-3))
-water.update(OpenPNM.Fluids.MolarVolume.set_molar_volume(5.56e4))
+air = {'name': 'wp'}
+air.update(OpenPNM.Fluids.Diffusivity.set_as(2.09e-5))
+air.update(OpenPNM.Fluids.Viscosity.set_as(1.73e-5))
+air.update(OpenPNM.Fluids.MolarDensity.set_as(40.90))
+water = {'name': 'nwp'}
+water.update(OpenPNM.Fluids.Diffusivity.set_as(1.0e-20))
+water.update(OpenPNM.Fluids.Viscosity.set_as(1.0e-3))
+water.update(OpenPNM.Fluids.MolarDensity.set_as(5.56e4))
 
 
 #Set various network conditions
 pn.pore_conditions['temperature']       = 353
-#OpenPNM.Physics.ThermoPhysical.SurfaceTension(pn,fluid='water')
+#OpenPNM.Physics.ThermoPhysical.SurfaceTension(pn,fluid1='water')
+#OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
 pn.throat_conditions['surface_tension'] = 0.072
 pn.throat_conditions['contact_angle']   = 120
 #pn.pore_conditions['swpi']              = 0

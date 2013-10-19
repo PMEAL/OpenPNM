@@ -443,37 +443,40 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             num[i] = sp.size(neighborPs[i])
         return num
 
-    def interpolate_pore_conditions(self,Tcond=None):
+    def interpolate_pore_values(self,Tinfo=None):
         r"""
         Determines a pore property as the average of it's neighboring throats
 
         Parameters
         ----------
-        Tcond : string
-            The name of the throat condition to be interpolated
+        Tinfo : array_like
+            The array of throat information to be interpolated
 
         Notes
         -----
         This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
 
         """
-        if sp.size(self.throat_conditions[Tcond])==1:
-            self.pore_conditions[Tcond] = self.throat_conditions[Tcond]
+        if sp.size(Tinfo)==1:
+            Pinfo = Tinfo
+        elif sp.size(Tinfo) != self.get_num_throats():
+            raise Exception('The list of throat information received was the wrong length')
         else:
-            self.pore_conditions[Tcond] = sp.zeros((self.get_num_pores()))
+            Pinfo = sp.zeros((self.get_num_pores()))
             #Only interpolate conditions for internal pores, type=0
             Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
             nTs = self.get_neighbor_throats(Pnums,flatten=False)
             for i in sp.r_[0:sp.shape(nTs)[0]]:
-                self.pore_conditions[Tcond][i] = sp.mean(self.throat_conditions[Tcond][nTs[i]])
+                Pinfo[i] = sp.mean(Tinfo[nTs[i]])
+        return Pinfo
 
-    def interpolate_throat_conditions(self,Pcond=None):
+    def interpolate_throat_values(self,Pinfo=None):
         r"""
         Determines a throat condition as the average of the conditions it's neighboring pores
 
         Parameters
         ----------
-        Pcond : string
+        Pinfo : array_like
             The name of the throat condition to be interpolated
 
         Notes
@@ -481,15 +484,18 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
 
         """
-        if sp.size(self.pore_conditions[Pcond])==1:
-            self.throat_conditions[Pcond] = self.pore_conditions[Pcond]
+        if sp.size(Pinfo)==1:
+            Tinfo = Pinfo
+        elif sp.size(Pinfo) != self.get_num_pores():
+            raise Exception('The list of pore information received was the wrong length')
         else:
-            self.throat_conditions[Pcond] = sp.zeros((self.get_num_throats()))
-            #Interpolate values for all throats, including those leading to boundary
+            Tinfo = sp.zeros((self.get_num_throats()))
+            #Interpolate values for all throats, including those leading to boundary pores
             Tnums = sp.r_[0:self.get_num_throats()]
             nPs = self.get_connected_pores(Tnums,flatten=False)
             for i in sp.r_[0:sp.shape(nPs)[0]]:
-                self.throat_conditions[Pcond][i] = sp.mean(self.pore_conditions[Pcond][nPs[i]])
+                Tinfo[i] = sp.mean(Pinfo[nPs[i]])
+        return Tinfo
 
     def check_basic(self):
         r"""

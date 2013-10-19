@@ -7,7 +7,7 @@ module Diffusivity
 
 import scipy as _sp
 
-def set_diffusivity(diff):
+def set_as(diff):
     return {'diffusivity':diff}
 
 def ChapmanEnskog(T,P):
