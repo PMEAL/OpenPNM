@@ -20,6 +20,7 @@ import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import matplotlib as mpl
+import math
 
 class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     r"""
@@ -491,7 +492,12 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             print sprsfmt, ":\t", self.incidence_matrix[sprsfmt].keys()
 
         print "="*72
-        
+    
+    def fastest_calc_dist(self,p1,p2):
+        return math.sqrt((p2[0] - p1[0]) ** 2 +
+                     (p2[1] - p1[1]) ** 2 +
+                     (p2[2] - p1[2]) ** 2)    
+                     
     def __str__(self):
         r"""
         Print some basic properties

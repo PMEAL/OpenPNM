@@ -11,9 +11,9 @@ from time import clock
 import scipy.ndimage as spim
 
 # Parameters unique to all matricies.
-Nx = 4
-Ny = 4
-Nz = 4
+Nx = 10
+Ny = 10
+Nz = 10
 
 network_main = {
 'psd_info'   : {'name'  : 'weibull_min', #Each statistical package takes different params, so send as dict
