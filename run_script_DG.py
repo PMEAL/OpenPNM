@@ -13,7 +13,7 @@ import scipy.ndimage as spim
 # Parameters unique to all matricies.
 Nx = 3
 Ny = 3
-Nz = 3
+Nz = 1
 
 network_main = {
 'psd_info'   : {'name'  : 'weibull_min', #Each statistical package takes different params, so send as dict
