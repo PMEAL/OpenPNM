@@ -27,3 +27,4 @@ import MolarDensity
 import Diffusivity
 import SurfaceTension
 import VaporPressure
+from __GenericFluid__ import GenericFluid
