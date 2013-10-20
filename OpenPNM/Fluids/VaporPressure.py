@@ -8,7 +8,7 @@ import OpenPNM
 import scipy as sp
 
 def set_as(fluid=None,Pv=3000):
-    Pv = sp.array(Pv)
+    Pv = sp.array(Pv,ndmin=1)
     fluid.update({'vapor_pressure': Pv})
 
 def Antoine(fluid=None,T=298,A=8.07131,B=1730.63,C=233.426):

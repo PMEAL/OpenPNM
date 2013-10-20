@@ -23,7 +23,7 @@ def set_as(fluid1, fluid2, sigma=0.072):
     -----
     This method sets the surface tension for both fluids simultaneously
     """
-    sigma = sp.array(sigma)
+    sigma = sp.array(sigma,ndmin=1)
     if 'surface_tension' not in fluid1.keys():
         fluid1.update({'surface_tension': {}})
     if 'surface_tension' not in fluid2.keys():

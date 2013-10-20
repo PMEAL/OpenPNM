@@ -8,12 +8,13 @@ Created on Fri Mar 08 09:43:02 2013
 import OpenPNM
 import scipy as sp
 from time import clock
+import pprint
 
 import scipy.ndimage as spim
 sphere = sp.ones((51,51,51),dtype=sp.bool8)
 sphere[26,26,26] = 0
 sphere = spim.distance_transform_edt(sphere)
-template  = sphere<20
+#template  = sphere<20
 
 start=clock()
 
@@ -34,7 +35,7 @@ params =     {'domain_size': [],  #physical network size [meters]
 }
 
 #Generate Network Geometry
-pn = OpenPNM.Geometry.Cubic(loglevel=10).generate(**params)
+pn = OpenPNM.Geometry.Cubic(loglevel=50).generate(**params)
 #pn = OpenPNM.Geometry.Delaunay().generate(**params)
 #pn = OpenPNM.Geometry.Template().generate(**params)
 
@@ -44,8 +45,8 @@ OpenPNM.Fluids.Diffusivity.set_as(air,2.09e-5)
 OpenPNM.Fluids.Viscosity.set_as(air,1.73e-5)
 OpenPNM.Fluids.MolarDensity.set_as(air,40.90)
 water = {'name': 'water'}
-water['Tc'] = 500
-water['Pc'] = 1e10
+water['critical_temperature'] = 500
+water['critical_pressure'] = 1e10
 OpenPNM.Fluids.Diffusivity.set_as(water,1.0e-20)
 OpenPNM.Fluids.Viscosity.set_as(water,1.0e-3)
 OpenPNM.Fluids.MolarDensity.set_as(water,5.56e4)
@@ -56,13 +57,18 @@ OpenPNM.Fluids.SurfaceTension.set_as(solid,water,0.02)
 
 #Apply Pore Scale Physics
 OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
+OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,water)
+OpenPNM.Physics.CapillaryPressure.set_contact_angle(water,120)
+OpenPNM.Physics.CapillaryPressure.Washburn(pn,water,air)
+
+pprint.pprint(air,   width=30, depth=1)
+pprint.pprint(water, width=30, depth=1)
 
 #Perform Algorithms
-#OpenPNM.Physics.CapillaryPressure.Washburn(pn,water,air)
-#inlets = sp.r_[0:pn.get_num_pores()]
-#mask = pn.pore_properties['type']==2
-#inlets = pn.pore_properties['numbering'][mask]
-#OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10).run(net=pn, npts=50, inv_sites=inlets)
+inlets = sp.r_[0:pn.get_num_pores()]
+mask = pn.pore_properties['type']==2
+inlets = pn.pore_properties['numbering'][mask]
+OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10).run(net=pn, invading_fluid=water, defending_fluid=air, npts=50, inv_sites=inlets)
 
 #OpenPNM.Algorithms.InvasionPercolation(loglevel=10).run(pn,inlets=[0],outlets=[1],end_condition='breakthrough',timing='ON',report=20)
 

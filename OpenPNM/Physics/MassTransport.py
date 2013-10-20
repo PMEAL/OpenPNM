@@ -42,5 +42,5 @@ def DiffusiveConductance(network,fluid):
     gt = ct*DABt*network.throat_properties['diameter']**2/(network.throat_properties['length'])
     g = (1/gt + 1/gp1 + 1/gp2)**(-1)
 
-    return g
+    fluid.update({'diffusive_conductance': g})
 

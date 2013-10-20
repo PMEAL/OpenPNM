@@ -10,7 +10,7 @@ import scipy as sp
 def set_as(fluid=None,diff=2.09e-5):
     r"""
     """
-    diff = sp.array(diff)
+    diff = sp.array(diff,ndmin=1)
     fluid.update({'diffusivity':diff})
 
 def ChapmanEnskog(fluid,T,P):
