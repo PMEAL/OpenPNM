@@ -32,7 +32,7 @@ network_main = {
 # Parameters specific to individual matricies.
 
 #Generate the main pore network.
-pn = OpenPNM.Geometry.Cubic().generate(**network_main)
-OpenPNM.Geometry.Cubic()._generate_boundaries(pn,**network_main)
+pn2 = OpenPNM.Geometry.Cubic().generate(**network_main)
+OpenPNM.Geometry.Cubic()._generate_boundaries(pn2,**network_main)
 # Call add boundaries(**params). Add boundares keeps calls generate and creates new networks based on the Nx, Ny, Nz.
     #Add boundaries then calls stitch after generating. Stitch is put into cubic.stitch(). 

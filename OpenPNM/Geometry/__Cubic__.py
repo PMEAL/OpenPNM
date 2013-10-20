@@ -12,6 +12,8 @@ import numpy as np
 import scipy.stats as spst
 import scipy.spatial as sptl
 import itertools as itr
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 from __GenericGeometry__ import GenericGeometry
 
@@ -305,8 +307,15 @@ class Cubic(GenericGeometry):
         net1.throat_properties['type']      = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
         
     def stitch_throats(self,net):
+        
         pts = net.pore_properties['coords']
+        #pts = pts[:,0:2]
         tri = sptl.Delaunay(pts)
+
+        #plt.triplot(pts[:,0], pts[:,1], tri.simplices.copy())
+        #plt.plot(pts[:,0], pts[:,1], 'o')
+        #plt.show()
+
         adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
         dist_comb = list(itr.combinations_with_replacement(range(4),2))
         
@@ -322,17 +331,25 @@ class Cubic(GenericGeometry):
         I = ind[:][0].tolist()
         J = ind[:][1].tolist()
         V = adj_mat[I,J]
-        masked = np.where((adj_mat < (V.min() + 1e-16)) & (adj_mat > 0))
+        masked = np.where((adj_mat < (V.min() + .001)) & (adj_mat > 0))
         connections = np.zeros((len(masked[0]),2))
         
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d',)
         for i in range(len(masked[0])):
+            temp= zip(tri.points[connections[i,0]],tri.points[connections[i,1]])
+            ax.plot([temp[0][0],temp[0][1]],[temp[1][0],temp[1][1]],[temp[2][0],temp[2][1]])
             connections[i,0] = masked[0][i]
             connections[i,1] = masked[1][i]
         
-        self._net.throat_properties['connections'] =  connections
-        #plt.triplot(pts[:,0], pts[:,1], tri.simplices.copy())
-        #plt.plot(pts[:,0], pts[:,1], 'o')
-        #plt.show()
+        
+        c = np.abs(pts[:,0])
+        cmhot = plt.get_cmap("hot")
+        ax.scatter(pts[:,0], pts[:,1], pts[:,2], s=50, c = c, cmap = cmhot)        
+        plt.show()
+        
+        net.throat_properties['connections'] =  connections
+
 
 if __name__ == '__main__':
     test=Cubic(loggername='TestCubic')
