@@ -245,6 +245,79 @@ class Cubic(GenericGeometry):
 #            self._net.pore_properties['coords'][bnum2] =
 
         self._logger.debug("add_opposing_boundaries: End of method")
+    
+    def _generate_boundaries(self,net,**params):
+        self._logger.info("generate_boundaries: Define edge points of the pore network and stitch them on")
+        self._generate_setup(**params)
+        Lc = self._Lc
+        params['divisions'] = [self._Nx, self._Ny, self._Nz]
+        temp_divisions = sp.copy(params['divisions']).tolist()
+        
+        for i in range(0,6):
+            params['divisions'] = temp_divisions
+            temp_divisions = sp.copy(params['divisions']).tolist()
+            params['divisions'][i%3] = 1
+            edge_net = super(Cubic, self).generate(**params)
+            displacement = [0,0,0]
+            if i < 3:
+                displacement[i%3] = net.pore_properties['coords'][:,i%3].max() + 0.5*Lc
+            else:
+                displacement[i%3] = -1*(net.pore_properties['coords'][:,i%3].min() + 0.5*Lc)
+            self.translate_coordinates(edge_net,displacement)
+            self.stitch(net,edge_net,edge = i+1)
+            
+
+        return net    
+        self._logger.debug("generate_boundaries: End of method")
+
+    def stitch(self,net1,net2,edge = 0):
+        r"""
+        Stitch two networks together
+        
+        Parameters
+        ----------
+        net1 : OpenPNM Network Object
+            The network that is stiched to
+        
+        net2 : OpenPNM Network Object
+            The network that is stitched
+        
+        """
+        net2.pore_properties['numbering']   = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
+        net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)        
+        net1.pore_properties['volume']      = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
+        net1.pore_properties['seed']        = sp.concatenate((net1.pore_properties['seed'],net2.pore_properties['seed']),axis = 0)
+        net2.pore_properties['type']        = sp.repeat(edge,len(net2.pore_properties['type']))
+        net1.pore_properties['type']        = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
+        net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
+        net1.pore_properties['coords']      = sp.concatenate((net1.pore_properties['coords'],net2.pore_properties['coords']),axis = 0)
+        
+        net2.throat_properties['numbering'] = len(net1.throat_properties['numbering']) + net2.throat_properties['numbering']
+        net1.throat_properties['numbering'] = sp.concatenate((net1.throat_properties['numbering'],net2.throat_properties['numbering']),axis=0)
+        net1.throat_properties['volume']    = sp.concatenate((net1.throat_properties['volume'],net2.throat_properties['volume']),axis=0)
+        net1.throat_properties['diameter']  = sp.concatenate((net1.throat_properties['diameter'],net2.throat_properties['diameter']),axis=0)
+        net1.throat_properties['length']    = sp.concatenate((net1.throat_properties['length'],net2.throat_properties['length']),axis=0)
+        net1.throat_properties['seed']      = sp.concatenate((net1.throat_properties['seed'],net2.throat_properties['seed']),axis=0)
+        net2.throat_properties['type']      = sp.repeat(edge,len(net2.throat_properties['type']))
+        net1.throat_properties['type']      = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
+        
+        pts = net1.pore_properties['coords']
+        tri = sptl.Delaunay(pts)
+        adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
+        dist_comb = list(itr.combinations_with_replacement(range(4),2))
+        
+        for i in range(len(pts)):
+            for j in range(len(dist_comb)):
+                point_1 = tri.simplices[i,dist_comb[j][0]]
+                point_2 = tri.simplices[i,dist_comb[j][1]]
+                coords_1 = tri.points[point_1]
+                coords_2 = tri.points[point_2]
+                adj_mat[point_1,point_2] = self._net.fastest_calc_dist(coords_1,coords_2)
+
+        print adj_mat
+        #plt.triplot(pts[:,0], pts[:,1], tri.simplices.copy())
+        #plt.plot(pts[:,0], pts[:,1], 'o')
+        #plt.show()
 
 
 if __name__ == '__main__':
