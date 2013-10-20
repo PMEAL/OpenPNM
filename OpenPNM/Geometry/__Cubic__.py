@@ -137,7 +137,7 @@ class Cubic(GenericGeometry):
         J = ind[:][1].tolist()
         V = adj_mat[I,J]
         masked = np.where((adj_mat < (V.min() + .001)) & (adj_mat > 0))
-        connections = np.zeros((len(masked[0]),2))
+        connections = np.zeros((len(masked[0]),2),np.int)
         
         #fig = plt.figure()
         #ax = fig.add_subplot(111, projection='3d',)
@@ -154,8 +154,8 @@ class Cubic(GenericGeometry):
         #plt.show()
         
         self._net.throat_properties['connections'] =  connections
-        self._net.pore_properties['numbering'] = np.arange(0,len(connections[:,0]))
-        self._net.pore_properties['type']= np.zeros((len(connections[:,0])),dtype=np.int8)
+        self._net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
+        self._net.throat_properties['type']= np.zeros(len(connections[:,0]),np.int)
 
         '''
         Nx = self._Nx
