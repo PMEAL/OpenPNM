@@ -16,11 +16,8 @@ def Washburn(net,fluid1,fluid2):
     network : OpenPNM Network Object
         The network on which to apply the calculation
 
-    wp : OpenPNM Fluid Object
-        Fluid dictionary for the wetting phase
-
-    nwp : OpenPNM Fluid Object
-        Fluid dictionary for the non-wetting phase
+    fluid1, fluid2 : OpenPNM Fluid Object
+        Fluid dictionaries for the invading and defending fluids, respectively
 
     Notes
     -----

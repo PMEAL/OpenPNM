@@ -40,25 +40,29 @@ pn = OpenPNM.Geometry.Cubic(loglevel=10).generate(**params)
 
 #Define the Fluids and set their properties
 air = {'name': 'air'}
-air.update(OpenPNM.Fluids.Diffusivity.set_as(2.09e-5))
-air.update(OpenPNM.Fluids.Viscosity.set_as(1.73e-5))
-air.update(OpenPNM.Fluids.MolarDensity.set_as(40.90))
+OpenPNM.Fluids.Diffusivity.set_as(air,2.09e-5)
+OpenPNM.Fluids.Viscosity.set_as(air,1.73e-5)
+OpenPNM.Fluids.MolarDensity.set_as(air,40.90)
 water = {'name': 'water'}
-water.update(OpenPNM.Fluids.Diffusivity.set_as(1.0e-20))
-water.update(OpenPNM.Fluids.Viscosity.set_as(1.0e-3))
-water.update(OpenPNM.Fluids.MolarDensity.set_as(5.56e4))
-water.update(OpenPNM.Fluids.SurfaceTension.set_as(0.072,air))
-water.update(OpenPNM.Fluids.ContactAngle.set_as(110,air))
+water['Tc'] = 500
+water['Pc'] = 1e10
+OpenPNM.Fluids.Diffusivity.set_as(water,1.0e-20)
+OpenPNM.Fluids.Viscosity.set_as(water,1.0e-3)
+OpenPNM.Fluids.MolarDensity.set_as(water,5.56e4)
+OpenPNM.Fluids.SurfaceTension.set_as(water,air,0.072)
+solid = {'name': 'solid'}
+OpenPNM.Fluids.SurfaceTension.set_as(solid,air,0.01)
+OpenPNM.Fluids.SurfaceTension.set_as(solid,water,0.02)
 
 #Apply Pore Scale Physics
 OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
 
-#Perform algorithms
-OpenPNM.Physics.CapillaryPressure.Washburn(pn,water,air)
+#Perform Algorithms
+#OpenPNM.Physics.CapillaryPressure.Washburn(pn,water,air)
 #inlets = sp.r_[0:pn.get_num_pores()]
-mask = pn.pore_properties['type']==2
-inlets = pn.pore_properties['numbering'][mask]
-OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10).run(net=pn, npts=50, inv_sites=inlets)
+#mask = pn.pore_properties['type']==2
+#inlets = pn.pore_properties['numbering'][mask]
+#OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10).run(net=pn, npts=50, inv_sites=inlets)
 
 #OpenPNM.Algorithms.InvasionPercolation(loglevel=10).run(pn,inlets=[0],outlets=[1],end_condition='breakthrough',timing='ON',report=20)
 
@@ -66,7 +70,7 @@ OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10).run(net=pn, npts=50, inv_sit
 #import os
 #fname = os.path.abspath(os.path.dirname(__file__))+'\LocalFiles\\test.vtk'
 #OpenPNM.Visualization.VTK(loglevel=50).write(pn,fname)
-OpenPNM.Visualization.Plots.Capillary_Pressure_Curve(pn)
+#OpenPNM.Visualization.Plots.Capillary_Pressure_Curve(pn)
 
 print clock()-start,"seconds."
 

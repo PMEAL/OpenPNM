@@ -4,8 +4,9 @@ module Viscosity
 ===============================================================================
 
 """
+import OpenPNM
+import scipy as sp
 
-import scipy as _sp
-
-def set_as(visc=0.001):
-    return {'viscosity':visc}
+def set_as(fluid=None,visc=0.001):
+    visc = sp.array(visc)
+    fluid.update({'viscosity':visc})
