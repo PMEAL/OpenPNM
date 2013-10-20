@@ -5,7 +5,7 @@ module __Cubic__: Generate simple cubic networks
 .. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
-
+#Test
 import OpenPNM
 import scipy as sp
 import numpy as np
