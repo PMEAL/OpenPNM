@@ -114,12 +114,7 @@ class Cubic(GenericGeometry):
         self._logger.info("generate_throats: Define connections between pores")
         
         pts = self._net.pore_properties['coords']
-        #pts = pts[:,0:2]
         tri = sptl.Delaunay(pts)
-
-        #plt.triplot(pts[:,0], pts[:,1], tri.simplices.copy())
-        #plt.plot(pts[:,0], pts[:,1], 'o')
-        #plt.show()
 
         adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
         dist_comb = list(itr.combinations_with_replacement(range(4),2))
@@ -138,48 +133,15 @@ class Cubic(GenericGeometry):
         V = adj_mat[I,J]
         masked = np.where((adj_mat < (V.min() + .001)) & (adj_mat > 0))
         connections = np.zeros((len(masked[0]),2),np.int)
-        
-        #fig = plt.figure()
-        #ax = fig.add_subplot(111, projection='3d',)
+
         for i in range(len(masked[0])):
-            #temp= zip(tri.points[connections[i,0]],tri.points[connections[i,1]])
-            #ax.plot([temp[0][0],temp[0][1]],[temp[1][0],temp[1][1]],[temp[2][0],temp[2][1]])
             connections[i,0] = masked[0][i]
             connections[i,1] = masked[1][i]
-        
-        
-        #c = np.abs(pts[:,0])
-        #cmhot = plt.get_cmap("hot")
-        #ax.scatter(pts[:,0], pts[:,1], pts[:,2], s=50, c = c, cmap = cmhot)        
-        #plt.show()
         
         self._net.throat_properties['connections'] =  connections
         self._net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         self._net.throat_properties['type']= np.zeros(len(connections[:,0]),np.int)
 
-        '''
-        Nx = self._Nx
-        Ny = self._Ny
-        Nz = self._Nz
-        Np = Nx*Ny*Nz
-        ind = np.arange(0,Np)
-
-        #Generate throats based on pattern of the adjacency matrix
-        tpore1_1 = ind[(ind%Nx)<(Nx-1)]
-        tpore2_1 = tpore1_1 + 1
-        tpore1_2 = ind[(ind%(Nx*Ny))<(Nx*(Ny-1))]
-        tpore2_2 = tpore1_2 + Nx
-        tpore1_3 = ind[(ind%Np)<(Nx*Ny*(Nz-1))]
-        tpore2_3 = tpore1_3 + Nx*Ny
-        tpore1 = np.hstack((tpore1_1,tpore1_2,tpore1_3))
-        tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
-        connections = np.vstack((tpore1,tpore2)).T
-        connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
-        self._net.throat_properties['connections'] = connections
-        self._net.throat_properties['type'] = np.zeros(np.shape(tpore1),dtype=np.int8)
-        self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
-        self._logger.debug("generate_throats: End of method")
-        '''
     def _generate_boundaries(self,net,**params):
         self._logger.info("generate_boundaries: Define edge points of the pore network and stitch them on")
         self._generate_setup(**params)
@@ -239,17 +201,12 @@ class Cubic(GenericGeometry):
     def stitch_throats(self,net):
         
         pts = net.pore_properties['coords']
-        #pts = pts[:,0:2]
         tri = sptl.Delaunay(pts)
-
-        #plt.triplot(pts[:,0], pts[:,1], tri.simplices.copy())
-        #plt.plot(pts[:,0], pts[:,1], 'o')
-        #plt.show()
 
         adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
         dist_comb = list(itr.combinations_with_replacement(range(4),2))
         
-        for i in range(len(pts)):
+        for i in range(len(tri.simplices)):
             for j in range(len(dist_comb)):
                 point_1 = tri.simplices[i,dist_comb[j][0]]
                 point_2 = tri.simplices[i,dist_comb[j][1]]
