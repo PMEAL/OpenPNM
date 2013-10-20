@@ -1,14 +1,9 @@
-.. FCSTpython documentation master file, created by
+.. OpenPNM documentation master file, created by
    sphinx-quickstart on Thu Nov 29 11:31:33 2012.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
    
-**************************************
-OpenPNM: Pore Network Models in Python
-**************************************
-
-
-
+*******************************************************************************
+OpenPNM: Pore Network Modeling in Python
+*******************************************************************************
 
 *OpenPNM* is an open source pore network modeling package initiated by researchers at McGill University and the University of Toronto and sponsored by the Automotive Fuel Cell Cooperation.  The aim of this package is to provide the scientific and engineering community with a ready-made framework for performing pore network simulations.  Pore network models have been used for decades among porous media researchers as a way to efficiently and accurately model multiphase transport and capillary phenomena.  Until now all researchers in this field must build their code from scratch since there is no mainstream commercial offering, as there is for CFD based modeling (ie. COMSOL and FLUENT).  OpenPNM aims to remedy this situation by providing a fast, efficient framework for working with pore network models of arbitrary size and dimensionality.
 
@@ -31,34 +26,6 @@ Links
       * - GIT project site
         - https://github.com/PMEAL/OpenPNM
 
-	
-Applications
-============
-
-OpenPNM is being developped for applications in the following fields
-
-- Two phase flow in porous media
-- Diffusion problems in porous media
-
-Features
-========
-
-- Flexible pore network generation based on
-  - propability distributions
-  - image processing
-  - cubic meshes
-  - fuel cell specific geometries
-- Efficient topological storage
-- Pore network algorithms
-  - Percolation
-  - Access limited percolation
-  - Diffusion
-
-Support
-=======
-
-Work on OpenPNM has been supported by the following projects:
-
 .. _documentation:
 
 Documentation
@@ -75,11 +42,6 @@ Contents:
    docOpenPNM.rst
 
 .. todolist::
-
-
-
-
-
 
 
 Indices and tables
