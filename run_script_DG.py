@@ -13,7 +13,7 @@ import scipy.ndimage as spim
 # Parameters unique to all matricies.
 Nx = 3
 Ny = 3
-Nz = 1
+Nz = 3
 
 network_main = {
 'psd_info'   : {'name'  : 'weibull_min', #Each statistical package takes different params, so send as dict
@@ -31,8 +31,14 @@ network_main = {
 
 # Parameters specific to individual matricies.
 
-#Generate the main pore network.
+#Generate the main pore networks.
+pn1 = OpenPNM.Geometry.Cubic().generate(**network_main)
 pn2 = OpenPNM.Geometry.Cubic().generate(**network_main)
-#OpenPNM.Geometry.Cubic()._generate_boundaries(pn2,**network_main)
-# Call add boundaries(**params). Add boundares keeps calls generate and creates new networks based on the Nx, Ny, Nz.
-    #Add boundaries then calls stitch after generating. Stitch is put into cubic.stitch(). 
+
+#Translate one of the networks.
+
+#Stitch the networks
+OpenPNM.Geometry.Cubic().stitch_network(pn1,pn2)
+
+#Add boundaries to the networks
+OpenPNM.Geometry.Cubic()._generate_boundaries(pn1,**network_main)
