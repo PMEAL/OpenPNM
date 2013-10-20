@@ -6,18 +6,11 @@ Created on Thu Sep 26 15:35:56 2013
 """
 
 import OpenPNM
-import scipy as sp
-from time import clock
-import scipy.ndimage as spim
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import numpy as np
-
 
 # Parameters unique to all matricies.
-Nx = 3
-Ny = 3
-Nz = 3
+Nx = 5
+Ny = 5
+Nz = 5
 
 network_main = {
 'psd_info'   : {'name'  : 'weibull_min', #Each statistical package takes different params, so send as dict
@@ -40,7 +33,7 @@ pn1 = OpenPNM.Geometry.Cubic().generate(**network_main)
 #pn2 = OpenPNM.Geometry.Cubic().generate(**network_main)
 
 #Add boundaries to the networks
-OpenPNM.Geometry.Cubic()._generate_boundaries(pn1,**network_main)
+#OpenPNM.Geometry.Cubic()._generate_boundaries(pn1,**network_main)
 
 #Stitch the networks
 #OpenPNM.Geometry.Cubic().stitch_network(pn1,pn2,stitch_side = 'top') # can be stitched to top, bottom, left right etc.

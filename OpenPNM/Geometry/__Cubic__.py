@@ -100,10 +100,16 @@ class Cubic(GenericGeometry):
         Lc = self._Lc
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
-        a = np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T
         self._net.pore_properties['coords'] = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self._net.pore_properties['numbering'] = ind
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
+        for i in range(3):
+            bound_1 = self._net.pore_properties['coords'][:,i].min()
+            bound_2 = self._net.pore_properties['coords'][:,i].max()
+            bound_ind_1 = np.where(self._net.pore_properties['coords'][:,0] == bound_1)
+            bound_ind_2 = np.where(self._net.pore_properties['coords'][:,0] == bound_2)
+            self._net.pore_properties['type'][bound_ind_1] = 1
+            self._net.pore_properties['type'][bound_ind_2] = 1
 
         self._logger.debug("generate_pores: End of method")
 
@@ -133,6 +139,13 @@ class Cubic(GenericGeometry):
         self._net.throat_properties['connections'] = connections
         self._net.throat_properties['type'] = np.zeros(np.shape(tpore1),dtype=np.int8)
         self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
+        
+        for i in range(0,np.shape(tpore1)[0]):
+            temp1 = self._net.pore_properties['type'][connections[i,0]]
+            temp2 = self._net.pore_properties['type'][connections[i,1]]
+            if temp1 > 0 and temp2 > 0:
+                self._net.throat_properties['type'][i] = 1
+        
         self._logger.debug("generate_throats: End of method")
         
     def _generate_boundaries(self,net,**params):
@@ -154,7 +167,7 @@ class Cubic(GenericGeometry):
             else:
                 displacement[i%3] = -1*(net.pore_properties['coords'][:,i%3].min() + 0.5*Lc)
             self.translate_coordinates(edge_net,displacement)
-            self.stitch_network(net,edge_net,edge = i+1,stitch_nets = 0)
+            self.stitch_network(net,edge_net,edge = 1,stitch_nets = 0)
             
         self.stitch_throats(net)
         
