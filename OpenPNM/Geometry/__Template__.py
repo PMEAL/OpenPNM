@@ -49,7 +49,11 @@ class Template(GenericGeometry):
         
         """
         self._template = params['template']
-        self._Lc = params['lattice_spacing']
+        if params['lattice_spacing']:
+            self._Lc = params['lattice_spacing']
+        else:
+            self._logger.error("lattice_spacing not specified")
+            raise Exception('lattice_spacing not specified')
         if np.ndim(self._template)==3:
             [self._Nx, self._Ny, self._Nz] = np.shape(self._template)
         else:
@@ -75,7 +79,10 @@ class Template(GenericGeometry):
         temp[img_ind] = np.r_[0:np.size(img_ind)]
         self._voxel_to_pore_map = temp
         
-        self._net.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(template)))
+        if self._Nz == 1:
+            self._net.pore_properties['coords'] = sp.hstack((Lc*(0.5 + np.transpose(np.nonzero(template))),np.zeros((Np,1))))
+        else:
+            self._net.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(template)))
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
         self._net.pore_properties['numbering'] = np.arange(0,Np,dtype=np.int32)
         
