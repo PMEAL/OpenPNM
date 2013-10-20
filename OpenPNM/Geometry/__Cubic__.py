@@ -10,6 +10,8 @@ import OpenPNM
 import scipy as sp
 import numpy as np
 import scipy.stats as spst
+import scipy.spatial as sptl
+import itertools as itr
 
 from __GenericGeometry__ import GenericGeometry
 
@@ -266,7 +268,8 @@ class Cubic(GenericGeometry):
             self.translate_coordinates(edge_net,displacement)
             self.stitch(net,edge_net,edge = i+1)
             
-
+        self.stitch_throats(net)
+        
         return net    
         self._logger.debug("generate_boundaries: End of method")
 
@@ -301,6 +304,7 @@ class Cubic(GenericGeometry):
         net2.throat_properties['type']      = sp.repeat(edge,len(net2.throat_properties['type']))
         net1.throat_properties['type']      = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
         
+    def stitch_throats(self,net1):
         pts = net1.pore_properties['coords']
         tri = sptl.Delaunay(pts)
         adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
@@ -314,11 +318,10 @@ class Cubic(GenericGeometry):
                 coords_2 = tri.points[point_2]
                 adj_mat[point_1,point_2] = self._net.fastest_calc_dist(coords_1,coords_2)
 
-        print adj_mat
         #plt.triplot(pts[:,0], pts[:,1], tri.simplices.copy())
         #plt.plot(pts[:,0], pts[:,1], 'o')
         #plt.show()
-
+        #net.throat_properties['connections'] = 
 
 if __name__ == '__main__':
     test=Cubic(loggername='TestCubic')
