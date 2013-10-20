@@ -17,23 +17,23 @@ import itertools
 class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
     r"""
     GenericAlgorithm - Base class to execute algorithms
-    
+
     Parameters
     ----------
     net : Descendent of OpenPNM.Network.GenericNetwork
         A valid network for this algorithm
-    
-    
-    
+
+
+
     Examples
     --------
     >>> print 'nothing yet'
-    
-    .. note:: 
+
+    .. note::
     n/a
 
     """
-    
+
     def __init__(self,**kwords):
         r"""
         Initialize
@@ -42,12 +42,13 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         self.indent = ""
         self._logger.debug("Construct class")
 
-        
+
     def run(self,net,**params):
         r"""
         Main run command for the algorithm
         """
-        self._net = net        
+        print params.keys()
+        self._net = net
         self._setup(**params)
         self._logger.info(self.indent+"Execute run(): Basic version")
         indent=self.indent
@@ -55,7 +56,7 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         self._do_outer_iteration_stage()
         self.indent=indent
         print self.indent, "-"*39
-        
+
     def _setup(self, **params):
         r"""
         Perform applicable preliminary checks and calculations required for algorithm
@@ -65,10 +66,10 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         This method is not implemented in the GenericAlgorithm, and must be subclassed in each algorithm as necessary
         """
         self._logger.error("_setup: not implemented")
-    
+
     def _do_one_outer_iteration(self):
         r"""
-        One iteration of an outer iteration loop for an algorithm 
+        One iteration of an outer iteration loop for an algorithm
         (e.g. time or parametric study)
         """
         self._logger.info(self.indent+"One Outer Iteration: Basic version")
@@ -77,7 +78,7 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         self._do_inner_iteration_stage()
         self.indent=indent
         print self.indent, "-"*39
-        
+
     def _do_outer_iteration_stage(self):
         r"""
         Executes the outer iteration stage
@@ -93,7 +94,7 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         Executes one inner iteration
         """
         self._logger.warning(self.indent+"One Inner Iteration: Implement me")
-    
+
     def _do_inner_iteration_stage(self):
         r"""
         Executes the inner iteration stage
@@ -104,7 +105,7 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         self._do_one_inner_iteration()
         self.indent=indent
         print self.indent, "-"*39
-        
+
 
 if __name__ =="__main__":
     test = GenericAlgorithm(loggername="TestGenericAlg")

@@ -5,7 +5,21 @@ module CapillaryPressure
 
 """
 
-import scipy as _sp
+import scipy as sp
+
+def set_contact_angle(fluid1,theta):
+    theta = sp.array(theta,ndmin=1)
+    fluid1.update({'contact_angle':theta})
+
+def set_Pc_entry(fluid,Pc_entry):
+    Pc_entry = sp.array(Pc_entry,ndmin=1)
+    fluid.update({'Pc_entry':Pc_entry})
+
+def Young(fluid1,fluid2,solid):
+    r"""
+    Calculates the contact angle from Young's equation given the surface tensions between all phases.
+    """
+    print 'nothing yet'
 
 def Washburn(net,fluid1,fluid2):
     r"""
@@ -30,10 +44,11 @@ def Washburn(net,fluid1,fluid2):
 
     """
     sigma = fluid1['surface_tension'][fluid2['name']]
-    theta = fluid1['contact_angle'][fluid2['name']]
-    vals = -4*sigma*_sp.cos(_sp.radians(theta))/net.throat_properties['diameter']
-    net.throat_conditions['Pc_entry'] = vals
-    return {'network': net}
+    sigma = net.interpolate_throat_values(sigma)
+    theta = fluid1['contact_angle']
+    theta = net.interpolate_throat_values(theta)
+    vals = -4*sigma*sp.cos(sp.radians(theta))/net.throat_properties['diameter']
+    fluid1.update({'Pc_entry':vals})
 
 def Purcell(net,sigma,theta,r_toroid):
     r"""
@@ -70,28 +85,7 @@ def Purcell(net,sigma,theta,r_toroid):
     """
     r = net.throat_properties['diameter']/2
     R = r_toroid
-    alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
-    vals = (-2*sigma/r)*(_sp.cos(_sp.radians(theta - alpha))/(1 + R/r*(1-_sp.cos(_sp.radians(alpha)))))
+    alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
+    vals = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
     net.throat_conditions['Pc_entry'] = vals
 
-def Morrow(net,sigma,theta):
-    r"""
-    Computes the throat capillary pressure using simplified version of the Purcell toroid
-
-    Parameters
-    ----------
-    network : OpenPNM Network Object
-        The network on which to apply the calculation
-
-    sigma : float, array_like
-        Surface tension of the invading/defending fluid pair.  Units must be consistent with the throat size values, but SI is encouraged.
-
-    theta : float, array_like
-        Contact angle formed by a droplet of the invading fluid and solid surface, measured through the defending fluid phase.  Angle must be given in degrees.
-
-    Notes
-    -----
-    Mason and Morrow compared the Purcell toroid to experimental data on various sized monodisperse PTFE beads.  They found that data could be approximated decently by simply scaling the contact angle measured through the wetting phase by 2/3.
-    """
-    vals = -4*sigma*_sp.cos(_sp.radians(2/3*(180-theta)))/net.throat_properties['diameter']
-    net.throat_conditions['Pc_entry'] = vals

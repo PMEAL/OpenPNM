@@ -48,17 +48,17 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
 
-    def _setup(self, npts=25, inv_sites=[0]):
+    def _setup(self, invading_fluid, defending_fluid, npts=25, inv_sites=[0]):
         self._npts = npts
         self._inv_sites = inv_sites
-        #Create a pore and throat list to store inv_val at which each is invaded
+        self._nwp = invading_fluid
+        self._wp = defending_fluid
+        #Create a pore and throat conditions list to store inv_val at which each is invaded
         self._net.pore_conditions['Pc_invaded'] = np.zeros(self._net.get_num_pores(),np.float)
         self._net.throat_conditions['Pc_invaded'] = np.zeros(self._net.get_num_throats(),np.float)
-        #Create a throat list to temporarily store the invasion state of throats
-        self._net.throat_properties['invaded'] = np.zeros(self._net.get_num_throats())
         #Determine the invasion pressures to apply
-        min_p = np.min(self._net.throat_conditions['Pc_entry'])
-        max_p = np.max(self._net.throat_conditions['Pc_entry'])
+        min_p = np.min(self._nwp['Pc_entry'])
+        max_p = np.max(self._nwp['Pc_entry'])
         self._inv_points = np.logspace(np.log10(min_p),np.log10(max_p),self._npts)
 
     def _do_outer_iteration_stage(self):
@@ -71,10 +71,9 @@ class OrdinaryPercolation(GenericAlgorithm):
             self._net.pore_conditions['Pc_invaded'][(self._net.pore_conditions['Pc_invaded']==0)*(pmask)] = inv_val
             #Determine Pc_invaded for throats as well
             temp = self._net.throat_properties['connections']
-            tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._net.throat_conditions['Pc_entry']<inv_val)
+            tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._nwp['Pc_entry']<inv_val)
             self._net.throat_conditions['Pc_invaded'][(self._net.throat_conditions['Pc_invaded']==0)*(tmask)] = inv_val
         #Remove temporary arrays and adjacency matrices
-        del self._net.throat_conditions['invaded']
         del self._net.adjacency_matrix['csr']['invaded']
 
     def _do_one_inner_iteration(self,inv_val):
@@ -86,16 +85,15 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         #Generate a tlist containing boolean values for throat state
-        self._net.throat_conditions['invaded'] = self._net.throat_conditions['Pc_entry']<inv_val
-        sum(self._net.throat_conditions['invaded'])
+        Tinvaded = self._nwp['Pc_entry']<inv_val
         #Fill adjacency matrix with invasion state info
-        I = {'invaded': self._net.throat_conditions['Pc_entry']<inv_val}
+        I = {'invaded': Tinvaded}
         self._net.create_adjacency_matrix(I,sprsfmt='csr',dropzeros=True)
         clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['invaded'])[1]
         #Find all pores with at least 1 invaded throat
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
         temp = self._net.get_connected_pores(np.r_[0:self._net.get_num_throats()])
-        temp = temp[self._net.throat_conditions['invaded']]
+        temp = temp[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
         Pinvaded[temp] = True
         #Add injection sites to Pinvaded for ALOP

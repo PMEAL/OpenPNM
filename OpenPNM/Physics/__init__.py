@@ -19,11 +19,6 @@ Submodules
 
  None                            --- No subpackages at the moment
 
-.. automodule:: Physics.GenericPhysics
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 .. automodule:: Physics.CapillaryPressure
    :members:
    :undoc-members:
@@ -39,6 +34,11 @@ Submodules
    :undoc-members:
    :show-inheritance:
 
+.. automodule:: Physics.ElectronConductions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 .. automodule:: Physics.HeatConduction
    :members:
    :undoc-members:
@@ -50,7 +50,7 @@ Submodules
    :show-inheritance:
 
 """
-
+import ElectronConduction
 import CapillaryPressure
 import MassTransport
 import HeatConduction
