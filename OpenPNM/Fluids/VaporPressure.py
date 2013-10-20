@@ -4,16 +4,16 @@ module VaporPressure
 ===============================================================================
 
 """
+import OpenPNM
+import scipy as sp
 
-import scipy as _sp
+def set_as(fluid=None,Pv=3000):
+    Pv = sp.array(Pv)
+    fluid.update({'vapor_pressure': Pv})
 
-def set_as(Pv=3000):
-    return {'vapor_pressure': Pv}
-
-def Antoine(A,B,C,T=298,P=101326):
+def Antoine(fluid=None,T=298,A=8.07131,B=1730.63,C=233.426):
     r"""
-    Takes Antoine coefficients and returns the vapor pressure as a K-value (Pv/P)
+    Takes Antoine coefficients and returns the vapor pressure
     """
     Pv = 10**(A-B/(C+T))
-    K = Pv/P
-    return {'vapor_pressure': K}
+    OpenPNM.Fluids.VaporPresure(fluid,Pv)

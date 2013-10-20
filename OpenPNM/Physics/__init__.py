@@ -11,7 +11,7 @@ This submodule contains all pore scale physics models applied to a pore network.
 
 .. note::
     none
- 
+
 
 Submodules
 ----------
@@ -28,12 +28,12 @@ Submodules
    :members:
    :undoc-members:
    :show-inheritance:
-       
+
 .. automodule:: Physics.FluidFlow
    :members:
    :undoc-members:
    :show-inheritance:
-   
+
 .. automodule:: Physics.MassTransport
    :members:
    :undoc-members:
@@ -43,17 +43,12 @@ Submodules
    :members:
    :undoc-members:
    :show-inheritance:
-   
+
 .. automodule:: Physics.MultiPhase
    :members:
    :undoc-members:
    :show-inheritance:
-   
-.. automodule:: Physics.ThermoPhysical
-   :members:
-   :undoc-members:
-   :show-inheritance:
-    
+
 """
 
 import CapillaryPressure
@@ -61,4 +56,3 @@ import MassTransport
 import HeatConduction
 import FluidFlow
 import MultiPhase
-import ThermoPhysical

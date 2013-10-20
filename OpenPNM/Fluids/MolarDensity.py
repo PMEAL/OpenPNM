@@ -4,13 +4,14 @@ module MolarDensity
 ===============================================================================
 
 """
+import OpenPNM
+import scipy as sp
 
-import scipy as _sp
+def set_as(fluid=None,c=40.89):
+    c = sp.array(c)
+    fluid.update({'molar_density': c})
 
-def set_as(c=40.89):
-    return {'molar_density': c}
-
-def ideal_gas_law(T,P):
+def ideal_gas_law(fluid,T=298,P=101325):
     c = P/(8.314*T)
-    return {'molar_density': c}
+    OpenPNM.Fluids.MolarDensity.set_as(fluid,c)
 
