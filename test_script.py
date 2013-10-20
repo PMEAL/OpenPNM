@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
+
+r"""
+This script is to be run before any commit to the development branch. 
+
+All testing scripts should be housed at the base of the relevant .py files
+"""
 
 #move to the OpenPNM directory
 os.chdir('OpenPNM')
