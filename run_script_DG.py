@@ -9,6 +9,10 @@ import OpenPNM
 import scipy as sp
 from time import clock
 import scipy.ndimage as spim
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+
 
 # Parameters unique to all matricies.
 Nx = 3
@@ -35,10 +39,10 @@ network_main = {
 pn1 = OpenPNM.Geometry.Cubic().generate(**network_main)
 pn2 = OpenPNM.Geometry.Cubic().generate(**network_main)
 
-#Translate one of the networks.
-
-#Stitch the networks
-OpenPNM.Geometry.Cubic().stitch_network(pn1,pn2)
-
 #Add boundaries to the networks
 OpenPNM.Geometry.Cubic()._generate_boundaries(pn1,**network_main)
+
+#Stitch the networks
+OpenPNM.Geometry.Cubic().stitch_network(pn1,pn2,stitch_side = 'bottom') # can be stitched to top, bottom, left right etc.
+
+OpenPNM.Geometry.GenericGeometry().plot_net(pn1)

@@ -17,6 +17,8 @@ module __GenericGeometry__: Base class to construct pore networks
 import OpenPNM
 import scipy as sp
 import scipy.stats as spst
+import matplotlib.pyplot as plt
+import numpy as np
 
 class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
     r"""
@@ -285,7 +287,19 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         }
         """
         self._logger.error("_generate_boundaries: not implemented")
-                
+     
+    @staticmethod
+    def plot_net(net):
+        x = net.pore_properties['coords'][:,0]
+        y = net.pore_properties['coords'][:,1]
+        z = net.pore_properties['coords'][:,2]
+        c = np.abs(x)
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        cmhot = plt.get_cmap("hot")
+        cax = ax.scatter(x, y, z, s=50, c = c, cmap = cmhot)
+        plt.show()         
 
 if __name__ == '__main__':
     test=GenericGeometry(loggername="TestGenerator")
