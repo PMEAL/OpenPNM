@@ -124,7 +124,7 @@ class Cubic(GenericGeometry):
         adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
         dist_comb = list(itr.combinations_with_replacement(range(4),2))
         
-        for i in range(len(pts)):
+        for i in range(len(tri.simplices)):
             for j in range(len(dist_comb)):
                 point_1 = tri.simplices[i,dist_comb[j][0]]
                 point_2 = tri.simplices[i,dist_comb[j][1]]
