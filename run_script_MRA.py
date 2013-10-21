@@ -33,41 +33,54 @@ params = {
 }
 start=clock()
 pn = OpenPNM.Geometry.Cubic().generate(**params)
-inlets = sp.nonzero(pn.pore_properties['type']==1)[0]
-pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure().Washburn(pn,0.072,110)  #This should be set somewhere else
-OP = OpenPNM.Algorithms.OrdinaryPercolation(pn, npts=50, inv_sites=inlets)
-OP.run()
-pn.update()
-setattr(pn,"Total_Conc",C)
-setattr(pn,"Diff_Coefficient",D)
-setattr(pn,"divisions",params['divisions'])
-#setattr(pn,"lattice_spacing",lattice_spacing)
+#inlets = sp.nonzero(pn.pore_properties['type']==1)[0]
+#pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure().Washburn(pn,0.072,110)  #This should be set somewhere else
+#OP = OpenPNM.Algorithms.OrdinaryPercolation(pn, npts=50, inv_sites=inlets)
+#OP.run()
 
+BCtypes = sp.zeros(pn.get_num_pores())
+BCvalues = sp.zeros(pn.get_num_pores())
+BCtypes[pn.pore_properties['type']==1]=1
+BCtypes[pn.pore_properties['type']==6]=1
+BCvalues[pn.pore_properties['type']==1]=0.5
+BCvalues[pn.pore_properties['type']==6]=0.2
 
-"FOR IP"
-#IP = OpenPNM.Algorithms.InvasionPercolationAlgorithmTiming(net=pn,loglevel=20,end_condition='breakthrough')
-#IP.run()
-#pn.set_pore_property('INVADED PORES',np.multiply(np.ones(pn.get_num_pores()),pn.pore_properties['IP_Pseq']<max(pn.pore_properties['IP_Pseq']/2)))
-#MT = OpenPNM.Algorithms.FickianDiffusion(pn,Alg='IP',Psequence=[max(pn.pore_properties['IP_Pseq'])/2])
+Alg1=OpenPNM.Algorithms.FickianDiffusion()
+Alg1.set_boundary_conditions(types=BCtypes,values=BCvalues)
+Alg1.run()
 
-"FOR OP"
-pn.pore_properties['Pc_invaded'] = sp.random.rand(pn.get_num_pores())
-P = 0
-#pn.pore_properties['INVADED PORES'] = sp.multiply(sp.ones(pn.get_num_pores()),pn.pore_properties['Pc_invaded']<P)
-MT = OpenPNM.Algorithms.FickianDiffusion(pn)
-
-"FOR None"
-#list1=range(401,492)
-#list2=range(501,592)
-#list3=range(601,692)
-#LIST=list1+list2+list3
-#Pores =np.array(LIST)
-#pn.set_pore_property('INVADED PORES',np.multiply(np.ones(pn.get_num_pores()),np.in1d(np.array(range(pn.get_num_pores())),Pores)))
-#MT = OpenPNM.Algorithms.FickianDiffusion(pn,Alg='None',Pinvaded=Pores)
-
-
-
-MT.run()
-#Write network to vtk file for visualization in Paraview
+#pn.update()
+#setattr(pn,"Total_Conc",C)
+#setattr(pn,"Diff_Coefficient",D)
+#setattr(pn,"divisions",params['divisions'])
+##setattr(pn,"lattice_spacing",lattice_spacing)
+#
+#
+#"FOR IP"
+##IP = OpenPNM.Algorithms.InvasionPercolationAlgorithmTiming(net=pn,loglevel=20,end_condition='breakthrough')
+##IP.run()
+##pn.set_pore_property('INVADED PORES',np.multiply(np.ones(pn.get_num_pores()),pn.pore_properties['IP_Pseq']<max(pn.pore_properties['IP_Pseq']/2)))
+##MT = OpenPNM.Algorithms.FickianDiffusion(pn,Alg='IP',Psequence=[max(pn.pore_properties['IP_Pseq'])/2])
+#
+#"FOR OP"
+#pn.pore_properties['Pc_invaded'] = sp.random.rand(pn.get_num_pores())
+#P = 0
+##pn.pore_properties['INVADED PORES'] = sp.multiply(sp.ones(pn.get_num_pores()),pn.pore_properties['Pc_invaded']<P)
+#MT = OpenPNM.Algorithms.FickianDiffusion(pn)
+#
+#"FOR None"
+##list1=range(401,492)
+##list2=range(501,592)
+##list3=range(601,692)
+##LIST=list1+list2+list3
+##Pores =np.array(LIST)
+##pn.set_pore_property('INVADED PORES',np.multiply(np.ones(pn.get_num_pores()),np.in1d(np.array(range(pn.get_num_pores())),Pores)))
+##MT = OpenPNM.Algorithms.FickianDiffusion(pn,Alg='None',Pinvaded=Pores)
+#BCtypes = sp.zeros(self._net.get_num_pores())
+#BCvalues = sp.zeros(self._net.get_num_pores())
+#
+#
+#MT.run()
+##Write network to vtk file for visualization in Paraview
 
 print clock()-start,"seconds."
