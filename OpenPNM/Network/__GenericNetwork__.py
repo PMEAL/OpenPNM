@@ -72,6 +72,9 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
 
+        #Create dictionary for storing phase information
+        self.phases = {}
+
         self._logger.info("Constructor completed")
 
     def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
