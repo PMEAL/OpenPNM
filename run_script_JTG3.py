@@ -77,12 +77,18 @@ air = OpenPNM.Fluids.GenericFluid().create(params_air)
 water = OpenPNM.Fluids.GenericFluid().create(params_water)
 
 #Assign fluids to network
-pn.phases = {} #This should be part of the GenericNetwork init
 OpenPNM.Fluids.GenericFluid().assign(pn,air)
 OpenPNM.Fluids.GenericFluid().assign(pn,water)
 
-air_props = OpenPNM.Fluids.GenericFluid().update(pn,'air')
-wat_props = OpenPNM.Fluids.GenericFluid().update(pn,'water')
+#Run some algorithms
+#blah, blah, blah
+
+#Update the fluid properties
+pn.pore_conditions['temperature'] = 333
+pn.pore_conditions['pressure'] = 201325
+
+#air_props = OpenPNM.Fluids.GenericFluid().update(pn,'air')
+#wat_props = OpenPNM.Fluids.GenericFluid().update(pn,'water')
 
 
 

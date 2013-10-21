@@ -19,9 +19,14 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
 
     def assign(self,network,params):
         network.phases.update({params['name']: params})
+        return self.update(network,params['name'])
+
+    def remove(self,network,name):
+        del network.phases[name]
 
     def update(self,network,name):
         params = network.phases[name]
+        print params
         self.fluid_dict = {}
         self.fluid_dict.update({'diffusivity': self.diffusivity(network,params['diffusivity'])})
         self.fluid_dict.update({'viscosity': self.viscosity(network,params['viscosity'])})
