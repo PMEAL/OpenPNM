@@ -15,9 +15,9 @@ import OpenPNM
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.linalg as splin
-from __TransportsLinearSolver__ import TransportsLinearSolver
+from __LinearSolver__ import LinearSolver
 
-class FickianDiffusion(TransportsLinearSolver):
+class FickianDiffusion(LinearSolver):
     r"""   
     
     FickianDiffusion - Class to run Fick's law mass transfer diffusion on constructed networks
@@ -66,15 +66,15 @@ class FickianDiffusion(TransportsLinearSolver):
         
     """
     
-    def __init__(self,net,loglevel=10,**kwargs):
+    def __init__(self,loglevel=10,**kwargs):
         r"""
         Initializing the class
         """
-        super(FickianDiffusion,self).__init__(net = net,**kwargs)
+        super(FickianDiffusion,self).__init__(**kwargs)
         self._logger.info("Create Fick's Diffusion Algorithm Object")
-        print 'init'
+
             
-    def _setup_for_TransportSolver(self,                                    
+    def _setup_for_Solver(self,                                    
                                     loglevel=10,
                                     DryNetwork=0,
                                     T=353.15,
