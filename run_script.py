@@ -6,9 +6,8 @@ Created on Fri Mar 08 09:43:02 2013
 """
 
 import OpenPNM
-import scipy as sp
-import matplotlib.pyplot as plt
 from time import clock
+import scipy as sp
 
 import scipy.ndimage as spim
 sphere = sp.ones((51,51,51),dtype=sp.bool8)
@@ -34,19 +33,19 @@ params = {
 }
 
 start=clock()
-pn = OpenPNM.Geometry.Cubic().generate(**params)
+pn = OpenPNM.Geometry.Cubic(loglevel=10).generate(**params)
 #pn = OpenPNM.Geometry.Delaunay().generate(**params)
 #pn = OpenPNM.Geometry.Template().generate(**params)
 
 pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure.Washburn(pn,0.072,110)
 inlets = [0]
 #exp1 = OpenPNM.Algorithms.InvasionPercolation(pn, loglevel=10, npts=100, inlets=inlets, outlets=outlets).run()
-exp2 = OpenPNM.Algorithms.OrdinaryPercolation(pn, npts=50, inv_sites=inlets).run()
-#pn.update()
+exp2 = OpenPNM.Algorithms.OrdinaryPercolation().run(pn, npts=50, inv_sites=inlets)
 
 #Write network to vtk file for visualization in Paraview
 #import os
-#OpenPNM.Visualization.NetToVtp(pn,os.path.abspath(os.path.dirname(__file__))+'\OpenPNM\\IO\\test.vtk')
+#filename = os.path.abspath(os.path.dirname(__file__))+'\LocalFiles\\test.vtk'
+#OpenPNM.Visualization.VTK().write(pn,filename)
 
 #print pn
 print clock(),"seconds."
