@@ -13,25 +13,24 @@ module __ElectronConduction__:
 
 import OpenPNM
 import scipy as sp
-from __TransportsLinearSolver__ import TransportsLinearSolver
+from __LinearSolver__ import LinearSolver
 
-class ElectronConduction(TransportsLinearSolver):
+class ElectronConduction(LinearSolver):
     r"""   
             
     """
     
-    def __init__(self,net,loglevel=10,**kwargs):
+    def __init__(self,loglevel=10,**kwargs):
         r"""
         Initializing the class
         """
-        super(ElectronConduction,self).__init__(net = net,**kwargs)
+        super(ElectronConduction,self).__init__(**kwargs)
         self._logger.info("Create Electrons Conduction Algorithm Object")
         print 'init'
             
-    def _setup_for_TransportSolver(self,                                    
-                                    loglevel=10,
-                                    T=353.15,                                    
-                                    **params):
+    def _setup_for_TransportSolver(self,loglevel=10,
+                                        T=353.15,                                    
+                                        **params):
         r"""
 
         This function executes the essential mathods for building matrices in Linear solution 
