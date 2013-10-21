@@ -13,6 +13,7 @@ def constant(visc=0.001,**params):
 def na(**params):
     return 'n/a'
 
-def Reynolds(T=25,uo=1,b=1,**params):
+def Reynolds(network,uo=1,b=1,**params):
+    T = network.pore_conditions['temperature']
     visc = uo*sp.exp(-1*b*T)
     return visc

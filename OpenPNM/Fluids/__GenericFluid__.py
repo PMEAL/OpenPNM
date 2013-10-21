@@ -16,11 +16,12 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
     def assign(self,network,params):
         network.phases.update({params['name']: params})
 
-    def create(self,network,**params):
+    def update(self,network,name):
+        params = network.phases[name]
         self.fluid_dict = {}
         self.fluid_dict.update({'diffusivity': self.diffusivity(network,params['diffusivity'])})
-        self.fluid_dict.update({'viscosity': self.viscosity(params['viscosity'])})
-        self.fluid_dict.update({'molar_density': self.molar_density(params['molar_density'])})
+        self.fluid_dict.update({'viscosity': self.viscosity(network,params['viscosity'])})
+        self.fluid_dict.update({'molar_density': self.molar_density(network,params['molar_density'])})
         return self.fluid_dict
 
     def diffusivity(self,network,params):
@@ -30,18 +31,19 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         del params['network']
         return vals
 
-    def viscosity(self,params):
+    def viscosity(self,network,params):
         eqn = getattr(OpenPNM.Fluids.Viscosity,params['method'])
-        params['T'] = 50
-        params['P'] = 20
-        return eqn(**params)
+        params.update({'network':network})
+        vals = eqn(**params)
+        del params['network']
+        return vals
 
-    def molar_density(self,params):
+    def molar_density(self,network,params):
         eqn = getattr(OpenPNM.Fluids.MolarDensity,params['method'])
-        params['T'] = 50
-        params['P'] = 20
-        params['R'] = 8.314
-        return eqn(**params)
+        params.update({'network':network})
+        vals = eqn(**params)
+        del params['network']
+        return vals
 
 if __name__ =="__main__":
     testfluid_dict ={   'name':  'testfluid',
