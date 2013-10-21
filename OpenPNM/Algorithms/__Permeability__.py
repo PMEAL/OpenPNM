@@ -15,7 +15,7 @@ import OpenPNM
 import scipy as sp
 from __TransportsLinearSolver__ import TransportsLinearSolver
 
-class Permeability(TransportsLinearSolver):
+class Permeability(LinearSolver):
     r"""   
        
     """
@@ -24,11 +24,11 @@ class Permeability(TransportsLinearSolver):
         r"""
         Initializing the class
         """
-        super(Permeability,self).__init__(net = net,**kwargs)
+        super(Permeability,self).__init__(**kwargs)
         self._logger.info("Create Permeability Algorithm Object")
-        print 'init'
+
             
-    def _setup_for_TransportSolver(self,                                    
+    def _setup_for_Solver(self,                                    
                                     loglevel=10,
                                     DryNetwork=0,
                                     T=353.15,
