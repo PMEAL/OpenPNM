@@ -30,20 +30,24 @@ sys.path.append(os.path.abspath('../bin'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo',
-	      'sphinx.ext.coverage', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig',
-	      'sphinx.ext.viewcode',
-#	      'matplotlib.sphinxext.mathmpl',
-	      'matplotlib.sphinxext.only_directives',
-	      'matplotlib.sphinxext.plot_directive',
-#	      'matplotlib.sphinxext.ipython_directive',
-	      'matplotlib.sphinxext.ipython_console_highlighting',
-	      'sphinx.ext.inheritance_diagram',
-	      'sphinx.ext.graphviz',
-	      'numpydoc']
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.doctest',
+              'sphinx.ext.todo',
+              'sphinx.ext.coverage',
+              'sphinx.ext.pngmath',
+              'sphinx.ext.ifconfig',
+              'sphinx.ext.viewcode',
+              'matplotlib.sphinxext.mathmpl',
+              'matplotlib.sphinxext.only_directives',
+              'matplotlib.sphinxext.plot_directive',
+#              'matplotlib.sphinxext.ipython_directive',
+#              'matplotlib.sphinxext.ipython_console_highlighting',
+              'sphinx.ext.inheritance_diagram',
+              'sphinx.ext.graphviz',
+              'numpydoc']
 [extensions]
 todo_include_todos=True
-	      
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -58,7 +62,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'OpenPNM'
-copyright = u'2013, McGill, UofA, AFCC'
+copyright = u'2013, McGill, AFCC'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -108,7 +112,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = "solar-dark"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -116,7 +120,7 @@ html_theme = 'default'
 #html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = ["_themes", ]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -127,7 +131,7 @@ html_theme = 'default'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+#html_logo = 'logosmall.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -326,4 +330,3 @@ latex_preamble = r'''
 
 # If false, no module index is generated.
 latex_use_modindex = True
-

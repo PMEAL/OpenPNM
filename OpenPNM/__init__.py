@@ -27,23 +27,19 @@ Subpackages
 
    * - Name
      - Description
-   * - :mod:`OpenPNM.BAS`
+   * - :mod:`OpenPNM.Utilities`
      - common utilities and classes used by most of the of the modules
-   * - :mod:`OpenPNM.NET`
+   * - :mod:`OpenPNM.Network`
      - Storage and manipulations of network topoologies and data stored on them.
-   * - :mod:`OpenPNM.GEN`
-     - Generators for pore networks. (Random cubic, image based, Voronoi). Should also contain
+   * - :mod:`OpenPNM.Geometry`
+     - Geometry for pore networks. (Random cubic, image based, Voronoi). Should also contain
        a mapper of the pore network back on the segmented image.
-   * - :mod:`OpenPNM.ALG`
+   * - :mod:`OpenPNM.Algorithms`
      - Module containing all algorithmic classes for networks.
-   * - `IO`
-     - Input output routines
-   * - `VISU`
-     - Mayavi-based post-processing modules (`postproc.py`)   
-   * - `interactive/`
-     - setup of IPython-based shell `isfepy`
-   * - `linalg/`
-     - linear algebra functions not covered by NumPy and SciPy
+   * - :mod:`OpenPNM.Physics`
+     - Module containing pore scale physics models and equations.
+   * - :mod:`OpenPNM.Visualization`
+     - Module for performing vtk-based post-processing routines.
 
 
  
@@ -62,29 +58,37 @@ Import
 Inheritance Diagram
 --------------------
 
-
-.. inheritance-diagram:: OpenPNM.NET.GenericNetwork
+.. inheritance-diagram:: OpenPNM.Network.GenericNetwork
 
 Package Documentation
 ---------------------
 
-.. automodule:: BAS  
+.. automodule:: Utilities
    :members:
    :undoc-members:
    :show-inheritance:
-
       
-.. automodule:: NET
+.. automodule:: Network
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: GEN
+.. automodule:: Geometry
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: ALG
+.. automodule:: Algorithms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: Physics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: Visualization
    :members:
    :undoc-members:
    :show-inheritance:
@@ -108,29 +112,18 @@ __extras_require__ = {
     ],
 }
 
-# __all__ = ['BAS']
+# __all__ = ['Base']
 
 
-import scipy as sp
-import numpy as np
-
-
-
-import BAS
-import NET
-import GEN
-import IO
-import ALG
-import IMG
+import Utilities
+import Network
+import Geometry
+import Algorithms
+import Visualization
+import Physics
 import GUI
-import VIS
-#
-# from PNMbase import *
-# from PNMalgorithms import *
-# from PNMgenerators import *
-# from PNMIO import *
-# from PNMparameters import *
-# from PNMtransport import *
+
+
 
 
 

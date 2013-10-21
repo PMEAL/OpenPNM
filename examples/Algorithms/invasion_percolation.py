@@ -14,7 +14,7 @@ print "="*50
 print "= Example: Create random network and run an invasion\n= percolation algorithm"
 print "-"*50
 print "- * generate a simple cubic network"
-pn = OpenPNM.GEN.SimpleCubicGenerator(divisions = [40,40,20],shape=[0.,4.,0.,4.,0.,2.],loggername='SimpleCubic').generate()
+pn = OpenPNM.Generators.Cubic().generate()
 
 start=clock()
 
@@ -27,11 +27,11 @@ pn.pore_properties['dia'] = sp.rand(pn.get_num_pores(),1)
 pn.throat_properties['dia'] = sp.rand(pn.get_num_throats(),1)
 
 print "- * Run Invasion percolation algorithm"
-IP = OpenPNM.ALG.InvasionPercolationAlgorithm(net=pn,inlets=[inlets],outlets=outlets,loggername="InvPercAlg",loglevel=30)
+IP = OpenPNM.Algorithms.InvasionPercolation(net=pn,inlets=[inlets],outlets=outlets,loggername="InvPercAlg",loglevel=30)
 IP.run()
 
 print "- * Save output to IP.vtp"
-OpenPNM.IO.NetToVtp(net = pn,filename="IP.vtp")
+OpenPNM.Visualization.NetToVtp(net = pn,filename="IP.vtp")
 
 print "="*50
 print "Delta T: ",clock()-start,"seconds."
