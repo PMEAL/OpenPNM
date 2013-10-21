@@ -47,10 +47,9 @@ pn.pore_conditions['pressure'] = 101325
 
 #Define the fluids and set their properties
 params_air = {       'name': 'air',
-                     'type': 'compressible_gas',
-                      'Pc' : 3.771e6, #Pa
-                      'Tc' : 132.65,  #K
-                      'MW' : 0.0291,  #kg/mol
+                       'Pc': 3.771e6, #Pa
+                       'Tc': 132.65,  #K
+                       'MW': 0.0291,  #kg/mol
               'diffusivity': {'method': 'Fuller',
                                   'MA': 31.99,
                                   'MB': 28.01,
@@ -63,10 +62,9 @@ params_air = {       'name': 'air',
                                    'R': 8.413},
 }
 params_water = {     'name': 'water',
-                     'type': 'incompressible_liquid',
-                      'Pc' : 2.206e6, #Pa
-                      'Tc' : 647,     #K
-                      'MW' : 0.0181,  #kg/mol
+                       'Pc': 2.206e6, #Pa
+                       'Tc': 647,     #K
+                       'MW': 0.0181,  #kg/mol
               'diffusivity': {'method': 'constant',
                                  'DAB': 1e-12},
                 'viscosity': {'method': 'constant',
@@ -75,10 +73,13 @@ params_water = {     'name': 'water',
                                    'c': 44445},
 }
 
-OpenPNM.Fluids.GenericFluid().create(pn,**params_air)
-OpenPNM.Fluids.GenericFluid().create(pn,**params_water)
+#Assign fluids to network
+pn.phases = {} #This should be part of the GenericNetwork init
+OpenPNM.Fluids.GenericFluid().assign(pn,params_air)
+OpenPNM.Fluids.GenericFluid().assign(pn,params_water)
 
-
+air_props = OpenPNM.Fluids.GenericFluid().update(pn,'air')
+wat_props = OpenPNM.Fluids.GenericFluid().update(pn,'water1')
 
 
 
