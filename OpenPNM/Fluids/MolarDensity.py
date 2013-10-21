@@ -7,10 +7,10 @@ module MolarDensity
 import OpenPNM
 import scipy as sp
 
-def constant(c=40.89,**params):
+def constant(network,c=40.89,**params):
     return c
 
-def na(**params):
+def na(network,**params):
     return 'n/a'
 
 def ideal_gas(network,R=8.314,**params):

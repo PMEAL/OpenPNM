@@ -28,6 +28,7 @@ class Water(GenericFluid):
                                           'c': 44444},
                         }
         network.phases.update({'water': params})
+        return self.update(network,params['name'])
 
 if __name__ =="__main__":
     testfluid_dict ={   'name':  'testfluid',
