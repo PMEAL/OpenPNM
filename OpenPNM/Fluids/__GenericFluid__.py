@@ -13,22 +13,22 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
 
-    def create(self,**params):
+    def assign(self,network,params):
+        network.phases.update({params['name']: params})
+
+    def create(self,network,**params):
         self.fluid_dict = {}
-        self.fluid_dict['name'] = params['name']
-        self.fluid_dict.update({'diffusivity': self.diffusivity(params['diffusivity'])})
+        self.fluid_dict.update({'diffusivity': self.diffusivity(network,params['diffusivity'])})
         self.fluid_dict.update({'viscosity': self.viscosity(params['viscosity'])})
         self.fluid_dict.update({'molar_density': self.molar_density(params['molar_density'])})
         return self.fluid_dict
 
-    def update(self,**params):
-        self.create(**params)
-
-    def diffusivity(self,params):
+    def diffusivity(self,network,params):
         eqn = getattr(OpenPNM.Fluids.Diffusivity,params['method'])
-        params['T'] = 50
-        params['P'] = 20
-        return eqn(**params)
+        params.update({'network':network})
+        vals = eqn(**params)
+        del params['network']
+        return vals
 
     def viscosity(self,params):
         eqn = getattr(OpenPNM.Fluids.Viscosity,params['method'])
