@@ -8,7 +8,7 @@ module MassTransport
 import OpenPNM
 import scipy as sp
 
-def DiffusiveConductance(network,fluid):
+def DiffusiveConductance(network,fluid_name):
     r"""
     Calculate the diffusive conductance of conduits in network ( 1/2 pore - full throat - 1/2 pore ) based on the area
 
@@ -25,8 +25,8 @@ def DiffusiveConductance(network,fluid):
     This function requires that all the necessary fluid properties have already been determined.
 
     """
-    cp = fluid['molar_density']
-    DABp = fluid['diffusivity']
+    cp = network.pore_conditions['molar_density'+'_'+fluid_name]
+    DABp = network.pore_conditions['diffusivity'+'_'+fluid_name]
     ct = network.interpolate_throat_values(cp)
     DABt = network.interpolate_throat_values(DABp)
 
@@ -41,6 +41,5 @@ def DiffusiveConductance(network,fluid):
     #Find g for full throat
     gt = ct*DABt*network.throat_properties['diameter']**2/(network.throat_properties['length'])
     g = (1/gt + 1/gp1 + 1/gp2)**(-1)
-
-    fluid.update({'diffusive_conductance': g})
+    network.throat_conditions['diffusive_conductance'+'_'+fluid_name] = g
 
