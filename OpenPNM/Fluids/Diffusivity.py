@@ -13,15 +13,12 @@ def constant(DAB,**params):
 def na(**params):
     return 'n/a'
 
-def Fuller(T,P,MA=31.99,MB=28.01,vA=16.6,vB=17.9,**params):
+def Fuller(network,MA=31.99,MB=28.01,vA=16.6,vB=17.9,**params):
     r"""
     Uses the Fuller model estimate diffusion coefficient at conditions of interest
-
-    Parameters
-    ----------
-    T & P :  float, array_like
-        Temperature and pressure of interest
     """
+    T = network.pore_conditions['temperature']
+    P = network.pore_conditions['pressure']
     MAB = 2*(1/MA+1/MB)**(-1)
     DAB = 0.00143*T**1.75/(P*MAB**0.5*(vA**(1/3)+vB**(1/3))**2)*1e-4
     return DAB
