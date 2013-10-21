@@ -89,9 +89,11 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         """
         self._logger.debug("self.generate()")
         self.generate_pores()
+        #self.generate_boundary_pores()
         self.generate_throats()
+        #self.generate_boundary_throats()
         self._net.update()
-        self.add_boundaries()
+        #self.add_boundaries()
         self.generate_pore_seeds()
         self.generate_throat_seeds()
         self.generate_pore_diameters()
@@ -108,12 +110,24 @@ class GenericGenerator(OpenPNM.Base.OpenPNMbase):
         Generate the pores (numbering, types and coordinates)
         """
         self._logger.error("generate_pores: not implemented")
+    
+    def generate_boundary_pores(self):
+        r"""
+        Generate the boundry pores (numbering, types and coordinates)
+        """
+        self._logger.error("generate_boundary_pores: not implemented")
         
     def generate_throats(self):        
         r"""
         Generate the throats (numbering and types)
         """
         self._logger.error("generate_throats: not implemented")
+        
+    def generate_boundary_throats(self):
+        r"""
+        Generate the boundary throats (numbering and types)
+        """
+        self._logger.error("generate_boundary_throats: not implemented")
         
     def generate_throat_type(self):
         self._logger.info("update_throat_type: Start of method")
