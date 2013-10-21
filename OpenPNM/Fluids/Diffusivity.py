@@ -7,10 +7,10 @@ module Diffusivity
 import OpenPNM
 import scipy as sp
 
-def constant(DAB,**params):
+def constant(network,DAB,**params):
     return DAB
 
-def na(**params):
+def na(network,**params):
     return 'n/a'
 
 def Fuller(network,MA=31.99,MB=28.01,vA=16.6,vB=17.9,**params):

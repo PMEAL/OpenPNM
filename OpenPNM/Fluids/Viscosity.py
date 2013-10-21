@@ -7,10 +7,10 @@ module Viscosity
 import OpenPNM
 import scipy as sp
 
-def constant(visc=0.001,**params):
+def constant(network,visc=0.001,**params):
     return visc
 
-def na(**params):
+def na(network,**params):
     return 'n/a'
 
 def Reynolds(network,uo=1,b=1,**params):

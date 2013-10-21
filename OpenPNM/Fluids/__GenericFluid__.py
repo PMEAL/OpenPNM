@@ -19,40 +19,36 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
 
     def assign(self,network,params):
         network.phases.update({params['name']: params})
-        return self.update(network,params['name'])
+        return self.refresh(network,params['name'])
 
     def remove(self,network,name):
         del network.phases[name]
 
-    def update(self,network,name):
+    def refresh(self,network,name):
         params = network.phases[name]
         print params
         self.fluid_dict = {}
         self.fluid_dict.update({'diffusivity': self.diffusivity(network,params['diffusivity'])})
         self.fluid_dict.update({'viscosity': self.viscosity(network,params['viscosity'])})
         self.fluid_dict.update({'molar_density': self.molar_density(network,params['molar_density'])})
+        for i in self.fluid_dict.keys():
+            network.pore_conditions.update({i+'_'+name: self.fluid_dict[i]})
         return self.fluid_dict
-
+        
     def diffusivity(self,network,params):
         eqn = getattr(OpenPNM.Fluids.Diffusivity,params['method'])
-        params.update({'network':network})
-        vals = eqn(**params)
-        del params['network']
-        return vals
+        vals = eqn(network,**params)
+        return sp.array(vals,ndmin=1)
 
     def viscosity(self,network,params):
         eqn = getattr(OpenPNM.Fluids.Viscosity,params['method'])
-        params.update({'network':network})
-        vals = eqn(**params)
-        del params['network']
-        return vals
+        vals = eqn(network,**params)
+        return sp.array(vals,ndmin=1)
 
     def molar_density(self,network,params):
         eqn = getattr(OpenPNM.Fluids.MolarDensity,params['method'])
-        params.update({'network':network})
-        vals = eqn(**params)
-        del params['network']
-        return vals
+        vals = eqn(network,**params)
+        return sp.array(vals,ndmin=1)
 
 if __name__ =="__main__":
     testfluid_dict ={   'name':  'testfluid',

@@ -80,15 +80,18 @@ water = OpenPNM.Fluids.GenericFluid().create(params_water)
 OpenPNM.Fluids.GenericFluid().assign(pn,air)
 OpenPNM.Fluids.GenericFluid().assign(pn,water)
 
-#Run some algorithms
-#blah, blah, blah
-
-#Update the fluid properties
+#Run some algorithms that change base conditions
+#blah, blah, blah...
 pn.pore_conditions['temperature'] = 333
 pn.pore_conditions['pressure'] = 201325
 
-#air_props = OpenPNM.Fluids.GenericFluid().update(pn,'air')
-#wat_props = OpenPNM.Fluids.GenericFluid().update(pn,'water')
+#Update fluids
+OpenPNM.Fluids.GenericFluid().refresh(pn,'air')
+OpenPNM.Fluids.GenericFluid().refresh(pn,'water')
+
+#Disassociate fluids from network
+#OpenPNM.Fluids.GenericFluid().remove(pn,'air')
+#OpenPNM.Fluids.GenericFluid().remove(pn,'water')
 
 
 
