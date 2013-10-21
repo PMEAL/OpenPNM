@@ -13,6 +13,10 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
 
+    def create(self,params):
+        self.fluid_dict = params
+        return self.fluid_dict
+
     def assign(self,network,params):
         network.phases.update({params['name']: params})
 

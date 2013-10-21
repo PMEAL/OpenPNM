@@ -72,14 +72,17 @@ params_water = {     'name': 'water',
             'molar_density': {'method': 'constant',
                                    'c': 44445},
 }
+#Create fluids
+air = OpenPNM.Fluids.GenericFluid().create(params_air)
+water = OpenPNM.Fluids.GenericFluid().create(params_water)
 
 #Assign fluids to network
 pn.phases = {} #This should be part of the GenericNetwork init
-OpenPNM.Fluids.GenericFluid().assign(pn,params_air)
-OpenPNM.Fluids.GenericFluid().assign(pn,params_water)
+OpenPNM.Fluids.GenericFluid().assign(pn,air)
+OpenPNM.Fluids.GenericFluid().assign(pn,water)
 
 air_props = OpenPNM.Fluids.GenericFluid().update(pn,'air')
-wat_props = OpenPNM.Fluids.GenericFluid().update(pn,'water1')
+wat_props = OpenPNM.Fluids.GenericFluid().update(pn,'water')
 
 
 
