@@ -13,27 +13,28 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
 
-    def create(self,params):
-        self.fluid_dict = params
+    def create(self,fluid):
+        self.fluid_dict = fluid
         return self.fluid_dict
 
-    def assign(self,network,params):
-        network.phases.update({params['name']: params})
-        return self.refresh(network,params['name'])
+    def assign(self,network,fluid):
+        network.phases.update({fluid['name']: fluid})
+        self.refresh(network,fluid['name'])
 
-    def remove(self,network,name):
-        del network.phases[name]
+    def remove(self,network,fluid_name):
+        del network.phases[fluid_name]
 
-    def refresh(self,network,name):
-        params = network.phases[name]
-        print params
+    def rename(self,fluid,fluid_name):
+        fluid['name'] = fluid_name
+
+    def refresh(self,network,fluid_name):
+        params = network.phases[fluid_name]
         self.fluid_dict = {}
         self.fluid_dict.update({'diffusivity': self.diffusivity(network,params['diffusivity'])})
         self.fluid_dict.update({'viscosity': self.viscosity(network,params['viscosity'])})
         self.fluid_dict.update({'molar_density': self.molar_density(network,params['molar_density'])})
         for i in self.fluid_dict.keys():
-            network.pore_conditions.update({i+'_'+name: self.fluid_dict[i]})
-        return self.fluid_dict
+            network.pore_conditions.update({ "{prop}_{fluid}".format(prop=i, fluid=fluid_name) : self.fluid_dict[i]})
         
     def diffusivity(self,network,params):
         eqn = getattr(OpenPNM.Fluids.Diffusivity,params['method'])
