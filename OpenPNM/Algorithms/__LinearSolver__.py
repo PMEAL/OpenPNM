@@ -30,29 +30,29 @@ class LinearSolver(GenericAlgorithm):
         super(LinearSolver,self).__init__(**kwargs)
         self._logger.info("Create Linear Solver Algorithm Object")
             
-    def _setup_for_Solver(self):
-        r"""
-        Main features: Applying Boundary Conditions & Creating Transport Conductivities 
-
-        This function executes the essential mathods for building matrices in Linear solution 
-        """
-        print '_setup_for_LinearSolver'
-
-    
-    def _do_outer_iteration_stage(self,fluid_name):
-        r"""
-                       
-        """
-        print '_do_outer_iteration_stage'
-        self._logger.info("Outer Iteration Stage ")
-        self._setup_for_Solver(self,fluid_name)       
-        self._do_inner_iteration(self)
-
-    def _do_inner_iteration_stage(self,**params):
-        r"""
-                       
-        """
-        print '_do_outer_iteration_stage'
+#    def _setup(self, **params):
+#        r"""
+#        Main features: Applying Boundary Conditions & Creating Transport Conductivities 
+#
+#        This function executes the essential mathods for building matrices in Linear solution 
+#        """
+#        print '_setup_for_LinearSolver'
+#
+#    
+#    def _do_outer_iteration_stage(self,fluid_name):
+#        r"""
+#                       
+#        """
+#        print '_do_outer_iteration_stage'
+#        self._logger.info("Outer Iteration Stage ")
+#        self._setup_for_Solver(self,fluid_name)       
+#        self._do_inner_iteration(self)
+#
+#    def _do_inner_iteration_stage(self,**params):
+#        r"""
+#                       
+#        """
+#        print '_do_outer_iteration_stage'
 
     def _do_one_inner_iteration(self):
         
