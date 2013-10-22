@@ -39,14 +39,14 @@ class LinearSolver(GenericAlgorithm):
         print '_setup_for_LinearSolver'
 
     
-    def _do_outer_iteration_stage(self,**params):
+    def _do_outer_iteration_stage(self,fluid_name):
         r"""
                        
         """
         print '_do_outer_iteration_stage'
         self._logger.info("Outer Iteration Stage ")
-        self._setup_for_Solver(**params)       
-        self._do_inner_iteration(**params)
+        self._setup_for_Solver(self,fluid_name)       
+        self._do_inner_iteration(self)
 
     def _do_inner_iteration_stage(self,**params):
         r"""
@@ -59,9 +59,9 @@ class LinearSolver(GenericAlgorithm):
         print '_do_inner_iteration_stage'
         A = self._coefficient_matrix()   
         B = self._RHS_matrix()
-        x = splin.spsolve(A,B) 
-        print x
-        return(x)
+        X = splin.spsolve(A,B) 
+        print X
+        return(X)
     
     def set_boundary_conditions(self,types=[],values=[]):
         r"""        
@@ -86,9 +86,9 @@ class LinearSolver(GenericAlgorithm):
               .
               for pore Np : Dirichlet_boundary value = 0.30
               
-    Notes
-    -----
-    Nuemann_isolated is equivalent to Nuemann_flux boundary condition with flux = 0.
+        Notes
+        -----
+        Nuemann_isolated is equivalent to Nuemann_flux boundary condition with flux = 0.
 
         """
         setattr(self,"BCtypes",types)
@@ -102,7 +102,7 @@ class LinearSolver(GenericAlgorithm):
         tpore2 = self._net.throat_properties['connections'][:,1]
         row = tpore1
         col = tpore2
-        data= self._net.throat_properties['Conductivities_Exp']
+        data= self._net.throat_conditions['eff_conductance']
         
         pnum = self._net.pore_properties['numbering']      
         loc1 = sp.in1d(tpore2,tpore2[sp.in1d(tpore2,pnum[self.BCtypes!=1])])
@@ -110,7 +110,7 @@ class LinearSolver(GenericAlgorithm):
         modified_tpore1 = tpore1[loc1]        
         row = sp.append(row,modified_tpore2)                
         col = sp.append(col,modified_tpore1)
-        data = sp.append(data,self._net.throat_properties['Conductivities_Exp'][loc1])
+        data = sp.append(data,self._net.throat_conditions['eff_conductance'][loc1])
         
         if (self.BCtypes==4).any():
             self.extera_Nuemann_equations = sp.unique(self.BCvalues[self.BCtypes==2])
@@ -130,7 +130,7 @@ class LinearSolver(GenericAlgorithm):
                 neu_tpore2_row = tpore2[loc_neu_row]
                 row = sp.append(row,sp.ones([len(neu_tpore2_row)])*(A_dim-item)) 
                 col = sp.append(col,neu_tpore2_row)
-                data = sp.append(data,-(self._net.throat_properties['Conductivities_Exp'][neu_tpore2_row]))
+                data = sp.append(data,-(self._net.throat_conditions['eff_conductance'][neu_tpore2_row]))
             
         else:
             A_dim = self._net.get_num_pores()
@@ -162,7 +162,7 @@ class LinearSolver(GenericAlgorithm):
         B = sp.zeros([A_dim,1])
         Dir_pores = self._net.pore_properties['numbering'][self.BCtypes==1]
         B[Dir_pores] = sp.reshape(self.BCvalues[Dir_pores],[len(Dir_pores),1])
-        if (self.BCtypes==2).any():
+        if (self.BCtypes==4).any():
             for item in len(extera_neu):                
                 B[self.A_dim-item,0] = extera_neu[item]
 #        else:

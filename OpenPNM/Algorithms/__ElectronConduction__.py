@@ -7,8 +7,6 @@ Created on Tue Jun 11 10:50:28 2013
 module __ElectronConduction__: 
 ========================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
-
 """
 
 import OpenPNM
