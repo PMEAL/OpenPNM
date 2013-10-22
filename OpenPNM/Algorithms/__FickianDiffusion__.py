@@ -48,9 +48,9 @@ class FickianDiffusion(LinearSolver):
         Dir_pores = network.pore_properties['numbering'][self.BCtypes==1]
         self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])        
         OpenPNM.Physics.MassTransport.DiffusiveConductance(network,fluid_name)        
-        OpenPNM.Physics.MassTransport.MultiPhase.full_pore_filling(network,Pc=0.0,Seq=0)
-        OpenPNM.Physics.MassTransport.MultiPhase.conduit_filled_state_calculator(network)
-        self._net.throat_conditions['eff_conductance'] = OpenPNM.Physics.MassTransport.MultiPhase.apply_phase_state_to_conduit_conductance(network,fluid_name)
+        OpenPNM.Physics.MultiPhase.full_pore_filling(network,Pc=0.0,Seq=0)
+        OpenPNM.Physics.MultiPhase.conduit_filled_state_calculator(network)
+        self._net.throat_conditions['eff_conductance'] = OpenPNM.Physics.MultiPhase.apply_phase_state_to_conduit_conductance(network,fluid_name)
          
    
     def _do_inner_iteration_stage(self):
