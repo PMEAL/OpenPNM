@@ -1,10 +1,10 @@
-*******************************************************************************
+###############################################################################
 Network Geometry
-*******************************************************************************
+###############################################################################
 The Geometry module contains methods for:
 1. Generating networks of various topologies (such as Cubic and Delaunay)
 2. Importing networks generated using other code (such as extraction from 3D tomographic images)
-3. Altering existing the geometry networks (such as merging networks)
+3. Altering the geometry of existing networks (such as merging networks)
 
 ===============================================================================
 Generating Geometry
@@ -13,15 +13,29 @@ Generating Geometry
 -------------------------------------------------------------------------------
 Generic Geometry
 -------------------------------------------------------------------------------
-The GenericGeometry class takes advantage of the object-oriented nature of Python by using `inheritance <http://docs.python.org/2/tutorial/classes.html>`_.  There are three main components to inheritance as used here.  
+The GenericGeometry class takes advantage of the object-oriented nature of Python by using `inheritance <http://docs.python.org/2/tutorial/classes.html>`_.  
+There are three main components to inheritance as used here. (The following explanation assumes no knowledge of object orientation)
 
-Firstly, the GenericGeometry class contains methods that will likely be used by all methods regardless of topology.  Every network inherits these methods and *can* use them if desired.  For instance, generate_pore_seeds can be used "as is" to assign a random number to each pore for subsequent use in pore size distribution calculations (i.e. generate_pore_diameters).  Alternatively, if the user wishes to use a more complex method to generate random seeds (for instance with spatial correlation), then they are free to over-write or sub-class this method in their specific geometry class.  The procedure for accomplishing this is outlined in the Writing Custom Geometry section below.  
+Firstly, the GenericGeometry class contains methods that will likely be used by all methods regardless of topology.  
+Every network inherits these methods and *can* use them if desired.  
+For instance, :code:`generate_pore_seeds` can be used "as is" to assign a random number to each pore for subsequent use in pore size distribution calculations (i.e. :code:`generate_pore_diameters`).  
+Alternatively, if the user wishes to use a more complex method to generate random seeds (for instance with spatial correlation), then they are free to over-write or sub-class this method in their specific geometry class.  
+The procedure for accomplishing this is outlined in the Writing Custom Geometry section below.  
 
-The second component to inheritance as applied in OpenPNM is that some methods *must* be sub-classed.  Specifically, generate_pores() and generate_throats() are not implimented in GenericGeometry.  One of the main results of generate_pores is to dictate the spatial coordinates of the pore centers; generate_throats dictates which pores are connected to which neighbors.  A cubic network places pores in space and defines connections in a completely different way than a random network.  Thus, there is no generic or default way to generate different networks.  
+The second component to inheritance as applied in OpenPNM is that some methods *must* be sub-classed.  
+For instance, :code:`generate_pores` and :code:`generate_throats` are not implemented in GenericGeometry.  
+One of the main results of :code:`generate_pores` is to dictate the spatial coordinates of the pore centers; and :code:`generate_throats` dictates which pores are connected to which neighbors.  
+A cubic network places pores in space and defines connections in a completely different way than a random network.  
+Thus, there is no generic or default way to generate different networks.  
 
-And finally, all sub-classed methods have the same name and black-box functionality as the generic methods.  The enables a truly generic generation scheme (defined by the generate() method in GenericGeometry) that always calls the same methods but acheives different results depending on which methods have been sub-classed.  It should be pointed out however, that even the generate() method *can* be sub-classed if desired, so there is no need to adhere to the steps or order defined there.  
+And finally, all sub-classed methods have the same name and black-box functionality as the generic methods.  
+The enables a the generic generation scheme (defined by the :code:`generate` method in GenericGeometry) that always calls the same methods but achieves different results depending on which methods have been sub-classed.  
+It should be pointed out however, that even the :code:`generate` method *can* be sub-classed if desired, so there is no need to adhere to the steps or order defined there.  
 
-The generate() method provided in GenericGeometry contains the following methods in the order given below.  The first 4 of these methods are abstract or empty methods that *must* be subclassed by the specific Geometry class.  The remainder are actually implimented in the GenericGeometry class and perform the most basic or common version of their specific function.  Any of these can also be subclassed in each specific Geometry class. Moreover, if the methods or the order given below are unsuitable then the generate() method itself can be subclassed by a specific Geometry class.
+The :code:`generate` method provided in GenericGeometry contains the following methods which are executed in the order given below.  
+The first 4 of these methods are abstract or empty methods that *must* be sub-classed by the specific Geometry class.  
+The remainder are actually implemented in the GenericGeometry class and perform the most basic or common version of their specific function.  
+Any of these can also be sub-classed in each specific Geometry class. 
 
 .. automethod:: OpenPNM.Geometry.GenericGeometry._generate_setup
 
@@ -48,14 +62,26 @@ The generate() method provided in GenericGeometry contains the following methods
 -------------------------------------------------------------------------------
 Cubic
 -------------------------------------------------------------------------------
-The most common and basic type of pore network is based on cubic geometry, with cubic lattice-type connectivity between pores.  The Cubic geometry corresponds to simplest `Bravais Lattice <http://en.wikipedia.org/wiki/Bravais_lattice>`_ type, the Primitive Centered Cubic, pcc.  Each pore is connected to 6 neighbors (in 3D).
+The most common and basic type of pore network is based on cubic geometry, with cubic lattice-type connectivity between pores.  
+The Cubic geometry corresponds to simplest `Bravais lattice <http://en.wikipedia.org/wiki/Bravais_lattice>`_ type, the Primitive Centered Cubic, pcc.  
+Each pore is connected to 6 neighbors (in 3D).  
+One of the future aims of is to extend this CubicGeometry class to a more general LatticeGeometry class that allows all possible Bravais lattice arrangements.  
+This 'bcc' structure, for instance, would allow for a network with higher porosity due to the closer packing.  
+
+The cubic geometry is very widely used throughout the pore network modeling community because it very straightforward to implement and analyzer, yet usually provides sufficient complexity for most situations.  
+
+see :ref:`cubic-example`.
 
 -------------------------------------------------------------------------------
 Template
 -------------------------------------------------------------------------------
-This is a varient of the Cubic network that allows for arbitrarily complex domain shapes such as spheres and cylinders, but still defines connections between pores based on lattice-type connectivity.  
+This is a variant of the Cubic network that allows for arbitrarily complex domain shapes such as spheres and cylinders, but still defines connections between pores based on lattice-type connectivity.  
 
-There are two main motivations for including this generator.  Firstly, it is the most straightforward way to generate unusual geometry of any shape.  Modeling the coking of catalyst particles of spherical or cylindrical shape can be accomplished with equal ease.  Secondly, some users will be more comfortable dealing with numerical matrices outside of OpenPNM and this generator allows them to store network data in a more human-friendly manner (i.e. in a series of matrices the same shape as the network).  For instance, it is possible to generate cubic networks this way if an image of a cube is provided.  
+There are two main motivations for including this generator.  
+Firstly, it is the most straightforward way to generate unusual geometry of any shape.  
+Modeling the coking of catalyst particles of spherical or cylindrical shape can be accomplished with equal ease.  
+Secondly, some users will be more comfortable dealing with numerical matrices outside of OpenPNM and this generator allows them to store network data in a more human-friendly manner (i.e. in a series of matrices the same shape as the network).  
+For instance, it is possible to generate cubic networks this way if a template of a cube is provided.  
 
 The Template geometry generator accepts a 3D or 2D ndarray with some pattern of 1's to define the network shape.  Generating a spherical network using this generator can be accomplished using the ndimage package in Scipy as follows:
 
@@ -70,7 +96,10 @@ The Template geometry generator accepts a 3D or 2D ndarray with some pattern of 
    params = {'template' = template}
    pn = OpenPNM.Geometry.Template().generate(**params)
    
-This will generate a spherical network with cubic-lattice connectivity.  All pore and throat properties will be generated from the methods inherited from GenericGeometry.  It is possible to specify certain properties in place of or in addition to those produced by the Generic methods.  For instance, if pore sizes are larger near the surface than near the core of the sphere this can be calculated externally, stored in an ndarray of the desired shape, and then imported into the network as follows:
+This will generate a spherical network with cubic-lattice connectivity.  
+All pore and throat properties will be generated from the methods inherited from GenericGeometry.  
+It is possible to specify certain properties in place of or in addition to those produced by the Generic methods.  
+For instance, if pore sizes are larger near the surface than near the core of the sphere this can be calculated externally, stored in an ndarray of the desired shape, and then imported into the network as follows:
 
 .. code-block:: python
 
@@ -100,9 +129,14 @@ Customizing Existing Geometries
 -------------------------------------------------------------------------------
 Sub-classing Methods in GenericGeometry
 -------------------------------------------------------------------------------
-The ability to subclass methods from a generic class enables very simple customization.  To illustrate the process of sub-classing, let's say we wish to calculate pore volumes assuming they are cubes rather than spheres (which is the default behavior in GenericGeometry) and let's assuming say we want to apply this to the Cubic geometry, but none of the others.  
+The ability to subclass methods from a generic class enables very simple customization.  
+To illustrate the process of sub-classing, let's say we wish to calculate pore volumes assuming they are cubes rather than spheres (which is the default behavior in GenericGeometry) and let's assuming say we want to apply this to the Cubic geometry, but none of the others.  
 
-We begin by noting that pore volumes are calcuated by the _calc_pore_volumes() method in GenericGeometry.  We also note that this method is called during the GenericGeometry._generate() stage.  We do not wish to change the generic behavior for volume calculation or generation, only the behavior of the Cubic geometry. Accordingly we add a method to the Cubic geometry file called _calc_pore_volumes() where we can define the desired volume calculation equations.  It will look something like this:
+We begin by noting that pore volumes are calcuated by the _calc_pore_volumes() method in GenericGeometry.  
+We also note that this method is called during the GenericGeometry._generate() stage.  
+We do not wish to change the generic behavior for volume calculation or generation, only the behavior of the Cubic geometry. 
+Accordingly we add a method to the Cubic geometry file called _calc_pore_volumes() where we can define the desired volume calculation equations.  
+It will look something like this:
 
 .. code-block:: python
    def _calc_pore_volumes(self):
@@ -113,7 +147,9 @@ When the program is executed, the version of _calc_pore_volumes() located in Cub
 -------------------------------------------------------------------------------
 Adding New Methods
 -------------------------------------------------------------------------------
-Adding new methods to any class is as simple as opening the file containing the class, and adding the method definition.  For instance, say you want the ability to quickly find the average pore size.  You could make a method called Rp_ave() and locate it in GenericGeometry as follows:
+Adding new methods to any class is as simple as opening the file containing the class, and adding the method definition.  
+For instance, say you want the ability to quickly find the average pore size.  
+You could make a method called Rp_ave() and locate it in GenericGeometry as follows:
 
 .. code-block:: python
 
@@ -126,10 +162,10 @@ This method will now be available to the rest of the code, or from the command l
 
    OpenPNM.Geometry.GenericGeometry().Rp_ave(pn)
    
-Because theis method was added to the GenericGeometry class it would be available to all geometries by inheritance.  
+Because this method was added to the GenericGeometry class it would be available to all geometries by inheritance.  
 
 .. note::
-   Of course, this is more typing than simply calculating the average explicity.  It is possible in Python to assign this method to it's own object, which can be accomplished and used as follows:
+   Of course, this is more typing than simply calculating the average explicitly.  It is possible in Python to assign this method to it's own object, which can be accomplished and used as follows:
 
    .. code-block:: python
 
@@ -143,11 +179,10 @@ Adding a New Geometry
 ===============================================================================
 Adding a new geometry requires the obvious step of writing the necessary procedures and equations, but it also requires a number of administrative type alterations to the code that allow the new geometry class to register with the rest of the code.
 
-Let's look at the first portion of this task.  A pore network's geometry is defined by the arrangment of pores in space, and by how they are connected by throats.  Although the GenericGeometry class has methods defined for this purpose, these are not implimented; they *must* be implimented in each individual Geometry class.  All of the Geometry classes included with OpenPNM each have their own unique means of defining pores and throats.  
-
-
-
-
+Let's look at the first portion of this task.  
+A pore network's geometry is defined by the arrangement of pores in space, and by how they are connected by throats.  
+Although the GenericGeometry class has methods defined for this purpose, these are not implemented; they *must* be implemented in each individual Geometry class.  
+All of the Geometry classes included with OpenPNM each have their own unique means of defining pores and throats.  
 
 ===============================================================================
 Manipulating Geometry
@@ -156,7 +191,8 @@ Manipulating Geometry
 -------------------------------------------------------------------------------
 Translate, Scale and Rotate Network
 -------------------------------------------------------------------------------
-The default geometry generation scheme orients the network relative to [x,y,z] = [0,0,0].  If for any reason the network coordinates must be altered, the GenericGeometry class has several useful tools.
+The default geometry generation scheme orients the network relative to [x,y,z] = [0,0,0].  
+If for any reason the network coordinates must be altered, the GenericGeometry class has several useful tools.
 
 .. automethod:: OpenPNM.Geometry.GenericGeometry.translate_coordinates
 
@@ -165,14 +201,21 @@ The default geometry generation scheme orients the network relative to [x,y,z] =
 -------------------------------------------------------------------------------
 Stitch Networks
 -------------------------------------------------------------------------------
-There are several situations where joining or stitching two networks to make a single network is convenient.  One particularly important situation is adding boundary pores to a network.  Given the existence of a cubic network, pn1, of size [10,10,10], boundary pores can be added to a face by generating a second network in memory, pn2, of size [10,10,1].  The new network, pn2, is basically a 2D layer of pores can be added to the face of pn1 to create boundary pores.  Note that both networks have [x,y,z] = [0,0,0] as their origin, so they overlap.  Before peforming the stitch, pn2 should be translated and rotated.  For instance, to attach boundary pores to the x=0 face, the following series of commands would be required:
+There are several situations where joining or stitching two networks to make a single network is convenient.  
+One particularly important situation is adding boundary pores to a network.  
+Given the existence of a cubic network, pn1, of size [10,10,10], boundary pores can be added to a face by generating a second network in memory, pn2, of size [10,10,1].  
+The new network, pn2, is basically a 2D layer of pores can be added to the face of pn1 to create boundary pores.  
+Note that both networks have [x,y,z] = [0,0,0] as their origin, so they overlap.  
+Before performing the stitch, pn2 should be translated and rotated.  
+For instance, to attach boundary pores to the x=0 face, the following series of commands would be required:
 
 .. code-block:: python
 
    OpenPNM.Geometry.GenericGeometry.translate_coords(pn2,[-1,0,0])
    OpenPNM.Geometry.GenericGeometry.stitch(pn1,pn2)
    
-This would append the pore properties of pn2 to those of pn1, theyby enlarging pn1.  The pn2 network would remain in memory for subsequent reuse.  
+This would append the pore properties of pn2 to those of pn1, theyby enlarging pn1.  
+The pn2 network would remain in memory for subsequent reuse.  
 
 .. automethod:: OpenPNM.Geometry.GenericGeometry.stitch
 
