@@ -40,11 +40,12 @@ class FickianDiffusion(LinearSolver):
         self._logger.info("Create Fick's Diffusion Algorithm Object")
 
             
-    def _setup_for_Solver(self,network,fluid_name):
+    def _setup(self,fluid_name):
         r"""
         This function executes the essential mathods before building matrices in Linear solution 
         """
-        Dir_pores = self._net.pore_properties['numbering'][self.BCtypes==1]
+        network = self._net        
+        Dir_pores = network.pore_properties['numbering'][self.BCtypes==1]
         self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])        
         OpenPNM.Physics.MassTransport.DiffusiveConductance(network,fluid_name)        
         OpenPNM.Physics.MassTransport.MultiPhase.full_pore_filling(network,Pc=0.0,Seq=0)

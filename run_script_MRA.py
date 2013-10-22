@@ -7,7 +7,9 @@ Created on Tue Jul 09 10:54:37 2013
 import OpenPNM
 import scipy as sp
 from time import clock
+import copy
 
+import scipy.ndimage as spim
 sphere = sp.ones((51,51,51),dtype=sp.bool8)
 sphere[26,26,26] = 0
 sphere = spim.distance_transform_edt(sphere)
@@ -64,20 +66,21 @@ params_water = {     'name': 'water',
                        'Tc': 647,     #K
                        'MW': 0.0181,  #kg/mol
               'diffusivity': {'method': 'constant',
-                                 'DAB': 1e-12},
+                               'value': 1e-12},
                 'viscosity': {'method': 'constant',
-                                  'mu': 0.001},
-             'wettability' : 'nwp',
+                               'value': 0.001},
+             'wettability' : 'wp',
             'molar_density': {'method': 'constant',
-                                   'c': 44445},
+                               'value': 44445},
 }
 #Create fluids
-air = OpenPNM.Fluids.GenericFluid(params_air)
-water= OpenPNM.Fluids.GenericFluid(params_water,log_level=10)
+air = OpenPNM.Fluids.GenericFluid(params_air,loglevel=50)
+water= OpenPNM.Fluids.GenericFluid(params_water)
 
 #Assign fluids to network
-air.assign(pn)
-water.assign(pn)
+air.assign_to(pn)
+water.assign_to(pn)
+
 #inlets = sp.nonzero(pn.pore_properties['type']==1)[0]
 #pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure().Washburn(pn,0.072,110)  #This should be set somewhere else
 #OP = OpenPNM.Algorithms.OrdinaryPercolation(pn, npts=50, inv_sites=inlets)
@@ -92,7 +95,7 @@ BCvalues[pn.pore_properties['type']==6]=0.2
 
 Alg1=OpenPNM.Algorithms.FickianDiffusion()
 Alg1.set_boundary_conditions(types=BCtypes,values=BCvalues)
-Alg1.run(pn)
+Alg1.run(pn,fluid_name='air')
 
 #pn.update()
 #setattr(pn,"Total_Conc",C)
