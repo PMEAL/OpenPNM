@@ -8,6 +8,7 @@ Created on Fri Mar 08 09:43:02 2013
 import OpenPNM
 import scipy as sp
 from time import clock
+import copy
 
 import scipy.ndimage as spim
 sphere = sp.ones((51,51,51),dtype=sp.bool8)
@@ -36,7 +37,7 @@ params_geom1 =     {'domain_size': [],  #physical network size [meters]
 }
 
 #Generate Network Geometry
-pn = OpenPNM.Geometry.Cubic(loglevel=50).generate(**params_geom1)
+pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geom1)
 #pn = OpenPNM.Geometry.Delaunay().generate(**params)
 #pn = OpenPNM.Geometry.Template().generate(**params)
 
@@ -45,7 +46,7 @@ pn.pore_conditions['temperature'] = 353
 pn.pore_conditions['pressure'] = 101325
 
 #Define the fluids and set their properties
-params_fluid1 = {       'name': 'air',
+params_air = {       'name': 'air',
                        'Pc': 3.771e6, #Pa
                        'Tc': 132.65,  #K
                        'MW': 0.0291,  #kg/mol
@@ -60,7 +61,7 @@ params_fluid1 = {       'name': 'air',
             'molar_density': {'method': 'ideal_gas',
                                    'R': 8.413},
 }
-params_fluid2 = {     'name': 'water',
+params_water = {     'name': 'water',
                        'Pc': 2.206e6, #Pa
                        'Tc': 647,     #K
                        'MW': 0.0181,  #kg/mol
@@ -72,26 +73,53 @@ params_fluid2 = {     'name': 'water',
                                    'c': 44445},
 }
 #Create fluids
-fluid1 = OpenPNM.Fluids.GenericFluid().create(params_fluid1)
-fluid2 = OpenPNM.Fluids.GenericFluid().create(params_fluid2)
+air = OpenPNM.Fluids.GenericFluid(params_air)
+water= OpenPNM.Fluids.GenericFluid(params_water,log_level=10)
 
 #Assign fluids to network
-OpenPNM.Fluids.GenericFluid().assign(pn,fluid1)
-OpenPNM.Fluids.GenericFluid().assign(pn,fluid2)
-
+air.assign(pn)
+water.assign(pn)
+print ''
+print 'current pore conditions:'
+for i in pn.pore_conditions.keys():
+    print i,'=',pn.pore_conditions[i]
+print ''
 #Run some algorithms that change base conditions
 #blah, blah, blah...
+print 'changing temp and pressure...'
 pn.pore_conditions['temperature'] = 333
 pn.pore_conditions['pressure'] = 201325
 
 #Update fluids
-OpenPNM.Fluids.GenericFluid().refresh(pn,'air')
-OpenPNM.Fluids.GenericFluid().refresh(pn,'water')
+air.refresh(pn)
+water.refresh(pn)
+print ''
+print 'current pore conditions:'
+for i in pn.pore_conditions.keys():
+    print i,'=',pn.pore_conditions[i]
+print ''
+
+print "Swapping out fluid 'water' with a similar 'solution'"
+#Create a new fluid that is similar to water
+params_solution = pn.phases['water']
+#Subtly change something about it
+params_solution['viscosity']['mu'] = 0.0005
+solution = OpenPNM.Fluids.GenericFluid(params_solution)
+solution.rename('solution')
+#Add this fluid to the network
+solution.assign(pn)
+#Remove water
+water.remove(pn)
+
+print ''
+print 'current pore conditions:'
+for i in pn.pore_conditions.keys():
+    print i,'=',pn.pore_conditions[i]
+print ''
 
 #Disassociate fluids from network
 #OpenPNM.Fluids.GenericFluid().remove(pn,'air')
 #OpenPNM.Fluids.GenericFluid().remove(pn,'water')
-
 
 
 
