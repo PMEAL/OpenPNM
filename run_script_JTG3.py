@@ -66,19 +66,19 @@ params_water = {     'name': 'water',
                        'Tc': 647,     #K
                        'MW': 0.0181,  #kg/mol
               'diffusivity': {'method': 'constant',
-                                 'DAB': 1e-12},
+                               'value': 1e-12},
                 'viscosity': {'method': 'constant',
-                                  'mu': 0.001},
+                               'value': 0.001},
             'molar_density': {'method': 'constant',
-                                   'c': 44445},
+                               'value': 44445},
 }
 #Create fluids
-air = OpenPNM.Fluids.GenericFluid(params_air)
-water= OpenPNM.Fluids.GenericFluid(params_water,log_level=10)
+air = OpenPNM.Fluids.GenericFluid(params_air,loglevel=50)
+water= OpenPNM.Fluids.GenericFluid(params_water)
 
 #Assign fluids to network
-air.assign(pn)
-water.assign(pn)
+air.assign_to(pn)
+water.assign_to(pn)
 print ''
 print 'current pore conditions:'
 for i in pn.pore_conditions.keys():
@@ -91,8 +91,8 @@ pn.pore_conditions['temperature'] = 333
 pn.pore_conditions['pressure'] = 201325
 
 #Update fluids
-air.refresh(pn)
-water.refresh(pn)
+air.refresh_in(pn)
+water.refresh_in(pn)
 print ''
 print 'current pore conditions:'
 for i in pn.pore_conditions.keys():
@@ -103,13 +103,13 @@ print "Swapping out fluid 'water' with a similar 'solution'"
 #Create a new fluid that is similar to water
 params_solution = pn.phases['water']
 #Subtly change something about it
-params_solution['viscosity']['mu'] = 0.0005
+params_solution['viscosity']['value'] = 0.0015
 solution = OpenPNM.Fluids.GenericFluid(params_solution)
 solution.rename('solution')
 #Add this fluid to the network
-solution.assign(pn)
+solution.assign_to(pn)
 #Remove water
-water.remove(pn)
+water.remove_from(pn)
 
 print ''
 print 'current pore conditions:'
