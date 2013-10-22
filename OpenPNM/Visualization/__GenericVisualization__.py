@@ -25,13 +25,12 @@ class GenericVisualization(OpenPNM.Utilities.OpenPNMbase):
     
     """
     
-    def __init__(self,net=OpenPNM.Network.GenericNetwork,**kwords):
+    def __init__(self,**kwargs):
         r"""
         Initialize
         """
-        super(GenericVisualization,self).__init__(**kwords)
-        self._logger.debug("Construct class")
-        self._net = net
-        
+        super(GenericVisualization,self).__init__(**kwargs)
+        self._logger.debug("Construct Visualization Class")
+
 if __name__ =="__main__":
-    test = GenericVisualization(loggername="TestGenericVis")
+    test = GenericVisualization(loggername="TestGenericVisualization")

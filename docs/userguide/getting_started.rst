@@ -1,6 +1,6 @@
-*******************************************************************************
+###############################################################################
 Getting Started
-*******************************************************************************
+###############################################################################
 
 ===============================================================================
 Example: Working with Scripts
@@ -13,7 +13,7 @@ The first thing you must do is tell Spyder to import the OpenPNM code so you hav
 
 .. code-block:: python
 
-   import OpenPNM
+   >>> import OpenPNM
 
 This imports the OpenPNM package with all it's algorithms and data storage functions.
 
@@ -21,19 +21,47 @@ Next, you'll want to generate a network.  This is accomplished by first creating
 
 .. code-block:: python
    
-   gn1 = OpenPNM.Geometry.Cubic()
+   >>> gn1 = OpenPNM.Geometry.Cubic()
    
 Now a generator has been initialized (with default parameters) and is ready to start spawning networks.  This can be achieved by:
 
 .. code-block:: python
    
-   pn1 = gn1.generate()
+   >>> pn1 = gn1.generate()
 
-The same generator can be used to create another network:
+To view the properties of pn1, use the print command:
+
+.. code-block:: python
+
+    >>> print pn1
+    ==================================================
+    Overview of network properties
+    --------------------------------------------------
+    Basic properties of the network
+    - Number of pores:   81
+    - Number of throats: 108
+    
+    Pore properties:
+    	diameter            float64             (81,)               
+    	numbering           int32               (81,)               
+    	volume              float64             (81,)               
+    	seed                float64             (81,)               
+    	coords              float64             (81, 3)             
+    	type                int8                (81,)               
+    Throat properties:
+    	volume              float64             (108,)              
+    	diameter            float64             (108,)              
+    	numbering           int32               (108,)              
+    	connections         int32               (108, 2)            
+    	length              float64             (108,)              
+    	seed                float64             (108,)              
+    	type                int8                (108,)  
+
+To create a second network, you must initiate a second geometry object:
 
 .. code-block:: python
    
-   pn2 = gn1.generate()
+   >>> pn2 = OpenPNM.Geometry.Cubic().generate()
    
 This network will be identical in most asepcts but will have different pore and throat sizes due the different random seeds used.  This functionality is useful for running simulations on multiple realizations for the same network for statistical significance.  
 
