@@ -7,8 +7,8 @@ module Diffusivity
 import OpenPNM
 import scipy as sp
 
-def constant(network,DAB,**params):
-    return DAB
+def constant(network,value,**params):
+    return value
 
 def na(network,**params):
     return 'n/a'
@@ -28,16 +28,16 @@ def Fuller(network,MA=31.99,MB=28.01,vA=16.6,vB=17.9,**params):
     MB : float, array_like
         Molecular weight of component B (g/mole)
     VA:  float, array_like
-        Sum of the diffusion volumes for component A        
+        Sum of the diffusion volumes for component A
     VB:  float, array_like
-        Sum of the diffusion volumes for component B             
-        
+        Sum of the diffusion volumes for component B
+
     Notes
     -----
     The Fuller equation is:
 
     .. math::
-        
+
 
     """
     T = network.pore_conditions['temperature']
@@ -79,9 +79,9 @@ def TynCalus(network,T=298.,etta=0.890,VA=16.6,VB=17.9,sigmaB=71.97,sigmaA=22.27
     VB : float, array_like
         Molar volume of component B at boiling temperature (g/s^2)
     sigmaA:  float, array_like
-        Surface tension of component A at boiling temperature (mN/m)       
+        Surface tension of component A at boiling temperature (mN/m)
     sigmaB:  float, array_like
-        Surface tension of component B at boiling temperature (mN/m)         
+        Surface tension of component B at boiling temperature (mN/m)
     Notes
     -----
     The Tyn Calus equation is:
@@ -93,7 +93,7 @@ def TynCalus(network,T=298.,etta=0.890,VA=16.6,VB=17.9,sigmaB=71.97,sigmaA=22.27
     T = network.pore_conditions['temperature']
     DAB = 8.93e-8*(VB**0.267/VA**0.433)*T*(sigmaB/sigmaA)**0.15/etta
     return DAB
-    
+
 def TynCalus_Scaling(network,DABo=2.09e-5,To=298.,ettao=0.890,Ti=298.,ettai=0.890,**params):
     r"""
     Uses the Tyn Calus model to adjust a diffusion coeffciient for liquids from reference conditions to conditions of interest

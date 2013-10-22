@@ -7,8 +7,8 @@ module MolarDensity
 import OpenPNM
 import scipy as sp
 
-def constant(network,c=40.89,**params):
-    return c
+def constant(network,value=40.89,**params):
+    return value
 
 def na(network,**params):
     return 'n/a'

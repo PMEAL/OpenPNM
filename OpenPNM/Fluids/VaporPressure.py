@@ -7,8 +7,8 @@ module VaporPressure
 import OpenPNM
 import scipy as sp
 
-def constant(network,Pv=3000,**params):
-    return Pv
+def constant(network,value=3000,**params):
+    return value
 
 def na(network,**params):
     return 'n/a'
