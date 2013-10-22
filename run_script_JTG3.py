@@ -59,7 +59,7 @@ params_air = {       'name': 'air',
                                   'uo': 0.001,
                                    'b': 0.1},
             'molar_density': {'method': 'ideal_gas',
-                                   'R': 8.413},
+                                   'R': 8.314},
 }
 params_water = {     'name': 'water',
                        'Pc': 2.206e6, #Pa
@@ -77,8 +77,8 @@ air = OpenPNM.Fluids.GenericFluid(params_air,loglevel=50)
 water= OpenPNM.Fluids.GenericFluid(params_water)
 
 #Assign fluids to network
-air.assign_to(pn)
-water.assign_to(pn)
+air.assign_to_network(pn)
+water.assign_to_network(pn)
 print ''
 print 'current pore conditions:'
 for i in pn.pore_conditions.keys():
@@ -91,8 +91,8 @@ pn.pore_conditions['temperature'] = 333
 pn.pore_conditions['pressure'] = 201325
 
 #Update fluids
-air.refresh_in(pn)
-water.refresh_in(pn)
+air.refresh_in_network(pn)
+water.refresh_in_network(pn)
 print ''
 print 'current pore conditions:'
 for i in pn.pore_conditions.keys():
@@ -105,11 +105,11 @@ params_solution = pn.phases['water']
 #Subtly change something about it
 params_solution['viscosity']['value'] = 0.0015
 solution = OpenPNM.Fluids.GenericFluid(params_solution)
-solution.rename('solution')
+solution.rename_fluid('solution')
 #Add this fluid to the network
-solution.assign_to(pn)
+solution.assign_to_network(pn)
 #Remove water
-water.remove_from(pn)
+water.remove_from_network(pn)
 
 print ''
 print 'current pore conditions:'
