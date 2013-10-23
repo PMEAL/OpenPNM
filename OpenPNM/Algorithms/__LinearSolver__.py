@@ -97,9 +97,9 @@ class LinearSolver(GenericAlgorithm):
         A_dim = self._net.get_num_pores()
 
         if (self.BCtypes==4).any():
-            self.extera_Nuemann_equations = sp.unique(self.BCvalues[self.BCtypes==4])
-            A_dim = A_dim + len(self.extera_Nuemann_equations)
-            extera_neu = self.extera_Nuemann_equations
+            self.extera_Neumann_equations = sp.unique(self.BCvalues[self.BCtypes==4])
+            A_dim = A_dim + len(self.extera_Neumann_equations)
+            extera_neu = self.extera_Neumann_equations
             g_super = 1e2
             for item in range(len(extera_neu)):
                 loc_neu = sp.in1d(tpore2,pnum[self.BCvalues==extera_neu[item]])
@@ -107,14 +107,14 @@ class LinearSolver(GenericAlgorithm):
 
                 row = sp.append(row,neu_tpore2)
                 col = sp.append(col,len(neu_tpore2)*[A_dim-item-1])
-                data = sp.append(data,len(neu_tpore2)*[-g_super])
+                data = sp.append(data,len(neu_tpore2)*[g_super])
 
                 row = sp.append(row,len(neu_tpore2)*[A_dim-item-1])
                 col = sp.append(col,neu_tpore2)
-                data = sp.append(data,len(neu_tpore2)*[-g_super])
+                data = sp.append(data,len(neu_tpore2)*[g_super])
 
         else:
-            self.extera_Nuemann_equations = 0
+            self.extera_Neumann_equations = 0
 
         self.Coeff_dimension = A_dim
 
@@ -133,13 +133,13 @@ class LinearSolver(GenericAlgorithm):
                 A[i,i] = 1
             else:
                 A[i,i] = -sp.sum(A[i,:][sp.nonzero(A[i,:])])
-
+        
         return(A)
 
 
     def _build_RHS_matrix(self):
 
-        extera_neu = self.extera_Nuemann_equations
+        extera_neu = self.extera_Neumann_equations
         A_dim = self.Coeff_dimension
         B = sp.zeros([A_dim,1])
         Dir_pores = self._net.pore_properties['numbering'][self.BCtypes==1]
@@ -147,5 +147,5 @@ class LinearSolver(GenericAlgorithm):
         if (self.BCtypes==4).any():
             for item in range(len(extera_neu)):
                 B[A_dim-item-1,0] = extera_neu[item]
-
+        
         return(B)

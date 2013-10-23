@@ -42,22 +42,39 @@ class Permeability(LinearSolver):
         self._logger.info("Create Hagen Poiseuille permeability Object")
 
             
-    def _setup(self,fluid_name):
+    def _setup(self,**params):
         r"""
         This function executes the essential mathods before building matrices in Linear solution 
         """
         network = self._net
-        # Building diffusive conductance       
-        OpenPNM.Physics.FluidFlow.HagenPoiseuille(network,fluid_name)        
-        OpenPNM.Physics.MultiPhase.full_pore_filling(network)
-        OpenPNM.Physics.MultiPhase.conduit_filled_state_calculator(network)
-        self._net.throat_conditions['eff_conductance'] = OpenPNM.Physics.MultiPhase.apply_phase_state_to_conduit_conductance(network,fluid_name)
-         
+        self.fluid_name = params['fluid_name']
+        network.refresh_fluid(self.fluid_name)
+        # Building hydraulic conductance
+        OpenPNM.Physics.FluidFlow.HydraulicConductance(network,self.fluid_name)
+#        method = params['conduit_filling_method']
+#        OpenPNM.Physics.MultiPhase.full_pore_filling(network)
+#        OpenPNM.Physics.MultiPhase.calc_conduit_filling(network,method)
+        g = network.throat_conditions['hydraulic_conductance'+'_'+self.fluid_name]
+#        c = pn.throat_conditions['']                
+        self._conductance = g
    
     def _do_inner_iteration_stage(self):
         r"""
                        
         """
         p = self._do_one_inner_iteration()       
-        self._net.pore_conditions['partial_pressure'] = p
+        self._net.pore_conditions['partial_pressure'+'_'+self.fluid_name] = p
         print p
+        
+    def calc_total_permeability(self):
+        
+        network = self._net        
+        pores1 = 0
+        pores2 = 0
+        area = 0
+        length = 0 
+                
+        total_rate = 0 
+        dp = network.pore_condtions['partial_pressure'][pores1] - network.pore_condtions['partial_pressure'][pores2]
+        K = sp.absolute(total_rate*length/area*(sp.average(network.pore_conditions['viscosity'+'_'+self.fluid_name]/dp)))
+        self._network_permeability = K

@@ -21,17 +21,17 @@ def HydraulicConductance(network,fluid_name):
     fluid_name : 'string'
     """
     try:
-        mup = network.pore_properties['viscosity'+'_'+fluid_name]
+        mup = network.pore_conditions['viscosity'+'_'+fluid_name]
     except:
-        raise Exception('Viscosity of the '+fluid_name+' phase has not been specified')
+        raise Exception('viscosity of the '+fluid_name+' phase has not been specified')
     mut = network.interpolate_throat_values(mup)
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
-    #Find g for half of pore 1
-    gp1 = 2.28*(network.pore_properties['diameter'][pores[:,0]]/2)**4/(network.pore_properties['diameter'][pores[:,0]]*mup[pores[:,0]])
+    #Find g for half of pore 1  
+    gp1 = 2.28*(network.pore_properties['diameter'][pores[:,0]]/2)**4/(network.pore_properties['diameter'][pores[:,0]]*mup)
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = 2.28*(network.pore_properties['diameter'][pores[:,1]]/2)**4/(network.pore_properties['diameter'][pores[:,1]]*mup[:,1])
+    gp2 = 2.28*(network.pore_properties['diameter'][pores[:,1]]/2)**4/(network.pore_properties['diameter'][pores[:,1]]*mup)
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     gt = 2.28*(network.throat_properties['diameter']/2)**4/(2*network.throat_properties['length']*mut)

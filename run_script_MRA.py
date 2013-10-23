@@ -84,13 +84,13 @@ BCvalues = sp.zeros(pn.get_num_pores())
 #Dirichlet
 BCtypes[pn.pore_properties['type']==1] = 1
 BCtypes[pn.pore_properties['type']==6] = 1
-BCvalues[pn.pore_properties['type']==1] = 8e-1
-BCvalues[pn.pore_properties['type']==6] = 8e-2
+BCvalues[pn.pore_properties['type']==1] = 8e-2
+BCvalues[pn.pore_properties['type']==6] = 8e-1
 ##Neumann
-#BCtypes[pn.pore_properties['type']==1]=1
-#BCtypes[pn.pore_properties['type']==6]=4
-#BCvalues[pn.pore_properties['type']==1]=8e-1
-#BCvalues[pn.pore_properties['type']==6]=-2e-10
+#BCtypes[pn.pore_properties['type']==1] = 1
+#BCtypes[pn.pore_properties['type']==6] = 4
+#BCvalues[pn.pore_properties['type']==1] = 8e-1
+#BCvalues[pn.pore_properties['type']==6] = -2e-10
 
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
@@ -102,5 +102,20 @@ params_alg = {
 Fickian_alg.run(pn,**params_alg)
     #calc Deff and store it
 
+
+##Permeability
+#BCtypes[pn.pore_properties['type']==1] = 1
+#BCtypes[pn.pore_properties['type']==6] = 1
+#BCvalues[pn.pore_properties['type']==1] = 1e6
+#BCvalues[pn.pore_properties['type']==6] = 3e6
+#
+#permeability_alg = OpenPNM.Algorithms.Permeability()
+#permeability_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
+#params_alg = {
+#                'fluid_name': 'water',
+#    'conduit_filling_method': 'strict',
+#                        'Pc': 0,
+#             }
+#permeability_alg.run(pn,**params_alg)
 
 print clock()-start,"seconds."
