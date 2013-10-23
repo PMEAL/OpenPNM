@@ -6,26 +6,21 @@ module MultiPhase
 """
 import scipy as sp
 
-def conduit_filled_state_calculator(network):
+def calc_conduit_filling(network,method='strict'):
     r"""
-    
-    """
-    pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
-    network.throat_conditions['satn_wp_conduits'] = network.pore_conditions['satn_wp'][pores[:,0]]*network.pore_conditions['satn_wp'][pores[:,1]]
-    network.throat_conditions['satn_nwp_conduits'] = -network.pore_conditions['satn_wp'][pores[:,0]]*-network.pore_conditions['satn_wp'][pores[:,1]]
 
-def apply_phase_state_to_conduit_conductance(network,fluid_name):
-    r"""
-    nothing yet
     """
-    fluid_wettability = network.phases[fluid_name]['wettability']    
-    Conductance = network.throat_conditions['diffusive_conductance'+'_'+fluid_name]
-    if fluid_wettability == 'wp':
-        Conductance[network.throat_conditions['satn_nwp_conduits']] = 1e-30
-    else:
-        Conductance[network.throat_conditions['satn_wp_conduits']] = 1e-30
-        
-    return(Conductance)
+    if method == 'strict':
+        #if only EITHER pore is filled an open throat is considered closed
+        pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
+        network.throat_conditions['conduit_satn_wp'] = network.pore_conditions['satn_wp'][pores[:,0]]*network.pore_conditions['satn_wp'][pores[:,1]]
+        network.throat_conditions['conduit_satn_nwp'] = -network.pore_conditions['satn_wp'][pores[:,0]]*-network.pore_conditions['satn_wp'][pores[:,1]]
+    elif method == 'moderate':
+        #if only ONE pore isfilled an open throat is still considered open
+        print 'nothing yet'
+    elif method == 'liberal':
+        #if BOTH pores are filled an open throat is still considered open
+        print 'nothing yet'
 
 def full_pore_filling(network,Pc=0.0,Seq=0):
     r"""
@@ -49,7 +44,7 @@ def full_pore_filling(network,Pc=0.0,Seq=0):
         network.pore_conditions['satn_wp'] = network.pore_conditions['IP_inv_seq']>Seq
     else:
         network.pore_conditions['satn_wp'] = sp.ones((network.get_num_pores(),), dtype=sp.int0)>0
-        
+
 def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     r"""
     Applies a late pore filling model to determine the fractional saturation of a pore based on the given capillary pressure
@@ -80,7 +75,7 @@ def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     Pc_star = network.pore_conditions['Pc_invaded']
     swp = swpi*(Pc_star/Pc)**eta*(network.pore_conditions['Pc_invaded']<=Pc)
     swp = swp + (network.pore_conditions['Pc_invaded']>Pc)
-    network.pore_conditions['satn_wp'] = swp
+    network.pore_conditions['satn'+'_'+fluid_name] = swp
 
 
 
