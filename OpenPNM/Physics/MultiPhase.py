@@ -48,7 +48,7 @@ def Apply_Phase_State_to_Conduit_Conductivity(network):
     C_wet[network.throat_properties['snwp']] = 1e-30
     return(C_wet)
 
-def full_pore_filling(network,Pc=0.0):
+def full_pore_filling(network,Pc=[],Seq=[]):
     r"""
     Determine the filled state of a pore based on given capillary pressure
 
@@ -64,7 +64,12 @@ def full_pore_filling(network,Pc=0.0):
     It is necessary that a capillary pressure curve has been run first, using the OrdinaryPercolation module.
 
     """
-    network.pore_conditions['satn_wp'] = network.pore_conditions['Pc_invaded']>Pc
+    if Pc and not Seq:
+        network.pore_conditions['satn_wp'] = network.pore_conditions['Pc_invaded']>Pc
+    elif Seq and not Pc:
+        network.pore_conditions['satn_wp'] = network.pore_conditions['IP_inv_Pseq']>Seq
+    else:
+        print 'error'
 
 def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     r"""
