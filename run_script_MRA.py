@@ -86,7 +86,7 @@ BCtypes[pn.pore_properties['type']==1] = 1
 BCtypes[pn.pore_properties['type']==6] = 1
 BCvalues[pn.pore_properties['type']==1] = 8e-1
 BCvalues[pn.pore_properties['type']==6] = 8e-2
-##Nuemann
+##Neumann
 #BCtypes[pn.pore_properties['type']==1]=1
 #BCtypes[pn.pore_properties['type']==6]=4
 #BCvalues[pn.pore_properties['type']==1]=8e-1
@@ -94,6 +94,13 @@ BCvalues[pn.pore_properties['type']==6] = 8e-2
 
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
-Fickian_alg.run(pn,fluid_name='air')
+params_alg = {
+                'fluid_name': 'air',
+    'conduit_filling_method': 'strict',
+                        'Pc': 0,
+             }
+Fickian_alg.run(pn,**params_alg)
+    #calc Deff and store it
+
 
 print clock()-start,"seconds."
