@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 
 import inspect
 from decimal import Decimal
@@ -118,7 +118,7 @@ class GenericIOWidget(QtGui.QWidget):
 
     #   widget.currentIndexChanged.connect(lambda: self.input_changed.emit(self.current_input()) )
 
-    elif isinstance(arg_value, (list, tuple)):
+    elif isinstance(arg_value, (list,tuple) ):
       ''' if the input is iterable, attempt to capture its structure by creating a widget nest
       as we travel through the tree
       '''

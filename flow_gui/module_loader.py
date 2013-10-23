@@ -1,8 +1,10 @@
+from __future__ import absolute_import, print_function
+
 import inspect
 import re
 from PyQt4 import QtGui, QtCore
 
-from widgets import *
+from .widgets import *
 
 class GenericModuleWidget(QtGui.QWidget):
 
@@ -51,7 +53,6 @@ class GenericModuleWidget(QtGui.QWidget):
     self.check_state(current_input)
 
   def check_state(self, current_input):
-
     if not self.content:
       self.state_changed.emit(0)
 

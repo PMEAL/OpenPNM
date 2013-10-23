@@ -1,6 +1,11 @@
+from __future__ import absolute_import, print_function
+
+import logging
+
 import sip
 from PyQt4 import QtGui, QtCore
 from .module_loader import GenericModuleWidget
+from .preview import PreviewWidget
 from . import icons_rc
 
 VERSION = 0.1
@@ -13,27 +18,21 @@ class PipelineItem(QtGui.QStandardItem):
     self.setTristate(True)
     self.setCheckState(0)
     self.module_widget = module_widget
-    self.module_widget.item = self
+    self.module_widget.item = self # not a good idea
     
-    self.module_widget.state_changed.connect(self.update)
+    self.module_widget.state_changed.connect(self.update_warnings)
 
-    self.preview = QtGui.QTextEdit()
-    self.preview.setAcceptRichText(False)
-    self.preview.setFocusPolicy(QtCore.Qt.NoFocus)
+    self.preview = PreviewWidget(main_window.preview_sources)
 
     self.main_window = main_window
-
+    
   @property
   def data_dict(self):
     return self.module_widget.content
 
-  def update(self, check_state):
+  def update_warnings(self, check_state):
     self.setCheckState(check_state)
-
-    self.preview.setPlainText(
-      '\n\n'.join("{0}:\n{1}".format(key, value) for key, value in sorted(self.branch_properties().items())) )
-    
-    self.main_window.update()
+    # self.main_window.update()
 
   def branch_properties(self):
     item = self
@@ -50,10 +49,12 @@ class PipelineItem(QtGui.QStandardItem):
     return properties
 
 class MainWindow(QtGui.QMainWindow):
+  preview_sources = []
 
   def __init__(self):
     super(MainWindow, self).__init__()
     self.setWindowTitle("{name} v{version}".format(name=NAME,version=VERSION))
+    self.move(50,50)
     self.setCorner( QtCore.Qt.BottomRightCorner, QtCore.Qt.RightDockWidgetArea )
     self.persistent_container = [] # avoid quirk with model items being auto-deleted silently by Qt
     self.create_model()
@@ -71,7 +72,7 @@ class MainWindow(QtGui.QMainWindow):
 
     self.view_settings_action = self.settings.toggleViewAction()
     self.view_settings_action.setIcon(QtGui.QIcon(":qrc/icons/cog.png"))
-    self.view_visualization_action = self.preview.toggleViewAction()
+    self.view_visualization_action = self.preview_dock.toggleViewAction()
     self.view_visualization_action.setIcon(QtGui.QIcon(":qrc/icons/monitor.png"))
 
   def create_widgets(self):
@@ -97,9 +98,10 @@ class MainWindow(QtGui.QMainWindow):
     self.settings = QtGui.QDockWidget("Settings")
     self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.settings)
 
-    self.preview = QtGui.QDockWidget("Visualization")
-    self.preview.setMinimumSize(500,500)
-    self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.preview)
+    self.preview_dock = QtGui.QDockWidget("Visualization")
+    self.preview_dock.setMinimumSize(500,500)
+    # self.preview_dock.setTitleBarWidget(QtGui.QLabel("Visualization"))
+    self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.preview_dock)
 
   def populate_toolbar(self):
     ''' There is no way to add items to the beginning of the toolbar.
@@ -153,6 +155,7 @@ class MainWindow(QtGui.QMainWindow):
     if icon:      new_action.setIcon(QtGui.QIcon(icon))
     if shortcut:  new_action.setShortcut(shortcut)
     self.toolbar.addAction(new_action)
+    logging.info("{module} added as source.".format(module=module))
 
   def remove_branch(self):
     index, item = self.selection()
@@ -192,11 +195,17 @@ class MainWindow(QtGui.QMainWindow):
   def update(self):
     index, item = self.selection()
     self.settings.setWidget( item.module_widget if item else None )
-    self.preview.setWidget( item.preview if item else None )
+    self.preview_dock.setWidget( item.preview if item else None )
 
   def run_all(self):
     for item in self.traverse(self.model.invisibleRootItem())[1:]:
       item.module_widget.visible_widget.current_output()
 
+      item.preview.update(item.branch_properties())
+
+
   def save_project(self):
     print( "Save" )
+
+  def set_previews(self, preview_sources):
+    self.preview_sources = preview_sources
