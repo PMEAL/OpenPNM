@@ -46,7 +46,7 @@ pn.pore_conditions['temperature'] = 353
 pn.pore_conditions['pressure'] = 101325
 
 #Define the fluids and set their properties
-params_air = {       'name': 'air',
+air_recipe = {       'name': 'air',
                        'Pc': 3.771e6, #Pa
                        'Tc': 132.65,  #K
                        'MW': 0.0291,  #kg/mol
@@ -59,9 +59,9 @@ params_air = {       'name': 'air',
                                   'uo': 0.001,
                                    'b': 0.1},
             'molar_density': {'method': 'ideal_gas',
-                                   'R': 8.413},
+                                   'R': 8.314},
 }
-params_water = {     'name': 'water',
+water_recipe = {     'name': 'water',
                        'Pc': 2.206e6, #Pa
                        'Tc': 647,     #K
                        'MW': 0.0181,  #kg/mol
@@ -73,12 +73,12 @@ params_water = {     'name': 'water',
                                'value': 44445},
 }
 #Create fluids
-air = OpenPNM.Fluids.GenericFluid(params_air,loglevel=50)
-water= OpenPNM.Fluids.GenericFluid(params_water)
+air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
+water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
 
 #Assign fluids to network
-air.assign_to(pn)
-water.assign_to(pn)
+air.assign_to_network(pn)
+water.assign_to_network(pn)
 print ''
 print 'current pore conditions:'
 for i in pn.pore_conditions.keys():
@@ -91,8 +91,8 @@ pn.pore_conditions['temperature'] = 333
 pn.pore_conditions['pressure'] = 201325
 
 #Update fluids
-air.refresh_in(pn)
-water.refresh_in(pn)
+air.refresh_in_network(pn)
+water.refresh_in_network(pn)
 print ''
 print 'current pore conditions:'
 for i in pn.pore_conditions.keys():
@@ -101,15 +101,15 @@ print ''
 
 print "Swapping out fluid 'water' with a similar 'solution'"
 #Create a new fluid that is similar to water
-params_solution = pn.phases['water']
+solution_recipe = pn.phases['water']
 #Subtly change something about it
-params_solution['viscosity']['value'] = 0.0015
-solution = OpenPNM.Fluids.GenericFluid(params_solution)
-solution.rename('solution')
+solution_recipe['viscosity']['value'] = 0.0015
+solution = OpenPNM.Fluids.GenericFluid().create(solution_recipe)
+solution.rename_fluid('solution')
 #Add this fluid to the network
-solution.assign_to(pn)
+solution.assign_to_network(pn)
 #Remove water
-water.remove_from(pn)
+water.remove_from_network(pn)
 
 print ''
 print 'current pore conditions:'
@@ -117,10 +117,51 @@ for i in pn.pore_conditions.keys():
     print i,'=',pn.pore_conditions[i]
 print ''
 
-#Disassociate fluids from network
-#OpenPNM.Fluids.GenericFluid().remove(pn,'air')
-#OpenPNM.Fluids.GenericFluid().remove(pn,'water')
+##################################################################
+#Now, try to do everything above without creating a fluid object
+print 'Working from the network exclusively'
+#Generate Network Geometry
+pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geom1)
+pn.pore_conditions['temperature'] = 353
+pn.pore_conditions['pressure'] = 101325
 
+#Assign fluids to network
+pn.assign_fluid(air_recipe)
+pn.assign_fluid(water_recipe)
 
+print ''
+print 'current pore conditions:'
+for i in pn.pore_conditions.keys():
+    print i,'=',pn.pore_conditions[i]
+print ''
+#Run some algorithms that change base conditions
+#blah, blah, blah...
+print 'changing temp and pressure...'
+pn.pore_conditions['temperature'] = 333
+pn.pore_conditions['pressure'] = 201325
 
+#Update fluids
+pn.refresh_all_fluids()
 
+print ''
+print 'current pore conditions:'
+for i in pn.pore_conditions.keys():
+    print i,'=',pn.pore_conditions[i]
+print ''
+
+print "Swapping out fluid 'water' with a similar 'solution'"
+#Create a new fluid that is similar to water
+solution_recipe = copy.deepcopy(pn.phases['water'])
+#Subtly change something about it
+solution_recipe['viscosity']['value'] = 0.0015
+solution_recipe['name'] = 'solution'
+#Add this fluid to the network
+pn.assign_fluid(solution_recipe)
+#Remove water
+pn.remove_fluid('water')
+
+print ''
+print 'current pore conditions:'
+for i in pn.pore_conditions.keys():
+    print i,'=',pn.pore_conditions[i]
+print ''

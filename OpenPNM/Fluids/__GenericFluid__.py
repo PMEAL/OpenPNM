@@ -10,63 +10,67 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
     ----------
 
     """
-    def __init__(self,fluid_dict,**kwargs):
+    def __init__(self,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        self._fluid_dict = copy.deepcopy(fluid_dict)
         # the following two lines track the methods that update pore or throat properties
-        self._accepted_pore_methods = ['diffusivity','viscosity','molar_density']
-        #self._implemented_methods = ['diffusivity','viscosity','molar_density']
+        self._implemented_methods = ['diffusivity','viscosity','molar_density']
         self._accepted_throat_methods = []
 
-    def assign_to(self,network):
+    def create(self,fluid_recipe):
+        self._fluid_recipe = copy.deepcopy(fluid_recipe)
+        return self
+        
+
+    def assign_to_network(self,network):
         #Make sure base conditions are set
         if 'temperature' not in network.pore_conditions.keys():
             network.pore_conditions['temperature'] = sp.array(293.15,ndmin=1)
         if 'pressure' not in network.pore_conditions.keys():
             network.pore_conditions['pressure'] = sp.array(101325,ndmin=1)
-        network.phases.update({self._fluid_dict['name']: self._fluid_dict})
-        self.refresh_in(network)
+        network.phases.update({self._fluid_recipe['name']: self._fluid_recipe})
+        self.refresh_in_network(network)
 
-    def remove_from(self,network):
-        fluid_name = self._fluid_dict['name']
+    def remove_from_network(self,network):
+        fluid_name = self._fluid_recipe['name']
         del network.phases[fluid_name]
-        for i in self._accepted_pore_methods:
+        for i in self._implemented_methods:
             try: del network.pore_conditions["{prop}_{fluid}".format(prop=i, fluid=fluid_name)]
             except: self._logger.warn("Attempted to remove a pore condition that doesn't exist")
-        for i in self._accepted_throat_methods:
-            try: del network.throat_conditions["{prop}_{fluid}".format(prop=i, fluid=fluid_name)]
-            except: self._logger.warn("Attempted to remove a throat condition that doesn't exist")
+#        for i in self._accepted_throat_methods:
+#            try: del network.throat_conditions["{prop}_{fluid}".format(prop=i, fluid=fluid_name)]
+#            except: self._logger.warn("Attempted to remove a throat condition that doesn't exist")
 
-    def rename(self,new_name):
-        self._fluid_dict['name'] = new_name
-        self._logger.warn("Warning: renaming a fluid does not change fluids already assigned to a network")
+    def rename_fluid(self,new_name):
+        self._fluid_recipe['name'] = new_name
+        #actually, because the network isn't a deep copy, the warning isn't necessary
+        #self._logger.warn("Warning: renaming a fluid may not change fluids already assigned to a network")
 
-    def refresh_in(self,network):
-        fluid_name = self._fluid_dict['name']
+    def refresh_in_network(self,network):
+        fluid_name = self._fluid_recipe['name']
         try: network.phases[fluid_name]
         except: raise Exception('This fluid does not exist in the specified network')
-        for i in self._accepted_pore_methods:
+        for i in self._implemented_methods:
             network.pore_conditions.update({ "{prop}_{fluid}".format(prop=i, fluid=fluid_name) : getattr(self,i)(network)})
-        for i in self._accepted_throat_methods:
-            network.throat_conditions.update({ "{prop}_{fluid}".format(prop=i, fluid=fluid_name) : getattr(self,i)(network)})
+#        for i in self._accepted_throat_methods:
+#            network.throat_conditions.update({ "{prop}_{fluid}".format(prop=i, fluid=fluid_name) : getattr(self,i)(network)})
 
     def diffusivity(self,network):
-        fluid_name = self._fluid_dict['name']
+        fluid_name = self._fluid_recipe['name']
         params = network.phases[fluid_name]['diffusivity']
         eqn = getattr(OpenPNM.Fluids.Diffusivity,params['method'])
         vals = eqn(network,**params)
         return sp.array(vals,ndmin=1)
 
     def viscosity(self,network):
-        fluid_name = self._fluid_dict['name']
+        fluid_name = self._fluid_recipe['name']
         params = network.phases[fluid_name]['viscosity']
         eqn = getattr(OpenPNM.Fluids.Viscosity,params['method'])
         vals = eqn(network,**params)
         return sp.array(vals,ndmin=1)
 
     def molar_density(self,network):
-        fluid_name = self._fluid_dict['name']
+        fluid_name = self._fluid_recipe['name']
         params = network.phases[fluid_name]['molar_density']
         eqn = getattr(OpenPNM.Fluids.MolarDensity,params['method'])
         vals = eqn(network,**params)
