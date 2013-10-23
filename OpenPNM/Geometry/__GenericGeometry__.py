@@ -264,42 +264,29 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
 
         """
         print 'not implemented yet'
-        
+
 
     def _generate_boundaries(self,**params):
         r"""
-        This should generate boundary networks using the parameters passed to generate(), but lattice based on geometry. 
-        
+        This should generate boundary networks using the parameters passed to generate(), but lattice based on geometry.
+
         Parameters
         ----------
         params = {
         'psd_info'   : {'name'  :, #Each statistical package takes different params, so send as dict
-                'shape' : 
-                'loc'   : 
+                'shape' :
+                'loc'   :
                 'scale' : },
-        'tsd_info'   : {'name'  : 
-                'shape' : 
-                'loc'   : 
+        'tsd_info'   : {'name'  :
+                'shape' :
+                'loc'   :
                 'scale' : },
-        'btype'                 : 
-        'lattice_spacing'       : 
-        'divisions'             : 
+        'btype'                 :
+        'lattice_spacing'       :
+        'divisions'             :
         }
         """
         self._logger.error("_generate_boundaries: not implemented")
-     
-    @staticmethod
-    def plot_net(net):
-        x = net.pore_properties['coords'][:,0]
-        y = net.pore_properties['coords'][:,1]
-        z = net.pore_properties['coords'][:,2]
-        c = np.abs(x)
-        
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        cmhot = plt.get_cmap("hot")
-        cax = ax.scatter(x, y, z, s=50, c = c, cmap = cmhot)
-        plt.show()         
 
 if __name__ == '__main__':
     test=GenericGeometry(loggername="TestGenerator")
