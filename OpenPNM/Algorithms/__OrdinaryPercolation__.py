@@ -18,6 +18,7 @@ import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import matplotlib.pyplot as plt
+from time import clock
 
 from __GenericAlgorithm__ import GenericAlgorithm
 
@@ -109,4 +110,37 @@ class OrdinaryPercolation(GenericAlgorithm):
 
 
 if __name__ == '__main__':
-    print "Create a test"
+    print ''
+    print ''    
+    print '************Testing OrdinaryPercolation Algorithm**************'
+    clock()
+    print "="*50
+    print "= Example: Create random network and run an ordinary\n= percolation algorithm"
+    print "-"*50   
+    params = {
+        'domain_size'               : [1,1,1],  #physical network size [meters]
+        'divisions'                 : [10,10,10], #Number of pores in each direction
+        'lattice_spacing'           : [],  #spacing between pores [meters]
+        'stats_pores'   : {  'name' : 'weibull_min', #Each statistical package takes different params, so send as dict
+                            'shape' : 1.5,
+                              'loc' : 6e-6,
+                            'scale' : 2e-5},
+        'stats_throats' : {  'name' : 'weibull_min',
+                            'shape' : 1.5,
+                              'loc' : 6e-6,
+                            'scale' : 2e-5},
+        'btype'                     : [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
+        }
+    
+    print "- * Generate a simple cubic network" 
+    pn = OpenPNM.Geometry.Cubic().generate(**params)
+    print "- * Assign capillary pressures to throats"
+    pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure.Washburn(pn,0.072,110)
+    inlets = [0]
+    print "- * Run Ordinary percolation algorithm"
+    exp = OpenPNM.Algorithms.OrdinaryPercolation()
+    exp.run(pn, npts=50, inv_sites=inlets)
+    print "+"*50
+    print "- * Completed OP algorithm in a",pn.get_num_pores(),'pore network \n-   with',exp._npts,'points in',np.round(clock(),decimals=2),'seconds.'
+    print "+"*50
+    print 
