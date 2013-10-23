@@ -10,13 +10,17 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
     ----------
 
     """
-    def __init__(self,fluid_dict,**kwargs):
+    def __init__(self,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        self._fluid_dict = copy.deepcopy(fluid_dict)
         # the following two lines track the methods that update pore or throat properties
         self._implemented_methods = ['diffusivity','viscosity','molar_density']
         self._accepted_throat_methods = []
+
+    def create(self,fluid_dict):
+        self._fluid_dict = copy.deepcopy(fluid_dict)
+        return self
+        
 
     def assign_to_network(self,network):
         #Make sure base conditions are set

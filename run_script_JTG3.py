@@ -73,8 +73,8 @@ params_water = {     'name': 'water',
                                'value': 44445},
 }
 #Create fluids
-air = OpenPNM.Fluids.GenericFluid(params_air,loglevel=50)
-water= OpenPNM.Fluids.GenericFluid(params_water)
+air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(params_air)
+water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(params_water)
 
 #Assign fluids to network
 air.assign_to_network(pn)
@@ -104,7 +104,7 @@ print "Swapping out fluid 'water' with a similar 'solution'"
 params_solution = pn.phases['water']
 #Subtly change something about it
 params_solution['viscosity']['value'] = 0.0015
-solution = OpenPNM.Fluids.GenericFluid(params_solution)
+solution = OpenPNM.Fluids.GenericFluid().create(params_solution)
 solution.rename_fluid('solution')
 #Add this fluid to the network
 solution.assign_to_network(pn)
