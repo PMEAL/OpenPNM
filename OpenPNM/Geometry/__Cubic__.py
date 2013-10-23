@@ -139,23 +139,23 @@ class Cubic(GenericGeometry):
         self._net.throat_properties['connections'] = connections
         self._net.throat_properties['type'] = np.zeros(np.shape(tpore1),dtype=np.int8)
         self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
-        
+
         for i in range(0,np.shape(tpore1)[0]):
             temp1 = self._net.pore_properties['type'][connections[i,0]]
             temp2 = self._net.pore_properties['type'][connections[i,1]]
             if temp1 > 0 and temp2 > 0:
                 self._net.throat_properties['type'][i] = 1
-        
+
         self._logger.debug("generate_throats: End of method")
-        
+
     def _generate_boundaries(self,net,**params):
-        
+
         self._logger.info("generate_boundaries: Define edge points of the pore network and stitch them on")
         self._generate_setup(**params)
         Lc = self._Lc
         params['divisions'] = [self._Nx, self._Ny, self._Nz]
         temp_divisions = sp.copy(params['divisions']).tolist()
-        
+
         for i in range(0,6):
             params['divisions'] = temp_divisions
             temp_divisions = sp.copy(params['divisions']).tolist()
@@ -168,39 +168,44 @@ class Cubic(GenericGeometry):
                 displacement[i%3] = -1*(net.pore_properties['coords'][:,i%3].min() + 0.5*Lc)
             self.translate_coordinates(edge_net,displacement)
             self.stitch_network(net,edge_net,edge = 1,stitch_nets = 0)
-            
-        self.stitch_throats(net)
-        
-        return net    
+
+        self._stitch_throats(net)
+
+        return net
         self._logger.debug("generate_boundaries: End of method")
 
-    def stitch_network(self,net1,net2,edge = 0, stitch_nets = 1, stitch_side = 'top'):
+    def stitch_network(self,net1,net2,edge = 0, stitch_nets = 1, stitch_side = []):
         r"""
         Stitch two networks together
-        
+
         Parameters
         ----------
         net1 : OpenPNM Network Object
             The network that is stiched to
-        
+
         net2 : OpenPNM Network Object
             The network that is stitched
-            
-        edge : default value of 0. This changed if you are adding boundaries to an existing network. 
-        
+
+        edge : default value of 0. This changed if you are adding boundaries to an existing network.
+
         stitch_nets : default value of 1. This assumes you are stitching 2 separately generated networks together. If the value
             is changed to a value of 0, you don't append the throats of the stitched network because you are adding boundary pores.
-        
+
+        stitch_side : string (optional)
+            When given, this flag moves net2 into position automatically
+
         """
         net2.pore_properties['numbering']   = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
-        net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)        
+        net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)
         net1.pore_properties['volume']      = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
         net1.pore_properties['seed']        = sp.concatenate((net1.pore_properties['seed'],net2.pore_properties['seed']),axis = 0)
         net2.pore_properties['type']        = sp.repeat(edge,len(net2.pore_properties['type']))
         net1.pore_properties['type']        = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
         net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
-        
+
         if stitch_nets:
+            if ~stitch_size:
+                #stitch in place
             if stitch_side == 'top':
                 def_translate = net1.pore_properties['coords'][:,0].max()+net1.pore_properties['coords'][:,0].min()
                 OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[def_translate,0,0])
@@ -219,9 +224,9 @@ class Cubic(GenericGeometry):
             elif stitch_side == 'back':
                 def_translate = net1.pore_properties['coords'][:,0].max()+net1.pore_properties['coords'][:,0].min()
                 OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[def_translate,0,0])
-        
+
         net1.pore_properties['coords']      = sp.concatenate((net1.pore_properties['coords'],net2.pore_properties['coords']),axis = 0)
-        
+
         net2.throat_properties['numbering'] = len(net1.throat_properties['numbering']) + net2.throat_properties['numbering']
         net1.throat_properties['numbering'] = sp.concatenate((net1.throat_properties['numbering'],net2.throat_properties['numbering']),axis=0)
         net1.throat_properties['volume']    = sp.concatenate((net1.throat_properties['volume'],net2.throat_properties['volume']),axis=0)
@@ -230,35 +235,36 @@ class Cubic(GenericGeometry):
         net1.throat_properties['seed']      = sp.concatenate((net1.throat_properties['seed'],net2.throat_properties['seed']),axis=0)
         net2.throat_properties['type']      = sp.repeat(edge,len(net2.throat_properties['type']))
         net1.throat_properties['type']      = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
-        
+
         if stitch_nets:
-            self.stitch_throats(net1)
-        
-    def stitch_throats(self,net):
+            self._stitch_throats(net1)
+
+    def _stitch_throats(self,net):
         r"""
         Stitch two networks together OR adds the boundary throats to an existing network
-        
+
         Parameters
         ----------
         net : OpenPNM Network Object
             The network that is stiched, whos throats are being added.
-        
+
         """
-        
+
         pts = net.pore_properties['coords']
         tri = sptl.Delaunay(pts)
 
         adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
         dist_comb = list(itr.combinations_with_replacement(range(4),2))
-        
+
         for i in range(len(tri.simplices)):
             for j in range(len(dist_comb)):
                 point_1 = tri.simplices[i,dist_comb[j][0]]
                 point_2 = tri.simplices[i,dist_comb[j][1]]
                 coords_1 = tri.points[point_1]
                 coords_2 = tri.points[point_2]
-                adj_mat[point_1,point_2] = self._net.fastest_calc_dist(coords_1,coords_2)
-        
+                adj_mat[point_1,point_2] = self._net.fastest_calc_dist(coords_1,coords_2) #move off of network
+
+        #Begin removing undesired connections based on their length
         ind = np.ma.where(adj_mat>0)
         I = ind[:][0].tolist()
         J = ind[:][1].tolist()
@@ -269,7 +275,7 @@ class Cubic(GenericGeometry):
         for i in range(len(masked[0])):
             connections[i,0] = masked[0][i]
             connections[i,1] = masked[1][i]
-        
+
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),np.int)
@@ -278,7 +284,7 @@ class Cubic(GenericGeometry):
         #    temp2 = net.pore_properties['type'][connections[i,1]]
         #    if temp1 > 0 and temp2 > 0:
         #        net.throat_properties['type'][i] = 1
-        
+
 
 
 if __name__ == '__main__':
