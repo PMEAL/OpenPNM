@@ -4,15 +4,13 @@ module MultiPhase
 ===============================================================================
 
 """
-
-import OpenPNM
 import scipy as sp
 
 def conduit_filled_state_calculator(network):
     r"""
     
     """
-    pores = network.get_connected_pores(network.throat_conditions['numbering'],flatten=0)
+    pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
     network.throat_conditions['satn_wp_conduits'] = network.pore_conditions['satn_wp'][pores[:,0]]*network.pore_conditions['satn_wp'][pores[:,1]]
     network.throat_conditions['satn_nwp_conduits'] = -network.pore_conditions['satn_wp'][pores[:,0]]*-network.pore_conditions['satn_wp'][pores[:,1]]
 
@@ -47,8 +45,10 @@ def full_pore_filling(network,Pc=0.0,Seq=0):
     """
     if Pc:
         network.pore_conditions['satn_wp'] = network.pore_conditions['Pc_invaded']>Pc
-    else:
+    elif Seq:
         network.pore_conditions['satn_wp'] = network.pore_conditions['IP_inv_seq']>Seq
+    else:
+        network.pore_conditions['satn_wp'] = sp.ones((network.get_num_pores(),), dtype=sp.int0)>0
         
 def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     r"""
