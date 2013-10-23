@@ -71,12 +71,12 @@ params_water = {     'name': 'water',
                                'value': 44445},
 }
 #Create fluids
-air = OpenPNM.Fluids.GenericFluid(params_air,loglevel=50)
-water= OpenPNM.Fluids.GenericFluid(params_water)
+air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(params_air)
+water= OpenPNM.Fluids.GenericFluid().create(params_water)
 
 #Assign fluids to network
-air.assign_to(pn)
-water.assign_to(pn)
+air.assign_to_network(pn)
+water.assign_to_network(pn)
 
 #Assign boundary conditions
 BCtypes = sp.zeros(pn.get_num_pores())
