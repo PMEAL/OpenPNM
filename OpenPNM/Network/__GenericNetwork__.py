@@ -604,6 +604,23 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     def update(self):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
+        
+    def assign_fluid(self,fluid_recipe):
+        fluid = OpenPNM.Fluids.GenericFluid().create(fluid_recipe)
+        fluid.assign_to_network(self)
+        
+    def refresh_fluid(self,fluid_name):
+        fluid = OpenPNM.Fluids.GenericFluid().create(self.phases[fluid_name])
+        fluid.refresh_in_network(self)
+        
+    def refresh_all_fluids(self):
+        for i in self.phases:
+            print i
+            self.refresh_fluid(i)
+    
+    def remove_fluid(self,fluid_name):
+        fluid = OpenPNM.Fluids.GenericFluid().create(self.phases[fluid_name])
+        fluid.remove_from_network(self)
 
 if __name__ == '__main__':
     test1=GenericNetwork(loggername='Test1')
