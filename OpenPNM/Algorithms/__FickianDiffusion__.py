@@ -47,16 +47,17 @@ class FickianDiffusion(LinearSolver):
         This function executes the essential mathods before building matrices in Linear solution
         """
         network = self._net
-        fluid_name = params['fluid_name']
+        self.fluid_name = params['fluid_name']
+        network.refresh_fluid(self.fluid_name)
         # Variable transformation for Fickian Algorithm
         Dir_pores = network.pore_properties['numbering'][self.BCtypes==1]
         self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])
         # Building diffusive conductance
-        OpenPNM.Physics.MassTransport.DiffusiveConductance(network,fluid_name)
+        OpenPNM.Physics.MassTransport.DiffusiveConductance(network,self.fluid_name)
 #        method = params['conduit_filling_method']
 #        OpenPNM.Physics.MultiPhase.full_pore_filling(network)
 #        OpenPNM.Physics.MultiPhase.calc_conduit_filling(network,method)
-        g = network.throat_conditions['diffusive_conductance'+'_'+fluid_name]
+        g = network.throat_conditions['diffusive_conductance'+'_'+self.fluid_name]
 #        c = pn.throat_conditions['']
         self._conductance = g
 
@@ -67,6 +68,6 @@ class FickianDiffusion(LinearSolver):
         """
         X = self._do_one_inner_iteration()
         xA = 1-sp.exp(X)
-        self._net.pore_conditions['mole_fractions'] = xA
+        self._net.pore_conditions['mole_fraction'+'_'+self.fluid_name] = xA
         print xA
 

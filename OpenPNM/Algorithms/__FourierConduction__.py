@@ -1,8 +1,11 @@
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 11 10:50:28 2013
+# Author: CEF PNM Team
+# License: TBD
+# Copyright (c) 2012
 
-@author: Mahmoudreza Aghighi
+#from __future__ import print_function
+"""
 
 module __FourierConduction__: 
 ========================================================================
@@ -17,7 +20,18 @@ from __LinearSolver__ import LinearSolver
 
 class FourierConduction(LinearSolver):
     r"""   
-            
+    
+    Fourier Conduction - Class to run an algorithm for heat conduction through flow on constructed networks
+    
+                        It returns temperature gradient inside the network.
+                                  
+                            
+    Parameter
+    ----------
+    -loglevel : int
+        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)    
+                
+        
     """
     
     def __init__(self,loglevel=10,**kwargs):
@@ -26,29 +40,29 @@ class FourierConduction(LinearSolver):
         """
         super(FourierConduction,self).__init__(**kwargs)
         self._logger.info("Create Fourier Conduction Algorithm Object")
-        print 'init'
             
-    def _setup_for_Solver(self,loglevel=10,
-                               T=353.15,                                    
-                               **params):
+    def _setup(self,**params):
         r"""
 
         This function executes the essential mathods for building matrices in Linear solution 
         """
-        print '_setup_'
-        self._net.pore_properties['temperature'] = T
-        if 'Cdiff' not in self._net.throat_properties:
-            self._logger.info("Creating Fourier thermal conduction conductivities for for solid network")
-            self._net.throat_properties['TCFiber'] = OpenPNM.Physics.ElectricTransport.Conduits_Conductivity(self._net,**params) 
-        else:
-            self.logger.info("Fourier thermal conductivities for solid network have already been created")     
-
-        self._net.throat_properties['Conductivities_Exp'] = self._net.throat_properties['TCFiber']
+        network = self._net
+        self.fluid_name = params['fluid_name']
+        network.refresh_fluid(self.fluid_name)
+        # Building hydraulic conductance
+        OpenPNM.Physics.HeatConduction.ThermalConductance(network,self.fluid_name)
+#        method = params['conduit_filling_method']
+#        OpenPNM.Physics.MultiPhase.full_pore_filling(network)
+#        OpenPNM.Physics.MultiPhase.calc_conduit_filling(network,method)
+        g = network.throat_conditions['thermal_conductance'+'_'+self.fluid_name]
+#        c = pn.throat_conditions['']
+        self._conductance = g
 
     
-    def _do_inner_iteration_stage(self,Experiment='Exp1'):
+    def _do_inner_iteration_stage(self):
         r"""
                        
         """
-        print '_do_outer_iteration_stage'
-        self._net.pore_properties[Experiment+'_solid_temperature'] = self._do_one_inner_iteration()
+        T = self._do_one_inner_iteration()       
+        self._net.pore_conditions['temperature'+'_'+self.fluid_name] = T
+        print T
