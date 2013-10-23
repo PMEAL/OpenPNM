@@ -17,6 +17,8 @@ module __GenericGeometry__: Base class to construct pore networks
 import OpenPNM
 import scipy as sp
 import scipy.stats as spst
+import matplotlib.pyplot as plt
+import numpy as np
 
 class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
     r"""
@@ -56,7 +58,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
-        self._add_boundaries()
+        #self._add_boundaries()
         self._generate_pore_seeds()
         self._generate_throat_seeds()
         self._generate_pore_diameters(stats_pores)
@@ -262,6 +264,29 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
 
         """
         print 'not implemented yet'
+
+
+    def _generate_boundaries(self,**params):
+        r"""
+        This should generate boundary networks using the parameters passed to generate(), but lattice based on geometry.
+
+        Parameters
+        ----------
+        params = {
+        'psd_info'   : {'name'  :, #Each statistical package takes different params, so send as dict
+                'shape' :
+                'loc'   :
+                'scale' : },
+        'tsd_info'   : {'name'  :
+                'shape' :
+                'loc'   :
+                'scale' : },
+        'btype'                 :
+        'lattice_spacing'       :
+        'divisions'             :
+        }
+        """
+        self._logger.error("_generate_boundaries: not implemented")
 
 if __name__ == '__main__':
     test=GenericGeometry(loggername="TestGenerator")
