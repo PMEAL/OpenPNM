@@ -5,7 +5,6 @@ module MassTransport
 
 """
 
-import OpenPNM
 import scipy as sp
 
 def DiffusiveConductance(network,fluid_name):

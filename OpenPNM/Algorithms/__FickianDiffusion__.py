@@ -1,8 +1,11 @@
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 11 10:50:28 2013
+# Author: CEF PNM Team
+# License: TBD
+# Copyright (c) 2012
 
-@author: Mahmoudreza Aghighi
+#from __future__ import print_function
+"""
 
 module __FickianDiffusion__: Fick's Law Diffusion
 ========================================================================
@@ -21,8 +24,7 @@ class FickianDiffusion(LinearSolver):
     FickianDiffusion - Class to run Fick's law mass transfer diffusion on constructed networks
     
                         It returns conecentration gradient inside the network.
-                        An invasion algorithm should be used before running diffusion calculations.
-                                   
+                                 
                             
     Parameter
     ----------
@@ -44,11 +46,13 @@ class FickianDiffusion(LinearSolver):
         r"""
         This function executes the essential mathods before building matrices in Linear solution 
         """
-        network = self._net        
+        network = self._net
+        # Variable transformation for Fickian Algorithm
         Dir_pores = network.pore_properties['numbering'][self.BCtypes==1]
-        self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])        
+        self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])
+        # Building diffusive conductance       
         OpenPNM.Physics.MassTransport.DiffusiveConductance(network,fluid_name)        
-        OpenPNM.Physics.MultiPhase.full_pore_filling(network,Pc=0.0,Seq=0)
+        OpenPNM.Physics.MultiPhase.full_pore_filling(network)
         OpenPNM.Physics.MultiPhase.conduit_filled_state_calculator(network)
         self._net.throat_conditions['eff_conductance'] = OpenPNM.Physics.MultiPhase.apply_phase_state_to_conduit_conductance(network,fluid_name)
          
@@ -57,8 +61,8 @@ class FickianDiffusion(LinearSolver):
         r"""
                        
         """
-        print '_do_outer_iteration_stage'
         X = self._do_one_inner_iteration()
         xA = 1-sp.exp(X)        
         self._net.pore_conditions['mole_fractions'] = xA
+        print xA
 

@@ -1,10 +1,12 @@
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
+# Author: CEF PNM Team
+# License: TBD
+# Copyright (c) 2012
+
+#from __future__ import print_function
 """
-Created on Tue Jun 11 10:50:28 2013
-
-@author: Mahmoudreza Aghighi
-
-module __FickianDiffusion__: Fick's Law Diffusion
+module __LinearSolver__: Algorithm for solving transport processes
 ========================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
@@ -16,10 +18,13 @@ import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.linalg as splin
 from __GenericAlgorithm__ import GenericAlgorithm
+import matplotlib.pylab as plt 
+
 
 class LinearSolver(GenericAlgorithm):
-    r"""   
-
+    r"""
+    This class provides essential methods for building and solving matrices in a transport process.
+    It will be inherited during Fickian diffusion, Fourier heat conduction, Hagen Poiseuille permeability and electron conduction.
         
     """
     
@@ -30,37 +35,12 @@ class LinearSolver(GenericAlgorithm):
         super(LinearSolver,self).__init__(**kwargs)
         self._logger.info("Create Linear Solver Algorithm Object")
             
-#    def _setup(self, **params):
-#        r"""
-#        Main features: Applying Boundary Conditions & Creating Transport Conductivities 
-#
-#        This function executes the essential mathods for building matrices in Linear solution 
-#        """
-#        print '_setup_for_LinearSolver'
-#
-#    
-#    def _do_outer_iteration_stage(self,fluid_name):
-#        r"""
-#                       
-#        """
-#        print '_do_outer_iteration_stage'
-#        self._logger.info("Outer Iteration Stage ")
-#        self._setup_for_Solver(self,fluid_name)       
-#        self._do_inner_iteration(self)
-#
-#    def _do_inner_iteration_stage(self,**params):
-#        r"""
-#                       
-#        """
-#        print '_do_outer_iteration_stage'
 
     def _do_one_inner_iteration(self):
         
-        print '_do_inner_iteration_stage'
-        A = self._coefficient_matrix()   
-        B = self._RHS_matrix()
+        A = self._build_coefficient_matrix() 
+        B = self._build_RHS_matrix()
         X = splin.spsolve(A,B) 
-        print X
         return(X)
     
     def set_boundary_conditions(self,types=[],values=[]):
@@ -88,13 +68,14 @@ class LinearSolver(GenericAlgorithm):
               
         Notes
         -----
-        Nuemann_isolated is equivalent to Nuemann_flux boundary condition with flux = 0.
+        Nuemann_isolated is equivalent to Nuemann_flux boundary condition with flux = 0. 
+        Negative value for Nuemann_rate or Nuemann_flux means that the quanitity of interest leaves the network. 
 
         """
         setattr(self,"BCtypes",types)
         setattr(self,"BCvalues",values)      
            
-    def _coefficient_matrix(self):
+    def _build_coefficient_matrix(self):
         
         # Filling coefficient matrix
 
@@ -112,28 +93,29 @@ class LinearSolver(GenericAlgorithm):
         col = sp.append(col,modified_tpore1)
         data = sp.append(data,self._net.throat_conditions['eff_conductance'][loc1])
         
-        if (self.BCtypes==4).any():
-            self.extera_Nuemann_equations = sp.unique(self.BCvalues[self.BCtypes==2])
-            self.Coeff_dimension = self._net.get_num_pores()+ len(self.extera_Nuemann_equations)
-            extera_neu = self.extera_Nuemann_equations
-            A_dim = self.Coeff_dimension
-            g_super = 1e-8
+        A_dim = self._net.get_num_pores()
 
+        if (self.BCtypes==4).any():
+            self.extera_Nuemann_equations = sp.unique(self.BCvalues[self.BCtypes==4])
+            A_dim = A_dim + len(self.extera_Nuemann_equations)
+            extera_neu = self.extera_Nuemann_equations
+            g_super = 1e2
             for item in range(len(extera_neu)):
                 loc_neu = sp.in1d(tpore2,pnum[self.BCvalues==extera_neu[item]])
-                neu_tpore2 = tpore2[loc_neu]                
+                neu_tpore2 = tpore2[loc_neu]
+                
                 row = sp.append(row,neu_tpore2) 
-                col = sp.append(col,sp.ones([len(neu_tpore2)])*(A_dim-item))
-                data = sp.append(data,sp.ones([len(neu_tpore2)])*g_super)
-                 
-                loc_neu_row = loc_neu * loc1
-                neu_tpore2_row = tpore2[loc_neu_row]
-                row = sp.append(row,sp.ones([len(neu_tpore2_row)])*(A_dim-item)) 
-                col = sp.append(col,neu_tpore2_row)
-                data = sp.append(data,-(self._net.throat_conditions['eff_conductance'][neu_tpore2_row]))
+                col = sp.append(col,len(neu_tpore2)*[A_dim-item-1])
+                data = sp.append(data,len(neu_tpore2)*[-g_super])
+
+                row = sp.append(row,len(neu_tpore2)*[A_dim-item-1]) 
+                col = sp.append(col,neu_tpore2)
+                data = sp.append(data,len(neu_tpore2)*[-g_super])
             
         else:
-            A_dim = self._net.get_num_pores()
+            self.extera_Nuemann_equations = 0
+        
+        self.Coeff_dimension = A_dim
         
         # Adding positions for diagonal
         
@@ -145,17 +127,16 @@ class LinearSolver(GenericAlgorithm):
         A = a.tocsr()        
        
         for i in range(0,A_dim):                    
-            if self.BCtypes[i]==1:
-                A[i,i] = 1                            
-            elif i>self._net.get_num_pores():
-                A[i,i] = len(A[i,:][sp.nonzero(A[i,:])])*g_super
+                           
+            if (i<self._net.get_num_pores() and self.BCtypes[i]==1):
+                A[i,i] = 1 
             else:
                 A[i,i] = -sp.sum(A[i,:][sp.nonzero(A[i,:])])
-                
+
         return(A)
         
         
-    def _RHS_matrix(self):
+    def _build_RHS_matrix(self):
         
         extera_neu = self.extera_Nuemann_equations  
         A_dim = self.Coeff_dimension
@@ -163,15 +144,7 @@ class LinearSolver(GenericAlgorithm):
         Dir_pores = self._net.pore_properties['numbering'][self.BCtypes==1]
         B[Dir_pores] = sp.reshape(self.BCvalues[Dir_pores],[len(Dir_pores),1])
         if (self.BCtypes==4).any():
-            for item in len(extera_neu):                
-                B[self.A_dim-item,0] = extera_neu[item]
-#        else:
-#            A_dim = self._net.get_num_pores()             
-#            B = sp.reshape(self._net.pore_properties['BCvalue'],[A_dim,1])
-#
-#
-#        for i in range(0,self._net.get_num_pores()):
-#            if self._net.pore_properties['BCvalue'][i]!=0:
-#                neighbors = self._net.get_neighbor_pores(i)
-#                if sp.in1d(neighbors,self.Pinvaded).all():
-#                    B[i,0] = 0
+            for item in range(len(extera_neu)):                
+                B[A_dim-item-1,0] = extera_neu[item]
+                
+        return(B)
