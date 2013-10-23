@@ -41,7 +41,42 @@ class Delaunay(GenericGeometry):
         self._logger.debug("Execute constructor")
         #Instantiate the network
         self._net=OpenPNM.Network.GenericNetwork()
-
+    
+    def generate(self,**params):
+        '''
+        Create Delauny network. Returns OpenPNM.Network.GenericNetwork() object.
+        
+        Parameters
+        ----------
+        
+        Critical\n     
+        domain_size : [float,float,float]
+            domain_size = [3.0,3.0,3.0] (default)\n
+            Bounding cube for internal pore positions\n
+        num_pores : int
+            num_pores = 27\n
+            Number of pores to randomly place within domain\n
+                
+        Optional\n
+        stats_pores : dictionary
+            PSD = {'name':'weibull_min','shape':1.5,'loc': 6e-6,'scale':2e-5} (default)\n
+            Probablity distributions for random pore size assignment\n
+        stats_throats : dictionary
+            TSD = {'name':'weibull_min','shape':1.5,'loc': 6e-6,'scale':2e-5} (default)\n
+            Probablity distributions for random throat size assignment\n
+        btype : [logical,logical,logical]
+            boundaries = [0,0,0] (default)\n
+            Automatically create periodic throats between opposite x, y, or z faces
+            
+        Examples:
+        ---------
+        
+        generate default 100x100x10 cubic network with no periodic boundaries
+        
+        >>> import OpenPNM as PNM
+        >>> pn=PNM.Geometry.Cubic(domain_size=[100,100,10],lattice_spacing = 1.0)
+        '''
+        
     def _generate_setup(self, **params):
         r"""
         Perform applicable preliminary checks and calculations required for generation
