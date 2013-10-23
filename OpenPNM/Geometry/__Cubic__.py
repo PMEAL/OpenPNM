@@ -19,7 +19,7 @@ class Cubic(GenericGeometry):
 
     Parameters
     ----------
-    
+
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
 
@@ -30,19 +30,13 @@ class Cubic(GenericGeometry):
     """
 
     def __init__(self, **kwargs):
-        super(Cubic,self).__init__(**kwargs)
-        self._logger.debug("Execute constructor")
-
-        #Instantiate pore network object
-        self._net=OpenPNM.Network.GenericNetwork()
-    def generate(self,**params):
-        '''
+        r'''
         Create Cubic network. Returns OpenPNM.Network.GenericNetwork() object.
-        
+
         Parameters
         ----------
-        
-        Critical\n     
+
+        Critical\n
         domain_size : [float,float,float]
             domain_size = [3.0,3.0,3.0] (default)\n
             Bounding cube for internal pore positions\n
@@ -50,10 +44,10 @@ class Cubic(GenericGeometry):
             lattice_spacing = [1.0] (default)\n
             Distance between pore centers\n
         divisions : [int,int,int]
-            divisions = [3,3,3]\n  
-            Number of internal pores in each dimension.\n 
+            divisions = [3,3,3]\n
+            Number of internal pores in each dimension.\n
             (Optional input. Replaces one of the above.)\n
-        
+
         Optional\n
         stats_pores : dictionary
             stats_pores = {'name':'weibull_min','shape':1.5,'loc': 6e-6,'scale':2e-5} (default)\n
@@ -64,17 +58,21 @@ class Cubic(GenericGeometry):
         btype : [logical,logical,logical]
             btype = [0,0,0] (default)\n
             Automatically create periodic throats between opposite x, y, or z faces
-            
+
         Examples:
         ---------
-        
+
         generate default 100x100x10 cubic network with no periodic boundaries
-        
+
         >>> import OpenPNM as PNM
         >>> pn=PNM.Geometry.Cubic(domain_size=[100,100,10],lattice_spacing = 1.0)
         '''
-        super(Cubic,self).generate(**params)        
-        
+        super(Cubic,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
+
+        #Instantiate pore network object
+        self._net=OpenPNM.Network.GenericNetwork()
+
     def _generate_setup(self,   domain_size = [],
                                 divisions = [],
                                 lattice_spacing = [],
