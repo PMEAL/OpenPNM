@@ -14,9 +14,8 @@ def DiffusiveConductance(network,fluid_name):
     Parameters
     ----------
     network : OpenPNM Network Object
-        The network for which conductance should be calculated
 
-    fluid : OpenPNM Fluid Object
+    fluid_name : string
         The fluid of interest
 
     Notes
@@ -24,18 +23,21 @@ def DiffusiveConductance(network,fluid_name):
     This function requires that all the necessary fluid properties have already been determined.
 
     """
-    cp = network.pore_conditions['molar_density'+'_'+fluid_name]
-    DABp = network.pore_conditions['diffusivity'+'_'+fluid_name]
+    try:
+        cp = network.pore_conditions['molar_density'+'_'+fluid_name]
+        DABp = network.pore_conditions['diffusivity'+'_'+fluid_name]
+    except:
+        raise Exception('Diffusion coefficient in the ' + fluid_name + ' has not been specified')
     ct = network.interpolate_throat_values(cp)
     DABt = network.interpolate_throat_values(DABp)
 
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
     #Find g for half of pore 1
-    gp1 = cp*DABp*network.pore_properties['diameter'][pores[:,0]]**2/(network.pore_properties['diameter'][pores[:,0]]/2)
+    gp1 = cp*DABp*network.pore_properties['diameter'][pores[:,0]]**2/(0.5*network.pore_properties['diameter'][pores[:,0]])
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = cp*DABp*network.pore_properties['diameter'][pores[:,1]]**2/(network.pore_properties['diameter'][pores[:,1]]/2)
+    gp2 = cp*DABp*network.pore_properties['diameter'][pores[:,1]]**2/(0.5*network.pore_properties['diameter'][pores[:,1]])
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     gt = ct*DABt*network.throat_properties['diameter']**2/(network.throat_properties['length'])
