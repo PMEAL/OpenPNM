@@ -1,41 +1,30 @@
 import OpenPNM
 import scipy as sp
+import copy
 
 from __GenericFluid__ import GenericFluid
 
 class Water(GenericFluid):
     r"""
-    GenericFluid - Base class to generate fluid properties
-
-    Parameters
-    ----------
-
+    Creates Fluid object named 'water'
     """
     def __init__(self,**kwargs):
         super(Water,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-
-    def assign(self,network):
-        params =       {'name': 'water',
-                        'Pc': 2.206e6, #Pa
-                        'Tc': 647,     #K
-                        'MW': 0.0181,  #kg/mol
-                        'diffusivity': {'method': 'constant',
-                                        'DAB': 2e-12},
-                        'viscosity': {'method': 'constant',
-                                      'mu': 0.001},
+        
+    def create(self,name='water'):
+        self._fluid_recipe = {   'name': name,
+                                   'Pc': 2.206e6, #Pa
+                                   'Tc': 647,     #K
+                                   'MW': 0.0181,  #kg/mol
+                          'diffusivity': {'method': 'constant',
+                                           'value': 1e-12},
+                            'viscosity': {'method': 'constant',
+                                           'value': 0.001},
                         'molar_density': {'method': 'constant',
-                                          'c': 44444},
-                        }
-        network.phases.update({'water': params})
-        return self.update(network,params['name'])
+                                           'value': 44445},
+                           }
+        return self
 
 if __name__ =="__main__":
-    testfluid_dict ={   'name':  'testfluid',
-                       'phase':  1,
-                 'diffusivity':  2.09e-5,
-                   'viscosity':  1.73e-5,
-                'molardensity':  40.9}
-    pn = OpenPNM.Geometry.Cubic().generate()
-    testfluid = GenericFluid(testfluid_dict,loggername="TestGenericFluid")
-    testfluid.update(pn)
+    print 'test script not written for Water class'

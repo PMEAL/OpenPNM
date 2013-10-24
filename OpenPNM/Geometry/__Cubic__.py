@@ -75,7 +75,6 @@ class Cubic(GenericGeometry):
         >>> import OpenPNM as PNM
         >>> pn=PNM.Geometry.Cubic(domain_size=[100,100,10],lattice_spacing = 1.0)
         '''
-        print 'hi'
         super(Cubic,self).generate(**params)    
         return self._net
 
