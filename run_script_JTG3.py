@@ -40,7 +40,6 @@ pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
 #pn = OpenPNM.Geometry.Delaunay().generate(**params)
 #pn = OpenPNM.Geometry.Template().generate(**params)
 
-pn.pore_properties['type'] = sp.zeros_like(pn.pore_properties['type'])
 
 #Define the fluids and set their properties
 air_recipe = {       'name': 'air',
