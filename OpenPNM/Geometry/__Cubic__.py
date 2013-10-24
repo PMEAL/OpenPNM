@@ -279,11 +279,6 @@ class Cubic(GenericGeometry):
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),np.int)
-        #for i in sp.arange(len(connections[:,0])):
-        #    temp1 = net.pore_properties['type'][connections[i,0]]
-        #    temp2 = net.pore_properties['type'][connections[i,1]]
-        #    if temp1 > 0 and temp2 > 0:
-        #        net.throat_properties['type'][i] = 1
 
 
 
