@@ -8,6 +8,11 @@ module SurfaceTension
 import scipy as sp
 import OpenPNM
 
+def constant(fluid,value,**params):
+    return value
+
+def na(fluid,**params):
+    return 'n/a'
 def set_as(fluid1, fluid2, sigma=0.072):
     r"""
     Set the surface tension of fluid1 relative to fluid2
