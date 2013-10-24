@@ -10,20 +10,20 @@ import OpenPNM
 import scipy as sp
 
 
-def HydraulicConductance(network,fluid_name):
+def HydraulicConductance(network,fluid):
     r"""
-    Calculates the hydraulic conductvity of throat assuming cylindrical geometry using the Hagen Poiseuille model
+    Calculates the hydraulic conductvity of throat assuming square geometry using a modified Hagen Poiseuille model
 
     Parameters
     ----------
     network : OpenPNM Network Object
 
-    fluid_name : 'string'
+    fluid : OpenPNM Fluid Object
     """
     try:
-        mup = network.pore_conditions['viscosity'+'_'+fluid_name]
+        mup = fluid.pore_conditions['viscosity']
     except:
-        raise Exception('viscosity of the '+fluid_name+' phase has not been specified')
+        raise Exception('viscosity of the phase has not been specified')
     mut = network.interpolate_throat_values(mup)
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
@@ -36,7 +36,7 @@ def HydraulicConductance(network,fluid_name):
     #Find g for full throat
     gt = 2.28*(network.throat_properties['diameter']/2)**4/(2*network.throat_properties['length']*mut)
     g = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    network.throat_conditions['hydraulic_conductance'+'_'+fluid_name] = g
+    fluid.throat_conditions['hydraulic_conductance'] = g
 
 
 

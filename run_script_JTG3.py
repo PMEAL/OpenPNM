@@ -8,7 +8,6 @@ Created on Fri Mar 08 09:43:02 2013
 import OpenPNM
 import scipy as sp
 from time import clock
-import copy
 
 import scipy.ndimage as spim
 sphere = sp.ones((51,51,51),dtype=sp.bool8)
@@ -20,7 +19,7 @@ start=clock()
 
 pn = OpenPNM.Network.GenericNetwork()
 
-params_geom1 =     {'domain_size': [],  #physical network size [meters]
+params_geo1= {'domain_size': [],  #physical network size [meters]
                 'divisions': [10,10,10], #Number of pores in each direction
           'lattice_spacing': [0.1],  #spacing between pores [meters]
                 'num_pores': 1000, #This is used for random networks where spacing is irrelevant
@@ -37,7 +36,7 @@ params_geom1 =     {'domain_size': [],  #physical network size [meters]
 }
 
 #Generate Network Geometry
-pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geom1)
+pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
 #pn = OpenPNM.Geometry.Delaunay().generate(**params)
 #pn = OpenPNM.Geometry.Template().generate(**params)
 
@@ -76,7 +75,7 @@ water_recipe = {     'name': 'water',
 air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
 water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
 
-#Set Base Conditions in the Fluids
+#Set base conditions in the Fluids
 air.pore_conditions['temperature'] = 353
 air.pore_conditions['pressure'] = 101325
 water.pore_conditions['temperature'] = 353
