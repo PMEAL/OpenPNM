@@ -46,15 +46,14 @@ class Permeability(LinearSolver):
         r"""
         This function executes the essential mathods before building matrices in Linear solution 
         """
-        network = self._net
-        self.fluid_name = params['fluid_name']
-        network.refresh_fluid(self.fluid_name)
+        self._fluid = params['fluid']
+        self._fluid.refresh_fluid(self.fluid_name)
         # Building hydraulic conductance
-        OpenPNM.Physics.FluidFlow.HydraulicConductance(network,self.fluid_name)
+        OpenPNM.Physics.FluidFlow.HydraulicConductance(self._net,self._fluid)
 #        method = params['conduit_filling_method']
 #        OpenPNM.Physics.MultiPhase.full_pore_filling(network)
 #        OpenPNM.Physics.MultiPhase.calc_conduit_filling(network,method)
-        g = network.throat_conditions['hydraulic_conductance'+'_'+self.fluid_name]
+        g = self._fluid.throat_conditions['hydraulic_conductance']
 #        c = pn.throat_conditions['']                
         self._conductance = g
    
@@ -63,7 +62,7 @@ class Permeability(LinearSolver):
                        
         """
         p = self._do_one_inner_iteration()       
-        self._net.pore_conditions['partial_pressure'+'_'+self.fluid_name] = p
+        self._fluid.pore_conditions['pressure'] = p
         print p
         
     def calc_total_permeability(self):
