@@ -7,13 +7,9 @@ module CapillaryPressure
 
 import scipy as sp
 
-def set_contact_angle(fluid1,theta):
+def set_contact_angle(fluid,theta):
     theta = sp.array(theta,ndmin=1)
-    fluid1.update({'contact_angle':theta})
-
-def set_Pc_entry(fluid,Pc_entry):
-    Pc_entry = sp.array(Pc_entry,ndmin=1)
-    fluid.update({'Pc_entry':Pc_entry})
+    fluid.throat_conditions['contact_angle'] = theta
 
 def Young(fluid1,fluid2,solid):
     r"""
@@ -21,7 +17,7 @@ def Young(fluid1,fluid2,solid):
     """
     print 'nothing yet'
 
-def Washburn(net,fluid1,fluid2):
+def Washburn(net,fluid):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
@@ -43,12 +39,12 @@ def Washburn(net,fluid1,fluid2):
     This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
-    sigma = fluid1['surface_tension'][fluid2['name']]
+    sigma = fluid.pore_conditions['surface_tension']
     sigma = net.interpolate_throat_values(sigma)
-    theta = fluid1['contact_angle']
+    theta = fluid.throat_conditions['contact_angle']
     theta = net.interpolate_throat_values(theta)
     vals = -4*sigma*sp.cos(sp.radians(theta))/net.throat_properties['diameter']
-    fluid1.update({'Pc_entry':vals})
+    fluid.throat_conditions['Pc_entry']= vals
 
 def Purcell(net,sigma,theta,r_toroid):
     r"""

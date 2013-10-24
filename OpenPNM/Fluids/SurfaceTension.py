@@ -8,7 +8,7 @@ module SurfaceTension
 import scipy as sp
 import OpenPNM
 
-def set_as(fluid1, fluid2, sigma=0.072):
+def constant(fluid,value,**params):
     r"""
     Set the surface tension of fluid1 relative to fluid2
 
@@ -23,13 +23,10 @@ def set_as(fluid1, fluid2, sigma=0.072):
     -----
     This method sets the surface tension for both fluids simultaneously
     """
-    sigma = sp.array(sigma,ndmin=1)
-    if 'surface_tension' not in fluid1.keys():
-        fluid1.update({'surface_tension': {}})
-    if 'surface_tension' not in fluid2.keys():
-        fluid2.update({'surface_tension': {}})
-    fluid1['surface_tension'].update({fluid2['name']: sigma})
-    fluid2['surface_tension'].update({fluid1['name']: sigma})
+    return value
+
+def na(fluid, **params):
+    return
 
 def Eotvos(fluid1, fluid2, T):
     r"""

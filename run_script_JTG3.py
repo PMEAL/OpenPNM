@@ -56,6 +56,8 @@ air_recipe = {       'name': 'air',
                                    'b': 0.1},
             'molar_density': {'method': 'ideal_gas',
                                    'R': 8.314},
+          'surface_tension': {'method': 'na',
+                               'value': [],}
 }
 water_recipe = {     'name': 'water',
                        'Pc': 2.206e6, #Pa
@@ -67,6 +69,8 @@ water_recipe = {     'name': 'water',
                                'value': 0.001},
             'molar_density': {'method': 'constant',
                                'value': 44445},
+          'surface_tension': {'method': 'constant',
+                               'value': 0.072,}
 }
 #Create fluids
 air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
@@ -80,6 +84,19 @@ water.pore_conditions['pressure'] = 101325
 
 water.refresh()
 air.refresh()
+
+#set water and air as a fluid pair
+water.set_pair(air)
+
+OpenPNM.Physics.CapillaryPressure.set_contact_angle(water,120)
+OpenPNM.Physics.CapillaryPressure.Washburn(pn,water)
+
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
+params_OP = { 'invading_fluid': water,
+             'defending_fluid': air,
+                        'npts': 50,
+                   'inv_sites': [0], }
+OP_1.run(pn,**params_OP)
 
 #Assign boundary conditions
 BCtypes = sp.zeros(pn.get_num_pores())
@@ -95,6 +112,7 @@ BCvalues[pn.pore_properties['type']==6] = 8e-1
 #BCvalues[pn.pore_properties['type']==1] = 8e-1
 #BCvalues[pn.pore_properties['type']==6] = 2e-10
 
+OpenPNM.Physics.MultiPhase.update_occupancy_OP(water,Pc=2000)
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
 params_alg = {      'fluid1': air,
@@ -110,14 +128,14 @@ Fickian_alg.run(pn,**params_alg)
 
 
 ########################################
-print "Now demonstrating the mislabeling of the Water class as 'air'"
-pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geom1)
-air = OpenPNM.Fluids.Water().create(name='air')
-water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
-air.assign_to_network(pn)
-water.assign_to_network(pn)
-print ''
-print 'current pore conditions:'
-for i in pn.pore_conditions.keys():
-    print i,'=',pn.pore_conditions[i]
-print ''
+#print "Now demonstrating the mislabeling of the Water class as 'air'"
+#pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geom1)
+#air = OpenPNM.Fluids.Water().create(name='air')
+#water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
+#air.assign_to_network(pn)
+#water.assign_to_network(pn)
+#print ''
+#print 'current pore conditions:'
+#for i in pn.pore_conditions.keys():
+#    print i,'=',pn.pore_conditions[i]
+#print ''

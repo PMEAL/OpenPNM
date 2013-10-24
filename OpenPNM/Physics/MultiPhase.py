@@ -22,19 +22,31 @@ def calc_conduit_filling(network,method='strict'):
         #if BOTH pores are filled an open throat is still considered open
         print 'nothing yet'
 
-def update_satn_from_OP(network,fluid,Pc=0):
+def update_occupancy_OP(fluid,Pc=0):
     r"""
     ---
     """
-    fluid_name = fluid['name']
-    network.pore_conditions['satn_'+fluid_name] = network.pore_conditions['Pc_invaded']>Pc
+    try: 
+        fluid.pore_conditions['occupancy'] = fluid.pore_conditions['Pc_invaded']>Pc
+        fluid.throat_conditions['occupancy'] = fluid.throat_conditions['Pc_invaded']>Pc
+    except: 
+        print ('OP has not been run with this fluid, setting occupancy to True everywhere')
+        fluid.pore_conditions['occupancy'] = True
+        fluid.throat_conditions['occupancy'] = True
+    try: 
+        fluid.partner.pore_conditions['occupancy'] = ~fluid.pore_conditions['occupancy']
+        fluid.partner.throat_conditions['occupancy'] = ~fluid.throat_conditions['occupancy']
+    except: 
+        print ('A partner fluid has not been set so inverse occupancy was not set')
 
-def update_satn_from_IP(network,fluid,Seq=0):
+def update_occupancy_IP(network,fluid,Seq=0):
     r"""
     ---
     """
-    fluid_name = fluid['name']
-    network.pore_conditions['satn_'+fluid_name] = network.pore_conditions['IP_inv_seq']>Seq
+    try: fluid.pore_conditions['occupancy'] = fluid.pore_conditions['IP_inv_seq']>Seq
+    except: raise Exception('It seems that an OP simulation has not been run with' + fluid['name'])
+    try: fluid.partner.pore_conditions['occupancy'] = ~fluid.pore_conditions['occupancy']
+    except: raise Exception('A partner fluid has not been set so inverse occupancy cannot be set')
 
 def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     r"""

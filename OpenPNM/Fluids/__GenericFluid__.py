@@ -14,7 +14,7 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         # the following two lines track the methods that update pore or throat properties
-        self._implemented_methods = ['diffusivity','viscosity','molar_density']
+        self._implemented_methods = ['diffusivity','viscosity','molar_density','surface_tension']
         self._accepted_throat_methods = []
         self.pore_conditions = {}
         self.throat_conditions = {}
@@ -24,7 +24,6 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         return self
 
     def refresh(self):
-        fluid_name = self._fluid_recipe['name']
         for condition in self._implemented_methods:
             self.pore_conditions.update({condition: getattr(self,condition)()})
 
@@ -45,6 +44,16 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         eqn = getattr(OpenPNM.Fluids.MolarDensity,params['method'])
         vals = eqn(self,**params)
         return sp.array(vals,ndmin=1)
+
+    def surface_tension(self):
+        params = self._fluid_recipe['surface_tension']
+        eqn = getattr(OpenPNM.Fluids.SurfaceTension,params['method'])
+        vals = eqn(self,**params)
+        return sp.array(vals,ndmin=1)
+
+    def set_pair(self,fluid2):
+        self.partner = fluid2
+        fluid2.partner = self
 
 if __name__ =="__main__":
 
