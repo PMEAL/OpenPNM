@@ -177,14 +177,6 @@ class Cubic(GenericGeometry):
         
         self._logger.debug("generate_throats: End of method")
 
-
-
-
-
-
-
-
-
     def _add_boundary_throat_type(self,net):
         throat_type = np.zeros(len(net.throat_properties['type']))
         
@@ -194,9 +186,7 @@ class Cubic(GenericGeometry):
             if max(temp1,temp2) > 0:
                 throat_type[i] = max(temp1,temp2)
         return throat_type
-    
-    
-    
+
     def _add_boundary_pore_type(self,net):
         pore_type = np.zeros(len(net.pore_properties['type']))
         for i in range(3):
@@ -207,10 +197,6 @@ class Cubic(GenericGeometry):
             pore_type[bound_ind_1] = i+1
             pore_type[bound_ind_2] = 6-i
         return pore_type
-
-
-
-
 
     def _generate_boundaries(self,net,**params):
 
@@ -239,12 +225,6 @@ class Cubic(GenericGeometry):
         
         return net
         self._logger.debug("generate_boundaries: End of method")
-
-
-
-
-
-
 
     def stitch_network(self,net1,net2,edge = 0, stitch_nets = 1, stitch_side = []):
         r"""
@@ -303,12 +283,11 @@ class Cubic(GenericGeometry):
         net1.throat_properties['diameter']  = sp.concatenate((net1.throat_properties['diameter'],net2.throat_properties['diameter']),axis=0)
         net1.throat_properties['volume']    = sp.concatenate((net1.throat_properties['volume'],net2.throat_properties['volume']),axis=0)
         net1.throat_properties['length']    = sp.concatenate((net1.throat_properties['length'],net2.throat_properties['length']),axis=0)
-
-
-
-
-
-
+        
+        if stitch_nets:
+            self._stitch_throats(net1)
+            net1.pore_properties['type'] = self._add_boundary_pore_type(net1)
+            net1.throat_properties['type'] = self._add_boundary_throat_type(net1)
 
     def _stitch_throats(self,net):
         r"""
@@ -351,6 +330,9 @@ class Cubic(GenericGeometry):
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),dtype=np.int8)
         net.throat_properties['seed'] = sp.amin(net.pore_properties['seed'][net.throat_properties['connections']],1)
+        #net.throat_properties['diameter']
+        #net.throat_properties['length']
+        #net.throat_properties['volume']
         
 if __name__ == '__main__':
     test=Cubic(loggername='TestCubic')
