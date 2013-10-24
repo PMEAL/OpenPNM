@@ -281,6 +281,7 @@ class Cubic(GenericGeometry):
             The network that is stiched, whos throats are being added.
 
         """
+        """
         pts = net.pore_properties['coords']
         tri = sptl.Delaunay(pts)
         I = []
@@ -306,6 +307,33 @@ class Cubic(GenericGeometry):
         connections = np.zeros((len(masked[0]),2),np.int)
         connections[:,0] = np.array(I)[masked]
         connections[:,1] = np.array(J)[masked]
+        """
+        pts = net.pore_properties['coords']
+        tri = sptl.Delaunay(pts)
+        adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
+        dist_comb = list(itr.combinations_with_replacement(range(4),2))
+
+        for i in range(len(tri.simplices)):
+            for j in range(len(dist_comb)):
+                point_1 = tri.simplices[i,dist_comb[j][0]]
+                point_2 = tri.simplices[i,dist_comb[j][1]]
+                coords_1 = tri.points[point_1]
+                coords_2 = tri.points[point_2]
+                adj_mat[point_1,point_2] = math.sqrt((coords_2[0] - coords_1[0]) ** 2 +
+                     (coords_2[1] - coords_1[1]) ** 2 +
+                     (coords_2[2] - coords_1[2]) ** 2)
+
+        #Begin removing undesired connections based on their length
+        ind = np.ma.where(adj_mat>0)
+        I = ind[:][0].tolist()
+        J = ind[:][1].tolist()
+        V = adj_mat[I,J]
+        masked = np.where((adj_mat < (V.min() + .001)) & (adj_mat > 0))
+        connections = np.zeros((len(masked[0]),2),np.int)
+
+        for i in range(len(masked[0])):
+            connections[i,0] = masked[0][i]
+            connections[i,1] = masked[1][i]
 
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
