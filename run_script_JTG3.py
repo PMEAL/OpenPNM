@@ -56,8 +56,8 @@ air_recipe = {       'name': 'air',
                                    'b': 0.1},
             'molar_density': {'method': 'ideal_gas',
                                    'R': 8.314},
-          'surface_tension': {'method': 'na',
-                               'value': [],}
+          'surface_tension': {'method': 'constant',
+                               'value': 0,}
 }
 water_recipe = {     'name': 'water',
                        'Pc': 2.206e6, #Pa
@@ -119,17 +119,14 @@ fluid = air
 network = pn
 fluid.regenerate()
 OpenPNM.Physics.MultiPhase.update_occupancy_OP(fluid,Pc=2000)
-OpenPNM.Physics.MassTransport.DiffusiveConductance(network,fluid)
 OpenPNM.Physics.MultiPhase.calc_conduit_occupancy(network,fluid)
+OpenPNM.Physics.MassTransport.DiffusiveConductance(network,fluid)
 
 
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
-params_alg = {      'fluid1': air,
-    'conduit_filling_method': 'strict',
-                        'Pc': 0,
-             }
-Fickian_alg.run(pn,**params_alg)
+params_alg = {'name': 'params'}
+Fickian_alg.run(pn,fluid,**params_alg)
 
 
 
