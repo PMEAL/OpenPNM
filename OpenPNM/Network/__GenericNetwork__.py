@@ -446,6 +446,13 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             num[i] = sp.size(neighborPs[i])
         return num
 
+    def check_basic(self):
+        r"""
+        Check the network for general health
+        TODO: implement
+        """
+        self._logger.debug("Method: check for general healts")
+
     def interpolate_pore_values(self,Tinfo=None):
         r"""
         Determines a pore property as the average of it's neighboring throats
@@ -499,13 +506,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             for i in sp.r_[0:sp.shape(nPs)[0]]:
                 Tinfo[i] = sp.mean(Pinfo[nPs[i]])
         return Tinfo
-
-    def check_basic(self):
-        r"""
-        Check the network for general health
-        TODO: implement
-        """
-        self._logger.debug("Method: check for general healts")
 
     def print_overview(self):
         r"""
@@ -604,23 +604,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     def update(self):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
-        
-    def assign_fluid(self,fluid_recipe):
-        fluid = OpenPNM.Fluids.GenericFluid().create(fluid_recipe)
-        fluid.assign_to_network(self)
-        
-    def refresh_fluid(self,fluid_name):
-        fluid = OpenPNM.Fluids.GenericFluid().create(self.phases[fluid_name])
-        fluid.refresh_in_network(self)
-        
-    def refresh_all_fluids(self):
-        for i in self.phases:
-            print i
-            self.refresh_fluid(i)
-    
-    def remove_fluid(self,fluid_name):
-        fluid = OpenPNM.Fluids.GenericFluid().create(self.phases[fluid_name])
-        fluid.remove_from_network(self)
 
 if __name__ == '__main__':
     test1=GenericNetwork(loggername='Test1')
