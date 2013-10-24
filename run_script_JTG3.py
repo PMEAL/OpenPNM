@@ -8,7 +8,6 @@ Created on Fri Mar 08 09:43:02 2013
 import OpenPNM
 import scipy as sp
 from time import clock
-import copy
 
 import scipy.ndimage as spim
 sphere = sp.ones((51,51,51),dtype=sp.bool8)
