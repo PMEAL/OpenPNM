@@ -45,11 +45,11 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
     def generate(self, stats_pores = {'name' : 'weibull_min',
                                      'shape' : 1.5,
                                        'loc' : 6e-6,
-                                     'scale' : 2e-5},
+                                     'scale' : 2.5e-5},
                      stats_throats = {'name' : 'weibull_min',
                                      'shape' : 1.5,
                                        'loc' : 6e-6,
-                                     'scale' : 2e-5},
+                                     'scale' : 2.5e-5},
                           **params):
         r"""
         Generate the network

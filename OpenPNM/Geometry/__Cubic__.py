@@ -12,8 +12,7 @@ import numpy as np
 import scipy.stats as spst
 import scipy.spatial as sptl
 import itertools as itr
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+import math
 #Test
 
 from __GenericGeometry__ import GenericGeometry
@@ -226,12 +225,6 @@ class Cubic(GenericGeometry):
             When given, this flag moves net2 into position automatically
 
         """
-        net2.pore_properties['numbering']   = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
-        net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)
-        net1.pore_properties['volume']      = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
-        net1.pore_properties['seed']        = sp.concatenate((net1.pore_properties['seed'],net2.pore_properties['seed']),axis = 0)            
-        net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
-        
         if stitch_nets:
             #if ~stitch_size:
                 #stitch in place
@@ -253,7 +246,12 @@ class Cubic(GenericGeometry):
             elif stitch_side == 'bottom':
                 def_translate = net1.pore_properties['coords'][:,2].max()+net1.pore_properties['coords'][:,2].min()
                 OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[0,0,-1*def_translate])
-
+                
+        net2.pore_properties['numbering']   = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
+        net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)
+        net1.pore_properties['volume']      = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
+        net1.pore_properties['seed']        = sp.concatenate((net1.pore_properties['seed'],net2.pore_properties['seed']),axis = 0)            
+        net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
         net1.pore_properties['coords']      = sp.concatenate((net1.pore_properties['coords'],net2.pore_properties['coords']),axis = 0)
         net1.pore_properties['type']        = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
         net2.throat_properties['numbering'] = len(net1.throat_properties['numbering']) + net2.throat_properties['numbering']
@@ -286,8 +284,10 @@ class Cubic(GenericGeometry):
 
         pts = net.pore_properties['coords']
         tri = sptl.Delaunay(pts)
-
-        adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
+        count = 0
+        I = []
+        J = []
+        V = []
         dist_comb = list(itr.combinations_with_replacement(range(4),2))
 
         for i in range(len(tri.simplices)):
@@ -296,14 +296,16 @@ class Cubic(GenericGeometry):
                 point_2 = tri.simplices[i,dist_comb[j][1]]
                 coords_1 = tri.points[point_1]
                 coords_2 = tri.points[point_2]
-                adj_mat[point_1,point_2] = self._net.fastest_calc_dist(coords_1,coords_2) #move off of network
+                dist = math.sqrt((coords_2[0] - coords_1[0]) ** 2 +
+                     (coords_2[1] - coords_1[1]) ** 2 +
+                     (coords_2[2] - coords_1[2]) ** 2)
+                if dist > 0:
+                    I[count] = point_1
+                    J[count] = point_2
+                    V[count] = dist
+                    count += count
 
-        #Begin removing undesired connections based on their length
-        ind = np.ma.where(adj_mat>0)
-        I = ind[:][0].tolist()
-        J = ind[:][1].tolist()
-        V = adj_mat[I,J]
-        masked = np.where((adj_mat < (V.min() + .001)) & (adj_mat > 0))
+        masked = np.where(V < (min(V) + .001))
         connections = np.zeros((len(masked[0]),2),np.int)
 
         for i in range(len(masked[0])):
@@ -314,12 +316,15 @@ class Cubic(GenericGeometry):
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),dtype=np.int8)
         net.throat_properties['seed'] = sp.amin(net.pore_properties['seed'][net.throat_properties['connections']],1)
-        
+
+               
         prob_fn = getattr(spst,stats_throats['name'])
         P = prob_fn(stats_throats['shape'],loc=stats_throats['loc'],scale=stats_throats['scale'])
+        new_seeds = net.throat_properties['seed'][len(net.throat_properties['diameter']):len(net.throat_properties['seed'])]
+        new_diameters = P.ppf(new_seeds)
         
-        
-        net.throat_properties['diameter'] = P.ppf(net.throat_properties['seed'])
+        net.throat_properties['seed'] = np.concatenate((net.throat_properties['seed'],new_seeds))
+        net.throat_properties['diameter'] = np.concatenate((net.throat_properties['diameter'],new_diameters))
         net.throat_properties['length'] = sp.zeros_like(net.throat_properties['type'])
         C1 = net.pore_properties['coords'][net.throat_properties['connections'][:,0]]
         C2 = net.pore_properties['coords'][net.throat_properties['connections'][:,1]]
@@ -328,6 +333,7 @@ class Cubic(GenericGeometry):
         D2 = net.pore_properties['diameter'][net.throat_properties['connections'][:,1]]
         net.throat_properties['length'] = E - (D1 + D2)/2
         net.throat_properties['volume'] = net.throat_properties['length']*net.throat_properties['diameter']**2
+        
 
     def _add_boundary_throat_type(self,net):
         throat_type = np.zeros(len(net.throat_properties['type']))
