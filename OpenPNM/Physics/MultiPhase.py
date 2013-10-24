@@ -47,6 +47,8 @@ def update_occupancy_IP(network,fluid,Seq=0):
     except: raise Exception('It seems that an OP simulation has not been run with' + fluid['name'])
     try: fluid.partner.pore_conditions['occupancy'] = ~fluid.pore_conditions['occupancy']
     except: raise Exception('A partner fluid has not been set so inverse occupancy cannot be set')
+    else:
+        print 'error'
 
 def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     r"""

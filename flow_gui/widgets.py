@@ -1,26 +1,31 @@
+from __future__ import absolute_import, print_function
+
 import inspect
-import re
 from decimal import Decimal
+
 from PyQt4 import QtGui, QtCore
+
 
 class GenericIOWidget(QtGui.QWidget):
   output_generated = QtCore.pyqtSignal(dict, object)
   input_changed = QtCore.pyqtSignal(dict)
 
-  def __init__(self, factory):
+  def __init__(self, factory, button=True):
     self.factory = factory
 
     super(GenericIOWidget, self).__init__()
     QtGui.QVBoxLayout(self)
+    self.layout().setSpacing(0)
 
     self.input_form = QtGui.QFormLayout()
     self.layout().addLayout(self.input_form)
 
     self.create_input_widgets()
 
-    output_button = QtGui.QPushButton("Process")
-    output_button.clicked.connect(self.current_output)
-    self.layout().addWidget(output_button)
+    if button:
+      output_button = QtGui.QPushButton("Process")
+      output_button.clicked.connect(self.current_output)
+      self.layout().addWidget(output_button)
 
   def create_input_widgets(self):
     # create persistent container for reference
@@ -33,6 +38,9 @@ class GenericIOWidget(QtGui.QWidget):
 
     elif inspect.isfunction(self.factory):
       self.arg_names_list, arg_values_list = inspect.getargspec(self.factory)[::3]
+
+    elif isinstance(self.factory, dict):
+      self.arg_names_list, arg_values_list = zip(*sorted(self.factory.items()))
     
     # determine the number of state inputs. account for possible empty list
     if arg_values_list is None: arg_values_list = []
@@ -92,6 +100,10 @@ class GenericIOWidget(QtGui.QWidget):
 
       line_edit.textChanged.connect(lambda: self.input_changed.emit(self.current_input()) )
 
+    elif arg_name.split('_')[0]=='stats':
+      widget = SciPyStatsWidget()
+      widget.changed.connect(lambda: self.input_changed.emit(self.current_input()) )
+
     elif isinstance(arg_value, (str)):
       widget = QtGui.QLineEdit()
       widget.setText(arg_value)
@@ -99,21 +111,32 @@ class GenericIOWidget(QtGui.QWidget):
 
       widget.textEdited.connect(lambda: self.input_changed.emit(self.current_input()) )
 
-    elif isinstance(arg_value, GenericModuleWidget):
-      widget = QtGui.QComboBox()
-      widget.setModel(arg_value.item_model)
-      widget.get = lambda: arg_value.item_model.item(widget.currentIndex()).data().toPyObject()
+    # elif isinstance(arg_value, GenericModuleWidget):
+    # ''' an attempt to allow very sophisticated imports '''
+    #   widget = QtGui.QComboBox()
+    #   widget.setModel(arg_value.item_model)
+    #   widget.get = lambda: arg_value.item_model.item(widget.currentIndex()).data().toPyObject()
 
-      widget.currentIndexChanged.connect(lambda: self.input_changed.emit(self.current_input()) )
+    #   widget.currentIndexChanged.connect(lambda: self.input_changed.emit(self.current_input()) )
 
-    elif hasattr(arg_value, "__iter__"):
-      widget = QtGui.QWidget()
-      widget.setLayout(QtGui.QHBoxLayout())
-      widget.sub_widgets = [self.create_widget(None, sub_value) for sub_value in arg_value]
-      widget.get = lambda: [sub_widget.get() for sub_widget in widget.sub_widgets]
+    elif isinstance(arg_value, (list,tuple) ):
+      ''' if the input is iterable, attempt to capture its structure by creating a widget nest
+      as we travel through the tree
+      '''
+      if all([isinstance(inner, str) for inner in arg_value]):
+        widget = QtGui.QComboBox()
+        widget.addItems(arg_value)
+        widget.get = lambda: widget.currentIndex()
 
-      for sub_widget in widget.sub_widgets:
-        widget.layout().addWidget(sub_widget)
+      else:
+        widget = QtGui.QWidget()
+        widget.setLayout(QtGui.QHBoxLayout())
+        widget.layout().setSpacing(0)
+        widget.sub_widgets = [self.create_widget(None, sub_value) for sub_value in arg_value]
+        widget.get = lambda: [sub_widget.get() for sub_widget in widget.sub_widgets]
+
+        for sub_widget in widget.sub_widgets:
+          widget.layout().addWidget(sub_widget)
 
     else:
       widget = QtGui.QLabel("%s." % type(arg_value))
@@ -131,82 +154,25 @@ class GenericIOWidget(QtGui.QWidget):
       self.factory( **self.current_input() )
       )
 
-class GenericModuleWidget(QtGui.QWidget):
 
-  state_changed = QtCore.pyqtSignal(int)
+class SciPyStatsWidget(QtGui.QWidget):
+  changed = QtCore.pyqtSignal()
   
-  def __init__(self, module):
-    super(GenericModuleWidget, self).__init__()
+  def __init__(self):
+    super(SciPyStatsWidget, self).__init__()
     QtGui.QVBoxLayout(self)
 
-    self.content = {}
-    self.input_widgets_list = []
+    self.distribution_name = QtGui.QComboBox()
+    self.distribution_name.addItems('weibull_min gamma norm lognorm'.split())
+    self.layout().addWidget(self.distribution_name)
 
-    self.element_selection_widget = QtGui.QComboBox()
-    self.element_selection_widget.currentIndexChanged.connect(self.refresh)
-    self.layout().addWidget(self.element_selection_widget)
+    self.parameters = GenericIOWidget({'shape':1.5, 'loc':6E-6, 'scale':2E-5}, button=False)
+    self.layout().addWidget(self.parameters)
 
-    self.filter_module(module)
-    self.module_name = module.__name__.rsplit('.',1)[-1]
+  def get(self):
+    return dict([('name', str(self.distribution_name.currentText()))] + self.parameters.current_input().items())
 
-    self.refresh()
 
-  def filter_module(self, module):
-    for factory_name, factory_object in inspect.getmembers(module):
-      if factory_name[0]=='_' or re.search('Abstract', factory_name): # better way to do this with property?
-        continue
-      if inspect.isclass(factory_object) or inspect.isfunction(factory_object):
-        self.append_factory(factory_name, factory_object)
-
-  def append_factory(self, factory_name, factory_object):
-    self.element_selection_widget.addItem(factory_name)
-    input_widget = GenericIOWidget(factory_object)
-    input_widget.output_generated.connect(self.set_contents)
-    input_widget.input_changed.connect(self.check_state)
-
-    self.input_widgets_list.append(input_widget)
-    self.layout().addWidget(input_widget)
-
-    self.refresh()
-
-  def set_contents(self, current_input, output):
-    self.last_input = current_input
-    if isinstance(output, dict):
-      self.content = output
-    else:
-      self.content = {self.module_name:output}
-    self.check_state(current_input)
-
-  def check_state(self, current_input):
-
-    if not self.content:
-      self.state_changed.emit(0)
-
-    elif self.last_input == current_input:
-      self.state_changed.emit(2)
-
-    else:
-      self.state_changed.emit(1)
-
-  def refresh(self):
-    current_index = self.element_selection_widget.currentIndex()
-
-    for index, widget in enumerate(self.input_widgets_list):
-      if index==current_index:
-        self.visible_widget = widget
-        self.visible_widget.show()
-
-      else:
-        widget.hide()
-
-# TEST STUFF GOES HERE
 if __name__ == '__main__':
-  import sys; sys.path.append(__file__.rsplit('/',2)[0]+'/modules')
-  import simulation
-
-  app = QtGui.QApplication([])
-
-  pg = GenericModuleWidget(simulation)
-  pg.show()
-
-  app.exec_()
+  import sys; sys.path.append(__file__.rsplit('/',2)[0])
+  import run_gui
