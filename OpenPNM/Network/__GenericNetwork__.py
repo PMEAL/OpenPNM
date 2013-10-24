@@ -527,28 +527,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             print key, "\t", "\t", self.throat_properties[key].dtype, "\t", self.throat_properties[key].shape, "\t", self.throat_properties[key].nbytes/1e6
 
         print "="*72
-        print "Pore Conditions"
-        print "-"*72
-        #commented vv due to scalars not having dtype or shape attribute
-        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
-        print "-"*72
-        for key in self.pore_conditions:
-            #commented vv due to scalars not having dtype or shape attribute
-            #print key, "\t", "\t", self.pore_conditions[key].dtype, "\t", self.pore_conditions[key].shape, "\t", self.pore_conditions[key].nbytes/1e6
-            print key, "\t", "\t", np.array(self.pore_conditions[key]).dtype, "\t", np.array(self.pore_conditions[key]).shape, "\t", np.array(self.pore_conditions[key]).nbytes/1e6
-
-        print "="*72
-        print "Throat Conditions"
-        print "-"*72
-        #commented vv due to scalars not having dtype or shape attribute
-        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
-        print "-"*72
-        for key in self.throat_conditions:
-            #commented vv due to scalars not having dtype or shape attribute
-            #print key, "\t", "\t", self.throat_conditions[key].dtype, "\t", self.throat_conditions[key].shape, "\t", self.throat_conditions[key].nbytes/1e6
-            print key, "\t", "\t", np.array(self.throat_conditions[key]).dtype, "\t", np.array(self.throat_conditions[key]).shape, "\t", np.array(self.throat_conditions[key]).nbytes/1e6
-
-        print "="*72
         print "Adjacency Matrices"
         print "-"*72
         print 'FORMAT', "\t", 'VALUES'
