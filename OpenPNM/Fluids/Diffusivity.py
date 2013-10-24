@@ -10,7 +10,7 @@ import scipy as sp
 def constant(fluid,value,**params):
     return value
 
-def na(network,**params):
+def na(fluid,**params):
     return 'n/a'
 
 def Fuller(fluid,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7,**params):
