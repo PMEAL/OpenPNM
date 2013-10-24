@@ -26,11 +26,14 @@ class Toray090(GenericFluid):
                                }
         return self
 
-    def ThermalConductivity(self,network):
-        fluid_name = self._fluid_recipe['name']
-        params = network.phases[fluid_name]['thermal_conductivity']
-        vals = 1 #Enter empirical equation here
-        return sp.array(vals,ndmin=1)
+    def ThermalConductivity(self,fluid):
+        r"""
+        In-plane thermal conductivity of Carbon paper without Teflon based on Zamel et al.  
+    
+        """
+        T = fluid.pore_conditions['temperature'] -273.15    
+        k = -7.166e-6*T**3 + 2.24e-3*T**2-0.237*T + 20.1
+        return sp.array(k,ndmin=1)
 
 if __name__ =="__main__":
     testfluid_dict ={   'name':  'testfluid',
