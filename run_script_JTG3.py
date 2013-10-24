@@ -41,10 +41,6 @@ pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geom1)
 #pn = OpenPNM.Geometry.Delaunay().generate(**params)
 #pn = OpenPNM.Geometry.Template().generate(**params)
 
-#Set Base Conditions in the Network
-pn.pore_conditions['temperature'] = 353
-pn.pore_conditions['pressure'] = 101325
-
 #Define the fluids and set their properties
 air_recipe = {       'name': 'air',
                        'Pc': 3.771e6, #Pa
@@ -76,95 +72,42 @@ water_recipe = {     'name': 'water',
 air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
 water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
 
-#Assign fluids to network
-air.assign_to_network(pn)
-water.assign_to_network(pn)
-print ''
-print 'current pore conditions:'
-for i in pn.pore_conditions.keys():
-    print i,'=',pn.pore_conditions[i]
-print ''
-#Run some algorithms that change base conditions
-#blah, blah, blah...
-print 'changing temp and pressure...'
-pn.pore_conditions['temperature'] = 333
-pn.pore_conditions['pressure'] = 201325
+#Set Base Conditions in the Fluids
+air.pore_conditions['temperature'] = 353
+air.pore_conditions['pressure'] = 101325
+water.pore_conditions['temperature'] = 353
+water.pore_conditions['pressure'] = 101325
 
-#Update fluids
-air.refresh_in_network(pn)
-water.refresh_in_network(pn)
-print ''
-print 'current pore conditions:'
-for i in pn.pore_conditions.keys():
-    print i,'=',pn.pore_conditions[i]
-print ''
+water.refresh()
+air.refresh()
 
-print "Swapping out fluid 'water' with a similar 'solution'"
-#Create a new fluid that is similar to water
-solution_recipe = pn.phases['water']
-#Subtly change something about it
-solution_recipe['viscosity']['value'] = 0.0015
-solution = OpenPNM.Fluids.GenericFluid().create(solution_recipe)
-solution.rename_fluid('solution')
-#Add this fluid to the network
-solution.assign_to_network(pn)
-#Remove water
-water.remove_from_network(pn)
+#Assign boundary conditions
+BCtypes = sp.zeros(pn.get_num_pores())
+BCvalues = sp.zeros(pn.get_num_pores())
+#Dirichlet
+BCtypes[pn.pore_properties['type']==1] = 1
+BCtypes[pn.pore_properties['type']==6] = 1
+BCvalues[pn.pore_properties['type']==1] = 8e-2
+BCvalues[pn.pore_properties['type']==6] = 8e-1
+#Neumann
+#BCtypes[pn.pore_properties['type']==1] = 1
+#BCtypes[pn.pore_properties['type']==6] = 4
+#BCvalues[pn.pore_properties['type']==1] = 8e-1
+#BCvalues[pn.pore_properties['type']==6] = 2e-10
 
-print ''
-print 'current pore conditions:'
-for i in pn.pore_conditions.keys():
-    print i,'=',pn.pore_conditions[i]
-print ''
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
+Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
+params_alg = {      'fluid1': air,
+    'conduit_filling_method': 'strict',
+                        'Pc': 0,
+             }
+Fickian_alg.run(pn,**params_alg)
 
-##################################################################
-#Now, try to do everything above without creating a fluid object
-print 'Working from the network exclusively'
-#Generate Network Geometry
-pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geom1)
-pn.pore_conditions['temperature'] = 353
-pn.pore_conditions['pressure'] = 101325
 
-#Assign fluids to network
-pn.assign_fluid(air_recipe)
-pn.assign_fluid(water_recipe)
 
-print ''
-print 'current pore conditions:'
-for i in pn.pore_conditions.keys():
-    print i,'=',pn.pore_conditions[i]
-print ''
-#Run some algorithms that change base conditions
-#blah, blah, blah...
-print 'changing temp and pressure...'
-pn.pore_conditions['temperature'] = 333
-pn.pore_conditions['pressure'] = 201325
 
-#Update fluids
-pn.refresh_all_fluids()
 
-print ''
-print 'current pore conditions:'
-for i in pn.pore_conditions.keys():
-    print i,'=',pn.pore_conditions[i]
-print ''
 
-print "Swapping out fluid 'water' with a similar 'solution'"
-#Create a new fluid that is similar to water
-solution_recipe = copy.deepcopy(pn.phases['water'])
-#Subtly change something about it
-solution_recipe['viscosity']['value'] = 0.0015
-solution_recipe['name'] = 'solution'
-#Add this fluid to the network
-pn.assign_fluid(solution_recipe)
-#Remove water
-pn.remove_fluid('water')
-
-print ''
-print 'current pore conditions:'
-for i in pn.pore_conditions.keys():
-    print i,'=',pn.pore_conditions[i]
-print ''
 
 ########################################
 print "Now demonstrating the mislabeling of the Water class as 'air'"

@@ -47,15 +47,10 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Main run command for the algorithm
         """
-        print params.keys()
+        self._logger.info(self.indent+"Execute run(): Basic version")
         self._net = net
         self._setup(**params)
-        self._logger.info(self.indent+"Execute run(): Basic version")
-        indent=self.indent
-        self.indent=self.indent + '  '
         self._do_outer_iteration_stage()
-        self.indent=indent
-        print self.indent, "-"*39
 
     def _setup(self, **params):
         r"""

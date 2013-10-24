@@ -7,13 +7,13 @@ module Diffusivity
 import OpenPNM
 import scipy as sp
 
-def constant(network,value,**params):
+def constant(fluid,value,**params):
     return value
 
-def na(network,**params):
+def na(fluid,**params):
     return 'n/a'
 
-def Fuller(network,MA=31.99,MB=28.01,vA=16.6,vB=17.9,**params):
+def Fuller(fluid,MA=31.99,MB=28.01,vA=16.6,vB=17.9,**params):
     r"""
     Uses the Fuller model to estimate diffusion coefficient for gases from first principles at conditions of interest
 
@@ -40,8 +40,8 @@ def Fuller(network,MA=31.99,MB=28.01,vA=16.6,vB=17.9,**params):
 
 
     """
-    T = network.pore_conditions['temperature']
-    P = network.pore_conditions['pressure']
+    T = fluid.pore_conditions['temperature']
+    P = fluid.pore_conditions['pressure']
     MAB = 2*(1/MA+1/MB)**(-1)
     DAB = 0.00143*T**1.75/(P*1e-5*MAB**0.5*(vA**(1/3)+vB**(1/3))**2)*1e-4
     return DAB
