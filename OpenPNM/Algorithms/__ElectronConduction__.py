@@ -43,22 +43,21 @@ class ElectronConduction(LinearSolver):
     def _setup(self,loglevel=10,**params):
         r"""
 
-        This function executes the essential mathods for building matrices in Linear solution 
+        This function executes the essential mathods for building matrices for Linear solution 
         """
-        network = self._net
-        self.fluid_name = params['fluid_name']
-        network.refresh_fluid(self.fluid_name)
+        self._fluid = params['fluid']
+        self._fluid.refresh(self._fluid)
         # Building hydraulic conductance
-        OpenPNM.Physics.ElectronConduction.ElectronicConductance(network,self.fluid_name)
+        OpenPNM.Physics.ElectronConduction.ElectronicConductance(self._net,self._fluid)
 #        method = params['conduit_filling_method']
 #        OpenPNM.Physics.MultiPhase.full_pore_filling(network)
 #        OpenPNM.Physics.MultiPhase.calc_conduit_filling(network,method)
-        g = network.throat_conditions['electronic_conductance'+'_'+self.fluid_name]
+        g = self._fluid.throat_conditions['electronic_conductance']
 #        c = pn.throat_conditions['']
         self._conductance = g
 
     
     def _do_inner_iteration_stage(self):
         v = self._do_one_inner_iteration()       
-        self._net.pore_conditions['voltage'] = v
+        self._fluid.pore_conditions['voltage'] = v
         print v

@@ -6,15 +6,15 @@ module MultiPhase
 """
 import scipy as sp
 
-def calc_conduit_filling(network,method='strict'):
+def calc_conduit_filling(network,fluid,method='strict'):
     r"""
 
     """
     if method == 'strict':
         #if only EITHER pore is filled an open throat is considered closed
         pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
-        network.throat_conditions['conduit_satn_wp'] = network.pore_conditions['satn_wp'][pores[:,0]]*network.pore_conditions['satn_wp'][pores[:,1]]
-        network.throat_conditions['conduit_satn_nwp'] = -network.pore_conditions['satn_wp'][pores[:,0]]*-network.pore_conditions['satn_wp'][pores[:,1]]
+        fluid.throat_conditions['conduit_occupancy'] = fluid.pore_conditions['occupancy'][pores[:,0]]*fluid.pore_conditions['occupancy'][pores[:,1]]
+        fluid.throat_conditions['conduit_occupancy'] = -fluid.pore_conditions['occupancy'][pores[:,0]]*-network.pore_conditions['occupancy'][pores[:,1]]
     elif method == 'moderate':
         #if only ONE pore isfilled an open throat is still considered open
         print 'nothing yet'
@@ -50,13 +50,15 @@ def update_occupancy_IP(network,fluid,Seq=0):
     else:
         print 'error'
 
-def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
+def late_pore_filling(network,fluid,swpi=0.0,eta=1.0,Pc=0.0):
     r"""
     Applies a late pore filling model to determine the fractional saturation of a pore based on the given capillary pressure
 
     Parameters
     ----------
     network : OpenPNM Network Object
+    
+    fluid : OpenPNM Fluid Object
 
     swpi : float, array_like
         The fraction of each pore still filled by wetting phase upon initial invasion
@@ -72,15 +74,11 @@ def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     It is necessary that a capillary pressure curve has been run first, using the OrdinaryPercolation module.
 
     """
-    try: swpi = network.pore_conditions['swpi']
-    except: pass
-    try: eta = network.pore_conditions['eta']
-    except: pass
 
-    Pc_star = network.pore_conditions['Pc_invaded']
-    swp = swpi*(Pc_star/Pc)**eta*(network.pore_conditions['Pc_invaded']<=Pc)
-    swp = swp + (network.pore_conditions['Pc_invaded']>Pc)
-    network.pore_conditions['satn'+'_'+fluid_name] = swp
+    Pc_star = fluid.pore_conditions['Pc_invaded']
+    swp = swpi*(Pc_star/Pc)**eta*(fluid.pore_conditions['Pc_invaded']<=Pc)
+    swp = swp + (fluid.pore_conditions['Pc_invaded']>Pc)
+    fluid.pore_conditions['volume_fraction'] = swp
 
 
 
