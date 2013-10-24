@@ -26,54 +26,7 @@ from __GenericAlgorithm__ import GenericAlgorithm
 
 
 class InvasionPercolation(GenericAlgorithm):
-    r"""   
     
-    Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
-
-    Parameters
-    ----------
-    inlets : list of integers (default: [0])
-        list of inlet nodes
-    outlets : list of integers (default: [1])
-        list of outlet nodes
-    end_condition : string('breaktrhough')
-        choice between 'breakthrough' and 'total'
-        
-    Input Network
-    -------------
-    The algorithm expects a pore network with the following pore properties:
-        volume, diameter, numbering, coords, type
-    and throat properties:
-        diameter, numbering, connections, type
-        
-    Output
-    ------
-    The input network automatically gains pore conditions ::
-    
-        IP_inv_final    : 0 for uninvaded, merged cluster number for invaded  
-        IP_inv_original : 0 for uninvaded, original cluster number for invaded  
-        IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
-        IP_inv_time     : 0 for uninvaded, simulation time for invaded  
-        
-    and throat conditions ::
-    
-        IP_inv          : 0 for uninvaded, merged cluster number for invaded  
-        IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
-        IP_inv_time     : 0 for uninvaded, simulation time for invaded  
-        
-    Examples
-    --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Geometry.Cubic().generate(domain_size=[3,3,3], lattice_spacing=[1.0], btype=[0,0,0])
-    >>> IP_timing = InvasionPercolation(net=pn,timing='ON')
-        
-    Suggested Improvements ::
-    
-        a) Allow input of cluster flow-rates (condensation rates)
-        b) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
-        c) Allow for a non-linear relationship between pressure and throat-cap volume.
-        
-    """
     
     def __init__(self,**kwords):
         r"""
@@ -82,7 +35,61 @@ class InvasionPercolation(GenericAlgorithm):
         super(InvasionPercolation,self).__init__(**kwords)
         self._logger.info("Create IP Algorithm Object")
         
-    def _setup(self, inlets=[0],outlets=[1],end_condition='breakthrough',timing='ON',report=20):
+    def run(self,net,**params):
+        r"""   
+    
+        Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
+    
+        Parameters
+        ----------
+        net : OpenPNM.Network.GenericNetwork object
+            pore network where algorithm will take place
+        inlets : list of integers (default: [0])
+            list of inlet nodes
+        outlets : list of integers (default: [-1])
+            list of outlet nodes
+        end_condition : string('breaktrhough')
+            choice between 'breakthrough' and 'total'
+            
+        Input Network
+        -------------
+        The algorithm expects a pore network with the following pore properties:
+            volume, diameter, numbering, coords, type
+        and throat properties:
+            diameter, numbering, connections, type
+            
+        Output
+        ------
+        The input network automatically gains pore conditions ::
+        
+            IP_inv_final    : 0 for uninvaded, merged cluster number for invaded  
+            IP_inv_original : 0 for uninvaded, original cluster number for invaded  
+            IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
+            IP_inv_time     : 0 for uninvaded, simulation time for invaded  
+            
+        and throat conditions ::
+        
+            IP_inv          : 0 for uninvaded, merged cluster number for invaded  
+            IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
+            IP_inv_time     : 0 for uninvaded, simulation time for invaded  
+            
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Geometry.Cubic().generate(domain_size=[3,3,3], lattice_spacing=[1.0], btype=[0,0,0])
+        >>> IP_timing = InvasionPercolation(net=pn,timing='ON')
+            
+        Suggested Improvements ::
+        
+            a) Allow input of cluster flow-rates (condensation rates)
+            b) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
+            c) Allow for a non-linear relationship between pressure and throat-cap volume.
+            
+        """
+        super(InvasionPercolation,self).run(net,**params)
+        return self
+        
+    def _setup(self, inlets=[0],outlets=[-1],end_condition='breakthrough',timing='ON',report=20):
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets 
         self._outlets = outlets
@@ -560,15 +567,15 @@ if __name__ =="__main__":
     
     print "- * Run Invasion percolation algorithm"
     #IP = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
-    IP_timing = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,timing='ON',loglevel=30,loggername="TestInvPercAlg")
-    IP_timing.run()
+    IP_timing = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
+    IP_timing.run(pn,inlets=inlets,outlets=outlets,report=1,timing='ON')
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_timing.vtp"
     OpenPNM.Visualization.VTK().write(net = pn,filename="IP_timing.vtp")
-    IP_notiming = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,timing='OFF',loglevel=30,loggername="TestInvPercAlg")
-    IP_notiming.run()
+    IP_notiming = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
+    IP_notiming.run(pn,inlets=inlets,outlets=outlets,report=1,timing='OFF')
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50

@@ -25,6 +25,20 @@ print matfile
 print 'Finished at time =',sp.round_(clock(),2),'seconds'
 print ''
 
+print "Adding 'air' and 'water' as fluids to the networks"
+air = OpenPNM.Fluids.Air().create(fluid_name='air')
+water = OpenPNM.Fluids.Water().create(fluid_name='water')
+print ''
+print "Adding Physics"
+################ NONE ADDED YET, WAIT FOR DEVELOP AND FLUIDS TO MERGE #####################
+print ''
+print 'Running IP algorithm'
+IP = OpenPNM.Algorithms.InvasionPercolation().run(cubic)
+print cubic
+
+
+
+
 
 #
 #
