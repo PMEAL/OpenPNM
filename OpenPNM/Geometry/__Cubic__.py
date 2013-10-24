@@ -188,10 +188,10 @@ class Cubic(GenericGeometry):
     def _add_boundary_throat_type(self,net):
         throat_type = np.zeros(len(net.throat_properties['type']))
         
-        for i in range(0,len(net.pore_properties['type'])):
+        for i in range(0,len(throat_type)):
             temp1 = net.pore_properties['type'][net.throat_properties['connections'][i,0]]
             temp2 = net.pore_properties['type'][net.throat_properties['connections'][i,1]]
-            if temp1 > 0 and temp2 > 0:
+            if max(temp1,temp2) > 0:
                 throat_type[i] = max(temp1,temp2)
         return throat_type
     
