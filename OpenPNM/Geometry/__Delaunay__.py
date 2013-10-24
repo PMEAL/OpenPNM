@@ -34,7 +34,14 @@ class Delaunay(GenericGeometry):
     """
 
     def __init__(self,**kwargs):
-        r'''
+        
+        super(Delaunay,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
+        #Instantiate the network
+        self._net=OpenPNM.Network.GenericNetwork()
+
+    def generate(self,**params):
+        '''
         Create Delauny network. Returns OpenPNM.Network.GenericNetwork() object.
 
         Parameters
@@ -67,13 +74,10 @@ class Delaunay(GenericGeometry):
         >>> import OpenPNM as PNM
         >>> pn=PNM.Geometry.Cubic(domain_size=[100,100,10],lattice_spacing = 1.0)
         '''
-        super(Delaunay,self).__init__(**kwargs)
-        self._logger.debug("Execute constructor")
-        #Instantiate the network
-        self._net=OpenPNM.Network.GenericNetwork()
-
-
-    def _generate_setup(self, **params):
+        super(Delaunay,self).generate(**params)
+        return self._net
+        
+    def _generate_setup(self, btype=[0,0,0],**params):
         r"""
         Perform applicable preliminary checks and calculations required for generation
         """
@@ -84,7 +88,7 @@ class Delaunay(GenericGeometry):
         else:
             self._logger.error("domain_size and num_pores must be specified")
             raise Exception('domain_size and num_pores must be specified')
-
+        self._btype = btype
     def _generate_pores(self):
         r"""
         Generate the pores with numbering scheme.

@@ -30,7 +30,15 @@ class Cubic(GenericGeometry):
     """
 
     def __init__(self, **kwargs):
-        r'''
+        
+        super(Cubic,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
+
+        #Instantiate pore network object
+        self._net=OpenPNM.Network.GenericNetwork()
+        
+    def generate(self,**params):
+        '''
         Create Cubic network. Returns OpenPNM.Network.GenericNetwork() object.
 
         Parameters
@@ -67,11 +75,9 @@ class Cubic(GenericGeometry):
         >>> import OpenPNM as PNM
         >>> pn=PNM.Geometry.Cubic(domain_size=[100,100,10],lattice_spacing = 1.0)
         '''
-        super(Cubic,self).__init__(**kwargs)
-        self._logger.debug("Execute constructor")
-
-        #Instantiate pore network object
-        self._net=OpenPNM.Network.GenericNetwork()
+        print 'hi'
+        super(Cubic,self).generate(**params)    
+        return self._net
 
     def _generate_setup(self,   domain_size = [],
                                 divisions = [],
