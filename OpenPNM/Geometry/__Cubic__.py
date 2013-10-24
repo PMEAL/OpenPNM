@@ -281,33 +281,6 @@ class Cubic(GenericGeometry):
             The network that is stiched, whos throats are being added.
 
         """
-        """
-        pts = net.pore_properties['coords']
-        tri = sptl.Delaunay(pts)
-        I = []
-        J = []
-        V = []
-        dist_comb = list(itr.combinations_with_replacement(range(4),2))
-
-        for i in range(len(tri.simplices)):
-            for j in range(len(dist_comb)):
-                point_1 = tri.simplices[i,dist_comb[j][0]]
-                point_2 = tri.simplices[i,dist_comb[j][1]]
-                coords_1 = tri.points[point_1]
-                coords_2 = tri.points[point_2]
-                dist = math.sqrt((coords_2[0] - coords_1[0]) ** 2 +
-                     (coords_2[1] - coords_1[1]) ** 2 +
-                     (coords_2[2] - coords_1[2]) ** 2)
-                if dist > 0:
-                    I.append(point_1)
-                    J.append(point_2)
-                    V.append(dist)
-
-        masked = np.where(np.array(V) < (np.array(V).min() + .001))
-        connections = np.zeros((len(masked[0]),2),np.int)
-        connections[:,0] = np.array(I)[masked]
-        connections[:,1] = np.array(J)[masked]
-        """
         pts = net.pore_properties['coords']
         tri = sptl.Delaunay(pts)
         adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
@@ -334,13 +307,12 @@ class Cubic(GenericGeometry):
         for i in range(len(masked[0])):
             connections[i,0] = masked[0][i]
             connections[i,1] = masked[1][i]
-
+            
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),dtype=np.int8)
         net.throat_properties['seed'] = sp.amin(net.pore_properties['seed'][net.throat_properties['connections']],1)
-
-               
+    
         prob_fn = getattr(spst,stats_throats['name'])
         P = prob_fn(stats_throats['shape'],loc=stats_throats['loc'],scale=stats_throats['scale'])
         new_seeds = net.throat_properties['seed'][len(net.throat_properties['diameter']):len(net.throat_properties['seed'])]
