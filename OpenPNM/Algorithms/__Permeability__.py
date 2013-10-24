@@ -59,21 +59,8 @@ class Permeability(LinearSolver):
    
     def _do_inner_iteration_stage(self):
         r"""
-                       
+        The main section of the algorithm               
         """
         p = self._do_one_inner_iteration()       
         self._fluid.pore_conditions['pressure'] = p
         print p
-        
-    def calc_total_permeability(self):
-        
-        network = self._net        
-        pores1 = 0
-        pores2 = 0
-        area = 0
-        length = 0 
-                
-        total_rate = 0 
-        dp = network.pore_condtions['partial_pressure'][pores1] - network.pore_condtions['partial_pressure'][pores2]
-        K = sp.absolute(total_rate*length/area*(sp.average(network.pore_conditions['viscosity'+'_'+self.fluid_name]/dp)))
-        self._network_permeability = K
