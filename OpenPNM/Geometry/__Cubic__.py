@@ -176,7 +176,7 @@ class Cubic(GenericGeometry):
         
         self._logger.debug("generate_throats: End of method")
 
-    def _generate_boundaries(self,net,**params):
+    def generate_boundaries(self,net,**params):
 
         self._logger.info("generate_boundaries: Define edge points of the pore network and stitch them on")
         self._generate_setup(**params)
@@ -201,9 +201,9 @@ class Cubic(GenericGeometry):
         net.pore_properties['type'] = self._add_boundary_pore_type(net)
         net.throat_properties['type'] = self._add_boundary_throat_type(net)
         
-        return net
         self._logger.debug("generate_boundaries: End of method")
-
+        return net
+        
     def stitch_network(self,net1,net2,edge = 0, stitch_nets = 1, stitch_side = [],**params):
         r"""
         Stitch two networks together
@@ -281,10 +281,8 @@ class Cubic(GenericGeometry):
             The network that is stiched, whos throats are being added.
 
         """
-
         pts = net.pore_properties['coords']
         tri = sptl.Delaunay(pts)
-        count = 0
         I = []
         J = []
         V = []
@@ -300,17 +298,14 @@ class Cubic(GenericGeometry):
                      (coords_2[1] - coords_1[1]) ** 2 +
                      (coords_2[2] - coords_1[2]) ** 2)
                 if dist > 0:
-                    I[count] = point_1
-                    J[count] = point_2
-                    V[count] = dist
-                    count += count
+                    I.append(point_1)
+                    J.append(point_2)
+                    V.append(dist)
 
-        masked = np.where(V < (min(V) + .001))
+        masked = np.where(np.array(V) < (np.array(V).min() + .001))
         connections = np.zeros((len(masked[0]),2),np.int)
-
-        for i in range(len(masked[0])):
-            connections[i,0] = masked[0][i]
-            connections[i,1] = masked[1][i]
+        connections[:,0] = np.array(I)[masked]
+        connections[:,1] = np.array(J)[masked]
 
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
