@@ -22,28 +22,19 @@ def calc_conduit_filling(network,method='strict'):
         #if BOTH pores are filled an open throat is still considered open
         print 'nothing yet'
 
-def full_pore_filling(network,Pc=0.0,Seq=0):
+def update_satn_from_OP(network,fluid,Pc=0):
     r"""
-    Determine the filled state of a pore based on given capillary pressure
-
-    Parameters
-    ----------
-    network : OpenPNM Network Object
-
-    Pc : float, scalar
-        The capillary pressure applied to the nonwetting phase
-
-    Notes
-    -----
-    It is necessary that a capillary pressure curve has been run first, using the OrdinaryPercolation module.
-
+    ---
     """
-    if Pc:
-        network.pore_conditions['satn_wp'] = network.pore_conditions['Pc_invaded']>Pc
-    elif Seq:
-        network.pore_conditions['satn_wp'] = network.pore_conditions['IP_inv_seq']>Seq
-    else:
-        network.pore_conditions['satn_wp'] = sp.ones((network.get_num_pores(),), dtype=sp.int0)>0
+    fluid_name = fluid['name']
+    network.pore_conditions['satn_'+fluid_name] = network.pore_conditions['Pc_invaded']>Pc
+
+def update_satn_from_IP(network,fluid,Seq=0):
+    r"""
+    ---
+    """
+    fluid_name = fluid['name']
+    network.pore_conditions['satn_'+fluid_name] = network.pore_conditions['IP_inv_seq']>Seq
 
 def late_pore_filling(network,swpi=0.0,eta=1.0,Pc=0.0):
     r"""
