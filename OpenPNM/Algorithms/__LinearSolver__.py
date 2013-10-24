@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+q#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # Author: CEF PNM Team
 # License: TBD
