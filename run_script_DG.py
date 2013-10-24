@@ -30,10 +30,10 @@ network_main = {
 
 #Generate the main pore networks.
 pn1 = OpenPNM.Geometry.Cubic().generate(**network_main)
-pn2 = OpenPNM.Geometry.Cubic().generate(**network_main)
+#pn2 = OpenPNM.Geometry.Cubic().generate(**network_main)
 
 #Add boundaries to the networks
-#OpenPNM.Geometry.Cubic()._generate_boundaries(pn1,**network_main)
+#OpenPNM.Geometry.Cubic().generate_boundaries(pn1,**network_main)
 
 #Stitch the networks
-OpenPNM.Geometry.Cubic().stitch_network(pn1,pn2,stitch_side = 'top') # can be stitched to top, bottom, left right etc.
+#OpenPNM.Geometry.Cubic().stitch_network(pn1,pn2,stitch_side = 'top') # can be stitched to top, bottom, left right etc.
