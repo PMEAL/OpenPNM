@@ -185,26 +185,29 @@ class Cubic(GenericGeometry):
 
 
 
-    def _add_boundary_throats(self,net):
+    def _add_boundary_throat_type(self,net):
+        throat_type = np.zeros(len(net.throat_properties['type']))
         for i in range(3):
             bound_1 = net.pore_properties['coords'][:,i].min()
             bound_2 = net.pore_properties['coords'][:,i].max()
             bound_ind_1 = np.where(net.pore_properties['coords'][:,i] == bound_1)
             bound_ind_2 = np.where(net.pore_properties['coords'][:,i] == bound_2)
-            net.pore_properties['type'][bound_ind_1] = i+1
-            net.pore_properties['type'][bound_ind_2] = 6-i
+            throat_type[bound_ind_1] = i+1
+            throat_type[bound_ind_2] = 6-i
+            self._temp_throat_type = throat_type
     
     
     
-    
-    def _add_boundary_pores(self,net):
+    def _add_boundary_pore_type(self,net):
+        pore_type = np.zeros(len(net.pore_properties['type']))
         for i in range(3):
             bound_1 = net.pore_properties['coords'][:,i].min()
             bound_2 = net.pore_properties['coords'][:,i].max()
             bound_ind_1 = np.where(net.pore_properties['coords'][:,i] == bound_1)
             bound_ind_2 = np.where(net.pore_properties['coords'][:,i] == bound_2)
-            net.pore_properties['type'][bound_ind_1] = i+1
-            net.pore_properties['type'][bound_ind_2] = 6-i
+            pore_type[bound_ind_1] = i+1
+            pore_type[bound_ind_2] = 6-i
+            self._temp_pore_type = pore_type
 
 
 
@@ -232,7 +235,11 @@ class Cubic(GenericGeometry):
             self.stitch_network(net,edge_net,edge = i+1,stitch_nets = 0)
 
         self._stitch_throats(net)
-
+        self._add_boundary_throat_type(net)
+        net.pore_properties['type'] = self._temp_pore_type
+        self._add_boundary_pore_type(net)
+        net.throat_properties['type'] = self._temp_throat_type
+        
         return net
         self._logger.debug("generate_boundaries: End of method")
 
