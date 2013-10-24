@@ -19,14 +19,15 @@ def required_arguments(callable_object):
 class MatplotlibWidget(FigureCanvas):
 
   def __init__(self, vis_method):
-    super(MatplotlibWidget, self).__init__(Figure())
+    super(MatplotlibWidget, self).__init__(Figure(tight_layout=True))
+    self.figure.set_facecolor( '#'+str(hex(self.palette().background().color().rgb()))[4:-1] )
     self.vis_method = vis_method
 
   def plot(self, available_data):
-    self.figure.clf()
-    input_data = dict( (key, available_data[key]) for key in required_arguments(self.vis_method) )
-    logging.debug("Obtained these input arguments: {0}".format(input_data) )    
-    self.vis_method(fig=self.figure, **input_data)
+    self.figure.clear()
+    relevant_data = dict( (key, available_data[key]) for key in required_arguments(self.vis_method) )
+    self.vis_method(fig=self.figure, **relevant_data)
+    self.draw()
 
 
 class PreviewWidget(QtGui.QTabWidget):
@@ -52,15 +53,16 @@ class PreviewWidget(QtGui.QTabWidget):
       idx = self.indexOf(w)
       try:
         w.plot(property_dict)
-        self.insertTab(0, w, name)
+        if idx < 0:
+          self.insertTab(0, w, name)
 
       except Exception as e:
         if idx >= 0:
           self.removeTab(idx)
-        logging.debug("Attempted to plot {name} and failed because {e}".format(**locals()))
 
-    self.debug_tab.setPlainText(
-      '\n\n'.join("{0}:\n{1}".format(key, value) for key, value in sorted(property_dict.items())) )
+        # logging.debug("Attempted to plot {name} and failed because {e}".format(**locals()))
+
+    self.debug_tab.setPlainText( '\n\n'.join("{0}:\n{1}".format(key, value) for key, value in sorted(property_dict.items())) )
     
 
 

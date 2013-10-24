@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import os
 import numpy as np
 import OpenPNM
 
@@ -6,8 +7,8 @@ def Cubic(domain_size=[1,1,1], divisions=[10,10,10], stats_pores=None, stats_thr
   pn = OpenPNM.Geometry.Cubic().generate(**locals())
   return {'net': pn}
   
-def Import(import_file = 'D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles\\large_network'):
-    sections = import_file.split('\\')
+def Import(path=os.path.expanduser('~')):
+    sections = path.split('\\')
     filename = sections[np.size(sections,0)-1]
     sections[np.size(sections,0)-1] = ''
     path = sections[0:(np.size(sections,0)-1)].join('\\')
