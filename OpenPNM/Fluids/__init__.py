@@ -24,6 +24,7 @@ Submodules
 
 from __GenericFluid__ import GenericFluid
 from __Water__ import Water
+from __Air__ import Air
 import Viscosity
 import MolarDensity
 import Diffusivity

@@ -165,3 +165,16 @@ print 'current pore conditions:'
 for i in pn.pore_conditions.keys():
     print i,'=',pn.pore_conditions[i]
 print ''
+
+########################################
+print "Now demonstrating the mislabeling of the Water class as 'air'"
+pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geom1)
+air = OpenPNM.Fluids.Water().create(name='air')
+water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
+air.assign_to_network(pn)
+water.assign_to_network(pn)
+print ''
+print 'current pore conditions:'
+for i in pn.pore_conditions.keys():
+    print i,'=',pn.pore_conditions[i]
+print ''
