@@ -7,11 +7,7 @@ module CapillaryPressure
 
 import scipy as _sp
 
-<<<<<<< HEAD
 def Washburn(net,sigma=0.072,theta=120.0):
-=======
-def Washburn(net,sigma=0.072,theta=110):
->>>>>>> Weekend-Work
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
