@@ -38,7 +38,6 @@ class ElectronConduction(LinearSolver):
         """
         super(ElectronConduction,self).__init__(**kwargs)
         self._logger.info("Create Electrons Conduction Algorithm Object")
-        print 'init'
             
     def _setup(self,loglevel=10,**params):
         r"""
