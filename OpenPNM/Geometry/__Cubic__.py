@@ -177,27 +177,6 @@ class Cubic(GenericGeometry):
         
         self._logger.debug("generate_throats: End of method")
 
-    def _add_boundary_throat_type(self,net):
-        throat_type = np.zeros(len(net.throat_properties['type']))
-        
-        for i in range(0,len(throat_type)):
-            temp1 = net.pore_properties['type'][net.throat_properties['connections'][i,0]]
-            temp2 = net.pore_properties['type'][net.throat_properties['connections'][i,1]]
-            if max(temp1,temp2) > 0:
-                throat_type[i] = max(temp1,temp2)
-        return throat_type
-
-    def _add_boundary_pore_type(self,net):
-        pore_type = np.zeros(len(net.pore_properties['type']))
-        for i in range(3):
-            bound_1 = net.pore_properties['coords'][:,i].min()
-            bound_2 = net.pore_properties['coords'][:,i].max()
-            bound_ind_1 = np.where(net.pore_properties['coords'][:,i] == bound_1)
-            bound_ind_2 = np.where(net.pore_properties['coords'][:,i] == bound_2)
-            pore_type[bound_ind_1] = i+1
-            pore_type[bound_ind_2] = 6-i
-        return pore_type
-
     def _generate_boundaries(self,net,**params):
 
         self._logger.info("generate_boundaries: Define edge points of the pore network and stitch them on")
@@ -219,14 +198,14 @@ class Cubic(GenericGeometry):
             self.translate_coordinates(edge_net,displacement)
             self.stitch_network(net,edge_net,edge = i+1,stitch_nets = 0)
 
-        self._stitch_throats(net)
+        self._stitch_throats(net,**params)
         net.pore_properties['type'] = self._add_boundary_pore_type(net)
         net.throat_properties['type'] = self._add_boundary_throat_type(net)
         
         return net
         self._logger.debug("generate_boundaries: End of method")
 
-    def stitch_network(self,net1,net2,edge = 0, stitch_nets = 1, stitch_side = []):
+    def stitch_network(self,net1,net2,edge = 0, stitch_nets = 1, stitch_side = [],**params):
         r"""
         Stitch two networks together
 
@@ -285,11 +264,16 @@ class Cubic(GenericGeometry):
         net1.throat_properties['length']    = sp.concatenate((net1.throat_properties['length'],net2.throat_properties['length']),axis=0)
         
         if stitch_nets:
-            self._stitch_throats(net1)
+            self._stitch_throats(net1,**params)
             net1.pore_properties['type'] = self._add_boundary_pore_type(net1)
             net1.throat_properties['type'] = self._add_boundary_throat_type(net1)
 
-    def _stitch_throats(self,net):
+    def _stitch_throats(self,net, 
+                     stats_throats = {'name' : 'weibull_min',
+                                     'shape' : 1.5,
+                                       'loc' : 6e-6,
+                                     'scale' : 2e-5},
+                          **params):
         r"""
         Stitch two networks together OR adds the boundary throats to an existing network
 
@@ -330,9 +314,41 @@ class Cubic(GenericGeometry):
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),dtype=np.int8)
         net.throat_properties['seed'] = sp.amin(net.pore_properties['seed'][net.throat_properties['connections']],1)
-        #net.throat_properties['diameter']
-        #net.throat_properties['length']
-        #net.throat_properties['volume']
+        
+        prob_fn = getattr(spst,stats_throats['name'])
+        P = prob_fn(stats_throats['shape'],loc=stats_throats['loc'],scale=stats_throats['scale'])
+        
+        
+        net.throat_properties['diameter'] = P.ppf(net.throat_properties['seed'])
+        net.throat_properties['length'] = sp.zeros_like(net.throat_properties['type'])
+        C1 = net.pore_properties['coords'][net.throat_properties['connections'][:,0]]
+        C2 = net.pore_properties['coords'][net.throat_properties['connections'][:,1]]
+        E = sp.sqrt(sp.sum((C1-C2)**2,axis=1))  #Euclidean distance between pores
+        D1 = net.pore_properties['diameter'][net.throat_properties['connections'][:,0]]
+        D2 = net.pore_properties['diameter'][net.throat_properties['connections'][:,1]]
+        net.throat_properties['length'] = E - (D1 + D2)/2
+        net.throat_properties['volume'] = net.throat_properties['length']*net.throat_properties['diameter']**2
+
+    def _add_boundary_throat_type(self,net):
+        throat_type = np.zeros(len(net.throat_properties['type']))
+        
+        for i in range(0,len(throat_type)):
+            temp1 = net.pore_properties['type'][net.throat_properties['connections'][i,0]]
+            temp2 = net.pore_properties['type'][net.throat_properties['connections'][i,1]]
+            if max(temp1,temp2) > 0:
+                throat_type[i] = max(temp1,temp2)
+        return throat_type
+
+    def _add_boundary_pore_type(self,net):
+        pore_type = np.zeros(len(net.pore_properties['type']))
+        for i in range(3):
+            bound_1 = net.pore_properties['coords'][:,i].min()
+            bound_2 = net.pore_properties['coords'][:,i].max()
+            bound_ind_1 = np.where(net.pore_properties['coords'][:,i] == bound_1)
+            bound_ind_2 = np.where(net.pore_properties['coords'][:,i] == bound_2)
+            pore_type[bound_ind_1] = i+1
+            pore_type[bound_ind_2] = 6-i
+        return pore_type
         
 if __name__ == '__main__':
     test=Cubic(loggername='TestCubic')
