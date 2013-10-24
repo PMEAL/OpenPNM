@@ -52,13 +52,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         self.pore_properties = {}
         self.throat_properties = {}
 
-        #Initialize the conditions dictionaries
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-
-        #Initialize constants dictionary
-        self.const = {}
-
         #This initializes the custom 'self-protecting' dictionary
 #        self.pore_properties = {}
 #        self.throat_properties = {}
@@ -72,9 +65,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         self.incidence_matrix['coo'] = {}
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
-
-        #Create dictionary for storing phase information
-        self.phases = {}
 
         self._logger.info("Constructor completed")
 
