@@ -23,7 +23,7 @@ def ElectronicConductance(network,fluid):
     try:
         sigmap = fluid.pore_properties['electonic_conducty']
     except:
-        raise Exception('Viscosity of the phase has not been specified')
+        raise Exception('electronic_conductivity of the phase has not been specified')
     sigmat = network.interpolate_throat_values(sigmap)
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)

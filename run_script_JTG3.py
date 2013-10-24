@@ -40,6 +40,8 @@ pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
 #pn = OpenPNM.Geometry.Delaunay().generate(**params)
 #pn = OpenPNM.Geometry.Template().generate(**params)
 
+pn.pore_properties['type'] = sp.zeros_like(pn.pore_properties['type'])
+
 #Define the fluids and set their properties
 air_recipe = {       'name': 'air',
                        'Pc': 3.771e6, #Pa
@@ -71,9 +73,13 @@ water_recipe = {     'name': 'water',
           'surface_tension': {'method': 'constant',
                                'value': 0.072,}
 }
+
 #Create fluids
 air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
 water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
+
+#set water and air as a fluid pair
+water.set_pair(air)
 
 #Set base conditions in the Fluids
 air.pore_conditions['temperature'] = 353
@@ -81,11 +87,9 @@ air.pore_conditions['pressure'] = 101325
 water.pore_conditions['temperature'] = 353
 water.pore_conditions['pressure'] = 101325
 
-water.refresh()
-air.refresh()
+water.regenerate()
+air.regenerate()
 
-#set water and air as a fluid pair
-water.set_pair(air)
 
 OpenPNM.Physics.CapillaryPressure.set_contact_angle(water,120)
 OpenPNM.Physics.CapillaryPressure.Washburn(pn,water)
