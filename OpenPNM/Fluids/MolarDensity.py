@@ -7,10 +7,10 @@ module MolarDensity
 import OpenPNM
 import scipy as sp
 
-def constant(network,value=40.89,**params):
+def constant(fluid,value=40.89,**params):
     return value
 
-def na(network,**params):
+def na(fluid,**params):
     return 'n/a'
 
 def ideal_gas(fluid,**params):
