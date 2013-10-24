@@ -58,7 +58,6 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
-        #self._add_boundaries()
         self._generate_pore_seeds()
         self._generate_throat_seeds()
         self._generate_pore_diameters(stats_pores)

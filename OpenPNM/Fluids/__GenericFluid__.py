@@ -26,6 +26,10 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
     def refresh(self):
         for condition in self._implemented_methods:
             self.pore_conditions.update({condition: getattr(self,condition)()})
+            
+    def regenerate(self):
+        for condition in self._implemented_methods:
+            self.pore_conditions.update({condition: getattr(self,condition)()})
 
     def diffusivity(self):
         params = self._fluid_recipe['diffusivity']
