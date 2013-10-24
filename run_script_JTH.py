@@ -9,17 +9,21 @@ import OpenPNM
 from time import clock
 import scipy as sp
 clock()
-print 'Creating 100,000 pore cubic network'
-cubic = OpenPNM.Geometry.Cubic().generate(domain_size=[100,100,10],lattice_spacing=[1.0])
+print 'Creating 1,000 pore cubic network'
+cubic = OpenPNM.Geometry.Cubic().generate(domain_size=[10,10,10],lattice_spacing=[1.0])
+print cubic
 print 'Finished at time =',sp.round_(clock(),2),'seconds'
 print ''
-print 'Creating 100,000 pore Delauny network'
-delauny = OpenPNM.Geometry.Delaunay().generate(domain_size=[100,100,10],num_pores=100000)
+print 'Creating 1,000 pore Delauny network'
+delaunay = OpenPNM.Geometry.Delaunay().generate(domain_size=[10,10,10],num_pores=1000)
+print delaunay
 print 'Finished at time =',sp.round_(clock(),2),'seconds'
 print ''
-print 'Creating #### pore imported network
-#imported = OpenPNM.Geometry.MatFile()
-
+print 'Creating #### pore imported network'
+matfile = OpenPNM.Geometry.MatFile().generate(filename='large_network')
+print matfile
+print 'Finished at time =',sp.round_(clock(),2),'seconds'
+print ''
 
 
 #
