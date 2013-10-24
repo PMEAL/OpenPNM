@@ -145,14 +145,15 @@ class Cubic(GenericGeometry):
         self._net.pore_properties['coords'] = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self._net.pore_properties['numbering'] = ind
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
+        
         for i in range(3):
             bound_1 = self._net.pore_properties['coords'][:,i].min()
             bound_2 = self._net.pore_properties['coords'][:,i].max()
-            bound_ind_1 = np.where(self._net.pore_properties['coords'][:,0] == bound_1)
-            bound_ind_2 = np.where(self._net.pore_properties['coords'][:,0] == bound_2)
-            self._net.pore_properties['type'][bound_ind_1] = 1
-            self._net.pore_properties['type'][bound_ind_2] = 1
-
+            bound_ind_1 = np.where(self._net.pore_properties['coords'][:,i] == bound_1)
+            bound_ind_2 = np.where(self._net.pore_properties['coords'][:,i] == bound_2)
+            self._net.pore_properties['type'][bound_ind_1] = i+1
+            self._net.pore_properties['type'][bound_ind_2] = 6-i
+        
         self._logger.debug("generate_pores: End of method")
 
     def _generate_throats(self):
@@ -186,7 +187,7 @@ class Cubic(GenericGeometry):
             temp1 = self._net.pore_properties['type'][connections[i,0]]
             temp2 = self._net.pore_properties['type'][connections[i,1]]
             if temp1 > 0 and temp2 > 0:
-                self._net.throat_properties['type'][i] = 1
+                self._net.throat_properties['type'][i] = max(temp1,temp2)
 
         self._logger.debug("generate_throats: End of method")
 
@@ -209,7 +210,7 @@ class Cubic(GenericGeometry):
             else:
                 displacement[i%3] = -1*(net.pore_properties['coords'][:,i%3].min() + 0.5*Lc)
             self.translate_coordinates(edge_net,displacement)
-            self.stitch_network(net,edge_net,edge = 1,stitch_nets = 0)
+            self.stitch_network(net,edge_net,edge = i+1,stitch_nets = 0)
 
         self._stitch_throats(net)
 
@@ -244,7 +245,7 @@ class Cubic(GenericGeometry):
         net2.pore_properties['type']        = sp.repeat(edge,len(net2.pore_properties['type']))
         net1.pore_properties['type']        = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
         net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
-
+            
         if stitch_nets:
             #if ~stitch_size:
                 #stitch in place
@@ -268,6 +269,15 @@ class Cubic(GenericGeometry):
                 OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[0,0,-1*def_translate])
 
         net1.pore_properties['coords']      = sp.concatenate((net1.pore_properties['coords'],net2.pore_properties['coords']),axis = 0)
+        
+        for i in range(3):
+            bound_1 = net1.pore_properties['coords'][:,i].min()
+            bound_2 = net1.pore_properties['coords'][:,i].max()
+            bound_ind_1 = np.where(net1.pore_properties['coords'][:,i] == bound_1)
+            bound_ind_2 = np.where(net1.pore_properties['coords'][:,i] == bound_2)
+            net1.pore_properties['type'][bound_ind_1] = i+1
+            net1.pore_properties['type'][bound_ind_2] = 6-i
+            
 
         net2.throat_properties['numbering'] = len(net1.throat_properties['numbering']) + net2.throat_properties['numbering']
         net1.throat_properties['numbering'] = sp.concatenate((net1.throat_properties['numbering'],net2.throat_properties['numbering']),axis=0)
@@ -275,9 +285,10 @@ class Cubic(GenericGeometry):
         net1.throat_properties['diameter']  = sp.concatenate((net1.throat_properties['diameter'],net2.throat_properties['diameter']),axis=0)
         net1.throat_properties['length']    = sp.concatenate((net1.throat_properties['length'],net2.throat_properties['length']),axis=0)
         net1.throat_properties['seed']      = sp.concatenate((net1.throat_properties['seed'],net2.throat_properties['seed']),axis=0)
-        net2.throat_properties['type']      = sp.repeat(edge,len(net2.throat_properties['type']))
-        net1.throat_properties['type']      = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
-
+        net2.throat_properties['type']      = sp.repeat(0,len(net2.throat_properties['type']))
+        net1.throat_properties['type']      = sp.concatenate((sp.repeat(0,len(net1.throat_properties['type'])),sp.repeat(0,len(net2.throat_properties['type']))),axis=0)
+        
+                
         if stitch_nets:
             self._stitch_throats(net1)
 
@@ -320,12 +331,12 @@ class Cubic(GenericGeometry):
 
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
-        net.throat_properties['type'] = np.zeros(len(connections[:,0]),np.int)
-        #for i in sp.arange(len(connections[:,0])):
-        #    temp1 = net.pore_properties['type'][connections[i,0]]
-        #    temp2 = net.pore_properties['type'][connections[i,1]]
-        #    if temp1 > 0 and temp2 > 0:
-        #        net.throat_properties['type'][i] = 1
+        
+        for i in range(0,len(net.pore_properties['type'])):
+            temp1 = net.pore_properties['type'][net.throat_properties['connections'][i,0]]
+            temp2 = net.pore_properties['type'][net.throat_properties['connections'][i,1]]
+            if temp1 > 0 and temp2 > 0:
+                net.throat_properties['type'][i] = max(temp1,temp2)
 
 
 
