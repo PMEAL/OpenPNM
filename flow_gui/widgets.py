@@ -15,6 +15,7 @@ class GenericIOWidget(QtGui.QWidget):
 
     super(GenericIOWidget, self).__init__()
     QtGui.QVBoxLayout(self)
+    self.layout().setSpacing(0)
 
     self.input_form = QtGui.QFormLayout()
     self.layout().addLayout(self.input_form)
@@ -130,6 +131,7 @@ class GenericIOWidget(QtGui.QWidget):
       else:
         widget = QtGui.QWidget()
         widget.setLayout(QtGui.QHBoxLayout())
+        widget.layout().setSpacing(0)
         widget.sub_widgets = [self.create_widget(None, sub_value) for sub_value in arg_value]
         widget.get = lambda: [sub_widget.get() for sub_widget in widget.sub_widgets]
 
@@ -161,7 +163,7 @@ class SciPyStatsWidget(QtGui.QWidget):
     QtGui.QVBoxLayout(self)
 
     self.distribution_name = QtGui.QComboBox()
-    self.distribution_name.addItems('weibull_min gamma normal lognormal'.split())
+    self.distribution_name.addItems('weibull_min gamma norm lognorm'.split())
     self.layout().addWidget(self.distribution_name)
 
     self.parameters = GenericIOWidget({'shape':1.5, 'loc':6E-6, 'scale':2E-5}, button=False)
@@ -172,10 +174,5 @@ class SciPyStatsWidget(QtGui.QWidget):
 
 
 if __name__ == '__main__':
-  app = QtGui.QApplication([])
-
-  g = GenericIOWidget(lambda stats_some='something': stats_some)
-  g.output_generated.connect(print)
-  g.show()
-
-  app.exec_()
+  import sys; sys.path.append(__file__.rsplit('/',2)[0])
+  import run_gui

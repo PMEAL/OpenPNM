@@ -9,6 +9,7 @@ from .widgets import *
 class GenericModuleWidget(QtGui.QWidget):
 
   state_changed = QtCore.pyqtSignal(int)
+  output_generated = QtCore.pyqtSignal()
   
   def __init__(self, module):
     super(GenericModuleWidget, self).__init__()
@@ -51,6 +52,7 @@ class GenericModuleWidget(QtGui.QWidget):
     else:
       self.content = {self.module_name:output}
     self.check_state(current_input)
+    self.output_generated.emit()
 
   def check_state(self, current_input):
     if not self.content:

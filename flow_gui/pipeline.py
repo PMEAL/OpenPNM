@@ -21,6 +21,7 @@ class PipelineItem(QtGui.QStandardItem):
     self.module_widget.item = self # not a good idea
     
     self.module_widget.state_changed.connect(self.update_warnings)
+    self.module_widget.output_generated.connect(self.update_plots)
 
     self.preview = PreviewWidget(main_window.preview_sources)
 
@@ -33,6 +34,9 @@ class PipelineItem(QtGui.QStandardItem):
   def update_warnings(self, check_state):
     self.setCheckState(check_state)
     # self.main_window.update()
+
+  def update_plots(self):
+    self.preview.update(self.branch_properties())
 
   def branch_properties(self):
     item = self
@@ -200,9 +204,6 @@ class MainWindow(QtGui.QMainWindow):
   def run_all(self):
     for item in self.traverse(self.model.invisibleRootItem())[1:]:
       item.module_widget.visible_widget.current_output()
-
-      item.preview.update(item.branch_properties())
-
 
   def save_project(self):
     print( "Save" )
