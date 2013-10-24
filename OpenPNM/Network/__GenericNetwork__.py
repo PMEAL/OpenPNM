@@ -20,6 +20,7 @@ import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import matplotlib as mpl
+import math
 
 class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     r"""
@@ -597,10 +598,24 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         str_throat = "\nThroat properties:"
         for key, value in self.throat_properties.iteritems():
+            print key, value
             str_throat += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,value)
+            
+        str_pore_cond = "\nPore conditions:"
+        for key, value in self.pore_conditions.iteritems():
+            str_pore_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
 
-        return str_overview+str_pore+str_throat
+        str_throat_cond = "\nThroat conditions:"
+        for key, value in self.throat_conditions.iteritems():
+            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
 
+        return str_overview+str_pore+str_throat+str_pore_cond+str_throat_cond
+    
+    def fastest_calc_dist(self,p1,p2):
+        return math.sqrt((p2[0] - p1[0]) ** 2 +
+                     (p2[1] - p1[1]) ** 2 +
+                     (p2[2] - p1[2]) ** 2)    
+                     
     def update(self):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()

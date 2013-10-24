@@ -103,5 +103,9 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
 
 
 if __name__ =="__main__":
+    print ''
+    print ''    
+    print '    ************Testing Generic Algorithm**************'
+    pn = OpenPNM.Geometry.Cubic().generate()
     test = GenericAlgorithm(loggername="TestGenericAlg")
-    test.run()
+    test.run(pn)

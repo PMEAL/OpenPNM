@@ -1,2 +1,2 @@
 from __future__ import absolute_import
-from . import network, physics, algorithm, output
+from OpenPNM.GUI import algorithm, network, output

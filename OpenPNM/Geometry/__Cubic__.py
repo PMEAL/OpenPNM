@@ -5,11 +5,16 @@ module __Cubic__: Generate simple cubic networks
 .. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
-
+#Test
 import OpenPNM
 import scipy as sp
 import numpy as np
 import scipy.stats as spst
+import scipy.spatial as sptl
+import itertools as itr
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+#Test
 
 from __GenericGeometry__ import GenericGeometry
 
@@ -137,10 +142,16 @@ class Cubic(GenericGeometry):
         Lc = self._Lc
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
-        a = np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F')).T
         self._net.pore_properties['coords'] = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self._net.pore_properties['numbering'] = ind
         self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
+        for i in range(3):
+            bound_1 = self._net.pore_properties['coords'][:,i].min()
+            bound_2 = self._net.pore_properties['coords'][:,i].max()
+            bound_ind_1 = np.where(self._net.pore_properties['coords'][:,0] == bound_1)
+            bound_ind_2 = np.where(self._net.pore_properties['coords'][:,0] == bound_2)
+            self._net.pore_properties['type'][bound_ind_1] = 1
+            self._net.pore_properties['type'][bound_ind_2] = 1
 
         self._logger.debug("generate_pores: End of method")
 
@@ -170,123 +181,152 @@ class Cubic(GenericGeometry):
         self._net.throat_properties['connections'] = connections
         self._net.throat_properties['type'] = np.zeros(np.shape(tpore1),dtype=np.int8)
         self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
+
+        for i in range(0,np.shape(tpore1)[0]):
+            temp1 = self._net.pore_properties['type'][connections[i,0]]
+            temp2 = self._net.pore_properties['type'][connections[i,1]]
+            if temp1 > 0 and temp2 > 0:
+                self._net.throat_properties['type'][i] = 1
+
         self._logger.debug("generate_throats: End of method")
 
-    def _add_boundaries(self):
-        r"""
-        Add boundaries to network
-        """
-        self._logger.debug("add_boundaries: Start of method")
-        #Remove all items pertaining to previously defined boundaries (if any)
-        Np = self._net.get_num_pores([0])
-        Nt = self._net.get_num_throats([0])
-#        for item in self._net.pore_properties.keys():
-#            self._net.pore_properties[item] = self._net.pore_properties[item][0:Np]
-#        for item in self._net.throat_properties.keys():
-#            self._net.throat_properties[item] = self._net.throat_properties[item][0:Nt]
-        pnum_orig = self._net.get_num_pores([0])
-        self._add_opposing_boundaries(face=2,periodic=self._btype[0]) #x faces
-        self._add_opposing_boundaries(face=3,periodic=self._btype[1]) #y faces
-        self._add_opposing_boundaries(face=1,periodic=self._btype[2]) #z faces
+    def _generate_boundaries(self,net,**params):
 
-        pnum_added = self._net.get_num_pores() - pnum_orig
-        self._net.pore_properties['coords'] = np.concatenate((self._net.pore_properties['coords'],np.zeros((pnum_added,3))),axis=0)
-        #Add 'coords' to boundaries
-        #   Generate an Nx2 array, named "boundary_pore_list" that names all
-        #   pairs of pores connected by boundary throats.
-        pnum_dif = self._net.get_num_pores()-pnum_orig
-        btlist = self._net.throat_properties['numbering'][self._net.throat_properties['type']>0]
-#        self._net.pore_properties['coords']=np.append(self._net.pore_properties['coords'],np.zeros((pnum_dif,3)),0)
-        btnum = np.size(btlist)
-        boundary_pore_list = np.zeros((btnum,2),dtype=np.int32)
-        for i in range(btnum):
-            boundary_pore_list[i] = self._net.get_connected_pores(btlist[i])
-        #   For each boundary pore in the pair, adopt the internal pore's coords
-        for i in boundary_pore_list:
-            if i[0] >= pnum_orig:
-                self._net.pore_properties['coords'][i[0]] = self._net.pore_properties['coords'][i[1]]
-            if i[1] >= pnum_orig:
-                self._net.pore_properties['coords'][i[1]] = self._net.pore_properties['coords'][i[0]]
-        #   Make lists of pores on each boundary
-        face1pores = np.nonzero(self._net.pore_properties['type']==1)[0]
-        face2pores = np.nonzero(self._net.pore_properties['type']==2)[0]
-        face3pores = np.nonzero(self._net.pore_properties['type']==3)[0]
-        face4pores = np.nonzero(self._net.pore_properties['type']==4)[0]
-        face5pores = np.nonzero(self._net.pore_properties['type']==5)[0]
-        face6pores = np.nonzero(self._net.pore_properties['type']==6)[0]
-        #   Appropriately add or subtract a lattice constant from the appropriate
-        #   dimention in the boundary pore's 'coords' value.
-        for i in face1pores:
-            self._net.pore_properties['coords'][i][2] += -self._Lc
-        for i in face2pores:
-            self._net.pore_properties['coords'][i][0] += -self._Lc
-        for i in face3pores:
-            self._net.pore_properties['coords'][i][1] += -self._Lc
-        for i in face4pores:
-            self._net.pore_properties['coords'][i][1] += self._Lc
-        for i in face5pores:
-            self._net.pore_properties['coords'][i][0] += self._Lc
-        for i in face6pores:
-            self._net.pore_properties['coords'][i][2] += self._Lc
-        #Update network
-        self._net.update()
-
-        self._logger.debug("add_boundaries: End of method")
-
-    def _add_opposing_boundaries(self,face,periodic=0):
-        r"""
-        Add boundaries by adding opposing faces, one pair at a time.
-        """
-        self._logger.debug("add_opposing_boundaries: Start of method")
-
-        Nx = self._Nx
-        Ny = self._Ny
-        Nz = self._Nz
-        Lx = self._Lx
-        Ly = self._Ly
-        Lz = self._Lz
+        self._logger.info("generate_boundaries: Define edge points of the pore network and stitch them on")
+        self._generate_setup(**params)
         Lc = self._Lc
-        Np = self._net.get_num_pores()
-        Nt = self._net.get_num_throats()
-        col = [-1,2,0,1,1,0,2] #Column to use in coord
-        coord = np.array([-1, Lc/2, Lc/2, Lc/2, Ly-Lc/2, Lx-Lc/2, Lz-Lc/2],dtype=np.float)
-        coordperi = np.array([-1, Lz-Lc/2, Lx-Lc/2, Ly-Lc/2, Lc/2, Lc/2, Lc/2],dtype=np.float)
-        NpFace = np.array([-1, Nx*Ny, Ny*Nz, Nx*Nz, Nx*Nz, Ny*Nz, Nx*Ny],dtype=np.int)
+        params['divisions'] = [self._Nx, self._Ny, self._Nz]
+        temp_divisions = sp.copy(params['divisions']).tolist()
 
-        #Extract pore numbers from opposing faces of the network
-        tpore1 = self._net.pore_properties['numbering'][np.abs(self._net.pore_properties['coords'][:,col[face]]-coord[face]) < np.min([Lx,Ly,Lz])/1000000]
-        tpore2 = self._net.pore_properties['numbering'][np.abs(self._net.pore_properties['coords'][:,col[face]]-coordperi[face]) < np.min([Lx,Ly,Lz])/1000000]
+        for i in range(0,6):
+            params['divisions'] = temp_divisions
+            temp_divisions = sp.copy(params['divisions']).tolist()
+            params['divisions'][i%3] = 1
+            edge_net = super(Cubic, self).generate(**params)
+            displacement = [0,0,0]
+            if i < 3:
+                displacement[i%3] = net.pore_properties['coords'][:,i%3].max() + 0.5*Lc
+            else:
+                displacement[i%3] = -1*(net.pore_properties['coords'][:,i%3].min() + 0.5*Lc)
+            self.translate_coordinates(edge_net,displacement)
+            self.stitch_network(net,edge_net,edge = 1,stitch_nets = 0)
 
-        if periodic:
-            #If periodic simply link faces together
-            conns = np.vstack((tpore1,tpore2)).T
-            #Add elements to throat lists
-            self._net.throat_properties['connections'] = np.concatenate((self._net.throat_properties['connections'],conns),axis=0)
-            self._net.throat_properties['numbering'] = np.concatenate((self._net.throat_properties['numbering'],np.arange(Nt,Nt+NpFace[face],dtype=np.int32)),axis=0)
-            self._net.throat_properties['type'] = np.concatenate((self._net.throat_properties['type'],np.ones(NpFace[face],dtype=np.int8)*face),axis=0)
-        else:
-            #If not periodic, then
-            tpore1 = np.concatenate((tpore1,tpore2),axis=0)
-            tpore2 = np.arange(Np,Np+2*NpFace[face])
-            conns = np.vstack((tpore1,tpore2)).T
-            #Add new elements to throat lists
-            self._net.throat_properties['connections'] = np.concatenate((self._net.throat_properties['connections'],conns),axis=0)
-            self._net.throat_properties['numbering'] = np.concatenate((self._net.throat_properties['numbering'],np.arange(Nt,Nt+2*NpFace[face],dtype=np.int32)),axis=0)
-            self._net.throat_properties['type'] = np.concatenate((self._net.throat_properties['type'],np.ones(NpFace[face],dtype=np.int8)*face),axis=0)
-            self._net.throat_properties['type'] = np.concatenate((self._net.throat_properties['type'],np.ones(NpFace[face],dtype=np.int8)*(7-face)),axis=0)
-            #Add new elements to pore lists
-            self._net.pore_properties['numbering'] = np.concatenate((self._net.pore_properties['numbering'],np.arange(Np,Np+2*NpFace[face],dtype=np.int32)),axis=0)
-            self._net.pore_properties['type'] = np.concatenate((self._net.pore_properties['type'],np.ones(NpFace[face],dtype=np.int8)*(face)),axis=0)
-            self._net.pore_properties['type'] = np.concatenate((self._net.pore_properties['type'],np.ones(NpFace[face],dtype=np.int8)*(7-face)),axis=0)
-            self._net.update()
-#            bnum1 = self._net.pore_properties['numbering'][self._net.pore_properties['type']>(face)]
-#            bnum2 = self._net.pore_properties['numbering'][self._net.pore_properties['type']>(7-face)]
-#            pnum1 = self._net.get_neighbor_pores(bnum1,[0])
-#            pnum2 = self._net.get_neighbor_pores(bnum2,[0])
-#            self._net.pore_properties['coords'][bnum1] = self._net.pore_properties['coords'][pnum1] - []
-#            self._net.pore_properties['coords'][bnum2] =
+        self._stitch_throats(net)
 
-        self._logger.debug("add_opposing_boundaries: End of method")
+        return net
+        self._logger.debug("generate_boundaries: End of method")
+
+    def stitch_network(self,net1,net2,edge = 0, stitch_nets = 1, stitch_side = []):
+        r"""
+        Stitch two networks together
+
+        Parameters
+        ----------
+        net1 : OpenPNM Network Object
+            The network that is stiched to
+
+        net2 : OpenPNM Network Object
+            The network that is stitched
+
+        edge : default value of 0. This changed if you are adding boundaries to an existing network.
+
+        stitch_nets : default value of 1. This assumes you are stitching 2 separately generated networks together. If the value
+            is changed to a value of 0, you don't append the throats of the stitched network because you are adding boundary pores.
+
+        stitch_side : string (optional)
+            When given, this flag moves net2 into position automatically
+
+        """
+        net2.pore_properties['numbering']   = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
+        net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)
+        net1.pore_properties['volume']      = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
+        net1.pore_properties['seed']        = sp.concatenate((net1.pore_properties['seed'],net2.pore_properties['seed']),axis = 0)
+        net2.pore_properties['type']        = sp.repeat(edge,len(net2.pore_properties['type']))
+        net1.pore_properties['type']        = sp.concatenate((net1.pore_properties['type'],net2.pore_properties['type']),axis = 0)
+        net1.pore_properties['diameter']    = sp.concatenate((net1.pore_properties['diameter'],net2.pore_properties['diameter']),axis = 0)
+
+        if stitch_nets:
+            #if ~stitch_size:
+                #stitch in place
+            if stitch_side == 'left':
+                def_translate = net1.pore_properties['coords'][:,0].max()+net1.pore_properties['coords'][:,0].min()
+                OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[def_translate,0,0])
+            elif stitch_side == 'right':
+                def_translate = net1.pore_properties['coords'][:,0].max()+net1.pore_properties['coords'][:,0].min()
+                OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[-1*def_translate,0,0])
+            elif stitch_side == 'back':
+                def_translate = net1.pore_properties['coords'][:,1].max()+net1.pore_properties['coords'][:,1].min()
+                OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[0,def_translate,0])
+            elif stitch_side == 'front':
+                def_translate = net1.pore_properties['coords'][:,1].max()+net1.pore_properties['coords'][:,1].min()
+                OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[0,-1*def_translate,0])
+            elif stitch_side == 'top':
+                def_translate = net1.pore_properties['coords'][:,2].max()+net1.pore_properties['coords'][:,2].min()
+                OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[0,0,def_translate])
+            elif stitch_side == 'bottom':
+                def_translate = net1.pore_properties['coords'][:,2].max()+net1.pore_properties['coords'][:,2].min()
+                OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[0,0,-1*def_translate])
+
+        net1.pore_properties['coords']      = sp.concatenate((net1.pore_properties['coords'],net2.pore_properties['coords']),axis = 0)
+
+        net2.throat_properties['numbering'] = len(net1.throat_properties['numbering']) + net2.throat_properties['numbering']
+        net1.throat_properties['numbering'] = sp.concatenate((net1.throat_properties['numbering'],net2.throat_properties['numbering']),axis=0)
+        net1.throat_properties['volume']    = sp.concatenate((net1.throat_properties['volume'],net2.throat_properties['volume']),axis=0)
+        net1.throat_properties['diameter']  = sp.concatenate((net1.throat_properties['diameter'],net2.throat_properties['diameter']),axis=0)
+        net1.throat_properties['length']    = sp.concatenate((net1.throat_properties['length'],net2.throat_properties['length']),axis=0)
+        net1.throat_properties['seed']      = sp.concatenate((net1.throat_properties['seed'],net2.throat_properties['seed']),axis=0)
+        net2.throat_properties['type']      = sp.repeat(edge,len(net2.throat_properties['type']))
+        net1.throat_properties['type']      = sp.concatenate((net1.throat_properties['type'],net2.throat_properties['type']),axis=0)
+
+        if stitch_nets:
+            self._stitch_throats(net1)
+
+    def _stitch_throats(self,net):
+        r"""
+        Stitch two networks together OR adds the boundary throats to an existing network
+
+        Parameters
+        ----------
+        net : OpenPNM Network Object
+            The network that is stiched, whos throats are being added.
+
+        """
+
+        pts = net.pore_properties['coords']
+        tri = sptl.Delaunay(pts)
+
+        adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
+        dist_comb = list(itr.combinations_with_replacement(range(4),2))
+
+        for i in range(len(tri.simplices)):
+            for j in range(len(dist_comb)):
+                point_1 = tri.simplices[i,dist_comb[j][0]]
+                point_2 = tri.simplices[i,dist_comb[j][1]]
+                coords_1 = tri.points[point_1]
+                coords_2 = tri.points[point_2]
+                adj_mat[point_1,point_2] = self._net.fastest_calc_dist(coords_1,coords_2) #move off of network
+
+        #Begin removing undesired connections based on their length
+        ind = np.ma.where(adj_mat>0)
+        I = ind[:][0].tolist()
+        J = ind[:][1].tolist()
+        V = adj_mat[I,J]
+        masked = np.where((adj_mat < (V.min() + .001)) & (adj_mat > 0))
+        connections = np.zeros((len(masked[0]),2),np.int)
+
+        for i in range(len(masked[0])):
+            connections[i,0] = masked[0][i]
+            connections[i,1] = masked[1][i]
+
+        net.throat_properties['connections'] =  connections
+        net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
+        net.throat_properties['type'] = np.zeros(len(connections[:,0]),np.int)
+        #for i in sp.arange(len(connections[:,0])):
+        #    temp1 = net.pore_properties['type'][connections[i,0]]
+        #    temp2 = net.pore_properties['type'][connections[i,1]]
+        #    if temp1 > 0 and temp2 > 0:
+        #        net.throat_properties['type'][i] = 1
+
 
 
 if __name__ == '__main__':
