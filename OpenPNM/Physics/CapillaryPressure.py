@@ -37,6 +37,7 @@ def Washburn(net,sigma=0.072,theta=120.0):
 
     vals = -4*sigma*_sp.cos(_sp.radians(theta))/net.throat_properties['diameter']
     net.throat_conditions['Pc_entry'] = vals
+    return {'net':net}
 
 def Purcell(net,sigma,theta,r_toroid):
     r"""
