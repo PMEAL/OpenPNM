@@ -26,10 +26,14 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
     def refresh(self):
         for condition in self._implemented_methods:
             self.pore_conditions.update({condition: getattr(self,condition)()})
-            
+
     def regenerate(self):
         for condition in self._implemented_methods:
             self.pore_conditions.update({condition: getattr(self,condition)()})
+
+    def set_pair(self,fluid2):
+        self.partner = fluid2
+        fluid2.partner = self
 
     def diffusivity(self):
         params = self._fluid_recipe['diffusivity']
@@ -54,10 +58,6 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         eqn = getattr(OpenPNM.Fluids.SurfaceTension,params['method'])
         vals = eqn(self,**params)
         return sp.array(vals,ndmin=1)
-
-    def set_pair(self,fluid2):
-        self.partner = fluid2
-        fluid2.partner = self
 
 if __name__ =="__main__":
 

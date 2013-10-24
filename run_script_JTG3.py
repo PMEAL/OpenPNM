@@ -114,7 +114,15 @@ BCvalues[pn.pore_properties['type']==6] = 8e-1
 #BCvalues[pn.pore_properties['type']==1] = 8e-1
 #BCvalues[pn.pore_properties['type']==6] = 2e-10
 
-OpenPNM.Physics.MultiPhase.update_occupancy_OP(water,Pc=2000)
+#Define Physics bundle
+fluid = air
+network = pn
+fluid.regenerate()
+OpenPNM.Physics.MultiPhase.update_occupancy_OP(fluid,Pc=2000)
+OpenPNM.Physics.MassTransport.DiffusiveConductance(network,fluid)
+OpenPNM.Physics.MultiPhase.calc_conduit_occupancy(network,fluid)
+
+
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
 params_alg = {      'fluid1': air,

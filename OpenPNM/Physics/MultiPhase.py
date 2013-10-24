@@ -6,7 +6,7 @@ module MultiPhase
 """
 import scipy as sp
 
-def calc_conduit_filling(network,fluid,method='strict'):
+def calc_conduit_occupancy(network,fluid,method='strict'):
     r"""
 
     """
@@ -26,17 +26,17 @@ def update_occupancy_OP(fluid,Pc=0):
     r"""
     ---
     """
-    try: 
+    try:
         fluid.pore_conditions['occupancy'] = fluid.pore_conditions['Pc_invaded']>Pc
         fluid.throat_conditions['occupancy'] = fluid.throat_conditions['Pc_invaded']>Pc
-    except: 
+    except:
         print ('OP has not been run with this fluid, setting occupancy to True everywhere')
         fluid.pore_conditions['occupancy'] = True
         fluid.throat_conditions['occupancy'] = True
-    try: 
+    try:
         fluid.partner.pore_conditions['occupancy'] = ~fluid.pore_conditions['occupancy']
         fluid.partner.throat_conditions['occupancy'] = ~fluid.throat_conditions['occupancy']
-    except: 
+    except:
         print ('A partner fluid has not been set so inverse occupancy was not set')
 
 def update_occupancy_IP(network,fluid,Seq=0):
@@ -57,7 +57,7 @@ def late_pore_filling(network,fluid,swpi=0.0,eta=1.0,Pc=0.0):
     Parameters
     ----------
     network : OpenPNM Network Object
-    
+
     fluid : OpenPNM Fluid Object
 
     swpi : float, array_like

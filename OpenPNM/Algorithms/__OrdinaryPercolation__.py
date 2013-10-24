@@ -108,15 +108,32 @@ class OrdinaryPercolation(GenericAlgorithm):
         inv_clusters = clusters[self._inv_sites]
         return np.in1d(clusters,inv_clusters)*(clusters>=0)
 
+    def update_occupancy(fluid,Pc=0):
+        r"""
+        ---
+        """
+        try:
+            fluid.pore_conditions['occupancy'] = fluid.pore_conditions['Pc_invaded']>Pc
+            fluid.throat_conditions['occupancy'] = fluid.throat_conditions['Pc_invaded']>Pc
+        except:
+            print ('OP has not been run with this fluid, setting occupancy to True everywhere')
+            fluid.pore_conditions['occupancy'] = True
+            fluid.throat_conditions['occupancy'] = True
+        try:
+            fluid.partner.pore_conditions['occupancy'] = ~fluid.pore_conditions['occupancy']
+            fluid.partner.throat_conditions['occupancy'] = ~fluid.throat_conditions['occupancy']
+        except:
+            print ('A partner fluid has not been set so inverse occupancy was not set')
+
 
 if __name__ == '__main__':
     print ''
-    print ''    
+    print ''
     print '************Testing OrdinaryPercolation Algorithm**************'
     clock()
     print "="*50
     print "= Example: Create random network and run an ordinary\n= percolation algorithm"
-    print "-"*50   
+    print "-"*50
     params = {
         'domain_size'               : [1,1,1],  #physical network size [meters]
         'divisions'                 : [10,10,10], #Number of pores in each direction
@@ -131,8 +148,8 @@ if __name__ == '__main__':
                             'scale' : 2e-5},
         'btype'                     : [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
         }
-    
-    print "- * Generate a simple cubic network" 
+
+    print "- * Generate a simple cubic network"
     pn = OpenPNM.Geometry.Cubic().generate(**params)
     print "- * Assign capillary pressures to throats"
     pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure.Washburn(pn,0.072,110)
@@ -143,4 +160,4 @@ if __name__ == '__main__':
     print "+"*50
     print "- * Completed OP algorithm in a",pn.get_num_pores(),'pore network \n-   with',exp._npts,'points in',np.round(clock(),decimals=2),'seconds.'
     print "+"*50
-    print 
+    print
