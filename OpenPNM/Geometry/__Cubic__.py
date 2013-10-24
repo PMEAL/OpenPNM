@@ -177,6 +177,14 @@ class Cubic(GenericGeometry):
         
         self._logger.debug("generate_throats: End of method")
 
+
+
+
+
+
+
+
+
     def _add_boundary_throats(self,net):
         for i in range(3):
             bound_1 = net.pore_properties['coords'][:,i].min()
@@ -186,6 +194,9 @@ class Cubic(GenericGeometry):
             net.pore_properties['type'][bound_ind_1] = i+1
             net.pore_properties['type'][bound_ind_2] = 6-i
     
+    
+    
+    
     def _add_boundary_pores(self,net):
         for i in range(3):
             bound_1 = net.pore_properties['coords'][:,i].min()
@@ -194,6 +205,10 @@ class Cubic(GenericGeometry):
             bound_ind_2 = np.where(net.pore_properties['coords'][:,i] == bound_2)
             net.pore_properties['type'][bound_ind_1] = i+1
             net.pore_properties['type'][bound_ind_2] = 6-i
+
+
+
+
 
     def _generate_boundaries(self,net,**params):
 
@@ -220,6 +235,12 @@ class Cubic(GenericGeometry):
 
         return net
         self._logger.debug("generate_boundaries: End of method")
+
+
+
+
+
+
 
     def stitch_network(self,net1,net2,edge = 0, stitch_nets = 1, stitch_side = []):
         r"""
@@ -279,6 +300,12 @@ class Cubic(GenericGeometry):
         net1.throat_properties['volume']    = sp.concatenate((net1.throat_properties['volume'],net2.throat_properties['volume']),axis=0)
         net1.throat_properties['length']    = sp.concatenate((net1.throat_properties['length'],net2.throat_properties['length']),axis=0)
 
+
+
+
+
+
+
     def _stitch_throats(self,net):
         r"""
         Stitch two networks together OR adds the boundary throats to an existing network
@@ -319,8 +346,8 @@ class Cubic(GenericGeometry):
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),dtype=np.int8)
-
-
+        net.throat_properties['seed'] = sp.amin(net.pore_properties['seed'][net.throat_properties['connections']],1)
+        
 if __name__ == '__main__':
     test=Cubic(loggername='TestCubic')
     pn = test.generate(lattice_spacing=1.0,domain_size=[3,3,3], btype=[1,1,0])
