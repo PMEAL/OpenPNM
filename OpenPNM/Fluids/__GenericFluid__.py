@@ -102,10 +102,9 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         return sp.array(vals,ndmin=1)
 
     def contact_angle(self):
-#        params = self._fluid_recipe['contact_angle']
-#        eqn = getattr(OpenPNM.Fluids.ContactAngle,params['method'])
-#        vals = eqn(self,**params)
-        vals = 120
+        params = self._fluid_recipe['contact_angle']
+        eqn = getattr(OpenPNM.Fluids.ContactAngle,params['method'])
+        vals = eqn(self,**params)
         return sp.array(vals,ndmin=1)
 
 if __name__ =="__main__":
