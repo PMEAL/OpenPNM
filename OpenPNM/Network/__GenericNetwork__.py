@@ -578,8 +578,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         return str_overview+str_pore+str_throat
 
-                     (p2[2] - p1[2]) ** 2)
-
     def update(self):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
