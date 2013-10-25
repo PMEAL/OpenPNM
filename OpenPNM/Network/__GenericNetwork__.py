@@ -600,7 +600,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             print i
             if sp.shape(fluid.throat_conditions[i])[0]==1:
                 val = fluid.throat_conditions[i]
-                fluid.throat_conditions[i] = val*sp.ones((Np,))
+                fluid.throat_conditions[i] = val*sp.ones((Nt,))
             if sp.shape(fluid.throat_conditions[i])[0]>0:
                 if fluid.throat_conditions[i].dtype == 'bool':
                     fluid.throat_conditions[i] = fluid.throat_conditions[i]*1

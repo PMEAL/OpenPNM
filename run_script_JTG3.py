@@ -1,12 +1,11 @@
 
-
 import OpenPNM
 import scipy as sp
 from time import clock
 start=clock()
 
 #======================================================================
-#Generate Network Geometry
+'''Generate Network Geometry'''
 #======================================================================
 #Define generation parameters
 params_geo1= {'domain_size': [],  #physical network size [meters]
@@ -28,7 +27,7 @@ pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
 OpenPNM.Geometry.Cubic()._generate_boundaries(pn,**params_geo1)
 
 #======================================================================
-#Generate Fluids
+'''Generate Fluids'''
 #======================================================================
 #Define the fluids properties
 air_recipe = {       'name': 'air',
@@ -80,9 +79,9 @@ water.regenerate()
 air.regenerate()
 
 #======================================================================
-#Begin Simulations
+'''Begin Simulations'''
 #======================================================================
-#Peform a Drainage Experiment (OrdinaryPercolation)
+'''Peform a Drainage Experiment (OrdinaryPercolation)'''
 #----------------------------------------------------------------------
 #Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
@@ -93,7 +92,7 @@ a = pn.pore_properties['numbering']<100
 OP_1.run(network=pn,invading_fluid=water,inv_sites=a,npts=50)
 
 #----------------------------------------------------------------------
-#Perform an Injection Experiment (InvasionPercolation)
+'''Perform an Injection Experiment (InvasionPercolation)'''
 #----------------------------------------------------------------------
 #Create a new water object
 water2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
@@ -106,7 +105,7 @@ OpenPNM.Physics.CapillaryPressure.Washburn(pn,water2)
 IP_1.run(pn,invading_fluid=water2,inlets=[0],outlets=[100])
 
 #----------------------------------------------------------------------
-#Performm a Diffusion Simulation on Partially Filled Network
+'''Performm a Diffusion Simulation on Partially Filled Network'''
 #----------------------------------------------------------------------
 #Apply desired/necessary pore scale physics methods
 air.regenerate()
