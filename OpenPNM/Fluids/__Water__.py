@@ -33,7 +33,10 @@ class Water(GenericFluid):
                                            'value': 0.001},
                         'molar_density': {'method': 'constant',
                                            'value': 44445},
-                           }
+                      'surface_tension': {'method': 'constant',
+                                           'value': 0.072,}
+                               }
+        self.regenerate()
         return self
 
 if __name__ =="__main__":

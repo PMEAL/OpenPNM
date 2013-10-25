@@ -28,16 +28,19 @@ class Air(GenericFluid):
                                    'Tc': 132.65,  #K
                                    'MW': 0.0291,  #kg/mol
                           'diffusivity': {'method': 'Fuller',
-                                              'MA': 31.99,
-                                              'MB': 28.01,
-                                              'vA': 16.6,
-                                              'vB': 17.9},
+                                              'MA': 0.03199,
+                                              'MB': 0.0291,
+                                              'vA': 16.3,
+                                              'vB': 19.7},
                             'viscosity': {'method': 'Reynolds',
                                               'uo': 0.001,
                                                'b': 0.1},
                         'molar_density': {'method': 'ideal_gas',
                                                'R': 8.314},
+                      'surface_tension': {'method': 'constant',
+                                           'value': 0}
             }
+        self.regenerate()
         return self
 
 if __name__ =="__main__":
