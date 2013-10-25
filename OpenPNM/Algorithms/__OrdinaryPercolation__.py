@@ -49,33 +49,36 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
 
-    def _setup(self, npts=25, inv_sites=[0]):
+    def _setup(self, invading_fluid,defending_fluid, npts=25, inv_sites=[0],**params):
         self._npts = npts
         self._inv_sites = inv_sites
-        #Create a pore and throat list to store inv_val at which each is invaded
-        self._net.pore_conditions['Pc_invaded'] = np.zeros(self._net.get_num_pores(),np.float)
-        self._net.throat_conditions['Pc_invaded'] = np.zeros(self._net.get_num_throats(),np.float)
-        #Create a throat list to temporarily store the invasion state of throats
-        self._net.throat_properties['invaded'] = np.zeros(self._net.get_num_throats())
+        self._fluid_inv = invading_fluid
+        self._fluid_def = defending_fluid
+        invading_fluid.set_pair(defending_fluid)
+        self._fluid_inv.refresh()
+        #Apply necessary pore scale physics models
+        OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._fluid_inv)
+        #Create a pore and throat conditions list to store inv_val at which each is invaded
+        self._fluid_inv.pore_conditions['Pc_invaded'] = np.zeros(self._net.get_num_pores(),np.float)
+        self._fluid_inv.throat_conditions['Pc_invaded'] = np.zeros(self._net.get_num_throats(),np.float)
         #Determine the invasion pressures to apply
-        min_p = np.min(self._net.throat_conditions['Pc_entry'])
-        max_p = np.max(self._net.throat_conditions['Pc_entry'])
+        min_p = np.min(self._fluid_inv.throat_conditions['Pc_entry'])
+        max_p = np.max(self._fluid_inv.throat_conditions['Pc_entry'])
         self._inv_points = np.logspace(np.log10(min_p),np.log10(max_p),self._npts)
 
     def _do_outer_iteration_stage(self):
         #Generate curve from points
         for inv_val in self._inv_points:
-            self._logger.info("Applying Pc = "+str(int(inv_val)))
+#            self._logger.info("Applying Pc = "+str(int(inv_val)))
             #Apply one applied pressure and determine invaded pores
             pmask = self._do_one_inner_iteration(inv_val)
             #Store result of invasion step
-            self._net.pore_conditions['Pc_invaded'][(self._net.pore_conditions['Pc_invaded']==0)*(pmask)] = inv_val
+            self._fluid_inv.pore_conditions['Pc_invaded'][(self._fluid_inv.pore_conditions['Pc_invaded']==0)*(pmask)] = inv_val
             #Determine Pc_invaded for throats as well
             temp = self._net.throat_properties['connections']
-            tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._net.throat_conditions['Pc_entry']<inv_val)
-            self._net.throat_conditions['Pc_invaded'][(self._net.throat_conditions['Pc_invaded']==0)*(tmask)] = inv_val
+            tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._fluid_inv.throat_conditions['Pc_entry']<inv_val)
+            self._fluid_inv.throat_conditions['Pc_invaded'][(self._fluid_inv.throat_conditions['Pc_invaded']==0)*(tmask)] = inv_val
         #Remove temporary arrays and adjacency matrices
-        del self._net.throat_conditions['invaded']
         del self._net.adjacency_matrix['csr']['invaded']
 
     def _do_one_inner_iteration(self,inv_val):
@@ -87,16 +90,15 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         #Generate a tlist containing boolean values for throat state
-        self._net.throat_conditions['invaded'] = self._net.throat_conditions['Pc_entry']<inv_val
-        sum(self._net.throat_conditions['invaded'])
+        Tinvaded = self._fluid_inv.throat_conditions['Pc_entry']<inv_val
         #Fill adjacency matrix with invasion state info
-        I = {'invaded': self._net.throat_conditions['Pc_entry']<inv_val}
+        I = {'invaded': Tinvaded}
         self._net.create_adjacency_matrix(I,sprsfmt='csr',dropzeros=True)
         clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['invaded'])[1]
         #Find all pores with at least 1 invaded throat
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
         temp = self._net.get_connected_pores(np.r_[0:self._net.get_num_throats()])
-        temp = temp[self._net.throat_conditions['invaded']]
+        temp = temp[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
         Pinvaded[temp] = True
         #Add injection sites to Pinvaded for ALOP
@@ -108,15 +110,40 @@ class OrdinaryPercolation(GenericAlgorithm):
         inv_clusters = clusters[self._inv_sites]
         return np.in1d(clusters,inv_clusters)*(clusters>=0)
 
+    def update_occupancy(fluid,Pc=0):
+        r"""
+        Updates the fluid occupancy status of invading and defending fluids as determined by the OP algorithm
+
+        Parameters
+        ----------
+        fluid : OpenPNM Fluid Object
+            This can be either the invading or defending fluid used.
+        """
+        #Apply occupancy to given fluid
+        try:
+            fluid.pore_conditions['occupancy'] = sp.array(fluid.pore_conditions['Pc_invaded']<=Pc,ndmin=1)
+            fluid.throat_conditions['occupancy'] = sp.array(fluid.throat_conditions['Pc_invaded']<=Pc,ndmin=1)
+        except:
+            print ('OP has not been run with this fluid, checking partner fluid')
+            try:
+                #Apply occupancy to given fluid
+                fluid.pore_conditions['occupancy'] = sp.array(~(fluid.partner.pore_conditions['Pc_invaded']<=Pc),ndmin=1)
+                fluid.throat_conditions['occupancy'] = sp.array(~(fluid.partner.throat_conditions['Pc_invaded']<=Pc),ndmin=1)
+            except:
+                raise Exception('It seems that OP has not been run on either fluid')
+        #Apply occupancy to partner fluid
+        fluid.partner.pore_conditions['occupancy'] = sp.array(~fluid.pore_conditions['occupancy'],ndmin=1)
+        fluid.partner.throat_conditions['occupancy'] = sp.array(~fluid.throat_conditions['occupancy'],ndmin=1)
+
 
 if __name__ == '__main__':
     print ''
-    print ''    
+    print ''
     print '************Testing OrdinaryPercolation Algorithm**************'
     clock()
     print "="*50
     print "= Example: Create random network and run an ordinary\n= percolation algorithm"
-    print "-"*50   
+    print "-"*50
     params = {
         'domain_size'               : [1,1,1],  #physical network size [meters]
         'divisions'                 : [10,10,10], #Number of pores in each direction
@@ -131,8 +158,8 @@ if __name__ == '__main__':
                             'scale' : 2e-5},
         'btype'                     : [0,0,0],  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
         }
-    
-    print "- * Generate a simple cubic network" 
+
+    print "- * Generate a simple cubic network"
     pn = OpenPNM.Geometry.Cubic().generate(**params)
     print "- * Assign capillary pressures to throats"
     pn.throat_properties['Pc_entry'] = OpenPNM.Physics.CapillaryPressure.Washburn(pn,0.072,110)
@@ -143,4 +170,4 @@ if __name__ == '__main__':
     print "+"*50
     print "- * Completed OP algorithm in a",pn.get_num_pores(),'pore network \n-   with',exp._npts,'points in',np.round(clock(),decimals=2),'seconds.'
     print "+"*50
-    print 
+    print

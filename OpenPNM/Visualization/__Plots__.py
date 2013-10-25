@@ -37,7 +37,7 @@ def Overview(net, fig=None):
   ax4.set_ylabel('Frequency')
 
 
-def Capillary_Pressure_Curve(net, fig=None):
+def Capillary_Pressure_Curve(net, fluid, fig=None):
   r"""
   Plot drainage capillary pressure curve
 
@@ -50,16 +50,16 @@ def Capillary_Pressure_Curve(net, fig=None):
 
   """
   try:
-    PcPoints = sp.unique(net.pore_conditions['Pc_invaded'])
+    PcPoints = sp.unique(fluid.pore_conditions['Pc_invaded'])
   except KeyError:
     raise Exception('Capillary pressure simulation has not been run')
   
-  PcPoints = sp.unique(net.pore_conditions['Pc_invaded'])
+  PcPoints = sp.unique(fluid.pore_conditions['Pc_invaded'])
   Snwp = sp.zeros_like(PcPoints)
   Ps = sp.r_[0:net.get_num_pores([0])]
   for i in range(1,sp.size(PcPoints)):
       Pc = PcPoints[i]
-      Snwp[i] = sum((net.pore_conditions['Pc_invaded'][Ps]<Pc)*(net.pore_properties['volume'][Ps]))/sum(net.pore_properties['volume'][Ps])
+      Snwp[i] = sum((fluid.pore_conditions['Pc_invaded'][Ps]<Pc)*(fluid.pore_properties['volume'][Ps]))/sum(fluid.pore_properties['volume'][Ps])
   
   ax = fig.add_subplot(111)
   ax.plot(PcPoints,Snwp,'r.-')
