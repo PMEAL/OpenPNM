@@ -567,7 +567,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         str_throat = "\nThroat properties:"
         for key, value in self.throat_properties.iteritems():
             str_throat += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,value)
-            
+
 #        str_pore_cond = "\nPore conditions:"
 #        for key, value in self.pore_conditions.iteritems():
 #            str_pore_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
@@ -577,10 +577,54 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 #            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
 
         return str_overview+str_pore+str_throat
-    
+
+                     (p2[2] - p1[2]) ** 2)
+
     def update(self):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
+
+    def merge_fluid(self,fluid):
+        Np = self.get_num_pores()
+        Nt = self.get_num_throats()
+        for i in fluid.pore_conditions.keys():
+            print i
+            if sp.shape(fluid.pore_conditions[i])[0]==1:
+                val = fluid.pore_conditions[i]
+                fluid.pore_conditions[i] = val*sp.ones((Np,))
+            if sp.shape(fluid.pore_conditions[i])[0]>0:
+                if fluid.pore_conditions[i].dtype == 'bool':
+                    fluid.pore_conditions[i] = fluid.pore_conditions[i]*1
+                self.pore_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.pore_conditions[i]})
+        for i in fluid.throat_conditions.keys():
+            print i
+            if sp.shape(fluid.throat_conditions[i])[0]==1:
+                val = fluid.throat_conditions[i]
+                fluid.throat_conditions[i] = val*sp.ones((Np,))
+            if sp.shape(fluid.throat_conditions[i])[0]>0:
+                if fluid.throat_conditions[i].dtype == 'bool':
+                    fluid.throat_conditions[i] = fluid.throat_conditions[i]*1
+                self.throat_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.throat_conditions[i]})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     test1=GenericNetwork(loggername='Test1')
