@@ -136,3 +136,5 @@ Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
 Fickian_alg.run(pn,active_fluid=air)
 
 
+#Export to VTK
+OpenPNM.Visualization.VTK().write(pn,fluid=water)

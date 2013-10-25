@@ -582,27 +582,27 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
 
-    def merge_fluid(self,fluid):
-        Np = self.get_num_pores()
-        Nt = self.get_num_throats()
-        for i in fluid.pore_conditions.keys():
-            print i
-            if sp.shape(fluid.pore_conditions[i])[0]==1:
-                val = fluid.pore_conditions[i]
-                fluid.pore_conditions[i] = val*sp.ones((Np,))
-            if sp.shape(fluid.pore_conditions[i])[0]>0:
-                if fluid.pore_conditions[i].dtype == 'bool':
-                    fluid.pore_conditions[i] = fluid.pore_conditions[i]*1
-                self.pore_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.pore_conditions[i]})
-        for i in fluid.throat_conditions.keys():
-            print i
-            if sp.shape(fluid.throat_conditions[i])[0]==1:
-                val = fluid.throat_conditions[i]
-                fluid.throat_conditions[i] = val*sp.ones((Nt,))
-            if sp.shape(fluid.throat_conditions[i])[0]>0:
-                if fluid.throat_conditions[i].dtype == 'bool':
-                    fluid.throat_conditions[i] = fluid.throat_conditions[i]*1
-                self.throat_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.throat_conditions[i]})
+#    def merge_fluid(self,fluid):
+#        Np = self.get_num_pores()
+#        Nt = self.get_num_throats()
+#        for i in fluid.pore_conditions.keys():
+#            print i
+#            if sp.shape(fluid.pore_conditions[i])[0]==1:
+#                val = fluid.pore_conditions[i]
+#                fluid.pore_conditions[i] = val*sp.ones((Np,))
+#            if sp.shape(fluid.pore_conditions[i])[0]>0:
+#                if fluid.pore_conditions[i].dtype == 'bool':
+#                    fluid.pore_conditions[i] = fluid.pore_conditions[i]*1
+#                self.pore_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.pore_conditions[i]})
+#        for i in fluid.throat_conditions.keys():
+#            print i
+#            if sp.shape(fluid.throat_conditions[i])[0]==1:
+#                val = fluid.throat_conditions[i]
+#                fluid.throat_conditions[i] = val*sp.ones((Nt,))
+#            if sp.shape(fluid.throat_conditions[i])[0]>0:
+#                if fluid.throat_conditions[i].dtype == 'bool':
+#                    fluid.throat_conditions[i] = fluid.throat_conditions[i]*1
+#                self.throat_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.throat_conditions[i]})
 
 
 

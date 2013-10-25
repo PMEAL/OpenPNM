@@ -45,7 +45,7 @@ class VTK(GenericVisualization):
         super(VTK,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
 
-    def write(self, net, filename='output.vtp'):
+    def write(self, net, fluid='none', filename='output.vtp'):
         r"""
         Write Network to a VTK file for visualizing in Paraview
 
@@ -64,7 +64,8 @@ class VTK(GenericVisualization):
         self._logger.info("Writing VTK File...please wait")
         self._f = open(output_path,'w')
         self._net=net
-
+        self._fluid=fluid
+        
         self._write_vtk_header()
         self._write_vtk_points()
         self._write_vtk_connections()
@@ -128,30 +129,71 @@ class VTK(GenericVisualization):
                         self._f.write(str(self._net.pore_properties[pore_keys[j]][i][0]))
                         self._f.write(' ')
                 self._f.write('\n</DataArray>\n')
-        # again for pore_properties
-        pore_keys = self._net.pore_properties.keys()
-        num_pore_keys = sp.size(pore_keys)
-        for j in range(num_pore_keys):
-            self._f.write('<DataArray type="Float32" Name="')
-            self._f.write(pore_keys[j])
-            self._f.write('" format="ascii">\n')
-            size =  np.size(self._net.pore_properties[pore_keys[j]])
-            if size == 1:
-                for i in range(self._net.get_num_pores()):
-                    self._f.write(str(self._net.pore_properties[pore_keys[j]]))
-                    self._f.write(' ')
-            else:
-                shape =  np.shape(self._net.pore_properties[pore_keys[j]])
-                if np.size(shape) == 1:
-                    for i in range(self._net.get_num_pores()):
-                        self._f.write(str(self._net.pore_properties[pore_keys[j]][i]))
-                        self._f.write(' ')
+        # Now for fluid
+        if self._fluid != 'none':
+            fluid_name = self._fluid._fluid_recipe['name']
+            pore_keys = self._fluid.pore_conditions.keys()
+            num_pore_keys = sp.size(pore_keys)
+            for j in range(num_pore_keys):
+                self._f.write('<DataArray type="Float32" Name="')
+                self._f.write(fluid_name+'_'+pore_keys[j])
+                self._f.write('" format="ascii">\n')
+                size =  np.size(self._fluid.pore_conditions[pore_keys[j]])
+                if size == 1:
+                    shape =  np.shape(self._fluid.pore_conditions[pore_keys[j]])
+                    if np.size(shape) == 0:
+                        for i in range(self._net.get_num_pores()):
+                            self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]])))
+                            self._f.write(' ')
+                    else:
+                        for i in range(self._net.get_num_pores()):
+                            self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]][0])))
+                            self._f.write(' ')
                 else:
-                    for i in range(self._net.get_num_pores()):
-                        self._f.write(str(self._net.pore_properties[pore_keys[j]][i][0]))
-                        self._f.write(' ')
-            self._f.write('\n</DataArray>\n')
-        self._f.write('</PointData>\n')
+                    shape =  np.shape(self._fluid.pore_conditions[pore_keys[j]])
+                    if np.size(shape) == 1:
+                        for i in range(self._net.get_num_pores()):
+                            self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]][i])))
+                            self._f.write(' ')
+                    else:
+                        for i in range(self._net.get_num_pores()):
+                            self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]][i][0])))
+                            self._f.write(' ')
+                self._f.write('\n</DataArray>\n')
+        # Now for fluid.partner
+            try:
+                fluid_name = self._fluid.partner._fluid_recipe['name']
+                pore_keys = self._fluid.partner.pore_conditions.keys()
+                num_pore_keys = sp.size(pore_keys)
+                for j in range(num_pore_keys):
+                    self._f.write('<DataArray type="Float32" Name="')
+                    self._f.write(fluid_name+'_'+pore_keys[j])
+                    self._f.write('" format="ascii">\n')
+                    size =  np.size(self._fluid.partner.pore_conditions[pore_keys[j]])
+                    if size == 1:
+                        shape =  np.shape(self._fluid.partner.pore_conditions[pore_keys[j]])
+                        if np.size(shape) == 0:
+                            for i in range(self._net.get_num_pores()):
+                                self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]])))
+                                self._f.write(' ')
+                        else:
+                            for i in range(self._net.get_num_pores()):
+                                self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][0])))
+                                self._f.write(' ')
+                    else:
+                        shape =  np.shape(self._fluid.partner.pore_conditions[pore_keys[j]])
+                        if np.size(shape) == 1:
+                            for i in range(self._net.get_num_pores()):
+                                self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][i])))
+                                self._f.write(' ')
+                        else:
+                            for i in range(self._net.get_num_pores()):
+                                self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][i][0])))
+                                self._f.write(' ')
+                    self._f.write('\n</DataArray>\n')
+            except: 
+                print 'No fluid partner output to VTK'
+            self._f.write('</PointData>\n')
 
     def _write_footer(self):
         self._f.write('</Piece>\n</PolyData>\n</VTKFile>')
