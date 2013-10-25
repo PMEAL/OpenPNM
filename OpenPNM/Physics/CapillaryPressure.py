@@ -7,16 +7,6 @@ module CapillaryPressure
 
 import scipy as sp
 
-def set_contact_angle(fluid,theta):
-    theta = sp.array(theta,ndmin=1)
-    fluid.throat_conditions['contact_angle'] = theta
-
-def Young(fluid1,fluid2,solid):
-    r"""
-    Calculates the contact angle from Young's equation given the surface tensions between all phases.
-    """
-    print 'nothing yet'
-
 def Washburn(net,fluid):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
@@ -26,8 +16,8 @@ def Washburn(net,fluid):
     network : OpenPNM Network Object
         The network on which to apply the calculation
 
-    fluid1, fluid2 : OpenPNM Fluid Object
-        Fluid dictionaries for the invading and defending fluids, respectively
+    fluid1 : OpenPNM Fluid Object
+        Fluid object for the invading fluids
 
     Notes
     -----
@@ -41,7 +31,7 @@ def Washburn(net,fluid):
     """
     sigma = fluid.pore_conditions['surface_tension']
     sigma = net.interpolate_throat_values(sigma)
-    theta = fluid.throat_conditions['contact_angle']
+    theta = fluid.pore_conditions['contact_angle']
     theta = net.interpolate_throat_values(theta)
     vals = -4*sigma*sp.cos(sp.radians(theta))/net.throat_properties['diameter']
     fluid.throat_conditions['Pc_entry']= vals
