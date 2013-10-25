@@ -29,45 +29,47 @@ class MatFile(GenericGeometry):
     
     Parameters
     ----------
-    filename: str
-        name of input file
-    path: str
-        path of the input file
+
     loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    
-    
-        
-    Attributes
-    ----------
-        net :   OpenPNM.Network.GenericNetwork
-            Initialized network
-        
-            
-    Examples
-    --------
-    
-    To import the example_network.mat file in your LocalFiles folder
-    
-    >>> import OpenPNM as PNM
-    >>> net=PNM.Geometry.MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles').generate()
+        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
+
     
     """
-    def __init__(self, filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles', **kwargs):
+    def __init__(self, **kwargs):
         
         r"""
         Initialize
         """
         super(MatFile,self).__init__(**kwargs)
+        
+    def generate(self,filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles'):
+        '''
+        Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() object.
+
+        Parameters
+        ----------
+
+        Critical\n
+        filename : string
+            filename = 'example_network' (default)\n
+            Name of mat file\n
+        path : string
+            path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles' (default)\n
+            the location of the mat file on your computer \n
+
+        Examples:
+        ---------
+
+        generate network using example mat file
+
+        >>> import OpenPNM as PNM
+        >>> pn=PNM.Geometry.MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles')
+        '''
         self._mat=OpenPNM.Utilities.ImportMat(filename=filename,path=path)
         self._Np=np.size(self._mat.getvar('pnumbering'))
         self._Nt=np.size(self._mat.getvar('tnumbering'))
         self._net=OpenPNM.Network.GenericNetwork(num_pores=self._Np, num_throats=self._Nt)
-        
-    def generate(self):
-        r"""
-        Generate the network
-        """
+
         self._logger.info('Writing pore properties')
         self._logger.debug('Writing pore volumes')
         self._net.pore_properties['volume']=np.reshape(self._mat.getvar('pvolume'),(self._Np))

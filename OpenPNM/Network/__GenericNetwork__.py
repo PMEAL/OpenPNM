@@ -52,13 +52,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         self.pore_properties = {}
         self.throat_properties = {}
 
-        #Initialize the conditions dictionaries
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-
-        #Initialize constants dictionary
-        self.const = {}
-
         #This initializes the custom 'self-protecting' dictionary
 #        self.pore_properties = {}
 #        self.throat_properties = {}
@@ -444,60 +437,66 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
             num[i] = sp.size(neighborPs[i])
         return num
 
-    def interpolate_pore_conditions(self,Tcond=None):
-        r"""
-        Determines a pore property as the average of it's neighboring throats
-
-        Parameters
-        ----------
-        Tcond : string
-            The name of the throat condition to be interpolated
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-
-        """
-        if sp.size(self.throat_conditions[Tcond])==1:
-            self.pore_conditions[Tcond] = self.throat_conditions[Tcond]
-        else:
-            self.pore_conditions[Tcond] = sp.zeros((self.get_num_pores()))
-            #Only interpolate conditions for internal pores, type=0
-            Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
-            nTs = self.get_neighbor_throats(Pnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nTs)[0]]:
-                self.pore_conditions[Tcond][i] = sp.mean(self.throat_conditions[Tcond][nTs[i]])
-
-    def interpolate_throat_conditions(self,Pcond=None):
-        r"""
-        Determines a throat condition as the average of the conditions it's neighboring pores
-
-        Parameters
-        ----------
-        Pcond : string
-            The name of the throat condition to be interpolated
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-
-        """
-        if sp.size(self.pore_conditions[Pcond])==1:
-            self.throat_conditions[Pcond] = self.pore_conditions[Pcond]
-        else:
-            self.throat_conditions[Pcond] = sp.zeros((self.get_num_throats()))
-            #Interpolate values for all throats, including those leading to boundary
-            Tnums = sp.r_[0:self.get_num_throats()]
-            nPs = self.get_connected_pores(Tnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nPs)[0]]:
-                self.throat_conditions[Pcond][i] = sp.mean(self.pore_conditions[Pcond][nPs[i]])
-
     def check_basic(self):
         r"""
         Check the network for general health
         TODO: implement
         """
         self._logger.debug("Method: check for general healts")
+
+    def interpolate_pore_values(self,Tinfo=None):
+        r"""
+        Determines a pore property as the average of it's neighboring throats
+
+        Parameters
+        ----------
+        Tinfo : array_like
+            The array of throat information to be interpolated
+
+        Notes
+        -----
+        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+
+        """
+        if sp.size(Tinfo)==1:
+            Pinfo = Tinfo
+        elif sp.size(Tinfo) != self.get_num_throats():
+            raise Exception('The list of throat information received was the wrong length')
+        else:
+            Pinfo = sp.zeros((self.get_num_pores()))
+            #Only interpolate conditions for internal pores, type=0
+            Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
+            nTs = self.get_neighbor_throats(Pnums,flatten=False)
+            for i in sp.r_[0:sp.shape(nTs)[0]]:
+                Pinfo[i] = sp.mean(Tinfo[nTs[i]])
+        return Pinfo
+
+    def interpolate_throat_values(self,Pinfo=None):
+        r"""
+        Determines a throat condition as the average of the conditions it's neighboring pores
+
+        Parameters
+        ----------
+        Pinfo : array_like
+            The name of the throat condition to be interpolated
+
+        Notes
+        -----
+        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+
+        """
+        if sp.size(Pinfo)==1:
+            Tinfo = Pinfo
+        elif sp.size(Pinfo) != self.get_num_pores():
+            raise Exception('The list of pore information received was the wrong length')
+        else:
+            Tinfo = sp.zeros((self.get_num_throats()))
+            #Interpolate values for all throats, including those leading to boundary pores
+            Tnums = sp.r_[0:self.get_num_throats()]
+            nPs = self.get_connected_pores(Tnums,flatten=False)
+            for i in sp.r_[0:sp.shape(nPs)[0]]:
+                Tinfo[i] = sp.mean(Pinfo[nPs[i]])
+        return Tinfo
 
     def print_overview(self):
         r"""
@@ -526,28 +525,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         print "-"*72
         for key in self.throat_properties:
             print key, "\t", "\t", self.throat_properties[key].dtype, "\t", self.throat_properties[key].shape, "\t", self.throat_properties[key].nbytes/1e6
-
-        print "="*72
-        print "Pore Conditions"
-        print "-"*72
-        #commented vv due to scalars not having dtype or shape attribute
-        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
-        print "-"*72
-        for key in self.pore_conditions:
-            #commented vv due to scalars not having dtype or shape attribute
-            #print key, "\t", "\t", self.pore_conditions[key].dtype, "\t", self.pore_conditions[key].shape, "\t", self.pore_conditions[key].nbytes/1e6
-            print key, "\t", "\t", np.array(self.pore_conditions[key]).dtype, "\t", np.array(self.pore_conditions[key]).shape, "\t", np.array(self.pore_conditions[key]).nbytes/1e6
-
-        print "="*72
-        print "Throat Conditions"
-        print "-"*72
-        #commented vv due to scalars not having dtype or shape attribute
-        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
-        print "-"*72
-        for key in self.throat_conditions:
-            #commented vv due to scalars not having dtype or shape attribute
-            #print key, "\t", "\t", self.throat_conditions[key].dtype, "\t", self.throat_conditions[key].shape, "\t", self.throat_conditions[key].nbytes/1e6
-            print key, "\t", "\t", np.array(self.throat_conditions[key]).dtype, "\t", np.array(self.throat_conditions[key]).shape, "\t", np.array(self.throat_conditions[key]).nbytes/1e6
 
         print "="*72
         print "Adjacency Matrices"
@@ -589,27 +566,63 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         str_throat = "\nThroat properties:"
         for key, value in self.throat_properties.iteritems():
-            print key, value
             str_throat += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,value)
-            
-        str_pore_cond = "\nPore conditions:"
-        for key, value in self.pore_conditions.iteritems():
-            str_pore_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
 
-        str_throat_cond = "\nThroat conditions:"
-        for key, value in self.throat_conditions.iteritems():
-            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
+#        str_pore_cond = "\nPore conditions:"
+#        for key, value in self.pore_conditions.iteritems():
+#            str_pore_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
+#
+#        str_throat_cond = "\nThroat conditions:"
+#        for key, value in self.throat_conditions.iteritems():
+#            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
 
-        return str_overview+str_pore+str_throat+str_pore_cond+str_throat_cond
-    
-    def fastest_calc_dist(self,p1,p2):
-        return math.sqrt((p2[0] - p1[0]) ** 2 +
-                     (p2[1] - p1[1]) ** 2 +
-                     (p2[2] - p1[2]) ** 2)    
-                     
+        return str_overview+str_pore+str_throat
+
     def update(self):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
+
+    def merge_fluid(self,fluid):
+        Np = self.get_num_pores()
+        Nt = self.get_num_throats()
+        for i in fluid.pore_conditions.keys():
+            print i
+            if sp.shape(fluid.pore_conditions[i])[0]==1:
+                val = fluid.pore_conditions[i]
+                fluid.pore_conditions[i] = val*sp.ones((Np,))
+            if sp.shape(fluid.pore_conditions[i])[0]>0:
+                if fluid.pore_conditions[i].dtype == 'bool':
+                    fluid.pore_conditions[i] = fluid.pore_conditions[i]*1
+                self.pore_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.pore_conditions[i]})
+        for i in fluid.throat_conditions.keys():
+            print i
+            if sp.shape(fluid.throat_conditions[i])[0]==1:
+                val = fluid.throat_conditions[i]
+                fluid.throat_conditions[i] = val*sp.ones((Nt,))
+            if sp.shape(fluid.throat_conditions[i])[0]>0:
+                if fluid.throat_conditions[i].dtype == 'bool':
+                    fluid.throat_conditions[i] = fluid.throat_conditions[i]*1
+                self.throat_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.throat_conditions[i]})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     test1=GenericNetwork(loggername='Test1')

@@ -28,7 +28,7 @@ Examples:
 import logging as _logging
 
 # set up logging to file - see previous section for more details
-_logging.basicConfig(level=_logging.CRITICAL,
+_logging.basicConfig(level=_logging.ERROR,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
                     )

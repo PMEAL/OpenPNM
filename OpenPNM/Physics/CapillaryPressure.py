@@ -5,9 +5,9 @@ module CapillaryPressure
 
 """
 
-import scipy as _sp
+import scipy as sp
 
-def Washburn(net,sigma=0.072,theta=120.0):
+def Washburn(net,fluid):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
@@ -16,13 +16,8 @@ def Washburn(net,sigma=0.072,theta=120.0):
     network : OpenPNM Network Object
         The network on which to apply the calculation
 
-    sigma : float, array_like
-        Surface tension of the invading/defending fluid pair.
-        Units must be consistent with the throat size values, but SI is encouraged.
-
-    theta : float, array_like
-        Contact angle formed by a droplet of the invading fluid and solid surface, measured through the defending fluid phase.
-        Angle must be given in degrees.
+    fluid1 : OpenPNM Fluid Object
+        Fluid object for the invading fluids
 
     Notes
     -----
@@ -31,15 +26,17 @@ def Washburn(net,sigma=0.072,theta=120.0):
     .. math::
         P_c = -\frac{2\sigma(cos(\theta))}{r}
 
-    This is the most basic approach to calcualing entry pressure and is suitable for highly non-wetting invading fluids in most materials.
+    This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
+    sigma = fluid.pore_conditions['surface_tension']
+    sigma = net.interpolate_throat_values(sigma)
+    theta = fluid.pore_conditions['contact_angle']
+    theta = net.interpolate_throat_values(theta)
+    vals = -4*sigma*sp.cos(sp.radians(theta))/net.throat_properties['diameter']
+    fluid.throat_conditions['Pc_entry']= vals
 
-    vals = -4*sigma*_sp.cos(_sp.radians(theta))/net.throat_properties['diameter']
-    net.throat_conditions['Pc_entry'] = vals
-    return {'net':net}
-
-def Purcell(net,sigma,theta,r_toroid):
+def Purcell(net,fluid,r_toroid):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a toroid.
 
@@ -72,30 +69,13 @@ def Purcell(net,sigma,theta,r_toroid):
     """TODO:
     Triple check the accuracy of this equation
     """
+    sigma = fluid.pore_conditions['surface_tension']
+    sigma = net.interpolate_throat_values(sigma)
+    theta = fluid.throat_conditions['contact_angle']
+    theta = net.interpolate_throat_values(theta)
     r = net.throat_properties['diameter']/2
     R = r_toroid
-    alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
-    vals = (-2*sigma/r)*(_sp.cos(_sp.radians(theta - alpha))/(1 + R/r*(1-_sp.cos(_sp.radians(alpha)))))
+    alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
+    vals = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
     net.throat_conditions['Pc_entry'] = vals
 
-def Morrow(net,sigma,theta):
-    r"""
-    Computes the throat capillary pressure using simplified version of the Purcell toroid
-
-    Parameters
-    ----------
-    network : OpenPNM Network Object
-        The network on which to apply the calculation
-
-    sigma : float, array_like
-        Surface tension of the invading/defending fluid pair.  Units must be consistent with the throat size values, but SI is encouraged.
-
-    theta : float, array_like
-        Contact angle formed by a droplet of the invading fluid and solid surface, measured through the defending fluid phase.  Angle must be given in degrees.
-
-    Notes
-    -----
-    Mason and Morrow compared the Purcell toroid to experimental data on various sized monodisperse PTFE beads.  They found that data could be approximated decently by simply scaling the contact angle measured through the wetting phase by 2/3.
-    """
-    vals = -4*sigma*_sp.cos(_sp.radians(2/3*(180-theta)))/net.throat_properties['diameter']
-    net.throat_conditions['Pc_entry'] = vals
