@@ -30,10 +30,12 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         return self
 
     def refresh(self):
-        for condition in self._implemented_methods:
-            self.pore_conditions.update({condition: getattr(self,condition)()})
+        self.regenerate()
 
     def regenerate(self):
+        r'''
+        This updates all properties using the methods indicated in the recipe.  This method also takes the opportunity to ensure all values are Numpy arrays.
+        '''
         for condition in self._implemented_methods:
             self.pore_conditions.update({condition: getattr(self,condition)()})
         #Make sure all values are Numpy arrays (Np,) or (Nt,)
@@ -43,6 +45,11 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
             self.throat_conditions[i] = sp.array(self.throat_conditions[i],ndmin=1)
 
     def reset(self):
+        r'''
+        Remove all existing condtions from the fluid
+
+        TODO: This works, but is kludgy
+        '''
         self.pore_conditions = {}
         self.throat_conditions = {}
         try: del self.partner
@@ -53,9 +60,20 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         return self
 
     def clone(self):
+        r'''
+        Create an exact duplicate fluid, but a unique object.
+
+        TODO: Doesn't work yet
+        '''
         return self.__new__
 
     def set_pair(self,fluid2):
+        r'''
+        Creates a fluid pair by storing each fluid object on the other.  This allows tracking of defending vs invading phase, among other things.
+
+        TODO: This method needs plenty of checks, for preexisting pair, etc.
+
+        '''
         self.partner = fluid2
         fluid2.partner = self
 

@@ -61,5 +61,4 @@ class FickianDiffusion(LinearSolver):
         X = self._do_one_inner_iteration()
         xA = 1-sp.exp(X)
         self._fluid.pore_conditions['mole_fraction'] = xA
-        print xA
 
