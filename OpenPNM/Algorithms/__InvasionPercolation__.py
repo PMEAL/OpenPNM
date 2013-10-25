@@ -550,14 +550,17 @@ class InvasionPercolation(GenericAlgorithm):
     
     def _update_network_state(self):
         r"""
-        This does nothing
         """
-        try: fluid.pore_conditions['occupancy'] = fluid.pore_conditions['IP_inv_seq']>Seq
-        except: raise Exception('It seems that an OP simulation has not been run with' + fluid['name'])
-        try: fluid.partner.pore_conditions['occupancy'] = ~fluid.pore_conditions['occupancy']
-        except: raise Exception('A partner fluid has not been set so inverse occupancy cannot be set')
-        else:
-            print 'error'
+        try: 
+            self._inv_fluid.pore_conditions['occupancy'] = self._Pinv>0
+            self._inv_fluid.throat_conditions['occupancy'] = self._Tinv>0
+        except:
+            print 'It seems that an OP simulation has not been run with ',self._inv_fluid._fluid_recipe['name']
+        try: 
+            self._inv_fluid.partner.pore_conditions['occupancy'] = ~self._Pinv>0
+            self._inv_fluid.partner.throat_conditions['occupancy'] = ~self._Tinv>0
+        except: 
+            print 'A partner fluid has not been set so inverse occupancy cannot be set'
                      
 if __name__ =="__main__":
     print ''
@@ -574,7 +577,8 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"        
     #sp.random.seed(1)
-    pn = OpenPNM.Geometry.Cubic().generate(domain_size=[3,3,3], lattice_spacing=[1.0], btype=[0,0,0])
+    pn = OpenPNM.Geometry.MatFile().generate()
+    print pn
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
     print "+"*50
@@ -596,12 +600,12 @@ if __name__ =="__main__":
                  'report':1,
                  'timing':'ON',
                  }
-    IP_timing.run(pn,ip_timing_params)
+    IP_timing.run(pn,**ip_timing_params)
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_timing.vtp"
-    OpenPNM.Visualization.VTK().write(net = pn,filename="IP_timing.vtp")
+    OpenPNM.Visualization.VTK().write(net=pn,fluid=water,filename="IP_timing.vtp")
     IP_notiming = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
     
     ip_notiming_params = {'inv_fluid':water,
@@ -611,12 +615,12 @@ if __name__ =="__main__":
                  'report':1,
                  'timing':'OFF',
                  }
-    IP_notiming.run(pn,water,air,inlets=inlets,outlets=outlets,report=1,timing='OFF')
+    IP_notiming.run(pn,**ip_notiming_params)
     print "+"*50
     print "IP completed at t =",clock(),"seconds."
     print "+"*50
     print "- * Save output to IP_notiming.vtp"
-    OpenPNM.Visualization.VTK().write(net = pn,filename="IP_notiming.vtp")
+    OpenPNM.Visualization.VTK().write(net=pn,fluid=water,filename="IP_notiming.vtp")
     
     print "="*50
     print "Program Finished at t = ",clock(),"seconds."
