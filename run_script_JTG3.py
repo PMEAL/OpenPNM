@@ -1,29 +1,17 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Mar 08 09:43:02 2013
 
-@author: jgostick
-"""
 
 import OpenPNM
 import scipy as sp
 from time import clock
-
-import scipy.ndimage as spim
-sphere = sp.ones((51,51,51),dtype=sp.bool8)
-sphere[26,26,26] = 0
-sphere = spim.distance_transform_edt(sphere)
-template  = sphere<20
-
 start=clock()
 
-pn = OpenPNM.Network.GenericNetwork()
-
+#======================================================================
+#Generate Network Geometry
+#======================================================================
+#Define generation parameters
 params_geo1= {'domain_size': [],  #physical network size [meters]
-                'divisions': [10,10,10], #Number of pores in each direction
+                'divisions': [5,5,5], #Number of pores in each direction
           'lattice_spacing': [0.1],  #spacing between pores [meters]
-                'num_pores': 1000, #This is used for random networks where spacing is irrelevant
-                 'template': template, #This is used for the Template based network generation
              'stats_pores' : {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
                              'shape': 1.5,
                                'loc': 6e-6,
@@ -34,14 +22,15 @@ params_geo1= {'domain_size': [],  #physical network size [meters]
                              'scale': 2e-5},
                     'btype': [0,0,0]  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 }
-
-#Generate Network Geometry
+#Generate Geometry
 pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
-#pn = OpenPNM.Geometry.Delaunay().generate(**params)
-#pn = OpenPNM.Geometry.Template().generate(**params)
+#Add Boundary Nodes (Pores)
+OpenPNM.Geometry.Cubic()._generate_boundaries(pn,**params_geo1)
 
-
-#Define the fluids and set their properties
+#======================================================================
+#Generate Fluids
+#======================================================================
+#Define the fluids properties
 air_recipe = {       'name': 'air',
                        'Pc': 3.771e6, #Pa
                        'Tc': 132.65,  #K
@@ -57,7 +46,9 @@ air_recipe = {       'name': 'air',
             'molar_density': {'method': 'ideal_gas',
                                    'R': 8.314},
           'surface_tension': {'method': 'constant',
-                               'value': 0,}
+                               'value': 0},
+            'contact_angle': {'method': 'na',
+                               'value': []},
 }
 water_recipe = {     'name': 'water',
                        'Pc': 2.206e6, #Pa
@@ -69,41 +60,66 @@ water_recipe = {     'name': 'water',
                                'value': 0.001},
             'molar_density': {'method': 'constant',
                                'value': 44445},
-          'surface_tension': {'method': 'constant',
-                               'value': 0.072,}
+          'surface_tension': {'method': 'Eotvos',
+                                   'k': 2.25e-4},
+            'contact_angle': {'method': 'constant',
+                               'value': 120},
 }
-
 #Create fluids
 air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
 water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
-
 #set water and air as a fluid pair
 water.set_pair(air)
-
-#Set base conditions in the Fluids
+#Set desired base conditions in the Fluids
 air.pore_conditions['temperature'] = 353
 air.pore_conditions['pressure'] = 101325
 water.pore_conditions['temperature'] = 353
 water.pore_conditions['pressure'] = 101325
-
+#Update Fluids to the new conditions
 water.regenerate()
 air.regenerate()
 
-
-OpenPNM.Physics.CapillaryPressure.set_contact_angle(water,120)
-OpenPNM.Physics.CapillaryPressure.Washburn(pn,water)
-
+#======================================================================
+#Begin Simulations
+#======================================================================
+#Peform a Drainage Experiment (OrdinaryPercolation)
+#----------------------------------------------------------------------
+#Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
-params_OP = { 'invading_fluid': water,
-             'defending_fluid': air,
-                        'npts': 50,
-                   'inv_sites': [0], }
-OP_1.run(pn,**params_OP)
+#Apply desired/necessary pore scale physics methods
+OpenPNM.Physics.CapillaryPressure.Washburn(pn,water)
+a = pn.pore_properties['numbering']<100
+#Run algorithm
+OP_1.run(network=pn,invading_fluid=water,inv_sites=a,npts=50)
 
-#Assign boundary conditions
+#----------------------------------------------------------------------
+#Perform an Injection Experiment (InvasionPercolation)
+#----------------------------------------------------------------------
+#Create a new water object
+water2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
+water.pore_conditions['temperature'] = 353
+water.pore_conditions['pressure'] = 101325
+#Initialize algorithm object
+IP_1 = OpenPNM.Algorithms.InvasionPercolation()
+#Apply desired/necessary pore scale physics methods
+OpenPNM.Physics.CapillaryPressure.Washburn(pn,water2)
+IP_1.run(pn,invading_fluid=water2,inlets=[0],outlets=[100])
+
+#----------------------------------------------------------------------
+#Performm a Diffusion Simulation on Partially Filled Network
+#----------------------------------------------------------------------
+#Apply desired/necessary pore scale physics methods
+air.regenerate()
+water.regenerate()
+OpenPNM.Physics.MultiPhase.update_occupancy_OP(air,Pc=2500)
+OpenPNM.Physics.MultiPhase.effective_occupancy(pn,air)
+OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
+#Initialize algorithm object
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
+#Create boundary condition arrays
 BCtypes = sp.zeros(pn.get_num_pores())
 BCvalues = sp.zeros(pn.get_num_pores())
-#Dirichlet
+#Specify Dirichlet-type and assign values
 BCtypes[pn.pore_properties['type']==1] = 1
 BCtypes[pn.pore_properties['type']==6] = 1
 BCvalues[pn.pore_properties['type']==1] = 8e-2
@@ -113,36 +129,8 @@ BCvalues[pn.pore_properties['type']==6] = 8e-1
 #BCtypes[pn.pore_properties['type']==6] = 4
 #BCvalues[pn.pore_properties['type']==1] = 8e-1
 #BCvalues[pn.pore_properties['type']==6] = 2e-10
-
-#Define Physics bundle
-fluid = air
-network = pn
-fluid.regenerate()
-OpenPNM.Physics.MultiPhase.update_occupancy_OP(fluid,Pc=2000)
-OpenPNM.Physics.MultiPhase.calc_conduit_occupancy(network,fluid)
-OpenPNM.Physics.MassTransport.DiffusiveConductance(network,fluid)
-
-
-Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
-params_alg = {'name': 'params'}
-Fickian_alg.run(pn,fluid,**params_alg)
+#Run simulation
+Fickian_alg.run(pn,active_fluid=air)
 
 
-
-
-
-
-
-########################################
-#print "Now demonstrating the mislabeling of the Water class as 'air'"
-#pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geom1)
-#air = OpenPNM.Fluids.Water().create(name='air')
-#water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
-#air.assign_to_network(pn)
-#water.assign_to_network(pn)
-#print ''
-#print 'current pore conditions:'
-#for i in pn.pore_conditions.keys():
-#    print i,'=',pn.pore_conditions[i]
-#print ''

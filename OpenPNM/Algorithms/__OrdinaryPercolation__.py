@@ -49,7 +49,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
 
-    def _setup(self, invading_fluid, defending_fluid, npts=25, inv_sites=[0],**params):
+    def _setup(self, invading_fluid, npts=25, inv_sites=[0],**params):
         self._npts = npts
         self._inv_sites = inv_sites
         self._fluid_inv = invading_fluid
@@ -110,20 +110,28 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def update_occupancy(fluid,Pc=0):
         r"""
-        ---
+        Updates the fluid occupancy status of invading and defending fluids as determined by the OP algorithm
+
+        Parameters
+        ----------
+        fluid : OpenPNM Fluid Object
+            This can be either the invading or defending fluid used.
         """
+        #Apply occupancy to given fluid
         try:
-            fluid.pore_conditions['occupancy'] = fluid.pore_conditions['Pc_invaded']>Pc
-            fluid.throat_conditions['occupancy'] = fluid.throat_conditions['Pc_invaded']>Pc
+            fluid.pore_conditions['occupancy'] = sp.array(fluid.pore_conditions['Pc_invaded']<=Pc,ndmin=1)
+            fluid.throat_conditions['occupancy'] = sp.array(fluid.throat_conditions['Pc_invaded']<=Pc,ndmin=1)
         except:
-            print ('OP has not been run with this fluid, setting occupancy to True everywhere')
-            fluid.pore_conditions['occupancy'] = True
-            fluid.throat_conditions['occupancy'] = True
-        try:
-            fluid.partner.pore_conditions['occupancy'] = ~fluid.pore_conditions['occupancy']
-            fluid.partner.throat_conditions['occupancy'] = ~fluid.throat_conditions['occupancy']
-        except:
-            print ('A partner fluid has not been set so inverse occupancy was not set')
+            print ('OP has not been run with this fluid, checking partner fluid')
+            try:
+                #Apply occupancy to given fluid
+                fluid.pore_conditions['occupancy'] = sp.array(~(fluid.partner.pore_conditions['Pc_invaded']<=Pc),ndmin=1)
+                fluid.throat_conditions['occupancy'] = sp.array(~(fluid.partner.throat_conditions['Pc_invaded']<=Pc),ndmin=1)
+            except:
+                raise Exception('It seems that OP has not been run on either fluid')
+        #Apply occupancy to partner fluid
+        fluid.partner.pore_conditions['occupancy'] = sp.array(~fluid.pore_conditions['occupancy'],ndmin=1)
+        fluid.partner.throat_conditions['occupancy'] = sp.array(~fluid.throat_conditions['occupancy'],ndmin=1)
 
 
 if __name__ == '__main__':

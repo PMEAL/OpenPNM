@@ -46,7 +46,7 @@ class FickianDiffusion(LinearSolver):
         r"""
         This function executes the essential methods specific to Fickian diffusion simulations
         """
-        self._fluid = params['fluid1']
+        self._fluid = params['active_fluid']
         # Variable transformation for Fickian Algorithm from xA to ln(xB)
         Dir_pores = self._net.pore_properties['numbering'][self.BCtypes==1]
         self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])
