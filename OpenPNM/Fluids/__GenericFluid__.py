@@ -17,10 +17,13 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         self._implemented_methods = ['diffusivity','viscosity','molar_density','surface_tension']
         self._accepted_throat_methods = []
         self.pore_conditions = {}
+        self.pore_conditions['temperature'] = 295.15
+        self.pore_conditions['pressure'] = 101325
         self.throat_conditions = {}
 
     def create(self,fluid_recipe):
         self._fluid_recipe = copy.deepcopy(fluid_recipe)
+        self.regenerate()
         return self
 
     def refresh(self):

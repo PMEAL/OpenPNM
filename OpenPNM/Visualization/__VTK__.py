@@ -139,13 +139,13 @@ class VTK(GenericVisualization):
                 self._f.write('" format="ascii">\n')
                 size =  np.size(self._fluid.pore_conditions[pore_keys[j]])
                 if size == 1:
-                    for i in range(self._fluid.get_num_pores()):
+                    for i in range(self._net.get_num_pores()):
                         self._f.write(str(self._fluid.pore_conditions[pore_keys[j]]))
                         self._f.write(' ')
                 else:
                     shape =  np.shape(self._fluid.pore_conditions[pore_keys[j]])
                     if np.size(shape) == 1:
-                        for i in range(self._fluid.get_num_pores()):
+                        for i in range(self._net.get_num_pores()):
                             self._f.write(str(self._fluid.pore_conditions[pore_keys[j]][i]))
                             self._f.write(' ')
                     else:

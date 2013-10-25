@@ -66,13 +66,15 @@ class InvasionPercolation(GenericAlgorithm):
         ------
         The invading fluid automatically gains pore conditions ::
         
+            occupancy       : 0 for univaded, 1 for invaded            
             IP_inv_final    : 0 for uninvaded, merged cluster number for invaded  
             IP_inv_original : 0 for uninvaded, original cluster number for invaded  
             IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
             IP_inv_time     : 0 for uninvaded, simulation time for invaded  
             
         and throat conditions ::
-        
+            
+            occupancy       : 0 for univaded, 1 for invaded
             IP_inv          : 0 for uninvaded, merged cluster number for invaded  
             IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
             IP_inv_time     : 0 for uninvaded, simulation time for invaded  
@@ -94,7 +96,6 @@ class InvasionPercolation(GenericAlgorithm):
         return self
         
     def _setup(self,inv_fluid,def_fluid,inlets=[0],outlets=[-1],end_condition='breakthrough',timing='ON',report=20,**params):
-        print params
         self._logger.info("\t end condition: "+end_condition)
         self._inv_fluid = inv_fluid
         self._def_fluid = def_fluid
@@ -122,10 +123,15 @@ class InvasionPercolation(GenericAlgorithm):
         # if empty, add Pc_entry to throat_properties
         tdia = self._net.throat_properties['diameter']
         # calculate Pc_entry from diameters
-        surface_tension = 0.486
-        contact_angle = 180
-        Pc_entry = -4*surface_tension*np.cos(np.deg2rad(contact_angle))/(tdia)#/1000/1000)  
-        self._net.throat_properties['Pc_entry']=np.array(Pc_entry,dtype=np.float)
+        try: 
+            Pc_entry = self._inv_fluid.throat_conditions['Pc_entry']
+        except:
+            try:
+                OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._inv_fluid)
+            except:
+                OpenPNM.Physics.CapillaryPressure.set_contact_angle(self._inv_fluid,180)
+                OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._inv_fluid)
+            Pc_entry = self._inv_fluid.throat_conditions['Pc_entry']
         if self._timing:
             # calculate Volume_coef for each throat
             self._Tvol_coef = tdia*tdia*tdia*np.pi/6/Pc_entry
@@ -190,7 +196,7 @@ class InvasionPercolation(GenericAlgorithm):
                 # Sum all interfacial throats' volume coeffients for throat cap volume calculation
                 self._cluster_data['vol_coef'][clusterNumber-1] = np.sum(self._Tvol_coef[interface_throat_numbers])
             # Make a list of all entry pressures of the interfacial throats            
-            interface_throat_pressures = self._net.throat_properties["Pc_entry"][interface_throat_numbers]#[0]         
+            interface_throat_pressures = self._inv_fluid.throat_conditions["Pc_entry"][interface_throat_numbers]#[0]         
             # Zip pressures and numbers together so that HeapQ can work its magic
             self._logger.debug('interface throat(s) found:')
             self._logger.debug(interface_throat_numbers)                   
@@ -222,12 +228,12 @@ class InvasionPercolation(GenericAlgorithm):
             self._logger.debug( 'cap volumes')
             self._logger.debug( self._cluster_data['cap_volume'])
             self._logger.debug( 'max throat cap volumes')
-            self._logger.debug( self._Tvol_coef*self._net.throat_properties["Pc_entry"])
+            self._logger.debug( self._Tvol_coef*self._inv_fluid.throat_conditions["Pc_entry"])
         self._logger.debug( 'haines_throats')
         self._logger.debug( self._cluster_data['haines_throat'])
         if self._timing:
             self._logger.debug( 'max throat cap volumes')
-            self._logger.debug( self._Tvol_coef*self._net.throat_properties["Pc_entry"])
+            self._logger.debug( self._Tvol_coef*self._inv_fluid.throat_conditions["Pc_entry"])
         self._tseq += 1
         self._pseq += 1
         self._current_cluster = 0
@@ -271,6 +277,8 @@ class InvasionPercolation(GenericAlgorithm):
             self._inv_fluid.throat_conditions['IP_inv_time']=np.array(self._Ttime,dtype=np.float)
         self._inv_fluid.pore_conditions['occupancy'] = np.array(self._Pinv>0,dtype=np.int)
         self._inv_fluid.throat_conditions['occupancy'] = np.array(self._Tinv>0,dtype=np.int)
+        self._inv_fluid.partner.pore_conditions['occupancy'] = ~self._Pinv>0
+        self._inv_fluid.partner.throat_conditions['occupancy'] = ~self._Tinv>0
 
     def _do_one_outer_iteration(self):
         r"""
@@ -462,7 +470,7 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.debug('connecting pores:')
                     self._logger.debug(self._net.get_connected_pores(j))
                     # Add this throat data (pressure, number) to this cluster's "heap" of throat data.
-                    heapq.heappush(self._tpoints[self._current_cluster-1],(self._net.throat_properties['Pc_entry'][j],j))
+                    heapq.heappush(self._tpoints[self._current_cluster-1],(self._inv_fluid.throat_conditions['Pc_entry'][j],j))
                     # Add new throat number to throat list for this cluster
                     self._tlists[self._current_cluster-1].append(j)
                     if self._timing:
@@ -555,7 +563,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._inv_fluid.pore_conditions['occupancy'] = self._Pinv>0
             self._inv_fluid.throat_conditions['occupancy'] = self._Tinv>0
         except:
-            print 'It seems that an OP simulation has not been run with ',self._inv_fluid._fluid_recipe['name']
+            print 'Something bad happened while trying to update fluid',self._inv_fluid._fluid_recipe['name']
         try: 
             self._inv_fluid.partner.pore_conditions['occupancy'] = ~self._Pinv>0
             self._inv_fluid.partner.throat_conditions['occupancy'] = ~self._Tinv>0
@@ -577,8 +585,7 @@ if __name__ =="__main__":
     print "-"*50
     print "- * generate a simple cubic network"        
     #sp.random.seed(1)
-    pn = OpenPNM.Geometry.MatFile().generate()
-    print pn
+    pn = OpenPNM.Geometry.MatFile().generate(filename='large_network')
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
     print "+"*50
@@ -597,7 +604,6 @@ if __name__ =="__main__":
                  'def_fluid':air,
                  'inlets':inlets,
                  'outlets':outlets,
-                 'report':1,
                  'timing':'ON',
                  }
     IP_timing.run(pn,**ip_timing_params)
@@ -612,7 +618,6 @@ if __name__ =="__main__":
                  'def_fluid':air,
                  'inlets':inlets,
                  'outlets':outlets,
-                 'report':1,
                  'timing':'OFF',
                  }
     IP_notiming.run(pn,**ip_notiming_params)
