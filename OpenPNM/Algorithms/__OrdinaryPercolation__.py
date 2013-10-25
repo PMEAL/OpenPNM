@@ -49,10 +49,12 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
 
-    def _setup(self, invading_fluid, npts=25, inv_sites=[0],**params):
+    def _setup(self, invading_fluid,defending_fluid, npts=25, inv_sites=[0],**params):
         self._npts = npts
         self._inv_sites = inv_sites
         self._fluid_inv = invading_fluid
+        self._fluid_def = defending_fluid
+        invading_fluid.set_pair(defending_fluid)
         self._fluid_inv.refresh()
         #Apply necessary pore scale physics models
         OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._fluid_inv)
