@@ -11,11 +11,11 @@ def constant(fluid,value=0.001,**params):
     return value
 
 def na(fluid,**params):
-    return 'n/a'
+    return -1
 
 def Chung(fluid,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**params):
     r"""
-    Uses Chung et al. model to estimate thermal conductivity for gases with low pressure(<10 bar) from first principles at conditions of interest 
+    Uses Chung et al. model to estimate thermal conductivity for gases with low pressure(<10 bar) from first principles at conditions of interest
 
     Parameters
     ----------
@@ -26,11 +26,11 @@ def Chung(fluid,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**params):
     MW : float, array_like
         Molecular weight of the component (kg/mol)
     acentric : float, array_like
-        Acentric factor of the component 
+        Acentric factor of the component
 
-    """    
-    R = 8.314    
-    T = fluid.pore_conditions['temperature']    
+    """
+    R = 8.314
+    T = fluid.pore_conditions['temperature']
     mu = fluid.pore_conditions['viscosity']
     Tr = T/Tc
     z = 2.0 + 10.5*Tr**2
@@ -55,7 +55,7 @@ def Sato(fluid,Tc=647.096,Tb=373.15,MW=0.0181,**params):
         Molecular weight of the component (kg/mol)
 
 
-    """     
+    """
     T = fluid.pore_conditions['temperature']
     Tbr = Tb/Tc
     Tr = T/Tc

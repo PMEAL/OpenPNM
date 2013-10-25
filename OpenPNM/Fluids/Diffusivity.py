@@ -11,7 +11,7 @@ def constant(fluid,value,**params):
     return value
 
 def na(fluid,**params):
-    return 'n/a'
+    return -1
 
 def Fuller(fluid,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7,**params):
     r"""
@@ -55,7 +55,7 @@ def Fuller_scaling(fluid,DABo=2.09e-5,To=298.,Po=101325.,**params):
         Pressure & temperature at reference conditions, respectively
     """
     Ti = fluid.pore_conditions['temperature']
-    Pi = fluid.pore_conditions['pressure']    
+    Pi = fluid.pore_conditions['pressure']
     DAB = DABo*(Ti/To)**1.75*(Po/Pi)
     return DAB
 
