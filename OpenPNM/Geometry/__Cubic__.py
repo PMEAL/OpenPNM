@@ -311,15 +311,14 @@ class Cubic(GenericGeometry):
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),dtype=np.int8)
-        net.throat_properties['seed'] = sp.amin(net.pore_properties['seed'][net.throat_properties['connections']],1)
-    
+        start = len(net.throat_properties['diameter'])
+        end = len(net.throat_properties['connections'])
+        old_seeds = net.throat_properties['seed'].copy()
+        new_seeds = sp.amin(net.pore_properties['seed'][net.throat_properties['connections'][start:end]],1)
+        net.throat_properties['seed'] = np.concatenate((old_seeds,new_seeds))
+        
         prob_fn = getattr(spst,stats_throats['name'])
         P = prob_fn(stats_throats['shape'],loc=stats_throats['loc'],scale=stats_throats['scale'])
-        new_seeds = net.throat_properties['seed'][len(net.throat_properties['diameter']):len(net.throat_properties['seed'])]
-        new_diameters = P.ppf(new_seeds)
-        
-        net.throat_properties['seed'] = np.concatenate((net.throat_properties['seed'],new_seeds))
-        net.throat_properties['diameter'] = np.concatenate((net.throat_properties['diameter'],new_diameters))
         net.throat_properties['length'] = sp.zeros_like(net.throat_properties['type'])
         C1 = net.pore_properties['coords'][net.throat_properties['connections'][:,0]]
         C2 = net.pore_properties['coords'][net.throat_properties['connections'][:,1]]
@@ -327,7 +326,7 @@ class Cubic(GenericGeometry):
         D1 = net.pore_properties['diameter'][net.throat_properties['connections'][:,0]]
         D2 = net.pore_properties['diameter'][net.throat_properties['connections'][:,1]]
         net.throat_properties['length'] = E - (D1 + D2)/2
-        net.throat_properties['volume'] = net.throat_properties['length']*net.throat_properties['diameter']**2
+        #net.throat_properties['volume'] = net.throat_properties['length']*net.throat_properties['diameter']**2
         
 
     def _add_boundary_throat_type(self,net):
