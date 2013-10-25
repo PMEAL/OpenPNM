@@ -37,3 +37,6 @@ OpenPNM.Geometry.Cubic().generate_boundaries(pn1,**network_main)
 
 #Stitch the networks
 #OpenPNM.Geometry.Cubic().stitch_network(pn1,pn2,stitch_side = 'top') # can be stitched to top, bottom, left right etc.
+
+
+#DIAMETERS AND VOLUMES -- > PUSH
