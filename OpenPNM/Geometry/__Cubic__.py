@@ -319,6 +319,7 @@ class Cubic(GenericGeometry):
         
         prob_fn = getattr(spst,stats_throats['name'])
         P = prob_fn(stats_throats['shape'],loc=stats_throats['loc'],scale=stats_throats['scale'])
+        net.throat_properties['diameter'] = P.ppf(net.throat_properties['seed'])
         net.throat_properties['length'] = sp.zeros_like(net.throat_properties['type'])
         C1 = net.pore_properties['coords'][net.throat_properties['connections'][:,0]]
         C2 = net.pore_properties['coords'][net.throat_properties['connections'][:,1]]
@@ -326,7 +327,7 @@ class Cubic(GenericGeometry):
         D1 = net.pore_properties['diameter'][net.throat_properties['connections'][:,0]]
         D2 = net.pore_properties['diameter'][net.throat_properties['connections'][:,1]]
         net.throat_properties['length'] = E - (D1 + D2)/2
-        #net.throat_properties['volume'] = net.throat_properties['length']*net.throat_properties['diameter']**2
+        net.throat_properties['volume'] = net.throat_properties['length']*net.throat_properties['diameter']**2
         
 
     def _add_boundary_throat_type(self,net):
