@@ -4,9 +4,10 @@ module MultiPhase
 ===============================================================================
 
 """
+import OpenPNM
 import scipy as sp
 
-def calc_conduit_occupancy(network,fluid,method='strict'):
+def effective_occupancy(network,fluid,method='strict'):
     r"""
 
     """
@@ -14,7 +15,7 @@ def calc_conduit_occupancy(network,fluid,method='strict'):
         #if only EITHER pore is filled an open throat is considered closed
         pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
         fluid.throat_conditions['conduit_occupancy'] = fluid.pore_conditions['occupancy'][pores[:,0]]*fluid.pore_conditions['occupancy'][pores[:,1]]
-        fluid.throat_conditions['conduit_occupancy'] = -fluid.pore_conditions['occupancy'][pores[:,0]]*-network.pore_conditions['occupancy'][pores[:,1]]
+        fluid.throat_conditions['conduit_occupancy'] = -fluid.pore_conditions['occupancy'][pores[:,0]]*-fluid.pore_conditions['occupancy'][pores[:,1]]
     elif method == 'moderate':
         #if only ONE pore isfilled an open throat is still considered open
         print 'nothing yet'
@@ -26,18 +27,21 @@ def update_occupancy_OP(fluid,Pc=0):
     r"""
     ---
     """
+    #Apply occupancy to given fluid
     try:
-        fluid.pore_conditions['occupancy'] = fluid.pore_conditions['Pc_invaded']>Pc
-        fluid.throat_conditions['occupancy'] = fluid.throat_conditions['Pc_invaded']>Pc
+        fluid.pore_conditions['occupancy'] = sp.array(fluid.pore_conditions['Pc_invaded']<=Pc,ndmin=1)
+        fluid.throat_conditions['occupancy'] = sp.array(fluid.throat_conditions['Pc_invaded']<=Pc,ndmin=1)
     except:
-        print ('OP has not been run with this fluid, setting occupancy to True everywhere')
-        fluid.pore_conditions['occupancy'] = True
-        fluid.throat_conditions['occupancy'] = True
-    try:
-        fluid.partner.pore_conditions['occupancy'] = ~fluid.pore_conditions['occupancy']
-        fluid.partner.throat_conditions['occupancy'] = ~fluid.throat_conditions['occupancy']
-    except:
-        print ('A partner fluid has not been set so inverse occupancy was not set')
+        print ('OP has not been run with this fluid, checking partner fluid')
+        try:
+            #Apply occupancy to given fluid
+            fluid.pore_conditions['occupancy'] = sp.array(~(fluid.partner.pore_conditions['Pc_invaded']<=Pc),ndmin=1)
+            fluid.throat_conditions['occupancy'] = sp.array(~(fluid.partner.throat_conditions['Pc_invaded']<=Pc),ndmin=1)
+        except:
+            raise Exception('It seems that OP has not been run on either fluid')
+    #Apply occupancy to partner fluid
+    fluid.partner.pore_conditions['occupancy'] = sp.array(~fluid.pore_conditions['occupancy'],ndmin=1)
+    fluid.partner.throat_conditions['occupancy'] = sp.array(~fluid.throat_conditions['occupancy'],ndmin=1)
 
 def update_occupancy_IP(network,fluid,Seq=0):
     r"""

@@ -13,16 +13,19 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
     def __init__(self,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        # the following two lines track the methods that update pore or throat properties
-        self._implemented_methods = ['diffusivity','viscosity','molar_density','surface_tension']
-        self._accepted_throat_methods = []
-        self.pore_conditions = {}
-        self.pore_conditions['temperature'] = 295.15
-        self.pore_conditions['pressure'] = 101325
-        self.throat_conditions = {}
+        #List of fluid property categories that are invoked when fluid is created
+        self._implemented_methods = ['diffusivity',
+                                     'viscosity',
+                                     'molar_density',
+                                     'surface_tension',
+                                     'contact_angle']
 
     def create(self,fluid_recipe):
         self._fluid_recipe = copy.deepcopy(fluid_recipe)
+        self.pore_conditions = {}
+        self.throat_conditions = {}
+        self.pore_conditions.update({'temperature': 298})
+        self.pore_conditions.update({'pressure': 101325})
         self.regenerate()
         return self
 
@@ -33,6 +36,24 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
     def regenerate(self):
         for condition in self._implemented_methods:
             self.pore_conditions.update({condition: getattr(self,condition)()})
+        #Make sure all values are Numpy arrays (Np,) or (Nt,)
+        for i in self.pore_conditions.keys():
+            self.pore_conditions[i] = sp.array(self.pore_conditions[i],ndmin=1)
+        for i in self.throat_conditions.keys():
+            self.throat_conditions[i] = sp.array(self.throat_conditions[i],ndmin=1)
+
+    def reset(self):
+        self.pore_conditions = {}
+        self.throat_conditions = {}
+        try: del self.partner
+        except: pass
+        self.pore_conditions.update({'temperature': 298})
+        self.pore_conditions.update({'pressure': 101325})
+        self.regenerate()
+        return self
+
+    def clone(self):
+        return self.__new__
 
     def set_pair(self,fluid2):
         self.partner = fluid2
@@ -59,6 +80,12 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
     def surface_tension(self):
         params = self._fluid_recipe['surface_tension']
         eqn = getattr(OpenPNM.Fluids.SurfaceTension,params['method'])
+        vals = eqn(self,**params)
+        return sp.array(vals,ndmin=1)
+
+    def contact_angle(self):
+        params = self._fluid_recipe['contact_angle']
+        eqn = getattr(OpenPNM.Fluids.ContactAngle,params['method'])
         vals = eqn(self,**params)
         return sp.array(vals,ndmin=1)
 

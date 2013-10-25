@@ -9,7 +9,7 @@ import scipy as sp
 import OpenPNM
 
 def constant(fluid, value=0.072,**params):
-    return 0.072
+    return value
 
 def na(fluid,**params):
     return 'n/a'
@@ -18,15 +18,15 @@ def Eotvos(fluid, k=2.1e-7, **params):
     r"""
     """
     Tc = fluid._fluid_recipe['Tc']
-    T = fluid.pore_properties['temperature']
-    Vm = 1/fluid.pore_properties['molar_volume']
+    T = fluid.pore_conditions['temperature']
+    Vm = 1/fluid.pore_conditions['molar_density']
     sigma = k*(Tc-T)/(Vm**(2/3))
     return sigma
 
 def GuggenheimKatayama(fluid, K2=1, n=1.222, **params):
     r"""
     """
-    T = fluid.pore_properties['temperature']
+    T = fluid.pore_condtions['temperature']
     Pc = fluid._fluid_recipe['Pc']
     Tc = fluid._fluid_recipe['Tc']
     sigma_o = K2*Tc**(1/3)*Pc**(2/3)
