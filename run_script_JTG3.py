@@ -24,7 +24,7 @@ params_geo1= {'domain_size': [],  #physical network size [meters]
 #Generate Geometry
 pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
 #Add Boundary Nodes (Pores)
-OpenPNM.Geometry.Cubic()._generate_boundaries(pn,**params_geo1)
+OpenPNM.Geometry.Cubic().generate_boundaries(pn,**params_geo1)
 
 #======================================================================
 '''Generate Fluids'''
@@ -89,20 +89,23 @@ OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
 OpenPNM.Physics.CapillaryPressure.Washburn(pn,water)
 a = pn.pore_properties['numbering']<100
 #Run algorithm
-OP_1.run(network=pn,invading_fluid=water,inv_sites=a,npts=50)
+OP_1.run(network=pn,invading_fluid=water,defending_fluid=air,inv_sites=a,npts=50)
 
 #----------------------------------------------------------------------
 '''Perform an Injection Experiment (InvasionPercolation)'''
 #----------------------------------------------------------------------
-#Create a new water object
+#Create some new Fluids
 water2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
+air2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
 water.pore_conditions['temperature'] = 353
 water.pore_conditions['pressure'] = 101325
+air.pore_conditions['temperature'] = 353
+air.pore_conditions['pressure'] = 101325
 #Initialize algorithm object
 IP_1 = OpenPNM.Algorithms.InvasionPercolation()
 #Apply desired/necessary pore scale physics methods
 OpenPNM.Physics.CapillaryPressure.Washburn(pn,water2)
-IP_1.run(pn,invading_fluid=water2,inlets=[0],outlets=[100])
+IP_1.run(pn,invading_fluid=water2,defending_fluid=air2,inlets=[0],outlets=[100])
 
 #----------------------------------------------------------------------
 '''Performm a Diffusion Simulation on Partially Filled Network'''
@@ -110,7 +113,7 @@ IP_1.run(pn,invading_fluid=water2,inlets=[0],outlets=[100])
 #Apply desired/necessary pore scale physics methods
 air.regenerate()
 water.regenerate()
-OpenPNM.Physics.MultiPhase.update_occupancy_OP(air,Pc=2500)
+OpenPNM.Physics.MultiPhase.update_occupancy_OP(air,Pc=5500)
 OpenPNM.Physics.MultiPhase.effective_occupancy(pn,air)
 OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
 #Initialize algorithm object
