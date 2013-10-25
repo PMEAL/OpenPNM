@@ -12,7 +12,7 @@ def constant(fluid, value=0.072,**params):
     return value
 
 def na(fluid,**params):
-    return 'n/a'
+    return -1
 
 def Eotvos(fluid, k=2.1e-7, **params):
     r"""
