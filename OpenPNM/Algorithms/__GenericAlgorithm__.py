@@ -43,12 +43,12 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         self._logger.debug("Construct class")
 
 
-    def run(self,net,**params):
+    def run(self,network,**params):
         r"""
         Main run command for the algorithm
         """
         self._logger.info(self.indent+"Execute run(): Basic version")
-        self._net = net
+        self._net = network
         self._setup(**params)
         self._do_outer_iteration_stage()
 
@@ -104,7 +104,7 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
 
 if __name__ =="__main__":
     print ''
-    print ''    
+    print ''
     print '    ************Testing Generic Algorithm**************'
     pn = OpenPNM.Geometry.Cubic().generate()
     test = GenericAlgorithm(loggername="TestGenericAlg")

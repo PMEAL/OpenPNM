@@ -101,6 +101,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._def_fluid = def_fluid
         self._inlets = inlets 
         self._outlets = outlets
+        self._fluid = invading_fluid
         if sp.size(inlets) == 1:
             self._inlets = [inlets]
         if sp.size(outlets) == 1:
@@ -287,7 +288,6 @@ class InvasionPercolation(GenericAlgorithm):
         """
         if (sp.mod(self._counter,500)==False):
             self._logger.info("Outer Iteration (counter = "+str(self._counter)+")")
-        self._update_network_state()
         self._do_inner_iteration_stage()
         self._condition_update()
         self._counter += 1
