@@ -298,14 +298,14 @@ class Cubic(GenericGeometry):
                 coords_1 = tri.points[point_1]
                 coords_2 = tri.points[point_2]
                 dist =  np.sqrt((coords_2[0] - coords_1[0]) ** 2 + (coords_2[1] - coords_1[1]) ** 2 + (coords_2[2] - coords_1[2]) ** 2)
-                if dist >0:
-                    V.append(dist)
-                    I.append(point_1)
-                    J.append(point_2)
+                V.append(dist)
+                I.append(point_1)
+                J.append(point_2)
                     
         spar_connections = sp.sparse.coo_matrix((np.array(V),(np.array(I),np.array(J))))
         ind = np.where(spar_connections.data < min(spar_connections.data) + 0.001)
         prelim_connections = np.array((spar_connections.row[ind],spar_connections.col[ind]))
+        connections = np.zeros((len(prelim_connections[0]),2),np.int)
         
         for i in range(len(prelim_connections[0])):
             connections[i,0] = prelim_connections[0][i]
