@@ -38,8 +38,13 @@ class Air(GenericFluid):
                         'molar_density': {'method': 'ideal_gas',
                                                'R': 8.314},
                       'surface_tension': {'method': 'constant',
-                                           'value': 0}
-            }
+                                           'value': 0},
+                        'contact_angle': {'method': 'na'},
+                        }
+        self.pore_conditions = {}
+        self.throat_conditions = {}
+        self.pore_conditions.update({'temperature': 298})
+        self.pore_conditions.update({'pressure': 101325})
         self.regenerate()
         return self
 

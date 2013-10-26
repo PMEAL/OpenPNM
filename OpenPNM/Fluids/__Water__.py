@@ -33,9 +33,15 @@ class Water(GenericFluid):
                                            'value': 0.001},
                         'molar_density': {'method': 'constant',
                                            'value': 44445},
-                      'surface_tension': {'method': 'constant',
-                                           'value': 0.072,}
-                               }
+                      'surface_tension': {'method': 'Eotvos',
+                                               'k': 2.25e-4},
+                        'contact_angle': {'method': 'constant',
+                                           'value': 120},
+                                           }
+        self.pore_conditions = {}
+        self.throat_conditions = {}
+        self.pore_conditions.update({'temperature': 298})
+        self.pore_conditions.update({'pressure': 101325})
         self.regenerate()
         return self
 
