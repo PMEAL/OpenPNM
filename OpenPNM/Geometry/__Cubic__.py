@@ -181,6 +181,7 @@ class Cubic(GenericGeometry):
         self._logger.info("generate_boundaries: Define edge points of the pore network and stitch them on")
         self._generate_setup(**params)
         Lc = self._Lc
+        #Takes the original dimensions of the first network. 
         params['divisions'] = [self._Nx, self._Ny, self._Nz]
         temp_divisions = sp.copy(params['divisions']).tolist()
         
@@ -188,14 +189,14 @@ class Cubic(GenericGeometry):
             params['divisions'] = temp_divisions
             temp_divisions = sp.copy(params['divisions']).tolist()
             params['divisions'][i%3] = 1
-            edge_net = super(Cubic, self).generate(**params)
+            edge_net = super(Cubic, self).generate(**params) # Generate networks based on the size of the edges. These are computed in divisions.
             displacement = [0,0,0]
             if i < 3:
-                displacement[i%3] = net.pore_properties['coords'][:,i%3].max() + 0.5*Lc
+                displacement[i%3] = net.pore_properties['coords'][:,i%3].max() + 0.5*Lc # This network is properly displaced and then translated.
             else:
                 displacement[i%3] = -1*(net.pore_properties['coords'][:,i%3].min() + 0.5*Lc)
             self.translate_coordinates(edge_net,displacement)
-            self.stitch_network(net,edge_net,edge = i+1,stitch_nets = 0)
+            self.stitch_network(net,edge_net,edge = i+1,stitch_nets = 0) # We stitch the networks to generate the new throats and append all properties. 
 
         self._stitch_throats(net,**params)
         net.pore_properties['type'] = self._add_boundary_pore_type(net)
@@ -225,7 +226,7 @@ class Cubic(GenericGeometry):
             When given, this flag moves net2 into position automatically
 
         """
-        if stitch_nets:
+        if stitch_nets: # This is the side where we stitch the new network onto. 
             #if ~stitch_size:
                 #stitch in place
             if stitch_side == 'left':
@@ -246,7 +247,8 @@ class Cubic(GenericGeometry):
             elif stitch_side == 'bottom':
                 def_translate = net1.pore_properties['coords'][:,2].max()+net1.pore_properties['coords'][:,2].min()
                 OpenPNM.Geometry.GenericGeometry.translate_coordinates(net2,displacement=[0,0,-1*def_translate])
-                
+        
+        #Concatenate all conserved properties. 
         net2.pore_properties['numbering']   = len(net1.pore_properties['numbering']) + net2.pore_properties['numbering']
         net1.pore_properties['numbering']   = sp.concatenate((net1.pore_properties['numbering'],net2.pore_properties['numbering']),axis=0)
         net1.pore_properties['volume']      = sp.concatenate((net1.pore_properties['volume'],net2.pore_properties['volume']),axis = 0)
@@ -283,8 +285,11 @@ class Cubic(GenericGeometry):
         """
         pts = net.pore_properties['coords']
         tri = sptl.Delaunay(pts)
-        adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
-        dist_comb = list(itr.combinations_with_replacement(range(4),2))
+        I = []
+        J = []
+        V = []
+        #adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
+        dist_comb = list(itr.combinations(range(4),2))
 
         for i in range(len(tri.simplices)):
             for j in range(len(dist_comb)):
@@ -292,22 +297,16 @@ class Cubic(GenericGeometry):
                 point_2 = tri.simplices[i,dist_comb[j][1]]
                 coords_1 = tri.points[point_1]
                 coords_2 = tri.points[point_2]
-                adj_mat[point_1,point_2] = math.sqrt((coords_2[0] - coords_1[0]) ** 2 +
-                     (coords_2[1] - coords_1[1]) ** 2 +
-                     (coords_2[2] - coords_1[2]) ** 2)
-
-        #Begin removing undesired connections based on their length
-        ind = np.ma.where(adj_mat>0)
-        I = ind[:][0].tolist()
-        J = ind[:][1].tolist()
-        V = adj_mat[I,J]
-        masked = np.where((adj_mat < (V.min() + .001)) & (adj_mat > 0))
-        connections = np.zeros((len(masked[0]),2),np.int)
-
-        for i in range(len(masked[0])):
-            connections[i,0] = masked[0][i]
-            connections[i,1] = masked[1][i]
-            
+                dist =  np.sqrt((coords_2[0] - coords_1[0]) ** 2 + (coords_2[1] - coords_1[1]) ** 2 + (coords_2[2] - coords_1[2]) ** 2)
+                if dist >0:
+                    V.append(dist)
+                    I.append(point_1)
+                    J.append(point_2)
+                    
+        spar_connections = sp.sparse.coo_matrix((np.array(V),(np.array(I),np.array(J))))
+        ind = np.where(spar_connections.data < min(spar_connections.data) + 0.001)
+        prelim_connections = np.array((spar_connections.row[ind],spar_connections.col[ind]))
+        
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),dtype=np.int8)
