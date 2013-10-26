@@ -50,6 +50,28 @@ Now a cubic network of 1000 pores is stored in the object named 'pn'.  To see wh
 This indicates all the pore and throat properties that are currently associated with the network.  You'll notice that they are exclusively geometric in nature, which is normal since no simulations have yet been run.  
 
 -------------------------------------------------------------------------------
+Adding Boundary Conditions
+-------------------------------------------------------------------------------
+To add boundary pores and throats to the cubic network, we must call the function below with the input cubic pore network.
+
+.. code-blocK:: python
+
+	OpenPNM.Geometry.Cubic().generate_boundaries(pn,**params)
+	
+This method will stitch 6 extra layers on the boundaries of the network, find the appropriate connecting throats, and apply the correct pore and throat type to the appended network.
+
+-------------------------------------------------------------------------------
+Stitch Cubic Networks together
+-------------------------------------------------------------------------------
+It is possible to connect two cubic networks by translating them to two aligned mating faces. You must first generate the two networks, and then specify which side of the first network will be appended by the second. The first network is the one that is stitched to, while the second network is the network being stitched.
+
+.. code-blocK:: python
+
+	OpenPNM.Geometry.Cubic().stitch_network(pn1,pn2,stitch_side = 'top')
+	
+This method will return all the properties for the new pores and connections of two stitched networks, while maintaining the properties of each of the networks. New connections for throats will be added, and the boundary types will also be modified. Stitches can be made to the top, left, right, bottom, front, or back side. 
+
+-------------------------------------------------------------------------------
 Using Pore Scale Physics
 -------------------------------------------------------------------------------
 To perform a capillary pressure curve simulation we must first generate a throat property that describes the capillary pressure required for the non-wetting fluid to invade as a function of size, wettability, fluid properties and so on.  OpenPNM comes with a Physics Module which contains numerous models and equations for calculating such properties.  We can generate the most basic estimate of capillary entry pressure by using the Washburn equation for cylindrical tubes:
