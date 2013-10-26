@@ -9,7 +9,7 @@ start=clock()
 #======================================================================
 #Define generation parameters
 params_geo1= {'domain_size': [],  #physical network size [meters]
-                'divisions': [50,50,10], #Number of pores in each direction
+                'divisions': [15,15,5], #Number of pores in each direction
           'lattice_spacing': [0.1],  #spacing between pores [meters]
              'stats_pores' : {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
                              'shape': 1.5,
@@ -24,9 +24,7 @@ params_geo1= {'domain_size': [],  #physical network size [meters]
 #Generate Geometry
 pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
 print pn
-#Add Boundary Nodes (Pores)
-OpenPNM.Geometry.Cubic().generate_boundaries(pn,**params_geo1)
-print 'generated'
+
 #======================================================================
 '''Generate Fluids'''
 #======================================================================
@@ -87,7 +85,7 @@ air.regenerate()
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
 #Apply desired/necessary pore scale physics methods
 OpenPNM.Physics.CapillaryPressure.Washburn(pn,water)
-a = pn.pore_properties['numbering']<100
+a = pn.pore_properties['type']==3
 #Run algorithm
 OP_1.run(network=pn,invading_fluid=water,defending_fluid=air,inv_sites=a,npts=50)
 
@@ -117,7 +115,7 @@ IP_1.run(pn,invading_fluid=water2,defending_fluid=air2,inlets=inlets,outlets=out
 #Apply desired/necessary pore scale physics methods
 air.regenerate()
 water.regenerate()
-OpenPNM.Physics.MultiPhase.update_occupancy_OP(air,Pc=5500)
+OpenPNM.Physics.MultiPhase.update_occupancy_OP(water,Pc=4000)
 OpenPNM.Physics.MultiPhase.effective_occupancy(pn,air)
 OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
 #Initialize algorithm object
@@ -126,10 +124,10 @@ Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 BCtypes = sp.zeros(pn.get_num_pores())
 BCvalues = sp.zeros(pn.get_num_pores())
 #Specify Dirichlet-type and assign values
-BCtypes[pn.pore_properties['type']==1] = 1
-BCtypes[pn.pore_properties['type']==6] = 1
-BCvalues[pn.pore_properties['type']==1] = 8e-2
-BCvalues[pn.pore_properties['type']==6] = 8e-1
+BCtypes[pn.pore_properties['type']==3] = 1
+BCtypes[pn.pore_properties['type']==4] = 1
+BCvalues[pn.pore_properties['type']==3] = 8e-2
+BCvalues[pn.pore_properties['type']==4] = 8e-1
 #Neumann
 #BCtypes[pn.pore_properties['type']==1] = 1
 #BCtypes[pn.pore_properties['type']==6] = 4
@@ -141,4 +139,4 @@ Fickian_alg.run(pn,active_fluid=air)
 
 
 #Export to VTK
-OpenPNM.Visualization.VTK().write(pn,fluid=water2)
+OpenPNM.Visualization.VTK().write(pn,fluid=water)
