@@ -9,7 +9,7 @@ start=clock()
 #======================================================================
 #Define generation parameters
 params_geo1= {'domain_size': [],  #physical network size [meters]
-                'divisions': [15,15,5], #Number of pores in each direction
+                'divisions': [25,25,5], #Number of pores in each direction
           'lattice_spacing': [0.1],  #spacing between pores [meters]
              'stats_pores' : {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
                              'shape': 1.5,
@@ -85,9 +85,9 @@ air.regenerate()
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
 #Apply desired/necessary pore scale physics methods
 OpenPNM.Physics.CapillaryPressure.Washburn(pn,water)
-a = pn.pore_properties['type']==3
+a = pn.pore_properties['type']==1
 #Run algorithm
-OP_1.run(network=pn,invading_fluid=water,defending_fluid=air,inv_sites=a,npts=50)
+OP_1.run(network=pn,invading_fluid=water,defending_fluid=air,inv_sites=a,npts=50,AL=True)
 
 #----------------------------------------------------------------------
 '''Perform an Injection Experiment (InvasionPercolation)'''
@@ -124,10 +124,10 @@ Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 BCtypes = sp.zeros(pn.get_num_pores())
 BCvalues = sp.zeros(pn.get_num_pores())
 #Specify Dirichlet-type and assign values
-BCtypes[pn.pore_properties['type']==3] = 1
-BCtypes[pn.pore_properties['type']==4] = 1
-BCvalues[pn.pore_properties['type']==3] = 8e-2
-BCvalues[pn.pore_properties['type']==4] = 8e-1
+BCtypes[pn.pore_properties['type']==1] = 1
+BCtypes[pn.pore_properties['type']==6] = 1
+BCvalues[pn.pore_properties['type']==1] = 8e-2
+BCvalues[pn.pore_properties['type']==6] = 8e-1
 #Neumann
 #BCtypes[pn.pore_properties['type']==1] = 1
 #BCtypes[pn.pore_properties['type']==6] = 4

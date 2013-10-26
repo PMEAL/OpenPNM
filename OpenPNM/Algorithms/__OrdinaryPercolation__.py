@@ -49,8 +49,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
 
-    def _setup(self, invading_fluid,defending_fluid, npts=25, inv_sites=[0],**params):
+    def _setup(self, invading_fluid,defending_fluid, npts=25, inv_sites=[0],AL=True,**params):
         self._npts = npts
+        self._AL = AL
         self._inv_sites = inv_sites
         self._fluid_inv = invading_fluid
         self._fluid_def = defending_fluid
@@ -76,7 +77,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             self._fluid_inv.pore_conditions['Pc_invaded'][(self._fluid_inv.pore_conditions['Pc_invaded']==0)*(pmask)] = inv_val
             #Determine Pc_invaded for throats as well
             temp = self._net.throat_properties['connections']
-            tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._fluid_inv.throat_conditions['Pc_entry']<inv_val)
+            tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._fluid_inv.throat_conditions['Pc_entry']<=inv_val)
             self._fluid_inv.throat_conditions['Pc_invaded'][(self._fluid_inv.throat_conditions['Pc_invaded']==0)*(tmask)] = inv_val
         #Remove temporary arrays and adjacency matrices
         del self._net.adjacency_matrix['csr']['invaded']
@@ -90,25 +91,27 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         #Generate a tlist containing boolean values for throat state
-        Tinvaded = self._fluid_inv.throat_conditions['Pc_entry']<inv_val
+        Tinvaded = self._fluid_inv.throat_conditions['Pc_entry']<=inv_val
         #Fill adjacency matrix with invasion state info
         I = {'invaded': Tinvaded}
         self._net.create_adjacency_matrix(I,sprsfmt='csr',dropzeros=True)
         clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['invaded'])[1]
         #Find all pores with at least 1 invaded throat
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
-        temp = self._net.get_connected_pores(np.r_[0:self._net.get_num_throats()])
+        temp = self._net.get_connected_pores(self._net.throat_properties['numbering'])
         temp = temp[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
         Pinvaded[temp] = True
         #Add injection sites to Pinvaded for ALOP
-        if sp.shape(self._inv_sites)<sp.shape(clusters):
+        if self._AL:
             Pinvaded[self._inv_sites] = True
+        else:
+            self._inv_sites = self._net.pore_properties['numbering']
         #Clean up clusters (not invaded = -1, invaded >=0)
         clusters = clusters*(Pinvaded) - (~Pinvaded)
         #Identify clusters connected to invasion sites
-        inv_clusters = clusters[self._inv_sites]
-        return np.in1d(clusters,inv_clusters)*(clusters>=0)
+        inv_clusters = sp.unique(clusters[self._inv_sites])
+        return np.in1d(clusters,inv_clusters)
 
     def update_occupancy(fluid,Pc=0):
         r"""
