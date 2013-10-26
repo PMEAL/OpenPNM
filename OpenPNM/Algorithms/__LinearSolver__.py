@@ -41,13 +41,13 @@ class LinearSolver(GenericAlgorithm):
         A = self._build_coefficient_matrix()
         B = self._build_RHS_matrix()
         X = splin.spsolve(A,B)
-        return(X)
+        return(X[range(self._net.get_num_pores())])
 
     def set_boundary_conditions(self,types=[],values=[]):
         r"""
         Assigning Type and Value for Boundary Pores.
 
-        - Types of Boundary Values:
+        - Types of Boundary Conditions:
            internal = 0, Dirichlet = 1, Nuemann_flux = 2, Nuemann_insulated = 3, Nuemann_rate = 4
 
         - For any network, it is possible to apply BC to arbitrary pores, by defining
@@ -68,34 +68,56 @@ class LinearSolver(GenericAlgorithm):
 
         Notes
         -----
-        Nuemann_isolated is equivalent to Nuemann_flux boundary condition with flux = 0.
-        Negative value for Nuemann_rate or Nuemann_flux means that the quanitity of interest leaves the network.
+        - Nuemann_insulated is equivalent to Nuemann_flux boundary condition when flux
+        is zero. Therefore, there is no need to define BCvalues for this kind of boundary condition.
+        - Negative value for Nuemann_rate or Nuemann_flux means that the quanitity of interest leaves the network.
 
         """
         setattr(self,"BCtypes",types)
         setattr(self,"BCvalues",values)
+        
 
     def _build_coefficient_matrix(self):
 
         # Filling coefficient matrix
 
+        pnum = self._net.pore_properties['numbering']        
         tpore1 = self._net.throat_properties['connections'][:,0]
         tpore2 = self._net.throat_properties['connections'][:,1]
-        row = tpore1
-        col = tpore2
-        data= self._conductance
-        data = data + 1e-30 #to prevent matrix singularities
-
-        pnum = self._net.pore_properties['numbering']
-        loc1 = sp.in1d(tpore2,tpore2[sp.in1d(tpore2,pnum[self.BCtypes!=1])])
-        modified_tpore2 = tpore2[loc1]
+        
+        loc1 = sp.in1d(tpore1,tpore1[sp.in1d(tpore1,pnum[self.BCtypes!=1])])
         modified_tpore1 = tpore1[loc1]
+        modified_tpore2 = tpore2[loc1]
+        row = modified_tpore1
+        col = modified_tpore2
+        data_main = self._conductance
+        data_main = data_main + 1e-30 #to prevent matrix singularities        
+        data = data_main[loc1]
+        
+        loc2 = sp.in1d(tpore2,tpore2[sp.in1d(tpore2,pnum[self.BCtypes!=1])])
+        modified_tpore2 = tpore2[loc2]
+        modified_tpore1 = tpore1[loc2]
         row = sp.append(row,modified_tpore2)
         col = sp.append(col,modified_tpore1)
-        data = sp.append(data,data[loc1])
+        data = sp.append(data,data_main[loc2])
 
         A_dim = self._net.get_num_pores()
-
+        
+        if (self.BCtypes==2).any():
+            flux_pores = self._net.pore_properties['numbering'][self.BCtypes==2]
+            flux_values = sp.unique(self.BCvalues[self.BCtypes==2])
+            for i in range(len(flux_values)):
+                f = flux_pores[sp.in1d(flux_pores,self._net.pore_properties['numbering'][self.BCvalues==flux_values[i]])]
+                fn = self._net.get_neighbor_pores(f)
+                fn = fn[self._net.pore_properties['type'][fn]<1]
+                ft = self._net.get_connecting_throat(f,fn)
+                self.BCtypes[f] = 4
+                self.BCvalues[f] = sp.sum(self.BCvalues[f]*(self._net.throat_properties['diameter'][ft])**2)
+        
+        boundaries = self._net.pore_properties['numbering'][self._net.pore_properties['type']>0]
+        if (boundaries[self.BCtypes[boundaries]==0]).any():
+            self.BCtypes[boundaries[self.BCtypes[boundaries]==0]] = 3
+        
         if (self.BCtypes==4).any():
             self.extera_Neumann_equations = sp.unique(self.BCvalues[self.BCtypes==4])
             A_dim = A_dim + len(self.extera_Neumann_equations)
