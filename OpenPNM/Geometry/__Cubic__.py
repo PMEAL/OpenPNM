@@ -307,6 +307,10 @@ class Cubic(GenericGeometry):
         ind = np.where(spar_connections.data < min(spar_connections.data) + 0.001)
         prelim_connections = np.array((spar_connections.row[ind],spar_connections.col[ind]))
         
+        for i in range(len(prelim_connections[0])):
+            connections[i,0] = prelim_connections[0][i]
+            connections[i,1] = prelim_connections[1][i]
+            
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),dtype=np.int8)
