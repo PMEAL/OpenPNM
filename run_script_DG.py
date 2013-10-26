@@ -8,9 +8,9 @@ Created on Thu Sep 26 15:35:56 2013
 import OpenPNM
 
 # Parameters unique to all matricies.
-Nx = 10
-Ny = 10
-Nz = 10
+Nx = 3
+Ny = 3
+Nz = 3
 
 network_main = {
 'psd_info'   : {'name'  : 'weibull_min', #Each statistical package takes different params, so send as dict
