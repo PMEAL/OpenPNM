@@ -301,6 +301,7 @@ class Cubic(GenericGeometry):
                 V.append(dist)
                 I.append(point_1)
                 J.append(point_2)
+        
                     # Takes all the IJV values and puts it into a sparse matrix. 
         spar_connections = sp.sparse.coo_matrix((np.array(V),(np.array(I),np.array(J))))
         ind = np.where(spar_connections.data < min(spar_connections.data) + 0.001)
@@ -310,7 +311,11 @@ class Cubic(GenericGeometry):
         for i in range(len(prelim_connections[0])):
             connections[i,0] = prelim_connections[0][i]
             connections[i,1] = prelim_connections[1][i]
-            
+        
+        b = np.ascontiguousarray(connections).view(np.dtype((np.void, connections.dtype.itemsize * connections.shape[1])))
+        _, idx = np.unique(b, return_index=True)
+        connections = connections[idx]
+
         net.throat_properties['connections'] =  connections
         net.throat_properties['numbering'] = np.arange(0,len(connections[:,0]))
         net.throat_properties['type'] = np.zeros(len(connections[:,0]),dtype=np.int8)
@@ -331,8 +336,7 @@ class Cubic(GenericGeometry):
         D2 = net.pore_properties['diameter'][net.throat_properties['connections'][:,1]]
         net.throat_properties['length'] = E - (D1 + D2)/2
         net.throat_properties['volume'] = net.throat_properties['length']*net.throat_properties['diameter']**2
-        
-
+    
     def _add_boundary_throat_type(self,net):
         throat_type = np.zeros(len(net.throat_properties['type']))
         
