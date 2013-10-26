@@ -288,8 +288,8 @@ class Cubic(GenericGeometry):
         I = []
         J = []
         V = []
-        #adj_mat = (sp.zeros((len(pts),len(pts)))-1).copy()
-        dist_comb = list(itr.combinations(range(4),2))
+        
+        dist_comb = list(itr.combinations(range(4),2)) # [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]. This compares each colony with its neighbor with no repeats. 
 
         for i in range(len(tri.simplices)):
             for j in range(len(dist_comb)):
@@ -301,7 +301,7 @@ class Cubic(GenericGeometry):
                 V.append(dist)
                 I.append(point_1)
                 J.append(point_2)
-                    
+                    # Takes all the IJV values and puts it into a sparse matrix. 
         spar_connections = sp.sparse.coo_matrix((np.array(V),(np.array(I),np.array(J))))
         ind = np.where(spar_connections.data < min(spar_connections.data) + 0.001)
         prelim_connections = np.array((spar_connections.row[ind],spar_connections.col[ind]))
