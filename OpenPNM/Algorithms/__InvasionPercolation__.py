@@ -231,13 +231,13 @@ class InvasionPercolation(GenericAlgorithm):
             self._logger.debug(self._cluster_data['pore_volume'])
             self._logger.debug( 'cap volumes')
             self._logger.debug( self._cluster_data['cap_volume'])
-            self._logger.debug( 'max throat cap volumes')
-            self._logger.debug( self._Tvol_coef*self._fluid.throat_conditions["Pc_entry"])
+#            self._logger.debug( 'max throat cap volumes')
+#            self._logger.debug( self._Tvol_coef*self._fluid.throat_conditions["Pc_entry"])
         self._logger.debug( 'haines_throats')
         self._logger.debug( self._cluster_data['haines_throat'])
-        if self._timing:
-            self._logger.debug( 'max throat cap volumes')
-            self._logger.debug( self._Tvol_coef*self._fluid.throat_conditions["Pc_entry"])
+#        if self._timing:
+#            self._logger.debug( 'max throat cap volumes')
+#            self._logger.debug( self._Tvol_coef*self._fluid.throat_conditions["Pc_entry"])
         self._tseq += 1
         self._pseq += 1
         self._current_cluster = 0
@@ -510,7 +510,7 @@ class InvasionPercolation(GenericAlgorithm):
             if self._cluster_data['active'][self._current_cluster-1] == 1:
                 self._cluster_data['haines_time'][self._current_cluster-1] = (self._cluster_data['pore_volume'][self._current_cluster-1]+self._cluster_data['cap_volume'][self._current_cluster-1])/self._cluster_data['flow_rate'][self._current_cluster-1]
             if self._cluster_data['haines_time'][self._current_cluster-1] < self._sim_time:
-                self._cluster_data['haines_time'][self._current_cluster-1] = self._sim_time + 0.01
+                self._cluster_data['haines_time'][self._current_cluster-1] = self._sim_time
             self._logger.debug('haines time at the end of the throat stuff')
             self._logger.debug(self._cluster_data['haines_time'])
             
@@ -555,7 +555,7 @@ class InvasionPercolation(GenericAlgorithm):
         elif self._end_condition == 'total':
             self._condition = not self._Tinv.all()    
     
-    def update_occupancy(network,fluid,Seq=0):
+    def update_occupancy(self):
         r"""
         """
         try: 
@@ -583,9 +583,8 @@ if __name__ =="__main__":
     air.set_pair(water)
     print "-"*50
     print "- * generate a simple cubic network"        
-    params_geo= {'domain_size': [],  #physical network size [meters]
-                'divisions': [3,3,10], #Number of pores in each direction
-          'lattice_spacing': [0.1],  #spacing between pores [meters]
+    params_geo= {'domain_size': [25,25,5],  #physical network size [meters]
+                   'lattice_spacing': [1.0],  #spacing between pores [meters]
              'stats_pores' : {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
                              'shape': 1.5,
                                'loc': 6e-6,
@@ -594,10 +593,10 @@ if __name__ =="__main__":
                              'shape': 1.5,
                                'loc': 6e-6,
                              'scale': 2e-5},
-                    'btype': [0,0,0]  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
+                    'btype': [1,1,0]  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 }
     pn = OpenPNM.Geometry.Cubic().generate(**params_geo)
-    OpenPNM.Geometry.Cubic().generate_boundaries(pn,**params_geo)
+#    OpenPNM.Geometry.Cubic().generate_boundaries(pn,**params_geo)
 #    pn = OpenPNM.Geometry.MatFile().generate(filename='large_network')
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
@@ -607,12 +606,14 @@ if __name__ =="__main__":
     pn.pore_properties['diameter'][pn.pore_properties['type']>0] = 0
         
     print "- * Define inlet and outlet faces"
-    inlets = sp.nonzero(pn.pore_properties['type']==1)[0]
-    outlets = sp.nonzero(pn.pore_properties['type']==6)[0]
+    face = pn.pore_properties['coords'][:,2]>2
+    quarter = sp.rand(pn.get_num_pores(),)<.01
+    inlets = pn.pore_properties['numbering'][face&quarter]
+    outlets = pn.pore_properties['numbering'][pn.pore_properties['coords'][:,2]<1]
     
     print "- * Run Invasion percolation algorithm"
     #IP = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
-    IP_timing = InvasionPercolation(loglevel=10,loggername="TestInvPercAlg")
+    IP_timing = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
     ip_timing_params = {'invading_fluid':water,
                  'defending_fluid':air,
                  'inlets':inlets,
