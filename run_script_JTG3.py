@@ -9,7 +9,7 @@ start=clock()
 #======================================================================
 #Define generation parameters
 params_geo1= {'domain_size': [],  #physical network size [meters]
-                'divisions': [5,5,5], #Number of pores in each direction
+                'divisions': [50,50,10], #Number of pores in each direction
           'lattice_spacing': [0.1],  #spacing between pores [meters]
              'stats_pores' : {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
                              'shape': 1.5,
@@ -23,9 +23,10 @@ params_geo1= {'domain_size': [],  #physical network size [meters]
 }
 #Generate Geometry
 pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
+print pn
 #Add Boundary Nodes (Pores)
 OpenPNM.Geometry.Cubic().generate_boundaries(pn,**params_geo1)
-
+print 'generated'
 #======================================================================
 '''Generate Fluids'''
 #======================================================================
@@ -46,8 +47,7 @@ air_recipe = {       'name': 'air',
                                    'R': 8.314},
           'surface_tension': {'method': 'constant',
                                'value': 0},
-            'contact_angle': {'method': 'na',
-                               'value': []},
+            'contact_angle': {'method': 'na'},
 }
 water_recipe = {     'name': 'water',
                        'Pc': 2.206e6, #Pa
@@ -105,7 +105,11 @@ air.pore_conditions['pressure'] = 101325
 IP_1 = OpenPNM.Algorithms.InvasionPercolation()
 #Apply desired/necessary pore scale physics methods
 OpenPNM.Physics.CapillaryPressure.Washburn(pn,water2)
-IP_1.run(pn,invading_fluid=water2,defending_fluid=air2,inlets=[0],outlets=[100])
+face = pn.pore_properties['type']==3
+quarter = sp.rand(pn.get_num_pores(),)<.1
+inlets = pn.pore_properties['numbering'][face&quarter]
+outlets = pn.pore_properties['numbering'][pn.pore_properties['type']==4]
+IP_1.run(pn,invading_fluid=water2,defending_fluid=air2,inlets=inlets,outlets=outlets)
 
 #----------------------------------------------------------------------
 '''Performm a Diffusion Simulation on Partially Filled Network'''
@@ -137,4 +141,4 @@ Fickian_alg.run(pn,active_fluid=air)
 
 
 #Export to VTK
-OpenPNM.Visualization.VTK().write(pn,fluid=water)
+OpenPNM.Visualization.VTK().write(pn,fluid=water2)
