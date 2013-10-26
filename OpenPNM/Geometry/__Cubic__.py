@@ -313,7 +313,7 @@ class Cubic(GenericGeometry):
             connections[i,1] = prelim_connections[1][i]
         
         b = np.ascontiguousarray(connections).view(np.dtype((np.void, connections.dtype.itemsize * connections.shape[1])))
-        _, idx = np.unique(b, return_index=True)
+        _, idx = np.unique(b, return_index=True) # TAKEN FROM STACK OVERFLOW FOR THE TIME BEING. 
         connections = connections[idx]
 
         net.throat_properties['connections'] =  connections
