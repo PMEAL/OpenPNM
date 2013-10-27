@@ -12,6 +12,8 @@ Contents:
    getting_started.rst
    data_storage.rst
    geometry.rst
+   fluids.rst
    physics.rst
    algorithms.rst
    visualization.rst
+   gui.rst
