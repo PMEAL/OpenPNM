@@ -51,7 +51,13 @@ The above example used the `constant` method for all properties, but many other 
 -------------------------------------------------------------------------------
 Refreshing a Fluid for Changes in Network Conditions
 -------------------------------------------------------------------------------
+.. automethod:: OpenPNM.Fluids.GenericFluid.regenerate
 
+For example, refreshing water properties for changes in the network can be achieved as follows:
+
+.. code-block:: python
+
+	water.regenerate()
 
 -------------------------------------------------------------------------------
 Available Property Estimation Methods
@@ -65,7 +71,7 @@ Available Property Estimation Methods
    :members:
    :undoc-members:
    :show-inheritance:
-   
+ 
 .. automodule:: OpenPNM.Fluids.MolarDensity
    :members:
    :undoc-members:
@@ -80,5 +86,14 @@ Available Property Estimation Methods
    :members:
    :undoc-members:
    :show-inheritance:
+ 
+.. automodule:: OpenPNM.Fluids.ThermalConductivity
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
+.. automodule:: OpenPNM.Fluids.VaporPressure
+   :members:
+   :undoc-members:
+   :show-inheritance:
 

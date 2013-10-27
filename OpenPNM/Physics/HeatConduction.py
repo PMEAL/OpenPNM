@@ -17,8 +17,8 @@ def ThermalConductance(network,fluid):
     ----------
     network : OpenPNM Network Object
 
-    fluid_name : OpenPNM Fluid Object
-        The fluid of interest
+    fluid : OpenPNM Fluid Object
+            The fluid of interest
 
     Notes
     -----
@@ -53,15 +53,14 @@ def ThermalConductanceSolid(network,fluid):
     ----------
     network : OpenPNM Network Object
 
-    fluid_name : string
-        The fluid of interest
+    fluid : The fluid of interest
 
     Notes
     -----
     This function requires that all the necessary phase properties have already been determined.
 
     .. warning::
-       This has not been implemented yet
+       This has not been fully implemented yet
 
     """
     try:

@@ -18,7 +18,7 @@ def ElectronicConductance(network,fluid):
     ----------
     network : OpenPNM Network Object
 
-    fluid_name : OpenPNM Fluid Object
+    fluid : OpenPNM Fluid Object
     """
     try:
         sigmap = fluid.pore_conditions['electronic_conductivity']
