@@ -63,6 +63,7 @@ class GenericIOWidget(QtGui.QWidget):
 
     if isinstance(arg_value, bool):
       widget = QtGui.QCheckBox()
+      widget.setTristate(False)
       widget.setCheckState(arg_value)
       widget.get = lambda: bool(widget.checkState())
 
