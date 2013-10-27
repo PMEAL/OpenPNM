@@ -48,7 +48,21 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
-
+        
+    def run(self,network,**params):
+        r'''
+        Parameters
+        ----------
+    
+        npts: int
+            number of simulation steps (pressures); default 25
+    
+        inv_sites: array_like
+            invasion pores i.e. [1,2,3,4,10]; default = [0]
+            
+            super(OrdinaryPercolation,self).run(network,**params)
+            return self
+        '''
     def _setup(self, invading_fluid,defending_fluid, npts=25, inv_sites=[0],AL=True,**params):
         self._npts = npts
         self._AL = AL
