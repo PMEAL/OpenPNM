@@ -67,7 +67,7 @@ def ThermalConductanceSolid(network,fluid):
     try:
         kp = fluid.pore_conditions['thermal_conductivity']
     except:
-        raise Exception('Thermal conductivity of the '+fluid_name+' has not been specified')
+        raise Exception('Thermal conductivity of the '+fluid['name']+' has not been specified')
     kt = network.interpolate_throat_values(kp)
 
     g = kt #A physical model of parallel resistors representing the solid phase surrouding each pore is required here

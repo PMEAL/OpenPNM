@@ -18,7 +18,7 @@ import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.linalg as splin
 from __GenericAlgorithm__ import GenericAlgorithm
-import matplotlib.pylab as plt
+
 
 
 class LinearSolver(GenericAlgorithm):
@@ -53,24 +53,43 @@ class LinearSolver(GenericAlgorithm):
         - For any network, it is possible to apply BC to arbitrary pores, by defining
           two arrays: types and values. For example:
 
-          types = array([2,4,1,0,...,1])
-          values = array([0.1,0.0087,0.5,0,...,0.30])
+            BCtypes = array([2, 1, 4 ,0, 4, 3, 4, 1]) 
+            BCvalues = array([0.1, 0.5, 0.87, 0, -0.35, 0, 0.87, 0.30])
+      
+            It means that:
+                  
+                  for pore 0: Nuemann, flux = 0.1
+                  
+                  for pore 1: Dirichlet, value = 0.5
 
-          It means that:
-              for pore 0: Nuemann_boundary flux = 0.1
-              for pore 1: Nuemann_boundary rate = 0.0087
-              for pore 2: Dirichlet_boundary value = 0.5
-              for pore 3: Internal pore without imposed boundary condition
-              .
-              .
-              .
-              for pore Np : Dirichlet_boundary value = 0.30
+                  for pore 2: Nuemann, rate = 0.0087 
+                  (hint: Since there are two pores (2,6) with Nuemann_rate type which 
+                  have the exact same amount of rate, algorithm assumes that 0.0087 is 
+                  the rate of quantity of interest which leaves both pore 2 and 6)
+                          
+                  for pore 3: Internal pore without imposed boundary condition
+                 (hint: If pore 3 is a boundary pore (a pore in boundary faces), algorithm 
+                 by default assumes that, this is Nuemann_insulated pore.)
+            
+                  for pore 4: Nuemann, rate= -0.35
+                  (hint: There is only one pore with Nuemann_rate type and value of -0.35. So 
+                  algorithm assumes that 0.35 is the rate of quantity of interest which is only entering pore 4)
+                        
+                  for pore 5: Nuemann_insulated, value=0
+
+                  for pore 6 : Nuemann, rate=0.0087
+                        (hint: Refer to pore 2)              .
+                          
+                  for pore 7 : Dirichlet, value = 0.30
+
 
         Notes
         -----
         - Nuemann_insulated is equivalent to Nuemann_flux boundary condition when flux
         is zero. Therefore, there is no need to define BCvalues for this kind of boundary condition.
-        - Negative value for Nuemann_rate or Nuemann_flux means that the quanitity of interest leaves the network.
+        - In Fickian algorithm, positive value for Nuemann_rate or Nuemann_flux for a boundary pore means 
+        that the quantity of interest leaves the pore, but for any other algorithms, positive Nuemann value
+        means that the quantity of interest enters this pore. 
 
         """
         setattr(self,"BCtypes",types)
