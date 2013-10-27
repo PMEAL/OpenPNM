@@ -19,6 +19,7 @@ import numpy as np
 import scipy.sparse as sprs
 import scipy.stats as spst
 from __GenericGeometry__ import GenericGeometry
+import os
 
 class MatFile(GenericGeometry):
     r"""
@@ -42,7 +43,7 @@ class MatFile(GenericGeometry):
         """
         super(MatFile,self).__init__(**kwargs)
         
-    def generate(self,filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles'):
+    def generate(self,filename='example_network', path='LocalFiles'):
         '''
         Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() object.
 
@@ -54,7 +55,7 @@ class MatFile(GenericGeometry):
             filename = 'example_network' (default)\n
             Name of mat file\n
         path : string
-            path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles' (default)\n
+            path='LocalFiles' (default)\n
             the location of the mat file on your computer \n
 
         Examples:
@@ -63,8 +64,11 @@ class MatFile(GenericGeometry):
         generate network using example mat file
 
         >>> import OpenPNM as PNM
-        >>> pn=PNM.Geometry.MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles')
+        >>> pn=PNM.Geometry.MatFile(filename='example_network', path='LocalFiles')
         '''
+        if path == 'LocalFiles':
+            path = os.path.abspath('..\\..\\LocalFiles')
+        self._path = path
         self._mat=OpenPNM.Utilities.ImportMat(filename=filename,path=path)
         self._Np=np.size(self._mat.getvar('pnumbering'))
         self._Nt=np.size(self._mat.getvar('tnumbering'))
@@ -118,9 +122,8 @@ class MatFile(GenericGeometry):
         return self._net  
 
 if __name__ == '__main__':
-    self=MatFile(filename='example_network', path='D:\\AFCC code\\GitHub projects\\OpenPNM\\LocalFiles',loglevel=10)
+    self=MatFile(filename='example_network',loglevel=10)
     pn=self.generate()
     inlets = np.nonzero(pn.pore_properties['type']==1)[0]
     outlets = np.nonzero(pn.pore_properties['type']==6)[0]
-    OpenPNM.Algorithms.InvasionPercolation(net=pn,inlets=inlets,outlets=outlets).run()
-    OpenPNM.Visualization.NetToVtp(net=pn)
+    OpenPNM.Visualization.VTK().write(pn,filename=self._path+'\output.vtp')
