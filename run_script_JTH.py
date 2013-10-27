@@ -9,16 +9,8 @@ import OpenPNM
 from time import clock
 import scipy as sp
 clock()
-stats_pores = {'name' : 'weibull_min',
-                                     'shape' : 1.5,
-                                       'loc' : .6,
-                                     'scale' : 2.5}
-stats_throats = {'name' : 'weibull_min',
-                                     'shape' : 1.5,
-                                       'loc' : .6,
-                                     'scale' : 2.5}
 print 'Creating 1,000 pore cubic network'
-cubic = OpenPNM.Geometry.Cubic().generate(domain_size=[5,5,5],lattice_spacing=[1.0])
+cubic = OpenPNM.Geometry.Cubic().generate(domain_size=[10,10,10],lattice_spacing=[1.0])
 print 'Finished at time =',sp.round_(clock(),2),'seconds'
 print ''
 print 'Creating 100 pore Delauny network'
@@ -26,7 +18,7 @@ delaunay = OpenPNM.Geometry.Delaunay().generate(domain_size=[10,10,10],num_pores
 print 'Finished at time =',sp.round_(clock(),2),'seconds'
 print ''
 print 'Creating #### pore imported network'
-matfile = OpenPNM.Geometry.MatFile().generate(filename='large_network')
+matfile = OpenPNM.Geometry.MatFile().generate(filename='standard_cubic_5x5x5.mat')
 print matfile
 print 'Finished at time =',sp.round_(clock(),2),'seconds'
 print ''
