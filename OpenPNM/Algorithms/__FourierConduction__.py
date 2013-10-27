@@ -46,22 +46,17 @@ class FourierConduction(LinearSolver):
 
         This function executes the essential mathods for building matrices in Linear solution 
         """
-        self._fluid = params['fluid']
-        self._fluid.refresh(self.fluid)
-        # Building hydraulic conductance
+        self._fluid = params['active_fluid']
+        # Building thermal conductance
         OpenPNM.Physics.HeatConduction.ThermalConductance(self._net,self._fluid)
-#        method = params['conduit_filling_method']
-#        OpenPNM.Physics.MultiPhase.full_pore_filling(network)
-#        OpenPNM.Physics.MultiPhase.calc_conduit_filling(network,method)
         g = self._fluid.throat_conditions['thermal_conductance']
-#        c = pn.throat_conditions['']
-        self._conductance = g
+        s = self._fluid.throat_conditions['occupancy']
+        self._conductance = g*s
 
     
     def _do_inner_iteration_stage(self):
         r"""
-                       
+         main section of the algorithm              
         """
         T = self._do_one_inner_iteration()       
         self._fluid.pore_conditions['temperature'] = T
-        print T
