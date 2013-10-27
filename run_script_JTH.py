@@ -57,17 +57,17 @@ print ''
 print 'Running OP algorithm for cubic'
 inlets = cubic.pore_properties['numbering'][cubic.pore_properties['type']==1]
 outlets = cubic.pore_properties['numbering'][cubic.pore_properties['type']==6]
-OpenPNM.Algorithms.OrdinaryPercolation().run(cubic,water_cubic,air_cubic,inlets=inlets,outlets=outlets,num_points=25)
+OpenPNM.Algorithms.OrdinaryPercolation().run(water_cubic,air_cubic,inlets=inlets,outlets=outlets,num_points=25)
 print ''
 print 'Running OP algorithm for delaunay'
 inlets = delaunay.pore_properties['numbering'][delaunay.pore_properties['type']==1]
 outlets = delaunay.pore_properties['numbering'][delaunay.pore_properties['type']==6]
-OpenPNM.Algorithms.OrdinaryPercolation().run(delaunay,water_delaunay,air_delaunay,inlets=inlets,outlets=outlets,num_points=25)
+OpenPNM.Algorithms.OrdinaryPercolation().run(water_delaunay,air_delaunay,inlets=inlets,outlets=outlets,num_points=25)
 print ''
 print 'Running OP algorithm for matfile'
 inlets = matfile.pore_properties['numbering'][matfile.pore_properties['type']==1]
 outlets = matfile.pore_properties['numbering'][matfile.pore_properties['type']==6]
-OpenPNM.Algorithms.OrdinaryPercolation().run(matfile,water_matfile,air_matfile,inlets=inlets,outlets=outlets,num_points=25)
+OpenPNM.Algorithms.OrdinaryPercolation().run(water_matfile,air_matfile,inlets=inlets,outlets=outlets,num_points=25)
 
 
 
