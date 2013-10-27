@@ -37,7 +37,7 @@ class InvasionPercolation(GenericAlgorithm):
         
     def run(self,net,**params):
         r"""   
-    
+        
         Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
     
         Parameters
@@ -95,7 +95,7 @@ class InvasionPercolation(GenericAlgorithm):
         super(InvasionPercolation,self).run(net,**params)
         return self
         
-    def _setup(self,invading_fluid,defending_fluid='auto',inlets=[0],outlets=[-1],end_condition='breakthrough',timing='ON',report=20):
+    def _setup(self,invading_fluid='none_given',defending_fluid='auto',inlets=[0],outlets=[-1],end_condition='breakthrough',timing='ON',report=20):
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets 
         self._outlets = outlets

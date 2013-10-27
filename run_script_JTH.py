@@ -14,8 +14,8 @@ cubic = OpenPNM.Geometry.Cubic().generate(domain_size=[10,10,10],lattice_spacing
 print cubic
 print 'Finished at time =',sp.round_(clock(),2),'seconds'
 print ''
-print 'Creating 1,000 pore Delauny network'
-delaunay = OpenPNM.Geometry.Delaunay().generate(domain_size=[10,10,10],num_pores=1000)
+print 'Creating 100 pore Delauny network'
+delaunay = OpenPNM.Geometry.Delaunay().generate(domain_size=[10,10,10],num_pores=100)
 print delaunay
 print 'Finished at time =',sp.round_(clock(),2),'seconds'
 print ''
@@ -25,17 +25,49 @@ print matfile
 print 'Finished at time =',sp.round_(clock(),2),'seconds'
 print ''
 
-print "Adding 'air' and 'water' as fluids to the networks"
-air = OpenPNM.Fluids.Air().create(fluid_name='air')
-water = OpenPNM.Fluids.Water().create(fluid_name='water')
-print ''
-print "Adding Physics"
-################ NONE ADDED YET, WAIT FOR DEVELOP AND FLUIDS TO MERGE #####################
-print ''
-print 'Running IP algorithm'
-IP = OpenPNM.Algorithms.InvasionPercolation().run(cubic)
-print cubic
+print "Adding 'air' and 'water' for each network type"
+air_cubic = OpenPNM.Fluids.Air().create(fluid_name='air_cubic')
+water_cubic = OpenPNM.Fluids.Water().create(fluid_name='water_cubic')
+air_delaunay = OpenPNM.Fluids.Air().create(fluid_name='air_delaunay')
+water_delaunay = OpenPNM.Fluids.Water().create(fluid_name='water_delaunay')
+air_matfile = OpenPNM.Fluids.Air().create(fluid_name='air_matfile')
+water_matfile = OpenPNM.Fluids.Water().create(fluid_name='water_matfile')
 
+print ''
+print "pairing fluids"
+air_cubic.set_pair(water_cubic)
+air_delaunay.set_pair(water_delaunay)
+air_matfile.set_pair(water_matfile)
+print ''
+print 'Running IP algorithm for cubic'
+inlets = cubic.pore_properties['numbering'][cubic.pore_properties['type']==1]
+outlets = cubic.pore_properties['numbering'][cubic.pore_properties['type']==6]
+OpenPNM.Algorithms.InvasionPercolation().run(cubic,invading_fluid=water_cubic,inlets=inlets,outlets=outlets)
+print ''
+print 'Running IP algorithm for delaunay'
+inlets = delaunay.pore_properties['numbering'][delaunay.pore_properties['type']==1]
+outlets = delaunay.pore_properties['numbering'][delaunay.pore_properties['type']==6]
+OpenPNM.Algorithms.InvasionPercolation().run(delaunay,invading_fluid=water_delaunay,inlets=inlets,outlets=outlets)
+print ''
+print 'Running IP algorithm for matfile'
+inlets = matfile.pore_properties['numbering'][matfile.pore_properties['type']==1]
+outlets = matfile.pore_properties['numbering'][matfile.pore_properties['type']==6]
+OpenPNM.Algorithms.InvasionPercolation().run(matfile,invading_fluid=water_matfile,inlets=inlets,outlets=outlets)
+print ''
+print 'Running OP algorithm for cubic'
+inlets = cubic.pore_properties['numbering'][cubic.pore_properties['type']==1]
+outlets = cubic.pore_properties['numbering'][cubic.pore_properties['type']==6]
+OpenPNM.Algorithms.OrdinaryPercolation().run(cubic,water_cubic,air_cubic,inlets=inlets,outlets=outlets,num_points=25)
+print ''
+print 'Running OP algorithm for delaunay'
+inlets = delaunay.pore_properties['numbering'][delaunay.pore_properties['type']==1]
+outlets = delaunay.pore_properties['numbering'][delaunay.pore_properties['type']==6]
+OpenPNM.Algorithms.OrdinaryPercolation().run(delaunay,water_delaunay,air_delaunay,inlets=inlets,outlets=outlets,num_points=25)
+print ''
+print 'Running OP algorithm for matfile'
+inlets = matfile.pore_properties['numbering'][matfile.pore_properties['type']==1]
+outlets = matfile.pore_properties['numbering'][matfile.pore_properties['type']==6]
+OpenPNM.Algorithms.OrdinaryPercolation().run(matfile,water_matfile,air_matfile,inlets=inlets,outlets=outlets,num_points=25)
 
 
 
