@@ -193,7 +193,7 @@ class VTK(GenericVisualization):
                     self._f.write('\n</DataArray>\n')
             except: 
                 print 'No fluid partner output to VTK'
-            self._f.write('</PointData>\n')
+        self._f.write('</PointData>\n')
 
     def _write_footer(self):
         self._f.write('</Piece>\n</PolyData>\n</VTKFile>')
