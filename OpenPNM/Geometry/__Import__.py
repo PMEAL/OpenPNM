@@ -33,6 +33,7 @@ class MatFile(GenericGeometry):
 
     loglevel : int
         Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
+    all other parameters are in the generate() command
 
     
     """
@@ -42,7 +43,6 @@ class MatFile(GenericGeometry):
         Initialize
         """
         super(MatFile,self).__init__(**kwargs)
-        
     def generate(self,filename='example_network', path='LocalFiles'):
         '''
         Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() object.
@@ -67,7 +67,11 @@ class MatFile(GenericGeometry):
         >>> pn=PNM.Geometry.MatFile(filename='example_network', path='LocalFiles')
         '''
         if path == 'LocalFiles':
-            path = os.path.abspath('..\\..\\LocalFiles')
+            long_path = os.path.abspath(__file__)
+            short_path, fname = os.path.split(long_path)
+            short_path, foldername = os.path.split(short_path)  
+            path, foldername = os.path.split(short_path)  
+            path = os.path.join(path,'LocalFiles')
         self._path = path
         self._mat=OpenPNM.Utilities.ImportMat(filename=filename,path=path)
         self._Np=np.size(self._mat.getvar('pnumbering'))
