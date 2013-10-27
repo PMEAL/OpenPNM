@@ -43,7 +43,7 @@ class MatFile(GenericGeometry):
         Initialize
         """
         super(MatFile,self).__init__(**kwargs)
-    def generate(self,filename='example_network', path='LocalFiles'):
+    def generate(self,filename='standard_cubic_5x5x5.mat', path='LocalFiles'):
         '''
         Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() object.
 
@@ -52,7 +52,7 @@ class MatFile(GenericGeometry):
 
         Critical\n
         filename : string
-            filename = 'example_network' (default)\n
+            filename = 'standard_cubic_5x5x5.mat' (default)\n
             Name of mat file\n
         path : string
             path='LocalFiles' (default)\n
@@ -64,7 +64,7 @@ class MatFile(GenericGeometry):
         generate network using example mat file
 
         >>> import OpenPNM as PNM
-        >>> pn=PNM.Geometry.MatFile(filename='example_network', path='LocalFiles')
+        >>> pn=PNM.Geometry.MatFile(filename='standard_cubic_5x5x5.mat', path='LocalFiles')
         '''
         if path == 'LocalFiles':
             long_path = os.path.abspath(__file__)
