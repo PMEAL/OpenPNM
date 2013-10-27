@@ -1,3 +1,5 @@
+. _geometry:
+
 ###############################################################################
 Network Geometry
 ###############################################################################
@@ -13,29 +15,17 @@ Generating Geometry
 -------------------------------------------------------------------------------
 Generic Geometry
 -------------------------------------------------------------------------------
-The GenericGeometry class takes advantage of the object-oriented nature of Python by using `inheritance <http://docs.python.org/2/tutorial/classes.html>`_.  
-There are three main components to inheritance as used here. (The following explanation assumes no knowledge of object orientation)
+The GenericGeometry class takes advantage of the object-oriented nature of Python by using `inheritance <http://docs.python.org/2/tutorial/classes.html>`_.  There are three main components to inheritance as used here. (The following explanation assumes no knowledge of object orientation)
 
-Firstly, the GenericGeometry class contains methods that will likely be used by all methods regardless of topology.  
-Every network inherits these methods and *can* use them if desired.  
-For instance, :code:`generate_pore_seeds` can be used "as is" to assign a random number to each pore for subsequent use in pore size distribution calculations (i.e. :code:`generate_pore_diameters`).  
-Alternatively, if the user wishes to use a more complex method to generate random seeds (for instance with spatial correlation), then they are free to over-write or sub-class this method in their specific geometry class.  
-The procedure for accomplishing this is outlined in the Writing Custom Geometry section below.  
+Firstly, the GenericGeometry class contains methods that will likely be used by all methods regardless of topology.  Every network inherits these methods and *can* use them if desired.  For instance, :code:`generate_pore_seeds` can be used "as is" to assign a random number to each pore for subsequent use in pore size distribution calculations (i.e. :code:`generate_pore_diameters`).  Alternatively, if the user wishes to use a more complex method to generate random seeds (for instance with spatial correlation), then they are free to over-write or sub-class this method in their specific geometry class.  The procedure for accomplishing this is outlined in the Writing Custom Geometry section below.  
 
-The second component to inheritance as applied in OpenPNM is that some methods *must* be sub-classed.  
-For instance, :code:`generate_pores` and :code:`generate_throats` are not implemented in GenericGeometry.  
-One of the main results of :code:`generate_pores` is to dictate the spatial coordinates of the pore centers; and :code:`generate_throats` dictates which pores are connected to which neighbors.  
-A cubic network places pores in space and defines connections in a completely different way than a random network.  
-Thus, there is no generic or default way to generate different networks.  
+The second component to inheritance as applied in OpenPNM is that some methods *must* be sub-classed.  For instance, :code:`generate_pores` and :code:`generate_throats` are not implemented in GenericGeometry.  One of the main results of :code:`generate_pores` is to dictate the spatial coordinates of the pore centers; and :code:`generate_throats` dictates which pores are connected to which neighbors.  A cubic network places pores in space and defines connections in a completely different way than a random network.  Thus, there is no generic or default way to generate different networks.  
 
 And finally, all sub-classed methods have the same name and black-box functionality as the generic methods.  
 The enables a the generic generation scheme (defined by the :code:`generate` method in GenericGeometry) that always calls the same methods but achieves different results depending on which methods have been sub-classed.  
 It should be pointed out however, that even the :code:`generate` method *can* be sub-classed if desired, so there is no need to adhere to the steps or order defined there.  
 
-The :code:`generate` method provided in GenericGeometry contains the following methods which are executed in the order given below.  
-The first 4 of these methods are abstract or empty methods that *must* be sub-classed by the specific Geometry class.  
-The remainder are actually implemented in the GenericGeometry class and perform the most basic or common version of their specific function.  
-Any of these can also be sub-classed in each specific Geometry class. 
+The :code:`generate` method provided in GenericGeometry contains the following methods which are executed in the order given below.  The first 4 of these methods are abstract or empty methods that *must* be sub-classed by the specific Geometry class.  The remainder are actually implemented in the GenericGeometry class and perform the most basic or common version of their specific function.  Any of these can also be sub-classed in each specific Geometry class. 
 
 .. automethod:: OpenPNM.Geometry.GenericGeometry._generate_setup
 

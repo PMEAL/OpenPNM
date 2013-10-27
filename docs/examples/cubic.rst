@@ -50,26 +50,57 @@ Now a cubic network of 1000 pores is stored in the object named 'pn'.  To see wh
 This indicates all the pore and throat properties that are currently associated with the network.  You'll notice that they are exclusively geometric in nature, which is normal since no simulations have yet been run.  
 
 -------------------------------------------------------------------------------
-Adding Boundary Conditions
+Creating Fluids
 -------------------------------------------------------------------------------
-To add boundary pores and throats to the cubic network, we must call the function below with the input cubic pore network.
+.. code-block::python
+	air_recipe = {       'name': 'air',
+						   'Pc': 3.771e6, #Pa
+						   'Tc': 132.65,  #K
+						   'MW': 0.0291,  #kg/mol
+				  'diffusivity': {'method': 'Fuller',
+									  'MA': 0.03199,
+									  'MB': 0.0291,
+									  'vA': 16.3,
+									  'vB': 19.7},
+					'viscosity': {'method': 'Reynolds',
+									  'uo': 0.001,
+									   'b': 0.1},
+				'molar_density': {'method': 'ideal_gas',
+									   'R': 8.314},
+			  'surface_tension': {'method': 'constant',
+								   'value': 0},
+				'contact_angle': {'method': 'na'},
+	}
+	water_recipe = {     'name': 'water',
+						   'Pc': 2.206e6, #Pa
+						   'Tc': 647,     #K
+						   'MW': 0.0181,  #kg/mol
+				  'diffusivity': {'method': 'constant',
+								   'value': 1e-12},
+					'viscosity': {'method': 'constant',
+								   'value': 0.001},
+				'molar_density': {'method': 'constant',
+								   'value': 44445},
+			  'surface_tension': {'method': 'Eotvos',
+									   'k': 2.25e-4},
+				'contact_angle': {'method': 'constant',
+								   'value': 120},
+	}
 
-.. code-blocK:: python
+Now that the fluids *recipes* are defined they can be passed to the `create()` method of the fluids module:
 
-	OpenPNM.Geometry.Cubic().generate_boundaries(pn,**params)
-	
-This method will stitch 6 extra layers on the boundaries of the network, find the appropriate connecting throats, and apply the correct pore and throat type to the appended network.
-
--------------------------------------------------------------------------------
-Stitch Cubic Networks together
--------------------------------------------------------------------------------
-It is possible to connect two cubic networks by translating them to two aligned mating faces. You must first generate the two networks, and then specify which side of the first network will be appended by the second. The first network is the one that is stitched to, while the second network is the network being stitched.
-
-.. code-blocK:: python
-
-	OpenPNM.Geometry.Cubic().stitch_network(pn1,pn2,stitch_side = 'top')
-	
-This method will return all the properties for the new pores and connections of two stitched networks, while maintaining the properties of each of the networks. New connections for throats will be added, and the boundary types will also be modified. Stitches can be made to the top, left, right, bottom, front, or back side. 
+.. code-block::python
+	#Create fluids
+	air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
+	water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
+	#Set desired base conditions in the Fluids
+	air.pore_conditions['temperature'] = 353
+	air.pore_conditions['pressure'] = 101325
+	water.pore_conditions['temperature'] = 353
+	water.pore_conditions['pressure'] = 101325
+	#Update Fluids to the new conditions
+	water.regenerate()
+	air.regenerate()
 
 -------------------------------------------------------------------------------
 Using Pore Scale Physics
@@ -78,10 +109,9 @@ To perform a capillary pressure curve simulation we must first generate a throat
 
 .. code-blocK:: python
 
-	OpenPNM.Physics.CapillaryPressure.Washburn(pn, sigma = 0.72, theta = 120)
+	OpenPNM.Physics.CapillaryPressure.Washburn(pn, water)
 	
-This method calculates the capillary entry pressure of each throat in the network based on the surface tension and wettability information provided.  The results of this calculation are stored in throat_conditions['Pc_entry'].  Note that this this is a 'condition' rather than a 'property' because it depends on which fluid is used so it's not an intrinsic network property.  Also, note that this 'condition' was stored in :code:`throat_conditions` since capillary invasion is controlled by throats not pores.  
-
+This method calculates the capillary entry pressure of each throat in the network based on the surface tension and wettability information provided.  The results of this calculation are stored as part of the water fluid undet throat_conditions['Pc_entry'].  Note that this 'condition' was stored in :code:`throat_conditions` since capillary invasion is controlled by throats not pores.  
 
 -------------------------------------------------------------------------------
 Running Simulations
@@ -103,20 +133,8 @@ The resulting capillary pressure curve can be visualized by sending the network 
 
 .. code-block:: python
 
-	OpenPNM.Visualization.Plots.Capillary_Pressure_Curve(pn)
+	OpenPNM.Visualization.Plots.Capillary_Pressure_Curve(water)
 
-The capillary pressure curve should like something like this:
-
-.. plot::
-	
-	import matplotlib.pyplot as plt
-	import OpenPNM
-	pn = OpenPNM.Geometry.Cubic(loglevel=10).generate()
-	OpenPNM.Physics.CapillaryPressure.Washburn(pn, sigma = 0.72, theta = 120)
-	mask = pn.pore_properties['type']>0
-	inlets = pn.pore_properties['numbering'][mask]
-	OpenPNM.Algorithms.OrdinaryPercolation(loglevel = 10).run(net = pn, npts = 50, inv_sites = inlets)
-	plt.hist(pn.pore_conditions['Pc_invaded'])
    
 
 -------------------------------------------------------------------------------

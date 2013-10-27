@@ -9,7 +9,7 @@ start=clock()
 #======================================================================
 #Define generation parameters
 params_geo1= {'domain_size': [],  #physical network size [meters]
-                'divisions': [25,25,5], #Number of pores in each direction
+                'divisions': [5,5,5], #Number of pores in each direction
           'lattice_spacing': [0.1],  #spacing between pores [meters]
              'stats_pores' : {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
                              'shape': 1.5,
@@ -23,7 +23,6 @@ params_geo1= {'domain_size': [],  #physical network size [meters]
 }
 #Generate Geometry
 pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
-print pn
 
 #======================================================================
 '''Generate Fluids'''
@@ -87,7 +86,7 @@ OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
 OpenPNM.Physics.CapillaryPressure.Washburn(pn,water)
 a = pn.pore_properties['type']==1
 #Run algorithm
-OP_1.run(network=pn,invading_fluid=water,defending_fluid=air,inv_sites=a,npts=50,AL=True)
+OP_1.run(network=pn,invading_fluid=water,defending_fluid=air,inv_sites=a,npts=50,AL=False)
 
 #----------------------------------------------------------------------
 '''Perform an Injection Experiment (InvasionPercolation)'''
