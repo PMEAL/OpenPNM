@@ -23,8 +23,7 @@ class Permeability(LinearSolver):
     
     Hagen Poiseuille permeability - Class to run an algorithm to find permeability on constructed networks
     
-                        It returns pressure gradient inside the network.
-                                  
+                        It returns pressure gradient inside the network.                              
                             
     Parameter
     ----------
@@ -63,7 +62,7 @@ class Permeability(LinearSolver):
     def calc_eff_permeability_cubic(self,face1=1,face2=6):
         r"""
         This function calculates effective permeability of a cubic network between face1 and face2.  
-        face1 and face2 represent type of the faces
+        face1 and face2 represent types of these two faces.
 
         """        
         face1_pores = self._net.pore_properties['numbering'][self._net.pore_properties['type']==face1]

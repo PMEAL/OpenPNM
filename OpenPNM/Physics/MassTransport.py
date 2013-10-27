@@ -20,7 +20,7 @@ def DiffusiveConductance(network,fluid):
 
     Notes
     -----
-    This function requires that all the necessary fluid properties have already been determined.
+    This function requires that all the necessary fluid properties should already be calculated.
 
     """
     try:
