@@ -47,7 +47,7 @@ class ElectronConduction(LinearSolver):
         self._fluid = params['active_fluid']
         # Building electron conductance
         OpenPNM.Physics.ElectronConduction.ElectronicConductance(self._net,self._fluid)
-        g = self._fluid.throat_conditions['electron_conductance']
+        g = self._fluid.throat_conditions['electronic_conductance']
         s = self._fluid.throat_conditions['occupancy']
         self._conductance = g*s
 
