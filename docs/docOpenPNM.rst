@@ -3,7 +3,7 @@
 ===============================================================================
 Function Reference
 ===============================================================================
-.. automodule:: OpenPNM.Utilites
+.. automodule:: OpenPNM.Utilities
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,6 +31,17 @@ Geometry
    :show-inheritance:
    
 .. _physics_ref:
+
+-------------------------------------------------------------------------------
+Fluids
+-------------------------------------------------------------------------------
+
+.. automodule:: OpenPNM.Fluids
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. _fluids_ref:
 
 -------------------------------------------------------------------------------
 Physics

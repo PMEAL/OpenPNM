@@ -48,15 +48,15 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
-        
+
     def run(self,network,**params):
         r'''
         Parameters
         ----------
-    
+
         npts: int
             number of simulation steps (pressures); default 25
-    
+
         inv_sites: array_like
             invasion pores i.e. [1,2,3,4,10]; default = [0]
         '''
@@ -115,16 +115,20 @@ class OrdinaryPercolation(GenericAlgorithm):
         temp = self._net.get_connected_pores(self._net.throat_properties['numbering'])
         temp = temp[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
+#        temp = self._net.get_connected_pores(self._net.throat_properties['numbering'][Tinvaded],flatten=True)
         Pinvaded[temp] = True
-        #Add injection sites to Pinvaded for ALOP
         if self._AL:
+            #Add injection sites to Pinvaded
             Pinvaded[self._inv_sites] = True
+            #Clean up clusters (not invaded = -1, invaded >=0)
+            clusters = clusters*(Pinvaded) - (~Pinvaded)
+            #Identify clusters connected to invasion sites
+            inv_clusters = sp.unique(clusters[self._inv_sites])
         else:
-            self._inv_sites = self._net.pore_properties['numbering']
-        #Clean up clusters (not invaded = -1, invaded >=0)
-        clusters = clusters*(Pinvaded) - (~Pinvaded)
-        #Identify clusters connected to invasion sites
-        inv_clusters = sp.unique(clusters[self._inv_sites])
+            #Clean up clusters (not invaded = -1, invaded >=0)
+            clusters = clusters*(Pinvaded) - (~Pinvaded)
+            #All clusters are invasion sites
+            inv_clusters = sp.r_[0:self._net.get_num_pores()]
         return np.in1d(clusters,inv_clusters)
 
     def update_occupancy(fluid,Pc=0):
