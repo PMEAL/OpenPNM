@@ -25,7 +25,6 @@ class FickianDiffusion(LinearSolver):
 
                         It returns conecentration gradient inside the network.
 
-
     Parameter
     ----------
     -loglevel : int
@@ -63,7 +62,7 @@ class FickianDiffusion(LinearSolver):
     def calc_eff_diffusivity_cubic(self,face1=1,face2=6):
         r"""
         This function calculates effective diffusivity of a cubic network between face1 and face2.  
-        face1 and face2 represent type of the faces
+        face1 and face2 represent types of these two faces.
 
         """        
         face1_pores = self._net.pore_properties['numbering'][self._net.pore_properties['type']==face1]

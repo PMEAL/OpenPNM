@@ -17,8 +17,8 @@ def ThermalConductance(network,fluid):
     ----------
     network : OpenPNM Network Object
 
-    fluid_name : OpenPNM Fluid Object
-        The fluid of interest
+    fluid : OpenPNM Fluid Object
+            The fluid of interest
 
     Notes
     -----
@@ -34,10 +34,10 @@ def ThermalConductance(network,fluid):
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
     #Find g for half of pore 1
-    gp1 = kp*network.pore_properties['diameter'][pores[:,0]]**2/(network.pore_properties['diameter'][pores[:,0]]/2)
+    gp1 = kt*network.pore_properties['diameter'][pores[:,0]]**2/(network.pore_properties['diameter'][pores[:,0]]/2)
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = kp*network.pore_properties['diameter'][pores[:,1]]**2/(network.pore_properties['diameter'][pores[:,1]]/2)
+    gp2 = kt*network.pore_properties['diameter'][pores[:,1]]**2/(network.pore_properties['diameter'][pores[:,1]]/2)
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     gt = kt*network.throat_properties['diameter']**2/(network.throat_properties['length'])
@@ -53,15 +53,14 @@ def ThermalConductanceSolid(network,fluid):
     ----------
     network : OpenPNM Network Object
 
-    fluid_name : string
-        The fluid of interest
+    fluid : The fluid of interest
 
     Notes
     -----
     This function requires that all the necessary phase properties have already been determined.
 
     .. warning::
-       This has not been implemented yet
+       This has not been fully implemented yet
 
     """
     try:

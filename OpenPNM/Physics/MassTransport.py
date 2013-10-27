@@ -20,7 +20,7 @@ def DiffusiveConductance(network,fluid):
 
     Notes
     -----
-    This function requires that all the necessary fluid properties have already been determined.
+    This function requires that all the necessary fluid properties should already be calculated.
 
     """
     try:
@@ -34,10 +34,10 @@ def DiffusiveConductance(network,fluid):
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
     #Find g for half of pore 1
-    gp1 = cp*DABp*network.pore_properties['diameter'][pores[:,0]]**2/(0.5*network.pore_properties['diameter'][pores[:,0]])
+    gp1 = ct*DABt*network.pore_properties['diameter'][pores[:,0]]**2/(0.5*network.pore_properties['diameter'][pores[:,0]])
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = cp*DABp*network.pore_properties['diameter'][pores[:,1]]**2/(0.5*network.pore_properties['diameter'][pores[:,1]])
+    gp2 = ct*DABt*network.pore_properties['diameter'][pores[:,1]]**2/(0.5*network.pore_properties['diameter'][pores[:,1]])
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     gt = ct*DABt*network.throat_properties['diameter']**2/(network.throat_properties['length'])
