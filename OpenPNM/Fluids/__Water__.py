@@ -11,11 +11,11 @@ class Water(GenericFluid):
     def __init__(self,**kwargs):
         super(Water,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        
-    def create(self,fluid_name='water'):
+
+    def create(self,fluid_name='water',T=298.,P=101325.):
         r"""
         Creates Fluid object with a default name 'water'
-        
+
         Parameters
         ----------
 
@@ -40,8 +40,8 @@ class Water(GenericFluid):
                                            }
         self.pore_conditions = {}
         self.throat_conditions = {}
-        self.pore_conditions.update({'temperature': 298})
-        self.pore_conditions.update({'pressure': 101325})
+        self.pore_conditions.update({'temperature': T})
+        self.pore_conditions.update({'pressure': P})
         self.regenerate()
         return self
 

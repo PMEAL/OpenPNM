@@ -20,12 +20,23 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
                                      'surface_tension',
                                      'contact_angle']
 
-    def create(self,fluid_recipe):
+    def create(self,fluid_recipe,T=298.,P=101325.):
+        r"""
+        Creates a fluid using the recipe provided
+
+        Parameters
+        ----------
+        fluid_recipe : Dictionary
+            A dictionary of key : value pairs that provide instructions for calculating fluid conditions
+
+        T & P : float (optional)
+            The temperature and pressure at which fluid should be create, defaults to STP.
+        """
         self._fluid_recipe = copy.deepcopy(fluid_recipe)
         self.pore_conditions = {}
         self.throat_conditions = {}
-        self.pore_conditions.update({'temperature': 298})
-        self.pore_conditions.update({'pressure': 101325})
+        self.pore_conditions.update({'temperature': T})
+        self.pore_conditions.update({'pressure': P})
         self.regenerate()
         return self
 
