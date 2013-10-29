@@ -29,7 +29,7 @@ def ThermalConductance(network,fluid):
         kp = fluid.pore_conditions['thermal_conductivity']
     except:
         raise Exception('Thermal conductivity of the fluid has not been specified')
-    kt = network.interpolate_throat_values(kp)
+    kt = fluid.interpolate_throat_conditions(network,kp)
 
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
