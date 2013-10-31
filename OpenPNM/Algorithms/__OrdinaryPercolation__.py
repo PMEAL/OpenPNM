@@ -134,32 +134,26 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def evaluate_trapping(self,network,invading_fluid,outlets):
         Np = network.get_num_pores()
-        out_sites = outlets
+        Nt = network.get_num_throats()
         fluid_inv = invading_fluid
         fluid_inv.pore_conditions['Pc_trapped'] = sp.zeros((Np,),dtype=float)
         inv_points = sp.unique(fluid_inv.throat_conditions['Pc_invaded'])
         for inv_val in inv_points[0:-1]:
-            #Find clusters of defended pores
-            Pdef_all_mask = fluid_inv.pore_conditions['Pc_invaded']>inv_val #All defending pores
-            Pdef_all_ind = network.pore_properties['numbering'][Pdef_all_mask]
-            Pinv_all_ind = network.pore_properties['numbering'][~Pdef_all_mask] #All invading pores
-            Pdef_bnd_ind = network.get_neighbor_pores(Pinv_all_ind) #Defenders connected to invaders
-            Pdef_int_mask = Pdef_all_mask.copy()
-            Pdef_int_mask[Pdef_bnd_ind] = False #Remove defenders connected to invaders
-            Pdef_int_ind = sp.where(Pdef_int_mask)[0] #Convert to pore index
-            Tdefended = sp.zeros_like(network.throat_properties['numbering'],dtype=bool)
-            Tdefended[network.get_neighbor_throats(Pdef_int_ind,flatten=True)] = True
-            I = {'defended': Tdefended}
+            #Find clusters of defender pores
+            Pinvaded = fluid_inv.pore_conditions['Pc_invaded']<=inv_val
+            temp = network.get_connected_pores(sp.r_[0:Nt])
+            PTPstate = sp.sum(Pinvaded[temp],1)
+            Tinvaded = (PTPstate>0)*(fluid_inv.throat_conditions['Pc_entry']<=inv_val)
+            PTPstate = PTPstate + Tinvaded #0 = all open, 1=1 pore filled, 2=2 pores filled 3=2 pores + 1 throat filled
+            I = {'defended': (PTPstate==0)}
             network.create_adjacency_matrix(I,sprsfmt='csr',dropzeros=True)
             clusters = sprs.csgraph.connected_components(network.adjacency_matrix['csr']['defended'])[1]
-            ##Clean up clusters (not defended = -1, defend >=0)
-            clusters = clusters*(Pdef_all_mask) - (~Pdef_all_mask)
-            #Find isolated defender pores and re-add
-            r"""TODO: Not sure how to do this yet"""
+            ##Clean up clusters (invaded = -1, defended >=0)
+            clusters = clusters*(~Pinvaded) - (Pinvaded)
             #Identify clusters connected to outlet sites
-            out_clusters = sp.unique(clusters[out_sites])
-            #Set trapped pores as those NOT connected to the outlet
-            pmask = (~sp.in1d(clusters,out_clusters))*(clusters>=0)
+            out_clusters = sp.unique(clusters[outlets])
+            trapped_clusters = (~sp.in1d(clusters,out_clusters))*(clusters>=0)
+            pmask = trapped_clusters
             fluid_inv.pore_conditions['Pc_trapped'][(fluid_inv.pore_conditions['Pc_trapped']==0)*(pmask)] = inv_val
         fluid_inv.pore_conditions['Pc_invaded'][fluid_inv.pore_conditions['Pc_trapped']>0]=0
 
