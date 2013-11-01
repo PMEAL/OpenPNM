@@ -46,7 +46,7 @@ To execute a transport algorithm for a fluid on a network (each with known recip
 3- Run the algorithm object for the active fluid in the network.
 
 *Boundary Conditions:*
-For boundary conditions, algorithm needs to know values of boundary conditions, their types (Dirichlet, Nuemann, etc)  and also the pore numbers. Therefore, for any network applying boundary conditions to arbitrary pores (whether they are internal or boundary pores) includes two steps:
+For boundary conditions, algorithm needs to know values of boundary conditions, their types (Dirichlet, Neumann, etc)  and also the pore numbers. Therefore, for any network applying boundary conditions to arbitrary pores (whether they are internal or boundary pores) includes two steps:
 
 1- Creating two 1D zero arrays of length Np, which Np is the total number of the pores (internal and boundary pores)
 
@@ -55,11 +55,11 @@ For boundary conditions, algorithm needs to know values of boundary conditions, 
 The followings are useful hints for applying boundary conditions:
 
 - BCtypes and BCvalues are bound to the object algorithm.
-- Types of boundary condition: Dirichlet = 1, Nuemann_flux = 2, Nuemann_insulated = 3, Nuemann_rate = 4
-- In Fickian algorithm, positive value for *Nuemann_rate* or *Nuemann_flux* for a pore means that the quantity of interest leaves the pore, but for any other algorithms, positive Nuemann value for a pore means that the quantity of interest enters this pore. This is because of variable transformation in Fickian algorithm from mole fraction of active fluid to natural logarithm of stagnant film mole fraction.
-- For a pore with *Nuemann_rate* type, the boundary value of the pore might not represent the rate of quantity for just that pore, but can imply that this pore belongs to a group of the pores which this amount of rate enters/leaves all of them. By this assumption, when the rate for each individual pore is unknown, it is still possible to use *Nuemann_rate* boundary conditions. However the user can always apply the rate for just a single pore, but this rate should be unique among all of the pores in the network. In other words, if two pores with *Nuemann_rate* boundary type, have different values, algorithm object considers them as their individual rate, but if their rate is exactly the same, algorithm will assume that this rate is the total rate which enters/leaves both of them.  
-- *Nuemann_insulated* is equivalent to Nuemann_flux boundary condition when flux is zero. Therefore, there is no need to define BCvalues for this kind of boundary condition.
-- For a boundary pore in the network (a pore in boundary faces), if the type of boundary condition has not been specified, it is assumed to be *Nuemann_insulated* type. This will help user to apply boundary conditions with less lines of code.
+- Types of boundary condition: Dirichlet = 1, Neumann_flux = 2, Neumann_insulated = 3, Neumann_rate = 4
+- In Fickian algorithm, positive value for *Neumann_rate* or *Neumann_flux* for a pore means that the quantity of interest leaves the pore, but for any other algorithms, positive Neumann value for a pore means that the quantity of interest enters this pore. This is because of variable transformation in Fickian algorithm from mole fraction of active fluid to natural logarithm of stagnant film mole fraction.
+- For a pore with *Neumann_rate* type, the boundary value of the pore might not represent the rate of quantity for just that pore, but can imply that this pore belongs to a group of the pores which this amount of rate enters/leaves all of them. By this assumption, when the rate for each individual pore is unknown, it is still possible to use *Neumann_rate* boundary conditions. However the user can always apply the rate for just a single pore, but this rate should be unique among all of the pores in the network. In other words, if two pores with *Neumann_rate* boundary type, have different values, algorithm object considers them as their individual rate, but if their rate is exactly the same, algorithm will assume that this rate is the total rate which enters/leaves both of them.  
+- *Neumann_insulated* is equivalent to Neumann_flux boundary condition when flux is zero. Therefore, there is no need to define BCvalues for this kind of boundary condition.
+- For a boundary pore in the network (a pore in boundary faces), if the type of boundary condition has not been specified, it is assumed to be *Neumann_insulated* type. This will help user to apply boundary conditions with less lines of code.
 - Units for all values should be in SI.
 - Each location in BCtypes and BCvalues arrays will determine the pore number.
 
@@ -71,19 +71,19 @@ For example, if BCtypes and BCvalues are defined as:
  
 It means that:
 
-for pore 0: Nuemann, flux = 0.1
+for pore 0: Neumann, flux = 0.1
 
 for pore 1: Dirichlet, value = 0.5
 
-for pore 2: Nuemann, rate = 0.0087 (hint: Since there are two pores (2,6) with *Nuemann_rate* type which have the exact same amount of rate, algorithm assumes that 0.0087 is the rate of quantity of interest which enters/leaves both pore 2 and 6)
+for pore 2: Neumann, rate = 0.0087 (hint: Since there are two pores (2,6) with *Neumann_rate* type which have the exact same amount of rate, algorithm assumes that 0.0087 is the rate of quantity of interest which enters/leaves both pore 2 and 6)
 
-for pore 3: Internal pore without imposed boundary condition (hint: If pore 3 is a boundary pore (a pore in a boundary face), algorithm by default assumes that, this is *Nuemann_insulated* pore.)
+for pore 3: Internal pore without imposed boundary condition (hint: If pore 3 is a boundary pore (a pore in a boundary face), algorithm by default assumes that, this is *Neumann_insulated* pore.)
 
-for pore 4: Nuemann, rate= -0.35 (hint: There is only one pore with Nuemann_rate type and value of -0.35. So, algorithm assumes that 0.35 is the rate of quantity of interest which is only entering/leaving pore 4)
+for pore 4: Neumann, rate= -0.35 (hint: There is only one pore with Neumann_rate type and value of -0.35. So, algorithm assumes that 0.35 is the rate of quantity of interest which is only entering/leaving pore 4)
 
-for pore 5: Nuemann_insulated, value=0
+for pore 5: Neumann_insulated, value=0
 
-for pore 6 : Nuemann, rate=0.0087 (hint: Refer to pore 2)
+for pore 6 : Neumann, rate=0.0087 (hint: Refer to pore 2)
 
 for pore 7 : Dirichlet, value = 0.30
 
