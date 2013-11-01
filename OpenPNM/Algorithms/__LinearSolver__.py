@@ -48,7 +48,7 @@ class LinearSolver(GenericAlgorithm):
         Assigning Type and Value for Boundary Pores.
 
         - Types of Boundary Conditions:
-           internal = 0, Dirichlet = 1, Nuemann_flux = 2, Nuemann_insulated = 3, Nuemann_rate = 4
+           internal = 0, Dirichlet = 1, Neumann_flux = 2, Neumann_insulated = 3, Neumann_rate = 4
 
         - For any network, it is possible to apply BC to arbitrary pores, by defining
           two arrays: types and values. For example:
@@ -58,26 +58,26 @@ class LinearSolver(GenericAlgorithm):
       
             It means that:
                   
-                  for pore 0: Nuemann, flux = 0.1
+                  for pore 0: Neumann, flux = 0.1
                   
                   for pore 1: Dirichlet, value = 0.5
 
-                  for pore 2: Nuemann, rate = 0.0087 
-                  (hint: Since there are two pores (2,6) with Nuemann_rate type which 
+                  for pore 2: Neumann, rate = 0.0087 
+                  (hint: Since there are two pores (2,6) with Neumann_rate type which 
                   have the exact same amount of rate, algorithm assumes that 0.0087 is 
                   the rate of quantity of interest which leaves both pore 2 and 6)
                           
                   for pore 3: Internal pore without imposed boundary condition
                  (hint: If pore 3 is a boundary pore (a pore in boundary faces), algorithm 
-                 by default assumes that, this is Nuemann_insulated pore.)
+                 by default assumes that, this is Neumann_insulated pore.)
             
-                  for pore 4: Nuemann, rate= -0.35
-                  (hint: There is only one pore with Nuemann_rate type and value of -0.35. So 
+                  for pore 4: Neumann, rate= -0.35
+                  (hint: There is only one pore with Neumann_rate type and value of -0.35. So 
                   algorithm assumes that 0.35 is the rate of quantity of interest which is only entering pore 4)
                         
-                  for pore 5: Nuemann_insulated, value=0
+                  for pore 5: Neumann_insulated, value=0
 
-                  for pore 6 : Nuemann, rate=0.0087
+                  for pore 6 : Neumann, rate=0.0087
                         (hint: Refer to pore 2)              .
                           
                   for pore 7 : Dirichlet, value = 0.30
@@ -85,10 +85,10 @@ class LinearSolver(GenericAlgorithm):
 
         Notes
         -----
-        - Nuemann_insulated is equivalent to Nuemann_flux boundary condition when flux
+        - Neumann_insulated is equivalent to Neumann_flux boundary condition when flux
         is zero. Therefore, there is no need to define BCvalues for this kind of boundary condition.
-        - In Fickian algorithm, positive value for Nuemann_rate or Nuemann_flux for a boundary pore means 
-        that the quantity of interest leaves the pore, but for any other algorithms, positive Nuemann value
+        - In Fickian algorithm, positive value for Neumann_rate or Neumann_flux for a boundary pore means 
+        that the quantity of interest leaves the pore, but for any other algorithms, positive Neumann value
         means that the quantity of interest enters this pore. 
 
         """
