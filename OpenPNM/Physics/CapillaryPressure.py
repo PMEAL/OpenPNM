@@ -30,9 +30,9 @@ def Washburn(net,fluid):
 
     """
     sigma = fluid.pore_conditions['surface_tension']
-    sigma = net.interpolate_throat_values(sigma)
+    sigma = fluid.interpolate_throat_conditions(net,sigma)
     theta = fluid.pore_conditions['contact_angle']
-    theta = net.interpolate_throat_values(theta)
+    theta = fluid.interpolate_throat_conditions(net,theta)
     vals = -4*sigma*sp.cos(sp.radians(theta))/net.throat_properties['diameter']
     fluid.throat_conditions['Pc_entry']= vals
 
@@ -70,9 +70,9 @@ def Purcell(net,fluid,r_toroid):
     Triple check the accuracy of this equation
     """
     sigma = fluid.pore_conditions['surface_tension']
-    sigma = net.interpolate_throat_values(sigma)
+    sigma = fluid.interpolate_throat_conditions(net,sigma)
     theta = fluid.throat_conditions['contact_angle']
-    theta = net.interpolate_throat_values(theta)
+    theta = fluid.interpolate_throat_conditions(net,theta)
     r = net.throat_properties['diameter']/2
     R = r_toroid
     alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))

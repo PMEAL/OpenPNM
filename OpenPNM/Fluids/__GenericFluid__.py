@@ -20,12 +20,23 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
                                      'surface_tension',
                                      'contact_angle']
 
-    def create(self,fluid_recipe):
+    def create(self,fluid_recipe,T=298.,P=101325.):
+        r"""
+        Creates a fluid using the recipe provided
+
+        Parameters
+        ----------
+        fluid_recipe : Dictionary
+            A dictionary of key : value pairs that provide instructions for calculating fluid conditions
+
+        T & P : float (optional)
+            The temperature and pressure at which fluid should be create, defaults to STP.
+        """
         self._fluid_recipe = copy.deepcopy(fluid_recipe)
         self.pore_conditions = {}
         self.throat_conditions = {}
-        self.pore_conditions.update({'temperature': 298})
-        self.pore_conditions.update({'pressure': 101325})
+        self.pore_conditions.update({'temperature': T})
+        self.pore_conditions.update({'pressure': P})
         self.regenerate()
         return self
 
@@ -107,33 +118,73 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         vals = eqn(self,**params)
         return sp.array(vals,ndmin=1)
 
+    def interpolate_pore_conditions(self,network,Tinfo=None):
+        r"""
+        Determines a pore property as the average of it's neighboring throats
+
+        Parameters
+        ----------
+        network : OpenPNM Pore Network Object
+            The network on which to perform the interpolation
+
+        Tinfo : array_like
+            The array of throat information to be interpolated
+
+        Notes
+        -----
+        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+
+        """
+        if sp.size(Tinfo)==1:
+            Pinfo = Tinfo
+        elif sp.size(Tinfo) != network.get_num_throats():
+            raise Exception('The list of throat information received was the wrong length')
+        else:
+            Pinfo = sp.zeros((network.get_num_pores()))
+            #Only interpolate conditions for internal pores, type=0
+            Pnums = sp.r_[0:network.get_num_pores(Ptype=[0])]
+            nTs = network.get_neighbor_throats(Pnums,flatten=False)
+            for i in sp.r_[0:sp.shape(nTs)[0]]:
+                Pinfo[i] = sp.mean(Tinfo[nTs[i]])
+        return Pinfo
+
+    def interpolate_throat_conditions(self,network,Pinfo=None):
+        r"""
+        Determines a throat condition as the average of the conditions it's neighboring pores
+
+        Parameters
+        ----------
+        network : OpenPNM Pore Network Object
+            The network on which to perform the interpolation
+
+        Pinfo : array_like
+            The name of the throat condition to be interpolated
+
+        Notes
+        -----
+        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+
+        """
+        if sp.size(Pinfo)==1:
+            Tinfo = Pinfo
+        elif sp.size(Pinfo) != network.get_num_pores():
+            raise Exception('The list of pore information received was the wrong length')
+        else:
+            Tinfo = sp.zeros((network.get_num_throats()))
+            #Interpolate values for all throats, including those leading to boundary pores
+            Tnums = sp.r_[0:network.get_num_throats()]
+            nPs = network.get_connected_pores(Tnums,flatten=False)
+            for i in sp.r_[0:sp.shape(nPs)[0]]:
+                Tinfo[i] = sp.mean(Pinfo[nPs[i]])
+        return Tinfo
+
 if __name__ =="__main__":
 
-    pn = OpenPNM.Geometry.Cubic(loglevel=40).generate()
-
-    #Define the fluids and set their properties
-    params_air = {       'name': 'air',
-                           'Pc': 3.771e6, #Pa
-                           'Tc': 132.65,  #K
-                           'MW': 0.0291,  #kg/mol
-                  'diffusivity': {'method': 'Fuller',
-                                      'MA': 31.99,
-                                      'MB': 28.01,
-                                      'vA': 16.6,
-                                      'vB': 17.9},
-                    'viscosity': {'method': 'Reynolds',
-                                      'uo': 0.001,
-                                       'b': 0.1},
-                'molar_density': {'method': 'ideal_gas',
-                                       'R': 8.413},
-                   }
     #Create fluids
-    air = OpenPNM.Fluids.GenericFluid(params_air)
+    air = OpenPNM.Fluids.Air().create(T=353,P=200000)
 
-    #Assign fluids to network
-    air.assign(pn)
     print ''
     print 'current pore conditions:'
-    for i in pn.pore_conditions.keys():
-        print i,'=',pn.pore_conditions[i]
+    for i in air.pore_conditions.keys():
+        print i,'=',air.pore_conditions[i]
     print ''

@@ -28,8 +28,8 @@ def DiffusiveConductance(network,fluid):
         DABp = fluid.pore_conditions['diffusivity']
     except:
         raise Exception('Necessary fluid properies are not present ' + fluid['name'])
-    ct = network.interpolate_throat_values(cp)
-    DABt = network.interpolate_throat_values(DABp)
+    ct = fluid.interpolate_throat_conditions(network,cp)
+    DABt = fluid.interpolate_throat_conditions(network,DABp)
 
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)

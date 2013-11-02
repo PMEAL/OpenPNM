@@ -29,5 +29,4 @@ Classes
 """
 from __GenericVisualization__ import GenericVisualization
 import __Plots__ as Plots
-from __VoxelImage__ import VoxelImage
 from __VTK__ import VTK

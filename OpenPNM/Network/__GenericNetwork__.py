@@ -108,10 +108,11 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         if V:
             dataset = V[V.keys()[0]]
             tprop = V.keys()[0]
+            if sp.shape(dataset)[0]!=Nt:
+                raise Exception('Received dataset of incorrect length')
         else:
             dataset = np.ones(Nt)
             tprop = 'connections'
-
 
         if dropzeros:
             ind = dataset>0
