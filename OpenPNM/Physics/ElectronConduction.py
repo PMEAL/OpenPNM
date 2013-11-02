@@ -24,7 +24,7 @@ def ElectronicConductance(network,fluid):
         sigmap = fluid.pore_conditions['electronic_conductivity']
     except:
         raise Exception('electronic_conductivity of the phase has not been specified')
-    sigmat = network.interpolate_throat_values(sigmap)
+    sigmat = fluid.interpolate_throat_conditions(network,sigmap)
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
     #Find g for half of pore 1

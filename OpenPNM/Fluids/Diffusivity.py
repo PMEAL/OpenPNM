@@ -8,9 +8,15 @@ import OpenPNM
 import scipy as sp
 
 def constant(fluid,value,**params):
+    r"""
+    Assigns specified constant value
+    """
     return value
 
 def na(fluid,**params):
+    r"""
+    Assigns nonsensical, but numerical value of -1.  This ensurse stability of other methods but introduces the possibility of being misused.
+     """
     return -1
 
 def Fuller(fluid,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7,**params):

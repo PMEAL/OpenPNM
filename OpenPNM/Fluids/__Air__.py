@@ -11,11 +11,11 @@ class Air(GenericFluid):
     def __init__(self,**kwargs):
         super(Air,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        
-    def create(self,fluid_name='air'):
+
+    def create(self,fluid_name='air',T=298.,P=101325.):
         r"""
         Creates Fluid object with a default name 'air'
-        
+
         Parameters
         ----------
 
@@ -37,14 +37,13 @@ class Air(GenericFluid):
                                                'b': 0.1},
                         'molar_density': {'method': 'ideal_gas',
                                                'R': 8.314},
-                      'surface_tension': {'method': 'constant',
-                                           'value': 0},
+                      'surface_tension': {'method': 'na'},
                         'contact_angle': {'method': 'na'},
                         }
         self.pore_conditions = {}
         self.throat_conditions = {}
-        self.pore_conditions.update({'temperature': 298})
-        self.pore_conditions.update({'pressure': 101325})
+        self.pore_conditions.update({'temperature': T})
+        self.pore_conditions.update({'pressure': P})
         self.regenerate()
         return self
 
