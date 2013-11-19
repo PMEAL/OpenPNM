@@ -33,6 +33,7 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         T & P : float (optional)
             The temperature and pressure at which fluid should be create, defaults to STP.
         """
+        self.name = fluid_recipe['name']
         self._fluid_recipe = copy.deepcopy(fluid_recipe)
         self.pore_conditions = {}
         self.throat_conditions = {}
@@ -83,7 +84,9 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         r'''
         Creates a fluid pair by storing each fluid object on the other.  This allows tracking of defending vs invading phase, among other things.
 
-        TODO: This method needs plenty of checks, for preexisting pair, etc.
+        TODO: This method needs plenty of checks,
+        - for preexisting pair
+        - make sure they're the same temperature and pressure, etc
 
         '''
         self.partner = fluid2

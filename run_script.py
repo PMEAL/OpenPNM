@@ -66,12 +66,9 @@ water_recipe = {
 }
 #Create fluids
 air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe,T=353,P=101325)
-water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe,T=353,P=101325)
+water = OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe,T=353,P=101325)
 #set water and air as a fluid pair
 water.set_pair(air)
-#Update Fluids to the new conditions
-water.regenerate()
-air.regenerate()
 
 #======================================================================
 '''Begin Simulations'''
@@ -93,12 +90,8 @@ OP_1.evaluate_trapping(network=pn,invading_fluid=water,outlets=b)
 '''Perform an Injection Experiment (InvasionPercolation)'''
 #----------------------------------------------------------------------
 #Create some new Fluids
-water2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
-air2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
-water.pore_conditions['temperature'] = 353
-water.pore_conditions['pressure'] = 101325
-air.pore_conditions['temperature'] = 353
-air.pore_conditions['pressure'] = 101325
+water2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe,T=353,P=101325)
+air2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe,T=353,P=101325)
 #Initialize algorithm object
 IP_1 = OpenPNM.Algorithms.InvasionPercolation()
 #Apply desired/necessary pore scale physics methods
