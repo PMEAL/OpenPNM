@@ -10,7 +10,7 @@ start=clock()
 #Define generation parameters
 params_geo1= {
 'domain_size': [],  #physical network size [meters]
-'divisions': [10,10,10], #Number of pores in each direction
+'divisions': [5,25,25], #Number of pores in each direction
 'lattice_spacing': [0.1],  #spacing between pores [meters]
 'stats_pores': {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
                 'shape': 1.5,
@@ -65,15 +65,10 @@ water_recipe = {
                   'value': 120},
 }
 #Create fluids
-air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe)
-water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe)
+air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe,T=353,P=101325)
+water= OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe,T=353,P=101325)
 #set water and air as a fluid pair
 water.set_pair(air)
-#Set desired base conditions in the Fluids
-air.pore_conditions['temperature'] = 353
-air.pore_conditions['pressure'] = 101325
-water.pore_conditions['temperature'] = 353
-water.pore_conditions['pressure'] = 101325
 #Update Fluids to the new conditions
 water.regenerate()
 air.regenerate()
@@ -129,10 +124,10 @@ Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 BCtypes = sp.zeros(pn.get_num_pores())
 BCvalues = sp.zeros(pn.get_num_pores())
 #Specify Dirichlet-type and assign values
-BCtypes[pn.pore_properties['type']==1] = 1
-BCtypes[pn.pore_properties['type']==6] = 1
-BCvalues[pn.pore_properties['type']==1] = 8e-2
-BCvalues[pn.pore_properties['type']==6] = 8e-1
+BCtypes[pn.pore_properties['type']==2] = 1
+BCtypes[pn.pore_properties['type']==5] = 1
+BCvalues[pn.pore_properties['type']==2] = 8e-2
+BCvalues[pn.pore_properties['type']==5] = 8e-1
 #Neumann
 #BCtypes[pn.pore_properties['type']==1] = 1
 #BCtypes[pn.pore_properties['type']==6] = 4

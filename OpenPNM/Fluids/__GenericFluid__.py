@@ -18,7 +18,8 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
                                      'viscosity',
                                      'molar_density',
                                      'surface_tension',
-                                     'contact_angle']
+                                     'contact_angle',
+                                     'electrical_conductivity']
 
     def create(self,fluid_recipe,T=298.,P=101325.):
         r"""
@@ -65,8 +66,8 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         self.throat_conditions = {}
         try: del self.partner
         except: pass
-        self.pore_conditions.update({'temperature': 298})
-        self.pore_conditions.update({'pressure': 101325})
+        self.pore_conditions.update({'temperature': 298.})
+        self.pore_conditions.update({'pressure': 101325.})
         self.regenerate()
         return self
 
@@ -89,34 +90,58 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
         fluid2.partner = self
 
     def diffusivity(self):
-        params = self._fluid_recipe['diffusivity']
-        eqn = getattr(OpenPNM.Fluids.Diffusivity,params['method'])
-        vals = eqn(self,**params)
-        return sp.array(vals,ndmin=1)
+        try:
+            params = self._fluid_recipe['diffusivity']
+            eqn = getattr(OpenPNM.Fluids.Diffusivity,params['method'])
+            vals = eqn(self,**params)
+            return sp.array(vals,ndmin=1)
+        except:
+            return -1
 
     def viscosity(self):
-        params = self._fluid_recipe['viscosity']
-        eqn = getattr(OpenPNM.Fluids.Viscosity,params['method'])
-        vals = eqn(self,**params)
-        return sp.array(vals,ndmin=1)
+        try:
+            params = self._fluid_recipe['viscosity']
+            eqn = getattr(OpenPNM.Fluids.Viscosity,params['method'])
+            vals = eqn(self,**params)
+            return sp.array(vals,ndmin=1)
+        except:
+           return -1
 
     def molar_density(self):
-        params = self._fluid_recipe['molar_density']
-        eqn = getattr(OpenPNM.Fluids.MolarDensity,params['method'])
-        vals = eqn(self,**params)
-        return sp.array(vals,ndmin=1)
+        try:
+            params = self._fluid_recipe['molar_density']
+            eqn = getattr(OpenPNM.Fluids.MolarDensity,params['method'])
+            vals = eqn(self,**params)
+            return sp.array(vals,ndmin=1)
+        except:
+            return -1
 
     def surface_tension(self):
-        params = self._fluid_recipe['surface_tension']
-        eqn = getattr(OpenPNM.Fluids.SurfaceTension,params['method'])
-        vals = eqn(self,**params)
-        return sp.array(vals,ndmin=1)
+        try:
+            params = self._fluid_recipe['surface_tension']
+            eqn = getattr(OpenPNM.Fluids.SurfaceTension,params['method'])
+            vals = eqn(self,**params)
+            return sp.array(vals,ndmin=1)
+        except:
+            return -1
 
     def contact_angle(self):
-        params = self._fluid_recipe['contact_angle']
-        eqn = getattr(OpenPNM.Fluids.ContactAngle,params['method'])
-        vals = eqn(self,**params)
-        return sp.array(vals,ndmin=1)
+        try:
+            params = self._fluid_recipe['contact_angle']
+            eqn = getattr(OpenPNM.Fluids.ContactAngle,params['method'])
+            vals = eqn(self,**params)
+            return sp.array(vals,ndmin=1)
+        except:
+            return -1
+
+    def electrical_conductivity(self):
+        try:
+            params = self._fluid_recipe['electrical_conductivity']
+            eqn = getattr(OpenPNM.Fluids.ElectricalConductivity,params['method'])
+            vals = eqn(self,**params)
+            return sp.array(vals,ndmin=1)
+        except:
+            return -1
 
     def interpolate_pore_conditions(self,network,Tinfo=None):
         r"""
@@ -181,10 +206,6 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
 if __name__ =="__main__":
 
     #Create fluids
-    air = OpenPNM.Fluids.Air().create(T=353,P=200000)
+    agg = OpenPNM.Fluids.GenericFluid().create(agg_recipe)
 
-    print ''
-    print 'current pore conditions:'
-    for i in air.pore_conditions.keys():
-        print i,'=',air.pore_conditions[i]
-    print ''
+
