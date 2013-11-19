@@ -14,6 +14,16 @@ def constant(fluid, value=0.072,**params):
 def na(fluid,**params):
     return -1
 
+def empirical(fluid,a=[0],**params):
+    r"""
+    Uses a polynomial fit of empirical data to calculate property
+    """
+    T = fluid.pore_conditions['temperature']
+    sigma = sp.zeros_like(T)
+    for i in range(0,sp.size(a)):
+        sigma = sigma + a[i]*(T**i)
+    return sigma
+
 def Eotvos(fluid, k=2.1e-7, **params):
     r"""
     """

@@ -33,8 +33,8 @@ class Water(GenericFluid):
                                            'value': 0.001},
                         'molar_density': {'method': 'constant',
                                            'value': 44445},
-                      'surface_tension': {'method': 'Eotvos',
-                                               'k': 2.25e-4},
+                      'surface_tension': {'method': 'empirical',
+                                               'a': [7.567977271, -0.015885753, 7.47908E-06, -1.83337E-07, 3.54966E-10, 2.25e-4]},
                         'contact_angle': {'method': 'constant',
                                            'value': 120},
                                            }
