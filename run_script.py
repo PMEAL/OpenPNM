@@ -11,7 +11,7 @@ start=clock()
 params_geo1= {
 'domain_size': [],  #physical network size [meters]
 'divisions': [5,25,25], #Number of pores in each direction
-'lattice_spacing': [0.1],  #spacing between pores [meters]
+'lattice_spacing': [0.0001],  #spacing between pores [meters]
 'stats_pores': {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
                 'shape': 1.5,
                 'loc': 6e-6,
