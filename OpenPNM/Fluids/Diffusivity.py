@@ -42,7 +42,9 @@ def Fuller(fluid,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7,**params):
     T = fluid.pore_conditions['temperature']
     P = fluid.pore_conditions['pressure']
     MAB = 2*(1/MA+1/MB)**(-1)
-    DAB = 0.00143*T**1.75/(P*1e-5*(MAB*1e3)**0.5*(vA**(1/3)+vB**(1/3))**2)*1e-4
+    MAB = MAB*1e3
+    P = P*1e-5
+    DAB = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3)+vB**(1./3))**2)*1e-4
     return DAB
 
 
