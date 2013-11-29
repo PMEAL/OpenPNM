@@ -11,7 +11,7 @@ import scipy as sp
 import numpy as np
 import os
 
-from __GenericVisualization__ import GenericVisualization
+from .__GenericVisualization__ import GenericVisualization
 
 class VTK(GenericVisualization):
     r"""
@@ -111,7 +111,7 @@ class VTK(GenericVisualization):
         self._f.write('\n</DataArray>\n</Lines>\n')
 
     def _write_point_data(self):
-        pore_keys = self._net.pore_properties.keys()
+        pore_keys = list(self._net.pore_properties.keys())
         num_pore_keys = sp.size(pore_keys)
         self._f.write('<PointData Scalars="pore_data">\n')
         for j in range(num_pore_keys):
@@ -132,7 +132,7 @@ class VTK(GenericVisualization):
         # Now for fluid
         if self._fluid != 'none':
             fluid_name = self._fluid._fluid_recipe['name']
-            pore_keys = self._fluid.pore_conditions.keys()
+            pore_keys = list(self._fluid.pore_conditions.keys())
             num_pore_keys = sp.size(pore_keys)
             for j in range(num_pore_keys):
                 self._f.write('<DataArray type="Float32" Name="')

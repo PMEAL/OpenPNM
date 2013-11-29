@@ -106,8 +106,9 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Nt   = self.get_num_throats()
 
         if V:
-            dataset = V[V.keys()[0]]
-            tprop = V.keys()[0]
+            
+            dataset = V[list(V.keys())[0]]
+            tprop = list(V.keys())[0]
             if sp.shape(dataset)[0]!=Nt:
                 raise Exception('Received dataset of incorrect length')
         else:
