@@ -97,7 +97,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         --------
         >>> V = {'foo': pn.throat_properties['diameter']}
         >>> pn.create_adjacency_matrix(V,'csr')
-        >>> print pn.adjacency_matrix['csr'].keys()
+        >>> print(pn.adjacency_matrix['csr'].keys())
         ['foo']
 
         """
@@ -166,7 +166,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         Examples
         --------
-        >>> print 'nothing yet'
+        >>> print('nothing yet')
         """
         self._logger.debug('create_incidence_matrix: Start of method')
 
@@ -504,46 +504,46 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         Print some basic properties
         """
         self._logger.debug("Method: print_overview")
-        print "="*72
-        print "= Overview of network properties"
-        print "-"*72
-        print "Basic properties of the network"
-        print " - Number of pores:   ", self.get_num_pores()
-        print " - Number of throats: ", self.get_num_throats()
+        print("="*72)
+        print("= Overview of network properties")
+        print("-"*72)
+        print("Basic properties of the network")
+        print(" - Number of pores:   ", self.get_num_pores())
+        print( " - Number of throats: ", self.get_num_throats())
 
-        print "="*72
-        print "Pore Properties"
-        print "-"*72
-        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
-        print "-"*72
+        print("="*72)
+        print("Pore Properties")
+        print("-"*72)
+        print('PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]')
+        print("-"*72)
         for key in self.pore_properties:
-            print key, "\t", "\t", self.pore_properties[key].dtype, "\t", self.pore_properties[key].shape, "\t", self.pore_properties[key].nbytes/1e6
+            print(key, "\t", "\t", self.pore_properties[key].dtype, "\t", self.pore_properties[key].shape, "\t", self.pore_properties[key].nbytes/1e6)
 
-        print "="*72
-        print "Throat Properties"
-        print "-"*72
-        print 'PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]'
-        print "-"*72
+        print("="*72)
+        print("Throat Properties")
+        print("-"*72)
+        print('PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]')
+        print("-"*72)
         for key in self.throat_properties:
-            print key, "\t", "\t", self.throat_properties[key].dtype, "\t", self.throat_properties[key].shape, "\t", self.throat_properties[key].nbytes/1e6
+            print(key, "\t", "\t", self.throat_properties[key].dtype, "\t", self.throat_properties[key].shape, "\t", self.throat_properties[key].nbytes/1e6)
 
-        print "="*72
-        print "Adjacency Matrices"
-        print "-"*72
-        print 'FORMAT', "\t", 'VALUES'
-        print "-"*72
+        print("="*72)
+        print("Adjacency Matrices")
+        print("-"*72)
+        print('FORMAT', "\t", 'VALUES')
+        print("-"*72)
         for sprsfmt in self.adjacency_matrix.keys():
-            print sprsfmt, ":\t", self.adjacency_matrix[sprsfmt].keys()
+            print(sprsfmt, ":\t", self.adjacency_matrix[sprsfmt].keys())
 
-        print "="*72
-        print "Incidence Matrices"
-        print "-"*72
-        print 'FORMAT', "\t", 'VALUES'
-        print "-"*72
+        print("="*72)
+        print("Incidence Matrices")
+        print("-"*72)
+        print('FORMAT', "\t", 'VALUES')
+        print("-"*72)
         for sprsfmt in self.incidence_matrix.keys():
-            print sprsfmt, ":\t", self.incidence_matrix[sprsfmt].keys()
+            print(sprsfmt, ":\t", self.incidence_matrix[sprsfmt].keys())
 
-        print "="*72
+        print( "="*72)
 
     def __str__(self):
         r"""
@@ -582,48 +582,6 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
     def update(self):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
-
-#    def merge_fluid(self,fluid):
-#        Np = self.get_num_pores()
-#        Nt = self.get_num_throats()
-#        for i in fluid.pore_conditions.keys():
-#            print i
-#            if sp.shape(fluid.pore_conditions[i])[0]==1:
-#                val = fluid.pore_conditions[i]
-#                fluid.pore_conditions[i] = val*sp.ones((Np,))
-#            if sp.shape(fluid.pore_conditions[i])[0]>0:
-#                if fluid.pore_conditions[i].dtype == 'bool':
-#                    fluid.pore_conditions[i] = fluid.pore_conditions[i]*1
-#                self.pore_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.pore_conditions[i]})
-#        for i in fluid.throat_conditions.keys():
-#            print i
-#            if sp.shape(fluid.throat_conditions[i])[0]==1:
-#                val = fluid.throat_conditions[i]
-#                fluid.throat_conditions[i] = val*sp.ones((Nt,))
-#            if sp.shape(fluid.throat_conditions[i])[0]>0:
-#                if fluid.throat_conditions[i].dtype == 'bool':
-#                    fluid.throat_conditions[i] = fluid.throat_conditions[i]*1
-#                self.throat_properties.update({fluid._fluid_recipe['name']+'_'+i: fluid.throat_conditions[i]})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 if __name__ == '__main__':
     test1=GenericNetwork(loggername='Test1')

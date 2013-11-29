@@ -29,7 +29,7 @@ class Cubic(GenericGeometry):
 
     Examples
     --------
-    >>>print 'none yet'
+    >>>print('none yet')
 
     """
 

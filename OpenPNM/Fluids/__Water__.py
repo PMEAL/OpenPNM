@@ -46,4 +46,4 @@ class Water(GenericFluid):
         return self
 
 if __name__ =="__main__":
-    print 'test script not written for Water class'
+    print('no tests yet')

@@ -253,7 +253,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._logger.info( 'percent complete')
         self._logger.info( self._percent_complete)
         self._rough_complete = 0
-        print '     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds'
+        print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds')
         self._logger.debug( '+='*25)
 
     def _do_outer_iteration_stage(self):
@@ -529,7 +529,7 @@ class InvasionPercolation(GenericAlgorithm):
             if self._end_condition == 'breakthrough':
                 if self._percent_complete > self._rough_complete + self._rough_increment:
                     self._rough_complete = np.floor(self._percent_complete/self._rough_increment)*self._rough_increment
-                    print '     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds'
+                    print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds')
         # Determine if a new breakthrough position has occured
         if self._end_condition == 'breakthrough':
             if self._NewPore in self._outlets:
@@ -551,7 +551,7 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.info('at time')
                     self._logger.info(self._sim_time)
                 self._condition = 0
-                print '     IP algorithm at 100% completion at ',np.int(np.round(clock())),' seconds'
+                print('     IP algorithm at 100% completion at ',np.int(np.round(clock())),' seconds')
         elif self._end_condition == 'total':
             self._condition = not self._Tinv.all()
 
@@ -562,27 +562,27 @@ class InvasionPercolation(GenericAlgorithm):
             self._inv_fluid.pore_conditions['occupancy'] = self._Pinv>0
             self._inv_fluid.throat_conditions['occupancy'] = self._Tinv>0
         except:
-            print 'Something bad happened while trying to update fluid',self._inv_fluid._fluid_recipe['name']
+            print('Something bad happened while trying to update fluid',self._inv_fluid._fluid_recipe['name'])
         try:
             self._inv_fluid.partner.pore_conditions['occupancy'] = ~self._Pinv>0
             self._inv_fluid.partner.throat_conditions['occupancy'] = ~self._Tinv>0
         except:
-            print 'A partner fluid has not been set so inverse occupancy cannot be set'
+            print('A partner fluid has not been set so inverse occupancy cannot be set')
 
 if __name__ =="__main__":
-    print ''
-    print ''
-    print '************Testing InvasionPercolation Algorithm**************'
+    print('')
+    print('')
+    print('************Testing InvasionPercolation Algorithm**************')
     clock()
-    print "="*50
-    print "= Example: Create random network and run an invasion\n= percolation algorithm"
-    print "-"*50
-    print "- * generate invading and defending fluids"
+    print("="*50)
+    print("= Example: Create random network and run an invasion\n= percolation algorithm")
+    print("-"*50)
+    print("- * generate invading and defending fluids")
     air = OpenPNM.Fluids.Air().create()
     water = OpenPNM.Fluids.Water().create()
     air.set_pair(water)
-    print "-"*50
-    print "- * generate a simple cubic network"
+    print("-"*50)
+    print("- * generate a simple cubic network")
     params_geo= {'domain_size': [25,25,5],  #physical network size [meters]
                    'lattice_spacing': [1.0],  #spacing between pores [meters]
              'stats_pores' : {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
@@ -598,20 +598,20 @@ if __name__ =="__main__":
     pn = OpenPNM.Geometry.Cubic().generate(**params_geo)
 #    OpenPNM.Geometry.Cubic().generate_boundaries(pn,**params_geo)
 #    pn = OpenPNM.Geometry.MatFile().generate(filename='large_network')
-    print "+"*50
-    print "Sample generated at t =",clock(),"seconds."
-    print "+"*50
+    print("+"*50)
+    print("Sample generated at t =",clock(),"seconds.")
+    print("+"*50)
 
-    print '- * Assign boundary pore volumes = 0'
+    print('- * Assign boundary pore volumes = 0')
     pn.pore_properties['diameter'][pn.pore_properties['type']>0] = 0
 
-    print "- * Define inlet and outlet faces"
+    print("- * Define inlet and outlet faces")
     face = pn.pore_properties['coords'][:,2]>2
     quarter = sp.rand(pn.get_num_pores(),)<.01
     inlets = pn.pore_properties['numbering'][face&quarter]
     outlets = pn.pore_properties['numbering'][pn.pore_properties['coords'][:,2]<1]
 
-    print "- * Run Invasion percolation algorithm"
+    print("- * Run Invasion percolation algorithm")
     #IP = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
     IP_timing = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
     ip_timing_params = {'invading_fluid':water,
@@ -621,10 +621,10 @@ if __name__ =="__main__":
                  'timing':'ON',
                  }
     IP_timing.run(pn,**ip_timing_params)
-    print "+"*50
-    print "IP completed at t =",clock(),"seconds."
-    print "+"*50
-    print "- * Save output to IP_timing.vtp"
+    print("+"*50)
+    print("IP completed at t =",clock(),"seconds.")
+    print("+"*50)
+    print("- * Save output to IP_timing.vtp")
     OpenPNM.Visualization.VTK().write(net=pn,fluid=water,filename="IP_timing.vtp")
     IP_notiming = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
 
@@ -635,12 +635,12 @@ if __name__ =="__main__":
                  'timing':'OFF',
                  }
     IP_notiming.run(pn,**ip_notiming_params)
-    print "+"*50
-    print "IP completed at t =",clock(),"seconds."
-    print "+"*50
-    print "- * Save output to IP_notiming.vtp"
+    print("+"*50)
+    print("IP completed at t =",clock(),"seconds.")
+    print("+"*50)
+    print("- Save output to IP_notiming.vtp")
     OpenPNM.Visualization.VTK().write(net=pn,fluid=water,filename="IP_notiming.vtp")
 
-    print "="*50
-    print "Program Finished at t = ",clock(),"seconds."
-    print "="*50
+    print("="*50)
+    print("Program Finished at t = ",clock(),"seconds.")
+    print("="*50)
