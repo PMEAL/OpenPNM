@@ -26,20 +26,20 @@ from __GenericAlgorithm__ import GenericAlgorithm
 
 
 class InvasionPercolation(GenericAlgorithm):
-    
-    
+
+
     def __init__(self,**kwords):
         r"""
-        
+
         """
         super(InvasionPercolation,self).__init__(**kwords)
         self._logger.info("Create IP Algorithm Object")
-        
+
     def run(self,net,**params):
-        r"""   
-        
+        r"""
+
         Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
-    
+
         Parameters
         ----------
         net : OpenPNM.Network.GenericNetwork object
@@ -54,50 +54,50 @@ class InvasionPercolation(GenericAlgorithm):
             list of outlet nodes
         end_condition : string('breaktrhough')
             choice between 'breakthrough' and 'total'
-            
+
         Input Network
         -------------
         The algorithm expects a pore network with the following pore properties:
             volume, diameter, numbering, coords, type
         and throat properties:
             diameter, numbering, connections, type
-            
+
         Output
         ------
         The invading fluid automatically gains pore conditions ::
-        
-            occupancy       : 0 for univaded, 1 for invaded            
-            IP_inv_final    : 0 for uninvaded, merged cluster number for invaded  
-            IP_inv_original : 0 for uninvaded, original cluster number for invaded  
-            IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
-            IP_inv_time     : 0 for uninvaded, simulation time for invaded  
-            
-        and throat conditions ::
-            
+
             occupancy       : 0 for univaded, 1 for invaded
-            IP_inv          : 0 for uninvaded, merged cluster number for invaded  
-            IP_inv_seq      : 0 for uninvaded, simulation step for invaded  
-            IP_inv_time     : 0 for uninvaded, simulation time for invaded  
-            
+            IP_inv_final    : 0 for uninvaded, merged cluster number for invaded
+            IP_inv_original : 0 for uninvaded, original cluster number for invaded
+            IP_inv_seq      : 0 for uninvaded, simulation step for invaded
+            IP_inv_time     : 0 for uninvaded, simulation time for invaded
+
+        and throat conditions ::
+
+            occupancy       : 0 for univaded, 1 for invaded
+            IP_inv          : 0 for uninvaded, merged cluster number for invaded
+            IP_inv_seq      : 0 for uninvaded, simulation step for invaded
+            IP_inv_time     : 0 for uninvaded, simulation time for invaded
+
         Examples
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Geometry.Cubic().generate(domain_size=[3,3,3], lattice_spacing=[1.0], btype=[0,0,0])
         >>> IP_timing = InvasionPercolation(net=pn,timing='ON')
-            
+
         Suggested Improvements ::
-        
+
             a) Allow input of cluster flow-rates (condensation rates)
             b) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
             c) Allow for a non-linear relationship between pressure and throat-cap volume.
-            
+
         """
         super(InvasionPercolation,self).run(net,**params)
         return self
-        
+
     def _setup(self,invading_fluid='none_given',defending_fluid='auto',inlets=[0],outlets=[-1],end_condition='breakthrough',timing='ON',report=20):
         self._logger.info("\t end condition: "+end_condition)
-        self._inlets = inlets 
+        self._inlets = inlets
         self._outlets = outlets
         if defending_fluid == 'auto':
             try:defending_fluid = invading_fluid.partner
@@ -127,7 +127,7 @@ class InvasionPercolation(GenericAlgorithm):
         # if empty, add Pc_entry to throat_properties
         tdia = self._net.throat_properties['diameter']
         # calculate Pc_entry from diameters
-        try: 
+        try:
             Pc_entry = self._fluid.throat_conditions['Pc_entry']
         except:
             try:
@@ -146,12 +146,12 @@ class InvasionPercolation(GenericAlgorithm):
         self._Tinv = np.zeros((self._net.get_num_throats(),1),dtype=np.int32)
         # Creating arrays for tracking invaded Pores(Np long, 0 for uninvaded, sequence for inaveded)
         self._psequence = np.zeros((self._net.get_num_pores(),1),dtype=np.int32)
-        if self._timing:        
+        if self._timing:
             # Creating arrays for tracking invaded Pores(Np long, -1 for uninvaded, simulation time for inaveded)
             self._Ptime = np.zeros((self._net.get_num_pores(),1),dtype=np.float64)-1
         # Creating arrays for tracking invaded throats(Nt long, 0 for uninvaded, sequence for inaveded)
         self._tsequence = np.zeros((self._net.get_num_throats(),1),dtype=np.int32)
-        if self._timing:            
+        if self._timing:
             # Creating arrays for tracking invaded Pores(Np long, -1 for uninvaded, simulation time for inaveded)
             self._Ttime = np.zeros((self._net.get_num_throats(),1),dtype=np.float64)-1
         # Creating an array for tracking the last invaded pore in each cluster.
@@ -178,13 +178,13 @@ class InvasionPercolation(GenericAlgorithm):
         for i in range(self._clusterCount):
             self._cluster_data['transform'][i] = i+1
         # Creating an empty list to store the list of potential throats for invasion in each cluster.
-        # its length is equal to the maximum number of possible clusters. 
+        # its length is equal to the maximum number of possible clusters.
         self._tlists = []
         # Creating a list for each cluster to store both potential throat and corresponding throat value
         self._tpoints = []
         # Initializing invasion percolation for each possible cluster
         for i in self._inlets:
-            if self._timing:            
+            if self._timing:
                 # Calculate total volume in all invaded pores
                 self._cluster_data['pore_volume'][clusterNumber-1] = np.sum(self._net.pore_properties['volume'][i])
                 # Label all invaded pores with their cluster
@@ -199,20 +199,20 @@ class InvasionPercolation(GenericAlgorithm):
             if self._timing:
                 # Sum all interfacial throats' volume coeffients for throat cap volume calculation
                 self._cluster_data['vol_coef'][clusterNumber-1] = np.sum(self._Tvol_coef[interface_throat_numbers])
-            # Make a list of all entry pressures of the interfacial throats            
+            # Make a list of all entry pressures of the interfacial throats
             interface_throat_pressures = self._fluid.throat_conditions["Pc_entry"][interface_throat_numbers]#[0]
             # Zip pressures and numbers together so that HeapQ can work its magic
             self._logger.debug('interface throat(s) found:')
-            self._logger.debug(interface_throat_numbers)                   
+            self._logger.debug(interface_throat_numbers)
             self._logger.debug( 'interface throat pressure(s):')
             self._logger.debug(interface_throat_pressures)
-            Interface= zip(interface_throat_pressures,interface_throat_numbers)
-            # Turn the zipped throat interfaces object into a heap            
+            Interface= list(zip(interface_throat_pressures,interface_throat_numbers))
+            # Turn the zipped throat interfaces object into a heap
             heapq.heapify(Interface)
             # Add to the total list of interface throats in the system
             self._tlists.append(interface_throat_numbers.tolist())
-            # Add to the total list of invaded interface throats in the system         
-            self._tpoints.append(Interface)   
+            # Add to the total list of invaded interface throats in the system
+            self._tpoints.append(Interface)
             # Pop off the first entry (lowest pressure) on the throat info list
             invaded_throat_info = Interface[0]
             if self._timing:
@@ -255,7 +255,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._rough_complete = 0
         print '     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds'
         self._logger.debug( '+='*25)
-        
+
     def _do_outer_iteration_stage(self):
         r"""
         Executes the outer iteration stage
@@ -282,7 +282,7 @@ class InvasionPercolation(GenericAlgorithm):
 
     def _do_one_outer_iteration(self):
         r"""
-        One iteration of an outer iteration loop for an algorithm 
+        One iteration of an outer iteration loop for an algorithm
         (e.g. time or parametric study)
         """
         if (sp.mod(self._counter,500)==False):
@@ -290,13 +290,13 @@ class InvasionPercolation(GenericAlgorithm):
         self._do_inner_iteration_stage()
         self._condition_update()
         self._counter += 1
-     
+
     def _do_inner_iteration_stage(self):
         r"""
         Executes the inner iteration stage
         """
-        self._logger.debug("  Inner Iteration Stage: ")        
-        
+        self._logger.debug("  Inner Iteration Stage: ")
+
         self._plast = len(np.nonzero(self._Pinv)[0])
         if self._timing:
             # determine the cluster with the earliest Haines time
@@ -327,20 +327,20 @@ class InvasionPercolation(GenericAlgorithm):
                 if loop_count > 1:
                     self._logger.error('No clusters active. Stuck in infinite loop.')
                 cnum = cnum + 1
-            
-        # run through the Haines Jump steps        
+
+        # run through the Haines Jump steps
         self._do_one_inner_iteration()
         self._pnew = len(np.nonzero(self._Pinv)[0])
         self._tseq += 1
         if self._pnew>self._plast:
             self._pseq += 1
-      
+
 
     def _do_one_inner_iteration(self):
         r"""
         Executes one inner iteration
         """
-        self._logger.debug("    Inner Iteration")             
+        self._logger.debug("    Inner Iteration")
         # Fill throat and connecting pore
         # Pop out the largest throat (lowest Pcap) in the list, read the throat number
         tinvade = heapq.heappop(self._tpoints[self._current_cluster-1])[1]
@@ -377,7 +377,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._Tinv[tinvade] = self._current_cluster
             # if pores are from 2 different clusters:
             if self._Pinv[Pores[0]]!=self._Pinv[Pores[1]] :
-                # find name of larger cluster number                
+                # find name of larger cluster number
                 maxCluster = max(clusters)[0]
                 self._logger.info(' ')
                 self._logger.info('CLUSTERS COMBINING:')
@@ -387,20 +387,20 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.info('at time')
                     self._logger.info(self._sim_time)
                 # update the cluster transform
-                self._cluster_data['transform'][self._cluster_data['transform']==maxCluster] = [self._current_cluster][0]  
+                self._cluster_data['transform'][self._cluster_data['transform']==maxCluster] = [self._current_cluster][0]
                 # relabel all pores and throats from larger number with smaller number
                 self._Pinv[np.where(self._Pinv==maxCluster)[0]] = self._current_cluster
                 self._Tinv[np.where(self._Tinv==maxCluster)[0]] = self._current_cluster
-                # append the list of throats for the other cluster to the current cluster                              
+                # append the list of throats for the other cluster to the current cluster
                 self._tlists[self._current_cluster-1] = self._tlists[self._current_cluster-1] + self._tlists[maxCluster-1]
-                # delete the throat lists on the other cluster     
+                # delete the throat lists on the other cluster
                 self._tlists[maxCluster-1] = []
                 # merge the heaps of throat information
                 self._tpoints[self._current_cluster-1] = list(heapq.merge(self._tpoints[self._current_cluster-1],self._tpoints[maxCluster-1]))
                 if self._timing:
                     # update the clusters' vol_coefs
                     self._cluster_data['vol_coef'][self._current_cluster-1] += self._cluster_data['vol_coef'][maxCluster-1]
-                    self._cluster_data['vol_coef'][maxCluster-1] = 0  
+                    self._cluster_data['vol_coef'][maxCluster-1] = 0
                     # update the clusters' pore volume
                     self._cluster_data['pore_volume'][self._current_cluster-1] += self._cluster_data['pore_volume'][maxCluster-1]
                     self._cluster_data['pore_volume'][maxCluster-1] = 0
@@ -422,7 +422,7 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.debug(self._cluster_data['active'][maxCluster-1])
                     self._cluster_data['active'][maxCluster-1] = 0
                     self._cluster_data['active'][self._current_cluster-1] = 0
-                    if self._timing:                    
+                    if self._timing:
                         self._cluster_data['haines_time'][self._current_cluster-1] = 100000000000000000000000000000000
                     self._logger.info(' ')
                     self._logger.info('CLUSTER MERGED WITH A BREAKTHROUGH CLUSTER')
@@ -432,7 +432,7 @@ class InvasionPercolation(GenericAlgorithm):
                 # update the old cluster's activity and time
                 if self._timing:
                     self._cluster_data['haines_time'][maxCluster-1] = 100000000000000000000000000000000
-                self._cluster_data['active'][maxCluster-1] = 0 
+                self._cluster_data['active'][maxCluster-1] = 0
                 # NO IDEA WHAT THIS LINE DOES PLEASE HELP MAHMOUD
                 #self._tpoints[self._current_cluster-1] = list(k for k,v in itertools.groupby(self._tpoints[self._current_cluster-1]))
                 self._tpoints[maxCluster-1] = []
@@ -442,7 +442,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._Tinv[tinvade] = self._current_cluster
             # find univaded pore, NewPore
             self._NewPore = Pores[self._Pinv[Pores][:,0]==0][0]
-            self._logger.debug( ' ')            
+            self._logger.debug( ' ')
             self._logger.debug( 'INVADING PORE: ')
             self._logger.debug(self._NewPore)
             self._logger.debug('the other pore is one of: ')
@@ -454,12 +454,12 @@ class InvasionPercolation(GenericAlgorithm):
             self._Pinv_original[self._NewPore] = self._current_cluster
             if self._timing:
                 self._Ptime[self._NewPore] = self._sim_time
-            self._psequence[self._NewPore] = self._tseq 
+            self._psequence[self._NewPore] = self._tseq
             if self._timing:
                 # update self._cluster_data.['pore_volume']
                 self._cluster_data['pore_volume'][self._current_cluster-1] += self._net.pore_properties['volume'][self._NewPore]
             # Make a list of all throats neighboring pores in the cluster
-            # Update interface list        
+            # Update interface list
             neighbors = self._net.get_neighbor_throats(self._NewPore)
             for j in neighbors:
                 # If a throat is not labelled as invaded by the cluster, it must be an interfacial throat
@@ -495,7 +495,7 @@ class InvasionPercolation(GenericAlgorithm):
             if self._timing:
                 self._cluster_data['haines_pressure'][self._current_cluster-1] = self._tpoints[self._current_cluster-1][0][0]
                 self._cluster_data['cap_volume'][self._current_cluster-1] = self._cluster_data['haines_pressure'][self._current_cluster-1]*self._cluster_data['vol_coef'][self._current_cluster-1]
-            
+
                 # Calculate the new Haines jump time
                 self._logger.debug( 'haines time before last stage:')
                 self._logger.debug( self._cluster_data['haines_time'])
@@ -513,7 +513,7 @@ class InvasionPercolation(GenericAlgorithm):
                 self._cluster_data['haines_time'][self._current_cluster-1] = self._sim_time
             self._logger.debug('haines time at the end of the throat stuff')
             self._logger.debug(self._cluster_data['haines_time'])
-            
+
     def _condition_update(self):
          # Calculate the distance between the new pore and outlet pores
         newpore_position = self._net.pore_properties['coords'][self._NewPore]
@@ -550,39 +550,39 @@ class InvasionPercolation(GenericAlgorithm):
                 if self._timing:
                     self._logger.info('at time')
                     self._logger.info(self._sim_time)
-                self._condition = 0 
+                self._condition = 0
                 print '     IP algorithm at 100% completion at ',np.int(np.round(clock())),' seconds'
         elif self._end_condition == 'total':
-            self._condition = not self._Tinv.all()    
-    
+            self._condition = not self._Tinv.all()
+
     def update_occupancy(self):
         r"""
         """
-        try: 
+        try:
             self._inv_fluid.pore_conditions['occupancy'] = self._Pinv>0
             self._inv_fluid.throat_conditions['occupancy'] = self._Tinv>0
         except:
             print 'Something bad happened while trying to update fluid',self._inv_fluid._fluid_recipe['name']
-        try: 
+        try:
             self._inv_fluid.partner.pore_conditions['occupancy'] = ~self._Pinv>0
             self._inv_fluid.partner.throat_conditions['occupancy'] = ~self._Tinv>0
-        except: 
+        except:
             print 'A partner fluid has not been set so inverse occupancy cannot be set'
-                     
+
 if __name__ =="__main__":
     print ''
-    print ''    
+    print ''
     print '************Testing InvasionPercolation Algorithm**************'
     clock()
     print "="*50
     print "= Example: Create random network and run an invasion\n= percolation algorithm"
     print "-"*50
-    print "- * generate invading and defending fluids"  
+    print "- * generate invading and defending fluids"
     air = OpenPNM.Fluids.Air().create()
     water = OpenPNM.Fluids.Water().create()
     air.set_pair(water)
     print "-"*50
-    print "- * generate a simple cubic network"        
+    print "- * generate a simple cubic network"
     params_geo= {'domain_size': [25,25,5],  #physical network size [meters]
                    'lattice_spacing': [1.0],  #spacing between pores [meters]
              'stats_pores' : {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
@@ -601,16 +601,16 @@ if __name__ =="__main__":
     print "+"*50
     print "Sample generated at t =",clock(),"seconds."
     print "+"*50
-    
+
     print '- * Assign boundary pore volumes = 0'
     pn.pore_properties['diameter'][pn.pore_properties['type']>0] = 0
-        
+
     print "- * Define inlet and outlet faces"
     face = pn.pore_properties['coords'][:,2]>2
     quarter = sp.rand(pn.get_num_pores(),)<.01
     inlets = pn.pore_properties['numbering'][face&quarter]
     outlets = pn.pore_properties['numbering'][pn.pore_properties['coords'][:,2]<1]
-    
+
     print "- * Run Invasion percolation algorithm"
     #IP = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
     IP_timing = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
@@ -627,7 +627,7 @@ if __name__ =="__main__":
     print "- * Save output to IP_timing.vtp"
     OpenPNM.Visualization.VTK().write(net=pn,fluid=water,filename="IP_timing.vtp")
     IP_notiming = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
-    
+
     ip_notiming_params = {'invading_fluid':water,
                  'defending_fluid':air,
                  'inlets':inlets,
@@ -640,7 +640,7 @@ if __name__ =="__main__":
     print "+"*50
     print "- * Save output to IP_notiming.vtp"
     OpenPNM.Visualization.VTK().write(net=pn,fluid=water,filename="IP_notiming.vtp")
-    
+
     print "="*50
     print "Program Finished at t = ",clock(),"seconds."
     print "="*50
