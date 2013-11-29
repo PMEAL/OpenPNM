@@ -16,7 +16,7 @@ module __FickianDiffusion__: Fick's Law Diffusion
 
 import OpenPNM
 import scipy as sp
-from __LinearSolver__ import LinearSolver
+from .__LinearSolver__ import LinearSolver
 
 class FickianDiffusion(LinearSolver):
     r"""

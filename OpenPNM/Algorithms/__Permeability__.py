@@ -16,7 +16,7 @@ module __Permeability__: Hagen Poiseuille permeability
 
 import OpenPNM
 import scipy as sp
-from __LinearSolver__ import LinearSolver
+from .__LinearSolver__ import LinearSolver
 
 class Permeability(LinearSolver):
     r"""   

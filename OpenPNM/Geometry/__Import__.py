@@ -18,7 +18,7 @@ import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.stats as spst
-from __GenericGeometry__ import GenericGeometry
+from .__GenericGeometry__ import GenericGeometry
 import os
 
 class MatFile(GenericGeometry):

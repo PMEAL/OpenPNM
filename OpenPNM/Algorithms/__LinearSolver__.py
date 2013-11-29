@@ -17,7 +17,7 @@ import OpenPNM
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.linalg as splin
-from __GenericAlgorithm__ import GenericAlgorithm
+from .__GenericAlgorithm__ import GenericAlgorithm
 
 
 class LinearSolver(GenericAlgorithm):
