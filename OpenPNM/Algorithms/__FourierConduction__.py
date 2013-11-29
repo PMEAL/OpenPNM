@@ -16,7 +16,7 @@ module __FourierConduction__:
 
 import OpenPNM
 import scipy as sp
-from __LinearSolver__ import LinearSolver
+from .__LinearSolver__ import LinearSolver
 
 class FourierConduction(LinearSolver):
     r"""   

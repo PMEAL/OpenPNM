@@ -15,7 +15,7 @@ import itertools as itr
 import math
 #Test
 
-from __GenericGeometry__ import GenericGeometry
+from .__GenericGeometry__ import GenericGeometry
 
 class Cubic(GenericGeometry):
     r"""

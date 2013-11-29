@@ -13,7 +13,7 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 
-from __GenericGeometry__ import GenericGeometry
+from .__GenericGeometry__ import GenericGeometry
 
 class Delaunay(GenericGeometry):
     r"""

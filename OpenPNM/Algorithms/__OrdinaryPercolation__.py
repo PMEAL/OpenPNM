@@ -20,7 +20,7 @@ import scipy.sparse as sprs
 import matplotlib.pyplot as plt
 from time import clock
 
-from __GenericAlgorithm__ import GenericAlgorithm
+from .__GenericAlgorithm__ import GenericAlgorithm
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""

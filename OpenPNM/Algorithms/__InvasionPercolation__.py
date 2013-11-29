@@ -22,7 +22,7 @@ from time import clock
 import heapq
 import itertools
 
-from __GenericAlgorithm__ import GenericAlgorithm
+from .__GenericAlgorithm__ import GenericAlgorithm
 
 
 class InvasionPercolation(GenericAlgorithm):

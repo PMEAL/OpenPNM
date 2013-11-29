@@ -14,7 +14,7 @@ import scipy.stats as spst
 import scipy.ndimage as spim
 from time import clock
 
-from __GenericGeometry__ import GenericGeometry
+from .__GenericGeometry__ import GenericGeometry
 
 class Template(GenericGeometry):
     r"""
