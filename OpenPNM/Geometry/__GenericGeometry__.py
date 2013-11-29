@@ -263,7 +263,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
             The network that is stitched
 
         """
-        print 'not implemented yet'
+        print('not implemented yet')
 
 
     def _generate_boundaries(self,**params):

@@ -27,14 +27,14 @@ class Delaunay(GenericGeometry):
 
     Examples
     --------
-    >>> print 'nothing yet'
+    >>> print('nothing yet')
 
     TODO:
 
     """
 
     def __init__(self,**kwargs):
-        
+
         super(Delaunay,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
         #Instantiate the network
@@ -76,7 +76,7 @@ class Delaunay(GenericGeometry):
         '''
         super(Delaunay,self).generate(**params)
         return self._net
-        
+
     def _generate_setup(self, btype=[0,0,0],**params):
         r"""
         Perform applicable preliminary checks and calculations required for generation

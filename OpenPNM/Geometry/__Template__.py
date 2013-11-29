@@ -27,7 +27,7 @@ class Template(GenericGeometry):
 
     Examples
     --------
-    >>> print 'none yet'
+    >>> print('none yet')
 
     """
 
@@ -85,8 +85,8 @@ class Template(GenericGeometry):
         self._voxel_to_pore_map = temp
 
         if self._Nz == 1:
-            print np.shape(Lc*(0.5 + np.transpose(np.nonzero(template))))
-            print np.shape(np.zeros((Np,1)))
+            print(np.shape(Lc*(0.5 + np.transpose(np.nonzero(template)))))
+            print(np.shape(np.zeros((Np,1))))
             self._net.pore_properties['coords'] = sp.hstack((Lc*(0.5 + np.transpose(np.nonzero(template))),np.zeros((Np,1))))
         else:
             self._net.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(template)))

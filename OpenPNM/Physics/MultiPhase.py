@@ -18,10 +18,10 @@ def effective_occupancy(network,fluid,method='strict'):
         fluid.throat_conditions['conduit_occupancy'] = -fluid.pore_conditions['occupancy'][pores[:,0]]*-fluid.pore_conditions['occupancy'][pores[:,1]]
     elif method == 'moderate':
         #if only ONE pore isfilled an open throat is still considered open
-        print 'nothing yet'
+        print('nothing yet')
     elif method == 'liberal':
         #if BOTH pores are filled an open throat is still considered open
-        print 'nothing yet'
+        print('nothing yet')
 
 def update_occupancy_OP(fluid,Pc=0):
     r"""
@@ -32,12 +32,12 @@ def update_occupancy_OP(fluid,Pc=0):
         fluid.pore_conditions['occupancy'] = sp.array(fluid.pore_conditions['Pc_invaded']<=Pc,ndmin=1)
         fluid.throat_conditions['occupancy'] = sp.array(fluid.throat_conditions['Pc_invaded']<=Pc,ndmin=1)
     except:
-        print ('OP has not been run with this fluid, checking partner fluid')
+        print('OP has not been run with this fluid, checking partner fluid')
         try:
             #Apply occupancy to given fluid
             fluid.pore_conditions['occupancy'] = sp.array(~(fluid.partner.pore_conditions['Pc_invaded']<=Pc),ndmin=1)
             fluid.throat_conditions['occupancy'] = sp.array(~(fluid.partner.throat_conditions['Pc_invaded']<=Pc),ndmin=1)
-            print ('Partner fluid found, calculating occupancy at requested Pc of invading fluid')
+            print('Partner fluid found, calculating occupancy at requested Pc of invading fluid')
         except:
             raise Exception('It seems that OP has not been run on either fluid')
     #Apply occupancy to partner fluid if Exception was not raised
@@ -48,7 +48,7 @@ def update_occupancy_IP(network,fluid,Seq=0):
     r"""
     ---
     """
-    try: 
+    try:
         fluid.pore_conditions['occupancy'] = fluid.pore_conditions['IP_inv_seq']<Seq
         fluid.throat_conditions['occupancy'] = fluid.throat_conditions['IP_inv_seq']<Seq
     except: raise Exception('Something bad happened')

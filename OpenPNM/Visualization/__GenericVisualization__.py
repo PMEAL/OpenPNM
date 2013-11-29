@@ -11,20 +11,20 @@ import scipy as sp
 
 class GenericVisualization(OpenPNM.Utilities.OpenPNMbase):
     r"""
-    GenericVisualization - Base class to visualize networks    
-    
+    GenericVisualization - Base class to visualize networks
+
     Parameters
     ----------
-    
+
     Examples
     --------
-    >>> print 'nothing yet'
-    
-    .. note:: 
+    >>> print('nothing yet')
+
+    .. note::
     n/a
-    
+
     """
-    
+
     def __init__(self,**kwargs):
         r"""
         Initialize

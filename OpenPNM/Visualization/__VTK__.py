@@ -58,14 +58,14 @@ class VTK(GenericVisualization):
 
         """
         output_path = os.path.join( os.path.expanduser('~'), filename )
-        print '     ooooooooooooooooooooooooooooooooooooooooo'
-        print '      Writing VTK file:', output_path
-        print '     ooooooooooooooooooooooooooooooooooooooooo'
+        print('     ooooooooooooooooooooooooooooooooooooooooo')
+        print('      Writing VTK file:', output_path)
+        print('     ooooooooooooooooooooooooooooooooooooooooo')
         self._logger.info("Writing VTK File...please wait")
         self._f = open(output_path,'w')
         self._net=net
         self._fluid=fluid
-        
+
         self._write_vtk_header()
         self._write_vtk_points()
         self._write_vtk_connections()
@@ -191,8 +191,8 @@ class VTK(GenericVisualization):
                                 self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][i][0])))
                                 self._f.write(' ')
                     self._f.write('\n</DataArray>\n')
-            except: 
-                print 'No fluid partner output to VTK'
+            except:
+                print('No fluid partner output to VTK')
         self._f.write('</PointData>\n')
 
     def _write_footer(self):

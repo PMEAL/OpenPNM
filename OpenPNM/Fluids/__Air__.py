@@ -48,4 +48,4 @@ class Air(GenericFluid):
         return self
 
 if __name__ =="__main__":
-    print 'test script not written for Air class'
+    print('no tests yet')
