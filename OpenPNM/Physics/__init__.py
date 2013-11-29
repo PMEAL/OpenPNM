@@ -50,9 +50,9 @@ Submodules
    :show-inheritance:
 
 """
-import ElectronConduction
-import CapillaryPressure
-import MassTransport
-import HeatConduction
-import FluidFlow
-import MultiPhase
+from . import ElectronConduction
+from . import CapillaryPressure
+from . import MassTransport
+from . import HeatConduction
+from . import FluidFlow
+from . import MultiPhase

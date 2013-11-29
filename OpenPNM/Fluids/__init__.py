@@ -25,11 +25,11 @@ Submodules
 from __GenericFluid__ import GenericFluid
 from __Water__ import Water
 from __Air__ import Air
-import Viscosity
-import MolarDensity
-import Diffusivity
-import SurfaceTension
-import VaporPressure
-import ContactAngle
-import ElectricalConductivity
-import ThermalConductivity
+from . import Viscosity
+from . import MolarDensity
+from . import Diffusivity
+from . import SurfaceTension
+from . import VaporPressure
+from . import ContactAngle
+from . import ElectricalConductivity
+from . import ThermalConductivity
