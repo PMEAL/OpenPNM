@@ -22,9 +22,9 @@ Submodules
 
 """
 
-from __GenericFluid__ import GenericFluid
-from __Water__ import Water
-from __Air__ import Air
+from .__GenericFluid__ import GenericFluid
+from .__Water__ import Water
+from .__Air__ import Air
 from . import Viscosity
 from . import MolarDensity
 from . import Diffusivity

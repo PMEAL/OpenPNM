@@ -46,11 +46,11 @@ Submodules
 
 """
 
-from __GenericAlgorithm__ import GenericAlgorithm
-from __InvasionPercolation__ import InvasionPercolation
-from __OrdinaryPercolation__ import OrdinaryPercolation
-from __FickianDiffusion__ import FickianDiffusion
-from __Permeability__ import Permeability
-from __FourierConduction__ import FourierConduction
-from __OhmicConduction__ import OhmicConduction
-from __LinearSolver__ import LinearSolver
+from .__GenericAlgorithm__ import GenericAlgorithm
+from .__InvasionPercolation__ import InvasionPercolation
+from .__OrdinaryPercolation__ import OrdinaryPercolation
+from .__FickianDiffusion__ import FickianDiffusion
+from .__Permeability__ import Permeability
+from .__FourierConduction__ import FourierConduction
+from .__OhmicConduction__ import OhmicConduction
+from .__LinearSolver__ import LinearSolver
