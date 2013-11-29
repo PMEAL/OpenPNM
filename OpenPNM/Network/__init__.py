@@ -37,4 +37,4 @@ Classes
     
 """
 
-from __GenericNetwork__ import GenericNetwork
+from .__GenericNetwork__ import GenericNetwork

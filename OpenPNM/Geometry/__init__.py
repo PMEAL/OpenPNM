@@ -38,8 +38,8 @@ Classes
    
 """
 
-from __GenericGeometry__ import GenericGeometry
-from __Cubic__ import Cubic
-from __Delaunay__ import Delaunay
-from __Template__ import Template
-from __Import__ import MatFile
+from .__GenericGeometry__ import GenericGeometry
+from .__Cubic__ import Cubic
+from .__Delaunay__ import Delaunay
+from .__Template__ import Template
+from .__Import__ import MatFile
