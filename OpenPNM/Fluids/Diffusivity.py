@@ -4,7 +4,6 @@ module Diffusivity
 ===============================================================================
 
 """
-import OpenPNM
 import scipy as sp
 
 def constant(fluid,value,**params):

@@ -13,7 +13,6 @@ module __OrdinaryPercolation__: Ordinary Percolation Algorithm
 
 """
 
-import OpenPNM
 import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
@@ -71,8 +70,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._fluid_def = defending_fluid
         invading_fluid.set_pair(defending_fluid)
         self._fluid_inv.refresh()
-        #Apply necessary pore scale physics models
-        OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._fluid_inv)
         #Create a pore and throat conditions list to store inv_val at which each is invaded
         self._fluid_inv.pore_conditions['Pc_invaded'] = np.zeros(self._net.get_num_pores(),np.float)
         self._fluid_inv.throat_conditions['Pc_invaded'] = np.zeros(self._net.get_num_throats(),np.float)

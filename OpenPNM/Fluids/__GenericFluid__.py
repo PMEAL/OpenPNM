@@ -1,8 +1,7 @@
-import OpenPNM
 import scipy as sp
 import copy
 
-class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
+class GenericFluid:
     r"""
     GenericFluid - Base class to generate fluid properties
 
@@ -11,8 +10,8 @@ class GenericFluid(OpenPNM.Utilities.OpenPNMbase):
 
     """
     def __init__(self,**kwargs):
-        super(GenericFluid,self).__init__(**kwargs)
-        self._logger.debug("Construct class")
+#        super(GenericFluid,self).__init__(**kwargs)
+#        self._logger.debug("Construct class")
         #List of fluid property categories that are invoked when fluid is created
         self._implemented_methods = ['diffusivity',
                                      'viscosity',

@@ -5,7 +5,6 @@ module __GenericAlgorithm__: Base class to construct pore networks
 .. warning:: The classes of this module should be loaded through the 'Algorithms/__init__.py' file.
 
 """
-
 import OpenPNM
 import scipy as sp
 import numpy as np

@@ -12,7 +12,6 @@ module __OhmicConduction__:
 
 """
 
-import OpenPNM
 import scipy as sp
 from .__LinearSolver__ import LinearSolver
 

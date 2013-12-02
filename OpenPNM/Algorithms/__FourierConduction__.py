@@ -14,7 +14,6 @@ module __FourierConduction__:
 
 """
 
-import OpenPNM
 import scipy as sp
 from .__LinearSolver__ import LinearSolver
 

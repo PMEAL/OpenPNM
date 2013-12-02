@@ -1,8 +1,7 @@
-import OpenPNM
 import scipy as sp
 import copy
 
-from __GenericFluid__ import GenericFluid
+from .__GenericFluid__ import GenericFluid
 
 class Toray090(GenericFluid):
     r"""

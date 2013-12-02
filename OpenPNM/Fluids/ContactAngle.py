@@ -4,7 +4,6 @@ module ContactAngle
 ===============================================================================
 
 """
-import OpenPNM
 import scipy as sp
 
 def constant(fluid,value=120,**params):

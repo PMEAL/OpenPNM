@@ -1,4 +1,3 @@
-import OpenPNM
 import scipy as sp
 import copy
 

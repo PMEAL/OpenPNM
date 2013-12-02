@@ -13,7 +13,6 @@ module __LinearSolver__: Algorithm for solving transport processes
 
 """
 
-import OpenPNM
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.linalg as splin
