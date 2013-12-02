@@ -4,7 +4,6 @@ module ThermalConductivity
 ===============================================================================
 
 """
-import OpenPNM
 import scipy as sp
 
 def constant(fluid,value=0.001,**params):

@@ -1,4 +1,3 @@
-
 import OpenPNM
 import scipy as sp
 from time import clock
@@ -86,21 +85,21 @@ OP_1.run(network=pn,invading_fluid=water,defending_fluid=air,inlets=a,npts=50,AL
 b = pn.pore_properties['type']==5
 OP_1.evaluate_trapping(network=pn,invading_fluid=water,outlets=b)
 
-#----------------------------------------------------------------------
-'''Perform an Injection Experiment (InvasionPercolation)'''
-#----------------------------------------------------------------------
-#Create some new Fluids
-water2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe,T=353,P=101325)
-air2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe,T=353,P=101325)
-#Initialize algorithm object
-IP_1 = OpenPNM.Algorithms.InvasionPercolation()
-#Apply desired/necessary pore scale physics methods
-OpenPNM.Physics.CapillaryPressure.Washburn(pn,water2)
-face = pn.pore_properties['type']==3
-quarter = sp.rand(pn.get_num_pores(),)<.1
-inlets = pn.pore_properties['numbering'][face&quarter]
-outlets = pn.pore_properties['numbering'][pn.pore_properties['type']==4]
-IP_1.run(pn,invading_fluid=water2,defending_fluid=air2,inlets=inlets,outlets=outlets)
+##----------------------------------------------------------------------
+#'''Perform an Injection Experiment (InvasionPercolation)'''
+##----------------------------------------------------------------------
+##Create some new Fluids
+#water2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe,T=353,P=101325)
+#air2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe,T=353,P=101325)
+##Initialize algorithm object
+#IP_1 = OpenPNM.Algorithms.InvasionPercolation()
+##Apply desired/necessary pore scale physics methods
+#OpenPNM.Physics.CapillaryPressure.Washburn(pn,water2)
+#face = pn.pore_properties['type']==3
+#quarter = sp.rand(pn.get_num_pores(),)<.1
+#inlets = pn.pore_properties['numbering'][face&quarter]
+#outlets = pn.pore_properties['numbering'][pn.pore_properties['type']==4]
+#IP_1.run(pn,invading_fluid=water2,defending_fluid=air2,inlets=inlets,outlets=outlets)
 
 #----------------------------------------------------------------------
 '''Performm a Diffusion Simulation on Partially Filled Network'''

@@ -13,12 +13,6 @@ This submodule contains methods for estimating fluid properties
     none
 
 
-Submodules
-----------
-::
-
- None                            --- No subpackages at the moment
-
 
 """
 

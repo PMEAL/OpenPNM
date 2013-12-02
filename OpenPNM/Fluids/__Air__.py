@@ -1,4 +1,3 @@
-import OpenPNM
 import scipy as sp
 import copy
 
@@ -10,9 +9,9 @@ class Air(GenericFluid):
     """
     def __init__(self,**kwargs):
         super(Air,self).__init__(**kwargs)
-        self._logger.debug("Construct class")
+        self._logger.critical("Construct class")
 
-    def create(self,fluid_name='air',T=298.,P=101325.):
+    def create(fluid_name='air',T=298.,P=101325.):
         r"""
         Creates Fluid object with a default name 'air'
 

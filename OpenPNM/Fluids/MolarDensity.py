@@ -4,7 +4,6 @@ module MolarDensity
 ===============================================================================
 
 """
-import OpenPNM
 import scipy as sp
 
 def constant(fluid,value=40.89,**params):

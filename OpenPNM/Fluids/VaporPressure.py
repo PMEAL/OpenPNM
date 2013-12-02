@@ -4,7 +4,6 @@ module VaporPressure
 ===============================================================================
 
 """
-import OpenPNM
 import scipy as sp
 
 def constant(fluid,value=3000,**params):

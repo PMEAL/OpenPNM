@@ -6,7 +6,6 @@ module SurfaceTension
 """
 
 import scipy as sp
-import OpenPNM
 
 def constant(fluid, value=0.072,**params):
     return value

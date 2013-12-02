@@ -14,7 +14,6 @@ module __InvasionPercolation__: Invasion Percolation Algorithm
 
 """
 
-import OpenPNM
 import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
