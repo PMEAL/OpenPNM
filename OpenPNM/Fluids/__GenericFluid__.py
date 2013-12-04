@@ -1,5 +1,6 @@
 import scipy as sp
 import copy
+import OpenPNM
 
 class GenericFluid:
     r"""
