@@ -29,11 +29,12 @@ pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
 #======================================================================
 #Define the fluids properties
 air_recipe = {
-'name': 'air',
-'Pc': 3.771e6, #Pa
-'Tc': 132.65,  #K
-'MW': 0.0291,  #kg/mol
-'diffusivity': {'method': 'Fuller',
+'Name': 'air',
+'Thermo':   { 'Pc': 3.771e6, #Pa
+              'Tc': 132.65,  #K
+              'MW': 0.0291,  #kg/mol
+            },
+'Diffusivity': {'method': 'Fuller',
                 'MA': 0.03199,
                 'MB': 0.0291,
                 'vA': 16.3,
@@ -48,7 +49,7 @@ air_recipe = {
 'contact_angle': {'method': 'na'},
 }
 water_recipe = {
-'name': 'water',
+'Name': 'water',
 'Pc': 2.206e6, #Pa
 'Tc': 647,     #K
 'MW': 0.0181,  #kg/mol

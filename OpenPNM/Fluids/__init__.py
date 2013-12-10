@@ -17,6 +17,7 @@ This submodule contains methods for estimating fluid properties
 """
 
 from .__GenericFluid__ import GenericFluid
+from .__GenericGas__ import GenericGas
 from .__Water__ import Water
 from .__Air__ import Air
 from . import Viscosity

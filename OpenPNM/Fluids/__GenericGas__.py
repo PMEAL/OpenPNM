@@ -1,4 +1,6 @@
+import OpenPNM
 import scipy as sp
+import sys
 import copy
 
 class GenericGas:
@@ -13,30 +15,21 @@ class GenericGas:
 #        super(GenericFluid,self).__init__(**kwargs)
 #        self._logger.debug("Construct class")
         #List of fluid property categories that are invoked when fluid is created
-        self._implemented_methods = ['diffusivity',
-                                     'viscosity',
-                                     'molar_density',]
+        print('init of GenericGas')
 
-    def create(self,fluid_recipe,T=298.,P=101325.):
+    def create(self,T=298.,P=101325.,**prms):
         r"""
-        Creates a fluid using the recipe provided
-
-        Parameters
-        ----------
-        fluid_recipe : Dictionary
-            A dictionary of key : value pairs that provide instructions for calculating fluid conditions
-
-        T & P : float (optional)
-            The temperature and pressure at which fluid should be create, defaults to STP.
+        Create a fluid object using the supplied parameters
         """
-        self.name = fluid_recipe['name']
-        self._fluid_recipe = copy.deepcopy(fluid_recipe)
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-        self.pore_conditions.update({'temperature': T})
-        self.pore_conditions.update({'pressure': P})
-        self.regenerate()
+        self.props = {}
+        key = 'Diffusivity'
+        a = getattr(OpenPNM.Fluids, key)
+        a = a.__getattribute__(prms[key]['method'])
+        self.__setattr__(key,a)
         return self
+
+#        for key in prms:
+#            self.__setattr__(key,FluidBuilder(prms[key]))
 
     def refresh(self):
         self.regenerate()
@@ -87,33 +80,6 @@ class GenericGas:
         '''
         self.partner = fluid2
         fluid2.partner = self
-
-    def diffusivity(self):
-        try:
-            params = self._fluid_recipe['diffusivity']
-            eqn = getattr(OpenPNM.Fluids.Diffusivity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def viscosity(self):
-        try:
-            params = self._fluid_recipe['viscosity']
-            eqn = getattr(OpenPNM.Fluids.Viscosity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-           return -1
-
-    def molar_density(self):
-        try:
-            params = self._fluid_recipe['molar_density']
-            eqn = getattr(OpenPNM.Fluids.MolarDensity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
 
     def interpolate_pore_conditions(self,network,Tinfo=None):
         r"""
@@ -174,6 +140,17 @@ class GenericGas:
             for i in sp.r_[0:sp.shape(nPs)[0]]:
                 Tinfo[i] = sp.mean(Pinfo[nPs[i]])
         return Tinfo
+
+    def FluidBuilder():
+    
+        
+        def doit(self,property_name,prms):
+            self.params = {}
+            for it in prms.keys():
+                self.params[it] = prms[it]
+            a = getattr(OpenPNM.Fluids, property_name)
+            self.method = a.__getattribute__(prms['method'])
+            return self
 
 if __name__ =="__main__":
 
