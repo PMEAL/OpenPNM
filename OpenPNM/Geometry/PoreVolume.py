@@ -6,21 +6,20 @@ module PoreVolume
 """
 import scipy as sp
 
-def constant(value,**params):
+def constant(network,value,**params):
     r"""
     Assigns specified constant value
     """
-    print('constant')
-    return value
+    network.pore_properties['volume'] = value
 
-def sphere(**params):
+def sphere(network,**params):
     r"""
     Calculate pore volume from diameter for a spherical pore body
     """
-    print('sphere: nothing yet')
+    network.pore_properties['volume'] = sp.pi/6*network.pore_properties['diameter']**3
     
-def cube(**params):
+def cube(network,**params):
     r"""
     Calculate pore volume from diameter for a cubic pore body
     """
-    print('cube: nothing yet')
+    network.pore_properties['volume'] = network.pore_properties['diameter']**3
