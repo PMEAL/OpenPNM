@@ -22,7 +22,7 @@ params_geo1= {
                   'btype': [0,0,0]  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
 }
 #Generate Geometry
-pn = OpenPNM.Geometry.Cubic(loglevel=40).generate(**params_geo1)
+pn = OpenPNM.Topology.Cubic(loglevel=40).generate(**params_geo1)
 
 #======================================================================
 '''Generate Fluids'''

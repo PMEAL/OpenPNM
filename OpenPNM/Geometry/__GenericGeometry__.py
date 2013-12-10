@@ -54,11 +54,7 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Generate the network
         """
-        self._logger.debug("self.generate()")
-        self._generate_setup(**params)
-        self._generate_pores()
-        self._generate_throats()
-        self._add_boundaries()
+        self._logger.debug("self.geometry()")
         self._generate_pore_seeds()
         self._generate_throat_seeds()
         self._generate_pore_diameters(stats_pores)
