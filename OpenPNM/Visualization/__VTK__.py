@@ -131,7 +131,7 @@ class VTK(GenericVisualization):
                 self._f.write('\n</DataArray>\n')
         # Now for fluid
         if self._fluid != 'none':
-            fluid_name = self._fluid._fluid_recipe['name']
+            fluid_name = self._fluid._fluid_recipe['Name']
             pore_keys = list(self._fluid.pore_conditions.keys())
             num_pore_keys = sp.size(pore_keys)
             for j in range(num_pore_keys):

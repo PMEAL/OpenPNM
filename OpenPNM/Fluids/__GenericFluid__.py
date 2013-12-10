@@ -33,7 +33,7 @@ class GenericFluid:
         T & P : float (optional)
             The temperature and pressure at which fluid should be create, defaults to STP.
         """
-        self.name = fluid_recipe['name']
+        self.name = fluid_recipe['Name']
         self._fluid_recipe = copy.deepcopy(fluid_recipe)
         self.pore_conditions = {}
         self.throat_conditions = {}
