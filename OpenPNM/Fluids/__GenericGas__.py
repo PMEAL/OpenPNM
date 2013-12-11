@@ -4,7 +4,7 @@ import sys
 import copy
 from functools import partial
 
-class GenericGas:
+class GenericGas(OpenPNM.Utilities.OpenPNMbase):
     r"""
     GenericGas - Base class to generate gas properties
 
@@ -22,28 +22,18 @@ class GenericGas:
         r"""
         Create a fluid object using the supplied parameters
         """
-        
+        self.pore_conditions = {}
+        self.throat_conditions = {}
+        self.pore_conditions['temperature'] = T
+        self.pore_conditions['pressure'] = P
         for key, args in prms.items():
             try:
                 function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) # this gets the method from the file
                 preloaded_fn = partial(function, fluid=self, **args) #
                 setattr(self, key, preloaded_fn)
-                    
             except AttributeError:
                 print( "Did not manage to load {}.".format(key) )
-            
-#        self.props = {}
-#        key = 'Diffusivity'
-#        a = getattr(OpenPNM.Fluids, key)
-#        a = a.__getattribute__(prms[key]['method'])
-#        self.__setattr__(key,a)
-#        return self
-#
-#        for key in prms:
-#            self.__setattr__(key,FluidBuilder(prms[key]))
-
-    def refresh(self):
-        self.regenerate()
+        return self
 
     def regenerate(self):
         r'''
@@ -57,9 +47,9 @@ class GenericGas:
         for i in self.throat_conditions.keys():
             self.throat_conditions[i] = sp.array(self.throat_conditions[i],ndmin=1)
 
-    def reset(self):
+    def reset(self,T=298.,P=101325.):
         r'''
-        Remove all existing condtions from the fluid
+        Remove all existing condtions from the fluid, but keep property definitions
 
         TODO: This works, but is kludgy
         '''
@@ -67,18 +57,10 @@ class GenericGas:
         self.throat_conditions = {}
         try: del self.partner
         except: pass
-        self.pore_conditions.update({'temperature': 298.})
-        self.pore_conditions.update({'pressure': 101325.})
+        self.pore_conditions.update({'temperature': T})
+        self.pore_conditions.update({'pressure': P})
         self.regenerate()
         return self
-
-    def clone(self):
-        r'''
-        Create an exact duplicate fluid, but a unique object.
-
-        TODO: Doesn't work yet
-        '''
-        return self.__new__
 
     def set_pair(self,fluid2):
         r'''
@@ -152,20 +134,30 @@ class GenericGas:
                 Tinfo[i] = sp.mean(Pinfo[nPs[i]])
         return Tinfo
 
-    def FluidBuilder():
-    
-        
-        def doit(self,property_name,prms):
-            self.params = {}
-            for it in prms.keys():
-                self.params[it] = prms[it]
-            a = getattr(OpenPNM.Fluids, property_name)
-            self.method = a.__getattribute__(prms['method'])
-            return self
-
 if __name__ =="__main__":
 
     #Create fluids
-    agg = OpenPNM.Fluids.GenericFluid().create(agg_recipe)
+    air_recipe = {
+    'Name': 'air',
+    'Thermo':   { 'Pc': 3.771e6, #Pa
+                  'Tc': 132.65,  #K
+                  'MW': 0.0291,  #kg/mol
+                },
+    'Diffusivity': {'method': 'Fuller',
+                    'MA': 0.03199,
+                    'MB': 0.0291,
+                    'vA': 16.3,
+                    'vB': 19.7},
+    'Viscosity': {'method': 'Reynolds',
+                  'uo': 0.001,
+                  'b': 0.1},
+    'MolarDensity': {'method': 'ideal_gas',
+                      'R': 8.314},
+    'SurfaceTension': {'method': 'constant',
+                        'value': 0},
+    'ContactAngle': {'method': 'na'},
+    }
+    gas = OpenPNM.Fluids.GenericGas().create(air_recipe)
+
 
 

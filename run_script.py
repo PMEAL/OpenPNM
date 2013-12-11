@@ -39,29 +39,30 @@ air_recipe = {
                 'MB': 0.0291,
                 'vA': 16.3,
                 'vB': 19.7},
-'viscosity': {'method': 'Reynolds',
+'Viscosity': {'method': 'Reynolds',
               'uo': 0.001,
               'b': 0.1},
-'molar_density': {'method': 'ideal_gas',
+'MolarDensity': {'method': 'ideal_gas',
                   'R': 8.314},
-'surface_tension': {'method': 'constant',
+'SurfaceTension': {'method': 'constant',
                     'value': 0},
-'contact_angle': {'method': 'na'},
+'ContactAngle': {'method': 'na'},
 }
+
 water_recipe = {
 'Name': 'water',
-'Pc': 2.206e6, #Pa
-'Tc': 647,     #K
-'MW': 0.0181,  #kg/mol
-'diffusivity': {'method': 'constant',
+'Thermo':   {'Pc': 2.206e6, #Pa
+             'Tc': 647,     #K
+             'MW': 0.0181,  #kg/mol},
+'Diffusivity': {'method': 'constant',
                 'value': 1e-12},
-'viscosity': {'method': 'constant',
+'Viscosity': {'method': 'constant',
               'value': 0.001},
-'molar_density': {'method': 'constant',
+'MolarDensity': {'method': 'constant',
                   'value': 44445},
-'surface_tension': {'method': 'Eotvos',
+'SurfaceTension': {'method': 'Eotvos',
                     'k': 2.25e-4},
-'contact_angle': {'method': 'constant',
+'ContactAngle': {'method': 'constant',
                   'value': 120},
 }
 #Create fluids
