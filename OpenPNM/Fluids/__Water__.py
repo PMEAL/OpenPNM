@@ -11,7 +11,7 @@ class Water(GenericFluid):
         super(Water,self).__init__(**kwargs)
         self._logger.debug("Construct class")
 
-    def create(self,fluid_name='water',T=298.,P=101325.):
+    def create(self,T=298.,P=101325.):
         r"""
         Creates Fluid object with a default name 'water'
 
@@ -22,21 +22,22 @@ class Water(GenericFluid):
             fluid_name = 'water' (default)\n
             fluid name that gets tagged to fluid-specific pore and throat conditions\n
         """
-        self._fluid_recipe = {   'name': fluid_name,
-                                   'Pc': 2.206e6, #Pa
-                                   'Tc': 647,     #K
-                                   'MW': 0.0181,  #kg/mol
-                          'diffusivity': {'method': 'constant',
-                                           'value': 1e-12},
-                            'viscosity': {'method': 'constant',
-                                           'value': 0.001},
-                        'molar_density': {'method': 'constant',
-                                           'value': 44445},
-                      'surface_tension': {'method': 'empirical',
-                                               'a': [7.567977271, -0.015885753, 7.47908E-06, -1.83337E-07, 3.54966E-10, 2.25e-4]},
-                        'contact_angle': {'method': 'constant',
-                                           'value': 120},
-                                           }
+        water_recipe = {
+        'Name': 'water',
+        'Thermo':   {'Pc': 2.206e6, #Pa
+                     'Tc': 647,     #K
+                     'MW': 0.0181,  #kg/mol},
+        'Diffusivity': {'method': 'constant',
+                        'value': 1e-12},
+        'Viscosity': {'method': 'constant',
+                      'value': 0.001},
+        'MolarDensity': {'method': 'constant',
+                          'value': 44445},
+        'SurfaceTension': {'method': 'Eotvos',
+                            'k': 2.25e-4},
+        'ContactAngle': {'method': 'constant',
+                          'value': 120},
+        }
         self.pore_conditions = {}
         self.throat_conditions = {}
         self.pore_conditions.update({'temperature': T})
