@@ -18,7 +18,7 @@ def na(fluid,**params):
      """
     return -1
 
-def Fuller(fluid,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7,**params):
+def Fuller(fluid, MA, MB, vA, vB, **params): #MA=0.03199,MB=0.0291,vA=16.3,vB=19.7,**params):
     r"""
     Uses Fuller model to estimate diffusion coefficient for gases from first principles at conditions of interest
 

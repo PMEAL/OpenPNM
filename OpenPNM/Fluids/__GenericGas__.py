@@ -2,6 +2,7 @@ import OpenPNM
 import scipy as sp
 import sys
 import copy
+from functools import partial
 
 class GenericGas:
     r"""
@@ -21,13 +22,23 @@ class GenericGas:
         r"""
         Create a fluid object using the supplied parameters
         """
-        self.props = {}
-        key = 'Diffusivity'
-        a = getattr(OpenPNM.Fluids, key)
-        a = a.__getattribute__(prms[key]['method'])
-        self.__setattr__(key,a)
-        return self
-
+        
+        for key, args in prms.items():
+            try:
+                function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) # this gets the method from the file
+                preloaded_fn = partial(function, fluid=self, **args) #
+                setattr(self, key, preloaded_fn)
+                    
+            except AttributeError:
+                print( "Did not manage to load {}.".format(key) )
+            
+#        self.props = {}
+#        key = 'Diffusivity'
+#        a = getattr(OpenPNM.Fluids, key)
+#        a = a.__getattribute__(prms[key]['method'])
+#        self.__setattr__(key,a)
+#        return self
+#
 #        for key in prms:
 #            self.__setattr__(key,FluidBuilder(prms[key]))
 
