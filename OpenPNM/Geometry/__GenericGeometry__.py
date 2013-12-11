@@ -17,7 +17,7 @@ module __GenericGeometry__: Base class to construct pore networks
 import OpenPNM
 import scipy as sp
 import scipy.stats as spst
-import matplotlib.pyplot as plt
+from functools import partial
 import numpy as np
 
 class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
@@ -41,111 +41,23 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-
-    def generate(self, stats_pores = {'name' : 'weibull_min',
-                                     'shape' : 1.5,
-                                       'loc' : 6e-6,
-                                     'scale' : 2.5e-5},
-                     stats_throats = {'name' : 'weibull_min',
-                                     'shape' : 1.5,
-                                       'loc' : 6e-6,
-                                     'scale' : 2.5e-5},
-                          **params):
+       
+    def create(self,**prms):
         r"""
-        Generate the network
+        Create a geometry object using the supplied parameters
         """
-        self._logger.debug("self.geometry()")
-        self._generate_pore_seeds()
-        self._generate_throat_seeds()
-        self._generate_pore_diameters(stats_pores)
-        self._generate_throat_diameters(stats_throats)
-        self._calc_pore_volumes()
-        self._calc_throat_lengths()
-        self._calc_throat_volumes()
-        self._logger.debug("\t end of self.generate()")
-        return self._net
-
-    def _generate_pore_seeds(self):
-        r"""
-        Assign random seed values to pores
-
-        Notes
-        -----
-        To reproduce an identical network it is necessary to set the seed of the random number generator.  This is accomplished using :code:`scipy.random.seed(<value>)`.
-        """
-        self._logger.info("generate_pore_seeds: Assign each pore a random seed")
-        print('call pore seed method here')
-        self._logger.debug("generate_pore_seeds: End of method")
-
-    def _generate_throat_seeds(self):
-        r"""
-        Assigns random seeds to throats by adopting the smaller of its neighboring pore seed values
-
-        Notes
-        -----
-        For this step any boundary pores are assumed to have seed value of 1, which forces the throat to adopt the internal pore's seed.
-        """
-        self._logger.info("generate_throat_seeds: Assign each throat its smaller neighboring pore seed")
-        print('call throat seed method here')   
-        self._logger.debug("generate_throat_seeds: End of method")
-
-    def _generate_pore_diameters(self,stats_pores):
-        r"""
-        Calculate pore diameter from given statisical distribution using the random seed value for each pore
-
-        Notes
-        -----
-        The stats_pores dictionary contains the requisite information for the desired distribution.  Each distribution in the Scipy stats library takes slightly different parameters, so this dictionary allows flexibility to send the necessary information.
-
-        """
-        self._logger.info("generate_pore_diameters: Generate pore diameter from "+stats_pores['name']+" distribution")
-        print('call pore diameter method here')   
-        self._logger.debug("generate_pore_diameters: End of method")
-
-    def _generate_throat_diameters(self,stats_throats):
-        r"""
-        Calculate throat diameter from given statisical distribution using the random seed value for each throat
-
-        Notes
-        -----
-        The stats_throats dictionary contains the requisite information for the desired distribution.  Each distribution in the Scipy stats library takes slightly different parameters, so this dictionary allows flexibility to send the necessary information.
-        """
-        self._logger.info("generate_throat_diameters: Generate throat diameter from "+stats_throats['name']+" distribution")
-        print('call throat diameter method here')   
-        self._logger.debug("generate_throat_diameters: End of method")
-
-    def _calc_pore_volumes(self):
-        r"""
-        Calculates pore volume from diameter assuming a spherical pore
-        """
-        self._logger.info("calc_pore_volumes: Setting pore volumes assuming cubic bodies")
-        print('call pore volume method here')
-        self._logger.debug("calc_pore_volumes: End of method")
-
-    def _calc_throat_volumes(self):
-        r"""
-        Calculates throat volume from diameter and length assuming a cylindrical pore of constant cross-section
-
-        Notes
-        -----
-        This calculation does not account for the overlap between the cylinder and spherical pore bodies, so volume is slightly over estimated.
-        """
-        self._logger.info("calc_throat_volumes: Setting throat volumes assuming square cross-section")
-        print('call throat volume method here')
-        self._logger.debug("calc_throat_volumes: End of method")
-
-    def _calc_throat_lengths(self):
-        r"""
-        Determine throat length from distance between pores minus the radius of each pore
-
-        Notes
-        -----
-        There is a slight geometric inconsistancy here due to the overlap between the cylinder and the sphereical pore bodies.
-        """
-        self._logger.info("calc_throat_lengths: Determine throat length from distance between pores")
-        print('call throat length method here')        
-        self._logger.debug("calc_throat_lengths: End of method")
-
+        self.pore_properties = {}
+        self.throat_properties = {}
+        for key, args in prms.items():
+            try:
+                function = getattr( getattr(OpenPNM.Geometry, key), args['method'] ) # this gets the method from the file
+                preloaded_fn = partial(function, geo=self, **args) 
+                setattr(self, key, preloaded_fn)
+                print ("Loaded {}.".format(key))
+            except AttributeError:
+                print( "Did not manage to load {}.".format(key) )
+        return self
+        
     @staticmethod
     def translate_coordinates(net,displacement=[0,0,0]):
         r"""
