@@ -44,8 +44,7 @@ def Fuller(fluid, MA, MB, vA, vB, **params): #MA=0.03199,MB=0.0291,vA=16.3,vB=19
     MAB = MAB*1e3
     P = P*1e-5
     DAB = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3)+vB**(1./3))**2)*1e-4
-    return DAB
-
+    fluid.pore_conditions['diffusivity'] = DAB
 
 def Fuller_scaling(fluid,DABo=2.09e-5,To=298.,Po=101325.,**params):
     r"""
@@ -64,7 +63,7 @@ def Fuller_scaling(fluid,DABo=2.09e-5,To=298.,Po=101325.,**params):
     Ti = fluid.pore_conditions['temperature']
     Pi = fluid.pore_conditions['pressure']
     DAB = DABo*(Ti/To)**1.75*(Po/Pi)
-    return DAB
+    fluid.pore_conditions['diffusivity'] = DAB
 
 def TynCalus(fluid,VA=0.018,VB=0.018,sigma_A=0.07197,sigma_B=0.07197,**params):
     r"""
@@ -89,7 +88,7 @@ def TynCalus(fluid,VA=0.018,VB=0.018,sigma_A=0.07197,sigma_B=0.07197,**params):
     T = fluid.pore_conditions['temperature']
     mu = fluid.pore_conditions['viscosity']
     DAB = 8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T*(sigma_B/sigma_A)**0.15/(mu*1e3)
-    return DAB
+    fluid.pore_conditions['diffusivity'] = DAB
 
 def TynCalus_Scaling(fluid,DABo=2.09e-9,To=298.,mu_o=8.90e-4,**params):
     r"""
@@ -108,4 +107,4 @@ def TynCalus_Scaling(fluid,DABo=2.09e-9,To=298.,mu_o=8.90e-4,**params):
     Ti = fluid.pore_conditions['temperature']
     mu_i = fluid.pore_conditions['viscosity']
     DAB = DABo*(Ti/To)*(mu_o/mu_i)
-    return DAB
+    fluid.pore_conditions['diffusivity'] = DAB

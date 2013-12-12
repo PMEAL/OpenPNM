@@ -26,6 +26,7 @@ Examples:
 
 
 import logging as _logging
+import scipy.constants
 
 # set up logging to file - see previous section for more details
 _logging.basicConfig(level=_logging.ERROR,
@@ -33,8 +34,7 @@ _logging.basicConfig(level=_logging.ERROR,
                     datefmt='%m-%d %H:%M',
                     )
 
-
-class OpenPNMbase(object):
+class Utilities(object):
     r"""
     .. class:: `OpenPNM.Utilities.OpenPNMbase` -- Base class for OpenPNM
     
@@ -68,11 +68,9 @@ class OpenPNMbase(object):
        CRITICAL 50      A serious error, might compromise program execution
        ======== =====   =============================================================
        
-    self._param : HDF
-        Contains the set of parameters
     """
     def __init__(self,**kwargs):
-        super(OpenPNMbase,self).__init__()
+        super(Utilities,self).__init__()
         if 'loggername' in kwargs.keys():
             self._logger = _logging.getLogger(kwargs['loggername'])
         else:
@@ -80,17 +78,10 @@ class OpenPNMbase(object):
         if 'loglevel' in kwargs.keys():
             loglevel=kwargs['loglevel']
             self.set_loglevel(loglevel)
+            
+        self.constants = scipy.constants
     
-    
-    def declare_parameters(self):
-        r"""
-          Create a default parameter file and create the parameter file logic.      
-        """
-        self._logger.warning('Implement this function')
-                
-        
-    
-    def IOpickle(self,filename="test.pickle"):
+    def save_network(self,filename="test.pickle"):
         r"""
         Write the class object to a pickle file.close
         
@@ -100,32 +91,53 @@ class OpenPNMbase(object):
             name of the file to be written.
         """
         self._logger.debug('Pickle self')
+        print('Save current Network: Nothing yet')
         
 
-    def IOunpickle(self):
+    def load_network(self,filename="test.pickle"):
+        r"""
+        Write the class object to a pickle file.close
+        
+        Parameters
+        ---------- 
+        filename : string
+            name of the file to be written.
+        """
         self._logger.debug('UnPickle self')
+        print('Load saved network: Nothing yet')
         
     def set_loglevel(self,level=20):
         r"""
         Sets the effective log level for this class
         
         Parameters
-        ---------- 
+        ----------
         level : int
             Level above which messages should be logged.
         """
         self._logger.setLevel(level)
         self._logger.debug("Changed log level")
         
-class testinheritance(OpenPNMbase):
-    r"""
-    testinheritance: Trial inheritance from lobject.
-    """
-    def __init__(self,**kwargs):
-        super(testinheritance,self).__init__(**kwargs)
-        self._logger.debug("Debug")
-        self._logger.warning("Warning")
         
-if __name__ == '__main__':
-    test1=testinheritance()
-    test2=testinheritance(loglevel=30,loggername="MyName")
+class Container(Utilities):
+    
+    def __init__(self,**kwargs):
+        super(Container,self).__init__(**kwargs)
+        for key in kwargs:
+            if type(kwargs[key]) is str:
+                self.__setattr__(kwargs[key],None)
+                
+    def Gas(self):
+        print('Empty slot for Fluid object')
+
+    def Liquid(self):
+        print('Empty slot for Fluid object')
+
+    def Solid(self):
+        print('Empty slot for Fluid object')
+        
+    def Geometry(self):
+        print('Empty slot for Geometry object')
+    
+    def Physics(self):
+        print('Empty slot for Physics object')

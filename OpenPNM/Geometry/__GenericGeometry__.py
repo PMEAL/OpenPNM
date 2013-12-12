@@ -20,7 +20,7 @@ import scipy.stats as spst
 from functools import partial
 import numpy as np
 
-class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
+class GenericGeometry():
     r"""
     GenericGeometry - Base class to construct pore networks
 

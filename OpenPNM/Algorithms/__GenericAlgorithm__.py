@@ -13,7 +13,7 @@ from time import clock
 import heapq
 import itertools
 
-class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
+class GenericAlgorithm():
     r"""
     GenericAlgorithm - Base class to execute algorithms
 
@@ -44,7 +44,7 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Main run command for the algorithm
         """
-        self._logger.info("Execute run(): Basic version")
+#        self._logger.info("Execute run(): Basic version")
         self._net = network
         self._setup(**params)
         self._do_outer_iteration_stage()
@@ -57,34 +57,34 @@ class GenericAlgorithm(OpenPNM.Utilities.OpenPNMbase):
         -----
         This method is not implemented in the GenericAlgorithm, and must be subclassed in each algorithm as necessary
         """
-        self._logger.error("_setup: not implemented")
+#        self._logger.error("_setup: not implemented")
 
     def _do_one_outer_iteration(self):
         r"""
         One iteration of an outer iteration loop for an algorithm
         (e.g. time or parametric study)
         """
-        self._logger.info("One Outer Iteration: Basic version")
+#        self._logger.info("One Outer Iteration: Basic version")
         self._do_inner_iteration_stage()
 
     def _do_outer_iteration_stage(self):
         r"""
         Executes the outer iteration stage
         """
-        self._logger.info("Outer Iteration Stage: Basic version")
+#        self._logger.info("Outer Iteration Stage: Basic version")
         self._do_one_outer_iteration()
 
     def _do_one_inner_iteration(self):
         r"""
         Executes one inner iteration
         """
-        self._logger.warning("One Inner Iteration: Implement me")
+#        self._logger.warning("One Inner Iteration: Implement me")
 
     def _do_inner_iteration_stage(self):
         r"""
         Executes the inner iteration stage
         """
-        self._logger.info("Inner Iteration Stage: Basic version")
+#        self._logger.info("Inner Iteration Stage: Basic version")
         self._do_one_inner_iteration()
 
 if __name__ =="__main__":

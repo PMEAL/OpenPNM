@@ -4,7 +4,7 @@ import sys
 import copy
 from functools import partial
 
-class GenericGas(OpenPNM.Utilities.OpenPNMbase):
+class GenericGas(OpenPNM.Base.Utilities):
     r"""
     GenericGas - Base class to generate gas properties
 
@@ -13,10 +13,9 @@ class GenericGas(OpenPNM.Utilities.OpenPNMbase):
 
     """
     def __init__(self,**kwargs):
-#        super(GenericFluid,self).__init__(**kwargs)
-#        self._logger.debug("Construct class")
+        super(GenericGas,self).__init__(**kwargs)
+        self._logger.debug("Construct class")
         #List of fluid property categories that are invoked when fluid is created
-        print('init of GenericGas')
 
     def create(self,T=298.,P=101325.,**prms):
         r"""

@@ -35,7 +35,6 @@ Classes
    :show-inheritance:
 """
 
-from .__OpenPNMbase__ import OpenPNMbase
-from .__OpenPNMbase__ import testinheritance
-from .__io__ import ImportMat
-from .__io__ import SaveNetwork
+from .__OpenPNMbase__ import Utilities
+from .__OpenPNMbase__ import Container
+from .__Network__ import Network

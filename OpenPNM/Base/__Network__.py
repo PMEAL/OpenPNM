@@ -21,8 +21,9 @@ import scipy as sp
 import scipy.sparse as sprs
 import matplotlib as mpl
 import math
+from . import Container
 
-class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
+class Network(Container):
     r"""
     GenericNetwork - Base topology class for pore networks
 
@@ -45,8 +46,8 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
 
         '''
 
-        super(GenericNetwork,self).__init__(**kwords)
-        self._logger.debug("Method: Constructor")
+        super(Network,self).__init__(**kwords)
+#        self._logger.debug("Method: Constructor")
 
         #Initializes properties dictionaries
         self.pore_properties = {}
@@ -66,7 +67,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
 
-        self._logger.info("Constructor completed")
+#        self._logger.info("Constructor completed")
 
     def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
         r"""
@@ -101,7 +102,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         ['foo']
 
         """
-        self._logger.debug('create_adjacency_matrix: Start of method')
+#        self._logger.debug('create_adjacency_matrix: Start of method')
         Np   = self.get_num_pores()
         Nt   = self.get_num_throats()
 
@@ -169,7 +170,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         --------
         >>> print('nothing yet')
         """
-        self._logger.debug('create_incidence_matrix: Start of method')
+#        self._logger.debug('create_incidence_matrix: Start of method')
 
         Nt = self.get_num_throats()
         Np = self.get_num_pores()
@@ -504,47 +505,7 @@ class GenericNetwork(OpenPNM.Utilities.OpenPNMbase):
         r"""
         Print some basic properties
         """
-        self._logger.debug("Method: print_overview")
-        print("="*72)
-        print("= Overview of network properties")
-        print("-"*72)
-        print("Basic properties of the network")
-        print(" - Number of pores:   ", self.get_num_pores())
-        print( " - Number of throats: ", self.get_num_throats())
-
-        print("="*72)
-        print("Pore Properties")
-        print("-"*72)
-        print('PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]')
-        print("-"*72)
-        for key in self.pore_properties:
-            print(key, "\t", "\t", self.pore_properties[key].dtype, "\t", self.pore_properties[key].shape, "\t", self.pore_properties[key].nbytes/1e6)
-
-        print("="*72)
-        print("Throat Properties")
-        print("-"*72)
-        print('PROPERTY', "\t", "\t", 'DTYPE', "\t", 'SHAPE', "\t", 'MEMORY [MB]')
-        print("-"*72)
-        for key in self.throat_properties:
-            print(key, "\t", "\t", self.throat_properties[key].dtype, "\t", self.throat_properties[key].shape, "\t", self.throat_properties[key].nbytes/1e6)
-
-        print("="*72)
-        print("Adjacency Matrices")
-        print("-"*72)
-        print('FORMAT', "\t", 'VALUES')
-        print("-"*72)
-        for sprsfmt in self.adjacency_matrix.keys():
-            print(sprsfmt, ":\t", self.adjacency_matrix[sprsfmt].keys())
-
-        print("="*72)
-        print("Incidence Matrices")
-        print("-"*72)
-        print('FORMAT', "\t", 'VALUES')
-        print("-"*72)
-        for sprsfmt in self.incidence_matrix.keys():
-            print(sprsfmt, ":\t", self.incidence_matrix[sprsfmt].keys())
-
-        print( "="*72)
+        print(self.__str__)
 
     def __str__(self):
         r"""

@@ -17,7 +17,7 @@ module __GenericTopology__: Base class to construct pore networks
 import OpenPNM
 import scipy as sp
 
-class GenericTopology(OpenPNM.Utilities.OpenPNMbase):
+class GenericTopology(OpenPNM.Base.Network):
     r"""
     GenericTopology - Base class to construct pore networks
 
@@ -38,18 +38,19 @@ class GenericTopology(OpenPNM.Utilities.OpenPNMbase):
         """
         super(GenericTopology,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        
 
-    def generate(self, **params):
+    def _generate(self, **params):
         r"""
         Generate the network
         """
-        self._logger.debug("self.generate()")
+#        self._logger.debug("self.generate()")
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
-        self._add_boundaries()
-        self._logger.debug("\t end of self.generate()")
-        return self._net
+#        self._add_boundaries()
+#        self._logger.debug("\t end of self.generate()")
+        return [self.pore_properties, self.throat_properties]
 
     def _generate_setup(self,**params):
         r"""
@@ -59,7 +60,7 @@ class GenericTopology(OpenPNM.Utilities.OpenPNMbase):
         -----
         This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
         """
-        self._logger.error("generation_setup: not implemented")
+#        self._logger.error("generation_setup: not implemented")
 
     def _generate_pores(self):
         r"""
@@ -69,7 +70,7 @@ class GenericTopology(OpenPNM.Utilities.OpenPNMbase):
         -----
         This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
         """
-        self._logger.error("generate_pores: not implemented")
+#        self._logger.error("generate_pores: not implemented")
 
     def _generate_throats(self):
         r"""
@@ -79,7 +80,7 @@ class GenericTopology(OpenPNM.Utilities.OpenPNMbase):
         -----
         This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
         """
-        self._logger.error("generate_throats: not implemented")
+#        self._logger.error("generate_throats: not implemented")
 
     def _add_boundaries(self):
         r"""
@@ -89,7 +90,7 @@ class GenericTopology(OpenPNM.Utilities.OpenPNMbase):
         -----
         This method is not implemented in the GenericGeometry and must be sub-classed to produce desired network topology.
         """
-        self._logger.error("add_boundaries: not implemented")
+#        self._logger.error("add_boundaries: not implemented")
 
 if __name__ == '__main__':
     test=GenericTopology(loggername="TestGenerator")
