@@ -46,7 +46,7 @@ class OhmicConduction(LinearSolver):
         self._fluid = params['active_fluid']
         g = self._fluid.throat_conditions['electronic_conductance']
         s = self._fluid.throat_conditions['occupancy']
-        self._conductance = g*s
+        self._conductance = g*s+g*(-s)/1e3
 
 
     def _do_inner_iteration_stage(self):

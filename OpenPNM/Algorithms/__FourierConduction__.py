@@ -47,10 +47,9 @@ class FourierConduction(LinearSolver):
         """
         self._fluid = params['active_fluid']
         # Building thermal conductance
-        OpenPNM.Physics.HeatConduction.ThermalConductance(self._net,self._fluid)
         g = self._fluid.throat_conditions['thermal_conductance']
         s = self._fluid.throat_conditions['occupancy']
-        self._conductance = g*s
+        self._conductance = g*s+g*(-s)/1e3
 
     
     def _do_inner_iteration_stage(self):
