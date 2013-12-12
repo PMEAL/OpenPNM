@@ -26,7 +26,8 @@ class Water(GenericFluid):
         'Name': 'water',
         'Thermo':   {'Pc': 2.206e6, #Pa
                      'Tc': 647,     #K
-                     'MW': 0.0181,  #kg/mol},
+                     'MW': 0.0181,  #kg/mol
+                     },
         'Diffusivity': {'method': 'constant',
                         'value': 1e-12},
         'Viscosity': {'method': 'constant',
