@@ -118,7 +118,6 @@ class LinearSolver(GenericAlgorithm):
         if sp.size(self._conductance)==1:
             self._conductance = self._conductance*sp.ones(self._net.get_num_throats())
         data_main = self._conductance
-        data_main = data_main #to prevent matrix singularities
         data = data_main[loc1]
 
         loc2 = sp.in1d(tpore2,pnum[self.BCtypes!=1])
