@@ -45,7 +45,7 @@ air_recipe = {
 'MolarDensity': {'method': 'ideal_gas',
                   'R': 8.314},
 }
-pn.Gas = OpenPNM.Fluids.GenericGas().create(**air_recipe)
+pn.gas = OpenPNM.Fluids.GenericGas().create(**air_recipe)
 
 water_recipe = {
 'Name': 'water',
@@ -64,7 +64,7 @@ water_recipe = {
 'ContactAngle': {'method': 'constant',
                   'value': 120},
 }
-pn.Liquid = OpenPNM.Fluids.GenericGas().create(**water_recipe)
+pn.liquid = OpenPNM.Fluids.GenericGas().create(**water_recipe)
 
 
 ##======================================================================

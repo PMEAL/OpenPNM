@@ -23,6 +23,7 @@ class GenericGas(OpenPNM.Base.Utilities):
         """
         self.pore_conditions = {}
         self.throat_conditions = {}
+        self.name = prms['Name']
         self.pore_conditions['temperature'] = T
         self.pore_conditions['pressure'] = P
         for key, args in prms.items():

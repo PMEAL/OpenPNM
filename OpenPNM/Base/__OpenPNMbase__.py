@@ -80,31 +80,6 @@ class Utilities(object):
             self.set_loglevel(loglevel)
             
         self.constants = scipy.constants
-    
-    def save_network(self,filename="test.pickle"):
-        r"""
-        Write the class object to a pickle file.close
-        
-        Parameters
-        ---------- 
-        filename : string
-            name of the file to be written.
-        """
-        self._logger.debug('Pickle self')
-        print('Save current Network: Nothing yet')
-        
-
-    def load_network(self,filename="test.pickle"):
-        r"""
-        Write the class object to a pickle file.close
-        
-        Parameters
-        ---------- 
-        filename : string
-            name of the file to be written.
-        """
-        self._logger.debug('UnPickle self')
-        print('Load saved network: Nothing yet')
         
     def set_loglevel(self,level=20):
         r"""
@@ -127,17 +102,41 @@ class Container(Utilities):
             if type(kwargs[key]) is str:
                 self.__setattr__(kwargs[key],None)
                 
-    def Gas(self):
+    def save_network(self,filename="test.pickle"):
+        r"""
+        Write the class object to a pickle file.close
+        
+        Parameters
+        ---------- 
+        filename : string
+            name of the file to be written.
+        """
+        self._logger.debug('Pickle self')
+        print('Save current Network: Nothing yet')
+
+    def load_network(self,filename="test.pickle"):
+        r"""
+        Write the class object to a pickle file.close
+        
+        Parameters
+        ---------- 
+        filename : string
+            name of the file to be written.
+        """
+        self._logger.debug('UnPickle self')
+        print('Load saved network: Nothing yet')
+                
+    def gas(self):
         print('Empty slot for Fluid object')
 
-    def Liquid(self):
+    def liquid(self):
         print('Empty slot for Fluid object')
 
-    def Solid(self):
+    def solid(self):
         print('Empty slot for Fluid object')
         
-    def Geometry(self):
+    def geometry(self):
         print('Empty slot for Geometry object')
     
-    def Physics(self):
+    def physics(self):
         print('Empty slot for Physics object')
