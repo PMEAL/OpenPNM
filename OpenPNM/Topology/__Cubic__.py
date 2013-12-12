@@ -2,7 +2,7 @@
 module __Cubic__: Generate simple cubic networks
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
 
 """
 #Test
@@ -12,12 +12,9 @@ import numpy as np
 import scipy.stats as spst
 import scipy.spatial as sptl
 import itertools as itr
-import math
-#Test
+from .__GenericTopology__ import GenericTopology
 
-from .__GenericGeometry__ import GenericGeometry
-
-class Cubic(GenericGeometry):
+class Cubic(GenericTopology):
     r"""
     Cubic - Class to create a basic cubic network
 
