@@ -78,7 +78,8 @@ class Cubic(GenericTopology):
         >>> pn=PNM.Geometry.Cubic(domain_size=[100,100,10],lattice_spacing = 1.0)
         '''
         super(Cubic,self)._generate(**params)
-        return [self.pore_properties, self.throat_properties]
+#        return [self.pore_properties, self.throat_properties]
+        return self._net
 
     def _generate_setup(self,   domain_size = [],
                                 divisions = [],
@@ -139,9 +140,9 @@ class Cubic(GenericTopology):
         Lc = self._Lc
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
-        self.pore_properties['coords'] = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
-        self.pore_properties['numbering'] = ind
-        self.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
+        self._net.pore_properties['coords'] = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
+        self._net.pore_properties['numbering'] = ind
+        self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
 
 #        self._logger.debug("generate_pores: End of method")
 
@@ -168,9 +169,9 @@ class Cubic(GenericTopology):
         tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
         connections = np.vstack((tpore1,tpore2)).T
         connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
-        self.throat_properties['connections'] = connections
-        self.throat_properties['type'] = np.zeros(np.shape(tpore1),dtype=np.int8)
-        self.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
+        self._net.throat_properties['connections'] = connections
+        self._net.throat_properties['type'] = np.zeros(np.shape(tpore1),dtype=np.int8)
+        self._net.throat_properties['numbering'] = np.arange(0,np.shape(tpore1)[0])
 
 #        self._logger.debug("generate_throats: End of method")
 

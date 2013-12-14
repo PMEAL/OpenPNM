@@ -1,150 +1,57 @@
-import scipy as sp
-import copy
 import OpenPNM
+import scipy as sp
+import sys
+import copy
+from functools import partial
 
-class GenericFluid:
+class GenericFluid(OpenPNM.Base.Utilities):
     r"""
-    GenericFluid - Base class to generate fluid properties
+    GenericGas - Base class to generate gas properties
 
     Parameters
     ----------
 
     """
     def __init__(self,**kwargs):
-#        super(GenericFluid,self).__init__(**kwargs)
-#        self._logger.debug("Construct class")
+        super(GenericFluid,self).__init__(**kwargs)
+        self._logger.debug("Construct class")
         #List of fluid property categories that are invoked when fluid is created
-        self._implemented_methods = ['diffusivity',
-                                     'viscosity',
-                                     'molar_density',
-                                     'surface_tension',
-                                     'contact_angle',
-                                     'electrical_conductivity']
 
-    def create(self,fluid_recipe,T=298.,P=101325.):
+    def create(self,T=298.,P=101325.,**prms):
         r"""
-        Creates a fluid using the recipe provided
-
-        Parameters
-        ----------
-        fluid_recipe : Dictionary
-            A dictionary of key : value pairs that provide instructions for calculating fluid conditions
-
-        T & P : float (optional)
-            The temperature and pressure at which fluid should be create, defaults to STP.
+        Create a fluid object using the supplied parameters
         """
-        self.name = fluid_recipe['Name']
-        self._fluid_recipe = copy.deepcopy(fluid_recipe)
         self.pore_conditions = {}
         self.throat_conditions = {}
-        self.pore_conditions.update({'temperature': T})
-        self.pore_conditions.update({'pressure': P})
+        self.name = prms['name']
+        self.pore_conditions['temperature'] = T
+        self.pore_conditions['pressure'] = P
+        for key, args in prms.items():
+            try:
+                function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) # this gets the method from the file
+                preloaded_fn = partial(function, fluid=self, **args) #
+                setattr(self, key, preloaded_fn)
+                self._logger.info("Successfully loaded {}.".format(key))
+            except AttributeError:
+                self._logger.debug("Did not manage to load {}.".format(key))
         self.regenerate()
         return self
-
-    def refresh(self):
-        self.regenerate()
 
     def regenerate(self):
         r'''
         This updates all properties using the methods indicated in the recipe.  This method also takes the opportunity to ensure all values are Numpy arrays.
         '''
-        for condition in self._implemented_methods:
-            self.pore_conditions.update({condition: getattr(self,condition)()})
-        #Make sure all values are Numpy arrays (Np,) or (Nt,)
-        for i in self.pore_conditions.keys():
-            self.pore_conditions[i] = sp.array(self.pore_conditions[i],ndmin=1)
-        for i in self.throat_conditions.keys():
-            self.throat_conditions[i] = sp.array(self.throat_conditions[i],ndmin=1)
-
-    def reset(self):
-        r'''
-        Remove all existing condtions from the fluid
-
-        TODO: This works, but is kludgy
-        '''
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-        try: del self.partner
+        try: self.viscosity()
         except: pass
-        self.pore_conditions.update({'temperature': 298.})
-        self.pore_conditions.update({'pressure': 101325.})
-        self.regenerate()
-        return self
+        try: self.diffusivity()
+        except: pass
+        try: self.molar_density()
+        except: pass
+        try: self.surface_tension()
+        except: pass
+        try: self.contact_angle()
+        except: pass
 
-    def clone(self):
-        r'''
-        Create an exact duplicate fluid, but a unique object.
-
-        TODO: Doesn't work yet
-        '''
-        return self.__new__
-
-    def set_pair(self,fluid2):
-        r'''
-        Creates a fluid pair by storing each fluid object on the other.  This allows tracking of defending vs invading phase, among other things.
-
-        TODO: This method needs plenty of checks,
-        - for preexisting pair
-        - make sure they're the same temperature and pressure, etc
-
-        '''
-        self.partner = fluid2
-        fluid2.partner = self
-
-    def diffusivity(self):
-        try:
-            params = self._fluid_recipe['diffusivity']
-            eqn = getattr(OpenPNM.Fluids.Diffusivity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def viscosity(self):
-        try:
-            params = self._fluid_recipe['viscosity']
-            eqn = getattr(OpenPNM.Fluids.Viscosity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-           return -1
-
-    def molar_density(self):
-        try:
-            params = self._fluid_recipe['molar_density']
-            eqn = getattr(OpenPNM.Fluids.MolarDensity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def surface_tension(self):
-        try:
-            params = self._fluid_recipe['surface_tension']
-            eqn = getattr(OpenPNM.Fluids.SurfaceTension,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def contact_angle(self):
-        try:
-            params = self._fluid_recipe['contact_angle']
-            eqn = getattr(OpenPNM.Fluids.ContactAngle,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def electrical_conductivity(self):
-        try:
-            params = self._fluid_recipe['electrical_conductivity']
-            eqn = getattr(OpenPNM.Fluids.ElectricalConductivity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
 
     def interpolate_pore_conditions(self,network,Tinfo=None):
         r"""
@@ -209,6 +116,27 @@ class GenericFluid:
 if __name__ =="__main__":
 
     #Create fluids
-    agg = OpenPNM.Fluids.GenericFluid().create(agg_recipe)
+    air_recipe = {
+    'Name': 'air',
+    'Thermo':   { 'Pc': 3.771e6, #Pa
+                  'Tc': 132.65,  #K
+                  'MW': 0.0291,  #kg/mol
+                },
+    'Diffusivity': {'method': 'Fuller',
+                    'MA': 0.03199,
+                    'MB': 0.0291,
+                    'vA': 16.3,
+                    'vB': 19.7},
+    'Viscosity': {'method': 'Reynolds',
+                  'uo': 0.001,
+                  'b': 0.1},
+    'MolarDensity': {'method': 'ideal_gas',
+                      'R': 8.314},
+    'SurfaceTension': {'method': 'constant',
+                        'value': 0},
+    'ContactAngle': {'method': 'na'},
+    }
+    gas = OpenPNM.Fluids.GenericGas().create(air_recipe)
+
 
 

@@ -10,13 +10,13 @@ def constant(fluid,value,**params):
     r"""
     Assigns specified constant value
     """
-    return value
+    fluid.pore_conditions['diffusivity'] = value
 
 def na(fluid,**params):
     r"""
     Assigns nonsensical, but numerical value of -1.  This ensurse stability of other methods but introduces the possibility of being misused.
      """
-    return -1
+    fluid.pore_conditions['diffusivity'] = -1
 
 def Fuller(fluid, MA, MB, vA, vB, **params): #MA=0.03199,MB=0.0291,vA=16.3,vB=19.7,**params):
     r"""
@@ -25,18 +25,17 @@ def Fuller(fluid, MA, MB, vA, vB, **params): #MA=0.03199,MB=0.0291,vA=16.3,vB=19
     Parameters
     ----------
     T :  float, array_like
-        Temperature of interest (K)
+        Temperature of interest [K]
     P :  float, array_like
-        Pressure of interest (Pa)
+        Pressure of interest [Pa]
     MA : float, array_like
-        Molecular weight of component A (kg/mol)
+        Molecular weight of component A [kg/mol]
     MB : float, array_like
-        Molecular weight of component B (kg/mol)
+        Molecular weight of component B [kg/mol]
     VA:  float, array_like
         Sum of atomic diffusion volumes for component A
     VB:  float, array_like
         Sum of atomic diffusion volumes for component B
-
     """
     T = fluid.pore_conditions['temperature']
     P = fluid.pore_conditions['pressure']

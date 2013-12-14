@@ -1,13 +1,13 @@
 
 """
-module Viscosity
+module  viscosity
 ===============================================================================
 
 """
 import scipy as sp
 
 def constant(fluid,value=0.001,**params):
-    return value
+    fluid.pore_conditions['viscosity'] = value
 
 def na(fluid,**params):
     return -1
@@ -24,7 +24,7 @@ def Reynolds(fluid,uo=0.001,b=0.1,**params):
     """
     T = fluid.pore_conditions['temperature']
     mu = uo*sp.exp(-1*b*T)
-    return mu
+    fluid.pore_conditions['viscosity'] = mu
 
 def Chung(fluid,Tc=132.65,Vc=92.35e-6,MW=0.0291,acentric=0,kappa=0,dipole=0,**params):
     r"""
@@ -59,8 +59,7 @@ def Chung(fluid,Tc=132.65,Vc=92.35e-6,MW=0.0291,acentric=0,kappa=0,dipole=0,**pa
     dipole_r = 131.3*(dipole*2.997e29)/((Vc*1e6)*Tc)**0.5
     f = 1-0.2756*acentric + 0.059035*(dipole_r**4) + kappa
     mu = 40.785*f*(MW*1e3*T)**0.5/((Vc*1e6)**(2/3)*sigma)*1e-7
-
-    return mu
+    fluid.pore_conditions['viscosity'] = mu
 
 
 

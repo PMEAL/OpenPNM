@@ -16,14 +16,15 @@ module __GenericNetwork__: contains OpenPNM topology baseclass
 """
 
 import OpenPNM
+import pprint
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import matplotlib as mpl
 import math
-from . import Container
+from . import Utilities
 
-class Network(Container):
+class Network(Utilities):
     r"""
     GenericNetwork - Base topology class for pore networks
 
@@ -68,6 +69,30 @@ class Network(Container):
         self.incidence_matrix['lil'] = {}
 
 #        self._logger.info("Constructor completed")
+
+    def save_network(self,filename="test.pickle"):
+        r"""
+        Write the class object to a pickle file.close
+        
+        Parameters
+        ---------- 
+        filename : string
+            name of the file to be written.
+        """
+        self._logger.debug('Pickle self')
+        print('Save current Network: Nothing yet')
+
+    def load_network(self,filename="test.pickle"):
+        r"""
+        Write the class object to a pickle file.close
+        
+        Parameters
+        ---------- 
+        filename : string
+            name of the file to be written.
+        """
+        self._logger.debug('UnPickle self')
+        print('Load saved network: Nothing yet')
 
     def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
         r"""
@@ -505,7 +530,7 @@ class Network(Container):
         r"""
         Print some basic properties
         """
-        print(self.__str__)
+        pprint.pprint(self.pore_properties)
 
     def __str__(self):
         r"""

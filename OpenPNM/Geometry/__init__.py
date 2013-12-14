@@ -21,10 +21,10 @@ Classes
 """
 
 from .__GenericGeometry__ import GenericGeometry
-from . import PoreDiameter
-from . import PoreSeed
-from . import PoreVolume
-from . import ThroatDiameter
-from . import ThroatLength
-from . import ThroatSeed
-from . import ThroatVolume
+from . import pore_diameter
+from . import pore_seed
+from . import pore_volume
+from . import throat_diameter
+from . import throat_length
+from . import throat_seed
+from . import throat_volume

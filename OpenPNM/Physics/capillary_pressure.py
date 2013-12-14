@@ -1,13 +1,13 @@
 
 """
-module CapillaryPressure
+module capillary_pressure
 ===============================================================================
 
 """
 
 import scipy as sp
 
-def Washburn(net,fluid):
+def washburn(physics,network,fluid,**params):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
@@ -16,7 +16,7 @@ def Washburn(net,fluid):
     network : OpenPNM Network Object
         The network on which to apply the calculation
 
-    fluid1 : OpenPNM Fluid Object
+    fluid : OpenPNM Fluid Object
         Fluid object for the invading fluids
 
     Notes
@@ -30,13 +30,13 @@ def Washburn(net,fluid):
 
     """
     sigma = fluid.pore_conditions['surface_tension']
-    sigma = fluid.interpolate_throat_conditions(net,sigma)
+    sigma = fluid.interpolate_throat_conditions(network,sigma)
     theta = fluid.pore_conditions['contact_angle']
-    theta = fluid.interpolate_throat_conditions(net,theta)
-    vals = -4*sigma*sp.cos(sp.radians(theta))/net.throat_properties['diameter']
+    theta = fluid.interpolate_throat_conditions(network,theta)
+    vals = -4*sigma*sp.cos(sp.radians(theta))/network.throat_properties['diameter']
     fluid.throat_conditions['Pc_entry']= vals
 
-def Purcell(net,fluid,r_toroid):
+def purcell(physics,network,fluid,r_toroid,**params):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a toroid.
 
@@ -70,12 +70,12 @@ def Purcell(net,fluid,r_toroid):
     Triple check the accuracy of this equation
     """
     sigma = fluid.pore_conditions['surface_tension']
-    sigma = fluid.interpolate_throat_conditions(net,sigma)
+    sigma = fluid.interpolate_throat_conditions(network,sigma)
     theta = fluid.throat_conditions['contact_angle']
-    theta = fluid.interpolate_throat_conditions(net,theta)
-    r = net.throat_properties['diameter']/2
+    theta = fluid.interpolate_throat_conditions(network,theta)
+    r = network.throat_properties['diameter']/2
     R = r_toroid
     alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
     vals = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
-    net.throat_conditions['Pc_entry'] = vals
+    fluid.throat_conditions['Pc_entry'] = vals
 

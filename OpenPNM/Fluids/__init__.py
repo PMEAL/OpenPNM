@@ -17,14 +17,13 @@ This submodule contains methods for estimating fluid properties
 """
 
 from .__GenericFluid__ import GenericFluid
-from .__GenericGas__ import GenericGas
 from .__Water__ import Water
 from .__Air__ import Air
-from . import Viscosity
-from . import MolarDensity
-from . import Diffusivity
-from . import SurfaceTension
-from . import VaporPressure
-from . import ContactAngle
-from . import ElectricalConductivity
-from . import ThermalConductivity
+from . import viscosity
+from . import molar_density
+from . import diffusivity
+from . import surface_tension
+from . import vapor_pressure
+from . import contact_angle
+from . import electrical_conductivity
+from . import thermal_conductivity
