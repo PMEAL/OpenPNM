@@ -36,10 +36,14 @@ class LinearSolver(GenericAlgorithm):
 
     def _do_one_inner_iteration(self):
 
-        A = self._build_coefficient_matrix()
-        B = self._build_RHS_matrix()
-        X = splin.spsolve(A,B)
-        self._result = X[sp.r_[0:self._net.get_num_pores()]]
+        if (self.BCtypes==0).all():
+            raise Exception('No boundary condition has been applied to this network.')
+            self._result = sp.zeros(self._net.get_num_pores())
+        else:
+            A = self._build_coefficient_matrix()
+            B = self._build_RHS_matrix()
+            X = splin.spsolve(A,B)
+            self._result = X[sp.r_[0:self._net.get_num_pores()]]
         return(self._result)
 
     def set_boundary_conditions(self,types=[],values=[]):
@@ -86,9 +90,9 @@ class LinearSolver(GenericAlgorithm):
         -----
         - Neumann_insulated is equivalent to Neumann_flux boundary condition when flux
         is zero. Therefore, there is no need to define BCvalues for this kind of boundary condition.
-        - In Fickian algorithm, positive value for Neumann_rate or Neumann_flux for a boundary pore means
-        that the quantity of interest leaves the pore, but for any other algorithms, positive Neumann value
-        means that the quantity of interest enters this pore.
+        - In Fickian algorithm, positive value for Neumann_rate or Neumann_flux for a pore with boundary condition means
+        that the quantity of interest leaves the pore, but for any other algorithms, positive Neumann value  means 
+        that the quantity of interest enters this pore.
 
         """
         setattr(self,"BCtypes",types)
@@ -96,7 +100,11 @@ class LinearSolver(GenericAlgorithm):
 
 
     def _build_coefficient_matrix(self):
-
+       
+        boundaries = self._net.pore_properties['numbering'][self._net.pore_properties['type']>0]
+        if (self.BCtypes[boundaries]==0).any():
+            self.BCtypes[boundaries[self.BCtypes[boundaries]==0]] = 3
+        
         # Filling coefficient matrix
         pnum = self._net.pore_properties['numbering']
         tpore1 = self._net.throat_properties['connections'][:,0]
@@ -110,7 +118,6 @@ class LinearSolver(GenericAlgorithm):
         if sp.size(self._conductance)==1:
             self._conductance = self._conductance*sp.ones(self._net.get_num_throats())
         data_main = self._conductance
-        data_main = data_main + 1e-30 #to prevent matrix singularities
         data = data_main[loc1]
 
         loc2 = sp.in1d(tpore2,pnum[self.BCtypes!=1])
@@ -133,18 +140,13 @@ class LinearSolver(GenericAlgorithm):
                 self.BCtypes[f] = 4
                 self.BCvalues[f] = sp.sum(self.BCvalues[f]*(self._net.throat_properties['diameter'][ft])**2)
 
-        boundaries = self._net.pore_properties['numbering'][self._net.pore_properties['type']>0]
-        if (boundaries[self.BCtypes[boundaries]==0]).any():
-            self.BCtypes[boundaries[self.BCtypes[boundaries]==0]] = 3
-
         if (self.BCtypes==4).any():
             self.extera_Neumann_equations = sp.unique(self.BCvalues[self.BCtypes==4])
             A_dim = A_dim + len(self.extera_Neumann_equations)
             extera_neu = self.extera_Neumann_equations
-            g_super = 1e-10
+            g_super = sp.average(self._conductance[self._net.get_neighbor_throats(pnum[self.BCtypes==4])])*1e5
             for item in list(range(len(extera_neu))):
-                loc_neu = sp.in1d(tpore2,pnum[self.BCvalues==extera_neu[item]])
-                neu_tpore2 = tpore2[loc_neu]
+                neu_tpore2 = pnum[self.BCvalues==extera_neu[item]]
 
                 row = sp.append(row,neu_tpore2)
                 col = sp.append(col,len(neu_tpore2)*[A_dim-item-1])
@@ -198,10 +200,10 @@ class LinearSolver(GenericAlgorithm):
         if throats:
             pores1 = self._net.get_connected_pores(throats)[:,0]
             pores2 = self._net.get_connected_pores(throats)[:,1]
-        else:
-            pores1 = pores
-            pores2 = self._net.get_neighbor_pores(pores1,flatten=True)
-            throats = self._net.get_neighbor_throats(pores1,flatten=True)
+        else:            
+            throats = self._net.get_neighbor_throats(pores,flatten=True)
+            pores1 = self._net.get_connected_pores(throats)[:,0]
+            pores2 = self._net.get_connected_pores(throats)[:,1]
         X1 = self._result[pores1]
         X2 = self._result[pores2]
         g = self._conductance[throats]

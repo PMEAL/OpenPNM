@@ -46,10 +46,9 @@ class Permeability(LinearSolver):
         """
         self._fluid = params['active_fluid']
         # Building hydraulic conductance
-        OpenPNM.Physics.FluidFlow.HydraulicConductance(self._net,self._fluid)
         g = self._fluid.throat_conditions['hydraulic_conductance']
         s = self._fluid.throat_conditions['occupancy']
-        self._conductance = g*s
+        self._conductance = g*s+g*(-s)/1e3
    
     def _do_inner_iteration_stage(self):
         r"""

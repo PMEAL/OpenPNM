@@ -50,7 +50,7 @@ class FickianDiffusion(LinearSolver):
         self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])
         g = self._fluid.throat_conditions['diffusive_conductance']
         s = self._fluid.throat_conditions['occupancy']
-        self._conductance = g*s
+        self._conductance = g*s+g*(-s)/1e3
 
     def _do_inner_iteration_stage(self):
 
