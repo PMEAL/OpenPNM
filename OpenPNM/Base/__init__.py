@@ -36,5 +36,4 @@ Classes
 """
 
 from .__OpenPNMbase__ import Utilities
-from .__OpenPNMbase__ import Container
 from .__Network__ import Network

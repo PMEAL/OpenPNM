@@ -1,16 +1,16 @@
 
 """
-module ThermalConductivity
+module thermal_conductance
 ===============================================================================
 
 """
 import scipy as sp
 
 def constant(fluid,value=0.001,**params):
-    return value
+    fluid.pore_conditions['thermal_conductance'] = value
 
 def na(fluid,**params):
-    return -1
+    fluid.pore_conditions['thermal_conductance'] = -1
 
 def Chung(fluid,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**params):
     r"""
@@ -37,8 +37,7 @@ def Chung(fluid,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**params):
     alpha = Cv/R -3/2
     s = 1 + alpha*((0.215+0.28288*alpha-1.061*beta+0.26665*z)/(0.6366+beta*z+1.061*alpha*beta))
     k = 3.75*s*(mu)*R/(MW)
-
-    return k
+    fluid.pore_conditions['thermal_conductance'] = k
 
 def Sato(fluid,Tc=647.096,Tb=373.15,MW=0.0181,**params):
     r"""
@@ -53,10 +52,9 @@ def Sato(fluid,Tc=647.096,Tb=373.15,MW=0.0181,**params):
     MW : float, array_like
         Molecular weight of the component (kg/mol)
 
-
     """
     T = fluid.pore_conditions['temperature']
     Tbr = Tb/Tc
     Tr = T/Tc
     k = (1.11/((MW*1e3)**0.5))*(3+20*(1-Tr)**(2/3))/(3+20*(1-Tbr)**(2/3))
-    return k
+    fluid.pore_conditions['thermal_conductance'] = k

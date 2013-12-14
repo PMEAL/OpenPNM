@@ -1,18 +1,18 @@
 
 """
-module ThroatLength
+module throat_length
 ===============================================================================
 
 """
 import scipy as sp
 
-def constant(network,value,**params):
+def constant(geometry,network,value,**params):
     r"""
     Assigns specified constant value
     """
     network.throat_properties['length'] = value
 
-def straight(network,**params):
+def straight(geometry,network,**params):
     r"""
     Calculate throat length 
     """

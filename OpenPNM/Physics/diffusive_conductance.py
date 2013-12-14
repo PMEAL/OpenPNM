@@ -1,13 +1,13 @@
 
 """
-module MassTransport
+module diffusive_conductance
 ===============================================================================
 
 """
 
 import scipy as sp
 
-def DiffusiveConductance(network,fluid):
+def bulk_diffusion(physics,network,fluid,**params):
     r"""
     Calculate the diffusive conductance of conduits in network ( 1/2 pore - full throat - 1/2 pore ) based on the area
 

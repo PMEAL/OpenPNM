@@ -1,14 +1,14 @@
 
 """
-module ElectricalConductivity
+module electrical_conductance
 ===============================================================================
 
 """
 import scipy as sp
 
 def constant(fluid,value=1,**params):
-    return value
+    fluid.pore_conditions['electrical_conductance'] = value
 
 def na(fluid,**params):
-    return -1
+    fluid.pore_conditions['electrical_conductance'] = -1
 

@@ -1,16 +1,16 @@
 
 """
-module MolarDensity
+module molar_density
 ===============================================================================
 
 """
 import scipy as sp
 
 def constant(fluid,value=40.89,**params):
-    return value
+    fluid.pore_conditions['molar_density'] = value
 
 def na(fluid,**params):
-    return -1
+    fluid.pore_conditions['molar_density'] = -1
 
 def ideal_gas(fluid,**params):
     r"""
@@ -21,5 +21,5 @@ def ideal_gas(fluid,**params):
     T = fluid.pore_conditions['temperature']
     P = fluid.pore_conditions['pressure']
     c = P/(R*T)
-    return c
+    fluid.pore_conditions['molar_density'] = c
 

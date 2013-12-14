@@ -1,8 +1,7 @@
 
 """
-module FluidFlow
+module hydraulic_conductance
 ===============================================================================
-
 
 """
 
@@ -10,7 +9,7 @@ import OpenPNM
 import scipy as sp
 
 
-def HydraulicConductance(network,fluid):
+def hagen_poiseuille(physics,network,fluid,**params):
     r"""
     Calculates the hydraulic conductvity of throat assuming square geometry using a modified Hagen Poiseuille model
 

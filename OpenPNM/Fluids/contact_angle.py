@@ -1,16 +1,16 @@
 
 """
-module ContactAngle
+module contact_angle
 ===============================================================================
 
 """
 import scipy as sp
 
 def constant(fluid,value=120,**params):
-    return value
+    fluid.pore_conditions['contact_angle'] = value
 
 def na(fluid,**params):
-    return -1
+    fluid.pore_conditions['contact_angle'] = -1
 
 
 

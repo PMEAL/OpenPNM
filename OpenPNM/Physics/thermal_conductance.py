@@ -1,6 +1,6 @@
 
 """
-module HeatConduction
+module thermal_conductance
 ===============================================================================
 
 """
@@ -9,7 +9,7 @@ import OpenPNM
 import scipy as sp
 
 
-def ThermalConductance(network,fluid):
+def thermal_fluid(physics,network,fluid,**params):
     r"""
     Calculate the thermal conductance of void conduits in network ( 1/2 pore - full throat - 1/2 pore ) based on size
 
@@ -45,7 +45,7 @@ def ThermalConductance(network,fluid):
     fluid.throat_conditions['thermal_conductance'] = g
 
 
-def ThermalConductanceSolid(network,fluid):
+def parallel_resistors(physics,network,fluid,**params):
     r"""
     Calculate the thermal conductance of solid phase surrounding the void
 

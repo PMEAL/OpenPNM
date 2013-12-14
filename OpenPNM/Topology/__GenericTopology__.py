@@ -17,7 +17,7 @@ module __GenericTopology__: Base class to construct pore networks
 import OpenPNM
 import scipy as sp
 
-class GenericTopology(OpenPNM.Base.Network):
+class GenericTopology(OpenPNM.Base.Utilities):
     r"""
     GenericTopology - Base class to construct pore networks
 
@@ -38,6 +38,7 @@ class GenericTopology(OpenPNM.Base.Network):
         """
         super(GenericTopology,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        self._net = OpenPNM.Base.Network()
         
 
     def _generate(self, **params):
@@ -50,7 +51,7 @@ class GenericTopology(OpenPNM.Base.Network):
         self._generate_throats()
 #        self._add_boundaries()
 #        self._logger.debug("\t end of self.generate()")
-        return [self.pore_properties, self.throat_properties]
+        return self._net
 
     def _generate_setup(self,**params):
         r"""

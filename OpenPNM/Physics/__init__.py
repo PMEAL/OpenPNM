@@ -19,40 +19,41 @@ Submodules
 
  None                            --- No subpackages at the moment
 
-.. automodule:: Physics.CapillaryPressure
+.. automodule:: Physics.capillary_pressure
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: Physics.FluidFlow
+.. automodule:: Physics.hydraulic_conductance
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: Physics.MassTransport
+.. automodule:: Physics.diffusive_conductance
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: Physics.ElectronConductions
+.. automodule:: Physics.electronic_conductance
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: Physics.HeatConduction
+.. automodule:: Physics.thermal_conductance
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: Physics.MultiPhase
+.. automodule:: Physics.multi_phase
    :members:
    :undoc-members:
    :show-inheritance:
 
 """
-from . import ElectronConduction
-from . import CapillaryPressure
-from . import MassTransport
-from . import HeatConduction
-from . import FluidFlow
-from . import MultiPhase
+from .__GenericPhysics__ import GenericPhysics
+from . import electronic_conductance
+from . import capillary_pressure
+from . import diffusive_conductance
+from . import thermal_conductance
+from . import hydraulic_conductance
+from . import multi_phase

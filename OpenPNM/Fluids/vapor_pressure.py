@@ -1,16 +1,16 @@
 
 """
-module VaporPressure
+module vapor_pressure
 ===============================================================================
 
 """
 import scipy as sp
 
 def constant(fluid,value=3000,**params):
-    return value
+    fluid.pore_conditions['vapor_pressure'] = value
 
 def na(fluid,**params):
-    return -1
+    fluid.pore_conditions['vapor_pressure'] = -1
 
 def Antoine(fluid,A=8.07131,B=1730.63,C=233.426,**params):
     r"""
@@ -24,4 +24,4 @@ def Antoine(fluid,A=8.07131,B=1730.63,C=233.426,**params):
     """
     T = fluid.pore_conditions['temperature']
     Pv = (10**(A-B/(C+T-273.15)))*1.333e2
-    return Pv
+    fluid.pore_conditions['vapor_pressure'] = Pv

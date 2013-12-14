@@ -1,16 +1,15 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Oct 15 13:51:40 2013
 
-@author: ARAX
 """
+module electronic_conductance
+===============================================================================
 
+"""
 
 import OpenPNM
 import scipy as sp
 
 
-def ElectronicConductance(network,fluid):
+def parallel_resistors(physics,network,fluid,**params):
     r"""
     Calculates the electronic conductance of throat assuming cylindrical geometry
 
