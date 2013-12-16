@@ -27,6 +27,7 @@ Examples:
 
 import logging as _logging
 import scipy.constants
+from pprint import pprint
 
 # set up logging to file - see previous section for more details
 _logging.basicConfig(level=_logging.ERROR,
@@ -93,4 +94,30 @@ class Utilities(object):
         self._logger.setLevel(level)
         self._logger.debug("Changed log level")
         
+    def save_network(self,filename="test.pickle"):
+        r"""
+        Write the class object to a pickle file.close
+        
+        Parameters
+        ---------- 
+        filename : string
+            name of the file to be written.
+        """
+        self._logger.debug('Pickle self')
+        print('Save current Network: Nothing yet')
+
+    def load_network(self,filename="test.pickle"):
+        r"""
+        Write the class object to a pickle file.close
+        
+        Parameters
+        ---------- 
+        filename : string
+            name of the file to be written.
+        """
+        self._logger.debug('UnPickle self')
+        print('Load saved network: Nothing yet')
+        
+    def print_dict(self,dic):
+        pprint(dic)
         

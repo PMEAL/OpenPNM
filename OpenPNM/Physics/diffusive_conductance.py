@@ -6,6 +6,18 @@ module diffusive_conductance
 """
 
 import scipy as sp
+import os
+propname = os.path.splitext(os.path.basename(__file__))[0]
+
+def constant(physics,network,fluid,value,**params):
+    r"""
+    Assigns specified constant value
+    """
+    network.throat_conditions[fluid.name+'_'+propname] = value
+
+def na(physics,network,fluid,**params):
+    value = -1
+    network.throat_conditions[fluid.name+'_'+propname] = value
 
 def bulk_diffusion(physics,network,fluid,**params):
     r"""
@@ -23,14 +35,10 @@ def bulk_diffusion(physics,network,fluid,**params):
     This function requires that all the necessary fluid properties should already be calculated.
 
     """
-    try:
-        cp = fluid.pore_conditions['molar_density']
-        DABp = fluid.pore_conditions['diffusivity']
-    except:
-        raise Exception('Necessary fluid properies are not present ' + fluid['name'])
+    cp = network.pore_conditions[fluid.name+'_'+'molar_density']
+    DABp = network.pore_conditions[fluid.name+'_'+'diffusivity']
     ct = fluid.interpolate_throat_conditions(network,cp)
     DABt = fluid.interpolate_throat_conditions(network,DABp)
-
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
     #Find g for half of pore 1
@@ -41,6 +49,6 @@ def bulk_diffusion(physics,network,fluid,**params):
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     gt = ct*DABt*network.throat_properties['diameter']**2/(network.throat_properties['length'])
-    g = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    fluid.throat_conditions['diffusive_conductance'] = g
+    value = (1/gt + 1/gp1 + 1/gp2)**(-1)
+    network.throat_conditions[fluid.name+'_'+propname] = value
 

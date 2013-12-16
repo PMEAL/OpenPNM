@@ -38,22 +38,22 @@ class GenericTopology(OpenPNM.Base.Utilities):
         """
         super(GenericTopology,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        self._net = OpenPNM.Base.Network()
         
-
-    def _generate(self, **params):
+    def generate(self, network, **params):
         r"""
         Generate the network
         """
 #        self._logger.debug("self.generate()")
-        self._generate_setup(**params)
-        self._generate_pores()
-        self._generate_throats()
-#        self._add_boundaries()
-#        self._logger.debug("\t end of self.generate()")
-        return self._net
+        self._net = network
+        self.generate_setup(**params)
+        self.generate_pores()
+        self.generate_throats()
+#        self.add_boundaries()
+        self._logger.debug("end of self.generate()")
+        del self._net
+        return self
 
-    def _generate_setup(self,**params):
+    def generate_setup(self,**params):
         r"""
         Perform applicable preliminary checks and calculations required for generation
 
@@ -63,7 +63,7 @@ class GenericTopology(OpenPNM.Base.Utilities):
         """
 #        self._logger.error("generation_setup: not implemented")
 
-    def _generate_pores(self):
+    def generate_pores(self):
         r"""
         Generate the pores (numbering, types and coordinates)
 
@@ -73,7 +73,7 @@ class GenericTopology(OpenPNM.Base.Utilities):
         """
 #        self._logger.error("generate_pores: not implemented")
 
-    def _generate_throats(self):
+    def generate_throats(self):
         r"""
         Generate the throats (numbering and types)
 
@@ -83,7 +83,7 @@ class GenericTopology(OpenPNM.Base.Utilities):
         """
 #        self._logger.error("generate_throats: not implemented")
 
-    def _add_boundaries(self):
+    def add_boundaries(self):
         r"""
         Add boundary pores around network (numbering and types), and create necessary throats
 

@@ -5,9 +5,19 @@ module electronic_conductance
 
 """
 
-import OpenPNM
 import scipy as sp
+import os
+propname = os.path.splitext(os.path.basename(__file__))[0]
 
+def constant(physics,network,fluid,value,**params):
+    r"""
+    Assigns specified constant value
+    """
+    network.throat_conditions[fluid.name+'_'+propname] = value
+
+def na(physics,network,fluid,**params):
+    value = -1
+    network.throat_conditions[fluid.name+'_'+propname] = value
 
 def parallel_resistors(physics,network,fluid,**params):
     r"""
@@ -19,10 +29,7 @@ def parallel_resistors(physics,network,fluid,**params):
 
     fluid : OpenPNM Fluid Object
     """
-    try:
-        sigmap = fluid.pore_conditions['electronic_conductivity']
-    except:
-        raise Exception('electronic_conductivity of the phase has not been specified')
+    sigmap = network.pore_conditions[fluid.name+'_'+'electronic_conductivity']
     sigmat = fluid.interpolate_throat_conditions(network,sigmap)
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
@@ -34,6 +41,6 @@ def parallel_resistors(physics,network,fluid,**params):
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     gt = sigmat*2*network.throat_properties['diameter']/(network.throat_properties['length'])
-    g = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    fluid.throat_conditions['electronic_conductance'] = g
+    value = (1/gt + 1/gp1 + 1/gp2)**(-1)
+    network.throat_conditions[fluid.name+'_'+propname] = value
 

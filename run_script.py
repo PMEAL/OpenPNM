@@ -4,6 +4,11 @@ from time import clock
 start=clock()
 
 #======================================================================
+'''Initialize empty Network object'''
+#======================================================================
+pn = OpenPNM.Base.Network()
+
+#======================================================================
 '''Generate Network Object with Desired Topology'''
 #======================================================================
 #Define topology parameters
@@ -13,12 +18,12 @@ topo_recipe = {
 'lattice_spacing': [0.0001],  #spacing between pores [meters]
 }
 #Add topology to network
-pn = OpenPNM.Topology.Cubic(loglevel=10)._generate(**topo_recipe)
+topo = OpenPNM.Topology.Cubic(loglevel=10).generate(network=pn, **topo_recipe)
 
 #======================================================================
 '''Build Geometry'''
 #======================================================================
-geo_recipe = {
+geom_recipe = {
 'pore_seed': {'method': 'random'},
 'throat_seed': {'method': 'neighbor_min'},
 'pore_diameter': {'method': 'sphere',
@@ -35,17 +40,17 @@ geo_recipe = {
 'throat_volume': {'method': 'cylinder'},
 'throat_length': {'method': 'straight'},
 }
-pn.geometry = OpenPNM.Geometry.GenericGeometry().create(pn,**geo_recipe)
+geom = OpenPNM.Geometry.GenericGeometry().create(network=pn,**geom_recipe)
 
 #======================================================================
-'''Generate Fluids'''
+'''Build Fluids'''
 #======================================================================
 #Define the fluids properties
 air_recipe = {
 'name': 'air',
-'thermo_props': { 'Pc': 3.771e6,
-                  'Tc': 132.65,
-                  'MW': 0.0291,},
+'Pc': 3.771e6,
+'Tc': 132.65,
+'MW': 0.0291,
 'diffusivity': {'method': 'Fuller',
                 'MA': 0.03199,
                 'MB': 0.0291,
@@ -57,13 +62,13 @@ air_recipe = {
 'molar_density': {'method': 'ideal_gas',
                   'R': 8.314},
 }
-pn.gas = OpenPNM.Fluids.GenericFluid(loglevel=10).create(**air_recipe)
+air = OpenPNM.Fluids.GenericFluid(loglevel=10).create(network=pn,**air_recipe)
 
 water_recipe = {
 'name': 'water',
-'thermo_props': {'Pc': 2.206e6,
-                 'Tc': 647,
-                 'MW': 0.0181,},
+'Pc': 2.206e6,
+'Tc': 647,
+'MW': 0.0181,
 'diffusivity': {'method': 'constant',
                 'value': 1e-12},
 'viscosity': {'method': 'constant',
@@ -76,7 +81,7 @@ water_recipe = {
                   'value': 110},
 }
 #It's good practice to attach fluid objects to network, but not necessary?
-pn.liquid = OpenPNM.Fluids.GenericFluid(loglevel=20).create(**water_recipe)
+water = OpenPNM.Fluids.GenericFluid(loglevel=20).create(network=pn,**water_recipe)
 
 #======================================================================
 '''Build Physics Objects'''
@@ -86,10 +91,9 @@ phys_recipe = {
 'capillary_pressure': {'method': 'washburn'},
 'hydraulic_conductance': {'method': 'hagen_poiseuille'},
 'diffusive_conductance': {'method': 'bulk_diffusion'},
-'thermal_conductance': {'method': 'parallel_resistors'},
-'electronic_conductance': {'method': 'parallel_resistors'},
 }
-pn.liquid.phys = OpenPNM.Physics.GenericPhysics(loglevel=20).create(net=pn,fluid=pn.liquid,**phys_recipe)
+phys_water = OpenPNM.Physics.GenericPhysics(loglevel=20).create(network=pn,fluid=water,**phys_recipe)
+phys_air = OpenPNM.Physics.GenericPhysics(loglevel=20).create(network=pn,fluid=air,**phys_recipe)
 
 #======================================================================
 '''Begin Simulations'''

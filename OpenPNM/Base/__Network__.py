@@ -50,9 +50,13 @@ class Network(Utilities):
         super(Network,self).__init__(**kwords)
 #        self._logger.debug("Method: Constructor")
 
-        #Initializes properties dictionaries
+        #Initialize network properties dictionaries
         self.pore_properties = {}
         self.throat_properties = {}
+
+        #Initializes fluid conditions dictionaries
+        self.pore_conditions = {}
+        self.throat_conditions = {}
 
         #This initializes the custom 'self-protecting' dictionary
 #        self.pore_properties = {}
@@ -69,30 +73,6 @@ class Network(Utilities):
         self.incidence_matrix['lil'] = {}
 
 #        self._logger.info("Constructor completed")
-
-    def save_network(self,filename="test.pickle"):
-        r"""
-        Write the class object to a pickle file.close
-        
-        Parameters
-        ---------- 
-        filename : string
-            name of the file to be written.
-        """
-        self._logger.debug('Pickle self')
-        print('Save current Network: Nothing yet')
-
-    def load_network(self,filename="test.pickle"):
-        r"""
-        Write the class object to a pickle file.close
-        
-        Parameters
-        ---------- 
-        filename : string
-            name of the file to be written.
-        """
-        self._logger.debug('UnPickle self')
-        print('Load saved network: Nothing yet')
 
     def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
         r"""
@@ -472,13 +452,13 @@ class Network(Utilities):
         """
         self._logger.debug("Method: check for general healts")
 
-    def interpolate_pore_values(self,Tinfo=None):
+    def interpolate_pore_values(self,Tvals=None):
         r"""
         Determines a pore property as the average of it's neighboring throats
 
         Parameters
         ----------
-        Tinfo : array_like
+        Tvals : array_like
             The array of throat information to be interpolated
 
         Notes
@@ -486,45 +466,45 @@ class Network(Utilities):
         This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
 
         """
-        if sp.size(Tinfo)==1:
-            Pinfo = Tinfo
-        elif sp.size(Tinfo) != self.get_num_throats():
+        if sp.size(Tvals)==1:
+            Pvals = Tvals
+        elif sp.size(Tvals) != self.get_num_throats():
             raise Exception('The list of throat information received was the wrong length')
         else:
-            Pinfo = sp.zeros((self.get_num_pores()))
+            Pvals = sp.zeros((self.get_num_pores()))
             #Only interpolate conditions for internal pores, type=0
             Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
             nTs = self.get_neighbor_throats(Pnums,flatten=False)
             for i in sp.r_[0:sp.shape(nTs)[0]]:
-                Pinfo[i] = sp.mean(Tinfo[nTs[i]])
-        return Pinfo
+                Pvals[i] = sp.mean(Tvals[nTs[i]])
+        return Pvals
 
-    def interpolate_throat_values(self,Pinfo=None):
+    def interpolate_throat_values(self,Pvals=None):
         r"""
         Determines a throat condition as the average of the conditions it's neighboring pores
 
         Parameters
         ----------
-        Pinfo : array_like
-            The name of the throat condition to be interpolated
+        Pvals : array_like
+            The array of the pore condition to be interpolated
 
         Notes
         -----
         This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
 
         """
-        if sp.size(Pinfo)==1:
-            Tinfo = Pinfo
-        elif sp.size(Pinfo) != self.get_num_pores():
+        if sp.size(Pvals)==1:
+            Tvals = Pvals
+        elif sp.size(Pvals) != self.get_num_pores():
             raise Exception('The list of pore information received was the wrong length')
         else:
-            Tinfo = sp.zeros((self.get_num_throats()))
+            Tvals = sp.zeros((self.get_num_throats()))
             #Interpolate values for all throats, including those leading to boundary pores
             Tnums = sp.r_[0:self.get_num_throats()]
             nPs = self.get_connected_pores(Tnums,flatten=False)
             for i in sp.r_[0:sp.shape(nPs)[0]]:
-                Tinfo[i] = sp.mean(Pinfo[nPs[i]])
-        return Tinfo
+                Tvals[i] = sp.mean(Pvals[nPs[i]])
+        return Tvals
 
     def print_overview(self):
         r"""

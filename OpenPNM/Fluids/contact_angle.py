@@ -5,14 +5,16 @@ module contact_angle
 
 """
 import scipy as sp
+import os
+propname = os.path.splitext(os.path.basename(__file__))[0]
 
-def constant(fluid,value=120,**params):
-    fluid.pore_conditions['contact_angle'] = value
+def constant(fluid,network,value,**params):
+    r"""
+    Assigns specified constant value
+    """
+    network.pore_conditions[fluid.name+'_'+propname] = value
 
-def na(fluid,**params):
-    fluid.pore_conditions['contact_angle'] = -1
-
-
-
-
+def na(fluid,network,**params):
+    value = -1
+    network.pore_conditions[fluid.name+'_'+propname] = value
 

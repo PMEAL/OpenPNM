@@ -6,43 +6,49 @@ module SurfaceTension
 """
 
 import scipy as sp
+import os
+propname = os.path.splitext(os.path.basename(__file__))[0]
 
-def constant(fluid, value=0.072,**params):
-    fluid.pore_conditions['surface_tension'] = value
+def constant(fluid,network,value,**params):
+    r"""
+    Assigns specified constant value
+    """
+    network.pore_conditions[fluid.name+'_'+propname] = value
 
-def na(fluid,**params):
-    fluid.pore_conditions['surface_tension'] = -1
+def na(fluid,network,**params):
+    value = -1
+    network.pore_conditions[fluid.name+'_'+propname] = value
 
-def empirical(fluid,a=[0],**params):
+def empirical(fluid,network,a=[0],**params):
     r"""
     Uses a polynomial fit of empirical data to calculate property
     """
-    T = fluid.pore_conditions['temperature']
-    sigma = sp.zeros_like(T)
+    T = network.pore_conditions[fluid.name+'_'+'temperature']
+    value = sp.zeros_like(T)
     for i in range(0,sp.size(a)):
-        sigma = sigma + a[i]*(T**i)
-    fluid.pore_conditions['surface_tension'] =  sigma
+        value = value + a[i]*(T**i)
+    network.pore_conditions[fluid.name+'_'+propname] = value
 
-def Eotvos(fluid, k=2.1e-7, **params):
+def Eotvos(fluid, network, k=2.1e-7, **params):
     r"""
     """
-    Tc = fluid._fluid_recipe['Tc']
-    T = fluid.pore_conditions['temperature']
-    Vm = 1/fluid.pore_conditions['molar_density']
-    sigma = k*(Tc-T)/(Vm**(2/3))
-    fluid.pore_conditions['surface_tension'] = sigma
+    Tc = fluid.Tc
+    T = network.pore_conditions[fluid.name+'_'+'temperature']
+    Vm = 1/network.pore_conditions[fluid.name+'_'+'molar_density']
+    value = k*(Tc-T)/(Vm**(2/3))
+    network.pore_conditions[fluid.name+'_'+propname] = value
 
-def GuggenheimKatayama(fluid, K2=1, n=1.222, **params):
+def GuggenheimKatayama(fluid, network, K2=1, n=1.222, **params):
     r"""
     """
-    T = fluid.pore_condtions['temperature']
-    Pc = fluid._fluid_recipe['Pc']
-    Tc = fluid._fluid_recipe['Tc']
+    T = network.pore_condtions[fluid.name+'_'+'temperature']
+    Pc = fluid.Pc
+    Tc = fluid.Tc
     sigma_o = K2*Tc**(1/3)*Pc**(2/3)
     sigma = sigma_o*(1-T/Tc)**n
     fluid.pore_conditions['surface_tension'] = sigma
 
-def BrockBird_scaling(fluid, sigma_o=0.072, To=298.,**params):
+def BrockBird_scaling(fluid, network, sigma_o=0.072, To=298.,**params):
     r"""
     Uses Brock_Bird model to adjust surface tension from it's value at a given reference temperature to temperature of interest
 
@@ -56,12 +62,12 @@ def BrockBird_scaling(fluid, sigma_o=0.072, To=298.,**params):
     To : float
         Temperature at reference conditions (K)
     """
-    Tc = fluid._fluid_dict['Tc']
-    Ti = fluid.pore_conitions['temperature']
+    Tc = fluid.Tc
+    Ti = network.pore_conitions[fluid.name+'_'+'temperature']
     Tro = To/Tc
     Tri = Ti/Tc
-    sigma_i = sigma_o*(1-Tri)**(11/9)/(1-Tro)**(11/9)
-    fluid.pore_conditions['surface_tension'] = sigma_i
+    value = sigma_o*(1-Tri)**(11/9)/(1-Tro)**(11/9)
+    network.pore_conditions[fluid.name+'_'+propname] = value
 
 
 
