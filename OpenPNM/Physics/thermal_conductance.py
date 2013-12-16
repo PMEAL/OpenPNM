@@ -5,9 +5,19 @@ module thermal_conductance
 
 """
 
-import OpenPNM
 import scipy as sp
+import os
+propname = os.path.splitext(os.path.basename(__file__))[0]
 
+def constant(physics,network,fluid,value,**params):
+    r"""
+    Assigns specified constant value
+    """
+    network.throat_conditions[fluid.name+'_'+propname] = value
+
+def na(physics,network,fluid,**params):
+    value = -1
+    network.throat_conditions[fluid.name+'_'+propname] = value
 
 def thermal_fluid(physics,network,fluid,**params):
     r"""
@@ -25,10 +35,7 @@ def thermal_fluid(physics,network,fluid,**params):
     This function requires that all the necessary fluid properties have already been determined.
 
     """
-    try:
-        kp = fluid.pore_conditions['thermal_conductivity']
-    except:
-        raise Exception('Thermal conductivity of the fluid has not been specified')
+    kp = fluid.pore_conditions['thermal_conductivity']
     kt = fluid.interpolate_throat_conditions(network,kp)
 
     #Get Nt-by-2 list of pores connected to each throat
@@ -42,7 +49,7 @@ def thermal_fluid(physics,network,fluid,**params):
     #Find g for full throat
     gt = kt*network.throat_properties['diameter']**2/(network.throat_properties['length'])
     g = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    fluid.throat_conditions['thermal_conductance'] = g
+    fluid.throat_conditions[fluid.name+'_'+propname] = g
 
 
 def parallel_resistors(physics,network,fluid,**params):
@@ -63,15 +70,12 @@ def parallel_resistors(physics,network,fluid,**params):
        This has not been fully implemented yet
 
     """
-    try:
-        kp = fluid.pore_conditions['thermal_conductivity']
+    try:    
+        kp = network.pore_conditions[fluid.name+'_'+'thermal_conductivity']
+        kt = network.interpolate_throat_values(kp)
+        value = kt #A physical model of parallel resistors representing the solid phase surrouding each pore is required here
+        network.throat_conditions[fluid.name+'_'+propname] = value
     except:
-        raise Exception('Thermal conductivity of the '+fluid['name']+' has not been specified')
-    kt = network.interpolate_throat_values(kp)
-
-    g = kt #A physical model of parallel resistors representing the solid phase surrouding each pore is required here
-
-    fluid.throat_conditions['thermal_conductance'] = g
-
+        print('error')
 
 

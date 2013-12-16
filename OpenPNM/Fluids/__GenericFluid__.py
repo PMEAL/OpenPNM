@@ -1,7 +1,5 @@
 import OpenPNM
 import scipy as sp
-import sys
-import copy
 from functools import partial
 
 class GenericFluid(OpenPNM.Base.Utilities):
@@ -17,19 +15,21 @@ class GenericFluid(OpenPNM.Base.Utilities):
         self._logger.debug("Construct class")
         #List of fluid property categories that are invoked when fluid is created
 
-    def create(self,T=298.,P=101325.,**prms):
+    def create(self,network,T=298.,P=101325.,**prms):
         r"""
         Create a fluid object using the supplied parameters
         """
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-        self.name = prms['name']
-        self.pore_conditions['temperature'] = T
-        self.pore_conditions['pressure'] = P
+        try: self.name = prms['name']
+        except: self._logger.error('Fluid name must be given')
+        self.Tc = prms['Tc']
+        self.Pc = prms['Pc']
+        self.MW = prms['MW']
+        network.pore_conditions[self.name+'_'+'temperature'] = T
+        network.pore_conditions[self.name+'_'+'pressure'] = P
         for key, args in prms.items():
             try:
                 function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) # this gets the method from the file
-                preloaded_fn = partial(function, fluid=self, **args) #
+                preloaded_fn = partial(function, network=network,fluid=self, **args) #
                 setattr(self, key, preloaded_fn)
                 self._logger.info("Successfully loaded {}.".format(key))
             except AttributeError:

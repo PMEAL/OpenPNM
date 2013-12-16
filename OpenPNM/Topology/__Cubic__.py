@@ -35,13 +35,9 @@ class Cubic(GenericTopology):
         super(Cubic,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
 
-        #Instantiate pore network object
-#        self._net=OpenPNM.Base.Network()
-#        self._net = OpenPNM.Base.Network()
-
-    def _generate(self,**params):
+#    def generate(self,network,**params):
         '''
-        Create Cubic network. Returns OpenPNM.Network.GenericNetwork() object.
+        Create Cubic network. 
 
         Parameters
         ----------
@@ -77,11 +73,10 @@ class Cubic(GenericTopology):
         >>> import OpenPNM as PNM
         >>> pn=PNM.Geometry.Cubic(domain_size=[100,100,10],lattice_spacing = 1.0)
         '''
-        super(Cubic,self)._generate(**params)
-#        return [self.pore_properties, self.throat_properties]
-        return self._net
+#        super(Cubic,self).generate(network,**params)
+        
 
-    def _generate_setup(self,   domain_size = [],
+    def generate_setup(self,   domain_size = [],
                                 divisions = [],
                                 lattice_spacing = [],
                                 btype = [0,0,0],
@@ -129,7 +124,7 @@ class Cubic(GenericTopology):
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
 
-    def _generate_pores(self):
+    def generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
         """
@@ -146,7 +141,7 @@ class Cubic(GenericTopology):
 
 #        self._logger.debug("generate_pores: End of method")
 
-    def _generate_throats(self):
+    def generate_throats(self):
         r"""
         Generate the throats (connections, numbering and types)
         """

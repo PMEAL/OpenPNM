@@ -14,17 +14,19 @@ class GenericPhysics(OpenPNM.Base.Utilities):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
-    def create(self,net,fluid,**prms):
+    def create(self,network,fluid,**prms):
         r"""
         Create a fluid object using the supplied parameters
         """
         self.name = prms['name']
+        self._prop_list = {}
         for key, args in prms.items():
             try:
                 function = getattr( getattr(OpenPNM.Physics, key), args['method'] ) # this gets the method from the file
-                preloaded_fn = partial(function, physics=self, network=net, fluid=fluid, **args) #
+                preloaded_fn = partial(function, physics=self, network=network, fluid=fluid, **args) #
                 setattr(self, key, preloaded_fn)
                 self._logger.info("Successfully loaded {}.".format(key))
+                self._prop_list[key] = True
             except AttributeError:
                 self._logger.debug("Did not manage to load {}.".format(key))
         self.regenerate()
@@ -32,17 +34,19 @@ class GenericPhysics(OpenPNM.Base.Utilities):
 
     def regenerate(self):
         r'''
-        This updates all properties using the methods indicated in the recipe.  This method also takes the opportunity to ensure all values are Numpy arrays.
+        This updates all properties using the methods indicated in the recipe.
         '''
-        try: self.capillary_pressure()
-        except: pass
-        try: self.thermal_conductance()
-        except: pass
-        try: self.hydraulic_conductance()
-        except: pass
-        try: self.diffusive_conductance()
-        except: pass
-        try: self.electronic_conductance()
-        except: pass
+        for item in self._prop_list.keys():
+            getattr(self,item)()
+#        try: self.capillary_pressure()
+#        except: self._logger.error('Failed to load')
+#        try: self.thermal_conductance()
+#        except: self._logger.error('Failed to load')
+#        try: self.hydraulic_conductance()
+#        except: self._logger.error('Failed to load')
+#        try: self.diffusive_conductance()
+#        except: self._logger.error('Failed to load')
+#        try: self.electronic_conductance()
+#        except: self._logger.error('Failed to load')
 
 

@@ -42,14 +42,14 @@ class GenericGeometry(OpenPNM.Base.Utilities):
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
        
-    def create(self,net,**prms):
+    def create(self,network,**prms):
         r"""
         Create a geometry object using the supplied parameters
         """
         for key, args in prms.items():
             try:
                 function = getattr( getattr(OpenPNM.Geometry, key), args['method'] ) # this gets the method from the file
-                preloaded_fn = partial(function, geometry=self, network=net, **args) 
+                preloaded_fn = partial(function, geometry=self, network=network, **args) 
                 setattr(self, key, preloaded_fn)
                 self._logger.info("Successfully loaded {}.".format(key))
             except AttributeError:
