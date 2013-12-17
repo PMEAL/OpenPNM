@@ -15,18 +15,20 @@ class GenericFluid(OpenPNM.Base.Utilities):
         self._logger.debug("Construct class")
         #List of fluid property categories that are invoked when fluid is created
 
-    def create(self,network,T=298.,P=101325.,**prms):
+    def create(self,network,T=298.,P=101325.,**recipe):
         r"""
         Create a fluid object using the supplied parameters
         """
-        try: self.name = prms['name']
+        try: recipe = self.recipe
+        except: pass
+        try: self.name = recipe['name']
         except: self._logger.error('Fluid name must be given')
-        self.Tc = prms['Tc']
-        self.Pc = prms['Pc']
-        self.MW = prms['MW']
+        self.Tc = recipe['Tc']
+        self.Pc = recipe['Pc']
+        self.MW = recipe['MW']
         network.pore_conditions[self.name+'_'+'temperature'] = T
         network.pore_conditions[self.name+'_'+'pressure'] = P
-        for key, args in prms.items():
+        for key, args in recipe.items():
             try:
                 function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) # this gets the method from the file
                 preloaded_fn = partial(function, network=network,fluid=self, **args) #
@@ -117,24 +119,23 @@ if __name__ =="__main__":
 
     #Create fluids
     air_recipe = {
-    'Name': 'air',
-    'Thermo':   { 'Pc': 3.771e6, #Pa
-                  'Tc': 132.65,  #K
-                  'MW': 0.0291,  #kg/mol
-                },
-    'Diffusivity': {'method': 'Fuller',
+    'name': 'air',
+    'Pc': 3.771e6, #Pa
+    'Tc': 132.65,  #K
+    'MW': 0.0291,  #kg/mol
+    'diffusivity': {'method': 'Fuller',
                     'MA': 0.03199,
                     'MB': 0.0291,
                     'vA': 16.3,
                     'vB': 19.7},
-    'Viscosity': {'method': 'Reynolds',
+    'viscosity': {'method': 'Reynolds',
                   'uo': 0.001,
                   'b': 0.1},
-    'MolarDensity': {'method': 'ideal_gas',
+    'molar_density': {'method': 'ideal_gas',
                       'R': 8.314},
-    'SurfaceTension': {'method': 'constant',
+    'surface_tension': {'method': 'constant',
                         'value': 0},
-    'ContactAngle': {'method': 'na'},
+    'contact_angle': {'method': 'na'},
     }
     gas = OpenPNM.Fluids.GenericGas().create(air_recipe)
 
