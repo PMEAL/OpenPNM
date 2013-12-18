@@ -23,6 +23,7 @@ class GenericFluid(OpenPNM.Base.Utilities):
         except: pass
         try: self.name = recipe['name']
         except: self._logger.error('Fluid name must be given')
+        network._fluids.append(self)
         self.Tc = recipe['Tc']
         self.Pc = recipe['Pc']
         self.MW = recipe['MW']
@@ -31,7 +32,7 @@ class GenericFluid(OpenPNM.Base.Utilities):
         for key, args in recipe.items():
             try:
                 function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) # this gets the method from the file
-                preloaded_fn = partial(function, network=network,fluid=self, **args) #
+                preloaded_fn = partial(function, fluid=self, network=network, **args) #
                 setattr(self, key, preloaded_fn)
                 self._logger.info("Successfully loaded {}.".format(key))
             except AttributeError:

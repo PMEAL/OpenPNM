@@ -49,6 +49,11 @@ class Network(Utilities):
 
         super(Network,self).__init__(**kwords)
 #        self._logger.debug("Method: Constructor")
+        
+        #Initialize fluid, physics, and geometry tracking lists
+        self._fluids = []
+        self._physics = []
+        self._geometry = []
 
         #Initialize network properties dictionaries
         self.pore_properties = {}
@@ -73,6 +78,16 @@ class Network(Utilities):
         self.incidence_matrix['lil'] = {}
 
 #        self._logger.info("Constructor completed")
+
+    def fluid_listing(self):
+        for item in self._fluids:
+            print(item.name+': ',item)
+            
+    def fluid_update(self,name='all'):
+        for item in self._fluids:
+            if (item.name == name) or (name == 'all'):
+                item.regenerate()
+                self._logger.info('Refreshed '+item.name)
 
     def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
         r"""

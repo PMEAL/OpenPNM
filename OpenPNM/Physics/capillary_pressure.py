@@ -49,7 +49,7 @@ def washburn(physics,fluid,network,**params):
         value = -4*sigma*sp.cos(sp.radians(theta))/network.throat_properties['diameter']
         network.throat_conditions[fluid.name+'_'+propname] = value
     except:
-        physics._logger.error(fluid.name+': '+'Unable to comply')
+        physics._logger.warning(fluid.name+'.'+propname+': Unable to calculate values, probably missing fluid properties')
 
 def purcell(physics,network,fluid,r_toroid,**params):
     r"""
