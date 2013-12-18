@@ -94,30 +94,6 @@ class Utilities(object):
         self._logger.setLevel(level)
         self._logger.debug("Changed log level")
         
-    def save_network(self,filename="test.pickle"):
-        r"""
-        Write the class object to a pickle file.close
-        
-        Parameters
-        ---------- 
-        filename : string
-            name of the file to be written.
-        """
-        self._logger.debug('Pickle self')
-        print('Save current Network: Nothing yet')
-
-    def load_network(self,filename="test.pickle"):
-        r"""
-        Write the class object to a pickle file.close
-        
-        Parameters
-        ---------- 
-        filename : string
-            name of the file to be written.
-        """
-        self._logger.debug('UnPickle self')
-        print('Load saved network: Nothing yet')
-        
     def print_dicts(self):
         for item in self.pore_conditions.__iter__():
             print(item,': ',type(self.pore_conditions[item]))

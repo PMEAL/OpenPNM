@@ -79,12 +79,32 @@ class Network(Utilities):
 
 #        self._logger.info("Constructor completed")
 
-    def fluid_listing(self):
+    def fluids_listing(self):
         for item in self._fluids:
             print(item.name+': ',item)
             
-    def fluid_update(self,name='all'):
+    def fluids_update(self,name='all'):
         for item in self._fluids:
+            if (item.name == name) or (name == 'all'):
+                item.regenerate()
+                self._logger.info('Refreshed '+item.name)
+
+    def physics_listing(self):
+        for item in self._physics:
+            print(item.name+': ',item)
+            
+    def physics_update(self,name='all'):
+        for item in self._physics:
+            if (item.name == name) or (name == 'all'):
+                item.regenerate()
+                self._logger.info('Refreshed '+item.name)
+
+    def geometry_listing(self):
+        for item in self._geometry:
+            print(item.name+': ',item)
+            
+    def geometry_update(self,name='all'):
+        for item in self._geometry:
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
@@ -560,6 +580,30 @@ class Network(Utilities):
 #            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
 
         return str_overview+str_pore+str_throat
+
+    def save_network(self,filename="test.pickle"):
+        r"""
+        Write the class object to a pickle file.close
+        
+        Parameters
+        ---------- 
+        filename : string
+            name of the file to be written.
+        """
+        self._logger.debug('Pickle self')
+        print('Save current Network: Nothing yet')
+
+    def load_network(self,filename="test.pickle"):
+        r"""
+        Write the class object to a pickle file.close
+        
+        Parameters
+        ---------- 
+        filename : string
+            name of the file to be written.
+        """
+        self._logger.debug('UnPickle self')
+        print('Load saved network: Nothing yet')
 
     def update(self):
         self.create_adjacency_matrix()

@@ -42,11 +42,17 @@ class GenericGeometry(OpenPNM.Base.Utilities):
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
        
-    def create(self,network,**prms):
+    def create(self,network,**recipe):
         r"""
         Create a geometry object using the supplied parameters
         """
-        for key, args in prms.items():
+        try: recipe = self.recipe #check if recipe is pre-existing on self (from init of subclassed methods)
+        except: pass
+        try: self.name = recipe['name']
+        except: self._logger.error('Geometry name must be given')
+        #bind objects togoether
+        network._geometry.append(self) #attach physics to network
+        for key, args in recipe.items():
             try:
                 function = getattr( getattr(OpenPNM.Geometry, key), args['method'] ) # this gets the method from the file
                 preloaded_fn = partial(function, geometry=self, network=network, **args) 

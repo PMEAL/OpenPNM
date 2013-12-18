@@ -8,7 +8,7 @@ start=clock()
 pn = OpenPNM.Base.Network()
 
 #======================================================================
-'''Build desired Topology object'''
+'''Build Topology'''
 #======================================================================
 #Define topology parameters
 topo_recipe = {
@@ -23,6 +23,7 @@ topo = OpenPNM.Topology.Cubic().generate(network=pn, **topo_recipe)
 '''Build Geometry'''
 #======================================================================
 geom_recipe = {
+'name': 'stick_and_ball',
 'pore_seed': {'method': 'random'},
 'throat_seed': {'method': 'neighbor_min'},
 'pore_diameter': {'method': 'sphere',
@@ -86,12 +87,19 @@ water = OpenPNM.Fluids.GenericFluid(loglevel=50).create(network=pn,**water_recip
 '''Build Physics Objects'''
 #======================================================================
 phys_recipe = {
-'name': 'standard_physics',
+'name': 'standard_air_physics',
 'capillary_pressure': {'method': 'washburn'},
 'hydraulic_conductance': {'method': 'hagen_poiseuille'},
 'diffusive_conductance': {'method': 'bulk_diffusion'},
 }
 phys_water = OpenPNM.Physics.GenericPhysics(loglevel=10).create(network=pn,fluid=water,**phys_recipe)
+
+phys_recipe = {
+'name': 'standard_water_physics',
+'capillary_pressure': {'method': 'washburn'},
+'hydraulic_conductance': {'method': 'hagen_poiseuille'},
+'diffusive_conductance': {'method': 'bulk_diffusion'},
+}
 phys_air = OpenPNM.Physics.GenericPhysics(loglevel=10).create(network=pn,fluid=air,**phys_recipe)
 
 #======================================================================
