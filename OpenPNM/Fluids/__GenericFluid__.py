@@ -19,7 +19,7 @@ class GenericFluid(OpenPNM.Base.Utilities):
         r"""
         Create a fluid object using the supplied parameters
         """
-        try: recipe = self.recipe
+        try: recipe = self.recipe #check if recipe is pre-existing on self (from init of subclassed methods)
         except: pass
         try: self.name = recipe['name']
         except: self._logger.error('Fluid name must be given')
