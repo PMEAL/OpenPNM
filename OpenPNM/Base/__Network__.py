@@ -48,7 +48,7 @@ class Network(Utilities):
         '''
 
         super(Network,self).__init__(**kwords)
-#        self._logger.debug("Method: Constructor")
+        self._logger.debug("Construct Network container")
         
         #Initialize fluid, physics, and geometry tracking lists
         self._fluids = []
@@ -63,10 +63,6 @@ class Network(Utilities):
         self.pore_conditions = {}
         self.throat_conditions = {}
 
-        #This initializes the custom 'self-protecting' dictionary
-#        self.pore_properties = {}
-#        self.throat_properties = {}
-
         #Initialize adjacency and incidence matrix dictionaries
         self.adjacency_matrix = {}
         self.incidence_matrix = {}
@@ -77,42 +73,100 @@ class Network(Utilities):
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
 
-#        self._logger.info("Constructor completed")
+        self._logger.info("Construction of Network container complete")
 
     def fluids_listing(self):
+        r"""
+        """
         for item in self._fluids:
             print(item.name+': ',item)
             
     def fluids_update(self,name='all'):
+        r"""
+        """
         for item in self._fluids:
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
 
     def fluids_fetch(self,name='all'):
+        r"""
+        """
         for item in self._fluids:
             if (item.name == name):
                 return item
 
     def physics_listing(self):
+        r"""
+        """
         for item in self._physics:
             print(item.name+': ',item)
             
     def physics_update(self,name='all'):
+        r"""
+        """
         for item in self._physics:
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
 
     def geometry_listing(self):
+        r"""
+        """
         for item in self._geometry:
             print(item.name+': ',item)
             
     def geometry_update(self,name='all'):
+        r"""
+        """
         for item in self._geometry:
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
+
+    def get_pore_properties(self,prop):
+        r"""
+        """
+        try: return self.pore_properties[prop]
+        except: self._logger.warning('Network does not have the requested pore property: '+prop)
+
+    def get_throat_properties(self,prop):
+        r"""
+        """
+        try: return self.throat_properties[prop]
+        except: self._logger.warning('Network does not have the requested throat property: '+prop)
+                
+    def get_pore_conditions(self,fluid,prop):
+        r"""
+        """
+        for item in self._fluids:
+            if (item.name == fluid):
+                try: return item.pore_conditions[prop]
+                except: self._logger.warning(fluid+' does not have the requested pore condition: '+prop)
+
+    def set_pore_condition(self,fluid,prop,data):
+        r"""
+        """
+        for item in self._fluids:
+            if (item.name == fluid):
+                data = sp.array(data,ndmin=1)
+                item.pore_conditions[prop] = data
+
+    def set_throat_conditions(self,fluid,prop,data):
+        r"""
+        """
+        for item in self._fluids:
+            if (item.name == fluid):
+                data = sp.array(data,ndmin=1)
+                item.throat_conditions[prop] = data
+
+    def get_throat_conditions(self,fluid,prop):
+        r"""
+        """
+        for item in self._fluids:
+            if (item.name == fluid):
+                try: return item.throat_conditions[prop]
+                except: self._logger.warning(fluid+' does not have the requested throat condition: '+prop)
 
     def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
         r"""
@@ -611,6 +665,8 @@ class Network(Utilities):
         print('Load saved network: Nothing yet')
 
     def update(self):
+        r"""
+        """
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
 

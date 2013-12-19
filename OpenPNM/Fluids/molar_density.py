@@ -12,19 +12,19 @@ def constant(fluid,network,value,**params):
     r"""
     Assigns specified constant value
     """
-    fluid.pore_conditions[propname] = value
+    network.set_pore_condition(fluid.name,propname,value)
 
 def na(fluid,network,**params):
     value = -1
-    fluid.pore_conditions[propname] = value
-
+    network.set_pore_condition(fluid.name,propname,value)
+    
 def ideal_gas(fluid,network,**params):
     r"""
     Uses ideal gas equation to estimate molar density of a pure gas
 
     """
-    R = 8.314
-    T = fluid.pore_conditions['temperature']
-    P = fluid.pore_conditions['pressure']
+    R = sp.constants.R
+    T = network.get_pore_conditions(fluid.name,'temperature')
+    P = network.get_pore_conditions(fluid.name,'pressure')
     value = P/(R*T)
-    fluid.pore_conditions[propname] = value
+    network.set_pore_condition(fluid.name,propname,value)

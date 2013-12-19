@@ -5,7 +5,7 @@ start=clock()
 #======================================================================
 '''Initialize empty Network object'''
 #======================================================================
-pn = OpenPNM.Base.Network()
+pn = OpenPNM.Base.Network(loglevel=10)
 
 #======================================================================
 '''Build Topology'''
@@ -62,7 +62,7 @@ air_recipe = {
 'molar_density': {'method': 'ideal_gas',
                   'R': 8.314},
 }
-air = OpenPNM.Fluids.GenericFluid(loglevel=50).create(network=pn,**air_recipe)
+air = OpenPNM.Fluids.GenericFluid(loglevel=10).create(network=pn,**air_recipe)
 
 water_recipe = {
 'name': 'water',
@@ -81,7 +81,7 @@ water_recipe = {
                   'value': 110},
 }
 #It's good practice to attach fluid objects to network, but not necessary?
-water = OpenPNM.Fluids.GenericFluid(loglevel=50).create(network=pn,**water_recipe)
+water = OpenPNM.Fluids.GenericFluid(loglevel=10).create(network=pn,**water_recipe)
 
 #======================================================================
 '''Build Physics Objects'''
