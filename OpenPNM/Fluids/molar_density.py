@@ -12,11 +12,11 @@ def constant(fluid,network,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.pore_conditions[fluid.name+'_'+propname] = value
+    fluid.pore_conditions[propname] = value
 
 def na(fluid,network,**params):
     value = -1
-    network.pore_conditions[fluid.name+'_'+propname] = value
+    fluid.pore_conditions[propname] = value
 
 def ideal_gas(fluid,network,**params):
     r"""
@@ -24,7 +24,7 @@ def ideal_gas(fluid,network,**params):
 
     """
     R = 8.314
-    T = network.pore_conditions[fluid.name+'_'+'temperature']
-    P = network.pore_conditions[fluid.name+'_'+'pressure']
+    T = fluid.pore_conditions['temperature']
+    P = fluid.pore_conditions['pressure']
     value = P/(R*T)
-    network.pore_conditions[fluid.name+'_'+propname] = value
+    fluid.pore_conditions[propname] = value

@@ -13,11 +13,11 @@ def constant(physics,network,fluid,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.throat_conditions[fluid.name+'_'+propname] = value
+    fluid.throat_conditions[propname] = value
 
 def na(physics,network,fluid,**params):
     value = -1
-    network.throat_conditions[fluid.name+'_'+propname] = value
+    fluid.throat_conditions[propname] = value
 
 def thermal_fluid(physics,network,fluid,**params):
     r"""
@@ -49,7 +49,7 @@ def thermal_fluid(physics,network,fluid,**params):
     #Find g for full throat
     gt = kt*network.throat_properties['diameter']**2/(network.throat_properties['length'])
     g = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    fluid.throat_conditions[fluid.name+'_'+propname] = g
+    fluid.throat_conditions[propname] = g
 
 
 def parallel_resistors(physics,network,fluid,**params):
@@ -71,10 +71,10 @@ def parallel_resistors(physics,network,fluid,**params):
 
     """
     try:    
-        kp = network.pore_conditions[fluid.name+'_'+'thermal_conductivity']
+        kp = fluid.pore_conditions['thermal_conductivity']
         kt = network.interpolate_throat_values(kp)
         value = kt #A physical model of parallel resistors representing the solid phase surrouding each pore is required here
-        network.throat_conditions[fluid.name+'_'+propname] = value
+        fluid.throat_conditions[propname] = value
     except:
         print('error')
 
