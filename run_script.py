@@ -108,12 +108,11 @@ phys_air = OpenPNM.Physics.GenericPhysics(loglevel=10).create(network=pn,fluid=a
 '''Peform a Drainage Experiment (OrdinaryPercolation)'''
 #----------------------------------------------------------------------
 #Initialize algorithm object
-#OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
 #Apply desired/necessary pore scale physics methods
-#OpenPNM.Physics.CapillaryPressure.Washburn(pn,pn.liquid)
-#a = pn.pore_properties['type']==2
+a = pn.pore_properties['coords'][:,2] <= 5e-5
 #Run algorithm
-#OP_1.run(network=pn,invading_fluid=water,defending_fluid=air,inlets=a,npts=50,AL=True)
+OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=50,AL=True)
 
 #b = pn.pore_properties['type']==5
 #OP_1.evaluate_trapping(network=pn,invading_fluid=pn.liquid,outlets=b)
