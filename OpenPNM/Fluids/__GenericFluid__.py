@@ -13,7 +13,8 @@ class GenericFluid(OpenPNM.Base.Utilities):
     def __init__(self,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        #List of fluid property categories that are invoked when fluid is created
+        self.pore_conditions = {}
+        self.throat_conditions = {}
 
     def create(self,network,T=298.,P=101325.,**recipe):
         r"""
@@ -27,8 +28,8 @@ class GenericFluid(OpenPNM.Base.Utilities):
         self.Tc = recipe['Tc']
         self.Pc = recipe['Pc']
         self.MW = recipe['MW']
-        network.pore_conditions[self.name+'_'+'temperature'] = T
-        network.pore_conditions[self.name+'_'+'pressure'] = P
+        self.pore_conditions['temperature'] = T
+        self.pore_conditions['pressure'] = P
         for key, args in recipe.items():
             try:
                 function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) # this gets the method from the file

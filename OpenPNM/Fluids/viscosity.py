@@ -11,11 +11,11 @@ def constant(fluid,network,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.pore_conditions[fluid.name+'_'+propname] = value
+    fluid.pore_conditions[propname] = value
 
 def na(fluid,network,**params):
     value = -1
-    network.pore_conditions[fluid.name+'_'+propname] = value
+    fluid.pore_conditions[propname] = value
 
 def Reynolds(fluid,network,uo=0.001,b=0.1,**params):
     r"""
@@ -27,9 +27,9 @@ def Reynolds(fluid,network,uo=0.001,b=0.1,**params):
             Coefficients of Reynolds method
 
     """
-    T = network.pore_conditions[fluid.name+'_'+'temperature']
+    T = fluid.pore_conditions['temperature']
     value = uo*sp.exp(-1*b*T)
-    network.pore_conditions[fluid.name+'_'+propname] = value
+    fluid.pore_conditions[propname] = value
 
 def Chung(fluid,network,Tc=132.65,Vc=92.35e-6,MW=0.0291,acentric=0,kappa=0,dipole=0,**params):
     r"""
@@ -51,7 +51,7 @@ def Chung(fluid,network,Tc=132.65,Vc=92.35e-6,MW=0.0291,acentric=0,kappa=0,dipol
         Dipole moment (C.m)
 
     """
-    T = network.pore_conditions[fluid.name+'_'+'temperature']
+    T = fluid.pore_conditions['temperature']
     Tr= T/fluid.Tc
     Tstar = 1.2593*Tr
     A = 1.161415
@@ -64,5 +64,5 @@ def Chung(fluid,network,Tc=132.65,Vc=92.35e-6,MW=0.0291,acentric=0,kappa=0,dipol
     dipole_r = 131.3*(dipole*2.997e29)/((Vc*1e6)*Tc)**0.5
     f = 1-0.2756*acentric + 0.059035*(dipole_r**4) + kappa
     value = 40.785*f*(MW*1e3*T)**0.5/((Vc*1e6)**(2/3)*sigma)*1e-7
-    network.pore_conditions[fluid.name+'_'+propname] = value
+    fluid.pore_conditions[propname] = value
 

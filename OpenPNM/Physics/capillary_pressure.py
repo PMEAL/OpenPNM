@@ -13,11 +13,11 @@ def constant(physics,fluid,network,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.pore_conditions[fluid.name+'_'+propname] = value
+    fluid.pore_conditions[propname] = value
 
 def na(physics,fluid,network,**params):
     value = -1
-    network.pore_conditions[fluid.name+'_'+propname] = value
+    fluid.pore_conditions[propname] = value
 
 def washburn(physics,fluid,network,**params):
     r"""
@@ -42,12 +42,12 @@ def washburn(physics,fluid,network,**params):
 
     """
     try:
-        sigma = network.pore_conditions[fluid.name+'_'+'surface_tension']
+        sigma = fluid.pore_conditions['surface_tension']
         sigma = fluid.interpolate_throat_conditions(network,sigma)
-        theta = network.pore_conditions[fluid.name+'_'+'contact_angle']
+        theta = fluid.pore_conditions['contact_angle']
         theta = fluid.interpolate_throat_conditions(network,theta)
         value = -4*sigma*sp.cos(sp.radians(theta))/network.throat_properties['diameter']
-        network.throat_conditions[fluid.name+'_'+propname] = value
+        fluid.throat_conditions[propname] = value
     except:
         physics._logger.warning(fluid.name+'.'+propname+': Unable to calculate values, probably missing fluid properties')
 
@@ -84,13 +84,13 @@ def purcell(physics,network,fluid,r_toroid,**params):
     """TODO:
     Triple check the accuracy of this equation
     """
-    sigma = network.pore_conditions[fluid.name+'_'+'surface_tension']
+    sigma = fluid.pore_conditions['surface_tension']
     sigma = fluid.interpolate_throat_conditions(network,sigma)
-    theta = network.pore_conditions[fluid.name+'_'+'contact_angle']
+    theta = fluid.pore_conditions['contact_angle']
     theta = fluid.interpolate_throat_conditions(network,theta)
     r = network.throat_properties['diameter']/2
     R = r_toroid
     alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
-    network.throat_conditions[fluid.name+'_'+propname] = value
+    fluid.throat_conditions[propname] = value
 
