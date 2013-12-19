@@ -89,6 +89,11 @@ class Network(Utilities):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
 
+    def fluids_fetch(self,name='all'):
+        for item in self._fluids:
+            if (item.name == name):
+                return item
+
     def physics_listing(self):
         for item in self._physics:
             print(item.name+': ',item)
