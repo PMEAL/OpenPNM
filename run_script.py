@@ -5,7 +5,7 @@ start=clock()
 #======================================================================
 '''Initialize empty Network object'''
 #======================================================================
-pn = OpenPNM.Base.Network(loglevel=10)
+pn = OpenPNM.Base.Network(loggername='PNM',loglevel=20)
 
 #======================================================================
 '''Build Topology'''
@@ -62,7 +62,7 @@ air_recipe = {
 'molar_density': {'method': 'ideal_gas',
                   'R': 8.314},
 }
-air = OpenPNM.Fluids.GenericFluid(loglevel=10).create(network=pn,**air_recipe)
+air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=20).create(network=pn,**air_recipe)
 
 water_recipe = {
 'name': 'water',
@@ -81,26 +81,26 @@ water_recipe = {
                   'value': 110},
 }
 #It's good practice to attach fluid objects to network, but not necessary?
-water = OpenPNM.Fluids.GenericFluid(loglevel=10).create(network=pn,**water_recipe)
+water = OpenPNM.Fluids.GenericFluid(loggername='WATER',loglevel=20).create(network=pn,**water_recipe)
 
 #======================================================================
 '''Build Physics Objects'''
 #======================================================================
 phys_recipe = {
-'name': 'air',
+'name': 'standard_air_physics',
 'capillary_pressure': {'method': 'washburn'},
 'hydraulic_conductance': {'method': 'hagen_poiseuille'},
 'diffusive_conductance': {'method': 'bulk_diffusion'},
 }
-phys_water = OpenPNM.Physics.GenericPhysics(loglevel=10).create(network=pn,fluid=water,**phys_recipe)
+phys_water = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=water,**phys_recipe)
 
 phys_recipe = {
-'name': 'water',
+'name': 'standard_water_physics',
 'capillary_pressure': {'method': 'washburn'},
 'hydraulic_conductance': {'method': 'hagen_poiseuille'},
 'diffusive_conductance': {'method': 'bulk_diffusion'},
 }
-phys_air = OpenPNM.Physics.GenericPhysics(loglevel=10).create(network=pn,fluid=air,**phys_recipe)
+phys_air = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=air,**phys_recipe)
 
 #======================================================================
 '''Begin Simulations'''
