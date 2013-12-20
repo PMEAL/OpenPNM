@@ -62,20 +62,20 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).run(network,**params)
         return self
 
-    def _setup(self, invading_fluid,defending_fluid, npts=25, inlets=[0],AL=True,**params):
+    def _setup(self, invading_fluid, defending_fluid, npts=25, inlets=[0],AL=True,**params):
         self._npts = npts
         self._AL = AL
         self._inv_sites = inlets
-        self._fluid_inv = self._net.fluids_fetch(invading_fluid)
-        self._fluid_def = self._net.fluids_fetch(defending_fluid)
+        self._fluid_inv = invading_fluid
+        self._fluid_def = defending_fluid
 #        invading_fluid.set_pair(defending_fluid)
 #        self._fluid_inv.refresh()
         #Create a pore and throat conditions list to store inv_val at which each is invaded
-        self._fluid_inv.pore_conditions['Pc_invaded'] = np.zeros(self._net.get_num_pores(),np.float)
-        self._fluid_inv.throat_conditions['Pc_invaded'] = np.zeros(self._net.get_num_throats(),np.float)
+        self._net.set_pore_conditions(self._fluid_inv,'Pc_invaded',np.zeros(self._net.get_num_pores(),np.float))
+        self._net.set_throat_conditions(self._fluid_inv,'Pc_invaded',np.zeros(self._net.get_num_throats(),np.float))
         #Determine the invasion pressures to apply
-        min_p = np.min(self._fluid_inv.throat_conditions['capillary_pressure'])
-        max_p = np.max(self._fluid_inv.throat_conditions['capillary_pressure'])
+        min_p = np.min(self._net.get_throat_conditions(self._fluid_inv,'capillary_pressure'))
+        max_p = np.min(self._net.get_throat_conditions(self._fluid_inv,'capillary_pressure'))
         self._inv_points = np.logspace(np.log10(min_p),np.log10(max_p),self._npts)
 
     def _do_outer_iteration_stage(self):
@@ -96,7 +96,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         #Generate a tlist containing boolean values for throat state
-        Tinvaded = self._fluid_inv.throat_conditions['capillary_pressure']<=inv_val
+        Tinvaded = self._net.get_throat_conditions(self._fluid_inv,'capillary_pressure')<=inv_val
         #Fill adjacency matrix with invasion state info
         I = {'invaded': Tinvaded}
         self._net.create_adjacency_matrix(I,sprsfmt='csr',dropzeros=True)
@@ -123,11 +123,11 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Store invasion pressure in pores and throats
         pmask = np.in1d(clusters,inv_clusters)
         #Store result of invasion step
-        self._fluid_inv.pore_conditions['Pc_invaded'][(self._fluid_inv.pore_conditions['Pc_invaded']==0)*(pmask)] = inv_val
+        self._net.get_pore_conditions(self._fluid_inv,'Pc_invaded')[(self._net.get_pore_conditions(self._fluid_inv,'Pc_invaded')==0)*(pmask)] = inv_val
         #Determine Pc_invaded for throats as well
         temp = self._net.throat_properties['connections']
-        tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._fluid_inv.throat_conditions['capillary_pressure']<=inv_val)
-        self._fluid_inv.throat_conditions['Pc_invaded'][(self._fluid_inv.throat_conditions['Pc_invaded']==0)*(tmask)] = inv_val
+        tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._net.get_throat_conditions(self._fluid_inv,'capillary_pressure')<=inv_val)
+        self._net.get_throat_conditions(self._fluid_inv,'Pc_invaded')[(self._net.get_throat_conditions(self._fluid_inv,'Pc_invaded')==0)*(tmask)] = inv_val
 
     def evaluate_trapping(self,network,invading_fluid,outlets):
         Np = network.get_num_pores()

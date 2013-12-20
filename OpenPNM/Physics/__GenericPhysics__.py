@@ -18,15 +18,17 @@ class GenericPhysics(OpenPNM.Base.Utilities):
         r"""
         Create a fluid object using the supplied parameters
         """
+        self.pore_conditions = {}
+        self.throat_conditions = {}
+        self._prop_list = {}
+        self._fluid = []
         try: recipe = self.recipe #check if recipe is pre-existing on self (from init of subclassed methods)
         except: pass
         try: self.name = recipe['name']
         except: self._logger.error('Physics name must be given')
         #bind objects togoether
         network._physics.append(self) #attach physics to network
-        self._fluid = []
         self._fluid.append(fluid) #attach fluid to physics
-        self._prop_list = {}
         for key, args in recipe.items():
             try:
                 function = getattr( getattr(OpenPNM.Physics, key), args['method'] ) # this gets the method from the file
@@ -34,8 +36,7 @@ class GenericPhysics(OpenPNM.Base.Utilities):
                 setattr(self, key, preloaded_fn)
                 self._logger.info("Successfully loaded {}.".format(key))
                 self._prop_list[key] = True
-            except AttributeError:
-                self._logger.debug("Did not manage to load {}.".format(key))
+            except AttributeError: pass
         self.regenerate()
         return self
 

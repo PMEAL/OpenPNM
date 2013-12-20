@@ -58,8 +58,7 @@ class GenericGeometry(OpenPNM.Base.Utilities):
                 preloaded_fn = partial(function, geometry=self, network=network, **args) 
                 setattr(self, key, preloaded_fn)
                 self._logger.info("Successfully loaded {}.".format(key))
-            except AttributeError:
-                self._logger.debug("Did not manage to load {}.".format(key))
+            except AttributeError: pass
         self.regenerate()
         return self
         

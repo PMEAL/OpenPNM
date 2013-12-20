@@ -144,11 +144,12 @@ class Network(Utilities):
                 try: return item.pore_conditions[prop]
                 except: self._logger.warning(fluid+' does not have the requested pore condition: '+prop)
 
-    def set_pore_condition(self,fluid,prop,data):
+    def set_pore_conditions(self,fluid,prop,data):
         r"""
         """
         for item in self._fluids:
             if (item.name == fluid):
+                self._logger.debug(prop+' has been added to '+fluid)
                 data = sp.array(data,ndmin=1)
                 item.pore_conditions[prop] = data
 
@@ -167,6 +168,26 @@ class Network(Utilities):
             if (item.name == fluid):
                 try: return item.throat_conditions[prop]
                 except: self._logger.warning(fluid+' does not have the requested throat condition: '+prop)
+                
+    def amalgamate_pore_data(self):
+        self.pore_data = {}
+        self.throat_data = {}
+        #Add fluid conditions
+        for item in self._fluids:
+            for key in item.pore_conditions.keys():
+                dict_name = item.name+'_'+key
+                self.pore_data.update({dict_name : item.pore_conditions[key]})
+        #Add physics conditions (does nothing now since they're stored in fluids)
+        for item in self._physics:
+            for key in item.pore_conditions.keys():
+                dict_name = item.name+'_'+key
+                self.pore_data.update({dict_name : item.pore_conditions[key]})
+        #Add geometry data
+        for key in self.pore_properties.keys():
+            dict_name = 'pore'+'_'+key
+            self.pore_data.update({dict_name : self.pore_properties[key]})
+        pprint.pprint(self.pore_data)
+        return self.pore_data
 
     def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
         r"""
