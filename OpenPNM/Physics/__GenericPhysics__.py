@@ -5,23 +5,29 @@ module Physics
 
 """
 import OpenPNM
-from functools import partial
 import scipy as sp
+from functools import partial
 
 class GenericPhysics(OpenPNM.Base.Utilities):
-    
-    def __init(self,**kwargs):
+    r"""
+    GenericPhysics - Base class to generate pore scale physics properties
+
+    Parameters
+    ----------
+
+    """
+    def __init__(self,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
+        self.pore_conditions = {}
+        self.throat_conditions = {}
+        self._prop_list = {}
+        self._fluid = []
         
     def create(self,network,fluid,**recipe):
         r"""
         Create a fluid object using the supplied parameters
         """
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-        self._prop_list = {}
-        self._fluid = []
         try: recipe = self.recipe #check if recipe is pre-existing on self (from init of subclassed methods)
         except: pass
         try: self.name = recipe['name']

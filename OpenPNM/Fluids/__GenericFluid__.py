@@ -1,10 +1,16 @@
+
+"""
+module Physics
+===============================================================================
+
+"""
 import OpenPNM
 import scipy as sp
 from functools import partial
 
 class GenericFluid(OpenPNM.Base.Utilities):
     r"""
-    GenericGas - Base class to generate gas properties
+    GenericFluid - Base class to generate fluid properties
 
     Parameters
     ----------
@@ -32,8 +38,8 @@ class GenericFluid(OpenPNM.Base.Utilities):
         self.pore_conditions['pressure'] = P
         for key, args in recipe.items():
             try:
-                function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) # this gets the method from the file
-                preloaded_fn = partial(function, fluid=self, network=network, **args) #
+                function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) #Get method from the file
+                preloaded_fn = partial(function, fluid=self, network=network, **args) 
                 setattr(self, key, preloaded_fn)
                 self._logger.info('Successfully added '+key+' to '+self.name)
             except AttributeError: pass
@@ -42,7 +48,7 @@ class GenericFluid(OpenPNM.Base.Utilities):
 
     def regenerate(self):
         r'''
-        This updates all properties using the methods indicated in the recipe.  This method also takes the opportunity to ensure all values are Numpy arrays.
+        This updates all properties using the methods indicated in the recipe.
         '''
         try: self.viscosity()
         except: pass
@@ -54,7 +60,6 @@ class GenericFluid(OpenPNM.Base.Utilities):
         except: pass
         try: self.contact_angle()
         except: pass
-
 
     def interpolate_pore_conditions(self,network,Tinfo=None):
         r"""
