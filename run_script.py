@@ -87,7 +87,7 @@ water = OpenPNM.Fluids.GenericFluid(loglevel=10).create(network=pn,**water_recip
 '''Build Physics Objects'''
 #======================================================================
 phys_recipe = {
-'name': 'standard_air_physics',
+'name': 'air',
 'capillary_pressure': {'method': 'washburn'},
 'hydraulic_conductance': {'method': 'hagen_poiseuille'},
 'diffusive_conductance': {'method': 'bulk_diffusion'},
@@ -95,7 +95,7 @@ phys_recipe = {
 phys_water = OpenPNM.Physics.GenericPhysics(loglevel=10).create(network=pn,fluid=water,**phys_recipe)
 
 phys_recipe = {
-'name': 'standard_water_physics',
+'name': 'water',
 'capillary_pressure': {'method': 'washburn'},
 'hydraulic_conductance': {'method': 'hagen_poiseuille'},
 'diffusive_conductance': {'method': 'bulk_diffusion'},

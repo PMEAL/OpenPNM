@@ -35,9 +35,8 @@ class GenericFluid(OpenPNM.Base.Utilities):
                 function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) # this gets the method from the file
                 preloaded_fn = partial(function, fluid=self, network=network, **args) #
                 setattr(self, key, preloaded_fn)
-                self._logger.info("Successfully loaded {}.".format(key))
-            except AttributeError:
-                self._logger.debug("Did not manage to load {}.".format(key))
+                self._logger.info('Successfully added '+key+' to '+self.name)
+            except AttributeError: pass
         self.regenerate()
         return self
 
@@ -116,6 +115,9 @@ class GenericFluid(OpenPNM.Base.Utilities):
             for i in sp.r_[0:sp.shape(nPs)[0]]:
                 Tinfo[i] = sp.mean(Pinfo[nPs[i]])
         return Tinfo
+        
+    def __str__(self):
+        return('test')
 
 if __name__ =="__main__":
 
