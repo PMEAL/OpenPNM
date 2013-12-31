@@ -26,7 +26,6 @@ from .__GenericAlgorithm__ import GenericAlgorithm
 
 class InvasionPercolation(GenericAlgorithm):
 
-
     def __init__(self,**kwords):
         r"""
 

@@ -41,6 +41,8 @@ class GenericGeometry(OpenPNM.Base.Utilities):
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        self.pore_conditions = {}
+        self.throat_conditions = {}
        
     def create(self,network,**recipe):
         r"""

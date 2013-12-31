@@ -34,8 +34,8 @@ class GenericFluid(OpenPNM.Base.Utilities):
         self.Tc = recipe['Tc']
         self.Pc = recipe['Pc']
         self.MW = recipe['MW']
-        self.pore_conditions['temperature'] = T
-        self.pore_conditions['pressure'] = P
+        self.pore_conditions['temperature'] = sp.array(T,ndmin=1)
+        self.pore_conditions['pressure'] = sp.array(P,ndmin=1)
         for key, args in recipe.items():
             try:
                 function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) #Get method from the file
