@@ -38,6 +38,8 @@ class GenericTopology(OpenPNM.Base.Utilities):
         """
         super(GenericTopology,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        self.pore_properties = {}
+        self.throat_properties = {}
         
     def generate(self, network, **params):
         r"""

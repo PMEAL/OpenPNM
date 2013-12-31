@@ -15,13 +15,11 @@ module __GenericNetwork__: contains OpenPNM topology baseclass
 
 """
 
-import OpenPNM
 import pprint
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import matplotlib as mpl
-import math
 from . import Utilities
 
 class Network(Utilities):
@@ -123,19 +121,34 @@ class Network(Utilities):
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
-
-    def get_pore_properties(self,prop):
+    
+    def boundary_listing(self):
         r"""
         """
+        print(self.boundary_legend)
+        
+    
+    #------------------------------------------------------------------
+    '''pore_properties setter and getter methods'''
+    #------------------------------------------------------------------    
+    def get_pore_properties(self):
         try: return self.pore_properties[prop]
-        except: self._logger.warning('Network does not have the requested pore property: '+prop)
-
-    def get_throat_properties(self,prop):
-        r"""
-        """
+        except: self._logger.warning('Network does not have the requested pore property: '+prop)     
+    def set_pore_properties(self,prop):
+        self.pore_properties[prop[0]] = sp.array(prop[1],ndmin=1)
+    
+    #------------------------------------------------------------------
+    '''throat_properties setter and getter methods'''
+    #------------------------------------------------------------------ 
+    def get_throat_properties(self):
         try: return self.throat_properties[prop]
         except: self._logger.warning('Network does not have the requested throat property: '+prop)
-                
+    def set_throat_properties(self,prop):
+        self.throat_properties[prop[0]] = sp.array(prop[1],ndmin=1)
+    
+    #------------------------------------------------------------------
+    '''pore_conditions setter and getter methods'''
+    #------------------------------------------------------------------  
     def get_pore_conditions(self,fluid,prop):
         r"""
         """
@@ -143,7 +156,6 @@ class Network(Utilities):
             if (item.name == fluid):
                 try: return item.pore_conditions[prop]
                 except: self._logger.warning(fluid+' does not have the requested pore condition: '+prop)
-
     def set_pore_conditions(self,fluid,prop,data):
         r"""
         """
@@ -153,14 +165,9 @@ class Network(Utilities):
                 data = sp.array(data,ndmin=1)
                 item.pore_conditions[prop] = data
 
-    def set_throat_conditions(self,fluid,prop,data):
-        r"""
-        """
-        for item in self._fluids:
-            if (item.name == fluid):
-                data = sp.array(data,ndmin=1)
-                item.throat_conditions[prop] = data
-
+    #------------------------------------------------------------------
+    '''throat_conditions setter and getter methods'''
+    #------------------------------------------------------------------ 
     def get_throat_conditions(self,fluid,prop):
         r"""
         """
@@ -168,6 +175,16 @@ class Network(Utilities):
             if (item.name == fluid):
                 try: return item.throat_conditions[prop]
                 except: self._logger.warning(fluid+' does not have the requested throat condition: '+prop)
+    def set_throat_conditions(self,fluid,prop,data):
+        r"""
+        """
+        for item in self._fluids:
+            if (item.name == fluid):
+                data = sp.array(data,ndmin=1)
+                item.throat_conditions[prop] = data
+    def _throat_cond_func(self,prop):
+        pass
+    t_cond = property(get_throat_conditions,set_throat_conditions)
                 
     def amalgamate_pore_data(self):
         self.pore_data = {}
@@ -626,7 +643,14 @@ class Network(Utilities):
         Print some basic properties
         """
         pprint.pprint(self.pore_properties)
-
+        pprint.pprint(self.throat_properties)
+        
+    def show_boundaries(self):
+        r'''
+        '''
+        
+        
+        
     def __str__(self):
         r"""
         Print some basic properties

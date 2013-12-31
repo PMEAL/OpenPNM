@@ -13,7 +13,7 @@ pn = OpenPNM.Base.Network(loggername='PNM',loglevel=20)
 #Define topology parameters
 topo_recipe = {
 'domain_size': [],  #physical network size [meters]
-'divisions': [5,25,25], #Number of pores in each direction
+'divisions': [35,35,35], #Number of pores in each direction
 'lattice_spacing': [0.0001],  #spacing between pores [meters]
 }
 #Add topology to network
@@ -28,12 +28,12 @@ geom_recipe = {
 'throat_seed': {'method': 'neighbor_min'},
 'pore_diameter': {'method': 'sphere',
                  'name': 'weibull_min',
-                 'shape': 1.5,
+                 'shape': 2.5,
                  'loc': 6e-6,
                  'scale': 2e-5},
 'throat_diameter': {'method': 'cylinder',
                    'name': 'weibull_min',
-                   'shape': 1.5,
+                   'shape': 2.5,
                    'loc': 6e-6,
                    'scale': 2e-5},
 'pore_volume': {'method': 'sphere'},
@@ -105,17 +105,18 @@ phys_air = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=air,**phys_r
 #======================================================================
 '''Begin Simulations'''
 #======================================================================
-'''Peform a Drainage Experiment (OrdinaryPercolation)'''
+'''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #----------------------------------------------------------------------
 #Initialize algorithm object
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation()
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10)
 #Apply desired/necessary pore scale physics methods
-a = pn.pore_properties['coords'][:,2] <= 5e-5
+a = pn.pore_properties['coords'][:,0] <= 5e-5
 #Run algorithm
 OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=50,AL=True)
+#OP_1.plot_drainage_curve()
 
-#b = pn.pore_properties['type']==5
-#OP_1.evaluate_trapping(network=pn,invading_fluid=pn.liquid,outlets=b)
+#b = pn.pore_properties['coords'][:,1] <= 5e-5
+#OP_1.evaluate_trapping(outlets=b)
 
 ##----------------------------------------------------------------------
 #'''Perform an Injection Experiment (InvasionPercolation)'''
