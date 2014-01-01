@@ -24,16 +24,12 @@ from . import Utilities
 
 class Network(Utilities):
     r"""
-    GenericNetwork - Base topology class for pore networks
+    GenericNetwork - Base class for pore networks
 
-    This class contains the basic functionality for storaging and querying pore network data.
+    This class contains the main functionality for storing and querying pore network data.
 
     Parameters
     ----------
-    num_pores : int
-        Number of pores
-    num_throats : int
-        Number of throats
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
 
@@ -47,6 +43,8 @@ class Network(Utilities):
 
         super(Network,self).__init__(**kwords)
         self._logger.debug("Construct Network container")
+        
+        self._pore_definitions = {}
         
         #Initialize fluid, physics, and geometry tracking lists
         self._fluids = []
@@ -121,29 +119,84 @@ class Network(Utilities):
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
-    
-    def boundary_listing(self):
-        r"""
-        """
-        print(self.boundary_legend)
         
-    
+    def set_pore_definitions(self,defn):
+        r"""
+        Assign keyword AND numerical values to describe  pore type
+        
+        Parameters
+        ----------
+        defn : dict
+            A dictionary containing the keyword/number association
+            
+        Examples
+        --------
+        >>> pn.set_pore_definitions({'internal':0,'external':1})
+        """
+        for item in defn.keys():
+            try:
+                self._pore_definitions[item]
+                self._logger.warning('Exisiting pore definition is being overwritten')
+            except:
+                self._logger.info('Adding new pore definition')
+            self._pore_definitions[item] = defn[item]
+            
+    def get_pore_definitions(self,defn=[]):
+        r"""
+        Retrieves the keyword name OR numerical number associated with each pore type
+        
+        Parameters
+        ----------
+        defn : list
+            A list containing either the keywords OR numbers of interest.  An empty list simply prints all keyword/number pairs to the console.
+            
+        Returns
+        -------
+            A list containing the numbers OR keywords corresponding to the input list.
+        """
+        names = list(self._pore_definitions.keys())
+        vals = list(self._pore_definitions.values())
+        return_list = []
+        if defn == []:
+            for item in self._pore_definitions.keys():
+                print(item,' -> ',self._pore_definitions[item])
+        elif type(defn[0]) == int:
+            for item in defn:
+                print(item,' -> ',names[vals.index(item)])
+                return_list.append(names[vals.index(item)])
+            return return_list
+        elif type(defn[0]) == str:
+            for item in defn:
+                print(item,' -> ',vals[names.index(item)])
+                return_list.append(vals[names.index(item)])
+            return return_list
+        
     #------------------------------------------------------------------
     '''pore_properties setter and getter methods'''
     #------------------------------------------------------------------    
-    def get_pore_properties(self):
+    def get_pore_properties(self,prop):
+        r"""
+        Retrieves specified property from correct location and returns an ndarray.
+        """
         try: return self.pore_properties[prop]
         except: self._logger.warning('Network does not have the requested pore property: '+prop)     
-    def set_pore_properties(self,prop):
+    def set_pore_properties(self,prop,data):
+        r"""
+        """
         self.pore_properties[prop[0]] = sp.array(prop[1],ndmin=1)
     
     #------------------------------------------------------------------
     '''throat_properties setter and getter methods'''
     #------------------------------------------------------------------ 
-    def get_throat_properties(self):
+    def get_throat_properties(self,prop):
+        r"""
+        Retrieves specified property from correct location and returns an ndarray.
+        """
         try: return self.throat_properties[prop]
         except: self._logger.warning('Network does not have the requested throat property: '+prop)
-    def set_throat_properties(self,prop):
+    def set_throat_properties(self,prop,data):
+        r"""
+        """
         self.throat_properties[prop[0]] = sp.array(prop[1],ndmin=1)
     
     #------------------------------------------------------------------
@@ -151,6 +204,7 @@ class Network(Utilities):
     #------------------------------------------------------------------  
     def get_pore_conditions(self,fluid,prop):
         r"""
+        Retrieves specified property from specified fluid and returns an ndarray.
         """
         for item in self._fluids:
             if (item.name == fluid):
@@ -170,6 +224,7 @@ class Network(Utilities):
     #------------------------------------------------------------------ 
     def get_throat_conditions(self,fluid,prop):
         r"""
+        Retrieves specified property from specified fluid and returns an ndarray.
         """
         for item in self._fluids:
             if (item.name == fluid):
@@ -182,9 +237,6 @@ class Network(Utilities):
             if (item.name == fluid):
                 data = sp.array(data,ndmin=1)
                 item.throat_conditions[prop] = data
-    def _throat_cond_func(self,prop):
-        pass
-    t_cond = property(get_throat_conditions,set_throat_conditions)
                 
     def amalgamate_pore_data(self):
         self.pore_data = {}
@@ -645,11 +697,20 @@ class Network(Utilities):
         pprint.pprint(self.pore_properties)
         pprint.pprint(self.throat_properties)
         
-    def show_boundaries(self):
+    def show_boundaries(self,btype='all'):
         r'''
         '''
-        
-        
+        from mpl_toolkits.mplot3d import Axes3D
+        fig = plt.figure()
+        if btype == 'all':
+            btype = self.boundary_legend
+#        for 
+        ax = fig.add_subplot(111, projection='3d')
+        xs = self.pore_properties['coords'][:,0]
+        ys = self.pore_properties['coords'][:,1]
+        zs = self.pore_properties['coords'][:,2]
+        ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
+        plt.show()                
         
     def __str__(self):
         r"""

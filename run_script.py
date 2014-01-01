@@ -112,11 +112,14 @@ OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10)
 #Apply desired/necessary pore scale physics methods
 a = pn.pore_properties['coords'][:,0] <= 5e-5
 #Run algorithm
-OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=50,AL=True)
+OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=10,AL=True)
 #OP_1.plot_drainage_curve()
 
 #b = pn.pore_properties['coords'][:,1] <= 5e-5
 #OP_1.evaluate_trapping(outlets=b)
+
+pn.set_pore_definitions({'internal':0,'external':1,'top':3})
+
 
 ##----------------------------------------------------------------------
 #'''Perform an Injection Experiment (InvasionPercolation)'''
