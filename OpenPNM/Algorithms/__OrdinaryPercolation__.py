@@ -136,6 +136,17 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_inv[(self._t_inv==0)*(tmask)] = inv_val
 
     def evaluate_trapping(self,outlets=[0]):
+        r"""
+        Finds trapped pores and throats after a full ordinary percolation/drainage has been run
+        
+        Parameters
+        ---------
+        outlets : array_like
+            A list of pores that define the wetting phase outlets.  Disconnection from these outlets results in trapping.
+            
+            TODO: Ideally this should update the inv_Pc property and set trapped pores to a value of inf. 
+            This would allow update_occupancy and plotting to work.
+        """
         Np = self._net.get_num_pores()
         Nt = self._net.get_num_throats()
         self._p_trap = sp.zeros((Np,),dtype=float)
@@ -160,34 +171,24 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._p_trap[self._p_trap>0] = 0
         self._net.set_pore_conditions(self._fluid_inv,'trap_Pc',self._p_trap)
 
-    def update_occupancy(fluid,Pc=0):
+    def update_occupancy(self,Pc=0):
         r"""
         Updates the fluid occupancy status of invading and defending fluids as determined by the OP algorithm
 
-        Parameters
-        ----------
-        fluid : OpenPNM Fluid Object
-            This can be either the invading or defending fluid used.
         """
-        #Apply occupancy to given fluid
-        try:
-            fluid.pore_conditions['occupancy'] = sp.array(fluid.pore_conditions['Pc_invaded']<=Pc,ndmin=1)
-            fluid.throat_conditions['occupancy'] = sp.array(fluid.throat_conditions['Pc_invaded']<=Pc,ndmin=1)
-        except:
-            print('OP has not been run with this fluid, checking partner fluid')
-            try:
-                #Apply occupancy to given fluid
-                fluid.pore_conditions['occupancy'] = sp.array(~(fluid.partner.pore_conditions['Pc_invaded']<=Pc),ndmin=1)
-                fluid.throat_conditions['occupancy'] = sp.array(~(fluid.partner.throat_conditions['Pc_invaded']<=Pc),ndmin=1)
-            except:
-                raise Exception('It seems that OP has not been run on either fluid')
-        #Apply occupancy to partner fluid
-        fluid.partner.pore_conditions['occupancy'] = sp.array(~fluid.pore_conditions['occupancy'],ndmin=1)
-        fluid.partner.throat_conditions['occupancy'] = sp.array(~fluid.throat_conditions['occupancy'],ndmin=1)
+        #Apply occupancy to invading fluid
+        p_inv = self._net.get_pore_conditions(self._fluid_inv,'inv_Pc')<=Pc
+        t_inv = self._net.get_throat_conditions(self._fluid_inv,'inv_Pc')<=Pc
+        self._net.set_pore_conditions(self._fluid_inv,'occupancy',p_inv)
+        self._net.set_throat_conditions(self._fluid_inv,'occupancy',t_inv)
+
+        #Apply occupancy to defending fluid
+        self._net.set_pore_conditions(self._fluid_def,'occupancy',~p_inv)
+        self._net.set_throat_conditions(self._fluid_def,'occupancy',~t_inv)        
         
     def plot_drainage_curve(self):
           r"""
-          Plot drainage capillary pressure curve 
+          Plot drainage capillary pressure curve
           """
           try:
             PcPoints = sp.unique(self._net.get_pore_conditions(self._fluid_inv,'inv_Pc'))
