@@ -119,7 +119,10 @@ class Network(Utilities):
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
-        
+
+    #-------------------------------------------------------------------------
+    '''pore_definition setter and getter methods'''
+    #-------------------------------------------------------------------------
     def set_pore_definitions(self,defn):
         r"""
         Assign keyword AND numerical values to describe  pore type
@@ -149,28 +152,28 @@ class Network(Utilities):
         ----------
         defn : list
             A list containing either the keywords OR numbers of interest.  An empty list simply prints all keyword/number pairs to the console.
-            
         Returns
         -------
             A list containing the numbers OR keywords corresponding to the input list.
         """
-        names = list(self._pore_definitions.keys())
-        vals = list(self._pore_definitions.values())
-        return_list = []
         if defn == []:
             for item in self._pore_definitions.keys():
                 print(item,' -> ',self._pore_definitions[item])
         elif type(defn[0]) == int:
-            for item in defn:
-                print(item,' -> ',names[vals.index(item)])
-                return_list.append(names[vals.index(item)])
+            return_list = ['']*sp.shape(defn)[0]
+            names = list(self._pore_definitions.keys())
+            nums = list(self._pore_definitions.values())
+            for i in range(0,sp.shape(defn)[0]):
+                return_list[i] = names[nums.index(defn[i])]
             return return_list
         elif type(defn[0]) == str:
-            for item in defn:
-                print(item,' -> ',vals[names.index(item)])
-                return_list.append(vals[names.index(item)])
+            return_list = ['']*sp.shape(defn)[0]
+            names = list(self._pore_definitions.keys())
+            nums = list(self._pore_definitions.values())
+            for i in range(0,sp.shape(defn)[0]):
+                return_list[i] = nums[names.index(defn[i])]
             return return_list
-        
+
     #------------------------------------------------------------------
     '''pore_properties setter and getter methods'''
     #------------------------------------------------------------------    
