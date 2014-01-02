@@ -177,12 +177,16 @@ class Network(Utilities):
     #------------------------------------------------------------------
     '''pore_properties setter and getter methods'''
     #------------------------------------------------------------------    
-    def get_pore_properties(self,prop):
+    def get_pore_properties(self,prop=''):
         r"""
         Retrieves specified property from correct location and returns an ndarray.
         """
-        try: return self.pore_properties[prop]
-        except: self._logger.warning('Network does not have the requested pore property: '+prop)     
+        if prop == '':
+            for item in self.pore_properties.keys():
+                print(item)
+        else:
+            try: return self.pore_properties[prop]
+            except: self._logger.warning('Network does not have the requested pore property: '+prop)     
     def set_pore_properties(self,prop,data):
         r"""
         """
@@ -191,12 +195,16 @@ class Network(Utilities):
     #------------------------------------------------------------------
     '''throat_properties setter and getter methods'''
     #------------------------------------------------------------------ 
-    def get_throat_properties(self,prop):
+    def get_throat_properties(self,prop=''):
         r"""
         Retrieves specified property from correct location and returns an ndarray.
         """
-        try: return self.throat_properties[prop]
-        except: self._logger.warning('Network does not have the requested throat property: '+prop)
+        if prop == '':
+            for item in self.throat_properties.keys():
+                print(item)
+        else:
+            try: return self.throat_properties[prop]
+            except: self._logger.warning('Network does not have the requested throat property: '+prop)
     def set_throat_properties(self,prop,data):
         r"""
         """
@@ -205,14 +213,18 @@ class Network(Utilities):
     #------------------------------------------------------------------
     '''pore_conditions setter and getter methods'''
     #------------------------------------------------------------------  
-    def get_pore_conditions(self,fluid,prop):
+    def get_pore_conditions(self,fluid,prop=''):
         r"""
         Retrieves specified property from specified fluid and returns an ndarray.
         """
         for item in self._fluids:
             if (item.name == fluid):
-                try: return item.pore_conditions[prop]
-                except: self._logger.warning(fluid+' does not have the requested pore condition: '+prop)
+                if prop == '':
+                    for item2 in item.pore_conditions.keys():
+                        print(item2)
+                else:
+                    try: return item.pore_conditions[prop]
+                    except: self._logger.warning(fluid+' does not have the requested pore condition: '+prop)
     def set_pore_conditions(self,fluid,prop,data):
         r"""
         """
@@ -225,14 +237,18 @@ class Network(Utilities):
     #------------------------------------------------------------------
     '''throat_conditions setter and getter methods'''
     #------------------------------------------------------------------ 
-    def get_throat_conditions(self,fluid,prop):
+    def get_throat_conditions(self,fluid,prop=''):
         r"""
         Retrieves specified property from specified fluid and returns an ndarray.
         """
         for item in self._fluids:
             if (item.name == fluid):
-                try: return item.throat_conditions[prop]
-                except: self._logger.warning(fluid+' does not have the requested throat condition: '+prop)
+                if prop == '':
+                    for item2 in item.throat_conditions.keys():
+                        print(item2)
+                else:
+                    try: return item.throat_conditions[prop]
+                    except: self._logger.warning(fluid+' does not have the requested throat condition: '+prop)
     def set_throat_conditions(self,fluid,prop,data):
         r"""
         """
