@@ -16,10 +16,11 @@ module __GenericNetwork__: contains OpenPNM topology baseclass
 """
 
 import pprint
+import collections
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
-import matplotlib as mpl
+import matplotlib.pyplot as plt
 from . import Utilities
 
 class Network(Utilities):
@@ -36,16 +37,15 @@ class Network(Utilities):
     """
 
     def __init__(self,**kwords):
-        r'''
+        r"""
         This is the abstract constructor of the basic network class.
-
-        '''
+        """
 
         super(Network,self).__init__(**kwords)
         self._logger.debug("Construct Network container")
-        
-        self._pore_definitions = {}
-        
+
+        self._type_definitions = {}
+
         #Initialize fluid, physics, and geometry tracking lists
         self._fluids = []
         self._physics = []
@@ -76,7 +76,7 @@ class Network(Utilities):
         """
         for item in self._fluids:
             print(item.name+': ',item)
-            
+
     def fluids_update(self,name='all'):
         r"""
         """
@@ -97,7 +97,7 @@ class Network(Utilities):
         """
         for item in self._physics:
             print(item.name+': ',item)
-            
+
     def physics_update(self,name='all'):
         r"""
         """
@@ -111,7 +111,7 @@ class Network(Utilities):
         """
         for item in self._geometry:
             print(item.name+': ',item)
-            
+
     def geometry_update(self,name='all'):
         r"""
         """
@@ -123,60 +123,74 @@ class Network(Utilities):
     #-------------------------------------------------------------------------
     '''pore_definition setter and getter methods'''
     #-------------------------------------------------------------------------
-    def set_pore_definitions(self,defn):
+    def set_type_definitions(self,defn):
         r"""
-        Assign keyword AND numerical values to describe  pore type
-        
+        Associate a keyword with a numerical value to describe pore type (i.e. type 0 is 'internal')
+
         Parameters
         ----------
         defn : dict
-            A dictionary containing the keyword/number association
-            
+            A dictionary containing the 'keyword':number association
+
+        Notes
+        -----
+        This method will not allow associations involving names or numbers that already exist
+
         Examples
         --------
         >>> pn.set_pore_definitions({'internal':0,'external':1})
+
         """
         for item in defn.keys():
-            try:
-                self._pore_definitions[item]
-                self._logger.warning('Exisiting pore definition is being overwritten')
-            except:
-                self._logger.info('Adding new pore definition')
-            self._pore_definitions[item] = defn[item]
-            
-    def get_pore_definitions(self,defn=[]):
+            if list(self._type_definitions.values()).count(defn[item]) > 0:
+               self._logger.error('The number '+str(defn[item])+' has already been assigned')
+            else:
+                try:
+                    self._type_definitions[item]
+                    self._logger.error('The pore definition '+item+' has already been assigned')
+                except:
+                    self._logger.info('Adding new pore definition')
+                    self._type_definitions[item] = defn[item]
+
+    def get_type_definitions(self,defn=[]):
         r"""
-        Retrieves the keyword name OR numerical number associated with each pore type
-        
+        Retrieves the keyword name name numerical number associated with each pore type
+
         Parameters
         ----------
-        defn : list
-            A list containing either the keywords OR numbers of interest.  An empty list simply prints all keyword/number pairs to the console.
+        defn : list, optional
+            A list containing either the keywords OR numbers of interest.
+
         Returns
         -------
-            A list containing the numbers OR keywords corresponding to the input list.
+            A list containing the numbers OR keywords corresponding to the types in the input list.
+            An empty list returns a nested list containing names in element 0 and numbers in element 1.
         """
-        if defn == []:
-            for item in self._pore_definitions.keys():
-                print(item,' -> ',self._pore_definitions[item])
+        type_defn = collections.namedtuple('TypeDefinitions', ['name', 'number'])
+
+        if defn == [] or defn == 'all':
+            names = list(self._type_definitions.keys())
+            nums = list(self._type_definitions.values())
+            temp = type_defn(name=names,number=nums)
         elif type(defn[0]) == int:
-            return_list = ['']*sp.shape(defn)[0]
-            names = list(self._pore_definitions.keys())
-            nums = list(self._pore_definitions.values())
+            temp = ['']*sp.shape(defn)[0]
+            names = list(self._type_definitions.keys())
+            nums = list(self._type_definitions.values())
             for i in range(0,sp.shape(defn)[0]):
-                return_list[i] = names[nums.index(defn[i])]
-            return return_list
+                temp[i] = names[nums.index(defn[i])]
+            temp = type_defn(name=temp,number=defn)
         elif type(defn[0]) == str:
-            return_list = ['']*sp.shape(defn)[0]
-            names = list(self._pore_definitions.keys())
-            nums = list(self._pore_definitions.values())
+            temp = ['']*sp.shape(defn)[0]
+            names = list(self._type_definitions.keys())
+            nums = list(self._type_definitions.values())
             for i in range(0,sp.shape(defn)[0]):
-                return_list[i] = nums[names.index(defn[i])]
-            return return_list
+                temp[i] = nums[names.index(defn[i])]
+            temp = type_defn(name=defn,number=temp)
+        return temp
 
     #------------------------------------------------------------------
     '''pore_properties setter and getter methods'''
-    #------------------------------------------------------------------    
+    #------------------------------------------------------------------
     def get_pore_properties(self,prop=''):
         r"""
         Retrieves specified property from correct location and returns an ndarray.
@@ -186,15 +200,17 @@ class Network(Utilities):
                 print(item)
         else:
             try: return self.pore_properties[prop]
-            except: self._logger.warning('Network does not have the requested pore property: '+prop)     
+            except: self._logger.error('Network does not have the requested pore property: '+prop)
+
     def set_pore_properties(self,prop,data):
         r"""
+
         """
-        self.pore_properties[prop[0]] = sp.array(prop[1],ndmin=1)
-    
+        self.pore_properties[prop] = sp.array(data,ndmin=1)
+
     #------------------------------------------------------------------
     '''throat_properties setter and getter methods'''
-    #------------------------------------------------------------------ 
+    #------------------------------------------------------------------
     def get_throat_properties(self,prop=''):
         r"""
         Retrieves specified property from correct location and returns an ndarray.
@@ -204,15 +220,17 @@ class Network(Utilities):
                 print(item)
         else:
             try: return self.throat_properties[prop]
-            except: self._logger.warning('Network does not have the requested throat property: '+prop)
+            except: self._logger.error('Network does not have the requested throat property: '+prop)
+
     def set_throat_properties(self,prop,data):
         r"""
+
         """
-        self.throat_properties[prop[0]] = sp.array(prop[1],ndmin=1)
-    
+        self.throat_properties[prop] = sp.array(data,ndmin=1)
+
     #------------------------------------------------------------------
     '''pore_conditions setter and getter methods'''
-    #------------------------------------------------------------------  
+    #------------------------------------------------------------------
     def get_pore_conditions(self,fluid,prop=''):
         r"""
         Retrieves specified property from specified fluid and returns an ndarray.
@@ -224,9 +242,11 @@ class Network(Utilities):
                         print(item2)
                 else:
                     try: return item.pore_conditions[prop]
-                    except: self._logger.warning(fluid+' does not have the requested pore condition: '+prop)
+                    except: self._logger.error(fluid+' does not have the requested pore condition: '+prop)
+
     def set_pore_conditions(self,fluid,prop,data):
         r"""
+
         """
         for item in self._fluids:
             if (item.name == fluid):
@@ -236,7 +256,7 @@ class Network(Utilities):
 
     #------------------------------------------------------------------
     '''throat_conditions setter and getter methods'''
-    #------------------------------------------------------------------ 
+    #------------------------------------------------------------------
     def get_throat_conditions(self,fluid,prop=''):
         r"""
         Retrieves specified property from specified fluid and returns an ndarray.
@@ -248,18 +268,22 @@ class Network(Utilities):
                         print(item2)
                 else:
                     try: return item.throat_conditions[prop]
-                    except: self._logger.warning(fluid+' does not have the requested throat condition: '+prop)
+                    except: self._logger.error(fluid+' does not have the requested throat condition: '+prop)
+
     def set_throat_conditions(self,fluid,prop,data):
         r"""
+
         """
         for item in self._fluids:
             if (item.name == fluid):
                 data = sp.array(data,ndmin=1)
                 item.throat_conditions[prop] = data
-                
+
     def amalgamate_pore_data(self):
+        r"""
+
+        """
         self.pore_data = {}
-        self.throat_data = {}
         #Add fluid conditions
         for item in self._fluids:
             for key in item.pore_conditions.keys():
@@ -277,9 +301,30 @@ class Network(Utilities):
         pprint.pprint(self.pore_data)
         return self.pore_data
 
-    def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
+    def amalgamate_throat_data(self):
         r"""
 
+        """
+        self.throat_data = {}
+        #Add fluid conditions
+        for item in self._fluids:
+            for key in item.throat_conditions.keys():
+                dict_name = item.name+'_'+key
+                self.throat_data.update({dict_name : item.throat_conditions[key]})
+        #Add physics conditions (does nothing now since they're stored in fluids)
+        for item in self._physics:
+            for key in item.throat_conditions.keys():
+                dict_name = item.name+'_'+key
+                self.throat_data.update({dict_name : item.throat_conditions[key]})
+        #Add geometry data
+        for key in self.throat_properties.keys():
+            dict_name = 'throat'+'_'+key
+            self.throat_data.update({dict_name : self.throat_properties[key]})
+        pprint.pprint(self.throat_data)
+        return self.throat_data
+
+    def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
+        r"""
         Generates adjacency matricies in various sparse storage formats
 
         Parameters
@@ -310,12 +355,11 @@ class Network(Utilities):
         ['foo']
 
         """
-#        self._logger.debug('create_adjacency_matrix: Start of method')
+        self._logger.debug('create_adjacency_matrix: Start of method')
         Np   = self.get_num_pores()
         Nt   = self.get_num_throats()
 
         if V:
-            
             dataset = V[list(V.keys())[0]]
             tprop = list(V.keys())[0]
             if sp.shape(dataset)[0]!=Nt:
@@ -357,7 +401,6 @@ class Network(Utilities):
 
         Parameters
         ----------
-
         V : Dict, optional
             The values in the {'key': value} pair specify the throat property (V) to enter into the I,J locations of the IJV sparse matrix. The 'key' is used to name the resulting incidence matrix when storing it on the network. If no argument is received, throat_properties['connections'] is used.
 
@@ -378,7 +421,7 @@ class Network(Utilities):
         --------
         >>> print('nothing yet')
         """
-#        self._logger.debug('create_incidence_matrix: Start of method')
+        self._logger.debug('create_incidence_matrix: Start of method')
 
         Nt = self.get_num_throats()
         Np = self.get_num_pores()
@@ -412,36 +455,37 @@ class Network(Utilities):
         if sprsfmt != 'all':
             return self.incidence_matrix[sprsfmt][tprop]
 
-    def get_num_pores(self,Ptype=[0,1,2,3,4,5,6]):
+    def get_num_pores(self,Ptype=[]):
         r"""
         Returns the number of pores of the specified type
 
         Parameters
         ----------
-
         Ptype : array_like, optional
             List of desired pore types to count
 
         Returns
         -------
-
         Np : int
             Returns the number of pores of the specified type
 
         """
+        #Parse Ptype input argument
+        Ptype = self.get_type_definitions(Ptype).number
+
+        #Count number of pores of specified type
         try:
             Np = np.sum(np.in1d(self.pore_properties['type'],Ptype))
         except:
             Np = 0
         return Np
 
-    def get_num_throats(self,Ttype=[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6]):
+    def get_num_throats(self,Ttype=[]):
         r"""
         Return the number of throats of the specified type
 
         Parameters
         ----------
-
         Ttype : array_like, optional
             list of desired throat types to count
 
@@ -450,6 +494,10 @@ class Network(Utilities):
         Nt : int
 
         """
+        #Parse Ttype input argument
+        Ttype = self.get_type_definitions(Ttype).number
+
+        #Count number of throat of specified type
         try:
             Nt = np.sum(np.in1d(self.throat_properties['type'],Ttype))
         except:
@@ -510,7 +558,7 @@ class Network(Utilities):
         """
         return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
-    def get_neighbor_pores(self,Pnums,Ptype=[0,1,2,3,4,5,6],flatten=True):
+    def get_neighbor_pores(self,Pnums,Ptype=[],flatten=True):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
@@ -528,8 +576,7 @@ class Network(Utilities):
 
         Returns
         -------
-        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if
-            flatten if False)
+        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if flatten if False)
 
         Examples
         --------
@@ -541,9 +588,13 @@ class Network(Utilities):
         >>> Pnums = [0,1]
         >>> Ps = pn.get_neighbor_pores(Pnums,flatten=False)
         >>> Ps
-        array([[  1,   2, 920],
-               [  0,   3, 921]])
+        array([[ 1, 2, 920],
+               [ 0, 3, 921]])
         """
+        #Parse Ptype input argument
+        Ptype = self.get_type_definitions(Ptype).number
+
+        #Count neighboring pores
         try:
             neighborPs = self.adjacency_matrix['lil']['connections'].rows[[Pnums]]
         except:
@@ -563,7 +614,7 @@ class Network(Utilities):
                 neighborPs[i] = sp.array(neighborPs[i])[ans]
         return np.array(neighborPs)
 
-    def get_neighbor_throats(self,Pnums,Ttype=[0,1,2,3,4,5,6],flatten=True):
+    def get_neighbor_throats(self,Pnums,Ttype=[],flatten=True):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
@@ -597,6 +648,10 @@ class Network(Utilities):
         array([[    0,     1,     2],
                [    2, 83895, 83896]])
         """
+        #Parse Ttype input argument
+        Ttype = self.get_type_definitions(Ttype).number
+
+        #Test for existance of incidence matrix
         try:
             neighborTs = self.incidence_matrix['lil']['connections'].rows[[Pnums]]
         except:
@@ -614,7 +669,7 @@ class Network(Utilities):
                 neighborTs[i] = sp.array(neighborTs[i])[ans]
         return np.array(neighborTs)
 
-    def get_num_neighbors(self,Pnums,Ptype=[0,1,2,3,4,5,6]):
+    def get_num_neighbors(self,Pnums,Ptype=[]):
         r"""
         Returns an ndarray containing the number of pores for each element in Pnums
 
@@ -623,7 +678,7 @@ class Network(Utilities):
         Pnums : array_like
             ID numbers of pores whose neighbors are sought
         Ptype : array_like
-            Type of throats to be returne
+            Type of throats to be returned
 
         Returns
         -------
@@ -642,6 +697,10 @@ class Network(Utilities):
         array([3, 4, 4, ..., 4, 4, 3], dtype=int8)
         >>> pn.pore_properties['num_neighbors'] = Nn
         """
+        #Parse Ptype input argument
+        Ptype = self.get_type_definitions(Ptype).number
+
+        #Count number of neighbors
         neighborPs = self.get_neighbor_pores(Pnums,Ptype,flatten=False)
         num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
         for i in range(0,sp.shape(num)[0]):
@@ -715,22 +774,26 @@ class Network(Utilities):
         """
         pprint.pprint(self.pore_properties)
         pprint.pprint(self.throat_properties)
-        
-    def show_boundaries(self,btype='all'):
+
+    def show_boundaries(self,Ptype=[]):
         r'''
         '''
         from mpl_toolkits.mplot3d import Axes3D
+        #Parse Ptype input argument
+        if Ptype == [] or Ptype == 'all':
+            Ptype = self.get_type_definitions()[1]
+        elif type(Ptype[0]) == str:
+            Ptype = self.get_type_definitions(Ptype)
         fig = plt.figure()
-        if btype == 'all':
-            btype = self.boundary_legend
-#        for 
         ax = fig.add_subplot(111, projection='3d')
-        xs = self.pore_properties['coords'][:,0]
-        ys = self.pore_properties['coords'][:,1]
-        zs = self.pore_properties['coords'][:,2]
-        ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
-        plt.show()                
-        
+        for i in Ptype:
+
+            xs = self.pore_properties['coords'][:,0]
+            ys = self.pore_properties['coords'][:,1]
+            zs = self.pore_properties['coords'][:,2]
+            ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
+        plt.show()
+
     def __str__(self):
         r"""
         Print some basic properties
@@ -764,30 +827,6 @@ class Network(Utilities):
 #            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
 
         return str_overview+str_pore+str_throat
-
-    def save_network(self,filename="test.pickle"):
-        r"""
-        Write the class object to a pickle file.close
-        
-        Parameters
-        ---------- 
-        filename : string
-            name of the file to be written.
-        """
-        self._logger.debug('Pickle self')
-        print('Save current Network: Nothing yet')
-
-    def load_network(self,filename="test.pickle"):
-        r"""
-        Write the class object to a pickle file.close
-        
-        Parameters
-        ---------- 
-        filename : string
-            name of the file to be written.
-        """
-        self._logger.debug('UnPickle self')
-        print('Load saved network: Nothing yet')
 
     def update(self):
         r"""
