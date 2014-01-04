@@ -18,6 +18,11 @@ topo_recipe = {
 }
 #Add topology to network
 topo = OpenPNM.Topology.Cubic().generate(network=pn, **topo_recipe)
+pn.set_type_definitions({'internal':0,'external':1,'inlet':2,'outlet':3})
+
+
+b = (pn.pore_properties['coords'][:,0] <= 5e-5)*2
+pn.set_pore_data('type',b)
 
 #======================================================================
 '''Build Geometry'''
@@ -80,23 +85,22 @@ water_recipe = {
 'contact_angle': {'method': 'constant',
                   'value': 110},
 }
-#It's good practice to attach fluid objects to network, but not necessary?
 water = OpenPNM.Fluids.GenericFluid(loggername='WATER',loglevel=20).create(network=pn,**water_recipe)
 
 #======================================================================
 '''Build Physics Objects'''
 #======================================================================
 phys_recipe = {
-'name': 'standard_air_physics',
-'capillary_pressure': {'method': 'washburn'},
+'name': 'standard_water_physics',
+'capillary_pressure': { 'method': 'purcell',
+                        'r_toroid':1e-5},
 'hydraulic_conductance': {'method': 'hagen_poiseuille'},
 'diffusive_conductance': {'method': 'bulk_diffusion'},
 }
 phys_water = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=water,**phys_recipe)
 
 phys_recipe = {
-'name': 'standard_water_physics',
-'capillary_pressure': {'method': 'washburn'},
+'name': 'standard_air_physics',
 'hydraulic_conductance': {'method': 'hagen_poiseuille'},
 'diffusive_conductance': {'method': 'bulk_diffusion'},
 }
@@ -109,24 +113,18 @@ phys_air = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=air,**phys_r
 #----------------------------------------------------------------------
 #Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10)
-#Apply desired/necessary pore scale physics methods
-a = pn.pore_properties['coords'][:,0] <= 5e-5
+a = pn.get_pore_data('type') == pn.get_type_definitions(['inlet']).number
 #Run algorithm
 OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=10,AL=True)
-#OP_1.plot_drainage_curve()
+OP_1.plot_drainage_curve()
 
 #b = pn.pore_properties['coords'][:,1] <= 5e-5
 #OP_1.evaluate_trapping(outlets=b)
-
-pn.set_pore_definitions({'internal':0,'external':1,'top':3})
 
 
 ##----------------------------------------------------------------------
 #'''Perform an Injection Experiment (InvasionPercolation)'''
 ##----------------------------------------------------------------------
-##Create some new Fluids
-#water2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(water_recipe,T=353,P=101325)
-#air2 = OpenPNM.Fluids.GenericFluid(loglevel=50).create(air_recipe,T=353,P=101325)
 ##Initialize algorithm object
 #IP_1 = OpenPNM.Algorithms.InvasionPercolation()
 ##Apply desired/necessary pore scale physics methods

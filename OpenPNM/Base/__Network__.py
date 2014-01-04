@@ -31,8 +31,10 @@ class Network(Utilities):
 
     Parameters
     ----------
-    loglevel : int
+    loglevel : int (optional)
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+    loggername : string (optional)
+        Define the logger name to be used on console output. Defaults to class name.
 
     """
 
@@ -55,10 +57,6 @@ class Network(Utilities):
         self.pore_properties = {}
         self.throat_properties = {}
 
-        #Initializes fluid conditions dictionaries
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-
         #Initialize adjacency and incidence matrix dictionaries
         self.adjacency_matrix = {}
         self.incidence_matrix = {}
@@ -73,33 +71,40 @@ class Network(Utilities):
 
     def fluids_listing(self):
         r"""
+        Prints the names of all fluids objects attached to the network
         """
         for item in self._fluids:
             print(item.name+': ',item)
 
     def fluids_update(self,name='all'):
         r"""
+        Updates ALL properties of specified fluid object attached to the network
+
+        Parameters
+        ----------
+        name : string (optional)
+            The name of fluid to be updated.  An empty string (default) refreshes all fluids.
         """
         for item in self._fluids:
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
 
-    def fluids_fetch(self,name='all'):
-        r"""
-        """
-        for item in self._fluids:
-            if (item.name == name):
-                return item
-
     def physics_listing(self):
         r"""
+        Prints the names of all physics objects attached to the network
         """
         for item in self._physics:
             print(item.name+': ',item)
 
     def physics_update(self,name='all'):
         r"""
+        Updates ALL properties of specified physics object attached to the network
+
+        Parameters
+        ----------
+        name : string (optional)
+            The name of physics object to be updated.  An empty string (default) refreshes all physics.
         """
         for item in self._physics:
             if (item.name == name) or (name == 'all'):
@@ -125,7 +130,7 @@ class Network(Utilities):
     #-------------------------------------------------------------------------
     def set_type_definitions(self,defn):
         r"""
-        Associate a keyword with a numerical value to describe pore type (i.e. type 0 is 'internal')
+        Associates a keyword with a numerical value to describe pore type (i.e. type 0 is 'internal')
 
         Parameters
         ----------
@@ -154,21 +159,38 @@ class Network(Utilities):
 
     def get_type_definitions(self,defn=[]):
         r"""
-        Retrieves the keyword name name numerical number associated with each pore type
+        Retrieves the keyword name AND numerical number associated with each pore type and returns a 'named tuple'
 
         Parameters
         ----------
-        defn : list, optional
-            A list containing either the keywords OR numbers of interest.
+        defn : list or ndarray, optional
+            A list containing either the keywords type OR number type of interest, or an ndarray containing the type number.
 
         Returns
         -------
-            A list containing the numbers OR keywords corresponding to the types in the input list.
-            An empty list returns a nested list containing names in element 0 and numbers in element 1.
+        type_defn : named tuple (type_defn.name and type_defn.number)
+            A named tuple containing a 'number' list and a 'name' list corresponding to the types in the input list.
+            An empty input list (or the string 'all') returns a named tuple containing each type currently defined, which is useful for manual inspection on the console.
+
+        Examples
+        --------
+        >>> pn.get_type_definitions() #To query the defined types from the console
+        TypeDefinitions(name=['inlet', 'external', 'internal', 'outlet'], number=[2, 1, 0, 3])
+
+        >>> a = pn.get_type_definitions([0,1]) #To get type names from numerical type values
+        >>> a.name
+        ['internal', 'external']
+        >>> a.number
+        [0, 1]
+
+        >>> temp = pn.pore_properties['type']
+        >>> a = pn.get_type_definitions(temp).name #To get name definitions for all pores
+
         """
         type_defn = collections.namedtuple('TypeDefinitions', ['name', 'number'])
-
-        if defn == [] or defn == 'all':
+        if type(defn) == sp.ndarray:
+            defn = defn.tolist()
+        if defn == [] or defn == 'all' or defn == ['all']:
             names = list(self._type_definitions.keys())
             nums = list(self._type_definitions.values())
             temp = type_defn(name=names,number=nums)
@@ -178,7 +200,7 @@ class Network(Utilities):
             nums = list(self._type_definitions.values())
             for i in range(0,sp.shape(defn)[0]):
                 temp[i] = names[nums.index(defn[i])]
-            temp = type_defn(name=temp,number=defn)
+            temp = type_defn(nadatame=temp,number=defn)
         elif type(defn[0]) == str:
             temp = ['']*sp.shape(defn)[0]
             names = list(self._type_definitions.keys())
@@ -188,100 +210,175 @@ class Network(Utilities):
             temp = type_defn(name=defn,number=temp)
         return temp
 
-    #------------------------------------------------------------------
-    '''pore_properties setter and getter methods'''
-    #------------------------------------------------------------------
-    def get_pore_properties(self,prop=''):
+    #-------------------------------------------------------------------
+    '''Generalized pore_data setter and getter methods'''
+    #-------------------------------------------------------------------
+    def get_pore_data(self,prop,fluid=''):
         r"""
-        Retrieves specified property from correct location and returns an ndarray.
+        Retrieves pore data from fluid or network objects according to input arguments.
+        Parameters
+        ----------
+        prop : string
+            Name of property to retrieve.  Requesting property 'all' prints a list of existing properties.
+        fluid : string, optional
+            Name of fluid from which to retrieve data.  If omitted data is retrieved from network object.
+        Returns
+        -------
+        array_like
+            An ndarray containing the requested property data from the specified object
         """
-        if prop == '':
-            for item in self.pore_properties.keys():
-                print(item)
+        if fluid:
+            for item in self._fluids:
+                if (item.name == fluid):
+                    if prop == 'all':
+                        for item2 in item.pore_conditions.keys():
+                            print(item2)
+                    else:
+                        try: return item.pore_conditions[prop]
+                        except: self._logger.error(fluid+' does not have the requested pore condition: '+prop)
         else:
-            try: return self.pore_properties[prop]
-            except: self._logger.error('Network does not have the requested pore property: '+prop)
+            if prop == 'all':
+                for item2 in self.pore_properties.keys():
+                    print(item2)
+            else:
+                try: return self.pore_properties[prop]
+                except: self._logger.error('Network does not have the requested pore property: '+prop)
 
-    def set_pore_properties(self,prop,data):
+    def set_pore_data(self,prop,data,fluid=''):
         r"""
-
+        Writes pore data to fluid or network objects according to input arguments.
+        Parameters
+        ----------
+        prop : string
+            Name of property to write
+        fluid : string, optional
+            Name of fluid to which data is written.  If omitted data is written to network object.
+        data : array_like
+            Data values to write to object
         """
-        self.pore_properties[prop] = sp.array(data,ndmin=1)
-
-    #------------------------------------------------------------------
-    '''throat_properties setter and getter methods'''
-    #------------------------------------------------------------------
-    def get_throat_properties(self,prop=''):
-        r"""
-        Retrieves specified property from correct location and returns an ndarray.
-        """
-        if prop == '':
-            for item in self.throat_properties.keys():
-                print(item)
+        if fluid:
+            for item in self._fluids:
+                if (item.name == fluid):
+                    item.pore_conditions[prop] = sp.array(data,ndmin=1)
         else:
-            try: return self.throat_properties[prop]
-            except: self._logger.error('Network does not have the requested throat property: '+prop)
+            self.pore_properties[prop] = sp.array(data,ndmin=1)
 
-    def set_throat_properties(self,prop,data):
+    #-------------------------------------------------------------------
+    '''Generalized throat_data setter and getter methods'''
+    #-------------------------------------------------------------------
+    def get_throat_data(self,prop,fluid=''):
         r"""
+        Retrieves throat data from fluid or network objects according to input arguments.
+        Parameters
+        ----------
+        prop : string
+            Name of property to retrieve.  Requesting property 'all' prints a list of existing properties.
+        fluid : string, optional
+            Name of fluid from which to retrieve data.  If omitted data is retrieved from network object.
+        Returns
+        -------
+        array_like
+            An ndarray containing the requested property data from the specified object
+        """
+        if fluid:
+            for item in self._fluids:
+                if (item.name == fluid):
+                    if prop == 'all':
+                        for item2 in item.throat_conditions.keys():
+                            print(item2)
+                    else:
+                        try: return item.throat_conditions[prop]
+                        except: self._logger.error(fluid+' does not have the requested throat condition: '+prop)
+        else:
+            if prop == 'all':
+                for item2 in self.thraot_properties.keys():
+                    print(item2)
+            else:
+                try: return self.throat_properties[prop]
+                except: self._logger.error('Network does not have the requested throat property: '+prop)
+
+    def set_throat_data(self,prop,data,fluid=''):
+        r"""
+        Writes pore data to fluid or network objects according to input arguments.
+        Parameters
+        ----------
+        prop : string
+            Name of property to write
+        fluid : string, optional
+            Name of fluid to which data is written.  If omitted data is written to network object.
+        data : array_like
+            Data values to write to object
+        """
+        if fluid:
+            for item in self._fluids:
+                if (item.name == fluid):
+                    item.throat_conditions[prop] = sp.array(data,ndmin=1)
+        else:
+            self.throat_properties[prop] = sp.array(data,ndmin=1)
+
+    #-------------------------------------------------------------------
+    '''pore_data and throat_data interpolation methods'''
+    #-------------------------------------------------------------------
+    def interpolate_pore_data(self,Tvals=None):
+        r"""
+        Determines a pore property as the average of it's neighboring throats
+
+        Parameters
+        ----------
+        Tvals : array_like
+            The array of throat information to be interpolated
+
+        Notes
+        -----
+        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
 
         """
-        self.throat_properties[prop] = sp.array(data,ndmin=1)
+        if sp.size(Tvals)==1:
+            Pvals = Tvals
+        elif sp.size(Tvals) != self.get_num_throats():
+            raise Exception('The list of throat information received was the wrong length')
+        else:
+            Pvals = sp.zeros((self.get_num_pores()))
+            #Only interpolate conditions for internal pores, type=0
+            Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
+            nTs = self.get_neighbor_throats(Pnums,flatten=False)
+            for i in sp.r_[0:sp.shape(nTs)[0]]:
+                Pvals[i] = sp.mean(Tvals[nTs[i]])
+        return Pvals
 
-    #------------------------------------------------------------------
-    '''pore_conditions setter and getter methods'''
-    #------------------------------------------------------------------
-    def get_pore_conditions(self,fluid,prop=''):
+    def interpolate_throat_data(self,Pvals=None):
         r"""
-        Retrieves specified property from specified fluid and returns an ndarray.
-        """
-        for item in self._fluids:
-            if (item.name == fluid):
-                if prop == '':
-                    for item2 in item.pore_conditions.keys():
-                        print(item2)
-                else:
-                    try: return item.pore_conditions[prop]
-                    except: self._logger.error(fluid+' does not have the requested pore condition: '+prop)
+        Determines a throat property as the average of it's neighboring pores
 
-    def set_pore_conditions(self,fluid,prop,data):
-        r"""
+        Parameters
+        ----------
+        Pvals : array_like
+            The array of the pore condition to be interpolated
 
-        """
-        for item in self._fluids:
-            if (item.name == fluid):
-                self._logger.debug(prop+' has been added to '+fluid)
-                data = sp.array(data,ndmin=1)
-                item.pore_conditions[prop] = data
-
-    #------------------------------------------------------------------
-    '''throat_conditions setter and getter methods'''
-    #------------------------------------------------------------------
-    def get_throat_conditions(self,fluid,prop=''):
-        r"""
-        Retrieves specified property from specified fluid and returns an ndarray.
-        """
-        for item in self._fluids:
-            if (item.name == fluid):
-                if prop == '':
-                    for item2 in item.throat_conditions.keys():
-                        print(item2)
-                else:
-                    try: return item.throat_conditions[prop]
-                    except: self._logger.error(fluid+' does not have the requested throat condition: '+prop)
-
-    def set_throat_conditions(self,fluid,prop,data):
-        r"""
+        Notes
+        -----
+        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
 
         """
-        for item in self._fluids:
-            if (item.name == fluid):
-                data = sp.array(data,ndmin=1)
-                item.throat_conditions[prop] = data
+        if sp.size(Pvals)==1:
+            Tvals = Pvals
+        elif sp.size(Pvals) != self.get_num_pores():
+            raise Exception('The list of pore information received was the wrong length')
+        else:
+            Tvals = sp.zeros((self.get_num_throats()))
+            #Interpolate values for all throats, including those leading to boundary pores
+            Tnums = sp.r_[0:self.get_num_throats()]
+            nPs = self.get_connected_pores(Tnums,flatten=False)
+            for i in sp.r_[0:sp.shape(nPs)[0]]:
+                Tvals[i] = sp.mean(Pvals[nPs[i]])
+        return Tvals
 
+    #-------------------------------------------------------------------
+    '''pore_data and throat_data interpolation methods'''
+    #-------------------------------------------------------------------
     def amalgamate_pore_data(self):
         r"""
-
+        Returns a dictionary containing ALL pore data from all fluids, physics and geometry objects
         """
         self.pore_data = {}
         #Add fluid conditions
@@ -303,7 +400,7 @@ class Network(Utilities):
 
     def amalgamate_throat_data(self):
         r"""
-
+        Returns a dictionary containing ALL throat data from all fluids, physics and geometry objects
         """
         self.throat_data = {}
         #Add fluid conditions
@@ -721,60 +818,6 @@ class Network(Utilities):
         TODO: implement
         """
         self._logger.debug("Method: check for general healts")
-
-    def interpolate_pore_values(self,Tvals=None):
-        r"""
-        Determines a pore property as the average of it's neighboring throats
-
-        Parameters
-        ----------
-        Tvals : array_like
-            The array of throat information to be interpolated
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-
-        """
-        if sp.size(Tvals)==1:
-            Pvals = Tvals
-        elif sp.size(Tvals) != self.get_num_throats():
-            raise Exception('The list of throat information received was the wrong length')
-        else:
-            Pvals = sp.zeros((self.get_num_pores()))
-            #Only interpolate conditions for internal pores, type=0
-            Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
-            nTs = self.get_neighbor_throats(Pnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nTs)[0]]:
-                Pvals[i] = sp.mean(Tvals[nTs[i]])
-        return Pvals
-
-    def interpolate_throat_values(self,Pvals=None):
-        r"""
-        Determines a throat condition as the average of the conditions it's neighboring pores
-
-        Parameters
-        ----------
-        Pvals : array_like
-            The array of the pore condition to be interpolated
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-
-        """
-        if sp.size(Pvals)==1:
-            Tvals = Pvals
-        elif sp.size(Pvals) != self.get_num_pores():
-            raise Exception('The list of pore information received was the wrong length')
-        else:
-            Tvals = sp.zeros((self.get_num_throats()))
-            #Interpolate values for all throats, including those leading to boundary pores
-            Tnums = sp.r_[0:self.get_num_throats()]
-            nPs = self.get_connected_pores(Tnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nPs)[0]]:
-                Tvals[i] = sp.mean(Pvals[nPs[i]])
-        return Tvals
 
     def print_overview(self):
         r"""

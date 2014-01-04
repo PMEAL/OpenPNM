@@ -13,11 +13,11 @@ def constant(physics,network,fluid,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_throat_conditions(fluid.name,propname,value)
+    network.set_throat_data(fluid=fluid.name,prop=propname,data=value)
 
 def na(physics,network,fluid,**params):
     value = -1
-    network.set_throat_conditions(fluid.name,propname,value)
+    network.set_throat_data(fluid=fluid.name,prop=propname,data=value)
 
 def bulk_diffusion(physics,network,fluid,**params):
     r"""
@@ -35,10 +35,10 @@ def bulk_diffusion(physics,network,fluid,**params):
     This function requires that all the necessary fluid properties should already be calculated.
 
     """
-    cp = network.get_pore_conditions(fluid.name,'molar_density')
-    DABp = network.get_pore_conditions(fluid.name,'diffusivity')
-    ct = fluid.interpolate_throat_conditions(network,cp)
-    DABt = fluid.interpolate_throat_conditions(network,DABp)
+    cp = network.get_pore_data(fluid=fluid.name,prop='molar_density')
+    DABp = network.get_pore_data(fluid=fluid.name,prop='diffusivity')
+    ct = network.interpolate_throat_data(cp)
+    DABt = network.interpolate_throat_data(DABp)
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
     #Find g for half of pore 1
@@ -50,5 +50,5 @@ def bulk_diffusion(physics,network,fluid,**params):
     #Find g for full throat
     gt = ct*DABt*network.throat_properties['diameter']**2/(network.throat_properties['length'])
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    network.set_throat_conditions(fluid.name,propname,value)
+    network.set_throat_data(fluid=fluid.name,prop=propname,data=value)
 
