@@ -105,8 +105,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Generate a tlist containing boolean values for throat state
         Tinvaded = self._t_cap<=inv_val
         #Fill adjacency matrix with invasion state info
-        I = {'invaded': Tinvaded}
-        self._net.create_adjacency_matrix(I,sprsfmt='csr',dropzeros=True)
+        self._net.create_adjacency_matrix(data=Tinvaded,prop='invaded',sprsfmt='csr',dropzeros=True)
         clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['invaded'])[1]
         #Find all pores with at least 1 invaded throat (invaded)
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
@@ -158,8 +157,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             PTPstate = sp.sum(Pinvaded[temp],1)
             Tinvaded = (PTPstate>0)*(self._t_inv<=inv_val)
             PTPstate = PTPstate + Tinvaded #0 = all open, 1=1 pore filled, 2=2 pores filled 3=2 pores + 1 throat filled
-            I = {'defended': (PTPstate==0)}
-            self._net.create_adjacency_matrix(I,sprsfmt='csr',dropzeros=True)
+            self._net.create_adjacency_matrix(data=(PTPstate==0),prop='defended',sprsfmt='csr',dropzeros=True)
             clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['defended'])[1]
             ##Clean up clusters (invaded = -1, defended >=0)
             clusters = clusters*(~Pinvaded) - (Pinvaded)
