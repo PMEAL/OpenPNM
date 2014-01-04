@@ -403,7 +403,6 @@ class Network(Utilities):
 
     def create_incidence_matrix(self,data=None,prop=None,sprsfmt='all',dropzeros=True):
         r"""
-
         Creates an incidence matrix filled with supplied throat values
 
         Parameters
@@ -437,7 +436,6 @@ class Network(Utilities):
 
         if (data!=None) and (prop!=None):
             dataset = data
-            dataset = V[V.keys()[0]]
             tprop = prop
         else:
             dataset = np.ones(Nt)
