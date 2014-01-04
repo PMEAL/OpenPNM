@@ -13,11 +13,11 @@ def constant(physics,fluid,network,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_throat_conditions(fluid.name,propname,value)
+    network.set_throat_data(fluid=fluid.name,prop=propname,data=value)
 
 def na(physics,fluid,network,**params):
     value = -1
-    network.set_throat_conditions(fluid.name,propname,value)
+    network.set_throat_data(fluid=fluid.name,prop=propname,data=value)
 
 def washburn(physics,fluid,network,**params):
     r"""
@@ -41,14 +41,13 @@ def washburn(physics,fluid,network,**params):
     This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
-    try:
-        sigma = network.get_pore_conditions(fluid.name,'surface_tension')
-        sigma = fluid.interpolate_throat_conditions(network,sigma)
-        theta = network.get_pore_conditions(fluid.name,'contact_angle')
-        theta = fluid.interpolate_throat_conditions(network,theta)
-        value = -4*sigma*sp.cos(sp.radians(theta))/network.throat_properties['diameter']
-        network.set_throat_conditions(fluid.name,propname,value)
-    except: pass
+    sigma = network.get_pore_data(fluid=fluid.name,prop='surface_tension')
+    sigma = network.interpolate_throat_data(sigma)
+    theta = network.get_pore_data(fluid=fluid.name,prop='contact_angle')
+    theta = network.interpolate_throat_data(theta)
+    r = network.throat_properties['diameter']/2
+    value = -2*sigma*sp.cos(sp.radians(theta))/r
+    network.set_throat_data(fluid=fluid.name,prop=propname,data=value)
 
 def purcell(physics,network,fluid,r_toroid,**params):
     r"""
@@ -83,13 +82,13 @@ def purcell(physics,network,fluid,r_toroid,**params):
     """TODO:
     Triple check the accuracy of this equation
     """
-    sigma = network.get_pore_conditions(fluid.name,'surface_tension')
-    sigma = fluid.interpolate_throat_conditions(network,sigma)
-    theta = network.get_pore_conditions(fluid.name,'contact_angle')
-    theta = fluid.interpolate_throat_conditions(network,theta)
+    sigma = network.get_pore_data(fluid=fluid.name,prop='surface_tension')
+    sigma = network.interpolate_throat_data(sigma)
+    theta = network.get_pore_data(fluid=fluid.name,prop='contact_angle')
+    theta = network.interpolate_throat_data(theta)
     r = network.throat_properties['diameter']/2
     R = r_toroid
     alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
-    network.set_throat_conditions(fluid.name,propname,value)
+    network.set_throat_data(fluid=fluid.name,prop=propname,data=value)
 
