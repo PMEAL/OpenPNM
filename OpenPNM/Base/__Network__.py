@@ -323,16 +323,23 @@ class Network(Utilities):
         pprint.pprint(self.throat_data)
         return self.throat_data
 
-    def create_adjacency_matrix(self,V=[],sprsfmt='all',dropzeros=True,sym=True):
+    #-------------------------------------------------------------------
+    '''Graph theory and topology related methods'''
+    #-------------------------------------------------------------------
+    def create_adjacency_matrix(self,data=None,prop=None,sprsfmt='all',dropzeros=True,sym=True):
         r"""
         Generates adjacency matricies in various sparse storage formats
 
         Parameters
         ----------
-        V : Dict, optional
-            The values in the {'key': value} pair specify the throat property (V) to enter into the I,J locations of the IJV sparse matrix. The 'key' is used to name the resulting adjacency matrix when storing it on the network. If no argument is received, throat_properties['connections'] is used.
+        data : array_like (optional)
+            An ndarray containing the throat values to place into the I,J locations of the IJV sparse matrix.
+            If no argument is supplied then the standard adjacency matrix is assumed.
+        prop : String (optional)
+            The name of the property being written to the adjacency matrix.
+            If no argument is supplied then the standard adjacency matrix is assumed.
         sprsfmt : String, optional
-            The sparse storage format to use. If none type is given, all are generated (coo, csr & lil)
+            The sparse storage format to use. If no type is specified then all are generated (coo, csr & lil)
         dropzeros : Boolean, optional
             Remove 0 elements from the values, instead of creating 0-weighted links, the default is True.
         sym : Boolean, optional
@@ -341,7 +348,7 @@ class Network(Utilities):
         Returns
         -------
         adj_mat : sparse_matrix, optional
-            Returns adjacency matrix in specified format for private use.
+            Returns adjacency matrix in specified format for local use.
 
         Notes
         -----
@@ -359,9 +366,9 @@ class Network(Utilities):
         Np   = self.get_num_pores()
         Nt   = self.get_num_throats()
 
-        if V:
-            dataset = V[list(V.keys())[0]]
-            tprop = list(V.keys())[0]
+        if (data!=None) and (prop!=None):
+            dataset = data
+            tprop = prop
             if sp.shape(dataset)[0]!=Nt:
                 raise Exception('Received dataset of incorrect length')
         else:
@@ -394,19 +401,21 @@ class Network(Utilities):
         if sprsfmt != 'all':
             return self.adjacency_matrix[sprsfmt][tprop]
 
-    def create_incidence_matrix(self,V=[],sprsfmt='all',dropzeros=True):
+    def create_incidence_matrix(self,data=None,prop=None,sprsfmt='all',dropzeros=True):
         r"""
 
-        Creates an incidence matrix filled with specified throat values
+        Creates an incidence matrix filled with supplied throat values
 
         Parameters
         ----------
-        V : Dict, optional
-            The values in the {'key': value} pair specify the throat property (V) to enter into the I,J locations of the IJV sparse matrix. The 'key' is used to name the resulting incidence matrix when storing it on the network. If no argument is received, throat_properties['connections'] is used.
-
+        data : array_like (optional)
+            An ndarray containing the throat values to place into the I,J locations of the IJV sparse matrix.
+            If no argument is supplied then the standard adjacency matrix is assumed.
+        prop : String (optional)
+            The name of the property being written to the adjacency matrix.
+            If no argument is supplied then the standard adjacency matrix is assumed.
         sprsfmt : String, optional
             The sparse storage format to use. If none type is given, all are generated (coo, csr & lil)
-
         dropzeros : Boolean, optional
             Remove 0 elements from values, instead of creating 0-weighted links, the default is True.
 
@@ -426,9 +435,10 @@ class Network(Utilities):
         Nt = self.get_num_throats()
         Np = self.get_num_pores()
 
-        if V:
+        if (data!=None) and (prop!=None):
+            dataset = data
             dataset = V[V.keys()[0]]
-            tprop = V.keys()[0]
+            tprop = prop
         else:
             dataset = np.ones(Nt)
             tprop = 'connections'
