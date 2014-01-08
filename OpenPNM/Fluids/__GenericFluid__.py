@@ -122,7 +122,7 @@ class GenericFluid(OpenPNM.Base.Utilities):
         return Tinfo
         
     def __str__(self):
-        return('test')
+        return('This is the __str__ methods of the generic_fluid being overwritten')
 
 if __name__ =="__main__":
 
