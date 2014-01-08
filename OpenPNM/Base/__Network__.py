@@ -50,7 +50,6 @@ class Network(Utilities):
 
         #Initialize fluid, physics, and geometry tracking lists
         self._fluids = []
-        self._physics = []
         self._geometry = []
 
         #Initialize network properties dictionaries
@@ -86,27 +85,6 @@ class Network(Utilities):
             The name of fluid to be updated.  An empty string (default) refreshes all fluids.
         """
         for item in self._fluids:
-            if (item.name == name) or (name == 'all'):
-                item.regenerate()
-                self._logger.info('Refreshed '+item.name)
-
-    def physics_listing(self):
-        r"""
-        Prints the names of all physics objects attached to the network
-        """
-        for item in self._physics:
-            print(item.name+': ',item)
-
-    def physics_update(self,name='all'):
-        r"""
-        Updates ALL properties of specified physics object attached to the network
-
-        Parameters
-        ----------
-        name : string (optional)
-            The name of physics object to be updated.  An empty string (default) refreshes all physics.
-        """
-        for item in self._physics:
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)

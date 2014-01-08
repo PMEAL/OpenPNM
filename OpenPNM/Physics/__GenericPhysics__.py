@@ -33,8 +33,8 @@ class GenericPhysics(OpenPNM.Base.Utilities):
         try: self.name = recipe['name']
         except: self._logger.error('Physics name must be given')
         #bind objects togoether
-        network._physics.append(self) #attach physics to network
         self._fluid.append(fluid) #attach fluid to physics
+        fluid._physics.append(self)
         for key, args in recipe.items():
             try:
                 function = getattr( getattr(OpenPNM.Physics, key), args['method'] ) # this gets the method from the file

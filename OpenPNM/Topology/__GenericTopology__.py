@@ -47,6 +47,7 @@ class GenericTopology(OpenPNM.Base.Utilities):
         """
 #        self._logger.debug("self.generate()")
         self._net = network
+        self.name = params['name']
         self.generate_setup(**params)
         self.generate_pores()
         self.generate_throats()
