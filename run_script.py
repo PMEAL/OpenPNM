@@ -12,6 +12,7 @@ pn = OpenPNM.Base.Network(loggername='PNM',loglevel=20)
 #======================================================================
 #Define topology parameters
 topo_recipe = {
+'name':'cubic_1',
 'domain_size': [],  #physical network size [meters]
 'divisions': [35,35,35], #Number of pores in each direction
 'lattice_spacing': [0.0001],  #spacing between pores [meters]

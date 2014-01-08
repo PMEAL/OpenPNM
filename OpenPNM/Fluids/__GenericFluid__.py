@@ -21,6 +21,7 @@ class GenericFluid(OpenPNM.Base.Utilities):
         self._logger.debug("Construct class")
         self.pore_conditions = {}
         self.throat_conditions = {}
+        self._physics = []
 
     def create(self,network,T=298.,P=101325.,**recipe):
         r"""
@@ -30,6 +31,7 @@ class GenericFluid(OpenPNM.Base.Utilities):
         except: pass
         try: self.name = recipe['name']
         except: self._logger.error('Fluid name must be given')
+        #Bind objects together
         network._fluids.append(self)
         self.Tc = recipe['Tc']
         self.Pc = recipe['Pc']
@@ -60,66 +62,29 @@ class GenericFluid(OpenPNM.Base.Utilities):
         except: pass
         try: self.contact_angle()
         except: pass
-
-    def interpolate_pore_conditions(self,network,Tinfo=None):
+        #Update physics associated with this fluid too
+        self.physics_update()
+        
+    def physics_listing(self):
         r"""
-        Determines a pore property as the average of it's neighboring throats
+        Prints the names of all physics objects attached to the network
+        """
+        for item in self._physics:
+            print(item.name+': ',item)
+
+    def physics_update(self,name='all'):
+        r"""
+        Updates ALL properties of specified physics object attached to the network
 
         Parameters
         ----------
-        network : OpenPNM Pore Network Object
-            The network on which to perform the interpolation
-
-        Tinfo : array_like
-            The array of throat information to be interpolated
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-
+        name : string (optional)
+            The name of physics object to be updated.  An empty string (default) refreshes all physics.
         """
-        if sp.size(Tinfo)==1:
-            Pinfo = Tinfo
-        elif sp.size(Tinfo) != network.get_num_throats():
-            raise Exception('The list of throat information received was the wrong length')
-        else:
-            Pinfo = sp.zeros((network.get_num_pores()))
-            #Only interpolate conditions for internal pores, type=0
-            Pnums = sp.r_[0:network.get_num_pores(Ptype=[0])]
-            nTs = network.get_neighbor_throats(Pnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nTs)[0]]:
-                Pinfo[i] = sp.mean(Tinfo[nTs[i]])
-        return Pinfo
-
-    def interpolate_throat_conditions(self,network,Pinfo=None):
-        r"""
-        Determines a throat condition as the average of the conditions it's neighboring pores
-
-        Parameters
-        ----------
-        network : OpenPNM Pore Network Object
-            The network on which to perform the interpolation
-
-        Pinfo : array_like
-            The name of the throat condition to be interpolated
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-
-        """
-        if sp.size(Pinfo)==1:
-            Tinfo = Pinfo
-        elif sp.size(Pinfo) != network.get_num_pores():
-            raise Exception('The list of pore information received was the wrong length')
-        else:
-            Tinfo = sp.zeros((network.get_num_throats()))
-            #Interpolate values for all throats, including those leading to boundary pores
-            Tnums = sp.r_[0:network.get_num_throats()]
-            nPs = network.get_connected_pores(Tnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nPs)[0]]:
-                Tinfo[i] = sp.mean(Pinfo[nPs[i]])
-        return Tinfo
+        for item in self._physics:
+            if (item.name == name) or (name == 'all'):
+                item.regenerate()
+                self._logger.info('Refreshed '+item.name)
         
     def __str__(self):
         return('This is the __str__ methods of the generic_fluid being overwritten')
