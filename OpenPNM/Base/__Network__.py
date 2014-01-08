@@ -200,7 +200,7 @@ class Network(Utilities):
             nums = list(self._type_definitions.values())
             for i in range(0,sp.shape(defn)[0]):
                 temp[i] = names[nums.index(defn[i])]
-            temp = type_defn(nadatame=temp,number=defn)
+            temp = type_defn(name=temp,number=defn)
         elif type(defn[0]) == str:
             temp = ['']*sp.shape(defn)[0]
             names = list(self._type_definitions.keys())
