@@ -18,10 +18,10 @@ import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.stats as spst
-from .__GenericTopology__ import GenericTopology
+from .__GenericNetwork__ import GenericNetwork
 import os
 
-class MatFile(GenericTopology):
+class MatFile(GenericNetwork):
     r"""
     MatFile - constructs a pore network from a perfectly formatted .mat file (MATLAB)
     

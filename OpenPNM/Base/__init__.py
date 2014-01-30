@@ -36,4 +36,4 @@ Classes
 """
 
 from .__OpenPNMbase__ import Utilities
-from .__Network__ import Network
+from .__Tools__ import Tools

@@ -9,9 +9,9 @@ module __Template__: Generate cubic networks from domain templates
 import OpenPNM
 import scipy as sp
 import numpy as np
-from .__GenericTopology__ import GenericTopology
+from .__GenericNetwork__ import GenericNetwork
 
-class Template(GenericTopology):
+class Template(GenericNetwork):
     r"""
     Template - Class to create a cubic network with an arbitrary domain shape defined by a supplied template
 
