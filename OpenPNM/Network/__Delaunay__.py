@@ -12,9 +12,9 @@ import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from .__GenericTopology__ import GenericTopology
+from .__GenericNetwork__ import GenericNetwork
 
-class Delaunay(GenericTopology):
+class Delaunay(GenericNetwork):
     r"""
     Delaunay - Class to create a random network based on the Delaunay tessellation
 
@@ -97,9 +97,9 @@ class Delaunay(GenericTopology):
         Ly = self.domain_size[1]
         Lz = self.domain_size[2]
         Np = self.num_pores
-        self._net.pore_properties['coords'] = np.hstack((np.random.rand(Np,1)*Lx, np.random.rand(Np,1)*Ly, np.random.rand(Np,1)*Lz))
-        self._net.pore_properties['numbering'] = np.arange(0,Np)
-        self._net.pore_properties['type']= np.zeros((Np,))
+        self._net.pore_data['coords'] = np.hstack((np.random.rand(Np,1)*Lx, np.random.rand(Np,1)*Ly, np.random.rand(Np,1)*Lz))
+        self._net.pore_data['numbering'] = np.arange(0,Np)
+        self._net.pore_data['type']= np.zeros((Np,))
         self._logger.debug("generate_pores: End of method")
 
     def _generate_throats(self):
@@ -108,7 +108,7 @@ class Delaunay(GenericTopology):
         """
         self._logger.info("generate_throats: Define connections between pores")
         Np = self._net.get_num_pores()
-        pts = self._net.pore_properties['coords']
+        pts = self._net.pore_data['coords']
         #Generate 6 dummy domains to pad onto each face of real domain
         #This prevents surface pores from making long range connections to each other
         Lx = self.domain_size[0]
@@ -132,9 +132,9 @@ class Delaunay(GenericTopology):
         #Remove duplicate (lower triangle) and self connections (diagonal)
         #and convert to coo
         adjmat = sprs.triu(adjmat,k=1,format="coo")
-        self._net.throat_properties['connections'] = np.vstack((adjmat.row, adjmat.col)).T
-        self._net.throat_properties['type'] = np.zeros_like(adjmat.row)
-        self._net.throat_properties['numbering'] = np.arange(0,np.size(adjmat.row))
+        self._net.throat_data['connections'] = np.vstack((adjmat.row, adjmat.col)).T
+        self._net.throat_data['type'] = np.zeros_like(adjmat.row)
+        self._net.throat_data['numbering'] = np.arange(0,np.size(adjmat.row))
         self._logger.debug("generate_throats: End of method")
 
     def _add_boundaries(self):
@@ -157,7 +157,7 @@ class Delaunay(GenericTopology):
         poffset[[2,5],0] = [-Lx, Lx]
         poffset[[3,4],1] = [-Ly, Ly]
         poffset[[1,6],2] = [-Lz, Lz]
-        pcoords = pcoords0 = self._net.pore_properties['coords']
+        pcoords = pcoords0 = self._net.pore_data['coords']
         for i in np.r_[1:7]:
             pcoords = np.concatenate((pcoords,pcoords0 + poffset[i,:]),axis=0)
 
@@ -168,7 +168,7 @@ class Delaunay(GenericTopology):
             ptype = np.concatenate((ptype,np.ones((Np,),dtype=int)*bval[i]),axis=0)
 
         #pnum contains the internal ID number of the boundary pores (for connecting periodic points)
-        pnum = self._net.pore_properties['numbering'][self._net.pore_properties['type']==0]
+        pnum = self._net.pore_data['numbering'][self._net.pore_data['type']==0]
         pnum = np.tile(pnum,7)
 
         Tri = sptl.Delaunay(pcoords)
@@ -181,28 +181,28 @@ class Delaunay(GenericTopology):
             #Add periodic throats to the netowrk (if any)
             tpore2 = pnum[adjmat.rows[i]][ptype[adjmat.rows[i]]<0]
             tpore1 = np.ones_like(tpore2,dtype=int)*i
-            self._net.throat_properties['connections'] = np.concatenate((self._net.throat_properties['connections'],np.vstack((tpore1,tpore2)).T),axis=0)
-            self._net.throat_properties['type'] = np.concatenate((self._net.throat_properties['type'],ptype[adjmat.rows[i]][ptype[adjmat.rows[i]]<0]))
+            self._net.throat_data['connections'] = np.concatenate((self._net.throat_data['connections'],np.vstack((tpore1,tpore2)).T),axis=0)
+            self._net.throat_data['type'] = np.concatenate((self._net.throat_data['type'],ptype[adjmat.rows[i]][ptype[adjmat.rows[i]]<0]))
             #Add boundary pores and throats to the network
             newporetyps = np.unique(ptype[adjmat.rows[i]][ptype[adjmat.rows[i]]>0])
             newporenums = np.r_[self._net.get_num_pores():self._net.get_num_pores()+np.size(newporetyps)]
             tpore2 = newporenums
             tpore1 = np.ones_like(tpore2,dtype=int)*i
-            self._net.throat_properties['connections'] = np.concatenate((self._net.throat_properties['connections'],np.vstack((tpore1,tpore2)).T),axis=0)
-            self._net.throat_properties['type'] = np.concatenate((self._net.throat_properties['type'],newporetyps),axis=0)
-            self._net.pore_properties['type'] = np.concatenate((self._net.pore_properties['type'],newporetyps),axis=0)
+            self._net.throat_data['connections'] = np.concatenate((self._net.throat_data['connections'],np.vstack((tpore1,tpore2)).T),axis=0)
+            self._net.throat_data['type'] = np.concatenate((self._net.throat_data['type'],newporetyps),axis=0)
+            self._net.pore_data['type'] = np.concatenate((self._net.pore_data['type'],newporetyps),axis=0)
             bcoords = np.zeros((7,3),dtype=float)
-            bcoords[1,:] = [self._net.pore_properties['coords'][i,0], self._net.pore_properties['coords'][i,1], 0-Lz*boffset]
-            bcoords[2,:] = [0-Lx*boffset, self._net.pore_properties['coords'][i,1], self._net.pore_properties['coords'][i,2]]
-            bcoords[3,:] = [self._net.pore_properties['coords'][i,0], -Ly*boffset, self._net.pore_properties['coords'][i,2]]
-            bcoords[4,:] = [self._net.pore_properties['coords'][i,0], Ly+Ly*boffset, self._net.pore_properties['coords'][i,2]]
-            bcoords[5,:] = [Lx+Lx*boffset, self._net.pore_properties['coords'][i,1], self._net.pore_properties['coords'][i,2]]
-            bcoords[6,:] = [self._net.pore_properties['coords'][i,0], self._net.pore_properties['coords'][i,1], Lz+Lz*boffset]
+            bcoords[1,:] = [self._net.pore_data['coords'][i,0], self._net.pore_data['coords'][i,1], 0-Lz*boffset]
+            bcoords[2,:] = [0-Lx*boffset, self._net.pore_data['coords'][i,1], self._net.pore_data['coords'][i,2]]
+            bcoords[3,:] = [self._net.pore_data['coords'][i,0], -Ly*boffset, self._net.pore_data['coords'][i,2]]
+            bcoords[4,:] = [self._net.pore_data['coords'][i,0], Ly+Ly*boffset, self._net.pore_data['coords'][i,2]]
+            bcoords[5,:] = [Lx+Lx*boffset, self._net.pore_data['coords'][i,1], self._net.pore_data['coords'][i,2]]
+            bcoords[6,:] = [self._net.pore_data['coords'][i,0], self._net.pore_data['coords'][i,1], Lz+Lz*boffset]
             newporecoords = bcoords[newporetyps,:]
-            self._net.pore_properties['coords'] = np.concatenate((self._net.pore_properties['coords'],newporecoords),axis=0)
+            self._net.pore_data['coords'] = np.concatenate((self._net.pore_data['coords'],newporecoords),axis=0)
         #Reset number of pores and throats (easier than tracking it)
-        self._net.pore_properties['numbering'] = np.r_[0:np.size(self._net.pore_properties['type'])]
-        self._net.throat_properties['numbering'] = np.r_[0:np.size(self._net.throat_properties['type'])]
+        self._net.pore_data['numbering'] = np.r_[0:np.size(self._net.pore_data['type'])]
+        self._net.throat_data['numbering'] = np.r_[0:np.size(self._net.throat_data['type'])]
         self._logger.debug("add_boundaries: end of method")
 
     def _add_boundaries_old(self):
@@ -235,11 +235,11 @@ class Delaunay(GenericTopology):
         Ly = self.domain_size[W]
         Lz = self.domain_size[H]
         #Rotate pore coordinates (use only internal pores)
-        pnum = self._net.pore_properties['numbering'][self._net.pore_properties['type']==0]
-        pcoords = np.zeros_like(self._net.pore_properties['coords'][pnum,:])
-        pcoords[:,0] = self._net.pore_properties['coords'][pnum,D]
-        pcoords[:,1] = self._net.pore_properties['coords'][pnum,W]
-        pcoords[:,2] = self._net.pore_properties['coords'][pnum,H]
+        pnum = self._net.pore_data['numbering'][self._net.pore_data['type']==0]
+        pcoords = np.zeros_like(self._net.pore_data['coords'][pnum,:])
+        pcoords[:,0] = self._net.pore_data['coords'][pnum,D]
+        pcoords[:,1] = self._net.pore_data['coords'][pnum,W]
+        pcoords[:,2] = self._net.pore_data['coords'][pnum,H]
 
         #Determine dimensions of image from dimensions of domain
         f = 100 #minimum image dimension
@@ -306,18 +306,18 @@ class Delaunay(GenericTopology):
         bp_coords[types_bd==1,D] = np.ones_like(nums_bd1)*Lx+0.0001
         bp_coords[types_bd==1,W] = pcoords[nums_bd1,1]
         bp_coords[types_bd==1,H] = pcoords[nums_bd1,2]
-        self._net.pore_properties['numbering'] = np.append(self._net.pore_properties['numbering'],bp_numbering)
-        self._net.pore_properties['type'] = np.append(self._net.pore_properties['type'],bp_type)
-        self._net.pore_properties['coords'] = np.concatenate((self._net.pore_properties['coords'],bp_coords))
+        self._net.pore_data['numbering'] = np.append(self._net.pore_data['numbering'],bp_numbering)
+        self._net.pore_data['type'] = np.append(self._net.pore_data['type'],bp_type)
+        self._net.pore_data['coords'] = np.concatenate((self._net.pore_data['coords'],bp_coords))
         Nt = self._net.get_num_throats()
         bt_numbering = np.r_[Nt:Nt+np.size(nums_bd)]
         bt_type = np.ones(np.size(nums_bd),dtype=int)*2
         bt_connections = np.zeros([np.size(nums_bd),2],dtype=int)
         bt_connections[:,0] = nums_bd
         bt_connections[:,1] = bp_numbering
-        self._net.throat_properties['numbering'] = np.append(self._net.throat_properties['numbering'],bt_numbering)
-        self._net.throat_properties['type'] = np.append(self._net.throat_properties['type'],bt_type)
-        self._net.throat_properties['connections'] =  np.concatenate((self._net.throat_properties['connections'],bt_connections))
+        self._net.throat_data['numbering'] = np.append(self._net.throat_data['numbering'],bt_numbering)
+        self._net.throat_data['type'] = np.append(self._net.throat_data['type'],bt_type)
+        self._net.throat_data['connections'] =  np.concatenate((self._net.throat_data['connections'],bt_connections))
 
 if __name__ == '__main__':
     test=Delaunay(loggername='TestDelaunay')

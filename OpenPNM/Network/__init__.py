@@ -38,7 +38,7 @@ Classes
    
 """
 
-from .__GenericTopology__ import GenericTopology
+from .__GenericNetwork__ import GenericNetwork
 from .__Cubic__ import Cubic
 from .__Delaunay__ import Delaunay
 from .__Template__ import Template
