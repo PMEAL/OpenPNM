@@ -378,50 +378,48 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         Examples
         --------
-        >>> Pnums = [0,1]
-        >>> Ps = pn.get_neighbor_pores(Pnums)
+        >>> pnums = [0,1]
+        >>> Ps = pn.get_neighbor_pores(pnums)
         >>> Ps
         array([  2,   3, 920, 921])
 
-        >>> Pnums = [0,1]
-        >>> Ps = pn.get_neighbor_pores(Pnums,flatten=False)
+        >>> pnums = [0,1]
+        >>> Ps = pn.get_neighbor_pores(pnums,flatten=False)
         >>> Ps
         array([[ 1, 2, 920],
                [ 0, 3, 921]])
         """
-        #Parse Ptype input argument
-        Ptype = self.get_type_definitions(Ptype).number
-
+        #Convert string to list, if necessary
+        if type(subdomain) == str: subdomain = [subdomain]
         #Count neighboring pores
         try:
-            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[Pnums]]
+            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
         except:
             self.create_adjacency_matrix()
-            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[Pnums]]
+            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
             neighborPs = sp.hstack(neighborPs)
             #Remove references to input pores and duplicates
-            neighborPs = sp.unique(neighborPs[~np.in1d(neighborPs,Pnums)])
+            neighborPs = sp.unique(neighborPs[~np.in1d(neighborPs,pnums)])
             #Remove pores of the wrong type
-            neighborPs = neighborPs[sp.in1d(self._pore_data['type'][neighborPs],Ptype)]
+            mask = self.get_pore_indices(subdomain=subdomain,indices=False)
+            neighborPs = neighborPs[mask[neighborPs]]
         else:
-            for i in range(0,sp.size(Pnums)):
-                ans = sp.array(sp.where(sp.in1d(self._pore_data['type'][neighborPs[i]],Ptype)))[0]
-                neighborPs[i] = sp.array(neighborPs[i])[ans]
-        return np.array(neighborPs)
+            mask = self.get_pore_indices(subdomain=subdomain,indices=False)
+            for i in range(0,sp.size(pnums)):
+                neighborPs[i] = sp.array(neighborPs[i])[mask[neighborPs[i]]]
+        return np.array(neighborPs,ndmin=1)
 
-    def get_neighbor_throats(self,Pnums,Ttype=[],flatten=True):
+    def get_neighbor_throats(self,pnums,subdomain=['all'],flatten=True):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
         Parameters
         ----------
-        Pnums : array_like
+        pnums : array_like
             ID numbers of pores whose neighbors are sought
-        Ttype : array_like
-            Type of throats to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique throat ID numbers
             is returned. If flatten is False the returned array contains arrays
@@ -446,37 +444,37 @@ class GenericNetwork(OpenPNM.Base.Tools):
         array([[    0,     1,     2],
                [    2, 83895, 83896]])
         """
-        #Parse Ttype input argument
-        Ttype = self.get_type_definitions(Ttype).number
-
+        #Convert string to list, if necessary
+        if type(subdomain) == str: subdomain = [subdomain]
         #Test for existance of incidence matrix
         try:
-            neighborTs = self.incidence_matrix['lil']['connections'].rows[[Pnums]]
+            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
         except:
             self.create_incidence_matrix()
-            neighborTs = self.incidence_matrix['lil']['connections'].rows[[Pnums]]
+            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-            neighborTs = [np.asarray(x) for x in neighborTs if x]
-            neighborTs = np.unique(np.hstack(neighborTs))
-            #Remove throats of the wrong type
-            neighborTs = neighborTs[sp.in1d(self._throat_data['type'][neighborTs],Ttype)]
+            neighborTs = [sp.asarray(x) for x in neighborTs if x]
+            neighborTs = sp.hstack(neighborTs)
+            #Remove references to input pores and duplicates
+            neighborTs = sp.unique(neighborTs[~np.in1d(neighborTs,pnums)])
+            #Remove pores of the wrong type
+            mask = self.get_throat_indices(subdomain=subdomain,indices=False)
+            neighborTs = neighborTs[mask[neighborTs]]
         else:
-            for i in range(0,sp.shape(Pnums)[0]):
-                ans = sp.array(sp.where(sp.in1d(self._throat_data['type'][neighborTs[i]],Ttype)))[0]
-                neighborTs[i] = sp.array(neighborTs[i])[ans]
-        return np.array(neighborTs)
+            mask = self.get_throat_indices(subdomain=subdomain,indices=False)
+            for i in range(0,sp.size(pnums)):
+                neighborTs[i] = sp.array(neighborTs[i])[mask[neighborTs[i]]]
+        return np.array(neighborTs,ndmin=1)
 
-    def get_num_neighbors(self,Pnums,Ptype=[]):
+    def get_num_neighbors(self,pnums,subdomain=['all'],flatten=True):
         r"""
         Returns an ndarray containing the number of pores for each element in Pnums
 
         Parameters
         ----------
-        Pnums : array_like
+        pnums : array_like
             ID numbers of pores whose neighbors are sought
-        Ptype : array_like
-            Type of throats to be returned
 
         Returns
         -------
@@ -495,14 +493,16 @@ class GenericNetwork(OpenPNM.Base.Tools):
         array([3, 4, 4, ..., 4, 4, 3], dtype=int8)
         >>> pn._pore_data['num_neighbors'] = Nn
         """
-        #Parse Ptype input argument
-        Ptype = self.get_type_definitions(Ptype).number
+        #Convert string to list, if necessary
+        if type(subdomain) == str: subdomain = [subdomain]
 
         #Count number of neighbors
-        neighborPs = self.get_neighbor_pores(Pnums,Ptype,flatten=False)
+        neighborPs = self.get_neighbor_pores(pnums,subdomain=subdomain,flatten=False)
         num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
         for i in range(0,sp.shape(num)[0]):
             num[i] = sp.size(neighborPs[i])
+        if flatten:
+            num = sp.sum(num)
         return num
 
     def check_basic(self):
@@ -522,21 +522,21 @@ class GenericNetwork(OpenPNM.Base.Tools):
     def show_boundaries(self,Ptype=[]):
         r'''
         '''
-        from mpl_toolkits.mplot3d import Axes3D
-        #Parse Ptype input argument
-        if Ptype == [] or Ptype == 'all':
-            Ptype = self.get_type_definitions()[1]
-        elif type(Ptype[0]) == str:
-            Ptype = self.get_type_definitions(Ptype)
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        for i in Ptype:
-
-            xs = self._pore_data['coords'][:,0]
-            ys = self._pore_data['coords'][:,1]
-            zs = self._pore_data['coords'][:,2]
-            ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
-        plt.show()
+        #        from mpl_toolkits.mplot3d import Axes3D
+        #        #Parse Ptype input argument
+        #        if Ptype == [] or Ptype == 'all':
+        #            Ptype = self.get_type_definitions()[1]
+        #        elif type(Ptype[0]) == str:
+        #            Ptype = self.get_type_definitions(Ptype)
+        #        fig = plt.figure()
+        #        ax = fig.add_subplot(111, projection='3d')
+        #        for i in Ptype:
+        #
+        #            xs = self._pore_data['coords'][:,0]
+        #            ys = self._pore_data['coords'][:,1]
+        #            zs = self._pore_data['coords'][:,2]
+        #            ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
+        #        plt.show()
 
     def __str__(self):
         r"""
