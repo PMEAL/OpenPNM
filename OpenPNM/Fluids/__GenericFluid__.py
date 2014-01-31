@@ -8,7 +8,7 @@ import OpenPNM
 import scipy as sp
 from functools import partial
 
-class GenericFluid(OpenPNM.Base.Utilities):
+class GenericFluid(OpenPNM.Base.Tools):
     r"""
     GenericFluid - Base class to generate fluid properties
 
@@ -19,8 +19,10 @@ class GenericFluid(OpenPNM.Base.Utilities):
     def __init__(self,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        self.pore_conditions = {}
-        self.throat_conditions = {}
+        self.pore_data = {}
+        self.throat_data = {}
+        self.pore_info = {}
+        self.throat_info = {}
         self._physics = []
 
     def create(self,network,T=298.,P=101325.,**recipe):
@@ -33,11 +35,13 @@ class GenericFluid(OpenPNM.Base.Utilities):
         except: self._logger.error('Fluid name must be given')
         #Bind objects together
         network._fluids.append(self)
+        self.set_pore_data(prop='numbering',data=network.get_pore_indices()) #This is necessary for the methods from 'tools' to work.  They must know network size.
+        self.set_throat_data(prop='numbering',data=network.get_throat_indices())        
         self.Tc = recipe['Tc']
         self.Pc = recipe['Pc']
         self.MW = recipe['MW']
-        self.pore_conditions['temperature'] = sp.array(T,ndmin=1)
-        self.pore_conditions['pressure'] = sp.array(P,ndmin=1)
+        self.set_pore_data(prop='temperature',data=sp.array(T,ndmin=1))
+        self.set_pore_data(prop='pressure',data=sp.array(P,ndmin=1))
         for key, args in recipe.items():
             try:
                 function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) #Get method from the file

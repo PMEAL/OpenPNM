@@ -12,9 +12,9 @@ def constant(fluid,network,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_pore_data(fluid=fluid.name,prop=propname,data=value)
+    network.set_pore_data(phase=fluid,prop=propname,data=value)
 
 def na(fluid,network,**params):
     value = -1
-    network.set_pore_data(fluid=fluid.name,prop=propname,data=value)
+    network.set_pore_data(phase=fluid,prop=propname,data=value)
 
