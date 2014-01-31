@@ -19,8 +19,6 @@ class GenericPhysics(OpenPNM.Base.Utilities):
     def __init__(self,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        self.pore_conditions = {}
-        self.throat_conditions = {}
         self._prop_list = {}
         self._fluid = []
         
