@@ -12,6 +12,7 @@ import numpy as np
 import scipy.stats as spst
 import scipy.spatial as sptl
 import itertools as itr
+import sys
 from .__GenericNetwork__ import GenericNetwork
 
 class Cubic(GenericNetwork):
@@ -80,16 +81,18 @@ class Cubic(GenericNetwork):
         r"""
         Generate the network
         """
-#        self._logger.debug("self.generate()")
+        self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
         self.name = params['name']
-        self.generate_setup(**params)
-        self.generate_pores()
-        self.generate_throats()
+        self._generate_setup(**params)
+        self._generate_pores()
+        self._generate_throats()
+        self._add_labels()
         #self.add_boundaries()
-        self._logger.debug("end of self.generate()")
+        print()
+        self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
         return self
 
-    def generate_setup(self,   domain_size = [],
+    def _generate_setup(self,   domain_size = [],
                                 divisions = [],
                                 lattice_spacing = [],
                                 btype = [0,0,0],
@@ -137,11 +140,11 @@ class Cubic(GenericNetwork):
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
 
-    def generate_pores(self):
+    def _generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
         """
-#        self._logger.info("generate_pores: Create specified number of pores")
+        self._logger.info(sys._getframe().f_code.co_name+": Creating specified number of pores")
         Nx = self._Nx
         Ny = self._Ny
         Nz = self._Nz
@@ -152,13 +155,13 @@ class Cubic(GenericNetwork):
         self.set_pore_data(prop='coords',data=pore_coords)
         self.set_pore_data(prop='numbering',data=ind)
         self.set_pore_data(prop='type',data=np.zeros((Np,),dtype=np.int8))
-#        self._logger.debug("generate_pores: End of method")
+        self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
 
-    def generate_throats(self):
+    def _generate_throats(self):
         r"""
         Generate the throats (connections, numbering and types)
         """
-#        self._logger.info("generate_throats: Define connections between pores")
+        self._logger.info(sys._getframe().f_code.co_name+": Creating specified number of throats")
 
         Nx = self._Nx
         Ny = self._Ny
@@ -180,9 +183,21 @@ class Cubic(GenericNetwork):
         self.set_throat_data(prop='connections',data=connections)
         self.set_throat_data(prop='type',data=np.zeros(np.shape(tpore1),dtype=np.int8))        
         self.set_throat_data(prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
-#        self._logger.debug("generate_throats: End of method")
+        self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
+        
+    def _add_labels(self):
+        self._logger.info(sys._getframe().f_code.co_name+": Applying labels")
+        coords = self.get_pore_data(prop='coords')
+        self.set_pore_info(prop='front',data=coords[:,0]<=self._Lc)
+        self.set_pore_info(prop='left',data=coords[:,1]<=self._Lc)
+        self.set_pore_info(prop='bottom',data=coords[:,2]<=self._Lc)
+        self.set_pore_info(prop='back',data=coords[:,0]>=(self._Lc*(self._Nx-1)))
+        self.set_pore_info(prop='right',data=coords[:,1]>=(self._Lc*(self._Ny-1)))
+        self.set_pore_info(prop='top',data=coords[:,2]>=(self._Lc*(self._Nz-1)))
+        self.set_pore_info(prop='internal',data=self.get_pore_indices(),indices=True)
+        self._logger.debug(sys._getframe().f_code.co_name+": End")
 
-    def generate_boundaries(self,net,**params):
+    def _generate_boundaries(self,net,**params):
 
         self._logger.info("generate_boundaries: Define edge points of the pore network and stitch them on")
         self._generate_setup(**params)
