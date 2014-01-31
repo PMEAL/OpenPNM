@@ -95,6 +95,15 @@ class Utilities(object):
         self._logger.debug("Changed log level")
         
     def print_dicts(self):
-        for item in self.pore_conditions.__iter__():
-            print(item,': ',type(self.pore_conditions[item]))
-        
+        print('Pore data dictionaries:')
+        for item in self._pore_data.keys():
+            print('  '+item)
+        print('Pore info dictionaries:')
+        for item in self._pore_info.keys():
+            print('  '+item)
+        print('Throat data dictionaries:')
+        for item in self._throat_data.keys():
+            print('  '+item)
+        print('Throat info dictionaries:')
+        for item in self._throat_info.keys():
+            print('  '+item)        

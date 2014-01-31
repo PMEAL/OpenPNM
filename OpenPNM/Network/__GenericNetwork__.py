@@ -55,15 +55,15 @@ class GenericNetwork(OpenPNM.Base.Tools):
         self.incidence_matrix['lil'] = {}
         self._logger.info("Construction of Network container complete")
         
-    def generate(self, network, **params):
+    def generate(self, **params):
         r"""
         Generate the network
         """
         print('this method is not implemented')
  
-    #-------------------------------------------------------------------
+    #--------------------------------------------------------------------------
     '''pore_data and throat_data interpolation methods'''
-    #-------------------------------------------------------------------
+    #--------------------------------------------------------------------------
     def interpolate_pore_data(self,Tvals=None):
         r"""
         Determines a pore property as the average of it's neighboring throats
@@ -118,9 +118,6 @@ class GenericNetwork(OpenPNM.Base.Tools):
                 Tvals[i] = sp.mean(Pvals[nPs[i]])
         return Tvals
 
-    #-------------------------------------------------------------------
-    '''pore_data and throat_data interpolation methods'''
-    #-------------------------------------------------------------------
     def amalgamate_pore_data(self):
         r"""
         Returns a dictionary containing ALL pore data from all fluids, physics and geometry objects
@@ -165,9 +162,9 @@ class GenericNetwork(OpenPNM.Base.Tools):
         pprint.pprint(self._throat_data)
         return self._throat_data
 
-    #-------------------------------------------------------------------
+    #--------------------------------------------------------------------------
     '''Graph theory and topology related methods'''
-    #-------------------------------------------------------------------
+    #--------------------------------------------------------------------------
     def create_adjacency_matrix(self,data=None,prop=None,sprsfmt='all',dropzeros=True,sym=True):
         r"""
         Generates adjacency matricies in various sparse storage formats
@@ -359,15 +356,15 @@ class GenericNetwork(OpenPNM.Base.Tools):
         """
         return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
-    def get_neighbor_pores(self,Pnums,Ptype=[],flatten=True):
+    def get_neighbor_pores(self,pnums,subdomain=['all'],flatten=True):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
         Parameters
         ----------
-        Pnums : array_like
+        pnums : array_like
             ID numbers of pores whose neighbors are sought.
-        Ptype : array_like
+        subdomain : list of strings
             Type of pores to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore ID numbers
