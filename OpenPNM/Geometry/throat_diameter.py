@@ -11,7 +11,7 @@ def constant(geometry,network,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.throat_properties['diameter'] = value
+    network.set_throat_data(prop='diameter',data=value)
 
 def cylinder(geometry,network,**params):
     r"""
@@ -19,7 +19,7 @@ def cylinder(geometry,network,**params):
     """
     prob_fn = getattr(spst,params['name'])
     P = prob_fn(params['shape'],loc=params['loc'],scale=params['scale'])
-    network.throat_properties['diameter'] = P.ppf(network.throat_properties['seed'])
+    network.set_throat_data(prop='diameter',data=P.ppf(network.get_throat_data(prop='seed')))
 
 def cuboid(geometry,network,**params):
     r"""

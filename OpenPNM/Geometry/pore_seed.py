@@ -10,7 +10,7 @@ def constant(geometry,network,value,**params):
     r"""
     Assign specified constant value
     """
-    network.pore_properties['seed'] = value
+    network.set_pore_data(prop='seed',data= value)
 
 def random(geometry,network,**params):
     r"""
@@ -18,5 +18,5 @@ def random(geometry,network,**params):
     note: should this be called 'poisson'?  
     """
     Np = network.get_num_pores()
-    network.pore_properties['seed'] = sp.random.rand(Np)
+    network.set_pore_data(prop='seed',data=sp.random.rand(Np))
     
