@@ -14,9 +14,9 @@ def effective_occupancy(network,fluid,method='strict'):
     """
     if method == 'strict':
         #if only EITHER pore is filled an open throat is considered closed
-        pores = network.get_connected_pores(network.throat_properties['numbering'],flatten=0)
-        fluid.throat_conditions['conduit_occupancy'] = fluid.pore_conditions['occupancy'][pores[:,0]]*fluid.pore_conditions['occupancy'][pores[:,1]]
-        fluid.throat_conditions['conduit_occupancy'] = -fluid.pore_conditions['occupancy'][pores[:,0]]*-fluid.pore_conditions['occupancy'][pores[:,1]]
+        pores = network.get_connected_pores(network.get_throat_data(prop='numbering'),flatten=0)
+        network.set_throat_data(phase=fluid,prop='conduit_occupancy',data=network.get_pore_data(phase=fluid,prop='occupancy')[pores[:,0]]*network.get_pore_data(phase=fluid,prop='occupancy')[pores[:,1]])
+        network.set_throat_data(phase=fluid,prop='conduit_occupancy',data=-network.get_pore_data(phase=fluid,prop='occupancy')[pores[:,0]]*-network.get_pore_data(phase=fluid,prop='occupancy')[pores[:,1]])
     elif method == 'moderate':
         #if only ONE pore isfilled an open throat is still considered open
         print('nothing yet')
@@ -49,10 +49,10 @@ def late_pore_filling(network,fluid,swpi=0.0,eta=1.0,Pc=0.0):
 
     """
 
-    Pc_star = network.get_pore_data(fluid=fluid.name,prop='Pc_invaded')
+    Pc_star = network.get_pore_data(phase=fluid,prop='Pc_invaded')
     swp = swpi*(Pc_star/Pc)**eta*(Pc_star<=Pc)
     swp = swp + (Pc_star>Pc)
-    network.set_throat_data(fluid=fluid.name,prop='volume_fraction',data=swp)
+    network.set_throat_data(phase=fluid,prop='volume_fraction',data=swp)
 
 
 
