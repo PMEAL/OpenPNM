@@ -76,19 +76,17 @@ class Cubic(GenericNetwork):
 #        super(Cubic,self).generate(network,**params)
         
 
-    def generate(self,network,**params):
+    def generate(self,**params):
         r"""
         Generate the network
         """
 #        self._logger.debug("self.generate()")
-        self._net = network
         self.name = params['name']
         self.generate_setup(**params)
         self.generate_pores()
         self.generate_throats()
         #self.add_boundaries()
         self._logger.debug("end of self.generate()")
-        del self._net
         return self
 
     def generate_setup(self,   domain_size = [],
@@ -151,9 +149,9 @@ class Cubic(GenericNetwork):
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
         pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
-        self._net.set_pore_data(prop='coords',data=pore_coords)
-        self._net.set_pore_data(prop='numbering',data=ind)
-        self._net.set_pore_data(prop='type',data=np.zeros((Np,),dtype=np.int8))
+        self.set_data(element='pore',prop='coords',data=pore_coords)
+        self.set_data(element='pore',prop='numbering',data=ind)
+        self.set_data(element='pore',prop='type',data=np.zeros((Np,),dtype=np.int8))
 #        self._logger.debug("generate_pores: End of method")
 
     def generate_throats(self):
@@ -179,9 +177,9 @@ class Cubic(GenericNetwork):
         tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
         connections = np.vstack((tpore1,tpore2)).T
         connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
-        self._net.set_throat_data(prop='connections',data=connections)
-        self._net.set_throat_data(prop='type',data=np.zeros(np.shape(tpore1),dtype=np.int8))        
-        self._net.set_throat_data(prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
+        self.set_data(element='throat',prop='connections',data=connections)
+        self.set_data(element='throat',prop='type',data=np.zeros(np.shape(tpore1),dtype=np.int8))        
+        self.set_data(element='throat',prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
 #        self._logger.debug("generate_throats: End of method")
 
     def generate_boundaries(self,net,**params):

@@ -3,12 +3,7 @@ from time import clock
 start=clock()
 
 #======================================================================
-'''Initialize empty Network object'''
-#======================================================================
-pn = OpenPNM.Base.Network(loggername='PNM',loglevel=20)
-
-#======================================================================
-'''Build Topology'''
+'''Build Topological Network'''
 #======================================================================
 #Define topology parameters
 topo_recipe = {
@@ -18,12 +13,7 @@ topo_recipe = {
 'lattice_spacing': [0.0001],  #spacing between pores [meters]
 }
 #Add topology to network
-topo = OpenPNM.Topology.Cubic().generate(network=pn, **topo_recipe)
-pn.set_type_definitions({'internal':0,'external':1,'inlet':2,'outlet':3})
-
-
-b = (pn.pore_properties['coords'][:,0] <= 5e-5)*2
-pn.set_pore_data('type',b)
+pn = OpenPNM.Network.Cubic().generate(**topo_recipe)
 
 #======================================================================
 '''Build Geometry'''
