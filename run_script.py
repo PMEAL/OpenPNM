@@ -13,15 +13,7 @@ topo_recipe = {
 'lattice_spacing': [0.0001],  #spacing between pores [meters]
 }
 #Add topology to network
-pn = OpenPNM.Network.Cubic().generate(**topo_recipe)
-
-#Add some face info
-a = sp.rand(pn.get_num_pores(),)>0.5
-pn.set_pore_info(prop='test1',data=a)
-pn.set_pore_info(prop='test2',data=(~a))
-b = sp.rand(pn.get_num_throats(),)>0.5
-pn.set_throat_info(prop='test1',data=b)
-pn.set_throat_info(prop='test2',data=(~b))
+pn = OpenPNM.Network.Cubic(loglevel=10).generate(**topo_recipe)
 
 #======================================================================
 '''Build Geometry'''
