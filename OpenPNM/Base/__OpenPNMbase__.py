@@ -71,6 +71,7 @@ class Utilities(object):
        
     """
     _instances = []
+    name = ''
     def __init__(self,**kwargs):
         super(Utilities,self).__init__()
         self._instances.append(self) #Track all instances derived from this class for kicks
