@@ -103,15 +103,14 @@ phys_air = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=air,**phys_r
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #----------------------------------------------------------------------
 #Initialize algorithm object
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10)
-a = pn.get_pore_data('type') == pn.get_type_definitions(['inlet']).number
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,name='OP')
+a = pn.get_pore_indices(subdomain='bottom')
 #Run algorithm
-OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=10,AL=True)
+OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=20,AL=True)
+
+b = pn.get_pore_indices(subdomain='top')
+OP_1.evaluate_trapping(outlets=b)
 OP_1.plot_drainage_curve()
-
-#b = pn.pore_properties['coords'][:,1] <= 5e-5
-#OP_1.evaluate_trapping(outlets=b)
-
 
 ##----------------------------------------------------------------------
 #'''Perform an Injection Experiment (InvasionPercolation)'''
