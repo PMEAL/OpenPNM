@@ -39,6 +39,7 @@ class GenericAlgorithm(OpenPNM.Base.Utilities):
         """
         super(GenericAlgorithm,self).__init__(**kwords)
         self._logger.debug("Construct class")
+        self.name = kwords['name']
 
     def run(self,network,**params):
         r"""
