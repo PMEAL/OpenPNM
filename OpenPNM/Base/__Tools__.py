@@ -70,17 +70,19 @@ class Tools(Utilities):
         data : array_like
             Data values to write to object
         """
-        try: subdomain_name = subdomain.name #allow passing of geometry objects
+        try: subdomain = subdomain.name #allow passing of geometry objects
         except: pass #Otherwise, accept string
+        try: phase = phase.name #allow passing of fluid objects
+        except: pass #Accept string
         if phase and not subdomain: getattr(phase,'_'+element+'_data')[prop] = sp.array(data,ndmin=1) #Set fluid property
         elif subdomain and not phase: #Set geometry property
-            ind = getattr(self,'get_'+element+'_info')(subdomain_name)
+            ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: getattr(self,'_'+element+'_data')[prop] #Test existance of prop
             except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),))*sp.nan
             if sp.shape(ind) == sp.shape(data): getattr(self,'_'+element+'_data')[prop][ind] = data
             else: print('data is the wrong size!')
         elif phase and subdomain: #Set pore/throat scale physics property
-            ind = getattr(self,'get_'+element+'_info')(subdomain_name)
+            ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: getattr(phase,'_'+element+'_data')[prop]
             except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),))
             getattr(phase,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
@@ -100,19 +102,19 @@ class Tools(Utilities):
         array_like
             An ndarray containing the requested property data from the specified object
         """            
-        try: subdomain_name = subdomain.name #allow passing of geometry objects
+        try: subdomain = subdomain.name #allow passing of geometry objects
         except: pass #Otherwise, accept string        
         if phase and not subdomain:
             try: return getattr(phase,'_'+element+'_data')[prop] #Get fluid prop
             except: self._logger.error(phase.name+' does not have the requested '+element+' property: '+prop)           
         elif subdomain and not phase: #Get geometry property
-            ind = getattr(self,'get_'+element+'_info')(subdomain_name)
+            ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: return getattr(self,'_'+element+'_data')[prop][ind]
-            except: self._logger.error(subdomain_name+' does not have the requested '+element+' property: '+prop)            
+            except: self._logger.error(subdomain+' does not have the requested '+element+' property: '+prop)            
         elif phase and subdomain: #Get physics property
-            ind = getattr(self,'get_'+element+'_info')(subdomain_name)
+            ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: return getattr(phase,'_'+element+'_data')[prop][ind] 
-            except: self._logger.error(phase.name+'/'+subdomain_name+' does not have the requested '+element+' property: '+prop) 
+            except: self._logger.error(phase.name+'/'+subdomain+' does not have the requested '+element+' property: '+prop) 
         elif not (phase or subdomain): #Get topology property  
             try: return getattr(self,'_'+element+'_data')[prop]
             except: self._logger.error('Network does not have the requested '+element+' property: '+prop)      
@@ -278,6 +280,12 @@ class Tools(Utilities):
                 ind = intersect
             if indices: ind = sp.where(ind==True)[0]
         return ind
+        
+    def find_object_by_name(self,name):
+        for item in self._instances:
+            if item.name == name:
+                obj = item
+        return obj
 
 if __name__ == '__main__':
     test1=GenericNetwork(loggername='Test1')
