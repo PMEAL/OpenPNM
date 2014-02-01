@@ -72,8 +72,8 @@ class Tools(Utilities):
         """
         try: subdomain = subdomain.name #allow passing of geometry objects
         except: pass #Otherwise, accept string
-        try: phase = phase.name #allow passing of fluid objects
-        except: pass #Accept string
+        try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
+        except: pass #Accept object
         if phase and not subdomain: getattr(phase,'_'+element+'_data')[prop] = sp.array(data,ndmin=1) #Set fluid property
         elif subdomain and not phase: #Set geometry property
             ind = getattr(self,'get_'+element+'_info')(subdomain)
@@ -103,7 +103,9 @@ class Tools(Utilities):
             An ndarray containing the requested property data from the specified object
         """            
         try: subdomain = subdomain.name #allow passing of geometry objects
-        except: pass #Otherwise, accept string        
+        except: pass #Otherwise, accept string
+        try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
+        except: pass #Accept object
         if phase and not subdomain:
             try: return getattr(phase,'_'+element+'_data')[prop] #Get fluid prop
             except: self._logger.error(phase.name+' does not have the requested '+element+' property: '+prop)           
