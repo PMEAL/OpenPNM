@@ -2,10 +2,11 @@ import scipy as sp
 
 class base(object):
     _instances = []
+    name = ''
     def __init__(self):
         self._instances.append(self) #Track all instances derived from this class for kicks
     
-    def find_objects_by_name(self,name):
+    def find_object_by_name(self,name):
         for item in self._instances:
             if item.name == name:
                 obj = item
@@ -86,6 +87,8 @@ class tools(object):
         '''
         try: subdomain = subdomain.name #allow passing of geometry objects
         except: pass #Otherwise, accept string
+        try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
+        except: pass #Accept object
         if phase and not subdomain: return phase._data[prop] #Get fluid prop
         elif subdomain and not phase: #Get geometry property
             ind = self.get_pore_indices(subdomain)
@@ -100,6 +103,8 @@ class tools(object):
         '''
         try: subdomain = subdomain.name #allow passing of geometry objects
         except: pass #Otherwise, accept string
+        try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
+        except: pass #Accept object
         if phase and not subdomain: phase._data[prop] = sp.array(data,ndmin=1) #Set fluid property
         elif subdomain and not phase: #Set geometry property
             ind = self.get_pore_indices(subdomain)
