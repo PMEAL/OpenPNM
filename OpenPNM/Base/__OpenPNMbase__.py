@@ -70,8 +70,10 @@ class Utilities(object):
        ======== =====   =============================================================
        
     """
+    _instances = []
     def __init__(self,**kwargs):
         super(Utilities,self).__init__()
+        self._instances.append(self) #Track all instances derived from this class for kicks
         if 'loggername' in kwargs.keys():
             self._logger = _logging.getLogger(kwargs['loggername'])
         else:

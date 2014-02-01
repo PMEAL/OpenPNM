@@ -4,7 +4,13 @@ class base(object):
     _instances = []
     def __init__(self):
         self._instances.append(self) #Track all instances derived from this class for kicks
-        
+    
+    def find_objects_by_name(self,name):
+        for item in self._instances:
+            if item.name == name:
+                obj = item
+        return obj
+    
     def print_dicts(self):
         print('Data dictionaries:')
         for item in self._data.keys():
