@@ -35,8 +35,8 @@ class GenericFluid(OpenPNM.Base.Tools):
         except: self._logger.error('Fluid name must be given')
         #Bind objects together
         network._fluids.append(self)
-        self.set_pore_data(prop='numbering',data=network.get_pore_indices()) #This is necessary for the methods from 'tools' to work.  They must know network size.
-        self.set_throat_data(prop='numbering',data=network.get_throat_indices())        
+        self.set_pore_info(prop='numbering',data=network.get_pore_indices()) #This is necessary for the methods from 'tools' to work.  They must know network size.
+        self.set_throat_info(prop='numbering',data=network.get_throat_indices())        
         self.Tc = recipe['Tc']
         self.Pc = recipe['Pc']
         self.MW = recipe['MW']
