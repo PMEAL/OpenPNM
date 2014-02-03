@@ -8,12 +8,14 @@ start=clock()
 #Define topology parameters
 topo_recipe = {
 'name':'cubic_1',
-'domain_size': [],  #physical network size [meters]
+'domain_size': [],  #physical network size
 'divisions': [35,35,35], #Number of pores in each direction
-'lattice_spacing': [0.0001],  #spacing between pores [meters]
+'lattice_spacing': [0.0001],  #spacing between pores
+'num_pores': 150,
+'domain_size': [100,100,100]
 }
 #Add topology to network
-pn = OpenPNM.Network.Cubic(loglevel=10).generate(**topo_recipe)
+pn = OpenPNM.Network.Delaunay(loglevel=20).generate(**topo_recipe)
 
 #======================================================================
 '''Build Geometry'''
@@ -58,7 +60,7 @@ air_recipe = {
 'molar_density': {'method': 'ideal_gas',
                   'R': 8.314},
 }
-air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=20).create(network=pn,**air_recipe)
+air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10).create(network=pn,**air_recipe)
 
 water_recipe = {
 'name': 'water',
@@ -76,7 +78,7 @@ water_recipe = {
 'contact_angle': {'method': 'constant',
                   'value': 110},
 }
-water = OpenPNM.Fluids.GenericFluid(loggername='WATER',loglevel=20).create(network=pn,**water_recipe)
+water = OpenPNM.Fluids.GenericFluid(loggername='WATER',loglevel=10).create(network=pn,**water_recipe)
 
 #======================================================================
 '''Build Physics Objects'''
@@ -103,14 +105,14 @@ phys_air = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=air,**phys_r
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #----------------------------------------------------------------------
 #Initialize algorithm object
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,name='OP')
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername="OP",name='OP')
 a = pn.get_pore_indices(subdomain='bottom')
 #Run algorithm
 OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=20,AL=True)
 
 b = pn.get_pore_indices(subdomain='top')
-OP_1.evaluate_trapping(outlets=b)
-OP_1.plot_drainage_curve()
+#OP_1.evaluate_trapping(outlets=b)
+#OP_1.plot_drainage_curve()
 
 ##----------------------------------------------------------------------
 #'''Perform an Injection Experiment (InvasionPercolation)'''
