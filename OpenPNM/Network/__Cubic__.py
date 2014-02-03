@@ -5,7 +5,6 @@ module __Cubic__: Generate simple cubic networks
 .. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
 
 """
-#Test
 
 import scipy as sp
 import numpy as np
@@ -36,7 +35,7 @@ class Cubic(GenericNetwork):
         super(Cubic,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
 
-#    def generate(self,network,**params):
+    def generate(self,**params):
         '''
         Create Cubic network. 
 
@@ -66,29 +65,14 @@ class Cubic(GenericNetwork):
             btype = [0,0,0] (default)\n
             Automatically create periodic throats between opposite x, y, or z faces
 
-        Examples:
-        ---------
-
-        generate default 100x100x10 cubic network with no periodic boundaries
-
-        >>> import OpenPNM as PNM
-        >>> pn=PNM.Geometry.Cubic(domain_size=[100,100,10],lattice_spacing = 1.0)
         '''
-#        super(Cubic,self).generate(network,**params)
-        
-
-    def generate(self,**params):
-        r"""
-        Generate the network
-        """
         self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
         self.name = params['name']
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
-        self._add_labels()
         #self.add_boundaries()
-        print()
+        self._add_labels()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
         return self
 
@@ -139,6 +123,7 @@ class Cubic(GenericNetwork):
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
+        self.set_pore_info(prop='numbering',data=sp.ones((params['num_pores'],),dtype=bool))
 
     def _generate_pores(self):
         r"""
@@ -154,7 +139,6 @@ class Cubic(GenericNetwork):
         pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self.set_pore_data(prop='coords',data=pore_coords)
         self.set_pore_data(prop='numbering',data=ind)
-        self.set_pore_data(prop='type',data=np.zeros((Np,),dtype=np.int8))
         self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
 
     def _generate_throats(self):

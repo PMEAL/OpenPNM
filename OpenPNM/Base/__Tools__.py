@@ -203,7 +203,7 @@ class Tools(Utilities):
         """
         #convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
-        Np = sp.shape(self.get_pore_data(prop='numbering'))[0]
+        Np = sp.shape(self.get_pore_info(prop='numbering'))[0]
         #Count number of pores of specified type
         if subdomain == ['all']: #return all pores
             return Np
@@ -227,7 +227,7 @@ class Tools(Utilities):
         """
         #convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
-        Nt = sp.shape(self.get_throat_data(prop='numbering'))[0]
+        Nt = sp.shape(self.get_throat_info(prop='numbering'))[0]
         #Count number of pores of specified type
         if subdomain == ['all']: #return all pores
             return Nt
