@@ -85,6 +85,18 @@ class Utilities(object):
             
         self.constants = scipy.constants
         
+    def save_object(self):
+        r'''
+        This method saves the object and all of its associated objects
+        '''
+        print('not implemented')
+        
+    def load_object(self):
+        r'''
+        This method loads an object and all of its associated objects
+        '''
+        print('not implemented')
+        
     def set_loglevel(self,level=50):
         r"""
         Sets the effective log level for this class
