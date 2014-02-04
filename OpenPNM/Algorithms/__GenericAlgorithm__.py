@@ -87,6 +87,9 @@ class GenericAlgorithm(OpenPNM.Base.Utilities):
         """
 #        self._logger.info("Inner Iteration Stage: Basic version")
         self._do_one_inner_iteration()
+        
+    def disseminate_results(self,**kwargs):
+        print('not implemented')
 
 if __name__ =="__main__":
     print('    ************Testing Generic Algorithm**************')

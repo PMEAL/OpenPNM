@@ -157,14 +157,14 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._p_trap[self._p_trap>0] = 0
         self._net.set_pore_data(phase=self._fluid_inv,prop='inv_Pc',data=self._p_trap)
 
-    def update_occupancy(self,Pc=0):
+    def disseminate_results(self,Pc=0):
         r"""
         Updates the occupancy status of invading and defending fluids as determined by the OP algorithm
 
         """
         #Apply occupancy to invading fluid
-        p_inv = self._net.get_pore_data(phase=self._fluid_inv,prop='inv_Pc')<=Pc
-        t_inv = self._net.get_throat_data(phase=self._fluid_inv,prop='inv_Pc')<=Pc
+        p_inv = self.get_pore_data(prop='inv_Pc')<=Pc
+        t_inv = self.get_throat_data(prop='inv_Pc')<=Pc
         self._net.set_pore_data(phase=self._fluid_inv,prop='occupancy',data=p_inv)
         self._net.set_throat_data(phase=self._fluid_inv,prop='occupancy',data=t_inv)
 
