@@ -123,7 +123,7 @@ class Cubic(GenericNetwork):
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
-        self.set_pore_info(prop='numbering',data=sp.ones((params['num_pores'],),dtype=bool))
+#        self.set_pore_info(prop='numbering',data=sp.ones((params['num_pores'],),dtype=bool))
 
     def _generate_pores(self):
         r"""
@@ -139,6 +139,7 @@ class Cubic(GenericNetwork):
         pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self.set_pore_data(prop='coords',data=pore_coords)
         self.set_pore_data(prop='numbering',data=ind)
+        self.set_pore_info(prop='numbering',data=np.ones_like(ind))
         self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
 
     def _generate_throats(self):
@@ -167,6 +168,7 @@ class Cubic(GenericNetwork):
         self.set_throat_data(prop='connections',data=connections)
         self.set_throat_data(prop='type',data=np.zeros(np.shape(tpore1),dtype=np.int8))        
         self.set_throat_data(prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
+        self.set_throat_info(prop='numbering',data=np.ones_like(np.arange(0,np.shape(tpore1)[0])))
         self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
         
     def _add_labels(self):
