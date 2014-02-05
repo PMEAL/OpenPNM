@@ -1,5 +1,6 @@
 import OpenPNM
 from time import clock
+import scipy as sp
 start=clock()
 
 #======================================================================
@@ -11,11 +12,11 @@ topo_recipe = {
 'domain_size': [],  #physical network size
 'divisions': [35,35,35], #Number of pores in each direction
 'lattice_spacing': [0.0001],  #spacing between pores
-'num_pores': 150,
-'domain_size': [100,100,100]
+#'num_pores': 150,
+#'domain_size': [100,100,100]
 }
 #Add topology to network
-pn = OpenPNM.Network.Delaunay(loglevel=20).generate(**topo_recipe)
+pn = OpenPNM.Network.Cubic(loglevel=20).generate(**topo_recipe)
 
 #======================================================================
 '''Build Geometry'''
@@ -133,19 +134,21 @@ b = pn.get_pore_indices(subdomain='top')
 ##Apply desired/necessary pore scale physics methods
 #air.regenerate()
 #water.regenerate()
-#OpenPNM.Physics.MultiPhase.update_occupancy_OP(water,Pc=8000)
-#OpenPNM.Physics.MultiPhase.effective_occupancy(pn,air)
-#OpenPNM.Physics.MassTransport.DiffusiveConductance(pn,air)
+#OpenPNM.Physics.multi_phase.update_occupancy_OP(water,Pc=8000)
+#OpenPNM.Physics.multi_phase.effective_occupancy(pn,air)
+#OpenPNM.Physics.multi_phase.DiffusiveConductance(pn,air)
 ##Initialize algorithm object
 #Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 ##Create boundary condition arrays
 #BCtypes = sp.zeros(pn.get_num_pores())
 #BCvalues = sp.zeros(pn.get_num_pores())
 ##Specify Dirichlet-type and assign values
-#BCtypes[pn.pore_properties['type']==2] = 1
-#BCtypes[pn.pore_properties['type']==5] = 1
-#BCvalues[pn.pore_properties['type']==2] = 8e-2
-#BCvalues[pn.pore_properties['type']==5] = 8e-1
+#Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg',network=pn)
+#Fickian_alg.set_pore_info(prop='Dirichlet',data=pn.get_pore_indices(subdomain=['top','bottom']))
+#Dir_pores = sp.zeros(pn.get_num_pores())
+#Dir_pores[pn.get_pore_indices(subdomain='top')] = 0.8
+#Dir_pores[pn.get_pore_indices(subdomain='bottom')] = 0.2
+#Fickian_alg.set_pore_data(subdomain='Dirichlet',prop='BCval',data=Dir_pores)
 ##Neumann
 ##BCtypes[pn.pore_properties['type']==1] = 1
 ##BCtypes[pn.pore_properties['type']==6] = 4
