@@ -84,21 +84,20 @@ water = OpenPNM.Fluids.GenericFluid(loggername='WATER',loglevel=10).create(netwo
 #======================================================================
 '''Build Physics Objects'''
 #======================================================================
-phys_recipe = {
-'name': 'standard_water_physics',
-'capillary_pressure': { 'method': 'purcell',
-                        'r_toroid':1e-5},
-'hydraulic_conductance': {'method': 'hagen_poiseuille'},
-'diffusive_conductance': {'method': 'bulk_diffusion'},
-}
-phys_water = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=water,**phys_recipe)
+
+phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water,name='standard_water_physics')
+phys_water.add_method(prop='capillary_pressure',model='purcell',r_torioid='1.e-5')
+phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
+phys_water.add_method(prop='diffusive_conductance',model='bulk_diffusion')
 
 phys_recipe = {
 'name': 'standard_air_physics',
 'hydraulic_conductance': {'method': 'hagen_poiseuille'},
 'diffusive_conductance': {'method': 'bulk_diffusion'},
 }
-phys_air = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=air,**phys_recipe)
+phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air)
+phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
+phys_air.add_method(prop='diffusive_conductance',model='bulk_diffusion')
 
 #======================================================================
 '''Begin Simulations'''
@@ -106,12 +105,12 @@ phys_air = OpenPNM.Physics.GenericPhysics().create(network=pn,fluid=air,**phys_r
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #----------------------------------------------------------------------
 #Initialize algorithm object
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername="OP",name='OP')
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername="OP",name='OP_1')
 a = pn.get_pore_indices(subdomain='bottom')
 #Run algorithm
-OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=20,AL=True)
+#OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=20,AL=True)
 
-b = pn.get_pore_indices(subdomain='top')
+#b = pn.get_pore_indices(subdomain='top')
 #OP_1.evaluate_trapping(outlets=b)
 #OP_1.plot_drainage_curve()
 
@@ -144,7 +143,7 @@ b = pn.get_pore_indices(subdomain='top')
 #BCvalues = sp.zeros(pn.get_num_pores())
 ##Specify Dirichlet-type and assign values
 #Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg',network=pn)
-#Fickian_alg.set_pore_info(prop='Dirichlet',data=pn.get_pore_indices(subdomain=['top','bottom']))
+#Fickian_alg.set_pore_info(prop='Dirichlet',data=pn.get_pore_indices(subdomain=['top','bottom']),indices=True)
 #Dir_pores = sp.zeros(pn.get_num_pores())
 #Dir_pores[pn.get_pore_indices(subdomain='top')] = 0.8
 #Dir_pores[pn.get_pore_indices(subdomain='bottom')] = 0.2
