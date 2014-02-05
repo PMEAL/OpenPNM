@@ -58,6 +58,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._p_seq = sp.zeros_like(self._p_inv)
         self._t_inv = sp.zeros((self._net.get_num_throats(),))
         self._t_seq = sp.zeros_like(self._t_inv)
+        self.set_pore_info(prop='numbering',data=network.get_pore_indices()) #This is necessary for the methods from 'tools' to work.  They must know network size.
+        self.set_throat_info(prop='numbering',data=network.get_throat_indices())  
         #Determine the invasion pressures to apply
         self._t_cap = self._net.get_throat_data(phase=self._fluid_inv,prop='capillary_pressure')
         min_p = sp.amin(self._t_cap)

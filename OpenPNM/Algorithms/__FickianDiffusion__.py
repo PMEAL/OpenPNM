@@ -45,18 +45,19 @@ class FickianDiffusion(LinearSolver):
         This function executes the essential methods specific to Fickian diffusion simulations
         """
         self._fluid = params['active_fluid']
+        self._boundary_conditions_setup()
         # Variable transformation for Fickian Algorithm from xA to ln(xB)
-        Dir_pores = self._net.pore_properties['numbering'][self.BCtypes==1]
+        Dir_pores = self._net.get_pore_data(prop='numbering')[self.BCtypes==1]
         self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])
-        g = self._fluid.throat_conditions['diffusive_conductance']
-        s = self._fluid.throat_conditions['occupancy']
+        g = self._fluid.get_throat_data(prop='diffusive_conductance')
+        s = self._fluid.get_throat_data(prop='occupancy')
         self._conductance = g*s+g*(-s)/1e3
 
     def _do_inner_iteration_stage(self):
 
         X = self._do_one_inner_iteration()
         xA = 1-sp.exp(X)
-        self._fluid.pore_conditions['mole_fraction'] = xA
+        self._fluid.set_pore_data(prop='mole_fraction',data = xA)
 
     def calc_eff_diffusivity_cubic(self,face1=1,face2=6):
         r"""
