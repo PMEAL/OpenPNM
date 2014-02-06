@@ -34,43 +34,35 @@ class GenericGeometry(OpenPNM.Base.Utilities):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, network,name,**kwargs):
 
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-       
-    def create(self,network,**recipe):
-        r"""
-        Create a geometry object using the supplied parameters
-        """
-        try: recipe = self.recipe #check if recipe is pre-existing on self (from init of subclassed methods)
-        except: pass
-        try: self.name = recipe['name']
-        except: self._logger.error('Geometry name must be given')
-        #bind objects togoether
-        network._geometry.append(self) #attach physics to network
-        for key, args in recipe.items():
-            try:
-                function = getattr( getattr(OpenPNM.Geometry, key), args['method'] ) # this gets the method from the file
-                preloaded_fn = partial(function, geometry=self, network=network, **args) 
-                setattr(self, key, preloaded_fn)
-                self._logger.info("Successfully loaded {}.".format(key))
-            except AttributeError: pass
-        self.regenerate()
-        return self
-        
+        network._geometry.append(self) #attach geometry to network
+        self.name = name
+        self._net = network #Attach network to self
+        self._prop_list = []
+              
     def regenerate(self):
+        r'''
+        This updates all properties using the selected methods
+        '''
         self._logger.info("Refreshing geometry")
-        self.pore_seed()
-        self.pore_diameter()
-        self.pore_volume()
-        self.throat_seed()
-        self.throat_diameter()
-        self.throat_length()
-        self.throat_volume()
+        for item in self._prop_list:
+            self._logger.debug('Refreshing: '+item)
+            getattr(self,item)()
+    
+    def add_method(self,prop='',**kwargs):
+        try:
+            function = getattr( getattr(OpenPNM.Geometry, prop), kwargs['model'] ) # this gets the method from the file
+            preloaded_fn = partial(function, geometry=self, network=self._net, **kwargs) #
+            setattr(self, prop, preloaded_fn)
+            self._logger.info("Successfully loaded {}.".format(prop))
+            self._prop_list.append(prop)
+        except AttributeError: print('could not find',kwargs['model'])
         
 
 if __name__ == '__main__':

@@ -29,9 +29,10 @@ class GenericPhysics(OpenPNM.Base.Utilities):
 
     def regenerate(self):
         r'''
-        This updates all properties using the methods indicated in the recipe.
+        This updates all properties using the selected methods
         '''
         for item in self._prop_list:
+            self._logger.debug('Refreshing: '+item)
             getattr(self,item)()
             
     def add_method(self,prop='',**kwargs):
