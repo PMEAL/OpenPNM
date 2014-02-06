@@ -289,6 +289,11 @@ class Tools(Utilities):
                 obj = item
         return obj
 
+    def get_result(self,obj,**kwargs):
+        
+        obj.update(**kwargs)        
+
+
 if __name__ == '__main__':
     test1=GenericNetwork(loggername='Test1')
     test2=GenericNetwork(loglevel=20,loggername='Test2')
