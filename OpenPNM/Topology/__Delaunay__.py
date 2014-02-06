@@ -2,7 +2,7 @@
 module __Delaunay__: Generate random networks based on Delaunay Tessellations
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
 
 """
 
@@ -12,10 +12,9 @@ import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 import scipy.ndimage as spim
+from .__GenericTopology__ import GenericTopology
 
-from .__GenericGeometry__ import GenericGeometry
-
-class Delaunay(GenericGeometry):
+class Delaunay(GenericTopology):
     r"""
     Delaunay - Class to create a random network based on the Delaunay tessellation
 
