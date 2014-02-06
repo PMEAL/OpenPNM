@@ -57,7 +57,7 @@ air_recipe = {
                   'R': 8.314},
 }
 air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10).create(network=pn,**air_recipe)
-#air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10)
+#air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10,network=pn,name='air')
 #air.set_pore_data(prop='Pc',data=132.65)
 #air.set_pore_data(prop='Tc',data=3.771e6)
 #air.set_pore_data(prop='MW',data=0.0291)
@@ -82,7 +82,7 @@ water_recipe = {
                   'value': 110},
 }
 water = OpenPNM.Fluids.GenericFluid(loggername='WATER',loglevel=10).create(network=pn,**water_recipe)
-#water = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10)
+#water = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10,network=pn,name='water')
 #water.set_pore_data(prop='Pc',data=132.65)
 #water.set_pore_data(prop='Tc',data=3.771e6)
 #water.set_pore_data(prop='MW',data=0.0291)
