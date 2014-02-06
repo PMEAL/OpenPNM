@@ -16,9 +16,10 @@ class GenericPhysics(OpenPNM.Base.Utilities):
     ----------
 
     """
-    def __init__(self,network,fluid,**kwargs):
+    def __init__(self,network,fluid,name,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
+        self.name = name
         self._prop_list = []
         self._fluid = []
         #bind objects togoether
@@ -33,14 +34,14 @@ class GenericPhysics(OpenPNM.Base.Utilities):
         for item in self._prop_list:
             getattr(self,item)()
             
-    def add_method(self,prop='',**args):
+    def add_method(self,prop='',**kwargs):
         try:
-            function = getattr( getattr(OpenPNM.Physics, prop), args['model'] ) # this gets the method from the file
-            preloaded_fn = partial(function, physics=self, network=self._net, fluid=self._fluid[0], **args) #
+            function = getattr( getattr(OpenPNM.Physics, prop), kwargs['model'] ) # this gets the method from the file
+            preloaded_fn = partial(function, physics=self, network=self._net, fluid=self._fluid[0], **kwargs) #
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)
-        except AttributeError: print('could not find',args['model'])
+        except AttributeError: print('could not find',kwargs['model'])
 
 
 
