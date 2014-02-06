@@ -34,7 +34,6 @@ class Cubic(GenericNetwork):
 
         super(Cubic,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
-        self.name = kwargs['name']
 
     def generate(self,**params):
         '''

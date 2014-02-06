@@ -37,13 +37,14 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, name,**kwargs):
 
         r"""
         Initialize
         """
         super(GenericNetwork,self).__init__(**kwargs)
         self._logger.debug("Construct Network container")
+        self.name = name
         #Initialize adjacency and incidence matrix dictionaries
         self.adjacency_matrix = {}
         self.incidence_matrix = {}
