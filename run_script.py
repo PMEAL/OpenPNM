@@ -9,90 +9,38 @@ pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[35,35,35],lattice
 #======================================================================
 '''Build Geometry'''
 #======================================================================
-geom_recipe = {
-'name': 'stick_and_ball',
-'pore_seed': {'method': 'random'},
-'throat_seed': {'method': 'neighbor_min'},
-'pore_diameter': {'method': 'sphere',
-                 'name': 'weibull_min',
-                 'shape': 2.5,
-                 'loc': 6e-6,
-                 'scale': 2e-5},
-'throat_diameter': {'method': 'cylinder',
-                   'name': 'weibull_min',
-                   'shape': 2.5,
-                   'loc': 6e-6,
-                   'scale': 2e-5},
-'pore_volume': {'method': 'sphere'},
-'throat_volume': {'method': 'cylinder'},
-'throat_length': {'method': 'straight'},
-}
-geom = OpenPNM.Geometry.GenericGeometry().create(network=pn,**geom_recipe)
-#geom = OpenPNM.Geometry.GenericGeometry(network=pn,name='stick_and_ball')
-#geom.add_method(prop='pore_seed',model='random')
-#geom.add_method(prop='throat_seed',model='neighbor_min')
-#geom.add_method(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc='6e-6',scale=2e-5)
-#geom.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc='6e-6',scale=2e-5)
-#geom.add_method(prop='pore_volume',model='sphere')
-#geom.add_method(prop='throat_volume',model='cylinder')
-#geom.add_method(prop='throat_length',model='straight')
+geom = OpenPNM.Geometry.GenericGeometry(loglevel=10,network=pn,name='stick_and_ball')
+geom.add_method(prop='pore_seed',model='random')
+geom.add_method(prop='throat_seed',model='neighbor_min')
+geom.add_method(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
+geom.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
+geom.add_method(prop='pore_volume',model='sphere')
+geom.add_method(prop='throat_volume',model='cylinder')
+geom.add_method(prop='throat_length',model='straight')
+geom.regenerate()
 
 #======================================================================
 '''Build Fluids'''
 #======================================================================
-#Define the fluids properties
-air_recipe = {
-'name': 'air',
-'Pc': 3.771e6,
-'Tc': 132.65,
-'MW': 0.0291,
-'diffusivity': {'method': 'Fuller',
-                'MA': 0.03199,
-                'MB': 0.0291,
-                'vA': 16.3,
-                'vB': 19.7},
-'viscosity': {'method': 'Reynolds',
-              'uo': 0.001,
-              'b': 0.1},
-'molar_density': {'method': 'ideal_gas',
-                  'R': 8.314},
-}
-air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10).create(network=pn,**air_recipe)
-#air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10,network=pn,name='air')
-#air.set_pore_data(prop='Pc',data=132.65)
-#air.set_pore_data(prop='Tc',data=3.771e6)
-#air.set_pore_data(prop='MW',data=0.0291)
-#air.add_method(prop='diffusivity',model='Fuller',MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
-#air.add_method(prop='viscosity',model='Reynolds',uo=0.001,b=0.1)
-#air.add_method(prop='molar_density',model='ideal_gas',R=8.314)
+air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10,network=pn,name='air')
+air.set_pore_data(prop='Pc',data=132.65)
+air.set_pore_data(prop='Tc',data=3.771e6)
+air.set_pore_data(prop='MW',data=0.0291)
+air.add_method(prop='diffusivity',model='Fuller',MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
+air.add_method(prop='viscosity',model='Reynolds',uo=0.001,b=0.1)
+air.add_method(prop='molar_density',model='ideal_gas',R=8.314)
+air.regenerate()
 
-water_recipe = {
-'name': 'water',
-'Pc': 2.206e6,
-'Tc': 647,
-'MW': 0.0181,
-'diffusivity': {'method': 'constant',
-                'value': 1e-12},
-'viscosity': {'method': 'constant',
-              'value': 0.001},
-'molar_density': {'method': 'constant',
-                  'value': 44445},
-'surface_tension': {'method': 'constant',
-                    'value': 0.072},
-'contact_angle': {'method': 'constant',
-                  'value': 110},
-}
-water = OpenPNM.Fluids.GenericFluid(loggername='WATER',loglevel=10).create(network=pn,**water_recipe)
-#water = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10,network=pn,name='water')
-#water.set_pore_data(prop='Pc',data=132.65)
-#water.set_pore_data(prop='Tc',data=3.771e6)
-#water.set_pore_data(prop='MW',data=0.0291)
-#water.add_method(prop='diffusivity',model='constant',value=1e-12)
-#water.add_method(prop='viscosity',model='constant',value=0.001)
-#water.add_method(prop='molar_density',model='constant',value=44445)
-#water.add_method(prop='surface_tension',model='constant',value=0.072)
-#water.add_method(prop='contact_angle',model='constant',value=110)
-
+water = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10,network=pn,name='water')
+water.set_pore_data(prop='Pc',data=132.65)
+water.set_pore_data(prop='Tc',data=3.771e6)
+water.set_pore_data(prop='MW',data=0.0291)
+water.add_method(prop='diffusivity',model='constant',value=1e-12)
+water.add_method(prop='viscosity',model='constant',value=0.001)
+water.add_method(prop='molar_density',model='constant',value=44445)
+water.add_method(prop='surface_tension',model='constant',value=0.072)
+water.add_method(prop='contact_angle',model='constant',value=110)
+water.regenerate()
 
 #======================================================================
 '''Build Physics Objects'''

@@ -16,58 +16,36 @@ class GenericFluid(OpenPNM.Base.Tools):
     ----------
 
     """
-    def __init__(self,**kwargs):
+    def __init__(self,network,name,T=298,P=101325,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
+        self.name = name
         self.pore_data = {}
         self.throat_data = {}
         self.pore_info = {}
         self.throat_info = {}
         self._physics = []
-
-    def create(self,network,T=298.,P=101325.,**recipe):
-        r"""
-        Create a fluid object using the supplied parameters
-        """
-        try: recipe = self.recipe #check if recipe is pre-existing on self (from init of subclassed methods)
-        except: pass
-        try: self.name = recipe['name']
-        except: self._logger.error('Fluid name must be given')
-        #Bind objects together
-        network._fluids.append(self)
-        self.set_pore_info(prop='numbering',data=network.get_pore_indices()) #This is necessary for the methods from 'tools' to work.  They must know network size.
-        self.set_throat_info(prop='numbering',data=network.get_throat_indices())        
-        self.Tc = recipe['Tc']
-        self.Pc = recipe['Pc']
-        self.MW = recipe['MW']
-        self.set_pore_data(prop='temperature',data=sp.array(T,ndmin=1))
-        self.set_pore_data(prop='pressure',data=sp.array(P,ndmin=1))
-        for key, args in recipe.items():
-            try:
-                function = getattr( getattr(OpenPNM.Fluids, key), args['method'] ) #Get method from the file
-                preloaded_fn = partial(function, fluid=self, network=network, **args) 
-                setattr(self, key, preloaded_fn)
-                self._logger.info('Successfully added '+key+' to '+self.name)
-            except AttributeError: pass
-        self.regenerate()
-        return self
+        self._prop_list = []
+        self._net = network
+        self.set_pore_data(prop='temperature',data=T)
+        self.set_pore_data(prop='pressure',data=P)
 
     def regenerate(self):
         r'''
-        This updates all properties using the methods indicated in the recipe.
+        This updates all properties using the selected methods
         '''
-        try: self.viscosity()
-        except: pass
-        try: self.diffusivity()
-        except: pass
-        try: self.molar_density()
-        except: pass
-        try: self.surface_tension()
-        except: pass
-        try: self.contact_angle()
-        except: pass
-        #Update physics associated with this fluid too
-        self.physics_update()
+        for item in self._prop_list:
+            self._logger.debug('Refreshing: '+item)
+            getattr(self,item)()
+        
+    def add_method(self,prop='',**kwargs):
+        try:
+            function = getattr( getattr(OpenPNM.Fluids, prop), kwargs['model'] ) # this gets the method from the file
+            preloaded_fn = partial(function, fluid=self, network=self._net, **kwargs) #
+            setattr(self, prop, preloaded_fn)
+            self._logger.info("Successfully loaded {}.".format(prop))
+            self._prop_list.append(prop)
+        except AttributeError: print('could not find',kwargs['model'])
         
     def physics_listing(self):
         r"""
