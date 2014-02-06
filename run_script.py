@@ -112,10 +112,10 @@ phys_air.add_method(prop='diffusive_conductance',model='bulk_diffusion')
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #----------------------------------------------------------------------
 #Initialize algorithm object
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername="OP",name='OP_1')
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername="OP",name='OP_1',network=pn)
 a = pn.get_pore_indices(subdomain='bottom')
 #Run algorithm
-#OP_1.run(network=pn,invading_fluid='water',defending_fluid='air',inlets=a,npts=20,AL=True)
+OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 
 #b = pn.get_pore_indices(subdomain='top')
 #OP_1.evaluate_trapping(outlets=b)
