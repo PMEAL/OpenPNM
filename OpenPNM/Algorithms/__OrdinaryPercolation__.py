@@ -46,8 +46,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
 
-    def run(self, network, invading_fluid, defending_fluid, npts=25, inlets=[0],AL=True,**params):
-        self._net = network
+    def run(self, invading_fluid, defending_fluid, npts=25, inlets=[0],AL=True,**params):
         self._npts = npts
         self._AL = AL
         self._inv_sites = inlets
@@ -58,8 +57,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._p_seq = sp.zeros_like(self._p_inv)
         self._t_inv = sp.zeros((self._net.get_num_throats(),))
         self._t_seq = sp.zeros_like(self._t_inv)
-        self.set_pore_info(prop='numbering',data=network.get_pore_indices()) #This is necessary for the methods from 'tools' to work.  They must know network size.
-        self.set_throat_info(prop='numbering',data=network.get_throat_indices())  
+        self.set_pore_info(prop='numbering',data=self._net.get_pore_indices()) #This is necessary for the methods from 'tools' to work.  They must know network size.
+        self.set_throat_info(prop='numbering',data=self._net.get_throat_indices())  
         #Determine the invasion pressures to apply
         self._t_cap = self._net.get_throat_data(phase=self._fluid_inv,prop='capillary_pressure')
         min_p = sp.amin(self._t_cap)

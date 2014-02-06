@@ -33,20 +33,20 @@ class GenericAlgorithm(OpenPNM.Base.Tools):
 
     """
 
-    def __init__(self,**kwords):
+    def __init__(self,name,network=None,**kwords):
         r"""
         Initialize
         """
         super(GenericAlgorithm,self).__init__(**kwords)
         self._logger.debug("Construct class")
-        self.name = kwords['name']
+        self.name = name
+        self._net = network
 
-    def run(self,network,**params):
+    def run(self,**params):
         r"""
         Main run command for the algorithm
         """
 #        self._logger.info("Execute run(): Basic version")
-        self._net = network
         self._setup(**params)
         self._do_outer_iteration_stage()
 
