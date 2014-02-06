@@ -34,6 +34,7 @@ class Cubic(GenericNetwork):
 
         super(Cubic,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
+        self.name = kwargs['name']
 
     def generate(self,**params):
         '''
@@ -67,7 +68,6 @@ class Cubic(GenericNetwork):
 
         '''
         self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
-        self.name = params['name']
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
@@ -84,9 +84,8 @@ class Cubic(GenericNetwork):
         r"""
         Perform applicable preliminary checks and calculations required for generation
         """
-#        self._logger.debug("generate_setup: Perform preliminary calculations")
+        self._logger.debug("generate_setup: Perform preliminary calculations")
         #Parse the given network size variables
-#        self._logger.info("Find network dimensions")
         self._btype = btype
         if domain_size and lattice_spacing and not divisions:
             self._Lc = np.float(lattice_spacing[0])
@@ -123,7 +122,6 @@ class Cubic(GenericNetwork):
         else:
             self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
             raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
-#        self.set_pore_info(prop='numbering',data=sp.ones((params['num_pores'],),dtype=bool))
 
     def _generate_pores(self):
         r"""
