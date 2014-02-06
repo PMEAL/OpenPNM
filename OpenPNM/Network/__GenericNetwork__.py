@@ -573,7 +573,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         return str_overview+str_pore+str_throat
 
-    def update(self):
+    def update_network(self):
         r"""
         """
         self.create_adjacency_matrix()

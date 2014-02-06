@@ -93,6 +93,10 @@ class GenericAlgorithm(OpenPNM.Base.Tools):
     def update(self,**kwargs):
         print('not implemented')
 
+    def set_result(self,**kwargs):
+        
+        self.update(**kwargs)
+
 if __name__ =="__main__":
     print('    ************Testing Generic Algorithm**************')
     pn = OpenPNM.Geometry.Cubic().generate()

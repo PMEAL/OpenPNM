@@ -1,4 +1,5 @@
 import OpenPNM
+import scipy as sp
 
 #======================================================================
 '''Build Topological Network'''
@@ -149,6 +150,7 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 #BCtypes = sp.zeros(pn.get_num_pores())
 #BCvalues = sp.zeros(pn.get_num_pores())
 ##Specify Dirichlet-type and assign values
+#OP_1.update()
 #Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg',network=pn)
 #Fickian_alg.set_pore_info(prop='Dirichlet',data=pn.get_pore_indices(subdomain=['top','bottom']),indices=True)
 #Dir_pores = sp.zeros(pn.get_num_pores())
@@ -162,7 +164,7 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 ##BCvalues[pn.pore_properties['type']==6] = 2e-10
 #Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
 ##Run simulation
-#Fickian_alg.run(pn,active_fluid=air)
+#Fickian_alg.run(active_fluid=air)
 #
 #
 ##Export to VTK
