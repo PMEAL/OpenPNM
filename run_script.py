@@ -96,15 +96,15 @@ water = OpenPNM.Fluids.GenericFluid(loggername='WATER',loglevel=10).create(netwo
 #======================================================================
 '''Build Physics Objects'''
 #======================================================================
-
 phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water,name='standard_water_physics')
-phys_water.add_method(prop='capillary_pressure',model='purcell',r_torioid='1.e-5')
+phys_water.add_method(prop='capillary_pressure',model='purcell',r_toroid=1e-5)
 phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 phys_water.add_method(prop='diffusive_conductance',model='bulk_diffusion')
-
+phys_water.regenerate()
 phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air,name='standard_air_physics')
 phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 phys_air.add_method(prop='diffusive_conductance',model='bulk_diffusion')
+phys_air.regenerate()
 
 #======================================================================
 '''Begin Simulations'''
