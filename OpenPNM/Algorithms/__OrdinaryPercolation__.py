@@ -71,13 +71,13 @@ class OrdinaryPercolation(GenericAlgorithm):
             self._logger.debug('Applying capillary pressure: '+str(inv_val))
             self._do_one_inner_iteration(inv_val)
         #Store results using networks' get/set method
-        self.set_pore_data(phase=self._fluid_inv,prop='inv_Pc',data=self._p_inv)
-        self.set_throat_data(phase=self._fluid_inv,prop='inv_Pc',data=self._t_inv)
+        self.set_pore_data(prop='inv_Pc',data=self._p_inv)
+        self.set_throat_data(prop='inv_Pc',data=self._t_inv)
         #Find invasion sequence values (to correspond with IP algorithm)
         self._p_seq = sp.searchsorted(sp.unique(self._p_inv),self._p_inv)
         self._t_seq = sp.searchsorted(sp.unique(self._t_inv),self._t_inv)
-        self.set_pore_data(phase=self._fluid_inv,prop='inv_seq',data=self._p_seq)
-        self.set_throat_data(phase=self._fluid_inv,prop='inv_seq',data=self._t_seq)
+        self.set_pore_data(prop='inv_seq',data=self._p_seq)
+        self.set_throat_data(prop='inv_seq',data=self._t_seq)
         #Remove temporary arrays and adjacency matrices
         del self._net.adjacency_matrix['csr']['invaded']
 
@@ -156,20 +156,29 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._p_trap[self._p_trap>0] = 0
         self.set_pore_data(phase=self._fluid_inv,prop='inv_Pc',data=self._p_trap)
 
-    def disseminate_results(self,Pc=0):
+    def update(self,Pc=0):
         r"""
         Updates the occupancy status of invading and defending fluids as determined by the OP algorithm
 
         """
         #Apply occupancy to invading fluid
+        p_inv = self.get_pore_data(prop='inv_Pc')
+        self._net.set_pore_data(phase=self._fluid_inv,prop='inv_Pc',data=p_inv)
+        t_inv = self.get_throat_data(prop='inv_Pc')
+        self.set_throat_data(phase=self._fluid_inv,prop='inv_Pc',data=t_inv)
+        #Find invasion sequence values (to correspond with IP algorithm)
+        p_seq = self.get_pore_data(prop='inv_seq')
+        self._net.set_pore_data(phase=self._fluid_inv,prop='inv_seq',data=p_seq)
+        t_seq = self.get_throat_data(prop='inv_seq')
+        self._net.set_throat_data(phase=self._fluid_inv,prop='inv_seq',data=t_seq)
+        #Remove temporary arrays and adjacency matrices
         p_inv = self.get_pore_data(prop='inv_Pc')<=Pc
         t_inv = self.get_throat_data(prop='inv_Pc')<=Pc
-        self.set_pore_data(phase=self._fluid_inv,prop='occupancy',data=p_inv)
-        self.set_throat_data(phase=self._fluid_inv,prop='occupancy',data=t_inv)
-
+        self._net.set_pore_data(phase=self._fluid_inv,prop='occupancy',data=p_inv)
+        self._net.set_throat_data(phase=self._fluid_inv,prop='occupancy',data=t_inv)
         #Apply occupancy to defending fluid
-        self.set_pore_data(phase=self._fluid_def,prop='occupancy',data=~p_inv)
-        self.set_throat_data(phase=self._fluid_def,prop='occupancy',data=~t_inv)
+        self._net.set_pore_data(phase=self._fluid_def,prop='occupancy',data=~p_inv)
+        self._net.set_throat_data(phase=self._fluid_def,prop='occupancy',data=~t_inv)
 
     def plot_drainage_curve(self):
           r"""
