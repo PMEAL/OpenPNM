@@ -29,6 +29,9 @@ class GenericFluid(OpenPNM.Base.Tools):
         self._net = network
         self.set_pore_data(prop='temperature',data=T)
         self.set_pore_data(prop='pressure',data=P)
+        self.set_pore_info(prop='numbering',locations=self._net.get_pore_indices())
+        self.set_throat_info(prop='numbering',locations=self._net.get_throat_indices())
+
 
     def regenerate(self):
         r'''
