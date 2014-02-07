@@ -101,10 +101,10 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 #OP_1.update()
 #Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg',network=pn)
 #Fickian_alg.set_pore_info(prop='Dirichlet',data=pn.get_pore_indices(subdomain=['top','bottom']),indices=True)
-#Dir_pores = sp.zeros(pn.get_num_pores())
+#Dir_pores = sp.zeros_like(pn.get_pore_indices(subdomain='top'))
 #Dir_pores[pn.get_pore_indices(subdomain='top')] = 0.8
-#Dir_pores[pn.get_pore_indices(subdomain='bottom')] = 0.2
-#Fickian_alg.set_pore_data(subdomain='Dirichlet',prop='BCval',data=Dir_pores)
+##Dir_pores[pn.get_pore_indices(subdomain='bottom')] = 0.2
+#Fickian_alg.set_pore_data(subdomain='Dirichlet',prop='BCval',data=Dir_pores,indices=pn.get_pore_indices(subdomain=['top']))
 ##Neumann
 ##BCtypes[pn.pore_properties['type']==1] = 1
 ##BCtypes[pn.pore_properties['type']==6] = 4
