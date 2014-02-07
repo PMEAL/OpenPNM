@@ -76,29 +76,38 @@ class Tools(Utilities):
         except: pass #Accept object
         if phase and not subdomain: #Set fluid property
             try: getattr(phase,'_'+element+'_data')[prop]
-            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),))
+            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'get_num_'+element+'s')(),))
             if indices!='': getattr(phase,'_'+element+'_data')[prop][indices] = sp.array(data,ndmin=1)
             else: getattr(phase,'_'+element+'_data')[prop] = sp.array(data,ndmin=1) 
         elif subdomain and not phase: #Set geometry property
             ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: getattr(self,'_'+element+'_data')[prop] #Test existance of prop
             except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),))*sp.nan
-            if sp.shape(ind) == sp.shape(data):
-                if indices!='': 
+            if indices!='':
+                if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
+                getattr(self,'get_'+element+'_indices')(subdomain))).all():
                     ind_temp = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
                     ind_temp[indices] = True
-                    ind = ind_temp*ind
+                    ind = ind_temp
+                else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
+            if sp.sum(ind) == sp.shape(data)[0] or sp.shape(data)[0]==1:
                 getattr(self,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
             else: print('data is the wrong size!')
+                
         elif phase and subdomain: #Set pore/throat scale physics property
-            ind = getattr(self,'get_'+element+'_info')(subdomain)
+            ind = getattr(self._net,'get_'+element+'_info')(subdomain)
             try: getattr(phase,'_'+element+'_data')[prop]
-            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),))
+            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'get_num_'+element+'s')(),))
             if indices!='':
-                ind_temp = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
-                ind_temp[indices] = True
-                ind = ind_temp*ind
-            getattr(phase,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)            
+                if (sp.in1d(getattr(phase,'get_'+element+'_indices')()[indices],\
+                getattr(phase,'get_'+element+'_indices')(subdomain))).all():
+                    ind_temp = sp.zeros((getattr(phase,'get_num_'+element+'s')(),),dtype=bool)
+                    ind_temp[indices] = True
+                    ind = ind_temp
+                else: phase._logger.error('Some/all of these indices do not belong to this subdomain!')
+            if sp.sum(ind) == sp.shape(data)[0] or sp.shape(data)[0]==1:
+                getattr(phase,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
+            else: print('data is the wrong size!')
         elif not (phase or subdomain):  #Set topology property
             try: getattr(self,'_'+element+'_data')[prop]
             except: getattr(self,'_'+element+'_data')[prop] = sp.zeros_like(data)           
@@ -128,27 +137,33 @@ class Tools(Utilities):
                 getattr(phase,'_'+element+'_data')[prop]
                 if indices!='':  return getattr(phase,'_'+element+'_data')[prop][indices]
                 else: return getattr(phase,'_'+element+'_data')[prop] #Get fluid prop
-            except: self._logger.error(phase.name+' does not have the requested '+element+' property: '+prop)           
+            except: phase._logger.error(phase.name+' does not have the requested '+element+' property: '+prop)           
         elif subdomain and not phase: #Get geometry property
             ind = getattr(self,'get_'+element+'_info')(subdomain)            
             try: 
                 getattr(self,'_'+element+'_data')[prop]                
                 if indices!='':
-                    ind_temp = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
-                    ind_temp[indices] = True
-                    ind = ind_temp*ind                    
+                    if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
+                    getattr(self,'get_'+element+'_indices')(subdomain))).all():
+                        ind_temp = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
+                        ind_temp[indices] = True
+                        ind = ind_temp
+                    else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
                 return getattr(self,'_'+element+'_data')[prop][ind]
             except: self._logger.error(subdomain+' does not have the requested '+element+' property: '+prop)            
         elif phase and subdomain: #Get physics property
-            ind = getattr(self,'get_'+element+'_info')(subdomain)            
+            ind = getattr(self._net,'get_'+element+'_info')(subdomain)            
             try: 
                 getattr(phase,'_'+element+'_data')[prop]
                 if indices!='':
-                    ind_temp = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
-                    ind_temp[indices] = True
-                    ind = ind_temp*ind                    
+                    if (sp.in1d(getattr(phase,'get_'+element+'_indices')()[indices],\
+                    getattr(phase,'get_'+element+'_indices')(subdomain))).all():
+                        ind_temp = sp.zeros((getattr(phase,'get_num_'+element+'s')(),),dtype=bool)
+                        ind_temp[indices] = True
+                        ind = ind_temp
+                    else: phase._logger.error('Some/all of these indices do not belong to this subdomain!')                   
                 return getattr(phase,'_'+element+'_data')[prop][ind]
-            except: self._logger.error(phase.name+'/'+subdomain+' does not have the requested '+element+' property: '+prop) 
+            except: phase._logger.error(phase.name+'/'+subdomain+' does not have the requested '+element+' property: '+prop) 
         elif not (phase or subdomain): #Get topology property  
             try: 
                 getattr(self,'_'+element+'_data')[prop]
