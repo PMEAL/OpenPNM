@@ -136,7 +136,7 @@ class Cubic(GenericNetwork):
         pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self.set_pore_data(prop='coords',data=pore_coords)
         self.set_pore_data(prop='numbering',data=ind)
-        self.set_pore_info(prop='numbering',data=np.ones_like(ind))
+        self.set_pore_info(prop='numbering',locations=np.ones_like(ind))
         self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
 
     def _generate_throats(self):
@@ -165,19 +165,19 @@ class Cubic(GenericNetwork):
         self.set_throat_data(prop='connections',data=connections)
         self.set_throat_data(prop='type',data=np.zeros(np.shape(tpore1),dtype=np.int8))        
         self.set_throat_data(prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
-        self.set_throat_info(prop='numbering',data=np.ones_like(np.arange(0,np.shape(tpore1)[0])))
+        self.set_throat_info(prop='numbering',locations=np.ones_like(np.arange(0,np.shape(tpore1)[0])))
         self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
         
     def _add_labels(self):
         self._logger.info(sys._getframe().f_code.co_name+": Applying labels")
         coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(prop='front',data=coords[:,0]<=self._Lc)
-        self.set_pore_info(prop='left',data=coords[:,1]<=self._Lc)
-        self.set_pore_info(prop='bottom',data=coords[:,2]<=self._Lc)
-        self.set_pore_info(prop='back',data=coords[:,0]>=(self._Lc*(self._Nx-1)))
-        self.set_pore_info(prop='right',data=coords[:,1]>=(self._Lc*(self._Ny-1)))
-        self.set_pore_info(prop='top',data=coords[:,2]>=(self._Lc*(self._Nz-1)))
-        self.set_pore_info(prop='internal',data=self.get_pore_indices(),indices=True)
+        self.set_pore_info(prop='front',locations=coords[:,0]<=self._Lc)
+        self.set_pore_info(prop='left',locations=coords[:,1]<=self._Lc)
+        self.set_pore_info(prop='bottom',locations=coords[:,2]<=self._Lc)
+        self.set_pore_info(prop='back',locations=coords[:,0]>=(self._Lc*(self._Nx-1)))
+        self.set_pore_info(prop='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
+        self.set_pore_info(prop='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
+        self.set_pore_info(prop='internal',locations=self.get_pore_indices(),is_indices=True)
         self._logger.debug(sys._getframe().f_code.co_name+": End")
 
     def _generate_boundaries(self,net,**params):

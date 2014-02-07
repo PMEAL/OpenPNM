@@ -180,43 +180,43 @@ class Tools(Utilities):
         """
         return self.get_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,indices=indices)     
 
-    def set_info(self,element='',prop='',data='',indices=False):
+    def set_info(self,element='',prop='',locations='',is_indices=False):
         r'''
         '''
-        if indices:
+        if is_indices:
             try: getattr(self,'_'+element+'_info')[prop]
             except: getattr(self,'_'+element+'_info')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
-            getattr(self,'_'+element+'_info')[prop][data] = True
+            getattr(self,'_'+element+'_info')[prop][locations] = True
         else:
-            getattr(self,'_'+element+'_info')[prop] = sp.array(data,dtype=bool,ndmin=1)
+            getattr(self,'_'+element+'_info')[prop] = sp.array(locations,dtype=bool,ndmin=1)
 
-    def get_info(self,element='',prop='',indices=False):
+    def get_info(self,element='',prop='',return_indices=False):
         r'''
         '''
-        if indices:
+        if return_indices:
             return sp.where(getattr(self,'_'+element+'_info')[prop]==True)[0]
         else:
             return getattr(self,'_'+element+'_info')[prop]
 
-    def set_pore_info(self,prop='',data='',indices=False):
+    def set_pore_info(self,prop='',locations='',is_indices=False):
         r'''
         '''
-        self.set_info(element='pore',prop=prop,data=data,indices=indices)
+        self.set_info(element='pore',prop=prop,locations=locations,is_indices=is_indices)
 
-    def get_pore_info(self,prop='',indices=False):
+    def get_pore_info(self,prop='',return_indices=False):
         r'''
         '''
-        return self.get_info(element='pore',prop=prop,indices=indices)
+        return self.get_info(element='pore',prop=prop,return_indices=return_indices)
         
-    def set_throat_info(self,prop='',data='',indices=False):
+    def set_throat_info(self,prop='',locations='',is_indices=False):
         r'''
         '''
-        self.set_info(element='throat',prop=prop,data=data,indices=indices)
+        self.set_info(element='throat',prop=prop,locations=locations,is_indices=is_indices)
         
-    def get_throat_info(self,prop='',indices=False):
+    def get_throat_info(self,prop='',return_indices=False):
         r'''
         '''
-        return self.get_info(element='throat',prop=prop,indices=indices)
+        return self.get_info(element='throat',prop=prop,return_indices=return_indices)
         
     #--------------------------------------------------------------------------
     '''Object query methods'''
