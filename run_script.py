@@ -100,7 +100,7 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 ##Specify Dirichlet-type and assign values
 #OP_1.update()
 #Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg',network=pn)
-#Fickian_alg.set_pore_info(prop='Dirichlet',data=pn.get_pore_indices(subdomain=['top','bottom']),indices=True)
+#Fickian_alg.set_pore_info(prop='Dirichlet',locations=pn.get_pore_indices(subdomain=['top','bottom']),is_indices=True)
 #Dir_pores = sp.zeros_like(pn.get_pore_indices(subdomain='top'))
 #Dir_pores[pn.get_pore_indices(subdomain='top')] = 0.8
 ##Dir_pores[pn.get_pore_indices(subdomain='bottom')] = 0.2

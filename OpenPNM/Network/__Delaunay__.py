@@ -86,7 +86,7 @@ class Delaunay(GenericNetwork):
             self._Lx = params['domain_size'][0]
             self._Ly = params['domain_size'][1]
             self._Lz = params['domain_size'][2]
-            self.set_pore_info(prop='numbering',data=sp.ones((params['num_pores'],),dtype=bool))
+            self.set_pore_info(prop='numbering',locations=sp.ones((params['num_pores'],),dtype=bool))
         else:
             self._logger.error("domain_size and num_pores must be specified")
             raise Exception('domain_size and num_pores must be specified')
@@ -135,21 +135,21 @@ class Delaunay(GenericNetwork):
         adjmat = sprs.triu(adjmat,k=1,format="coo")
         self.set_throat_data(prop='connections',data=sp.vstack((adjmat.row, adjmat.col)).T)
         self.set_throat_data(prop='numbering', data=sp.arange(0,sp.size(adjmat.row)))
-        self.set_throat_info(prop='numbering',data=sp.ones((sp.size(adjmat.row),),dtype=bool))
+        self.set_throat_info(prop='numbering',locations=sp.ones((sp.size(adjmat.row),),dtype=bool))
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         
     def _add_labels(self):
         coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(prop='front',data=(coords[:,0]<0))
-        self.set_pore_info(prop='back',data=(coords[:,0]>self._Lx))
-        self.set_pore_info(prop='left',data=(coords[:,1]<0))
-        self.set_pore_info(prop='right',data=(coords[:,1]>self._Ly))
-        self.set_pore_info(prop='bottom',data=(coords[:,2]<0))
-        self.set_pore_info(prop='top',data=(coords[:,2]>self._Lz))
+        self.set_pore_info(prop='front',locations=(coords[:,0]<0))
+        self.set_pore_info(prop='back',locations=(coords[:,0]>self._Lx))
+        self.set_pore_info(prop='left',locations=(coords[:,1]<0))
+        self.set_pore_info(prop='right',locations=(coords[:,1]>self._Ly))
+        self.set_pore_info(prop='bottom',locations=(coords[:,2]<0))
+        self.set_pore_info(prop='top',locations=(coords[:,2]>self._Lz))
         bnds = self.get_pore_indices(subdomain=['front','back','left','right','bottom','top'])
-        self.set_pore_info(prop='boundary',data=bnds,indices=True)
+        self.set_pore_info(prop='boundary',locations=bnds,is_indices=True)
         internal = ~self.get_pore_indices('boundary',indices=False)
-        self.set_pore_info(prop='internal',data=internal)
+        self.set_pore_info(prop='internal',locations=internal)
         
     def _add_boundaries(self):
         r"""
@@ -218,10 +218,10 @@ class Delaunay(GenericNetwork):
         #Reset number of pores and throats (easier than tracking it)
         nums = np.r_[0:np.shape(coords)[0]]
         self.set_pore_data(prop='numbering',data=nums)
-        self.set_pore_info(prop='numbering',data=np.ones((nums[-1]+1,),dtype=bool))
+        self.set_pore_info(prop='numbering',locations=np.ones((nums[-1]+1,),dtype=bool))
         nums = np.r_[0:np.shape(conns)[0]]
         self.set_throat_data(prop='numbering',data=nums)
-        self.set_throat_info(prop='numbering',data=np.ones((nums[-1]+1,),dtype=bool))
+        self.set_throat_info(prop='numbering',locations=np.ones((nums[-1]+1,),dtype=bool))
         self._logger.debug("add_boundaries: end of method")
 
     def _add_boundaries_old(self):
