@@ -53,12 +53,14 @@ class GenericGeometry(OpenPNM.Base.Utilities):
         self._logger.debug("Method: Constructor")
         locations = sp.array(locations,ndmin=1)
         if locations.dtype == bool:
-            network.set_pore_info(prop=name,data=locations,indices=False)
+            network.set_pore_info(prop=name,locations=locations,is_indices=False)
         else:
-            network.set_pore_info(prop=name,data=locations,indices=True)
+            network.set_pore_info(prop=name,locations=locations,is_indices=True)
         ind = network.get_pore_indices(name)
+        '''TODO: The following lines will create conflicting throat labels when additionaly geometries are added
+        '''
         Tn = network.get_neighbor_throats(ind)
-        network.set_throat_info(prop=name,data=Tn,indices=True)
+        network.set_throat_info(prop=name,locations=Tn,is_indices=True)
         network._geometry.append(self) #attach geometry to network
         self.name = name
         self._net = network #Attach network to self

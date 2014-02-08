@@ -4,12 +4,12 @@ import scipy as sp
 #======================================================================
 '''Build Topological Network'''
 #======================================================================
-pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[35,35,35],lattice_spacing=[0.0001])
+pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=20).generate(divisions=[35,35,35],lattice_spacing=[0.0001])
 
 #======================================================================
 '''Build Geometry'''
 #======================================================================
-geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='stick_and_ball',locations=pn.get_pore_indices())
+geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='stick_and_ball',locations=pn.get_pore_indices(),loglevel=10)
 geom.regenerate()
 
 #======================================================================
@@ -55,7 +55,7 @@ phys_air.regenerate()
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #----------------------------------------------------------------------
 #Initialize algorithm object
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,name='OP_1',network=pn)
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,loggername='OP',name='OP_1',network=pn)
 a = pn.get_pore_indices(subdomain='bottom')
 #Run algorithm
 OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
