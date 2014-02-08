@@ -9,20 +9,13 @@ pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[35,35,35],lattice
 #======================================================================
 '''Build Geometry'''
 #======================================================================
-geom = OpenPNM.Geometry.GenericGeometry(loglevel=10,network=pn,name='stick_and_ball')
-geom.add_method(prop='pore_seed',model='random')
-geom.add_method(prop='throat_seed',model='neighbor_min')
-geom.add_method(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
-geom.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
-geom.add_method(prop='pore_volume',model='sphere')
-geom.add_method(prop='throat_volume',model='cylinder')
-geom.add_method(prop='throat_length',model='straight')
+geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='stick_and_ball',locations=pn.get_pore_indices())
 geom.regenerate()
 
 #======================================================================
 '''Build Fluids'''
 #======================================================================
-air = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10,network=pn,name='air')
+air = OpenPNM.Fluids.GenericFluid(loglevel=10,network=pn,name='air')
 air.set_pore_data(prop='Pc',data=132.65)
 air.set_pore_data(prop='Tc',data=3.771e6)
 air.set_pore_data(prop='MW',data=0.0291)
@@ -31,7 +24,7 @@ air.add_method(prop='viscosity',model='Reynolds',uo=0.001,b=0.1)
 air.add_method(prop='molar_density',model='ideal_gas',R=8.314)
 air.regenerate()
 
-water = OpenPNM.Fluids.GenericFluid(loggername='AIR',loglevel=10,network=pn,name='water')
+water = OpenPNM.Fluids.GenericFluid(network=pn,name='water')
 water.set_pore_data(prop='Pc',data=132.65)
 water.set_pore_data(prop='Tc',data=3.771e6)
 water.set_pore_data(prop='MW',data=0.0291)
@@ -50,6 +43,7 @@ phys_water.add_method(prop='capillary_pressure',model='purcell',r_toroid=1e-5)
 phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 phys_water.add_method(prop='diffusive_conductance',model='bulk_diffusion')
 phys_water.regenerate()
+
 phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air,name='standard_air_physics')
 phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 phys_air.add_method(prop='diffusive_conductance',model='bulk_diffusion')
@@ -61,7 +55,7 @@ phys_air.regenerate()
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #----------------------------------------------------------------------
 #Initialize algorithm object
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername="OP",name='OP_1',network=pn)
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,name='OP_1',network=pn)
 a = pn.get_pore_indices(subdomain='bottom')
 #Run algorithm
 OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
