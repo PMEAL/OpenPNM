@@ -19,8 +19,9 @@ import scipy as sp
 import scipy.stats as spst
 from functools import partial
 import numpy as np
+from .__GenericGeometry__ import GenericGeometry
 
-class GenericGeometry(OpenPNM.Base.Utilities):
+class Stick_and_Ball(GenericGeometry):
     r"""
     GenericGeometry - Base class to construct pore networks
 
@@ -39,33 +40,16 @@ class GenericGeometry(OpenPNM.Base.Utilities):
         r"""
         Initialize
         """
-        super(GenericGeometry,self).__init__(**kwargs)
+        super(Stick_and_Ball,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-       
-    def create(self,net,**prms):
-        r"""
-        Create a geometry object using the supplied parameters
-        """
-        for key, args in prms.items():
-            try:
-                function = getattr( getattr(OpenPNM.Geometry, key), args['method'] ) # this gets the method from the file
-                preloaded_fn = partial(function, geometry=self, network=net, **args) 
-                setattr(self, key, preloaded_fn)
-                self._logger.info("Successfully loaded {}.".format(key))
-            except AttributeError:
-                self._logger.debug("Did not manage to load {}.".format(key))
-        self.regenerate()
-        return self
-        
-    def regenerate(self):
-        self._logger.info("Refreshing geometry")
-        self.pore_seed()
-        self.pore_diameter()
-        self.pore_volume()
-        self.throat_seed()
-        self.throat_diameter()
-        self.throat_length()
-        self.throat_volume()
+   
+        self.add_method(prop='pore_seed',model='random')
+        self.add_method(prop='throat_seed',model='neighbor_min')
+        self.add_method(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
+        self.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
+        self.add_method(prop='pore_volume',model='sphere')
+        self.add_method(prop='throat_length',model='straight')
+        self.add_method(prop='throat_volume',model='cylinder')
         
 
 if __name__ == '__main__':
