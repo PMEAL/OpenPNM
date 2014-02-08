@@ -21,6 +21,7 @@ Classes
 """
 
 from .__GenericGeometry__ import GenericGeometry
+from .__StickBall__ import Stick_and_Ball
 from . import pore_diameter
 from . import pore_seed
 from . import pore_volume
