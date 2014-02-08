@@ -68,7 +68,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Generate curve from points
         for inv_val in self._inv_points:
             #Apply one applied pressure and determine invaded pores
-            self._logger.debug('Applying capillary pressure: '+str(inv_val))
+            self._logger.info('Applying capillary pressure: '+str(inv_val))
             self._do_one_inner_iteration(inv_val)
         #Store results using networks' get/set method
         self.set_pore_data(prop='inv_Pc',data=self._p_inv)
