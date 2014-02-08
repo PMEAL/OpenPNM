@@ -357,7 +357,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         """
         return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
-    def get_neighbor_pores(self,pnums,subdomain=['all'],flatten=True):
+    def get_neighbor_pores(self,pnums,subdomain=['all'],flatten=True,mode=''):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
@@ -372,6 +372,9 @@ class GenericNetwork(OpenPNM.Base.Tools):
             is returned with the input pores (Pnum) removed. If flatten is
             False the returned array contains arrays of neighboring pores for
             each input pore, in the order they were sent.
+        mode : string, optional
+            This controls the contents of what indices are returned.  The mode can only be specified to a 'flattened' list.
+            Options are 'union', 'intersection', and 'not_intersection'
 
         Returns
         -------
@@ -396,14 +399,23 @@ class GenericNetwork(OpenPNM.Base.Tools):
         try:
             neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
         except:
+            self._logger.info('Creating adjacency matrix, please wait')
             self.create_adjacency_matrix()
             neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
             neighborPs = sp.hstack(neighborPs)
+#            neighborPs = sp.concatenate((neighborPs,pnums))
             #Remove references to input pores and duplicates
-            neighborPs = sp.unique(neighborPs[~np.in1d(neighborPs,pnums)])
+            if mode == 'not_intersection':
+                neighborPs = sp.unique(np.where(np.bincount(neighborPs)==1)[0])
+            elif mode == 'union':
+                neighborPs = sp.unique(neighborPs)
+            elif mode == 'intersection':
+                neighborPs = sp.unique(np.where(np.bincount(neighborPs)>1)[0])
+            elif mode == '':
+                neighborPs = sp.unique(neighborPs[~np.in1d(neighborPs,pnums)])
             #Remove pores of the wrong type
             mask = self.get_pore_indices(subdomain=subdomain,indices=False)
             neighborPs = neighborPs[mask[neighborPs]]
@@ -413,7 +425,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
                 neighborPs[i] = sp.array(neighborPs[i])[mask[neighborPs[i]]]
         return np.array(neighborPs,ndmin=1)
 
-    def get_neighbor_throats(self,pnums,subdomain=['all'],flatten=True):
+    def get_neighbor_throats(self,pnums,subdomain=['all'],flatten=True,mode=''):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
@@ -426,6 +438,9 @@ class GenericNetwork(OpenPNM.Base.Tools):
             is returned. If flatten is False the returned array contains arrays
             of neighboring throat ID numbers for each input pore, in the order
             they were sent.
+        mode : string, optional
+            This controls the contents of what indices are returned.  The mode can only be specified to a 'flattened' list.
+            Options are 'union', 'intersection', and 'not_intersection'
 
         Returns
         -------
@@ -451,6 +466,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         try:
             neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
         except:
+            self._logger.info('Creating incidence matrix, please wait')
             self.create_incidence_matrix()
             neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
         if flatten:
@@ -458,8 +474,15 @@ class GenericNetwork(OpenPNM.Base.Tools):
             neighborTs = [sp.asarray(x) for x in neighborTs if x]
             neighborTs = sp.hstack(neighborTs)
             #Remove references to input pores and duplicates
-            neighborTs = sp.unique(neighborTs[~np.in1d(neighborTs,pnums)])
-            #Remove pores of the wrong type
+            if mode == 'not_intersection':
+                neighborTs = sp.unique(np.where(np.bincount(neighborTs)==1)[0])
+            elif mode == 'union':
+                neighborTs = sp.unique(neighborTs)
+            elif mode == 'intersection':
+                neighborTs = sp.unique(np.where(np.bincount(neighborTs)>1)[0])
+            elif mode == '':
+                neighborTs = sp.unique(neighborTs)
+            #Remove throats of the wrong type            
             mask = self.get_throat_indices(subdomain=subdomain,indices=False)
             neighborTs = neighborTs[mask[neighborTs]]
         else:
