@@ -58,7 +58,7 @@ class Tools(Utilities):
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
-    def set_data(self,element='',subdomain='',phase='',prop='',data=''):
+    def set_data(self,element='',subdomain='',phase='',prop='',data='',indices=''):
         r"""
         Writes data to fluid or network objects according to input arguments.
         Parameters
@@ -74,21 +74,47 @@ class Tools(Utilities):
         except: pass #Otherwise, accept string
         try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
         except: pass #Accept object
-        if phase and not subdomain: getattr(phase,'_'+element+'_data')[prop] = sp.array(data,ndmin=1) #Set fluid property
+        if phase and not subdomain: #Set fluid property
+            try: getattr(phase,'_'+element+'_data')[prop]
+            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'get_num_'+element+'s')(),))
+            if indices!='': getattr(phase,'_'+element+'_data')[prop][indices] = sp.array(data,ndmin=1)
+            else: getattr(phase,'_'+element+'_data')[prop] = sp.array(data,ndmin=1) 
         elif subdomain and not phase: #Set geometry property
             ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: getattr(self,'_'+element+'_data')[prop] #Test existance of prop
             except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),))*sp.nan
-            if sp.shape(ind) == sp.shape(data): getattr(self,'_'+element+'_data')[prop][ind] = data
+            if indices!='':
+                if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
+                getattr(self,'get_'+element+'_indices')(subdomain))).all():
+                    ind_temp = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
+                    ind_temp[indices] = True
+                    ind = ind_temp
+                else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
+            if sp.sum(ind) == sp.shape(data)[0] or sp.shape(data)[0]==1:
+                getattr(self,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
             else: print('data is the wrong size!')
+                
         elif phase and subdomain: #Set pore/throat scale physics property
             ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: getattr(phase,'_'+element+'_data')[prop]
-            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),))
-            getattr(phase,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
-        elif not (phase or subdomain): getattr(self,'_'+element+'_data')[prop] = sp.array(data,ndmin=1) #Set topology property
+            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'get_num_'+element+'s')(),))
+            if indices!='':
+                if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
+                getattr(self,'get_'+element+'_indices')(subdomain))).all():
+                    ind_temp = sp.zeros((getattr(phase,'get_num_'+element+'s')(),),dtype=bool)
+                    ind_temp[indices] = True
+                    ind = ind_temp
+                else: phase._logger.error('Some/all of these indices do not belong to this subdomain!')
+            if sp.sum(ind) == sp.shape(data)[0] or sp.shape(data)[0]==1:
+                getattr(phase,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
+            else: print('data is the wrong size!')
+        elif not (phase or subdomain):  #Set topology property
+            try: getattr(self,'_'+element+'_data')[prop]
+            except: getattr(self,'_'+element+'_data')[prop] = sp.zeros_like(data)           
+            if indices!='': getattr(self,'_'+element+'_data')[prop][indices] = sp.array(data,ndmin=1)
+            else: getattr(self,'_'+element+'_data')[prop] = sp.array(data,ndmin=1)
 
-    def get_data(self,element='',subdomain='',phase='',prop=''):
+    def get_data(self,element='',subdomain='',phase='',prop='',indices=''):
         r"""
         Retrieves data from fluid or network objects according to input arguments.
         Parameters
@@ -107,81 +133,108 @@ class Tools(Utilities):
         try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
         except: pass #Accept object
         if phase and not subdomain:
-            try: return getattr(phase,'_'+element+'_data')[prop] #Get fluid prop
-            except: self._logger.error(phase.name+' does not have the requested '+element+' property: '+prop)           
+            try: 
+                getattr(phase,'_'+element+'_data')[prop]
+                if indices!='':  return getattr(phase,'_'+element+'_data')[prop][indices]
+                else: return getattr(phase,'_'+element+'_data')[prop] #Get fluid prop
+            except: phase._logger.error(phase.name+' does not have the requested '+element+' property: '+prop)           
         elif subdomain and not phase: #Get geometry property
-            ind = getattr(self,'get_'+element+'_info')(subdomain)
-            try: return getattr(self,'_'+element+'_data')[prop][ind]
+            ind = getattr(self,'get_'+element+'_info')(subdomain)            
+            try: 
+                getattr(self,'_'+element+'_data')[prop]                
+                if indices!='':
+                    if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
+                    getattr(self,'get_'+element+'_indices')(subdomain))).all():
+                        ind_temp = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
+                        ind_temp[indices] = True
+                        ind = ind_temp
+                    else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
+                return getattr(self,'_'+element+'_data')[prop][ind]
             except: self._logger.error(subdomain+' does not have the requested '+element+' property: '+prop)            
         elif phase and subdomain: #Get physics property
-            ind = getattr(self,'get_'+element+'_info')(subdomain)
-            try: return getattr(phase,'_'+element+'_data')[prop][ind] 
-            except: self._logger.error(phase.name+'/'+subdomain+' does not have the requested '+element+' property: '+prop) 
+            ind = getattr(self,'get_'+element+'_info')(subdomain)            
+            try: 
+                getattr(phase,'_'+element+'_data')[prop]
+                if indices!='':
+                    if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
+                    getattr(self,'get_'+element+'_indices')(subdomain))).all():
+                        ind_temp = sp.zeros((getattr(phase,'get_num_'+element+'s')(),),dtype=bool)
+                        ind_temp[indices] = True
+                        ind = ind_temp
+                    else: phase._logger.error('Some/all of these indices do not belong to this subdomain!')                   
+                return getattr(phase,'_'+element+'_data')[prop][ind]
+            except: phase._logger.error(phase.name+'/'+subdomain+' does not have the requested '+element+' property: '+prop) 
         elif not (phase or subdomain): #Get topology property  
-            try: return getattr(self,'_'+element+'_data')[prop]
+            try: 
+                getattr(self,'_'+element+'_data')[prop]
+                if indices!='':  return getattr(self,'_'+element+'_data')[prop][indices]
+                else: return getattr(self,'_'+element+'_data')[prop] #Get fluid prop
             except: self._logger.error('Network does not have the requested '+element+' property: '+prop)      
  
-    def set_pore_data(self,subdomain='',phase='',prop='',data=''):
+    def set_pore_data(self,subdomain='',phase='',prop='',data='',indices=''):
         r"""
         Deprecated: See set_data
         """
-        self.set_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,data=data)
+        self.set_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)
         
-    def get_pore_data(self,subdomain='',phase='',prop=''):
+    def get_pore_data(self,subdomain='',phase='',prop='',indices=''):
         r"""
         Deprecated: See get_data
         """
-        return self.get_data(element='pore',subdomain=subdomain,phase=phase,prop=prop)
+        return self.get_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,indices=indices)
 
-    def set_throat_data(self,subdomain='',phase='',prop='',data=''):
+    def set_throat_data(self,subdomain='',phase='',prop='',data='',indices=''):
         r"""
         Deprecated: See set_data
         """
-        self.set_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,data=data)         
+        self.set_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)         
 
-    def get_throat_data(self,subdomain='',phase='',prop=''):
+    def get_throat_data(self,subdomain='',phase='',prop='',indices=''):
         r"""
         Deprecated: See get_data
         """
-        return self.get_data(element='throat',subdomain=subdomain,phase=phase,prop=prop)     
+        return self.get_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,indices=indices)     
 
-    def set_info(self,element='',prop='',data='',indices=False):
+    def set_info(self,element='',prop='',locations='',is_indices=False,mode='merge'):
         r'''
         '''
-        if indices:
-            try: getattr(self,'_'+element+'_info')[prop]
+        if mode=='overwrite':
+            getattr(self,'_'+element+'_info')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
+        if is_indices:
+            try: 
+                getattr(self,'_'+element+'_info')[prop]
             except: getattr(self,'_'+element+'_info')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
-            getattr(self,'_'+element+'_info')[prop][data] = True
+            getattr(self,'_'+element+'_info')[prop][locations] = True
         else:
-            getattr(self,'_'+element+'_info')[prop] = sp.array(data,dtype=bool,ndmin=1)
+            getattr(self,'_'+element+'_info')[prop] = sp.array(locations,dtype=bool,ndmin=1)
 
-    def get_info(self,element='',prop='',indices=False):
+    def get_info(self,element='',prop='',return_indices=False):
         r'''
         '''
-        if indices:
+        if return_indices:
             return sp.where(getattr(self,'_'+element+'_info')[prop]==True)[0]
         else:
             return getattr(self,'_'+element+'_info')[prop]
 
-    def set_pore_info(self,prop='',data='',indices=False):
+    def set_pore_info(self,prop='',locations='',is_indices=False):
         r'''
         '''
-        self.set_info(element='pore',prop=prop,data=data,indices=indices)
+        self.set_info(element='pore',prop=prop,locations=locations,is_indices=is_indices)
 
-    def get_pore_info(self,prop='',indices=False):
+    def get_pore_info(self,prop='',return_indices=False):
         r'''
         '''
-        return self.get_info(element='pore',prop=prop,indices=indices)
+        return self.get_info(element='pore',prop=prop,return_indices=return_indices)
         
-    def set_throat_info(self,prop='',data='',indices=False):
+    def set_throat_info(self,prop='',locations='',is_indices=False):
         r'''
         '''
-        self.set_info(element='throat',prop=prop,data=data,indices=indices)
+        self.set_info(element='throat',prop=prop,locations=locations,is_indices=is_indices)
         
-    def get_throat_info(self,prop='',indices=False):
+    def get_throat_info(self,prop='',return_indices=False):
         r'''
         '''
-        return self.get_info(element='throat',prop=prop,indices=indices)
+        return self.get_info(element='throat',prop=prop,return_indices=return_indices)
         
     #--------------------------------------------------------------------------
     '''Object query methods'''
