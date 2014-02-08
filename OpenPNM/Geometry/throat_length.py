@@ -5,12 +5,15 @@ module throat_length
 
 """
 import scipy as sp
+import os
+propname = os.path.splitext(os.path.basename(__file__))[0]
+propname = propname.split('_')[1]
 
 def constant(geometry,network,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(prop='length',data=value)
+    network.set_throat_data(subdomain=geometry,prop=propname,data=value)
 
 def straight(geometry,network,**params):
     r"""
@@ -23,6 +26,7 @@ def straight(geometry,network,**params):
     E = sp.sqrt(sp.sum((C1-C2)**2,axis=1))  #Euclidean distance between pores
     D1 = network.get_pore_data(prop='diameter')[network.get_throat_data(prop='connections')[:,0]]
     D2 = network.get_pore_data(prop='diameter')[network.get_throat_data(prop='connections')[:,1]]
-    network.set_throat_data(prop='length',data=E - (D1 + D2)/2)
+    value = E-(D1+D2)/2
+    network.set_throat_data(subdomain=geometry,prop=propname,data=value)
         
     

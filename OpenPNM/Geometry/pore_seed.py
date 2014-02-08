@@ -5,12 +5,15 @@ module pore_seeds
 
 """
 import scipy as sp
+import os
+propname = os.path.splitext(os.path.basename(__file__))[0]
+propname = propname.split('_')[1]
 
 def constant(geometry,network,value,**params):
     r"""
     Assign specified constant value
     """
-    network.set_pore_data(prop='seed',data= value)
+    network.set_pore_data(subdomain=geometry,prop=propname,data=value)
 
 def random(geometry,network,**params):
     r"""
@@ -18,5 +21,6 @@ def random(geometry,network,**params):
     note: should this be called 'poisson'?  
     """
     Np = network.get_num_pores()
-    network.set_pore_data(prop='seed',data=sp.random.rand(Np))
+    value=sp.random.rand(Np)
+    network.set_pore_data(subdomain=geometry,prop=propname,data=value)
     

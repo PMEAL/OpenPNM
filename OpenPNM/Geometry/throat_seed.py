@@ -5,12 +5,15 @@ module throat_seeds
 
 """
 import scipy as sp
+import os
+propname = os.path.splitext(os.path.basename(__file__))[0]
+propname = propname.split('_')[1]
 
 def constant(geometry, network, value,**params):
     r"""
     Assign specified constant value
     """
-    network.set_throat_data(prop='seed',data=value)
+    network.set_throat_data(subdomain=geometry,prop=propname,data=value)
 
 def random(geometry,network,**params):
     r"""
@@ -23,10 +26,12 @@ def neighbor_min(geometry,network,**params):
     r"""
     Adopt the minimum seed value from the neighboring pores
     """
-    network.set_throat_data(prop='seed',data=sp.amin(network.get_pore_data(prop='seed')[network.get_throat_data(prop='connections')],1))
+    value=sp.amin(network.get_pore_data(prop='seed')[network.get_throat_data(prop='connections')],1)
+    network.set_throat_data(subdomain=geometry,prop=propname,data=value)
 
 def neighbor_max(geometry,network,**params):
     r"""
     Adopt the maximum seed value from the neighboring pores
     """
-    network.set_throat_data(prop='seed',data=sp.amax(network.get_pore_data(prop='seed')[network.get_throat_data(prop='connections')],1))
+    value=sp.amax(network.get_pore_data(prop='seed')[network.get_throat_data(prop='connections')],1)
+    network.set_throat_data(subdomain=geometry,prop=propname,data=value)
