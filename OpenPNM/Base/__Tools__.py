@@ -186,7 +186,7 @@ class Tools(Utilities):
     #--------------------------------------------------------------------------
     '''Object query methods'''
     #--------------------------------------------------------------------------
-    def get_num_pores(self,subdomain=['all']):
+    def get_num_pores(self,subdomain=['all'],mode='union'):
         r"""
         Returns the number of pores of the specified subdomain
 
@@ -203,17 +203,15 @@ class Tools(Utilities):
         """
         #convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
-        Np = sp.shape(self.get_pore_info(prop='numbering'))[0]
         #Count number of pores of specified type
         if subdomain == ['all']: #return all pores
-            return Np
+            return sp.shape(self.get_pore_info(prop='numbering'))[0]
         else:
-            temp = sp.zeros((Np,),dtype=bool)
-            for item in subdomain: #iterate over subdomain list and accumulate Trues
-                temp = temp + self.get_info(prop=item,element='pore')
+            temp = self.get_pore_indices(subdomain=subdomain,mode=mode,indices=False)
             return sp.sum(temp) #return sum of Trues
+            
 
-    def get_num_throats(self,subdomain=['all']):
+    def get_num_throats(self,subdomain=['all'],mode='union'):
         r"""
         Return the number of throats of the specified subdomain
 
@@ -227,14 +225,11 @@ class Tools(Utilities):
         """
         #convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
-        Nt = sp.shape(self.get_throat_info(prop='numbering'))[0]
         #Count number of pores of specified type
         if subdomain == ['all']: #return all pores
-            return Nt
+            return sp.shape(self.get_throat_info(prop='numbering'))[0]
         else:
-            temp = sp.zeros((Nt,),dtype=bool)
-            for item in subdomain: #iterate over subdomain list and accumulate Trues
-                temp = temp + self.get_info(prop=item,element='throat')
+            temp = self.get_throat_indices(subdomain=subdomain,mode=mode,indices=False)
             return sp.sum(temp) #return sum of Trues
 
     def get_pore_indices(self,subdomain=['all'],indices=True,mode='union'):
