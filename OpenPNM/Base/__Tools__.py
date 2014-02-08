@@ -95,12 +95,12 @@ class Tools(Utilities):
             else: print('data is the wrong size!')
                 
         elif phase and subdomain: #Set pore/throat scale physics property
-            ind = getattr(self._net,'get_'+element+'_info')(subdomain)
+            ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: getattr(phase,'_'+element+'_data')[prop]
             except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'get_num_'+element+'s')(),))
             if indices!='':
-                if (sp.in1d(getattr(phase,'get_'+element+'_indices')()[indices],\
-                getattr(phase,'get_'+element+'_indices')(subdomain))).all():
+                if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
+                getattr(self,'get_'+element+'_indices')(subdomain))).all():
                     ind_temp = sp.zeros((getattr(phase,'get_num_'+element+'s')(),),dtype=bool)
                     ind_temp[indices] = True
                     ind = ind_temp
@@ -152,12 +152,12 @@ class Tools(Utilities):
                 return getattr(self,'_'+element+'_data')[prop][ind]
             except: self._logger.error(subdomain+' does not have the requested '+element+' property: '+prop)            
         elif phase and subdomain: #Get physics property
-            ind = getattr(self._net,'get_'+element+'_info')(subdomain)            
+            ind = getattr(self,'get_'+element+'_info')(subdomain)            
             try: 
                 getattr(phase,'_'+element+'_data')[prop]
                 if indices!='':
-                    if (sp.in1d(getattr(phase,'get_'+element+'_indices')()[indices],\
-                    getattr(phase,'get_'+element+'_indices')(subdomain))).all():
+                    if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
+                    getattr(self,'get_'+element+'_indices')(subdomain))).all():
                         ind_temp = sp.zeros((getattr(phase,'get_num_'+element+'s')(),),dtype=bool)
                         ind_temp[indices] = True
                         ind = ind_temp
@@ -195,11 +195,14 @@ class Tools(Utilities):
         """
         return self.get_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,indices=indices)     
 
-    def set_info(self,element='',prop='',locations='',is_indices=False):
+    def set_info(self,element='',prop='',locations='',is_indices=False,mode='merge'):
         r'''
         '''
+        if mode=='overwrite':
+            getattr(self,'_'+element+'_info')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
         if is_indices:
-            try: getattr(self,'_'+element+'_info')[prop]
+            try: 
+                getattr(self,'_'+element+'_info')[prop]
             except: getattr(self,'_'+element+'_info')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
             getattr(self,'_'+element+'_info')[prop][locations] = True
         else:
