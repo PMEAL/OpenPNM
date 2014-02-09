@@ -52,7 +52,7 @@ def Chung(fluid,network,Tc=132.65,Vc=92.35e-6,MW=0.0291,acentric=0,kappa=0,dipol
 
     """
     T = network.get_pore_data(phase=fluid,prop='temperature')
-    Tr= T/fluid.Tc
+    Tr= T/fluid.get_pore_data(prop='Tc')
     Tstar = 1.2593*Tr
     A = 1.161415
     B = 0.14874

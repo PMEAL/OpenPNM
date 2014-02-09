@@ -16,8 +16,8 @@ geom.regenerate()
 '''Build Fluids'''
 #======================================================================
 air = OpenPNM.Fluids.GenericFluid(loglevel=10,loggername='AIR',network=pn,name='air')
-air.set_pore_data(prop='Pc',data=132.65)
-air.set_pore_data(prop='Tc',data=3.771e6)
+air.set_pore_data(prop='Tc',data=132.65)
+air.set_pore_data(prop='Pc',data=3.771e6)
 air.set_pore_data(prop='MW',data=0.0291)
 air.add_method(prop='diffusivity',model='Fuller',MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
 air.add_method(prop='viscosity',model='Reynolds',uo=0.001,b=0.1)
@@ -25,8 +25,8 @@ air.add_method(prop='molar_density',model='ideal_gas',R=8.314)
 air.regenerate()
 
 water = OpenPNM.Fluids.GenericFluid(loglevel=10,loggername='WATER',network=pn,name='water')
-water.set_pore_data(prop='Pc',data=132.65)
-water.set_pore_data(prop='Tc',data=3.771e6)
+water.set_pore_data(prop='Tc',data=647.096)
+water.set_pore_data(prop='Pc',data=22.06e6)
 water.set_pore_data(prop='MW',data=0.0291)
 water.add_method(prop='diffusivity',model='constant',value=1e-12)
 water.add_method(prop='viscosity',model='constant',value=0.001)
@@ -68,14 +68,13 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 #'''Perform an Injection Experiment (InvasionPercolation)'''
 ##----------------------------------------------------------------------
 ##Initialize algorithm object
-#IP_1 = OpenPNM.Algorithms.InvasionPercolation()
-##Apply desired/necessary pore scale physics methods
-#OpenPNM.Physics.CapillaryPressure.Washburn(pn,water2)
-#face = pn.pore_properties['type']==3
-#quarter = sp.rand(pn.get_num_pores(),)<.1
-#inlets = pn.pore_properties['numbering'][face&quarter]
-#outlets = pn.pore_properties['numbering'][pn.pore_properties['type']==4]
-#IP_1.run(pn,invading_fluid=water2,defending_fluid=air2,inlets=inlets,outlets=outlets)
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
+face = pn.get_pore_indices('right',indices=False)
+quarter = sp.rand(pn.get_num_pores(),)<.1
+inlets = pn.get_pore_indices()[face&quarter]
+outlets = pn.get_pore_indices('left')
+#Run algorithm
+IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
 #
 ##----------------------------------------------------------------------
 #'''Performm a Diffusion Simulation on Partially Filled Network'''
