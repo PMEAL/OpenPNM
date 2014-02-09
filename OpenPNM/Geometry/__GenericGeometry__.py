@@ -51,14 +51,14 @@ class GenericGeometry(OpenPNM.Base.Utilities):
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        locations = sp.array(locations,ndmin=1)
+        loc = sp.array(locations,ndmin=1)
         if locations.dtype == bool:
-            network.set_pore_info(prop=name,data=locations,indices=False)
+            network.set_pore_info(prop=name,locations=loc,is_indices=False)
         else:
-            network.set_pore_info(prop=name,data=locations,indices=True)
+            network.set_pore_info(prop=name,locations=loc,is_indices=True)
         ind = network.get_pore_indices(name)
         Tn = network.get_neighbor_throats(ind)
-        network.set_throat_info(prop=name,data=Tn,indices=True)
+        network.set_throat_info(prop=name,locations=Tn,is_indices=True)
         network._geometry.append(self) #attach geometry to network
         self.name = name
         self._net = network #Attach network to self
