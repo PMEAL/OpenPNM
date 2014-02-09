@@ -1,26 +1,20 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
-
 """
-module __GenericTopology__: Base class to construct pore networks
+module __GenericNetwork__: Abstract class to construct pore networks
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Network.__init__.py' file.
 
 """
 
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(1, parent_dir)
 import OpenPNM
+
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import pprint
-import collections
-import matplotlib.pyplot as plt
 
 class GenericNetwork(OpenPNM.Base.Tools):
     r"""
@@ -196,10 +190,11 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         Examples
         --------
-        >>> V = {'foo': pn._throat_data['diameter']}
-        >>> pn.create_adjacency_matrix(V,'csr')
+        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> vals = pn.get_throat_data(prop='numbering')
+        >>> temp = pn.create_adjacency_matrix(data=vals,prop='numbering',sprsfmt='csr')
         >>> print(pn.adjacency_matrix['csr'].keys())
-        ['foo']
+        dict_keys(['numbering'])
 
         """
         self._logger.debug('create_adjacency_matrix: Start of method')
@@ -268,6 +263,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Examples
         --------
         >>> print('nothing yet')
+        nothing yet
         """
         self._logger.debug('create_incidence_matrix: Start of method')
 
@@ -303,7 +299,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         if sprsfmt != 'all':
             return self.incidence_matrix[sprsfmt][tprop]
 
-    def get_connected_pores(self,Tnums=[],flatten=False):
+    def get_connected_pores(self,tnums=[],flatten=False):
         r"""
         Return a list of pores connected to a list of throats
 
@@ -324,19 +320,15 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         Examples
         --------
-        >>> Tnums = [0,1]
-        >>> Ps = pn.get_connected_pores(Tnums)
-        >>> Ps
-        array([  0,   2, 920])
-
-        >>> Tnums = [0,1]
-        >>> Ps = pn.get_connected_pores(Tnums,flatten=False)
-        >>> Ps
-        array([[  0, 920],
-               [  0,   2]])
+        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn.get_connected_pores(tnums=[0,1])
+        array([[0, 1],
+               [0, 5]])
+        >>> pn.get_connected_pores(tnums=[0,1],flatten=True)
+        array([0, 1, 5])
         """
-        Ps = self._throat_data['connections'][Tnums]
-#        Ps = [np.asarray(x) for x in Ps if x]
+        Ps = self._throat_data['connections'][tnums]
+        #Ps = [np.asarray(x) for x in Ps if x]
         if flatten:
             Ps = np.unique(np.hstack(Ps))
         return Ps
@@ -354,6 +346,12 @@ class GenericNetwork(OpenPNM.Base.Tools):
         -------
         Tnum : int
             Returns throat ID number, or empty array if pores are not connected
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn.get_connecting_throat(0,1)
+        array([0])
         """
         return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
@@ -382,16 +380,11 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         Examples
         --------
-        >>> pnums = [0,1]
-        >>> Ps = pn.get_neighbor_pores(pnums)
-        >>> Ps
-        array([  2,   3, 920, 921])
-
-        >>> pnums = [0,1]
-        >>> Ps = pn.get_neighbor_pores(pnums,flatten=False)
-        >>> Ps
-        array([[ 1, 2, 920],
-               [ 0, 3, 921]])
+        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn.get_neighbor_pores(pnums=[0,1])
+        array([ 2,  5,  6, 25, 26])
+        >>> pn.get_neighbor_pores(pnums=[0,1],flatten=False)
+        array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
         """
         #Convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
@@ -406,7 +399,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
             neighborPs = sp.hstack(neighborPs)
-#            neighborPs = sp.concatenate((neighborPs,pnums))
+            #neighborPs = sp.concatenate((neighborPs,pnums))
             #Remove references to input pores and duplicates
             if mode == 'not_intersection':
                 neighborPs = sp.unique(np.where(np.bincount(neighborPs)==1)[0])
@@ -449,16 +442,11 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         Examples
         --------
-        >>> Pnums = [0,1]
-        >>> Ts = pn.get_neighbor_throats(Pnums)
-        >>> Ts
-        array([    0,     1,     2, 83895, 83896])
-
-        >>> Pnums = [0,1]
-        >>> Ts = pn.get_neighbor_throats(Pnums,flatten=False)
-        >>> Ts
-        array([[    0,     1,     2],
-               [    2, 83895, 83896]])
+        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn.get_neighbor_throats(pnums=[0,1])
+        array([0, 1, 2, 3, 4, 5])
+        >>> pn.get_neighbor_throats(pnums=[0,1],flatten=False)
+        array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
         #Convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
@@ -506,16 +494,12 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         Examples
         --------
+        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
         >>> Pnum = [0,1]
-        >>> Nn = pn.get_num_neighbors(Pnum)
-        >>> Nn
+        >>> pn.get_num_neighbors(Pnum,flatten=False)
         array([3, 4], dtype=int8)
-
-        >>> Pnum = range(0,pn.get_num_pores())
-        >>> Nn = pn.get_num_neighbors(Pnum)
-        >>> Nn
-        array([3, 4, 4, ..., 4, 4, 3], dtype=int8)
-        >>> pn._pore_data['num_neighbors'] = Nn
+        >>> pn.get_num_neighbors(Pnum)
+        7
         """
         #Convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
@@ -602,7 +586,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
 
-
 if __name__ == '__main__':
-    test1=GenericNetwork(loggername='Test1')
-    test2=GenericNetwork(loglevel=20,loggername='Test2')
+    #Run doc tests
+    import doctest
+    doctest.testmod(verbose=True)

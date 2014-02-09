@@ -1,11 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
-
 """
 module __Tools__: Base class to construct pore network tools
 ==================================================================
@@ -14,17 +6,17 @@ module __Tools__: Base class to construct pore network tools
 
 """
 
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if sys.path[1] != parent_dir:
+    sys.path.insert(1, parent_dir)
 import OpenPNM
-import numpy as np
-import scipy as sp
-import scipy.sparse as sprs
-import pprint
-import collections
-from . import Utilities
 
+import scipy as sp
+from OpenPNM.Base import Utilities
 
 class Tools(Utilities):
-    r"""
+    r'''
     Tools - Base class to initialize pore network methods
 
     This class contains the interface definition for the construction of networks
@@ -36,13 +28,15 @@ class Tools(Utilities):
     loggername : string (optional)
         Define the logger name to be used on console output. Defaults to class name.
 
-    """
+    '''
 
     def __init__(self, **kwargs):
-
-        r"""
+        r'''
         Initialize
-        """
+
+        Examples
+        --------
+        '''
         super(Tools,self).__init__(**kwargs)
         self._logger.debug("Construct Network container")
         #Initialize network properties dictionaries
@@ -59,7 +53,7 @@ class Tools(Utilities):
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
     def set_data(self,element='',subdomain='',phase='',prop='',data='',indices=''):
-        r"""
+        r'''
         Writes data to fluid or network objects according to input arguments.
         Parameters
         ----------
@@ -69,7 +63,7 @@ class Tools(Utilities):
             Name of fluid to which data is written.  If omitted data is written to network object.
         data : array_like
             Data values to write to object
-        """
+        '''
         try: subdomain = subdomain.name #allow passing of geometry objects
         except: pass #Otherwise, accept string
         try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
@@ -115,7 +109,7 @@ class Tools(Utilities):
             else: getattr(self,'_'+element+'_data')[prop] = sp.array(data,ndmin=1)
 
     def get_data(self,element='',subdomain='',phase='',prop='',indices=''):
-        r"""
+        r'''
         Retrieves data from fluid or network objects according to input arguments.
         Parameters
         ----------
@@ -127,7 +121,7 @@ class Tools(Utilities):
         -------
         array_like
             An ndarray containing the requested property data from the specified object
-        """            
+        '''      
         try: subdomain = subdomain.name #allow passing of geometry objects
         except: pass #Otherwise, accept string
         try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
@@ -172,27 +166,37 @@ class Tools(Utilities):
             except: self._logger.error('Network does not have the requested '+element+' property: '+prop)      
  
     def set_pore_data(self,subdomain='',phase='',prop='',data='',indices=''):
-        r"""
-        Deprecated: See set_data
-        """
+        r'''
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> print(pn.name)
+        test_network
+        >>> pn.set_pore_data(prop='test',data=1)
+        '''
         self.set_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)
         
     def get_pore_data(self,subdomain='',phase='',prop='',indices=''):
-        r"""
-        Deprecated: See get_data
-        """
+        r'''
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> print(pn.name)
+        test_network
+        >>> pn.set_pore_data(prop='test',data=1)
+        >>> pn.get_pore_data(prop='test')
+        array([1])
+        '''
         return self.get_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,indices=indices)
 
     def set_throat_data(self,subdomain='',phase='',prop='',data='',indices=''):
-        r"""
-        Deprecated: See set_data
-        """
+        r'''
+        '''
         self.set_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)         
 
     def get_throat_data(self,subdomain='',phase='',prop='',indices=''):
-        r"""
-        Deprecated: See get_data
-        """
+        r'''
+        '''
         return self.get_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,indices=indices)     
 
     def set_info(self,element='',prop='',locations='',is_indices=False,mode='merge'):
@@ -240,7 +244,7 @@ class Tools(Utilities):
     '''Object query methods'''
     #--------------------------------------------------------------------------
     def get_num_pores(self,subdomain=['all'],mode='union'):
-        r"""
+        r'''
         Returns the number of pores of the specified subdomain
 
         Parameters
@@ -252,8 +256,17 @@ class Tools(Utilities):
         -------
         Np : int
             Returns the number of pores of the specified type
-
-        """
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.get_num_pores()
+        125
+        >>> pn.get_num_pores(subdomain=['top','front'],mode='union') #'union' is default
+        45
+        >>> pn.get_num_pores(subdomain=['top','front'],mode='intersection')
+        5
+        '''
         #convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
         #Count number of pores of specified type
@@ -265,7 +278,7 @@ class Tools(Utilities):
             
 
     def get_num_throats(self,subdomain=['all'],mode='union'):
-        r"""
+        r'''
         Return the number of throats of the specified subdomain
 
         Parameters
@@ -275,7 +288,12 @@ class Tools(Utilities):
         -------
         Nt : int
 
-        """
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.get_num_throats()
+        300
+        '''
         #convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
         #Count number of pores of specified type
@@ -287,6 +305,13 @@ class Tools(Utilities):
 
     def get_pore_indices(self,subdomain=['all'],indices=True,mode='union'):
         r'''
+        Returns pore locations where subdomain is active. Returned list can be either a boolean mask or list of index values
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.get_pore_indices(subdomain=['top','front'],mode='intersection')
+        array([100, 105, 110, 115, 120], dtype=int64)
         '''
         if type(subdomain) == str: subdomain = [subdomain] #convert string to list, if necessary
         if subdomain == ['all']: #Return full index; easier than get_data(prop='nums')
@@ -310,6 +335,14 @@ class Tools(Utilities):
 
     def get_throat_indices(self,subdomain=['all'],indices=True,mode='union'):
         r'''
+        Returns throat locations where subdomain is active. Returned list can be either a boolean mask or list of index values
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> Tind = pn.get_throat_indices()
+        >>> Tind[0:5]
+        array([0, 1, 2, 3, 4])
         '''
         if type(subdomain) == str: subdomain = [subdomain] #convert string to list, if necessary
         if subdomain == ['all']: #Return full index; easier than get_data(prop='nums')
@@ -332,16 +365,19 @@ class Tools(Utilities):
         return ind
         
     def find_object_by_name(self,name):
+        r'''
+        '''
         for item in self._instances:
             if item.name == name:
                 obj = item
         return obj
 
     def get_result(self,obj,**kwargs):
-        
+        r'''
+        '''
         obj.update(**kwargs)        
 
-
 if __name__ == '__main__':
-    test1=GenericNetwork(loggername='Test1')
-    test2=GenericNetwork(loglevel=20,loggername='Test2')
+    import doctest
+    doctest.testmod(verbose=True)
+

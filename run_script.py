@@ -15,7 +15,7 @@ geom.regenerate()
 #======================================================================
 '''Build Fluids'''
 #======================================================================
-air = OpenPNM.Fluids.GenericFluid(loglevel=10,network=pn,name='air')
+air = OpenPNM.Fluids.GenericFluid(loglevel=10,loggername='AIR',network=pn,name='air')
 air.set_pore_data(prop='Pc',data=132.65)
 air.set_pore_data(prop='Tc',data=3.771e6)
 air.set_pore_data(prop='MW',data=0.0291)
@@ -24,7 +24,7 @@ air.add_method(prop='viscosity',model='Reynolds',uo=0.001,b=0.1)
 air.add_method(prop='molar_density',model='ideal_gas',R=8.314)
 air.regenerate()
 
-water = OpenPNM.Fluids.GenericFluid(network=pn,name='water')
+water = OpenPNM.Fluids.GenericFluid(loglevel=10,loggername='WATER',network=pn,name='water')
 water.set_pore_data(prop='Pc',data=132.65)
 water.set_pore_data(prop='Tc',data=3.771e6)
 water.set_pore_data(prop='MW',data=0.0291)

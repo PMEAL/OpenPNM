@@ -1,11 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
-
 """
 module __GenericGeometry__: Base class to construct pore networks
 ==================================================================
@@ -14,7 +6,11 @@ module __GenericGeometry__: Base class to construct pore networks
 
 """
 
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(1, parent_dir)
 import OpenPNM
+
 import scipy as sp
 import scipy.stats as spst
 from functools import partial
@@ -45,7 +41,6 @@ class GenericGeometry(OpenPNM.Base.Utilities):
     """
 
     def __init__(self, network,name,locations,**kwargs):
-
         r"""
         Initialize
         """
@@ -57,7 +52,8 @@ class GenericGeometry(OpenPNM.Base.Utilities):
         else:
             network.set_pore_info(prop=name,locations=locations,is_indices=True)
         ind = network.get_pore_indices(name)
-        '''TODO: The following lines will create conflicting throat labels when additionaly geometries are added
+        r'''
+        TODO: The following lines will create conflicting throat labels when additionaly geometries are added
         '''
         Tn = network.get_neighbor_throats(ind)
         network.set_throat_info(prop=name,locations=Tn,is_indices=True)
@@ -83,8 +79,8 @@ class GenericGeometry(OpenPNM.Base.Utilities):
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)
         except AttributeError: print('could not find',kwargs['model'])
-        
 
 if __name__ == '__main__':
-    test=GenericGeometry(loggername="TestGenerator")
+    pn = OpenPNM.Network.Cubic(name='test_net').generate(divisions=[5,5,5],lattice_spacing=[0.001])
+    test = OpenPNM.Geometry.GenericGeometry(loglevel=10,name='doc_test',locations=[0],network=pn)
 

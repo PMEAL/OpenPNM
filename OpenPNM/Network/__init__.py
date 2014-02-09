@@ -42,4 +42,5 @@ from .__GenericNetwork__ import GenericNetwork
 from .__Cubic__ import Cubic
 from .__Delaunay__ import Delaunay
 from .__Template__ import Template
+from .__TestNet__ import TestNet
 from .__Import__ import MatFile

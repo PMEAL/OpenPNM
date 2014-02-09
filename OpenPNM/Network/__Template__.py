@@ -6,10 +6,14 @@ module __Template__: Generate cubic networks from domain templates
 
 """
 
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(1, parent_dir)
 import OpenPNM
+
 import scipy as sp
 import numpy as np
-from .__GenericNetwork__ import GenericNetwork
+from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Template(GenericNetwork):
     r"""
@@ -22,22 +26,23 @@ class Template(GenericNetwork):
 
     Examples
     --------
-    >>> print('none yet')
+    >>> pn = OpenPNM.Network.Template().generate()
 
     """
 
     def __init__(self, **kwargs):
-
         super(Template,self).__init__(**kwargs)
-        self._logger.debug("Execute constructor")
-        self._logger.info("Import template containing custom network shape")
-        r"""
-        Perform applicable preliminary checks and calculations required for generation
-        """
-        self._logger.debug("generate_setup: Perform preliminary calculations")
-
-        #Instantiate object
-        self._net=OpenPNM.Network.GenericNetwork()
+        self._logger.debug(self.__class__.__name__,": ","Execute constructor")
+    
+    def generate(self, **params):
+        self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
+        self._generate_setup(**params)
+        self._generate_pores()
+        self._generate_throats()
+        self._add_boundaries()
+        self._add_labels()
+        self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
+        return self
 
     def _generate_setup(self, **params):
         r"""
@@ -59,12 +64,10 @@ class Template(GenericNetwork):
             self._Ny = 1
             self._Nz = 1
 
-
     def _generate_pores(self):
         r"""
         Generate the pores (coordinates, numbering and types)
         """
-
         self._logger.info("generate_pores: Create specified number of pores")
         Lc = self._Lc
 
@@ -72,7 +75,7 @@ class Template(GenericNetwork):
         template = self._template
         Np = np.sum(template>0)
         img_ind = np.ravel_multi_index(np.nonzero(template), dims=np.shape(template), order='F')
-        self._net.pore_properties['voxel_index'] = img_ind
+        self.pore_properties['voxel_index'] = img_ind
 
         #This voxel_to_pore map is messy but works
         temp = np.prod(np.shape(template))*np.ones(np.prod(np.shape(template),),dtype=np.int32)
@@ -82,11 +85,11 @@ class Template(GenericNetwork):
         if self._Nz == 1:
             print(np.shape(Lc*(0.5 + np.transpose(np.nonzero(template)))))
             print(np.shape(np.zeros((Np,1))))
-            self._net.pore_properties['coords'] = sp.hstack((Lc*(0.5 + np.transpose(np.nonzero(template))),np.zeros((Np,1))))
+            self.pore_properties['coords'] = sp.hstack((Lc*(0.5 + np.transpose(np.nonzero(template))),np.zeros((Np,1))))
         else:
-            self._net.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(template)))
-        self._net.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
-        self._net.pore_properties['numbering'] = np.arange(0,Np,dtype=np.int32)
+            self.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(template)))
+        self.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
+        self.pore_properties['numbering'] = np.arange(0,Np,dtype=np.int32)
 
         self._logger.debug("generate_pores: End of method")
 
@@ -167,8 +170,9 @@ class Template(GenericNetwork):
         return pore_prop
 
 if __name__ == '__main__':
-    test=Template(loggername='TestTemplate')
-    test.generate()
+    tmplt = sp.ones((30,30,30),dtype=int)
+    pn = OpenPNM.Network.Template(name='template_1').generate(template=tmplt,lattice_spacing=0.001)
+    print(pn.name)
 
 
 

@@ -6,13 +6,19 @@ module __Cubic__: Generate simple cubic networks
 
 """
 
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if sys.path[1] != parent_dir:
+    sys.path.insert(1, parent_dir)
+import OpenPNM
+
 import scipy as sp
 import numpy as np
 import scipy.stats as spst
 import scipy.spatial as sptl
 import itertools as itr
 import sys
-from .__GenericNetwork__ import GenericNetwork
+from OpenPNM.Network import GenericNetwork
 
 class Cubic(GenericNetwork):
     r"""
@@ -23,17 +29,21 @@ class Cubic(GenericNetwork):
 
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+        
+    loggername : string
+        Overwrite the name of the logger, which defaults to the generic class name
 
     Examples
     --------
-    >>>print('none yet')
+    >>> print('none yet')
+    none yet
 
     """
 
     def __init__(self, **kwargs):
 
         super(Cubic,self).__init__(**kwargs)
-        self._logger.debug("Execute constructor")
+        self._logger.debug(self.__class__.__name__+": Execute constructor")
 
     def generate(self,**params):
         '''
@@ -523,15 +533,6 @@ class Cubic(GenericNetwork):
             self._net.update()
 
 
-
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
-    test=Cubic(loggername='TestCubic')
-    pn = test.generate(lattice_spacing=1.0,domain_size=[3,3,3], btype=[1,1,0])
+    pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(lattice_spacing=[1.0],domain_size=[3,3,3])
+    print(pn.name)
