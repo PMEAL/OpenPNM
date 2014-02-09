@@ -169,7 +169,7 @@ class Tools(Utilities):
                 getattr(self,'_'+element+'_data')[prop]
                 if indices!='':  return getattr(self,'_'+element+'_data')[prop][indices]
                 else: return getattr(self,'_'+element+'_data')[prop] #Get fluid prop
-            except: self._logger.error('Network does not have the requested '+element+' property: '+prop)      
+            except: self._logger.error('Object does not have the requested '+element+' property: '+prop)      
  
     def set_pore_data(self,subdomain='',phase='',prop='',data='',indices=''):
         r"""

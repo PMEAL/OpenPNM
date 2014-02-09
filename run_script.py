@@ -68,14 +68,13 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 #'''Perform an Injection Experiment (InvasionPercolation)'''
 ##----------------------------------------------------------------------
 ##Initialize algorithm object
-#IP_1 = OpenPNM.Algorithms.InvasionPercolation()
-##Apply desired/necessary pore scale physics methods
-#OpenPNM.Physics.CapillaryPressure.Washburn(pn,water2)
-#face = pn.pore_properties['type']==3
-#quarter = sp.rand(pn.get_num_pores(),)<.1
-#inlets = pn.pore_properties['numbering'][face&quarter]
-#outlets = pn.pore_properties['numbering'][pn.pore_properties['type']==4]
-#IP_1.run(pn,invading_fluid=water2,defending_fluid=air2,inlets=inlets,outlets=outlets)
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
+face = pn.get_pore_indices('right',indices=False)
+quarter = sp.rand(pn.get_num_pores(),)<.1
+inlets = pn.get_pore_indices()[face&quarter]
+outlets = pn.get_pore_indices('left')
+#Run algorithm
+IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
 #
 ##----------------------------------------------------------------------
 #'''Performm a Diffusion Simulation on Partially Filled Network'''
