@@ -269,14 +269,14 @@ class InvasionPercolation(GenericAlgorithm):
         #self._Tinv = np.zeros(self._net.get_num_throats())
         while self._condition:
             self._do_one_outer_iteration()
-        self._fluid.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
-        self._fluid.set_pore_data(prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
-        self._fluid.set_throat_data(prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
-        self._fluid.set_pore_data(prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
-        self._fluid.set_throat_data(prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
+        self.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
+        self.set_pore_data(prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
+        self.set_throat_data(prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
+        self.set_pore_data(prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
+        self.set_throat_data(prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
         if self._timing:
-            self._fluid.set_pore_data(prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
-            self._fluid.set_throat_data(prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))
+            self.set_pore_data(prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
+            self.set_throat_data(prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))
 
     def _do_one_outer_iteration(self):
         r"""
@@ -553,19 +553,29 @@ class InvasionPercolation(GenericAlgorithm):
         elif self._end_condition == 'total':
             self._condition = not self._Tinv.all()
 
-    def update_occupancy(self):
+    def update(self):
         r"""
         """
         try:
-            self._inv_fluid.set_pore_data(prop='occupancy',data=self._Pinv>0)
-            self._inv_fluid.set_throat_data(prop='occupancy',data=self._Tinv>0)
+            self._fluid.set_pore_data(prop='occupancy',data=self._Pinv>0)
+            self._fluid.set_throat_data(prop='occupancy',data=self._Tinv>0)
         except:
-            print('Something bad happened while trying to update fluid',self._inv_fluid._fluid_recipe['name'])
+            print('Something bad happened while trying to update fluid',self._fluid.name)
         try:
-            self._inv_fluid.partner.set_pore_data(prop='occupancy',data= ~self._Pinv>0)
-            self._inv_fluid.partner.set_throat_data(prop='occupancy',data= ~self._Tinv>0)
+            self._fluid_def.set_pore_data(prop='occupancy',data= ~self._Pinv>0)
+            self._fluid_def.set_throat_data(prop='occupancy',data= ~self._Tinv>0)
         except:
             print('A partner fluid has not been set so inverse occupancy cannot be set')
+        self._fluid.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
+        self._fluid.set_pore_data(prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
+        self._fluid.set_throat_data(prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
+        self._fluid.set_pore_data(prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
+        self._fluid.set_throat_data(prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
+        if self._timing:
+            self._fluid.set_pore_data(prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
+            self._fluid.set_throat_data(prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))            
+            
+            
 
 if __name__ =="__main__":
     print('')
@@ -576,26 +586,27 @@ if __name__ =="__main__":
     print("= Example: Create random network and run an invasion\n= percolation algorithm")
     print("-"*50)
     print("- * generate invading and defending fluids")
-    air = OpenPNM.Fluids.Air().create()
-    water = OpenPNM.Fluids.Water().create()
-    air.set_pair(water)
+    #======================================================================
+    '''Build Fluids'''
+    #======================================================================
+    air = OpenPNM.Fluids.Air(network=pn,name='air')
+    water = OpenPNM.Fluids.Water(network=pn,name='water')
     print("-"*50)
     print("- * generate a simple cubic network")
-    params_geo= {'domain_size': [25,25,5],  #physical network size [meters]
-                   'lattice_spacing': [1.0],  #spacing between pores [meters]
-             'stats_pores' : {'name': 'weibull_min', #Each statistical package takes different params, so send as dict
-                             'shape': 1.5,
-                               'loc': 6e-6,
-                             'scale': 2e-5},
-           'stats_throats' : {'name': 'weibull_min',
-                             'shape': 1.5,
-                               'loc': 6e-6,
-                             'scale': 2e-5},
-                    'btype': [1,1,0]  #boundary type to apply to opposing faces [x,y,z] (1=periodic)
-}
-    pn = OpenPNM.Geometry.Cubic().generate(**params_geo)
-#    OpenPNM.Geometry.Cubic().generate_boundaries(pn,**params_geo)
-#    pn = OpenPNM.Geometry.MatFile().generate(filename='large_network')
+    #======================================================================
+    '''Build Topological Network'''
+    #======================================================================
+    pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15,15,15],lattice_spacing=[0.0001])    
+    #======================================================================
+    '''Build Geometry'''
+    #======================================================================
+    geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='stick_and_ball',locations=pn.get_pore_indices())
+    geom.regenerate()     
+    #======================================================================
+    '''Build Physics Objects'''
+    #======================================================================
+    phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water,name='standard_water_physics')
+    phys_water.add_method(prop='capillary_pressure',model='purcell',r_toroid=1e-5)
     print("+"*50)
     print("Sample generated at t =",clock(),"seconds.")
     print("+"*50)
@@ -613,20 +624,20 @@ if __name__ =="__main__":
 
     print("- * Run Invasion percolation algorithm")
     #IP = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
-    IP_timing = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
+    IP_timing = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg",name='IP_timing',network=pn)
     ip_timing_params = {'invading_fluid':water,
                  'defending_fluid':air,
                  'inlets':inlets,
                  'outlets':outlets,
                  'timing':'ON',
                  }
-    IP_timing.run(pn,**ip_timing_params)
+    IP_timing.run(**ip_timing_params)
     print("+"*50)
     print("IP completed at t =",clock(),"seconds.")
     print("+"*50)
     print("- * Save output to IP_timing.vtp")
     OpenPNM.Visualization.VTK().write(net=pn,fluid=water,filename="IP_timing.vtp")
-    IP_notiming = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg")
+    IP_notiming = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg",name='IP_notiming',network=pn)
 
     ip_notiming_params = {'invading_fluid':water,
                  'defending_fluid':air,
@@ -634,7 +645,7 @@ if __name__ =="__main__":
                  'outlets':outlets,
                  'timing':'OFF',
                  }
-    IP_notiming.run(pn,**ip_notiming_params)
+    IP_notiming.run(**ip_notiming_params)
     print("+"*50)
     print("IP completed at t =",clock(),"seconds.")
     print("+"*50)
