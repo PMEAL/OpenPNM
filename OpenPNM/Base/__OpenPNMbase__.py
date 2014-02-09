@@ -1,33 +1,15 @@
-#! /usr/bin/env python
-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
-
 """
 module __OpenPNMbase__: contains OpenPNM base classes
 =====================================================
 
-.. warning:: The classes of this module should be loaded through the 'Base.__init__.py' file.
-
-Logging:
---------
-
-This module defines the logging format.
-
-Examples:
----------
->>> import OpenPNM 
->>> tmp=PNM.Base.testinheritance()
-
 """
-
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(1, parent_dir)
+import OpenPNM
 
 import logging as _logging
 import scipy.constants
-from pprint import pprint
 
 # set up logging to file - see previous section for more details
 _logging.basicConfig(level=_logging.ERROR,
@@ -121,4 +103,7 @@ class Utilities(object):
             print('  '+item)
         print('Throat info dictionaries:')
         for item in self._throat_info.keys():
-            print('  '+item)        
+            print('  '+item)
+
+if __name__ == '__main__':
+    pass

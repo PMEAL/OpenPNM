@@ -6,13 +6,18 @@ module __Delaunay__: Generate random networks based on Delaunay Tessellations
 
 """
 
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(1, parent_dir)
+import OpenPNM
+
 import sys
 import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from .__GenericNetwork__ import GenericNetwork
+from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Delaunay(GenericNetwork):
     r"""
@@ -33,42 +38,29 @@ class Delaunay(GenericNetwork):
     """
 
     def __init__(self,**kwargs):
-
-        super(Delaunay,self).__init__(**kwargs)
-        self._logger.debug("Execute constructor")
-        
-    def generate(self,**params):
         '''
-        Create Delauny network.
-
-        Parameters
-        ----------
-
-        Critical\n
-        domain_size : [float,float,float]
-            domain_size = [3.0,3.0,3.0] (default)\n
-            Bounding cube for internal pore positions\n
-        num_pores : int
-            num_pores = 27\n
-            Number of pores to randomly place within domain\n
-
-        Optional\n
-        stats_pores : dictionary
-            PSD = {'name':'weibull_min','shape':1.5,'loc': 6e-6,'scale':2e-5} (default)\n
-            Probablity distributions for random pore size assignment\n
-        stats_throats : dictionary
-            TSD = {'name':'weibull_min','shape':1.5,'loc': 6e-6,'scale':2e-5} (default)\n
-            Probablity distributions for random throat size assignment\n
-        btype : [logical,logical,logical]
-            boundaries = [0,0,0] (default)\n
-            Automatically create periodic throats between opposite x, y, or z faces
+        Create Delauny network object
 
         Examples:
         ---------
         
         '''
+        super(Delaunay,self).__init__(**kwargs)
+        self._logger.debug("Execute constructor")
+        
+    def generate(self,**params):
+        r'''
+        Method to trigger the generation of the network
+        
+        Parameters
+        ----------
+        domain_size : list, [Lx,Ly,Lz]
+            Bounding cube for internal pore positions
+        num_pores : int
+            Number of pores to place randomly within domain
+
+        '''
         self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
-        self.name = params['name']
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
@@ -77,7 +69,7 @@ class Delaunay(GenericNetwork):
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
         return self
 
-    def _generate_setup(self, btype=[0,0,0],**params):
+    def _generate_setup(self, **params):
         r"""
         Perform applicable preliminary checks and calculations required for generation
         """
@@ -86,11 +78,14 @@ class Delaunay(GenericNetwork):
             self._Lx = params['domain_size'][0]
             self._Ly = params['domain_size'][1]
             self._Lz = params['domain_size'][2]
+            r'''
+            TODO: Fix this, btype should be received as an argument
+            '''
+            self._btype = [0,0,0]
             self.set_pore_info(prop='numbering',locations=sp.ones((params['num_pores'],),dtype=bool))
         else:
             self._logger.error("domain_size and num_pores must be specified")
             raise Exception('domain_size and num_pores must be specified')
-        self._btype = btype
 
     def _generate_pores(self):
         r"""
@@ -339,5 +334,5 @@ class Delaunay(GenericNetwork):
         self._net.throat_data['connections'] =  np.concatenate((self._net.throat_data['connections'],bt_connections))
 
 if __name__ == '__main__':
-    test=Delaunay(loggername='TestDelaunay')
-#    test.generate(num_pores=250, domain_size=[100,100,100])
+    pn = OpenPNM.Network.Delaunay(name='delaunay_1').generate(num_pores=100, domain_size=[3,3,3])
+    print(pn.name)

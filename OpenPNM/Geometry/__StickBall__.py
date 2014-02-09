@@ -1,11 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
-
 """
 module __GenericGeometry__: Base class to construct pore networks
 ==================================================================
@@ -14,29 +6,25 @@ module __GenericGeometry__: Base class to construct pore networks
 
 """
 
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(1, parent_dir)
 import OpenPNM
-import scipy as sp
-import scipy.stats as spst
-from functools import partial
-import numpy as np
-from .__GenericGeometry__ import GenericGeometry
+
+from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
 class Stick_and_Ball(GenericGeometry):
     r"""
-    GenericGeometry - Base class to construct pore networks
-
-    This class contains the interface definition for the construction of networks
+    Stick and Ball subclass of GenericGeometry.
 
     Parameters
     ----------
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
 
-
     """
 
     def __init__(self, **kwargs):
-
         r"""
         Initialize
         """
@@ -51,7 +39,6 @@ class Stick_and_Ball(GenericGeometry):
         self.add_method(prop='throat_length',model='straight')
         self.add_method(prop='throat_volume',model='cylinder')
         
-
 if __name__ == '__main__':
-    test=GenericGeometry(loggername="TestGenerator")
-
+    pn = OpenPNM.Network.TestNet()
+    test = OpenPNM.Geometry.Stick_and_Ball(loglevel=10,name='test_geom',locations=[0],network=pn)

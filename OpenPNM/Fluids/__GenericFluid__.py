@@ -1,10 +1,14 @@
-
 """
 module Physics
 ===============================================================================
 
 """
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if sys.path[1] != parent_dir:
+    sys.path.insert(1, parent_dir)
 import OpenPNM
+
 import scipy as sp
 from functools import partial
 
@@ -20,18 +24,20 @@ class GenericFluid(OpenPNM.Base.Tools):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         self.name = name
+        self._net = network
+        #Initialize necessary empty attributes
         self.pore_data = {}
         self.throat_data = {}
         self.pore_info = {}
         self.throat_info = {}
         self._physics = []
         self._prop_list = []
-        self._net = network
+        #Set default T and P since most propery models require it
         self.set_pore_data(prop='temperature',data=T)
         self.set_pore_data(prop='pressure',data=P)
+        #Initialize 'numbering arrays in the objects own info dictionaries
         self.set_pore_info(prop='numbering',locations=self._net.get_pore_indices())
         self.set_throat_info(prop='numbering',locations=self._net.get_throat_indices())
-
 
     def regenerate(self):
         r'''
@@ -42,6 +48,29 @@ class GenericFluid(OpenPNM.Base.Tools):
             getattr(self,item)()
         
     def add_method(self,prop='',**kwargs):
+        r'''
+        Add specified property estimation method to the fluid object.
+        
+        Parameters
+        ----------
+        prop : string
+            The name of the fluid property attribute to add.
+            This name must correspond with a file in the Fluids folder.  
+            To add a new property simply add a file with the appropriate name and the necessary methods.
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> print(pn.name)
+        test_network
+        >>> fluid = OpenPNM.Fluids.GenericFluid(network=pn,name='test_fluid')
+        >>> fluid.add_method(prop='diffusivity',model='constant',value=1)
+        >>> fluid.regenerate()
+        >>> fluid.get_pore_data(prop='diffusivity') #Use fluid's getter
+        array([1])
+        >>> pn.get_pore_data(prop='diffusivity',phase=fluid) #Use network's getter
+        array([1])
+        '''
         try:
             function = getattr( getattr(OpenPNM.Fluids, prop), kwargs['model'] ) # this gets the method from the file
             preloaded_fn = partial(function, fluid=self, network=self._net, **kwargs) #
@@ -75,28 +104,10 @@ class GenericFluid(OpenPNM.Base.Tools):
         return('This is the __str__ methods of the generic_fluid being overwritten')
 
 if __name__ =="__main__":
-
-    #Create fluids
-    air_recipe = {
-    'name': 'air',
-    'Pc': 3.771e6, #Pa
-    'Tc': 132.65,  #K
-    'MW': 0.0291,  #kg/mol
-    'diffusivity': {'method': 'Fuller',
-                    'MA': 0.03199,
-                    'MB': 0.0291,
-                    'vA': 16.3,
-                    'vB': 19.7},
-    'viscosity': {'method': 'Reynolds',
-                  'uo': 0.001,
-                  'b': 0.1},
-    'molar_density': {'method': 'ideal_gas',
-                      'R': 8.314},
-    'surface_tension': {'method': 'constant',
-                        'value': 0},
-    'contact_angle': {'method': 'na'},
-    }
-    gas = OpenPNM.Fluids.GenericGas().create(air_recipe)
+    pn = OpenPNM.Network.Cubic(name='test_cubic').generate(divisions=[5,5,5],lattice_spacing=[1])
+    fluid = OpenPNM.Fluids.GenericFluid(name='test_fluid',network=pn)
+    import doctest
+    doctest.testmod(verbose=True)
 
 
 
