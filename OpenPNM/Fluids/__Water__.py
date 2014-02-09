@@ -8,22 +8,15 @@ class Water(GenericFluid):
     def __init__(self,**kwargs):
         super(Water,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        self.recipe = {
-        'Name': 'water',
-        'Pc': 2.206e6, #Pa
-        'Tc': 647,     #K
-        'MW': 0.0181,  #kg/mol
-        'diffusivity': {'method': 'constant',
-                        'value': 1e-12},
-        'viscosity': {'method': 'constant',
-                      'value': 0.001},
-        'molar_density': {'method': 'constant',
-                          'value': 44445},
-        'surface_tension': {'method': 'Eotvos',
-                            'k': 2.25e-4},
-        'contact_angle': {'method': 'constant',
-                          'value': 120},
-        }
+        self.set_pore_data(prop='Tc',data=647.096)
+        self.set_pore_data(prop='Pc',data=22.06e6)
+        self.set_pore_data(prop='MW',data=0.0291)
+        self.add_method(prop='diffusivity',model='constant',value=1e-12)
+        self.add_method(prop='viscosity',model='constant',value=0.001)
+        self.add_method(prop='molar_density',model='constant',value=44445)
+        self.add_method(prop='surface_tension',model='constant',value=0.072)
+        self.add_method(prop='contact_angle',model='constant',value=110)
+        self.regenerate()
 
 if __name__ =="__main__":
     print('no tests yet')
