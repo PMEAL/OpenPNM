@@ -188,6 +188,16 @@ class Cubic(GenericNetwork):
         self.set_pore_info(prop='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
         self.set_pore_info(prop='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
         self.set_pore_info(prop='internal',locations=self.get_pore_indices(),is_indices=True)
+        #Add throat labels based IF both throat's neighbors have label in common
+        for item in ['top','bottom','left','right','front','back']:
+            ps = self.get_pore_indices(item)
+            ts = self.get_neighbor_throats(ps)
+            ps = self.get_connected_pores(ts)
+            ps0 = self.get_pore_info(prop=item)[ps[:,0]]
+            ps1 = self.get_pore_info(prop=item)[ps[:,1]]
+            ts = ts[ps1*ps0]
+            self.set_throat_info(prop=item,locations=ts,is_indices=True)
+        self.set_throat_info(prop='internal',locations=self.get_throat_indices(),is_indices=True)
         self._logger.debug(sys._getframe().f_code.co_name+": End")
 
     def _generate_boundaries(self,net,**params):

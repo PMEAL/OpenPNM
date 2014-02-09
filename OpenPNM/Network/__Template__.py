@@ -26,8 +26,12 @@ class Template(GenericNetwork):
 
     Examples
     --------
-    >>> pn = OpenPNM.Network.Template().generate()
-
+    >>> img = sp.ones((30,30,30),dtype=int)
+    >>> pn = OpenPNM.Network.Template(name='template_1').generate(template=img,lattice_spacing=0.001)
+    >>> pn.get_num_pores()
+    27000
+    >>> pn.get_num_throats()
+    78300
     """
 
     def __init__(self, **kwargs):
@@ -40,7 +44,7 @@ class Template(GenericNetwork):
         self._generate_pores()
         self._generate_throats()
         self._add_boundaries()
-        self._add_labels()
+#        self._add_labels()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
         return self
 
@@ -75,7 +79,7 @@ class Template(GenericNetwork):
         template = self._template
         Np = np.sum(template>0)
         img_ind = np.ravel_multi_index(np.nonzero(template), dims=np.shape(template), order='F')
-        self.pore_properties['voxel_index'] = img_ind
+        self.set_pore_data(prop='voxel_index',data=img_ind)
 
         #This voxel_to_pore map is messy but works
         temp = np.prod(np.shape(template))*np.ones(np.prod(np.shape(template),),dtype=np.int32)
@@ -85,12 +89,14 @@ class Template(GenericNetwork):
         if self._Nz == 1:
             print(np.shape(Lc*(0.5 + np.transpose(np.nonzero(template)))))
             print(np.shape(np.zeros((Np,1))))
-            self.pore_properties['coords'] = sp.hstack((Lc*(0.5 + np.transpose(np.nonzero(template))),np.zeros((Np,1))))
+            coords = sp.hstack((Lc*(0.5 + np.transpose(np.nonzero(template))),np.zeros((Np,1))))
+            self.set_pore_data(prop='coords',data=coords)
         else:
-            self.pore_properties['coords'] = Lc*(0.5 + np.transpose(np.nonzero(template)))
-        self.pore_properties['type']= np.zeros((Np,),dtype=np.int8)
-        self.pore_properties['numbering'] = np.arange(0,Np,dtype=np.int32)
-
+            coords = Lc*(0.5 + np.transpose(np.nonzero(template)))
+            self.set_pore_data(prop='coords',data=coords)
+        ind = np.arange(0,Np,dtype=np.int32)
+        self.set_pore_data(prop='numbering',data=ind)
+        self.set_pore_info(prop='numbering',locations=sp.ones_like(ind))
         self._logger.debug("generate_pores: End of method")
 
     def _generate_throats(self):
@@ -117,16 +123,16 @@ class Template(GenericNetwork):
         connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
 
         #Remove throats to non-active pores
-        img_ind = self._net.pore_properties['voxel_index']
+        img_ind = self.get_pore_data(prop='voxel_index')
         temp0 = sp.in1d(connections[:,0],img_ind)
         temp1 = sp.in1d(connections[:,1],img_ind)
         tind = temp0*temp1
         connections = connections[tind]
 
         #Need a cleaner way to do this other than voxel_to_pore map...figure out later
-        self._net.throat_properties['connections'] = self._voxel_to_pore_map[connections]
-        self._net.throat_properties['type'] = np.zeros(np.sum(tind))
-        self._net.throat_properties['numbering'] = np.arange(0,np.sum(tind))
+        self.set_throat_data(prop='connections',data=self._voxel_to_pore_map[connections])
+        self.set_pore_data(prop='numbering', data=np.arange(0,np.sum(tind)))
+        self.set_throat_info(prop='numbering',locations=sp.ones_like(tind))
         self._logger.debug("generate_throats: End of method")
 
     def _add_boundaries(self):
