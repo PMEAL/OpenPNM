@@ -11,7 +11,6 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 sys.path.insert(1, parent_dir)
 import OpenPNM
 
-import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import pprint
@@ -207,13 +206,13 @@ class GenericNetwork(OpenPNM.Base.Tools):
             if sp.shape(dataset)[0]!=Nt:
                 raise Exception('Received dataset of incorrect length')
         else:
-            dataset = np.ones(Nt)
+            dataset = sp.ones(Nt)
             tprop = 'connections'
 
         if dropzeros:
             ind = dataset>0
         else:
-            ind = np.ones_like(dataset,dtype=bool)
+            ind = sp.ones_like(dataset,dtype=bool)
 
         conn = self._throat_data["connections"][ind]
         row  = conn[:,0]
@@ -274,20 +273,20 @@ class GenericNetwork(OpenPNM.Base.Tools):
             dataset = data
             tprop = prop
         else:
-            dataset = np.ones(Nt)
+            dataset = sp.ones(Nt)
             tprop = 'connections'
 
         if dropzeros:
             ind = dataset>0
         else:
-            ind = np.ones_like(dataset,dtype=bool)
+            ind = sp.ones_like(dataset,dtype=bool)
 
         conn = self._throat_data['connections'][ind]
         row  = conn[:,0]
-        row = np.append(row,conn[:,1])
+        row = sp.append(row,conn[:,1])
         col = self._throat_data['numbering'][ind]
-        col = np.append(col,col)
-        data = np.append(dataset[ind],dataset[ind])
+        col = sp.append(col,col)
+        data = sp.append(dataset[ind],dataset[ind])
 
         temp = sprs.coo.coo_matrix((data,(row,col)),(Np,Nt))
         if sprsfmt == 'coo' or sprsfmt == 'all':
@@ -328,9 +327,9 @@ class GenericNetwork(OpenPNM.Base.Tools):
         array([0, 1, 5])
         """
         Ps = self._throat_data['connections'][tnums]
-        #Ps = [np.asarray(x) for x in Ps if x]
+        #Ps = [sp.asarray(x) for x in Ps if x]
         if flatten:
-            Ps = np.unique(np.hstack(Ps))
+            Ps = sp.unique(sp.hstack(Ps))
         return Ps
 
     def get_connecting_throat(self,P1,P2):
@@ -353,7 +352,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         >>> pn.get_connecting_throat(0,1)
         array([0])
         """
-        return np.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
+        return sp.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
     def get_neighbor_pores(self,pnums,subdomain=['all'],flatten=True,mode=''):
         r"""
@@ -402,13 +401,13 @@ class GenericNetwork(OpenPNM.Base.Tools):
             #neighborPs = sp.concatenate((neighborPs,pnums))
             #Remove references to input pores and duplicates
             if mode == 'not_intersection':
-                neighborPs = sp.unique(np.where(np.bincount(neighborPs)==1)[0])
+                neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)==1)[0])
             elif mode == 'union':
                 neighborPs = sp.unique(neighborPs)
             elif mode == 'intersection':
-                neighborPs = sp.unique(np.where(np.bincount(neighborPs)>1)[0])
+                neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)>1)[0])
             elif mode == '':
-                neighborPs = sp.unique(neighborPs[~np.in1d(neighborPs,pnums)])
+                neighborPs = sp.unique(neighborPs[~sp.in1d(neighborPs,pnums)])
             #Remove pores of the wrong type
             mask = self.get_pore_indices(subdomain=subdomain,indices=False)
             neighborPs = neighborPs[mask[neighborPs]]
@@ -416,7 +415,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
             mask = self.get_pore_indices(subdomain=subdomain,indices=False)
             for i in range(0,sp.size(pnums)):
                 neighborPs[i] = sp.array(neighborPs[i])[mask[neighborPs[i]]]
-        return np.array(neighborPs,ndmin=1)
+        return sp.array(neighborPs,ndmin=1)
 
     def get_neighbor_throats(self,pnums,subdomain=['all'],flatten=True,mode=''):
         r"""
@@ -463,11 +462,11 @@ class GenericNetwork(OpenPNM.Base.Tools):
             neighborTs = sp.hstack(neighborTs)
             #Remove references to input pores and duplicates
             if mode == 'not_intersection':
-                neighborTs = sp.unique(np.where(np.bincount(neighborTs)==1)[0])
+                neighborTs = sp.unique(sp.where(sp.bincount(neighborTs)==1)[0])
             elif mode == 'union':
                 neighborTs = sp.unique(neighborTs)
             elif mode == 'intersection':
-                neighborTs = sp.unique(np.where(np.bincount(neighborTs)>1)[0])
+                neighborTs = sp.unique(sp.where(sp.bincount(neighborTs)>1)[0])
             elif mode == '':
                 neighborTs = sp.unique(neighborTs)
             #Remove throats of the wrong type            
@@ -477,7 +476,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
             mask = self.get_throat_indices(subdomain=subdomain,indices=False)
             for i in range(0,sp.size(pnums)):
                 neighborTs[i] = sp.array(neighborTs[i])[mask[neighborTs[i]]]
-        return np.array(neighborTs,ndmin=1)
+        return sp.array(neighborTs,ndmin=1)
 
     def get_num_neighbors(self,pnums,subdomain=['all'],flatten=True):
         r"""
@@ -572,11 +571,11 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
 #        str_pore_cond = "\nPore conditions:"
 #        for key, value in self.pore_conditions.iteritems():
-#            str_pore_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
+#            str_pore_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,sp.array(value))
 #
 #        str_throat_cond = "\nThroat conditions:"
 #        for key, value in self.throat_conditions.iteritems():
-#            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,np.array(value))
+#            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,sp.array(value))
 
         return str_overview+str_pore+str_throat
 

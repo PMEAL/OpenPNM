@@ -57,7 +57,6 @@ phys_air.regenerate()
 #Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,loggername='OP',name='OP_1',network=pn)
 a = pn.get_pore_indices(subdomain='bottom')
-#Run algorithm
 OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 
 #b = pn.get_pore_indices(subdomain='top')
@@ -68,13 +67,12 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 #'''Perform an Injection Experiment (InvasionPercolation)'''
 ##----------------------------------------------------------------------
 ##Initialize algorithm object
-IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
-face = pn.get_pore_indices('right',indices=False)
-quarter = sp.rand(pn.get_num_pores(),)<.1
-inlets = pn.get_pore_indices()[face&quarter]
-outlets = pn.get_pore_indices('left')
-#Run algorithm
-IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
+#IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
+#face = pn.get_pore_indices('right',indices=False)
+#quarter = sp.rand(pn.get_num_pores(),)<.1
+#inlets = pn.get_pore_indices()[face&quarter]
+#outlets = pn.get_pore_indices('left')
+#IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
 #
 ##----------------------------------------------------------------------
 #'''Performm a Diffusion Simulation on Partially Filled Network'''

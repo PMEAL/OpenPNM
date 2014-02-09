@@ -31,19 +31,17 @@ class Delaunay(GenericNetwork):
 
     Examples
     --------
-    >>> print('nothing yet')
-
-    TODO:
+    >>> pn = OpenPNM.Network.Delaunay(name='test_delaunay').generate(num_pores=100,domain_size=[100,100,100])
+    >>> pn.get_num_pores()
+    100
+    >>> type(pn.get_num_throats())
+    <class 'int'>
 
     """
 
     def __init__(self,**kwargs):
         '''
         Create Delauny network object
-
-        Examples:
-        ---------
-        
         '''
         super(Delaunay,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
@@ -64,7 +62,7 @@ class Delaunay(GenericNetwork):
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
-        self._add_boundaries()
+#        self._add_boundaries()
         self._add_labels()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
         return self
