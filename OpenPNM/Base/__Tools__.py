@@ -7,26 +7,16 @@ module __Tools__: Base class to construct pore network tools
 """
 
 import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
-
 import scipy as sp
 from OpenPNM.Base import Utilities
 
 class Tools(Utilities):
     r'''
-    Tools - Base class to initialize pore network methods
-
-    This class contains the interface definition for the construction of networks
-
-    Parameters
-    ----------
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    loggername : string (optional)
-        Define the logger name to be used on console output. Defaults to class name.
+    This class contains tools to read and write data in OpenPNM objects
 
     '''
 
@@ -60,7 +50,8 @@ class Tools(Utilities):
             try: getattr(phase,'_'+element+'_data')[prop]
             except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'get_num_'+element+'s')(),))
             if indices!='': getattr(phase,'_'+element+'_data')[prop][indices] = sp.array(data,ndmin=1)
-            else: getattr(phase,'_'+element+'_data')[prop] = sp.array(data,ndmin=1) 
+            else: getattr(phase,'_'+element+'_data')[prop] = sp.array(data,ndmin=1)
+            
         elif subdomain and not phase: #Set geometry property
             ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: getattr(self,'_'+element+'_data')[prop] #Test existance of prop
@@ -72,6 +63,9 @@ class Tools(Utilities):
                     ind_temp[indices] = True
                     ind = ind_temp
                 else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
+            r'''
+            TODO:Shouldn't there be else here, for indices==''?  This doesn't seem to write scalar data either.
+            '''
             if sp.sum(ind) == sp.shape(data)[0] or sp.shape(data)[0]==1:
                 getattr(self,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
             else: print('data is the wrong size!')
@@ -90,6 +84,7 @@ class Tools(Utilities):
             if sp.sum(ind) == sp.shape(data)[0] or sp.shape(data)[0]==1:
                 getattr(phase,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
             else: print('data is the wrong size!')
+            
         elif not (phase or subdomain):  #Set topology property
             try: getattr(self,'_'+element+'_data')[prop]
             except: getattr(self,'_'+element+'_data')[prop] = sp.zeros_like(data)           
@@ -144,18 +139,25 @@ class Tools(Utilities):
  
     def set_pore_data(self,subdomain='',phase='',prop='',data='',indices=''):
         r'''
-        Writes data to fluid or network objects according to input arguments.  
-        Network topology data and pore/throat geometry data is stored on the network object.
-        Fluid properties and physics properties are stored on the corresponding fluid object.
+        Writes data to fluid or network objects according to input arguments.
         
         Parameters
         ----------
         prop : string
             Name of property to write
-        fluid : OpenPNM fluid object or fluid name string, optional
+        subdomain : Open
+        phase : OpenPNM Fluid object or fluid name string, optional
             Fluid to which data is written.  If omitted data is written to network object.
         data : array_like
             Data values to write to object
+            
+        See Also
+        --------
+        set_throat_data, set_pore_info, set_throat_info
+        
+        Notes
+        -----
+        This is wrapper method that calls set_data, which is generic for pores and throats
             
         Examples
         --------
@@ -169,16 +171,26 @@ class Tools(Utilities):
     def get_pore_data(self,subdomain='',phase='',prop='',indices=''):
         r'''
         Retrieves data from fluid or network objects according to input arguments.
+        
         Parameters
         ----------
         prop : string
             Name of property to retrieve.  Requesting property 'all' prints a list of existing properties.
         fluid : string, optional
             Name of fluid from which to retrieve data.  If omitted data is retrieved from network object.
+        
         Returns
         -------
         array_like
             An ndarray containing the requested property data from the specified object
+            
+        See Also
+        --------
+        get_throat_data, get_pore_info, get_throat_info
+
+        Notes
+        -----
+        This is a wrapper method that calls get_data, which is generic for pores and throats
             
         Examples
         --------
@@ -193,11 +205,60 @@ class Tools(Utilities):
 
     def set_throat_data(self,subdomain='',phase='',prop='',data='',indices=''):
         r'''
+        Writes data to fluid or network objects according to input arguments.  
+        Network topology data and pore/throat geometry data is stored on the network object.
+        Fluid properties and physics properties are stored on the corresponding fluid object.
+        
+        Parameters
+        ----------
+        prop : string
+            Name of property to write
+        fluid : OpenPNM fluid object or fluid name string, optional
+            Fluid to which data is written.  If omitted data is written to network object.
+        data : array_like
+            Data values to write to object
+            
+        See Also
+        --------
+        set_pore_data, set_pore_info, set_throat_info
+            
+        Notes
+        -----
+        This is wrapper method that calls set_data, which is generic for pores and throats
+        
+        Examples
+        --------
+        See set_pore_data
         '''
         self.set_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)         
 
     def get_throat_data(self,subdomain='',phase='',prop='',indices=''):
         r'''
+        Retrieves data from fluid or network objects according to input arguments.
+        
+        Parameters
+        ----------
+        prop : string
+            Name of property to retrieve.  Requesting property 'all' prints a list of existing properties.
+        fluid : string, optional
+            Name of fluid from which to retrieve data.  If omitted data is retrieved from network object.
+        
+        Returns
+        -------
+        array_like
+            An ndarray containing the requested property data from the specified object
+            
+        See Also
+        --------
+        get_pore_data, get_pore_info, get_throat_info
+
+        Notes
+        -----
+        This is a wrapper method that calls get_data, which is generic for pores and throats
+        
+        Examples
+        --------
+        See get_pore_data
         '''
         return self.get_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,indices=indices)     
 
@@ -250,6 +311,10 @@ class Tools(Utilities):
             This flag indicates whether locations are being sent as a boolean maks (default), 
             or a list of indices.
             
+        See Also
+        --------
+        set_pore_data, set_throat_data, set_throat_info
+            
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
@@ -266,10 +331,24 @@ class Tools(Utilities):
 
     def get_pore_info(self,prop='',return_indices=False):
         r'''
+        Retrieves locations where requested subdomain label is applies
+        
         Parameters
         ----------
         prop : string
             The name of the label you wish to retrieve (e.g. 'top')
+            
+        return_indices : bool, optional
+            This flag indicates that the returned result should be a list of indices
+            
+        Returns
+        -------
+        A boolean mask of length Np with True at all locations where subdomain label applies, 
+        or a list of indices where label applies.
+        
+        See Also
+        --------
+        get_pore_data, get_throat_data, get_throat_info
         
         Examples
         --------
@@ -285,13 +364,62 @@ class Tools(Utilities):
         
     def set_throat_info(self,prop='',locations='',is_indices=False):
         r'''
+        Parameters
+        ----------
+        prop : string
+            The name of the pore label you wish to apply (e.g. 'top')
+        locaitons : array_like
+            An array containing the locations (pores) where the label should be applied.
+            Can be either a boolean mask of Np length with True at label locations (default), 
+            a list of indices where label should be applied. 
+        is_indices : boolean
+            This flag indicates whether locations are being sent as a boolean maks (default), 
+            or a list of indices.
+            
+        See Also
+        --------
+        set_pore_data, set_throat_data, set_pore_info
+            
+        Examples
+        --------
+        See set_pore_info for usage
         '''
         self.set_info(element='throat',prop=prop,locations=locations,is_indices=is_indices)
         
     def get_throat_info(self,prop='',return_indices=False):
         r'''
+        Retrieves locations where requested subdomain label is applies
+        
+        Parameters
+        ----------
+        prop : string
+            The name of the label you wish to retrieve (e.g. 'top')
+            
+        return_indices : bool, optional
+            This flag indicates that the returned result should be a list of indices
+            
+        Returns
+        -------
+        A boolean mask of length Np with True at all locations where subdomain label applies, 
+        or a list of indices where label applies.
+        
+        See Also
+        --------
+        get_pore_data, get_throat_data, get_pore_info
+        
+        Examples
+        --------
+        See set_pore_info for usage
         '''
         return self.get_info(element='throat',prop=prop,return_indices=return_indices)
+        
+    def check_pore_labels(self,pnum):
+        labels = []
+        for item in self._pore_info.keys():
+            if self._pore_info[item][pnum]:
+                labels.append(item)
+        return labels
+            
         
     #--------------------------------------------------------------------------
     '''Object query methods'''
@@ -313,7 +441,11 @@ class Tools(Utilities):
         Returns
         -------
         Np : int
-            Returns the number of pores of the specified type
+            Number of pores with the specified subdomain label
+            
+        See Also
+        --------
+        get_num_throats
             
         Examples
         --------
@@ -326,6 +458,7 @@ class Tools(Utilities):
         45
         >>> pn.get_num_pores(subdomain=['top','front'],mode='intersection')
         5
+        
         '''
         #convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
@@ -353,6 +486,11 @@ class Tools(Utilities):
         Returns
         -------
         Nt : int
+            Number of throats with the specified subdomain label
+            
+        See Also
+        --------
+        get_num_pores
 
         Examples
         --------
@@ -365,6 +503,7 @@ class Tools(Utilities):
         76
         >>> pn.get_num_throats(subdomain=['top','front'],mode='intersection')
         4
+        
         '''
         #convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
@@ -377,7 +516,7 @@ class Tools(Utilities):
 
     def get_pore_indices(self,subdomain=['all'],indices=True,mode='union'):
         r'''
-        Returns pore locations where specified subdomain is active.
+        Returns pore locations where given subdomain labels exist.
         
         Parameters
         ----------
@@ -421,7 +560,7 @@ class Tools(Utilities):
 
     def get_throat_indices(self,subdomain=['all'],indices=True,mode='union'):
         r'''
-        Returns throat locations where subdomains are active.
+        Returns throat locations where given subdomain labels exist.
         
         Parameters
         ----------
@@ -466,16 +605,45 @@ class Tools(Utilities):
         
     def find_object_by_name(self,name):
         r'''
+        This is a short-cut method.  Given the string name of an 
+        OpenPNM Fluid, Geometry, Physics, Algorithm, or Network object 
+        this method will return that object
+        
+        Parameters
+        ----------
+        name : string
+            Unique name of desired object
+        
+        Returns
+        -------
+        OpenPNM Object
+            
+        Notes
+        -----
+        If any objects are instantiated without a name (i.e. name = ''), then
+        this method may start failing since the default name in many method calls
+        is name = ''.
+        
         '''
         for item in self._instances:
             if item.name == name:
                 obj = item
         return obj
 
-    def get_result(self,obj,**kwargs):
+    def get_result(self,alg_obj,**kwargs):
         r'''
+        This method invokes the update method on the given OpenPNM Algorithm object
+        
+        Parameters
+        ----------
+        alg_obj : OpenPNM Algorithm object
+        
+        Notes
+        -----
+        This method accepts keyword arguments which it passes on to algorithm object.
+        For specific details refer to the `update` of the algorithm.
         '''
-        obj.update(**kwargs)        
+        alg_obj.update(**kwargs)        
 
 if __name__ == '__main__':
     import doctest

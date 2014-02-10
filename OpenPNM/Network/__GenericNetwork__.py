@@ -8,9 +8,9 @@ module __GenericNetwork__: Abstract class to construct pore networks
 
 import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
+if sys.path[1] != parent_dir:
+    sys.path.insert(1, parent_dir)
 import OpenPNM
-
 import scipy as sp
 import scipy.sparse as sprs
 import pprint
@@ -23,6 +23,8 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
     Parameters
     ----------
+    name : string
+        Unique name for Network object
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
     loggername : string (optional)
@@ -31,7 +33,6 @@ class GenericNetwork(OpenPNM.Base.Tools):
     """
 
     def __init__(self, name,**kwargs):
-
         r"""
         Initialize
         """
@@ -53,7 +54,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         r"""
         Generate the network
         """
-        print('this method is not implemented')
+        self._logger.error('This method is not implemented')
  
     #--------------------------------------------------------------------------
     '''pore_data and throat_data interpolation methods'''
@@ -66,6 +67,15 @@ class GenericNetwork(OpenPNM.Base.Tools):
         ----------
         Tvals : array_like
             The array of throat information to be interpolated
+        
+        Returns
+        -------
+        Pvals : array_like
+            An array of size Np contain interpolated throat data
+            
+        See Also
+        --------
+        interpolate_throat_data
 
         Notes
         -----
@@ -93,6 +103,15 @@ class GenericNetwork(OpenPNM.Base.Tools):
         ----------
         Pvals : array_like
             The array of the pore condition to be interpolated
+        
+        Returns
+        -------
+        Tvals : array_like
+            An array of size Nt contain interpolated pore data
+            
+        See Also
+        --------
+        interpolate_throat_data
 
         Notes
         -----
@@ -379,11 +398,19 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.get_neighbor_pores(pnums=[0,1])
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.get_neighbor_pores(pnums=[0,2])
+        array([ 1,  3,  5,  7, 25, 27])
+        >>> pn.get_neighbor_pores(pnums=[0,1]) #Find all neighbors, excluding selves (default behavior)
         array([ 2,  5,  6, 25, 26])
-        >>> pn.get_neighbor_pores(pnums=[0,1],flatten=False)
-        array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
+        >>> pn.get_neighbor_pores(pnums=[0,2],flatten=False)
+        array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
+        >>> pn.get_neighbor_pores(pnums=[0,2],mode='intersection') #Find only common neighbors
+        array([1], dtype=int64)
+        >>> pn.get_neighbor_pores(pnums=[0,2],mode='not_intersection') #Exclude common neighbors
+        array([ 3,  5,  7, 25, 27], dtype=int64)
+        >>> pn.get_neighbor_pores(pnums=[0,1],mode='union') #Find all neighbors, including selves
+        array([ 0,  1,  2,  5,  6, 25, 26])
         """
         #Convert string to list, if necessary
         if type(subdomain) == str: subdomain = [subdomain]
@@ -417,7 +444,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
                 neighborPs[i] = sp.array(neighborPs[i])[mask[neighborPs[i]]]
         return sp.array(neighborPs,ndmin=1)
 
-    def get_neighbor_throats(self,pnums,subdomain=['all'],flatten=True,mode=''):
+    def get_neighbor_throats(self,pnums,subdomain=['all'],flatten=True,mode='union'):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
@@ -467,8 +494,6 @@ class GenericNetwork(OpenPNM.Base.Tools):
                 neighborTs = sp.unique(neighborTs)
             elif mode == 'intersection':
                 neighborTs = sp.unique(sp.where(sp.bincount(neighborTs)>1)[0])
-            elif mode == '':
-                neighborTs = sp.unique(neighborTs)
             #Remove throats of the wrong type            
             mask = self.get_throat_indices(subdomain=subdomain,indices=False)
             neighborTs = neighborTs[mask[neighborTs]]

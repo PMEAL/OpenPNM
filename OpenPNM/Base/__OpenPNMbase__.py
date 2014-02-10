@@ -62,7 +62,10 @@ class Utilities(object):
         else:
             self._logger = _logging.getLogger(self.__class__.__name__)
         if 'loglevel' in kwargs.keys():
-            loglevel=kwargs['loglevel']
+            loglevel = kwargs['loglevel']
+            self.set_loglevel(loglevel)
+        else:
+            loglevel = 50
             self.set_loglevel(loglevel)
             
         self.constants = scipy.constants

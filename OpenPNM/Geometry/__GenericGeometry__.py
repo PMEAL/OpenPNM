@@ -8,13 +8,12 @@ module __GenericGeometry__: Base class to construct pore networks
 
 import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
+if sys.path[1] != parent_dir:
+    sys.path.insert(1, parent_dir)
 import OpenPNM
 
 import scipy as sp
-import scipy.stats as spst
 from functools import partial
-import numpy as np
 
 class GenericGeometry(OpenPNM.Base.Utilities):
     r"""
@@ -37,7 +36,16 @@ class GenericGeometry(OpenPNM.Base.Utilities):
 
     loggername : string (optional)
         Sets a custom name for the logger, to help identify logger messages
-
+        
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> loc = pn.get_pore_indices() #Get all pores to define geometry everywhere
+    >>> geo = OpenPNM.Geometry.GenericGeometry(name='geo_test',locations=loc,network=pn)
+    >>> geo.add_method(prop='pore_seed',model='constant',value=0.123)
+    >>> seeds = pn.get_pore_data(subdomain='geo_test',prop='pore_seed')
+    >>> seeds[0]
+    0.123
     """
 
     def __init__(self, network,name,locations,**kwargs):
@@ -81,6 +89,7 @@ class GenericGeometry(OpenPNM.Base.Utilities):
         except AttributeError: print('could not find',kwargs['model'])
 
 if __name__ == '__main__':
-    pn = OpenPNM.Network.Cubic(name='test_net').generate(divisions=[5,5,5],lattice_spacing=[0.001])
-    test = OpenPNM.Geometry.GenericGeometry(loglevel=10,name='doc_test',locations=[0],network=pn)
+    pn = OpenPNM.Network.TestNet()
+    loc = pn.get_pore_indices()
+    test = OpenPNM.Geometry.GenericGeometry(name='doc_test',locations=loc,network=pn)
 
