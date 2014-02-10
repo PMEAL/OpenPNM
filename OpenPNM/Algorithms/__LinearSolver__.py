@@ -33,7 +33,6 @@ class LinearSolver(GenericAlgorithm):
         super(LinearSolver,self).__init__(**kwargs)
         self._logger.info("Create Linear Solver Algorithm Object")
 
-
     def _do_one_inner_iteration(self):
 
         if (self.BCtypes==0).all():
@@ -115,12 +114,12 @@ class LinearSolver(GenericAlgorithm):
 
     def _build_coefficient_matrix(self):
        
-        boundaries = self._net.get_pore_data(prop='numbering')[self._net.get_pore_info(prop='boundary')]
+        boundaries = self._net.get_pore_indices()[-sp.in1d(self._net.get_pore_indices(),self._net.get_pore_indices('internal'))]
         if (self.BCtypes[boundaries]==0).any():
             self.BCtypes[boundaries[self.BCtypes[boundaries]==0]] = 3
         
         # Filling coefficient matrix
-        pnum = self._net.get_pore_data(prop='numbering')
+        pnum = self._net.get_pore_indices()
         tpore1 = self._net.get_throat_data(prop='connections')[:,0]
         tpore2 = self._net.get_throat_data(prop='connections')[:,1]
 
@@ -144,10 +143,10 @@ class LinearSolver(GenericAlgorithm):
         A_dim = self._net.get_num_pores()
 
         if (self.BCtypes==2).any():
-            flux_pores = self._net.get_pore_data(prop='numbering')[self.BCtypes==2]
+            flux_pores = self._net.get_pore_indices()[self.BCtypes==2]
             flux_values = sp.unique(self.BCvalues[self.BCtypes==2])
             for i in list(range(len(flux_values))):
-                f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_data(prop='numbering')[self.BCvalues==flux_values[i]])]
+                f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_indices()[self.BCvalues==flux_values[i]])]
                 fn = self._net.get_neighbor_pores(f)
                 fn = fn[self._net.get_pore_info(prop='internal')[fn]]
                 ft = self._net.get_connecting_throat(f,fn)
@@ -201,7 +200,7 @@ class LinearSolver(GenericAlgorithm):
         extera_neu = self.extera_Neumann_equations
         A_dim = self.Coeff_dimension
         B = sp.zeros([A_dim,1])
-        Dir_pores = self._net.get_pore_data(prop='numbering')[self.BCtypes==1]
+        Dir_pores = self._net.get_pore_indices()[self.BCtypes==1]
         B[Dir_pores] = sp.reshape(self.BCvalues[Dir_pores],[len(Dir_pores),1])
         if (self.BCtypes==4).any():
             for item in list(range(len(extera_neu))):
