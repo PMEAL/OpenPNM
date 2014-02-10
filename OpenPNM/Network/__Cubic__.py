@@ -161,8 +161,7 @@ class Cubic(GenericNetwork):
         tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
         connections = np.vstack((tpore1,tpore2)).T
         connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
-        self.set_throat_data(prop='connections',data=connections)
-        self.set_throat_data(prop='type',data=np.zeros(np.shape(tpore1),dtype=np.int8))        
+        self.set_throat_data(prop='connections',data=connections)      
         self.set_throat_data(prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
         self.set_throat_info(prop='numbering',locations=np.ones_like(np.arange(0,np.shape(tpore1)[0])))
         self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
