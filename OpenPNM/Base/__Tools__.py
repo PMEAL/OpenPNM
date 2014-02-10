@@ -413,13 +413,31 @@ class Tools(Utilities):
         '''
         return self.get_info(element='throat',prop=prop,return_indices=return_indices)
         
-    def check_pore_labels(self,pnum):
+    def find_pore_labels(self,pnum):
+        r'''
+        Returns all the subdomain labels associated with the given pore
+        '''
         labels = []
         for item in self._pore_info.keys():
             if self._pore_info[item][pnum]:
                 labels.append(item)
         return labels
-            
+        
+    def refresh_info(self):
+        temp = sp.zeros_like(self.get_pore_data(prop='coords')[:,0],dtype=bool)
+        self.set_pore_info(prop='all',locations=temp)
+        temp = sp.zeros_like(self.get_throat_data(prop='connections')[:,0],dtype=bool)
+        self.set_throat_info(prop='all',locations=temp)
+    
+    def find_throat_labels(self,tnum):
+        r'''
+        Returns all the subdomain labels associated with the given throat
+        '''
+        labels = []
+        for item in self._throat_info.keys():
+            if self._throat_info[item][tnum]:
+                labels.append(item)
+        return labels
         
     #--------------------------------------------------------------------------
     '''Object query methods'''

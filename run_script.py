@@ -1,36 +1,28 @@
 import OpenPNM
 
-#======================================================================
+#==============================================================================
 '''Build Topological Network'''
-#======================================================================
+#==============================================================================
 pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[35,35,35],lattice_spacing=[0.0001])
 
-#======================================================================
+#==============================================================================
 '''Build Geometry'''
-#======================================================================
-geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='stick_and_ball',locations=pn.get_pore_indices(),loglevel=10)
+#==============================================================================
+geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='stick_and_ball',locations=pn.get_pore_indices())
 geom.regenerate()
 
-#======================================================================
+#==============================================================================
 '''Build Fluids'''
-#======================================================================
+#==============================================================================
 air = OpenPNM.Fluids.Air(network=pn)
 air.regenerate()
 
-water = OpenPNM.Fluids.GenericFluid(loggername='WATER',network=pn,name='water')
-water.set_pore_data(prop='Tc',data=647.096)
-water.set_pore_data(prop='Pc',data=22.06e6)
-water.set_pore_data(prop='MW',data=0.0291)
-water.add_method(prop='diffusivity',model='constant',value=1e-12)
-water.add_method(prop='viscosity',model='constant',value=0.001)
-water.add_method(prop='molar_density',model='constant',value=44445)
-water.add_method(prop='surface_tension',model='constant',value=0.072)
-water.add_method(prop='contact_angle',model='constant',value=110)
+water = OpenPNM.Fluids.Water(network=pn)
 water.regenerate()
 
-#======================================================================
+#==============================================================================
 '''Build Physics Objects'''
-#======================================================================
+#==============================================================================
 phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water,name='standard_water_physics')
 phys_water.add_method(prop='capillary_pressure',model='purcell',r_toroid=1e-5)
 phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
@@ -42,11 +34,11 @@ phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 phys_air.add_method(prop='diffusive_conductance',model='bulk_diffusion')
 phys_air.regenerate()
 
-#======================================================================
+#==============================================================================
 '''Begin Simulations'''
-#======================================================================
+#==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 #Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,loggername='OP',name='OP_1',network=pn)
 a = pn.get_pore_indices(subdomain='bottom')
@@ -56,9 +48,9 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 #OP_1.evaluate_trapping(outlets=b)
 #OP_1.plot_drainage_curve()
 
-##----------------------------------------------------------------------
+##-----------------------------------------------------------------------------
 #'''Perform an Injection Experiment (InvasionPercolation)'''
-##----------------------------------------------------------------------
+##-----------------------------------------------------------------------------
 ##Initialize algorithm object
 #IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
 #face = pn.get_pore_indices('right',indices=False)
@@ -67,9 +59,9 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 #outlets = pn.get_pore_indices('left')
 #IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
 #
-##----------------------------------------------------------------------
+##-----------------------------------------------------------------------------
 #'''Performm a Diffusion Simulation on Partially Filled Network'''
-##----------------------------------------------------------------------
+##-----------------------------------------------------------------------------
 ##Apply desired/necessary pore scale physics methods
 #air.regenerate()
 #water.regenerate()
