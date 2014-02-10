@@ -17,12 +17,21 @@ from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Template(GenericNetwork):
     r"""
-    Template - Class to create a cubic network with an arbitrary domain shape defined by a supplied template
+    This class contains the methods to create a cubic network with an arbitrary 
+    domain shape defined by a supplied template.
+    
+    To invoke the actual generation it is necessary to run the `generate` method.
 
     Parameters
     ----------
+    name : string
+        A unique name for the network
+        
     loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
+        
+    loggername : string
+        Overwrite the name of the logger, which defaults to the class name
 
     Examples
     --------
@@ -39,6 +48,13 @@ class Template(GenericNetwork):
         self._logger.debug(self.__class__.__name__,": ","Execute constructor")
     
     def generate(self, **params):
+        r'''
+        template : array_like, boolean
+            An image containing 1's where each pore should be located, and 0's elsewhere.
+            This image can be 1,2 or 3D.
+        lattice_spacing : float
+            The lattice constant for the network, used to scale distance between pores.
+        '''
         self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
         self._generate_setup(**params)
         self._generate_pores()

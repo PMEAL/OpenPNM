@@ -45,3 +45,9 @@ doctest.testmod(mod_to_test,report=report,verbose=verbose)
 #------------------------------------------------------------------------------
 import OpenPNM.Fluids.__GenericFluid__ as mod_to_test
 doctest.testmod(mod_to_test,report=report,verbose=verbose)
+
+import OpenPNM.Fluids.__Air__ as mod_to_test
+doctest.testmod(mod_to_test,report=report,verbose=verbose)
+
+import OpenPNM.Fluids.__Water__ as mod_to_test
+doctest.testmod(mod_to_test,report=report,verbose=verbose)

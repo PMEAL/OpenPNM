@@ -11,8 +11,9 @@ import OpenPNM
 
 import scipy as sp
 from functools import partial
+from OpenPNM.Base import Tools
 
-class GenericFluid(OpenPNM.Base.Tools):
+class GenericFluid(Tools):
     r"""
     GenericFluid - Base class to generate fluid properties
 
@@ -64,12 +65,12 @@ class GenericFluid(OpenPNM.Base.Tools):
         >>> print(pn.name)
         test_network
         >>> fluid = OpenPNM.Fluids.GenericFluid(network=pn,name='test_fluid')
-        >>> fluid.add_method(prop='diffusivity',model='constant',value=1)
+        >>> fluid.add_method(prop='diffusivity',model='constant',value=1.234)
         >>> fluid.regenerate()
         >>> fluid.get_pore_data(prop='diffusivity') #Use fluid's getter
-        array([1])
+        array([ 1.234])
         >>> pn.get_pore_data(prop='diffusivity',phase=fluid) #Use network's getter
-        array([1])
+        array([ 1.234])
         '''
         try:
             function = getattr( getattr(OpenPNM.Fluids, prop), kwargs['model'] ) # this gets the method from the file
@@ -104,7 +105,7 @@ class GenericFluid(OpenPNM.Base.Tools):
         return('This is the __str__ methods of the generic_fluid being overwritten')
 
 if __name__ =="__main__":
-    pn = OpenPNM.Network.Cubic(name='test_cubic').generate(divisions=[5,5,5],lattice_spacing=[1])
+    pn = OpenPNM.Network.TestNet()
     fluid = OpenPNM.Fluids.GenericFluid(name='test_fluid',network=pn)
     import doctest
     doctest.testmod(verbose=True)

@@ -22,21 +22,23 @@ from OpenPNM.Network import GenericNetwork
 
 class Cubic(GenericNetwork):
     r"""
-    Cubic - Class to create a basic cubic network
+    This class contains the methods for creating a *Cubic* network topology.  
+    To invoke the actual generation it is necessary to run the `generate` method.
 
     Parameters
     ----------
+    name : string
+        A unique name for the network
 
     loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
         
     loggername : string
-        Overwrite the name of the logger, which defaults to the generic class name
+        Overwrite the name of the logger, which defaults to the class name
 
     Examples
     --------
-    >>> print('none yet')
-    none yet
+    >>> pn = OpenPNM.Network.Cubic(name='test_cubic').generate(lattice_spacing=[1],divisions=[5,5,5])
 
     """
 
@@ -47,12 +49,10 @@ class Cubic(GenericNetwork):
 
     def generate(self,**params):
         '''
-        Create Cubic network. 
+        Invokes the creation of a Cubic network
 
         Parameters
         ----------
-
-        Critical\n
         domain_size : [float,float,float]
             domain_size = [3.0,3.0,3.0] (default)\n
             Bounding cube for internal pore positions\n
@@ -63,17 +63,6 @@ class Cubic(GenericNetwork):
             divisions = [3,3,3]\n
             Number of internal pores in each dimension.\n
             (Optional input. Replaces one of the above.)\n
-
-        Optional\n
-        stats_pores : dictionary
-            stats_pores = {'name':'weibull_min','shape':1.5,'loc': 6e-6,'scale':2e-5} (default)\n
-            Probablity distributions for random pore size assignment\n
-        stats_throats : dictionary
-            stats_throats = {'name':'weibull_min','shape':1.5,'loc': 6e-6,'scale':2e-5} (default)\n
-            Probablity distributions for random throat size assignment\n
-        btype : [logical,logical,logical]
-            btype = [0,0,0] (default)\n
-            Automatically create periodic throats between opposite x, y, or z faces
 
         '''
         self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")

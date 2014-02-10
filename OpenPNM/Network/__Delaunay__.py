@@ -21,13 +21,21 @@ from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Delaunay(GenericNetwork):
     r"""
-    Delaunay - Class to create a random network based on the Delaunay tessellation
+    This class contains the methods for creating a *Delaunay* network topology
+    based connecting pores with a Delaunay tessellation.  
+    
+    To invoke the actual generation it is necessary to run the `generate` method.
 
     Parameters
     ----------
-
+    name : string
+        A unique name for the network
+        
     loglevel : int
         Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
+        
+    loggername : string
+        Overwrite the name of the logger, which defaults to the class name
 
     Examples
     --------
@@ -52,7 +60,7 @@ class Delaunay(GenericNetwork):
         
         Parameters
         ----------
-        domain_size : list, [Lx,Ly,Lz]
+        domain_size : list of floats, [Lx,Ly,Lz]
             Bounding cube for internal pore positions
         num_pores : int
             Number of pores to place randomly within domain

@@ -1,12 +1,31 @@
-
-from .__GenericFluid__ import GenericFluid
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if sys.path[1] != parent_dir:
+    sys.path.insert(1, parent_dir)
+import OpenPNM
+from OpenPNM.Fluids.__GenericFluid__ import GenericFluid
 
 class Air(GenericFluid):
     r"""
-    Creates Fluid object with a default name 'air' and preset values
+    Creates Fluid object with a default name 'air' and preset values for air
+    
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network to which this fluid object will be attached.  
+        
+    Notes
+    -----
+    This explicit association is necessary so the Fluid object can initialize
+    data arrays of the correct size to store network data.
+    
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> air = OpenPNM.Fluids.Air(network=pn)
     """
     def __init__(self,**kwargs):
-        super(Air,self).__init__(**kwargs)
+        super(Air,self).__init__(name='air',**kwargs)
         self._logger.debug("Construct class")
         self.set_pore_data(prop='Tc',data=132.65)
         self.set_pore_data(prop='Pc',data=3.771e6)
@@ -17,4 +36,5 @@ class Air(GenericFluid):
         self.regenerate()
 
 if __name__ =="__main__":
-    print('no tests yet')
+    pn = OpenPNM.Network.TestNet()
+    air = OpenPNM.Fluids.Air(network=pn)
