@@ -26,7 +26,7 @@ class GenericGeometry(OpenPNM.Base.Utilities):
     network : OpenPNM Network Object
     
     name : string
-        The name to apply to the subdomain (e.g. 'layer_1')
+        The name to apply to the labels (e.g. 'layer_1')
         
     locations : boolean mask or list of indices
         The pore locations in the network where this geometry applies
@@ -43,7 +43,7 @@ class GenericGeometry(OpenPNM.Base.Utilities):
     >>> loc = pn.get_pore_indices() #Get all pores to define geometry everywhere
     >>> geo = OpenPNM.Geometry.GenericGeometry(name='geo_test',locations=loc,network=pn)
     >>> geo.add_method(prop='pore_seed',model='constant',value=0.123)
-    >>> seeds = pn.get_pore_data(subdomain='geo_test',prop='pore_seed')
+    >>> seeds = pn.get_pore_data(labels='geo_test',prop='pore_seed')
     >>> seeds[0]
     0.123
     """
