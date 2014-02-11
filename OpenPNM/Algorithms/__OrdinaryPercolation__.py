@@ -53,9 +53,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._fluid_inv = invading_fluid
         self._fluid_def = defending_fluid
         #Create a pore and throat conditions list to store inv_val at which each is invaded
-        self._p_inv = sp.zeros((self._net.get_num_pores(),))
+        self._p_inv = sp.zeros((self._net.num_pores(),))
         self._p_seq = sp.zeros_like(self._p_inv)
-        self._t_inv = sp.zeros((self._net.get_num_throats(),))
+        self._t_inv = sp.zeros((self._net.num_throats(),))
         self._t_seq = sp.zeros_like(self._t_inv)
         #Determine the invasion pressures to apply
         self._t_cap = self._net.get_throat_data(phase=self._fluid_inv,prop='capillary_pressure')
@@ -96,7 +96,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Find all pores with at least 1 invaded throat (invaded)
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
         nums = self._net.get_throat_data(prop='numbering')
-        temp = self._net.get_connected_pores(nums)
+        temp = self._net.find_connected_pores(nums)
         temp = temp[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
         Pinvaded[temp] = True
@@ -111,7 +111,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             #Clean up clusters (not invaded = -1, invaded >=0)
             clusters = clusters*(Pinvaded) - (~Pinvaded)
             #All clusters are invasion sites
-            inv_clusters = sp.r_[0:self._net.get_num_pores()]
+            inv_clusters = sp.r_[0:self._net.num_pores()]
         #Store invasion pressure in pores and throats
         pmask = np.in1d(clusters,inv_clusters)
         #Store result of invasion step
@@ -133,11 +133,11 @@ class OrdinaryPercolation(GenericAlgorithm):
             TODO: Ideally this should update the inv_Pc property and set trapped pores to a value of inf.
             This would allow update_occupancy and plotting to work.
         """
-        Np = self._net.get_num_pores()
-        Nt = self._net.get_num_throats()
+        Np = self._net.num_pores()
+        Nt = self._net.num_throats()
         self._p_trap = sp.zeros((Np,),dtype=float)
         inv_points = sp.unique(self._p_inv)
-        conns = self._net.get_connected_pores(sp.r_[0:Nt])
+        conns = self._net.find_connected_pores(sp.r_[0:Nt])
         for inv_val in inv_points[0:-1]:
             #Find clusters of defender pores
             Pinvaded = self._p_inv<=inv_val

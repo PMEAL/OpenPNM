@@ -138,20 +138,20 @@ class InvasionPercolation(GenericAlgorithm):
             # calculate Volume_coef for each throat
             self._Tvol_coef = tdia*tdia*tdia*np.pi/6/Pc_entry
         # Creating an array for invaded Pores(Np long, 0 for uninvaded, cluster number for inaveded)
-        self._Pinv = np.zeros((self._net.get_num_pores(),1),dtype=np.int32)
-        self._Pinv_original = np.zeros((self._net.get_num_pores(),1),dtype=np.int32)
+        self._Pinv = np.zeros((self._net.num_pores(),1),dtype=np.int32)
+        self._Pinv_original = np.zeros((self._net.num_pores(),1),dtype=np.int32)
         # Creating an array for invaded throats(Nt long, 0 for uninvaded, cluster number for inaveded)
-        self._Tinv = np.zeros((self._net.get_num_throats(),1),dtype=np.int32)
+        self._Tinv = np.zeros((self._net.num_throats(),1),dtype=np.int32)
         # Creating arrays for tracking invaded Pores(Np long, 0 for uninvaded, sequence for inaveded)
-        self._psequence = np.zeros((self._net.get_num_pores(),1),dtype=np.int32)
+        self._psequence = np.zeros((self._net.num_pores(),1),dtype=np.int32)
         if self._timing:
             # Creating arrays for tracking invaded Pores(Np long, -1 for uninvaded, simulation time for inaveded)
-            self._Ptime = np.zeros((self._net.get_num_pores(),1),dtype=np.float64)-1
+            self._Ptime = np.zeros((self._net.num_pores(),1),dtype=np.float64)-1
         # Creating arrays for tracking invaded throats(Nt long, 0 for uninvaded, sequence for inaveded)
-        self._tsequence = np.zeros((self._net.get_num_throats(),1),dtype=np.int32)
+        self._tsequence = np.zeros((self._net.num_throats(),1),dtype=np.int32)
         if self._timing:
             # Creating arrays for tracking invaded Pores(Np long, -1 for uninvaded, simulation time for inaveded)
-            self._Ttime = np.zeros((self._net.get_num_throats(),1),dtype=np.float64)-1
+            self._Ttime = np.zeros((self._net.num_throats(),1),dtype=np.float64)-1
         # Creating an array for tracking the last invaded pore in each cluster.
         # its length is equal to the maximum number of possible clusters.
         #self.plists = np.zeros((len(self._inlets),1),dtype=np.int32)
@@ -266,7 +266,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._sim_time = 0
         self._setup_for_IP()
         self._condition_update()
-        #self._Tinv = np.zeros(self._net.get_num_throats())
+        #self._Tinv = np.zeros(self._net.num_throats())
         while self._condition:
             self._do_one_outer_iteration()
         self.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
@@ -362,7 +362,7 @@ class InvasionPercolation(GenericAlgorithm):
             # Remove throat's contribution to the vol_coef
             self._cluster_data['vol_coef'][self._current_cluster-1] = self._cluster_data['vol_coef'][self._current_cluster-1]-self._Tvol_coef[tinvade]
         # Mark pore as invaded
-        Pores = self._net.get_connected_pores(tinvade)
+        Pores = self._net.find_connected_pores(tinvade)
         # If both pores are already invaded:
         if np.in1d(Pores,np.nonzero(self._Pinv)[0]).all():
             self._NewPore = -1
@@ -465,7 +465,7 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.debug( 'new throat:')
                     self._logger.debug(j)
                     self._logger.debug('connecting pores:')
-                    self._logger.debug(self._net.get_connected_pores(j))
+                    self._logger.debug(self._net.find_connected_pores(j))
                     # Add this throat data (pressure, number) to this cluster's "heap" of throat data.
                     heapq.heappush(self._tpoints[self._current_cluster-1],(self._fluid.get_throat_data(prop='capillary_pressure')[j],j))
                     # Add new throat number to throat list for this cluster
@@ -618,7 +618,7 @@ if __name__ =="__main__":
 
     print("- * Define inlet and outlet faces")
     face = pn.get_pore_data(prop='coords')[:,2]>2
-    quarter = sp.rand(pn.get_num_pores(),)<.01
+    quarter = sp.rand(pn.num_pores(),)<.01
     inlets = pn.get_pore_indices()[face&quarter]
     outlets = pn.get_pore_indices()[pn.get_pore_data(prop='coords')[:,2]<1]
 
