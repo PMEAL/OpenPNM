@@ -163,7 +163,7 @@ class Cubic(GenericNetwork):
         connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
         self.set_throat_data(prop='connections',data=connections)      
         self.set_throat_data(prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
-        self.set_throat_info(prop='all',locations=np.ones_like(np.arange(0,np.shape(tpore1)[0])))        
+        self.set_throat_info(prop='all',locations=np.ones_like(tpore1))
         self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
         
     def _add_labels(self):

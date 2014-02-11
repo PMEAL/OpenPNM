@@ -112,7 +112,7 @@ class Template(GenericNetwork):
             self.set_pore_data(prop='coords',data=coords)
         ind = np.arange(0,Np,dtype=np.int32)
         self.set_pore_data(prop='numbering',data=ind)
-        self.set_pore_info(prop='numbering',locations=sp.ones_like(ind))
+        self.set_pore_info(prop='all',locations=sp.ones_like(ind))
         self._logger.debug("generate_pores: End of method")
 
     def _generate_throats(self):
@@ -148,7 +148,7 @@ class Template(GenericNetwork):
         #Need a cleaner way to do this other than voxel_to_pore map...figure out later
         self.set_throat_data(prop='connections',data=self._voxel_to_pore_map[connections])
         self.set_pore_data(prop='numbering', data=np.arange(0,np.sum(tind)))
-        self.set_throat_info(prop='numbering',locations=sp.ones_like(tind))
+        self.set_throat_info(prop='all',locations=sp.ones_like(tind))
         self._logger.debug("generate_throats: End of method")
 
     def _add_boundaries(self):
