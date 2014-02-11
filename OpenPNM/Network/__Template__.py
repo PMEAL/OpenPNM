@@ -37,9 +37,9 @@ class Template(GenericNetwork):
     --------
     >>> img = sp.ones((30,30,30),dtype=int)
     >>> pn = OpenPNM.Network.Template(name='template_1').generate(template=img,lattice_spacing=0.001)
-    >>> pn.get_num_pores()
+    >>> pn.num_pores()
     27000
-    >>> pn.get_num_throats()
+    >>> pn.num_throats()
     78300
     """
 
@@ -185,7 +185,7 @@ class Template(GenericNetwork):
         """
         self._logger.info("add_pore_prop_from_template: Add pore properties")
         if prop_name not in net.pore_properties.keys():
-            net.pore_properties[prop_name] = np.zeros(net.get_num_pores(),dtype=template.dtype)
+            net.pore_properties[prop_name] = np.zeros(net.num_pores(),dtype=template.dtype)
         pore_prop = sp.ravel(template)[net.pore_properties['voxel_index']]
         net.pore_properties[prop_name] = pore_prop
         self._logger.debug("add_pore_prop_from_template: End of method")

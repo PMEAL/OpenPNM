@@ -94,7 +94,7 @@ class FickianDiffusion(LinearSolver):
             
         fn = self._net.get_neighbor_pores(face1_pores)
         fn = fn[self._net.pore_properties['type'][fn]<1]
-        ft = self._net.get_connecting_throat(face1_pores,fn)
+        ft = self._net.find_connecting_throat(face1_pores,fn)
         N = sp.sum(self._fluid.throat_conditions['diffusive_conductance'][ft]*sp.absolute(X1-sp.log(1-xA[fn])))
         Deff = N*L/(C*A*delta_X)
         return Deff

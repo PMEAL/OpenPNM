@@ -88,12 +88,12 @@ class GenericNetwork(OpenPNM.Base.Tools):
         """
         if sp.size(Tvals)==1:
             Pvals = Tvals
-        elif sp.size(Tvals) != self.get_num_throats():
+        elif sp.size(Tvals) != self.num_throats():
             raise Exception('The list of throat information received was the wrong length')
         else:
-            Pvals = sp.zeros((self.get_num_pores()))
+            Pvals = sp.zeros((self.num_pores()))
             #Only interpolate conditions for internal pores, type=0
-            Pnums = sp.r_[0:self.get_num_pores(Ptype=[0])]
+            Pnums = sp.r_[0:self.num_pores(Ptype=[0])]
             nTs = self.get_neighbor_throats(Pnums,flatten=False)
             for i in sp.r_[0:sp.shape(nTs)[0]]:
                 Pvals[i] = sp.mean(Tvals[nTs[i]])
@@ -127,13 +127,13 @@ class GenericNetwork(OpenPNM.Base.Tools):
         """
         if sp.size(Pvals)==1:
             Tvals = Pvals
-        elif sp.size(Pvals) != self.get_num_pores():
+        elif sp.size(Pvals) != self.num_pores():
             raise Exception('The list of pore information received was the wrong length')
         else:
-            Tvals = sp.zeros((self.get_num_throats()))
+            Tvals = sp.zeros((self.num_throats()))
             #Interpolate values for all throats, including those leading to boundary pores
-            Tnums = sp.r_[0:self.get_num_throats()]
-            nPs = self.get_connected_pores(Tnums,flatten=False)
+            Tnums = sp.r_[0:self.num_throats()]
+            nPs = self.find_connected_pores(Tnums,flatten=False)
             for i in sp.r_[0:sp.shape(nPs)[0]]:
                 Tvals[i] = sp.mean(Pvals[nPs[i]])
         return Tvals
@@ -223,8 +223,8 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         """
         self._logger.debug('create_adjacency_matrix: Start of method')
-        Np   = self.get_num_pores()
-        Nt   = self.get_num_throats()
+        Np   = self.num_pores()
+        Nt   = self.num_throats()
 
         if (data!=None) and (prop!=None):
             dataset = data
@@ -292,8 +292,8 @@ class GenericNetwork(OpenPNM.Base.Tools):
         """
         self._logger.debug('create_incidence_matrix: Start of method')
 
-        Nt = self.get_num_throats()
-        Np = self.get_num_pores()
+        Nt = self.num_throats()
+        Np = self.num_pores()
 
         if (data!=None) and (prop!=None):
             dataset = data
@@ -324,7 +324,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         if sprsfmt != 'all':
             return self.incidence_matrix[sprsfmt][tprop]
 
-    def get_connected_pores(self,tnums=[],flatten=False):
+    def find_connected_pores(self,tnums=[],flatten=False):
         r"""
         Return a list of pores connected to a list of throats
 
@@ -345,10 +345,10 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.get_connected_pores(tnums=[0,1])
+        >>> pn.find_connected_pores(tnums=[0,1])
         array([[0, 1],
                [0, 5]])
-        >>> pn.get_connected_pores(tnums=[0,1],flatten=True)
+        >>> pn.find_connected_pores(tnums=[0,1],flatten=True)
         array([0, 1, 5])
         """
         Ps = self._throat_data['connections'][tnums]
@@ -357,7 +357,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
             Ps = sp.unique(sp.hstack(Ps))
         return Ps
 
-    def get_connecting_throat(self,P1,P2):
+    def find_connecting_throat(self,P1,P2):
         r"""
         Return a the throat number connecting two given pores connected
 
@@ -374,7 +374,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.get_connecting_throat(0,1)
+        >>> pn.find_connecting_throat(0,1)
         array([0])
         """
         return sp.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
@@ -511,7 +511,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
                 neighborTs[i] = sp.array(neighborTs[i])[mask[neighborTs[i]]]
         return sp.array(neighborTs,ndmin=1)
 
-    def get_num_neighbors(self,pnums,labels=['all'],flatten=True):
+    def num_neighbors(self,pnums,labels=['all'],flatten=True):
         r"""
         Returns an ndarray containing the number of pores for each element in Pnums
 
@@ -528,9 +528,9 @@ class GenericNetwork(OpenPNM.Base.Tools):
         --------
         >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
         >>> Pnum = [0,1]
-        >>> pn.get_num_neighbors(Pnum,flatten=False)
+        >>> pn.num_neighbors(Pnum,flatten=False)
         array([3, 4], dtype=int8)
-        >>> pn.get_num_neighbors(Pnum)
+        >>> pn.num_neighbors(Pnum)
         7
         """
         #Convert string to list, if necessary
@@ -591,8 +591,8 @@ class GenericNetwork(OpenPNM.Base.Tools):
         'Basic properties of the network\n'
         '- Number of pores:   {num_pores}\n'
         '- Number of throats: {num_throats}\n'
-        ).format(num_pores=self.get_num_pores(),
-                   num_throats=self.get_num_throats())
+        ).format(num_pores=self.num_pores(),
+                   num_throats=self.num_throats())
 
         str_pore = "\nPore properties:"
         for key, value in self._pore_data.iteritems():

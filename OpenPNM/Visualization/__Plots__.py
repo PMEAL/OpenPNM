@@ -19,7 +19,7 @@ def Overview(net, fig=None):
 
   ax2 = fig.add_subplot(222)
   net.get_neighbor_pores(1)
-  x = sp.zeros(net.get_num_pores())
+  x = sp.zeros(net.num_pores())
   for i in range(0,sp.shape(net.adjacency_matrix['lil']['connections'].rows)[0]):
     x[i] = sp.shape(net.adjacency_matrix['lil']['connections'].rows[i])[0]
   ax2.hist(x,25,facecolor='yellow')
@@ -56,7 +56,7 @@ def Capillary_Pressure_Curve(net, fluid, fig=None):
 
   PcPoints = sp.unique(fluid.pore_conditions['Pc_invaded'])
   Snwp = sp.zeros_like(PcPoints)
-  Ps = sp.r_[0:net.get_num_pores([0])]
+  Ps = sp.r_[0:net.num_pores([0])]
   for i in range(1,sp.size(PcPoints)):
       Pc = PcPoints[i]
       Snwp[i] = sum((fluid.pore_conditions['Pc_invaded'][Ps]<Pc)*(fluid.pore_properties['volume'][Ps]))/sum(fluid.pore_properties['volume'][Ps])
