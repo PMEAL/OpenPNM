@@ -63,9 +63,6 @@ class Tools(Utilities):
                     ind_temp[indices] = True
                     ind = ind_temp
                 else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
-            r'''
-            TODO:Shouldn't there be else here, for indices==''?  This doesn't seem to write scalar data either.
-            '''
             if sp.sum(ind) == sp.shape(data)[0] or sp.shape(data)[0]==1:
                 getattr(self,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
             else: print('data is the wrong size!')
@@ -276,7 +273,10 @@ class Tools(Utilities):
         if is_indices:
             try: 
                 getattr(self,'_'+element+'_info')[prop]
-            except: getattr(self,'_'+element+'_info')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
+            except: getattr(self,'_'+element+'_info')[prop] = sp.zeros_like(getattr(self,'_'+element+'_info')['all'],dtype=bool)
+            r'''
+            FIXME:if locations are 0:10
+            '''
             getattr(self,'_'+element+'_info')[prop][locations] = True
         else:
             getattr(self,'_'+element+'_info')[prop] = sp.array(locations,dtype=bool,ndmin=1)

@@ -66,7 +66,7 @@ class TestNet(GenericNetwork):
         Np = Nx*Ny*Nz
         ind = sp.arange(0,Np)
         self.set_pore_data(prop='numbering',data=ind)
-        self.set_pore_info(prop='numbering',locations=sp.ones_like(ind))
+        self.set_pore_info(prop='all',locations=sp.ones_like(ind))
         pore_coords = Lc/2+Lc*sp.array(sp.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=sp.float64).T
         self.set_pore_data(prop='coords',data=pore_coords)
 
@@ -91,9 +91,8 @@ class TestNet(GenericNetwork):
         connections = sp.vstack((tpore1,tpore2)).T
         connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
         self.set_throat_data(prop='numbering',data=sp.arange(0,sp.shape(tpore1)[0]))
-        self.set_throat_info(prop='numbering',locations=sp.ones_like(sp.arange(0,sp.shape(tpore1)[0])))
-        self.set_throat_data(prop='connections',data=connections)
-        self.set_throat_data(prop='type',data=sp.zeros(sp.shape(tpore1),dtype=sp.int8))        
+        self.set_throat_info(prop='all',locations=sp.ones_like(sp.arange(0,sp.shape(tpore1)[0])))
+        self.set_throat_data(prop='connections',data=connections)       
         
     def _add_labels(self):
         coords = self.get_pore_data(prop='coords')

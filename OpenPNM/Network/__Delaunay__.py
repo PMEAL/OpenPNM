@@ -99,8 +99,10 @@ class Delaunay(GenericNetwork):
         """
         self._logger.info(sys._getframe().f_code.co_name+": Place randomly located pores in the domain")
         Np = self.get_num_pores()
-        self.set_pore_data(prop='coords',data=sp.rand(Np,3)*[self._Lx,self._Ly,self._Lz])
+        coords = sp.rand(Np,3)*[self._Lx,self._Ly,self._Lz]
+        self.set_pore_data(prop='coords',data=coords)
         self.set_pore_data(prop='numbering',data=self.get_pore_indices())
+        self.set_pore_info(prop='all',locations=np.ones_like(coords[:,0]))
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
 
     def _generate_throats(self):
@@ -136,7 +138,7 @@ class Delaunay(GenericNetwork):
         adjmat = sprs.triu(adjmat,k=1,format="coo")
         self.set_throat_data(prop='connections',data=sp.vstack((adjmat.row, adjmat.col)).T)
         self.set_throat_data(prop='numbering', data=sp.arange(0,sp.size(adjmat.row)))
-        self.set_throat_info(prop='numbering',locations=sp.ones((sp.size(adjmat.row),),dtype=bool))
+        self.set_throat_info(prop='all',locations=np.ones_like(tpore1))
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         
     def _add_labels(self):
