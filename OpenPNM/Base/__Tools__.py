@@ -423,12 +423,6 @@ class Tools(Utilities):
                 labels.append(item)
         return labels
         
-    def refresh_info(self):
-        temp = sp.zeros_like(self.get_pore_data(prop='coords')[:,0],dtype=bool)
-        self.set_pore_info(prop='all',locations=temp)
-        temp = sp.zeros_like(self.get_throat_data(prop='connections')[:,0],dtype=bool)
-        self.set_throat_info(prop='all',locations=temp)
-    
     def find_throat_labels(self,tnum):
         r'''
         Returns all the subdomain labels associated with the given throat
@@ -438,11 +432,25 @@ class Tools(Utilities):
             if self._throat_info[item][tnum]:
                 labels.append(item)
         return labels
-        
+
+    def check_info(self):
+        r'''
+        '''
+        temp = sp.zeros_like(self.get_pore_data(prop='coords')[:,0],dtype=bool)
+        self.set_pore_info(prop='all',locations=temp)
+        for item in self._pore_info.keys():
+            if sp.shape(self._pore_info[item])[0] != sp.shape(self._pore_info['all'])[0]:
+                print('warning, info arrays are wrong size!')
+        temp = sp.zeros_like(self.get_throat_data(prop='connections')[:,0],dtype=bool)
+        self.set_throat_info(prop='all',locations=temp)
+        for item in self._throat_info.keys():
+            if sp.shape(self._throat_info[item])[0] != sp.shape(self._throat_info['all'])[0]:
+                print('warning, info arrays are wrong size!')
+
     #--------------------------------------------------------------------------
     '''Object query methods'''
     #--------------------------------------------------------------------------
-    def get_num_pores(self,subdomain=['all'],mode='union'):
+    def get_num_pores(self,labels=['all'],mode='union'):
         r'''
         Returns the number of pores of the specified subdomain
 
@@ -451,6 +459,8 @@ class Tools(Utilities):
         subdomain : list of strings, optional
             The pore subdomain labels that should be included in the count.  
             If not supplied, all pores are counted.
+        labels : list of strings
+            Label of pores to be returned
         mode : string, optional
             Specifies whether the count should be done as a union (default) or intersection.
             In union mode, all pores with ANY of the given labels are counted.
@@ -470,24 +480,21 @@ class Tools(Utilities):
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.get_num_pores()
         125
-        >>> pn.get_num_pores(subdomain=['top'])
+        >>> pn.get_num_pores(labels=['top'])
         25
-        >>> pn.get_num_pores(subdomain=['top','front'],mode='union') #'union' is default
+        >>> pn.get_num_pores(labels=['top','front'],mode='union') #'union' is default
         45
-        >>> pn.get_num_pores(subdomain=['top','front'],mode='intersection')
+        >>> pn.get_num_pores(labels=['top','front'],mode='intersection')
         5
         
         '''
         #convert string to list, if necessary
-        if type(subdomain) == str: subdomain = [subdomain]
+        if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
-        if subdomain == ['all']: #return all pores
-            return sp.shape(self.get_pore_info(prop='numbering'))[0]
-        else:
-            temp = self.get_pore_indices(subdomain=subdomain,mode=mode,indices=False)
-            return sp.sum(temp) #return sum of Trues
+        temp = self.get_pore_indices(labels=labels,mode=mode,indices=False)
+        return sp.sum(temp) #return sum of Trues
             
-    def get_num_throats(self,subdomain=['all'],mode='union'):
+    def get_num_throats(self,labels=['all'],mode='union'):
         r'''
         Return the number of throats of the specified subdomain
 
@@ -515,31 +522,28 @@ class Tools(Utilities):
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.get_num_throats()
         300
-        >>> pn.get_num_throats(subdomain=['top'])
+        >>> pn.get_num_throats(labels=['top'])
         40
-        >>> pn.get_num_throats(subdomain=['top','front'],mode='union') #'union' is default
+        >>> pn.get_num_throats(labels=['top','front'],mode='union') #'union' is default
         76
-        >>> pn.get_num_throats(subdomain=['top','front'],mode='intersection')
+        >>> pn.get_num_throats(labels=['top','front'],mode='intersection')
         4
         
         '''
         #convert string to list, if necessary
-        if type(subdomain) == str: subdomain = [subdomain]
+        if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
-        if subdomain == ['all']: #return all pores
-            return sp.shape(self.get_throat_info(prop='numbering'))[0]
-        else:
-            temp = self.get_throat_indices(subdomain=subdomain,mode=mode,indices=False)
-            return sp.sum(temp) #return sum of Trues
+        temp = self.get_throat_indices(labels=labels,mode=mode,indices=False)
+        return sp.sum(temp) #return sum of Trues
 
-    def get_pore_indices(self,subdomain=['all'],indices=True,mode='union'):
+    def get_pore_indices(self,labels=['all'],indices=True,mode='union'):
         r'''
         Returns pore locations where given subdomain labels exist.
         
         Parameters
         ----------
-        subdomain : list of strings, optional
-            The pore subdomain label(s) whose locations are requested.
+        labels : list of strings, optional
+            The pore label(s) whose locations are requested.
             If omitted, all pore inidices are returned.
         indices : boolean, optional
             This flag specifies whether pore locations are returned a boolean mask of length Np,
@@ -553,37 +557,31 @@ class Tools(Utilities):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.get_pore_indices(subdomain=['top','front'],mode='intersection')
+        >>> pn.get_pore_indices(labels=['top','front'],mode='intersection')
         array([100, 105, 110, 115, 120], dtype=int64)
         '''
-        if type(subdomain) == str: subdomain = [subdomain] #convert string to list, if necessary
-        if subdomain == ['all']: #Return full index; easier than get_data(prop='nums')
-            if indices:
-                ind = sp.r_[0:self.get_num_pores()]
-            else:
-                ind = sp.ones((self.get_num_pores(),),dtype=bool)
-        else:
-            if mode == 'union':
-                union = sp.zeros((self.get_num_pores(),),dtype=bool)
-                for item in subdomain: #iterate over subdomain list and collect all indices
-                    union = union + self.get_info(element='pore',prop=item)
-                ind = union
-            elif mode == 'intersection':
-                intersect = sp.ones((self.get_num_pores(),),dtype=bool)
-                for item in subdomain: #iterate over subdomain list and collect all indices
-                    intersect = intersect*self.get_info(element='pore',prop=item)
-                ind = intersect
-            if indices: ind = sp.where(ind==True)[0]
+        if type(labels) == str: labels = [labels] #convert string to list, if necessary
+        if mode == 'union':
+            union = sp.zeros_like(self.get_pore_info(prop='all'),dtype=bool)
+            for item in labels: #iterate over labels list and collect all indices
+                union = union + self.get_info(element='pore',prop=item)
+            ind = union
+        elif mode == 'intersection':
+            intersect = sp.ones((self.get_num_pores(),),dtype=bool)
+            for item in labels: #iterate over labels list and collect all indices
+                intersect = intersect*self.get_info(element='pore',prop=item)
+            ind = intersect
+        if indices: ind = sp.where(ind==True)[0]
         return ind
 
-    def get_throat_indices(self,subdomain=['all'],indices=True,mode='union'):
+    def get_throat_indices(self,labels=['all'],indices=True,mode='union'):
         r'''
         Returns throat locations where given subdomain labels exist.
         
         Parameters
         ----------
-        subdomain : list of strings, optional
-            The throat subdomain label(s) whose locations are requested.
+        labels : list of strings, optional
+            The throat label(s) whose locations are requested.
             If omitted, all throat inidices are returned.
         indices : boolean, optional
             This flag specifies whether throat locations are returned as a boolean mask of length Np,
@@ -601,24 +599,18 @@ class Tools(Utilities):
         >>> Tind[0:5]
         array([0, 1, 2, 3, 4])
         '''
-        if type(subdomain) == str: subdomain = [subdomain] #convert string to list, if necessary
-        if subdomain == ['all']: #Return full index; easier than get_data(prop='nums')
-            if indices:
-                ind = sp.r_[0:self.get_num_throats()]
-            else:
-                ind = sp.ones((self.get_num_throats(),),dtype=bool)
-        else:
-            if mode == 'union':
-                union = sp.zeros((self.get_num_throats(),),dtype=bool)
-                for item in subdomain: #iterate over subdomain list and collect all indices
-                    union = union + self.get_info(element='throat',prop=item)
-                ind = union
-            elif mode == 'intersection':
-                intersect = sp.ones((self.get_num_throats(),),dtype=bool)
-                for item in subdomain: #iterate over subdomain list and collect all indices
-                    intersect = intersect*self.get_info(element='throat',prop=item)
-                ind = intersect
-            if indices: ind = sp.where(ind==True)[0]
+        if type(labels) == str: labels = [labels] #convert string to list, if necessary
+        if mode == 'union':
+            union = sp.zeros_like(self.get_throat_info(prop='all'),dtype=bool)
+            for item in labels: #iterate over labels list and collect all indices
+                union = union + self.get_info(element='throat',prop=item)
+            ind = union
+        elif mode == 'intersection':
+            intersect = sp.ones((self.get_num_throats(),),dtype=bool)
+            for item in labels: #iterate over labels list and collect all indices
+                intersect = intersect*self.get_info(element='throat',prop=item)
+            ind = intersect
+        if indices: ind = sp.where(ind==True)[0]
         return ind
         
     def find_object_by_name(self,name):

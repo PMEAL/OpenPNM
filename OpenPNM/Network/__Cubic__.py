@@ -135,7 +135,7 @@ class Cubic(GenericNetwork):
         pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self.set_pore_data(prop='coords',data=pore_coords)
         self.set_pore_data(prop='numbering',data=ind)
-        self.set_pore_info(prop='numbering',locations=np.ones_like(ind))
+        self.set_pore_info(prop='all',locations=np.ones_like(ind))
         self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
 
     def _generate_throats(self):
@@ -163,7 +163,7 @@ class Cubic(GenericNetwork):
         connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
         self.set_throat_data(prop='connections',data=connections)      
         self.set_throat_data(prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
-        self.set_throat_info(prop='numbering',locations=np.ones_like(np.arange(0,np.shape(tpore1)[0])))
+        self.set_throat_info(prop='all',locations=np.ones_like(np.arange(0,np.shape(tpore1)[0])))        
         self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
         
     def _add_labels(self):
