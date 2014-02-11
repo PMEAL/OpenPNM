@@ -147,7 +147,7 @@ class LinearSolver(GenericAlgorithm):
             flux_values = sp.unique(self.BCvalues[self.BCtypes==2])
             for i in list(range(len(flux_values))):
                 f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_indices()[self.BCvalues==flux_values[i]])]
-                fn = self._net.get_neighbor_pores(f)
+                fn = self._net.find_neighbor_pores(f)
                 fn = fn[self._net.get_pore_info(prop='internal')[fn]]
                 ft = self._net.find_connecting_throat(f,fn)
                 self.BCtypes[f] = 4
@@ -157,7 +157,7 @@ class LinearSolver(GenericAlgorithm):
             self.extera_Neumann_equations = sp.unique(self.BCvalues[self.BCtypes==4])
             A_dim = A_dim + len(self.extera_Neumann_equations)
             extera_neu = self.extera_Neumann_equations
-            g_super = sp.average(self._conductance[self._net.get_neighbor_throats(pnum[self.BCtypes==4])])*1e5
+            g_super = sp.average(self._conductance[self._net.find_neighbor_throats(pnum[self.BCtypes==4])])*1e5
             for item in list(range(len(extera_neu))):
                 neu_tpore2 = pnum[self.BCvalues==extera_neu[item]]
 
@@ -214,7 +214,7 @@ class LinearSolver(GenericAlgorithm):
             pores1 = self._net.find_connected_pores(throats)[:,0]
             pores2 = self._net.find_connected_pores(throats)[:,1]
         else:            
-            throats = self._net.get_neighbor_throats(pores,flatten=True)
+            throats = self._net.find_neighbor_throats(pores,flatten=True)
             pores1 = self._net.find_connected_pores(throats)[:,0]
             pores2 = self._net.find_connected_pores(throats)[:,1]
         X1 = self._result[pores1]

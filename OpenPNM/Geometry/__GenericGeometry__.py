@@ -63,7 +63,7 @@ class GenericGeometry(OpenPNM.Base.Utilities):
         r'''
         TODO: The following lines will create conflicting throat labels when additionaly geometries are added
         '''
-        Tn = network.get_neighbor_throats(ind)
+        Tn = network.find_neighbor_throats(ind)
         network.set_throat_info(prop=name,locations=Tn,is_indices=True)
         network._geometry.append(self) #attach geometry to network
         self.name = name

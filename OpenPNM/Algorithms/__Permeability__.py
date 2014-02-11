@@ -90,7 +90,7 @@ class Permeability(LinearSolver):
             lz = (max(coordz[face1_pores]) - min(coordz[face1_pores]))*1e-6
             A = lx*lz
             
-        fn = self._net.get_neighbor_pores(face1_pores)
+        fn = self._net.find_neighbor_pores(face1_pores)
         fn = fn[self._net.pore_properties['type'][fn]<1]
         ft = self._net.find_connecting_throat(face1_pores,fn)
         Q = sp.sum(self._fluid.throat_conditions['hydraulic_conductance'][ft]*sp.absolute(P1-p[fn]))
