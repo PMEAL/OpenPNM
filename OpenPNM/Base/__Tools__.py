@@ -258,7 +258,7 @@ class Tools(Utilities):
         '''
         return self._get_data(element='throat',labels=labels,phase=phase,prop=prop,indices=indices)     
 
-    def _set_info(self,element='',prop='',locations='',is_indices=False,mode='merge'):
+    def _set_info(self,element='',label='',locations='',mode='merge'):
         r'''
         This is the actual info setter method, but it should not be called directly.  
         Wrapper methods have been created.  Use set_pore_info and get_pore_info.
@@ -267,17 +267,22 @@ class Tools(Utilities):
         --------
         set_pore_info, set_throat_info
         '''
+        if type(locations)!=sp.ndarray:
+            locations = sp.array(locations,ndmin=1)
         if mode=='overwrite':
-            getattr(self,'_'+element+'_info')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
-        if is_indices:
+            getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+        if locations.dtype!=bool:
             try: 
-                getattr(self,'_'+element+'_info')[prop]
-            except: getattr(self,'_'+element+'_info')[prop] = sp.zeros_like(getattr(self,'_'+element+'_info')['all'],dtype=bool)
-            getattr(self,'_'+element+'_info')[prop][locations] = True
+                getattr(self,'_'+element+'_info')[label]
+            except: 
+                if label=='all':
+                    getattr(self,'_'+element+'_info')[label] = sp.array(locations,dtype=bool,ndmin=1)
+                else: getattr(self,'_'+element+'_info')[label] = sp.zeros_like(getattr(self,'_'+element+'_info')['all'],dtype=bool)
+            getattr(self,'_'+element+'_info')[label][locations] = True
         else:
-            getattr(self,'_'+element+'_info')[prop] = sp.array(locations,dtype=bool,ndmin=1)
+            getattr(self,'_'+element+'_info')[label] = sp.array(locations,dtype=bool,ndmin=1)
 
-    def _get_info(self,element='',prop='',return_indices=False):
+    def _get_info(self,element='',label='',return_indices=False):
         r'''
         This is the actual info getter method, but it should not be called directly.  
         Wrapper methods have been created.  Use get_pore_info and get_throat_info
@@ -288,11 +293,11 @@ class Tools(Utilities):
         
         '''
         if return_indices:
-            return sp.where(getattr(self,'_'+element+'_info')[prop]==True)[0]
+            return sp.where(getattr(self,'_'+element+'_info')[label]==True)[0]
         else:
-            return getattr(self,'_'+element+'_info')[prop]
-
-    def set_pore_info(self,prop='',locations='',is_indices=False,mode='merge'):
+            return getattr(self,'_'+element+'_info')[label]
+           
+    def set_pore_info(self,label='',locations='',mode='merge'):
         r'''
         Parameters
         ----------
@@ -324,9 +329,9 @@ class Tools(Utilities):
         >>> pn.get_pore_info(prop='test',return_indices=True) #Retrieve values as indices
         array([0, 1], dtype=int64)
         '''
-        self._set_info(element='pore',prop=prop,locations=locations,is_indices=is_indices)
+        self._set_info(element='pore',label=label,locations=locations)
 
-    def get_pore_info(self,prop='',return_indices=False):
+    def get_pore_info(self,label='',return_indices=False):
         r'''
         Retrieves locations where requested label is applies
         
@@ -357,9 +362,9 @@ class Tools(Utilities):
         >>> result[97:103]
         array([False, False, False,  True,  True,  True], dtype=bool)
         '''
-        return self._get_info(element='pore',prop=prop,return_indices=return_indices)
+        return self._get_info(element='pore',label=label,return_indices=return_indices)
         
-    def set_throat_info(self,prop='',locations='',is_indices=False,mode='merge'):
+    def set_throat_info(self,label='',locations='',mode='merge'):
         r'''
         Parameters
         ----------
@@ -383,9 +388,9 @@ class Tools(Utilities):
         --------
         See set_pore_info for usage
         '''
-        self._set_info(element='throat',prop=prop,locations=locations,is_indices=is_indices)
+        self._set_info(element='throat',label=label,locations=locations)
         
-    def get_throat_info(self,prop='',return_indices=False):
+    def get_throat_info(self,label='',return_indices=False):
         r'''
         Retrieves locations where requested labels are applied
         
@@ -410,7 +415,7 @@ class Tools(Utilities):
         --------
         See set_pore_info for usage
         '''
-        return self._get_info(element='throat',prop=prop,return_indices=return_indices)
+        return self._get_info(element='throat',label=label,return_indices=return_indices)
         
     def find_labels(self,pnum='',tnum=''):
         r'''
@@ -488,12 +493,12 @@ class Tools(Utilities):
         r'''
         '''
         temp = sp.zeros_like(self.get_pore_data(prop='coords')[:,0],dtype=bool)
-        self.set_pore_info(prop='all',locations=temp)
+        self.set_pore_info(label='all',locations=temp)
         for item in self._pore_info.keys():
             if sp.shape(self._pore_info[item])[0] != sp.shape(self._pore_info['all'])[0]:
                 print('warning, info arrays are wrong size!')
         temp = sp.zeros_like(self.get_throat_data(prop='connections')[:,0],dtype=bool)
-        self.set_throat_info(prop='all',locations=temp)
+        self.set_throat_info(label='all',locations=temp)
         for item in self._throat_info.keys():
             if sp.shape(self._throat_info[item])[0] != sp.shape(self._throat_info['all'])[0]:
                 print('warning, info arrays are wrong size!')
@@ -613,14 +618,14 @@ class Tools(Utilities):
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         if mode == 'union':
-            union = sp.zeros_like(self.get_pore_info(prop='all'),dtype=bool)
+            union = sp.zeros_like(self.get_pore_info(label='all'),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                    union = union + self._get_info(element='pore',prop=item)
+                    union = union + self._get_info(element='pore',label=item)
             ind = union
         elif mode == 'intersection':
             intersect = sp.ones((self.num_pores(),),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                    intersect = intersect*self._get_info(element='pore',prop=item)
+                    intersect = intersect*self._get_info(element='pore',label=item)
             ind = intersect
         if indices: ind = sp.where(ind==True)[0]
         return ind
@@ -652,14 +657,14 @@ class Tools(Utilities):
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         if mode == 'union':
-            union = sp.zeros_like(self.get_throat_info(prop='all'),dtype=bool)
+            union = sp.zeros_like(self.get_throat_info(label='all'),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                    union = union + self._get_info(element='throat',prop=item)
+                    union = union + self._get_info(element='throat',label=item)
             ind = union
         elif mode == 'intersection':
             intersect = sp.ones((self.num_throats(),),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                    intersect = intersect*self._get_info(element='throat',prop=item)
+                    intersect = intersect*self._get_info(element='throat',label=item)
             ind = intersect
         if indices: ind = sp.where(ind==True)[0]
         return ind

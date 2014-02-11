@@ -41,8 +41,8 @@ class GenericAlgorithm(OpenPNM.Base.Tools):
         self._logger.debug("Construct class")
         self.name = name
         self._net = network
-        self.set_pore_info(prop='all',locations=self._net.get_pore_info(prop='all')) #This is necessary for the methods from 'tools' to work.  They must know network size.
-        self.set_throat_info(prop='all',locations=self._net.get_pore_info(prop='all'))  
+        self.set_pore_info(label='all',locations=self._net.get_pore_info(label='all')) #This is necessary for the methods from 'tools' to work.  They must know network size.
+        self.set_throat_info(label='all',locations=self._net.get_pore_info(label='all'))  
 
     def run(self,**params):
         r"""

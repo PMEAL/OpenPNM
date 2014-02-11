@@ -98,17 +98,17 @@ class LinearSolver(GenericAlgorithm):
         self.BCvalues = sp.zeros(self._net.num_pores())
         for bctype in self._pore_info.keys():
             if bctype=='Dirichlet':
-                self.BCtypes[self.get_pore_info(prop='Dirichlet')] = 1
-                self.BCvalues[self.get_pore_info(prop='Dirichlet')] = self.get_pore_data(labels='Dirichlet',prop='BCval')
+                self.BCtypes[self.get_pore_info(label='Dirichlet')] = 1
+                self.BCvalues[self.get_pore_info(label='Dirichlet')] = self.get_pore_data(labels='Dirichlet',prop='BCval')
             elif bctype=='Neumann_flux':
-                self.BCtypes[self.get_pore_info(prop='Neumann_flux')] = 2
-                self.BCvalues[self.get_pore_info(prop='Neumann_flux')] = self.get_pore_data(labels='Neumann_flux',prop='BCval')                
+                self.BCtypes[self.get_pore_info(label='Neumann_flux')] = 2
+                self.BCvalues[self.get_pore_info(label='Neumann_flux')] = self.get_pore_data(labels='Neumann_flux',prop='BCval')                
             elif bctype=='Neumann_insulated':
-                self.BCtypes[self.get_pore_info(prop='Neumann_insulated')] = 3
-                self.BCvalues[self.get_pore_info(prop='Neumann_insulated')] = self.get_pore_data(labels='Neumann_insulated',prop='BCval') 
+                self.BCtypes[self.get_pore_info(label='Neumann_insulated')] = 3
+                self.BCvalues[self.get_pore_info(label='Neumann_insulated')] = self.get_pore_data(labels='Neumann_insulated',prop='BCval') 
             elif bctype=='Neumann_rate':
-                self.BCtypes[self.get_pore_info(prop='Neumann_rate')] = 4
-                self.BCvalues[self.get_pore_info(prop='Neumann_rate')] = self.get_pore_data(labels='Neumann_rate',prop='BCval') 
+                self.BCtypes[self.get_pore_info(label='Neumann_rate')] = 4
+                self.BCvalues[self.get_pore_info(label='Neumann_rate')] = self.get_pore_data(labels='Neumann_rate',prop='BCval') 
 
 
 
@@ -148,7 +148,7 @@ class LinearSolver(GenericAlgorithm):
             for i in list(range(len(flux_values))):
                 f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_indices()[self.BCvalues==flux_values[i]])]
                 fn = self._net.find_neighbor_pores(f)
-                fn = fn[self._net.get_pore_info(prop='internal')[fn]]
+                fn = fn[self._net.get_pore_info(label='internal')[fn]]
                 ft = self._net.find_connecting_throat(f,fn)
                 self.BCtypes[f] = 4
                 self.BCvalues[f] = sp.sum(self.BCvalues[f]*(self._net.get_throat_data(prop='diameter')[ft])**2)
