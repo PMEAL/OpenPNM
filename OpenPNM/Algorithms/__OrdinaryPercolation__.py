@@ -96,7 +96,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Find all pores with at least 1 invaded throat (invaded)
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
         nums = self._net.get_throat_data(prop='numbering')
-        temp = self._net.get_connected_pores(nums)
+        temp = self._net.find_connected_pores(nums)
         temp = temp[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
         Pinvaded[temp] = True
@@ -137,7 +137,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         Nt = self._net.num_throats()
         self._p_trap = sp.zeros((Np,),dtype=float)
         inv_points = sp.unique(self._p_inv)
-        conns = self._net.get_connected_pores(sp.r_[0:Nt])
+        conns = self._net.find_connected_pores(sp.r_[0:Nt])
         for inv_val in inv_points[0:-1]:
             #Find clusters of defender pores
             Pinvaded = self._p_inv<=inv_val

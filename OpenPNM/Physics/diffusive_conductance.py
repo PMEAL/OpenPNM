@@ -40,7 +40,7 @@ def bulk_diffusion(physics,network,fluid,**params):
     ct = network.interpolate_throat_data(cp)
     DABt = network.interpolate_throat_data(DABp)
     #Get Nt-by-2 list of pores connected to each throat
-    pores = network.get_connected_pores(network.get_throat_data(prop='numbering'),flatten=0)
+    pores = network.find_connected_pores(network.get_throat_data(prop='numbering'),flatten=0)
     #Find g for half of pore 1
     gp1 = ct*DABt*network.get_pore_data(prop='diameter')[pores[:,0]]**2/(0.5*network.get_pore_data(prop='diameter')[pores[:,0]])
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf

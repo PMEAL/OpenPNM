@@ -55,11 +55,11 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 ##Initialize algorithm object
 #IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
 #face = pn.get_pore_indices('right',indices=False)
-#quarter = sp.rand(pn.get_num_pores(),)<.1
+#quarter = sp.rand(pn.num_pores(),)<.1
 #inlets = pn.get_pore_indices()[face&quarter]
 #outlets = pn.get_pore_indices('left')
 #IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
-#
+
 ##----------------------------------------------------------------------
 #'''Perform Fickian Diffusion'''
 ##----------------------------------------------------------------------

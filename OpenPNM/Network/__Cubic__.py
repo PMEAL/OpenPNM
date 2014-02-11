@@ -180,7 +180,7 @@ class Cubic(GenericNetwork):
         for item in ['top','bottom','left','right','front','back']:
             ps = self.get_pore_indices(item)
             ts = self.get_neighbor_throats(ps)
-            ps = self.get_connected_pores(ts)
+            ps = self.find_connected_pores(ts)
             ps0 = self.get_pore_info(prop=item)[ps[:,0]]
             ps1 = self.get_pore_info(prop=item)[ps[:,1]]
             ts = ts[ps1*ps0]
@@ -446,7 +446,7 @@ class Cubic(GenericNetwork):
         btnum = np.size(btlist)
         boundary_pore_list = np.zeros((btnum,2),dtype=np.int32)
         for i in range(btnum):
-            boundary_pore_list[i] = self._net.get_connected_pores(btlist[i])
+            boundary_pore_list[i] = self._net.find_connected_pores(btlist[i])
         #   For each boundary pore in the pair, adopt the internal pore's coords
         for i in boundary_pore_list:
             if i[0] >= pnum_orig:

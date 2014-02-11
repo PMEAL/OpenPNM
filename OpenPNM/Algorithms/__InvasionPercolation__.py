@@ -362,7 +362,7 @@ class InvasionPercolation(GenericAlgorithm):
             # Remove throat's contribution to the vol_coef
             self._cluster_data['vol_coef'][self._current_cluster-1] = self._cluster_data['vol_coef'][self._current_cluster-1]-self._Tvol_coef[tinvade]
         # Mark pore as invaded
-        Pores = self._net.get_connected_pores(tinvade)
+        Pores = self._net.find_connected_pores(tinvade)
         # If both pores are already invaded:
         if np.in1d(Pores,np.nonzero(self._Pinv)[0]).all():
             self._NewPore = -1
@@ -465,7 +465,7 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.debug( 'new throat:')
                     self._logger.debug(j)
                     self._logger.debug('connecting pores:')
-                    self._logger.debug(self._net.get_connected_pores(j))
+                    self._logger.debug(self._net.find_connected_pores(j))
                     # Add this throat data (pressure, number) to this cluster's "heap" of throat data.
                     heapq.heappush(self._tpoints[self._current_cluster-1],(self._fluid.get_throat_data(prop='capillary_pressure')[j],j))
                     # Add new throat number to throat list for this cluster
