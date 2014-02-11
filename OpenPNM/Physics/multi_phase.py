@@ -14,7 +14,7 @@ def effective_occupancy(network,fluid,method='strict'):
     """
     if method == 'strict':
         #if only EITHER pore is filled an open throat is considered closed
-        pores = network.get_connected_pores(network.get_throat_data(prop='numbering'),flatten=0)
+        pores = network.find_connected_pores(network.get_throat_data(prop='numbering'),flatten=0)
         network.set_throat_data(phase=fluid,prop='conduit_occupancy',data=network.get_pore_data(phase=fluid,prop='occupancy')[pores[:,0]]*network.get_pore_data(phase=fluid,prop='occupancy')[pores[:,1]])
         network.set_throat_data(phase=fluid,prop='conduit_occupancy',data=-network.get_pore_data(phase=fluid,prop='occupancy')[pores[:,0]]*-network.get_pore_data(phase=fluid,prop='occupancy')[pores[:,1]])
     elif method == 'moderate':

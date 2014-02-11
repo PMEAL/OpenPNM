@@ -149,7 +149,7 @@ class LinearSolver(GenericAlgorithm):
                 f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_indices()[self.BCvalues==flux_values[i]])]
                 fn = self._net.get_neighbor_pores(f)
                 fn = fn[self._net.get_pore_info(prop='internal')[fn]]
-                ft = self._net.get_connecting_throat(f,fn)
+                ft = self._net.find_connecting_throat(f,fn)
                 self.BCtypes[f] = 4
                 self.BCvalues[f] = sp.sum(self.BCvalues[f]*(self._net.get_throat_data(prop='diameter')[ft])**2)
 
@@ -211,12 +211,12 @@ class LinearSolver(GenericAlgorithm):
     def rate(self,pores=[],throats=[]):
 
         if throats:
-            pores1 = self._net.get_connected_pores(throats)[:,0]
-            pores2 = self._net.get_connected_pores(throats)[:,1]
+            pores1 = self._net.find_connected_pores(throats)[:,0]
+            pores2 = self._net.find_connected_pores(throats)[:,1]
         else:            
             throats = self._net.get_neighbor_throats(pores,flatten=True)
-            pores1 = self._net.get_connected_pores(throats)[:,0]
-            pores2 = self._net.get_connected_pores(throats)[:,1]
+            pores1 = self._net.find_connected_pores(throats)[:,0]
+            pores2 = self._net.find_connected_pores(throats)[:,1]
         X1 = self._result[pores1]
         X2 = self._result[pores2]
         g = self._conductance[throats]

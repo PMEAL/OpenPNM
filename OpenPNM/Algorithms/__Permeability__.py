@@ -92,7 +92,7 @@ class Permeability(LinearSolver):
             
         fn = self._net.get_neighbor_pores(face1_pores)
         fn = fn[self._net.pore_properties['type'][fn]<1]
-        ft = self._net.get_connecting_throat(face1_pores,fn)
+        ft = self._net.find_connecting_throat(face1_pores,fn)
         Q = sp.sum(self._fluid.throat_conditions['hydraulic_conductance'][ft]*sp.absolute(P1-p[fn]))
         Keff = Q*mu*L/(A*delta_P)
         return Keff

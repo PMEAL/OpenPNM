@@ -133,7 +133,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
             Tvals = sp.zeros((self.num_throats()))
             #Interpolate values for all throats, including those leading to boundary pores
             Tnums = sp.r_[0:self.num_throats()]
-            nPs = self.get_connected_pores(Tnums,flatten=False)
+            nPs = self.find_connected_pores(Tnums,flatten=False)
             for i in sp.r_[0:sp.shape(nPs)[0]]:
                 Tvals[i] = sp.mean(Pvals[nPs[i]])
         return Tvals
@@ -324,7 +324,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         if sprsfmt != 'all':
             return self.incidence_matrix[sprsfmt][tprop]
 
-    def get_connected_pores(self,tnums=[],flatten=False):
+    def find_connected_pores(self,tnums=[],flatten=False):
         r"""
         Return a list of pores connected to a list of throats
 
@@ -345,10 +345,10 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.get_connected_pores(tnums=[0,1])
+        >>> pn.find_connected_pores(tnums=[0,1])
         array([[0, 1],
                [0, 5]])
-        >>> pn.get_connected_pores(tnums=[0,1],flatten=True)
+        >>> pn.find_connected_pores(tnums=[0,1],flatten=True)
         array([0, 1, 5])
         """
         Ps = self._throat_data['connections'][tnums]
@@ -357,7 +357,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
             Ps = sp.unique(sp.hstack(Ps))
         return Ps
 
-    def get_connecting_throat(self,P1,P2):
+    def find_connecting_throat(self,P1,P2):
         r"""
         Return a the throat number connecting two given pores connected
 
@@ -374,7 +374,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.get_connecting_throat(0,1)
+        >>> pn.find_connecting_throat(0,1)
         array([0])
         """
         return sp.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
