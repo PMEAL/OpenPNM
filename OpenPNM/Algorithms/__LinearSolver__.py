@@ -37,12 +37,12 @@ class LinearSolver(GenericAlgorithm):
 
         if (self.BCtypes==0).all():
             raise Exception('No boundary condition has been applied to this network.')
-            self._result = sp.zeros(self._net.get_num_pores())
+            self._result = sp.zeros(self._net.num_pores())
         else:
             A = self._build_coefficient_matrix()
             B = self._build_RHS_matrix()
             X = splin.spsolve(A,B)
-            self._result = X[sp.r_[0:self._net.get_num_pores()]]
+            self._result = X[sp.r_[0:self._net.num_pores()]]
         return(self._result)
 
     def _boundary_conditions_setup(self,types=[],values=[]):
@@ -94,8 +94,8 @@ class LinearSolver(GenericAlgorithm):
         that the quantity of interest enters this pore.
 
         """
-        self.BCtypes = sp.zeros(self._net.get_num_pores())
-        self.BCvalues = sp.zeros(self._net.get_num_pores())
+        self.BCtypes = sp.zeros(self._net.num_pores())
+        self.BCvalues = sp.zeros(self._net.num_pores())
         for bctype in self._pore_info.keys():
             if bctype=='Dirichlet':
                 self.BCtypes[self.get_pore_info(prop='Dirichlet')] = 1
@@ -129,7 +129,7 @@ class LinearSolver(GenericAlgorithm):
         row = modified_tpore1
         col = modified_tpore2
         if sp.size(self._conductance)==1:
-            self._conductance = self._conductance*sp.ones(self._net.get_num_throats())
+            self._conductance = self._conductance*sp.ones(self._net.num_throats())
         data_main = self._conductance
         data = data_main[loc1]
 
@@ -140,7 +140,7 @@ class LinearSolver(GenericAlgorithm):
         col = sp.append(col,modified_tpore1)
         data = sp.append(data,data_main[loc2])
 
-        A_dim = self._net.get_num_pores()
+        A_dim = self._net.num_pores()
 
         if (self.BCtypes==2).any():
             flux_pores = self._net.get_pore_indices()[self.BCtypes==2]

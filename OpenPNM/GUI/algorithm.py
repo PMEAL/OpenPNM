@@ -30,7 +30,7 @@ def InvasionPercolation(net, invading_fluid, defending_fluid,
   IP_1 = OpenPNM.Algorithms.InvasionPercolation()
   OpenPNM.Physics.CapillaryPressure.Washburn(net, defending_fluid)
   face = net.pore_properties['type']==in_pore_type
-  quarter = sp.rand(net.get_num_pores(),)<quarter_lim
+  quarter = sp.rand(net.num_pores(),)<quarter_lim
   inlets = net.pore_properties['numbering'][face&quarter]
   outlets = net.pore_properties['numbering'][net.pore_properties['type']==out_pore_type]
   IP_1.run(net,
@@ -46,8 +46,8 @@ def DiffusionSimulation(net, invading_fluid, defending_fluid, Pc=4000):
 
   Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
 
-  BCtypes = sp.zeros(net.get_num_pores())
-  BCvalues = sp.zeros(net.get_num_pores())
+  BCtypes = sp.zeros(net.num_pores())
+  BCvalues = sp.zeros(net.num_pores())
 
   BCtypes[net.pore_properties['type']==1] = 1
   BCtypes[net.pore_properties['type']==6] = 1

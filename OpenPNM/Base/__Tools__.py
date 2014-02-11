@@ -48,18 +48,18 @@ class Tools(Utilities):
         except: pass #Accept object
         if phase and not subdomain: #Set fluid property
             try: getattr(phase,'_'+element+'_data')[prop]
-            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'get_num_'+element+'s')(),))
+            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))
             if indices!='': getattr(phase,'_'+element+'_data')[prop][indices] = sp.array(data,ndmin=1)
             else: getattr(phase,'_'+element+'_data')[prop] = sp.array(data,ndmin=1)
             
         elif subdomain and not phase: #Set geometry property
             ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: getattr(self,'_'+element+'_data')[prop] #Test existance of prop
-            except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),))*sp.nan
+            except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
             if indices!='':
                 if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
                 getattr(self,'get_'+element+'_indices')(subdomain))).all():
-                    ind_temp = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
+                    ind_temp = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
                     ind_temp[indices] = True
                     ind = ind_temp
                 else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
@@ -70,11 +70,11 @@ class Tools(Utilities):
         elif phase and subdomain: #Set pore/throat scale physics property
             ind = getattr(self,'get_'+element+'_info')(subdomain)
             try: getattr(phase,'_'+element+'_data')[prop]
-            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'get_num_'+element+'s')(),))
+            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))
             if indices!='':
                 if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
                 getattr(self,'get_'+element+'_indices')(subdomain))).all():
-                    ind_temp = sp.zeros((getattr(phase,'get_num_'+element+'s')(),),dtype=bool)
+                    ind_temp = sp.zeros((getattr(phase,'num_'+element+'s')(),),dtype=bool)
                     ind_temp[indices] = True
                     ind = ind_temp
                 else: phase._logger.error('Some/all of these indices do not belong to this subdomain!')
@@ -108,7 +108,7 @@ class Tools(Utilities):
                 if indices!='':
                     if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
                     getattr(self,'get_'+element+'_indices')(subdomain))).all():
-                        ind_temp = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
+                        ind_temp = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
                         ind_temp[indices] = True
                         ind = ind_temp
                     else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
@@ -121,7 +121,7 @@ class Tools(Utilities):
                 if indices!='':
                     if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
                     getattr(self,'get_'+element+'_indices')(subdomain))).all():
-                        ind_temp = sp.zeros((getattr(phase,'get_num_'+element+'s')(),),dtype=bool)
+                        ind_temp = sp.zeros((getattr(phase,'num_'+element+'s')(),),dtype=bool)
                         ind_temp[indices] = True
                         ind = ind_temp
                     else: phase._logger.error('Some/all of these indices do not belong to this subdomain!')                   
@@ -269,7 +269,7 @@ class Tools(Utilities):
         set_pore_info, set_throat_info
         '''
         if mode=='overwrite':
-            getattr(self,'_'+element+'_info')[prop] = sp.zeros((getattr(self,'get_num_'+element+'s')(),),dtype=bool)
+            getattr(self,'_'+element+'_info')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
         if is_indices:
             try: 
                 getattr(self,'_'+element+'_info')[prop]
@@ -321,7 +321,7 @@ class Tools(Utilities):
         >>> pn.set_pore_info(prop='test',locations=[0,1],is_indices=True) #Set using index notation
         >>> pn.get_pore_info(prop='test',return_indices=True) #Retrieve values as indices
         array([0, 1], dtype=int64)
-        >>> loc = sp.zeros((pn.get_num_pores(),),dtype=bool)
+        >>> loc = sp.zeros((pn.num_pores(),),dtype=bool)
         >>> loc[[0,1]] = True
         >>> pn.set_pore_info(prop='test2',locations=loc) #Set using boolean mask
         >>> pn.get_pore_info(prop='test',return_indices=True) #Retrieve values as indices
@@ -438,7 +438,7 @@ class Tools(Utilities):
     #--------------------------------------------------------------------------
     '''Object query methods'''
     #--------------------------------------------------------------------------
-    def get_num_pores(self,labels=['all'],mode='union'):
+    def num_pores(self,labels=['all'],mode='union'):
         r'''
         Returns the number of pores of the specified subdomain
 
@@ -461,18 +461,18 @@ class Tools(Utilities):
             
         See Also
         --------
-        get_num_throats
+        num_throats
             
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.get_num_pores()
+        >>> pn.num_pores()
         125
-        >>> pn.get_num_pores(labels=['top'])
+        >>> pn.num_pores(labels=['top'])
         25
-        >>> pn.get_num_pores(labels=['top','front'],mode='union') #'union' is default
+        >>> pn.num_pores(labels=['top','front'],mode='union') #'union' is default
         45
-        >>> pn.get_num_pores(labels=['top','front'],mode='intersection')
+        >>> pn.num_pores(labels=['top','front'],mode='intersection')
         5
         
         '''
@@ -482,7 +482,7 @@ class Tools(Utilities):
         temp = self.get_pore_indices(labels=labels,mode=mode,indices=False)
         return sp.sum(temp) #return sum of Trues
             
-    def get_num_throats(self,labels=['all'],mode='union'):
+    def num_throats(self,labels=['all'],mode='union'):
         r'''
         Return the number of throats of the specified subdomain
 
@@ -503,18 +503,18 @@ class Tools(Utilities):
             
         See Also
         --------
-        get_num_pores
+        num_pores
 
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.get_num_throats()
+        >>> pn.num_throats()
         300
-        >>> pn.get_num_throats(labels=['top'])
+        >>> pn.num_throats(labels=['top'])
         40
-        >>> pn.get_num_throats(labels=['top','front'],mode='union') #'union' is default
+        >>> pn.num_throats(labels=['top','front'],mode='union') #'union' is default
         76
-        >>> pn.get_num_throats(labels=['top','front'],mode='intersection')
+        >>> pn.num_throats(labels=['top','front'],mode='intersection')
         4
         
         '''
@@ -555,7 +555,7 @@ class Tools(Utilities):
                     union = union + self._get_info(element='pore',prop=item)
             ind = union
         elif mode == 'intersection':
-            intersect = sp.ones((self.get_num_pores(),),dtype=bool)
+            intersect = sp.ones((self.num_pores(),),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
                     intersect = intersect*self._get_info(element='pore',prop=item)
             ind = intersect
@@ -594,7 +594,7 @@ class Tools(Utilities):
                     union = union + self._get_info(element='throat',prop=item)
             ind = union
         elif mode == 'intersection':
-            intersect = sp.ones((self.get_num_throats(),),dtype=bool)
+            intersect = sp.ones((self.num_throats(),),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
                     intersect = intersect*self._get_info(element='throat',prop=item)
             ind = intersect

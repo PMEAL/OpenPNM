@@ -79,16 +79,16 @@ class VTK(GenericVisualization):
         self._f.write('<PolyData>\n')
         self._f.write('<Piece NumberOfPoints="')
         #text = str(pn.getNumPores())
-        self._f.write(str(self._net.get_num_pores()))
+        self._f.write(str(self._net.num_pores()))
         self._f.write('" NumberOfVerts="0" NumberOfLines="')
         #text = str(pn.getNumThroats())
-        self._f.write(str(self._net.get_num_throats()))
+        self._f.write(str(self._net.num_throats()))
         self._f.write('" NumberOfStrips="0" NumberOfPolys="0">\n')
 
     def _write_vtk_points(self):
         self._f.write('<Points>\n')
         self._f.write('<DataArray type="Float32" NumberOfComponents="3" format="ascii">\n')
-        for i in range(self._net.get_num_pores()):
+        for i in range(self._net.num_pores()):
             self._f.write(str(self._net.pore_properties['coords'][i,0]))
             self._f.write(' ')
             self._f.write(str(self._net.pore_properties['coords'][i,1]))
@@ -99,13 +99,13 @@ class VTK(GenericVisualization):
 
     def _write_vtk_connections(self):
         self._f.write('<Lines>\n<DataArray type="Int32" Name="connectivity" format="ascii">\n')
-        for i in range(self._net.get_num_throats()):
+        for i in range(self._net.num_throats()):
             self._f.write(str(self._net.throat_properties['connections'][i,0]))
             self._f.write(' ')
             self._f.write(str(self._net.throat_properties['connections'][i,1]))
             self._f.write(' ')
         self._f.write('\n</DataArray>\n<DataArray type="Int32" Name="offsets" format="ascii">\n')
-        for i in range(self._net.get_num_throats()):
+        for i in range(self._net.num_throats()):
             self._f.write(str((i+1)*2))
             self._f.write(' ')
         self._f.write('\n</DataArray>\n</Lines>\n')
@@ -121,11 +121,11 @@ class VTK(GenericVisualization):
                 self._f.write('" format="ascii">\n')
                 shape =  np.shape(self._net.pore_properties[pore_keys[j]])
                 if np.size(shape) == 1:
-                    for i in range(self._net.get_num_pores()):
+                    for i in range(self._net.num_pores()):
                         self._f.write(str(self._net.pore_properties[pore_keys[j]][i]))
                         self._f.write(' ')
                 else:
-                    for i in range(self._net.get_num_pores()):
+                    for i in range(self._net.num_pores()):
                         self._f.write(str(self._net.pore_properties[pore_keys[j]][i][0]))
                         self._f.write(' ')
                 self._f.write('\n</DataArray>\n')
@@ -142,21 +142,21 @@ class VTK(GenericVisualization):
                 if size == 1:
                     shape =  np.shape(self._fluid.pore_conditions[pore_keys[j]])
                     if np.size(shape) == 0:
-                        for i in range(self._net.get_num_pores()):
+                        for i in range(self._net.num_pores()):
                             self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]])))
                             self._f.write(' ')
                     else:
-                        for i in range(self._net.get_num_pores()):
+                        for i in range(self._net.num_pores()):
                             self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]][0])))
                             self._f.write(' ')
                 else:
                     shape =  np.shape(self._fluid.pore_conditions[pore_keys[j]])
                     if np.size(shape) == 1:
-                        for i in range(self._net.get_num_pores()):
+                        for i in range(self._net.num_pores()):
                             self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]][i])))
                             self._f.write(' ')
                     else:
-                        for i in range(self._net.get_num_pores()):
+                        for i in range(self._net.num_pores()):
                             self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]][i][0])))
                             self._f.write(' ')
                 self._f.write('\n</DataArray>\n')
@@ -173,21 +173,21 @@ class VTK(GenericVisualization):
                     if size == 1:
                         shape =  np.shape(self._fluid.partner.pore_conditions[pore_keys[j]])
                         if np.size(shape) == 0:
-                            for i in range(self._net.get_num_pores()):
+                            for i in range(self._net.num_pores()):
                                 self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]])))
                                 self._f.write(' ')
                         else:
-                            for i in range(self._net.get_num_pores()):
+                            for i in range(self._net.num_pores()):
                                 self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][0])))
                                 self._f.write(' ')
                     else:
                         shape =  np.shape(self._fluid.partner.pore_conditions[pore_keys[j]])
                         if np.size(shape) == 1:
-                            for i in range(self._net.get_num_pores()):
+                            for i in range(self._net.num_pores()):
                                 self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][i])))
                                 self._f.write(' ')
                         else:
-                            for i in range(self._net.get_num_pores()):
+                            for i in range(self._net.num_pores()):
                                 self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][i][0])))
                                 self._f.write(' ')
                     self._f.write('\n</DataArray>\n')
