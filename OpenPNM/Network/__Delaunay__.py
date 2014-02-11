@@ -137,7 +137,7 @@ class Delaunay(GenericNetwork):
         adjmat = sprs.triu(adjmat,k=1,format="coo")
         self.set_throat_data(prop='connections',data=sp.vstack((adjmat.row, adjmat.col)).T)
         self.set_throat_data(prop='numbering', data=sp.arange(0,sp.size(adjmat.row)))
-        tpore1 = self.get_throat_data(prop='connections')
+        tpore1 = self.get_throat_data(prop='connections')[:,0]
         self.set_throat_info(prop='all',locations=np.ones_like(tpore1))
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         
