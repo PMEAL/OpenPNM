@@ -46,7 +46,7 @@ class Tools(Utilities):
         try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
         except: pass #Accept object
         if type(data)!=sp.ndarray:
-            data = sp.array([data])
+            data = sp.array(data,ndmin=1)
         if phase and not labels: #Set fluid property
             try: getattr(phase,'_'+element+'_data')[prop]
             except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))
