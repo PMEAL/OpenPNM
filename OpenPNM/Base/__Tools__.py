@@ -417,7 +417,7 @@ class Tools(Utilities):
                 labels.append(item)
         return labels
         
-    def is_label(self,labels='all',pnums):
+    def is_label(self,pnums,labels='all'):
         pass
             
 
