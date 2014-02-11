@@ -19,7 +19,6 @@ class Tools(Utilities):
     This class contains tools to read and write data in OpenPNM objects
 
     '''
-
     def __init__(self, **kwargs):
         r'''
         Initialize
@@ -159,9 +158,9 @@ class Tools(Utilities):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> print(pn.name)
-        test_network
-        >>> pn.set_pore_data(prop='test',data=1)
+        >>> pn.set_pore_data(prop='test',data=1.1)
+        >>> pn.get_pore_data(prop='test')
+        array([ 1.1])
         '''
         self._set_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)
         
@@ -192,11 +191,9 @@ class Tools(Utilities):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> print(pn.name)
-        test_network
-        >>> pn.set_pore_data(prop='test',data=1)
+        >>> pn.set_pore_data(prop='test',data=1.1)
         >>> pn.get_pore_data(prop='test')
-        array([1])
+        array([ 1.1])
         '''
         return self._get_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,indices=indices)
 
@@ -274,9 +271,6 @@ class Tools(Utilities):
             try: 
                 getattr(self,'_'+element+'_info')[prop]
             except: getattr(self,'_'+element+'_info')[prop] = sp.zeros_like(getattr(self,'_'+element+'_info')['all'],dtype=bool)
-            r'''
-            FIXME:if locations are 0:10
-            '''
             getattr(self,'_'+element+'_info')[prop][locations] = True
         else:
             getattr(self,'_'+element+'_info')[prop] = sp.array(locations,dtype=bool,ndmin=1)
@@ -290,14 +284,13 @@ class Tools(Utilities):
         --------
         get_pore_info, get_throat_info
         
-        TODO: It might be a good idea to have this return the T/F result of a list of indices given the prop type?
         '''
         if return_indices:
             return sp.where(getattr(self,'_'+element+'_info')[prop]==True)[0]
         else:
             return getattr(self,'_'+element+'_info')[prop]
 
-    def set_pore_info(self,prop='',locations='',is_indices=False):
+    def set_pore_info(self,prop='',locations='',is_indices=False,mode='merge'):
         r'''
         Parameters
         ----------
@@ -307,6 +300,8 @@ class Tools(Utilities):
             An array containing the locations (pores) where the label should be applied.
             Can be either a boolean mask of Np length with True at label locations (default), 
             a list of indices where label should be applied. 
+        mode : string
+            Options are 'merge' and 'overwrite', default is 'merge'
         is_indices : boolean
             This flag indicates whether locations are being sent as a boolean maks (default), 
             or a list of indices.
@@ -362,12 +357,14 @@ class Tools(Utilities):
         '''
         return self._get_info(element='pore',prop=prop,return_indices=return_indices)
         
-    def set_throat_info(self,prop='',locations='',is_indices=False):
+    def set_throat_info(self,prop='',locations='',is_indices=False,mode='merge'):
         r'''
         Parameters
         ----------
         prop : string
             The name of the pore label you wish to apply (e.g. 'top')
+        mode : string
+            Options are 'merge' and 'overwrite', default is 'merge'
         locaitons : array_like
             An array containing the locations (pores) where the label should be applied.
             Can be either a boolean mask of Np length with True at label locations (default), 
@@ -413,12 +410,15 @@ class Tools(Utilities):
         '''
         return self._get_info(element='throat',prop=prop,return_indices=return_indices)
         
-    def check_pore_labels(self,pnum):
+    def find_pore_labels(self,pnum):
         labels = []
         for item in self._pore_info.keys():
             if self._pore_info[item][pnum]:
                 labels.append(item)
         return labels
+        
+    def is_label(self,labels='all',pnums):
+        pass
             
 
     def check_info(self):
@@ -585,7 +585,7 @@ class Tools(Utilities):
         >>> pn = OpenPNM.Network.TestNet()
         >>> Tind = pn.get_throat_indices()
         >>> Tind[0:5]
-        array([0, 1, 2, 3, 4])
+        array([0, 1, 2, 3, 4], dtype=int64)
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         if mode == 'union':
