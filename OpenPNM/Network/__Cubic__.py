@@ -135,7 +135,7 @@ class Cubic(GenericNetwork):
         pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self.set_pore_data(prop='coords',data=pore_coords)
         self.set_pore_data(prop='numbering',data=ind)
-        self.set_pore_info(prop='all',locations=np.ones_like(ind))
+        self.set_pore_info(label='all',locations=np.ones_like(ind))
         self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
 
     def _generate_throats(self):
@@ -163,29 +163,29 @@ class Cubic(GenericNetwork):
         connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
         self.set_throat_data(prop='connections',data=connections)      
         self.set_throat_data(prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
-        self.set_throat_info(prop='all',locations=np.ones_like(tpore1))
+        self.set_throat_info(label='all',locations=np.ones_like(tpore1))
         self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
         
     def _add_labels(self):
         self._logger.info(sys._getframe().f_code.co_name+": Applying labels")
         coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(prop='front',locations=coords[:,0]<=self._Lc)
-        self.set_pore_info(prop='left',locations=coords[:,1]<=self._Lc)
-        self.set_pore_info(prop='bottom',locations=coords[:,2]<=self._Lc)
-        self.set_pore_info(prop='back',locations=coords[:,0]>=(self._Lc*(self._Nx-1)))
-        self.set_pore_info(prop='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
-        self.set_pore_info(prop='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
-        self.set_pore_info(prop='internal',locations=self.get_pore_indices(),is_indices=True)
+        self.set_pore_info(label='front',locations=coords[:,0]<=self._Lc)
+        self.set_pore_info(label='left',locations=coords[:,1]<=self._Lc)
+        self.set_pore_info(label='bottom',locations=coords[:,2]<=self._Lc)
+        self.set_pore_info(label='back',locations=coords[:,0]>=(self._Lc*(self._Nx-1)))
+        self.set_pore_info(label='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
+        self.set_pore_info(label='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
+        self.set_pore_info(label='internal',locations=self.get_pore_indices())
         #Add throat labels based IF both throat's neighbors have label in common
         for item in ['top','bottom','left','right','front','back']:
             ps = self.get_pore_indices(item)
             ts = self.find_neighbor_throats(ps)
             ps = self.find_connected_pores(ts)
-            ps0 = self.get_pore_info(prop=item)[ps[:,0]]
-            ps1 = self.get_pore_info(prop=item)[ps[:,1]]
+            ps0 = self.get_pore_info(label=item)[ps[:,0]]
+            ps1 = self.get_pore_info(label=item)[ps[:,1]]
             ts = ts[ps1*ps0]
-            self.set_throat_info(prop=item,locations=ts,is_indices=True)
-        self.set_throat_info(prop='internal',locations=self.get_throat_indices(),is_indices=True)
+            self.set_throat_info(label=item,locations=ts)
+        self.set_throat_info(label='internal',locations=self.get_throat_indices())
         self._logger.debug(sys._getframe().f_code.co_name+": End")
 
     def _generate_boundaries(self,net,**params):

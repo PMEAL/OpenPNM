@@ -37,8 +37,8 @@ class GenericFluid(Tools):
         self.set_pore_data(prop='temperature',data=T)
         self.set_pore_data(prop='pressure',data=P)
         #Initialize 'numbering arrays in the objects own info dictionaries
-        self.set_pore_info(prop='all',locations=self._net.get_pore_indices())
-        self.set_throat_info(prop='all',locations=self._net.get_throat_indices())
+        self.set_pore_info(label='all',locations=self._net.get_pore_indices())
+        self.set_throat_info(label='all',locations=self._net.get_throat_indices())
 
     def regenerate(self):
         r'''

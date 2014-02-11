@@ -66,7 +66,7 @@ class TestNet(GenericNetwork):
         Np = Nx*Ny*Nz
         ind = sp.arange(0,Np)
         self.set_pore_data(prop='numbering',data=ind)
-        self.set_pore_info(prop='all',locations=sp.ones_like(ind))
+        self.set_pore_info(label='all',locations=sp.ones_like(ind))
         pore_coords = Lc/2+Lc*sp.array(sp.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=sp.float64).T
         self.set_pore_data(prop='coords',data=pore_coords)
 
@@ -91,27 +91,27 @@ class TestNet(GenericNetwork):
         connections = sp.vstack((tpore1,tpore2)).T
         connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
         self.set_throat_data(prop='numbering',data=sp.arange(0,sp.shape(tpore1)[0]))
-        self.set_throat_info(prop='all',locations=sp.ones_like(sp.arange(0,sp.shape(tpore1)[0])))
+        self.set_throat_info(label='all',locations=sp.ones_like(sp.arange(0,sp.shape(tpore1)[0])))
         self.set_throat_data(prop='connections',data=connections)       
         
     def _add_labels(self):
         coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(prop='front',locations=coords[:,0]<=self._Lc)
-        self.set_pore_info(prop='left',locations=coords[:,1]<=self._Lc)
-        self.set_pore_info(prop='bottom',locations=coords[:,2]<=self._Lc)
-        self.set_pore_info(prop='back',locations=coords[:,0]>=(self._Lc*(self._Nx-1)))
-        self.set_pore_info(prop='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
-        self.set_pore_info(prop='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
-        self.set_pore_info(prop='internal',locations=self.get_pore_indices(),is_indices=True)
+        self.set_pore_info(label='front',locations=coords[:,0]<=self._Lc)
+        self.set_pore_info(label='left',locations=coords[:,1]<=self._Lc)
+        self.set_pore_info(label='bottom',locations=coords[:,2]<=self._Lc)
+        self.set_pore_info(label='back',locations=coords[:,0]>=(self._Lc*(self._Nx-1)))
+        self.set_pore_info(label='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
+        self.set_pore_info(label='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
+        self.set_pore_info(label='internal',locations=self.get_pore_indices())
         for item in ['top','bottom','left','right','front','back']:
             ps = self.get_pore_indices(item)
             ts = self.find_neighbor_throats(ps)
             ps = self.find_connected_pores(ts)
-            ps0 = self.get_pore_info(prop=item)[ps[:,0]]
-            ps1 = self.get_pore_info(prop=item)[ps[:,1]]
+            ps0 = self.get_pore_info(label=item)[ps[:,0]]
+            ps1 = self.get_pore_info(label=item)[ps[:,1]]
             ts = ts[ps1*ps0]
-            self.set_throat_info(prop=item,locations=ts,is_indices=True)
-        self.set_throat_info(prop='internal',locations=self.get_throat_indices(),is_indices=True)
+            self.set_throat_info(label=item,locations=ts)
+        self.set_throat_info(label='internal',locations=self.get_throat_indices())
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()

@@ -73,12 +73,12 @@ Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg',network=pn)
 ## Assign Dirichlet boundary conditions
 ## BC1
 BC1_pores = pn.get_pore_indices(labels='top')
-Fickian_alg.set_pore_info(prop='Dirichlet',locations=BC1_pores,is_indices=True)
+Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
 BC1_values = 0.8
 Fickian_alg.set_pore_data(labels='Dirichlet',prop='BCval',data=BC1_values,indices=BC1_pores)
 ## BC2
 BC2_pores = pn.get_pore_indices(labels='bottom')
-Fickian_alg.set_pore_info(prop='Dirichlet',locations=BC2_pores,is_indices=True)
+Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
 BC2_values = 0.4
 Fickian_alg.set_pore_data(labels='Dirichlet',prop='BCval',data=BC2_values,indices=BC2_pores)
 ##----------------------------------------------------------------------
