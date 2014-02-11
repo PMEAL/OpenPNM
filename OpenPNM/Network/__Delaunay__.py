@@ -43,7 +43,7 @@ class Delaunay(GenericNetwork):
     >>> pn.get_num_pores()
     100
     >>> type(pn.get_num_throats())
-    <class 'int'>
+    <class 'numpy.int32'>
 
     """
 
@@ -84,11 +84,11 @@ class Delaunay(GenericNetwork):
             self._Lx = params['domain_size'][0]
             self._Ly = params['domain_size'][1]
             self._Lz = params['domain_size'][2]
+            self._Np = params['num_pores']
             r'''
             TODO: Fix this, btype should be received as an argument
             '''
             self._btype = [0,0,0]
-            self.set_pore_info(prop='numbering',locations=sp.ones((params['num_pores'],),dtype=bool))
         else:
             self._logger.error("domain_size and num_pores must be specified")
             raise Exception('domain_size and num_pores must be specified')
@@ -98,10 +98,9 @@ class Delaunay(GenericNetwork):
         Generate the pores with numbering scheme.
         """
         self._logger.info(sys._getframe().f_code.co_name+": Place randomly located pores in the domain")
-        Np = self.get_num_pores()
-        coords = sp.rand(Np,3)*[self._Lx,self._Ly,self._Lz]
+        coords = sp.rand(self._Np,3)*[self._Lx,self._Ly,self._Lz]
         self.set_pore_data(prop='coords',data=coords)
-        self.set_pore_data(prop='numbering',data=self.get_pore_indices())
+        self.set_pore_data(prop='numbering',data=sp.arange(0,self._Np))
         self.set_pore_info(prop='all',locations=np.ones_like(coords[:,0]))
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
 
@@ -138,6 +137,7 @@ class Delaunay(GenericNetwork):
         adjmat = sprs.triu(adjmat,k=1,format="coo")
         self.set_throat_data(prop='connections',data=sp.vstack((adjmat.row, adjmat.col)).T)
         self.set_throat_data(prop='numbering', data=sp.arange(0,sp.size(adjmat.row)))
+        tpore1 = self.get_throat_data(prop='connections')
         self.set_throat_info(prop='all',locations=np.ones_like(tpore1))
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         
@@ -149,7 +149,7 @@ class Delaunay(GenericNetwork):
         self.set_pore_info(prop='right',locations=(coords[:,1]>self._Ly))
         self.set_pore_info(prop='bottom',locations=(coords[:,2]<0))
         self.set_pore_info(prop='top',locations=(coords[:,2]>self._Lz))
-        bnds = self.get_pore_indices(subdomain=['front','back','left','right','bottom','top'])
+        bnds = self.get_pore_indices(labels=['front','back','left','right','bottom','top'])
         self.set_pore_info(prop='boundary',locations=bnds,is_indices=True)
         internal = ~self.get_pore_indices('boundary',indices=False)
         self.set_pore_info(prop='internal',locations=internal)
