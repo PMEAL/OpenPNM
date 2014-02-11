@@ -59,36 +59,42 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 #outlets = pn.get_pore_indices('left')
 #IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
 #
-##-----------------------------------------------------------------------------
-#'''Performm a Diffusion Simulation on Partially Filled Network'''
-##-----------------------------------------------------------------------------
-##Apply desired/necessary pore scale physics methods
-#air.regenerate()
-#water.regenerate()
-#OpenPNM.Physics.multi_phase.update_occupancy_OP(water,Pc=8000)
-#OpenPNM.Physics.multi_phase.effective_occupancy(pn,air)
-#OpenPNM.Physics.multi_phase.DiffusiveConductance(pn,air)
-##Initialize algorithm object
-#Fickian_alg = OpenPNM.Algorithms.FickianDiffusion()
-##Create boundary condition arrays
-#BCtypes = sp.zeros(pn.get_num_pores())
-#BCvalues = sp.zeros(pn.get_num_pores())
-##Specify Dirichlet-type and assign values
-#OP_1.update()
-#Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg',network=pn)
-#Fickian_alg.set_pore_info(prop='Dirichlet',locations=pn.get_pore_indices(subdomain=['top','bottom']),is_indices=True)
-#Dir_pores = sp.zeros_like(pn.get_pore_indices(subdomain='top'))
-#Dir_pores[pn.get_pore_indices(subdomain='top')] = 0.8
-##Dir_pores[pn.get_pore_indices(subdomain='bottom')] = 0.2
-#Fickian_alg.set_pore_data(subdomain='Dirichlet',prop='BCval',data=Dir_pores,indices=pn.get_pore_indices(subdomain=['top']))
-##Neumann
-##BCtypes[pn.pore_properties['type']==1] = 1
-##BCtypes[pn.pore_properties['type']==6] = 4
-##BCvalues[pn.pore_properties['type']==1] = 8e-1
-##BCvalues[pn.pore_properties['type']==6] = 2e-10
-#Fickian_alg.set_boundary_conditions(types=BCtypes,values=BCvalues)
-##Run simulation
-#Fickian_alg.run(active_fluid=air)
+##----------------------------------------------------------------------
+#'''Perform Fickian Diffusion'''
+##----------------------------------------------------------------------
+## Updating data based on the result of Percolation Algorithms
+OP_1.update()
+#IP_1.update()
+##----------------------------------------------------------------------
+## Initializing diffusion algorithm
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg',network=pn)
+## Assign Dirichlet boundary conditions
+## BC1
+BC1_pores = pn.get_pore_indices(subdomain='top')
+Fickian_alg.set_pore_info(prop='Dirichlet',locations=BC1_pores,is_indices=True)
+BC1_values = [0.8]
+Fickian_alg.set_pore_data(subdomain='Dirichlet',prop='BCval',data=BC1_values,indices=BC1_pores)
+## BC2
+BC2_pores = pn.get_pore_indices(subdomain='bottom')
+Fickian_alg.set_pore_info(prop='Dirichlet',locations=BC2_pores,is_indices=True)
+BC2_values = [0.4]
+Fickian_alg.set_pore_data(subdomain='Dirichlet',prop='BCval',data=BC2_values,indices=BC2_pores)
+##----------------------------------------------------------------------
+### Assign Neumann boundary conditions
+### BC1
+#BC1_pores = pn.get_pore_indices(subdomain='top')
+#Fickian_alg.set_pore_info(prop='Dirichlet',locations=BC1_pores,is_indices=True)
+#BC1_values = [0.5]
+#Fickian_alg.set_pore_data(subdomain='Dirichlet',prop='BCval',data=BC1_values,indices=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(subdomain='bottom')
+#Fickian_alg.set_pore_info(prop='Neumann_rate',locations=BC2_pores,is_indices=True)
+#BC2_values = [2e-12]
+#Fickian_alg.set_pore_data(subdomain='Neumann_rate',prop='BCval',data=BC2_values,indices=BC2_pores)
+##----------------------------------------------------------------------
+## Run simulation
+Fickian_alg.run(active_fluid=air)
+##----------------------------------------------------------------------
 #
 #
 ##Export to VTK

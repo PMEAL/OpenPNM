@@ -39,7 +39,7 @@ class Tools(Utilities):
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
-    def set_data(self,element='',subdomain='',phase='',prop='',data='',indices=''):
+    def _set_data(self,element='',subdomain='',phase='',prop='',data='',indices=''):
         r'''
         '''
         try: subdomain = subdomain.name #allow passing of geometry objects
@@ -91,7 +91,7 @@ class Tools(Utilities):
             if indices!='': getattr(self,'_'+element+'_data')[prop][indices] = sp.array(data,ndmin=1)
             else: getattr(self,'_'+element+'_data')[prop] = sp.array(data,ndmin=1)
 
-    def get_data(self,element='',subdomain='',phase='',prop='',indices=''):
+    def _get_data(self,element='',subdomain='',phase='',prop='',indices=''):
         r'''
         '''      
         try: subdomain = subdomain.name #allow passing of geometry objects
@@ -166,7 +166,7 @@ class Tools(Utilities):
         test_network
         >>> pn.set_pore_data(prop='test',data=1)
         '''
-        self.set_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)
+        self._set_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)
         
     def get_pore_data(self,subdomain='',phase='',prop='',indices=''):
         r'''
@@ -201,7 +201,7 @@ class Tools(Utilities):
         >>> pn.get_pore_data(prop='test')
         array([1])
         '''
-        return self.get_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,indices=indices)
+        return self._get_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,indices=indices)
 
     def set_throat_data(self,subdomain='',phase='',prop='',data='',indices=''):
         r'''
@@ -230,7 +230,7 @@ class Tools(Utilities):
         --------
         See set_pore_data
         '''
-        self.set_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)         
+        self._set_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)         
 
     def get_throat_data(self,subdomain='',phase='',prop='',indices=''):
         r'''
@@ -260,9 +260,9 @@ class Tools(Utilities):
         --------
         See get_pore_data
         '''
-        return self.get_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,indices=indices)     
+        return self._get_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,indices=indices)     
 
-    def set_info(self,element='',prop='',locations='',is_indices=False,mode='merge'):
+    def _set_info(self,element='',prop='',locations='',is_indices=False,mode='merge'):
         r'''
         This is the actual info setter method, but it should not be called directly.  
         Wrapper methods have been created.  Use set_pore_info and get_pore_info.
@@ -281,7 +281,7 @@ class Tools(Utilities):
         else:
             getattr(self,'_'+element+'_info')[prop] = sp.array(locations,dtype=bool,ndmin=1)
 
-    def get_info(self,element='',prop='',return_indices=False):
+    def _get_info(self,element='',prop='',return_indices=False):
         r'''
         This is the actual info getter method, but it should not be called directly.  
         Wrapper methods have been created.  Use get_pore_info and get_throat_info
@@ -327,7 +327,7 @@ class Tools(Utilities):
         >>> pn.get_pore_info(prop='test',return_indices=True) #Retrieve values as indices
         array([0, 1], dtype=int64)
         '''
-        self.set_info(element='pore',prop=prop,locations=locations,is_indices=is_indices)
+        self._set_info(element='pore',prop=prop,locations=locations,is_indices=is_indices)
 
     def get_pore_info(self,prop='',return_indices=False):
         r'''
@@ -360,7 +360,7 @@ class Tools(Utilities):
         >>> result[97:103]
         array([False, False, False,  True,  True,  True], dtype=bool)
         '''
-        return self.get_info(element='pore',prop=prop,return_indices=return_indices)
+        return self._get_info(element='pore',prop=prop,return_indices=return_indices)
         
     def set_throat_info(self,prop='',locations='',is_indices=False):
         r'''
@@ -384,7 +384,7 @@ class Tools(Utilities):
         --------
         See set_pore_info for usage
         '''
-        self.set_info(element='throat',prop=prop,locations=locations,is_indices=is_indices)
+        self._set_info(element='throat',prop=prop,locations=locations,is_indices=is_indices)
         
     def get_throat_info(self,prop='',return_indices=False):
         r'''
@@ -411,27 +411,15 @@ class Tools(Utilities):
         --------
         See set_pore_info for usage
         '''
-        return self.get_info(element='throat',prop=prop,return_indices=return_indices)
+        return self._get_info(element='throat',prop=prop,return_indices=return_indices)
         
-    def find_pore_labels(self,pnum):
-        r'''
-        Returns all the subdomain labels associated with the given pore
-        '''
+    def check_pore_labels(self,pnum):
         labels = []
         for item in self._pore_info.keys():
             if self._pore_info[item][pnum]:
                 labels.append(item)
         return labels
-        
-    def find_throat_labels(self,tnum):
-        r'''
-        Returns all the subdomain labels associated with the given throat
-        '''
-        labels = []
-        for item in self._throat_info.keys():
-            if self._throat_info[item][tnum]:
-                labels.append(item)
-        return labels
+            
 
     def check_info(self):
         r'''
@@ -564,12 +552,12 @@ class Tools(Utilities):
         if mode == 'union':
             union = sp.zeros_like(self.get_pore_info(prop='all'),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                union = union + self.get_info(element='pore',prop=item)
+                    union = union + self._get_info(element='pore',prop=item)
             ind = union
         elif mode == 'intersection':
             intersect = sp.ones((self.get_num_pores(),),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                intersect = intersect*self.get_info(element='pore',prop=item)
+                    intersect = intersect*self._get_info(element='pore',prop=item)
             ind = intersect
         if indices: ind = sp.where(ind==True)[0]
         return ind
@@ -603,12 +591,12 @@ class Tools(Utilities):
         if mode == 'union':
             union = sp.zeros_like(self.get_throat_info(prop='all'),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                union = union + self.get_info(element='throat',prop=item)
+                    union = union + self._get_info(element='throat',prop=item)
             ind = union
         elif mode == 'intersection':
             intersect = sp.ones((self.get_num_throats(),),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                intersect = intersect*self.get_info(element='throat',prop=item)
+                    intersect = intersect*self._get_info(element='throat',prop=item)
             ind = intersect
         if indices: ind = sp.where(ind==True)[0]
         return ind
