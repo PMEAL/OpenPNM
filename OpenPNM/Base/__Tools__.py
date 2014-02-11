@@ -38,102 +38,102 @@ class Tools(Utilities):
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
-    def _set_data(self,element='',subdomain='',phase='',prop='',data='',indices=''):
+    def _set_data(self,element='',labels='',phase='',prop='',data='',indices=''):
         r'''
         '''
-        try: subdomain = subdomain.name #allow passing of geometry objects
+        try: labels = labels.name #allow passing of geometry objects
         except: pass #Otherwise, accept string
         try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
         except: pass #Accept object
-        if phase and not subdomain: #Set fluid property
+        if phase and not labels: #Set fluid property
             try: getattr(phase,'_'+element+'_data')[prop]
             except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))
             if indices!='': getattr(phase,'_'+element+'_data')[prop][indices] = sp.array(data,ndmin=1)
             else: getattr(phase,'_'+element+'_data')[prop] = sp.array(data,ndmin=1)
             
-        elif subdomain and not phase: #Set geometry property
-            ind = getattr(self,'get_'+element+'_info')(subdomain)
+        elif labels and not phase: #Set geometry property
+            ind = getattr(self,'get_'+element+'_info')(labels)
             try: getattr(self,'_'+element+'_data')[prop] #Test existance of prop
             except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
             if indices!='':
                 if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
-                getattr(self,'get_'+element+'_indices')(subdomain))).all():
+                getattr(self,'get_'+element+'_indices')(labels))).all():
                     ind_temp = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
                     ind_temp[indices] = True
                     ind = ind_temp
-                else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
+                else: self._logger.error('Some/all of these indices do not belong to the label!')
             if sp.sum(ind) == sp.shape(data)[0] or sp.shape(data)[0]==1:
                 getattr(self,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
             else: print('data is the wrong size!')
                 
-        elif phase and subdomain: #Set pore/throat scale physics property
-            ind = getattr(self,'get_'+element+'_info')(subdomain)
+        elif phase and labels: #Set pore/throat scale physics property
+            ind = getattr(self,'get_'+element+'_info')(labels)
             try: getattr(phase,'_'+element+'_data')[prop]
             except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))
             if indices!='':
                 if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
-                getattr(self,'get_'+element+'_indices')(subdomain))).all():
+                getattr(self,'get_'+element+'_indices')(labels))).all():
                     ind_temp = sp.zeros((getattr(phase,'num_'+element+'s')(),),dtype=bool)
                     ind_temp[indices] = True
                     ind = ind_temp
-                else: phase._logger.error('Some/all of these indices do not belong to this subdomain!')
+                else: phase._logger.error('Some/all of these indices do not belong to the label!')
             if sp.sum(ind) == sp.shape(data)[0] or sp.shape(data)[0]==1:
                 getattr(phase,'_'+element+'_data')[prop][ind] = sp.array(data,ndmin=1)
             else: print('data is the wrong size!')
             
-        elif not (phase or subdomain):  #Set topology property
+        elif not (phase or labels):  #Set topology property
             try: getattr(self,'_'+element+'_data')[prop]
             except: getattr(self,'_'+element+'_data')[prop] = sp.zeros_like(data)           
             if indices!='': getattr(self,'_'+element+'_data')[prop][indices] = sp.array(data,ndmin=1)
             else: getattr(self,'_'+element+'_data')[prop] = sp.array(data,ndmin=1)
 
-    def _get_data(self,element='',subdomain='',phase='',prop='',indices=''):
+    def _get_data(self,element='',labels='',phase='',prop='',indices=''):
         r'''
         '''      
-        try: subdomain = subdomain.name #allow passing of geometry objects
+        try: labels = labels.name #allow passing of geometry objects
         except: pass #Otherwise, accept string
         try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
         except: pass #Accept object
-        if phase and not subdomain:
+        if phase and not labels:
             try: 
                 getattr(phase,'_'+element+'_data')[prop]
                 if indices!='':  return getattr(phase,'_'+element+'_data')[prop][indices]
                 else: return getattr(phase,'_'+element+'_data')[prop] #Get fluid prop
             except: phase._logger.error(phase.name+' does not have the requested '+element+' property: '+prop)           
-        elif subdomain and not phase: #Get geometry property
-            ind = getattr(self,'get_'+element+'_info')(subdomain)            
+        elif labels and not phase: #Get geometry property
+            ind = getattr(self,'get_'+element+'_info')(labels)            
             try: 
                 getattr(self,'_'+element+'_data')[prop]                
                 if indices!='':
                     if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
-                    getattr(self,'get_'+element+'_indices')(subdomain))).all():
+                    getattr(self,'get_'+element+'_indices')(labels))).all():
                         ind_temp = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
                         ind_temp[indices] = True
                         ind = ind_temp
-                    else: self._logger.error('Some/all of these indices do not belong to this subdomain!')
+                    else: self._logger.error('Some/all of these indices do not belong to the label!')
                 return getattr(self,'_'+element+'_data')[prop][ind]
-            except: self._logger.error(subdomain+' does not have the requested '+element+' property: '+prop)            
-        elif phase and subdomain: #Get physics property
-            ind = getattr(self,'get_'+element+'_info')(subdomain)            
+            except: self._logger.error(labels+' does not have the requested '+element+' property: '+prop)            
+        elif phase and labels: #Get physics property
+            ind = getattr(self,'get_'+element+'_info')(labels)            
             try: 
                 getattr(phase,'_'+element+'_data')[prop]
                 if indices!='':
                     if (sp.in1d(getattr(self,'get_'+element+'_indices')()[indices],\
-                    getattr(self,'get_'+element+'_indices')(subdomain))).all():
+                    getattr(self,'get_'+element+'_indices')(labels))).all():
                         ind_temp = sp.zeros((getattr(phase,'num_'+element+'s')(),),dtype=bool)
                         ind_temp[indices] = True
                         ind = ind_temp
-                    else: phase._logger.error('Some/all of these indices do not belong to this subdomain!')                   
+                    else: phase._logger.error('Some/all of these indices do not belong to the label!')                   
                 return getattr(phase,'_'+element+'_data')[prop][ind]
-            except: phase._logger.error(phase.name+'/'+subdomain+' does not have the requested '+element+' property: '+prop) 
-        elif not (phase or subdomain): #Get topology property  
+            except: phase._logger.error(phase.name+'/'+labels+' does not have the requested '+element+' property: '+prop) 
+        elif not (phase or labels): #Get topology property  
             try: 
                 getattr(self,'_'+element+'_data')[prop]
                 if indices!='':  return getattr(self,'_'+element+'_data')[prop][indices]
                 else: return getattr(self,'_'+element+'_data')[prop] #Get fluid prop
             except: self._logger.error('Object does not have the requested '+element+' property: '+prop)      
  
-    def set_pore_data(self,subdomain='',phase='',prop='',data='',indices=''):
+    def set_pore_data(self,labels='',phase='',prop='',data='',indices=''):
         r'''
         Writes data to fluid or network objects according to input arguments.
         
@@ -141,7 +141,7 @@ class Tools(Utilities):
         ----------
         prop : string
             Name of property to write
-        subdomain : Open
+        labels : Open
         phase : OpenPNM Fluid object or fluid name string, optional
             Fluid to which data is written.  If omitted data is written to network object.
         data : array_like
@@ -162,9 +162,9 @@ class Tools(Utilities):
         >>> pn.get_pore_data(prop='test')
         array([ 1.1])
         '''
-        self._set_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)
+        self._set_data(element='pore',labels=labels,phase=phase,prop=prop,data=data,indices=indices)
         
-    def get_pore_data(self,subdomain='',phase='',prop='',indices=''):
+    def get_pore_data(self,labels='',phase='',prop='',indices=''):
         r'''
         Retrieves data from fluid or network objects according to input arguments.
         
@@ -195,9 +195,9 @@ class Tools(Utilities):
         >>> pn.get_pore_data(prop='test')
         array([ 1.1])
         '''
-        return self._get_data(element='pore',subdomain=subdomain,phase=phase,prop=prop,indices=indices)
+        return self._get_data(element='pore',labels=labels,phase=phase,prop=prop,indices=indices)
 
-    def set_throat_data(self,subdomain='',phase='',prop='',data='',indices=''):
+    def set_throat_data(self,labels='',phase='',prop='',data='',indices=''):
         r'''
         Writes data to fluid or network objects according to input arguments.  
         Network topology data and pore/throat geometry data is stored on the network object.
@@ -224,9 +224,9 @@ class Tools(Utilities):
         --------
         See set_pore_data
         '''
-        self._set_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,data=data,indices=indices)         
+        self._set_data(element='throat',labels=labels,phase=phase,prop=prop,data=data,indices=indices)         
 
-    def get_throat_data(self,subdomain='',phase='',prop='',indices=''):
+    def get_throat_data(self,labels='',phase='',prop='',indices=''):
         r'''
         Retrieves data from fluid or network objects according to input arguments.
         
@@ -254,7 +254,7 @@ class Tools(Utilities):
         --------
         See get_pore_data
         '''
-        return self._get_data(element='throat',subdomain=subdomain,phase=phase,prop=prop,indices=indices)     
+        return self._get_data(element='throat',labels=labels,phase=phase,prop=prop,indices=indices)     
 
     def _set_info(self,element='',prop='',locations='',is_indices=False,mode='merge'):
         r'''
@@ -295,11 +295,11 @@ class Tools(Utilities):
         Parameters
         ----------
         prop : string
-            The name of the pore label you wish to apply (e.g. 'top')
+            The name of the pore labels you wish to apply (e.g. 'top')
         locaitons : array_like
-            An array containing the locations (pores) where the label should be applied.
-            Can be either a boolean mask of Np length with True at label locations (default), 
-            a list of indices where label should be applied. 
+            An array containing the locations (pores) where the labels should be applied.
+            Can be either a boolean mask of Np length with True at labels locations (default), 
+            a list of indices where labels should be applied. 
         mode : string
             Options are 'merge' and 'overwrite', default is 'merge'
         is_indices : boolean
@@ -326,20 +326,20 @@ class Tools(Utilities):
 
     def get_pore_info(self,prop='',return_indices=False):
         r'''
-        Retrieves locations where requested subdomain label is applies
+        Retrieves locations where requested label is applies
         
         Parameters
         ----------
         prop : string
-            The name of the label you wish to retrieve (e.g. 'top')
+            The name of the labels you wish to retrieve (e.g. 'top')
             
         return_indices : bool, optional
             This flag indicates that the returned result should be a list of indices
             
         Returns
         -------
-        A boolean mask of length Np with True at all locations where subdomain label applies, 
-        or a list of indices where label applies.
+        A boolean mask of length Np with True at all locations where labels apply, 
+        or a list of indices where labels apply.
         
         See Also
         --------
@@ -362,13 +362,13 @@ class Tools(Utilities):
         Parameters
         ----------
         prop : string
-            The name of the pore label you wish to apply (e.g. 'top')
+            The name of the pore labels you wish to apply (e.g. 'top')
         mode : string
             Options are 'merge' and 'overwrite', default is 'merge'
         locaitons : array_like
-            An array containing the locations (pores) where the label should be applied.
-            Can be either a boolean mask of Np length with True at label locations (default), 
-            a list of indices where label should be applied. 
+            An array containing the locations (pores) where the labels should be applied.
+            Can be either a boolean mask of Np length with True at labels locations (default), 
+            a list of indices where labels should be applied. 
         is_indices : boolean
             This flag indicates whether locations are being sent as a boolean maks (default), 
             or a list of indices.
@@ -385,20 +385,20 @@ class Tools(Utilities):
         
     def get_throat_info(self,prop='',return_indices=False):
         r'''
-        Retrieves locations where requested subdomain label is applies
+        Retrieves locations where requested labels are applied
         
         Parameters
         ----------
         prop : string
-            The name of the label you wish to retrieve (e.g. 'top')
+            The name of the labels you wish to retrieve (e.g. 'top')
             
         return_indices : bool, optional
             This flag indicates that the returned result should be a list of indices
             
         Returns
         -------
-        A boolean mask of length Np with True at all locations where subdomain label applies, 
-        or a list of indices where label applies.
+        A boolean mask of length Np with True at all locations where labels apply, 
+        or a list of indices where labels apply.
         
         See Also
         --------
@@ -440,12 +440,12 @@ class Tools(Utilities):
     #--------------------------------------------------------------------------
     def num_pores(self,labels=['all'],mode='union'):
         r'''
-        Returns the number of pores of the specified subdomain
+        Returns the number of pores of the specified labels
 
         Parameters
         ----------
-        subdomain : list of strings, optional
-            The pore subdomain labels that should be included in the count.  
+        labels : list of strings, optional
+            The pore labels that should be included in the count.  
             If not supplied, all pores are counted.
         labels : list of strings
             Label of pores to be returned
@@ -457,7 +457,7 @@ class Tools(Utilities):
         Returns
         -------
         Np : int
-            Number of pores with the specified subdomain label
+            Number of pores with the specified labels 
             
         See Also
         --------
@@ -484,12 +484,12 @@ class Tools(Utilities):
             
     def num_throats(self,labels=['all'],mode='union'):
         r'''
-        Return the number of throats of the specified subdomain
+        Return the number of throats of the specified labels
 
         Parameters
         ----------
-        subdomain : list of strings, optional
-            The throat subdomain labels that should be included in the count.  
+        labels : list of strings, optional
+            The throat labels that should be included in the count.  
             If not supplied, all throats are counted.
         mode : string, optional
             Specifies whether the count should be done as a union (default) or intersection.
@@ -499,7 +499,7 @@ class Tools(Utilities):
         Returns
         -------
         Nt : int
-            Number of throats with the specified subdomain label
+            Number of throats with the specified labels
             
         See Also
         --------
@@ -526,7 +526,7 @@ class Tools(Utilities):
 
     def get_pore_indices(self,labels=['all'],indices=True,mode='union'):
         r'''
-        Returns pore locations where given subdomain labels exist.
+        Returns pore locations where given labels exist.
         
         Parameters
         ----------
@@ -540,7 +540,7 @@ class Tools(Utilities):
             Specifies whether the indices should be union (default) or intersection of desired labels.
             In union mode, all pores with ANY of the given labels are included.
             In intersection mode, only pores with ALL the give labels are included.
-            This is ignored if no subdomain is given.
+            This is ignored if no label is given.
         
         Examples
         --------
@@ -564,7 +564,7 @@ class Tools(Utilities):
 
     def get_throat_indices(self,labels=['all'],indices=True,mode='union'):
         r'''
-        Returns throat locations where given subdomain labels exist.
+        Returns throat locations where given labels exist.
         
         Parameters
         ----------
@@ -578,7 +578,7 @@ class Tools(Utilities):
             Specifies whether the indices should be union (default) or intersection of desired labels.
             In union mode, all throats with ANY of the given labels are included.
             In intersection mode, only throats with ALL the give labels are included.
-            This is ignored if no subdomain is given.
+            This is ignored if no labels are given.
         
         Examples
         --------
