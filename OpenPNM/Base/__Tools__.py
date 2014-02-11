@@ -412,16 +412,77 @@ class Tools(Utilities):
         '''
         return self._get_info(element='throat',prop=prop,return_indices=return_indices)
         
-    def find_pore_labels(self,pnum):
+    def find_labels(self,pnum='',tnum=''):
+        r'''
+        Returns a list of all labels that have been applied to the given pore or throat.
+
+        Parameters
+        ----------
+        pnum : int
+            The pore who's labels are sought
+        tnum : int
+            The throat who's labels are sought
+            
+        Returns
+        -------
+        A list of labels that have been applied to the given pore or throat
+        
+        Notes
+        -----
+        This only accepts a single pore or throat value for now, and works with
+        brute force appraoch.  Vectorization would be nice.
+        
+        Also, the logic for allowing pnum/tnum to be either int or list is clunky (but works)
+        '''
+        if pnum != '' and tnum == '':
+            element = 'pore'
+            num = pnum
+        elif tnum != '' and pnum == '':
+            element = 'throat'
+            num = tnum
+        else: self._logger.error(sys._getframe().f_code.co_name+' can only accept one of tnum or pnum')
         labels = []
-        for item in self._pore_info.keys():
-            if self._pore_info[item][pnum]:
+        for item in getattr(self,'_'+element+'_info').keys():
+            if getattr(self,'_'+element+'_info')[item][num]:
                 labels.append(item)
         return labels
         
-    def is_label(self,pnums,labels='all'):
-        pass
+    def has_labels(self,pnums='',tnums='',labels='all',mode='union'):
+        r'''
+        This method accepts a list of pores (or throats) and a list of labels, 
+        and returns True if pore or throat has any (or all) of the labels.
+        
+        Parameters
+        ----------
+        pnums : int or list of ints
+            Pore numbers (locations) of interest
+        tnum : int or list of ints
+            Throat numbers (locations) of interest
+        labels : str or list of strings
+            Labels of interest, defaults to 'all'
+        mode : str, optional
+            Flag to control logic, options are 'union' (default) or 'intersection'
             
+        Returns
+        -------
+        A boolean list the same shape as pnums (or tnums) containing truth values
+        indicating whether the corresponding pore (or throat) has the specfied labels
+        
+        Notes
+        -----
+        The logic for allowing pnum/tnum to be either int or list is clunky (but works)
+        '''
+        #Parse input arguments
+        if pnums != '' and tnums == '':
+            element = 'pore'
+            nums = pnums
+        elif tnums != '' and pnums == '':
+            element = 'throat'
+            nums = tnums
+        else: self._logger.error(sys._getframe().f_code.co_name+' can only accept one of tnum or pnum')
+        if type(labels) == str: labels = [labels] #convert string to list, if necessary
+        mask = getattr(self,'get_'+element+'_indices')(labels=labels,indices=False,mode=mode)
+        return mask[nums]
 
     def check_info(self):
         r'''
