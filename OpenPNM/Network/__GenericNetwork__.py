@@ -94,7 +94,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
             Pvals = sp.zeros((self.num_pores()))
             #Only interpolate conditions for internal pores, type=0
             Pnums = sp.r_[0:self.num_pores(Ptype=[0])]
-            nTs = self.get_neighbor_throats(Pnums,flatten=False)
+            nTs = self.find_neighbor_throats(Pnums,flatten=False)
             for i in sp.r_[0:sp.shape(nTs)[0]]:
                 Pvals[i] = sp.mean(Tvals[nTs[i]])
         return Pvals
@@ -377,9 +377,9 @@ class GenericNetwork(OpenPNM.Base.Tools):
         >>> pn.find_connecting_throat(0,1)
         array([0])
         """
-        return sp.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
+        return sp.intersect1d(self.find_neighbor_throats(P1),self.find_neighbor_throats(P2))
 
-    def get_neighbor_pores(self,pnums,labels=['all'],flatten=True,mode=''):
+    def find_neighbor_pores(self,pnums,labels=['all'],flatten=True,mode=''):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
@@ -405,17 +405,17 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.get_neighbor_pores(pnums=[0,2])
+        >>> pn.find_neighbor_pores(pnums=[0,2])
         array([ 1,  3,  5,  7, 25, 27])
-        >>> pn.get_neighbor_pores(pnums=[0,1]) #Find all neighbors, excluding selves (default behavior)
+        >>> pn.find_neighbor_pores(pnums=[0,1]) #Find all neighbors, excluding selves (default behavior)
         array([ 2,  5,  6, 25, 26])
-        >>> pn.get_neighbor_pores(pnums=[0,2],flatten=False)
+        >>> pn.find_neighbor_pores(pnums=[0,2],flatten=False)
         array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
-        >>> pn.get_neighbor_pores(pnums=[0,2],mode='intersection') #Find only common neighbors
+        >>> pn.find_neighbor_pores(pnums=[0,2],mode='intersection') #Find only common neighbors
         array([1], dtype=int64)
-        >>> pn.get_neighbor_pores(pnums=[0,2],mode='not_intersection') #Exclude common neighbors
+        >>> pn.find_neighbor_pores(pnums=[0,2],mode='not_intersection') #Exclude common neighbors
         array([ 3,  5,  7, 25, 27], dtype=int64)
-        >>> pn.get_neighbor_pores(pnums=[0,1],mode='union') #Find all neighbors, including selves
+        >>> pn.find_neighbor_pores(pnums=[0,1],mode='union') #Find all neighbors, including selves
         array([ 0,  1,  2,  5,  6, 25, 26])
         """
         #Convert string to list, if necessary
@@ -450,7 +450,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
                 neighborPs[i] = sp.array(neighborPs[i])[mask[neighborPs[i]]]
         return sp.array(neighborPs,ndmin=1)
 
-    def get_neighbor_throats(self,pnums,labels=['all'],flatten=True,mode='union'):
+    def find_neighbor_throats(self,pnums,labels=['all'],flatten=True,mode='union'):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
@@ -477,9 +477,9 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.get_neighbor_throats(pnums=[0,1])
+        >>> pn.find_neighbor_throats(pnums=[0,1])
         array([0, 1, 2, 3, 4, 5])
-        >>> pn.get_neighbor_throats(pnums=[0,1],flatten=False)
+        >>> pn.find_neighbor_throats(pnums=[0,1],flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
         #Convert string to list, if necessary
@@ -537,7 +537,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         if type(labels) == str: labels = [labels]
 
         #Count number of neighbors
-        neighborPs = self.get_neighbor_pores(pnums,labels=labels,flatten=False)
+        neighborPs = self.find_neighbor_pores(pnums,labels=labels,flatten=False)
         num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
         for i in range(0,sp.shape(num)[0]):
             num[i] = sp.size(neighborPs[i])

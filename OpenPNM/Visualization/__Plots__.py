@@ -18,7 +18,7 @@ def Overview(net, fig=None):
   ax1.set_ylabel('Frequency')
 
   ax2 = fig.add_subplot(222)
-  net.get_neighbor_pores(1)
+  net.find_neighbor_pores(1)
   x = sp.zeros(net.num_pores())
   for i in range(0,sp.shape(net.adjacency_matrix['lil']['connections'].rows)[0]):
     x[i] = sp.shape(net.adjacency_matrix['lil']['connections'].rows[i])[0]

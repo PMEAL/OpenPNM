@@ -193,7 +193,7 @@ class InvasionPercolation(GenericAlgorithm):
             if self._timing:
                 self._Ptime[i] = self._sim_time
             # Find all throats that border invaded pores
-            interface_throat_numbers = self._net.get_neighbor_throats(np.where(self._Pinv==clusterNumber)[0])
+            interface_throat_numbers = self._net.find_neighbor_throats(np.where(self._Pinv==clusterNumber)[0])
             if self._timing:
                 # Sum all interfacial throats' volume coeffients for throat cap volume calculation
                 self._cluster_data['vol_coef'][clusterNumber-1] = np.sum(self._Tvol_coef[interface_throat_numbers])
@@ -458,7 +458,7 @@ class InvasionPercolation(GenericAlgorithm):
                 self._cluster_data['pore_volume'][self._current_cluster-1] += self._net.get_pore_data(prop='volume')[self._NewPore]
             # Make a list of all throats neighboring pores in the cluster
             # Update interface list
-            neighbors = self._net.get_neighbor_throats(self._NewPore)
+            neighbors = self._net.find_neighbor_throats(self._NewPore)
             for j in neighbors:
                 # If a throat is not labelled as invaded by the cluster, it must be an interfacial throat
                 if (j not in self._tlists[self._current_cluster-1]):

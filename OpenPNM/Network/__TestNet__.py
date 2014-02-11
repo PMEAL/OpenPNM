@@ -105,7 +105,7 @@ class TestNet(GenericNetwork):
         self.set_pore_info(prop='internal',locations=self.get_pore_indices(),is_indices=True)
         for item in ['top','bottom','left','right','front','back']:
             ps = self.get_pore_indices(item)
-            ts = self.get_neighbor_throats(ps)
+            ts = self.find_neighbor_throats(ps)
             ps = self.find_connected_pores(ts)
             ps0 = self.get_pore_info(prop=item)[ps[:,0]]
             ps1 = self.get_pore_info(prop=item)[ps[:,1]]
