@@ -80,6 +80,10 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Notes
         -----
         This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+        
+        Examples
+        --------
+        
 
         """
         if sp.size(Tvals)==1:
@@ -116,6 +120,9 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Notes
         -----
         This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+
+        Examples
+        --------
 
         """
         if sp.size(Pvals)==1:
@@ -323,18 +330,17 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         Parameters
         ----------
-        Tnums : array_like
-            List of throats ID numbers
+        tnums : array_like
+            List of throats numbers
         flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique pore ID numbers
+            If flatten is True (default) a 1D array of unique pore numbers
             is returned. If flatten is False the returned array contains
             arrays of neighboring pores for each input throat, in the order
             they were sent.
 
         Returns
         -------
-        Ps : 1D array (if flatten is True) or ndarray of arrays (if flatten is
-            False)
+        1D array (if flatten is True) or ndarray of arrays (if flatten is False)
 
         Examples
         --------
@@ -357,13 +363,13 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
         Parameters
         ----------
-        Pnum1 , Pnum2 : int
+        P1 , P2 : int
             The pore numbers connected by the desired throat
 
         Returns
         -------
         Tnum : int
-            Returns throat ID number, or empty array if pores are not connected
+            Returns throat number, or empty array if pores are not connected
             
         Examples
         --------
@@ -373,7 +379,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         """
         return sp.intersect1d(self.get_neighbor_throats(P1),self.get_neighbor_throats(P2))
 
-    def get_neighbor_pores(self,pnums,subdomain=['all'],flatten=True,mode=''):
+    def get_neighbor_pores(self,pnums,labels=['all'],flatten=True,mode=''):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
@@ -381,8 +387,8 @@ class GenericNetwork(OpenPNM.Base.Tools):
         ----------
         pnums : array_like
             ID numbers of pores whose neighbors are sought.
-        subdomain : list of strings
-            Type of pores to be returned
+        labels : list of strings
+            Label of pores to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore ID numbers
             is returned with the input pores (Pnum) removed. If flatten is
@@ -413,7 +419,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         array([ 0,  1,  2,  5,  6, 25, 26])
         """
         #Convert string to list, if necessary
-        if type(subdomain) == str: subdomain = [subdomain]
+        if type(labels) == str: labels = [labels]
         #Count neighboring pores
         try:
             neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
@@ -436,22 +442,24 @@ class GenericNetwork(OpenPNM.Base.Tools):
             elif mode == '':
                 neighborPs = sp.unique(neighborPs[~sp.in1d(neighborPs,pnums)])
             #Remove pores of the wrong type
-            mask = self.get_pore_indices(subdomain=subdomain,indices=False)
+            mask = self.get_pore_indices(labels=labels,indices=False)
             neighborPs = neighborPs[mask[neighborPs]]
         else:
-            mask = self.get_pore_indices(subdomain=subdomain,indices=False)
+            mask = self.get_pore_indices(labels=labels,indices=False)
             for i in range(0,sp.size(pnums)):
                 neighborPs[i] = sp.array(neighborPs[i])[mask[neighborPs[i]]]
         return sp.array(neighborPs,ndmin=1)
 
-    def get_neighbor_throats(self,pnums,subdomain=['all'],flatten=True,mode='union'):
+    def get_neighbor_throats(self,pnums,labels=['all'],flatten=True,mode='union'):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
         Parameters
         ----------
         pnums : array_like
-            ID numbers of pores whose neighbors are sought
+            Indices of pores whose neighbors are sought
+        labels : list of strings
+            Label of pores to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique throat ID numbers
             is returned. If flatten is False the returned array contains arrays
@@ -475,7 +483,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
         #Convert string to list, if necessary
-        if type(subdomain) == str: subdomain = [subdomain]
+        if type(labels) == str: labels = [labels]
         #Test for existance of incidence matrix
         try:
             neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
@@ -495,15 +503,15 @@ class GenericNetwork(OpenPNM.Base.Tools):
             elif mode == 'intersection':
                 neighborTs = sp.unique(sp.where(sp.bincount(neighborTs)>1)[0])
             #Remove throats of the wrong type            
-            mask = self.get_throat_indices(subdomain=subdomain,indices=False)
+            mask = self.get_throat_indices(labels=labels,indices=False)
             neighborTs = neighborTs[mask[neighborTs]]
         else:
-            mask = self.get_throat_indices(subdomain=subdomain,indices=False)
+            mask = self.get_throat_indices(labels=labels,indices=False)
             for i in range(0,sp.size(pnums)):
                 neighborTs[i] = sp.array(neighborTs[i])[mask[neighborTs[i]]]
         return sp.array(neighborTs,ndmin=1)
 
-    def get_num_neighbors(self,pnums,subdomain=['all'],flatten=True):
+    def get_num_neighbors(self,pnums,labels=['all'],flatten=True):
         r"""
         Returns an ndarray containing the number of pores for each element in Pnums
 
@@ -526,10 +534,10 @@ class GenericNetwork(OpenPNM.Base.Tools):
         7
         """
         #Convert string to list, if necessary
-        if type(subdomain) == str: subdomain = [subdomain]
+        if type(labels) == str: labels = [labels]
 
         #Count number of neighbors
-        neighborPs = self.get_neighbor_pores(pnums,subdomain=subdomain,flatten=False)
+        neighborPs = self.get_neighbor_pores(pnums,labels=labels,flatten=False)
         num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
         for i in range(0,sp.shape(num)[0]):
             num[i] = sp.size(neighborPs[i])

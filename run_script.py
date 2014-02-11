@@ -41,10 +41,10 @@ phys_air.regenerate()
 #------------------------------------------------------------------------------
 #Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,loggername='OP',name='OP_1',network=pn)
-a = pn.get_pore_indices(subdomain='bottom')
+a = pn.get_pore_indices(labels='bottom')
 OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 
-#b = pn.get_pore_indices(subdomain='top')
+#b = pn.get_pore_indices(labels='top')
 #OP_1.evaluate_trapping(outlets=b)
 #OP_1.plot_drainage_curve()
 
