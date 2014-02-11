@@ -20,7 +20,7 @@ def random(geometry,network,**params):
     Assign random number to pore bodies
     note: should this be called 'poisson'?  
     """
-    Np = network.get_num_pores()
+    Np = network.num_pores()
     value=sp.random.rand(Np)
     network.set_pore_data(subdomain=geometry,prop=propname,data=value)
     

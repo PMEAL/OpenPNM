@@ -430,17 +430,17 @@ class Cubic(GenericNetwork):
 #            self._net.pore_data[item] = self._net.pore_data[item][0:Np]
 #        for item in self._net.throat_data.keys():
 #            self._net.throat_data[item] = self._net.throat_data[item][0:Nt]
-        pnum_orig = self._net.get_num_pores([0])
+        pnum_orig = self._net.num_pores([0])
         self._add_opposing_boundaries(face=2,periodic=self._btype[0]) #x faces
         self._add_opposing_boundaries(face=3,periodic=self._btype[1]) #y faces
         self._add_opposing_boundaries(face=1,periodic=self._btype[2]) #z faces
 
-        pnum_added = self._net.get_num_pores() - pnum_orig
+        pnum_added = self._net.num_pores() - pnum_orig
         self._net.set_pore_data(prop='coords',data=np.concatenate((self._net.get_pore_data(prop='coords'),np.zeros((pnum_added,3))),axis=0))
         #Add 'coords' to boundaries
         #   Generate an Nx2 array, named "boundary_pore_list" that names all
         #   pairs of pores connected by boundary throats.
-        pnum_dif = self._net.get_num_pores()-pnum_orig
+        pnum_dif = self._net.num_pores()-pnum_orig
         btlist = self._net.get_throat_data(prop='numbering')[self._net.get_throat_data(prop='type')>0]
 #        self._net.pore_data['coords']=np.append(self._net.pore_data['coords'],np.zeros((pnum_dif,3)),0)
         btnum = np.size(btlist)
@@ -496,8 +496,8 @@ class Cubic(GenericNetwork):
         Ly = self._Ly
         Lz = self._Lz
         Lc = self._Lc
-        Np = self._net.get_num_pores()
-        Nt = self._net.get_num_throats()
+        Np = self._net.num_pores()
+        Nt = self._net.num_throats()
         col = [-1,2,0,1,1,0,2] #Column to use in coord
         coord = np.array([-1, Lc/2, Lc/2, Lc/2, Ly-Lc/2, Lx-Lc/2, Lz-Lc/2],dtype=np.float)
         coordperi = np.array([-1, Lz-Lc/2, Lx-Lc/2, Ly-Lc/2, Lc/2, Lc/2, Lc/2],dtype=np.float)

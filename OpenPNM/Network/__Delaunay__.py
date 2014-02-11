@@ -40,9 +40,9 @@ class Delaunay(GenericNetwork):
     Examples
     --------
     >>> pn = OpenPNM.Network.Delaunay(name='test_delaunay').generate(num_pores=100,domain_size=[100,100,100])
-    >>> pn.get_num_pores()
+    >>> pn.num_pores()
     100
-    >>> type(pn.get_num_throats())
+    >>> type(pn.num_throats())
     <class 'int'>
 
     """
@@ -98,7 +98,7 @@ class Delaunay(GenericNetwork):
         Generate the pores with numbering scheme.
         """
         self._logger.info(sys._getframe().f_code.co_name+": Place randomly located pores in the domain")
-        Np = self.get_num_pores()
+        Np = self.num_pores()
         coords = sp.rand(Np,3)*[self._Lx,self._Ly,self._Lz]
         self.set_pore_data(prop='coords',data=coords)
         self.set_pore_data(prop='numbering',data=self.get_pore_indices())
@@ -110,7 +110,7 @@ class Delaunay(GenericNetwork):
         Generate the throats (connections, numbering and types)
         """
         self._logger.info(sys._getframe().f_code.co_name+": Define connections between pores")
-        Np = self.get_num_pores()
+        Np = self.num_pores()
         pts = self.get_pore_data(prop='coords')
         #Generate 6 dummy domains to pad onto each face of real domain
         #This prevents surface pores from making long range connections to each other
@@ -165,7 +165,7 @@ class Delaunay(GenericNetwork):
         Lx = self._Lx
         Ly = self._Ly
         Lz = self._Lz
-        Np = self.get_num_pores()
+        Np = self.num_pores()
         btype = self._btype
         boffset = 0.05
 
@@ -202,7 +202,7 @@ class Delaunay(GenericNetwork):
             conns = np.concatenate((conns,np.vstack((tpore1,tpore2)).T),axis=0)
             #Add boundary pores and throats to the network
             newporetyps = np.unique(ptype[adjmat.rows[i]][ptype[adjmat.rows[i]]>0])
-            newporenums = np.r_[self.get_num_pores():self.get_num_pores()+np.size(newporetyps)]
+            newporenums = np.r_[self.num_pores():self.num_pores()+np.size(newporetyps)]
             tpore2 = newporenums
             tpore1 = np.ones_like(tpore2,dtype=int)*i
             conns = np.concatenate((conns,np.vstack((tpore1,tpore2)).T),axis=0)
@@ -318,7 +318,7 @@ class Delaunay(GenericNetwork):
         types_bd = np.append(np.zeros_like(nums_bd0),np.ones_like(nums_bd1))
 
         #Add new boundary pores and throats to the network
-        Np = self._net.get_num_pores() #Get all pores including previously added boundaries
+        Np = self._net.num_pores() #Get all pores including previously added boundaries
         bp_numbering = np.r_[Np:Np+np.size(nums_bd)]
         bp_type = (types_bd==0)*btype[0] + (types_bd==1)*btype[1]
         bp_coords = np.zeros([np.size(nums_bd),3])
@@ -331,7 +331,7 @@ class Delaunay(GenericNetwork):
         self._net.pore_data['numbering'] = np.append(self._net.pore_data['numbering'],bp_numbering)
         self._net.pore_data['type'] = np.append(self._net.pore_data['type'],bp_type)
         self._net.pore_data['coords'] = np.concatenate((self._net.pore_data['coords'],bp_coords))
-        Nt = self._net.get_num_throats()
+        Nt = self._net.num_throats()
         bt_numbering = np.r_[Nt:Nt+np.size(nums_bd)]
         bt_type = np.ones(np.size(nums_bd),dtype=int)*2
         bt_connections = np.zeros([np.size(nums_bd),2],dtype=int)
