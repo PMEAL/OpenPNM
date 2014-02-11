@@ -17,7 +17,7 @@ module __Permeability__: Hagen Poiseuille permeability
 import scipy as sp
 from .__LinearSolver__ import LinearSolver
 
-class Permeability(LinearSolver):
+class StokesFlow(LinearSolver):
     r"""   
     
     Hagen Poiseuille permeability - Class to run an algorithm to find permeability on constructed networks
@@ -36,7 +36,7 @@ class Permeability(LinearSolver):
         r"""
         Initializing the class
         """
-        super(Permeability,self).__init__(**kwargs)
+        super(StokesFlow,self).__init__(**kwargs)
         self._logger.info("Create Hagen Poiseuille permeability Object")
 
             
@@ -44,18 +44,18 @@ class Permeability(LinearSolver):
         r"""
         This function executes the essential mathods before building matrices in Linear solution 
         """
+      
         self._fluid = params['active_fluid']
         # Building hydraulic conductance
-        g = self._fluid.throat_conditions['hydraulic_conductance']
-        s = self._fluid.throat_conditions['occupancy']
+        g = self._fluid.get_throat_data(prop='hydraulic_conductance')
+        s = self._fluid.get_throat_data(prop='occupancy')
         self._conductance = g*s+g*(-s)/1e3
-   
+
     def _do_inner_iteration_stage(self):
-        r"""
-        The main section of the algorithm               
-        """
-        p = self._do_one_inner_iteration()       
-        self._fluid.pore_conditions['pressure'] = p
+
+        p = self._do_one_inner_iteration()
+        self._fluid.set_pore_data(prop='pressure',data = p)
+
 
     def calc_eff_permeability_cubic(self,face1=1,face2=6):
         r"""
