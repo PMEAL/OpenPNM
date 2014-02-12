@@ -15,10 +15,31 @@ from OpenPNM.Base import Tools
 
 class GenericFluid(Tools):
     r"""
-    GenericFluid - Base class to generate fluid properties
+    Base class to generate a generic fluid object.  The user must specify models
+    and parameters for the all the properties they require. Classes for several
+    common fluids are included with OpenPNM and can be found under OpenPNM.Fluids.
 
     Parameters
     ----------
+    network : OpenPNM Network object 
+        The network to which this fluid should be attached
+    
+    name : str
+        A unique string name to identify the fluid object, typically same as 
+        instance name but can be anything.
+        
+    init_cond : dictionary, optional
+        A dictionary of 'key':value pairs to initize fluid properties.  If omitted
+        the temperature and pressure of the fluid are set to STP.  A typical 
+        additiona would be 'mole_fraction' for a mixture.  Temperature and
+        pressure can be set through init_cond, but will be set to STP if not 
+        only other properties are included.
+    
+    loglevel : int
+        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+
+    loggername : string (optional)
+        Sets a custom name for the logger, to help identify logger messages
 
     """
     def __init__(self,network,name,init_cond={},**kwargs):
@@ -34,8 +55,8 @@ class GenericFluid(Tools):
         self._physics = []
         self._prop_list = []
         #Set default T and P since most propery models require it
-        self.set_pore_data(prop='temperature',data=298)
-        self.set_pore_data(prop='pressure',data=101325)
+        self.set_pore_data(prop='temperature',data=298.0)
+        self.set_pore_data(prop='pressure',data=101325.0)
         for item in init_cond.keys():
             self.set_pore_data(prop=item,data=init_cond[item])
         #Initialize 'numbering arrays in the objects own info dictionaries
@@ -44,7 +65,7 @@ class GenericFluid(Tools):
 
     def regenerate(self):
         r'''
-        This updates all properties using the selected methods
+        This updates all properties of the fluid using the selected models
         '''
         for item in self._prop_list:
             self._logger.debug('Refreshing: '+item)
@@ -52,7 +73,7 @@ class GenericFluid(Tools):
         
     def add_method(self,prop='',prop_name='',**kwargs):
         r'''
-        Add specified property estimation method to the fluid object.
+        Add specified property estimation model to the fluid object.
         
         Parameters
         ----------
@@ -91,14 +112,14 @@ class GenericFluid(Tools):
         
     def physics_listing(self):
         r"""
-        Prints the names of all physics objects attached to the network
+        Prints the names of all physics objects attached to the fluid
         """
         for item in self._physics:
             print(item.name+': ',item)
 
     def physics_update(self,name='all'):
         r"""
-        Updates ALL properties of specified physics object attached to the network
+        Updates ALL properties of specified physics object attached to the fluid
 
         Parameters
         ----------
