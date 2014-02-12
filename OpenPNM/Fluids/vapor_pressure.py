@@ -5,20 +5,18 @@ module vapor_pressure
 
 """
 import scipy as sp
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
 
-def constant(fluid,network,value,**params):
+def constant(fluid,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def na(fluid,network,**params):
+def na(fluid,network,propname,**params):
     value = -1
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Antoine(fluid,network,A=8.07131,B=1730.63,C=233.426,**params):
+def Antoine(fluid,network,propname,A=8.07131,B=1730.63,C=233.426,**params):
     r"""
     Uses Antoine equation to estimate vapor pressure of a pure component
 

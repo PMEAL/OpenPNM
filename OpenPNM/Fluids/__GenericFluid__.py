@@ -21,7 +21,7 @@ class GenericFluid(Tools):
     ----------
 
     """
-    def __init__(self,network,name,T=298,P=101325,**kwargs):
+    def __init__(self,network,name,init_cond={},**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         self.name = name
@@ -34,8 +34,10 @@ class GenericFluid(Tools):
         self._physics = []
         self._prop_list = []
         #Set default T and P since most propery models require it
-        self.set_pore_data(prop='temperature',data=T)
-        self.set_pore_data(prop='pressure',data=P)
+        self.set_pore_data(prop='temperature',data=298)
+        self.set_pore_data(prop='pressure',data=101325)
+        for item in init_cond.keys():
+            self.set_pore_data(prop=item,data=init_cond[item])
         #Initialize 'numbering arrays in the objects own info dictionaries
         self.set_pore_info(label='all',locations=self._net.get_pore_indices())
         self.set_throat_info(label='all',locations=self._net.get_throat_indices())
@@ -48,7 +50,7 @@ class GenericFluid(Tools):
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()
         
-    def add_method(self,prop='',**kwargs):
+    def add_method(self,prop='',prop_name='',**kwargs):
         r'''
         Add specified property estimation method to the fluid object.
         
@@ -58,7 +60,13 @@ class GenericFluid(Tools):
             The name of the fluid property attribute to add.
             This name must correspond with a file in the Fluids folder.  
             To add a new property simply add a file with the appropriate name and the necessary methods.
-            
+           
+        prop_name : string, optional
+            This argument will be used as the method name and the dictionary key
+            where data is written by method. This option is provided for occasions
+            when multiple properties of the same type are required, such as
+            diffusivity coefficients of each species in a multicomponent mixture.
+        
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
@@ -74,7 +82,8 @@ class GenericFluid(Tools):
         '''
         try:
             function = getattr( getattr(OpenPNM.Fluids, prop), kwargs['model'] ) # this gets the method from the file
-            preloaded_fn = partial(function, fluid=self, network=self._net, **kwargs) #
+            if prop_name: prop = prop_name #overwrite the default prop with user supplied name  
+            preloaded_fn = partial(function, fluid=self, network=self._net, propname=prop, **kwargs) #          
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)

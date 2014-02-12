@@ -5,10 +5,8 @@ module thermal_conductance
 
 """
 import scipy as sp
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
 
-def constant(fluid,network,value,**params):
+def constant(fluid,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
@@ -18,7 +16,7 @@ def na(fluid,network,**params):
     value = -1
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Chung(fluid,network,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**params):
+def Chung(fluid,network,propname,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**params):
     r"""
     Uses Chung et al. model to estimate thermal conductivity for gases with low pressure(<10 bar) from first principles at conditions of interest
 
@@ -46,7 +44,7 @@ def Chung(fluid,network,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**params):
     value = 3.75*s*(mu)*R/(MW)
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Sato(fluid,network,Tc=647.096,Tb=373.15,MW=0.0181,**params):
+def Sato(fluid,network,propname,Tc=647.096,Tb=373.15,MW=0.0181,**params):
     r"""
     Uses Sato et al. model to estimate thermal conductivity for pure liquids from first principles at conditions of interest
 
