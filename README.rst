@@ -6,9 +6,9 @@ OpenPNM
 What is OpenPNM?
 --------------
 
-OpenPNM (pronounced "Sigh Pie") is open-source framework for conducting pore 
-network modeling simulations of multiphase transport in porous materials.  
-It includes modules for generating various network topologies, pore and 
+OpenPNM is open-source framework for conducting pore network modeling 
+simulations of multiphase transport in porous materials.  It includes 
+modules for generating various common network topologies, pore and 
 throat geometry models, pore scale physics models, and fluid property
 estimation.  It also contains a large set of algorithms for running various
 simulations such drainage curves, gas diffusion, permeability, and more.  
