@@ -16,7 +16,7 @@ geom.regenerate()
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn)
+air = OpenPNM.Fluids.Air(network=pn,init_cond={'temperature':350,'pressure':200000})
 air.regenerate()
 
 water = OpenPNM.Fluids.Water(network=pn)

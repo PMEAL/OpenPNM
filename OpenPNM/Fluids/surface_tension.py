@@ -6,20 +6,18 @@ module SurfaceTension
 """
 
 import scipy as sp
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
 
-def constant(fluid,network,value,**params):
+def constant(fluid,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def na(fluid,network,**params):
+def na(fluid,network,propname,**params):
     value = -1
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def empirical(fluid,network,a=[0],**params):
+def empirical(fluid,network,propname,a=[0],**params):
     r"""
     Uses a polynomial fit of empirical data to calculate property
     """
@@ -29,7 +27,7 @@ def empirical(fluid,network,a=[0],**params):
         value = value + a[i]*(T**i)
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Eotvos(fluid, network, k=2.1e-7, **params):
+def Eotvos(fluid,network,propname,k=2.1e-7,**params):
     r"""
     """
     Tc = fluid.get_pore_data(prop='Tc')
@@ -38,7 +36,7 @@ def Eotvos(fluid, network, k=2.1e-7, **params):
     value = k*(Tc-T)/(Vm**(2/3))
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def GuggenheimKatayama(fluid, network, K2=1, n=1.222, **params):
+def GuggenheimKatayama(fluid,network,propname,K2=1,n=1.222,**params):
     r"""
     """
     T = network.get_pore_data(phase=fluid,prop='temperature')
@@ -48,7 +46,7 @@ def GuggenheimKatayama(fluid, network, K2=1, n=1.222, **params):
     value = sigma_o*(1-T/Tc)**n
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def BrockBird_scaling(fluid, network, sigma_o=0.072, To=298.,**params):
+def BrockBird_scaling(fluid,network,propname,sigma_o=0.072,To=298.0,**params):
     r"""
     Uses Brock_Bird model to adjust surface tension from it's value at a given reference temperature to temperature of interest
 
