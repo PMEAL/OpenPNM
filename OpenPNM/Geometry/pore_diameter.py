@@ -6,17 +6,15 @@ module pore_diameter
 """
 import scipy as sp
 import scipy.stats as spst
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
-propname = propname.split('_')[1]
 
-def constant(geometry,network,value,**params):
+
+def constant(geometry,network,propname,value,**params):
     r"""
     Assign specified constant value
     """
     network.set_pore_data(labels=geometry,prop=propname,data=value)
 
-def sphere(geometry,network,**params):
+def sphere(geometry,network,propname,**params):
     r"""
     Calculate pore diameter from seed values for a spherical pore body
     """

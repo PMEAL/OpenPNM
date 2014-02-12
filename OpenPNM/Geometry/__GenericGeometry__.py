@@ -26,10 +26,11 @@ class GenericGeometry(OpenPNM.Base.Utilities):
     network : OpenPNM Network Object
     
     name : string
-        The name to apply to the labels (e.g. 'layer_1')
+        A unique name to apply to the object.  This name will also be used as a
+        label to identify where this this geometry applies.
         
     locations : boolean mask or list of indices
-        The pore locations in the network where this geometry applies
+        The pore locations in the network where this geometry applies.
     
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
@@ -79,10 +80,32 @@ class GenericGeometry(OpenPNM.Base.Utilities):
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()
     
-    def add_method(self,prop='',**kwargs):
+    def add_method(self,prop='',prop_name='',**kwargs):
+        r'''
+        Add specified property estimation model to the fluid object.
+        
+        Parameters
+        ----------
+        prop : string
+            The name of the fluid property attribute to add.
+            This name must correspond with a file in the Fluids folder.  
+            To add a new property simply add a file with the appropriate name and the necessary methods.
+           
+        prop_name : string, optional
+            This argument will be used as the method name and the dictionary key
+            where data is written by method. This option is provided for occasions
+            when multiple properties of the same type are required, such as
+            diffusivity coefficients of each species in a multicomponent mixture.
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        '''
         try:
             function = getattr( getattr(OpenPNM.Geometry, prop), kwargs['model'] ) # this gets the method from the file
-            preloaded_fn = partial(function, geometry=self, network=self._net, **kwargs) #
+            if prop_name: propname = prop = prop_name #overwrite the default prop with user supplied name
+            else: propname = prop.split('_')[1] #remove leading pore_ or throat_ from dictionary key
+            preloaded_fn = partial(function, geometry=self, network=self._net,propname=propname, **kwargs) #
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)

@@ -6,17 +6,14 @@ module throat_diameter
 """
 import scipy as sp
 import scipy.stats as spst
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
-propname = propname.split('_')[1]
 
-def constant(geometry,network,value,**params):
+def constant(geometry,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
     network.set_throat_data(labels=geometry,prop=propname,data=value)
 
-def cylinder(geometry,network,**params):
+def cylinder(geometry,network,propname,**params):
     r"""
     Calculate throat diameter from seeds for a cylindrical throat
     """
@@ -25,13 +22,13 @@ def cylinder(geometry,network,**params):
     value=P.ppf(network.get_throat_data(prop='seed'))
     network.set_throat_data(labels=geometry,prop=propname,data=value)
 
-def cuboid(geometry,network,**params):
+def cuboid(geometry,network,propname,**params):
     r"""
     Calculate throat diameter from seeds for a cuboidal throat
     """
     print('cuboid: nothing yet')
     
-def voronoi(geometry,network,**params):
+def voronoi(geometry,network,propname,**params):
     r"""
     Calculate throat diameter from analysis of Voronoi facets
     """
