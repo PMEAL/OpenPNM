@@ -438,6 +438,14 @@ class Tools(Utilities):
         brute force appraoch.  Vectorization would be nice.
         
         Also, the logic for allowing pnum/tnum to be either int or list is clunky (but works)
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.find_labels(pnum=0)
+        ['front', 'left', 'all', 'internal', 'bottom']
+        >>> pn.find_labels(tnum=124)
+        ['right', 'all', 'internal']
         '''
         if pnum != '' and tnum == '':
             element = 'pore'
@@ -476,6 +484,14 @@ class Tools(Utilities):
         Notes
         -----
         The logic for allowing pnum/tnum to be either int or list is clunky (but works)
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.has_labels(pnums=[0,1,2,122,123,124],labels=['top','front'],mode='union') #Default mode is 'union'
+        array([ True, False, False,  True,  True,  True], dtype=bool)
+        >>> pn.has_labels(pnums=[0,1,2,122,123,124],labels=['top','right'],mode='intersection')
+        array([False, False, False,  True,  True,  True], dtype=bool)        
         '''
         #Parse input arguments
         if pnums != '' and tnums == '':
