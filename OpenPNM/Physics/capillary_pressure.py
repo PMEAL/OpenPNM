@@ -6,20 +6,18 @@ module capillary_pressure
 """
 
 import scipy as sp
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
 
-def constant(physics,fluid,network,value,**params):
+def constant(physics,fluid,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def na(physics,fluid,network,**params):
+def na(physics,fluid,network,propname,**params):
     value = -1
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def washburn(physics,fluid,network,**params):
+def washburn(physics,fluid,network,propname,**params):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
@@ -27,7 +25,6 @@ def washburn(physics,fluid,network,**params):
     ----------
     network : OpenPNM Network Object
         The network on which to apply the calculation
-
     fluid : OpenPNM Fluid Object
         Fluid object for the invading fluids
 
@@ -49,7 +46,7 @@ def washburn(physics,fluid,network,**params):
     value = -2*sigma*sp.cos(sp.radians(theta))/r
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def purcell(physics,network,fluid,r_toroid,**params):
+def purcell(physics,network,fluid,propname,r_toroid,**params):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a toroid.
 
@@ -57,13 +54,10 @@ def purcell(physics,network,fluid,r_toroid,**params):
     ----------
     network : OpenPNM Network Object
         The network on which to apply the calculation
-
     sigma : float, array_like
         Surface tension of the invading/defending fluid pair.  Units must be consistent with the throat size values, but SI is encouraged.
-
     theta : float, array_like
         Contact angle formed by a droplet of the invading fluid and solid surface, measured through the defending fluid phase.  Angle must be given in degrees.
-
     r_toroid : float or array_like
         The radius of the solid
 
