@@ -5,17 +5,15 @@ module throat_length
 
 """
 import scipy as sp
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
-propname = propname.split('_')[1]
 
-def constant(geometry,network,value,**params):
+def constant(geometry,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
+    propname = propname.split('_')[1] #remove leading pore_ or throat_ from dictionary key
     network.set_throat_data(labels=geometry,prop=propname,data=value)
 
-def straight(geometry,network,**params):
+def straight(geometry,network,propname,**params):
     r"""
     Calculate throat length 
     """
