@@ -66,35 +66,35 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 ##----------------------------------------------------------------------
 ## Updating data based on the result of Percolation Algorithms
 OP_1.update()
-#IP_1.update()
-##----------------------------------------------------------------------
-## Initializing diffusion algorithm
-Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg',network=pn)
+###IP_1.update()
+####----------------------------------------------------------------------
+#### Initializing diffusion algorithm
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20,name='Fickian_alg',network=pn)
 ## Assign Dirichlet boundary conditions
 ## BC1
 BC1_pores = pn.get_pore_indices(labels='top')
 Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
 BC1_values = 0.8
-Fickian_alg.set_pore_data(labels='Dirichlet',prop='BCval',data=BC1_values,indices=BC1_pores)
+Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
 ## BC2
 BC2_pores = pn.get_pore_indices(labels='bottom')
 Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
 BC2_values = 0.4
-Fickian_alg.set_pore_data(labels='Dirichlet',prop='BCval',data=BC2_values,indices=BC2_pores)
-##----------------------------------------------------------------------
-### Assign Neumann boundary conditions
-### BC1
+Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+###----------------------------------------------------------------------
+#### Assign Neumann boundary conditions
+# BC1
 #BC1_pores = pn.get_pore_indices(labels='top')
-#Fickian_alg.set_pore_info(prop='Dirichlet',locations=BC1_pores,is_indices=True)
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
 #BC1_values = 0.5
-#Fickian_alg.set_pore_data(labels='Dirichlet',prop='BCval',data=BC1_values,indices=BC1_pores)
+#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
 ### BC2
 #BC2_pores = pn.get_pore_indices(labels='bottom')
-#Fickian_alg.set_pore_info(prop='Neumann_rate',locations=BC2_pores,is_indices=True)
+#Fickian_alg.set_pore_info(label='Neumann_rate',locations=BC2_pores)
 #BC2_values = 2e-12
-#Fickian_alg.set_pore_data(labels='Neumann_rate',prop='BCval',data=BC2_values,indices=BC2_pores)
-##----------------------------------------------------------------------
-## Run simulation
+#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+###----------------------------------------------------------------------
+### Run simulation
 Fickian_alg.run(active_fluid=air)
 ##----------------------------------------------------------------------
 #
