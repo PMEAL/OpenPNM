@@ -6,20 +6,18 @@ module electronic_conductance
 """
 
 import scipy as sp
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
 
-def constant(physics,network,fluid,value,**params):
+def constant(physics,network,fluid,propname,value,**params):
     r"""
     Assigns specified constant value
     """
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def na(physics,network,fluid,**params):
+def na(physics,network,fluid,propname,**params):
     value = -1
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def parallel_resistors(physics,network,fluid,**params):
+def parallel_resistors(physics,network,fluid,propname,**params):
     r"""
     Calculates the electronic conductance of throat assuming cylindrical geometry
 

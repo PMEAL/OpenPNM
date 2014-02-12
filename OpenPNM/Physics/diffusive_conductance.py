@@ -6,20 +6,18 @@ module diffusive_conductance
 """
 
 import scipy as sp
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
 
-def constant(physics,network,fluid,value,**params):
+def constant(physics,network,fluid,propname,value,**params):
     r"""
     Assigns specified constant value
     """
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def na(physics,network,fluid,**params):
+def na(physics,network,fluid,propname,**params):
     value = -1
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def bulk_diffusion(physics,network,fluid,**params):
+def bulk_diffusion(physics,network,fluid,propname,**params):
     r"""
     Calculate the diffusive conductance of conduits in network ( 1/2 pore - full throat - 1/2 pore ) based on the area
 
