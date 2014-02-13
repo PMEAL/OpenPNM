@@ -22,7 +22,8 @@ def na(fluid,network,propname,**params):
 
 def Fuller(fluid, network, propname, MA, MB, vA, vB, **params): #MA=0.03199,MB=0.0291,vA=16.3,vB=19.7,**params):
     r"""
-    Uses Fuller model to estimate diffusion coefficient for gases from first principles at conditions of interest
+    Uses Fuller model to estimate diffusion coefficient for gases from first 
+    principles at conditions of interest
 
     Parameters
     ----------

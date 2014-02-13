@@ -7,19 +7,40 @@ module diffusive_conductance
 
 import scipy as sp
 
-def constant(physics,network,fluid,propname,value,**params):
+def constant(physics,
+             network,
+             fluid,
+             propname,
+             value,
+             **params):
     r"""
     Assigns specified constant value
     """
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def na(physics,network,fluid,propname,**params):
+def na(physics,
+       network,
+       fluid,
+       propname,
+       **params):
+    r"""
+    """
     value = -1
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def bulk_diffusion(physics,network,fluid,propname,**params):
+def bulk_diffusion(physics,
+                   network,
+                   fluid,
+                   propname,
+                   diffusivity = 'diffusivity',
+                   molar_density = 'molar_density',
+                   throat_diameter = 'diameter',
+                   throat_length = 'length',
+                   pore_diameter = 'diameter',
+                   **params):
     r"""
-    Calculate the diffusive conductance of conduits in network ( 1/2 pore - full throat - 1/2 pore ) based on the area
+    Calculate the diffusive conductance of conduits in network, where a 
+    conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
 
     Parameters
     ----------
@@ -30,23 +51,30 @@ def bulk_diffusion(physics,network,fluid,propname,**params):
 
     Notes
     -----
-    This function requires that all the necessary fluid properties should already be calculated.
+    This function requires that all the necessary fluid properties already be 
+    calculated.
 
-    """
-    cp = network.get_pore_data(phase=fluid,prop='molar_density')
-    DABp = network.get_pore_data(phase=fluid,prop='diffusivity')
+    """    
+    #Get fluid properties
+    cp = network.get_pore_data(phase=fluid,prop=molar_density)
+    DABp = network.get_pore_data(phase=fluid,prop=diffusivity)
+    #Interpolate pore values to throats
     ct = network.interpolate_throat_data(cp)
     DABt = network.interpolate_throat_data(DABp)
     #Get Nt-by-2 list of pores connected to each throat
-    pores = network.find_connected_pores(network.get_throat_data(prop='numbering'),flatten=0)
+    tind = network.get_throat_indices()
+    pores = network.find_connected_pores(tind,flatten=0)
     #Find g for half of pore 1
-    gp1 = ct*DABt*network.get_pore_data(prop='diameter')[pores[:,0]]**2/(0.5*network.get_pore_data(prop='diameter')[pores[:,0]])
+    pdia = network.get_pore_data(prop=pore_diameter)
+    gp1 = ct*DABt*pdia[pores[:,0]]**2/(0.5*pdia[pores[:,0]])
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = ct*DABt*network.get_pore_data(prop='diameter')[pores[:,1]]**2/(0.5*network.get_pore_data(prop='diameter')[pores[:,1]])
+    gp2 = ct*DABt*pdia[pores[:,1]]**2/(0.5*pdia[pores[:,1]])
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
-    gt = ct*DABt*network.get_throat_data(prop='diameter')**2/(network.get_throat_data(prop='length'))
+    tdia = network.get_throat_data(prop=throat_diameter)
+    tlen = network.get_throat_data(prop=throat_length)
+    gt = ct*DABt*tdia**2/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
