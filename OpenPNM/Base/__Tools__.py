@@ -42,11 +42,17 @@ class Tools(Utilities):
         r'''
         '''
         if type(data)!=sp.ndarray: data = sp.array(data,ndmin=1)
-        if type(locations)==list: locations = getattr(self,'get_'+element+'_indices')(locations)
+        if type(locations)==list: 
+            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            except: locations = sp.array(locations,ndmin=1)
+        elif type(locations)==sp.ndarray:
+            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            except: pass            
         elif locations!='':
             try: locations = locations.name #allow passing of geometry objects
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
+              
         try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
         except: pass #Accept object
 
@@ -112,7 +118,12 @@ class Tools(Utilities):
     def _get_data(self,element='',phase='',prop='',locations=''):
         r'''
         '''      
-        if type(locations)==list: locations = getattr(self,'get_'+element+'_indices')(locations)
+        if type(locations)==list: 
+            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            except: locations = sp.array(locations,ndmin=1)
+        elif type(locations)==sp.ndarray:
+            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            except: pass            
         elif locations!='':
             try: locations = locations.name #allow passing of geometry objects
             except: pass
@@ -275,13 +286,21 @@ class Tools(Utilities):
         --------
         set_pore_info, set_throat_info
         '''
-        if type(locations)==list: locations = getattr(self,'get_'+element+'_indices')(locations)
-        elif locations!='':
+        
+        if type(locations)==list: 
+            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            except: locations = sp.array(locations,ndmin=1)
+        elif type(locations)==sp.ndarray:
+            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            except : pass            
+        if locations!='':
             try: 
                 locations = locations.name #allow passing of geometry objects
                 label = locations
             except: pass
-            if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])           
+            if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])        
+          
+            
             if label:
                 if label=='all': getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
                 else:    
