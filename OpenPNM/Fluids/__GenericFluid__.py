@@ -58,6 +58,12 @@ class GenericFluid(Tools):
         #Initialize 'numbering arrays in the objects own info dictionaries
         self.set_pore_info(label='all',locations=self._net.get_pore_indices())
         self.set_throat_info(label='all',locations=self._net.get_throat_indices())
+        
+    def apply_ICs(self,init_cond):
+        r'''
+        '''
+        for item in init_cond.keys():
+            self.set_pore_data(prop=item,data=init_cond[item])
 
     def regenerate(self):
         r'''
