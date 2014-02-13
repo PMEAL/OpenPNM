@@ -23,21 +23,17 @@ class GenericFluid(Tools):
     ----------
     network : OpenPNM Network object 
         The network to which this fluid should be attached
-    
     name : str
         A unique string name to identify the fluid object, typically same as 
         instance name but can be anything.
-        
     init_cond : dictionary, optional
         A dictionary of 'key':value pairs to initize fluid properties.  If omitted
         the temperature and pressure of the fluid are set to STP.  A typical 
         additiona would be 'mole_fraction' for a mixture.  Temperature and
         pressure can be set through init_cond, but will be set to STP if not 
         only other properties are included.
-    
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-
     loggername : string (optional)
         Sets a custom name for the logger, to help identify logger messages
 
@@ -81,7 +77,6 @@ class GenericFluid(Tools):
             The name of the fluid property attribute to add.
             This name must correspond with a file in the Fluids folder.  
             To add a new property simply add a file with the appropriate name and the necessary methods.
-           
         prop_name : string, optional
             This argument will be used as the method name and the dictionary key
             where data is written by method. This option is provided for occasions
@@ -91,8 +86,6 @@ class GenericFluid(Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> print(pn.name)
-        test_network
         >>> fluid = OpenPNM.Fluids.GenericFluid(network=pn,name='test_fluid')
         >>> fluid.add_method(prop='diffusivity',model='constant',value=1.234)
         >>> fluid.regenerate()
@@ -100,6 +93,15 @@ class GenericFluid(Tools):
         array([ 1.234])
         >>> pn.get_pore_data(prop='diffusivity',phase=fluid) #Use network's getter
         array([ 1.234])
+        
+        In cases where the same property is needed multiple times (like 
+        diffusivity of multiple species in a mixture), it is possible to
+        specify unique property names:
+        
+        >>> fluid.add_method(prop='diffusivity',prop_name='diffusivity_of_species_2',model='constant',value=3.333)
+        >>> fluid.regenerate()
+        >>> pn.get_pore_data(prop='diffusivity_of_species_2',phase=fluid)
+        array([ 3.333])
         '''
         try:
             function = getattr( getattr(OpenPNM.Fluids, prop), kwargs['model'] ) # this gets the method from the file

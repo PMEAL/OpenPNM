@@ -331,13 +331,13 @@ class Tools(Utilities):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_pore_info(prop='test',locations=[0,1],is_indices=True) #Set using index notation
-        >>> pn.get_pore_info(prop='test',return_indices=True) #Retrieve values as indices
+        >>> pn.set_pore_info(label='test',locations=[0,1]) #Set using index notation
+        >>> pn.get_pore_info(label='test',return_indices=True) #Retrieve values as indices
         array([0, 1], dtype=int64)
         >>> loc = sp.zeros((pn.num_pores(),),dtype=bool)
         >>> loc[[0,1]] = True
-        >>> pn.set_pore_info(prop='test2',locations=loc) #Set using boolean mask
-        >>> pn.get_pore_info(prop='test',return_indices=True) #Retrieve values as indices
+        >>> pn.set_pore_info(label='test',locations=loc) #Set using boolean mask
+        >>> pn.get_pore_info(label='test',return_indices=True) #Retrieve values as indices
         array([0, 1], dtype=int64)
         '''
         self._set_info(element='pore',label=label,locations=locations)
@@ -366,10 +366,10 @@ class Tools(Utilities):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> result = pn.get_pore_info(prop='top',return_indices=True) #Retrieve values as indices
+        >>> result = pn.get_pore_info(label='top',return_indices=True) #Retrieve values as indices
         >>> result[0:10]
         array([100, 101, 102, 103, 104, 105, 106, 107, 108, 109], dtype=int64)
-        >>> result = pn.get_pore_info(prop='top') #Retrieve values as boolean mask
+        >>> result = pn.get_pore_info(label='top') #Retrieve values as boolean mask
         >>> result[97:103]
         array([False, False, False,  True,  True,  True], dtype=bool)
         '''
@@ -454,9 +454,9 @@ class Tools(Utilities):
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_labels(pnum=0)
-        ['front', 'left', 'all', 'internal', 'bottom']
+        ['front', 'bottom', 'all', 'internal', 'left']
         >>> pn.find_labels(tnum=124)
-        ['right', 'all', 'internal']
+        ['all', 'internal', 'right']
         '''
         if pnum != '' and tnum == '':
             element = 'pore'
@@ -502,7 +502,7 @@ class Tools(Utilities):
         >>> pn.has_labels(pnums=[0,1,2,122,123,124],labels=['top','front'],mode='union') #Default mode is 'union'
         array([ True, False, False,  True,  True,  True], dtype=bool)
         >>> pn.has_labels(pnums=[0,1,2,122,123,124],labels=['top','right'],mode='intersection')
-        array([False, False, False,  True,  True,  True], dtype=bool)        
+        array([False, False, False,  True,  True,  True], dtype=bool)
         '''
         #Parse input arguments
         if pnums != '' and tnums == '':
