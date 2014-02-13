@@ -21,6 +21,7 @@ air.apply_ICs(init_cond={'temperature':350,'pressure':200000}) #experimental fea
 air.regenerate()
 
 water = OpenPNM.Fluids.Water(network=pn)
+water.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=1000000)
 water.regenerate()
 
 #==============================================================================
@@ -29,7 +30,7 @@ water.regenerate()
 phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water,name='standard_water_physics')
 phys_water.add_method(prop='capillary_pressure',model='purcell',r_toroid=1e-5)
 phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
-phys_water.add_method(prop='diffusive_conductance',model='bulk_diffusion')
+phys_water.add_method(prop='diffusive_conductance',prop_name='gdAB',model='bulk_diffusion',diffusivity='DAB')
 phys_water.regenerate()
 
 phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air,name='standard_air_physics')
