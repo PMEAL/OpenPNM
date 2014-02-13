@@ -20,6 +20,7 @@ from .__Water__ import Water
 from .__Air__ import Air
 from . import viscosity
 from . import molar_density
+from . import molar_mass
 from . import diffusivity
 from . import surface_tension
 from . import vapor_pressure
