@@ -20,7 +20,7 @@ def na(fluid,network,propname,**params):
     value = -1
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Reynolds(fluid,network,propname,uo=0.001,b=0.1,**params):
+def Reynolds(fluid,network,propname,uo,b,**params):
     r"""
     Uses Reynolds method for the temperature dependance of shear viscosity
 
@@ -34,7 +34,7 @@ def Reynolds(fluid,network,propname,uo=0.001,b=0.1,**params):
     value = uo*sp.exp(-1*b*T)
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Chung(fluid,network,propname,Tc=132.65,Vc=92.35e-6,MW=0.0291,acentric=0,kappa=0,dipole=0,**params):
+def Chung(fluid,network,propname,Tc,Vc,MW,acentric,kappa,dipole,**params):
     r"""
     Uses Chung et al. model to estimate viscosity for gases with low pressure(not near the critical pressure) from first principles at conditions of interest
 
