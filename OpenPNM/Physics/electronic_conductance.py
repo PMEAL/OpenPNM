@@ -7,17 +7,34 @@ module electronic_conductance
 
 import scipy as sp
 
-def constant(physics,network,fluid,propname,value,**params):
+def constant(physics,
+             network,
+             fluid,
+             propname,
+             value,
+             **params):
     r"""
     Assigns specified constant value
     """
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def na(physics,network,fluid,propname,**params):
+def na(physics,
+       network,
+       fluid,
+       propname,
+       **params):
     value = -1
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def parallel_resistors(physics,network,fluid,propname,**params):
+def parallel_resistors(physics,
+                       network,
+                       fluid,
+                       propname,
+                       electrical_conductivity='electrical_conductivity',
+                       throat_diameter = 'diameter',
+                       throat_length = 'length',
+                       pore_diameter = 'diameter',                       
+                       **params):
     r"""
     Calculates the electronic conductance of throat assuming cylindrical geometry
 
@@ -27,18 +44,22 @@ def parallel_resistors(physics,network,fluid,propname,**params):
 
     fluid : OpenPNM Fluid Object
     """
-    sigmap = network.get_pore_data(phase=fluid,prop='electronic_conductivity')
+    sigmap = network.get_pore_data(phase=fluid,prop=electrical_conductivity)
     sigmat = network.interpolate_throat_data(sigmap)
     #Get Nt-by-2 list of pores connected to each throat
-    pores = network.find_connected_pores(network.get_throat_data(prop='numbering'),flatten=0)
+    tind = network.get_throat_indices()
+    pores = network.find_connected_pores(tind,flatten=0)
     #Find g for half of pore 1
-    gp1 = (network.get_pore_data(prop='diameter')[pores[:,0]]/2)**2/(network.get_pore_data(prop='diameter')[pores[:,0]]*sigmat)
+    pdia = network.get_pore_data(prop=pore_diameter)
+    gp1 = sigmat*pdia[pores[:,0]]**2/(0.5*pdia[pores[:,0]])
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = (network.get_pore_data(prop='diameter')[pores[:,1]]/2)**2/(network.get_pore_data(prop='diameter')[pores[:,1]]*sigmat)
+    gp2 = sigmat*pdia[pores[:,1]]**2/(0.5*pdia[pores[:,1]])
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
-    gt = sigmat*2*network.get_throat_data(prop='diameter')/(network.get_throat_data(prop='length'))
+    tdia = network.get_throat_data(prop=throat_diameter)
+    tlen = network.get_throat_data(prop=throat_length)
+    gt = sigmat*tdia**2/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
