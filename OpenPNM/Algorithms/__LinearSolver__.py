@@ -98,18 +98,21 @@ class LinearSolver(GenericAlgorithm):
         self.BCvalues = sp.zeros(self._net.num_pores())
         for bctype in self._pore_info.keys():
             if bctype=='Dirichlet':
-                self.BCtypes[self.get_pore_info(label='Dirichlet')] = 1
-                self.BCvalues[self.get_pore_info(label='Dirichlet')] = self.get_pore_data(labels='Dirichlet',prop='BCval')
+                bcpores = self.get_pore_info(label='Dirichlet')
+                self.BCtypes[bcpores] = 1 
+                self.BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
             elif bctype=='Neumann_flux':
-                self.BCtypes[self.get_pore_info(label='Neumann_flux')] = 2
-                self.BCvalues[self.get_pore_info(label='Neumann_flux')] = self.get_pore_data(labels='Neumann_flux',prop='BCval')                
+                bcpores = self.get_pore_info(label='Neumann_flux')
+                self.BCtypes[bcpores] = 2
+                self.BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
             elif bctype=='Neumann_insulated':
-                self.BCtypes[self.get_pore_info(label='Neumann_insulated')] = 3
-                self.BCvalues[self.get_pore_info(label='Neumann_insulated')] = self.get_pore_data(labels='Neumann_insulated',prop='BCval') 
+                bcpores = self.get_pore_info(label='Neumann_insulated')
+                self.BCtypes[bcpores] = 3
+                self.BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
             elif bctype=='Neumann_rate':
-                self.BCtypes[self.get_pore_info(label='Neumann_rate')] = 4
-                self.BCvalues[self.get_pore_info(label='Neumann_rate')] = self.get_pore_data(labels='Neumann_rate',prop='BCval') 
-
+                bcpores = self.get_pore_info(label='Neumann_rate')
+                self.BCtypes[bcpores] = 4
+                self.BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
 
 
     def _build_coefficient_matrix(self):
