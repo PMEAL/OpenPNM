@@ -1,6 +1,6 @@
 
 """
-module contact_angle
+module molar_mass
 ===============================================================================
 
 """
@@ -21,3 +21,14 @@ def na(fluid,network,propname,**params):
     value = -1
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
+def mixture(fluid,network,propname,MWs=[],mole_fracs=[],**params):
+    r"""
+    Calculates the average molecular weight of a mixture using mole fraction weighting
+    """
+    MWs = sp.array(MWs)
+    mole_fracs = sp.array(mole_fracs)
+    #Ensure mole fraction sum to 1
+    fsum = sp.sum(mole_fracs)
+    if fsum != 1: print(fluid._logger.warning('mole fractions do not add to 1, so performing normalization'))
+    value = sp.sum(MWs*mole_fracs)/fsum
+    network.set_pore_data(phase=fluid,prop=propname,data=value)
