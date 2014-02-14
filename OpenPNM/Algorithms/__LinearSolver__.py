@@ -145,7 +145,9 @@ class LinearSolver(GenericAlgorithm):
 
         A_dim = self._net.num_pores()
 
+        
         if (self._BCtypes==2).any():
+        # just for square cross section    
             flux_pores = self._net.get_pore_indices()[self._BCtypes==2]
             flux_values = sp.unique(self._BCvalues[self._BCtypes==2])
             for i in list(range(len(flux_values))):
@@ -156,6 +158,7 @@ class LinearSolver(GenericAlgorithm):
                 self._BCtypes[f] = 4
                 self._BCvalues[f] = sp.sum(self._BCvalues[f]*(self._net.get_throat_data(prop='diameter')[ft])**2)
 
+            
         if (self._BCtypes==4).any():
             self._extera_Neumann_equations = sp.unique(self._BCvalues[self._BCtypes==4])
             A_dim = A_dim + len(self._extera_Neumann_equations)
@@ -211,12 +214,12 @@ class LinearSolver(GenericAlgorithm):
 
         return(B)
 
-    def rate(self,pores=[],throats=[]):
+    def rate(self,pores='',throats=''):
 
-        if throats:
+        if throats!='':
             pores1 = self._net.find_connected_pores(throats)[:,0]
             pores2 = self._net.find_connected_pores(throats)[:,1]
-        else:            
+        elif pores!='':            
             throats = self._net.find_neighbor_throats(pores,flatten=True)
             pores1 = self._net.find_connected_pores(throats)[:,0]
             pores2 = self._net.find_connected_pores(throats)[:,1]

@@ -40,15 +40,19 @@ class FourierConduction(LinearSolver):
         super(FourierConduction,self).__init__(**kwargs)
         self._logger.info("Create Fourier Conduction Algorithm Object")
             
-    def _setup(self,**params):
+    def _setup(self,
+               thermal_conductance='thermal_conductance',
+               occupancy='occupancy',
+               **params):
         r"""
 
         This function executes the essential mathods for building matrices in Linear solution 
         """
         self._fluid = params['active_fluid']
+        self._boundary_conditions_setup()
         # Building thermal conductance
-        g = self._fluid.throat_conditions['thermal_conductance']
-        s = self._fluid.throat_conditions['occupancy']
+        g = self._fluid.get_throat_data(prop=thermal_conductance)
+        s = self._fluid.get_throat_data(prop=occupancy)
         self._conductance = g*s+g*(-s)/1e3
 
     
@@ -57,4 +61,9 @@ class FourierConduction(LinearSolver):
          main section of the algorithm              
         """
         T = self._do_one_inner_iteration()       
-        self._fluid.pore_conditions['temperature'] = T
+        self.set_pore_data(prop='temperature',data= T)
+
+    def update(self):
+        
+        T = self.get_pore_data(prop='temperature')
+        self._net.set_pore_data(phase=self._fluid,prop='temperature',data=T)

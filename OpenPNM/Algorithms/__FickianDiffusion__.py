@@ -40,30 +40,34 @@ class FickianDiffusion(LinearSolver):
         self._logger.info("Create Fick's Diffusion Algorithm Object")
 
 
-    def _setup(self,**params):
+    def _setup(self,
+               diffusive_conductance='diffusive_conductance',
+               occupancy='occupancy',
+               mole_fraction='mole_fraction',
+               **params):
         r"""
         This function executes the essential methods specific to Fickian diffusion simulations
         """
         self._fluid = params['active_fluid']
+        self._X_name = mole_fraction
         self._boundary_conditions_setup()
         # Variable transformation for Fickian Algorithm from xA to ln(xB)
-        Dir_pores = self._net.get_pore_data(prop='numbering')[self._BCtypes==1]
+        Dir_pores = self._net.get_pore_indices('all')[self._BCtypes==1]
         self._BCvalues[Dir_pores] = sp.log(1-self._BCvalues[Dir_pores])
-        g = self._fluid.get_throat_data(prop='diffusive_conductance')
-        s = self._fluid.get_throat_data(prop='occupancy')
+        g = self._fluid.get_throat_data(prop=diffusive_conductance)
+        s = self._fluid.get_throat_data(prop=occupancy)
         self._conductance = g*s+g*(-s)/1e3
 
     def _do_inner_iteration_stage(self):
 
         X = self._do_one_inner_iteration()
         xA = 1-sp.exp(X)
-        self.set_pore_data(prop='mole_fraction',data = xA)
+        self.set_pore_data(prop=self._X_name,data = xA)
         
-    def update(self,
-               mole_fraction='mole_fraction'):
+    def update(self):
         
-        x = self.get_pore_data(prop=mole_fraction)
-        self._net.set_pore_data(phase=self._fluid,prop=mole_fraction,data=x)
+        x = self.get_pore_data(prop=self._X_name)
+        self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=x)
 
     def effective_diffusivity_cubic(self,
                                    fluid,
