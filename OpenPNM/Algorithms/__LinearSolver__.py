@@ -35,7 +35,7 @@ class LinearSolver(GenericAlgorithm):
 
     def _do_one_inner_iteration(self):
 
-        if (self.BCtypes==0).all():
+        if (self._BCtypes==0).all():
             raise Exception('No boundary condition has been applied to this network.')
             self._result = sp.zeros(self._net.num_pores())
         else:
@@ -94,39 +94,39 @@ class LinearSolver(GenericAlgorithm):
         that the quantity of interest enters this pore.
 
         """
-        self.BCtypes = sp.zeros(self._net.num_pores())
-        self.BCvalues = sp.zeros(self._net.num_pores())
+        self._BCtypes = sp.zeros(self._net.num_pores())
+        self._BCvalues = sp.zeros(self._net.num_pores())
         for bctype in self._pore_info.keys():
             if bctype=='Dirichlet':
                 bcpores = self.get_pore_info(label='Dirichlet')
-                self.BCtypes[bcpores] = 1 
-                self.BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
+                self._BCtypes[bcpores] = 1 
+                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
             elif bctype=='Neumann_flux':
                 bcpores = self.get_pore_info(label='Neumann_flux')
-                self.BCtypes[bcpores] = 2
-                self.BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
+                self._BCtypes[bcpores] = 2
+                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
             elif bctype=='Neumann_insulated':
                 bcpores = self.get_pore_info(label='Neumann_insulated')
-                self.BCtypes[bcpores] = 3
-                self.BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
+                self._BCtypes[bcpores] = 3
+                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
             elif bctype=='Neumann_rate':
                 bcpores = self.get_pore_info(label='Neumann_rate')
-                self.BCtypes[bcpores] = 4
-                self.BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
+                self._BCtypes[bcpores] = 4
+                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
 
 
     def _build_coefficient_matrix(self):
        
         boundaries = self._net.get_pore_indices()[-sp.in1d(self._net.get_pore_indices(),self._net.get_pore_indices('internal'))]
-        if (self.BCtypes[boundaries]==0).any():
-            self.BCtypes[boundaries[self.BCtypes[boundaries]==0]] = 3
+        if (self._BCtypes[boundaries]==0).any():
+            self._BCtypes[boundaries[self._BCtypes[boundaries]==0]] = 3
         
         # Filling coefficient matrix
         pnum = self._net.get_pore_indices()
         tpore1 = self._net.get_throat_data(prop='connections')[:,0]
         tpore2 = self._net.get_throat_data(prop='connections')[:,1]
 
-        loc1 = sp.in1d(tpore1,pnum[self.BCtypes!=1])
+        loc1 = sp.in1d(tpore1,pnum[self._BCtypes!=1])
         modified_tpore1 = tpore1[loc1]
         modified_tpore2 = tpore2[loc1]
         row = modified_tpore1
@@ -136,7 +136,7 @@ class LinearSolver(GenericAlgorithm):
         data_main = self._conductance
         data = data_main[loc1]
 
-        loc2 = sp.in1d(tpore2,pnum[self.BCtypes!=1])
+        loc2 = sp.in1d(tpore2,pnum[self._BCtypes!=1])
         modified_tpore2 = tpore2[loc2]
         modified_tpore1 = tpore1[loc2]
         row = sp.append(row,modified_tpore2)
@@ -145,24 +145,24 @@ class LinearSolver(GenericAlgorithm):
 
         A_dim = self._net.num_pores()
 
-        if (self.BCtypes==2).any():
-            flux_pores = self._net.get_pore_indices()[self.BCtypes==2]
-            flux_values = sp.unique(self.BCvalues[self.BCtypes==2])
+        if (self._BCtypes==2).any():
+            flux_pores = self._net.get_pore_indices()[self._BCtypes==2]
+            flux_values = sp.unique(self._BCvalues[self._BCtypes==2])
             for i in list(range(len(flux_values))):
-                f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_indices()[self.BCvalues==flux_values[i]])]
+                f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_indices()[self._BCvalues==flux_values[i]])]
                 fn = self._net.find_neighbor_pores(f)
                 fn = fn[self._net.get_pore_info(label='internal')[fn]]
                 ft = self._net.find_connecting_throat(f,fn)
-                self.BCtypes[f] = 4
-                self.BCvalues[f] = sp.sum(self.BCvalues[f]*(self._net.get_throat_data(prop='diameter')[ft])**2)
+                self._BCtypes[f] = 4
+                self._BCvalues[f] = sp.sum(self._BCvalues[f]*(self._net.get_throat_data(prop='diameter')[ft])**2)
 
-        if (self.BCtypes==4).any():
-            self.extera_Neumann_equations = sp.unique(self.BCvalues[self.BCtypes==4])
-            A_dim = A_dim + len(self.extera_Neumann_equations)
-            extera_neu = self.extera_Neumann_equations
-            g_super = sp.average(self._conductance[self._net.find_neighbor_throats(pnum[self.BCtypes==4])])*1e5
+        if (self._BCtypes==4).any():
+            self._extera_Neumann_equations = sp.unique(self._BCvalues[self._BCtypes==4])
+            A_dim = A_dim + len(self._extera_Neumann_equations)
+            extera_neu = self._extera_Neumann_equations
+            g_super = sp.average(self._conductance[self._net.find_neighbor_throats(pnum[self._BCtypes==4])])*1e5
             for item in list(range(len(extera_neu))):
-                neu_tpore2 = pnum[self.BCvalues==extera_neu[item]]
+                neu_tpore2 = pnum[self._BCvalues==extera_neu[item]]
 
                 row = sp.append(row,neu_tpore2)
                 col = sp.append(col,len(neu_tpore2)*[A_dim-item-1])
@@ -173,19 +173,19 @@ class LinearSolver(GenericAlgorithm):
                 data = sp.append(data,len(neu_tpore2)*[g_super])
 
         else:
-            self.extera_Neumann_equations = 0
+            self._extera_Neumann_equations = 0
 
-        self.Coeff_dimension = A_dim
+        self._Coeff_dimension = A_dim
 
         # Adding positions for diagonal
 
         dia = sp.array(list(range(0,A_dim)))
-        row = sp.append(row,dia[self.BCtypes==1])
-        col = sp.append(col,dia[self.BCtypes==1])
-        data = sp.append(data,sp.ones_like(dia[self.BCtypes==1]))
+        row = sp.append(row,dia[self._BCtypes==1])
+        col = sp.append(col,dia[self._BCtypes==1])
+        data = sp.append(data,sp.ones_like(dia[self._BCtypes==1]))
 
-        temp_data = sp.zeros(A_dim-len(dia[self.BCtypes==1]))
-        non_Dir = dia[-sp.in1d(dia,dia[self.BCtypes==1])]
+        temp_data = sp.zeros(A_dim-len(dia[self._BCtypes==1]))
+        non_Dir = dia[-sp.in1d(dia,dia[self._BCtypes==1])]
         for i in list(range(len(non_Dir))):
             temp_data[i] = -sp.sum(data[row==non_Dir[i]])
         data = sp.append(data,temp_data)
@@ -200,12 +200,12 @@ class LinearSolver(GenericAlgorithm):
 
     def _build_RHS_matrix(self):
 
-        extera_neu = self.extera_Neumann_equations
-        A_dim = self.Coeff_dimension
+        extera_neu = self._extera_Neumann_equations
+        A_dim = self._Coeff_dimension
         B = sp.zeros([A_dim,1])
-        Dir_pores = self._net.get_pore_indices()[self.BCtypes==1]
-        B[Dir_pores] = sp.reshape(self.BCvalues[Dir_pores],[len(Dir_pores),1])
-        if (self.BCtypes==4).any():
+        Dir_pores = self._net.get_pore_indices()[self._BCtypes==1]
+        B[Dir_pores] = sp.reshape(self._BCvalues[Dir_pores],[len(Dir_pores),1])
+        if (self._BCtypes==4).any():
             for item in list(range(len(extera_neu))):
                 B[A_dim-item-1,0] = extera_neu[item]
 

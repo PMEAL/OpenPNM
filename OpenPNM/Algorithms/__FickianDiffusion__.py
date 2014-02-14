@@ -47,8 +47,8 @@ class FickianDiffusion(LinearSolver):
         self._fluid = params['active_fluid']
         self._boundary_conditions_setup()
         # Variable transformation for Fickian Algorithm from xA to ln(xB)
-        Dir_pores = self._net.get_pore_data(prop='numbering')[self.BCtypes==1]
-        self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])
+        Dir_pores = self._net.get_pore_data(prop='numbering')[self._BCtypes==1]
+        self._BCvalues[Dir_pores] = sp.log(1-self._BCvalues[Dir_pores])
         g = self._fluid.get_throat_data(prop='diffusive_conductance')
         s = self._fluid.get_throat_data(prop='occupancy')
         self._conductance = g*s+g*(-s)/1e3
