@@ -44,7 +44,7 @@ class StokesFlow(LinearSolver):
         r"""
         This function executes the essential mathods before building matrices in Linear solution 
         """
-      
+        self._logger.info("Setup for Stokes Flow Algorithm")
         self._fluid = params['active_fluid']
         self._boundary_conditions_setup()
         # Building hydraulic conductance
@@ -56,11 +56,13 @@ class StokesFlow(LinearSolver):
 
         p = self._do_one_inner_iteration()
         self.set_pore_data(prop='pressure',data = p)
+        self._logger.info("Solving process finished successfully!")
 
     def update(self):
         
         p = self.get_pore_data(prop='pressure')
         self._net.set_pore_data(phase=self._fluid,prop='pressure',data=p)
+        self._logger.info("Results of this algorithm have been updated successfully.")
 
 
     def effective_permeability_cubic(self,
