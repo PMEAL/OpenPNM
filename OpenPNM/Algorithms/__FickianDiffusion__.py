@@ -57,5 +57,27 @@ class FickianDiffusion(LinearSolver):
 
         X = self._do_one_inner_iteration()
         xA = 1-sp.exp(X)
-        self._fluid.set_pore_data(prop='mole_fraction',data = xA)
+        self.set_pore_data(prop='mole_fraction',data = xA)
 
+    def effective_diffusivity_cubic(self,
+                                   fluid,
+                                   face1='',
+                                   face2='',
+                                   d_term='molar_density',
+                                   x_term='mole_fraction',
+                                   conductance='diffusive_conductance',
+                                   occupancy='',
+                                   **params):
+        r"""
+        This function calculates effective diffusivity of a cubic network between face1 and face2.  
+        face1 and face2 represent types of these two faces.
+
+        """ 
+        return self._calc_eff_prop_cubic(alg='Fickian',
+                                  fluid=fluid,
+                                  face1=face1,
+                                  face2=face2,
+                                  d_term=d_term,
+                                  x_term=x_term,
+                                  conductance=conductance,
+                                  occupancy=occupancy)
