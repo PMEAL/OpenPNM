@@ -55,5 +55,28 @@ class StokesFlow(LinearSolver):
     def _do_inner_iteration_stage(self):
 
         p = self._do_one_inner_iteration()
-        self._fluid.set_pore_data(prop='pressure',data = p)
+        self.set_pore_data(prop='pressure',data = p)
 
+
+    def effective_permeability_cubic(self,
+                                   fluid,
+                                   face1='',
+                                   face2='',
+                                   d_term='viscosity',
+                                   x_term='pressure',
+                                   conductance='hydraulic_conductance',
+                                   occupancy='',
+                                   **params):
+        r"""
+        This function calculates effective diffusivity of a cubic network between face1 and face2.  
+        face1 and face2 represent types of these two faces.
+
+        """ 
+        return self._calc_eff_prop_cubic(alg='Fickian',
+                                  fluid=fluid,
+                                  face1=face1,
+                                  face2=face2,
+                                  d_term=d_term,
+                                  x_term=x_term,
+                                  conductance=conductance,
+                                  occupancy=occupancy)
