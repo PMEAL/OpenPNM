@@ -46,6 +46,7 @@ class StokesFlow(LinearSolver):
         """
       
         self._fluid = params['active_fluid']
+        self._boundary_conditions_setup()
         # Building hydraulic conductance
         g = self._fluid.get_throat_data(prop='hydraulic_conductance')
         s = self._fluid.get_throat_data(prop='occupancy')
@@ -54,45 +55,33 @@ class StokesFlow(LinearSolver):
     def _do_inner_iteration_stage(self):
 
         p = self._do_one_inner_iteration()
-        self._fluid.set_pore_data(prop='pressure',data = p)
+        self.set_pore_data(prop='pressure',data = p)
+
+    def update(self):
+        
+        p = self.get_pore_data(prop='pressure')
+        self._net.set_pore_data(phase=self._fluid,prop='pressure',data=p)
 
 
-    def calc_eff_permeability_cubic(self,face1=1,face2=6):
+    def effective_permeability_cubic(self,
+                                   fluid,
+                                   face1='',
+                                   face2='',
+                                   d_term='viscosity',
+                                   x_term='pressure',
+                                   conductance='hydraulic_conductance',
+                                   occupancy='',
+                                   **params):
         r"""
-        This function calculates effective permeability of a cubic network between face1 and face2.  
+        This function calculates effective diffusivity of a cubic network between face1 and face2.  
         face1 and face2 represent types of these two faces.
 
-        """        
-        face1_pores = self._net.pore_properties['numbering'][self._net.pore_properties['type']==face1]
-        face2_pores = self._net.pore_properties['numbering'][self._net.pore_properties['type']==face2]
-        p = self._fluid.pore_conditions['pressure']
-        P1 = p[face1_pores]
-        P2 = p[face2_pores]
-        delta_P = sp.absolute(sp.average(P2)-sp.average(P1)) 
-        mu =sp.average(self._fluid.pore_conditions['viscosity'])
-        
-        coordx = self._net.pore_properties['coords'][:,0]
-        coordy = self._net.pore_properties['coords'][:,1]
-        coordz = self._net.pore_properties['coords'][:,2]
-        if face1==1 or face1==6:
-            L = sp.absolute(sp.unique(coordz[face1_pores])[0]-sp.unique(coordz[face2_pores])[0])*1e-6
-            lx = (max(coordx[face1_pores]) - min(coordx[face1_pores]))*1e-6
-            ly = (max(coordy[face1_pores]) - min(coordy[face1_pores]))*1e-6
-            A = lx*ly            
-        elif face1==2 or face1==5:
-            L = sp.absolute(sp.unique(coordx[face1])[0]-sp.unique(coordx[face2])[0])*1e-6
-            lz = (max(coordz[face1_pores]) - min(coordz[face1_pores]))*1e-6
-            ly = (max(coordy[face1_pores]) - min(coordy[face1_pores]))*1e-6
-            A = lz*ly  
-        elif face1==3 or face1==4:
-            L = sp.absolute(sp.unique(coordy[face1_pores])[0]-sp.unique(coordy[face2_pores])[0])*1e-6
-            lx = (max(coordx[face1_pores]) - min(coordx[face1_pores]))*1e-6
-            lz = (max(coordz[face1_pores]) - min(coordz[face1_pores]))*1e-6
-            A = lx*lz
-            
-        fn = self._net.find_neighbor_pores(face1_pores)
-        fn = fn[self._net.pore_properties['type'][fn]<1]
-        ft = self._net.find_connecting_throat(face1_pores,fn)
-        Q = sp.sum(self._fluid.throat_conditions['hydraulic_conductance'][ft]*sp.absolute(P1-p[fn]))
-        Keff = Q*mu*L/(A*delta_P)
-        return Keff
+        """ 
+        return self._calc_eff_prop_cubic(alg='Fickian',
+                                  fluid=fluid,
+                                  face1=face1,
+                                  face2=face2,
+                                  d_term=d_term,
+                                  x_term=x_term,
+                                  conductance=conductance,
+                                  occupancy=occupancy)
