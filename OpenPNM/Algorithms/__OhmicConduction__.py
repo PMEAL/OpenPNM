@@ -59,8 +59,11 @@ class OhmicConduction(LinearSolver):
     def _do_inner_iteration_stage(self):
         v = self._do_one_inner_iteration()
         self.set_pore_data(prop=self._X_name,data= v)
+        self._logger.info("Solving process finished successfully!")
     
     def update(self):
         
-        T = self.get_pore_data(prop=self._X_name)
-        self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=T)
+        v = self.get_pore_data(prop=self._X_name)
+        self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=v)
+        self._logger.info("Results of this algorithm have been updated successfully.")
+        
