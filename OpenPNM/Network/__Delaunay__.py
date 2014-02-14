@@ -127,14 +127,20 @@ class Delaunay(GenericNetwork):
         #Add dummy domains to real domain
         pts = sp.concatenate([pts,ptsX0,ptsXX,ptsY0,ptsYY,ptsZ0,ptsZZ])
         #Perform tessellation
+        self._logger.debug(sys._getframe().f_code.co_name+": Beginning tessellation")
         Tri = sptl.Delaunay(pts)
+        self._logger.debug(sys._getframe().f_code.co_name+": Converting tessellation to adjacency matrix")
         adjmat = sprs.lil_matrix((Np,Np),dtype=int)
         for i in sp.arange(0,sp.shape(Tri.simplices)[0]):
             #Keep only simplices that are fully in real domain
-            adjmat[Tri.simplices[i][Tri.simplices[i]<Np],Tri.simplices[i][Tri.simplices[i]<Np]] = 1
+            #this used to be vectorize, but it stopped working...change in scipy?
+            for j in Tri.simplices[i]: 
+                if j < Np:
+                    adjmat[j,Tri.simplices[i][Tri.simplices[i]<Np]] = 1
         #Remove duplicate (lower triangle) and self connections (diagonal)
         #and convert to coo
         adjmat = sprs.triu(adjmat,k=1,format="coo")
+        self._logger.debug(sys._getframe().f_code.co_name+": Conversion to adjacency matrix complete")
         self.set_throat_data(prop='connections',data=sp.vstack((adjmat.row, adjmat.col)).T)
         self.set_throat_data(prop='numbering', data=sp.arange(0,sp.size(adjmat.row)))
         tpore1 = self.get_throat_data(prop='connections')[:,0]
