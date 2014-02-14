@@ -46,6 +46,7 @@ class StokesFlow(LinearSolver):
         """
       
         self._fluid = params['active_fluid']
+        self._boundary_conditions_setup()
         # Building hydraulic conductance
         g = self._fluid.get_throat_data(prop='hydraulic_conductance')
         s = self._fluid.get_throat_data(prop='occupancy')
