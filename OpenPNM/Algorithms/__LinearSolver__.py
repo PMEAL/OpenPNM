@@ -49,9 +49,10 @@ class LinearSolver(GenericAlgorithm):
         r"""
         Assigning Type and Value for Boundary Pores.
 
-        - Types of Boundary Conditions:
-           internal = 0, Dirichlet = 1, Neumann_flux = 2, Neumann_insulated = 3, Neumann_rate = 4
-
+        - Types of Boundary Conditions are:
+           Dirichlet, Neumann_flux, Neumann_insulated, Neumann_rate        
+        - The way which linear solver manages these conditions is followings:
+            Dirichlet = 1, Neumann_flux = 2, Neumann_insulated = 3, Neumann_rate = 4
         - For any network, it is possible to apply BC to arbitrary pores, by defining
           two arrays: types and values. For example:
 
@@ -89,6 +90,8 @@ class LinearSolver(GenericAlgorithm):
         -----
         - Neumann_insulated is equivalent to Neumann_flux boundary condition when flux
         is zero. Therefore, there is no need to define BCvalues for this kind of boundary condition.
+        - For Neumann_insulated to be applied to one side, it is recommended to create boundary pores. 
+        - For internal Neumann_insulated BC, it is easier to set conductance of those conduits to a number close to zero, rather than applying zero Neumann_rate to them.
         - In Fickian algorithm, positive value for Neumann_rate or Neumann_flux for a pore with boundary condition means
         that the quantity of interest leaves the pore, but for any other algorithms, positive Neumann value  means 
         that the quantity of interest enters this pore.
