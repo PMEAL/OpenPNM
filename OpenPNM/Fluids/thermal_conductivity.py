@@ -27,8 +27,6 @@ def Chung(fluid,network,propname,Cv,MW,acentric,viscosity='viscosity',**params):
 
     Parameters
     ----------
-    Tc :  float, array_like
-        Critical Temperature of the component (K)
     Cv :  float, array_like
         Heat capacity at constant volume (J/(mol.K))
     MW : float, array_like
@@ -55,8 +53,6 @@ def Sato(fluid,network,propname,Tb,MW,**params):
 
     Parameters
     ----------
-    Tc :  float, array_like
-        Critical Temperature of interest (K)
     Tb :  float, array_like
         Boiling temperature of the component (K)
     MW : float, array_like

@@ -33,8 +33,9 @@ def empirical(fluid,network,propname,a=[0],**params):
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
 def Eotvos(fluid,network,propname,k,molar_density='molar_density', **params):
-    r"""
-    """
+    r'''
+    Documentation for this method is being updated, we are sorry for the inconvenience.
+    '''
     Tc = fluid.get_pore_data(prop='Tc')
     T = network.get_pore_data(phase=fluid,prop='temperature')
     Vm = 1/network.get_pore_data(phase=fluid,prop=molar_density)
@@ -42,8 +43,9 @@ def Eotvos(fluid,network,propname,k,molar_density='molar_density', **params):
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
 def GuggenheimKatayama(fluid,network,propname,K2,n,**params):
-    r"""
-    """
+    r'''
+    Documentation for this method is being updated, we are sorry for the inconvenience.
+    '''
     T = network.get_pore_data(phase=fluid,prop='temperature')
     Pc = fluid.get_pore_data(prop='Pc')
     Tc = fluid.get_pore_data(prop='Tc')

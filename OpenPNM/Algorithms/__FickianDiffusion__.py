@@ -37,7 +37,7 @@ class FickianDiffusion(LinearSolver):
         Initializing the class
         """
         super(FickianDiffusion,self).__init__(**kwargs)
-        self._logger.info("Create Fick's Diffusion Algorithm Object")
+        self._logger.info('Create Fickian Diffusion Algorithm Object')
 
 
     def _setup(self,
@@ -48,6 +48,7 @@ class FickianDiffusion(LinearSolver):
         r"""
         This function executes the essential methods specific to Fickian diffusion simulations
         """
+        self._logger.info("Setup for Fickian Algorithm")        
         self._fluid = params['active_fluid']
         self._X_name = mole_fraction
         self._boundary_conditions_setup()
@@ -63,11 +64,13 @@ class FickianDiffusion(LinearSolver):
         X = self._do_one_inner_iteration()
         xA = 1-sp.exp(X)
         self.set_pore_data(prop=self._X_name,data = xA)
+        self._logger.info("Solving process finished successfully!")
         
     def update(self):
         
         x = self.get_pore_data(prop=self._X_name)
         self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=x)
+        self._logger.info("Results of this algorithm have been updated successfully.")
 
     def effective_diffusivity_cubic(self,
                                    fluid,

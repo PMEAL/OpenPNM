@@ -33,7 +33,7 @@ class Tools(Utilities):
         #Initialize fluid, physics, and geometry tracking lists
         self._fluids = []
         self._geometry = []
-        self._logger.info("Construction of Network container complete")
+        self._logger.info("Construction of Object container complete")
         
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
