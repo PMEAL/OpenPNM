@@ -473,7 +473,7 @@ class Tools(Utilities):
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_labels(pnum=0)
-        ['front', 'bottom', 'all', 'internal', 'left']
+        ['all', 'bottom', 'front', 'internal', 'left']
         >>> pn.find_labels(tnum=124)
         ['all', 'internal', 'right']
         '''
@@ -488,6 +488,7 @@ class Tools(Utilities):
         for item in getattr(self,'_'+element+'_info').keys():
             if getattr(self,'_'+element+'_info')[item][num]:
                 labels.append(item)
+        labels.sort()
         return labels
         
     def has_labels(self,pnums='',tnums='',labels='all',mode='union'):
