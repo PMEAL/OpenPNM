@@ -44,7 +44,7 @@ class LinearSolver(GenericAlgorithm):
             B = self._build_RHS_matrix()
             self._logger.info("Solving AX = B for the sparse matrices")
             X = splin.spsolve(A,B)
-            self._result = X[sp.r_[0:self._net.num_pores()]]
+            self._result = X[sp.r_[0:self._net.num_pores()]]        
         return(self._result)
 
     def _boundary_conditions_setup(self,types=[],values=[]):

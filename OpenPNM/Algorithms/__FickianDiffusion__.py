@@ -62,15 +62,16 @@ class FickianDiffusion(LinearSolver):
     def _do_inner_iteration_stage(self):
 
         X = self._do_one_inner_iteration()
-        xA = 1-sp.exp(X)
+        xA = 1-sp.exp(X)        
         self.set_pore_data(prop=self._X_name,data = xA)
-        self._logger.info("Solving process finished successfully!")
-        
+        print('Solving process finished successfully!')
+              
     def update(self):
         
-        x = self.get_pore_data(prop=self._X_name)
+        x = self.get_pore_data(prop=self._X_name)        
         self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=x)
-        self._logger.info("Results of this algorithm have been updated successfully.")
+        print('Results of this algorithm have been updated successfully.')
+        
 
     def effective_diffusivity_cubic(self,
                                    fluid,
