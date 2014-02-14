@@ -186,7 +186,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data=~p_inv)
         self._net.set_throat_data(phase=self._fluid_def,prop=occupancy,data=~t_inv)
 
-    def plot_drainage_curve(self,volume='volume'):
+    def plot_drainage_curve(self,
+                            pore_volume='volume',
+                            throat_volume='volume'):
           r"""
           Plot drainage capillary pressure curve
           """
@@ -196,8 +198,8 @@ class OrdinaryPercolation(GenericAlgorithm):
             raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
           Snwp_t = sp.zeros_like(PcPoints)
           Snwp_p = sp.zeros_like(PcPoints)
-          Pvol = self._net.get_pore_data(prop=volume)
-          Tvol = self._net.get_throat_data(prop=volume)
+          Pvol = self._net.get_pore_data(prop=pore_volume)
+          Tvol = self._net.get_throat_data(prop=throat_volume)
           Pvol_tot = sum(Pvol)
           Tvol_tot = sum(Tvol)
           for i in range(0,sp.size(PcPoints)):
