@@ -184,10 +184,10 @@ class Template(GenericNetwork):
 
         """
         self._logger.info("add_pore_prop_from_template: Add pore properties")
-        if prop_name not in net.pore_properties.keys():
-            net.pore_properties[prop_name] = np.zeros(net.num_pores(),dtype=template.dtype)
-        pore_prop = sp.ravel(template)[net.pore_properties['voxel_index']]
-        net.pore_properties[prop_name] = pore_prop
+        if prop_name not in net._pore_data.keys():
+            net.set_pore_data(prop=prop_name,data = np.zeros(net.num_pores(),dtype=template.dtype))
+        pore_prop = sp.ravel(template)[net.get_pore_data(prop='voxel_index')]
+        net.set_pore_data(prop=prop_name,data = pore_prop)
         self._logger.debug("add_pore_prop_from_template: End of method")
         return pore_prop
 

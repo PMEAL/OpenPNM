@@ -167,6 +167,9 @@ class Cubic(GenericNetwork):
         self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
         
     def _add_labels(self):
+        r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
+        '''
         self._logger.info(sys._getframe().f_code.co_name+": Applying labels")
         coords = self.get_pore_data(prop='coords')
         self.set_pore_info(label='front',locations=coords[:,0]<=self._Lc)
@@ -189,6 +192,9 @@ class Cubic(GenericNetwork):
         self._logger.debug(sys._getframe().f_code.co_name+": End")
 
     def _generate_boundaries(self,net,**params):
+        r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
+        '''
 
         self._logger.info("generate_boundaries: Define edge points of the pore network and stitch them on")
         self._generate_setup(**params)
