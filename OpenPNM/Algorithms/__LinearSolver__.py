@@ -339,6 +339,6 @@ class LinearSolver(GenericAlgorithm):
             effective_prop.append(eff)
             del self._pore_info['Dirichlet']
             del self._pore_data['BCval']
-            delattr (self,'BCtypes')
-            delattr(self,'BCvalues')            
+            delattr (self,'_BCtypes')
+            delattr(self,'_BCvalues')            
         return sp.array(effective_prop,ndmin=1)
