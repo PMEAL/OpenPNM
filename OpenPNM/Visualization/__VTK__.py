@@ -88,107 +88,107 @@ class VTK(GenericVisualization):
     def _write_vtk_points(self):
         self._f.write('<Points>\n')
         self._f.write('<DataArray type="Float32" NumberOfComponents="3" format="ascii">\n')
-        for i in range(self._net.num_pores()):
-            self._f.write(str(self._net.pore_properties['coords'][i,0]))
+        for i in list(range(self._net.num_pores())):
+            self._f.write(str(self._net.get_pore_data(prop='coords')[i,0]))
             self._f.write(' ')
-            self._f.write(str(self._net.pore_properties['coords'][i,1]))
+            self._f.write(str(self._net.get_pore_data(prop='coords')[i,1]))
             self._f.write(' ')
-            self._f.write(str(self._net.pore_properties['coords'][i,2]))
+            self._f.write(str(self._net.get_pore_data(prop='coords')[i,2]))
             self._f.write('\n')
         self._f.write('\n</DataArray>\n</Points>\n')
 
     def _write_vtk_connections(self):
         self._f.write('<Lines>\n<DataArray type="Int32" Name="connectivity" format="ascii">\n')
-        for i in range(self._net.num_throats()):
-            self._f.write(str(self._net.throat_properties['connections'][i,0]))
+        for i in list(range(self._net.num_throats())):
+            self._f.write(str(self._net.get_throat_data(prop='connections')[i,0]))
             self._f.write(' ')
-            self._f.write(str(self._net.throat_properties['connections'][i,1]))
+            self._f.write(str(self._net.get_throat_data(prop='connections')[i,1]))
             self._f.write(' ')
         self._f.write('\n</DataArray>\n<DataArray type="Int32" Name="offsets" format="ascii">\n')
-        for i in range(self._net.num_throats()):
+        for i in list(range(self._net.num_throats())):
             self._f.write(str((i+1)*2))
             self._f.write(' ')
         self._f.write('\n</DataArray>\n</Lines>\n')
 
     def _write_point_data(self):
-        pore_keys = list(self._net.pore_properties.keys())
+        pore_keys = list(self._net._pore_data.keys())
         num_pore_keys = sp.size(pore_keys)
         self._f.write('<PointData Scalars="pore_data">\n')
-        for j in range(num_pore_keys):
+        for j in list(range(num_pore_keys)):
             if pore_keys[j] !='coords':
                 self._f.write('<DataArray type="Float32" Name="')
                 self._f.write(pore_keys[j])
                 self._f.write('" format="ascii">\n')
-                shape =  np.shape(self._net.pore_properties[pore_keys[j]])
+                shape =  np.shape(self._net.get_pore_data(prop=pore_keys[j]))
                 if np.size(shape) == 1:
-                    for i in range(self._net.num_pores()):
-                        self._f.write(str(self._net.pore_properties[pore_keys[j]][i]))
+                    for i in list(range(self._net.num_pores())):
+                        self._f.write(str(self._net.get_pore_data(prop=pore_keys[j])[i]))
                         self._f.write(' ')
                 else:
-                    for i in range(self._net.num_pores()):
-                        self._f.write(str(self._net.pore_properties[pore_keys[j]][i][0]))
+                    for i in list(range(self._net.num_pores())):
+                        self._f.write(str(self._net.get_pore_data(prop=pore_keys[j])[i][0]))
                         self._f.write(' ')
                 self._f.write('\n</DataArray>\n')
         # Now for fluid
         if self._fluid != 'none':
-            fluid_name = self._fluid._fluid_recipe['Name']
-            pore_keys = list(self._fluid.pore_conditions.keys())
+            fluid_name = self._fluid.name
+            pore_keys = list(self._fluid._pore_data.keys())
             num_pore_keys = sp.size(pore_keys)
-            for j in range(num_pore_keys):
+            for j in list(range(num_pore_keys)):
                 self._f.write('<DataArray type="Float32" Name="')
                 self._f.write(fluid_name+'_'+pore_keys[j])
                 self._f.write('" format="ascii">\n')
-                size =  np.size(self._fluid.pore_conditions[pore_keys[j]])
+                size =  np.size(self._fluid.get_pore_data(prop=pore_keys[j]))
                 if size == 1:
-                    shape =  np.shape(self._fluid.pore_conditions[pore_keys[j]])
+                    shape =  np.shape(self._fluid.get_pore_data(prop=pore_keys[j]))
                     if np.size(shape) == 0:
-                        for i in range(self._net.num_pores()):
-                            self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]])))
+                        for i in list(range(self._net.num_pores())):
+                            self._f.write(str(np.float(self._fluid.get_pore_data(prop=pore_keys[j]))))
                             self._f.write(' ')
                     else:
-                        for i in range(self._net.num_pores()):
-                            self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]][0])))
+                        for i in list(range(self._net.num_pores())):
+                            self._f.write(str(np.float(self._fluid.get_pore_data(prop=pore_keys[j])[0])))
                             self._f.write(' ')
                 else:
-                    shape =  np.shape(self._fluid.pore_conditions[pore_keys[j]])
+                    shape =  np.shape(self._fluid.get_pore_data(prop=pore_keys[j]))
                     if np.size(shape) == 1:
-                        for i in range(self._net.num_pores()):
-                            self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]][i])))
+                        for i in list(range(self._net.num_pores())):
+                            self._f.write(str(np.float(self._fluid.get_pore_data(prop=pore_keys[j])[i])))
                             self._f.write(' ')
                     else:
-                        for i in range(self._net.num_pores()):
-                            self._f.write(str(np.float(self._fluid.pore_conditions[pore_keys[j]][i][0])))
+                        for i in list(range(self._net.num_pores())):
+                            self._f.write(str(np.float(self._fluid.get_pore_data(prop=pore_keys[j])[i][0])))
                             self._f.write(' ')
                 self._f.write('\n</DataArray>\n')
         # Now for fluid.partner
             try:
-                fluid_name = self._fluid.partner._fluid_recipe['name']
-                pore_keys = self._fluid.partner.pore_conditions.keys()
+                fluid_name = self._fluid.partner.name
+                pore_keys = self._fluid.partner._pore_data.keys()
                 num_pore_keys = sp.size(pore_keys)
                 for j in range(num_pore_keys):
                     self._f.write('<DataArray type="Float32" Name="')
                     self._f.write(fluid_name+'_'+pore_keys[j])
                     self._f.write('" format="ascii">\n')
-                    size =  np.size(self._fluid.partner.pore_conditions[pore_keys[j]])
+                    size =  np.size(self._fluid.partner.get_pore_data(prop=pore_keys[j]))
                     if size == 1:
-                        shape =  np.shape(self._fluid.partner.pore_conditions[pore_keys[j]])
+                        shape =  np.shape(self._fluid.partner.get_pore_data(prop=pore_keys[j]))
                         if np.size(shape) == 0:
-                            for i in range(self._net.num_pores()):
-                                self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]])))
+                            for i in list(range(self._net.num_pores())):
+                                self._f.write(str(np.float(self._fluid.partner.get_pore_data(prop=pore_keys[j]))))
                                 self._f.write(' ')
                         else:
-                            for i in range(self._net.num_pores()):
-                                self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][0])))
+                            for i in list(range(self._net.num_pores())):
+                                self._f.write(str(np.float(self._fluid.partner.get_pore_data(prop=pore_keys[j])[0])))
                                 self._f.write(' ')
                     else:
-                        shape =  np.shape(self._fluid.partner.pore_conditions[pore_keys[j]])
+                        shape =  np.shape(self._fluid.partner.get_pore_data(prop=pore_keys[j]))
                         if np.size(shape) == 1:
-                            for i in range(self._net.num_pores()):
-                                self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][i])))
+                            for i in list(range(self._net.num_pores())):
+                                self._f.write(str(np.float(self._fluid.partner.get_pore_data(prop=pore_keys[j])[i])))
                                 self._f.write(' ')
                         else:
-                            for i in range(self._net.num_pores()):
-                                self._f.write(str(np.float(self._fluid.partner.pore_conditions[pore_keys[j]][i][0])))
+                            for i in list(range(self._net.num_pores())):
+                                self._f.write(str(np.float(self._fluid.partner.get_pore_data(prop=pore_keys[j])[i][0])))
                                 self._f.write(' ')
                     self._f.write('\n</DataArray>\n')
             except:
