@@ -114,7 +114,10 @@ class InvasionPercolation(GenericAlgorithm):
         if report == 0:
             self._rough_increment = 100
         self._timing = timing=='ON'
-
+        self._capillary_pressure_name = 'capillary_pressure'
+        self._volume_name = 'volume'
+        self._diameter_name = 'diameter'
+        
     def _setup_for_IP(self):
         r"""
         Determines cluster labelling and condition for completion
@@ -123,17 +126,17 @@ class InvasionPercolation(GenericAlgorithm):
         self._logger.debug( '+='*25)
         self._logger.debug( 'INITIAL SETUP (STEP 1)')
         # if empty, add Pc_entry to throat_properties
-        tdia = self._net.get_throat_data(prop='diameter')
+        tdia = self._net.get_throat_data(prop=self._diameter_name)
         # calculate Pc_entry from diameters
         try:
-            Pc_entry = self._fluid.get_throat_data(prop='capillary_pressure')
+            Pc_entry = self._fluid.get_throat_data(prop=self._capillary_pressure_name)
         except:
             try:
                 OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._fluid)
             except:
                 OpenPNM.Fluids.ContactAngle.constant(self._fluid,120)
                 OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._fluid)
-            Pc_entry = self._fluid.get_throat_data(prop='capillary_pressure')
+            Pc_entry = self._fluid.get_throat_data(prop=self._capillary_pressure_name)
         if self._timing:
             # calculate Volume_coef for each throat
             self._Tvol_coef = tdia*tdia*tdia*np.pi/6/Pc_entry
@@ -184,7 +187,7 @@ class InvasionPercolation(GenericAlgorithm):
         for i in self._inlets:
             if self._timing:
                 # Calculate total volume in all invaded pores
-                self._cluster_data['pore_volume'][clusterNumber-1] = np.sum(self._net.get_pore_data(prop='volume')[i])
+                self._cluster_data['pore_volume'][clusterNumber-1] = np.sum(self._net.get_pore_data(prop=self._volume_name)[i])
                 # Label all invaded pores with their cluster
             self._Pinv[i] = clusterNumber
             self._Pinv_original[i] = clusterNumber
@@ -198,7 +201,7 @@ class InvasionPercolation(GenericAlgorithm):
                 # Sum all interfacial throats' volume coeffients for throat cap volume calculation
                 self._cluster_data['vol_coef'][clusterNumber-1] = np.sum(self._Tvol_coef[interface_throat_numbers])
             # Make a list of all entry pressures of the interfacial throats
-            interface_throat_pressures = self._fluid.get_throat_data(prop='capillary_pressure')[interface_throat_numbers]#[0]
+            interface_throat_pressures = self._fluid.get_throat_data(prop=self._capillary_pressure_name)[interface_throat_numbers]#[0]
             # Zip pressures and numbers together so that HeapQ can work its magic
             self._logger.debug('interface throat(s) found:')
             self._logger.debug(interface_throat_numbers)
@@ -455,7 +458,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._psequence[self._NewPore] = self._tseq
             if self._timing:
                 # update self._cluster_data.['pore_volume']
-                self._cluster_data['pore_volume'][self._current_cluster-1] += self._net.get_pore_data(prop='volume')[self._NewPore]
+                self._cluster_data['pore_volume'][self._current_cluster-1] += self._net.get_pore_data(prop=self._volume_name)[self._NewPore]
             # Make a list of all throats neighboring pores in the cluster
             # Update interface list
             neighbors = self._net.find_neighbor_throats(self._NewPore)
@@ -467,7 +470,7 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.debug('connecting pores:')
                     self._logger.debug(self._net.find_connected_pores(j))
                     # Add this throat data (pressure, number) to this cluster's "heap" of throat data.
-                    heapq.heappush(self._tpoints[self._current_cluster-1],(self._fluid.get_throat_data(prop='capillary_pressure')[j],j))
+                    heapq.heappush(self._tpoints[self._current_cluster-1],(self._fluid.get_throat_data(prop=self._capillary_pressure_name)[j],j))
                     # Add new throat number to throat list for this cluster
                     self._tlists[self._current_cluster-1].append(j)
                     if self._timing:
@@ -553,17 +556,17 @@ class InvasionPercolation(GenericAlgorithm):
         elif self._end_condition == 'total':
             self._condition = not self._Tinv.all()
 
-    def update(self):
+    def update(self,occupancy='occupancy'):
         r"""
         """
         try:
-            self._fluid.set_pore_data(prop='occupancy',data=self._Pinv>0)
-            self._fluid.set_throat_data(prop='occupancy',data=self._Tinv>0)
+            self._fluid.set_pore_data(prop=occupancy,data=self._Pinv>0)
+            self._fluid.set_throat_data(prop=occupancy,data=self._Tinv>0)
         except:
             print('Something bad happened while trying to update fluid',self._fluid.name)
         try:
-            self._fluid_def.set_pore_data(prop='occupancy',data= ~self._Pinv>0)
-            self._fluid_def.set_throat_data(prop='occupancy',data= ~self._Tinv>0)
+            self._fluid_def.set_pore_data(prop=occupancy,data= ~self._Pinv>0)
+            self._fluid_def.set_throat_data(prop=occupancy,data= ~self._Tinv>0)
         except:
             print('A partner fluid has not been set so inverse occupancy cannot be set')
         self._fluid.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
