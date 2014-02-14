@@ -50,22 +50,21 @@ class GenericGeometry(OpenPNM.Base.Utilities):
     0.123
     """
 
-    def __init__(self, network,name,locations,**kwargs):
+    def __init__(self,network,name,locations,**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        loc = sp.array(locations,ndmin=1)
         if locations.dtype == bool:
-            network.set_pore_info(label=name,locations=loc)
+            network.set_pore_info(label=name,locations=locations)
         else:
-            network.set_pore_info(label=name,locations=loc)
-        ind = network.get_pore_indices(name)
+            network.set_pore_info(label=name,locations=locations)
+        pind = network.get_pore_indices(name)
         r'''
         TODO: The following lines will create conflicting throat labels when additionaly geometries are added
         '''
-        Tn = network.find_neighbor_throats(ind)
+        Tn = network.find_neighbor_throats(pind)
         network.set_throat_info(label=name,locations=Tn)
         network._geometry.append(self) #attach geometry to network
         self.name = name
