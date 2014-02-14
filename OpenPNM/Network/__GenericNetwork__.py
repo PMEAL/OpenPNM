@@ -240,7 +240,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         else:
             ind = sp.ones_like(dataset,dtype=bool)
 
-        conn = self.get_throat_data(prop='connections')[ind]
+        conn = self._throat_data["connections"][ind]
         row  = conn[:,0]
         col  = conn[:,1]
         data = dataset[ind]
@@ -307,7 +307,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         else:
             ind = sp.ones_like(dataset,dtype=bool)
 
-        conn = self.get_throat_data(prop='connections')[ind]
+        conn = self._throat_data['connections'][ind]
         row  = conn[:,0]
         row = sp.append(row,conn[:,1])
         col = self.get_throat_indices('all')[ind]

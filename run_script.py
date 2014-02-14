@@ -11,15 +11,8 @@ pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[35,35,35],lattice
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-geom = OpenPNM.Geometry.GenericGeometry(network=pn,name='stick_n_ball',locations=pn.get_pore_indices())
-geom.add_method(prop='pore_seed',model='random')
-geom.add_method(prop='throat_seed',model='neighbor_min')
-geom.add_method(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
-geom.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
-geom.add_method(prop='pore_volume',model='sphere')
-geom.add_method(prop='throat_length',model='straight')
-geom.add_method(prop='throat_volume',model='cylinder')
-#geom.regenerate()
+geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='stick_and_ball',locations=pn.get_pore_indices())
+geom.regenerate()
 
 #==============================================================================
 '''Build Fluids'''
