@@ -44,7 +44,8 @@ class GenericGeometry(OpenPNM.Base.Utilities):
     >>> loc = pn.get_pore_indices() #Get all pores to define geometry everywhere
     >>> geo = OpenPNM.Geometry.GenericGeometry(name='geo_test',locations=loc,network=pn)
     >>> geo.add_method(prop='pore_seed',model='constant',value=0.123)
-    >>> seeds = pn.get_pore_data(labels='geo_test',prop='pore_seed')
+    >>> geo.regenerate()
+    >>> seeds = pn.get_pore_data(locations='geo_test',prop='seed')
     >>> seeds[0]
     0.123
     """
