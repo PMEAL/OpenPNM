@@ -93,7 +93,18 @@ class InvasionPercolation(GenericAlgorithm):
         super(InvasionPercolation,self).run(**params)
         return self
 
-    def _setup(self,invading_fluid,defending_fluid,inlets=[0],outlets=[-1],end_condition='breakthrough',timing='ON',report=20):
+    def _setup(self,invading_fluid,
+               defending_fluid,
+               inlets=[0],
+                outlets=[-1],
+                end_condition='breakthrough',
+                capillary_pressure='capillary_pressure',
+                pore_volume_name='volume',
+                pore_diameter_name='diameter',
+                throat_volume_name='volume',
+                throat_diameter_name = 'diameter',               
+                timing='ON',
+                report=20):
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets
         self._outlets = outlets
@@ -114,9 +125,12 @@ class InvasionPercolation(GenericAlgorithm):
         if report == 0:
             self._rough_increment = 100
         self._timing = timing=='ON'
-        self._capillary_pressure_name = 'capillary_pressure'
-        self._volume_name = 'volume'
-        self._diameter_name = 'diameter'
+        self._capillary_pressure_name = capillary_pressure
+        self._pore_volume_name = pore_volume_name
+        self._pore_diameter_name = pore_diameter_name
+        self._throat_volume_name = throat_volume_name
+        self._throat_diameter_name = throat_diameter_name 
+        
         
     def _setup_for_IP(self):
         r"""
@@ -126,7 +140,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._logger.debug( '+='*25)
         self._logger.debug( 'INITIAL SETUP (STEP 1)')
         # if empty, add Pc_entry to throat_properties
-        tdia = self._net.get_throat_data(prop=self._diameter_name)
+        tdia = self._net.get_throat_data(prop=self._throat_diameter_name)
         # calculate Pc_entry from diameters
         try:
             Pc_entry = self._fluid.get_throat_data(prop=self._capillary_pressure_name)
@@ -187,7 +201,7 @@ class InvasionPercolation(GenericAlgorithm):
         for i in self._inlets:
             if self._timing:
                 # Calculate total volume in all invaded pores
-                self._cluster_data['pore_volume'][clusterNumber-1] = np.sum(self._net.get_pore_data(prop=self._volume_name)[i])
+                self._cluster_data['pore_volume'][clusterNumber-1] = np.sum(self._net.get_pore_data(prop=self._pore_volume_name)[i])
                 # Label all invaded pores with their cluster
             self._Pinv[i] = clusterNumber
             self._Pinv_original[i] = clusterNumber
@@ -458,7 +472,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._psequence[self._NewPore] = self._tseq
             if self._timing:
                 # update self._cluster_data.['pore_volume']
-                self._cluster_data['pore_volume'][self._current_cluster-1] += self._net.get_pore_data(prop=self._volume_name)[self._NewPore]
+                self._cluster_data['pore_volume'][self._current_cluster-1] += self._net.get_pore_data(prop=self._pore_volume_name)[self._NewPore]
             # Make a list of all throats neighboring pores in the cluster
             # Update interface list
             neighbors = self._net.find_neighbor_throats(self._NewPore)
