@@ -86,7 +86,7 @@ BC2_values = 0.4
 Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------
 #### Assign Neumann boundary conditions
-# BC1
+### BC1
 #BC1_pores = pn.get_pore_indices(labels='top')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
 #BC1_values = 0.5

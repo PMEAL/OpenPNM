@@ -57,11 +57,10 @@ class StokesFlow(LinearSolver):
         p = self._do_one_inner_iteration()
         self.set_pore_data(prop='pressure',data = p)
 
-    def update(self,
-               pressure='pressure'):
+    def update(self):
         
-        p = self.get_pore_data(prop=pressure)
-        self._net.set_pore_data(phase=self._fluid,prop=pressure,data=p)
+        p = self.get_pore_data(prop='pressure')
+        self._net.set_pore_data(phase=self._fluid,prop='pressure',data=p)
 
 
     def effective_permeability_cubic(self,
