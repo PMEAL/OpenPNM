@@ -40,6 +40,7 @@ class Tools(Utilities):
     #--------------------------------------------------------------------------
     def _set_data(self,element='',phase='',prop='',data='',locations=''):
         r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
         if type(data)!=sp.ndarray: data = sp.array(data,ndmin=1)
         if type(locations)==list: 
@@ -49,11 +50,11 @@ class Tools(Utilities):
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
             except: pass            
         elif locations!='':
-            try: locations = locations.name #allow passing of geometry objects
+            try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
               
-        try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
+        try: phase = self.find_object_by_name(phase) 
         except: pass #Accept object
 
         if phase :
@@ -117,6 +118,7 @@ class Tools(Utilities):
 
     def _get_data(self,element='',phase='',prop='',locations=''):
         r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
         '''      
         if type(locations)==list: 
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
@@ -125,11 +127,11 @@ class Tools(Utilities):
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
             except: pass            
         elif locations!='':
-            try: locations = locations.name #allow passing of geometry objects
+            try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
-        try: phase = self.find_object_by_name(phase) #allow passing of fluid name by string
-        except: pass #Accept object        
+        try: phase = self.find_object_by_name(phase) 
+        except: pass        
         
         if phase :
             if locations!='':                
@@ -162,12 +164,11 @@ class Tools(Utilities):
         ----------
         prop : string
             Name of property to write
-        labels : Open
         phase : OpenPNM Fluid object or fluid name string, optional
             Fluid to which data is written.  If omitted data is written to network object.
         data : array_like
             Data values to write to object
-            
+        locations: It can be object, location string (or a list of strings), boolean array or indices.   
         See Also
         --------
         set_throat_data, set_pore_info, set_throat_info
@@ -193,9 +194,10 @@ class Tools(Utilities):
         ----------
         prop : string
             Name of property to retrieve.  Requesting property 'all' prints a list of existing properties.
-        fluid : string, optional
+        phase : string, optional
             Name of fluid from which to retrieve data.  If omitted data is retrieved from network object.
-        
+        locations: It can be object, location string (or a list of strings), boolean array or indices.   
+
         Returns
         -------
         array_like
@@ -228,11 +230,12 @@ class Tools(Utilities):
         ----------
         prop : string
             Name of property to write
-        fluid : OpenPNM fluid object or fluid name string, optional
+        phase : OpenPNM fluid object or fluid name string, optional
             Fluid to which data is written.  If omitted data is written to network object.
         data : array_like
             Data values to write to object
-            
+        locations: It can be object, location string (or a list of strings), boolean array or indices.   
+
         See Also
         --------
         set_pore_data, set_pore_info, set_throat_info
@@ -255,9 +258,10 @@ class Tools(Utilities):
         ----------
         prop : string
             Name of property to retrieve.  Requesting property 'all' prints a list of existing properties.
-        fluid : string, optional
+        phase : string, optional
             Name of fluid from which to retrieve data.  If omitted data is retrieved from network object.
-        
+        locations: It can be geometry object, location string (or a list of strings), boolean array or indices.   
+
         Returns
         -------
         array_like
@@ -295,7 +299,7 @@ class Tools(Utilities):
             except : pass            
         if locations!='':
             try: 
-                locations = locations.name #allow passing of geometry objects
+                locations = locations.name
                 label = locations
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])        
@@ -331,7 +335,7 @@ class Tools(Utilities):
         r'''
         Parameters
         ----------
-        prop : string
+        label : string
             The name of the pore labels you wish to apply (e.g. 'top')
         locaitons : array_like
             An array containing the locations (pores) where the labels should be applied.
@@ -367,7 +371,7 @@ class Tools(Utilities):
         
         Parameters
         ----------
-        prop : string
+        label : string
             The name of the labels you wish to retrieve (e.g. 'top')
             
         return_indices : bool, optional
@@ -398,7 +402,7 @@ class Tools(Utilities):
         r'''
         Parameters
         ----------
-        prop : string
+        label : string
             The name of the pore labels you wish to apply (e.g. 'top')
         mode : string
             Options are 'merge' and 'overwrite', default is 'merge'
@@ -426,7 +430,7 @@ class Tools(Utilities):
         
         Parameters
         ----------
-        prop : string
+        label : string
             The name of the labels you wish to retrieve (e.g. 'top')
             
         return_indices : bool, optional
@@ -538,6 +542,7 @@ class Tools(Utilities):
 
     def check_info(self):
         r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
         temp = sp.zeros_like(self.get_pore_data(prop='coords')[:,0],dtype=bool)
         self.set_pore_info(label='all',locations=temp)
