@@ -1,4 +1,3 @@
-# Author: Andreas Putz
 # Copyright (c) 2013, OpenPNM
 # License: TBD.
 r"""
