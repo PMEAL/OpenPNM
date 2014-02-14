@@ -46,7 +46,13 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
 
-    def run(self, invading_fluid, defending_fluid, npts=25, inlets=[0],AL=True,**params):
+    def run(self, invading_fluid,
+            defending_fluid,
+            npts=25,
+            inlets=[0],
+            capillary_pressure='capillary_pressure',
+            AL=True,
+            **params):
         self._npts = npts
         self._AL = AL
         self._inv_sites = inlets
@@ -58,7 +64,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_inv = sp.zeros((self._net.num_throats(),))
         self._t_seq = sp.zeros_like(self._t_inv)
         #Determine the invasion pressures to apply
-        self._t_cap = self._net.get_throat_data(phase=self._fluid_inv,prop='capillary_pressure')
+        self._t_cap = self._net.get_throat_data(phase=self._fluid_inv,prop=capillary_pressure)
         min_p = sp.amin(self._t_cap)
         max_p = sp.amax(self._t_cap)
         self._inv_points = sp.logspace(sp.log10(min_p),sp.log10(max_p),self._npts)
@@ -95,7 +101,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['invaded'])[1]
         #Find all pores with at least 1 invaded throat (invaded)
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
-        nums = self._net.get_throat_data(prop='numbering')
+        nums = self._net.get_throat_indices('all')
         temp = self._net.find_connected_pores(nums)
         temp = temp[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
@@ -156,7 +162,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._p_trap[self._p_trap>0] = 0
         self.set_pore_data(phase=self._fluid_inv,prop='inv_Pc',data=self._p_trap)
 
-    def update(self,Pc=0):
+    def update(self,Pc=0,occupancy='occupancy'):
         r"""
         Updates the occupancy status of invading and defending fluids as determined by the OP algorithm
 
@@ -174,13 +180,13 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Remove temporary arrays and adjacency matrices
         p_inv = self.get_pore_data(prop='inv_Pc')<=Pc
         t_inv = self.get_throat_data(prop='inv_Pc')<=Pc
-        self._net.set_pore_data(phase=self._fluid_inv,prop='occupancy',data=p_inv)
-        self._net.set_throat_data(phase=self._fluid_inv,prop='occupancy',data=t_inv)
+        self._net.set_pore_data(phase=self._fluid_inv,prop=occupancy,data=p_inv)
+        self._net.set_throat_data(phase=self._fluid_inv,prop=occupancy,data=t_inv)
         #Apply occupancy to defending fluid
-        self._net.set_pore_data(phase=self._fluid_def,prop='occupancy',data=~p_inv)
-        self._net.set_throat_data(phase=self._fluid_def,prop='occupancy',data=~t_inv)
+        self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data=~p_inv)
+        self._net.set_throat_data(phase=self._fluid_def,prop=occupancy,data=~t_inv)
 
-    def plot_drainage_curve(self):
+    def plot_drainage_curve(self,volume='volume'):
           r"""
           Plot drainage capillary pressure curve
           """
@@ -190,8 +196,8 @@ class OrdinaryPercolation(GenericAlgorithm):
             raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
           Snwp_t = sp.zeros_like(PcPoints)
           Snwp_p = sp.zeros_like(PcPoints)
-          Pvol = self._net.get_pore_data(prop='volume')
-          Tvol = self._net.get_throat_data(prop='volume')
+          Pvol = self._net.get_pore_data(prop=volume)
+          Tvol = self._net.get_throat_data(prop=volume)
           Pvol_tot = sum(Pvol)
           Tvol_tot = sum(Tvol)
           for i in range(0,sp.size(PcPoints)):
