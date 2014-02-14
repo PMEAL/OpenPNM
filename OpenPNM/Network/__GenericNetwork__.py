@@ -310,7 +310,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         conn = self.get_throat_data(prop='connections')[ind]
         row  = conn[:,0]
         row = sp.append(row,conn[:,1])
-        col = self.get_throat_indices()[ind]
+        col = self.get_throat_indices('all')[ind]
         col = sp.append(col,col)
         data = sp.append(dataset[ind],dataset[ind])
 
