@@ -56,13 +56,14 @@ class StokesFlow(LinearSolver):
 
         p = self._do_one_inner_iteration()
         self.set_pore_data(prop='pressure',data = p)
-        self._logger.info("Solving process finished successfully!")
+        print('Solving process finished successfully!')
+        
 
     def update(self):
         
         p = self.get_pore_data(prop='pressure')
         self._net.set_pore_data(phase=self._fluid,prop='pressure',data=p)
-        self._logger.info("Results of this algorithm have been updated successfully.")
+        print('Results of this algorithm have been updated successfully.')
 
 
     def effective_permeability_cubic(self,
