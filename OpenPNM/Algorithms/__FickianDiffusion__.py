@@ -58,6 +58,12 @@ class FickianDiffusion(LinearSolver):
         X = self._do_one_inner_iteration()
         xA = 1-sp.exp(X)
         self.set_pore_data(prop='mole_fraction',data = xA)
+        
+    def update(self,
+               mole_fraction='mole_fraction'):
+        
+        x = self.get_pore_data(prop=mole_fraction)
+        self._net.set_pore_data(phase=self._fluid,prop=mole_fraction,data=x)
 
     def effective_diffusivity_cubic(self,
                                    fluid,
