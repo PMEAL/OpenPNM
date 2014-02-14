@@ -561,6 +561,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
 
     def show_boundaries(self,Ptype=[]):
         r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
         #        from mpl_toolkits.mplot3d import Axes3D
         #        #Parse Ptype input argument
@@ -602,19 +603,13 @@ class GenericNetwork(OpenPNM.Base.Tools):
         for key, value in self._throat_data.iteritems():
             str_throat += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,value)
 
-#        str_pore_cond = "\nPore conditions:"
-#        for key, value in self.pore_conditions.iteritems():
-#            str_pore_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,sp.array(value))
-#
-#        str_throat_cond = "\nThroat conditions:"
-#        for key, value in self.throat_conditions.iteritems():
-#            str_throat_cond += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,sp.array(value))
 
         return str_overview+str_pore+str_throat
 
     def update_network(self):
-        r"""
-        """
+        r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
+        '''
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
 

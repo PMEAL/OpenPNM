@@ -80,33 +80,33 @@ class MatFile(GenericNetwork):
 
         self._logger.info('Writing pore properties')
         self._logger.debug('Writing pore volumes')
-        self._net.pore_properties['volume']=np.reshape(self._mat.getvar('pvolume'),(self._Np))
+        self._net.set_pore_data(prop='volume',data=np.reshape(self._mat.getvar('pvolume'),(self._Np)))        
         self._logger.debug('Writing pore seeds')
-        self._net.pore_properties['seed']=np.zeros((self._Np),dtype=np.float)
+        self._net.set_pore_data(prop='seed',data=np.zeros((self._Np),dtype=np.float))
         self._logger.debug('Writing pore diameters')
-        self._net.pore_properties['diameter']=np.reshape(self._mat.getvar('pdiameter'),(self._Np))
+        self._net.set_pore_data(prop='diameter',data=np.reshape(self._mat.getvar('pdiameter'),(self._Np)))
         self._logger.debug('Writing pore numbering')
-        self._net.pore_properties['numbering']=np.reshape(self._mat.getvar('pnumbering'),(self._Np))
+        self._net.set_pore_data(prop='numbering',data=np.reshape(self._mat.getvar('pnumbering'),(self._Np)))
         self._logger.debug('Writing pore type')
-        self._net.pore_properties['type']=np.reshape(self._mat.getvar('ptype'),(self._Np))
+        self._net.set_pore_data(prop='type',data=np.reshape(self._mat.getvar('ptype'),(self._Np)))
         self._logger.debug('Writing pore coordinates')
-        self._net.pore_properties['coords']=self._mat.getvar('pcoords')
+        self._net.set_pore_data(prop='coords',data=self._mat.getvar('pcoords'))
         
         self._logger.info('Writing throat properties')
         self._logger.debug('Writing throat lengths')
-        self._net.throat_properties['length']=np.zeros((self._Nt),dtype=np.float)
+        self._net.set_throat_data(prop='length',data=np.zeros((self._Nt),dtype=np.float))
         self._logger.debug('Writing throat seeds')
-        self._net.throat_properties['seed']=np.zeros((self._Nt),dtype=np.float)
+        self._net.set_throat_data(prop='seed',data=np.zeros((self._Nt),dtype=np.float))
         self._logger.debug('Writing throat diameters')
-        self._net.throat_properties['diameter']=np.reshape(self._mat.getvar('tdiameter'),(self._Nt))
+        self._net.set_throat_data(prop='diameter',data=np.reshape(self._mat.getvar('tdiameter'),(self._Nt)))
         self._logger.debug('Writing throat numbering')
-        self._net.throat_properties['numbering']=np.reshape(self._mat.getvar('tnumbering'),(self._Nt))
+        self._net.set_throat_data(prop='numbering',data=np.reshape(self._mat.getvar('tnumbering'),(self._Nt)))
         self._logger.debug('Writing throat type')
-        self._net.throat_properties['type']=np.reshape(self._mat.getvar('ttype'),(self._Nt))
+        self._net.set_throat_data(prop='type',data=np.reshape(self._mat.getvar('ttype'),(self._Nt)))
         self._logger.debug('Writing throat volumes')
-        self._net.throat_properties['volume']=np.zeros((self._Nt),dtype=np.float)
+        self._net.set_throat_data(prop='volume',data=np.zeros((self._Nt),dtype=np.float))
         self._logger.debug('Writing throat connections')
-        self._net.throat_properties['connections']=self._mat.getvar('tconnections')
+        self._net.set_throat_data(prop='connections',data=self._mat.getvar('tconnections'))
         
         
         #self._logger.debug("self.generate()")
@@ -128,6 +128,6 @@ class MatFile(GenericNetwork):
 if __name__ == '__main__':
     self=MatFile(filename='example_network',loglevel=10)
     pn=self.generate()
-    inlets = np.nonzero(pn.pore_properties['type']==1)[0]
-    outlets = np.nonzero(pn.pore_properties['type']==6)[0]
+    inlets = np.nonzero(pn.get_pore_data(prop='type')==1)[0]
+    outlets = np.nonzero(pn.get_pore_data(prop='type')==6)[0]
     OpenPNM.Visualization.VTK().write(pn,filename=self._path+'\output.vtp')
