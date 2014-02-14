@@ -6,20 +6,36 @@ module thermal_conductance
 """
 
 import scipy as sp
-import os
-propname = os.path.splitext(os.path.basename(__file__))[0]
 
-def constant(physics,network,fluid,value,**params):
+def constant(physics,
+             network,
+             fluid,
+             propname,
+             value,
+             **params):
     r"""
     Assigns specified constant value
     """
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def na(physics,network,fluid,**params):
+def na(physics,
+       network,
+       fluid,
+       propname,
+       **params):
+    
     value = -1
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def thermal_fluid(physics,network,fluid,**params):
+def thermal_fluid(physics,
+                  network,
+                  fluid,
+                  propname,
+                  thermal_conductivity='thermal_conductivity',
+                  throat_diameter = 'diameter',
+                  throat_length = 'length',
+                  pore_diameter = 'diameter',
+                  **params):
     r"""
     Calculate the thermal conductance of void conduits in network ( 1/2 pore - full throat - 1/2 pore ) based on size
 
@@ -35,23 +51,32 @@ def thermal_fluid(physics,network,fluid,**params):
     This function requires that all the necessary fluid properties have already been determined.
 
     """
-    kp = network.get_pore_data(phase=fluid.name,prop='thermal_conductivity')
+    kp = network.get_pore_data(phase=fluid.name,prop=thermal_conductivity)
     kt = network.interpolate_throat_data(kp)
 
     #Get Nt-by-2 list of pores connected to each throat
-    pores = network.find_connected_pores(network.get_throat_data(prop='numbering'),flatten=0)
+    tind = network.get_throat_indices()
+    pores = network.find_connected_pores(tind,flatten=0)
     #Find g for half of pore 1
-    gp1 = kt*network.get_pore_data(prop='diameter')[pores[:,0]]**2/(network.get_pore_data(prop='diameter')[pores[:,0]]/2)
+    pdia = network.get_pore_data(prop=pore_diameter)
+    gp1 = kt*pdia[pores[:,0]]**2/(0.5*pdia[pores[:,0]])
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = kt*network.get_pore_data(prop='diameter')[pores[:,1]]**2/(network.get_pore_data(prop='diameter')[pores[:,1]]/2)
+    gp2 = kt*pdia[pores[:,1]]**2/(0.5*pdia[pores[:,1]])
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
-    gt = kt*network.get_throat_data(prop='diameter')**2/(network.get_throat_data(prop='length'))
+    tdia = network.get_throat_data(prop=throat_diameter)
+    tlen = network.get_throat_data(prop=throat_length)
+    gt = kt*tdia**2/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     network.set_throat_data(phase=fluid,prop=propname,data=value)
 
-def parallel_resistors(physics,network,fluid,**params):
+def parallel_resistors(physics,
+                       network,
+                       fluid,
+                       propname,
+                       thermal_conductivity='thermal_conductivity',
+                       **params):
     r"""
     Calculate the thermal conductance of solid phase surrounding the void
 
@@ -69,7 +94,7 @@ def parallel_resistors(physics,network,fluid,**params):
        This has not been fully implemented yet
 
     """
-    kp = network.get_pore_data(phase=fluid,prop='thermal_conductivity')
+    kp = network.get_pore_data(phase=fluid,prop=thermal_conductivity)
     kt = network.interpolate_throat_data(kp)
     value = kt #A physical model of parallel resistors representing the solid phase surrouding each pore is required here
     network.set_throat_data(phase=fluid,prop=propname,data=value)

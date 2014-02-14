@@ -21,7 +21,7 @@ def na(fluid,network,propname,**params):
     value = -1
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Antoine(fluid,network,propname,A=8.07131,B=1730.63,C=233.426,**params):
+def Antoine(fluid,network,propname,A,B,C,**params):
     r"""
     Uses Antoine equation to estimate vapor pressure of a pure component
 
