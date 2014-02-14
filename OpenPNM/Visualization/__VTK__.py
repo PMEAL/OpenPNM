@@ -43,7 +43,7 @@ class VTK(GenericVisualization):
         Initialize
         """
         super(VTK,self).__init__(**kwargs)
-        self._logger.debug("Execute constructor")
+#        self._logger.debug("Execute constructor")
 
     def write(self, net, fluid='none', filename='output.vtp'):
         r"""
@@ -61,7 +61,6 @@ class VTK(GenericVisualization):
         print('     ooooooooooooooooooooooooooooooooooooooooo')
         print('      Writing VTK file:', output_path)
         print('     ooooooooooooooooooooooooooooooooooooooooo')
-        self._logger.info("Writing VTK File...please wait")
         self._f = open(output_path,'w')
         self._net=net
         self._fluid=fluid
