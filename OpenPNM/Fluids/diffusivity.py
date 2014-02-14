@@ -20,7 +20,7 @@ def na(fluid,network,propname,**params):
     value = -1
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Fuller(fluid, network, propname, MA, MB, vA, vB, **params): #MA=0.03199,MB=0.0291,vA=16.3,vB=19.7,**params):
+def Fuller(fluid, network, propname, MA, MB, vA, vB, **params): 
     r"""
     Uses Fuller model to estimate diffusion coefficient for gases from first 
     principles at conditions of interest
@@ -49,7 +49,7 @@ def Fuller(fluid, network, propname, MA, MB, vA, vB, **params): #MA=0.03199,MB=0
     value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3)+vB**(1./3))**2)*1e-4
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Fuller_scaling(fluid,network,propname,DABo=2.09e-5,To=298.,Po=101325.,**params):
+def Fuller_scaling(fluid,network,propname,DABo, To, Po,**params):
     r"""
     Uses Fuller model to adjust a diffusion coefficient for gases from reference conditions to conditions of interest
 
@@ -68,7 +68,7 @@ def Fuller_scaling(fluid,network,propname,DABo=2.09e-5,To=298.,Po=101325.,**para
     value = DABo*(Ti/To)**1.75*(Po/Pi)
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def TynCalus(fluid,network,propname,VA=0.018,VB=0.018,sigma_A=0.07197,sigma_B=0.07197,**params):
+def TynCalus(fluid,network,propname,VA ,VB ,sigma_A ,sigma_B,viscosity='viscosity',**params):
     r"""
     Uses Tyn_Calus model to estimate diffusion coefficient in a dilute liquid solution of A in B from first principles at conditions of interest
 
@@ -89,11 +89,11 @@ def TynCalus(fluid,network,propname,VA=0.018,VB=0.018,sigma_A=0.07197,sigma_B=0.
 
     """
     T = network.get_pore_data(phase=fluid,prop='temperature')
-    mu = network.get_pore_data(phase=fluid,prop='viscosity')
+    mu = network.get_pore_data(phase=fluid,prop=viscosity)
     value = 8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T*(sigma_B/sigma_A)**0.15/(mu*1e3)
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def TynCalus_Scaling(fluid,network,propname,DABo=2.09e-9,To=298.,mu_o=8.90e-4,**params):
+def TynCalus_Scaling(fluid,network,propname,DABo ,To ,mu_o ,viscosity='viscosity', **params):
     r"""
     Uses Tyn_Calus model to adjust a diffusion coeffciient for liquids from reference conditions to conditions of interest
 
@@ -108,6 +108,6 @@ def TynCalus_Scaling(fluid,network,propname,DABo=2.09e-9,To=298.,mu_o=8.90e-4,**
         Viscosity & temperature at reference conditions, respectively
     """
     Ti = network.get_pore_data(phase=fluid,prop='temperature')
-    mu_i = network.get_pore_data(phase=fluid,prop='viscosity')
+    mu_i = network.get_pore_data(phase=fluid,prop=viscosity)
     value = DABo*(Ti/To)*(mu_o/mu_i)
     network.set_pore_data(phase=fluid,prop=propname,data=value)

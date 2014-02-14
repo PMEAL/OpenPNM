@@ -12,7 +12,7 @@ def constant(fluid,network,propname,value,**params):
     """
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def na(fluid,network,**params):
+def na(fluid,network,propname,**params):
     r"""
     Assigns nonsensical, but numerical value of -1.  
     This ensurse stability of other methods 
@@ -21,7 +21,7 @@ def na(fluid,network,**params):
     value = -1
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Chung(fluid,network,propname,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**params):
+def Chung(fluid,network,propname,Cv,MW,acentric,viscosity='viscosity',**params):
     r"""
     Uses Chung et al. model to estimate thermal conductivity for gases with low pressure(<10 bar) from first principles at conditions of interest
 
@@ -39,7 +39,7 @@ def Chung(fluid,network,propname,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**par
     """
     R = 8.314
     T = network.get_pore_data(phase=fluid,prop='temperature')
-    mu = network.get_pore_data(phase=fluid,prop='viscosity')
+    mu = network.get_pore_data(phase=fluid,prop=viscosity)
     Tc = fluid.get_pore_data(prop='Tc')
     Tr = T/Tc
     z = 2.0 + 10.5*Tr**2
@@ -49,7 +49,7 @@ def Chung(fluid,network,propname,Tc=132.64,Cv=1000,MW=0.0291,acentric=0.03,**par
     value = 3.75*s*(mu)*R/(MW)
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Sato(fluid,network,propname,Tc=647.096,Tb=373.15,MW=0.0181,**params):
+def Sato(fluid,network,propname,Tb,MW,**params):
     r"""
     Uses Sato et al. model to estimate thermal conductivity for pure liquids from first principles at conditions of interest
 
