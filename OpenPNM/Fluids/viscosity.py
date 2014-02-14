@@ -34,14 +34,12 @@ def Reynolds(fluid,network,propname,uo,b,**params):
     value = uo*sp.exp(-1*b*T)
     network.set_pore_data(phase=fluid,prop=propname,data=value)
 
-def Chung(fluid,network,propname,Tc,Vc,MW,acentric,kappa,dipole,**params):
+def Chung(fluid,network,propname,Vc,MW,acentric,kappa,dipole,**params):
     r"""
     Uses Chung et al. model to estimate viscosity for gases with low pressure(not near the critical pressure) from first principles at conditions of interest
 
     Parameters
     ----------
-    Tc :  float, array_like
-        Critical Temperature of the component (K)
     Vc :  float, array_like
         Critical volume of the component (m3/mol)
     MW : float, array_like
@@ -55,7 +53,8 @@ def Chung(fluid,network,propname,Tc,Vc,MW,acentric,kappa,dipole,**params):
 
     """
     T = network.get_pore_data(phase=fluid,prop='temperature')
-    Tr= T/fluid.get_pore_data(prop='Tc')
+    Tc = fluid.get_pore_data(prop = 'Tc')
+    Tr= T/Tc
     Tstar = 1.2593*Tr
     A = 1.161415
     B = 0.14874

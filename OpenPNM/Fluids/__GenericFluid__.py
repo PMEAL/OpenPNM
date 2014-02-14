@@ -61,6 +61,7 @@ class GenericFluid(Tools):
         
     def apply_ICs(self,init_cond):
         r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
         for item in init_cond.keys():
             self.set_pore_data(prop=item,data=init_cond[item])

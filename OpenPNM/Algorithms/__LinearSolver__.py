@@ -26,12 +26,11 @@ class LinearSolver(GenericAlgorithm):
 
     """
 
-    def __init__(self,loglevel=10,**kwargs):
+    def __init__(self,**kwargs):
         r"""
         Initializing the class
         """
         super(LinearSolver,self).__init__(**kwargs)
-        self._logger.info("Create Linear Solver Algorithm Object")
 
     def _do_one_inner_iteration(self):
 
@@ -39,8 +38,11 @@ class LinearSolver(GenericAlgorithm):
             raise Exception('No boundary condition has been applied to this network.')
             self._result = sp.zeros(self._net.num_pores())
         else:
+            self._logger.info("Creating Coefficient matrix for the algorithm")
             A = self._build_coefficient_matrix()
+            self._logger.info("Creating RHS matrix for the algorithm")
             B = self._build_RHS_matrix()
+            self._logger.info("Solving AX = B for the sparse matrices")
             X = splin.spsolve(A,B)
             self._result = X[sp.r_[0:self._net.num_pores()]]
         return(self._result)
@@ -116,7 +118,7 @@ class LinearSolver(GenericAlgorithm):
                 bcpores = self.get_pore_info(label='Neumann_rate')
                 self._BCtypes[bcpores] = 4
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
-
+        self._logger.info("Boundary conditions have been applied successfully.")
 
     def _build_coefficient_matrix(self):
        

@@ -3,6 +3,7 @@ import OpenPNM
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
+
 pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[35,35,35],lattice_spacing=[0.0001])
 #pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=100,domain_size=[100,100,100])
 #pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((30,30,30),dtype=int),lattice_spacing=0.001)
@@ -72,7 +73,7 @@ OP_1.update()
 ###IP_1.update()
 ####----------------------------------------------------------------------
 #### Initializing diffusion algorithm
-Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20,name='Fickian_alg',network=pn)
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20,loggername='Fickian',name='Fickian_alg',network=pn)
 ## Assign Dirichlet boundary conditions
 ## BC1
 BC1_pores = pn.get_pore_indices(labels='top')

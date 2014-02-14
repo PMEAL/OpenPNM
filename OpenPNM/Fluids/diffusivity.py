@@ -76,7 +76,7 @@ def TynCalus(fluid,network,propname,VA ,VB ,sigma_A ,sigma_B,viscosity='viscosit
     ----------
     T :  float, array_like
         Temperature of interest (K)
-    mu :  float, array_like
+    viscosity :  float, array_like
         Viscosity of solvent (Pa.s)
     VA : float, array_like
         Molar volume of component A at boiling temperature (m3/mol)
