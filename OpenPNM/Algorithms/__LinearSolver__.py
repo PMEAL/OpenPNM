@@ -225,3 +225,112 @@ class LinearSolver(GenericAlgorithm):
         g = self._conductance[throats]
         R = sp.sum(sp.multiply(g,(X1-X2)))
         return(R)
+        
+    def _calc_eff_prop_cubic(self,                            
+                           fluid,
+                           alg='',
+                           face1='',
+                           face2='',
+                           d_term='',
+                           x_term='',
+                           conductance='',
+                           occupancy='',
+                           **params):
+                
+        network =self._net
+        ftype1 = []
+        ftype2 = []
+        effective_prop = []
+        if face1!='' and face2!='':             
+            if type(face1)==list and type(face2)==list: 
+                if len(face1)==len(face2):
+                    for i in list(range(len(face1))):
+                        if type(face1[i])==str and type(face2[i])==str:
+                            ftype1.append(face1[i])
+                            ftype2.append(face2[i])                            
+                        else: self._logger.error('face1 and face2 should be string or a list of strings!')
+                else: self._logger.error('face1 and face 2 should have equal length!')
+
+            elif type(face1)==str and type(face2)==str:
+                ftype1.append(face1)
+                ftype2.append(face2)
+            else: self._logger.error('face1 and face2 should be string or a list of strings!')
+
+        elif face1=='' and face2=='':            
+            ftype1 = ['front','right','top']
+            ftype2 = ['back','left','bottom']
+        else: self._logger.error('wrong input for face1 or face2')
+        
+        for i in list(range(len(ftype1))):
+            face1 = ftype1[i] 
+            face2 = ftype2[i]
+            face1_pores = network.get_pore_indices(face1)
+            face2_pores = network.get_pore_indices(face2)            
+            ## Assign Dirichlet boundary conditions
+            ## BC1
+            BC1_pores = face1_pores  
+            self.set_pore_info(label='Dirichlet',locations=BC1_pores)
+            BC1_values = 0.8
+            self.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+            ## BC2
+            BC2_pores = face2_pores
+            self.set_pore_info(label='Dirichlet',locations=BC2_pores)
+            BC2_values = 0.4
+            self.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)        
+            self.run(active_fluid=fluid) 
+            x = self.get_pore_data(prop=x_term)
+            if alg=='Fickian':
+                X1 = sp.log(1-x[face1_pores])
+                X2 = sp.log(1-x[face2_pores])
+            elif alg=='Stokes':
+                X1 = x[face1_pores]
+                X2 = x[face2_pores]
+            delta_X = sp.absolute(sp.average(X2)-sp.average(X1)) 
+            d_force =sp.average(fluid.get_pore_data(prop=d_term))
+            
+            coordx = network.get_pore_data(prop='coords')[:,0]
+            coordy = network.get_pore_data(prop='coords')[:,1]
+            coordz = network.get_pore_data(prop='coords')[:,2]
+            
+            if sp.size(sp.unique(coordx[network.get_pore_indices(face1)]))==1:
+                coord_main1 = coordx[network.get_pore_indices(face1)]
+                coord_main2 = coordx[network.get_pore_indices(face2)]
+                coord_temp1 = coordy[network.get_pore_indices(face1)]
+                coord_temp2 = coordz[network.get_pore_indices(face1)]
+             
+            elif sp.size(sp.unique(coordy[network.get_pore_indices(face1)]))==1:
+                coord_main1 = coordy[network.get_pore_indices(face1)]
+                coord_main2 = coordy[network.get_pore_indices(face2)]
+                coord_temp1 = coordx[network.get_pore_indices(face1)]
+                coord_temp2 = coordz[network.get_pore_indices(face1)]
+                
+            elif sp.size(sp.unique(coordz[network.get_pore_indices(face1)]))==1:
+                coord_main1 = coordz[network.get_pore_indices(face1)]
+                coord_main2 = coordz[network.get_pore_indices(face2)]
+                coord_temp1 = coordx[network.get_pore_indices(face1)]
+                coord_temp2 = coordy[network.get_pore_indices(face1)]
+
+            L = sp.absolute(sp.unique(coord_main1)[0]-sp.unique(coord_main2)[0])
+            length_1 = (max(coord_temp1) - min(coord_temp1))
+            length_2 = (max(coord_temp2) - min(coord_temp2))
+            A = length_1*length_2            
+                
+            fn = network.find_neighbor_pores(face1_pores)
+            fn = fn[sp.in1d(fn,network.get_pore_indices('internal'))]
+            ft = network.find_connecting_throat(face1_pores,fn)
+            if alg=='Fickian': X_temp = sp.log(1-x[fn])
+            elif alg=='Stokes':
+                X_temp = x[fn]
+                d_force = 1/d_force
+            g = fluid.get_throat_data(prop=conductance)
+            if occupancy=='': s = sp.ones_like(g, dtype=bool)
+            elif occupancy=='occupancy': s = fluid.get_throat_data(prop=occupancy)
+            cond = g*s+g*(-s)/1e3
+            N = sp.sum(cond[ft]*sp.absolute(X1-X_temp))
+            eff = N*L/(d_force*A*delta_X)
+            effective_prop.append(eff)
+            del self._pore_info['Dirichlet']
+            del self._pore_data['BCval']
+            delattr (self,'BCtypes')
+            delattr(self,'BCvalues')            
+        return sp.array(effective_prop,ndmin=1)
