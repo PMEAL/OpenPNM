@@ -142,6 +142,9 @@ class Delaunay(GenericNetwork):
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         
     def _add_labels(self):
+        r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
+        '''
         coords = self.get_pore_data(prop='coords')
         self.set_pore_info(label='front',locations=(coords[:,0]<0))
         self.set_pore_info(label='back',locations=(coords[:,0]>self._Lx))
