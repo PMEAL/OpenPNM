@@ -3,8 +3,7 @@ import OpenPNM
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-
-pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15,15,15],lattice_spacing=[0.0001])
+pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15, 15, 15], lattice_spacing=[0.0001])
 #pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=100,domain_size=[100,100,100])
 #pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((30,30,30),dtype=int),lattice_spacing=0.001)
 #pn = OpenPNM.Network.TestNet()
@@ -12,14 +11,14 @@ pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15,15,15],lattice
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='stick_and_ball',locations=pn.get_pore_indices())
+geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='stick_and_ball', locations=pn.get_pore_indices())
 geom.regenerate()
 
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn,init_cond={'temperature':300,'pressure':100000})
-air.apply_ICs(init_cond={'temperature':350,'pressure':200000}) #experimental feature
+air = OpenPNM.Fluids.Air(network=pn, init_cond={'temperature':300, 'pressure':100000})
+air.apply_ICs(init_cond={'temperature':350, 'pressure':200000})  # experimental feature
 air.regenerate()
 
 water = OpenPNM.Fluids.Water(network=pn)
