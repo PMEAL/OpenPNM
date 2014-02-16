@@ -226,10 +226,10 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Np   = self.num_pores()
         Nt   = self.num_throats()
 
-        if (data!=None) and (prop!=None):
+        if (data is not None) and (prop is not None):
             dataset = data
             tprop = prop
-            if sp.shape(dataset)[0]!=Nt:
+            if sp.shape(dataset)[0] != Nt:
                 raise Exception('Received dataset of incorrect length')
         else:
             dataset = sp.ones(Nt)
@@ -295,7 +295,7 @@ class GenericNetwork(OpenPNM.Base.Tools):
         Nt = self.num_throats()
         Np = self.num_pores()
 
-        if (data!=None) and (prop!=None):
+        if (data is not None) and (prop is not None):
             dataset = data
             tprop = prop
         else:
@@ -303,9 +303,9 @@ class GenericNetwork(OpenPNM.Base.Tools):
             tprop = 'connections'
 
         if dropzeros:
-            ind = dataset>0
+            ind = dataset > 0
         else:
-            ind = sp.ones_like(dataset,dtype=bool)
+            ind = sp.ones_like(dataset, dtype=bool)
 
         conn = self._throat_data['connections'][ind]
         row  = conn[:,0]
