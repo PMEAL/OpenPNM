@@ -28,15 +28,15 @@ water.regenerate()
 #==============================================================================
 '''Build Physics Objects'''
 #==============================================================================
-phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water,name='standard_water_physics')
-phys_water.add_method(prop='capillary_pressure',model='purcell',r_toroid=1e-5)
-phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
-phys_water.add_method(prop='diffusive_conductance',prop_name='gdAB',model='bulk_diffusion',diffusivity='DAB')
+phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water, name='standard_water_physics')
+phys_water.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
+phys_water.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_water.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
 phys_water.regenerate()
 
-phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air,name='standard_air_physics')
-phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
-phys_air.add_method(prop='diffusive_conductance',model='bulk_diffusion')
+phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air, name='standard_air_physics')
+phys_air.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_air.add_method(prop='diffusive_conductance', model='bulk_diffusion')
 phys_air.regenerate()
 
 #==============================================================================
@@ -72,18 +72,18 @@ OP_1.update()
 ###IP_1.update()
 ####----------------------------------------------------------------------
 #### Initializing diffusion algorithm
-Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20,loggername='Fickian',name='Fickian_alg',network=pn)
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, loggername='Fickian', name='Fickian_alg',network=pn)
 ## Assign Dirichlet boundary conditions
 ## BC1
 BC1_pores = pn.get_pore_indices(labels='top')
-Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
 BC1_values = 0.8
-Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
 ## BC2
 BC2_pores = pn.get_pore_indices(labels='bottom')
-Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
+Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
 BC2_values = 0.4
-Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ###----------------------------------------------------------------------
 #### Assign Neumann boundary conditions
 ### BC1
@@ -103,5 +103,4 @@ Fickian_alg.update()
 
 #
 #Export to VTK
-OpenPNM.Visualization.VTK().write(net=pn,fluid=air)
-
+OpenPNM.Visualization.VTK().write(net=pn, fluid=air)

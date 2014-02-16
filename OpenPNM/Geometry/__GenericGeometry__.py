@@ -11,11 +11,11 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
-
+from OpenPNM.Geometry.__PlotTools__ import PlotTools
 import scipy as sp
 from functools import partial
 
-class GenericGeometry(OpenPNM.Base.Utilities):
+class GenericGeometry(OpenPNM.Base.Utilities,PlotTools):
     r"""
     GenericGeometry - Base class to construct pore networks
 
