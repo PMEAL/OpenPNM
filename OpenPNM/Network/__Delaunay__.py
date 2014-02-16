@@ -152,16 +152,15 @@ class Delaunay(GenericNetwork):
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
         coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(label='front',locations=(coords[:,0]<0))
-        self.set_pore_info(label='back',locations=(coords[:,0]>self._Lx))
-        self.set_pore_info(label='left',locations=(coords[:,1]<0))
-        self.set_pore_info(label='right',locations=(coords[:,1]>self._Ly))
-        self.set_pore_info(label='bottom',locations=(coords[:,2]<0))
-        self.set_pore_info(label='top',locations=(coords[:,2]>self._Lz))
+        self.set_pore_info(label='front',locations=(coords[:,0]<(0.1*self._Lx)))
+        self.set_pore_info(label='back',locations=(coords[:,0]>(0.9*self._Lx)))
+        self.set_pore_info(label='left',locations=(coords[:,1]<(0.1*self._Ly)))
+        self.set_pore_info(label='right',locations=(coords[:,1]>(0.9*self._Ly)))
+        self.set_pore_info(label='bottom',locations=(coords[:,2]<(0.1*self._Lz)))
+        self.set_pore_info(label='top',locations=(coords[:,2]>(0.9*self._Lz)))
         bnds = self.get_pore_indices(labels=['front','back','left','right','bottom','top'])
         self.set_pore_info(label='boundary',locations=bnds)
-        internal = ~self.get_pore_indices('boundary',indices=False)
-        self.set_pore_info(label='internal',locations=internal)
+        self.set_pore_info(label='internal',locations='all')
         
     def _add_boundaries(self):
         r"""
