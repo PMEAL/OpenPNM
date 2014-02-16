@@ -77,7 +77,8 @@ class Tools(Utilities):
                         try: getattr(phase,'_'+element+'_data')[prop]
                         except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
                         getattr(phase,'_'+element+'_data')[prop][locations] = data
-                    else: phase._logger.error('locations and data sizes do not match!')
+                    else: 
+                        phase._logger.error('locations and data sizes do not match!')
                 else:
                     try: 
                         getattr(phase,'num_'+element+'s')()                        
@@ -106,12 +107,14 @@ class Tools(Utilities):
                         try: getattr(self,'_'+element+'_data')[prop]
                         except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
                         getattr(self,'_'+element+'_data')[prop][locations] = data
+                        self._logger.debug(element+' property '+ prop+'has been added')
                     else: self._logger.error('locations and data sizes do not match!')
                 else:
                     try: 
                         getattr(self,'num_'+element+'s')()                        
                         if sp.shape(data)[0]==getattr(self,'num_'+element+'s')():
                             getattr(self,'_'+element+'_data')[prop] = data
+                            self._logger.debug(element+' property '+ prop+'has been added')
                         else: self._logger.error('Number of '+element+'s and size of data do not match!')
                     except: getattr(self,'_'+element+'_data')[prop] = data
 
