@@ -17,8 +17,8 @@ import numpy as np
 import scipy.stats as spst
 import scipy.spatial as sptl
 import itertools as itr
-import sys
 from OpenPNM.Network import GenericNetwork
+
 
 class Cubic(GenericNetwork):
     r"""
@@ -43,8 +43,7 @@ class Cubic(GenericNetwork):
     """
 
     def __init__(self, **kwargs):
-
-        super(Cubic,self).__init__(**kwargs)
+        super(Cubic, self).__init__(**kwargs)
         self._logger.debug(self.__class__.__name__+": Execute constructor")
 
     def generate(self,**params):
