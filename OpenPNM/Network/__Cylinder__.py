@@ -39,7 +39,7 @@ class Cylinder(Template):
     """
 
     def __init__(self, **kwargs):
-        super(Sphere,self).__init__(**kwargs)
+        super(Cylinder,self).__init__(**kwargs)
         self._logger.debug(self.__class__.__name__,": ","Execute constructor")
     
     def generate(self, **params):
@@ -66,12 +66,12 @@ class Cylinder(Template):
         self._generate_pores()
         self._generate_throats()
         self._add_boundaries()
-#        self._add_labels()
+        self._add_labels()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")        
         return self
 
 if __name__ == '__main__':
-    pn = OpenPNM.Network.Sphere(name='sphere_1').generate(radius=5, lattice_spacing=1)
+    pn = OpenPNM.Network.Cylinder(name='test_cylinder').generate(radius=5, length=10, lattice_spacing=1)
     print(pn.name)
 
 

@@ -147,8 +147,9 @@ class Template(GenericNetwork):
     def _add_labels(self):
         pind = self.get_pore_indices('all')
         Tn = self.find_neighbor_throats(pnums=pind, flatten=False)
+        Tmax = sp.amax(self.num_neighbors(pnums=pind, flatten=False))
         for i in sp.arange(0, sp.shape(Tn)[0]):
-            if sp.shape(Tn[i])[0] < 6:
+            if sp.shape(Tn[i])[0] < Tmax:
                 self.set_pore_info(label='surface', locations=i)
             else:
                 self.set_pore_info(label='internal', locations=i)
