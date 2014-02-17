@@ -89,7 +89,7 @@ class Template(GenericNetwork):
         self.set_pore_data(prop='numbering', data=pind)  # Remove eventually
         self.set_pore_info(label='all', locations=pind)
         
-        img_ind = np.ravel_multi_index(sp.nonzero(template), dims=sp.shape(template), order='C')
+        img_ind = np.ravel_multi_index(sp.nonzero(template), dims=sp.shape(template), order='F')
         self.set_pore_data(prop='voxel_index', data=img_ind)
 
         #This voxel_to_pore map is messy but works
