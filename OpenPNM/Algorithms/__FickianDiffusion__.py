@@ -32,7 +32,7 @@ class FickianDiffusion(LinearSolver):
 
     """
 
-    def __init__(self,loglevel=10,**kwargs):
+    def __init__(self,**kwargs):
         r"""
         Initializing the class
         """
@@ -64,13 +64,13 @@ class FickianDiffusion(LinearSolver):
         X = self._do_one_inner_iteration()
         xA = 1-sp.exp(X)        
         self.set_pore_data(prop=self._X_name,data = xA)
-        print('Solving process finished successfully!')
+        self._logger.info('Solving process finished successfully!')
               
     def update(self):
         
         x = self.get_pore_data(prop=self._X_name)        
         self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=x)
-        print('Results of this algorithm have been updated successfully.')
+        self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
         
 
     def effective_diffusivity_cubic(self,
