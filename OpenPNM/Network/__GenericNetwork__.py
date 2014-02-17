@@ -15,7 +15,7 @@ import scipy as sp
 import scipy.sparse as sprs
 import pprint
 
-class GenericNetwork(OpenPNM.Base.Tools):
+class GenericNetwork(OpenPNM.Utilities.Tools):
     r"""
     GenericNetwork - Base class to construct pore networks
 

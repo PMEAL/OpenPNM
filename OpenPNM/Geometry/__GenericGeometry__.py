@@ -15,7 +15,7 @@ from OpenPNM.Geometry.__PlotTools__ import PlotTools
 import scipy as sp
 from functools import partial
 
-class GenericGeometry(OpenPNM.Base.Utilities,PlotTools):
+class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
     r"""
     GenericGeometry - Base class to construct pore networks
 

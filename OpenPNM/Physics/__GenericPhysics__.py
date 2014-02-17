@@ -12,7 +12,7 @@ import OpenPNM
 import scipy as sp
 from functools import partial
 
-class GenericPhysics(OpenPNM.Base.Utilities):
+class GenericPhysics(OpenPNM.Utilities.Base):
     r"""
     Base class to generate a generic Physics object.  The user must specify models
     and parameters for the all the properties they require. Classes for several

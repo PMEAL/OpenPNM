@@ -11,9 +11,8 @@ import OpenPNM
 
 import scipy as sp
 from functools import partial
-from OpenPNM.Base import Tools
 
-class GenericFluid(Tools):
+class GenericFluid(OpenPNM.Utilities.Tools):
     r"""
     Base class to generate a generic fluid object.  The user must specify models
     and parameters for the all the properties they require. Classes for several
