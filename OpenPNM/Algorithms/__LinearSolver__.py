@@ -236,19 +236,21 @@ class LinearSolver(GenericAlgorithm):
         
     def _calc_eff_prop_cubic(self,                            
                            fluid,
-                           alg='',
+                           alg,
+                           d_term,
+                           x_term,
+                           conductance,
+                           occupancy,
                            face1='',
                            face2='',
-                           d_term='',
-                           x_term='',
-                           conductance='',
-                           occupancy='',
                            **params):
                 
         network =self._net
         ftype1 = []
         ftype2 = []
         effective_prop = []
+        try: fluid = self.find_object_by_name(fluid) 
+        except: pass #Accept object
         if face1!='' and face2!='':             
             if type(face1)==list and type(face2)==list: 
                 if len(face1)==len(face2):
@@ -277,7 +279,7 @@ class LinearSolver(GenericAlgorithm):
             ## Assign Dirichlet boundary conditions
             ## BC1
             BC1_pores = face1_pores  
-            self.set_pore_info(label='Dirichlet',locations=BC1_pores)
+            self.set_pore_info(label='Dirichlet',locations=BC1_pores,mode='overwrite')
             BC1_values = 0.8
             self.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
             ## BC2
@@ -285,7 +287,10 @@ class LinearSolver(GenericAlgorithm):
             self.set_pore_info(label='Dirichlet',locations=BC2_pores)
             BC2_values = 0.4
             self.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)        
-            self.run(active_fluid=fluid) 
+            self.run(active_fluid=fluid,
+                           x_term=x_term,
+                           conductance=conductance,
+                           occupancy=occupancy) 
             x = self.get_pore_data(prop=x_term)
             if alg=='Fickian':
                 X1 = sp.log(1-x[face1_pores])
@@ -330,10 +335,7 @@ class LinearSolver(GenericAlgorithm):
             elif alg=='Stokes':
                 X_temp = x[fn]
                 d_force = 1/d_force
-            g = fluid.get_throat_data(prop=conductance)
-            if occupancy=='': s = sp.ones_like(g, dtype=bool)
-            elif occupancy=='occupancy': s = fluid.get_throat_data(prop=occupancy)
-            cond = g*s+g*(-s)/1e3
+            cond = self._conductance
             N = sp.sum(cond[ft]*sp.absolute(X1-X_temp))
             eff = N*L/(d_force*A*delta_X)
             effective_prop.append(eff)

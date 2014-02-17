@@ -35,23 +35,26 @@ class FickianDiffusion(LinearSolver):
 
 
     def _setup(self,
-               diffusive_conductance='diffusive_conductance',
+               conductance='diffusive_conductance',
                occupancy='occupancy',
-               mole_fraction='mole_fraction',
+               x_term='mole_fraction',               
                **params):
         r"""
         This function executes the essential methods specific to Fickian diffusion simulations
         """
         self._logger.info("Setup for Fickian Algorithm")        
         self._fluid = params['active_fluid']
-        self._X_name = mole_fraction
+        try: self._fluid = self.find_object_by_name(self._fluid) 
+        except: pass #Accept object
+        self._X_name = x_term
         self._boundary_conditions_setup()
         # Variable transformation for Fickian Algorithm from xA to ln(xB)
         Dir_pores = self._net.get_pore_indices('all')[self._BCtypes==1]
         self._BCvalues[Dir_pores] = sp.log(1-self._BCvalues[Dir_pores])
-        g = self._fluid.get_throat_data(prop=diffusive_conductance)
-        s = self._fluid.get_throat_data(prop=occupancy)
+        g = self._net.get_throat_data(phase=self._fluid,prop=conductance)
+        s = self._net.get_throat_data(phase=self._fluid,prop=occupancy)
         self._conductance = g*s+g*(-s)/1e3
+        
 
     def _do_inner_iteration_stage(self):
 
@@ -70,11 +73,11 @@ class FickianDiffusion(LinearSolver):
     def effective_diffusivity_cubic(self,
                                    fluid,
                                    face1='',
-                                   face2='',
-                                   d_term='molar_density',
-                                   x_term='mole_fraction',
+                                   face2='',                                   
                                    conductance='diffusive_conductance',
-                                   occupancy='',
+                                   occupancy='occupancy',
+                                   x_term='mole_fraction',
+                                   d_term='molar_density',
                                    **params):
         r"""
         This function calculates effective diffusivity of a cubic network between face1 and face2.  
