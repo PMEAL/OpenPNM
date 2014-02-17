@@ -65,7 +65,7 @@ class Base(object):
             loglevel = kwargs['loglevel']
             self.set_loglevel(loglevel)
         else:
-            loglevel = 20
+            loglevel = 10
             self.set_loglevel(loglevel)
             
         self.constants = scipy.constants
