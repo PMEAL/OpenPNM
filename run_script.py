@@ -19,7 +19,7 @@ geom.regenerate()
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, init_cond={'temperature':300, 'pressure':100000})
+air = OpenPNM.Fluids.Air(network=pn, loglevel=10,init_cond={'temperature':300, 'pressure':100000})
 air.apply_ICs(init_cond={'temperature':350, 'pressure':200000})  # experimental feature
 air.regenerate()
 
@@ -47,7 +47,7 @@ phys_air.regenerate()
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
 #Initialize algorithm object
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,loggername='OP',name='OP_1',network=pn)
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername='OP',name='OP_1',network=pn)
 a = pn.get_pore_indices(labels='bottom')
 OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 
@@ -74,7 +74,7 @@ OP_1.update(Pc=3000)
 ###IP_1.update()
 ####----------------------------------------------------------------------
 #### Initializing diffusion algorithm
-Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, loggername='Fickian', name='Fickian_alg',network=pn)
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Fickian', name='Fickian_alg',network=pn)
 ## Assign Dirichlet boundary conditions
 ## BC1
 BC1_pores = pn.get_pore_indices(labels='top')
