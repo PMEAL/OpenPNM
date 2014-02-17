@@ -3,9 +3,10 @@ import OpenPNM
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15, 15, 15], lattice_spacing=[0.0001])
-#pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=100,domain_size=[100,100,100])
-#pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((30,30,30),dtype=int),lattice_spacing=0.001)
+#pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15, 15, 15], lattice_spacing=[0.0001])
+#pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=1500,domain_size=[100,100,30])
+#pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((4,4,4),dtype=int),lattice_spacing=0.001)
+pn = OpenPNM.Network.Sphere(name='sphere_1',loglevel=10).generate(radius=5,lattice_spacing=1)
 #pn = OpenPNM.Network.TestNet()
 
 #==============================================================================
@@ -68,7 +69,7 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 #'''Perform Fickian Diffusion'''
 ##----------------------------------------------------------------------
 ## Updating data based on the result of Percolation Algorithms
-OP_1.update()
+OP_1.update(Pc=3000)
 ###IP_1.update()
 ####----------------------------------------------------------------------
 #### Initializing diffusion algorithm
