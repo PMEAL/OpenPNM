@@ -24,12 +24,6 @@ class FickianDiffusion(LinearSolver):
 
                         It returns conecentration gradient inside the network.
 
-    Parameter
-    ----------
-    -loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-
-
     """
 
     def __init__(self,**kwargs):

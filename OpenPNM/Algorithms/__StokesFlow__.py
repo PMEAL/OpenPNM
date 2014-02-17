@@ -22,17 +22,11 @@ class StokesFlow(LinearSolver):
     
     Hagen Poiseuille permeability - Class to run an algorithm to find permeability on constructed networks
     
-                        It returns pressure gradient inside the network.                              
-                            
-    Parameter
-    ----------
-    -loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)    
-                
+                        It returns pressure gradient inside the network.       
         
     """
     
-    def __init__(self,loglevel=10,**kwargs):
+    def __init__(self,**kwargs):
         r"""
         Initializing the class
         """
@@ -56,14 +50,14 @@ class StokesFlow(LinearSolver):
 
         p = self._do_one_inner_iteration()
         self.set_pore_data(prop='pressure',data = p)
-        print('Solving process finished successfully!')
+        self._logger.info('Solving process finished successfully!')
         
 
     def update(self):
         
         p = self.get_pore_data(prop='pressure')
         self._net.set_pore_data(phase=self._fluid,prop='pressure',data=p)
-        print('Results of this algorithm have been updated successfully.')
+        self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
 
 
     def effective_permeability_cubic(self,

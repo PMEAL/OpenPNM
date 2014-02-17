@@ -20,18 +20,11 @@ class OhmicConduction(LinearSolver):
 
     OhmicConduction - Class to run an algorithm for electron conduction on constructed networks
 
-                        It returns ------- gradient inside the network.
-
-
-    Parameter
-    ----------
-    -loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-
+                        It returns voltage gradient inside the network.
 
     """
 
-    def __init__(self,loglevel=10,**kwargs):
+    def __init__(self,**kwargs):
         r"""
         Initializing the class
         """
@@ -59,11 +52,11 @@ class OhmicConduction(LinearSolver):
     def _do_inner_iteration_stage(self):
         v = self._do_one_inner_iteration()
         self.set_pore_data(prop=self._X_name,data= v)
-        print('Solving process finished successfully!')
+        self._logger.info('Solving process finished successfully!')
     
     def update(self):
         
         v = self.get_pore_data(prop=self._X_name)
         self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=v)
-        print('Results of this algorithm have been updated successfully.')
+        self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
         

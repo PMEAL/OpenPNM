@@ -22,18 +22,11 @@ class FourierConduction(LinearSolver):
     
     Fourier Conduction - Class to run an algorithm for heat conduction through flow on constructed networks
     
-                        It returns temperature gradient inside the network.
-                                  
-                            
-    Parameter
-    ----------
-    -loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)    
-                
+                        It returns temperature gradient inside the network.                
         
     """
     
-    def __init__(self,loglevel=10,**kwargs):
+    def __init__(self,**kwargs):
         r"""
         Initializing the class
         """
@@ -63,10 +56,10 @@ class FourierConduction(LinearSolver):
         """
         T = self._do_one_inner_iteration()       
         self.set_pore_data(prop='temperature',data= T)
-        print('Solving process finished successfully!')
+        self._logger.info('Solving process finished successfully!')
 
     def update(self):
         
         T = self.get_pore_data(prop='temperature')
         self._net.set_pore_data(phase=self._fluid,prop='temperature',data=T)
-        print('Results of this algorithm have been updated successfully.')
+        self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
