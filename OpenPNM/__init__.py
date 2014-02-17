@@ -116,7 +116,7 @@ __extras_require__ = {
 
 #_local_files_path = os.path.join(os.path.abspath(OpenPNM),'LocalFiles')
 
-from . import Base
+from . import Utilities
 from . import Network
 from . import Geometry
 from . import Fluids

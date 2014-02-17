@@ -12,9 +12,9 @@ if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
 import scipy as sp
-from OpenPNM.Base import Utilities
+from OpenPNM.Utilities import Base
 
-class Tools(Utilities):
+class Tools(Base):
     r'''
     This class contains tools to read and write data in OpenPNM objects
 

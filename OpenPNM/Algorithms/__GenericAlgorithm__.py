@@ -13,7 +13,7 @@ from time import clock
 import heapq
 import itertools
 
-class GenericAlgorithm(OpenPNM.Base.Tools):
+class GenericAlgorithm(OpenPNM.Utilities.Tools):
     r"""
     GenericAlgorithm - Base class to execute algorithms
 

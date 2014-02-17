@@ -34,5 +34,5 @@ Classes
    :show-inheritance:
 """
 
-from .__OpenPNMbase__ import Utilities
+from .__Base__ import Base
 from .__Tools__ import Tools

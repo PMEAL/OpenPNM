@@ -17,7 +17,7 @@ _logging.basicConfig(level=_logging.ERROR,
                     datefmt='%m-%d %H:%M',
                     )
 
-class Utilities(object):
+class Base(object):
     r"""
     .. class:: `OpenPNM.Utilities.OpenPNMbase` -- Base class for OpenPNM
     
@@ -55,7 +55,7 @@ class Utilities(object):
     _instances = []
     name = ''
     def __init__(self,**kwargs):
-        super(Utilities,self).__init__()
+        super(Base,self).__init__()
         self._instances.append(self) #Track all instances derived from this class for kicks
         if 'loggername' in kwargs.keys():
             self._logger = _logging.getLogger(kwargs['loggername'])
