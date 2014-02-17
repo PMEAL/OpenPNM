@@ -68,9 +68,9 @@ class Tools(Base):
                     try: 
                         getattr(phase,'_'+element+'_data')[prop]
                         if sp.shape(getattr(phase,'_'+element+'_data')[prop])[0]!=1:
-                            print('Warning: '+prop+' '+element+' property was an array which has been overwritten with a scalar value')
+                            print('Warning: '+prop+' '+element+' property in '+phase.name+' was an array which has been overwritten with a scalar value')
                     except: pass
-                    getattr(phase,'_'+element+'_data')[prop] = data            
+                    getattr(phase,'_'+element+'_data')[prop] = data  
             else:                
                 if locations!='':
                     if sp.shape(locations)[0]==sp.shape(data)[0]:
@@ -78,14 +78,15 @@ class Tools(Base):
                         except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
                         getattr(phase,'_'+element+'_data')[prop][locations] = data
                     else: 
-                        phase._logger.error('locations and data sizes do not match!')
+                        phase._logger.error('For adding '+element+' property '+prop+' to '+phase.name+', locations and size of data do not match!')
                 else:
                     try: 
                         getattr(phase,'num_'+element+'s')()                        
                         if sp.shape(data)[0]==getattr(phase,'num_'+element+'s')():
                             getattr(phase,'_'+element+'_data')[prop] = data
-                        else: phase._logger.error('Number of '+element+'s and size of data do not match!')
-                    except: phase._logger.error(element+' numbering has not been specified for this phase')
+                        else: phase._logger.error('For adding '+element+' property '+prop+' to '+phase.name+', number of '+element+'s and size of data do not match!')
+                    except: phase._logger.error(element+' numbering has not been specified for '+phase.name)
+            phase._logger.debug(element+' property '+prop+' has been added to '+phase.name)
                         
         else:
             
@@ -98,7 +99,7 @@ class Tools(Base):
                     try: 
                         getattr(self,'_'+element+'_data')[prop]
                         if sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:
-                            print('Warning: '+prop+' '+element+' property was an array which has been overwritten with a scalar value')
+                            print('Warning: '+prop+' '+element+' property in '+self.name+' was an array which has been overwritten with a scalar value')
                     except: pass
                     getattr(self,'_'+element+'_data')[prop] = data            
             else:                
@@ -107,16 +108,16 @@ class Tools(Base):
                         try: getattr(self,'_'+element+'_data')[prop]
                         except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
                         getattr(self,'_'+element+'_data')[prop][locations] = data
-                        self._logger.debug(element+' property '+ prop+'has been added')
-                    else: self._logger.error('locations and data sizes do not match!')
+                    else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', locations and size of data do not match!')
                 else:
                     try: 
                         getattr(self,'num_'+element+'s')()                        
                         if sp.shape(data)[0]==getattr(self,'num_'+element+'s')():
                             getattr(self,'_'+element+'_data')[prop] = data
-                            self._logger.debug(element+' property '+ prop+'has been added')
-                        else: self._logger.error('Number of '+element+'s and size of data do not match!')
+                        else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', number of '+element+'s and size of data do not match!')
                     except: getattr(self,'_'+element+'_data')[prop] = data
+            self._logger.debug(element+' property '+prop+' has been added to '+self.name)
+
 
 
     def _get_data(self,element='',phase='',prop='',locations=''):
