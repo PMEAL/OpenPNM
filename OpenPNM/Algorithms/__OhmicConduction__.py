@@ -42,6 +42,8 @@ class OhmicConduction(LinearSolver):
         This function executes the essential mathods for building matrices for Linear solution
         """
         self._fluid = params['active_fluid']
+        try: self._fluid = self.find_object_by_name(self._fluid) 
+        except: pass #Accept object
         self._X_name = voltage
         self._boundary_conditions_setup()
         g = self._fluid.get_throat_data(prop=electronic_conductance)

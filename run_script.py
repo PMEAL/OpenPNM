@@ -24,7 +24,7 @@ air.apply_ICs(init_cond={'temperature':350, 'pressure':200000})  # experimental 
 air.regenerate()
 
 water = OpenPNM.Fluids.Water(network=pn)
-water.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=1000000)
+water.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
 water.regenerate()
 
 #==============================================================================
