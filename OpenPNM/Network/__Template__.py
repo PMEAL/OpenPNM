@@ -86,8 +86,9 @@ class Template(GenericNetwork):
         Np = np.sum(template > 0)
         #Add pores to data and ifo
         pind = np.arange(0, Np)
-        self.set_pore_data(prop='numbering', data=pind)  # Remove eventually
         self.set_pore_info(label='all', locations=pind)
+        self.set_pore_data(prop='numbering', data=pind)  # Remove eventually
+
         
         img_ind = np.ravel_multi_index(sp.nonzero(template), dims=sp.shape(template), order='F')
         self.set_pore_data(prop='voxel_index', data=img_ind)
@@ -134,8 +135,8 @@ class Template(GenericNetwork):
         #Need a cleaner way to do this other than voxel_to_pore map...figure out later
         
         self.set_throat_data(prop='connections', data=self._voxel_to_pore_map[connections])
-        self.set_pore_data(prop='numbering', data=np.arange(0, sp.sum(tind)))
         self.set_throat_info(label='all', locations=sp.ones(sp.sum(tind,),dtype=bool))
+        self.set_throat_data(prop='numbering', data=np.arange(0, sp.sum(tind)))
         self._logger.debug("generate_throats: End of method")
 
     def _add_boundaries(self):
