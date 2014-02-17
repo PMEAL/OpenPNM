@@ -105,4 +105,4 @@ Fickian_alg.update()
 
 #
 #Export to VTK
-OpenPNM.Visualization.VTK().write(net=pn, fluid=air)
+OpenPNM.Visualization.VTK().write(net=pn, fluids=air)
