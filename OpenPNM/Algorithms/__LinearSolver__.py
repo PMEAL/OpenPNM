@@ -248,7 +248,8 @@ class LinearSolver(GenericAlgorithm):
         network =self._net
         ftype1 = []
         ftype2 = []
-        effective_prop = []
+        effective_prop = []  
+        result = {}
         try: fluid = self.find_object_by_name(fluid) 
         except: pass #Accept object
         if face1!='' and face2!='':             
@@ -270,13 +271,15 @@ class LinearSolver(GenericAlgorithm):
             ftype1 = ['front','right','top']
             ftype2 = ['back','left','bottom']
         else: self._logger.error('wrong input for face1 or face2')
-        
+        tensor = sp.zeros([3,3])
         for i in list(range(len(ftype1))):
             face1 = ftype1[i] 
             face2 = ftype2[i]
             face1_pores = network.get_pore_indices(face1)
             face2_pores = network.get_pore_indices(face2)            
             ## Assign Dirichlet boundary conditions
+            self.set_pore_info(label='Dirichlet')
+            self.set_pore_data(prop='BCval',data=0,locations=network.get_pore_indices())
             ## BC1
             BC1_pores = face1_pores  
             self.set_pore_info(label='Dirichlet',locations=BC1_pores,mode='overwrite')
@@ -343,4 +346,9 @@ class LinearSolver(GenericAlgorithm):
             del self._pore_data['BCval']
             delattr (self,'_BCtypes')
             delattr(self,'_BCvalues')            
-        return sp.array(effective_prop,ndmin=1)
+            result[ftype1[i]+'/'+ftype2[i]] = sp.array(effective_prop[i],ndmin=1)
+            if ftype1[i]=='top' or ftype1[i]=='bottom': tensor[2,2] = effective_prop[i]
+            elif ftype1[i]=='right' or ftype1[i]=='left': tensor[1,1] = effective_prop[i]
+            elif ftype1[i]=='front' or ftype1[i]=='back': tensor[0,0] = effective_prop[i]
+        if len(ftype1)<3: return result
+        elif len(ftype1)==3 : return tensor
