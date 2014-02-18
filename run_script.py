@@ -71,9 +71,9 @@ OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 ##----------------------------------------------------------------------
 ## Updating data based on the result of Percolation Algorithms
 OP_1.update(Pc=3000)
-###IP_1.update()
-####----------------------------------------------------------------------
-#### Initializing diffusion algorithm
+#IP_1.update()
+###----------------------------------------------------------------------
+### Initializing diffusion algorithm
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Fickian', name='Fickian_alg',network=pn)
 ## Assign Dirichlet boundary conditions
 ## BC1
@@ -87,7 +87,7 @@ Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
 BC2_values = 0.4
 Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ###----------------------------------------------------------------------
-#### Assign Neumann boundary conditions
+### Assign Neumann boundary conditions
 ### BC1
 #BC1_pores = pn.get_pore_indices(labels='top')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
@@ -102,7 +102,6 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ### Run simulation
 Fickian_alg.run(active_fluid=air)
 Fickian_alg.update()
-
-#
-#Export to VTK
+###-----------------------------------------------------------------------
+##Export to VTK
 OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
