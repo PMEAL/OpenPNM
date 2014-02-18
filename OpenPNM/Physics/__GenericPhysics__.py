@@ -48,11 +48,24 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         fluid._physics.append(self)
         self._net = network
 
-    def regenerate(self):
+    def regenerate(self, prop_list=''):
         r'''
         This updates all properties using the selected methods
+
+        Parameters
+        ----------
+        prop_list : string or list of strings
+            The names of the properties that should be updated, defaults to all
+            
+        Examples
+        --------
+        For examples refer to usage of Fluid or Geometry refresh methods
         '''
-        for item in self._prop_list:
+        if prop_list == '':
+            prop_list = self._prop_list
+        elif type(prop_list) == str:
+            prop_list = [prop_list]
+        for item in prop_list:
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()
             

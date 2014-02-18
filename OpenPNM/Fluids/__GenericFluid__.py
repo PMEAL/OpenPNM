@@ -66,11 +66,28 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         for item in init_cond.keys():
             self.set_pore_data(prop=item,data=init_cond[item])
 
-    def regenerate(self):
+    def regenerate(self,prop_list=''):
         r'''
         This updates all properties of the fluid using the selected models
+        
+        Parameters
+        ----------
+        prop_list : string or list of strings
+            The names of the properties that should be updated, defaults to all
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> air = OpenPNM.Fluids.Air(loglevel=50,network=pn)
+        >>> air.regenerate()  # Regenerate all properties at once
+        >>> air.regenerate('molar_density')  # only one property
+        >>> air.regenerate(['molar_density', 'diffusivity'])  # or several
         '''
-        for item in self._prop_list:
+        if prop_list == '':
+            prop_list = self._prop_list
+        elif type(prop_list) == str:
+            prop_list = [prop_list]
+        for item in prop_list:
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()
         

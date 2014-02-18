@@ -72,12 +72,29 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
         self._net = network #Attach network to self
         self._prop_list = []
               
-    def regenerate(self):
+    def regenerate(self, prop_list=''):
         r'''
         This updates all properties using the selected methods
+        
+        Parameters
+        ----------
+        prop_list : string or list of strings
+            The names of the properties that should be updated, defaults to all
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pind = pn.get_pore_indices()
+        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='geo_test', locations=pind)
+        >>> geom.regenerate()  # Regenerate all properties at once
+        >>> geom.regenerate('pore_seed')  # only one property
+        >>> geom.regenerate(['pore_seed', 'pore_diameter'])  # or several
         '''
-        self._logger.info("Refreshing geometry")
-        for item in self._prop_list:
+        if prop_list == '':
+            prop_list = self._prop_list
+        elif type(prop_list) == str:
+            prop_list = [prop_list]
+        for item in prop_list:
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()
     
