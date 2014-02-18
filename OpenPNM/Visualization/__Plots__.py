@@ -1,4 +1,5 @@
 import scipy as sp
+import matplotlib.pylab as plt
 
 def Overview(net,
              throat_diameter='diameter',
@@ -16,6 +17,7 @@ def Overview(net,
     The canvas on which to draw the plots
 
   """
+  if fig==None: fig = plt.figure()
   ax1 = fig.add_subplot(221)
   ax1.hist(net.get_pore_data(prop=pore_diameter)[net.get_pore_indices('internal')],25,facecolor='green')
   ax1.set_xlabel('Pore Diameter [m]')
@@ -45,6 +47,7 @@ def Capillary_Pressure_Curve(net,
                              fluid,
                              capillary_pressure='capillary_pressure',
                              pore_volume='volume',
+                             throat_volume='volume',
                              fig=None):
   r"""
   Plot drainage capillary pressure curve
@@ -57,19 +60,21 @@ def Capillary_Pressure_Curve(net,
       Canvas on which to draw plots
 
   """
+  if type(fluid)==str: fluid = net.find_object_by_name(fluid)
   try:
-    PcPoints = sp.unique(fluid.get_pore_data(prop=capillary_pressure))
+    PcPoints = sp.unique(fluid.get_throat_data(prop=capillary_pressure))
   except KeyError:
     raise Exception('Capillary pressure simulation has not been run')
 
-  PcPoints = sp.unique(fluid.get_pore_data(prop=capillary_pressure))
+  PcPoints = sp.unique(fluid.get_throat_data(prop=capillary_pressure))
   Snwp = sp.zeros_like(PcPoints)
-  Ps = sp.r_[0:net.num_pores([0])]
+  Ps = sp.r_[0:net.num_pores('internal')]
   for i in range(1,sp.size(PcPoints)):
       Pc = PcPoints[i]
-      Snwp[i] = sum((fluid.get_pore_data(prop=capillary_pressure)[Ps]<Pc)*(fluid.get_pore_data(prop=pore_volume)[Ps]))/sum(fluid.get_pore_data(prop=pore_volume)[Ps])
-
+      Snwp[i] = sum((fluid.get_throat_data(prop=capillary_pressure)[Ps]<Pc)*(net.get_throat_data(prop=throat_volume)[Ps]))/sum(net.get_throat_data(prop=throat_volume)[Ps])
+  
+  if fig==None: fig = plt.figure()
   ax = fig.add_subplot(111)
   ax.plot(PcPoints,Snwp,'r.-')
   ax.set_xlabel('Capillary Pressure')
-  ax.set_ylabel('Invading Fluid Saturation')
+  ax.set_ylabel('Fluid Saturation')
