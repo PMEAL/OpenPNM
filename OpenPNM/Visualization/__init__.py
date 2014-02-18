@@ -29,4 +29,4 @@ Classes
 """
 from .__GenericVisualization__ import GenericVisualization
 from .__VTK__ import VTK
-from . import __Plots__
+from .__Plots__ import *
