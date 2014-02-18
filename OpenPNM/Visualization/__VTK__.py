@@ -109,58 +109,32 @@ class VTK(GenericVisualization):
         self._f.write('\n</DataArray>\n</Lines>\n')
 
     def _write_point_data(self):
-        pore_keys = list(self._net._pore_data.keys())
-        num_pore_keys = sp.size(pore_keys)
-        self._f.write('<PointData Scalars="pore_data">\n')
-        for j in list(range(num_pore_keys)):
-            if pore_keys[j] !='coords':
+        network = self._net
+        pore_amalgamate = network.amalgamate_pore_data()
+        throat_amalgamate = network.amalgamate_throat_data()
+        total_amalgamate = dict(pore_amalgamate,**throat_amalgamate)
+        total_keys = list(total_amalgamate.keys())
+        num_keys = sp.size(total_keys)
+        self._f.write('<PointData Scalars="_data">\n')
+        for j in list(range(num_keys)):
+            if total_keys[j] !='pore_coords' and total_keys[j] !='throat_connections':
+                if total_keys[j] in pore_amalgamate: element='pores'
+                else: element='throats'
                 self._f.write('<DataArray type="Float32" Name="')
-                self._f.write(pore_keys[j])
+                self._f.write(total_keys[j])
                 self._f.write('" format="ascii">\n')
-                shape =  np.shape(self._net.get_pore_data(prop=pore_keys[j]))
+                shape =  np.shape(total_amalgamate[total_keys[j]])
                 if np.size(shape) == 1:
-                    for i in list(range(self._net.num_pores())):
-                        self._f.write(str(self._net.get_pore_data(prop=pore_keys[j])[i]))
+                    total_amalgamate[total_keys[j]] = total_amalgamate[total_keys[j]]*sp.ones(getattr(network,'num_'+element)())
+                    for i in list(range(getattr(network,'num_'+element)())):
+                        self._f.write(str(total_amalgamate[total_keys[j]][i]))
                         self._f.write(' ')
                 else:
-                    for i in list(range(self._net.num_pores())):
-                        self._f.write(str(self._net.get_pore_data(prop=pore_keys[j])[i][0]))
+                    for i in list(range(getattr(network,'num_'+element)())):
+                        self._f.write(str(total_amalgamate[total_keys[j]][i][0]))
                         self._f.write(' ')
                 self._f.write('\n</DataArray>\n')
-        # Now for fluid
-        if type(self._fluids)==sp.ndarray:
-            for fluid in self._fluids:
-                if type(fluid)==sp.str_: fluid =  self._net.find_object_by_name(fluid)
-                fluid_name = fluid.name
-                pore_keys = list(fluid._pore_data.keys())
-                num_pore_keys = sp.size(pore_keys)
-                for j in list(range(num_pore_keys)):
-                    self._f.write('<DataArray type="Float32" Name="')
-                    self._f.write(fluid_name+'_'+pore_keys[j])
-                    self._f.write('" format="ascii">\n')
-                    size =  np.size(fluid.get_pore_data(prop=pore_keys[j]))
-                    if size == 1:
-                        shape =  np.shape(fluid.get_pore_data(prop=pore_keys[j]))
-                        if np.size(shape) == 0:
-                            for i in list(range(self._net.num_pores())):
-                                self._f.write(str(np.float(fluid.get_pore_data(prop=pore_keys[j]))))
-                                self._f.write(' ')
-                        else:
-                            for i in list(range(self._net.num_pores())):
-                                self._f.write(str(np.float(fluid.get_pore_data(prop=pore_keys[j])[0])))
-                                self._f.write(' ')
-                    else:
-                        shape =  np.shape(fluid.get_pore_data(prop=pore_keys[j]))
-                        if np.size(shape) == 1:
-                            for i in list(range(self._net.num_pores())):
-                                self._f.write(str(np.float(fluid.get_pore_data(prop=pore_keys[j])[i])))
-                                self._f.write(' ')
-                        else:
-                            for i in list(range(self._net.num_pores())):
-                                self._f.write(str(np.float(fluid.get_pore_data(prop=pore_keys[j])[i][0])))
-                                self._f.write(' ')
-                    self._f.write('\n</DataArray>\n')
-        # Now for fluid.partner
+
         output_path = os.path.join( os.path.expanduser('~'), self._file_name )
         print('     oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo')
         print('      Writing VTK file:', output_path)
