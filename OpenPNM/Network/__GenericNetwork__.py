@@ -142,45 +142,33 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r"""
         Returns a dictionary containing ALL pore data from all fluids, physics and geometry objects
         """
-        self._pore_data = {}
-        #Add fluid conditions
+        self._pore_data_amalgamate = {}
+        #Add fluid data
         for item in self._fluids:
-            for key in item.pore_data.keys():
-                dict_name = item.name+'_'+key
-                self._pore_data.update({dict_name : item.pore_data[key]})
-        #Add physics conditions (does nothing now since they're stored in fluids)
-        for item in self._physics:
-            for key in item.pore_data.keys():
-                dict_name = item.name+'_'+key
-                self._pore_data.update({dict_name : item.pore_data[key]})
+            for key in item._pore_data.keys():
+                dict_name = item.name+'_pore_'+key
+                self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
         #Add geometry data
         for key in self._pore_data.keys():
             dict_name = 'pore'+'_'+key
-            self._pore_data.update({dict_name : self._pore_data[key]})
-        pprint.pprint(self._pore_data)
-        return self._pore_data
+            self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
+        return self._pore_data_amalgamate
 
     def amalgamate_throat_data(self):
         r"""
         Returns a dictionary containing ALL throat data from all fluids, physics and geometry objects
         """
-        self._throat_data = {}
-        #Add fluid conditions
+        self._throat_data_amalgamate = {}
+        #Add fluid data
         for item in self._fluids:
-            for key in item.throat_data.keys():
-                dict_name = item.name+'_'+key
-                self._throat_data.update({dict_name : item.throat_data[key]})
-        #Add physics conditions (does nothing now since they're stored in fluids)
-        for item in self._physics:
-            for key in item.throat_data.keys():
-                dict_name = item.name+'_'+key
-                self._throat_data.update({dict_name : item.throat_conditions[key]})
+            for key in item._throat_data.keys():
+                dict_name = item.name+'_throat_'+key
+                self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
         #Add geometry data
         for key in self._throat_data.keys():
             dict_name = 'throat'+'_'+key
-            self._throat_data.update({dict_name : self._throat_data[key]})
-        pprint.pprint(self._throat_data)
-        return self._throat_data
+            self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
+        return self._throat_data_amalgamate
 
     #--------------------------------------------------------------------------
     '''Graph theory and topology related methods'''
