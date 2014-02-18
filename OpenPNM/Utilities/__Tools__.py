@@ -455,6 +455,30 @@ class Tools(Base):
         '''
         return self._get_info(element='throat',label=label,return_indices=return_indices)
         
+    def list_pore_props(self):
+        r'''
+        Returns a list containing the names of all defined pore properties
+        '''
+        return list(self._pore_data.keys())
+
+    def list_throat_props(self):
+        r'''
+        Returns a list containing the names of all defined throat properties
+        '''
+        return list(self._throat_data.keys())
+        
+    def list_pore_labels(self):
+        r'''
+        Returns a list containing the names of all defined pore labels
+        '''
+        return list(self._pore_info.keys())
+
+    def list_throat_labels(self):
+        r'''
+        Returns a list containing the names of all defined throat labels
+        '''
+        return list(self._throat_info.keys())
+        
     def find_labels(self,pnum='',tnum=''):
         r'''
         Returns a list of all labels that have been applied to the given pore or throat.
