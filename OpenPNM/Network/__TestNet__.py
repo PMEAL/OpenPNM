@@ -25,8 +25,8 @@ class TestNet(GenericNetwork):
 
     """
 
-    def __init__(self):
-        super(TestNet,self).__init__(name='test_network')
+    def __init__(self, name='test_net', **kwargs):
+        super(TestNet, self).__init__(name, **kwargs)
         self.generate()
 
     def generate(self):
