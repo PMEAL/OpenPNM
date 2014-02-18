@@ -49,6 +49,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         self.throat_info = {}
         self._physics = []
         self._prop_list = []
+        network._fluids.append(self) #attach fluid to network
         #Set default T and P since most propery models require it
         self.set_pore_data(prop='temperature',data=298.0)
         self.set_pore_data(prop='pressure',data=101325.0)
