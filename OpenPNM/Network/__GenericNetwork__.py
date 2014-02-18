@@ -138,13 +138,18 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 Tvals[i] = sp.mean(Pvals[nPs[i]])
         return Tvals
 
-    def amalgamate_pore_data(self):
+    def amalgamate_pore_data(self,fluids='all'):
         r"""
         Returns a dictionary containing ALL pore data from all fluids, physics and geometry objects
         """
         self._pore_data_amalgamate = {}
+        if type(fluids)!= sp.ndarray and fluids=='all':
+            fluids = self._fluids
+        elif type(fluids)!= sp.ndarray: 
+            fluids = sp.array(fluids,ndmin=1)
         #Add fluid data
-        for item in self._fluids:
+        for item in fluids:
+            if type(item)==sp.str_: item =  self.find_object_by_name(item)
             for key in item._pore_data.keys():
                 dict_name = item.name+'_pore_'+key
                 self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
@@ -154,13 +159,18 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
         return self._pore_data_amalgamate
 
-    def amalgamate_throat_data(self):
+    def amalgamate_throat_data(self,fluids='all'):
         r"""
         Returns a dictionary containing ALL throat data from all fluids, physics and geometry objects
         """
         self._throat_data_amalgamate = {}
+        if type(fluids)!= sp.ndarray and fluids=='all':
+            fluids = self._fluids
+        elif type(fluids)!= sp.ndarray: 
+            fluids = sp.array(fluids,ndmin=1)
         #Add fluid data
-        for item in self._fluids:
+        for item in fluids:
+            if type(item)==sp.str_: item =  self.find_object_by_name(item)
             for key in item._throat_data.keys():
                 dict_name = item.name+'_throat_'+key
                 self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
