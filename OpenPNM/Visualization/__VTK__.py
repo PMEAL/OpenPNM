@@ -110,8 +110,8 @@ class VTK(GenericVisualization):
 
     def _write_point_data(self):
         network = self._net
-        pore_amalgamate = network.amalgamate_pore_data()
-        throat_amalgamate = network.amalgamate_throat_data()
+        pore_amalgamate = network.amalgamate_pore_data(fluids=self._fluids)
+        throat_amalgamate = network.amalgamate_throat_data(fluids=self._fluids)
         total_amalgamate = dict(pore_amalgamate,**throat_amalgamate)
         total_keys = list(total_amalgamate.keys())
         num_keys = sp.size(total_keys)
