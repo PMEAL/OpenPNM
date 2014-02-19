@@ -79,12 +79,12 @@ Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Ficki
 ## BC1
 BC1_pores = pn.get_pore_indices(labels='top')
 Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
-BC1_values = 0.8
+BC1_values = 0.6
 Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
 ## BC2
 BC2_pores = pn.get_pore_indices(labels='bottom')
 Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
-BC2_values = 0.4
+BC2_values = 0.2
 Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ###----------------------------------------------------------------------
 ### Assign Neumann boundary conditions
@@ -96,7 +96,7 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ### BC2
 #BC2_pores = pn.get_pore_indices(labels='bottom')
 #Fickian_alg.set_pore_info(label='Neumann_rate',locations=BC2_pores)
-#BC2_values = 2e-12
+#BC2_values = 2e-11
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------
 ### Run simulation

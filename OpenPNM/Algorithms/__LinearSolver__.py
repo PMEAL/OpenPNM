@@ -271,6 +271,18 @@ class LinearSolver(GenericAlgorithm):
             ftype1 = ['front','right','top']
             ftype2 = ['back','left','bottom']
         else: self._logger.error('wrong input for face1 or face2')
+        if 'Dirichlet' in self._pore_info:
+            self._dir = self.get_pore_info(label='Dirichlet')
+            del self._pore_info['Dirichlet']
+        if 'BCval' in self._pore_data:
+            self._BCval_temp = self.get_pore_data(prop='BCval')
+            del self._pore_data['BCval']
+            try:
+                self._BCtypes_temp = sp.copy(self._BCtypes)
+                delattr (self,'_BCtypes')
+                self._BCvalues_temp = sp.copy(self._BCvalues)
+                delattr(self,'_BCvalues')
+            except: pass            
         tensor = sp.zeros([3,3])
         for i in list(range(len(ftype1))):
             face1 = ftype1[i] 
@@ -278,8 +290,8 @@ class LinearSolver(GenericAlgorithm):
             face1_pores = network.get_pore_indices(face1)
             face2_pores = network.get_pore_indices(face2)            
             ## Assign Dirichlet boundary conditions
-            self.set_pore_info(label='Dirichlet')
-            self.set_pore_data(prop='BCval',data=0,locations=network.get_pore_indices())
+#            self.set_pore_info(label='Dirichlet')
+#            self.set_pore_data(prop='BCval',data=0,locations=network.get_pore_indices())
             ## BC1
             BC1_pores = face1_pores  
             self.set_pore_info(label='Dirichlet',locations=BC1_pores,mode='overwrite')
@@ -350,5 +362,15 @@ class LinearSolver(GenericAlgorithm):
             if ftype1[i]=='top' or ftype1[i]=='bottom': tensor[2,2] = effective_prop[i]
             elif ftype1[i]=='right' or ftype1[i]=='left': tensor[1,1] = effective_prop[i]
             elif ftype1[i]=='front' or ftype1[i]=='back': tensor[0,0] = effective_prop[i]
+        try:
+            self.set_pore_info(label='Dirichlet',locations=self._dir,mode='overwrite')
+            delattr (self,'_dir')
+            self.set_pore_data(prop='BCval',data=self._BCval_temp)
+            delattr (self,'_BCval_temp')
+            self._BCtypes = self._BCtypes_temp
+            delattr (self,'_BCtypes_temp')
+            self._BCvalues = self._BCvalues_temp
+            delattr (self,'_BCvalues_temp')
+        except: pass        
         if len(ftype1)<3: return result
         elif len(ftype1)==3 : return tensor
