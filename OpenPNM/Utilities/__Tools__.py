@@ -598,9 +598,13 @@ class Tools(Base):
         labels : list of strings
             Label of pores to be returned
         mode : string, optional
-            Specifies whether the count should be done as a union (default) or intersection.
-            In union mode, all pores with ANY of the given labels are counted.
-            In intersection mode, only pores with ALL the give labels are counted.
+            Specifies how the count should be performed.  The options are: 
+            
+            * 'union' : (default) All pores with ANY of the given labels are counted.
+
+            * 'intersection' : Only pores with ALL the given labels are counted.
+            
+            * 'not_intersection' : Only pores with exactly one of the given labels are counted.
             
         Returns
         -------
@@ -622,6 +626,8 @@ class Tools(Base):
         45
         >>> pn.num_pores(labels=['top','front'],mode='intersection')
         5
+        >>> pn.num_pores(labels=['top','front'],mode='not_intersection')
+        40
         
         '''
         #convert string to list, if necessary
@@ -640,9 +646,13 @@ class Tools(Base):
             The throat labels that should be included in the count.  
             If not supplied, all throats are counted.
         mode : string, optional
-            Specifies whether the count should be done as a union (default) or intersection.
-            In union mode, all throats with ANY of the given labels are counted.
-            In intersection mode, only throats with ALL the give labels are counted.
+            Specifies how the count should be performed.  The options are: 
+
+            * 'union' : (default) All throats with ANY of the given labels are counted.
+
+            * 'intersection' : Only throats with ALL the given labels are counted.
+
+            * 'not_intersection' : Only throats with exactly one of the given labels are counted.
 
         Returns
         -------
@@ -664,6 +674,8 @@ class Tools(Base):
         76
         >>> pn.num_throats(labels=['top','front'],mode='intersection')
         4
+        >>> pn.num_throats(labels=['top','front'],mode='not_intersection')
+        72
         
         '''
         #convert string to list, if necessary
@@ -685,10 +697,13 @@ class Tools(Base):
             This flag specifies whether pore locations are returned a boolean mask of length Np,
             or as a list of indices (default).
         mode : string, optional
-            Specifies whether the indices should be union (default) or intersection of desired labels.
-            In union mode, all pores with ANY of the given labels are included.
-            In intersection mode, only pores with ALL the give labels are included.
-            This is ignored if no label is given.
+            Specifies how the count should be performed.  The options are:    
+
+            * 'union' : (default) All pores with ANY of the given labels are counted.
+
+            * 'intersection' : Only pore with ALL the given labels are counted.
+
+            * 'not_intersection' : Only pores with exactly one of the given labels are counted.
         
         Examples
         --------
@@ -703,10 +718,16 @@ class Tools(Base):
                     union = union + self._get_info(element='pore',label=item)
             ind = union
         elif mode == 'intersection':
-            intersect = sp.ones((self.num_pores(),),dtype=bool)
+            intersect = sp.ones_like(self.get_pore_info(label='all'),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
                     intersect = intersect*self._get_info(element='pore',label=item)
             ind = intersect
+        elif mode == 'not_intersection':
+            not_intersect = sp.zeros_like(self.get_pore_info(label='all'),dtype=int)
+            for item in labels: #iterate over labels list and collect all indices
+                info = self._get_info(element='pore',label=item)
+                not_intersect = not_intersect + sp.int8(info)
+            ind = (not_intersect == 1)
         if indices: ind = sp.where(ind==True)[0]
         return ind
 
@@ -723,10 +744,13 @@ class Tools(Base):
             This flag specifies whether throat locations are returned as a boolean mask of length Np,
             or as a list of indices (default).
         mode : string, optional
-            Specifies whether the indices should be union (default) or intersection of desired labels.
-            In union mode, all throats with ANY of the given labels are included.
-            In intersection mode, only throats with ALL the give labels are included.
-            This is ignored if no labels are given.
+            Specifies how the count should be performed.  The options are: 
+
+            * 'union' : (default) All throats with ANY of the given labels are counted.
+
+            * 'intersection' : Only throats with ALL the given labels are counted.
+
+            * 'not_intersection' : Only throats with exactly one of the given labels are counted.
         
         Examples
         --------
@@ -742,10 +766,16 @@ class Tools(Base):
                     union = union + self._get_info(element='throat',label=item)
             ind = union
         elif mode == 'intersection':
-            intersect = sp.ones((self.num_throats(),),dtype=bool)
+            intersect = sp.ones_like(self.get_throat_info(label='all'),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
                     intersect = intersect*self._get_info(element='throat',label=item)
             ind = intersect
+        elif mode == 'not_intersection':
+            not_intersect = sp.zeros_like(self.get_throat_info(label='all'),dtype=int)
+            for item in labels: #iterate over labels list and collect all indices
+                info = self._get_info(element='throat',label=item)
+                not_intersect = not_intersect + sp.int8(info)
+            ind = (not_intersect == 1)
         if indices: ind = sp.where(ind==True)[0]
         return ind
         
