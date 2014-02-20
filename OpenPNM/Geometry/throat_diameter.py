@@ -20,14 +20,14 @@ def constant(geometry,
 def cylinder(geometry,
              network,
              propname,
-             pore_seed='seed',
+             seed='seed',
              **params):
     r"""
     Calculate throat diameter from seeds for a cylindrical throat
     """
     prob_fn = getattr(spst,params['name'])
     P = prob_fn(params['shape'],loc=params['loc'],scale=params['scale'])
-    value=P.ppf(network.get_throat_data(prop=pore_seed))
+    value=P.ppf(network.get_throat_data(prop=seed))
     network.set_throat_data(locations=geometry,prop=propname,data=value)
 
 def cuboid(geometry,
