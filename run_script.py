@@ -96,7 +96,7 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ### BC2
 #BC2_pores = pn.get_pore_indices(labels='bottom')
 #Fickian_alg.set_pore_info(label='Neumann_rate',locations=BC2_pores)
-#BC2_values = 2e-11
+#BC2_values = 2e-10
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------
 ### Run simulation
