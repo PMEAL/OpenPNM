@@ -377,7 +377,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         return sp.intersect1d(self.find_neighbor_throats(P1),self.find_neighbor_throats(P2))
 
-    def find_neighbor_pores(self,pnums,labels=['all'],flatten=True,mode=''):
+    def find_neighbor_pores(self,pnums,flatten=True,mode='union',excl_self=False):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
@@ -385,16 +385,24 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         ----------
         pnums : array_like
             ID numbers of pores whose neighbors are sought.
-        labels : list of strings
-            Label of pores to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore ID numbers
             is returned with the input pores (Pnum) removed. If flatten is
             False the returned array contains arrays of neighboring pores for
             each input pore, in the order they were sent.
+        excl_self : bool, optional
+            If this is True (default) then the input pores are not included
+            in the returned list.  This option only applies when input pores
+            are in fact neighbors to each other, otherwise they are not
+            part of the returned list.  
         mode : string, optional
-            This controls the contents of what indices are returned.  The mode can only be specified to a 'flattened' list.
-            Options are 'union', 'intersection', and 'not_intersection'
+            Specifies which neighbors should be returned.  The options are: 
+            
+            * 'union' : All neighbors of the input pores
+
+            * 'intersection' : Only neighbors shared by all input pores 
+            
+            * 'not_intersection' : Only neighbors not shared by any input pores
 
         Returns
         -------
@@ -416,8 +424,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn.find_neighbor_pores(pnums=[0,1],mode='union') #Find all neighbors, including selves
         array([ 0,  1,  2,  5,  6, 25, 26])
         """
-        #Convert string to list, if necessary
-        if type(labels) == str: labels = [labels]
         #Count neighboring pores
         try:
             neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
@@ -437,18 +443,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 neighborPs = sp.unique(neighborPs)
             elif mode == 'intersection':
                 neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)>1)[0])
-            elif mode == '':
-                neighborPs = sp.unique(neighborPs[~sp.in1d(neighborPs,pnums)])
-            #Remove pores of the wrong type
-            mask = self.get_pore_indices(labels=labels,indices=False)
-            neighborPs = neighborPs[mask[neighborPs]]
+            if excl_self:
+                neighborPs = neighborPs[~sp.in1d(neighborPs,pnums)]
         else:
-            mask = self.get_pore_indices(labels=labels,indices=False)
             for i in range(0,sp.size(pnums)):
-                neighborPs[i] = sp.array(neighborPs[i])[mask[neighborPs[i]]]
+                neighborPs[i] = sp.array(neighborPs[i])
         return sp.array(neighborPs,ndmin=1)
 
-    def find_neighbor_throats(self,pnums,labels=['all'],flatten=True,mode='union'):
+    def find_neighbor_throats(self,pnums,flatten=True,mode='union'):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
@@ -456,16 +458,19 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         ----------
         pnums : array_like
             Indices of pores whose neighbors are sought
-        labels : list of strings
-            Label of pores to be returned
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique throat ID numbers
             is returned. If flatten is False the returned array contains arrays
             of neighboring throat ID numbers for each input pore, in the order
             they were sent.
         mode : string, optional
-            This controls the contents of what indices are returned.  The mode can only be specified to a 'flattened' list.
-            Options are 'union', 'intersection', and 'not_intersection'
+            Specifies which neighbors should be returned.  The options are: 
+            
+            * 'union' : All neighbors of the input pores
+
+            * 'intersection' : Only neighbors shared by all input pores 
+            
+            * 'not_intersection' : Only neighbors not shared by any input pores
 
         Returns
         -------
@@ -480,8 +485,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn.find_neighbor_throats(pnums=[0,1],flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
-        #Convert string to list, if necessary
-        if type(labels) == str: labels = [labels]
         #Test for existance of incidence matrix
         try:
             neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
@@ -500,31 +503,31 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 neighborTs = sp.unique(neighborTs)
             elif mode == 'intersection':
                 neighborTs = sp.unique(sp.where(sp.bincount(neighborTs)>1)[0])
-            #Remove throats of the wrong type            
-            mask = self.get_throat_indices(labels=labels,indices=False)
-            neighborTs = neighborTs[mask[neighborTs]]
         else:
-            mask = self.get_throat_indices(labels=labels,indices=False)
             for i in range(0,sp.size(pnums)):
-                neighborTs[i] = sp.array(neighborTs[i])[mask[neighborTs[i]]]
+                neighborTs[i] = sp.array(neighborTs[i])
         return sp.array(neighborTs,ndmin=1)
 
-    def num_neighbors(self,pnums,labels=['all'],flatten=True):
+    def num_neighbors(self,pnums,labels=['all']):
         r"""
-        Returns an ndarray containing the number of pores for each element in Pnums
+        Returns an ndarray containing the number of neigbhor pores for each 
+        element in Pnums
 
         Parameters
         ----------
         pnums : array_like
-            ID numbers of pores whose neighbors are sought
+            Pores whose neighbors are to be counted
+        labels : list of string, optional
+            The pore labels that should be included in the count
 
         Returns
         -------
-        num_neighbors : 1D array with number of neighbors in each element
+        num_neighbors : 1D array with number of neighbors in each element, 
+        useful for finding the number of neighbors of a certain type
 
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn = OpenPNM.Network.TestNet()
         >>> Pnum = [0,1]
         >>> pn.num_neighbors(Pnum,flatten=False)
         array([3, 4], dtype=int8)
@@ -539,8 +542,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
         for i in range(0,sp.shape(num)[0]):
             num[i] = sp.size(neighborPs[i])
-        if flatten:
-            num = sp.sum(num)
         return num
 
     def check_basic(self):
