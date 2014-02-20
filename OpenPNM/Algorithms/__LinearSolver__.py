@@ -15,7 +15,8 @@ module __LinearSolver__: Algorithm for solving transport processes
 
 import scipy as sp
 import scipy.sparse as sprs
-import scipy.sparse.linalg as splin
+import scipy.linalg as splin
+import scipy.sparse.linalg as sprslin
 from .__GenericAlgorithm__ import GenericAlgorithm
 
 
@@ -43,7 +44,7 @@ class LinearSolver(GenericAlgorithm):
             self._logger.info("Creating RHS matrix for the algorithm")
             B = self._build_RHS_matrix()
             self._logger.info("Solving AX = B for the sparse matrices")
-            X = splin.spsolve(A,B)
+            X = sprslin.spsolve(A,B)
             self._result = X[sp.r_[0:self._net.num_pores()]]        
         return(self._result)
 
@@ -186,17 +187,18 @@ class LinearSolver(GenericAlgorithm):
         self._Coeff_dimension = A_dim
 
         # Adding positions for diagonal
-
         dia = sp.array(list(range(0,A_dim)))
         row = sp.append(row,dia[self._BCtypes==1])
         col = sp.append(col,dia[self._BCtypes==1])
         data = sp.append(data,sp.ones_like(dia[self._BCtypes==1]))
 
-        temp_data = sp.zeros(A_dim-len(dia[self._BCtypes==1]))
+        temp_data = sp.copy(data)
+        temp_data[sp.in1d(row,dia[self._BCtypes==1])] = 0
+        S_temp = sp.zeros(A_dim)
+        for i in list(range(len(row))):
+            S_temp[row[i]] = S_temp[row[i]] - temp_data[i]
         non_Dir = dia[-sp.in1d(dia,dia[self._BCtypes==1])]
-        for i in list(range(len(non_Dir))):
-            temp_data[i] = -sp.sum(data[row==non_Dir[i]])
-        data = sp.append(data,temp_data)
+        data = sp.append(data,S_temp[non_Dir])
         row = sp.append(row,non_Dir)
         col = sp.append(col,non_Dir)
 
