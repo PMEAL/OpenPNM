@@ -1,6 +1,6 @@
 r"""
 *********************************************************************************
-:mod:`OpenPNM.Geometry` -- All classes related the creation of network geometry
+:mod:`OpenPNM.Geometery` -- All classes related the creation of network geometry
 *********************************************************************************
 
 .. module:: OpenPNM.Geometry
@@ -17,29 +17,16 @@ Classes
    :undoc-members:
    :private-members:
    :show-inheritance:
-       
-.. autoclass:: Cubic
-   :members:
-   :undoc-members:
-   :private-members:
-   :show-inheritance:
-
-.. autoclass:: Delaunay
-   :members:
-   :undoc-members:
-   :private-members:
-   :show-inheritance:
-   
-.. autoclass:: Template
-   :members:
-   :undoc-members:
-   :private-members:
-   :show-inheritance:
    
 """
 
-from __GenericGeometry__ import GenericGeometry
-from __Cubic__ import Cubic
-from __Delaunay__ import Delaunay
-from __Template__ import Template
-from __Import__ import MatFile
+from .__GenericGeometry__ import GenericGeometry
+from .__StickBall__ import Stick_and_Ball
+from .__PlotTools__ import PlotTools
+from . import pore_diameter
+from . import pore_seed
+from . import pore_volume
+from . import throat_diameter
+from . import throat_length
+from . import throat_seed
+from . import throat_volume

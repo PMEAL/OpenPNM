@@ -14,9 +14,8 @@ module __FickianDiffusion__: Fick's Law Diffusion
 
 """
 
-import OpenPNM
 import scipy as sp
-from __LinearSolver__ import LinearSolver
+from .__LinearSolver__ import LinearSolver
 
 class FickianDiffusion(LinearSolver):
     r"""
@@ -25,76 +24,71 @@ class FickianDiffusion(LinearSolver):
 
                         It returns conecentration gradient inside the network.
 
-    Parameter
-    ----------
-    -loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-
-
     """
 
-    def __init__(self,loglevel=10,**kwargs):
+    def __init__(self,**kwargs):
         r"""
         Initializing the class
         """
         super(FickianDiffusion,self).__init__(**kwargs)
-        self._logger.info("Create Fick's Diffusion Algorithm Object")
+        self._logger.info('Create Fickian Diffusion Algorithm Object')
 
 
-    def _setup(self,**params):
+    def _setup(self,
+               conductance='diffusive_conductance',
+               occupancy='occupancy',
+               x_term='mole_fraction',               
+               **params):
         r"""
         This function executes the essential methods specific to Fickian diffusion simulations
         """
+        self._logger.info("Setup for Fickian Algorithm")        
         self._fluid = params['active_fluid']
+        try: self._fluid = self.find_object_by_name(self._fluid) 
+        except: pass #Accept object
+        self._X_name = x_term
+        self._boundary_conditions_setup()
         # Variable transformation for Fickian Algorithm from xA to ln(xB)
-        Dir_pores = self._net.pore_properties['numbering'][self.BCtypes==1]
-        self.BCvalues[Dir_pores] = sp.log(1-self.BCvalues[Dir_pores])
-        g = self._fluid.throat_conditions['diffusive_conductance']
-        s = self._fluid.throat_conditions['occupancy']
-        self._conductance = g*s
+        Dir_pores = self._net.get_pore_indices('all')[self._BCtypes==1]
+        self._BCvalues[Dir_pores] = sp.log(1-self._BCvalues[Dir_pores])
+        g = self._net.get_throat_data(phase=self._fluid,prop=conductance)
+        s = self._net.get_throat_data(phase=self._fluid,prop=occupancy)
+        self._conductance = g*s+g*(-s)/1e3
+        
 
     def _do_inner_iteration_stage(self):
 
         X = self._do_one_inner_iteration()
-        xA = 1-sp.exp(X)
-        self._fluid.pore_conditions['mole_fraction'] = xA
+        xA = 1-sp.exp(X)        
+        self.set_pore_data(prop=self._X_name,data = xA)
+        self._logger.info('Solving process finished successfully!')
+              
+    def update(self):
+        
+        x = self.get_pore_data(prop=self._X_name)        
+        self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=x)
+        self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
+        
 
-    def calc_eff_diffusivity_cubic(self,face1=1,face2=6):
+    def effective_diffusivity_cubic(self,
+                                   fluid,
+                                   face1='',
+                                   face2='',                                   
+                                   conductance='diffusive_conductance',
+                                   occupancy='occupancy',
+                                   x_term='mole_fraction',
+                                   d_term='molar_density',
+                                   **params):
         r"""
         This function calculates effective diffusivity of a cubic network between face1 and face2.  
         face1 and face2 represent types of these two faces.
 
-        """        
-        face1_pores = self._net.pore_properties['numbering'][self._net.pore_properties['type']==face1]
-        face2_pores = self._net.pore_properties['numbering'][self._net.pore_properties['type']==face2]
-        xA = self._fluid.pore_conditions['mole_fraction']
-        X1 = sp.log(1-xA[face1_pores])
-        X2 = sp.log(1-xA[face2_pores])
-        delta_X = sp.absolute(sp.average(X2)-sp.average(X1)) 
-        C =sp.average(self._fluid.pore_conditions['molar_density'])
-        
-        coordx = self._net.pore_properties['coords'][:,0]
-        coordy = self._net.pore_properties['coords'][:,1]
-        coordz = self._net.pore_properties['coords'][:,2]
-        if face1==1 or face1==6:
-            L = sp.absolute(sp.unique(coordz[face1_pores])[0]-sp.unique(coordz[face2_pores])[0])*1e-6
-            lx = (max(coordx[face1_pores]) - min(coordx[face1_pores]))*1e-6
-            ly = (max(coordy[face1_pores]) - min(coordy[face1_pores]))*1e-6
-            A = lx*ly            
-        elif face1==2 or face1==5:
-            L = sp.absolute(sp.unique(coordx[face1])[0]-sp.unique(coordx[face2])[0])*1e-6
-            lz = (max(coordz[face1_pores]) - min(coordz[face1_pores]))*1e-6
-            ly = (max(coordy[face1_pores]) - min(coordy[face1_pores]))*1e-6
-            A = lz*ly  
-        elif face1==3 or face1==4:
-            L = sp.absolute(sp.unique(coordy[face1_pores])[0]-sp.unique(coordy[face2_pores])[0])*1e-6
-            lx = (max(coordx[face1_pores]) - min(coordx[face1_pores]))*1e-6
-            lz = (max(coordz[face1_pores]) - min(coordz[face1_pores]))*1e-6
-            A = lx*lz
-            
-        fn = self._net.get_neighbor_pores(face1_pores)
-        fn = fn[self._net.pore_properties['type'][fn]<1]
-        ft = self._net.get_connecting_throat(face1_pores,fn)
-        N = sp.sum(self._fluid.throat_conditions['diffusive_conductance'][ft]*sp.absolute(X1-sp.log(1-xA[fn])))
-        Deff = N*L/(C*A*delta_X)
-        return Deff
+        """ 
+        return self._calc_eff_prop_cubic(alg='Fickian',
+                                  fluid=fluid,
+                                  face1=face1,
+                                  face2=face2,
+                                  d_term=d_term,
+                                  x_term=x_term,
+                                  conductance=conductance,
+                                  occupancy=occupancy)

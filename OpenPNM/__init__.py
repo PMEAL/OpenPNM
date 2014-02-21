@@ -113,16 +113,17 @@ __extras_require__ = {
 }
 
 # __all__ = ['Base']
-import os
+
 #_local_files_path = os.path.join(os.path.abspath(OpenPNM),'LocalFiles')
-import Utilities
-import Network
-import Fluids
-import Geometry
-import Algorithms
-import Visualization
-import Physics
-import GUI
+
+from . import Utilities
+from . import Network
+from . import Geometry
+from . import Fluids
+from . import Physics
+from . import Algorithms
+from . import Visualization
+#from . import GUI
 
 
 

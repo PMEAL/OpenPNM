@@ -1,52 +1,40 @@
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if sys.path[1] != parent_dir:
+    sys.path.insert(1, parent_dir)
 import OpenPNM
-import scipy as sp
-import copy
-
-from __GenericFluid__ import GenericFluid
+from OpenPNM.Fluids.__GenericFluid__ import GenericFluid
 
 class Air(GenericFluid):
     r"""
-    Creates Fluid object with a default name 'air' and preset values
+    Creates Fluid object with a default name 'air' and preset values for air
+    
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network to which this fluid object will be attached.  
+        
+    Notes
+    -----
+    This explicit association is necessary so the Fluid object can initialize
+    data arrays of the correct size to store network data.
+    
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> air = OpenPNM.Fluids.Air(network=pn)
     """
     def __init__(self,**kwargs):
-        super(Air,self).__init__(**kwargs)
+        super(Air,self).__init__(name='air',**kwargs)
         self._logger.debug("Construct class")
-        
-    def create(self,fluid_name='air'):
-        r"""
-        Creates Fluid object with a default name 'air'
-        
-        Parameters
-        ----------
-
-        fluid_name : string
-            fluid_name = 'air' (default)\n
-            fluid name that gets tagged to fluid-specific pore and throat conditions\n
-        """
-        self._fluid_recipe = {   'name': fluid_name,
-                                   'Pc': 3.771e6, #Pa
-                                   'Tc': 132.65,  #K
-                                   'MW': 0.0291,  #kg/mol
-                          'diffusivity': {'method': 'Fuller',
-                                              'MA': 0.03199,
-                                              'MB': 0.0291,
-                                              'vA': 16.3,
-                                              'vB': 19.7},
-                            'viscosity': {'method': 'Reynolds',
-                                              'uo': 0.001,
-                                               'b': 0.1},
-                        'molar_density': {'method': 'ideal_gas',
-                                               'R': 8.314},
-                      'surface_tension': {'method': 'constant',
-                                           'value': 0},
-                        'contact_angle': {'method': 'na'},
-                        }
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-        self.pore_conditions.update({'temperature': 298})
-        self.pore_conditions.update({'pressure': 101325})
+        self.set_pore_data(prop='Tc',data=132.65)
+        self.set_pore_data(prop='Pc',data=3.771e6)
+        self.set_pore_data(prop='MW',data=0.0291)
+        self.add_method(prop='diffusivity',model='Fuller',MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
+        self.add_method(prop='viscosity',model='constant',value=1.9e-5)
+        self.add_method(prop='molar_density',model='ideal_gas',R=8.314)
         self.regenerate()
-        return self
 
 if __name__ =="__main__":
-    print 'test script not written for Air class'
+    pn = OpenPNM.Network.TestNet()
+    air = OpenPNM.Fluids.Air(network=pn)
