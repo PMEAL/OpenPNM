@@ -10,13 +10,13 @@ Getting started with sphinx and rst
 RST tutorials
 =============
 
-The text markup is based on rst. There are quite a few good exmaples 
+The text markup is based on rst. There are quite a few good exmaples
 and tutorials on the web:
 
 .. list-table:: rst tutorials.
    :widths: 10 90
    :header-rows: 1
-   
+
    * - Website
      - Description
    * - `basic <http://people.ee.ethz.ch/~creller/web/tricks/reST.html>`__
@@ -25,28 +25,28 @@ and tutorials on the web:
      - A short document on how to include mathematical formulas
    * - `inria <http://openalea.gforge.inria.fr/doc/openalea/doc/_build/html/source/sphinx/rest_syntax.html>`__
      - A good introduction / example at INRIA
-     
+
 Docscrape module
 ----------------
 
 Known sections of the docsrape module:
 
 .. warning:: I have not figured this out yet. It only allows specific sections in the class documentation.
-     
+
 The doctest module
 ==================
 
 .. testcode::
 
    1+1        # this will give no output!
-   print 2+2  # this will give output
+   print(2+2)  # this will give output
 
 .. testoutput::
 
    4
 
 
-     
+
 .. _ipython-highlighting:
 
 ipython sessions

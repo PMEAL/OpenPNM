@@ -11,3 +11,4 @@ Available Examples:
    
    cubic.rst
    template.rst
+   delaunay.rst

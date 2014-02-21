@@ -1,40 +1,49 @@
-# Author: Andreas Putz
-# Copyright (c) 2013, OpenPNM
-# License: TBD.
 r"""
-*****************************************************************************************
-:mod:`OpenPNM.Network`: All classes related to network storage
-*****************************************************************************************
+*********************************************************************************
+:mod:`OpenPNM.Topology` -- All classes related the creation of network topology
+*********************************************************************************
 
-.. module:: OpenPNM.Network
+.. module:: OpenPNM.Topology
 
 Contents
 --------
-The OpenPNM package imports all the functions from the top level modules. 
 
-.. note::
-    n/a
- 
-Import
-------
->>> import OpenPNM as PNM
->>> tmp=PNM.Network.GenericNetwork()
-
-
-Submodules
-----------
-::
-
- None                            --- No subpackages at the moment
 
 Classes
 -------
-
-.. autoclass:: GenericNetwork
+    
+.. autoclass:: GenericTopology
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
-    
+       
+.. autoclass:: Cubic
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+
+.. autoclass:: Delaunay
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   
+.. autoclass:: Template
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   
 """
 
-from __GenericNetwork__ import GenericNetwork
+from .__GenericNetwork__ import GenericNetwork
+from .__Cubic__ import Cubic
+from .__Sphere__ import Sphere
+from .__Cylinder__ import Cylinder
+from .__Delaunay__ import Delaunay
+from .__Template__ import Template
+from .__TestNet__ import TestNet
+from .__NullNet__ import NullNet
+from .__Import__ import MatFile

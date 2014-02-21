@@ -9,28 +9,28 @@ module __GenericVisualization__: Base class to visualize networks
 import OpenPNM
 import scipy as sp
 
-class GenericVisualization(OpenPNM.Utilities.OpenPNMbase):
+class GenericVisualization():
     r"""
-    GenericVisualization - Base class to visualize networks    
-    
+    GenericVisualization - Base class to visualize networks
+
     Parameters
     ----------
-    
+
     Examples
     --------
-    >>> print 'nothing yet'
-    
-    .. note:: 
+    >>> print('nothing yet')
+
+    .. note::
     n/a
-    
+
     """
-    
+
     def __init__(self,**kwargs):
         r"""
         Initialize
         """
         super(GenericVisualization,self).__init__(**kwargs)
-        self._logger.debug("Construct Visualization Class")
+#        self._logger.debug("Construct Visualization Class")
 
 if __name__ =="__main__":
     test = GenericVisualization(loggername="TestGenericVisualization")

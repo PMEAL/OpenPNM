@@ -27,6 +27,6 @@ Classes
    :show-inheritance:
 
 """
-from __GenericVisualization__ import GenericVisualization
-import __Plots__ as Plots
-from __VTK__ import VTK
+from .__GenericVisualization__ import GenericVisualization
+from .__VTK__ import VTK
+from .__Plots__ import *

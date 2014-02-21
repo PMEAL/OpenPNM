@@ -1,0 +1,66 @@
+
+"""
+module hydraulic_conductance
+===============================================================================
+
+"""
+
+import scipy as sp
+
+def constant(physics,
+             network,
+             fluid,
+             propname,
+             value,
+             **params):
+    r"""
+    Assigns specified constant value
+    """
+    network.set_throat_data(phase=fluid,prop=propname,data=value)
+
+def na(physics,
+       network,
+       fluid,
+       propname,
+       **params):
+    value = -1
+    network.set_throat_data(phase=fluid,prop=propname,data=value)
+
+def hagen_poiseuille(physics,
+                     network,
+                     fluid,
+                     propname,
+                     viscosity='viscosity',
+                     throat_diameter = 'diameter',
+                     throat_length = 'length',
+                     pore_diameter = 'diameter',
+                     **params):
+    r"""
+    Calculates the hydraulic conductvity of throat assuming square geometry using a modified Hagen Poiseuille model
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+
+    fluid : OpenPNM Fluid Object
+    """
+    mup = network.get_pore_data(phase=fluid,prop=viscosity)
+    mut = network.interpolate_throat_data(mup)
+    #Get Nt-by-2 list of pores connected to each throat
+    tind = network.get_throat_indices()
+    pores = network.find_connected_pores(tind,flatten=0)
+    #Find g for half of pore 1
+    pdia = network.get_pore_data(prop=pore_diameter)
+    gp1 = 2.28*(pdia[pores[:,0]]/2)**4/(pdia[pores[:,0]]*mut)
+    gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
+    #Find g for half of pore 2
+    gp2 = 2.28*(pdia[pores[:,1]]/2)**4/(pdia[pores[:,1]]*mut)
+    gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
+    #Find g for full throat
+    tdia = network.get_throat_data(prop=throat_diameter)
+    tlen = network.get_throat_data(prop=throat_length)
+    gt = 2.28*(tdia/2)**4/(2*tlen*mut)
+    value = (1/gt + 1/gp1 + 1/gp2)**(-1)
+    network.set_throat_data(phase=fluid,prop=propname,data=value)
+
+
