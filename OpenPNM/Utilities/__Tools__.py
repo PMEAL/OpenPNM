@@ -457,27 +457,75 @@ class Tools(Base):
         
     def list_pore_props(self):
         r'''
-        Returns a list containing the names of all defined pore properties
+        Returns a list containing the names of all defined pore properties.
+        This list is an iterable, so is useful for scanning through labels.
+
+        Returns
+        -------
+        A an alphabetically sorted list containing the string name of all 
+        pore properties currently defined.  
+
+        See Also
+        --------
+        print_dicts
         '''
-        return list(self._pore_data.keys())
+        temp = list(self._pore_data.keys())
+        temp.sort()
+        return temp
 
     def list_throat_props(self):
         r'''
-        Returns a list containing the names of all defined throat properties
+        Returns a list containing the names of all defined throat properties. 
+        This list is an iterable, so is useful for scanning through labels.
+
+        Returns
+        -------
+        A an alphabetically sorted list containing the string name of all 
+        throat properties currently defined.  
+
+        See Also
+        --------
+        print_dicts
         '''
-        return list(self._throat_data.keys())
+        temp = list(self._throat_data.keys())
+        temp.sort()
+        return temp
         
     def list_pore_labels(self):
         r'''
-        Returns a list containing the names of all defined pore labels
+        Returns a list containing the names of all defined pore labels. This
+        list is an iterable, so is useful for scanning through labels.
+
+        Returns
+        -------
+        A an alphabetically sorted list containing the string name of all 
+        pore labels currently defined.  
+
+        See Also
+        --------
+        print_dicts
         '''
-        return list(self._pore_info.keys())
+        temp = list(self._pore_info.keys())
+        temp.sort()
+        return temp
 
     def list_throat_labels(self):
         r'''
-        Returns a list containing the names of all defined throat labels
+        Returns a list containing the names of all defined throat labels. This
+        list is an iterable, so is useful for scanning through labels.
+        
+        Returns
+        -------
+        A an alphabetically sorted list containing the string name of all 
+        throat labels currently defined.  
+        
+        See Also
+        --------
+        print_dicts
         '''
-        return list(self._throat_info.keys())
+        temp = list(self._throat_info.keys())
+        temp.sort()
+        return temp
         
     def find_labels(self,pnum='',tnum=''):
         r'''
@@ -523,7 +571,23 @@ class Tools(Base):
         labels.sort()
         return labels
         
-    def has_labels(self,pnums='',tnums='',labels='all',mode='union'):
+    def filter_indices(self, pnums='', tnums='', labels=['all'], mode='union'):
+        r'''
+        Filters a list of given pore or throat indices according to the list
+        of labels provided, using the logical mode of choice.
+        
+        See Also
+        --------
+        get_pore_indices, get_throat_indices, has_labels, find_labels
+        '''
+        if pnums != '':
+            query = self.get_pore_indices(labels=labels,mode=mode,indices=False)
+            return pnums[query[pnums]]
+        if tnums != '':
+            query = self.get_throat_indices(labels=labels,mode=mode,indices=False)
+            return tnums[query[tnums]]
+        
+    def has_labels(self,pnums='',tnums='',labels='all',mode='union',return_indices=False):
         r'''
         This method accepts a list of pores (or throats) and a list of labels, 
         and returns True if pore or throat has any (or all) of the labels.
@@ -708,6 +772,9 @@ class Tools(Base):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
+        >>> pind = pn.get_pore_indices(labels=['top','front'],mode='union')
+        >>> pind[[0,1,2,-3,-2,-1]]
+        array([  0,   5,  10, 122, 123, 124], dtype=int64)
         >>> pn.get_pore_indices(labels=['top','front'],mode='intersection')
         array([100, 105, 110, 115, 120], dtype=int64)
         '''
