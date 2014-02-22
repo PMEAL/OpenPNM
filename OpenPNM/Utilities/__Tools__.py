@@ -571,22 +571,6 @@ class Tools(Base):
         labels.sort()
         return labels
         
-    def filter_indices(self, pnums='', tnums='', labels=['all'], mode='union'):
-        r'''
-        Filters a list of given pore or throat indices according to the list
-        of labels provided, using the logical mode of choice.
-        
-        See Also
-        --------
-        get_pore_indices, get_throat_indices, has_labels, find_labels
-        '''
-        if pnums != '':
-            query = self.get_pore_indices(labels=labels,mode=mode,indices=False)
-            return pnums[query[pnums]]
-        if tnums != '':
-            query = self.get_throat_indices(labels=labels,mode=mode,indices=False)
-            return tnums[query[tnums]]
-        
     def has_labels(self,pnums='',tnums='',labels='all',mode='union',return_indices=False):
         r'''
         This method accepts a list of pores (or throats) and a list of labels, 
@@ -594,23 +578,36 @@ class Tools(Base):
         
         Parameters
         ----------
-        pnums : int or list of ints
-            Pore numbers (locations) of interest
-        tnum : int or list of ints
-            Throat numbers (locations) of interest
-        labels : str or list of strings
-            Labels of interest, defaults to 'all'
-        mode : str, optional
-            Flag to control logic, options are 'union' (default) or 'intersection'
+        pnums OR tnums : array_like
+            A list of pore or throat numbers that are to be filtered
+        labels : list of strings
+            The labels of interest, defaults to 'all'
+        mode : string
+            The logical mode to be used when filtering pore or throat numbers.
+            The options are 'union', 'intersection' and 'not_intersection'.
+            For details see the methods listed in See Also below.
             
         Returns
         -------
-        A boolean list the same shape as pnums (or tnums) containing truth values
-        indicating whether the corresponding pore (or throat) has the specfied labels
+        If return_indices is False (default), returns a boolean list the same 
+        shape as pnums (or tnums) containing truth values indicating whether
+        the corresponding pore (or throat) has the specfied labels.
+        
+        If return_indices is True, returns a list containing the pore 
+        (or throat) indices where the specified labels exist according 
+        to the logical mode of choice.
         
         Notes
         -----
-        The logic for allowing pnum/tnum to be either int or list is clunky (but works)
+        The logic for allowing pnum/tnum to be either int or list is clunky
+        (but works).
+        
+        At the moment this method does ONLY accepts 1D arrays.  Therefore it 
+        generally only accepts output from queries where 'flatten' was True.
+        
+        See Also
+        --------
+        get_pore_indices, get_throat_indices, find_labels
         
         Examples
         --------
@@ -630,7 +627,10 @@ class Tools(Base):
         else: self._logger.error(sys._getframe().f_code.co_name+' can only accept one of tnum or pnum')
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         mask = getattr(self,'get_'+element+'_indices')(labels=labels,indices=False,mode=mode)
-        return mask[nums]
+        if return_indices == False:
+            return mask[nums]
+        elif return_indices == True:
+            return nums[mask[nums]]
 
     def check_info(self):
         r'''
