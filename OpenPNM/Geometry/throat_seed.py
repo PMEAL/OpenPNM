@@ -20,6 +20,7 @@ def constant(geometry,
 def random(geometry,
            network,
            propname,
+           seed=None,
            **params):
     r"""
     Assign random number to throats
