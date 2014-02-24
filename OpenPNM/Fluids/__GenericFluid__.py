@@ -1,214 +1,170 @@
-import scipy as sp
-import copy
+"""
+module Physics
+===============================================================================
+
+"""
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if sys.path[1] != parent_dir:
+    sys.path.insert(1, parent_dir)
 import OpenPNM
 
-class GenericFluid:
+import scipy as sp
+from functools import partial
+
+class GenericFluid(OpenPNM.Utilities.Tools):
     r"""
-    GenericFluid - Base class to generate fluid properties
+    Base class to generate a generic fluid object.  The user must specify models
+    and parameters for the all the properties they require. Classes for several
+    common fluids are included with OpenPNM and can be found under OpenPNM.Fluids.
 
     Parameters
     ----------
+    network : OpenPNM Network object 
+        The network to which this fluid should be attached
+    name : str
+        A unique string name to identify the fluid object, typically same as 
+        instance name but can be anything.
+    init_cond : dictionary, optional
+        A dictionary of 'key':value pairs to initize fluid properties.  If omitted
+        the temperature and pressure of the fluid are set to STP.  A typical 
+        additiona would be 'mole_fraction' for a mixture.  Temperature and
+        pressure can be set through init_cond, but will be set to STP if not 
+        only other properties are included.
+    loglevel : int
+        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+    loggername : string (optional)
+        Sets a custom name for the logger, to help identify logger messages
 
     """
-    def __init__(self,**kwargs):
-#        super(GenericFluid,self).__init__(**kwargs)
-#        self._logger.debug("Construct class")
-        #List of fluid property categories that are invoked when fluid is created
-        self._implemented_methods = ['diffusivity',
-                                     'viscosity',
-                                     'molar_density',
-                                     'surface_tension',
-                                     'contact_angle',
-                                     'electrical_conductivity']
+    def __init__(self,network,name,init_cond={},**kwargs):
+        super(GenericFluid,self).__init__(**kwargs)
+        self._logger.debug("Construct class")
+        self.name = name
+        self._net = network
+        #Initialize necessary empty attributes
+        self.pore_data = {}
+        self.throat_data = {}
+        self.pore_info = {}
+        self.throat_info = {}
+        self._physics = []
+        self._prop_list = []
+        network._fluids.append(self) #attach fluid to network
+        #Set default T and P since most propery models require it
+        self.set_pore_data(prop='temperature',data=298.0)
+        self.set_pore_data(prop='pressure',data=101325.0)
+        for item in init_cond.keys():
+            self.set_pore_data(prop=item,data=init_cond[item])
+        #Initialize 'numbering arrays in the objects own info dictionaries
+        self.set_pore_info(label='all',locations=self._net.get_pore_indices())
+        self.set_throat_info(label='all',locations=self._net.get_throat_indices())
+        
+    def apply_ICs(self,init_cond):
+        r'''
+        Documentation for this method is being updated, we are sorry for the inconvenience.
+        '''
+        for item in init_cond.keys():
+            self.set_pore_data(prop=item,data=init_cond[item])
 
-    def create(self,fluid_recipe,T=298.,P=101325.):
+    def regenerate(self,prop_list=''):
+        r'''
+        This updates all properties of the fluid using the selected models
+        
+        Parameters
+        ----------
+        prop_list : string or list of strings
+            The names of the properties that should be updated, defaults to all
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> air = OpenPNM.Fluids.Air(loglevel=50,network=pn)
+        >>> air.regenerate()  # Regenerate all properties at once
+        >>> air.regenerate('molar_density')  # only one property
+        >>> air.regenerate(['molar_density', 'diffusivity'])  # or several
+        '''
+        if prop_list == '':
+            prop_list = self._prop_list
+        elif type(prop_list) == str:
+            prop_list = [prop_list]
+        for item in prop_list:
+            self._logger.debug('Refreshing: '+item)
+            getattr(self,item)()
+        
+    def add_method(self,prop='',prop_name='',**kwargs):
+        r'''
+        Add specified property estimation model to the fluid object.
+        
+        Parameters
+        ----------
+        prop : string
+            The name of the fluid property attribute to add.
+            This name must correspond with a file in the Fluids folder.  
+            To add a new property simply add a file with the appropriate name and the necessary methods.
+        prop_name : string, optional
+            This argument will be used as the method name and the dictionary key
+            where data is written by method. This option is provided for occasions
+            when multiple properties of the same type are required, such as
+            diffusivity coefficients of each species in a multicomponent mixture.
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> fluid = OpenPNM.Fluids.GenericFluid(network=pn,name='test_fluid')
+        >>> fluid.add_method(prop='diffusivity',model='constant',value=1.234)
+        >>> fluid.regenerate()
+        >>> fluid.get_pore_data(prop='diffusivity') #Use fluid's getter
+        array([ 1.234])
+        >>> pn.get_pore_data(prop='diffusivity',phase=fluid) #Use network's getter
+        array([ 1.234])
+        
+        In cases where the same property is needed multiple times (like 
+        diffusivity of multiple species in a mixture), it is possible to
+        specify unique property names:
+        
+        >>> fluid.add_method(prop='diffusivity',prop_name='diffusivity_of_species_2',model='constant',value=3.333)
+        >>> fluid.regenerate()
+        >>> pn.get_pore_data(prop='diffusivity_of_species_2',phase=fluid)
+        array([ 3.333])
+        '''
+        try:
+            function = getattr( getattr(OpenPNM.Fluids, prop), kwargs['model'] ) # this gets the method from the file
+            if prop_name: prop = prop_name #overwrite the default prop with user supplied name  
+            preloaded_fn = partial(function, fluid=self, network=self._net, propname=prop, **kwargs) #          
+            setattr(self, prop, preloaded_fn)
+            self._logger.info("Successfully loaded {}.".format(prop))
+            self._prop_list.append(prop)
+        except AttributeError: print('could not find',kwargs['model'])
+        
+    def physics_listing(self):
         r"""
-        Creates a fluid using the recipe provided
+        Prints the names of all physics objects attached to the fluid
+        """
+        for item in self._physics:
+            print(item.name+': ',item)
+
+    def physics_update(self,name='all'):
+        r"""
+        Updates ALL properties of specified physics object attached to the fluid
 
         Parameters
         ----------
-        fluid_recipe : Dictionary
-            A dictionary of key : value pairs that provide instructions for calculating fluid conditions
-
-        T & P : float (optional)
-            The temperature and pressure at which fluid should be create, defaults to STP.
+        name : string (optional)
+            The name of physics object to be updated.  An empty string (default) refreshes all physics.
         """
-        self.name = fluid_recipe['name']
-        self._fluid_recipe = copy.deepcopy(fluid_recipe)
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-        self.pore_conditions.update({'temperature': T})
-        self.pore_conditions.update({'pressure': P})
-        self.regenerate()
-        return self
-
-    def refresh(self):
-        self.regenerate()
-
-    def regenerate(self):
-        r'''
-        This updates all properties using the methods indicated in the recipe.  This method also takes the opportunity to ensure all values are Numpy arrays.
-        '''
-        for condition in self._implemented_methods:
-            self.pore_conditions.update({condition: getattr(self,condition)()})
-        #Make sure all values are Numpy arrays (Np,) or (Nt,)
-        for i in self.pore_conditions.keys():
-            self.pore_conditions[i] = sp.array(self.pore_conditions[i],ndmin=1)
-        for i in self.throat_conditions.keys():
-            self.throat_conditions[i] = sp.array(self.throat_conditions[i],ndmin=1)
-
-    def reset(self):
-        r'''
-        Remove all existing condtions from the fluid
-
-        TODO: This works, but is kludgy
-        '''
-        self.pore_conditions = {}
-        self.throat_conditions = {}
-        try: del self.partner
-        except: pass
-        self.pore_conditions.update({'temperature': 298.})
-        self.pore_conditions.update({'pressure': 101325.})
-        self.regenerate()
-        return self
-
-    def clone(self):
-        r'''
-        Create an exact duplicate fluid, but a unique object.
-
-        TODO: Doesn't work yet
-        '''
-        return self.__new__
-
-    def set_pair(self,fluid2):
-        r'''
-        Creates a fluid pair by storing each fluid object on the other.  This allows tracking of defending vs invading phase, among other things.
-
-        TODO: This method needs plenty of checks,
-        - for preexisting pair
-        - make sure they're the same temperature and pressure, etc
-
-        '''
-        self.partner = fluid2
-        fluid2.partner = self
-
-    def diffusivity(self):
-        try:
-            params = self._fluid_recipe['diffusivity']
-            eqn = getattr(OpenPNM.Fluids.Diffusivity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def viscosity(self):
-        try:
-            params = self._fluid_recipe['viscosity']
-            eqn = getattr(OpenPNM.Fluids.Viscosity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-           return -1
-
-    def molar_density(self):
-        try:
-            params = self._fluid_recipe['molar_density']
-            eqn = getattr(OpenPNM.Fluids.MolarDensity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def surface_tension(self):
-        try:
-            params = self._fluid_recipe['surface_tension']
-            eqn = getattr(OpenPNM.Fluids.SurfaceTension,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def contact_angle(self):
-        try:
-            params = self._fluid_recipe['contact_angle']
-            eqn = getattr(OpenPNM.Fluids.ContactAngle,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def electrical_conductivity(self):
-        try:
-            params = self._fluid_recipe['electrical_conductivity']
-            eqn = getattr(OpenPNM.Fluids.ElectricalConductivity,params['method'])
-            vals = eqn(self,**params)
-            return sp.array(vals,ndmin=1)
-        except:
-            return -1
-
-    def interpolate_pore_conditions(self,network,Tinfo=None):
-        r"""
-        Determines a pore property as the average of it's neighboring throats
-
-        Parameters
-        ----------
-        network : OpenPNM Pore Network Object
-            The network on which to perform the interpolation
-
-        Tinfo : array_like
-            The array of throat information to be interpolated
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-
-        """
-        if sp.size(Tinfo)==1:
-            Pinfo = Tinfo
-        elif sp.size(Tinfo) != network.get_num_throats():
-            raise Exception('The list of throat information received was the wrong length')
-        else:
-            Pinfo = sp.zeros((network.get_num_pores()))
-            #Only interpolate conditions for internal pores, type=0
-            Pnums = sp.r_[0:network.get_num_pores(Ptype=[0])]
-            nTs = network.get_neighbor_throats(Pnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nTs)[0]]:
-                Pinfo[i] = sp.mean(Tinfo[nTs[i]])
-        return Pinfo
-
-    def interpolate_throat_conditions(self,network,Pinfo=None):
-        r"""
-        Determines a throat condition as the average of the conditions it's neighboring pores
-
-        Parameters
-        ----------
-        network : OpenPNM Pore Network Object
-            The network on which to perform the interpolation
-
-        Pinfo : array_like
-            The name of the throat condition to be interpolated
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-
-        """
-        if sp.size(Pinfo)==1:
-            Tinfo = Pinfo
-        elif sp.size(Pinfo) != network.get_num_pores():
-            raise Exception('The list of pore information received was the wrong length')
-        else:
-            Tinfo = sp.zeros((network.get_num_throats()))
-            #Interpolate values for all throats, including those leading to boundary pores
-            Tnums = sp.r_[0:network.get_num_throats()]
-            nPs = network.get_connected_pores(Tnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nPs)[0]]:
-                Tinfo[i] = sp.mean(Pinfo[nPs[i]])
-        return Tinfo
+        for item in self._physics:
+            if (item.name == name) or (name == 'all'):
+                item.regenerate()
+                self._logger.info('Refreshed '+item.name)
+        
+    def __str__(self):
+        return('This is the __str__ methods of the generic_fluid being overwritten')
 
 if __name__ =="__main__":
+    pn = OpenPNM.Network.TestNet()
+    fluid = OpenPNM.Fluids.GenericFluid(name='test_fluid',network=pn)
+    import doctest
+    doctest.testmod(verbose=True)
 
-    #Create fluids
-    agg = OpenPNM.Fluids.GenericFluid().create(agg_recipe)
 
 

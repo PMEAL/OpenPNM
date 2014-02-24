@@ -1,4 +1,3 @@
-# Author: Andreas Putz
 # Copyright (c) 2013, OpenPNM
 # License: TBD.
 r"""
@@ -35,7 +34,5 @@ Classes
    :show-inheritance:
 """
 
-from .__OpenPNMbase__ import OpenPNMbase
-from .__OpenPNMbase__ import testinheritance
-from .__io__ import ImportMat
-from .__io__ import SaveNetwork
+from .__Base__ import Base
+from .__Tools__ import Tools

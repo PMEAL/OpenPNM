@@ -1,11 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
-
 """
 module __GenericGeometry__: Base class to construct pore networks
 ==================================================================
@@ -14,13 +6,16 @@ module __GenericGeometry__: Base class to construct pore networks
 
 """
 
+import sys, os
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if sys.path[1] != parent_dir:
+    sys.path.insert(1, parent_dir)
 import OpenPNM
+from OpenPNM.Geometry.__PlotTools__ import PlotTools
 import scipy as sp
-import scipy.stats as spst
 from functools import partial
-import numpy as np
 
-class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
+class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
     r"""
     GenericGeometry - Base class to construct pore networks
 
@@ -28,107 +23,114 @@ class GenericGeometry(OpenPNM.Utilities.OpenPNMbase):
 
     Parameters
     ----------
+    network : OpenPNM Network Object
+    
+    name : string
+        A unique name to apply to the object.  This name will also be used as a
+        label to identify where this this geometry applies.
+        
+    locations : boolean mask or list of indices
+        The pore locations in the network where this geometry applies.
+    
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
 
-
+    loggername : string (optional)
+        Sets a custom name for the logger, to help identify logger messages
+        
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> loc = pn.get_pore_indices() #Get all pores to define geometry everywhere
+    >>> geo = OpenPNM.Geometry.GenericGeometry(name='geo_test',locations=loc,network=pn)
+    >>> geo.add_method(prop='pore_seed',model='constant',value=0.123)
+    >>> geo.regenerate()
+    >>> seeds = pn.get_pore_data(locations='geo_test',prop='seed')
+    >>> seeds[0]
+    0.123
     """
 
-    def __init__(self, **kwargs):
-
+    def __init__(self, network,name,locations,**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-       
-    def create(self,**prms):
-        r"""
-        Create a geometry object using the supplied parameters
-        """
-        self.pore_properties = {}
-        self.throat_properties = {}
-        for key, args in prms.items():
-            try:
-                function = getattr( getattr(OpenPNM.Geometry, key), args['method'] ) # this gets the method from the file
-                preloaded_fn = partial(function, geo=self, **args) 
-                setattr(self, key, preloaded_fn)
-                print ("Loaded {}.".format(key))
-            except AttributeError:
-                print( "Did not manage to load {}.".format(key) )
-        return self
+        loc = sp.array(locations,ndmin=1)
+        if locations.dtype == bool:
+            network.set_pore_info(label=name,locations=loc)
+        else:
+            network.set_pore_info(label=name,locations=loc)
+        ind = network.get_pore_indices(name)
+        r'''
+        TODO: The following lines will create conflicting throat labels when additionaly geometries are added
+        '''
+        Tn = network.find_neighbor_throats(ind)
+        network.set_throat_info(label=name,locations=Tn)
+        network._geometry.append(self) #attach geometry to network
+        self.name = name
+        self._net = network #Attach network to self
+        self._prop_list = []
+              
+    def regenerate(self, prop_list=''):
+        r'''
+        This updates all properties using the selected methods
         
-    @staticmethod
-    def translate_coordinates(net,displacement=[0,0,0]):
-        r"""
-        Translate pore network coordinates by specified amount
-
         Parameters
         ----------
-        net : OpenPNM Network Object
-            The network to which translation should be applied
-
-        displacement : array_like
-            A vector containing the amount to translate in each dimension. [0,0,0] yeilds no translation.
-
-        """
-        net.pore_properties['coords'] = net.pore_properties['coords'] + displacement
-
-    @staticmethod
-    def scale_coordinates(net,scale=[1,1,1]):
-        r"""
-        Scale pore network coordinates by specified amount
-
+        prop_list : string or list of strings
+            The names of the properties that should be updated, defaults to all
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pind = pn.get_pore_indices()
+        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='geo_test', locations=pind)
+        >>> geom.regenerate()  # Regenerate all properties at once
+        >>> geom.regenerate('pore_seed')  # only one property
+        >>> geom.regenerate(['pore_seed', 'pore_diameter'])  # or several
+        '''
+        if prop_list == '':
+            prop_list = self._prop_list
+        elif type(prop_list) == str:
+            prop_list = [prop_list]
+        for item in prop_list:
+            self._logger.debug('Refreshing: '+item)
+            getattr(self,item)()
+    
+    def add_method(self,prop='',prop_name='',**kwargs):
+        r'''
+        Add specified property estimation model to the fluid object.
+        
         Parameters
         ----------
-        net : OpenPNM Network Object
-            The network to which translation should be applied
-
-        scale : array_like
-            A vector containing the amount to scale in each dimension.  [1,1,1] yeilds no scaling.
-
-        """
-        net.pore_properties['coords'] = net.pore_properties['coords']*scale
-
-    @staticmethod
-    def stitch(net1,net2):
-        r"""
-        Stitch two networks together
-
-        Parameters
-        ----------
-        net1 : OpenPNM Network Object
-            The network that is stiched to
-
-        net2 : OpenPNM Network Object
-            The network that is stitched
-
-        """
-        print('not implemented yet')
-
-
-    def _generate_boundaries(self,**params):
-        r"""
-        This should generate boundary networks using the parameters passed to generate(), but lattice based on geometry.
-
-        Parameters
-        ----------
-        params = {
-        'psd_info'   : {'name'  :, #Each statistical package takes different params, so send as dict
-                'shape' :
-                'loc'   :
-                'scale' : },
-        'tsd_info'   : {'name'  :
-                'shape' :
-                'loc'   :
-                'scale' : },
-        'btype'                 :
-        'lattice_spacing'       :
-        'divisions'             :
-        }
-        """
-        self._logger.error("_generate_boundaries: not implemented")
+        prop : string
+            The name of the fluid property attribute to add.
+            This name must correspond with a file in the Fluids folder.  
+            To add a new property simply add a file with the appropriate name and the necessary methods.
+           
+        prop_name : string, optional
+            This argument will be used as the method name and the dictionary key
+            where data is written by method. This option is provided for occasions
+            when multiple properties of the same type are required, such as
+            diffusivity coefficients of each species in a multicomponent mixture.
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        '''
+        try:
+            function = getattr( getattr(OpenPNM.Geometry, prop), kwargs['model'] ) # this gets the method from the file
+            if prop_name: propname = prop = prop_name #overwrite the default prop with user supplied name
+            else: propname = prop.split('_')[1] #remove leading pore_ or throat_ from dictionary key
+            preloaded_fn = partial(function, geometry=self, network=self._net,propname=propname, **kwargs) #
+            setattr(self, prop, preloaded_fn)
+            self._logger.info("Successfully loaded {}.".format(prop))
+            self._prop_list.append(prop)
+        except AttributeError: print('could not find',kwargs['model'])
 
 if __name__ == '__main__':
-    test=GenericGeometry(loggername="TestGenerator")
+    pn = OpenPNM.Network.TestNet()
+    loc = pn.get_pore_indices()
+    test = OpenPNM.Geometry.GenericGeometry(name='doc_test',locations=loc,network=pn)
 
