@@ -1,4 +1,4 @@
-. _network:
+.. _network:
 
 ###############################################################################
 Network Architecture and Data Storage
