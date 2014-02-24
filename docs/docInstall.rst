@@ -5,11 +5,9 @@ Installation Instructions
 -------------------------------------------------------------------------------
 Preparing Your System
 -------------------------------------------------------------------------------
-OpenPNM utilizes Python 2.7 with Scipy 0.14 and Matplotlib.  OpenPNM outputs many of its results in the vtk format which is conveniently visualized with Paraview.  
+OpenPNM utilizes Python 3.3 with Scipy 0.14 and Matplotlib.  OpenPNM outputs many of its results in the vtk format which is conveniently visualized with Paraview.  
 
 The code is hosted on Github so it is also useful to have a Git client installed that can download the repository.  
-
-OpenPNM plans to upgrade to Python 3.3 in the very near future, once the basic functionality is pinned down and v1.0 is released.  
 
 The installation of these requirements on specific platforms is described below.
 
@@ -30,7 +28,7 @@ TODO
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Linux Instructions
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-If you are using Linux, then you should ensure your Python 2.7 is up to date, and that you have the Scipy and Matplot libraries installed.  
+If you are using Linux, then you should ensure your Python 3 is up to date, and that you have the Scipy and Matplot libraries installed.  
 
 -------------------------------------------------------------------------------
 Setting Up the Code
