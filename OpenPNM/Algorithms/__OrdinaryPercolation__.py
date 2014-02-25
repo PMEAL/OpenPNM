@@ -78,9 +78,6 @@ class OrdinaryPercolation(GenericAlgorithm):
             self._do_one_inner_iteration(inv_val)
         #Store results using networks' get/set method
         self.set_pore_data(prop='inv_Pc',data=self._p_inv)
-        r'''
-        TODO: _t_inv seems wrong...check logic!
-        '''
         self.set_throat_data(prop='inv_Pc',data=self._t_inv)
         #Find invasion sequence values (to correspond with IP algorithm)
         self._p_seq = sp.searchsorted(sp.unique(self._p_inv),self._p_inv)
@@ -127,7 +124,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._p_inv[(self._p_inv==0)*(pmask)] = inv_val
         #Determine Pc_invaded for throats as well
         temp = self._net.get_throat_data(prop='connections')
-        tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(self._t_inv<=inv_val)
+        tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(Tinvaded)
         self._t_inv[(self._t_inv==0)*(tmask)] = inv_val
 
     def evaluate_trapping(self, outlets=[0]):
@@ -142,15 +139,13 @@ class OrdinaryPercolation(GenericAlgorithm):
             Disconnection from these outlets results in trapping.
 
         """
-        Np = self._net.num_pores()
-        Nt = self._net.num_throats()
-        self._p_trap = sp.zeros((Np,), dtype=float)
+        self._p_trap = sp.zeros_like(self._p_inv, dtype=float)
         try:
             inv_points = sp.unique(self._p_inv)  # Get points used in OP
         except:
             self._logger.error('Orindary percolation has not been run!')
             raise Exception('Aborting algorithm')
-        tind = self.get_throat_indices()
+        tind = self._net.get_throat_indices()
         conns = self._net.find_connected_pores(tind)
         for inv_val in inv_points[0:-1]:
             #Find clusters of defender pores
@@ -167,8 +162,8 @@ class OrdinaryPercolation(GenericAlgorithm):
             trapped_clusters = (~sp.in1d(clusters, out_clusters))*(clusters >= 0)
             pmask = trapped_clusters
             self._p_trap[(self._p_trap == 0)*(pmask)] = inv_val
-        self._p_trap[self._p_trap > 0] = 0
-        self.set_pore_data(phase=self._fluid_inv, prop='inv_Pc', data=self._p_trap)
+        self._p_inv[self._p_trap > 0] = sp.inf
+        self.set_pore_data(prop='inv_Pc', data=self._p_inv)
 
     def update(self, Pc=0, occupancy='occupancy'):
         r"""
