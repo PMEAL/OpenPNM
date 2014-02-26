@@ -577,6 +577,28 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #            zs = self._pore_data['coords'][:,2]
         #            ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
         #        plt.show()
+        
+    def clone_pores(self,pnums,mode='parent'):
+        r'''
+        mode options should be 'parent', 'siblings'
+        '''
+        #Clone pores
+        Np = self.num_pores()
+        pcurrent = self.get_pore_data(prop='coords')
+        pclone = pcurrent[pnums,:]
+        pnew = sp.concatenate((pcurrent,pclone),axis=0)
+        Npnew = sp.shape(pnew)[0]
+        self.set_pore_info(label='all',locations=sp.ones((Npnew,),dtype=bool))
+        self.set_pore_data(prop='coords',data=pnew)
+        #Add new throat connections
+        parents = sp.array(pnums,ndmin=1)
+        clones = sp.arange(Np,Npnew)
+        tcurrent = self.get_throat_data(prop='connections')
+        tclone = sp.vstack((parents,clones)).T
+        tnew = sp.concatenate((tcurrent,tclone),axis=0)
+        Ntnew = sp.shape(tnew)[0]
+        self.set_throat_info(label='all',locations=sp.ones((Ntnew,),dtype=bool))
+        self.set_throat_data(prop='connections',data=tnew)
 
     def __str__(self):
         r"""
