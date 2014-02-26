@@ -45,19 +45,31 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
-
-    def run(self, invading_fluid,
-            defending_fluid,
-            npts=25,
-            inlets=[0],
-            capillary_pressure='capillary_pressure',
-            AL=True,
-            **params):
+        
+    def setup(self,
+              invading_fluid = None,
+              defending_fluid = None,
+              inlets = [0],
+              npts = 25,
+              capillary_pressure = 'capillary_pressure',
+              AL=True,
+              **params):
+        # Parse params
+        try: self._fluid_inv
+        except: self._fluid_inv = invading_fluid
+        try: self._fluid_def
+        except: self._fluid_def = defending_fluid
+        try: self._inv_sites
+        except: self._inv_sites = inlets
         self._npts = npts
         self._AL = AL
-        self._inv_sites = inlets
-        self._fluid_inv = invading_fluid
-        self._fluid_def = defending_fluid
+        self._p_cap = capillary_pressure
+
+    def run(self):
+        #See if setup has been run
+        try: capillary_pressure = self._p_cap
+        except: 
+            raise Exception('setup has not been run, cannot proceed!')
         #Create a pore and throat conditions list to store inv_val at which each is invaded
         self._p_inv = sp.zeros((self._net.num_pores(),))
         self._p_seq = sp.zeros_like(self._p_inv)
@@ -127,7 +139,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(Tinvaded)
         self._t_inv[(self._t_inv==0)*(tmask)] = inv_val
 
-    def evaluate_trapping(self, outlets=[0]):
+    def evaluate_trapping(self, outlets):
         r"""
         Finds trapped pores and throats after a full ordinary
         percolation drainage has been run
