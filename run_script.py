@@ -49,7 +49,9 @@ phys_air.regenerate()
 #Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername='OP',name='OP_1',network=pn)
 a = pn.get_pore_indices(labels='bottom')
-OP_1.run(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
+OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
+OP_1.run()
+
 
 #b = pn.get_pore_indices(labels='top')
 #OP_1.evaluate_trapping(outlets=b)
@@ -100,8 +102,8 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------
 ### Run simulation
-Fickian_alg.run(active_fluid=air)
-Fickian_alg.update()
+#Fickian_alg.run(active_fluid=air)
+#Fickian_alg.update()
 ###-----------------------------------------------------------------------
 ###Export to VTK
 #OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
