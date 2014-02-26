@@ -19,7 +19,6 @@ def constant(geometry,
 def pore_to_pore(geometry,
                  network,
                  propname,
-                 vector='unit_vector',
                  **params):
     r"""
     Calculates throat vector as straight path between connected pores.
