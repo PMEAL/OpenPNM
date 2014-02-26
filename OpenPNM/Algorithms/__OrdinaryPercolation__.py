@@ -140,6 +140,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         self._p_trap = sp.zeros_like(self._p_inv, dtype=float)
+        self._t_trap = sp.zeros_like(self._t_inv, dtype=float)
         try:
             inv_points = sp.unique(self._p_inv)  # Get points used in OP
         except:
@@ -150,20 +151,25 @@ class OrdinaryPercolation(GenericAlgorithm):
         for inv_val in inv_points[0:-1]:
             #Find clusters of defender pores
             Pinvaded = self._p_inv <= inv_val
-            PTPstate = sp.sum(Pinvaded[conns], axis=1)
-            Tinvaded = (PTPstate>0)*(self._t_inv <= inv_val)
-            PTPstate = PTPstate + Tinvaded #0 = all open, 1=1 pore filled, 2=2 pores filled 3=2 pores + 1 throat filled
-            self._net.create_adjacency_matrix(data=(PTPstate == 0), prop='defended', sprsfmt='csr', dropzeros=True)
+            Cstate = sp.sum(Pinvaded[conns], axis=1)
+            Tinvaded = self._t_inv <= inv_val
+            Cstate = Cstate + Tinvaded #0 = all open, 1=1 pore filled, 2=2 pores filled 3=2 pores + 1 throat filled
+            self._net.create_adjacency_matrix(data=(Cstate == 0), prop='defended', sprsfmt='csr', dropzeros=True)
             clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['defended'])[1]
             ##Clean up clusters (invaded = -1, defended >=0)
             clusters = clusters*(~Pinvaded) - (Pinvaded)
             #Identify clusters connected to outlet sites
             out_clusters = sp.unique(clusters[outlets])
-            trapped_clusters = (~sp.in1d(clusters, out_clusters))*(clusters >= 0)
-            pmask = trapped_clusters
-            self._p_trap[(self._p_trap == 0)*(pmask)] = inv_val
+            trapped_pores = ~sp.in1d(clusters, out_clusters)
+            self._p_trap[(self._p_trap == 0)[trapped_pores]] = inv_val
+            trapped_throats = self._net.find_neighbor_throats(trapped_pores)
+            self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val       
+            trapped_throats = sp.where(Cstate==2)[0]
+            self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
         self._p_inv[self._p_trap > 0] = sp.inf
+        self._t_inv[self._t_trap > 0] = sp.inf        
         self.set_pore_data(prop='inv_Pc', data=self._p_inv)
+        self.set_throat_data(prop='inv_Pc', data=self._t_inv)
 
     def update(self, Pc=0, occupancy='occupancy'):
         r"""
@@ -197,7 +203,7 @@ class OrdinaryPercolation(GenericAlgorithm):
           Plot drainage capillary pressure curve
           """
           try:
-            PcPoints = sp.unique(self._net.get_pore_data(phase=self._fluid_inv,prop='inv_Pc'))
+            PcPoints = sp.unique(self.get_pore_data(prop='inv_Pc'))
           except:
             raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
           Snwp_t = sp.zeros_like(PcPoints)
