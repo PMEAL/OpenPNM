@@ -159,7 +159,6 @@ class LinearSolver(GenericAlgorithm):
 
         
         if (self._BCtypes==2).any():
-        # just for square cross section    
             flux_pores = self._net.get_pore_indices()[self._BCtypes==2]
             flux_values = sp.unique(self._BCvalues[self._BCtypes==2])
             for i in sp.r_[0:len(flux_values)]:
@@ -180,7 +179,6 @@ class LinearSolver(GenericAlgorithm):
             for item in sp.r_[0:len(extera_neu)]:
                 neu_tpore2 = pnum[mask]
                 neu_tpore2 = neu_tpore2[self._BCvalues[neu_tpore2]==extera_neu[item]]
-#                neu_tpore2 = pnum[self._BCvalues==extera_neu[item]]                
                 row = sp.append(row,neu_tpore2)
                 col = sp.append(col,len(neu_tpore2)*[A_dim-item-1])
                 data = sp.append(data,len(neu_tpore2)*[self._g_super])
@@ -233,12 +231,16 @@ class LinearSolver(GenericAlgorithm):
     def rate(self,pores='',throats=''):
 
         if throats!='':
-            pores1 = self._net.find_connected_pores(throats)[:,0]
-            pores2 = self._net.find_connected_pores(throats)[:,1]
+            p1 = self._net.find_connected_pores(throats)[:,0]
+            p2 = self._net.find_connected_pores(throats)[:,1]
         elif pores!='': 
             throats = self._net.find_neighbor_throats(pores,flatten=True,mode='not_intersection')
-            pores1 = self._net.find_connected_pores(throats)[:,0]
-            pores2 = self._net.find_connected_pores(throats)[:,1]
+            p1 = self._net.find_connected_pores(throats)[:,0]
+            p2 = self._net.find_connected_pores(throats)[:,1]
+        pores1 = sp.copy(p1)
+        pores2 = sp.copy(p2)
+        pores1[-sp.in1d(p1,pores)] = p2[-sp.in1d(p1,pores)]        
+        pores2[-sp.in1d(p1,pores)] = p1[-sp.in1d(p1,pores)]
         X1 = self._result[pores1]
         X2 = self._result[pores2]
         g = self._conductance[throats]
@@ -301,8 +303,6 @@ class LinearSolver(GenericAlgorithm):
             face1_pores = network.get_pore_indices(face1)
             face2_pores = network.get_pore_indices(face2)            
             ## Assign Dirichlet boundary conditions
-#            self.set_pore_info(label='Dirichlet')
-#            self.set_pore_data(prop='BCval',data=0,locations=network.get_pore_indices())
             ## BC1
             BC1_pores = face1_pores  
             self.set_pore_info(label='Dirichlet',locations=BC1_pores,mode='overwrite')
