@@ -139,6 +139,22 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 #BC2_values = 0.3
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------------
+### Assign Dirichlet boundary condition to some of the surface pores and 
+### Neumann insulated boundary condition to some of the internal pores
+###BC0
+#BC0_pores = sp.r_[500:530]
+#Fickian_alg.set_pore_info(label='Neumann_insulated',locations=BC0_pores)
+###BC1
+#BC1_pores = pn.get_pore_indices(labels='top')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+#BC1_values = 0.4
+#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(labels='bottom')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
+#BC2_values = 0.1
+#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+###----------------------------------------------------------------------------
 ### Run simulation
 Fickian_alg.run(active_fluid=air)
 Fickian_alg.update()

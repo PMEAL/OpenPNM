@@ -52,53 +52,7 @@ class LinearSolver(GenericAlgorithm):
     def _boundary_conditions_setup(self,types=[],values=[]):
         r"""
         Assigning Type and Value for Boundary Pores.
-
-        - Types of Boundary Conditions are:
-           Dirichlet, Neumann_flux, Neumann_insulated, Neumann_rate        
-        - The way which linear solver manages these conditions is followings:
-            Dirichlet = 1, Neumann_flux = 2, Neumann_insulated = 3, Neumann_rate = 4
-        - For any network, it is possible to apply BC to arbitrary pores, by defining
-          two arrays: types and values. For example:
-
-            BCtypes = array([2, 1, 4 ,0, 4, 3, 4, 1])
-            BCvalues = array([0.1, 0.5, 0.87, 0, -0.35, 0, 0.87, 0.30])
-
-            It means that:
-
-                  for pore 0: Neumann, flux = 0.1
-
-                  for pore 1: Dirichlet, value = 0.5
-
-                  for pore 2: Neumann, rate = 0.0087
-                  (hint: Since there are two pores (2,6) with Neumann_rate type which
-                  have the exact same amount of rate, algorithm assumes that 0.0087 is
-                  the rate of quantity of interest which leaves both pore 2 and 6)
-
-                  for pore 3: Internal pore without imposed boundary condition
-                 (hint: If pore 3 is a boundary pore (a pore in boundary faces), algorithm
-                 by default assumes that, this is Neumann_insulated pore.)
-
-                  for pore 4: Neumann, rate= -0.35
-                  (hint: There is only one pore with Neumann_rate type and value of -0.35. So
-                  algorithm assumes that 0.35 is the rate of quantity of interest which is only entering pore 4)
-
-                  for pore 5: Neumann_insulated, value=0
-
-                  for pore 6 : Neumann, rate=0.0087
-                        (hint: Refer to pore 2)              .
-
-                  for pore 7 : Dirichlet, value = 0.30
-
-
-        Notes
-        -----
-        - Neumann_insulated is equivalent to Neumann_flux boundary condition when flux
-        is zero. Therefore, there is no need to define BCvalues for this kind of boundary condition.
-        - For Neumann_insulated to be applied to one side, it is recommended to create boundary pores. 
-        - For internal Neumann_insulated BC, it is easier to set conductance of those conduits to a number close to zero, rather than applying zero Neumann_rate to them.
-        - In Fickian algorithm, positive value for Neumann_rate or Neumann_flux for a pore with boundary condition means
-        that the quantity of interest leaves the pore, but for any other algorithms, positive Neumann value  means 
-        that the quantity of interest enters this pore.
+        Documentation for this method is being updated, we are sorry for the inconvenience.
 
         """
         self._BCtypes = sp.zeros(self._net.num_pores())
@@ -129,10 +83,6 @@ class LinearSolver(GenericAlgorithm):
 
     def _build_coefficient_matrix(self):
        
-        boundaries = self._net.get_pore_indices()[-sp.in1d(self._net.get_pore_indices(),self._net.get_pore_indices('internal'))]
-        if (self._BCtypes[boundaries]==0).any():
-            self._BCtypes[boundaries[self._BCtypes[boundaries]==0]] = 3
-        
         # Filling coefficient matrix
         pnum = self._net.get_pore_indices()
         tpore1 = self._net.get_throat_data(prop='connections')[:,0]
@@ -146,6 +96,10 @@ class LinearSolver(GenericAlgorithm):
         if sp.size(self._conductance)==1:
             self._conductance = self._conductance*sp.ones(self._net.num_throats())
         data_main = self._conductance
+        if (self._BCtypes==3).any():
+            insulated_pores = self._net.get_pore_indices()[self._BCtypes==3]
+            insulated_throats = self._net.find_neighbor_throats(insulated_pores,flatten=True,mode='not_intersection')
+            data_main[insulated_throats] = 1e-60
         data = data_main[loc1]
 
         loc2 = sp.in1d(tpore2,pnum[self._BCtypes!=1])
@@ -156,7 +110,6 @@ class LinearSolver(GenericAlgorithm):
         data = sp.append(data,data_main[loc2])
 
         A_dim = self._net.num_pores()
-
         
         if (self._BCtypes==2).any():
             flux_pores = self._net.get_pore_indices()[self._BCtypes==2]
@@ -168,8 +121,7 @@ class LinearSolver(GenericAlgorithm):
                 ft = self._net.find_connecting_throat(f,fn)
                 self._BCtypes[f] = 4
                 self._BCvalues[f] = sp.sum(self._BCvalues[f]*(self._net.get_throat_data(prop='cross_section')[ft]))
-
-            
+           
         if (self._BCtypes==4).any():
             self._extera_Neumann_equations = sp.unique(self._BCvalues[self._BCtypes==4])
             A_dim = A_dim + len(self._extera_Neumann_equations)
