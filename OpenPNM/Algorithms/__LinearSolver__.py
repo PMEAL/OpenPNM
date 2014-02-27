@@ -45,6 +45,7 @@ class LinearSolver(GenericAlgorithm):
             B = self._build_RHS_matrix()
             self._logger.info("Solving AX = B for the sparse matrices")
             X = sprslin.spsolve(A,B)
+            self._Neumann_super_X = X[-sp.in1d(sp.r_[0:len(X)],sp.r_[0:self._net.num_pores()])]
             self._result = X[sp.r_[0:self._net.num_pores()]]        
         return(self._result)
 
@@ -115,10 +116,15 @@ class LinearSolver(GenericAlgorithm):
                 bcpores = self.get_pore_info(label='Neumann_insulated')
                 self._BCtypes[bcpores] = 3
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
-            elif bctype=='Neumann_rate':
-                bcpores = self.get_pore_info(label='Neumann_rate')
+            elif bctype=='Neumann_rate_union':
+                bcpores = self.get_pore_info(label='Neumann_rate_union')
                 self._BCtypes[bcpores] = 4
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
+            elif bctype=='Neumann_rate_individual':
+                bcpores = self.get_pore_info(label='Neumann_rate_individual')
+                self._BCtypes[bcpores] = 5
+                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')                
+                
         self._logger.info("Boundary conditions have been applied successfully.")
 
     def _build_coefficient_matrix(self):
@@ -156,7 +162,7 @@ class LinearSolver(GenericAlgorithm):
         # just for square cross section    
             flux_pores = self._net.get_pore_indices()[self._BCtypes==2]
             flux_values = sp.unique(self._BCvalues[self._BCtypes==2])
-            for i in list(range(len(flux_values))):
+            for i in sp.r_[0:len(flux_values)]:
                 f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_indices()[self._BCvalues==flux_values[i]])]
                 fn = self._net.find_neighbor_pores(f,mode='not_intersection',excl_self=True)
                 fn = fn[self._net.get_pore_info(label='internal')[fn]]
@@ -188,7 +194,7 @@ class LinearSolver(GenericAlgorithm):
         self._Coeff_dimension = A_dim
 
         # Adding positions for diagonal
-        dia = sp.array(list(range(0,A_dim)))
+        dia = sp.r_[0:A_dim]
         row = sp.append(row,dia[self._BCtypes==1])
         col = sp.append(col,dia[self._BCtypes==1])
         data = sp.append(data,sp.ones_like(dia[self._BCtypes==1]))
@@ -196,7 +202,7 @@ class LinearSolver(GenericAlgorithm):
         temp_data = sp.copy(data)
         temp_data[sp.in1d(row,dia[self._BCtypes==1])] = 0
         S_temp = sp.zeros(A_dim)
-        for i in list(range(len(row))):
+        for i in sp.r_[0:len(row)]:
             S_temp[row[i]] = S_temp[row[i]] - temp_data[i]
         non_Dir = dia[-sp.in1d(dia,dia[self._BCtypes==1])]
         data = sp.append(data,S_temp[non_Dir])
@@ -216,10 +222,12 @@ class LinearSolver(GenericAlgorithm):
         B = sp.zeros([A_dim,1])
         Dir_pores = self._net.get_pore_indices()[self._BCtypes==1]
         B[Dir_pores] = sp.reshape(self._BCvalues[Dir_pores],[len(Dir_pores),1])
+        individual_Neu_pores = self._net.get_pore_indices()[self._BCtypes==5]
+        B[individual_Neu_pores] = sp.reshape(self._BCvalues[individual_Neu_pores],[len(individual_Neu_pores),1])
         if (self._BCtypes==4).any():
-            for item in list(range(len(extera_neu))):
+            for item in sp.r_[0:len(extera_neu)]:
                 B[A_dim-item-1,0] = extera_neu[item]
-
+            
         return(B)
 
     def rate(self,pores='',throats=''):
@@ -227,8 +235,8 @@ class LinearSolver(GenericAlgorithm):
         if throats!='':
             pores1 = self._net.find_connected_pores(throats)[:,0]
             pores2 = self._net.find_connected_pores(throats)[:,1]
-        elif pores!='':            
-            throats = self._net.find_neighbor_throats(pores,flatten=True)
+        elif pores!='': 
+            throats = self._net.find_neighbor_throats(pores,flatten=True,mode='not_intersection')
             pores1 = self._net.find_connected_pores(throats)[:,0]
             pores2 = self._net.find_connected_pores(throats)[:,1]
         X1 = self._result[pores1]
@@ -287,7 +295,7 @@ class LinearSolver(GenericAlgorithm):
                 delattr(self,'_BCvalues')
             except: pass            
         tensor = sp.zeros([3,3])
-        for i in list(range(len(ftype1))):
+        for i in sp.r_[0:len(ftype1)]:
             face1 = ftype1[i] 
             face2 = ftype2[i]
             face1_pores = network.get_pore_indices(face1)
