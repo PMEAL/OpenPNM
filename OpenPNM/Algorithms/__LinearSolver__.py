@@ -158,11 +158,11 @@ class LinearSolver(GenericAlgorithm):
             flux_values = sp.unique(self._BCvalues[self._BCtypes==2])
             for i in list(range(len(flux_values))):
                 f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_indices()[self._BCvalues==flux_values[i]])]
-                fn = self._net.find_neighbor_pores(f)
+                fn = self._net.find_neighbor_pores(f,mode='not_intersection',excl_self=True)
                 fn = fn[self._net.get_pore_info(label='internal')[fn]]
                 ft = self._net.find_connecting_throat(f,fn)
                 self._BCtypes[f] = 4
-                self._BCvalues[f] = sp.sum(self._BCvalues[f]*(self._net.get_throat_data(prop='diameter')[ft])**2)
+                self._BCvalues[f] = sp.sum(self._BCvalues[f]*(self._net.get_throat_data(prop='cross_section')[ft]))
 
             
         if (self._BCtypes==4).any():
@@ -346,7 +346,7 @@ class LinearSolver(GenericAlgorithm):
             length_2 = (max(coord_temp2) - min(coord_temp2))
             A = length_1*length_2            
                 
-            fn = network.find_neighbor_pores(face1_pores)
+            fn = network.find_neighbor_pores(face1_pores,mode='not_intersection',excl_self=True)
             fn = fn[sp.in1d(fn,network.get_pore_indices('internal'))]
             ft = network.find_connecting_throat(face1_pores,fn)
             if alg=='Fickian': X_temp = sp.log(1-x[fn])
