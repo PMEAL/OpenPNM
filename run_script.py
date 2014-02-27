@@ -102,8 +102,8 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------
 ### Run simulation
-#Fickian_alg.run(active_fluid=air)
-#Fickian_alg.update()
+Fickian_alg.run(active_fluid=air)
+Fickian_alg.update()
 ###-----------------------------------------------------------------------
 ###Export to VTK
 #OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])

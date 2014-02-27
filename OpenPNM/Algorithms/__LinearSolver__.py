@@ -169,17 +169,18 @@ class LinearSolver(GenericAlgorithm):
             self._extera_Neumann_equations = sp.unique(self._BCvalues[self._BCtypes==4])
             A_dim = A_dim + len(self._extera_Neumann_equations)
             extera_neu = self._extera_Neumann_equations
-            g_super = sp.average(self._conductance[self._net.find_neighbor_throats(pnum[self._BCtypes==4])])*1e5
-            for item in list(range(len(extera_neu))):
-                neu_tpore2 = pnum[self._BCvalues==extera_neu[item]]
-
+            self._g_super = 1e-60            
+            mask = self._BCtypes==4
+            for item in sp.r_[0:len(extera_neu)]:
+                neu_tpore2 = pnum[mask]
+                neu_tpore2 = neu_tpore2[self._BCvalues[neu_tpore2]==extera_neu[item]]
+#                neu_tpore2 = pnum[self._BCvalues==extera_neu[item]]                
                 row = sp.append(row,neu_tpore2)
                 col = sp.append(col,len(neu_tpore2)*[A_dim-item-1])
-                data = sp.append(data,len(neu_tpore2)*[g_super])
-
+                data = sp.append(data,len(neu_tpore2)*[self._g_super])
                 row = sp.append(row,len(neu_tpore2)*[A_dim-item-1])
                 col = sp.append(col,neu_tpore2)
-                data = sp.append(data,len(neu_tpore2)*[g_super])
+                data = sp.append(data,len(neu_tpore2)*[self._g_super])
 
         else:
             self._extera_Neumann_equations = 0
