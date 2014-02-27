@@ -99,7 +99,7 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 #Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
 ### BC2
 #BC2_pores = pn.get_pore_indices(labels='bottom')
-#Fickian_alg.set_pore_info(label='Neumann_rate_union',locations=BC2_pores)
+#Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC2_pores)
 #BC2_values = 2e-9
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------------
@@ -107,7 +107,7 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ### Neumann boundary condition to all of the internal pores(individually) 
 ###BC0
 #BC0_pores = pn.get_pore_indices()[-sp.in1d(pn.get_pore_indices(),pn.get_pore_indices(['top','bottom']))]
-#Fickian_alg.set_pore_info(label='Neumann_rate_individual',locations=BC0_pores)
+#Fickian_alg.set_pore_info(label='Neumann_rate_single',locations=BC0_pores)
 #BC0_values = 7e-12
 #Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
 ###BC1
@@ -125,7 +125,7 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ### Neumann boundary condition to some of the internal pores(to the cluster not individually)
 ###BC0
 #BC0_pores = [500,501,502,503,504]
-#Fickian_alg.set_pore_info(label='Neumann_rate_union',locations=BC0_pores)
+#Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC0_pores)
 #BC0_values = 5e-7
 #Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
 ###BC1
