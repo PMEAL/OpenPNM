@@ -584,15 +584,17 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         if type(pnums) == str:
             pnums = self.get_pore_indices(labels=pnums)
+        if self._geometry != [] or self._fluids != []:
+            raise Exception('Cannot clone an active network')
         #Clone pores
         Np = self.num_pores()
         pcurrent = self.get_pore_data(prop='coords')
         pclone = pcurrent[pnums,:]
         pnew = sp.concatenate((pcurrent,pclone),axis=0)
         Npnew = sp.shape(pnew)[0]
-        for item in self.list_pore_labels():
-            self.set_throat_info(label=item,locations=sp.ones((Npnew,),dtype=bool))
+        self.set_pore_info(label='all', locations=sp.ones((Npnew,),dtype=bool))
         self.set_pore_data(prop='coords',data=pnew)
+
         #Add new throat connections
         parents = sp.array(pnums,ndmin=1)
         clones = sp.arange(Np,Npnew)
@@ -600,9 +602,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         tclone = sp.vstack((parents,clones)).T
         tnew = sp.concatenate((tcurrent,tclone),axis=0)
         Ntnew = sp.shape(tnew)[0]
-        for item in self.list_throat_labels():
-            self.set_throat_info(label=item,locations=sp.ones((Ntnew,),dtype=bool))
-        self.set_throat_data(prop='connections',data=tnew)
+        self.set_throat_info(label='all', locations=sp.ones((Ntnew,),dtype=bool))
+        self.set_throat_data(prop='connections',data=tnew)        
 
     def __str__(self):
         r"""
