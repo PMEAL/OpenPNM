@@ -341,15 +341,21 @@ class Tools(Base):
         ----------
         label : string
             The name of the pore labels you wish to apply (e.g. 'top')
-        locaitons : array_like
+        locations : array_like
             An array containing the locations (pores) where the labels should be applied.
             Can be either a boolean mask of Np length with True at labels locations (default), 
             a list of indices where labels should be applied. 
         mode : string
-            Options are 'merge' and 'overwrite', default is 'merge'
-        is_indices : boolean
-            This flag indicates whether locations are being sent as a boolean maks (default), 
-            or a list of indices.
+            The mode controls how new values are written to an existing list.
+            The options are:
+            
+            * 'merge' : (default) Inserts labels into the existing list at 
+            the locations specified, keeping existing values
+            
+            * 'overwrite' : Creates a new list with labels at the locations 
+            specified
+            
+            * 'remove' : Removes labels from the locations specified
             
         See Also
         --------
@@ -408,15 +414,22 @@ class Tools(Base):
         ----------
         label : string
             The name of the pore labels you wish to apply (e.g. 'top')
-        mode : string
-            Options are 'merge' and 'overwrite', default is 'merge'
-        locaitons : array_like
+        locations : array_like
             An array containing the locations (pores) where the labels should be applied.
             Can be either a boolean mask of Np length with True at labels locations (default), 
             a list of indices where labels should be applied. 
-        is_indices : boolean
-            This flag indicates whether locations are being sent as a boolean maks (default), 
-            or a list of indices.
+        mode : string
+            The mode controls how new values are written to an existing list.
+            The options are:
+            
+            * 'merge' : (default) Inserts labels into the existing list at 
+            the locations specified, keeping existing values
+            
+            * 'overwrite' : Creates a new list with labels at the locations 
+            specified
+            
+            * 'remove' : Removes labels from the locations specified
+
             
         See Also
         --------
