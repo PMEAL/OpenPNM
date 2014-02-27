@@ -1,4 +1,5 @@
 import OpenPNM
+import scipy as sp
 
 #==============================================================================
 '''Build Topological Network'''
@@ -77,8 +78,9 @@ OP_1.update(Pc=3000)
 ###----------------------------------------------------------------------
 ### Initializing diffusion algorithm
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Fickian', name='Fickian_alg',network=pn)
-## Assign Dirichlet boundary conditions
-## BC1
+###----------------------------------------------------------------------------
+### Assign Dirichlet boundary conditions to some of the surface pores
+##BC1
 BC1_pores = pn.get_pore_indices(labels='top')
 Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
 BC1_values = 0.6
@@ -88,8 +90,8 @@ BC2_pores = pn.get_pore_indices(labels='bottom')
 Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
 BC2_values = 0.2
 Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
-###----------------------------------------------------------------------
-### Assign Neumann boundary conditions
+###----------------------------------------------------------------------------
+### Assign Neumann and Dirichlet boundary conditions to some of the surface pores
 ### BC1
 #BC1_pores = pn.get_pore_indices(labels='top')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
@@ -97,10 +99,46 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 #Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
 ### BC2
 #BC2_pores = pn.get_pore_indices(labels='bottom')
-#Fickian_alg.set_pore_info(label='Neumann_rate',locations=BC2_pores)
-#BC2_values = 2e-10
+#Fickian_alg.set_pore_info(label='Neumann_rate_union',locations=BC2_pores)
+#BC2_values = 2e-9
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-###----------------------------------------------------------------------
+###----------------------------------------------------------------------------
+### Assign Dirichlet boundary condition to some of the surface pores and 
+### Neumann boundary condition to all of the internal pores(individually) 
+###BC0
+#BC0_pores = pn.get_pore_indices()[-sp.in1d(pn.get_pore_indices(),pn.get_pore_indices(['top','bottom']))]
+#Fickian_alg.set_pore_info(label='Neumann_rate_individual',locations=BC0_pores)
+#BC0_values = 7e-12
+#Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
+###BC1
+#BC1_pores = pn.get_pore_indices(labels='top')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+#BC1_values = 0.6
+#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(labels='bottom')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
+#BC2_values = 0.2
+#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+###----------------------------------------------------------------------------
+### Assign Dirichlet boundary condition to some of the surface pores and 
+### Neumann boundary condition to some of the internal pores(to the cluster not individually)
+###BC0
+#BC0_pores = [500,501,502,503,504]
+#Fickian_alg.set_pore_info(label='Neumann_rate_union',locations=BC0_pores)
+#BC0_values = 5e-7
+#Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
+###BC1
+#BC1_pores = pn.get_pore_indices(labels='top')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+#BC1_values = 0.4
+#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(labels='bottom')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
+#BC2_values = 0.3
+#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+###----------------------------------------------------------------------------
 ### Run simulation
 Fickian_alg.run(active_fluid=air)
 Fickian_alg.update()
