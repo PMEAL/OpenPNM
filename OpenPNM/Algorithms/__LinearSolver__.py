@@ -70,12 +70,12 @@ class LinearSolver(GenericAlgorithm):
                 bcpores = self.get_pore_info(label='Neumann_insulated')
                 self._BCtypes[bcpores] = 3
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
-            elif bctype=='Neumann_rate_union':
-                bcpores = self.get_pore_info(label='Neumann_rate_union')
+            elif bctype=='Neumann_rate_group':
+                bcpores = self.get_pore_info(label='Neumann_rate_group')
                 self._BCtypes[bcpores] = 4
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
-            elif bctype=='Neumann_rate_individual':
-                bcpores = self.get_pore_info(label='Neumann_rate_individual')
+            elif bctype=='Neumann_rate_single':
+                bcpores = self.get_pore_info(label='Neumann_rate_single')
                 self._BCtypes[bcpores] = 5
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')                
                 
@@ -119,8 +119,8 @@ class LinearSolver(GenericAlgorithm):
                 fn = self._net.find_neighbor_pores(f,mode='not_intersection',excl_self=True)
                 fn = fn[self._net.get_pore_info(label='internal')[fn]]
                 ft = self._net.find_connecting_throat(f,fn)
-                self._BCtypes[f] = 4
-                self._BCvalues[f] = sp.sum(self._BCvalues[f]*(self._net.get_throat_data(prop='cross_section')[ft]))
+                self._BCtypes[f] = 5
+                self._BCvalues[f] = self._BCvalues[f]*(self._net.get_throat_data(prop='cross_section')[ft])
            
         if (self._BCtypes==4).any():
             self._extera_Neumann_equations = sp.unique(self._BCvalues[self._BCtypes==4])
