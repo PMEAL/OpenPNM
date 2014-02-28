@@ -527,6 +527,62 @@ class Tools(Base):
         temp.sort()
         return temp
         
+    def _get_labels(self,element,pnums,mode='union',flatten=True):
+        r'''
+        This is the actual label getter method, but it should not be called directly.  
+        Wrapper methods have been created.  Use get_pore_labels and get_throat_labels
+        
+        See Also
+        --------
+        get_pore_labels, get_throat_labels
+        
+        '''
+        if element == 'pore':
+            element_info = self._pore_info
+        elif element == 'throat':
+            element_info = self._throat_info
+        labels = sp.array(list(element_info.keys()))
+        arr = sp.ndarray((sp.shape(pnums,)[0],len(labels)),dtype=bool)
+        col = 0
+        for item in labels:
+            arr[:,col] = element_info[item][pnums]
+            col = col + 1
+        if flatten == True:
+            if mode == 'count':
+                return sp.sum(arr,axis=1)
+            if mode == 'union':
+                return labels[sp.sum(arr,axis=0)>0]
+            if mode == 'intersection':
+                return labels[sp.sum(arr,axis=0)==sp.shape(pnums,)[0]]
+        else:
+            temp = sp.ndarray((sp.shape(pnums,)[0],),dtype=object)
+            for i in sp.arange(0,sp.shape(pnums,)[0]):
+                temp[i] = list(labels[arr[i,:]])
+            return temp
+            
+    def get_pore_labels(self,pnums,mode='union',flatten=False):
+        r'''
+        Returns the labels applied to specified locations
+        
+        Parameters
+        ----------
+        pnums : array_like
+            The pores whos labels are sought
+        flatten : boolean, optional
+            If false (default) the returned 
+        mode : string, optional
+            Controls how the query should be performed
+            
+            * 'union' : A list of labels applied to ANY of the given locations        
+            
+            * 'intersection' : Label applied to ALL of the given locations
+            
+            * 'count' : The number of labels on each pore
+        
+        '''
+        return self._get_labels(element='pores',pnums=pnums,mode=mode,flatten=flatten)
+        
+        
     def find_labels(self,pnum='',tnum=''):
         r'''
         Returns a list of all labels that have been applied to the given pore or throat.
