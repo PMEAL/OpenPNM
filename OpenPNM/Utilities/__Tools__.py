@@ -294,7 +294,6 @@ class Tools(Base):
         --------
         set_pore_info, set_throat_info
         '''
-        
         if type(locations)==list: 
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
             except: locations = sp.array(locations,ndmin=1)
@@ -306,19 +305,35 @@ class Tools(Base):
                 locations = locations.name
                 label = locations
             except: pass
-            if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])        
-          
+            if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])           
             
             if label:
-                if label=='all': getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
+                if label=='all':
+                    try: 
+                        old_label = getattr(self,'_'+element+'_info')[label]
+                        if sp.shape(old_label)[0]<sp.shape(locations)[0]:
+                            getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
+                            self._logger.info('label=all has been updated to a bigger size!')
+                            for info_labels in getattr(self,'_'+element+'_info').keys():
+                                if info_labels!=label:
+                                    temp = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+                                    temp[old_label] = getattr(self,'_'+element+'_info')[info_labels]
+                                    getattr(self,'_'+element+'_info')[info_labels] = temp
+                        elif sp.shape(old_label)[0]>sp.shape(locations)[0]: 
+                            self._logger.error('To apply a new numbering label (label=all), size of the locations cannot be less than the network!!')
+                    except: getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
                 else:    
                     try: getattr(self,'_'+element+'_info')[label]
                     except: getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
-                    if mode=='overwrite': getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
-                    getattr(self,'_'+element+'_info')[label][locations] = True
+                    if mode=='overwrite':
+                        getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+                        getattr(self,'_'+element+'_info')[label][locations] = True
+                    elif mode=='remove':  getattr(self,'_'+element+'_info')[label][locations] = False                           
+                    elif mode=='merge':  getattr(self,'_'+element+'_info')[label][locations] = True
             else: self._logger.error('No label has been defined for these locations')                
 
-        else: getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+        elif mode=='remove':  del getattr(self,'_'+element+'_info')[label]
+        else:  getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
 
     def _get_info(self,element='',label='',return_indices=False):
         r'''
@@ -337,6 +352,8 @@ class Tools(Base):
            
     def set_pore_info(self,label='',locations='',mode='merge'):
         r'''
+        Apply a label to a selection of pores.  
+        
         Parameters
         ----------
         label : string
@@ -344,12 +361,19 @@ class Tools(Base):
         locaitons : array_like
             An array containing the locations (pores) where the labels should be applied.
             Can be either a boolean mask of Np length with True at labels locations (default), 
-            a list of indices where labels should be applied. 
+            a list of indices where labels should be applied.
         mode : string
-            Options are 'merge' and 'overwrite', default is 'merge'
-        is_indices : boolean
-            This flag indicates whether locations are being sent as a boolean maks (default), 
-            or a list of indices.
+            Set the mode to be used for writing labels.  Options are:
+            
+            * 'merge' : (default) Adds label to specified locations while 
+            maintaining pre-existing labels
+            
+            * 'overwrite' : Adds label to specified locations while 
+            removing all pre-existing labels
+            
+            * 'remove' : Removes labels from specified locations.  If no
+            locations are given then this mode will remove the entire label
+            from the network.
             
         See Also
         --------
@@ -367,7 +391,7 @@ class Tools(Base):
         >>> pn.get_pore_info(label='test',return_indices=True) #Retrieve values as indices
         array([0, 1], dtype=int64)
         '''
-        self._set_info(element='pore',label=label,locations=locations)
+        self._set_info(element='pore',label=label,locations=locations,mode=mode)
 
     def get_pore_info(self,label='',return_indices=False):
         r'''
@@ -404,6 +428,8 @@ class Tools(Base):
         
     def set_throat_info(self,label='',locations='',mode='merge'):
         r'''
+        Apply a label to a selection of throats
+        
         Parameters
         ----------
         label : string
@@ -414,9 +440,18 @@ class Tools(Base):
             An array containing the locations (pores) where the labels should be applied.
             Can be either a boolean mask of Np length with True at labels locations (default), 
             a list of indices where labels should be applied. 
-        is_indices : boolean
-            This flag indicates whether locations are being sent as a boolean maks (default), 
-            or a list of indices.
+        mode : string
+            Set the mode to be used for writing labels.  Options are:
+            
+            * 'merge' : (default) Adds label to specified locations while 
+            maintaining pre-existing labels
+            
+            * 'overwrite' : Adds label to specified locations while 
+            removing all pre-existing labels
+            
+            * 'remove' : Removes labels from specified locations.  If no
+            locations are given then this mode will remove the entire label
+            from the network.
             
         See Also
         --------
@@ -426,7 +461,7 @@ class Tools(Base):
         --------
         See set_pore_info for usage
         '''
-        self._set_info(element='throat',label=label,locations=locations)
+        self._set_info(element='throat',label=label,locations=locations,mode=mode)
         
     def get_throat_info(self,label='',return_indices=False):
         r'''
@@ -726,21 +761,6 @@ class Tools(Base):
             return mask[nums]
         elif return_indices == True:
             return nums[mask[nums]]
-
-    def check_info(self):
-        r'''
-        Documentation for this method is being updated, we are sorry for the inconvenience.
-        '''
-        temp = sp.zeros_like(self.get_pore_data(prop='coords')[:,0],dtype=bool)
-        self.set_pore_info(label='all',locations=temp)
-        for item in self._pore_info.keys():
-            if sp.shape(self._pore_info[item])[0] != sp.shape(self._pore_info['all'])[0]:
-                print('warning, info arrays are wrong size!')
-        temp = sp.zeros_like(self.get_throat_data(prop='connections')[:,0],dtype=bool)
-        self.set_throat_info(label='all',locations=temp)
-        for item in self._throat_info.keys():
-            if sp.shape(self._throat_info[item])[0] != sp.shape(self._throat_info['all'])[0]:
-                print('warning, info arrays are wrong size!')
 
     #--------------------------------------------------------------------------
     '''Object query methods'''
