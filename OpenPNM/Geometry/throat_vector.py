@@ -36,6 +36,9 @@ def pore_to_pore(geometry,
     C1 = network.get_pore_data(prop='coords')[Ps[:,1]]
     V = C1 - C0
     L = sp.sqrt(sp.sum(V[:,:]**2,axis=1))
-    value = sp.vstack((V[:,0]/L, V[:,1]/L, V[:,2]/L)).T
-    network._throat_data['tvecs'] = value
+    value = V[:,0]/L
+    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    value = V[:,1]/L
+    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    value = V[:,2]/L
     network.set_throat_data(locations=geometry,prop=propname,data=value)
