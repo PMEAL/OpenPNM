@@ -352,6 +352,8 @@ class Tools(Base):
            
     def set_pore_info(self,label='',locations='',mode='merge'):
         r'''
+        Apply a label to a selection of pores.  
+        
         Parameters
         ----------
         label : string
@@ -359,12 +361,19 @@ class Tools(Base):
         locaitons : array_like
             An array containing the locations (pores) where the labels should be applied.
             Can be either a boolean mask of Np length with True at labels locations (default), 
-            a list of indices where labels should be applied. 
+            a list of indices where labels should be applied.
         mode : string
-            Options are 'merge' and 'overwrite', default is 'merge'
-        is_indices : boolean
-            This flag indicates whether locations are being sent as a boolean maks (default), 
-            or a list of indices.
+            Set the mode to be used for writing labels.  Options are:
+            
+            * 'merge' : (default) Adds label to specified locations while 
+            maintaining pre-existing labels
+            
+            * 'overwrite' : Adds label to specified locations while 
+            removing all pre-existing labels
+            
+            * 'remove' : Removes labels from specified locations.  If no
+            locations are given then this mode will remove the entire label
+            from the network.
             
         See Also
         --------
@@ -419,6 +428,8 @@ class Tools(Base):
         
     def set_throat_info(self,label='',locations='',mode='merge'):
         r'''
+        Apply a label to a selection of throats
+        
         Parameters
         ----------
         label : string
@@ -429,9 +440,18 @@ class Tools(Base):
             An array containing the locations (pores) where the labels should be applied.
             Can be either a boolean mask of Np length with True at labels locations (default), 
             a list of indices where labels should be applied. 
-        is_indices : boolean
-            This flag indicates whether locations are being sent as a boolean maks (default), 
-            or a list of indices.
+        mode : string
+            Set the mode to be used for writing labels.  Options are:
+            
+            * 'merge' : (default) Adds label to specified locations while 
+            maintaining pre-existing labels
+            
+            * 'overwrite' : Adds label to specified locations while 
+            removing all pre-existing labels
+            
+            * 'remove' : Removes labels from specified locations.  If no
+            locations are given then this mode will remove the entire label
+            from the network.
             
         See Also
         --------
@@ -646,21 +666,6 @@ class Tools(Base):
             return mask[nums]
         elif return_indices == True:
             return nums[mask[nums]]
-
-    def check_info(self):
-        r'''
-        Documentation for this method is being updated, we are sorry for the inconvenience.
-        '''
-        temp = sp.zeros_like(self.get_pore_data(prop='coords')[:,0],dtype=bool)
-        self.set_pore_info(label='all',locations=temp)
-        for item in self._pore_info.keys():
-            if sp.shape(self._pore_info[item])[0] != sp.shape(self._pore_info['all'])[0]:
-                print('warning, info arrays are wrong size!')
-        temp = sp.zeros_like(self.get_throat_data(prop='connections')[:,0],dtype=bool)
-        self.set_throat_info(label='all',locations=temp)
-        for item in self._throat_info.keys():
-            if sp.shape(self._throat_info[item])[0] != sp.shape(self._throat_info['all'])[0]:
-                print('warning, info arrays are wrong size!')
 
     #--------------------------------------------------------------------------
     '''Object query methods'''
