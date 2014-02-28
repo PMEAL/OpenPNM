@@ -193,8 +193,11 @@ class Cubic(GenericNetwork):
     def _add_boundaries(self):
         r'''
         '''
+        pn = OpenPNM.Network.TestNet()
+        pn.num_pores()
+        pn.num_throats()
         ps = pn.get_pore_indices(labels=['top','bottom'])
-        self.clone_pores(pnums=ps,apply_labels=['top','bottom','boundary'])
+        pn.clone_pores(pnums=ps,apply_label='boundary')
         
         
         

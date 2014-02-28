@@ -507,7 +507,7 @@ class Tools(Base):
         '''
         temp = list(self._pore_info.keys())
         temp.sort()
-        return temp
+        return sp.array(temp,ndmin=1)
 
     def list_throat_labels(self):
         r'''
@@ -525,9 +525,9 @@ class Tools(Base):
         '''
         temp = list(self._throat_info.keys())
         temp.sort()
-        return temp
+        return sp.array(temp,ndmin=1)
         
-    def _get_labels(self,element,pnums,mode='union',flatten=True):
+    def _get_labels(self,element,locations,mode='union',flatten=False):
         r'''
         This is the actual label getter method, but it should not be called directly.  
         Wrapper methods have been created.  Use get_pore_labels and get_throat_labels
@@ -539,13 +539,14 @@ class Tools(Base):
         '''
         if element == 'pore':
             element_info = self._pore_info
+            labels = self.list_pore_labels()
         elif element == 'throat':
             element_info = self._throat_info
-        labels = sp.array(list(element_info.keys()))
-        arr = sp.ndarray((sp.shape(pnums,)[0],len(labels)),dtype=bool)
+            labels = self.list_throat_labels()
+        arr = sp.ndarray((sp.shape(locations,)[0],len(labels)),dtype=bool)
         col = 0
         for item in labels:
-            arr[:,col] = element_info[item][pnums]
+            arr[:,col] = element_info[item][locations]
             col = col + 1
         if flatten == True:
             if mode == 'count':
@@ -553,23 +554,28 @@ class Tools(Base):
             if mode == 'union':
                 return labels[sp.sum(arr,axis=0)>0]
             if mode == 'intersection':
-                return labels[sp.sum(arr,axis=0)==sp.shape(pnums,)[0]]
+                return labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
         else:
-            temp = sp.ndarray((sp.shape(pnums,)[0],),dtype=object)
-            for i in sp.arange(0,sp.shape(pnums,)[0]):
-                temp[i] = list(labels[arr[i,:]])
-            return temp
+            if mode == 'raw':
+                return arr
+            else:
+                temp = sp.ndarray((sp.shape(locations,)[0],),dtype=object)
+                for i in sp.arange(0,sp.shape(locations,)[0]):
+                    temp[i] = list(labels[arr[i,:]])
+                return temp
             
     def get_pore_labels(self,pnums,mode='union',flatten=False):
         r'''
-        Returns the labels applied to specified locations
+        Returns the labels applied to specified pore locations
         
         Parameters
         ----------
         pnums : array_like
             The pores whos labels are sought
         flatten : boolean, optional
-            If false (default) the returned 
+            If False (default) the returned list is Np long, where each element
+            is a list labels applied to the specified pores.  If True, the mode
+            logic
         mode : string, optional
             Controls how the query should be performed
             
@@ -578,9 +584,42 @@ class Tools(Base):
             * 'intersection' : Label applied to ALL of the given locations
             
             * 'count' : The number of labels on each pore
+            
+            * 'raw' : returns an Np x Nlabels array, where each row corresponds
+            to a pore location, and each column contains the truth value for 
+            the existance of labels as return from list_pore_labels().
         
         '''
-        return self._get_labels(element='pores',pnums=pnums,mode=mode,flatten=flatten)
+        temp = self._get_labels(element='pore',locations=pnums, mode=mode, flatten=flatten)
+        return temp
+
+    def get_throat_labels(self,tnums,mode='union',flatten=False):
+        r'''
+        Returns the labels applied to specified throat locations
+        
+        Parameters
+        ----------
+        tnums : array_like
+            The throats whos labels are sought
+        flatten : boolean, optional
+            If false (default) the returned list is Nt long, where each element
+            is a list labels applied to the specified throats
+        mode : string, optional
+            Controls how the query should be performed
+            
+            * 'union' : A list of labels applied to ANY of the given locations        
+            
+            * 'intersection' : Label applied to ALL of the given locations
+            
+            * 'count' : The number of labels on each pore
+            
+            * 'raw' : returns an Np x Nlabels array, where each row corresponds
+            to a throat location, and each column contains the truth value for 
+            the existance of labels as return from list_throat_labels().
+        
+        '''
+        temp = self._get_labels(element='throat',locations=tnums,mode=mode,flatten=flatten)
+        return temp
         
         
     def find_labels(self,pnum='',tnum=''):
