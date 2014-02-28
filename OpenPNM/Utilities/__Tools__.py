@@ -294,7 +294,6 @@ class Tools(Base):
         --------
         set_pore_info, set_throat_info
         '''
-        
         if type(locations)==list: 
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
             except: locations = sp.array(locations,ndmin=1)
@@ -306,19 +305,35 @@ class Tools(Base):
                 locations = locations.name
                 label = locations
             except: pass
-            if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])        
-          
+            if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])           
             
             if label:
-                if label=='all': getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
+                if label=='all':
+                    try: 
+                        old_label = getattr(self,'_'+element+'_info')[label]
+                        if sp.shape(old_label)[0]<sp.shape(locations)[0]:
+                            getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
+                            self._logger.info('label=all has been updated to a bigger size!')
+                            for info_labels in getattr(self,'_'+element+'_info').keys():
+                                if info_labels!=label:
+                                    temp = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+                                    temp[old_label] = getattr(self,'_'+element+'_info')[info_labels]
+                                    getattr(self,'_'+element+'_info')[info_labels] = temp
+                        elif sp.shape(old_label)[0]>sp.shape(locations)[0]: 
+                            self._logger.error('To apply a new numbering label (label=all), size of the locations cannot be less than the network!!')
+                    except: getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
                 else:    
                     try: getattr(self,'_'+element+'_info')[label]
                     except: getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
-                    if mode=='overwrite': getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
-                    getattr(self,'_'+element+'_info')[label][locations] = True
+                    if mode=='overwrite':
+                        getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+                        getattr(self,'_'+element+'_info')[label][locations] = True
+                    elif mode=='remove':  getattr(self,'_'+element+'_info')[label][locations] = False                           
+                    elif mode=='merge':  getattr(self,'_'+element+'_info')[label][locations] = True
             else: self._logger.error('No label has been defined for these locations')                
 
-        else: getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+        elif mode=='remove':  del getattr(self,'_'+element+'_info')[label]
+        else:  getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
 
     def _get_info(self,element='',label='',return_indices=False):
         r'''
@@ -367,7 +382,7 @@ class Tools(Base):
         >>> pn.get_pore_info(label='test',return_indices=True) #Retrieve values as indices
         array([0, 1], dtype=int64)
         '''
-        self._set_info(element='pore',label=label,locations=locations)
+        self._set_info(element='pore',label=label,locations=locations,mode=mode)
 
     def get_pore_info(self,label='',return_indices=False):
         r'''
@@ -426,7 +441,7 @@ class Tools(Base):
         --------
         See set_pore_info for usage
         '''
-        self._set_info(element='throat',label=label,locations=locations)
+        self._set_info(element='throat',label=label,locations=locations,mode=mode)
         
     def get_throat_info(self,label='',return_indices=False):
         r'''
