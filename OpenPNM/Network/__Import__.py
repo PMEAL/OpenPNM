@@ -75,9 +75,12 @@ class MatFile(GenericNetwork):
         self._path = path
         self._mat=OpenPNM.Utilities.ImportMat(filename=filename,path=path)
         self._Np=np.size(self._mat.getvar('pnumbering'))
+        Pind = np.arange(0,self._Np)
+        self.set_pore_info(label='all',locations=np.ones_like(Pind))
         self._Nt=np.size(self._mat.getvar('tnumbering'))
+        Tind = np.arange(0,self._Nt)
+        self.set_throat_info(label='all',locations=np.ones_like(Tind))
         self._net=OpenPNM.Network.GenericNetwork(num_pores=self._Np, num_throats=self._Nt)
-
         self._logger.info('Writing pore properties')
         self._logger.debug('Writing pore volumes')
         self._net.set_pore_data(prop='volume',data=np.reshape(self._mat.getvar('pvolume'),(self._Np)))        
