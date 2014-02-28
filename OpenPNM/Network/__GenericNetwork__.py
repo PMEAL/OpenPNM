@@ -562,6 +562,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
+        pass
         #        from mpl_toolkits.mplot3d import Axes3D
         #        #Parse Ptype input argument
         #        if Ptype == [] or Ptype == 'all':
@@ -578,12 +579,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #            ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
         #        plt.show()
         
-    def clone_pores(self,pnums,mode='parent'):
+    def clone_pores(self,pnums,mode='parent',apply_labels='clone'):
         r'''
         mode options should be 'parent', 'siblings'
         '''
-        if type(pnums) == str:
-            pnums = self.get_pore_indices(labels=pnums)
+        if type(pnums) == str: 
+            pnums = self.get_pore_indices(labels=[pnums])
         if self._geometry != [] or self._fluids != []:
             raise Exception('Cannot clone an active network')
         #Clone pores
@@ -593,6 +594,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         pnew = sp.concatenate((pcurrent,pclone),axis=0)
         Npnew = sp.shape(pnew)[0]
         self.set_pore_info(label='all', locations=sp.ones((Npnew,),dtype=bool))
+        self.set_pore_info(label=apply_labels,locations=pclone)
         self.set_pore_data(prop='coords',data=pnew)
 
         #Add new throat connections
@@ -603,6 +605,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         tnew = sp.concatenate((tcurrent,tclone),axis=0)
         Ntnew = sp.shape(tnew)[0]
         self.set_throat_info(label='all', locations=sp.ones((Ntnew,),dtype=bool))
+        self.set_throat_info(label=apply_labels,locations=clones)
         self.set_throat_data(prop='connections',data=tnew)        
 
     def __str__(self):

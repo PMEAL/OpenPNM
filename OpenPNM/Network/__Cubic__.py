@@ -190,6 +190,27 @@ class Cubic(GenericNetwork):
         self.set_throat_info(label='internal',locations=self.get_throat_indices())
         self._logger.debug(sys._getframe().f_code.co_name+": End")
         
+    def _add_boundaries(self):
+        r'''
+        '''
+        ps = pn.get_pore_indices(labels=['top','bottom'])
+        self.clone_pores(pnums=ps,apply_labels=['top','bottom','boundary'])
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(lattice_spacing=[1.0],domain_size=[3,3,3])
