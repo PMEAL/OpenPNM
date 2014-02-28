@@ -31,3 +31,5 @@ from . import throat_length
 from . import throat_seed
 from . import throat_volume
 from . import throat_vector
+from . import throat_area
+from . import throat_surface_area

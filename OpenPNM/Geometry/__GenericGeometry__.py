@@ -119,7 +119,12 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
         try:
             function = getattr( getattr(OpenPNM.Geometry, prop), kwargs['model'] ) # this gets the method from the file
             if prop_name: propname = prop = prop_name #overwrite the default prop with user supplied name
-            else: propname = prop.split('_')[1] #remove leading pore_ or throat_ from dictionary key
+            else:
+                #remove leading pore_ or throat_ from dictionary key
+                propname = prop.split('_')[1]
+                element = prop.split('_')[0]
+                if len(prop.split('_')) > 2:
+                    propname = prop.split(element+'_')[1] 
             preloaded_fn = partial(function, geometry=self, network=self._net,propname=propname, **kwargs) #
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))

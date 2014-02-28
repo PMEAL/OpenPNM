@@ -38,6 +38,9 @@ class Stick_and_Ball(GenericGeometry):
         self.add_method(prop='pore_volume',model='sphere')
         self.add_method(prop='throat_length',model='straight')
         self.add_method(prop='throat_volume',model='cylinder')
+        self.add_method(prop='throat_vector',model='pore_to_pore')
+        self.add_method(prop='throat_area',model='cylinder')
+        self.add_method(prop='throat_surface_area',model='cylinder')
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
