@@ -589,30 +589,41 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             raise Exception('Cannot clone an active network')
         #Clone pores
         Np = self.num_pores()
+        parents = sp.array(pnums,ndmin=1)
         pcurrent = self.get_pore_data(prop='coords')
         pclone = pcurrent[pnums,:]
         pnew = sp.concatenate((pcurrent,pclone),axis=0)
         Npnew = sp.shape(pnew)[0]
-        arr = self.get_pore_labels(pnums=pnums,mode='raw')
+        clones = sp.arange(Np,Npnew)
+        #Increase size of 'all' to accomodate new pores
         self.set_pore_info(label='all', locations=sp.ones((Npnew,),dtype=bool))
-        self.set_pore_info(label=apply_label)
+        #Insert cloned pore coordinates into network
+        self.set_pore_data(prop='coords',data=pnew)
+        #Clone parent pore labels
+        arr = self.get_pore_labels(pnums=pnums,mode='raw')
         labels = self.list_pore_labels()
         for item in labels:
             col = sp.where(labels==item)[0][0]
             vals = sp.where(arr[:,col])[0] + Np
-            pn.set_pore_info(label=item,locations=vals)
-        self.set_pore_data(prop='coords',data=pnew)
+            self.set_pore_info(label=item,locations=vals)
+        self.set_pore_info(label=apply_label,locations=clones)
 
-        #Add new throat connections
-        parents = sp.array(pnums,ndmin=1)
-        clones = sp.arange(Np,Npnew)
+        #Add connections between parents and clones
+        Nt = self.num_throats()
         tcurrent = self.get_throat_data(prop='connections')
         tclone = sp.vstack((parents,clones)).T
         tnew = sp.concatenate((tcurrent,tclone),axis=0)
         Ntnew = sp.shape(tnew)[0]
+        #Increase size of 'all' to accomodate new throats
         self.set_throat_info(label='all', locations=sp.ones((Ntnew,),dtype=bool))
-        self.set_throat_info(label='clone',locations=clones)
+        #Insert new throats into network
         self.set_throat_data(prop='connections',data=tnew)        
+        #Clone throat labels
+        self.set_throat_info(label=apply_label)
+        r'''
+        TODO: Throat labels are not inherited from parent pores since I'm not 
+        sure how this should be done, and it isn't needed yet
+        '''
 
     def __str__(self):
         r"""

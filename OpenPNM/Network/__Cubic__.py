@@ -68,8 +68,8 @@ class Cubic(GenericNetwork):
         self._generate_setup(**params)
         self._generate_pores()
         self._generate_throats()
-        #self.add_boundaries()
         self._add_labels()
+        self._add_boundaries()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
         return self
 
@@ -133,7 +133,6 @@ class Cubic(GenericNetwork):
         ind = np.arange(0,Np)
         pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self.set_pore_data(prop='coords',data=pore_coords)
-        self.set_pore_data(prop='numbering',data=ind)
         self.set_pore_info(label='all',locations=np.ones_like(ind))
         self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
 
@@ -161,7 +160,6 @@ class Cubic(GenericNetwork):
         connections = np.vstack((tpore1,tpore2)).T
         connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
         self.set_throat_data(prop='connections',data=connections)      
-        self.set_throat_data(prop='numbering',data=np.arange(0,np.shape(tpore1)[0]))
         self.set_throat_info(label='all',locations=np.ones_like(tpore1))
         self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
         
@@ -193,11 +191,9 @@ class Cubic(GenericNetwork):
     def _add_boundaries(self):
         r'''
         '''
-        pn = OpenPNM.Network.TestNet()
-        pn.num_pores()
-        pn.num_throats()
-        ps = pn.get_pore_indices(labels=['top','bottom'])
-        pn.clone_pores(pnums=ps,apply_label='boundary')
+
+        ps = self.get_pore_indices(labels=['top','bottom'])
+        self.clone_pores(pnums=ps,apply_label='boundary')
         
         
         

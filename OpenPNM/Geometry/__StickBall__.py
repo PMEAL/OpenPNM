@@ -1,5 +1,6 @@
 """
-module __GenericGeometry__: Base class to construct pore networks
+module __StickBall__: Subclass of GenericGeometry for a standard 'stick & ball'
+geometrical model
 ==================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
