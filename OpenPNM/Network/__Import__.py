@@ -73,14 +73,16 @@ class MatFile(GenericNetwork):
             path, foldername = os.path.split(short_path)  
             path = os.path.join(path,'LocalFiles')
         self._path = path
-        self._mat=OpenPNM.Utilities.ImportMat(filename=filename,path=path)
+        self._mat=OpenPNM.Network.ImportMat(filename=filename,path=path)
         self._Np=np.size(self._mat.getvar('pnumbering'))
-        Pind = np.arange(0,self._Np)
-        self.set_pore_info(label='all',locations=np.ones_like(Pind))
         self._Nt=np.size(self._mat.getvar('tnumbering'))
+        self._net=OpenPNM.Network.GenericNetwork(name=self.name,num_pores=self._Np, num_throats=self._Nt)
+        Pind = np.arange(0,self._Np)
+        self._net.set_pore_info(label='all',locations=np.ones_like(Pind))
+        self._net.set_pore_data(prop='numbering',phase='',data=Pind)
         Tind = np.arange(0,self._Nt)
-        self.set_throat_info(label='all',locations=np.ones_like(Tind))
-        self._net=OpenPNM.Network.GenericNetwork(num_pores=self._Np, num_throats=self._Nt)
+        self._net.set_throat_info(label='all',locations=np.ones_like(Tind))
+        self._net.set_throat_data(prop='numbering',data=Tind)        
         self._logger.info('Writing pore properties')
         self._logger.debug('Writing pore volumes')
         self._net.set_pore_data(prop='volume',data=np.reshape(self._mat.getvar('pvolume'),(self._Np)))        
@@ -110,27 +112,5 @@ class MatFile(GenericNetwork):
         self._net.set_throat_data(prop='volume',data=np.zeros((self._Nt),dtype=np.float))
         self._logger.debug('Writing throat connections')
         self._net.set_throat_data(prop='connections',data=self._mat.getvar('tconnections'))
-        
-        
-        #self._logger.debug("self.generate()")
-        #self.generate_pores()
-        #self.generate_throats()
-        #self._net.update()
-        #self.add_boundaries()
-        #self.generate_pore_seeds()
-        #self.generate_throat_seeds()
-        #self.generate_pore_diameters()
-        #self.generate_throat_diameters()
-        #self.calc_pore_volumes()
-        #self.calc_throat_lengths()
-        #self.calc_throat_volumes()
-        #self._net.update()
-        #self._logger.debug("\t end of self.generate()")
+ 
         return self._net  
-
-if __name__ == '__main__':
-    self=MatFile(filename='example_network',loglevel=10)
-    pn=self.generate()
-    inlets = np.nonzero(pn.get_pore_data(prop='type')==1)[0]
-    outlets = np.nonzero(pn.get_pore_data(prop='type')==6)[0]
-    OpenPNM.Visualization.VTK().write(pn,filename=self._path+'\output.vtp')
