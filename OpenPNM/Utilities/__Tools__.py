@@ -54,8 +54,8 @@ class Tools(Base):
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
               
-        try: phase = self.find_object_by_name(phase) 
-        except: pass #Accept object
+#        try: phase = self.find_object_by_name(phase) 
+#        except: pass #Accept object
 
         if phase :
 
@@ -134,8 +134,8 @@ class Tools(Base):
             try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
-        try: phase = self.find_object_by_name(phase) 
-        except: pass        
+#        try: phase = self.find_object_by_name(phase) 
+#        except: pass        
         
         if phase :
             if locations!='':                
