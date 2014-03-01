@@ -17,6 +17,9 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[25, 2
 geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='stick_and_ball', locations=pn.get_pore_indices())
 geom.regenerate()
 
+bndry = OpenPNM.Geometry.Boundary(network=pn, name='boundary', locations=pn.get_pore_indices(labels='boundary'))
+geom.regenerate()
+
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
@@ -49,7 +52,7 @@ phys_air.regenerate()
 #------------------------------------------------------------------------------
 #Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername='OP',name='OP_1',network=pn)
-a = pn.get_pore_indices(labels='bottom')
+a = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 OP_1.run()
 
@@ -160,7 +163,7 @@ Fickian_alg.run(active_fluid=air)
 Fickian_alg.update()
 ###-----------------------------------------------------------------------
 ###Export to VTK
-#OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
+OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
 ### Capillary pressure curve and Overview histograms
 #OpenPNM.Visualization.__Plots__.Capillary_Pressure_Curve(net=pn,fluid=water)
 #OpenPNM.Visualization.__Plots__.Overview(net=pn)

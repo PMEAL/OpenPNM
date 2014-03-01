@@ -22,6 +22,7 @@ Classes
 
 from .__GenericGeometry__ import GenericGeometry
 from .__StickBall__ import Stick_and_Ball
+from .__Boundary__ import Boundary
 from .__PlotTools__ import PlotTools
 from . import pore_diameter
 from . import pore_seed
