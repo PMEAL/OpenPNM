@@ -62,21 +62,17 @@ class LinearSolver(GenericAlgorithm):
                 bcpores = self.get_pore_info(label='Dirichlet')
                 self._BCtypes[bcpores] = 1 
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
-            elif bctype=='Neumann_flux':
-                bcpores = self.get_pore_info(label='Neumann_flux')
-                self._BCtypes[bcpores] = 2
-                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
             elif bctype=='Neumann_insulated':
                 bcpores = self.get_pore_info(label='Neumann_insulated')
-                self._BCtypes[bcpores] = 3
+                self._BCtypes[bcpores] = 2
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
             elif bctype=='Neumann_rate_group':
                 bcpores = self.get_pore_info(label='Neumann_rate_group')
-                self._BCtypes[bcpores] = 4
+                self._BCtypes[bcpores] = 3
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
             elif bctype=='Neumann_rate_single':
                 bcpores = self.get_pore_info(label='Neumann_rate_single')
-                self._BCtypes[bcpores] = 5
+                self._BCtypes[bcpores] = 4
                 self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')                
                 
         self._logger.info("Boundary conditions have been applied successfully.")
@@ -96,8 +92,8 @@ class LinearSolver(GenericAlgorithm):
         if sp.size(self._conductance)==1:
             self._conductance = self._conductance*sp.ones(self._net.num_throats())
         data_main = self._conductance
-        if (self._BCtypes==3).any():
-            insulated_pores = self._net.get_pore_indices()[self._BCtypes==3]
+        if (self._BCtypes==2).any():
+            insulated_pores = self._net.get_pore_indices()[self._BCtypes==2]
             insulated_throats = self._net.find_neighbor_throats(insulated_pores,flatten=True,mode='not_intersection')
             data_main[insulated_throats] = 1e-60
         data = data_main[loc1]
@@ -110,24 +106,13 @@ class LinearSolver(GenericAlgorithm):
         data = sp.append(data,data_main[loc2])
 
         A_dim = self._net.num_pores()
-        
-        if (self._BCtypes==2).any():
-            flux_pores = self._net.get_pore_indices()[self._BCtypes==2]
-            flux_values = sp.unique(self._BCvalues[self._BCtypes==2])
-            for i in sp.r_[0:len(flux_values)]:
-                f = flux_pores[sp.in1d(flux_pores,self._net.get_pore_indices()[self._BCvalues==flux_values[i]])]
-                fn = self._net.find_neighbor_pores(f,mode='not_intersection',excl_self=True)
-                fn = fn[self._net.get_pore_info(label='internal')[fn]]
-                ft = self._net.find_connecting_throat(f,fn)
-                self._BCtypes[f] = 5
-                self._BCvalues[f] = self._BCvalues[f]*(self._net.get_throat_data(prop='cross_section')[ft])
            
-        if (self._BCtypes==4).any():
-            self._extera_Neumann_equations = sp.unique(self._BCvalues[self._BCtypes==4])
+        if (self._BCtypes==3).any():
+            self._extera_Neumann_equations = sp.unique(self._BCvalues[self._BCtypes==3])
             A_dim = A_dim + len(self._extera_Neumann_equations)
             extera_neu = self._extera_Neumann_equations
             self._g_super = 1e-60            
-            mask = self._BCtypes==4
+            mask = self._BCtypes==3
             for item in sp.r_[0:len(extera_neu)]:
                 neu_tpore2 = pnum[mask]
                 neu_tpore2 = neu_tpore2[self._BCvalues[neu_tpore2]==extera_neu[item]]
@@ -172,9 +157,9 @@ class LinearSolver(GenericAlgorithm):
         B = sp.zeros([A_dim,1])
         Dir_pores = self._net.get_pore_indices()[self._BCtypes==1]
         B[Dir_pores] = sp.reshape(self._BCvalues[Dir_pores],[len(Dir_pores),1])
-        individual_Neu_pores = self._net.get_pore_indices()[self._BCtypes==5]
+        individual_Neu_pores = self._net.get_pore_indices()[self._BCtypes==4]
         B[individual_Neu_pores] = sp.reshape(self._BCvalues[individual_Neu_pores],[len(individual_Neu_pores),1])
-        if (self._BCtypes==4).any():
+        if (self._BCtypes==3).any():
             for item in sp.r_[0:len(extera_neu)]:
                 B[A_dim-item-1,0] = extera_neu[item]
             
@@ -306,7 +291,7 @@ class LinearSolver(GenericAlgorithm):
             length_2 = (max(coord_temp2) - min(coord_temp2))
             A = length_1*length_2            
                 
-            fn = network.find_neighbor_pores(face1_pores,mode='not_intersection',excl_self=True)
+            fn = network.find_neighbor_pores(face1_pores,excl_self=True)
             fn = fn[sp.in1d(fn,network.get_pore_indices('internal'))]
             ft = network.find_connecting_throat(face1_pores,fn)
             if alg=='Fickian': X_temp = sp.log(1-x[fn])

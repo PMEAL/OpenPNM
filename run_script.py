@@ -5,8 +5,8 @@ import scipy as sp
 '''Build Topological Network'''
 #==============================================================================
 
-pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=10).generate(filename='example_network.mat')
-#pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001])
+#pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=10).generate(filename='example_network.mat')
+pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001])
 #pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=1500,domain_size=[100,100,30])
 #pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((4,4),dtype=int),lattice_spacing=0.001)
 #pn = OpenPNM.Network.Sphere(name='sphere_1',loglevel=10).generate(radius=5,lattice_spacing=1)
@@ -44,143 +44,125 @@ phys_air.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
 phys_air.add_method(prop='diffusive_conductance', model='bulk_diffusion')
 phys_air.regenerate()
 
-##==============================================================================
-#'''Begin Simulations'''
-##==============================================================================
-#'''Perform a Drainage Experiment (OrdinaryPercolation)'''
-##------------------------------------------------------------------------------
+#==============================================================================
+'''Begin Simulations'''
+#==============================================================================
+'''Perform a Drainage Experiment (OrdinaryPercolation)'''
+#------------------------------------------------------------------------------
+#Initialize algorithm object
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername='OP',name='OP_1',network=pn)
+a = pn.get_pore_indices(labels='bottom')
+OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
+OP_1.run()
+
+
+#b = pn.get_pore_indices(labels='top')
+#OP_1.evaluate_trapping(outlets=b)
+#OP_1.plot_drainage_curve()
+
+##-----------------------------------------------------------------------------
+#'''Perform an Injection Experiment (InvasionPercolation)'''
+##-----------------------------------------------------------------------------
 ##Initialize algorithm object
-#OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername='OP',name='OP_1',network=pn)
-#a = pn.get_pore_indices(labels='bottom')
-#OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
-#OP_1.run()
+#IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
+#face = pn.get_pore_indices('right',indices=False)
+#quarter = sp.rand(pn.num_pores(),)<.1
+#inlets = pn.get_pore_indices()[face&quarter]
+#outlets = pn.get_pore_indices('left')
+#IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
 
-
-##b = pn.get_pore_indices(labels='top')
-##OP_1.evaluate_trapping(outlets=b)
-##OP_1.plot_drainage_curve()
-#
-###-----------------------------------------------------------------------------
-##'''Perform an Injection Experiment (InvasionPercolation)'''
-###-----------------------------------------------------------------------------
-###Initialize algorithm object
-##IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
-##face = pn.get_pore_indices('right',indices=False)
-##quarter = sp.rand(pn.num_pores(),)<.1
-##inlets = pn.get_pore_indices()[face&quarter]
-##outlets = pn.get_pore_indices('left')
-##IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
-#
+##----------------------------------------------------------------------
+#'''Perform Fickian Diffusion'''
+##----------------------------------------------------------------------
+## Updating data based on the result of Percolation Algorithms
+OP_1.update(Pc=3000)
+#IP_1.update()
 ###----------------------------------------------------------------------
-##'''Perform Fickian Diffusion'''
-###----------------------------------------------------------------------
-### Updating data based on the result of Percolation Algorithms
-#OP_1.update(Pc=3000)
-##IP_1.update()
-####----------------------------------------------------------------------
-#### Initializing diffusion algorithm
-#Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Fickian', name='Fickian_alg',network=pn)
-####----------------------------------------------------------------------------
-#### Assign Dirichlet boundary conditions to some of the surface pores
-####BC1
-##BC1_pores = pn.get_pore_indices(labels='top')
-##Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
-##BC1_values = 0.6
-##Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
-#### BC2
-##BC2_pores = pn.get_pore_indices(labels='bottom')
-##Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
-##BC2_values = 0.2
-##Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
-####----------------------------------------------------------------------------
-#### Assign Neumann and Dirichlet boundary conditions to some of the surface pores
-#### BC1
-##BC1_pores = pn.get_pore_indices(labels='top')
-##Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-##BC1_values = 0.5
-##Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-#### BC2
-##BC2_pores = pn.get_pore_indices(labels='bottom')
-##Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC2_pores)
-##BC2_values = 2e-9
-##Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-####----------------------------------------------------------------------------
-#### Assign Dirichlet boundary condition to some of the surface pores and 
-#### Neumann boundary condition to all of the internal pores(individually) 
-####BC0
-##BC0_pores = pn.get_pore_indices()[-sp.in1d(pn.get_pore_indices(),pn.get_pore_indices(['top','bottom']))]
-##Fickian_alg.set_pore_info(label='Neumann_rate_single',locations=BC0_pores)
-##BC0_values = 7e-12
-##Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
-####BC1
-##BC1_pores = pn.get_pore_indices(labels='top')
-##Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-##BC1_values = 0.6
-##Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-#### BC2
-##BC2_pores = pn.get_pore_indices(labels='bottom')
-##Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
-##BC2_values = 0.2
-##Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-####----------------------------------------------------------------------------
-#### Assign Dirichlet boundary condition to some of the surface pores and 
-#### Neumann boundary condition to some of the internal pores(to the cluster not individually)
-####BC0
-##BC0_pores = [500,501,502,503,504]
-##Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC0_pores)
-##BC0_values = 5e-7
-##Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
-####BC1
-##BC1_pores = pn.get_pore_indices(labels='top')
-##Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-##BC1_values = 0.4
-##Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-#### BC2
-##BC2_pores = pn.get_pore_indices(labels='bottom')
-##Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
-##BC2_values = 0.3
-##Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-####----------------------------------------------------------------------------
-#### Assign Dirichlet boundary condition to some of the surface pores and 
-#### Neumann insulated boundary condition to some of the internal pores
-####BC0
-##BC0_pores = sp.r_[500:530]
-##Fickian_alg.set_pore_info(label='Neumann_insulated',locations=BC0_pores)
-####BC1
-##BC1_pores = pn.get_pore_indices(labels='top')
-##Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-##BC1_values = 0.4
-##Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-#### BC2
-##BC2_pores = pn.get_pore_indices(labels='bottom')
-##Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
-##BC2_values = 0.1
-##Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-####----------------------------------------------------------------------------
-#### Assign Dirichlet boundary condition to some of the surface pores and 
-#### Neumann boundary condition to some of the internal pores(to the cluster not individually)
+### Initializing diffusion algorithm
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Fickian', name='Fickian_alg',network=pn)
+###----------------------------------------------------------------------------
+### Assign Dirichlet boundary conditions to some of the surface pores
+##BC1
+BC1_pores = pn.get_pore_indices(labels='top')
+Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
+BC1_values = 0.6
+Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
+## BC2
+BC2_pores = pn.get_pore_indices(labels='bottom')
+Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
+BC2_values = 0.2
+Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
+###----------------------------------------------------------------------------
+### Assign Neumann and Dirichlet boundary conditions to some of the surface pores
+### BC1
+#BC1_pores = pn.get_pore_indices(labels='top')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+#BC1_values = 0.5
+#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(labels='bottom')
+#Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC2_pores)
+#BC2_values = 2e-9
+#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+###----------------------------------------------------------------------------
+### Assign Dirichlet boundary condition to some of the surface pores and 
+### Neumann boundary condition to all of the internal pores(individually) 
 ###BC0
-##BC0_pores = [500,1201,1502,443,704]
-##Fickian_alg.set_pore_info(label='Neumann_flux',locations=BC0_pores)
-##BC0_values = 340
-##Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
-####BC1
-##BC1_pores = pn.get_pore_indices(labels='top')
-##Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-##BC1_values = 0.4
-##Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-#### BC2
-##BC2_pores = pn.get_pore_indices(labels='bottom')
-##Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
-##BC2_values = 0.3
-##Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-#
-#### Run simulation
-##Fickian_alg.run(active_fluid=air)
-##Fickian_alg.update()
-####-----------------------------------------------------------------------
-####Export to VTK
-##OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
-#### Capillary pressure curve and Overview histograms
-##OpenPNM.Visualization.__Plots__.Capillary_Pressure_Curve(net=pn,fluid=water)
-##OpenPNM.Visualization.__Plots__.Overview(net=pn)
+#BC0_pores = pn.get_pore_indices()[-sp.in1d(pn.get_pore_indices(),pn.get_pore_indices(['top','bottom']))]
+#Fickian_alg.set_pore_info(label='Neumann_rate_single',locations=BC0_pores)
+#BC0_values = 7e-12
+#Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
+###BC1
+#BC1_pores = pn.get_pore_indices(labels='top')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+#BC1_values = 0.6
+#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(labels='bottom')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
+#BC2_values = 0.2
+#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+###----------------------------------------------------------------------------
+### Assign Dirichlet boundary condition to some of the surface pores and 
+### Neumann boundary condition to some of the internal pores(to the cluster not individually)
+###BC0
+#BC0_pores = [500,501,502,503,504]
+#Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC0_pores)
+#BC0_values = 5e-7
+#Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
+###BC1
+#BC1_pores = pn.get_pore_indices(labels='top')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+#BC1_values = 0.4
+#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(labels='bottom')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
+#BC2_values = 0.3
+#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+###----------------------------------------------------------------------------
+### Assign Dirichlet boundary condition to some of the surface pores and 
+### Neumann insulated boundary condition to some of the internal pores
+###BC0
+#BC0_pores = sp.r_[500:530]
+#Fickian_alg.set_pore_info(label='Neumann_insulated',locations=BC0_pores)
+###BC1
+#BC1_pores = pn.get_pore_indices(labels='top')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+#BC1_values = 0.4
+#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(labels='bottom')
+#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
+#BC2_values = 0.1
+#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+###----------------------------------------------------------------------------
+### Run simulation
+Fickian_alg.run(active_fluid=air)
+Fickian_alg.update()
+###-----------------------------------------------------------------------
+###Export to VTK
+#OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
+### Capillary pressure curve and Overview histograms
+#OpenPNM.Visualization.__Plots__.Capillary_Pressure_Curve(net=pn,fluid=water)
+#OpenPNM.Visualization.__Plots__.Overview(net=pn)
