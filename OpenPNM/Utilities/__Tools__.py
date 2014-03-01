@@ -53,11 +53,11 @@ class Tools(Base):
             try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
-              
-        try: phase = self.find_object_by_name(phase) 
-        except: pass #Accept object
+        
 
         if phase :
+            try: phase = self.find_object_by_name(phase) 
+            except: pass #Accept object
 
             if sp.shape(data)[0]==1:
                 if locations!='':                
@@ -134,10 +134,10 @@ class Tools(Base):
             try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
-        try: phase = self.find_object_by_name(phase) 
-        except: pass        
-        
+       
         if phase :
+            try: phase = self.find_object_by_name(phase) 
+            except: pass 
             if locations!='':                
                 try: 
                     getattr(phase,'_'+element+'_data')[prop]
@@ -299,14 +299,15 @@ class Tools(Base):
             except: locations = sp.array(locations,ndmin=1)
         elif type(locations)==sp.ndarray:
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
-            except : pass            
+            except : pass 
         if locations!='':
+            
             try: 
                 locations = locations.name
                 label = locations
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])           
-            
+            locations=sp.array(locations,ndmin=1)
             if label:
                 if label=='all':
                     try: 
