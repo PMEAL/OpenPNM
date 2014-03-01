@@ -299,14 +299,15 @@ class Tools(Base):
             except: locations = sp.array(locations,ndmin=1)
         elif type(locations)==sp.ndarray:
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
-            except : pass            
+            except : pass 
         if locations!='':
+            
             try: 
                 locations = locations.name
                 label = locations
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])           
-            
+            locations=sp.array(locations,ndmin=1)
             if label:
                 if label=='all':
                     try: 
