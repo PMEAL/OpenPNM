@@ -151,12 +151,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         for item in fluids:
             if type(item)==sp.str_: item =  self.find_object_by_name(item)
             for key in item._pore_data.keys():
-                dict_name = item.name+'_pore_'+key
-                self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
+                if sp.amax(item._pore_data[key]) < sp.inf:
+                    dict_name = item.name+'_pore_'+key
+                    self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
         #Add geometry data
         for key in self._pore_data.keys():
-            dict_name = 'pore'+'_'+key
-            self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
+            if sp.amax(self._pore_data[key]) < sp.inf:
+                dict_name = 'pore'+'_'+key
+                self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
         return self._pore_data_amalgamate
 
     def amalgamate_throat_data(self,fluids='all'):
@@ -172,12 +174,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         for item in fluids:
             if type(item)==sp.str_: item =  self.find_object_by_name(item)
             for key in item._throat_data.keys():
-                dict_name = item.name+'_throat_'+key
-                self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
+                if sp.amax(item._throat_data[key]) < sp.inf:
+                    dict_name = item.name+'_throat_'+key
+                    self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
         #Add geometry data
         for key in self._throat_data.keys():
-            dict_name = 'throat'+'_'+key
-            self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
+            if sp.amax(self._throat_data[key]) < sp.inf:
+                dict_name = 'throat'+'_'+key
+                self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
         return self._throat_data_amalgamate
 
     #--------------------------------------------------------------------------
