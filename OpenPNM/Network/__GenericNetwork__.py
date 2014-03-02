@@ -37,7 +37,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Initialize
         """
         super(GenericNetwork,self).__init__(**kwargs)
-        self._logger.info("Construct Network container")
+        self._logger.info("Construct Network")
         self.name = name
         #Initialize adjacency and incidence matrix dictionaries
         self.adjacency_matrix = {}
@@ -48,7 +48,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.incidence_matrix['coo'] = {}
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
-        self._logger.debug("Construction of Network container complete")
+        self._logger.debug("Construction of Network container")
         
     def generate(self, **params):
         r"""
@@ -618,12 +618,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.set_throat_info(label='all', locations=sp.ones((Ntnew,),dtype=bool))
         #Insert new throats into network
         self.set_throat_data(prop='connections',data=tnew)        
-        #Clone throat labels
-        self.set_throat_info(label=apply_label)
+        #Clone throat label
         r'''
         TODO: Throat labels are not inherited from parent pores since I'm not 
         sure how this should be done, and it isn't needed yet
         '''
+        self.update_network()
 
     def __str__(self):
         r"""

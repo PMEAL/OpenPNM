@@ -6,7 +6,7 @@ import scipy as sp
 #==============================================================================
 
 #pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=10).generate(filename='standard_cubic_5x5x5.mat')
-pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001])
+pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[25, 25, 25], lattice_spacing=[0.0001])
 #pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=1500,domain_size=[100,100,30])
 #pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((4,4),dtype=int),lattice_spacing=0.001)
 #pn = OpenPNM.Network.Sphere(name='sphere_1',loglevel=10).generate(radius=5,lattice_spacing=1)
@@ -16,10 +16,14 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 1
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='stick_and_ball', locations=pn.get_pore_indices())
-geom.regenerate()
+a = pn.get_pore_indices(labels=['all','boundary'],mode='not_intersection')
+pn.set_pore_info(label='stick_and_ball',locations=a)
+pn.set_throat_info(label='stick_and_ball',locations='all')
+geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, label='stick_and_ball')
 
-bndry = OpenPNM.Geometry.Boundary(network=pn, name='boundary', locations=pn.get_pore_indices(labels='boundary'))
+bndry = OpenPNM.Geometry.Boundary(network=pn, label='boundary')
+
+bndry.regenerate()
 geom.regenerate()
 
 #==============================================================================
@@ -32,10 +36,10 @@ air.regenerate()
 water = OpenPNM.Fluids.Water(network=pn)
 water.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
 water.regenerate()
-#
-##==============================================================================
-#'''Build Physics Objects'''
-##==============================================================================
+
+#==============================================================================
+'''Build Physics Objects'''
+#==============================================================================
 phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water, name='standard_water_physics')
 phys_water.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
 phys_water.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
@@ -165,7 +169,7 @@ Fickian_alg.run(active_fluid=air)
 Fickian_alg.update()
 ###-----------------------------------------------------------------------
 ###Export to VTK
-OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
+#OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
 ### Capillary pressure curve and Overview histograms
 #OpenPNM.Visualization.__Plots__.Capillary_Pressure_Curve(net=pn,fluid=water)
 #OpenPNM.Visualization.__Plots__.Overview(net=pn)

@@ -14,7 +14,6 @@ def constant(geometry,
     r"""
     Assigns specified constant value
     """
-    propname = propname.split('_')[1] #remove leading pore_ or throat_ from dictionary key
     network.set_throat_data(locations=geometry,prop=propname,data=value)
 
 def straight(geometry,
