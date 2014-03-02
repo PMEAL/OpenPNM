@@ -90,12 +90,10 @@ class Tools(Base):
         else:
             if sp.shape(data)[0]==1:
                 if locations!='':
-                    print('step1')
                     try: getattr(self,'_'+element+'_data')[prop]
                     except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
                     getattr(self,'_'+element+'_data')[prop][locations] = data
                 else:
-                    print('step2')
                     try:
                         getattr(self,'_'+element+'_data')[prop]
                         if sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:
@@ -104,7 +102,6 @@ class Tools(Base):
                     getattr(self,'_'+element+'_data')[prop] = data            
             else:
                 if locations!='':
-                    print('step3')
                     try: getattr(self,'_'+element+'_data')[prop]
                     except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
                     getattr(self,'_'+element+'_data')[prop][locations] = data
@@ -114,7 +111,6 @@ class Tools(Base):
 #                        getattr(self,'_'+element+'_data')[prop][locations] = data
 #                    else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', locations and size of data do not match!')
                 else:
-                    print('step4')
                     getattr(self,'_'+element+'_data')[prop] = data
 #                    try:
 #                        getattr(self,'num_'+element+'s')()                        

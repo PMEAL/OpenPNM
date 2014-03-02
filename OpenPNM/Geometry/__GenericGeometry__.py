@@ -58,11 +58,11 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
         self._logger.debug("Method: Constructor")
         network._geometry.append(self) #attach geometry to network
         self.name = label
-        #Check if name/label exists
-        if sp.size(sp.where(network.list_pore_labels==label)) == 0:
+        #Check if name/label exists, and create it if necessary
+        if sp.size(sp.where(network.list_pore_labels()==label)) == 0:
             self._logger.warning('Pore label not found, creating empty label')
             network.set_pore_info(label=label,locations=[])
-        if sp.size(sp.where(network.list_throat_labels==label)) == 0:
+        if sp.size(sp.where(network.list_throat_labels()==label)) == 0:
             self._logger.warning('throat label not found, creating empty label')
             network.set_throat_info(label=label,locations=[])
         self._net = network #Attach network to self
