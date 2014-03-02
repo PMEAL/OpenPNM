@@ -42,8 +42,8 @@ class Tools(Base):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
-        if type(data)!=sp.ndarray: data = sp.array(data,ndmin=1)
-        if type(locations)==list: 
+        data = sp.array(data,ndmin=1)
+        if type(locations)==list:
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
             except: locations = sp.array(locations,ndmin=1)
         elif type(locations)==sp.ndarray:
@@ -53,34 +53,33 @@ class Tools(Base):
             try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
-        
 
         if phase :
             try: phase = self.find_object_by_name(phase) 
             except: pass #Accept object
 
             if sp.shape(data)[0]==1:
-                if locations!='':                
+                if locations!='':
                     try: getattr(phase,'_'+element+'_data')[prop]
                     except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
                     getattr(phase,'_'+element+'_data')[prop][locations] = data
                 else:
-                    try: 
+                    try:
                         getattr(phase,'_'+element+'_data')[prop]
                         if sp.shape(getattr(phase,'_'+element+'_data')[prop])[0]!=1:
                             print('Warning: '+prop+' '+element+' property in '+phase.name+' was an array which has been overwritten with a scalar value')
                     except: pass
                     getattr(phase,'_'+element+'_data')[prop] = data  
-            else:                
+            else:
                 if locations!='':
                     if sp.shape(locations)[0]==sp.shape(data)[0]:
                         try: getattr(phase,'_'+element+'_data')[prop]
                         except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
                         getattr(phase,'_'+element+'_data')[prop][locations] = data
-                    else: 
+                    else:
                         phase._logger.error('For adding '+element+' property '+prop+' to '+phase.name+', locations and size of data do not match!')
                 else:
-                    try: 
+                    try:
                         getattr(phase,'num_'+element+'s')()                        
                         if sp.shape(data)[0]==getattr(phase,'num_'+element+'s')():
                             getattr(phase,'_'+element+'_data')[prop] = data
@@ -89,34 +88,41 @@ class Tools(Base):
             phase._logger.debug(element+' property '+prop+' has been added to '+phase.name)
                         
         else:
-            
             if sp.shape(data)[0]==1:
-                if locations!='':                
+                if locations!='':
+                    print('step1')
                     try: getattr(self,'_'+element+'_data')[prop]
                     except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
                     getattr(self,'_'+element+'_data')[prop][locations] = data
                 else:
-                    try: 
+                    print('step2')
+                    try:
                         getattr(self,'_'+element+'_data')[prop]
                         if sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:
                             print('Warning: '+prop+' '+element+' property in '+self.name+' was an array which has been overwritten with a scalar value')
                     except: pass
                     getattr(self,'_'+element+'_data')[prop] = data            
-            else:                
+            else:
                 if locations!='':
-                    if sp.shape(locations)[0]==sp.shape(data)[0]:
-                        try: getattr(self,'_'+element+'_data')[prop]
-                        except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
-                        getattr(self,'_'+element+'_data')[prop][locations] = data
-                    else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', locations and size of data do not match!')
+                    print('step3')
+                    try: getattr(self,'_'+element+'_data')[prop]
+                    except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
+                    getattr(self,'_'+element+'_data')[prop][locations] = data
+#                    if sp.shape(locations)[0]==sp.shape(data)[0]:
+#                        try: getattr(self,'_'+element+'_data')[prop]
+#                        except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
+#                        getattr(self,'_'+element+'_data')[prop][locations] = data
+#                    else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', locations and size of data do not match!')
                 else:
-                    try: 
-                        getattr(self,'num_'+element+'s')()                        
-                        if sp.shape(data)[0]==getattr(self,'num_'+element+'s')():
-                            getattr(self,'_'+element+'_data')[prop] = data
-                        else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', number of '+element+'s and size of data do not match!')
-                    except: getattr(self,'_'+element+'_data')[prop] = data
-            self._logger.debug(element+' property '+prop+' has been added to '+self.name)
+                    print('step4')
+                    getattr(self,'_'+element+'_data')[prop] = data
+#                    try:
+#                        getattr(self,'num_'+element+'s')()                        
+#                        if sp.shape(data)[0]==getattr(self,'num_'+element+'s')():
+#                            getattr(self,'_'+element+'_data')[prop] = data
+#                        else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', number of '+element+'s and size of data do not match!')
+#                    except: getattr(self,'_'+element+'_data')[prop] = data
+#            self._logger.debug(element+' property '+prop+' has been added to '+self.name)
 
 
 

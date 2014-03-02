@@ -33,7 +33,7 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
         The pore locations in the network where this geometry applies.
     
     loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
 
     loggername : string (optional)
         Sets a custom name for the logger, to help identify logger messages
@@ -50,22 +50,21 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
     0.123
     """
 
-    def __init__(self, network,name,locations,**kwargs):
+    def __init__(self, network,label,**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        loc = sp.array(locations,ndmin=1)
-        network.set_pore_info(label=name,locations=loc)
-        ind = network.get_pore_indices(name)
-        r'''
-        TODO: The following lines will create conflicting throat labels when additionaly geometries are added
-        '''
-        Tn = network.find_neighbor_throats(ind)
-        network.set_throat_info(label=name,locations=Tn)
         network._geometry.append(self) #attach geometry to network
-        self.name = name
+        self.name = label
+        #Check if name/label exists
+        if sp.size(sp.where(network.list_pore_labels==label)) == 0:
+            self._logger.warning('Pore label not found, creating empty label')
+            network.set_pore_info(label=label,locations=[])
+        if sp.size(sp.where(network.list_throat_labels==label)) == 0:
+            self._logger.warning('throat label not found, creating empty label')
+            network.set_throat_info(label=label,locations=[])
         self._net = network #Attach network to self
         self._prop_list = []
               
