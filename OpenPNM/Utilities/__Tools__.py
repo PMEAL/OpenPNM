@@ -58,7 +58,10 @@ class Tools(Base):
         if phase :
             try: phase = self.find_object_by_name(phase) 
             except: pass #Accept object
-
+            try: 
+                getattr(phase,'_'+element+'_data')[prop]
+                temp_word = 'updated for '
+            except: temp_word = 'added to '
             if sp.shape(data)[0]==1:
                 if locations!='':                
                     try: getattr(phase,'_'+element+'_data')[prop]
@@ -86,10 +89,13 @@ class Tools(Base):
                             getattr(phase,'_'+element+'_data')[prop] = data
                         else: phase._logger.error('For adding '+element+' property '+prop+' to '+phase.name+', number of '+element+'s and size of data do not match!')
                     except: phase._logger.error(element+' numbering has not been specified for '+phase.name)
-            phase._logger.debug(element+' property '+prop+' has been added to '+phase.name)
+            phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
                         
         else:
-            
+            try: 
+                getattr(self,'_'+element+'_data')[prop]
+                temp_word = 'updated for '
+            except: temp_word = 'added to '            
             if sp.shape(data)[0]==1:
                 if locations!='':                
                     try: getattr(self,'_'+element+'_data')[prop]
@@ -116,7 +122,7 @@ class Tools(Base):
                             getattr(self,'_'+element+'_data')[prop] = data
                         else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', number of '+element+'s and size of data do not match!')
                     except: getattr(self,'_'+element+'_data')[prop] = data
-            self._logger.debug(element+' property '+prop+' has been added to '+self.name)
+            self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
 
 
 
@@ -314,14 +320,14 @@ class Tools(Base):
                         old_label = getattr(self,'_'+element+'_info')[label]
                         if sp.shape(old_label)[0]<sp.shape(locations)[0]:
                             getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
-                            self._logger.info('label=all has been updated to a bigger size!')
+                            self._logger.info('label=all for '+element+'has been updated to a bigger size!')
                             for info_labels in getattr(self,'_'+element+'_info').keys():
                                 if info_labels!=label:
                                     temp = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
                                     temp[old_label] = getattr(self,'_'+element+'_info')[info_labels]
                                     getattr(self,'_'+element+'_info')[info_labels] = temp
                         elif sp.shape(old_label)[0]>sp.shape(locations)[0]: 
-                            self._logger.error('To apply a new numbering label (label=all), size of the locations cannot be less than the network!!')
+                            self._logger.error('To apply a new numbering label (label=all) to '+element+'s, size of the locations cannot be less than total number of '+element+'s!!')
                     except: getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
                 else:    
                     try: getattr(self,'_'+element+'_info')[label]
