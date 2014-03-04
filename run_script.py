@@ -16,8 +16,10 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 1
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='stick_and_ball', locations=pn.get_pore_indices())
-geom.regenerate()
+a = pn.get_pore_indices(labels='all')
+b = pn.get_throat_indices(labels='top')
+GDL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='GDL', pnums=a, tnums=b)
+GDL_geom.regenerate()
 
 #==============================================================================
 '''Build Fluids'''
@@ -33,13 +35,13 @@ water.regenerate()
 ##==============================================================================
 #'''Build Physics Objects'''
 ##==============================================================================
-phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water, name='standard_water_physics')
+phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water, geometry=GDL_geom, name='standard_water_physics')
 phys_water.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
 phys_water.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
 phys_water.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
 phys_water.regenerate()
 
-phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air, name='standard_air_physics')
+phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air, geometry=GDL_geom, name='standard_air_physics')
 phys_air.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
 phys_air.add_method(prop='diffusive_conductance', model='bulk_diffusion')
 phys_air.regenerate()
