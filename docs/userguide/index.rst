@@ -11,6 +11,7 @@ Contents:
    
    getting_started.rst
    data_storage.rst
+   network.rst
    geometry.rst
    fluids.rst
    physics.rst
