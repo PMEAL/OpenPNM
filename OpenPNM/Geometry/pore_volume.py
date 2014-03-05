@@ -24,7 +24,7 @@ def sphere(geometry,
     r"""
     Calculate pore volume from diameter for a spherical pore body
     """
-    value=sp.pi/6*network.get_pore_data(prop=pore_diameter)**3
+    value=sp.pi/6*network.get_pore_data(prop=pore_diameter,locations=geometry)**3
     network.set_pore_data(locations=geometry,prop=propname,data=value)
     
 def cube(geometry,
@@ -35,5 +35,5 @@ def cube(geometry,
     r"""
     Calculate pore volume from diameter for a cubic pore body
     """
-    value=network.get_pore_data(prop=pore_diameter)**3
+    value=network.get_pore_data(prop=pore_diameter,locations=geometry)**3
     network.set_pore_data(locations=geometry,prop=propname,data=value)
