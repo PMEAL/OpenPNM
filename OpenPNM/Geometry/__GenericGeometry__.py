@@ -50,12 +50,14 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
     0.123
     """
 
-    def __init__(self, network,label,**kwargs):
+    def __init__(self, network,name,pnums=[],tnums=[],**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        network.set_pore_info(label=name,locations=pnums)
+        network.set_throat_info(label=name,locations=tnums)
         network._geometry.append(self) #attach geometry to network
         self.name = label
         #Check if name/label exists, and create it if necessary
@@ -66,6 +68,7 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
             self._logger.warning('throat label not found, creating empty label')
             network.set_throat_info(label=label,locations=[])
         self._net = network #Attach network to self
+        self._physics = [] #Create list for physics to append themselves to
         self._prop_list = []
               
     def regenerate(self, prop_list=''):

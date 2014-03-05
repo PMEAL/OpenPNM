@@ -30,7 +30,7 @@ def pore_to_pore(geometry,
     This corresponds to the pores in the 1st and 2nd columns of the 
     'connections' array as stored on the network.
     """
-    Ts = network.get_throat_indices()
+    Ts = network.get_throat_indices(geometry.name)
     Ps = network.find_connected_pores(tnums=Ts,flatten=False)
     C0 = network.get_pore_data(prop='coords')[Ps[:,0]]
     C1 = network.get_pore_data(prop='coords')[Ps[:,1]]
