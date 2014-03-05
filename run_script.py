@@ -54,7 +54,7 @@ water.regenerate()
 ##==============================================================================
 #'''Build Physics Objects'''
 ##==============================================================================
-phys_water_GDL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry='GDL',name='phys_water_GDL')
+phys_water_GDL = OpenPNM.Physics.GenericPhysics(network=pn, fluid='water',geometry=GDL_geom,name='phys_water_GDL')
 phys_water_GDL.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
 phys_water_GDL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
 phys_water_GDL.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
