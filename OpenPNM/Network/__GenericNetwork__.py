@@ -649,6 +649,40 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         return str_overview+str_pore+str_throat
 
+    def regenerate_fluid(self,fluids='all',prop_list=''):
+        
+        if type(fluids)!= sp.ndarray and fluids=='all':
+            fluids = self._fluids
+        elif type(fluids)!= sp.ndarray: 
+            fluids = sp.array(fluids,ndmin=1)
+        for item in fluids:
+            try: item = self.find_object_by_name(item) 
+            except: pass #Accept object
+            item.regenerate(prop_list=prop_list)
+      
+
+    def regenerate_physics(self,physics='all',prop_list=''):
+        
+        if type(physics)!= sp.ndarray and physics=='all':
+            physics = self._physics
+        elif type(physics)!= sp.ndarray: 
+            physics = sp.array(physics,ndmin=1)
+        for item in physics:
+            try: item = self.find_object_by_name(item) 
+            except: pass #Accept object
+            item.regenerate(prop_list=prop_list) 
+                
+    def regenerate_geometry(self,geometry='all',prop_list=''):
+        
+        if type(geometry)!= sp.ndarray and geometry=='all':
+            geometry = self._geometry
+        elif type(geometry)!= sp.ndarray: 
+            geometry = sp.array(geometry,ndmin=1)
+        for item in geometry:
+            try: item = self.find_object_by_name(item) 
+            except: pass #Accept object
+            item.regenerate(prop_list=prop_list) 
+
     def update_network(self):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
