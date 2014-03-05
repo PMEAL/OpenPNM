@@ -27,7 +27,7 @@ def cylinder(geometry,
     """
     prob_fn = getattr(spst,params['name'])
     P = prob_fn(params['shape'],loc=params['loc'],scale=params['scale'])
-    value=P.ppf(network.get_throat_data(prop=seed))
+    value=P.ppf(network.get_throat_data(prop=seed,locations=geometry))
     network.set_throat_data(locations=geometry,prop=propname,data=value)
 
 def cuboid(geometry,

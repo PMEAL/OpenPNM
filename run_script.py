@@ -6,7 +6,7 @@ import scipy as sp
 #==============================================================================
 
 #pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=10).generate(filename='standard_cubic_5x5x5.mat')
-pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[25, 25, 25], lattice_spacing=[0.0001])
+pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001])
 #pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=1500,domain_size=[100,100,30])
 #pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((4,4),dtype=int),lattice_spacing=0.001)
 #pn = OpenPNM.Network.Sphere(name='sphere_1',loglevel=10).generate(radius=5,lattice_spacing=1)
@@ -16,15 +16,30 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[25, 2
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-a = pn.get_pore_indices(labels=['all','boundary'],mode='not_intersection')
-pn.set_pore_info(label='stick_and_ball',locations=a)
-pn.set_throat_info(label='stick_and_ball',locations='all')
-geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, label='stick_and_ball')
+GDL_pores = sp.r_[0:1500]
+GDL_throats = pn.find_neighbor_throats(GDL_pores,mode='intersection')
+GDL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='GDL', pnums=GDL_pores, tnums=GDL_throats)
+GDL_geom.regenerate()
+## ----------------------------------------------------------------------------------------------
+MPL_pores = sp.r_[1500:pn.num_pores()]
+MPL_throats = pn.find_neighbor_throats(MPL_pores,mode='intersection')
+MPL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='MPL', pnums=MPL_pores, tnums=MPL_throats)
+MPL_geom.regenerate()
+## ----------------------------------------------------------------------------------------------
+t1 = pn.find_neighbor_throats(GDL_pores,mode='not_intersection')
+t2 = pn.find_neighbor_throats(MPL_pores,mode='not_intersection')
+interface_throats = t2[sp.in1d(t2,t1)]
+MPL_throats = pn.find_neighbor_throats(GDL_pores,mode='intersection')
 
-bndry = OpenPNM.Geometry.Boundary(network=pn, label='boundary')
-
-bndry.regenerate()
-geom.regenerate()
+interface_geom = OpenPNM.Geometry.GenericGeometry(network=pn, name='interface',tnums=interface_throats)
+interface_geom.add_method(prop='throat_seed',model='neighbor_min')
+interface_geom.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
+interface_geom.add_method(prop='throat_length',model='straight')
+interface_geom.add_method(prop='throat_volume',model='cylinder')
+interface_geom.add_method(prop='throat_vector',model='pore_to_pore')
+interface_geom.add_method(prop='throat_area',model='cylinder')
+interface_geom.add_method(prop='throat_surface_area',model='cylinder')
+interface_geom.regenerate()
 
 #==============================================================================
 '''Build Fluids'''
@@ -33,23 +48,45 @@ air = OpenPNM.Fluids.Air(network=pn, loglevel=10,init_cond={'temperature':300, '
 air.apply_ICs(init_cond={'temperature':350, 'pressure':200000})  # experimental feature
 air.regenerate()
 
-water = OpenPNM.Fluids.Water(network=pn)
+water = OpenPNM.Fluids.Water(network=pn,loglevel=10)
 water.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
 water.regenerate()
+#
+##==============================================================================
+#'''Build Physics Objects'''
+##==============================================================================
+phys_water_GDL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry='GDL',name='phys_water_GDL')
+phys_water_GDL.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
+phys_water_GDL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_water_GDL.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
+phys_water_GDL.regenerate()
 
-#==============================================================================
-'''Build Physics Objects'''
-#==============================================================================
-phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water, name='standard_water_physics')
-phys_water.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
-phys_water.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-phys_water.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
-phys_water.regenerate()
+phys_air_GDL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air,geometry='GDL', name='phys_air_GDL')
+phys_air_GDL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_air_GDL.add_method(prop='diffusive_conductance', model='bulk_diffusion')
+phys_air_GDL.regenerate()
+## ----------------------------------------------------------------------------------------------
+phys_water_MPL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry='MPL',name='phys_water_MPL')
+phys_water_MPL.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
+phys_water_MPL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_water_MPL.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
+phys_water_MPL.regenerate()
 
-phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air, name='standard_air_physics')
-phys_air.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-phys_air.add_method(prop='diffusive_conductance', model='bulk_diffusion')
-phys_air.regenerate()
+phys_air_MPL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air, geometry='MPL',name='phys_air_MPL')
+phys_air_MPL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_air_MPL.add_method(prop='diffusive_conductance', model='bulk_diffusion')
+phys_air_MPL.regenerate()
+## ----------------------------------------------------------------------------------------------
+phys_water_interface = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry='interface',name='phys_water_interface')
+phys_water_interface.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
+phys_water_interface.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_water_interface.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
+phys_water_interface.regenerate()
+
+phys_air_interface = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air, geometry='interface',name='phys_air_interface')
+phys_air_interface.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_air_interface.add_method(prop='diffusive_conductance', model='bulk_diffusion')
+phys_air_interface.regenerate()
 
 #==============================================================================
 '''Begin Simulations'''
@@ -58,7 +95,7 @@ phys_air.regenerate()
 #------------------------------------------------------------------------------
 #Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername='OP',name='OP_1',network=pn)
-a = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
+a = pn.get_pore_indices(labels='bottom')
 OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 OP_1.run()
 

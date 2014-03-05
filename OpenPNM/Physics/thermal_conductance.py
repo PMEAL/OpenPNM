@@ -9,6 +9,7 @@ import scipy as sp
 
 def constant(physics,
              network,
+             geometry,
              fluid,
              propname,
              value,
@@ -16,20 +17,22 @@ def constant(physics,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
 
 def na(physics,
        network,
        fluid,
+       geometry,
        propname,
        **params):
     
     value = -1
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
 
 def thermal_fluid(physics,
                   network,
                   fluid,
+                  geometry,
                   propname,
                   thermal_conductivity='thermal_conductivity',
                   throat_diameter = 'diameter',
@@ -69,10 +72,12 @@ def thermal_fluid(physics,
     tlen = network.get_throat_data(prop=throat_length)
     gt = kt*tdia**2/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    mask = network.get_throat_indices(geometry)
+    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
 
 def parallel_resistors(physics,
                        network,
+                       geometry,
                        fluid,
                        propname,
                        thermal_conductivity='thermal_conductivity',
@@ -97,6 +102,7 @@ def parallel_resistors(physics,
     kp = network.get_pore_data(phase=fluid,prop=thermal_conductivity)
     kt = network.interpolate_throat_data(kp)
     value = kt #A physical model of parallel resistors representing the solid phase surrouding each pore is required here
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    mask = network.get_throat_indices(geometry)
+    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
 
 
