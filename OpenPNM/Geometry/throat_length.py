@@ -26,11 +26,11 @@ def straight(geometry,
     Calculate throat length 
     """
     #Initialize throat_property['length']
-    C1 = network.get_pore_data(prop='coords')[network.get_throat_data(prop='connections')[:,0]]
-    C2 = network.get_pore_data(prop='coords')[network.get_throat_data(prop='connections')[:,1]]
+    C1 = network.get_pore_data(prop='coords')[network.get_throat_data(prop='connections',locations=geometry)[:,0]]
+    C2 = network.get_pore_data(prop='coords')[network.get_throat_data(prop='connections',locations=geometry)[:,1]]
     E = sp.sqrt(sp.sum((C1-C2)**2,axis=1))  #Euclidean distance between pores
-    D1 = network.get_pore_data(prop=pore_diameter)[network.get_throat_data(prop='connections')[:,0]]
-    D2 = network.get_pore_data(prop=pore_diameter)[network.get_throat_data(prop='connections')[:,1]]
+    D1 = network.get_pore_data(prop=pore_diameter)[network.get_throat_data(prop='connections',locations=geometry)[:,0]]
+    D2 = network.get_pore_data(prop=pore_diameter)[network.get_throat_data(prop='connections',locations=geometry)[:,1]]
     value = E-(D1+D2)/2
     network.set_throat_data(locations=geometry,prop=propname,data=value)
         

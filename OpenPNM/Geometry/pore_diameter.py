@@ -28,7 +28,7 @@ def sphere(geometry,
     """
     prob_fn = getattr(spst,params['name'])
     P = prob_fn(params['shape'],loc=params['loc'],scale=params['scale'])
-    value = P.ppf(network.get_pore_data(prop=seed))
+    value = P.ppf(network.get_pore_data(prop=seed,locations=geometry))
     network.set_pore_data(locations=geometry,prop=propname,data=value)
 
     

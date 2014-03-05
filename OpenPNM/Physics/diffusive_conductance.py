@@ -9,6 +9,7 @@ import scipy as sp
 
 def constant(physics,
              network,
+             geometry,
              fluid,
              propname,
              value,
@@ -16,21 +17,23 @@ def constant(physics,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
 
 def na(physics,
        network,
+       geometry,
        fluid,
        propname,
        **params):
     r"""
     """
     value = -1
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
 
 def bulk_diffusion(physics,
                    network,
                    fluid,
+                   geometry,
                    propname,
                    diffusivity = 'diffusivity',
                    molar_density = 'molar_density',
@@ -76,5 +79,6 @@ def bulk_diffusion(physics,
     tlen = network.get_throat_data(prop=throat_length)
     gt = ct*DABt*tdia**2/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    mask = network.get_throat_indices(geometry)
+    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
 
