@@ -127,24 +127,24 @@ Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Ficki
 ###----------------------------------------------------------------------------
 ### Assign Dirichlet boundary conditions to some of the surface pores
 ##BC1
-BC1_pores = pn.get_pore_indices(labels='top')
+BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
 Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
 BC1_values = 0.6
 Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
 ## BC2
-BC2_pores = pn.get_pore_indices(labels='bottom')
+BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
 Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
 BC2_values = 0.2
 Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ###----------------------------------------------------------------------------
 ### Assign Neumann and Dirichlet boundary conditions to some of the surface pores
 ### BC1
-#BC1_pores = pn.get_pore_indices(labels='top')
+#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
 #BC1_values = 0.5
 #Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
 ### BC2
-#BC2_pores = pn.get_pore_indices(labels='bottom')
+#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
 #Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC2_pores)
 #BC2_values = 2e-9
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
@@ -157,12 +157,12 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 #BC0_values = 7e-12
 #Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
 ###BC1
-#BC1_pores = pn.get_pore_indices(labels='top')
+#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
 #BC1_values = 0.6
 #Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
 ### BC2
-#BC2_pores = pn.get_pore_indices(labels='bottom')
+#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
 #BC2_values = 0.2
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
@@ -175,12 +175,12 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 #BC0_values = 5e-7
 #Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
 ###BC1
-#BC1_pores = pn.get_pore_indices(labels='top')
+#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
 #BC1_values = 0.4
 #Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
 ### BC2
-#BC2_pores = pn.get_pore_indices(labels='bottom')
+#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
 #BC2_values = 0.3
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
@@ -191,12 +191,12 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 #BC0_pores = sp.r_[500:530]
 #Fickian_alg.set_pore_info(label='Neumann_insulated',locations=BC0_pores)
 ###BC1
-#BC1_pores = pn.get_pore_indices(labels='top')
+#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
 #BC1_values = 0.4
 #Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
 ### BC2
-#BC2_pores = pn.get_pore_indices(labels='bottom')
+#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
 #Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
 #BC2_values = 0.1
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
