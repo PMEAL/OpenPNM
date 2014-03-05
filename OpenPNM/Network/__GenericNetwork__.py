@@ -583,7 +583,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #            ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
         #        plt.show()
         
-    def clone_pores(self,pnums,mode='parent',apply_label='clone'):
+    def clone_pores(self,pnums,mode='parent',apply_label=['clone']):
         r'''
         mode options should be 'parent', 'siblings'
         '''
@@ -591,6 +591,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             pnums = self.get_pore_indices(labels=[pnums])
         if self._geometry != [] or self._fluids != []:
             raise Exception('Cannot clone an active network')
+        apply_label = list(apply_label)
         #Clone pores
         Np = self.num_pores()
         parents = sp.array(pnums,ndmin=1)
@@ -603,14 +604,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.set_pore_info(label='all', locations=sp.ones((Npnew,),dtype=bool))
         #Insert cloned pore coordinates into network
         self.set_pore_data(prop='coords',data=pnew)
-        #Clone parent pore labels
-        arr = self.get_pore_labels(pnums=pnums,mode='raw')
-        labels = self.list_pore_labels()
-        for item in labels:
-            col = sp.where(labels==item)[0][0]
-            vals = sp.where(arr[:,col])[0] + Np
-            self.set_pore_info(label=item,locations=vals)
-        self.set_pore_info(label=apply_label,locations=clones)
+        #Apply specified labels to cloned pores
+        for item in apply_label:
+            self.set_pore_info(label=item,locations=clones)
 
         #Add connections between parents and clones
         Nt = self.num_throats()
@@ -621,14 +617,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #Increase size of 'all' to accomodate new throats
         self.set_throat_info(label='all', locations=sp.ones((Ntnew,),dtype=bool))
         #Insert new throats into network
-        self.set_throat_data(prop='connections',data=tnew)        
-        #Clone throat label
-        r'''
-        TODO: Throat labels are not inherited from parent pores since I'm not 
-        sure how this should be done, and it isn't needed yet
-        '''
-        self.update_network()
-
+        self.set_throat_data(prop='connections',data=tnew)
+        
+        # Any existing adjacency and incidence matrices will be invalid
+        self._reset_network()
+        
     def __str__(self):
         r"""
         Print some basic properties
@@ -662,6 +655,19 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
+        
+    def _reset_network(self):
+        r'''
+        '''
+        #Initialize adjacency and incidence matrix dictionaries
+        self.adjacency_matrix = {}
+        self.incidence_matrix = {}
+        self.adjacency_matrix['coo'] = {}
+        self.adjacency_matrix['csr'] = {}
+        self.adjacency_matrix['lil'] = {}
+        self.incidence_matrix['coo'] = {}
+        self.incidence_matrix['csr'] = {}
+        self.incidence_matrix['lil'] = {}
 
 if __name__ == '__main__':
     #Run doc tests

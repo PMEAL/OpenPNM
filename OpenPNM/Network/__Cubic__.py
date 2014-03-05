@@ -191,19 +191,29 @@ class Cubic(GenericNetwork):
     def _add_boundaries(self):
         r'''
         '''
+        
+        offset = {}
+        offset['front'] = offset['left'] = offset['bottom'] = [0,0,0]
+        offset['back']  = [self._Lx,0,0]
+        offset['right'] = [0,self._Ly,0]
+        offset['top']   = [0,0,self._Lz]
+        
+        scale = {}
+        scale['front']  = scale['back']  = [0,1,1]
+        scale['left']   = scale['right'] = [1,0,1]
+        scale['bottom'] = scale['top']   = [1,1,0]
+        
+        for label in ['front','back','left','right','bottom','top']:
+            ps = self.get_pore_indices(labels=[label,'internal'],mode='intersection')
+            self.clone_pores(pnums=ps,apply_label=[label,'boundary']) 
+            #Translate cloned pores
+            ind = self.get_pore_indices(labels=[label,'internal'],mode='intersection')
+            coords = self.get_pore_data(prop='coords',locations=ind) 
+            coords = coords*scale[label]+ offset[label]
+            self.set_pore_data(prop='coords', locations=ind, data=coords)
+        
+        
 
-        ps = self.get_pore_indices(labels=['top','bottom'])
-        self.clone_pores(pnums=ps,apply_label='boundary')
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         
