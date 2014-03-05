@@ -703,6 +703,24 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
 
+    def save_network_tocsv(self,path='',filename='network'):
+        
+        if path=='':
+            path = os.path.abspath('')+'\\LocalFiles\\'
+        Xp = self.get_pore_indices()
+        Xt = self.get_throat_indices()
+        for p in self._pore_data.keys():
+            if sp.shape(sp.shape(self.get_pore_data(prop=p)))==(1,):
+                Xp = sp.vstack((Xp,self.get_pore_data(prop=p)))
+                sp.savetxt(path+'\\'+filename+'_pores_'+p+'.csv',self.get_pore_data(prop=p).transpose())
+        for t in self._throat_data.keys():
+            if sp.shape(sp.shape(self.get_throat_data(prop=t)))==(1,):
+                Xt = sp.vstack((Xt,self.get_throat_data(prop=t)))
+                sp.savetxt(path+'\\'+filename+'_throats_'+t+'.csv',self.get_throat_data(prop=t).transpose())
+        sp.savetxt(path+'\\'+filename+'_pores_all.csv',Xp.transpose())
+        sp.savetxt(path+'\\'+filename+'_throats_all.csv',Xt.transpose())
+
+
 if __name__ == '__main__':
     #Run doc tests
     import doctest
