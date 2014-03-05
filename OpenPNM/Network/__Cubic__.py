@@ -190,6 +190,8 @@ class Cubic(GenericNetwork):
         
     def _add_boundaries(self):
         r'''
+        This method uses clone_pore to clone the surface pores (labeled 'left'
+        , 'right', etc), then shifts them to the periphery of the domain.
         '''
         
         offset = {}
@@ -207,19 +209,10 @@ class Cubic(GenericNetwork):
             ps = self.get_pore_indices(labels=[label,'internal'],mode='intersection')
             self.clone_pores(pnums=ps,apply_label=[label,'boundary']) 
             #Translate cloned pores
-            ind = self.get_pore_indices(labels=[label,'internal'],mode='intersection')
+            ind = self.get_pore_indices(labels=[label,'boundary'],mode='intersection')
             coords = self.get_pore_data(prop='coords',locations=ind) 
-            coords = coords*scale[label]+ offset[label]
+            coords = coords*scale[label] + offset[label]
             self.set_pore_data(prop='coords', locations=ind, data=coords)
-        
-        
-
-        
-        
-        
-        
-        
-        
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(lattice_spacing=[1.0],domain_size=[3,3,3])
