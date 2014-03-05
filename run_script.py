@@ -29,7 +29,6 @@ MPL_geom.regenerate()
 t1 = pn.find_neighbor_throats(GDL_pores,mode='not_intersection')
 t2 = pn.find_neighbor_throats(MPL_pores,mode='not_intersection')
 interface_throats = t2[sp.in1d(t2,t1)]
-MPL_throats = pn.find_neighbor_throats(GDL_pores,mode='intersection')
 
 interface_geom = OpenPNM.Geometry.GenericGeometry(network=pn, name='interface',tnums=interface_throats)
 interface_geom.add_method(prop='throat_seed',model='neighbor_min')
@@ -95,7 +94,7 @@ phys_air_interface.regenerate()
 #------------------------------------------------------------------------------
 #Initialize algorithm object
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername='OP',name='OP_1',network=pn)
-a = pn.get_pore_indices(labels='bottom')
+a = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 OP_1.run()
 
