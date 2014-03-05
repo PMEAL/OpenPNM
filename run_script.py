@@ -99,7 +99,7 @@ OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 OP_1.run()
 
 
-#b = pn.get_pore_indices(labels='top')
+#b = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
 #OP_1.evaluate_trapping(outlets=b)
 #OP_1.plot_drainage_curve()
 
@@ -108,7 +108,7 @@ OP_1.run()
 ##-----------------------------------------------------------------------------
 ##Initialize algorithm object
 #IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
-#face = pn.get_pore_indices('right',indices=False)
+#face = pn.get_pore_indices(labels=['right','boundary'],mode='intersection',indices=False)
 #quarter = sp.rand(pn.num_pores(),)<.1
 #inlets = pn.get_pore_indices()[face&quarter]
 #outlets = pn.get_pore_indices('left')

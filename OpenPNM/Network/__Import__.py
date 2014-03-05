@@ -16,8 +16,6 @@ module __GenericGeometry__: Base class to construct pore networks
 import OpenPNM
 import scipy as sp
 import numpy as np
-import scipy.sparse as sprs
-import scipy.stats as spst
 from .__GenericNetwork__ import GenericNetwork
 import os
 
@@ -73,9 +71,10 @@ class MatFile(GenericNetwork):
             path, foldername = os.path.split(short_path)  
             path = os.path.join(path,'LocalFiles')
         self._path = path
-        self._mat=OpenPNM.Network.ImportMat(filename=filename,path=path)
-        self._Np=np.size(self._mat.getvar('pnumbering'))
-        self._Nt=np.size(self._mat.getvar('tnumbering'))
+        filepath = os.path.join(self._path,filename)
+        self._dictionary=sp.io.loadmat(filepath)
+        self._Np=np.size(self._getvar('pnumbering'))
+        self._Nt=np.size(self._getvar('tnumbering'))
         self._net=OpenPNM.Network.GenericNetwork(name=self.name,num_pores=self._Np, num_throats=self._Nt)
         Pind = np.arange(0,self._Np)
         self._net.set_pore_info(label='all',locations=np.ones_like(Pind))
@@ -85,17 +84,17 @@ class MatFile(GenericNetwork):
         self._net.set_throat_data(prop='numbering',data=Tind)        
         self._logger.info('Writing pore properties')
         self._logger.debug('Writing pore volumes')
-        self._net.set_pore_data(prop='volume',data=np.reshape(self._mat.getvar('pvolume'),(self._Np)))        
+        self._net.set_pore_data(prop='volume',data=np.reshape(self._getvar('pvolume'),(self._Np)))        
         self._logger.debug('Writing pore seeds')
         self._net.set_pore_data(prop='seed',data=np.zeros((self._Np),dtype=np.float))
         self._logger.debug('Writing pore diameters')
-        self._net.set_pore_data(prop='diameter',data=np.reshape(self._mat.getvar('pdiameter'),(self._Np)))
+        self._net.set_pore_data(prop='diameter',data=np.reshape(self._getvar('pdiameter'),(self._Np)))
         self._logger.debug('Writing pore numbering')
-        self._net.set_pore_data(prop='numbering',data=np.reshape(self._mat.getvar('pnumbering'),(self._Np)))
+        self._net.set_pore_data(prop='numbering',data=np.reshape(self._getvar('pnumbering'),(self._Np)))
         self._logger.debug('Writing pore type')
-        self._net.set_pore_data(prop='type',data=np.reshape(self._mat.getvar('ptype'),(self._Np)))
+        self._net.set_pore_data(prop='type',data=np.reshape(self._getvar('ptype'),(self._Np)))
         self._logger.debug('Writing pore coordinates')
-        self._net.set_pore_data(prop='coords',data=self._mat.getvar('pcoords'))
+        self._net.set_pore_data(prop='coords',data=self._getvar('pcoords'))
         
         self._logger.info('Writing throat properties')
         self._logger.debug('Writing throat lengths')
@@ -103,14 +102,35 @@ class MatFile(GenericNetwork):
         self._logger.debug('Writing throat seeds')
         self._net.set_throat_data(prop='seed',data=np.zeros((self._Nt),dtype=np.float))
         self._logger.debug('Writing throat diameters')
-        self._net.set_throat_data(prop='diameter',data=np.reshape(self._mat.getvar('tdiameter'),(self._Nt)))
+        self._net.set_throat_data(prop='diameter',data=np.reshape(self._getvar('tdiameter'),(self._Nt)))
         self._logger.debug('Writing throat numbering')
-        self._net.set_throat_data(prop='numbering',data=np.reshape(self._mat.getvar('tnumbering'),(self._Nt)))
+        self._net.set_throat_data(prop='numbering',data=np.reshape(self._getvar('tnumbering'),(self._Nt)))
         self._logger.debug('Writing throat type')
-        self._net.set_throat_data(prop='type',data=np.reshape(self._mat.getvar('ttype'),(self._Nt)))
+        self._net.set_throat_data(prop='type',data=np.reshape(self._getvar('ttype'),(self._Nt)))
         self._logger.debug('Writing throat volumes')
         self._net.set_throat_data(prop='volume',data=np.zeros((self._Nt),dtype=np.float))
         self._logger.debug('Writing throat connections')
-        self._net.set_throat_data(prop='connections',data=self._mat.getvar('tconnections'))
+        self._net.set_throat_data(prop='connections',data=self._getvar('tconnections'))
  
-        return self._net  
+        return self._net                 
+    
+    def getvarnames(self):
+        r"""
+        Returns variable names in the matfile
+        """
+        keys = self._dictionary.keys()  
+        return keys
+        
+    def _getvar(self,varname):
+        r"""
+        Returns a specific variable from the matfile        
+        """
+        var = self._dictionary[varname]
+        return var
+    
+    def getdict(self):
+        r"""
+        Returns the matfile as a dictionary
+        """
+        dictionary = self._dictionary
+        return dictionary
