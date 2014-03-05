@@ -237,8 +237,12 @@ class LinearSolver(GenericAlgorithm):
         for i in sp.r_[0:len(ftype1)]:
             face1 = ftype1[i] 
             face2 = ftype2[i]
-            face1_pores = network.get_pore_indices(face1)
-            face2_pores = network.get_pore_indices(face2)            
+            if 'boundary' in self._net._pore_info:
+                face1_pores = network.get_pore_indices(labels=[face1,'boundary'],mode='intersection')
+                face2_pores = network.get_pore_indices(labels=[face2,'boundary'],mode='intersection')
+            else:    
+                face1_pores = network.get_pore_indices(face1)
+                face2_pores = network.get_pore_indices(face2)            
             ## Assign Dirichlet boundary conditions
             ## BC1
             BC1_pores = face1_pores  
@@ -268,23 +272,23 @@ class LinearSolver(GenericAlgorithm):
             coordy = network.get_pore_data(prop='coords')[:,1]
             coordz = network.get_pore_data(prop='coords')[:,2]
             
-            if sp.size(sp.unique(coordx[network.get_pore_indices(face1)]))==1:
-                coord_main1 = coordx[network.get_pore_indices(face1)]
-                coord_main2 = coordx[network.get_pore_indices(face2)]
-                coord_temp1 = coordy[network.get_pore_indices(face1)]
-                coord_temp2 = coordz[network.get_pore_indices(face1)]
+            if sp.size(sp.unique(coordx[face1_pores]))==1:
+                coord_main1 = coordx[face1_pores]
+                coord_main2 = coordx[face2_pores]
+                coord_temp1 = coordy[face1_pores]
+                coord_temp2 = coordz[face1_pores]
              
-            elif sp.size(sp.unique(coordy[network.get_pore_indices(face1)]))==1:
-                coord_main1 = coordy[network.get_pore_indices(face1)]
-                coord_main2 = coordy[network.get_pore_indices(face2)]
-                coord_temp1 = coordx[network.get_pore_indices(face1)]
-                coord_temp2 = coordz[network.get_pore_indices(face1)]
+            elif sp.size(sp.unique(coordy[face1_pores]))==1:
+                coord_main1 = coordy[face1_pores]
+                coord_main2 = coordy[face2_pores]
+                coord_temp1 = coordx[face1_pores]
+                coord_temp2 = coordz[face1_pores]
                 
-            elif sp.size(sp.unique(coordz[network.get_pore_indices(face1)]))==1:
-                coord_main1 = coordz[network.get_pore_indices(face1)]
-                coord_main2 = coordz[network.get_pore_indices(face2)]
-                coord_temp1 = coordx[network.get_pore_indices(face1)]
-                coord_temp2 = coordy[network.get_pore_indices(face1)]
+            elif sp.size(sp.unique(coordz[face1_pores]))==1:
+                coord_main1 = coordz[face1_pores]
+                coord_main2 = coordz[face2_pores]
+                coord_temp1 = coordx[face1_pores]
+                coord_temp2 = coordy[face1_pores]
 
             L = sp.absolute(sp.unique(coord_main1)[0]-sp.unique(coord_main2)[0])
             length_1 = (max(coord_temp1) - min(coord_temp1))
