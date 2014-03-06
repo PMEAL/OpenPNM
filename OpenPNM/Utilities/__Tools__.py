@@ -645,6 +645,7 @@ class Tools(Base):
         of 'raw'.
         
         '''
+        pnums = sp.array(pnums,ndmin=1)
         temp = self._get_labels(element='pore',locations=pnums, mode=mode, flatten=flatten)
         return temp
 
@@ -666,7 +667,7 @@ class Tools(Base):
             
             * 'intersection' : Label applied to ALL of the given locations
             
-            * 'count' : The number of labels on each pore
+            * 'count' : The number of labels on each throat
             
             * 'raw' : returns an Np x Nlabels array, where each row corresponds
             to a throat location, and each column contains the truth value for 
@@ -678,6 +679,7 @@ class Tools(Base):
         of 'raw'.
         
         '''
+        tnums = sp.array(tnums,ndmin=1)
         temp = self._get_labels(element='throat',locations=tnums,mode=mode,flatten=flatten)
         return temp
         
@@ -702,6 +704,12 @@ class Tools(Base):
                 info = self._get_info(element=element,label=item)
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
+        elif mode == 'none':
+            none = sp.zeros_like(self._get_info(element=element,label='all'),dtype=int)
+            for item in labels: #iterate over labels list and collect all indices
+                info = self._get_info(element=element,label=item)
+                none = none - sp.int8(info)
+            ind = (none == 0)
         if return_indices: ind = sp.where(ind==True)[0]
         return ind
 
@@ -718,13 +726,18 @@ class Tools(Base):
             This flag specifies whether pore locations are returned a boolean mask of length Np,
             or as a list of indices (default).
         mode : string, optional
-            Specifies how the count should be performed.  The options are:    
+            Specifies how the query should be performed.  The options are:    
 
-            * 'union' : (default) All pores with ANY of the given labels are counted.
+            * 'union' : (default) All pores with ANY of the given labels are 
+            returned.
 
-            * 'intersection' : Only pore with ALL the given labels are counted.
+            * 'intersection' : Only pore with ALL the given labels are 
+            returned.
 
-            * 'not_intersection' : Only pores with exactly one of the given labels are counted.
+            * 'not_intersection' : Only pores with exactly one of the given 
+            labels are returned.
+            
+            * 'none' : Only pores with none of the given labels are returned.
         
         Examples
         --------
@@ -752,13 +765,18 @@ class Tools(Base):
             This flag specifies whether throat locations are returned as a boolean mask of length Np,
             or as a list of indices (default).
         mode : string, optional
-            Specifies how the count should be performed.  The options are: 
+            Specifies how the query should be performed.  The options are: 
 
-            * 'union' : (default) All throats with ANY of the given labels are counted.
+            * 'union' : (default) All throats with ANY of the given labels are 
+            returned.
 
-            * 'intersection' : Only throats with ALL the given labels are counted.
+            * 'intersection' : Only throats with ALL the given labels are 
+            counted.
 
-            * 'not_intersection' : Only throats with exactly one of the given labels are counted.
+            * 'not_intersection' : Only throats with exactly one of the given 
+            labels are counted.
+            
+            * 'none' : Only throats with none of the given labels are returned.
         
         Examples
         --------
@@ -790,6 +808,8 @@ class Tools(Base):
             * 'intersection' : Only pores with ALL the given labels are counted.
             
             * 'not_intersection' : Only pores with exactly one of the given labels are counted.
+            
+            * 'none' : Only pores with none of the given labels are counted.
             
         Returns
         -------
@@ -838,6 +858,8 @@ class Tools(Base):
             * 'intersection' : Only throats with ALL the given labels are counted.
 
             * 'not_intersection' : Only throats with exactly one of the given labels are counted.
+            
+            * 'none' : Only throats with none of the given labels are counted.
 
         Returns
         -------
