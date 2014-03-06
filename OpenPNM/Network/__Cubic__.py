@@ -69,7 +69,8 @@ class Cubic(GenericNetwork):
         self._generate_pores()
         self._generate_throats()
         self._add_labels()
-        self._add_boundaries()
+        if params['add_boundaries']:
+            self._add_boundaries()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
         return self
 
