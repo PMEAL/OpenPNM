@@ -637,7 +637,12 @@ class Tools(Base):
             
             * 'raw' : returns an Np x Nlabels array, where each row corresponds
             to a pore location, and each column contains the truth value for 
-            the existance of labels as return from list_pore_labels().
+            the existance of labels as returned from list_pore_labels().
+            
+        Notes
+        -----
+        The mode argument is ignored unless flatten is True, with the exception 
+        of 'raw'.
         
         '''
         temp = self._get_labels(element='pore',locations=pnums, mode=mode, flatten=flatten)
@@ -665,72 +670,16 @@ class Tools(Base):
             
             * 'raw' : returns an Np x Nlabels array, where each row corresponds
             to a throat location, and each column contains the truth value for 
-            the existance of labels as return from list_throat_labels().
+            the existance of labels as returned from list_throat_labels().
+            
+        Notes
+        -----
+        The mode argument is ignored unless flatten is True, with the exception 
+        of 'raw'.
         
         '''
         temp = self._get_labels(element='throat',locations=tnums,mode=mode,flatten=flatten)
         return temp
-        
-    def has_labels(self,pnums='',tnums='',labels='all',mode='union',return_indices=False):
-        r'''
-        This method accepts a list of pores (or throats) and a list of labels, 
-        and returns True if pore or throat has any (or all) of the labels.
-        
-        Parameters
-        ----------
-        pnums OR tnums : array_like
-            A list of pore or throat numbers that are to be filtered
-        labels : list of strings
-            The labels of interest, defaults to 'all'
-        mode : string
-            The logical mode to be used when filtering pore or throat numbers.
-            The options are 'union', 'intersection' and 'not_intersection'.
-            For details see the methods listed in See Also below.
-            
-        Returns
-        -------
-        If return_indices is False (default), returns a boolean list the same 
-        shape as pnums (or tnums) containing truth values indicating whether
-        the corresponding pore (or throat) has the specfied labels.
-        
-        If return_indices is True, returns a list containing the pore 
-        (or throat) indices where the specified labels exist according 
-        to the logical mode of choice.
-        
-        Notes
-        -----
-        The logic for allowing pnum/tnum to be either int or list is clunky
-        (but works).
-        
-        At the moment this method does ONLY accepts 1D arrays.  Therefore it 
-        generally only accepts output from queries where 'flatten' was True.
-        
-        See Also
-        --------
-        get_pore_indices, get_throat_indices, get_pore_labels, get_throat_labels
-        
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.has_labels(pnums=[0,1,2,122,123,124],labels=['top','front'],mode='union') #Default mode is 'union'
-        array([ True, False, False,  True,  True,  True], dtype=bool)
-        >>> pn.has_labels(pnums=[0,1,2,122,123,124],labels=['top','right'],mode='intersection')
-        array([False, False, False,  True,  True,  True], dtype=bool)
-        '''
-        #Parse input arguments
-        if pnums != '' and tnums == '':
-            element = 'pore'
-            nums = pnums
-        elif tnums != '' and pnums == '':
-            element = 'throat'
-            nums = tnums
-        else: self._logger.error(sys._getframe().f_code.co_name+' can only accept one of tnum or pnum')
-        if type(labels) == str: labels = [labels] #convert string to list, if necessary
-        mask = getattr(self,'get_'+element+'_indices')(labels=labels,indices=False,mode=mode)
-        if return_indices == False:
-            return mask[nums]
-        elif return_indices == True:
-            return nums[mask[nums]]
 
     #--------------------------------------------------------------------------
     '''Object query methods'''
@@ -782,7 +731,7 @@ class Tools(Base):
         #convert string to list, if necessary
         if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
-        temp = self.get_pore_indices(labels=labels,mode=mode,indices=False)
+        temp = self.get_pore_indices(labels=labels,mode=mode,return_indices=False)
         return sp.sum(temp) #return sum of Trues
             
     def num_throats(self,labels=['all'],mode='union'):
@@ -830,10 +779,10 @@ class Tools(Base):
         #convert string to list, if necessary
         if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
-        temp = self.get_throat_indices(labels=labels,mode=mode,indices=False)
+        temp = self.get_throat_indices(labels=labels,mode=mode,return_indices=False)
         return sp.sum(temp) #return sum of Trues
         
-    def _get_indices(self,element,labels,indices,mode):
+    def _get_indices(self,element,labels,return_indices,mode):
         r'''
         This is the actual method for getting indices, but should not be called
         directly.  
@@ -854,10 +803,10 @@ class Tools(Base):
                 info = self._get_info(element=element,label=item)
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
-        if indices: ind = sp.where(ind==True)[0]
+        if return_indices: ind = sp.where(ind==True)[0]
         return ind
 
-    def get_pore_indices(self,labels=['all'],indices=True,mode='union'):
+    def get_pore_indices(self,labels=['all'],return_indices=True,mode='union'):
         r'''
         Returns pore locations where given labels exist.
         
@@ -888,10 +837,10 @@ class Tools(Base):
         array([100, 105, 110, 115, 120], dtype=int64)
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
-        ind = self._get_indices(element='pore',labels=labels,indices=indices,mode=mode)
+        ind = self._get_indices(element='pore',labels=labels,return_indices=return_indices,mode=mode)
         return ind
 
-    def get_throat_indices(self,labels=['all'],indices=True,mode='union'):
+    def get_throat_indices(self,labels=['all'],return_indices=True,mode='union'):
         r'''
         Returns throat locations where given labels exist.
         
@@ -900,7 +849,7 @@ class Tools(Base):
         labels : list of strings, optional
             The throat label(s) whose locations are requested.
             If omitted, all throat inidices are returned.
-        indices : boolean, optional
+        return_indices : boolean, optional
             This flag specifies whether throat locations are returned as a boolean mask of length Np,
             or as a list of indices (default).
         mode : string, optional
@@ -920,7 +869,7 @@ class Tools(Base):
         array([0, 1, 2, 3, 4], dtype=int64)
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
-        ind = self._get_indices(element='throat',labels=labels,indices=indices,mode=mode)
+        ind = self._get_indices(element='throat',labels=labels,return_indices=return_indices,mode=mode)
         return ind
         
     def find_object_by_name(self,name):
