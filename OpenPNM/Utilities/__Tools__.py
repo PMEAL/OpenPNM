@@ -680,10 +680,97 @@ class Tools(Base):
         '''
         temp = self._get_labels(element='throat',locations=tnums,mode=mode,flatten=flatten)
         return temp
+        
+    def _get_indices(self,element,labels,return_indices,mode):
+        r'''
+        This is the actual method for getting indices, but should not be called
+        directly.  
+        '''
+        if mode == 'union':
+            union = sp.zeros_like(self._get_info(element=element,label='all'),dtype=bool)
+            for item in labels: #iterate over labels list and collect all indices
+                    union = union + self._get_info(element=element,label=item)
+            ind = union
+        elif mode == 'intersection':
+            intersect = sp.ones_like(self._get_info(element=element,label='all'),dtype=bool)
+            for item in labels: #iterate over labels list and collect all indices
+                    intersect = intersect*self._get_info(element=element,label=item)
+            ind = intersect
+        elif mode == 'not_intersection':
+            not_intersect = sp.zeros_like(self._get_info(element=element,label='all'),dtype=int)
+            for item in labels: #iterate over labels list and collect all indices
+                info = self._get_info(element=element,label=item)
+                not_intersect = not_intersect + sp.int8(info)
+            ind = (not_intersect == 1)
+        if return_indices: ind = sp.where(ind==True)[0]
+        return ind
 
-    #--------------------------------------------------------------------------
-    '''Object query methods'''
-    #--------------------------------------------------------------------------
+    def get_pore_indices(self,labels=['all'],return_indices=True,mode='union'):
+        r'''
+        Returns pore locations where given labels exist.
+        
+        Parameters
+        ----------
+        labels : list of strings, optional
+            The pore label(s) whose locations are requested.
+            If omitted, all pore inidices are returned.
+        indices : boolean, optional
+            This flag specifies whether pore locations are returned a boolean mask of length Np,
+            or as a list of indices (default).
+        mode : string, optional
+            Specifies how the count should be performed.  The options are:    
+
+            * 'union' : (default) All pores with ANY of the given labels are counted.
+
+            * 'intersection' : Only pore with ALL the given labels are counted.
+
+            * 'not_intersection' : Only pores with exactly one of the given labels are counted.
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pind = pn.get_pore_indices(labels=['top','front'],mode='union')
+        >>> pind[[0,1,2,-3,-2,-1]]
+        array([  0,   5,  10, 122, 123, 124], dtype=int64)
+        >>> pn.get_pore_indices(labels=['top','front'],mode='intersection')
+        array([100, 105, 110, 115, 120], dtype=int64)
+        '''
+        if type(labels) == str: labels = [labels] #convert string to list, if necessary
+        ind = self._get_indices(element='pore',labels=labels,return_indices=return_indices,mode=mode)
+        return ind
+
+    def get_throat_indices(self,labels=['all'],return_indices=True,mode='union'):
+        r'''
+        Returns throat locations where given labels exist.
+        
+        Parameters
+        ----------
+        labels : list of strings, optional
+            The throat label(s) whose locations are requested.
+            If omitted, all throat inidices are returned.
+        return_indices : boolean, optional
+            This flag specifies whether throat locations are returned as a boolean mask of length Np,
+            or as a list of indices (default).
+        mode : string, optional
+            Specifies how the count should be performed.  The options are: 
+
+            * 'union' : (default) All throats with ANY of the given labels are counted.
+
+            * 'intersection' : Only throats with ALL the given labels are counted.
+
+            * 'not_intersection' : Only throats with exactly one of the given labels are counted.
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> Tind = pn.get_throat_indices()
+        >>> Tind[0:5]
+        array([0, 1, 2, 3, 4], dtype=int64)
+        '''
+        if type(labels) == str: labels = [labels] #convert string to list, if necessary
+        ind = self._get_indices(element='throat',labels=labels,return_indices=return_indices,mode=mode)
+        return ind
+        
     def num_pores(self,labels=['all'],mode='union'):
         r'''
         Returns the number of pores of the specified labels
@@ -781,96 +868,6 @@ class Tools(Base):
         #Count number of pores of specified type
         temp = self.get_throat_indices(labels=labels,mode=mode,return_indices=False)
         return sp.sum(temp) #return sum of Trues
-        
-    def _get_indices(self,element,labels,return_indices,mode):
-        r'''
-        This is the actual method for getting indices, but should not be called
-        directly.  
-        '''
-        if mode == 'union':
-            union = sp.zeros_like(self._get_info(element=element,label='all'),dtype=bool)
-            for item in labels: #iterate over labels list and collect all indices
-                    union = union + self._get_info(element=element,label=item)
-            ind = union
-        elif mode == 'intersection':
-            intersect = sp.ones_like(self._get_info(element=element,label='all'),dtype=bool)
-            for item in labels: #iterate over labels list and collect all indices
-                    intersect = intersect*self._get_info(element=element,label=item)
-            ind = intersect
-        elif mode == 'not_intersection':
-            not_intersect = sp.zeros_like(self._get_info(element=element,label='all'),dtype=int)
-            for item in labels: #iterate over labels list and collect all indices
-                info = self._get_info(element=element,label=item)
-                not_intersect = not_intersect + sp.int8(info)
-            ind = (not_intersect == 1)
-        if return_indices: ind = sp.where(ind==True)[0]
-        return ind
-
-    def get_pore_indices(self,labels=['all'],return_indices=True,mode='union'):
-        r'''
-        Returns pore locations where given labels exist.
-        
-        Parameters
-        ----------
-        labels : list of strings, optional
-            The pore label(s) whose locations are requested.
-            If omitted, all pore inidices are returned.
-        indices : boolean, optional
-            This flag specifies whether pore locations are returned a boolean mask of length Np,
-            or as a list of indices (default).
-        mode : string, optional
-            Specifies how the count should be performed.  The options are:    
-
-            * 'union' : (default) All pores with ANY of the given labels are counted.
-
-            * 'intersection' : Only pore with ALL the given labels are counted.
-
-            * 'not_intersection' : Only pores with exactly one of the given labels are counted.
-        
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pind = pn.get_pore_indices(labels=['top','front'],mode='union')
-        >>> pind[[0,1,2,-3,-2,-1]]
-        array([  0,   5,  10, 122, 123, 124], dtype=int64)
-        >>> pn.get_pore_indices(labels=['top','front'],mode='intersection')
-        array([100, 105, 110, 115, 120], dtype=int64)
-        '''
-        if type(labels) == str: labels = [labels] #convert string to list, if necessary
-        ind = self._get_indices(element='pore',labels=labels,return_indices=return_indices,mode=mode)
-        return ind
-
-    def get_throat_indices(self,labels=['all'],return_indices=True,mode='union'):
-        r'''
-        Returns throat locations where given labels exist.
-        
-        Parameters
-        ----------
-        labels : list of strings, optional
-            The throat label(s) whose locations are requested.
-            If omitted, all throat inidices are returned.
-        return_indices : boolean, optional
-            This flag specifies whether throat locations are returned as a boolean mask of length Np,
-            or as a list of indices (default).
-        mode : string, optional
-            Specifies how the count should be performed.  The options are: 
-
-            * 'union' : (default) All throats with ANY of the given labels are counted.
-
-            * 'intersection' : Only throats with ALL the given labels are counted.
-
-            * 'not_intersection' : Only throats with exactly one of the given labels are counted.
-        
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> Tind = pn.get_throat_indices()
-        >>> Tind[0:5]
-        array([0, 1, 2, 3, 4], dtype=int64)
-        '''
-        if type(labels) == str: labels = [labels] #convert string to list, if necessary
-        ind = self._get_indices(element='throat',labels=labels,return_indices=return_indices,mode=mode)
-        return ind
         
     def find_object_by_name(self,name):
         r'''

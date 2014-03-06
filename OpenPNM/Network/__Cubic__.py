@@ -214,7 +214,24 @@ class Cubic(GenericNetwork):
             coords = self.get_pore_data(prop='coords',locations=ind) 
             coords = coords*scale[label] + offset[label]
             self.set_pore_data(prop='coords', locations=ind, data=coords)
+    
+    def domain_size(self,dimension=''):
+        if dimension == 'front' or dimension == 'back':
+            return self._Ly*self._Lz
+        if dimension == 'left' or dimension == 'right':
+            return self._Lx*self._Lz
+        if dimension == 'top' or dimension == 'bottom':
+            return self._Lx*self._Ly
+        if dimension == 'volume':
+            return self._Lx*self._Ly*self._Lz
+        if dimension == 'height':
+            return self._Lz
+        if dimension == 'width':
+            return self._Lx
+        if dimension == 'depth':
+            return self._Ly
 
+        
 if __name__ == '__main__':
     pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(lattice_spacing=[1.0],domain_size=[3,3,3])
     print(pn.name)
