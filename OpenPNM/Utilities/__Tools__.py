@@ -260,7 +260,7 @@ class Tools(Base):
             
         Notes
         -----
-        This is wrapper method that calls set_data, which is generic for pores and throats
+        This is wrapper method that calls _set_data, which is generic for pores and throats
         
         Examples
         --------
@@ -291,7 +291,7 @@ class Tools(Base):
 
         Notes
         -----
-        This is a wrapper method that calls get_data, which is generic for pores and throats
+        This is a wrapper method that calls _get_data, which is generic for pores and throats
         
         Examples
         --------
@@ -671,51 +671,6 @@ class Tools(Base):
         temp = self._get_labels(element='throat',locations=tnums,mode=mode,flatten=flatten)
         return temp
         
-        
-    def find_labels(self,pnum='',tnum=''):
-        r'''
-        Returns a list of all labels that have been applied to the given pore or throat.
-
-        Parameters
-        ----------
-        pnum : int
-            The pore who's labels are sought
-        tnum : int
-            The throat who's labels are sought
-            
-        Returns
-        -------
-        A list of labels that have been applied to the given pore or throat
-        
-        Notes
-        -----
-        This only accepts a single pore or throat value for now, and works with
-        brute force appraoch.  Vectorization would be nice.
-        
-        Also, the logic for allowing pnum/tnum to be either int or list is clunky (but works)
-        
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.find_labels(pnum=0)
-        ['all', 'bottom', 'front', 'internal', 'left']
-        >>> pn.find_labels(tnum=124)
-        ['all', 'internal', 'right']
-        '''
-        if pnum != '' and tnum == '':
-            element = 'pore'
-            num = pnum
-        elif tnum != '' and pnum == '':
-            element = 'throat'
-            num = tnum
-        else: self._logger.error(sys._getframe().f_code.co_name+' can only accept one of tnum or pnum')
-        labels = []
-        for item in getattr(self,'_'+element+'_info').keys():
-            if getattr(self,'_'+element+'_info')[item][num]:
-                labels.append(item)
-        labels.sort()
-        return labels
-        
     def has_labels(self,pnums='',tnums='',labels='all',mode='union',return_indices=False):
         r'''
         This method accepts a list of pores (or throats) and a list of labels, 
@@ -752,7 +707,7 @@ class Tools(Base):
         
         See Also
         --------
-        get_pore_indices, get_throat_indices, find_labels
+        get_pore_indices, get_throat_indices, get_pore_labels, get_throat_labels
         
         Examples
         --------
@@ -877,6 +832,30 @@ class Tools(Base):
         #Count number of pores of specified type
         temp = self.get_throat_indices(labels=labels,mode=mode,indices=False)
         return sp.sum(temp) #return sum of Trues
+        
+    def _get_indices(self,element,labels,indices,mode):
+        r'''
+        This is the actual method for getting indices, but should not be called
+        directly.  
+        '''
+        if mode == 'union':
+            union = sp.zeros_like(self._get_info(element=element,label='all'),dtype=bool)
+            for item in labels: #iterate over labels list and collect all indices
+                    union = union + self._get_info(element=element,label=item)
+            ind = union
+        elif mode == 'intersection':
+            intersect = sp.ones_like(self._get_info(element=element,label='all'),dtype=bool)
+            for item in labels: #iterate over labels list and collect all indices
+                    intersect = intersect*self._get_info(element=element,label=item)
+            ind = intersect
+        elif mode == 'not_intersection':
+            not_intersect = sp.zeros_like(self._get_info(element=element,label='all'),dtype=int)
+            for item in labels: #iterate over labels list and collect all indices
+                info = self._get_info(element=element,label=item)
+                not_intersect = not_intersect + sp.int8(info)
+            ind = (not_intersect == 1)
+        if indices: ind = sp.where(ind==True)[0]
+        return ind
 
     def get_pore_indices(self,labels=['all'],indices=True,mode='union'):
         r'''
@@ -909,23 +888,7 @@ class Tools(Base):
         array([100, 105, 110, 115, 120], dtype=int64)
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
-        if mode == 'union':
-            union = sp.zeros_like(self.get_pore_info(label='all'),dtype=bool)
-            for item in labels: #iterate over labels list and collect all indices
-                    union = union + self._get_info(element='pore',label=item)
-            ind = union
-        elif mode == 'intersection':
-            intersect = sp.ones_like(self.get_pore_info(label='all'),dtype=bool)
-            for item in labels: #iterate over labels list and collect all indices
-                    intersect = intersect*self._get_info(element='pore',label=item)
-            ind = intersect
-        elif mode == 'not_intersection':
-            not_intersect = sp.zeros_like(self.get_pore_info(label='all'),dtype=int)
-            for item in labels: #iterate over labels list and collect all indices
-                info = self._get_info(element='pore',label=item)
-                not_intersect = not_intersect + sp.int8(info)
-            ind = (not_intersect == 1)
-        if indices: ind = sp.where(ind==True)[0]
+        ind = self._get_indices(element='pore',labels=labels,indices=indices,mode=mode)
         return ind
 
     def get_throat_indices(self,labels=['all'],indices=True,mode='union'):
@@ -957,23 +920,7 @@ class Tools(Base):
         array([0, 1, 2, 3, 4], dtype=int64)
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
-        if mode == 'union':
-            union = sp.zeros_like(self.get_throat_info(label='all'),dtype=bool)
-            for item in labels: #iterate over labels list and collect all indices
-                    union = union + self._get_info(element='throat',label=item)
-            ind = union
-        elif mode == 'intersection':
-            intersect = sp.ones_like(self.get_throat_info(label='all'),dtype=bool)
-            for item in labels: #iterate over labels list and collect all indices
-                    intersect = intersect*self._get_info(element='throat',label=item)
-            ind = intersect
-        elif mode == 'not_intersection':
-            not_intersect = sp.zeros_like(self.get_throat_info(label='all'),dtype=int)
-            for item in labels: #iterate over labels list and collect all indices
-                info = self._get_info(element='throat',label=item)
-                not_intersect = not_intersect + sp.int8(info)
-            ind = (not_intersect == 1)
-        if indices: ind = sp.where(ind==True)[0]
+        ind = self._get_indices(element='throat',labels=labels,indices=indices,mode=mode)
         return ind
         
     def find_object_by_name(self,name):
