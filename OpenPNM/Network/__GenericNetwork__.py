@@ -609,7 +609,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self.set_pore_info(label=item,locations=clones)
 
         #Add connections between parents and clones
-        Nt = self.num_throats()
         tcurrent = self.get_throat_data(prop='connections')
         tclone = sp.vstack((parents,clones)).T
         tnew = sp.concatenate((tcurrent,tclone),axis=0)
@@ -639,11 +638,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                    num_throats=self.num_throats())
 
         str_pore = "\nPore properties:"
-        for key, value in self._pore_data.iteritems():
+        for key, value in self._pore_data.items():
             str_pore += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,value)
 
         str_throat = "\nThroat properties:"
-        for key, value in self._throat_data.iteritems():
+        for key, value in self._throat_data.items():
             str_throat += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,value)
 
 
@@ -704,7 +703,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.incidence_matrix['lil'] = {}
 
     def save_network_tocsv(self,path='',filename='network'):
-        
+        r'''
+        '''
         if path=='':
             path = os.path.abspath('')+'\\LocalFiles\\'
         Xp = self.get_pore_indices()
