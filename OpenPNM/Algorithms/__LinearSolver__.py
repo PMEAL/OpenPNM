@@ -184,16 +184,15 @@ class LinearSolver(GenericAlgorithm):
         R = sp.sum(sp.multiply(g,(X1-X2)))
         return(R)
         
-    def _calc_eff_prop_cubic(self,                            
-                           fluid,
-                           alg,
-                           d_term,
-                           x_term,
-                           conductance,
-                           occupancy,
-                           face1='',
-                           face2='',
-                           **params):
+    def _calc_eff_prop(self,                            
+                       fluid,
+                       alg,
+                       d_term,
+                       x_term,
+                       conductance,
+                       occupancy,
+                       direction,
+                       **params):
                 
         network =self._net
         ftype1 = []
@@ -202,25 +201,25 @@ class LinearSolver(GenericAlgorithm):
         result = {}
         try: fluid = self.find_object_by_name(fluid) 
         except: pass #Accept object
-        if face1!='' and face2!='':             
-            if type(face1)==list and type(face2)==list: 
-                if len(face1)==len(face2):
-                    for i in list(range(len(face1))):
-                        if type(face1[i])==str and type(face2[i])==str:
-                            ftype1.append(face1[i])
-                            ftype2.append(face2[i])                            
-                        else: self._logger.error('face1 and face2 should be string or a list of strings!')
-                else: self._logger.error('face1 and face 2 should have equal length!')
-
-            elif type(face1)==str and type(face2)==str:
-                ftype1.append(face1)
-                ftype2.append(face2)
-            else: self._logger.error('face1 and face2 should be string or a list of strings!')
-
-        elif face1=='' and face2=='':            
+        if type(direction)==str and direction=='': 
             ftype1 = ['front','right','top']
-            ftype2 = ['back','left','bottom']
-        else: self._logger.error('wrong input for face1 or face2')
+            ftype2 = ['back','left','bottom']            
+        elif type(direction)==str: direction = sp.array(direction,ndmin=1)              
+        if type(direction)==sp.ndarray:
+            ftype1 = []
+            ftype2 = []
+            for d in direction:
+                if d=='x' or d=='X' or d=='front' or d=='back': 
+                    ftype1.append('front')
+                    ftype2.append('back')
+                elif d=='y' or d=='Y'or d=='left' or d=='right': 
+                    ftype1.append('left')
+                    ftype2.append('right')
+                elif d=='z' or d=='Z'or d=='top' or d=='bottom': 
+                    ftype1.append('top')
+                    ftype2.append('bottom') 
+                else: self._logger.error('wrong input for direction!')
+        
         if 'Dirichlet' in self._pore_info:
             self._dir = self.get_pore_info(label='Dirichlet')
             del self._pore_info['Dirichlet']
@@ -232,11 +231,16 @@ class LinearSolver(GenericAlgorithm):
                 delattr (self,'_BCtypes')
                 self._BCvalues_temp = sp.copy(self._BCvalues)
                 delattr(self,'_BCvalues')
-            except: pass            
+            except: pass
+        try: self._X_temp = self.get_pore_data(prop=self._X_name)  
+        except: pass          
         tensor = sp.zeros([3,3])
         for i in sp.r_[0:len(ftype1)]:
             face1 = ftype1[i] 
             face2 = ftype2[i]
+            if face1=='front' or face1=='back': direct = 'X'
+            elif face1=='left' or face1=='right': direct = 'Y'
+            elif face1=='top' or face1=='bottom': direct = 'Z'
             if 'boundary' in self._net._pore_info:
                 face1_pores = network.get_pore_indices(labels=[face1,'boundary'],mode='intersection')
                 face2_pores = network.get_pore_indices(labels=[face2,'boundary'],mode='intersection')
@@ -267,34 +271,16 @@ class LinearSolver(GenericAlgorithm):
                 X2 = x[face2_pores]
             delta_X = sp.absolute(sp.average(X2)-sp.average(X1)) 
             d_force =sp.average(fluid.get_pore_data(prop=d_term))
-            
-            coordx = network.get_pore_data(prop='coords')[:,0]
-            coordy = network.get_pore_data(prop='coords')[:,1]
-            coordz = network.get_pore_data(prop='coords')[:,2]
-            
-            if sp.size(sp.unique(coordx[face1_pores]))==1:
-                coord_main1 = coordx[face1_pores]
-                coord_main2 = coordx[face2_pores]
-                coord_temp1 = coordy[face1_pores]
-                coord_temp2 = coordz[face1_pores]
-             
-            elif sp.size(sp.unique(coordy[face1_pores]))==1:
-                coord_main1 = coordy[face1_pores]
-                coord_main2 = coordy[face2_pores]
-                coord_temp1 = coordx[face1_pores]
-                coord_temp2 = coordz[face1_pores]
-                
-            elif sp.size(sp.unique(coordz[face1_pores]))==1:
-                coord_main1 = coordz[face1_pores]
-                coord_main2 = coordz[face2_pores]
-                coord_temp1 = coordx[face1_pores]
-                coord_temp2 = coordy[face1_pores]
 
-            L = sp.absolute(sp.unique(coord_main1)[0]-sp.unique(coord_main2)[0])
-            length_1 = (max(coord_temp1) - min(coord_temp1))
-            length_2 = (max(coord_temp2) - min(coord_temp2))
-            A = length_1*length_2            
-                
+            if  face1=='top' or face1=='bottom': 
+                L = self._net.domain_size('height')
+                A = self._net.domain_size('top')
+            elif  face1=='left' or face1=='right':
+                L = self._net.domain_size('depth')
+                A = self._net.domain_size('left')
+            elif  face1=='front' or face1=='back':
+                L = self._net.domain_size('width')
+                A = self._net.domain_size('front')
             fn = network.find_neighbor_pores(face1_pores,excl_self=True)
             fn = fn[sp.in1d(fn,network.get_pore_indices('internal'))]
             ft = network.find_connecting_throat(face1_pores,fn)
@@ -310,10 +296,15 @@ class LinearSolver(GenericAlgorithm):
             del self._pore_data['BCval']
             delattr (self,'_BCtypes')
             delattr(self,'_BCvalues')            
-            result[ftype1[i]+'/'+ftype2[i]] = sp.array(effective_prop[i],ndmin=1)
+            result[ftype1[i]+'/'+ftype2[i]+'('+direct+')'] = sp.array(effective_prop[i],ndmin=1)
             if ftype1[i]=='top' or ftype1[i]=='bottom': tensor[2,2] = effective_prop[i]
             elif ftype1[i]=='right' or ftype1[i]=='left': tensor[1,1] = effective_prop[i]
             elif ftype1[i]=='front' or ftype1[i]=='back': tensor[0,0] = effective_prop[i]
+        
+        try:
+            self.set_pore_data(prop=self._X_name,data=self._X_temp)
+            delattr (self,'_X_temp')
+        except : del self._pore_data[self._X_name]
         try:
             self.set_pore_info(label='Dirichlet',locations=self._dir,mode='overwrite')
             delattr (self,'_dir')
