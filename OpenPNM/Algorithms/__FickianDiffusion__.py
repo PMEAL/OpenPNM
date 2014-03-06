@@ -70,24 +70,22 @@ class FickianDiffusion(LinearSolver):
         self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
         
 
-    def effective_diffusivity_cubic(self,
-                                   fluid,
-                                   face1='',
-                                   face2='',                                   
-                                   conductance='diffusive_conductance',
-                                   occupancy='occupancy',
-                                   x_term='mole_fraction',
-                                   d_term='molar_density',
-                                   **params):
+    def effective_diffusivity(self,
+                              fluid,
+                              direction='',                                                                               
+                              conductance='diffusive_conductance',
+                              occupancy='occupancy',
+                              x_term='mole_fraction',
+                              d_term='molar_density',
+                              **params):
         r"""
         This function calculates effective diffusivity of a cubic network between face1 and face2.  
         face1 and face2 represent types of these two faces.
 
         """ 
-        return self._calc_eff_prop_cubic(alg='Fickian',
+        return self._calc_eff_prop(alg='Fickian',
                                   fluid=fluid,
-                                  face1=face1,
-                                  face2=face2,
+                                  direction=direction,
                                   d_term=d_term,
                                   x_term=x_term,
                                   conductance=conductance,
