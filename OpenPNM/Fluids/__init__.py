@@ -12,6 +12,29 @@ This submodule contains methods for estimating fluid properties
 .. note::
     none
 
+.. autoclass:: GenericFluid
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   
+.. autoclass:: Water
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   
+.. autoclass:: Air
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   
+.. autoclass:: Viscosity
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
 
 """
 

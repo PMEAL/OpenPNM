@@ -1,7 +1,7 @@
-. _network:
+.. _network:
 
 ###############################################################################
-Network Generation
+Network Objects
 ###############################################################################
 
 The `network` is the central object in OpenPNM.

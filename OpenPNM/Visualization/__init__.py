@@ -16,7 +16,7 @@ tbd
 Classes
 -------
 
-.. autoclass:: Common
+.. autoclass:: GenericVisualization
    :members:
    :undoc-members:
    :show-inheritance:
