@@ -7,18 +7,19 @@ module capillary_pressure
 
 import scipy as sp
 
-def constant(physics,fluid,network,propname,value,**params):
+def constant(physics,fluid,geometry,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    network.set_throat_data(phase=fluid,prop=propname,locations=geometry,data=value)
 
-def na(physics,fluid,network,propname,**params):
+def na(physics,fluid,geometry,network,propname,**params):
     value = -1
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
 
 def washburn(physics,
              fluid,
+             geometry,
              network,
              propname,
              pore_surface_tension='surface_tension',
@@ -51,10 +52,12 @@ def washburn(physics,
     theta = network.interpolate_throat_data(theta)
     r = network.get_throat_data(prop=throat_diameter)/2
     value = -2*sigma*sp.cos(sp.radians(theta))/r
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    mask = network.get_throat_indices(geometry)
+    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
 
 def purcell(physics,
             network,
+            geometry,
             fluid,
             propname,
             r_toroid,
@@ -99,5 +102,6 @@ def purcell(physics,
     R = r_toroid
     alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
-    network.set_throat_data(phase=fluid,prop=propname,data=value)
+    mask = network.get_throat_indices(geometry)
+    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
 
