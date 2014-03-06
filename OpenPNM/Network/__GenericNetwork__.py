@@ -336,9 +336,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             List of throats numbers
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore numbers
-            is returned. If flatten is False the returned array contains
-            arrays of neighboring pores for each input throat, in the order
-            they were sent.
+            is returned. If flatten is False each location in the the returned 
+            array contains a sub-arras of neighboring pores for each input 
+            throat, in the order they were sent.
 
         Returns
         -------
@@ -391,9 +391,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             ID numbers of pores whose neighbors are sought.
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore ID numbers
-            is returned with the input pores (Pnum) removed. If flatten is
-            False the returned array contains arrays of neighboring pores for
-            each input pore, in the order they were sent.
+            is returned. If flatten is False the returned array contains arrays
+            of neighboring pores for each input pore, in the order they were 
+            sent.
         excl_self : bool, optional
             If this is True (default) then the input pores are not included
             in the returned list.  This option only applies when input pores
@@ -410,7 +410,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Returns
         -------
-        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if flatten if False)
+        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if 
+        flatten if False)
 
         Examples
         --------
@@ -512,40 +513,45 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 neighborTs[i] = sp.array(neighborTs[i])
         return sp.array(neighborTs,ndmin=1)
 
-    def num_neighbors(self,pnums,labels=['all']):
+    def num_neighbors(self,pnums,flatten=False):
         r"""
         Returns an ndarray containing the number of neigbhor pores for each 
-        element in Pnums
+        element in pnums
 
         Parameters
         ----------
         pnums : array_like
             Pores whose neighbors are to be counted
-        labels : list of string, optional
-            The pore labels that should be included in the count
+        flatten : boolean (optional)
+            If False (default) the number pore neighbors for each input are
+            returned as an array.  If True the sum total number of unique 
+            neighbors is counted, not including the input pores even if they 
+            neighbor each other.  
 
         Returns
         -------
-        num_neighbors : 1D array with number of neighbors in each element, 
-        useful for finding the number of neighbors of a certain type
+        num_neighbors : 1D array with number of neighbors in each element
 
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> Pnum = [0,1]
-        >>> pn.num_neighbors(Pnum,flatten=False)
+        >>> pn.num_neighbors(pnums=[0,1],flatten=False)
         array([3, 4], dtype=int8)
-        >>> pn.num_neighbors(Pnum)
-        7
+        >>> pn.num_neighbors(pnums=[0,1],flatten=True)  # Sum excludes pores 0 & 1
+        5
+        >>> pn.num_neighbors(pnums=[0,2],flatten=True)  # Sum includes pore 1, but not 0 & 2
+        6
         """
-        #Convert string to list, if necessary
-        if type(labels) == str: labels = [labels]
 
         #Count number of neighbors
-        neighborPs = self.find_neighbor_pores(pnums,labels=labels,flatten=False)
-        num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
-        for i in range(0,sp.shape(num)[0]):
-            num[i] = sp.size(neighborPs[i])
+        if flatten:
+            neighborPs = self.find_neighbor_pores(pnums,flatten=True,mode='union',excl_self=True)
+            num = sp.shape(neighborPs)[0]
+        else:
+            neighborPs = self.find_neighbor_pores(pnums,flatten=False)
+            num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
+            for i in range(0,sp.shape(num)[0]):
+                num[i] = sp.size(neighborPs[i])
         return num
 
     def check_basic(self):
