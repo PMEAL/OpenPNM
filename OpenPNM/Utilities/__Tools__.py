@@ -931,7 +931,45 @@ class Tools(Base):
         This method accepts keyword arguments which it passes on to algorithm object.
         For specific details refer to the `update` of the algorithm.
         '''
-        alg_obj.update(**kwargs)        
+        alg_obj.update(**kwargs)     
+        
+        
+    def save_object_tocsv(self,path='', filename='', p_prop='all',t_prop='all'):
+        r'''
+        '''
+        if path=='':    path = os.path.abspath('')+'\\LocalFiles\\'
+        if filename=='':    filename = self.name
+        if type(p_prop)==str:
+            if p_prop=='all':
+                p_temp = True
+                p_prop = self._pore_data.keys()               
+            elif p_prop=='not': p_temp = False
+            else:
+                p_prop = sp.array(p_prop,ndmin=1)
+                p_temp = True
+        else:
+             p_prop = sp.array(p_prop,ndmin=1)
+             p_temp = True
+        if type(t_prop)==str:
+            if t_prop=='all':
+                t_temp = True
+                t_prop = self._throat_data.keys()               
+            elif t_prop=='not': t_temp = False
+            else:
+                t_prop = sp.array(t_prop,ndmin=1)
+                t_temp = True
+        else:
+             t_prop = sp.array(t_prop,ndmin=1)
+             t_temp = True        
+    
+        if p_temp :
+            for p in p_prop:
+                if sp.shape(sp.shape(self.get_pore_data(prop=p)))==(1,):
+                    sp.savetxt(path+'\\'+filename+'_pores_'+p+'.csv',self.get_pore_data(prop=p))
+        if t_temp:
+            for t in t_prop:
+                if sp.shape(sp.shape(self.get_throat_data(prop=t)))==(1,):
+                    sp.savetxt(path+'\\'+filename+'_throats_'+t+'.csv',self.get_throat_data(prop=t))
 
 if __name__ == '__main__':
     import doctest
