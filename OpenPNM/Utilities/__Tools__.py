@@ -43,8 +43,8 @@ class Tools(Base):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
-        if type(data)!=sp.ndarray: data = sp.array(data,ndmin=1)
-        if type(locations)==list: 
+        data = sp.array(data,ndmin=1)
+        if type(locations)==list:
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
             except: locations = sp.array(locations,ndmin=1)
         elif type(locations)==sp.ndarray:
@@ -54,7 +54,6 @@ class Tools(Base):
             try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
-        
 
         if phase :
             try: phase = self.find_object_by_name(phase) 
@@ -64,30 +63,30 @@ class Tools(Base):
                 temp_word = 'updated for '
             except: temp_word = 'added to '
             if sp.shape(data)[0]==1:
-                if locations!='':                
+                if locations!='':
                     try: getattr(phase,'_'+element+'_data')[prop]
                     except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
                     getattr(phase,'_'+element+'_data')[prop][locations] = data
                     phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
                 else:
-                    try: 
+                    try:
                         getattr(phase,'_'+element+'_data')[prop]
                         if sp.shape(getattr(phase,'_'+element+'_data')[prop])[0]!=1:
                             print('Warning: '+prop+' '+element+' property in '+phase.name+' was an array which has been overwritten with a scalar value')
                     except: pass
                     getattr(phase,'_'+element+'_data')[prop] = data  
                     phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
-            else:                
+            else:
                 if locations!='':
                     if sp.shape(locations)[0]==sp.shape(data)[0]:
                         try: getattr(phase,'_'+element+'_data')[prop]
                         except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
                         getattr(phase,'_'+element+'_data')[prop][locations] = data
                         phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
-                    else: 
+                    else:
                         phase._logger.error('For adding '+element+' property '+prop+' to '+phase.name+', locations and size of data do not match!')
                 else:
-                    try: 
+                    try:
                         getattr(phase,'num_'+element+'s')()                        
                         if sp.shape(data)[0]==getattr(phase,'num_'+element+'s')():
                             getattr(phase,'_'+element+'_data')[prop] = data
@@ -558,7 +557,7 @@ class Tools(Base):
         '''
         temp = list(self._pore_info.keys())
         temp.sort()
-        return temp
+        return sp.array(temp,ndmin=1)
 
     def list_throat_labels(self):
         r'''
@@ -576,7 +575,102 @@ class Tools(Base):
         '''
         temp = list(self._throat_info.keys())
         temp.sort()
+        return sp.array(temp,ndmin=1)
+        
+    def _get_labels(self,element,locations,mode='union',flatten=False):
+        r'''
+        This is the actual label getter method, but it should not be called directly.  
+        Wrapper methods have been created.  Use get_pore_labels and get_throat_labels
+        
+        See Also
+        --------
+        get_pore_labels, get_throat_labels
+        
+        '''
+        if element == 'pore':
+            element_info = self._pore_info
+            labels = self.list_pore_labels()
+        elif element == 'throat':
+            element_info = self._throat_info
+            labels = self.list_throat_labels()
+        arr = sp.ndarray((sp.shape(locations,)[0],len(labels)),dtype=bool)
+        col = 0
+        for item in labels:
+            arr[:,col] = element_info[item][locations]
+            col = col + 1
+        if flatten == True:
+            if mode == 'count':
+                return sp.sum(arr,axis=1)
+            if mode == 'union':
+                return labels[sp.sum(arr,axis=0)>0]
+            if mode == 'intersection':
+                return labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
+        else:
+            if mode == 'raw':
+                return arr
+            else:
+                temp = sp.ndarray((sp.shape(locations,)[0],),dtype=object)
+                for i in sp.arange(0,sp.shape(locations,)[0]):
+                    temp[i] = list(labels[arr[i,:]])
+                return temp
+            
+    def get_pore_labels(self,pnums,mode='union',flatten=False):
+        r'''
+        Returns the labels applied to specified pore locations
+        
+        Parameters
+        ----------
+        pnums : array_like
+            The pores whos labels are sought
+        flatten : boolean, optional
+            If False (default) the returned list is Np long, where each element
+            is a list labels applied to the specified pores.  If True, the mode
+            logic
+        mode : string, optional
+            Controls how the query should be performed
+            
+            * 'union' : A list of labels applied to ANY of the given locations        
+            
+            * 'intersection' : Label applied to ALL of the given locations
+            
+            * 'count' : The number of labels on each pore
+            
+            * 'raw' : returns an Np x Nlabels array, where each row corresponds
+            to a pore location, and each column contains the truth value for 
+            the existance of labels as return from list_pore_labels().
+        
+        '''
+        temp = self._get_labels(element='pore',locations=pnums, mode=mode, flatten=flatten)
         return temp
+
+    def get_throat_labels(self,tnums,mode='union',flatten=False):
+        r'''
+        Returns the labels applied to specified throat locations
+        
+        Parameters
+        ----------
+        tnums : array_like
+            The throats whos labels are sought
+        flatten : boolean, optional
+            If false (default) the returned list is Nt long, where each element
+            is a list labels applied to the specified throats
+        mode : string, optional
+            Controls how the query should be performed
+            
+            * 'union' : A list of labels applied to ANY of the given locations        
+            
+            * 'intersection' : Label applied to ALL of the given locations
+            
+            * 'count' : The number of labels on each pore
+            
+            * 'raw' : returns an Np x Nlabels array, where each row corresponds
+            to a throat location, and each column contains the truth value for 
+            the existance of labels as return from list_throat_labels().
+        
+        '''
+        temp = self._get_labels(element='throat',locations=tnums,mode=mode,flatten=flatten)
+        return temp
+        
         
     def find_labels(self,pnum='',tnum=''):
         r'''

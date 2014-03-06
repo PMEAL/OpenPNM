@@ -37,7 +37,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Initialize
         """
         super(GenericNetwork,self).__init__(**kwargs)
-        self._logger.info("Construct Network container")
+        self._logger.info("Construct Network")
         self.name = name
         #Initialize adjacency and incidence matrix dictionaries
         self.adjacency_matrix = {}
@@ -48,7 +48,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.incidence_matrix['coo'] = {}
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
-        self._logger.debug("Construction of Network container complete")
+        self._logger.debug("Construction of Network container")
         
     def generate(self, **params):
         r"""
@@ -151,12 +151,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         for item in fluids:
             if type(item)==sp.str_: item =  self.find_object_by_name(item)
             for key in item._pore_data.keys():
-                dict_name = item.name+'_pore_'+key
-                self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
+                if sp.amax(item._pore_data[key]) < sp.inf:
+                    dict_name = item.name+'_pore_'+key
+                    self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
         #Add geometry data
         for key in self._pore_data.keys():
-            dict_name = 'pore'+'_'+key
-            self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
+            if sp.amax(self._pore_data[key]) < sp.inf:
+                dict_name = 'pore'+'_'+key
+                self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
         return self._pore_data_amalgamate
 
     def amalgamate_throat_data(self,fluids='all'):
@@ -172,12 +174,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         for item in fluids:
             if type(item)==sp.str_: item =  self.find_object_by_name(item)
             for key in item._throat_data.keys():
-                dict_name = item.name+'_throat_'+key
-                self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
+                if sp.amax(item._throat_data[key]) < sp.inf:
+                    dict_name = item.name+'_throat_'+key
+                    self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
         #Add geometry data
         for key in self._throat_data.keys():
-            dict_name = 'throat'+'_'+key
-            self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
+            if sp.amax(self._throat_data[key]) < sp.inf:
+                dict_name = 'throat'+'_'+key
+                self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
         return self._throat_data_amalgamate
 
     #--------------------------------------------------------------------------
@@ -562,6 +566,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
+        pass
         #        from mpl_toolkits.mplot3d import Axes3D
         #        #Parse Ptype input argument
         #        if Ptype == [] or Ptype == 'all':
@@ -577,7 +582,46 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #            zs = self._pore_data['coords'][:,2]
         #            ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
         #        plt.show()
+        
+    def clone_pores(self,pnums,mode='parent',apply_label=['clone']):
+        r'''
+        mode options should be 'parent', 'siblings'
+        '''
+        if type(pnums) == str: 
+            pnums = self.get_pore_indices(labels=[pnums])
+        if self._geometry != [] or self._fluids != []:
+            raise Exception('Cannot clone an active network')
+        apply_label = list(apply_label)
+        #Clone pores
+        Np = self.num_pores()
+        parents = sp.array(pnums,ndmin=1)
+        pcurrent = self.get_pore_data(prop='coords')
+        pclone = pcurrent[pnums,:]
+        pnew = sp.concatenate((pcurrent,pclone),axis=0)
+        Npnew = sp.shape(pnew)[0]
+        clones = sp.arange(Np,Npnew)
+        #Increase size of 'all' to accomodate new pores
+        self.set_pore_info(label='all', locations=sp.ones((Npnew,),dtype=bool))
+        #Insert cloned pore coordinates into network
+        self.set_pore_data(prop='coords',data=pnew)
+        #Apply specified labels to cloned pores
+        for item in apply_label:
+            self.set_pore_info(label=item,locations=clones)
 
+        #Add connections between parents and clones
+        Nt = self.num_throats()
+        tcurrent = self.get_throat_data(prop='connections')
+        tclone = sp.vstack((parents,clones)).T
+        tnew = sp.concatenate((tcurrent,tclone),axis=0)
+        Ntnew = sp.shape(tnew)[0]
+        #Increase size of 'all' to accomodate new throats
+        self.set_throat_info(label='all', locations=sp.ones((Ntnew,),dtype=bool))
+        #Insert new throats into network
+        self.set_throat_data(prop='connections',data=tnew)
+        
+        # Any existing adjacency and incidence matrices will be invalid
+        self._reset_network()
+        
     def __str__(self):
         r"""
         Print some basic properties
@@ -645,6 +689,35 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
+        
+    def _reset_network(self):
+        r'''
+        '''
+        #Initialize adjacency and incidence matrix dictionaries
+        self.adjacency_matrix = {}
+        self.incidence_matrix = {}
+        self.adjacency_matrix['coo'] = {}
+        self.adjacency_matrix['csr'] = {}
+        self.adjacency_matrix['lil'] = {}
+        self.incidence_matrix['coo'] = {}
+        self.incidence_matrix['csr'] = {}
+        self.incidence_matrix['lil'] = {}
+
+    def save_network_tocsv(self,path='',filename='network'):
+        
+        if path=='':
+            path = os.path.abspath('')+'\\LocalFiles\\'
+        Xp = self.get_pore_indices()
+        Xt = self.get_throat_indices()
+        for p in self._pore_data.keys():
+            if sp.shape(sp.shape(self.get_pore_data(prop=p)))==(1,):
+                Xp = sp.vstack((Xp,self.get_pore_data(prop=p)))
+                sp.savetxt(path+'\\'+filename+'_pores_'+p+'.csv',self.get_pore_data(prop=p))
+        for t in self._throat_data.keys():
+            if sp.shape(sp.shape(self.get_throat_data(prop=t)))==(1,):
+                Xt = sp.vstack((Xt,self.get_throat_data(prop=t)))
+                sp.savetxt(path+'\\'+filename+'_throats_'+t+'.csv',self.get_throat_data(prop=t))
+
 
 if __name__ == '__main__':
     #Run doc tests

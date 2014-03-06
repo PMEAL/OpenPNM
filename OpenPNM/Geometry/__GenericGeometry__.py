@@ -33,7 +33,7 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
         The pore locations in the network where this geometry applies.
     
     loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
 
     loggername : string (optional)
         Sets a custom name for the logger, to help identify logger messages

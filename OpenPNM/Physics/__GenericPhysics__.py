@@ -45,16 +45,22 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         self._fluid = []
         self._geometry = []
         #bind objects togoether
+        try: fluid = fluid.name
+        except: pass
         self._fluid.append(fluid)  # attach fluid to this physics
-        fluid._physics.append(self)  # attach this physics to fluid
-        self._geometry.append(geometry)  # attach geometry to this physics
+        try: fluid = network.find_object_by_name(fluid) 
+        except: pass #Accept object               
+        fluid._physics.append(self) # attach this physics to fluid
         if type(geometry)!= sp.ndarray and geometry=='all':
             geometry = network._geometry
         elif type(geometry)!= sp.ndarray: 
             geometry = sp.array(geometry,ndmin=1)
         for geom in geometry:
+            try: geom = geom.name
+            except: pass
+            self._geometry.append(geom)  # attach geometry to this physics
             try: geom = network.find_object_by_name(geom) 
-            except: pass #Accept String               
+            except: pass #Accept object               
             geom._physics.append(self)  # attach this physics to geometry
         self._net = network  # attach network to this physics
         network._physics.append(self) #attach physics to network

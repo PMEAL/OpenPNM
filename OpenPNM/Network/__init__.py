@@ -47,4 +47,3 @@ from .__Template__ import Template
 from .__TestNet__ import TestNet
 from .__NullNet__ import NullNet
 from .__Import__ import MatFile
-from .__io__ import ImportMat
