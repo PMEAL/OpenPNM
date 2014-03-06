@@ -1,6 +1,6 @@
 
 """
-module throat_diameter
+module throat_area
 ===============================================================================
 
 """
@@ -20,30 +20,28 @@ def constant(geometry,
 def cylinder(geometry,
              network,
              propname,
-             seed='seed',
+             diameter='diameter',
+             length='length',
              **params):
     r"""
-    Calculate throat diameter from seeds for a cylindrical throat
+    Calculate throat area for a cylindrical throat
     """
-    prob_fn = getattr(spst,params['name'])
-    P = prob_fn(params['shape'],loc=params['loc'],scale=params['scale'])
-    value=P.ppf(network.get_throat_data(prop=seed,locations=geometry))
+    D = network.get_throat_data(prop=diameter,locations=geometry)
+    L = network.get_throat_data(prop=length,locations=geometry)
+    value = sp.constants.pi/(D)*L
     network.set_throat_data(locations=geometry,prop=propname,data=value)
 
 def cuboid(geometry,
            network,
            propname,
+           diameter='diameter',
+           length='length',
            **params):
     r"""
-    Calculate throat diameter from seeds for a cuboidal throat
+    Calculate throat area for a cuboid throat
     """
-    print('cuboid: nothing yet')
+    D = network.get_throat_data(prop=diameter,locations=geometry)
+    L = network.get_throat_data(prop=length,locations=geometry)
+    value = 4*D*L
+    network.set_throat_data(locations=geometry,prop=propname,data=value)
     
-def voronoi(geometry,
-            network,
-            propname,
-            **params):
-    r"""
-    Calculate throat diameter from analysis of Voronoi facets
-    """
-    print('voronoi: nothing yet')

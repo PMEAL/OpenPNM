@@ -33,7 +33,7 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
         The pore locations in the network where this geometry applies.
     
     loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
 
     loggername : string (optional)
         Sets a custom name for the logger, to help identify logger messages
@@ -50,23 +50,18 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
     0.123
     """
 
-    def __init__(self, network,name,locations,**kwargs):
+    def __init__(self, network,name,pnums=[],tnums=[],**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        loc = sp.array(locations,ndmin=1)
-        network.set_pore_info(label=name,locations=loc)
-        ind = network.get_pore_indices(name)
-        r'''
-        TODO: The following lines will create conflicting throat labels when additionaly geometries are added
-        '''
-        Tn = network.find_neighbor_throats(ind)
-        network.set_throat_info(label=name,locations=Tn)
+        network.set_pore_info(label=name,locations=pnums)
+        network.set_throat_info(label=name,locations=tnums)
         network._geometry.append(self) #attach geometry to network
         self.name = name
         self._net = network #Attach network to self
+        self._physics = [] #Create list for physics to append themselves to
         self._prop_list = []
               
     def regenerate(self, prop_list=''):
@@ -119,7 +114,12 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
         try:
             function = getattr( getattr(OpenPNM.Geometry, prop), kwargs['model'] ) # this gets the method from the file
             if prop_name: propname = prop = prop_name #overwrite the default prop with user supplied name
-            else: propname = prop.split('_')[1] #remove leading pore_ or throat_ from dictionary key
+            else:
+                #remove leading pore_ or throat_ from dictionary key
+                propname = prop.split('_')[1]
+                element = prop.split('_')[0]
+                if len(prop.split('_')) > 2:
+                    propname = prop.split(element+'_')[1] 
             preloaded_fn = partial(function, geometry=self, network=self._net,propname=propname, **kwargs) #
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))

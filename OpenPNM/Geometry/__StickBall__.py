@@ -1,5 +1,6 @@
 """
-module __GenericGeometry__: Base class to construct pore networks
+module __StickBall__: Subclass of GenericGeometry for a standard 'stick & ball'
+geometrical model
 ==================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
@@ -38,6 +39,9 @@ class Stick_and_Ball(GenericGeometry):
         self.add_method(prop='pore_volume',model='sphere')
         self.add_method(prop='throat_length',model='straight')
         self.add_method(prop='throat_volume',model='cylinder')
+        self.add_method(prop='throat_vector',model='pore_to_pore')
+        self.add_method(prop='throat_area',model='cylinder')
+        self.add_method(prop='throat_surface_area',model='cylinder')
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()

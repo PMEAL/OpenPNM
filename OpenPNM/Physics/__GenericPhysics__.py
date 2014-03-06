@@ -37,16 +37,33 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         Sets a custom name for the logger, to help identify logger messages
 
     """
-    def __init__(self,network,fluid,name,**kwargs):
+    def __init__(self,network,name,fluid,geometry='all',**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         self.name = name
         self._prop_list = []
         self._fluid = []
+        self._geometry = []
         #bind objects togoether
-        self._fluid.append(fluid) #attach fluid to physics
-        fluid._physics.append(self)
-        self._net = network
+        try: fluid = fluid.name
+        except: pass
+        self._fluid.append(fluid)  # attach fluid to this physics
+        try: fluid = network.find_object_by_name(fluid) 
+        except: pass #Accept object               
+        fluid._physics.append(self) # attach this physics to fluid
+        if type(geometry)!= sp.ndarray and geometry=='all':
+            geometry = network._geometry
+        elif type(geometry)!= sp.ndarray: 
+            geometry = sp.array(geometry,ndmin=1)
+        for geom in geometry:
+            try: geom = geom.name
+            except: pass
+            self._geometry.append(geom)  # attach geometry to this physics
+            try: geom = network.find_object_by_name(geom) 
+            except: pass #Accept object               
+            geom._physics.append(self)  # attach this physics to geometry
+        self._net = network  # attach network to this physics
+        network._physics.append(self) #attach physics to network
 
     def regenerate(self, prop_list=''):
         r'''
@@ -93,7 +110,7 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         try:
             function = getattr( getattr(OpenPNM.Physics, prop), kwargs['model'] ) # this gets the method from the file
             if prop_name: prop = prop_name #overwrite the default prop with user supplied name  
-            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid[0], **kwargs) #
+            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid[0], geometry=self._geometry, **kwargs) #
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)

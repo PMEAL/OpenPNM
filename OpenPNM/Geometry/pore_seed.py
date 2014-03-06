@@ -26,7 +26,7 @@ def random(geometry,
     note: should this be called 'poisson'?  
     """
     sp.random.seed(seed)
-    Np = network.num_pores()
+    Np = network.num_pores(geometry.name)
     value=sp.random.rand(Np)
     network.set_pore_data(locations=geometry,prop=propname,data=value)
     
