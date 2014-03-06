@@ -18,6 +18,18 @@ Classes
    :private-members:
    :show-inheritance:
    
+.. autoclass:: Stick_and_Ball
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+
+.. autoclass:: Boundary
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   
 """
 
 from .__GenericGeometry__ import GenericGeometry

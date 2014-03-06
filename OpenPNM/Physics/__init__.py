@@ -12,6 +12,11 @@ This submodule contains all pore scale physics models applied to a pore network.
 .. note::
     none
 
+.. autoclass:: GenericPhysics
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
 
 """
 

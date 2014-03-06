@@ -13,8 +13,8 @@ The OpenPNM package imports all the functions from the top level modules.
  
 Import
 ======
->>> import OpenPNM as PNM
->>> tmp=PNM.Base.testinheritance()
+>>> import OpenPNM
+>>> OpenPNM.__version__
 
 Submodules
 ==========
@@ -23,12 +23,12 @@ Submodules
 Classes
 =======
 
-.. autoclass:: OpenPNMbase
+.. autoclass:: Base
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: testinheritance
+.. autoclass:: Tools
    :members:
    :undoc-members:
    :show-inheritance:

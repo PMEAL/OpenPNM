@@ -12,7 +12,7 @@ Contents
 Classes
 -------
     
-.. autoclass:: GenericTopology
+.. autoclass:: GenericNetwork
    :members:
    :undoc-members:
    :private-members:
@@ -30,7 +30,7 @@ Classes
    :private-members:
    :show-inheritance:
    
-.. autoclass:: Template
+.. autoclass:: TestNet
    :members:
    :undoc-members:
    :private-members:

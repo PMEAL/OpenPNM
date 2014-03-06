@@ -1,7 +1,7 @@
-. _geometry:
+.. _geometry:
 
 ###############################################################################
-Pore and Throat Geometry
+Pore and Throat Geometry Objects
 ###############################################################################
 In OpenPNM the pore and throat geometry are defined separately from the Network topology.  In other words, creating a network simply places pores at certain coordinates and connects them in a certain pattern.  It is the job of the Geometry object to calculate the physical properties of the pores and throats (i.e. sizes, volumes, lengths, etc), based on a specific pore or throat model (i.e. sphere, cuboid, cylinder, etc).  
 
