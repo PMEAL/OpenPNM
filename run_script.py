@@ -26,9 +26,7 @@ MPL_throats = pn.find_neighbor_throats(MPL_pores,mode='intersection')
 MPL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='MPL', pnums=MPL_pores, tnums=MPL_throats)
 MPL_geom.regenerate()
 ## ----------------------------------------------------------------------------------------------
-t1 = pn.find_neighbor_throats(GDL_pores,mode='not_intersection')
-t2 = pn.find_neighbor_throats(MPL_pores,mode='not_intersection')
-interface_throats = t2[sp.in1d(t2,t1)]
+interface_throats = pn.find_interface_throats(['GDL','MPL'])
 
 interface_geom = OpenPNM.Geometry.GenericGeometry(network=pn, name='interface',tnums=interface_throats)
 interface_geom.add_method(prop='throat_seed',model='neighbor_min')
