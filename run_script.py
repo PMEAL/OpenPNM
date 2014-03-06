@@ -6,7 +6,7 @@ import scipy as sp
 #==============================================================================
 
 #pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=10).generate(filename='standard_cubic_5x5x5.mat')
-pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001])
+pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001],add_boundaries=True)
 #pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=1500,domain_size=[100,100,30])
 #pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((4,4),dtype=int),lattice_spacing=0.001)
 #pn = OpenPNM.Network.Sphere(name='sphere_1',loglevel=10).generate(radius=5,lattice_spacing=1)
