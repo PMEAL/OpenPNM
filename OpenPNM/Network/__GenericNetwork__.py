@@ -553,6 +553,49 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             for i in range(0,sp.shape(num)[0]):
                 num[i] = sp.size(neighborPs[i])
         return num
+        
+    def find_interface_throats(self,labels=[]):
+        r'''
+        Finds the throats that join two pore labels.  
+        
+        Parameters
+        ----------
+        labels : list of strings
+            The labels of the two pore groups whose interface is sought
+            
+        Returns
+        -------
+        An array of throat numbers that connect the given pore groups
+        
+        Notes
+        -----
+        This method is meant to find interfaces between TWO groups, regions or 
+        clusters of pores (as defined by their label).  If the input labels 
+        overlap or are not adjacent, an empty array is returned. 
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.set_pore_info(label='domain1',locations=[0,1,2])
+        >>> pn.set_pore_info(label='domain2',locations=[5,6,7])
+        >>> pn.find_interface_throats(labels=['domain1','domain2'])
+        array([1, 4, 7])
+        '''
+        Tind = sp.array([],ndmin=1)
+        if sp.shape(labels)[0] != 2:
+            self._logger.error('Exactly two labels must be given')
+        else:
+            P1 = self.get_pore_indices(labels=labels[0])
+            P2 = self.get_pore_indices(labels=labels[1])
+            #Check if labels overlap
+            if sp.sum(sp.in1d(P1,P2)) > 0: 
+                self._logger.error('Some labels overlap, iterface cannot be found')
+            else:
+                T1 = self.find_neighbor_throats(P1)
+                T2 = self.find_neighbor_throats(P2)
+                Tmask = sp.in1d(T1,T2)
+                Tind = T1[Tmask]
+        return Tind
 
     def check_basic(self):
         r"""
