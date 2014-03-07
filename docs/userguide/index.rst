@@ -10,6 +10,7 @@ Contents:
    :maxdepth: 3
    
    getting_started.rst
+   overview.rst
    data_storage.rst
    network.rst
    geometry.rst
