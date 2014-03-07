@@ -153,7 +153,7 @@ class InvasionPercolation(GenericAlgorithm):
             Pc_entry = self._fluid.get_throat_data(prop=self._capillary_pressure_name)
         if self._timing:
             # calculate Volume_coef for each throat
-            self._Tvol_coef = tdia*tdia*tdia*np.pi/6/Pc_entry
+            self._Tvol_coef = tdia*tdia*tdia*np.pi/12/Pc_entry
         # Creating an array for invaded Pores(Np long, 0 for uninvaded, cluster number for inaveded)
         self._Pinv = np.zeros((self._net.num_pores(),1),dtype=np.int32)
         self._Pinv_original = np.zeros((self._net.num_pores(),1),dtype=np.int32)
