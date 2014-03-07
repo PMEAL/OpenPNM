@@ -7,11 +7,7 @@ r"""
 
 Contents
 --------
-tbd
-
-.. note::
-   n/a
-
+Classes for exporting data to standard formats (i.e. VTK) for postprocessing
 
 Classes
 -------

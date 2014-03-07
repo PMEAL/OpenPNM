@@ -9,9 +9,6 @@ Contents
 --------
 This submodule contains methods for estimating fluid properties
 
-.. note::
-    none
-
 .. autoclass:: GenericFluid
    :members:
    :undoc-members:
