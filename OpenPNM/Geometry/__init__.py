@@ -7,7 +7,7 @@ r"""
 
 Contents
 --------
-
+Contains methods for applying pore and throat geometry
 
 Classes
 -------

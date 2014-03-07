@@ -6,20 +6,16 @@ r"""
 .. module:: OpenPNM.Utilities 
 
 Contents
-========
+--------
 The OpenPNM package imports all the functions from the top level modules. 
  
 Import
-======
+------
 >>> import OpenPNM
 >>> OpenPNM.__version__
 
-Submodules
-==========
-
-
 Classes
-=======
+-------
 
 .. autoclass:: Base
    :members:
