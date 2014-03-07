@@ -12,7 +12,7 @@ Generating Geometry
 ===============================================================================
 The most general way to generate a Geometry object is as follows:
 
-.. code::
+.. code-block:: python
 
     >> pn = OpenPNM.Network.TestNet()  # This generates a 5x5x5 cubic network for testing purposes
     >> geom = OpenPNM.Geometry.GenericNetwork(network=pn, name='custom_1', locations='all')
@@ -24,7 +24,7 @@ Building a Custom Geometry Object
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Once an empty GenericGeometry object has been instantiated, the next step is to add methods to the object that calculate the appropriate pore and throat properties.  GenericGeometry contains the ``add_method`` function for this purpose.  It is typical to assign a random seed to each pore in the network which is subsequently used to calculate pore diameters from a statistical distribution.  OpenPNM.Geometry comes with a submodule called ``pore_seed`` that contains several methods that can be used.  The desired method is added to the Geometry object as follows:
 
-.. code::
+.. code-block:: python
 
     >> geom.add_method(prop='pore_seed',method='random')
 	>> geom.add_method(prop='pore_seed',propname='second_seed',method='random')
@@ -48,7 +48,7 @@ Generating or Regenerating Geometry Data
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Once the Geometry object has been built and contains all the desired property models it is necessary to actually run all these methods to calculate their results.   When the time comes to actually generate the pore and throat size data (or regenerate it) one CAN manually run each method as:
 
-.. code::
+.. code-block:: python
 
     >> geom.pore_seed()
 

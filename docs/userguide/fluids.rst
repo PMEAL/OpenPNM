@@ -23,14 +23,14 @@ Creating a Fluid
 ===============================================================================
 Fluid objects are designed to be highly customizable.  The general process of creating a fluid involves first initializing the Fluid object as shown below.  Note that the initialization takes a pore network object as an argument.  This is necessary so the Fluid is aware of the network topology and size, so it can store data for each pore and throat.  
 
-.. code::
+.. code-block:: python
 
   >>> pn = OpenPNM.Network.TestNet()  # Creates a simple 5 x 5 x 5 network for testing
   >>> liq_1 = OpenPNM.Fluids.GenericFluid(network=pn,name='liquid')
   
 This basic object does not contain any property estimation methods.  These must be selected and added individually.  OpenPNM includes a number of submodules under the Fluids module, such as viscosity, diffusivity, molar_density and so on.  Each of these submodules has multiple predefined models available for calculating each property.  For instance the molar_density submodule has a model called ideal_gas_law.  Most or all of these models take input arguments that customize their output to a specific fluid.  The ideal_gas_law model requires only R (the gas constant in the appropriate units); the viscosity submodule, on the other hand, has the reynolds model which requires uo and b that are fluid specific.  Methods are added to the Fluid object using `add_method` as follows
 
-.. code::
+.. code-block:: python
 
   >>> liq_1.add_method(prop='molar_density', model='constant', value=100)  # apply a constant density
   >>> liq_1.add_method(prop='viscosity', model='reynolds', uo=1, b=1)  # use a temperature dependent model
@@ -38,14 +38,14 @@ This basic object does not contain any property estimation methods.  These must 
 
 The methods are added to the Fluid object according to the property name (`prop`) by default, but can be given customized names as well using the `prop_name` argument.  The number of fluid properties that are added is arbitrary and customizable.  If only fluid flow calculations will be performed, then it is not necessary to add a diffusivity method to the fluid.  Once the desired methods have been added, the next step is to actually calculate the fluid properties.  This is done by calling the added methods as follows:
 
-.. code::
+.. code-block:: python
 
   >>> liq_1.molar_density()
   >>> liq_1.viscosity()
 
 When ever the data need to be updated, such as when the temperature of the network changes, then the methods need to be called again.  The Fluid object contains a helper function called `regenerate` which will call all of the added methods in the order they were added.  It is also possible to update only certain methods by sending their names as string arguments to `regenerate`.
 
-.. code::
+.. code-block:: python
 
   >>> liq_1.regenerate()
   >>> liq_1.regenerate(['molar_density','viscosity'])
