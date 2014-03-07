@@ -154,11 +154,19 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 if sp.amax(item._pore_data[key]) < sp.inf:
                     dict_name = item.name+'_pore_'+key
                     self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
+            for key in item._pore_info.keys():
+                if sp.amax(item._pore_info[key]) < sp.inf:
+                    dict_name = item.name+'_pore_label_'+key
+                    self._pore_data_amalgamate.update({dict_name : item._pore_info[key]})
         #Add geometry data
         for key in self._pore_data.keys():
             if sp.amax(self._pore_data[key]) < sp.inf:
                 dict_name = 'pore'+'_'+key
                 self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
+        for key in self._pore_info.keys():
+            if sp.amax(self._pore_info[key]) < sp.inf:
+                dict_name = 'pore'+'_label_'+key
+                self._pore_data_amalgamate.update({dict_name : self._pore_info[key]})
         return self._pore_data_amalgamate
 
     def amalgamate_throat_data(self,fluids='all'):
@@ -177,11 +185,19 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 if sp.amax(item._throat_data[key]) < sp.inf:
                     dict_name = item.name+'_throat_'+key
                     self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
+            for key in item._throat_info.keys():
+                if sp.amax(item._throat_info[key]) < sp.inf:
+                    dict_name = item.name+'_throat_label_'+key
+                    self._throat_data_amalgamate.update({dict_name : item._throat_info[key]})
         #Add geometry data
         for key in self._throat_data.keys():
             if sp.amax(self._throat_data[key]) < sp.inf:
                 dict_name = 'throat'+'_'+key
                 self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
+        for key in self._throat_info.keys():
+            if sp.amax(self._throat_info[key]) < sp.inf:
+                dict_name = 'throat'+'_label_'+key
+                self._throat_data_amalgamate.update({dict_name : self._throat_info[key]})
         return self._throat_data_amalgamate
 
     #--------------------------------------------------------------------------
@@ -336,9 +352,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             List of throats numbers
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore numbers
-            is returned. If flatten is False the returned array contains
-            arrays of neighboring pores for each input throat, in the order
-            they were sent.
+            is returned. If flatten is False each location in the the returned 
+            array contains a sub-arras of neighboring pores for each input 
+            throat, in the order they were sent.
 
         Returns
         -------
@@ -391,9 +407,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             ID numbers of pores whose neighbors are sought.
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore ID numbers
-            is returned with the input pores (Pnum) removed. If flatten is
-            False the returned array contains arrays of neighboring pores for
-            each input pore, in the order they were sent.
+            is returned. If flatten is False the returned array contains arrays
+            of neighboring pores for each input pore, in the order they were 
+            sent.
         excl_self : bool, optional
             If this is True (default) then the input pores are not included
             in the returned list.  This option only applies when input pores
@@ -410,7 +426,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Returns
         -------
-        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if flatten if False)
+        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if 
+        flatten if False)
 
         Examples
         --------
@@ -512,41 +529,89 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 neighborTs[i] = sp.array(neighborTs[i])
         return sp.array(neighborTs,ndmin=1)
 
-    def num_neighbors(self,pnums,labels=['all']):
+    def num_neighbors(self,pnums,flatten=False):
         r"""
         Returns an ndarray containing the number of neigbhor pores for each 
-        element in Pnums
+        element in pnums
 
         Parameters
         ----------
         pnums : array_like
             Pores whose neighbors are to be counted
-        labels : list of string, optional
-            The pore labels that should be included in the count
+        flatten : boolean (optional)
+            If False (default) the number pore neighbors for each input are
+            returned as an array.  If True the sum total number of unique 
+            neighbors is counted, not including the input pores even if they 
+            neighbor each other.  
 
         Returns
         -------
-        num_neighbors : 1D array with number of neighbors in each element, 
-        useful for finding the number of neighbors of a certain type
+        num_neighbors : 1D array with number of neighbors in each element
 
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> Pnum = [0,1]
-        >>> pn.num_neighbors(Pnum,flatten=False)
+        >>> pn.num_neighbors(pnums=[0,1],flatten=False)
         array([3, 4], dtype=int8)
-        >>> pn.num_neighbors(Pnum)
-        7
+        >>> pn.num_neighbors(pnums=[0,1],flatten=True)  # Sum excludes pores 0 & 1
+        5
+        >>> pn.num_neighbors(pnums=[0,2],flatten=True)  # Sum includes pore 1, but not 0 & 2
+        6
         """
-        #Convert string to list, if necessary
-        if type(labels) == str: labels = [labels]
 
         #Count number of neighbors
-        neighborPs = self.find_neighbor_pores(pnums,labels=labels,flatten=False)
-        num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
-        for i in range(0,sp.shape(num)[0]):
-            num[i] = sp.size(neighborPs[i])
+        if flatten:
+            neighborPs = self.find_neighbor_pores(pnums,flatten=True,mode='union',excl_self=True)
+            num = sp.shape(neighborPs)[0]
+        else:
+            neighborPs = self.find_neighbor_pores(pnums,flatten=False)
+            num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
+            for i in range(0,sp.shape(num)[0]):
+                num[i] = sp.size(neighborPs[i])
         return num
+        
+    def find_interface_throats(self,labels=[]):
+        r'''
+        Finds the throats that join two pore labels.  
+        
+        Parameters
+        ----------
+        labels : list of strings
+            The labels of the two pore groups whose interface is sought
+            
+        Returns
+        -------
+        An array of throat numbers that connect the given pore groups
+        
+        Notes
+        -----
+        This method is meant to find interfaces between TWO groups, regions or 
+        clusters of pores (as defined by their label).  If the input labels 
+        overlap or are not adjacent, an empty array is returned. 
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.set_pore_info(label='domain1',locations=[0,1,2])
+        >>> pn.set_pore_info(label='domain2',locations=[5,6,7])
+        >>> pn.find_interface_throats(labels=['domain1','domain2'])
+        array([1, 4, 7])
+        '''
+        Tind = sp.array([],ndmin=1)
+        if sp.shape(labels)[0] != 2:
+            self._logger.error('Exactly two labels must be given')
+        else:
+            P1 = self.get_pore_indices(labels=labels[0])
+            P2 = self.get_pore_indices(labels=labels[1])
+            #Check if labels overlap
+            if sp.sum(sp.in1d(P1,P2)) > 0: 
+                self._logger.error('Some labels overlap, iterface cannot be found')
+            else:
+                T1 = self.find_neighbor_throats(P1)
+                T2 = self.find_neighbor_throats(P2)
+                Tmask = sp.in1d(T1,T2)
+                Tind = T1[Tmask]
+        return Tind
 
     def check_basic(self):
         r"""
@@ -701,23 +766,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.incidence_matrix['coo'] = {}
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
-
-    def save_network_tocsv(self,path='',filename='network'):
-        r'''
-        '''
-        if path=='':
-            path = os.path.abspath('')+'\\LocalFiles\\'
-        Xp = self.get_pore_indices()
-        Xt = self.get_throat_indices()
-        for p in self._pore_data.keys():
-            if sp.shape(sp.shape(self.get_pore_data(prop=p)))==(1,):
-                Xp = sp.vstack((Xp,self.get_pore_data(prop=p)))
-                sp.savetxt(path+'\\'+filename+'_pores_'+p+'.csv',self.get_pore_data(prop=p))
-        for t in self._throat_data.keys():
-            if sp.shape(sp.shape(self.get_throat_data(prop=t)))==(1,):
-                Xt = sp.vstack((Xt,self.get_throat_data(prop=t)))
-                sp.savetxt(path+'\\'+filename+'_throats_'+t+'.csv',self.get_throat_data(prop=t))
-
 
 if __name__ == '__main__':
     #Run doc tests

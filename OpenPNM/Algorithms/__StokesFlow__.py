@@ -45,6 +45,7 @@ class StokesFlow(LinearSolver):
         self._fluid = params['active_fluid']
         try: self._fluid = self.find_object_by_name(self._fluid) 
         except: pass #Accept object
+        self._X_name = 'pressure'
         self._boundary_conditions_setup()
         # Building hydraulic conductance
         g = self._fluid.get_throat_data(prop=conductance)
@@ -65,24 +66,22 @@ class StokesFlow(LinearSolver):
         self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
 
 
-    def effective_permeability_cubic(self,
-                                   fluid,
-                                   face1='',
-                                   face2='',
-                                   d_term='viscosity',
-                                   x_term='pressure',
-                                   conductance='hydraulic_conductance',
-                                   occupancy='occupancy',
-                                   **params):
+    def effective_permeability(self,
+                               fluid,
+                               direction='',
+                               d_term='viscosity',
+                               x_term='pressure',
+                               conductance='hydraulic_conductance',
+                               occupancy='occupancy',
+                               **params):
         r"""
         This function calculates effective diffusivity of a cubic network between face1 and face2.  
         face1 and face2 represent types of these two faces.
 
         """ 
-        return self._calc_eff_prop_cubic(alg='Stokes',
+        return self._calc_eff_prop(alg='Stokes',
                                   fluid=fluid,
-                                  face1=face1,
-                                  face2=face2,
+                                  direction=direction,
                                   d_term=d_term,
                                   x_term=x_term,
                                   conductance=conductance,

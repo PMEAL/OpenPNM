@@ -111,15 +111,17 @@ class VTK(GenericVisualization):
     def _write_point_data(self):
         network = self._net
         pore_amalgamate = network.amalgamate_pore_data(fluids=self._fluids)
-        throat_amalgamate = network.amalgamate_throat_data(fluids=self._fluids)
-        total_amalgamate = dict(pore_amalgamate,**throat_amalgamate)
+#        throat_amalgamate = network.amalgamate_throat_data(fluids=self._fluids)
+#        total_amalgamate = dict(pore_amalgamate,**throat_amalgamate)
+        total_amalgamate = pore_amalgamate
         total_keys = list(total_amalgamate.keys())
         num_keys = sp.size(total_keys)
         self._f.write('<PointData Scalars="_data">\n')
         for j in list(range(num_keys)):
             if total_keys[j] !='pore_coords' and total_keys[j] !='throat_connections':
-                if total_keys[j] in pore_amalgamate: element='pores'
-                else: element='throats'
+                element = 'pores'
+#                if total_keys[j] in pore_amalgamate: element='pores'
+#               else: element='throats'
                 self._f.write('<DataArray type="Float32" Name="')
                 self._f.write(total_keys[j])
                 self._f.write('" format="ascii">\n')
