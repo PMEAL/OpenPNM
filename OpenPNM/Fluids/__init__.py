@@ -1,6 +1,6 @@
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Fluids`: Fluid Property Estimation Methods
+:mod:`OpenPNM.Fluids` -- Fluid Property Estimation Methods
 *******************************************************************************
 
 .. module:: OpenPNM.Fluids

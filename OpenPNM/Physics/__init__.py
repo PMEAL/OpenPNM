@@ -1,6 +1,6 @@
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Physics`: Pore Scale Physics Models
+:mod:`OpenPNM.Physics` -- Pore Scale Physics Models
 *******************************************************************************
 
 .. module:: OpenPNM.Physics

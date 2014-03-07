@@ -1,6 +1,6 @@
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Visualization`: Network Visualization
+:mod:`OpenPNM.Visualization` -- Network Visualization
 *******************************************************************************
 
 .. module:: OpenPNM.Visualization

@@ -1,9 +1,9 @@
 r"""
 *********************************************************************************
-:mod:`OpenPNM.Topology` -- All classes related the creation of network topology
+:mod:`OpenPNM.Network` -- All classes related the creation of network topology
 *********************************************************************************
 
-.. module:: OpenPNM.Topology
+.. module:: OpenPNM.Network
 
 Contents
 --------

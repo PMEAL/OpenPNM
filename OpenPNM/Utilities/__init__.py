@@ -1,8 +1,6 @@
-# Copyright (c) 2013, OpenPNM
-# License: TBD.
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Utilities` -- base classes, helpers and all homeless functions
+:mod:`OpenPNM.Utilities` -- Base class, Network tools and other functions
 *******************************************************************************
 
 .. module:: OpenPNM.Utilities 
