@@ -203,7 +203,7 @@ Fickian_alg.run(active_fluid=air)
 Fickian_alg.update()
 ###-----------------------------------------------------------------------
 ###Export to VTK
-#OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
+OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
 ### Capillary pressure curve and Overview histograms
 #OpenPNM.Visualization.__Plots__.Capillary_Pressure_Curve(net=pn,fluid=water)
 #OpenPNM.Visualization.__Plots__.Overview(net=pn)
