@@ -1,6 +1,6 @@
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Algorithms`: Algorithms on Networks
+:mod:`OpenPNM.Algorithms` -- Algorithms on Networks
 *******************************************************************************
 
 .. module:: OpenPNM.Algorithms
