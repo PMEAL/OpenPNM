@@ -17,4 +17,3 @@ Contents:
    physics.rst
    algorithms.rst
    visualization.rst
-   gui.rst
