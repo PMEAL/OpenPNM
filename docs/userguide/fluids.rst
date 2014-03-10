@@ -1,16 +1,16 @@
 .. _fluids:
 
 ###############################################################################
-Fluids Objects
+Fluid Properties
 ###############################################################################
-Virtually all algorithms in OpenPNM require **fluid** properties of some sort, 
-either directly or through the pore scale physics methods.  Many algorithm also 
-produce new fluid properties.  Generating pure fluid properties, and storing 
-the results of pore scale physics and algorithms is performed by the Fluids 
-object, as outlined below.  
+Virtually all algorithms in OpenPNM require **fluid** properties of some sort, either directly or through the pore scale physics methods.  Many algorithm also produce new fluid properties.  Generating pure fluid properties, and storing the results of pore scale physics and algorithms is performed by the Fluids object, as outlined below.  
+
+.. note:: 
+
+Fluid, Geometry and Physics modules are designed to function identically, so once you're familiar with the usage of one then all the others should be similar.  
 
 ===============================================================================
-What is a Fluid in OpenPNM?
+What is a Fluid Object in OpenPNM?
 ===============================================================================
 Fluid objects have 2 main functions in OpenPNM:
 

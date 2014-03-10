@@ -1,11 +1,23 @@
 .. _geometry:
 
 ###############################################################################
-Geometry Objects
+Pore and Throat Geometry
 ###############################################################################
-In OpenPNM the pore and throat geometry are defined separately from the Network topology.  In other words, creating a network simply places pores at certain coordinates and connects them in a certain pattern.  It is the job of the Geometry object to calculate the physical properties of the pores and throats (i.e. sizes, volumes, lengths, etc), based on a specific pore or throat model (i.e. sphere, cuboid, cylinder, etc).  
+In OpenPNM the pore and throat geometry are defined separately from the Network topology.  In other words, creating a network simply places pores at certain coordinates and connects them in a certain pattern.  It is the job of the Geometry object(s) to calculate the physical properties of the pores and throats (i.e. sizes, volumes, lengths, etc), based on a specific pore or throat model (i.e. sphere, cuboid, cylinder, etc).  
 
-Geometry objects are `custom built` by the user in 2 ways: Firstly, the user can select which physical models they wish to use and how the physical properties of should be calculated.  Secondly, the user can add their own physical models and property calculation methods to the list supplied with OpenPNM to extend the framework.
+.. note:: 
+
+Fluid, Geometry and Physics modules are designed to function identically, so once you're familiar with the usage of one then all the others should be similar. 
+
+===============================================================================
+What is a Geometry Object?
+===============================================================================
+
+Geometry objects have one main function in OpenPNM.  They contain the models the user wishes to use to calculate pore and throat properties.  
+
+1. The user selects which physical models they wish to use and how the physical properties of should be calculated.  
+
+2. Secondly, the user can add their own physical models and property calculation methods to the list supplied with OpenPNM to extend the framework. 
 
 ===============================================================================
 Generating Geometry
@@ -15,9 +27,16 @@ The most general way to generate a Geometry object is as follows:
 .. code-block:: python
 
     >> pn = OpenPNM.Network.TestNet()  # This generates a 5x5x5 cubic network for testing purposes
-    >> geom = OpenPNM.Geometry.GenericNetwork(network=pn, name='custom_1', locations='all')
+    >> geom = OpenPNM.Geometry.GenericNetwork(network=pn, name='custom_1')
 	
-There are 3 arguments sent to GenericGeometry here.  Firstly, the Geometry object must be associated with a network (`network=pn`).  This gives the Geometry object access to the network topology such as the number of pores and throats, where they are located in space, and how they are connected.  This is required for something like throat length which depends on the distance between two neighboring pores.  Secondly, each Geometry object (and all objects in OpenPNM) must be given a unique name (`name='custom_1'`).  This makes is possible for a human to differentiate between multiple different Geometry objects by simply checking their `name` attribute.  Finally, the locations argument (`locations='all'`) tells the Geometry object to which pores it applies.  A single Network can have a many different Geometry objects associated with it.  For instance a region of low permeability might be embedded in the middle of the domain, so the Geometry object for this region would calculate much smaller pores.  In this case the locations were set by assigning `geom` to any pore with the label `'all'` which by definition is all pores.  Pore and throat labels are discussed in the :ref:`introduction`.
+There are 2 arguments sent to GenericGeometry here.  Firstly, the Geometry object must be associated with a network (`network=pn`).  This gives the Geometry object access to the network topology such as the number of pores and throats, where they are located in space, and how they are connected.  This is required for something like throat length which depends on the distance between two neighboring pores.  Secondly, each Geometry object (and all objects in OpenPNM) must be given a unique name (`name='custom_1'`).  This makes is possible for a human to differentiate between multiple different Geometry objects by simply checking their `name` attribute.  
+
+In the above example, the geometry object `geom` will apply to all pores and throats.  A single Network can have a many different Geometry objects associated with it.  For instance a region of low permeability might be embedded in the middle of the domain, so the Geometry object for this region would calculate much smaller pores.  In this case it is necessary to initialize each geometry object with a list of which pores and throats it applies to.  Assuming that pores and throats for two domains have already been given labels of 'subdomain1' and 'subdomain2', the following procedure would generate two geometry objects and apply them to the correct locations.  
+
+.. code-block:: python
+
+    >> pn = OpenPNM.Network.TestNet()  # This generates a 5x5x5 cubic network for testing purposes
+    >> geom = OpenPNM.Geometry.GenericNetwork(network=pn, name='custom_1')
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Building a Geometry Object
@@ -33,7 +52,7 @@ The first line above looks into the `pore_seed` submodule and finds a method nam
 
 A critical feature of this method addition approach is that none of the arguments to the method can be changed after it has been added to the object.  This is done deliberately using Python's 'partial function' feature.  
 
-In the above case the seed generated by each method will differ since the state of the random number generator was not specifically.  Many methods, including `pore_seed` accept or require additional parameters. In the case of `pore_seed` it is possible to send a seed value which initializes Scipiy's random number generator to the specified state as follows:
+In the above case the seed generated by each method will differ since the state of the random number generator was not specifically.  Many methods, including `pore_seed` accept or require additional parameters. In the case of `pore_seed` it is possible to send a seed value which initializes Scipy's random number generator to the specified state as follows:
 
 .. code::
 
