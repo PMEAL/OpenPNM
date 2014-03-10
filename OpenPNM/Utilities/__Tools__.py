@@ -890,33 +890,6 @@ class Tools(Base):
         #Count number of pores of specified type
         temp = self.get_throat_indices(labels=labels,mode=mode,return_indices=False)
         return sp.sum(temp) #return sum of Trues
-        
-    def find_object_by_name(self,name):
-        r'''
-        This is a short-cut method.  Given the string name of an 
-        OpenPNM Fluid, Geometry, Physics, Algorithm, or Network object 
-        this method will return that object
-        
-        Parameters
-        ----------
-        name : string
-            Unique name of desired object
-        
-        Returns
-        -------
-        OpenPNM Object
-            
-        Notes
-        -----
-        If any objects are instantiated without a name (i.e. name = ''), then
-        this method may start failing since the default name in many method calls
-        is name = ''.
-        
-        '''
-        for item in self._instances:
-            if item.name == name:
-                obj = item
-        return obj
 
     def get_result(self,alg_obj,**kwargs):
         r'''
@@ -932,44 +905,7 @@ class Tools(Base):
         For specific details refer to the `update` of the algorithm.
         '''
         alg_obj.update(**kwargs)     
-        
-        
-    def save_object_tocsv(self,path='', filename='', p_prop='all',t_prop='all'):
-        r'''
-        '''
-        if path=='':    path = os.path.abspath('')+'\\LocalFiles\\'
-        if filename=='':    filename = self.name
-        if type(p_prop)==str:
-            if p_prop=='all':
-                p_temp = True
-                p_prop = self._pore_data.keys()               
-            elif p_prop=='not': p_temp = False
-            else:
-                p_prop = sp.array(p_prop,ndmin=1)
-                p_temp = True
-        else:
-             p_prop = sp.array(p_prop,ndmin=1)
-             p_temp = True
-        if type(t_prop)==str:
-            if t_prop=='all':
-                t_temp = True
-                t_prop = self._throat_data.keys()               
-            elif t_prop=='not': t_temp = False
-            else:
-                t_prop = sp.array(t_prop,ndmin=1)
-                t_temp = True
-        else:
-             t_prop = sp.array(t_prop,ndmin=1)
-             t_temp = True        
-    
-        if p_temp :
-            for p in p_prop:
-                if sp.shape(sp.shape(self.get_pore_data(prop=p)))==(1,):
-                    sp.savetxt(path+'\\'+filename+'_pores_'+p+'.csv',self.get_pore_data(prop=p))
-        if t_temp:
-            for t in t_prop:
-                if sp.shape(sp.shape(self.get_throat_data(prop=t)))==(1,):
-                    sp.savetxt(path+'\\'+filename+'_throats_'+t+'.csv',self.get_throat_data(prop=t))
+            
 
 if __name__ == '__main__':
     import doctest
