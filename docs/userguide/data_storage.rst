@@ -12,14 +12,13 @@ The advantages of this are numerous:
 3. Only one version of an algorithm or method needs to be developed then can be applied universally
 4. The commonality between network types becomes apparent
 
-As the name suggests, pore network modeling borrows significantly from the fields of network and graph theory.  During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as `graph-tool <http://graph-tool.skewed.de/>`_ and `NetworkX <http://networkx.github.io/>`_) should be used to store the network topology.  It was decided that storage of network property data could be handled very efficiently and transparently using simple 1D arrays, which allows for a high degree of code vectorization.  Fortuitously, around the same time as this discussion, Scipy started to include the 'compressed sparse graph' library, which contained numerous graph theory algorithms.  The CSGraph library requires adjacency matrices which happens to be how OpenPNM stores network connections as described below.
+As the name suggests, pore network modeling borrows significantly from the fields of network and graph theory.  During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as `graph-tool <http://graph-tool.skewed.de/>`_ and `NetworkX <http://networkx.github.io/>`_) should be used to store the network topology.  It was decided that storage of network property data should be simply stored as 1D Numpy ndarrays.  In this form the data storage would be very transparent, since all engineers are used to working with 1D arrays, and also very efficiently since this allows a high degree of code vectorization.  Fortuitously, around the same time as this discussion, Scipy started to include the 'compressed sparse graph' library, which contained numerous graph theory algorithms.  The CSGraph library requires adjacency matrices which happens to be how OpenPNM stores network connections as described below.
 
 ===============================================================================
 Network Architecture
 ===============================================================================
 
-One of the main design considerations of OpenPNM was to accommodate *all* pore networks (arbitrary dimensionality, connectivity, shape and so on).  Cubic networks are commonly used in pore network modeling, with each pore connected to 6 or 26 neighbors.  This type of network *can* be represented as cubic matrices in numerical simulations, and this has the advantage that it is easily interpreted by human users.  Representing networks this way, however, clearly lacks generality.
-Networks extracted from tomographic images, or generated using random pore placements connected by Delaunay tessellations require a different approach.  OpenPNM uses network representation schemes borrowed from graph theory, such as adjacency and incidence matrices, that can be used to represent *all* network topologies.
+One of the main design considerations of OpenPNM was to accommodate *all* pore networks (arbitrary dimensionality, connectivity, shape and so on).  Cubic networks are commonly used in pore network modeling, with each pore connected to 6 or 26 neighbors.  This type of network *can* be represented as cubic matrices in numerical simulations, and this has the advantage that it is easily interpreted by human users.  Representing networks this way, however, clearly lacks generality.  Networks extracted from tomographic images, or generated using random pore placements connected by Delaunay tessellations require a different approach.  OpenPNM uses network representation schemes borrowed from graph theory, such as adjacency and incidence matrices, that can be used to represent *all* network topologies.
 
 The basic definitions used by OpenPNM are:
 
@@ -29,14 +28,13 @@ The basic definitions used by OpenPNM are:
 
 3. Two pores are connected by no more than one throat
 
-A network has a certain number of pores, *Np*, and a certain number of throats, *Nt*.  Typically, *Nt* > *Np* since most pores have more than 1 throat.  If every pore has 1 throat (e.g. the network forms a circular chain), then *Nt* = *Np* - 1.
-It can be *unofficially* stated that a network should have at least 2 pores connected by at least 1 throat (*Np* > 1 and *Nt* > 0).
+A network has a certain number of pores, *Np*, and a certain number of throats, *Nt*.  Typically, *Nt* > *Np* since most pores have more than 1 throat.  If every pore has 1 throat (e.g. the network forms a circular chain), then *Nt* = *Np* - 1.  It can be *unofficially* stated that a network should have at least 2 pores connected by at least 1 throat (*Np* > 1 and *Nt* > 0).
 
 -------------------------------------------------------------------------------
 Storing Network Connectivity with Adjacency Matrices
 -------------------------------------------------------------------------------
 
-Network topology or connectivity is conveniently and efficiently stored as an `adjacency matrix <http://en.wikipedia.org/wiki/Adjacency_matrix>`_.  An adjacency matrix is a *Np*-by-*Np* 2D matrix.  A non-zero value at location (*i*, *j*) indicates that pores *i* and *j* are connected.  Describing the network in this fashion is one of the main features that allows OpenPNM to be agnostic to the type of network it describes.  Another important feature of the adjacency matrix is that it is highly sparse and can be stored with a variety of sparse storage schemes.  OpenPNM stores the adjacency matrix in the 'COO' or 'IJV' format, which essential stores the coordinates (I,J) and values (V) of the nonzero elements.  Without delving into the details, this approach results in `throat_properties` entry called *'connections'* which is and *Nt*-by-2 array that gives the ID number of the two pores that a given throat connects.  The storage scheme coincides exactly with the storage of all other throat properties.  The details of the OpenPNM implementation of adjacency matrices and other relate issues are given below for the interested reader.
+Network topology or connectivity is conveniently and efficiently stored as an `adjacency matrix <http://en.wikipedia.org/wiki/Adjacency_matrix>`_.  An adjacency matrix is a *Np*-by-*Np* 2D matrix.  A non-zero value at location (*i*, *j*) indicates that pores *i* and *j* are connected.  Describing the network in this fashion is one of the main features that allows OpenPNM to be agnostic to the type of network it describes.  Another important feature of the adjacency matrix is that it is highly sparse and can be stored with a variety of sparse storage schemes.  OpenPNM stores the adjacency matrix in the 'COO' or 'IJV' format, which essential stores the coordinates (I,J) and values (V) of the nonzero elements.  Without delving into the details, this approach results in `throat_data` entry called *'connections'* which is and *Nt*-by-2 array that gives the ID number of the two pores that a given throat connects.  The storage scheme coincides exactly with the storage of all other throat properties.  The details of the OpenPNM implementation of adjacency matrices and other relate issues are given below for the interested reader.
 
 .. Note:: In Depth: Adjacency and Incidence Matrices
 
@@ -77,16 +75,34 @@ Pore and Throat *Data* and *Info*
 -------------------------------------------------------------------------------
 OpenPNM stores two types of information about pores and throats: 'data' and 'info'.  Data includes the physical quantities associated with a pore or throat such as the geometrical (e.g. diameter), structural (e.g. coordinates) and thermophysical (e.g. capillary entry pressure) aspects of the network.  Info is basically pore or throat labels, such as which subdomain a pore belongs to, whether a pore is an internal or boundary pore, and so on. 
 
-`Data` is 
-
-
-
-
 -------------------------------------------------------------------------------
 Data and Info: Setter and Getter Methods
 -------------------------------------------------------------------------------
 
+After much deliberation it was decided that Network Objects and Fluid Objects should each store their own data, while Geometry and Physics Objects should not.  Geometry stores its data on the Network and Physics stores it's data on the Fluid to which it pertains.  The main motivation for this was to keep the data 'silo-ed' to avoid overwriting data, or using needlessly long dictionary keys (e.g. 'fluid1_viscosity' is just 'viscosity' stored on the Fluid1 object).  This division of data is quite arbitrary of course, and is subject to change.  That is why `data` and `info` dictionary names are prefaced with an underscore, which denotes *private* in Python.  A user can still access them, but it is not recommended.  
 
+Algorithm Objects also store their own data, but this is for a different reason.  Several algorithms may produce the results (i.e. mole fraction), so it is necessary to keep this data isolated to the Algorithm object if all the results are to be available simultaneously.  
+
+To avoid any confusion regarding where data is stored, OpenPNM comes with Setter and Getter methods.  These methods are members of the Tools class, and are inherited by Fluids, Networks, and Algorithms.  The Setter methods works as follows:
+
+.. code_block:: python
+
+	pn = OpenPNM.Network.TestNet()  # Create a basic 5 x 5 x 5 network
+	values = sp.rand(125)  # Create a rando value for each pore
+	pn.set_pore_data(prop='rand_vals',data=values)  # Store the values under the 'rand_vals' dictionary
+	a = pn.get_pore_data(prop='rand_vals')  # Retrieve the random values
+	sum(a == values)  # Is equal to 125
+	
+The Getter method is also demonstrated here.  The above code shows the Setter and Getter in their most basic form.  There are a number of optional arguments that can be used.   Below the Network setter is used to store data on a Fluid Object
+
+.. code_block:: python
+	
+	fluid = OpenPNM.Fluids.Air(network=pn)
+	pn.set_pore_data(phase=fluid,prop='rand_vals',data=values)  # Store the values on the fluid
+	a = fluid.get_pore_data(prop='rand_vals')  # Retrieve the random values using Fluid Getter
+	sum(a == values)  # Equal to 125
+	
+The Fluid also possesses a Setter method which can be used to accomplish the same result as the 2nd line above, without the need to specify which phase to write to (e.g. fluid.set_pore_data(prop='rand_vals',data=values)).  It is important to note that the Network Setter and Getter can operate on itself OR the Fluids, but the Fluids can only operate on themselves.  
 
 
 
