@@ -10,8 +10,7 @@ Main Modules
 
 The OpenPNM framework contains 6 Modules:
 
-
-1 `Utilities`_:  Contains the Base class and several helper classes that are used as mixins to add functionality to the base objects
+1 `Utilities`_:  Contains the Base class and the Tools class.  Base contains the `logger` as well as methods to save and load networks.  Tools contains all the methods required for *Getting* and Setting* data and info.  These methods are central operation of OpenPNM as they control how and where data is stored. 
 
 2 `Network`_: Consists of the GenericNetwork class which contains numerous methods for querying and manipulating networks, and subclasses which contain the generation protocols for various network topologies.  
 
@@ -27,7 +26,7 @@ The OpenPNM framework contains 6 Modules:
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Utilities
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-This module contains the main abstract `Base` class from which all OpenPNM objects derive.  The main functionality offered by this class is the logger which outputs debugging info and error message to the console.  There is also a save and load object method.
+This module contains the main abstract `Base` class from which all OpenPNM objects derive.  The main functionality offered by this class is the logger which outputs debugging info and error message to the console.  There is also a save and load object method.  
 
 This module also contains the `Tools` class, which possesses the for most important methods in the framework: `get_pore_data`, `set_pore_data`, `get_pore_info` and `set_pore_info`.  Cumulatively, these methods are referred to as the setters and getters.  They are used to access to actual network data.  The `Tools` class is a subclass of `Base` so posses all of the methods defined there, plus its own additional methods.  The `Network` and `Fluids` objects both inherit from `Tools`, while the other objects listed below only inherit from `Base`.  The reason for this is that both `Network` and `Fluids` store data on their own objects, hence they need access to the setters and getters.  The objects either store data on the `Network` or the `Fluid`, so don't require these tools.  
 
