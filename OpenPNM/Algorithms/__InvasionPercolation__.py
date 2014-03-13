@@ -578,16 +578,16 @@ class InvasionPercolation(GenericAlgorithm):
     def update(self,occupancy='occupancy'):
         r"""
         """
-        try:
-            self._net.set_pore_data(phase=self._fluid,prop=occupancy,data=self._Pinv>0)
-            self._net.set_pore_data(phase=self._fluid,prop=occupancy,data=self._Tinv>0)
-        except:
-            print('Something bad happened while trying to update fluid',self._fluid.name)
-        try:
-            self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data= ~self._Pinv>0)
-            self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data= ~self._Tinv>0)
-        except:
-            print('A partner fluid has not been set so inverse occupancy cannot be set')
+        #try:
+        #    self._net.set_pore_data(phase=self._fluid,prop=occupancy,data=self._Pinv>0)
+        #    self._net.set_pore_data(phase=self._fluid,prop=occupancy,data=self._Tinv>0)
+        #except:
+        #    print('Something bad happened while trying to update fluid',self._fluid.name)
+        #try:
+        #    self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data= ~self._Pinv>0)
+        #    self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data= ~self._Tinv>0)
+        #except:
+        #    print('A partner fluid has not been set so inverse occupancy cannot be set')
         self._net.set_pore_data(phase=self._fluid,prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
         self._net.set_pore_data(phase=self._fluid,prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
         self._net.set_throat_data(phase=self._fluid,prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
@@ -609,16 +609,16 @@ if __name__ =="__main__":
     print("-"*50)
     print("- * generate invading and defending fluids")
     #======================================================================
+    '''Build Topological Network'''
+    #======================================================================
+    pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15,15,15],lattice_spacing=[0.0001])  
+    #======================================================================
     '''Build Fluids'''
     #======================================================================
     air = OpenPNM.Fluids.Air(network=pn,name='air')
     water = OpenPNM.Fluids.Water(network=pn,name='water')
     print("-"*50)
-    print("- * generate a simple cubic network")
-    #======================================================================
-    '''Build Topological Network'''
-    #======================================================================
-    pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15,15,15],lattice_spacing=[0.0001])    
+    print("- * generate a simple cubic network")  
     #======================================================================
     '''Build Geometry'''
     #======================================================================
