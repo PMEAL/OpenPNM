@@ -39,7 +39,7 @@ class Tools(Base):
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
-    def _set_data(self,element='',phase='',prop='',data='',locations=''):
+    def _set_data(self,network='',element='',phase='',prop='',data='',locations=''):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
@@ -54,87 +54,96 @@ class Tools(Base):
             try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
-
-        if phase :
-            try: phase = self.find_object_by_name(phase) 
+        setter = True
+        if network:
+            try:    network = self.find_object_by_name(network)
             except: pass #Accept object
-            try: 
-                getattr(phase,'_'+element+'_data')[prop]
-                temp_word = 'updated for '
-            except: temp_word = 'added to '
-            if sp.shape(data)[0]==1:
-                if locations!='':
-                    try: getattr(phase,'_'+element+'_data')[prop]
-                    except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
-                    getattr(phase,'_'+element+'_data')[prop][locations] = data
-                    phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
-                else:
-                    try:
-                        getattr(phase,'_'+element+'_data')[prop]
-                        if sp.shape(getattr(phase,'_'+element+'_data')[prop])[0]!=1:
-                            print('Warning: '+prop+' '+element+' property in '+phase.name+' was an array which has been overwritten with a scalar value')
-                    except: pass
-                    getattr(phase,'_'+element+'_data')[prop] = data  
-                    phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
-            else:
-                if locations!='':
-                    if sp.shape(locations)[0]==sp.shape(data)[0]:
-                        try: getattr(phase,'_'+element+'_data')[prop]
-                        except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
-                        getattr(phase,'_'+element+'_data')[prop][locations] = data
-                        phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
-                    else:
-                        phase._logger.error('For adding '+element+' property '+prop+' to '+phase.name+', locations and size of data do not match!')
-                else:
-                    try:
-                        getattr(phase,'num_'+element+'s')()                        
-                        if sp.shape(data)[0]==getattr(phase,'num_'+element+'s')():
-                            getattr(phase,'_'+element+'_data')[prop] = data
-                            phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
-                        else: phase._logger.error('For adding '+element+' property '+prop+' to '+phase.name+', number of '+element+'s and size of data do not match!')
-                    except: phase._logger.error(element+' numbering has not been specified for '+phase.name)
-                        
-        else:
-            try: 
-                getattr(self,'_'+element+'_data')[prop]
-                temp_word = 'updated for '
-            except: temp_word = 'added to '            
-            if sp.shape(data)[0]==1:
-                if locations!='':                
-                    try: getattr(self,'_'+element+'_data')[prop]
-                    except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
-                    getattr(self,'_'+element+'_data')[prop][locations] = data
-                    self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-                else:
+            if network and 'OpenPNM.Network' in str(network.__class__): self = network
+            else: 
+                self._logger.error('In the setter for '+element+' property '+prop+' : Wrong input for the network! Check the object or its name again.')
+                setter = False
+        if setter:
+            if phase :
+                try: phase = self.find_object_by_name(phase) 
+                except: pass #Accept object
+                if phase and 'OpenPNM.Fluids' in str(phase.__class__):
                     try: 
-                        getattr(self,'_'+element+'_data')[prop]
-                        if sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:
-                            print('Warning: '+prop+' '+element+' property in '+self.name+' was an array which has been overwritten with a scalar value')
-                    except: pass
-                    getattr(self,'_'+element+'_data')[prop] = data   
-                    self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-            else:                
-                if locations!='':
-                    if sp.shape(locations)[0]==sp.shape(data)[0]:
+                        getattr(phase,'_'+element+'_data')[prop]
+                        temp_word = 'updated for '
+                    except: temp_word = 'added to '
+                    if sp.shape(data)[0]==1:
+                        if locations!='':
+                            try: getattr(phase,'_'+element+'_data')[prop]
+                            except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
+                            getattr(phase,'_'+element+'_data')[prop][locations] = data
+                            phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
+                        else:
+                            try:
+                                getattr(phase,'_'+element+'_data')[prop]
+                                if sp.shape(getattr(phase,'_'+element+'_data')[prop])[0]!=1:
+                                    print('Warning: '+prop+' '+element+' property in '+phase.name+' was an array which has been overwritten with a scalar value')
+                            except: pass
+                            getattr(phase,'_'+element+'_data')[prop] = data  
+                            phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
+                    else:
+                        if locations!='':
+                            if sp.shape(locations)[0]==sp.shape(data)[0]:
+                                try: getattr(phase,'_'+element+'_data')[prop]
+                                except: getattr(phase,'_'+element+'_data')[prop] = sp.zeros((getattr(phase,'num_'+element+'s')(),))*sp.nan
+                                getattr(phase,'_'+element+'_data')[prop][locations] = data
+                                phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
+                            else:
+                                phase._logger.error('For adding '+element+' property '+prop+' to '+phase.name+', locations and size of data do not match!')
+                        else:
+                            try:
+                                getattr(phase,'num_'+element+'s')()                        
+                                if sp.shape(data)[0]==getattr(phase,'num_'+element+'s')():
+                                    getattr(phase,'_'+element+'_data')[prop] = data
+                                    phase._logger.debug(element+' property '+prop+' has been '+temp_word+phase.name)
+                                else: phase._logger.error('For adding '+element+' property '+prop+' to '+phase.name+', number of '+element+'s and size of data do not match!')
+                            except: phase._logger.error(element+' numbering has not been specified for '+phase.name)
+                else:  self._logger.error('In the setter for '+element+' property '+prop+' : Wrong input for the phase! Check the object or its name again.' )       
+            else:
+                try: 
+                    getattr(self,'_'+element+'_data')[prop]
+                    temp_word = 'updated for '
+                except: temp_word = 'added to '            
+                if sp.shape(data)[0]==1:
+                    if locations!='':                
                         try: getattr(self,'_'+element+'_data')[prop]
                         except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
                         getattr(self,'_'+element+'_data')[prop][locations] = data
                         self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-                    else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', locations and size of data do not match!')
-                else:
-                    try: 
-                        getattr(self,'num_'+element+'s')()                        
-                        if sp.shape(data)[0]==getattr(self,'num_'+element+'s')():
+                    else:
+                        try: 
+                            getattr(self,'_'+element+'_data')[prop]
+                            if sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:
+                                print('Warning: '+prop+' '+element+' property in '+self.name+' was an array which has been overwritten with a scalar value')
+                        except: pass
+                        getattr(self,'_'+element+'_data')[prop] = data   
+                        self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
+                else:                
+                    if locations!='':
+                        if sp.shape(locations)[0]==sp.shape(data)[0]:
+                            try: getattr(self,'_'+element+'_data')[prop]
+                            except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
+                            getattr(self,'_'+element+'_data')[prop][locations] = data
+                            self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
+                        else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', locations and size of data do not match!')
+                    else:
+                        try: 
+                            getattr(self,'num_'+element+'s')()                        
+                            if sp.shape(data)[0]==getattr(self,'num_'+element+'s')():
+                                getattr(self,'_'+element+'_data')[prop] = data
+                                self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
+                            else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', number of '+element+'s and size of data do not match!')
+                        except: 
                             getattr(self,'_'+element+'_data')[prop] = data
                             self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-                        else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', number of '+element+'s and size of data do not match!')
-                    except: 
-                        getattr(self,'_'+element+'_data')[prop] = data
-                        self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
 
 
 
-    def _get_data(self,element='',phase='',prop='',locations=''):
+    def _get_data(self,network='',element='',phase='',prop='',locations=''):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''      
@@ -148,33 +157,43 @@ class Tools(Base):
             try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
-       
-        if phase :
-            try: phase = self.find_object_by_name(phase) 
-            except: pass 
-            if locations!='':                
-                try: 
-                    getattr(phase,'_'+element+'_data')[prop]
-                    try: return getattr(phase,'_'+element+'_data')[prop][locations]
-                    except: phase._logger.error('data for these locations cannot be returned')
-                except: phase._logger.error(phase.name+' does not have the requested '+element+' property: '+prop) 
-            else:
-                try: return getattr(phase,'_'+element+'_data')[prop]
-                except: phase._logger.error(phase.name+' does not have the requested '+element+' property: '+prop) 
-       
-        else :
-            if locations!='':                
-                try: 
-                    getattr(self,'_'+element+'_data')[prop]
-                    try: return getattr(self,'_'+element+'_data')[prop][locations]
-                    except: self._logger.error('data for these locations cannot be returned')
-                except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop) 
-            else:
-                try: return getattr(self,'_'+element+'_data')[prop]
-                except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop)           
+
+        getter = True
+        if network:
+            try:    network = self.find_object_by_name(network)
+            except: pass #Accept object
+            if network and 'OpenPNM.Network' in str(network.__class__): self = network
+            else: 
+                self._logger.error('In the getter for '+element+' property '+prop+' : Wrong input for the network! Check the object or its name again.')
+                getter = False
+        if getter:
+            if phase :
+                try: phase = self.find_object_by_name(phase) 
+                except: pass 
+                if phase and 'OpenPNM.Fluids' in str(phase.__class__):
+                    if locations!='':                
+                        try: 
+                            getattr(phase,'_'+element+'_data')[prop]
+                            try: return getattr(phase,'_'+element+'_data')[prop][locations]
+                            except: phase._logger.error('data for these locations cannot be returned')
+                        except: phase._logger.error(phase.name+' does not have the requested '+element+' property: '+prop) 
+                    else:
+                        try: return getattr(phase,'_'+element+'_data')[prop]
+                        except: phase._logger.error(phase.name+' does not have the requested '+element+' property: '+prop) 
+                else:  self._logger.error('In the getter for '+element+' property '+prop+' : Wrong input for the phase! Check the object or its name again.' )       
+            else :
+                if locations!='':                
+                    try: 
+                        getattr(self,'_'+element+'_data')[prop]
+                        try: return getattr(self,'_'+element+'_data')[prop][locations]
+                        except: self._logger.error('data for these locations cannot be returned')
+                    except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop) 
+                else:
+                    try: return getattr(self,'_'+element+'_data')[prop]
+                    except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop)           
       
  
-    def set_pore_data(self,phase='',prop='',data='',locations=''):
+    def set_pore_data(self,network='',phase='',prop='',data='',locations=''):
         r'''
         Writes data to fluid or network objects according to input arguments.
         
@@ -202,9 +221,9 @@ class Tools(Base):
         >>> pn.get_pore_data(prop='test')
         array([ 1.1])
         '''
-        self._set_data(element='pore',phase=phase,prop=prop,data=data,locations=locations)
+        self._set_data(network=network,element='pore',phase=phase,prop=prop,data=data,locations=locations)
         
-    def get_pore_data(self,phase='',prop='',locations=''):
+    def get_pore_data(self,network='',phase='',prop='',locations=''):
         r'''
         Retrieves data from fluid or network objects according to input arguments.
         
@@ -236,9 +255,9 @@ class Tools(Base):
         >>> pn.get_pore_data(prop='test')
         array([ 1.1])
         '''
-        return self._get_data(element='pore',phase=phase,prop=prop,locations=locations)
+        return self._get_data(network=network,element='pore',phase=phase,prop=prop,locations=locations)
 
-    def set_throat_data(self,phase='',prop='',data='',locations=''):
+    def set_throat_data(self,network='',phase='',prop='',data='',locations=''):
         r'''
         Writes data to fluid or network objects according to input arguments.  
         Network topology data and pore/throat geometry data is stored on the network object.
@@ -266,9 +285,9 @@ class Tools(Base):
         --------
         See set_pore_data
         '''
-        self._set_data(element='throat',phase=phase,prop=prop,data=data,locations=locations)         
+        self._set_data(network=network,element='throat',phase=phase,prop=prop,data=data,locations=locations)         
 
-    def get_throat_data(self,phase='',prop='',locations=''):
+    def get_throat_data(self,network='',phase='',prop='',locations=''):
         r'''
         Retrieves data from fluid or network objects according to input arguments.
         
@@ -297,7 +316,7 @@ class Tools(Base):
         --------
         See get_pore_data
         '''
-        return self._get_data(element='throat',phase=phase,prop=prop,locations=locations)     
+        return self._get_data(network=network,element='throat',phase=phase,prop=prop,locations=locations)     
 
     def _set_info(self,element='',label='',locations='',mode='merge'):
         r'''
@@ -888,33 +907,6 @@ class Tools(Base):
         #Count number of pores of specified type
         temp = self.get_throat_indices(labels=labels,mode=mode,return_indices=False)
         return sp.sum(temp) #return sum of Trues
-        
-    def find_object_by_name(self,name):
-        r'''
-        This is a short-cut method.  Given the string name of an 
-        OpenPNM Fluid, Geometry, Physics, Algorithm, or Network object 
-        this method will return that object
-        
-        Parameters
-        ----------
-        name : string
-            Unique name of desired object
-        
-        Returns
-        -------
-        OpenPNM Object
-            
-        Notes
-        -----
-        If any objects are instantiated without a name (i.e. name = ''), then
-        this method may start failing since the default name in many method calls
-        is name = ''.
-        
-        '''
-        for item in self._instances:
-            if item.name == name:
-                obj = item
-        return obj
 
     def get_result(self,alg_obj,**kwargs):
         r'''
@@ -930,44 +922,7 @@ class Tools(Base):
         For specific details refer to the `update` of the algorithm.
         '''
         alg_obj.update(**kwargs)     
-        
-        
-    def save_object_tocsv(self,path='', filename='', p_prop='all',t_prop='all'):
-        r'''
-        '''
-        if path=='':    path = os.path.abspath('')+'\\LocalFiles\\'
-        if filename=='':    filename = self.name
-        if type(p_prop)==str:
-            if p_prop=='all':
-                p_temp = True
-                p_prop = self._pore_data.keys()               
-            elif p_prop=='not': p_temp = False
-            else:
-                p_prop = sp.array(p_prop,ndmin=1)
-                p_temp = True
-        else:
-             p_prop = sp.array(p_prop,ndmin=1)
-             p_temp = True
-        if type(t_prop)==str:
-            if t_prop=='all':
-                t_temp = True
-                t_prop = self._throat_data.keys()               
-            elif t_prop=='not': t_temp = False
-            else:
-                t_prop = sp.array(t_prop,ndmin=1)
-                t_temp = True
-        else:
-             t_prop = sp.array(t_prop,ndmin=1)
-             t_temp = True        
-    
-        if p_temp :
-            for p in p_prop:
-                if sp.shape(sp.shape(self.get_pore_data(prop=p)))==(1,):
-                    sp.savetxt(path+'\\'+filename+'_pores_'+p+'.csv',self.get_pore_data(prop=p))
-        if t_temp:
-            for t in t_prop:
-                if sp.shape(sp.shape(self.get_throat_data(prop=t)))==(1,):
-                    sp.savetxt(path+'\\'+filename+'_throats_'+t+'.csv',self.get_throat_data(prop=t))
+            
 
 if __name__ == '__main__':
     import doctest
