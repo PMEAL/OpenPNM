@@ -15,6 +15,7 @@ module __GenericGeometry__: Base class to construct pore networks
 
 import OpenPNM
 import scipy as sp
+import scipy.io as io
 import numpy as np
 from .__GenericNetwork__ import GenericNetwork
 import os
@@ -72,8 +73,9 @@ class MatFile(GenericNetwork):
             path = os.path.join(path,'LocalFiles')
         self._path = path
         filepath = os.path.join(self._path,filename)
-        self._dictionary=sp.io.loadmat(filepath)
+        self._dictionary=io.loadmat(filepath)
         self._Np=np.size(self._getvar('pnumbering'))
+        print(self._Np)
         self._Nt=np.size(self._getvar('tnumbering'))
         self._net=OpenPNM.Network.GenericNetwork(name=self.name,num_pores=self._Np, num_throats=self._Nt)
         Pind = np.arange(0,self._Np)
