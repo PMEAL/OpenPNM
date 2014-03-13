@@ -31,20 +31,11 @@ Links
 Documentation
 =============
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
    userguide/index.rst
    devguide/index.rst
    docOpenPNM.rst
-
-
-Index and Tables
-================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   docExtraSidebar.rst
 

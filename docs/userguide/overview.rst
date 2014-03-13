@@ -10,17 +10,17 @@ Main Modules
 
 The OpenPNM framework contains 6 Modules:
 
-1 `Utilities`_:  Contains the Base class and the Tools class.  Base contains the `logger` as well as methods to save and load networks.  Tools contains all the methods required for *Getting* and Setting* data and info.  These methods are central operation of OpenPNM as they control how and where data is stored. 
+1 `Utilities`_:  Contains the Base class and the Tools class.  
 
-2 `Network`_: Consists of the GenericNetwork class which contains numerous methods for querying and manipulating networks, and subclasses which contain the generation protocols for various network topologies.  
+2 `Network`_: Consists of the (1) GenericNetwork class which contains numerous methods for working with networks, and subclasses which generate various network topologies.  
 
-3 `Geometry`_: Contains methods for applying pore scale geometry (e.g. pore size, throat length, etc)
+3 `Geometry`_: Contains methods for applying pore scale geometry
 
-4 `Fluids`_: Contains methods for estimating physical properties of fluids as a function of conditions in the network (e.g. viscosity as a function of temperature).
+4 `Fluids`_: Contains methods for estimating physical properties of fluids as a function of conditions in the network
 
-5 `Physics`_: Contains methods for calculating pore scale physics properties which combine fluid and geometry values (e.g. hydraulic conductance which combines pore size and fluid viscosity).
+5 `Physics`_: Contains methods for calculating pore scale physics properties which combine fluid and geometry values
 
-6 `Algorithms`_: This module is the home of the actual algorithms that use the network properties defined by the above modules (e.g. ordinary percolation for computing capillary pressure drainage curves, and Fickian diffusion algorithms for computing the diffusion of a gaseous species through the air filled pores).
+6 `Algorithms`_: This module is the home of the actual algorithms that use the network properties defined by the above modules
 
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
