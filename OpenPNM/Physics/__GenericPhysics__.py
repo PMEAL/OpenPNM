@@ -43,7 +43,7 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         self.name = name
         self._prop_list = []
         self._fluid = []
-        self._geometry = []
+        self._geometry = 'all'
         #bind objects togoether
         try: fluid = fluid.name
         except: pass
