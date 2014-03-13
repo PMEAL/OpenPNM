@@ -9,7 +9,7 @@ module __GenericVisualization__: Base class to visualize networks
 import OpenPNM
 import scipy as sp
 
-class GenericVisualization():
+class GenericVisualization(OpenPNM.Utilities.Base):
     r"""
     GenericVisualization - Base class to visualize networks
 
