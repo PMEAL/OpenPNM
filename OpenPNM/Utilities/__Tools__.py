@@ -44,6 +44,7 @@ class Tools(Base):
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
         data = sp.array(data,ndmin=1)
+        if data.ndim > 1: data = data.squeeze()
         if type(locations)==list:
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
             except: locations = sp.array(locations,ndmin=1)
