@@ -1,18 +1,19 @@
 r"""
-*********************************************************************************
-:mod:`OpenPNM.Topology` -- All classes related the creation of network topology
-*********************************************************************************
+*******************************************************************************
+:mod:`OpenPNM.Network` -- All classes related the creation of network topology
+*******************************************************************************
 
-.. module:: OpenPNM.Topology
+.. module:: OpenPNM.Network
 
 Contents
 --------
-
+Contains two main types of information: classes for generating network topology
+and methods for querying existing networks for topological information.
 
 Classes
 -------
     
-.. autoclass:: GenericTopology
+.. autoclass:: GenericNetwork
    :members:
    :undoc-members:
    :private-members:
@@ -30,7 +31,7 @@ Classes
    :private-members:
    :show-inheritance:
    
-.. autoclass:: Template
+.. autoclass:: TestNet
    :members:
    :undoc-members:
    :private-members:
