@@ -52,10 +52,7 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         except: pass #Accept object               
         fluid._physics.append(self) # attach this physics to fluid
         if type(geometry)!= sp.ndarray and geometry=='all':
-            if 'OpenPNM.Geometry' in str(network._geometry): geometry = network._geometry
-            else:
-                geometry = []
-                self._logger.critical('Physics functions for '+fluid.name+' require geometrical data, but no geometry is attached to the network!')
+            geometry = network._geometry
         elif type(geometry)!= sp.ndarray: 
             geometry = sp.array(geometry,ndmin=1)
         for geom in geometry:
@@ -110,12 +107,10 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         --------
         >>> pn = OpenPNM.Network.TestNet()
         '''
-        if self._geometry == []: geom = 'all'
-        else: geom = self._geometry 
         try:
             function = getattr( getattr(OpenPNM.Physics, prop), kwargs['model'] ) # this gets the method from the file
             if prop_name: prop = prop_name #overwrite the default prop with user supplied name  
-            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid[0], geometry=geom, **kwargs) #
+            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid[0], geometry=self._geometry, **kwargs) #
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)
