@@ -1,22 +1,18 @@
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Visualization`: Network Visualization
+:mod:`OpenPNM.Visualization` -- Network Visualization
 *******************************************************************************
 
 .. module:: OpenPNM.Visualization
 
 Contents
 --------
-tbd
-
-.. note::
-   n/a
-
+Classes for exporting data to standard formats (i.e. VTK) for postprocessing
 
 Classes
 -------
 
-.. autoclass:: Common
+.. autoclass:: GenericVisualization
    :members:
    :undoc-members:
    :show-inheritance:

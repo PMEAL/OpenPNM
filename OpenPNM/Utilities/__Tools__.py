@@ -44,6 +44,7 @@ class Tools(Base):
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
         data = sp.array(data,ndmin=1)
+        if data.ndim > 1: data = data.squeeze()
         if type(locations)==list:
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
             except: locations = sp.array(locations,ndmin=1)
@@ -392,7 +393,7 @@ class Tools(Base):
         ----------
         label : string
             The name of the pore labels you wish to apply (e.g. 'top')
-        locaitons : array_like
+        locations : array_like
             An array containing the locations (pores) where the labels should be applied.
             Can be either a boolean mask of Np length with True at labels locations (default), 
             a list of indices where labels should be applied.
@@ -468,9 +469,7 @@ class Tools(Base):
         ----------
         label : string
             The name of the pore labels you wish to apply (e.g. 'top')
-        mode : string
-            Options are 'merge' and 'overwrite', default is 'merge'
-        locaitons : array_like
+        locations : array_like
             An array containing the locations (pores) where the labels should be applied.
             Can be either a boolean mask of Np length with True at labels locations (default), 
             a list of indices where labels should be applied. 

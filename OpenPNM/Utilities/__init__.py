@@ -1,34 +1,28 @@
-# Copyright (c) 2013, OpenPNM
-# License: TBD.
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Utilities` -- base classes, helpers and all homeless functions
+:mod:`OpenPNM.Utilities` -- Base class, Network tools and other functions
 *******************************************************************************
 
 .. module:: OpenPNM.Utilities 
 
 Contents
-========
+--------
 The OpenPNM package imports all the functions from the top level modules. 
  
 Import
-======
->>> import OpenPNM as PNM
->>> tmp=PNM.Base.testinheritance()
-
-Submodules
-==========
-
+------
+>>> import OpenPNM
+>>> OpenPNM.__version__
 
 Classes
-=======
+-------
 
-.. autoclass:: OpenPNMbase
+.. autoclass:: Base
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: testinheritance
+.. autoclass:: Tools
    :members:
    :undoc-members:
    :show-inheritance:

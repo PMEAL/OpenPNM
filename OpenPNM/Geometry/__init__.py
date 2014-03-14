@@ -1,18 +1,30 @@
 r"""
-*********************************************************************************
-:mod:`OpenPNM.Geometery` -- All classes related the creation of network geometry
-*********************************************************************************
+*******************************************************************************
+:mod:`OpenPNM.Geometry` -- Classes related to the creation of pore and throat geometry
+*******************************************************************************
 
 .. module:: OpenPNM.Geometry
 
 Contents
 --------
-
+Contains methods for applying pore and throat geometry
 
 Classes
 -------
     
 .. autoclass:: GenericGeometry
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   
+.. autoclass:: Stick_and_Ball
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+
+.. autoclass:: Boundary
    :members:
    :undoc-members:
    :private-members:
