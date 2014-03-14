@@ -11,11 +11,10 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
-from OpenPNM.Geometry.__PlotTools__ import PlotTools
 import scipy as sp
 from functools import partial
 
-class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
+class GenericGeometry(OpenPNM.Utilities.Base):
     r"""
     GenericGeometry - Base class to construct pore networks
 
@@ -56,8 +55,16 @@ class GenericGeometry(OpenPNM.Utilities.Base,PlotTools):
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        network.set_pore_info(label=name,locations=pnums)
-        network.set_throat_info(label=name,locations=tnums)
+        if (pnums == []) and (tnums == []):
+            pnums = tnums = 'all'
+        if sum(network.list_pore_labels()==name) > 0:
+            raise Exception('Supplied geometry label already exists')
+        else:
+            network.set_pore_info(label=name,locations=pnums)
+        if sum(network.list_throat_labels()==name) > 0:
+            raise Exception('Supplied geometry label already exists')
+        else:
+            network.set_throat_info(label=name,locations=tnums)
         network._geometry.append(self) #attach geometry to network
         self.name = name
         self._net = network #Attach network to self
