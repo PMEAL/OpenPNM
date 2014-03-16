@@ -1,7 +1,7 @@
 .. _examples:
 
 ###############################################################################
-**OpenPNM Examples**
+**Examples**
 ###############################################################################
 
 Available Examples:
@@ -10,5 +10,4 @@ Available Examples:
    :maxdepth: 1
    
    cubic.rst
-   template.rst
-   delaunay.rst
+   boundary_conditions.rst
