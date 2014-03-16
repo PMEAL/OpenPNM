@@ -173,6 +173,37 @@ class Base(object):
             if item.name == name:
                 obj = item
         return obj
+        
+    def find_object_by_type(self,obj_type):
+        r'''
+        
+        Parameters
+        ----------
+        obj_type : string
+            The type of object to found found.  Options are 'network', 'geometry',
+            'fluid', 'physics', or 'algorithm'.
+            
+        Returns
+        -------
+        A list containing the objects of the type requested.
+            
+        '''
+        obj = []
+        if obj_type == 'fluid':
+            for item in self._fluids:
+                obj.append(item)
+        if obj_type == 'geometry':
+            for item in self._geometry:
+                obj.append(item)
+        if obj_type == 'network':
+            obj = [self]
+        if obj_type == 'physics':
+            for item in self._physics:
+                obj.append(item)
+        return obj
+        
+        
+        
 
 if __name__ == '__main__':
     pass

@@ -4,8 +4,8 @@ import scipy as sp
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=10).generate(filename='standard_cubic_5x5x5.mat')
-#pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[10, 10, 10], lattice_spacing=[0.0001],add_boundaries=True)
+#pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=10).generate(filename='standard_cubic_5x5x5.mat')
+pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001],add_boundaries=True)
 #pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=1500,domain_size=[100,100,30])
 #pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((4,4),dtype=int),lattice_spacing=0.001)
 #pn = OpenPNM.Network.Sphere(name='sphere_1',loglevel=10).generate(radius=5,lattice_spacing=1)
@@ -15,13 +15,11 @@ pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=10).generate(filename='standa
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-GDL_geom = pn._geometry[0]
-GDL_geom.add_method(prop='throat_length',model='constant',value=1)
-GDL_geom.regenerate()
-#GDL_pores = sp.r_[0:1500]
-#GDL_throats = pn.find_neighbor_throats(GDL_pores,mode='intersection')
-#GDL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='GDL', pnums=GDL_pores, tnums=GDL_throats)
+#GDL_geom = pn._geometry[0]
+#GDL_geom.add_method(prop='throat_length',model='constant',value=1)
 #GDL_geom.regenerate()
+GDL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='GDL', pnums='all', tnums='all')
+GDL_geom.regenerate()
 #------------------------------------------------------------------------------
 #MPL_pores = sp.r_[1500:pn.num_pores()]
 #MPL_throats = pn.find_neighbor_throats(MPL_pores,mode='intersection')
@@ -125,15 +123,15 @@ Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Ficki
 ###----------------------------------------------------------------------------
 ### Assign Dirichlet boundary conditions to some of the surface pores
 ##BC1
-BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
-BC1_values = 0.6
-Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
-## BC2
-BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
-BC2_values = 0.2
-Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
+#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
+#Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
+#BC1_values = 0.6
+#Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
+#Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
+#BC2_values = 0.2
+#Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ###----------------------------------------------------------------------------
 ### Assign Neumann and Dirichlet boundary conditions to some of the surface pores
 ### BC1
@@ -165,23 +163,23 @@ Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 #BC2_values = 0.2
 #Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------------
-### Assign Dirichlet boundary condition to some of the surface pores and 
-### Neumann boundary condition to some of the internal pores(to the cluster not individually)
-###BC0
-#BC0_pores = [500,501,502,503,504]
-#Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC0_pores)
-#BC0_values = 5e-7
-#Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
-###BC1
-#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-#BC1_values = 0.4
-#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-### BC2
-#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
-#BC2_values = 0.3
-#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+## Assign Dirichlet boundary condition to some of the surface pores and 
+## Neumann boundary condition to some of the internal pores(to the cluster not individually)
+#BC0
+BC0_pores = [500,501,502,503,504]
+Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC0_pores)
+BC0_values = 5e-7
+Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
+#BC1
+BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
+Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+BC1_values = 0.6
+Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+# BC2
+BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
+Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
+BC2_values = 0.2
+Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------------
 ### Assign Dirichlet boundary condition to some of the surface pores and 
 ### Neumann insulated boundary condition to some of the internal pores
