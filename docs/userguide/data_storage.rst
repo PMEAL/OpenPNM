@@ -85,7 +85,7 @@ Algorithm Objects also store their own data, but this is for a different reason.
 
 To avoid any confusion regarding where data is stored, OpenPNM comes with Setter and Getter methods.  These methods are members of the Tools class, and are inherited by Fluids, Networks, and Algorithms.  The Setter methods works as follows:
 
-.. code_block:: python
+.. code-block:: python
 
 	pn = OpenPNM.Network.TestNet()  # Create a basic 5 x 5 x 5 network
 	values = sp.rand(125)  # Create a rando value for each pore
@@ -95,7 +95,7 @@ To avoid any confusion regarding where data is stored, OpenPNM comes with Setter
 	
 The Getter method is also demonstrated here.  The above code shows the Setter and Getter in their most basic form.  There are a number of optional arguments that can be used.   Below the Network setter is used to store data on a Fluid Object
 
-.. code_block:: python
+.. code-block:: python
 	
 	fluid = OpenPNM.Fluids.Air(network=pn)
 	pn.set_pore_data(phase=fluid,prop='rand_vals',data=values)  # Store the values on the fluid

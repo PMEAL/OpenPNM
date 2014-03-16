@@ -1,7 +1,7 @@
 .. _devguide_index:
 
 **************************************************
-OpenPNM Developer Guide
+Developer Guide
 **************************************************
 
 Useful Links:
