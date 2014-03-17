@@ -135,27 +135,27 @@ Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Ficki
 ###----------------------------------------------------------------------------
 ### Assign Dirichlet boundary conditions to some of the surface pores
 ##BC1
-BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
-BC1_values = 0.6
-Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
-## BC2
-BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
-BC2_values = 0.2
-Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
+#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
+#Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
+#BC1_values = 0.6
+#Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
+### BC2
+#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
+#Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
+#BC2_values = 0.2
+#Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
 ###----------------------------------------------------------------------------
 ### Assign Neumann and Dirichlet boundary conditions to some of the surface pores
 ### BC1
-#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-#BC1_values = 0.5
-#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-### BC2
-#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC2_pores)
-#BC2_values = 2e-9
-#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
+BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
+Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
+BC1_values = 0.6
+Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
+## BC2
+BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
+Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC2_pores)
+BC2_values = 1e-8
+Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
 ###----------------------------------------------------------------------------
 ### Assign Dirichlet boundary condition to some of the surface pores and 
 ### Neumann boundary condition to all of the internal pores(individually) 
