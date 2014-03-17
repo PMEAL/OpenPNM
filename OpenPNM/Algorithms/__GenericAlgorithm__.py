@@ -19,8 +19,9 @@ class GenericAlgorithm(OpenPNM.Utilities.Tools):
 
     Parameters
     ----------
-    net : Descendent of OpenPNM.Network.GenericNetwork
+    network : Descendent of OpenPNM.Network.GenericNetwork
         A valid network for this algorithm
+    name : name of this algorithm
 
 
 

@@ -28,6 +28,13 @@ class InvasionPercolation(GenericAlgorithm):
 
     def __init__(self,**kwords):
         r"""
+        Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
+
+        Parameters
+        ----------
+        network : Descendent of OpenPNM.Network.GenericNetwork
+            A valid network for this algorithm
+        name : name of this algorithm
 
         """
         super(InvasionPercolation,self).__init__(**kwords)
@@ -40,8 +47,6 @@ class InvasionPercolation(GenericAlgorithm):
 
         Parameters
         ----------
-        net : OpenPNM.Network.GenericNetwork object
-            pore network where algorithm will take place
         invading_fluid : OpenPNM Fluid Object
             fluid which will displace defending fluid
         defending_fluid : OpenPNM Fluid Object
@@ -153,7 +158,7 @@ class InvasionPercolation(GenericAlgorithm):
             Pc_entry = self._fluid.get_throat_data(prop=self._capillary_pressure_name)
         if self._timing:
             # calculate Volume_coef for each throat
-            self._Tvol_coef = tdia*tdia*tdia*np.pi/6/Pc_entry
+            self._Tvol_coef = tdia*tdia*tdia*np.pi/12/Pc_entry
         # Creating an array for invaded Pores(Np long, 0 for uninvaded, cluster number for inaveded)
         self._Pinv = np.zeros((self._net.num_pores(),1),dtype=np.int32)
         self._Pinv_original = np.zeros((self._net.num_pores(),1),dtype=np.int32)
@@ -573,24 +578,24 @@ class InvasionPercolation(GenericAlgorithm):
     def update(self,occupancy='occupancy'):
         r"""
         """
-        try:
-            self._fluid.set_pore_data(prop=occupancy,data=self._Pinv>0)
-            self._fluid.set_throat_data(prop=occupancy,data=self._Tinv>0)
-        except:
-            print('Something bad happened while trying to update fluid',self._fluid.name)
-        try:
-            self._fluid_def.set_pore_data(prop=occupancy,data= ~self._Pinv>0)
-            self._fluid_def.set_throat_data(prop=occupancy,data= ~self._Tinv>0)
-        except:
-            print('A partner fluid has not been set so inverse occupancy cannot be set')
-        self._fluid.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
-        self._fluid.set_pore_data(prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
-        self._fluid.set_throat_data(prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
-        self._fluid.set_pore_data(prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
-        self._fluid.set_throat_data(prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
+        #try:
+        #    self._net.set_pore_data(phase=self._fluid,prop=occupancy,data=self._Pinv>0)
+        #    self._net.set_pore_data(phase=self._fluid,prop=occupancy,data=self._Tinv>0)
+        #except:
+        #    print('Something bad happened while trying to update fluid',self._fluid.name)
+        #try:
+        #    self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data= ~self._Pinv>0)
+        #    self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data= ~self._Tinv>0)
+        #except:
+        #    print('A partner fluid has not been set so inverse occupancy cannot be set')
+        self._net.set_pore_data(phase=self._fluid,prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
+        self._net.set_pore_data(phase=self._fluid,prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
+        self._net.set_throat_data(phase=self._fluid,prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
+        self._net.set_pore_data(phase=self._fluid,prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
+        self._net.set_throat_data(phase=self._fluid,prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
         if self._timing:
-            self._fluid.set_pore_data(prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
-            self._fluid.set_throat_data(prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))            
+            self._net.set_pore_data(phase=self._fluid,prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
+            self._net.set_throat_data(phase=self._fluid,prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))            
             
             
 
@@ -604,16 +609,16 @@ if __name__ =="__main__":
     print("-"*50)
     print("- * generate invading and defending fluids")
     #======================================================================
+    '''Build Topological Network'''
+    #======================================================================
+    pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15,15,15],lattice_spacing=[0.0001])  
+    #======================================================================
     '''Build Fluids'''
     #======================================================================
     air = OpenPNM.Fluids.Air(network=pn,name='air')
     water = OpenPNM.Fluids.Water(network=pn,name='water')
     print("-"*50)
-    print("- * generate a simple cubic network")
-    #======================================================================
-    '''Build Topological Network'''
-    #======================================================================
-    pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15,15,15],lattice_spacing=[0.0001])    
+    print("- * generate a simple cubic network")  
     #======================================================================
     '''Build Geometry'''
     #======================================================================
