@@ -1,7 +1,7 @@
 .. _network:
 
 ###############################################################################
-Network Objects
+The Network Object
 ###############################################################################
 
 The *Network* is the central object in OpenPNM.  This object contains 3 main aspects:

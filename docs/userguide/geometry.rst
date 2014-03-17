@@ -7,7 +7,7 @@ In OpenPNM the pore and throat geometry are defined separately from the Network 
 
 .. note:: 
 
-Fluid, Geometry and Physics modules are designed to function identically, so once you're familiar with the usage of one then all the others should be similar. 
+	Fluid, Geometry and Physics modules are designed to function identically, so once you're familiar with the usage of one then all the others should be similar.  
 
 ===============================================================================
 What is a Geometry Object?

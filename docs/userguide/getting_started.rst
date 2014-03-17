@@ -1,9 +1,11 @@
+.. _tutorial:
+
 ###############################################################################
 Getting Started
 ###############################################################################
 
 ===============================================================================
-Example: Building a Cubic Network
+Building a Cubic Network
 ===============================================================================
 
 The first thing you must do is import the OpenPNM code so you have access to the functions and methods, so in a blank *.py* file or at the python command line, start by entering the following line:

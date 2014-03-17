@@ -1,11 +1,12 @@
-. _physics:
+.. _physics:
 
 ###############################################################################
 Pore Scale Physics
 ###############################################################################
 
-For a complete listing of the existing modules and their included methods see 
-the :ref:`function_ref`.
+.. note:: 
+
+	Fluid, Geometry and Physics modules are designed to function identically, so once you're familiar with the usage of one then all the others should be similar.  
 
 ===============================================================================
 Adding Custom Models to Existing Physics Classes
