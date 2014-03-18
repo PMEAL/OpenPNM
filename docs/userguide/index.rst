@@ -11,7 +11,6 @@ Contents:
    
    overview.rst
    installation.rst
-   getting_started.rst
    data_storage.rst
    network.rst
    geometry.rst

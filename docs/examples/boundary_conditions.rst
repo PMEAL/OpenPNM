@@ -1,4 +1,4 @@
-.. _boundary_conditions:
+.. _boundary_conditions_example:
 
 ===============================================================================
 Diffusion Simulations with Various Boundary Conditions

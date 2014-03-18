@@ -1,13 +1,14 @@
 .. _examples:
 
 ###############################################################################
-Examples
+Examples and Tutorials
 ###############################################################################
 
-Available Examples:
+Available Examples and Tutorials:
 
 .. toctree::
    :maxdepth: 1
    
-   cubic.rst
+   getting_started.rst
+   drainage.rst
    boundary_conditions.rst

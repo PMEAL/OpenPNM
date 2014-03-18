@@ -27,7 +27,7 @@ This submodule contains methods for estimating fluid properties
    :private-members:
    :show-inheritance:
    
-.. autoclass:: Viscosity
+.. autoclass:: viscosity
    :members:
    :undoc-members:
    :private-members:
