@@ -12,10 +12,7 @@ Percolation Algorithms
 Invasion Percolation
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-OpenPNM employs a sophisticated drainage algorithm that allows for a wide 
-variety of initial conditions. The algorithm follows the basic tenants of the 
-invasion percolation scheme, which was first described here [1]_, with a few 
-clarifications.
+OpenPNM employs a sophisticated drainage algorithm that allows for a wide variety of initial conditions. The algorithm follows the basic tenants of the invasion percolation scheme, which was first described here [1]_, with a few clarifications.
 
 1) Multiple, independent clusters of the invading phase can be simulated, originating from any pore, or group of pores in the network.
 2) Clusters grow simultaneously. Pore invasion times are calculated from cluster volumes and prescribed cluster growth rates.

@@ -44,7 +44,7 @@ The methods are added to the **Fluid** object according to the property name (``
 	liq_1.molar_density()
 	liq_1.viscosity()
 
-Whenever the data need to be updated, such as when the temperature of the network changes, then the methods need to be called again.  The **Fluid** object contains a helper function called ``regenerate`` which will call all of the added methods in the order they were added.  It is also possible to update only certain methods by sending their names as string arguments to ``regenerate``.
+Whenever the data need to be updated, such as when the temperature of the network changes, then the methods need to be called again.  The **Fluid** object contains a helper function called ``regenerate`` which will call all of the added methods in the order they were added.  It is also possible to update only certain methods by sending their names as string arguments to ``regenerate``:
 
 .. code-block:: python
 
@@ -67,8 +67,53 @@ Sub-classing a Fluid
 There are several fluids that are used commonly enough that entering individual methods as described above would be annoyingly repetitive.  For these cases, it is helpful to create a subclass of the ``GenericFluid`` class that contains a pre-written list of methods to add and the appropriate arguments.  OpenPNM includes subclasses for ``Air`` and ``Water``, and these can be used as examples for develop custom subclasses.  There are two steps required to add a custom subclass.  First, a file must be added to the **Fluids** folder, such as *__Oil__.py*.  In the initialization method of this file, the various ``add_method()`` lines that are required to generate the fluid should be added.  Secondly, the new file must be added to the *OpenPNM/Fluids/__init__.py* file as ``from . import __Oil__.py``.  
 
 
+===============================================================================
+Available Property Estimation Models
+===============================================================================
 
+----
 
+.. automodule:: OpenPNM.Fluids.contact_angle
+   :members:
 
+----
 
+.. automodule:: OpenPNM.Fluids.diffusivity
+   :members:
 
+----
+
+.. automodule:: OpenPNM.Fluids.electrical_conductivity
+   :members:
+
+----
+
+.. automodule:: OpenPNM.Fluids.molar_density
+   :members:
+
+----
+
+.. automodule:: OpenPNM.Fluids.molar_mass
+   :members:
+
+----
+
+.. automodule:: OpenPNM.Fluids.surface_tension
+   :members:
+
+----
+
+.. automodule:: OpenPNM.Fluids.thermal_conductivity
+   :members:
+
+----
+
+.. automodule:: OpenPNM.Fluids.vapor_pressure
+   :members:
+
+----
+
+.. automodule:: OpenPNM.Fluids.viscosity
+   :members:
+
+----
