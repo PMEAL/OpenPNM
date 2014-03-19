@@ -66,7 +66,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         for item in init_cond.keys():
             self.set_pore_data(prop=item,data=init_cond[item])
 
-    def regenerate(self,prop_list=''):
+    def regenerate(self,prop_list='',mode=None):
         r'''
         This updates all properties of the fluid using the selected models
         
@@ -74,6 +74,8 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         ----------
         prop_list : string or list of strings
             The names of the properties that should be updated, defaults to all
+        mode : string
+            Control how the regeneration occurs.  
             
         Examples
         --------
@@ -87,6 +89,11 @@ class GenericFluid(OpenPNM.Utilities.Tools):
             prop_list = self._prop_list
         elif type(prop_list) == str:
             prop_list = [prop_list]
+        if mode == 'exclude':
+            a = sp.array(self._prop_list)
+            b = sp.array(prop_list)
+            c = a[sp.where(~sp.in1d(a,b))[0]]
+            prop_list = list(c)
         for item in prop_list:
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()
