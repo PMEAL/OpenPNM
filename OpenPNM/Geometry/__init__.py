@@ -29,6 +29,51 @@ Classes
    :undoc-members:
    :private-members:
    :show-inheritance:
+
+.. automodule:: OpenPNM.Geometry.pore_seed
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. automodule:: OpenPNM.Geometry.pore_diameter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Geometry.pore_volume
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Geometry.throat_seed
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Geometry.throat_diameter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Geometry.throat_volume
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Geometry.throat_length
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Geometry.throat_area
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Geometry.throat_surface_area
+   :members:
+   :undoc-members:
+   :show-inheritance:
    
 """
 

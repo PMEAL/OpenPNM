@@ -7,7 +7,7 @@ r"""
 
 Contents
 --------
-This submodule contains methods for estimating fluid properties
+This module contains methods for estimating fluid properties
 
 .. autoclass:: GenericFluid
    :members:
@@ -27,10 +27,49 @@ This submodule contains methods for estimating fluid properties
    :private-members:
    :show-inheritance:
    
-.. autoclass:: viscosity
+.. automodule:: OpenPNM.Fluids.contact_angle
    :members:
    :undoc-members:
-   :private-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Fluids.diffusivity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Fluids.electrical_conductivity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Fluids.molar_density
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Fluids.molar_mass
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Fluids.surface_tension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Fluids.thermal_conductivity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Fluids.vapor_pressure
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: OpenPNM.Fluids.viscosity
+   :members:
+   :undoc-members:
    :show-inheritance:
 
 """

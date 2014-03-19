@@ -1,6 +1,9 @@
-"""
-module  viscosity
+r"""
 ===============================================================================
+Submodule -- viscosity
+===============================================================================
+
+Models for predicting fluid viscosity
 
 """
 import scipy as sp
