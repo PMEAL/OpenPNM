@@ -23,29 +23,4 @@ This documentation is being rewritten, sorry for the inconvenience.
 Available Property Estimation Models
 ===============================================================================
 
-----
-
-.. automodule:: OpenPNM.Physics.capillary_pressure
-   :members:
-
-----
-
-.. automodule:: OpenPNM.Physics.diffusive_conductance
-   :members:
-   
-----
-
-.. automodule:: OpenPNM.Physics.electronic_conductance
-   :members:
-   
-----
-
-.. automodule:: OpenPNM.Physics.hydraulic_conductance
-   :members:
-
-----   
-
-.. automodule:: OpenPNM.Physics.thermal_conductance
-   :members:
-
-----
+For a complete list of available pore scale physics models see the :ref:`Function Reference <physics_ref>`.

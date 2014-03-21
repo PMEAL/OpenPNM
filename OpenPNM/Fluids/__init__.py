@@ -12,19 +12,16 @@ This module contains methods for estimating fluid properties
 .. autoclass:: GenericFluid
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
    
 .. autoclass:: Water
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
    
 .. autoclass:: Air
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
    
 .. automodule:: OpenPNM.Fluids.contact_angle

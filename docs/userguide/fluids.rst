@@ -66,54 +66,17 @@ Sub-classing a Fluid
 ===============================================================================
 There are several fluids that are used commonly enough that entering individual methods as described above would be annoyingly repetitive.  For these cases, it is helpful to create a subclass of the ``GenericFluid`` class that contains a pre-written list of methods to add and the appropriate arguments.  OpenPNM includes subclasses for ``Air`` and ``Water``, and these can be used as examples for develop custom subclasses.  There are two steps required to add a custom subclass.  First, a file must be added to the **Fluids** folder, such as *__Oil__.py*.  In the initialization method of this file, the various ``add_method()`` lines that are required to generate the fluid should be added.  Secondly, the new file must be added to the *OpenPNM/Fluids/__init__.py* file as ``from . import __Oil__.py``.  
 
-
 ===============================================================================
 Available Property Estimation Models
 ===============================================================================
 
-----
+For a complete list of available fluid property models see the :ref:`Function Reference <fluids_ref>`.
 
-.. automodule:: OpenPNM.Fluids.contact_angle
-   :members:
+===============================================================================
+The Inheritance and Composition Diagram for Fluid Objects
+===============================================================================
 
-----
+.. figure:: FluidsComposition.png
 
-.. automodule:: OpenPNM.Fluids.diffusivity
-   :members:
+   The inheritance of Base and Tools from Utilities, and the addition of property estimation methods from Fluids submodules
 
-----
-
-.. automodule:: OpenPNM.Fluids.electrical_conductivity
-   :members:
-
-----
-
-.. automodule:: OpenPNM.Fluids.molar_density
-   :members:
-
-----
-
-.. automodule:: OpenPNM.Fluids.molar_mass
-   :members:
-
-----
-
-.. automodule:: OpenPNM.Fluids.surface_tension
-   :members:
-
-----
-
-.. automodule:: OpenPNM.Fluids.thermal_conductivity
-   :members:
-
-----
-
-.. automodule:: OpenPNM.Fluids.vapor_pressure
-   :members:
-
-----
-
-.. automodule:: OpenPNM.Fluids.viscosity
-   :members:
-
-----

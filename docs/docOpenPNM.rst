@@ -34,8 +34,8 @@ Geometry
    :members:
    :undoc-members:
    :show-inheritance:
-   
-.. _physics_ref:
+
+.. _fluids_ref:
 
 -------------------------------------------------------------------------------
 Fluids
@@ -45,8 +45,8 @@ Fluids
    :members:
    :undoc-members:
    :show-inheritance:
- 
-.. _fluids_ref:
+
+.. _physics_ref:
 
 -------------------------------------------------------------------------------
 Physics
