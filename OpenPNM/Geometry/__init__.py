@@ -15,19 +15,16 @@ Classes
 .. autoclass:: GenericGeometry
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
    
 .. autoclass:: Stick_and_Ball
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
 
 .. autoclass:: Boundary
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
 
 .. automodule:: OpenPNM.Geometry.pore_seed

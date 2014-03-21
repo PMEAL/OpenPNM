@@ -13,7 +13,6 @@ This submodule contains all pore scale physics models applied to a pore network.
 .. autoclass:: GenericPhysics
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
    
 .. automodule:: OpenPNM.Physics.capillary_pressure
