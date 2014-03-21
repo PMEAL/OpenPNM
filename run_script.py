@@ -15,27 +15,9 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 1
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-#GDL_geom = pn._geometry[0]
-#GDL_geom.add_method(prop='throat_length',model='constant',value=1)
-#GDL_geom.regenerate()
 GDL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='GDL', pnums='all', tnums='all')
 GDL_geom.regenerate()
-#------------------------------------------------------------------------------
-#MPL_pores = sp.r_[1500:pn.num_pores()]
-#MPL_throats = pn.find_neighbor_throats(MPL_pores,mode='intersection')
-#MPL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='MPL', pnums=MPL_pores, tnums=MPL_throats)
-#MPL_geom.regenerate()
-#------------------------------------------------------------------------------
-#interface_throats = pn.find_interface_throats(['GDL','MPL'])
-#interface_geom = OpenPNM.Geometry.GenericGeometry(network=pn, name='interface',tnums=interface_throats)
-#interface_geom.add_method(prop='throat_seed',model='neighbor_min')
-#interface_geom.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
-#interface_geom.add_method(prop='throat_length',model='straight')
-#interface_geom.add_method(prop='throat_volume',model='cylinder')
-#interface_geom.add_method(prop='throat_vector',model='pore_to_pore')
-#interface_geom.add_method(prop='throat_area',model='cylinder')
-#interface_geom.add_method(prop='throat_surface_area',model='cylinder')
-#interface_geom.regenerate()
+
 
 #==============================================================================
 '''Build Fluids'''

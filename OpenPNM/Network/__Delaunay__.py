@@ -100,13 +100,12 @@ class Delaunay(GenericNetwork):
         self._logger.info(sys._getframe().f_code.co_name+": Place randomly located pores in the domain")
         coords = sp.rand(self._Np,3)*[self._Lx,self._Ly,self._Lz]
         self.set_pore_data(prop='coords',data=coords)
-        self.set_pore_data(prop='numbering',data=sp.arange(0,self._Np))
         self.set_pore_info(label='all',locations=np.ones_like(coords[:,0]))
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
 
     def _generate_throats(self):
         r"""
-        Generate the throats (connections, numbering and types)
+        Generate the throats connections
         """
         self._logger.info(sys._getframe().f_code.co_name+": Define connections between pores")
         Np = self.num_pores()
@@ -142,14 +141,14 @@ class Delaunay(GenericNetwork):
         adjmat = sprs.triu(adjmat,k=1,format="coo")
         self._logger.debug(sys._getframe().f_code.co_name+": Conversion to adjacency matrix complete")
         self.set_throat_data(prop='connections',data=sp.vstack((adjmat.row, adjmat.col)).T)
-        self.set_throat_data(prop='numbering', data=sp.arange(0,sp.size(adjmat.row)))
         tpore1 = self.get_throat_data(prop='connections')[:,0]
         self.set_throat_info(label='all',locations=np.ones_like(tpore1))
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         
     def _add_labels(self):
         r'''
-        Documentation for this method is being updated, we are sorry for the inconvenience.
+        This finds surface pors simply by proximity to the domain boundaries.
+        A better approach is necessary 
         '''
         coords = self.get_pore_data(prop='coords')
         self.set_pore_info(label='front',locations=(coords[:,0]<(0.1*self._Lx)))
