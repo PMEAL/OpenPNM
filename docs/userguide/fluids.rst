@@ -11,7 +11,7 @@ Virtually all algorithms in OpenPNM require *fluid* properties of some sort, eit
 	Fluid, Geometry and Physics modules are designed to function identically, so once you're familiar with the usage of one then all the others should be similar.  
 
 ===============================================================================
-What is a Fluid Object in OpenPNM?
+What is a Fluid Object?
 ===============================================================================
 **Fluids** objects have 2 main functions in OpenPNM:
 
@@ -35,22 +35,45 @@ This basic object does not contain any property estimation methods.  These must 
 
 	liq_1.add_method(prop='molar_density', model='constant', value=100)  # apply a constant density
 	liq_1.add_method(prop='viscosity', model='reynolds', uo=1, b=1)  # use a temperature dependent model
-	liq_1.add_method(prop='molar_mass', prop_name='MW', model='constant', value=0.02)  # use a custom property name
 
-The methods are added to the **Fluid** object according to the property name (``prop``) by default, but can be given customized names as well using the ``prop_name`` argument.  The number of fluid properties that are added is arbitrary and customizable.  If only fluid flow calculations will be performed, then it is not necessary to add a ``diffusivity`` method to the fluid.  Once the desired methods have been added, the next step is to actually calculate the **Fluid** properties.  This is done by calling the added methods as follows:
+The methods are added to the **Fluid** object according to the property name (``prop``) by default, but can be given customized names as well using the ``prop_name`` argument (see below for details on customizing ``prop_name``).  The number of fluid properties that are added is arbitrary; if only fluid flow calculations will be performed, then it is not necessary to add a ``diffusivity`` method to the fluid.  
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Generating or Regenerating the Fluid Properties
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Once the desired methods have been added, the next step is to actually calculate the **Fluid** properties.  This is done by calling the added methods as follows:
 
 .. code-block:: python
 
 	liq_1.molar_density()
 	liq_1.viscosity()
-
+	
 Whenever the data need to be updated, such as when the temperature of the network changes, then the methods need to be called again.  The **Fluid** object contains a helper function called ``regenerate`` which will call all of the added methods in the order they were added.  It is also possible to update only certain methods by sending their names as string arguments to ``regenerate``:
 
 .. code-block:: python
 
 	liq_1.regenerate()
 	liq_1.regenerate(['molar_density','viscosity'])
-  
+	
+	
+===============================================================================
+Customizing the Fluid Property Submodules
+===============================================================================
+The properties and models provided with OpenPNM are a small set of the total possibilities.  There are a number of ways to customize and extend the Fluids objects.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Changing the Default Property Name
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+The first and easiest type of customization a user might wish to do is to change the name of the property.  This allows for the creation of multiple properties from the same submodule (i.e. diffusivity) with each having a different name (ie. *DAB* and *DCB*).  The ``add_method`` method accepts the ``prop_name`` argument as follows:
+
+.. code-block:: python
+
+	liq1.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=2.1e-5)
+	liq1.add_method(prop='diffusivity',prop_name='DCB',model='constant',value=1.6e-5)
+
+The is one *major* repercussion of this renaming.  All methods that depend on using the diffusivity value must be told where to look for the data.  For instance, the ``diffusive_conductance`` model in the Physics object combines pore/throat size information with the diffusivity of the fluid.  By default it will assume that diffusivity values are stored on the Fluid object under the key 'diffusivity', but because of the above renaming this will not work.  Dealing with this is described in the documentation for the :ref:`Physics Object <custom_prop_names>`.
+
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Adding Custom Property Models
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -60,6 +83,8 @@ OpenPNM comes with a small set of property models for each of the property submo
 Adding Custom Properties
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 OpenPNM includes fluid submodules for many common properties, but this list is not exhaustive.  Adding a new property submodule is a two step process.  Firstly, one must create a new file in *OpenPNM/Fluids* with the desired property name (e.g. *enthalpy.py*).  Secondly, this file must be added to the *__init__.py* file in the **Fluids** folder or else its methods won't be available.  Examples can be found in the *__init__.py* file, but the required line would be ``from . import enthalpy``.  
+
+
 
 ===============================================================================
 Sub-classing a Fluid
