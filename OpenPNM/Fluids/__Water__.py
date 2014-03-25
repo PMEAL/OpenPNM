@@ -24,8 +24,8 @@ class Water(GenericFluid):
     >>> pn = OpenPNM.Network.TestNet()
     >>> water = OpenPNM.Fluids.Water(network=pn)
     '''
-    def __init__(self,**kwargs):
-        super(Water,self).__init__(name='water',**kwargs)
+    def __init__(self,name='water',**kwargs):
+        super(Water,self).__init__(name=name,**kwargs)
         self._logger.debug("Construct class")
         self.set_pore_data(prop='Tc',data=647.096)
         self.set_pore_data(prop='Pc',data=22.06e6)
