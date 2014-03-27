@@ -37,7 +37,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         Sets a custom name for the logger, to help identify logger messages
 
     """
-    def __init__(self,network,name,init_cond={},**kwargs):
+    def __init__(self,network,name,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         self.name = name
@@ -53,18 +53,16 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         #Set default T and P since most propery models require it
         self.set_pore_data(prop='temperature',data=298.0)
         self.set_pore_data(prop='pressure',data=101325.0)
-        for item in init_cond.keys():
-            self.set_pore_data(prop=item,data=init_cond[item])
-        #Initialize 'numbering arrays in the objects own info dictionaries
+        #Initialize label 'all' in the object's own info dictionaries
         self.set_pore_info(label='all',locations=self._net.get_pore_indices())
         self.set_throat_info(label='all',locations=self._net.get_throat_indices())
         
-    def apply_ICs(self,init_cond):
+    def apply_conditions(self,**kwargs):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
-        for item in init_cond.keys():
-            self.set_pore_data(prop=item,data=init_cond[item])
+        for item in kwargs.keys():
+            self.set_pore_data(prop=item,data=kwargs[item])
 
     def regenerate(self,prop_list='',mode=None):
         r'''
