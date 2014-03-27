@@ -40,7 +40,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
     def __init__(self,network,name,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        for item in network._fluid:
+        for item in network._fluids:
             if item.name == name:
                 raise Exception('A Fluid Object with the supplied name already exists')
         self.name = name
@@ -56,6 +56,8 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         #Set default T and P since most propery models require it
         self.set_pore_data(prop='temperature',data=298.0)
         self.set_pore_data(prop='pressure',data=101325.0)
+        self.set_pore_data(prop='occupancy',data=1)
+        self.set_throat_data(prop='occupancy',data=1)
         #Initialize label 'all' in the object's own info dictionaries
         self.set_pore_info(label='all',locations=self._net.get_pore_indices())
         self.set_throat_info(label='all',locations=self._net.get_throat_indices())
