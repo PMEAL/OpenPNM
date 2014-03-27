@@ -15,24 +15,29 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 1
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-GDL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='GDL', pnums='all', tnums='all')
-GDL_geom.regenerate()
+a = pn.get_pore_indices('internal')
+pn.set_pore_info(label='GDL',locations=a)
+a = pn.get_throat_indices('internal')
+pn.set_throat_info(label='GDL',locations=a)
 
+GDL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='GDL',pnums=[],tnums=[])
+GDL_geom.regenerate()
+GDL_geom.check_consistency()
 
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, loglevel=10,init_cond={'temperature':300, 'pressure':100000})
-air.apply_ICs(init_cond={'temperature':350, 'pressure':200000})  # experimental feature
+air = OpenPNM.Fluids.Air(network=pn, loglevel=10)
+air.apply_conditions(temperature=350, pressure=200000)
 air.regenerate()
 
 water = OpenPNM.Fluids.Water(network=pn,loglevel=10)
 water.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
 water.regenerate()
-#
-##==============================================================================
-#'''Build Physics Objects'''
-##==============================================================================
+
+#==============================================================================
+'''Build Physics Objects'''
+#==============================================================================
 phys_water_GDL = OpenPNM.Physics.GenericPhysics(network=pn, fluid='water',geometry=GDL_geom,name='phys_water_GDL')
 phys_water_GDL.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
 phys_water_GDL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
