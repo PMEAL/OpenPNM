@@ -57,6 +57,9 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        for item in network._geometry:
+            if item.name == name:
+                raise Exception('A Geometry Object with the supplied name already exists')
         network.set_pore_info(label=name,locations=pnums)
         network.set_throat_info(label=name,locations=tnums)
         network._geometry.append(self) #attach geometry to network

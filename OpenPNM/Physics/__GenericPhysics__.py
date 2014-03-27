@@ -40,6 +40,9 @@ class GenericPhysics(OpenPNM.Utilities.Base):
     def __init__(self,network,name,fluid,geometry='all',**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
+        for item in network._physics:
+            if item.name == name:
+                raise Exception('A Physics Object with the supplied name already exists')
         self.name = name
         self._prop_list = []
         self._fluid = []

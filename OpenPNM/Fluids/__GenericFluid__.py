@@ -40,6 +40,9 @@ class GenericFluid(OpenPNM.Utilities.Tools):
     def __init__(self,network,name,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
+        for item in network._fluid:
+            if item.name == name:
+                raise Exception('A Fluid Object with the supplied name already exists')
         self.name = name
         self._net = network
         #Initialize necessary empty attributes
