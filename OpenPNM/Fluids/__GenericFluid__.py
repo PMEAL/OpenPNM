@@ -37,9 +37,12 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         Sets a custom name for the logger, to help identify logger messages
 
     """
-    def __init__(self,network,name,init_cond={},**kwargs):
+    def __init__(self,network,name,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
+        for item in network._fluids:
+            if item.name == name:
+                raise Exception('A Fluid Object with the supplied name already exists')
         self.name = name
         self._net = network
         #Initialize necessary empty attributes
@@ -53,20 +56,20 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         #Set default T and P since most propery models require it
         self.set_pore_data(prop='temperature',data=298.0)
         self.set_pore_data(prop='pressure',data=101325.0)
-        for item in init_cond.keys():
-            self.set_pore_data(prop=item,data=init_cond[item])
-        #Initialize 'numbering arrays in the objects own info dictionaries
+        self.set_pore_data(prop='occupancy',data=1)
+        self.set_throat_data(prop='occupancy',data=1)
+        #Initialize label 'all' in the object's own info dictionaries
         self.set_pore_info(label='all',locations=self._net.get_pore_indices())
         self.set_throat_info(label='all',locations=self._net.get_throat_indices())
         
-    def apply_ICs(self,init_cond):
+    def apply_conditions(self,**kwargs):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
-        for item in init_cond.keys():
-            self.set_pore_data(prop=item,data=init_cond[item])
+        for item in kwargs.keys():
+            self.set_pore_data(prop=item,data=kwargs[item])
 
-    def regenerate(self,prop_list=''):
+    def regenerate(self,prop_list='',mode=None):
         r'''
         This updates all properties of the fluid using the selected models
         
@@ -74,6 +77,8 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         ----------
         prop_list : string or list of strings
             The names of the properties that should be updated, defaults to all
+        mode : string
+            Control how the regeneration occurs.  
             
         Examples
         --------
@@ -87,6 +92,11 @@ class GenericFluid(OpenPNM.Utilities.Tools):
             prop_list = self._prop_list
         elif type(prop_list) == str:
             prop_list = [prop_list]
+        if mode == 'exclude':
+            a = sp.array(self._prop_list)
+            b = sp.array(prop_list)
+            c = a[sp.where(~sp.in1d(a,b))[0]]
+            prop_list = list(c)
         for item in prop_list:
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()

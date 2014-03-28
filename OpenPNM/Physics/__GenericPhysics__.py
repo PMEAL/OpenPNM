@@ -40,6 +40,9 @@ class GenericPhysics(OpenPNM.Utilities.Base):
     def __init__(self,network,name,fluid,geometry='all',**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
+        for item in network._physics:
+            if item.name == name:
+                raise Exception('A Physics Object with the supplied name already exists')
         self.name = name
         self._prop_list = []
         self._fluid = []
@@ -65,7 +68,7 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         self._net = network  # attach network to this physics
         network._physics.append(self) #attach physics to network
 
-    def regenerate(self, prop_list=''):
+    def regenerate(self, prop_list='',mode=None):
         r'''
         This updates all properties using the selected methods
 
@@ -73,6 +76,8 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         ----------
         prop_list : string or list of strings
             The names of the properties that should be updated, defaults to all
+        mode : string
+            Control how the regeneration occurs.  
             
         Examples
         --------
@@ -82,6 +87,11 @@ class GenericPhysics(OpenPNM.Utilities.Base):
             prop_list = self._prop_list
         elif type(prop_list) == str:
             prop_list = [prop_list]
+        if mode == 'exclude':
+            a = sp.array(self._prop_list)
+            b = sp.array(prop_list)
+            c = a[sp.where(~sp.in1d(a,b))[0]]
+            prop_list = list(c)
         for item in prop_list:
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()

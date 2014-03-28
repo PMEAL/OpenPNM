@@ -28,8 +28,10 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         A unique name to apply to the object.  This name will also be used as a
         label to identify where this this geometry applies.
         
-    locations : boolean mask or list of indices
-        The pore locations in the network where this geometry applies.
+    pnums and tnums : boolean mask or list of indices
+        The pore (pnums) and throat (tnums) locations in the network where this 
+        geometry applies.  By default it will apply everywhere.  To create an 
+        empty geometry set pnums and tnums to empty lists [].  
     
     loglevel : int
         Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
@@ -49,29 +51,24 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     0.123
     """
 
-    def __init__(self, network,name,pnums=[],tnums=[],**kwargs):
+    def __init__(self, network,name,pnums='all',tnums='all',**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        if (pnums == []) and (tnums == []):
-            pnums = tnums = 'all'
-        if sum(network.list_pore_labels()==name) > 0:
-            raise Exception('Supplied geometry label already exists')
-        else:
-            network.set_pore_info(label=name,locations=pnums)
-        if sum(network.list_throat_labels()==name) > 0:
-            raise Exception('Supplied geometry label already exists')
-        else:
-            network.set_throat_info(label=name,locations=tnums)
+        for item in network._geometry:
+            if item.name == name:
+                raise Exception('A Geometry Object with the supplied name already exists')
+        network.set_pore_info(label=name,locations=pnums)
+        network.set_throat_info(label=name,locations=tnums)
         network._geometry.append(self) #attach geometry to network
         self.name = name
         self._net = network #Attach network to self
         self._physics = [] #Create list for physics to append themselves to
         self._prop_list = []
               
-    def regenerate(self, prop_list=''):
+    def regenerate(self, prop_list='',mode=None):
         r'''
         This updates all properties using the selected methods
         
@@ -79,6 +76,8 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         ----------
         prop_list : string or list of strings
             The names of the properties that should be updated, defaults to all
+        mode : string
+            Control how the regeneration occurs.  
             
         Examples
         --------
@@ -93,6 +92,11 @@ class GenericGeometry(OpenPNM.Utilities.Base):
             prop_list = self._prop_list
         elif type(prop_list) == str:
             prop_list = [prop_list]
+        if mode == 'exclude':
+            a = sp.array(self._prop_list)
+            b = sp.array(prop_list)
+            c = a[sp.where(~sp.in1d(a,b))[0]]
+            prop_list = list(c)
         for item in prop_list:
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()
@@ -132,6 +136,22 @@ class GenericGeometry(OpenPNM.Utilities.Base):
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)
         except AttributeError: print('could not find',kwargs['model'])
+
+    def check_consistency(self):
+        r'''
+        Checks to see if the current geometry conflicts with any other geometry
+        '''
+        temp = sp.zeros_like(self._net.get_pore_info(label=self.name),dtype=int)
+        for item in self._net._geometry:
+            temp = temp + sp.array(self._net.get_pore_info(label=item.name),dtype=int)
+        print('Geometry labels overlap in', sp.sum(temp>1),'pores')
+        print('Geometry not yet applied to',sp.sum(temp==0),'pores')
+        
+        temp = sp.zeros_like(self._net.get_throat_info(label=self.name),dtype=int)
+        for item in self._net._geometry:
+            temp = temp + sp.array(self._net.get_throat_info(label=item.name),dtype=int)
+        print('Geometry labels overlap in', sp.sum(temp>1),'throats')
+        print('Geometry not yet applied to',sp.sum(temp==0),'throats')
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
