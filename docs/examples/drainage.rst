@@ -62,14 +62,15 @@ At this point, the system is fully defined and ready to perform some simulations
 
 .. code-block:: python
 
-	OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,name='OP_1')
+	OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn, name='OP_1')
 
-To perform simulations using this algorithm simply call the `run()` command with the desired parameters:
+Before performing simulations with this algorithm it is necessary to setup the desired experimental parameters using ``setup()``, and then call ``run()``:
 
 .. code-block:: python
 	
 	injection_sites = pn.get_pore_indices(labels='bottom')
-	OP_1.run(invading_fluid='water',defending_fluid='air',inlets=injection_sites,npts=20)
+	OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=injection_sites,npts=20)
+	OP_1.run()
 	
 The first line in the above block finds all the pores in the network that are labeled 'bottom'.  This labeling step was applied during the network construction.  The list of pores which are to be considered as fluid inlets along with which fluids are the invader and defender are set to the `run()` method and the algorithm proceeds.  Upon completion one can view resultant capillary pressure curving using `OP_1.plot_drainage_curve()`.
 
@@ -86,36 +87,7 @@ The results of the above simulation (and all simulations) are stored locally on 
 The above command outputs data called 'occupancy' to the invading fluid object. This data describes which pores and throats are filled by invading and defending fluid at an applied capillary pressure of 5000.  This information can be used by subsequent algorithms.  For instance it is often of interest to determine the gas phase diffusivity through a partially water filled network.  The Fickian diffusion algorithm then would use this information and set gas diffusion through water filled pores to zero and a relative effective diffusivity value could be found. 
 
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Run a Diffusion Simulation a Partially Saturated Network
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-Calculating the gas phase diffusivity through a water invading porous medium is one of the main applications of pore networks.  The Fickian diffusion algorithm supplied with OpenPNM is setup and called in much the same way as the ordinary percolation algorithm described above.
-
--------------------------------------------------------------------------------
-Prepare the Algorithm
--------------------------------------------------------------------------------
-
-Firstly, an Algorithm object must be instantiated:
-
-.. code-block:: python
-
-	Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,name='Fickian_alg')
-
-Each algorithm performs drastically different functions and calculations so each naturally expect quite different arguments.  The Fickian algorithm needs to know what boundary conditions are prevailing.  These can include Dirchelet, various types of Neumann, reaction rates, and so on.  The lines below outline how to setup Dirchelet conditions on two opposing faces.  Note that the process involves first finding the pore finding the indices of pores laying on the 'top' or 'bottom' face of the domain, then applying a the 'Dirichlet' label, and finally applying the boundary value to those locations. 
-
-.. code-block:: python
-
-	BC1 = pn.get_pore_indices(labels=['top'],mode='intersection')
-	Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1)
-	Fickian_alg.set_pore_data(prop='BCval', data=0.6, locations=BC1)
-	BC2 = pn.get_pore_indices(labels=['bottom'],mode='intersection')
-	Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2)
-	Fickian_alg.set_pore_data(prop='BCval', data=0.2, locations=BC2)
-	
-Note that this simulation will run on a Network that has been invaded upto 5000 Pa with water due to the OP_1.update(Pc=5000) command used above.  It is a simple matter to change the network saturation be calling this command with a different applied pressure.  
-
-There are many features, details and nuances of this package that have been glossed over in this quickstart guide.  The complete documentation describes the OpenPNM framework in detail.  Happy coding.  
+ 
 
 
 
