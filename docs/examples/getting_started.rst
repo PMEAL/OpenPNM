@@ -54,8 +54,8 @@ This freshly instantiated object contains no methods for actual geometry calcula
 
 	geom.add_method(prop='pore_seed',model='random') #begin adding the desired methods to 'geom'
 	geom.add_method(prop='throat_seed',model='neighbor_min')
-	geom.add_method(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc='6e-6',scale=2e-5)
-	geom.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc='6e-6',scale=2e-5)
+	geom.add_method(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
+	geom.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
 	geom.add_method(prop='pore_volume',model='sphere')
 	geom.add_method(prop='throat_volume',model='cylinder')
 	geom.add_method(prop='throat_length',model='straight')
@@ -139,7 +139,7 @@ As with fluids and geometry objects, the next step is to build-up the bare objec
 
 .. code-block:: python
 
-	phys_water.add_method(prop='capillary_pressure',model='purcell',r_torioid='1.e-5')
+	phys_water.add_method(prop='capillary_pressure',model='purcell',r_torioid=1.e-5)
 	phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 	phys_water.add_method(prop='diffusive_conductance',model='bulk_diffusion')
 	phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
