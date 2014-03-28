@@ -16,7 +16,7 @@ What is a Geometry Object?
 **Geometry** objects have one main function in OpenPNM.  They contain the models the user wishes to use to calculate pore and throat properties.  
 
 ===============================================================================
-Generating Geometry
+Creating a Geometry Object
 ===============================================================================
 The most general way to generate a **Geometry** object is as follows:
 
@@ -28,7 +28,7 @@ The most general way to generate a **Geometry** object is as follows:
 There are 2 arguments sent to ``GenericGeometry`` here.  Firstly, the **Geometry** object is associated with a **Network** with ``network=pn``.  This gives the **Geometry** object access to the network topology such as the number of pores and throats, where they are located in space, and how they are connected.  This is required for something like throat length which depends on the distance between two neighboring pores.  Secondly, each **Geometry** object (and all objects in OpenPNM) must be given a unique name (``name='geom_1'``).  This makes is possible for a human reader to differentiate between multiple different **Geometry** objects by simply checking their ``name`` attribute.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Building a Geometry Object
+Adding Properties to a Geometry
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Once a **Geometry** object has been instantiated, the next step is to add methods to the object that calculate the appropriate pore and throat properties.  The ``GenericGeometry`` class contains the ``add_method` function for this purpose.  It is typical to assign a random seed to each pore in the network which is subsequently used to calculate pore diameters from a statistical distribution.  The **Geometry** module comes with a submodule called **pore_seed** that contains several methods that can be used.  The desired method is added to the **Geometry** object as follows:
 
@@ -86,7 +86,7 @@ There are a number of 'helper' methods available as well.  For instance, if the 
 	ts = pn.find_neighbor_throats(ps,mode='intersection')
 
 ===============================================================================
-Customizing the Geometry Module
+Customizing the Geometry Submodules
 ===============================================================================
 blah
 
