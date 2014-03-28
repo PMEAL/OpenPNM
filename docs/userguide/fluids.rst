@@ -20,7 +20,7 @@ What is a Fluid Object?
 2. They store all data pertaining to the fluid.  For instance, the viscosity of the fluid will be stored on the **Fluid** object.  Additionally, any data indirectly pertaining to fluid behavior is also stored on the fluid, such as hydraulic conductance, which is a product of both the fluid viscosity, but also the pore and throat dimensions.  This information is stored on the fluid in order to compartmentalize data pertaining to each fluid, since gas and liquid will both have hydraulic conductances.  
 
 ===============================================================================
-Creating a Fluid
+Creating a Fluid Object
 ===============================================================================
 **Fluid** objects are designed to be highly customizable.  The general process of creating a fluid involves first initializing the **Fluid** object as shown below.  Note that the initialization takes a **Network** object as an argument.  This is necessary so the **Fluid** is aware of the network topology and size, so it can store data for each pore and throat.  
 
@@ -28,8 +28,11 @@ Creating a Fluid
 
 	pn = OpenPNM.Network.TestNet()  # Creates a simple 5 x 5 x 5 network for testing
 	liq_1 = OpenPNM.Fluids.GenericFluid(network=pn,name='liquid')
-  
-This basic object does not contain any property estimation methods.  These must be selected and added individually.  OpenPNM includes a number of submodules under the **Fluids** module, such as *viscosity*, *diffusivity*, *molar_density* and so on.  Each of these submodules has multiple predefined models available for calculating each property.  For instance the *molar_density* submodule has a model called ``ideal_gas_law``.  Most or all of these models take input arguments that customize their output to a specific fluid.  The ``ideal_gas_law`` model requires only R (the gas constant in the appropriate units); the *viscosity* submodule, on the other hand, has the ``reynolds`` model which requires *uo* and *b* that are fluid specific.  Methods are added to the **Fluid** object using ``add_method`` as follows:
+	
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Adding Properties to a Fluid
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+This basic object does not contain any property estimation methods.  These must be selected and added individually using the ``add_method`` function on the ``GenericFluids`` class.  OpenPNM includes a number of submodules under the **Fluids** module, such as *viscosity*, *diffusivity*, *molar_density* and so on.  Each of these submodules has multiple predefined models available for calculating each property.  For instance the *molar_density* submodule has a model called ``ideal_gas_law``.  Most or all of these models take input arguments that customize their output to a specific fluid.  The ``ideal_gas_law`` model requires only R (the gas constant in the appropriate units); the *viscosity* submodule, on the other hand, has the ``reynolds`` model which requires *uo* and *b* that are fluid specific.  Methods are added to the **Fluid** object using ``add_method`` as follows:
 
 .. code-block:: python
 
@@ -72,19 +75,17 @@ The first and easiest type of customization a user might wish to do is to change
 	liq1.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=2.1e-5)
 	liq1.add_method(prop='diffusivity',prop_name='DCB',model='constant',value=1.6e-5)
 
-The is one *major* repercussion of this renaming.  All methods that depend on using the diffusivity value must be told where to look for the data.  For instance, the ``diffusive_conductance`` model in the Physics object combines pore/throat size information with the diffusivity of the fluid.  By default it will assume that diffusivity values are stored on the Fluid object under the key 'diffusivity', but because of the above renaming this will not work.  Dealing with this is described in the documentation for the :ref:`Physics Object <custom_prop_names>`.
+The is one *major* repercussion of this renaming.  All methods that depend on using the diffusivity value must be told where to look for the data.  For instance, the ``diffusive_conductance`` model in the Physics object combines pore/throat size information with the diffusivity of the fluid.  By default it will assume that diffusivity values are stored on the Fluid object under the name 'diffusivity', but because of the above renaming this will not work.  Dealing with this is described in the documentation for the :ref:`Physics Object <custom_prop_names>`.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Adding Custom Property Models
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-OpenPNM comes with a small set of property models for each of the property submodules.  It was designed to be as simple as possible to add new property models to this set.  This is done by simply adding a new method to submodule file of interest.  For example, to add the Peng-Robinson equation of state to the **molar_density** submodule, you simply open *OpenPNM/Fluids/molar_density.py* and add the function.  There is one caveat: the data produced by the function should be written using the OpenPNM *setter* method.  This ensures that date is written to the correct location and in the correct format.  It also ensures that the data can be found using the corresponding *getter* method.  Writing data directly to the **Fluid** object dictionary is possible, but highly discouraged.  An example of the *setter* method can be found in any of the provided property model functions.  
+OpenPNM comes with a small set of property models for each of the property submodules.  It was designed to be as simple as possible to add new property models to this set.  This is done by simply adding a new method to submodule file of interest.  For example, to add the Peng-Robinson equation of state to the **molar_density** submodule, you simply open *OpenPNM/Fluids/molar_density.py* and add the function (using one of the existing functions as a template).  There is one caveat: the data produced by the function should be written using the OpenPNM *setter* method.  This ensures that date is written to the correct location and in the correct format.  It also ensures that the data can be found using the corresponding *getter* method.  Writing data directly to the **Fluid** object dictionary is possible, but highly discouraged.  An example of the *setter* method can be found in any of the provided property model functions.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Adding Custom Properties
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-OpenPNM includes fluid submodules for many common properties, but this list is not exhaustive.  Adding a new property submodule is a two step process.  Firstly, one must create a new file in *OpenPNM/Fluids* with the desired property name (e.g. *enthalpy.py*).  Secondly, this file must be added to the *__init__.py* file in the **Fluids** folder or else its methods won't be available.  Examples can be found in the *__init__.py* file, but the required line would be ``from . import enthalpy``.  
-
-
+OpenPNM includes submodules for many common properties, but this list is not exhaustive.  Adding a new property submodule is a two step process.  Firstly, one must create a new file in *OpenPNM/Fluids* with the desired property name (e.g. *enthalpy.py*).  Secondly, this file must be added to the *__init__.py* file in the **Fluids** folder or else its methods won't be available.  Examples can be found in the *__init__.py* file, but the required line would be ``from . import enthalpy``.  
 
 ===============================================================================
 Sub-classing a Fluid
