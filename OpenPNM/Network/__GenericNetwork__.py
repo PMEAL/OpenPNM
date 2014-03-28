@@ -746,6 +746,24 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             try: item = self.find_object_by_name(item) 
             except: pass #Accept object
             item.regenerate(prop_list=prop_list) 
+            
+    def add_geometry(self,name,subclass='GenericGeometry',**kwargs):
+        r'''
+        '''
+        temp = OpenPNM.Geometry.__getattribute__(subclass)
+        return temp(network=self,name=name,**kwargs)
+
+    def add_fluid(self,name,subclass='GenericFluid',**kwargs):
+        r'''
+        '''
+        temp = OpenPNM.Fluids.__getattribute__(subclass)
+        return temp(network=self,name=name,**kwargs)
+        
+    def add_physics(self,name,fluid,geometry,subclass='GenericPhysics',**kwargs):
+        r'''
+        '''
+        temp = OpenPNM.Physics.__getattribute__(subclass)
+        return temp(network=self,name=name,fluid=fluid,geometry=geometry,**kwargs)
 
     def update_network(self):
         r'''

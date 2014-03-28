@@ -42,7 +42,7 @@ class MatFile(GenericNetwork):
         """
         super(MatFile,self).__init__(**kwargs)
         
-    def generate(self,filename='standard_cubic_5x5x5.mat', path='LocalFiles'):
+    def generate(self,filename='standard_cubic_5x5x5.mat', path='LocalFiles', xtra_pore_data=None, xtra_throat_data=None):
         '''
         Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() object.
 
@@ -56,6 +56,12 @@ class MatFile(GenericNetwork):
         path : string
             path='LocalFiles' (default)\n
             the location of the mat file on your computer \n
+        xtra_pore_data : list of strings
+            xtra_pore_data = ['type','shape','material']
+            any additional props to look for in the dictionary
+        xtra_throat_data : list of strings
+            xtra_throat_data = ['type','shape','material']
+            any additional props to look for in the dictionary
 
         Examples:
         ---------
@@ -73,6 +79,8 @@ class MatFile(GenericNetwork):
             path = os.path.join(path,'LocalFiles')
         self._path = path
         filepath = os.path.join(self._path,filename)
+        self._xtra_pore_data=xtra_pore_data
+        self._xtra_throat_data=xtra_throat_data
         self._dictionary=spio.loadmat(filepath)
         
         self._Np=sp.size(self._dictionary['pnumbering'])
@@ -82,6 +90,8 @@ class MatFile(GenericNetwork):
         self._add_pores()
         self._add_throats()
         self._add_geometry()
+        self._add_xtra_pore_data()
+        self._add_xtra_throat_data()
  
         return self
         
@@ -109,3 +119,32 @@ class MatFile(GenericNetwork):
         data = self._dictionary['tdiameter']
         geom.add_method(prop='throat_diameter',model='constant',value=data)
     
+    def _add_xtra_pore_data(self):
+        xpdata = self._xtra_pore_data
+        if xpdata is not None:
+            if type(xpdata) is type([]):
+                for pdata in xpdata:
+                    try:
+                        self.set_pore_data(prop=pdata,data=self._dictionary['p'+pdata])
+                    except:
+                        self._logger.warning('Could not add pore data: '+pdata+' to network')
+            else:
+                try:
+                    self.set_pore_data(prop=xpdata,data=self._dictionary['p'+xpdata])
+                except:
+                    self._logger.warning('Could not add pore data: '+xpdata+' to network')
+
+    def _add_xtra_throat_data(self):
+        xtdata = self._xtra_throat_data
+        if xtdata is not None:
+            if type(xtdata) is type([]):
+                for tdata in xtdata:
+                    try:
+                        self.set_pore_data(prop=tdata,data=self._dictionary['t'+tdata])
+                    except:
+                        self._logger.warning('Could not add throat data: '+tdata+' to network')
+            else:
+                try:
+                    self.set_pore_data(prop=xtdata,data=self._dictionary['t'+xtdata])
+                except:
+                    self._logger.warning('Could not add throat data: '+xtdata+' to network')
