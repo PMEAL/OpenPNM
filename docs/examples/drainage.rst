@@ -18,8 +18,8 @@ Start by generating a basic cubic network and the other required components:
     geo.regenerate()
     air = OpenPNM.Fluids.Air(network=pn)
     air.regenerate()
-	water = OpenPNM.Fluids.Water(network=pn)
-	water.regenerate()
+    water = OpenPNM.Fluids.Water(network=pn)
+    water.regenerate()
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Define the Pore-scale Physics
@@ -84,7 +84,7 @@ The results of the above simulation (and all simulations) are stored locally on 
 	
 	OP_1.update(Pc=8000)
 
-The above command outputs data called 'occupancy' to the invading fluid object. This data describes which pores and throats are filled by invading and defending fluid at an applied capillary pressure of 5000.  This information can be used by subsequent algorithms.  For instance it is often of interest to determine the gas phase diffusivity through a partially water filled network.  The Fickian diffusion algorithm then would use this information and set gas diffusion through water filled pores to zero and a relative effective diffusivity value could be found. 
+The above command outputs data called 'occupancy' to the invading fluid object. This data describes which pores and throats are filled by invading and defending fluid at the specified applied capillary pressure *Pc*.  This information can be used by subsequent algorithms.  For instance it is often of interest to determine the gas phase diffusivity through a partially water filled network.  The Fickian diffusion algorithm then would use this information and set gas diffusion through water filled pores to zero and a relative effective diffusivity value could be found. 
 
 
  

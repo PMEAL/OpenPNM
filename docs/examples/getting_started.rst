@@ -145,7 +145,7 @@ As with fluids and geometry objects, the next step is to build-up the bare objec
 	phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 	phys_air.add_method(prop='diffusive_conductance',model='bulk_diffusion')
 	
-The final step is to `regenerate()` the object so that the data is actually calculated.  
+The final step is to ``regenerate()`` the object so that the data is actually calculated.  
 	
  
 

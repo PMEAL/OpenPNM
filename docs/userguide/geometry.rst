@@ -13,7 +13,7 @@ In OpenPNM the pore and throat geometry are defined separately from the **Networ
 What is a Geometry Object?
 ===============================================================================
 
-**Geometry** objects have one main function in OpenPNM.  They contain the models the user wishes to use to calculate pore and throat properties.  
+**Geometry** objects have one main function in OpenPNM.  They contain the models the user wishes to use to calculate pore and throat properties, such as diamete and volume.  
 
 ===============================================================================
 Creating a Geometry Object

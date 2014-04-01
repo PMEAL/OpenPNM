@@ -10,5 +10,6 @@ Available Examples and Tutorials:
    :maxdepth: 1
    
    getting_started.rst
+   geometries.rst
    drainage.rst
    boundary_conditions.rst
