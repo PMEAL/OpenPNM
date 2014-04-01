@@ -15,9 +15,9 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 1
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-a = pn.get_pore_indices('internal')
+a = pn.get_pore_indices('all')
 pn.set_pore_info(label='GDL',locations=a)
-a = pn.get_throat_indices('internal')
+a = pn.get_throat_indices('all')
 pn.set_throat_info(label='GDL',locations=a)
 
 GDL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='GDL',pnums=[],tnums=[])

@@ -3,6 +3,7 @@
 ###############################################################################
 Pore Scale Physics
 ###############################################################################
+Pore scale physics are one of the main distinguishing features of a pore network simulation.  The physics describes how the fluid interacts with the geometry.  For instance, the pressure drop through a throat is a function both the fluid viscosity *and* the throat size (diameter & length).  There are many physical models that can be used to calculate the actual pressure drop, such as the Hagen-Poiseuille model for a cylinder or the XYZ model for a slit.  The Physics module in OpenPNM was designed to be highly customizable and extensible to allow for the most flexible framework possible.  
 
 .. note:: 
 
