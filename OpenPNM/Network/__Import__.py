@@ -140,11 +140,11 @@ class MatFile(GenericNetwork):
             if type(xtdata) is type([]):
                 for tdata in xtdata:
                     try:
-                        self.set_pore_data(prop=tdata,data=self._dictionary['t'+tdata])
+                        self.set_throat_data(prop=tdata,data=self._dictionary['t'+tdata])
                     except:
                         self._logger.warning('Could not add throat data: '+tdata+' to network')
             else:
                 try:
-                    self.set_pore_data(prop=xtdata,data=self._dictionary['t'+xtdata])
+                    self.set_throat_data(prop=xtdata,data=self._dictionary['t'+xtdata])
                 except:
                     self._logger.warning('Could not add throat data: '+xtdata+' to network')
