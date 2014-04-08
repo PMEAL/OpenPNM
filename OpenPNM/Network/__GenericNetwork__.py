@@ -613,20 +613,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 Tind = T1[Tmask]
         return Tind
 
-    def check_basic(self):
-        r"""
-        Check the network for general health
-        TODO: implement
-        """
-        self._logger.debug("Method: check for general healts")
-
-    def print_overview(self):
-        r"""
-        Print some basic properties
-        """
-        pprint.pprint(self._pore_data)
-        pprint.pprint(self._throat_data)
-
     def show_boundaries(self,Ptype=[]):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
