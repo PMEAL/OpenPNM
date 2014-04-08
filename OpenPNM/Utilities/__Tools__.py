@@ -924,7 +924,39 @@ class Tools(Base):
         This method accepts keyword arguments which it passes on to algorithm object.
         For specific details refer to the `update` of the algorithm.
         '''
-        alg_obj.update(**kwargs)     
+        alg_obj.update(**kwargs)
+    
+    def _check_health(self,element='',props=[]):
+        r'''
+        '''
+        success = 1
+        if type(props)==str: 
+            props = [props]
+        if props != []: 
+            items = props
+        else: 
+            items = getattr(self,'_'+element+'_data').keys()
+        for item in items:
+            try: 
+                temp = getattr(self,'_'+element+'_data')[item]
+                if sp.sum(sp.isnan(temp)) > 0:
+                    self._logger.warning('Nans found in: '+item)
+                    success = 0
+            except:
+                self._logger.warning('Property: '+item+' not found!')
+                success = 0
+        if success == 1:
+            self._logger.info('All checks passed successfully')
+        
+    def check_pore_health(self,props=''):
+        r'''
+        '''
+        self._check_health(element='pore',props=props)
+        
+    def check_throat_health(self,props=''):
+        r'''
+        '''
+        self._check_health(element='throat',props=props)
             
 
 if __name__ == '__main__':
