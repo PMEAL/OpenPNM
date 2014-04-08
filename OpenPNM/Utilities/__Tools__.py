@@ -31,9 +31,9 @@ class Tools(Base):
         self._throat_data = {}
         self._throat_info = {}
         #Initialize fluid, physics, and geometry tracking lists
-        self._fluids = []
-        self._geometry = []
-        self._physics = []
+        self._fluids = {}
+        self._geometry ={}
+        self._physics = {}
         self._logger.info("Construction of Object container complete")
         
     #--------------------------------------------------------------------------
@@ -50,9 +50,9 @@ class Tools(Base):
             except: locations = sp.array(locations,ndmin=1)
         elif type(locations)==sp.ndarray:
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
-            except: pass            
+            except: pass
         elif locations!='':
-            try: locations = locations.name 
+            try: locations = locations.name
             except: pass
             if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
         setter = True
@@ -706,6 +706,8 @@ class Tools(Base):
         This is the actual method for getting indices, but should not be called
         directly.  
         '''
+        try: labels = [labels.name]  # Check if object was sent
+        except: pass
         if mode == 'union':
             union = sp.zeros_like(self._get_info(element=element,label='all'),dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
