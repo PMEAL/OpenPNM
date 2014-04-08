@@ -57,15 +57,15 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        for item in network._geometry:
-            if item.name == name:
+        for item in network._geometry.keys():
+            if item == name:
                 raise Exception('A Geometry Object with the supplied name already exists')
         network.set_pore_info(label=name,locations=pnums)
         network.set_throat_info(label=name,locations=tnums)
-        network._geometry.append(self) #attach geometry to network
+        network._geometry.update({name:self}) #attach this geometry to network
         self.name = name
         self._net = network #Attach network to self
-        self._physics = [] #Create list for physics to append themselves to
+        self._physics = {} #Create list for physics to append themselves to
         self._prop_list = []
               
     def regenerate(self, prop_list='',mode=None):

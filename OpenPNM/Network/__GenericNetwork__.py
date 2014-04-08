@@ -654,7 +654,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         if type(pnums) == str: 
             pnums = self.get_pore_indices(labels=[pnums])
-        if self._geometry != [] or self._fluids != []:
+        if self._geometry != {} or self._fluids != {}:
             raise Exception('Cannot clone an active network')
         apply_label = list(apply_label)
         #Clone pores

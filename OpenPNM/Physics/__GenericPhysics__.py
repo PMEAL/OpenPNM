@@ -37,36 +37,30 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         Sets a custom name for the logger, to help identify logger messages
 
     """
-    def __init__(self,network,name,fluid,geometry='all',**kwargs):
+    def __init__(self,network,name,fluid,geometry,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        for item in network._physics:
-            if item.name == name:
+        for item in network._physics.keys():
+            if item == name:
                 raise Exception('A Physics Object with the supplied name already exists')
         self.name = name
         self._prop_list = []
-        self._fluid = []
-        self._geometry = []
-        #bind objects togoether
-        try: fluid = fluid.name
-        except: pass
-        self._fluid.append(fluid)  # attach fluid to this physics
-        try: fluid = network.find_object_by_name(fluid) 
-        except: pass #Accept object               
-        fluid._physics.append(self) # attach this physics to fluid
-        if type(geometry)!= sp.ndarray and geometry=='all':
-            geometry = network._geometry
-        elif type(geometry)!= sp.ndarray: 
-            geometry = sp.array(geometry,ndmin=1)
-        for geom in geometry:
-            try: geom = geom.name
-            except: pass
-            self._geometry.append(geom)  # attach geometry to this physics
-            try: geom = network.find_object_by_name(geom) 
-            except: pass #Accept object               
-            geom._physics.append(self)  # attach this physics to geometry
-        self._net = network  # attach network to this physics
-        network._physics.append(self) #attach physics to network
+        # Attach network to this physics
+        self._net = network
+        # Attach fluid to this physics
+        try: fluid.name  # See if string or object was passed
+        except: fluid = network.find_object_by_name(fluid)
+        self._fluid = fluid
+        # Attach geometry to this physics
+        try: geometry.name  # See if string or object was passed
+        except: geometry = network.find_object_by_name(geometry)
+        self._geometry = geometry
+        # Attach this physics to fluid
+        fluid._physics.update({name:self})
+        # Attach this physics to geometry
+        geometry._physics.update({name:self})
+        # Attach this physics to network
+        network._physics.update({name:self})
 
     def regenerate(self, prop_list='',mode=None):
         r'''
@@ -120,7 +114,7 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         try:
             function = getattr( getattr(OpenPNM.Physics, prop), kwargs['model'] ) # this gets the method from the file
             if prop_name: prop = prop_name #overwrite the default prop with user supplied name  
-            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid[0], geometry=self._geometry, **kwargs) #
+            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid, geometry=self._geometry, **kwargs) #
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)
