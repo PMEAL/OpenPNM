@@ -193,7 +193,7 @@ class Base(object):
             for item in self._fluids:
                 obj.append(item)
         if obj_type == 'geometry':
-            for item in self._geometry:
+            for item in self._geometries:
                 obj.append(item)
         if obj_type == 'network':
             obj = [self]
