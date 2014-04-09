@@ -32,7 +32,7 @@ class Tools(Base):
         self._throat_info = {}
         #Initialize fluid, physics, and geometry tracking lists
         self._fluids = {}
-        self._geometry ={}
+        self._geometries ={}
         self._physics = {}
         self._logger.info("Construction of Object container complete")
         

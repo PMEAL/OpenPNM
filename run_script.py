@@ -26,16 +26,16 @@ water.regenerate()
 #==============================================================================
 '''Build Physics Objects'''
 #==============================================================================
-phys_water_GDL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry=geom,name='phys_water_GDL')
-phys_water_GDL.add_method(prop='capillary_pressure', model='washburn')
-phys_water_GDL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-phys_water_GDL.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
-phys_water_GDL.regenerate()
+phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry=geom,name='phys_water')
+phys_water.add_method(prop='capillary_pressure', model='washburn')
+phys_water.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_water.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
+phys_water.regenerate()
 
-phys_air_GDL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air,geometry=geom, name='phys_air_GDL')
-phys_air_GDL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-phys_air_GDL.add_method(prop='diffusive_conductance', model='bulk_diffusion')
-phys_air_GDL.regenerate()
+phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air,geometry=geom, name='phys_air')
+phys_air.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
+phys_air.add_method(prop='diffusive_conductance', model='bulk_diffusion')
+phys_air.regenerate()
 
 #==============================================================================
 '''Begin Simulations'''
