@@ -30,10 +30,6 @@ class Tools(Base):
         self._pore_info = {}
         self._throat_data = {}
         self._throat_info = {}
-        #Initialize fluid, physics, and geometry tracking lists
-        self._fluids = {}
-        self._geometries ={}
-        self._physics = {}
         self._logger.info("Construction of Object container complete")
         
     #--------------------------------------------------------------------------
