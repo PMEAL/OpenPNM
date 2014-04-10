@@ -45,7 +45,8 @@ class GenericFluid(OpenPNM.Utilities.Tools):
                 raise Exception('A Fluid Object with the supplied name already exists')
         self.name = name
         self._net = network
-        del self._geometries, self._fluids
+        #Initialize physics tracking lists
+        self._physics = {}
         self._prop_list = []
         network._fluids.update({name:self}) #attach this fluid to network
         #Set default T and P since most propery models require it
