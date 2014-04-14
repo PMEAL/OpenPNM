@@ -26,8 +26,11 @@ def preview(pn, values=[]):
     polydata = vtk.vtkPolyData()
     polydata.SetPoints(points)
     polydata.SetLines(polys)
-    if values:
+    if colors.GetNumberOfTuples() == len(coords):
         polydata.GetPointData().SetScalars(colors)
+    else:
+        raise Exception("Mismatch: {} points, {} scalars".format(
+                        len(coords), colors.GetNumberOfTuples()))
 
     mapper = vtk.vtkPolyDataMapper()
     mapper.SetInput(polydata)
