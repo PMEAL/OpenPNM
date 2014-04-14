@@ -123,7 +123,7 @@ from . import Fluids
 from . import Physics
 from . import Algorithms
 from . import Visualization
-#from . import GUI
+from . import Graphics
 
 
 
