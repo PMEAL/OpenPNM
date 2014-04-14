@@ -24,13 +24,13 @@ class Tools(Base):
         Initialize
         '''
         super(Tools,self).__init__(**kwargs)
-        self._logger.debug("Construct Network container")
+        self._logger.info("Construct Base class from Tools subclass")
         #Initialize network properties dictionaries
         self._pore_data = {}
         self._pore_info = {}
         self._throat_data = {}
         self._throat_info = {}
-        self._logger.info("Construction of Object container complete")
+        self._logger.debug("Construction of Base class complete")
         
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''

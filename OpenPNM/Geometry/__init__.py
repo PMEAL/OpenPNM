@@ -34,6 +34,8 @@ Classes
 
 from .__GenericGeometry__ import GenericGeometry
 from .__StickBall__ import Stick_and_Ball
+from .__SGL10__ import SGL10
+from .__Toray090__ import Toray090
 from .__Boundary__ import Boundary
 from .__PlotTools__ import PlotTools
 from . import pore_diameter
