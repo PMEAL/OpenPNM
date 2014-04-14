@@ -11,8 +11,8 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 sys.path.insert(1, parent_dir)
 import OpenPNM
 
-import scipy as sp
 import numpy as np
+import scipy as sp
 from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Template(GenericNetwork):
@@ -47,121 +47,62 @@ class Template(GenericNetwork):
         super(Template,self).__init__(**kwargs)
         self._logger.debug(self.__class__.__name__,": ","Execute constructor")
     
-    def generate(self, **params):
+    def generate(self, im, dmax=200, threshold=0.2):
         r'''
-        template : array_like, boolean
-            An image containing 1's where each pore should be located, and 0's elsewhere.
-            This image can be 1,2 or 3D.
-        lattice_spacing : float
-            The lattice constant for the network, used to scale distance between pores.
         '''
-        self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
-        self._generate_setup(**params)
-        self._generate_pores()
-        self._generate_throats()
-        self._add_boundaries()
-        self._add_labels()
-        self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
-        return self
+        rf = np.true_divide(dmax, im.shape).clip(0,1).min()
+        im = imresize(im, [int(d*rf) for d in im.shape])
+        im = im.astype(float)
+        im-= im.min()
+        im/= im.max()
+        im = im.T[0]
+        im = im.reshape(im.shape+(1,))
 
-    def _generate_setup(self, **params):
-        r"""
-
-        """
-        if params['lattice_spacing']:
-            self._Lc = params['lattice_spacing']
-        else:
-            self._logger.error("lattice_spacing not specified")
-            raise Exception('lattice_spacing not specified')
-        self._template = sp.array(params['template'], ndmin=3)
-
-    def _generate_pores(self):
-        r"""
-        Generate the pores (coordinates, numbering and types)
-        """
-        self._logger.info("generate_pores: Create specified number of pores")
-
-        #Find non-zero elements in image
-        template = self._template
-        Np = np.sum(template > 0)
-        #Add pores to data and ifo
-        pind = np.arange(0, Np)
-        self.set_pore_info(label='all', locations=pind)
-        self.set_pore_data(prop='numbering', data=pind)  # Remove eventually
-
+        # network generation stuff
+        coords = np.array([idx for idx,val in np.ndenumerate(im)]).astype(float)
         
-        img_ind = np.ravel_multi_index(sp.nonzero(template), dims=sp.shape(template), order='F')
-        self.set_pore_data(prop='voxel_index', data=img_ind)
+        I = np.arange(im.size).reshape(im.shape)
+        heads, tails = [], []
+        for A, B in [
+            (I[:,:,:-1], I[:,:,1:]),
+            (I[:,:-1], I[:,1:]),
+            (I[:-1], I[1:]),
+            ]:
+            hs, ts = np.vstack([A.flat, B.flat])
+            heads.append(hs)
+            tails.append(ts)
+        heads = np.hstack(heads)
+        tails = np.hstack(tails)
 
-        #This voxel_to_pore map is messy but works
-        temp = sp.prod(sp.shape(template))*sp.ones(np.prod(sp.shape(template),),dtype=sp.int32)
-        temp[img_ind] = pind
-        self._voxel_to_pore_map = temp
+        # prune bad
+        accessible = I[im < threshold]
+        good_heads = np.in1d(heads, accessible)
+        good_tails = np.in1d(tails, accessible)
+        heads = heads[good_heads & good_tails]
+        tails = tails[good_heads & good_tails]
 
-        coords = self._Lc*(0.5 + np.transpose(np.nonzero(template)))
+        # every id in tails maps somewhere in accessible
+        coords = coords[accessible]
+        translate = dict(zip(accessible, np.arange(accessible.size)))
+        heads = np.array(map(translate.get, heads))
+        tails = np.array(map(translate.get, tails))
+
+        # insert into sub-structure
         self.set_pore_data(prop='coords', data=coords)
-        self._logger.debug("generate_pores: End of method")
+        self.set_pore_info(label='all', locations=np.ones(len(coords)).astype(bool))
+        self.set_throat_data(prop='connections', data=np.vstack([heads, tails]).T)
+        self.set_throat_info(label='all', locations=np.ones_like(heads).astype(bool))
 
-    def _generate_throats(self):
-        r"""
-        Generate the throats (connections, numbering and types)
-        """
-        self._logger.info("generate_throats: Define connections between pores")
-
-        [Nx, Ny, Nz] = sp.shape(self._template)
-        Np = Nx*Ny*Nz
-        ind = np.arange(0, Np)
-
-        #Generate throats based on pattern of the adjacency matrix
-        #This is taken from Cubic
-        tpore1_1 = ind[(ind % Nx) < (Nx-1)]
-        tpore2_1 = tpore1_1 + 1
-        tpore1_2 = ind[(ind % (Nx*Ny)) < (Nx*(Ny-1))]
-        tpore2_2 = tpore1_2 + Nx
-        tpore1_3 = ind[(ind % Np) < (Nx*Ny*(Nz-1))]
-        tpore2_3 = tpore1_3 + Nx*Ny
-        tpore1 = sp.hstack((tpore1_1, tpore1_2, tpore1_3))
-        tpore2 = sp.hstack((tpore2_1, tpore2_2, tpore2_3))
-        connections = sp.vstack((tpore1, tpore2)).T
-        connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
-
-        #Remove throats to non-active pores
-        img_ind = self.get_pore_data(prop='voxel_index')
-        temp0 = sp.in1d(connections[:, 0], img_ind)
-        temp1 = sp.in1d(connections[:, 1], img_ind)
-        tind = temp0*temp1
-        connections = connections[tind]
-
-        #Need a cleaner way to do this other than voxel_to_pore map...figure out later
-        
-        self.set_throat_data(prop='connections', data=self._voxel_to_pore_map[connections])
-        self.set_throat_info(label='all', locations=sp.ones(sp.sum(tind,),dtype=bool))
-        self.set_throat_data(prop='numbering', data=np.arange(0, sp.sum(tind)))
-        self._logger.debug("generate_throats: End of method")
-
-    def _add_boundaries(self):
-        r"""
-        TO DO: Implement some sort of boundary pore addition
-        """
-        self._logger.debug("add_boundaries: Not implemented")
-
-    def _add_labels(self):
-        pind = self.get_pore_indices('all')
-        Tn = self.find_neighbor_throats(pnums=pind, flatten=False)
-        Tmax = sp.amax(self.num_neighbors(pnums=pind, flatten=False))
-        for i in sp.arange(0, sp.shape(Tn)[0]):
-            if sp.shape(Tn[i])[0] < Tmax:
-                self.set_pore_info(label='surface', locations=i)
-            else:
-                self.set_pore_info(label='internal', locations=i)
-        coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(label='left',locations=coords[:,0]<=(sp.amin(coords[:,0])))
-        self.set_pore_info(label='right',locations=coords[:,0]>=(sp.amax(coords[:,0])))
-        self.set_pore_info(label='front',locations=coords[:,1]<=(sp.amin(coords[:,1])))
-        self.set_pore_info(label='back',locations=coords[:,1]>=(sp.amax(coords[:,1])))
-        self.set_pore_info(label='bottom',locations=coords[:,2]<=(sp.amin(coords[:,2])))
-        self.set_pore_info(label='top',locations=coords[:,2]>=(sp.amax(coords[:,2])))
-        
+    @staticmethod
+    def _process_image(im, dmax):
+        rf = np.true_divide(dmax, im.shape).clip(0,1).min()
+        im = imresize(im, [int(d*rf) for d in im.shape]) # downsize large
+        im = im.astype(float)
+        im-= im.min() # normalize
+        im/= im.max()
+        im = im.T[0] # required by coordinate specification
+        im = im.reshape(im.shape+(1,))
+        return im 
 
     def add_pore_property_from_template(self, template, prop):
         r"""
@@ -192,13 +133,15 @@ class Template(GenericNetwork):
         self._logger.debug("add_pore_prop_from_template: End of method")
 
 if __name__ == '__main__':
-    tmplt = sp.ones((30, 30, 30), dtype=int)
-    pn = OpenPNM.Network.Template(name='template_1').generate(template=tmplt, lattice_spacing=0.001)
-    print(pn.name)
+    # os stuff
+    dirpath = '/home/harday/Crack Study/Images/'
+    file_list = os.listdir(dirpath)
+    filename = dirpath + file_list[1]
 
+    # user generates array
+    from scipy.misc import imread, imresize
+    im = imread(filename)
 
-
-
-
-
-
+    pn = Template(name='boo')
+    pn.generate(im)
+    OpenPNM.Graphics.preview(pn)

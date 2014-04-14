@@ -26,7 +26,8 @@ def preview(pn, values=[]):
     polydata = vtk.vtkPolyData()
     polydata.SetPoints(points)
     polydata.SetLines(polys)
-    polydata.GetPointData().SetScalars(colors)
+    if values:
+        polydata.GetPointData().SetScalars(colors)
 
     mapper = vtk.vtkPolyDataMapper()
     mapper.SetInput(polydata)
