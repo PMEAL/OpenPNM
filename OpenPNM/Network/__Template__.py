@@ -13,6 +13,7 @@ import OpenPNM
 
 import numpy as np
 import scipy as sp
+from scipy.misc import imread, imresize
 from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Template(GenericNetwork):
@@ -47,16 +48,27 @@ class Template(GenericNetwork):
         super(Template,self).__init__(**kwargs)
         self._logger.debug(self.__class__.__name__,": ","Execute constructor")
     
-    def generate(self, im, dmax=200, threshold=0.2):
+    def generate(self, im, dmax=200, threshold=None):
         r'''
+        Parameters
+        ----------
+        im : 2D or 3D array-like
+            A monochrome image obtained by ie: scipy.misc.imresize
+        dmax : float
+            The maximum possible number of voxels in any dimension.
+            Useful for downsizing large networks for preview
+        threshold : float
+            Images are currently assumed to be dark in areas of interest,
+            and clear in void areas. The threshold value determines which
+            pores and throats will be pruned out.
+
+            e.g.: with a threshold of 0.5,
+                    0 0 0       o-o-o
+                    1 1 1   ->     
+                    0 0 0       o-o-o
         '''
-        rf = np.true_divide(dmax, im.shape).clip(0,1).min()
-        im = imresize(im, [int(d*rf) for d in im.shape])
-        im = im.astype(float)
-        im-= im.min()
-        im/= im.max()
-        im = im.T[0]
-        im = im.reshape(im.shape+(1,))
+        assert(len(im.shape) in [2,3])
+        im = self._process_image(im, dmax)
 
         # network generation stuff
         coords = np.array([idx for idx,val in np.ndenumerate(im)]).astype(float)
@@ -74,18 +86,19 @@ class Template(GenericNetwork):
         heads = np.hstack(heads)
         tails = np.hstack(tails)
 
-        # prune bad
-        accessible = I[im < threshold]
-        good_heads = np.in1d(heads, accessible)
-        good_tails = np.in1d(tails, accessible)
-        heads = heads[good_heads & good_tails]
-        tails = tails[good_heads & good_tails]
+        if threshold:
+            # prune bad
+            accessible = I[im < threshold]
+            good_heads = np.in1d(heads, accessible)
+            good_tails = np.in1d(tails, accessible)
+            heads = heads[good_heads & good_tails]
+            tails = tails[good_heads & good_tails]
 
-        # every id in tails maps somewhere in accessible
-        coords = coords[accessible]
-        translate = dict(zip(accessible, np.arange(accessible.size)))
-        heads = np.array(map(translate.get, heads))
-        tails = np.array(map(translate.get, tails))
+            # every id in tails maps somewhere in accessible
+            coords = coords[accessible]
+            translate = dict(zip(accessible, np.arange(accessible.size)))
+            heads = np.array(map(translate.get, heads))
+            tails = np.array(map(translate.get, tails))
 
         # insert into sub-structure
         self.set_pore_data(prop='coords', data=coords)
@@ -96,12 +109,14 @@ class Template(GenericNetwork):
     @staticmethod
     def _process_image(im, dmax):
         rf = np.true_divide(dmax, im.shape).clip(0,1).min()
-        im = imresize(im, [int(d*rf) for d in im.shape]) # downsize large
+        if rf != 1:
+            im = imresize(im, [int(d*rf) for d in im.shape]) # downsize large
         im = im.astype(float)
         im-= im.min() # normalize
         im/= im.max()
-        im = im.T[0] # required by coordinate specification
-        im = im.reshape(im.shape+(1,))
+        if len(im.shape)==2:
+            im = im.T
+            im = im.reshape(im.shape+(1,))
         return im 
 
     def add_pore_property_from_template(self, template, prop):
@@ -131,17 +146,3 @@ class Template(GenericNetwork):
         pore_prop = sp.ravel(template)[self.get_pore_data(prop='voxel_index')]
         self.set_pore_data(prop=prop, data=pore_prop)
         self._logger.debug("add_pore_prop_from_template: End of method")
-
-if __name__ == '__main__':
-    # os stuff
-    dirpath = '/home/harday/Crack Study/Images/'
-    file_list = os.listdir(dirpath)
-    filename = dirpath + file_list[1]
-
-    # user generates array
-    from scipy.misc import imread, imresize
-    im = imread(filename)
-
-    pn = Template(name='boo')
-    pn.generate(im)
-    OpenPNM.Graphics.preview(pn)
