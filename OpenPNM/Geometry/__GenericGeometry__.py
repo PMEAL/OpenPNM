@@ -142,14 +142,14 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         Checks to see if the current geometry conflicts with any other geometry
         '''
         temp = sp.zeros_like(self._net.get_pore_info(label=self.name),dtype=int)
-        for item in self._net._geometry:
-            temp = temp + sp.array(self._net.get_pore_info(label=item.name),dtype=int)
+        for item in self._net._geometries:
+            temp = temp + sp.array(self._net.get_pore_info(label=item),dtype=int)
         print('Geometry labels overlap in', sp.sum(temp>1),'pores')
         print('Geometry not yet applied to',sp.sum(temp==0),'pores')
         
         temp = sp.zeros_like(self._net.get_throat_info(label=self.name),dtype=int)
-        for item in self._net._geometry:
-            temp = temp + sp.array(self._net.get_throat_info(label=item.name),dtype=int)
+        for item in self._net._geometries:
+            temp = temp + sp.array(self._net.get_throat_info(label=item),dtype=int)
         print('Geometry labels overlap in', sp.sum(temp>1),'throats')
         print('Geometry not yet applied to',sp.sum(temp==0),'throats')
 
