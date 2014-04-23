@@ -35,10 +35,6 @@ def pore_to_pore(geometry,
     C0 = network.get_pore_data(prop='coords')[Ps[:,0]]
     C1 = network.get_pore_data(prop='coords')[Ps[:,1]]
     V = C1 - C0
-    L = sp.sqrt(sp.sum(V[:,:]**2,axis=1))
-    value = V[:,0]/L
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
-    value = V[:,1]/L
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
-    value = V[:,2]/L
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    L = sp.array(sp.sqrt(sp.sum(V[:,:]**2,axis=1)),ndmin=1)
+    value = V/sp.array(L,ndmin=2).T
+    network.set_throat_data(prop='vector',data=value)
