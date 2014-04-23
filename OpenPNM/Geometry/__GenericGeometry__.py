@@ -67,7 +67,13 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         self._net = network #Attach network to self
         self._physics = {} #Create list for physics to append themselves to
         self._prop_list = []
-              
+        # Add location query methods from GenericNetwork using partial to 
+        # force the label to be self.name
+        preloaded_fn = partial(network.get_pore_indices, labels=name, mode='union')
+        setattr(self, 'get_pore_indices', preloaded_fn)
+        preloaded_fn = partial(network.get_throat_indices, labels=name, mode='union')
+        setattr(self, 'get_throat_indices', preloaded_fn)
+        
     def regenerate(self, prop_list='',mode=None):
         r'''
         This updates all properties using the selected methods
