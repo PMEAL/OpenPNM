@@ -4,7 +4,7 @@ import scipy as sp
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001],add_boundaries=True)
+pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=20).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001],add_boundaries=True)
 
 #==============================================================================
 '''Build Geometry'''
@@ -15,11 +15,11 @@ geom.regenerate()
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, loglevel=10)
+air = OpenPNM.Fluids.Air(network=pn, loglevel=20)
 air.apply_conditions(temperature=350, pressure=200000)
 air.regenerate()
 
-water = OpenPNM.Fluids.Water(network=pn,loglevel=10)
+water = OpenPNM.Fluids.Water(network=pn,loglevel=20)
 water.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
 water.regenerate()
 
@@ -42,7 +42,7 @@ phys_air.regenerate()
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername='OP',name='OP_1',network=pn)
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,loggername='OP',name='OP_1',network=pn)
 a = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
 OP_1.run()
@@ -51,7 +51,7 @@ OP_1.run()
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
-Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Fickian', name='Fickian_alg',network=pn)
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, loggername='Fickian', name='Fickian_alg',network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
 Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
