@@ -16,7 +16,9 @@ from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
 class Stick_and_Ball(GenericGeometry):
     r"""
-    Stick and Ball subclass of GenericGeometry.
+    Stick and Ball subclass of GenericGeometry.  This subclass produces a 
+    generic set of geometry models with pore sizes distributed between 0 and 1,
+    and volumes and other info based on spherical pores and cylindrical throats
 
     Parameters
     ----------
@@ -34,8 +36,8 @@ class Stick_and_Ball(GenericGeometry):
    
         self.add_method(prop='pore_seed',model='random')
         self.add_method(prop='throat_seed',model='neighbor_min')
-        self.add_method(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
-        self.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=6e-6,scale=2e-5)
+        self.add_method(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc=0,scale=0.5)
+        self.add_method(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=0,scale=0.5)
         self.add_method(prop='pore_volume',model='sphere')
         self.add_method(prop='throat_length',model='straight')
         self.add_method(prop='throat_volume',model='cylinder')
@@ -46,3 +48,4 @@ class Stick_and_Ball(GenericGeometry):
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
     test = OpenPNM.Geometry.Stick_and_Ball(loglevel=10,name='test_geom',locations=[0],network=pn)
+    test.regenerate()
