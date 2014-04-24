@@ -51,7 +51,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     0.123
     """
 
-    def __init__(self, network,name,pnums='all',tnums='all',**kwargs):
+    def __init__(self, network,name,**kwargs):
         r"""
         Initialize
         """
@@ -65,66 +65,38 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         self._net = network #Attach network to self
         self._physics = {} #Create list for physics to append themselves to
         self._prop_list = []
-        self.set_pore_indices = network.get_pore_indices(labels='all')
-        self.throat_indices = network.get_throat_indices(labels='all')
+        network.set_pore_info(label=self.name,locations=[])
+        network.set_throat_info(label=self.name,locations=[])
         
-    def set_pore_indices(self,locations=None):
+    def set_pore_locations(self,locations=None):
         r'''
         '''
-        try: self._net._pore_data['domain']
-        except: self._net._pore_data['domain'] = sp.ndarray((self._net.num_pores(),),dtype=object)
-        if locations=='all':
-            locations = self._net.get_pore_indices(labels='all')
-        self._net._pore_data['domain'][locations] = self.name
-        temp = self._net._pore_data['domain']==self.name
-        self._net.set_pore_info(label=self.name,locations=temp,mode='overwrite')
+        geoms = list(self._net._geometries.keys())
+        geoms.remove(self.name)
+        temp = self._net.get_pore_indices(labels=geoms,mode='union',return_indices=False)
+        if sum(temp[locations]) >= 1:
+            raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
+        self._net.set_pore_info(label=self.name,locations=locations,mode='overwrite')
         
-    def get_pore_indices(self):
+    def get_pore_locations(self):
         r'''
         '''
-        return self._net._pore_data['domain']==self.name
+        return self._net.get_pore_info(label=self.name,return_indices=True)
         
-    def set_throat_indices(self,locations=None):
+    def set_throat_locations(self,locations=None):
         r'''
         '''
-        try: self._net._throat_data['domain']
-        except: self._net._throat_data['domain'] = sp.ndarray((self._net.num_throats(),),dtype=object)
-        if locations=='all':
-            locations = self._net.get_throat_indices(labels='all')
-        self._net._throat_data['domain'][locations] = self.name
-        temp = self._net._throat_data['domain']==self.name
-        self._net.set_throat_info(label=self.name,locations=temp,mode='overwrite')
+        geoms = list(self._net._geometries.keys())
+        geoms.remove(self.name)
+        temp = self._net.get_throat_indices(labels=geoms,mode='union',return_indices=False)
+        if sum(temp[locations]) >= 1:
+            raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
+        self._net.set_throat_info(label=self.name,locations=locations,mode='overwrite')
 
-    def get_throat_indices(self):
+    def get_throat_locations(self):
         r'''
         '''
-        return self._net._throat_data['domain']==self.name
-                
-    def _setPoreInd(self,locs):
-        try: self._net._pore_data['domain']
-        except: self._net._pore_data['domain'] = sp.ndarray((self._net.num_pores(),),dtype=object)
-        self._net._pore_data['domain'][locs] = self.name
-        temp = self._net._pore_data['domain']==self.name
-        self._net.set_pore_info(label=self.name,locations=temp,mode='overwrite')
-        
-    def _getPoreInd(self):
-        return self._net._pore_data['domain']==self.name
-        
-    pore_indices = property(_getPoreInd,_setPoreInd)
-    
-    def _setThroatInd(self,locs):
-        #Make sure 'domain' key exists
-        try: 
-            self._net._throat_data['domain']
-        except: 
-            self._net._throat_data['domain'] = sp.ndarray((self._net.num_throats(),),dtype=object)
-        self._net._throat_data['domain'][locs] = self.name
-        self._net.set_throat_info(label=self.name,locations=locs,mode='overwrite')
-        
-    def _getThroatInd(self):
-        return self._net._throat_data['domain']==self.name    
-    
-    throat_indices = property(_getThroatInd,_setThroatInd)
+        return self._net.get_throat_info(label=self.name,return_indices=True)
         
     def regenerate(self, prop_list='',mode=None):
         r'''
