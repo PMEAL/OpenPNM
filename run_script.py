@@ -12,6 +12,9 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=20).generate(divisions=[15, 1
 geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='geom')
 geom.regenerate()
 
+geom2 = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='geom2',pnums=[],tnums=[])
+geom2.regenerate()
+
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
@@ -68,4 +71,6 @@ Fickian_alg.update()
 
 #------------------------------------------------------------------------------
 #Export to VTK
-OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
+#del pn._pore_data['domain']
+#del pn._throat_data['domain']
+#OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
