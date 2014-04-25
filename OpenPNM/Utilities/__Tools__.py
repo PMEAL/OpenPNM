@@ -35,7 +35,7 @@ class Tools(Base):
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
-    def _set_data(self,element='',prop='',data='',locations=''):
+    def _set_data(self,element='',prop='',data='',locations='',mode='merge'):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
@@ -121,7 +121,7 @@ class Tools(Base):
             except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop)           
       
  
-    def set_pore_data(self,prop='',data='',locations=''):
+    def set_pore_data(self,prop='',data='',locations='',mode='merge'):
         r'''
         Writes data to fluid or network objects according to input arguments.
         
@@ -149,7 +149,7 @@ class Tools(Base):
         >>> pn.get_pore_data(prop='test')
         array([ 1.1])
         '''
-        self._set_data(element='pore',prop=prop,data=data,locations=locations)
+        self._set_data(element='pore',prop=prop,data=data,locations=locations,mode=mode)
         
     def get_pore_data(self,prop='',locations=''):
         r'''
@@ -185,7 +185,7 @@ class Tools(Base):
         '''
         return self._get_data(element='pore',prop=prop,locations=locations)
 
-    def set_throat_data(self,prop='',data='',locations=''):
+    def set_throat_data(self,prop='',data='',locations='',mode='merge'):
         r'''
         Writes data to fluid or network objects according to input arguments.  
         Network topology data and pore/throat geometry data is stored on the network object.
@@ -213,7 +213,7 @@ class Tools(Base):
         --------
         See set_pore_data
         '''
-        self._set_data(element='throat',prop=prop,data=data,locations=locations)         
+        self._set_data(element='throat',prop=prop,data=data,locations=locations,mode=mode)         
 
     def get_throat_data(self,prop='',locations=''):
         r'''
