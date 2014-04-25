@@ -15,7 +15,7 @@ def constant(geometry,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
 
 def cylinder(geometry,
              network,
@@ -29,7 +29,7 @@ def cylinder(geometry,
     D = network.get_throat_data(prop=diameter,locations=geometry)
     L = network.get_throat_data(prop=length,locations=geometry)
     value = sp.constants.pi/(D)*L
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
 
 def cuboid(geometry,
            network,
@@ -43,5 +43,5 @@ def cuboid(geometry,
     D = network.get_throat_data(prop=diameter,locations=geometry)
     L = network.get_throat_data(prop=length,locations=geometry)
     value = 4*D*L
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
     

@@ -14,7 +14,7 @@ def constant(geometry,
     r"""
     Assigns specified constant value
     """
-    network.set_pore_data(locations=geometry,prop=propname,data=value)
+    network.set_pore_data(locations=geometry.get_pore_locations(),prop=propname,data=value)
 
 def sphere(geometry,
            network,
@@ -25,7 +25,7 @@ def sphere(geometry,
     Calculate pore volume from diameter for a spherical pore body
     """
     value=sp.pi/6*network.get_pore_data(prop=pore_diameter,locations=geometry)**3
-    network.set_pore_data(locations=geometry,prop=propname,data=value)
+    network.set_pore_data(locations=geometry.get_pore_locations(),prop=propname,data=value)
     
 def cube(geometry,
          network,
@@ -36,4 +36,4 @@ def cube(geometry,
     Calculate pore volume from diameter for a cubic pore body
     """
     value=network.get_pore_data(prop=pore_diameter,locations=geometry)**3
-    network.set_pore_data(locations=geometry,prop=propname,data=value)
+    network.set_pore_data(locations=geometry.get_pore_locations(),prop=propname,data=value)

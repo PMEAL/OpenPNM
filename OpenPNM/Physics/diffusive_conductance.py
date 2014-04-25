@@ -17,7 +17,7 @@ def constant(physics,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
+    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry.get_throat_locations())
 
 def na(physics,
        network,
@@ -28,7 +28,7 @@ def na(physics,
     r"""
     """
     value = -1
-    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
+    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry.get_throat_locations())
 
 def bulk_diffusion(physics,
                    network,
@@ -79,6 +79,6 @@ def bulk_diffusion(physics,
     tlen = network.get_throat_data(prop=throat_length)
     gt = ct*DABt*tdia**2/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    mask = network.get_throat_indices(geometry)
-    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
+    mask = geometry.get_throat_locations()
+    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry.get_throat_locations())
 
