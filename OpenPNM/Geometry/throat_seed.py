@@ -15,7 +15,7 @@ def constant(geometry,
     r"""
     Assign specified constant value
     """
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
 
 def random(geometry,
            network,
@@ -37,7 +37,7 @@ def neighbor_min(geometry,
     Adopt the minimum seed value from the neighboring pores
     """
     value=sp.amin(network.get_pore_data(prop=pore_seed)[network.get_throat_data(prop='connections',locations=geometry)],axis=1)
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
 
 def neighbor_max(geometry,
                  network,
@@ -48,4 +48,4 @@ def neighbor_max(geometry,
     Adopt the maximum seed value from the neighboring pores
     """
     value=sp.amax(network.get_pore_data(prop=pore_seed)[network.get_throat_data(prop='connections',locations=geometry)],axis=1)
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)

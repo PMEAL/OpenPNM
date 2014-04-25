@@ -14,7 +14,7 @@ def constant(geometry,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(locations=geometry,prop=propname,data=value)
+    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
 
 def pore_to_pore(geometry,
                  network,
@@ -37,4 +37,4 @@ def pore_to_pore(geometry,
     V = C1 - C0
     L = sp.array(sp.sqrt(sp.sum(V[:,:]**2,axis=1)),ndmin=1)
     value = V/sp.array(L,ndmin=2).T
-    network.set_throat_data(prop='vector',data=value)
+    network.set_throat_data(locations=geometry.get_throat_locations(),prop='vector',data=value)

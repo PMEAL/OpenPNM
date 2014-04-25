@@ -57,6 +57,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        
         for item in network._geometries.keys():
             if item == name:
                 raise Exception('A Geometry Object with the supplied name already exists')

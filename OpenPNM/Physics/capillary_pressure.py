@@ -52,8 +52,8 @@ def washburn(physics,
     theta = network.interpolate_throat_data(theta)
     r = network.get_throat_data(prop=throat_diameter)/2
     value = -2*sigma*sp.cos(sp.radians(theta))/r
-    mask = network.get_throat_indices(geometry)
-    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
+    indices = network.get_throat_indices(geometry)
+    network.set_throat_data(phase=fluid,prop=propname,data=value[indices],locations=indices)
 
 def purcell(physics,
             network,
@@ -102,6 +102,6 @@ def purcell(physics,
     R = r_toroid
     alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
-    mask = network.get_throat_indices(geometry)
-    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
+    indices = geometry.get_throat_locations()
+    network.set_throat_data(phase=fluid,prop=propname,data=value[indices],locations=indices)
 

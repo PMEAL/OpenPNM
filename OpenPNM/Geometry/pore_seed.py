@@ -14,7 +14,7 @@ def constant(geometry,
     r"""
     Assign specified constant value
     """
-    network.set_pore_data(locations=geometry,prop=propname,data=value)
+    network.set_pore_data(locations=geometry.get_pore_locations(),prop=propname,data=value)
 
 def random(geometry,
            network,
@@ -28,5 +28,5 @@ def random(geometry,
     sp.random.seed(seed)
     Np = network.num_pores(geometry.name)
     value=sp.random.rand(Np)
-    network.set_pore_data(locations=geometry,prop=propname,data=value)
+    network.set_pore_data(locations=geometry.get_pore_locations(),prop=propname,data=value)
     
