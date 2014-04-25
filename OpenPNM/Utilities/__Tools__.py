@@ -39,56 +39,89 @@ class Tools(Base):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
-        data = sp.array(data,ndmin=1)
-        if data.ndim > 1: data = data.squeeze()
-        if 'OpenPNM.Network' in str(self.__class__): net = self
-        else: net = self._net
-        if type(locations)==list:
-            try: locations = getattr(net,'get_'+element+'_indices')(locations)
-            except: locations = sp.array(locations,ndmin=1)
-        elif type(locations)==sp.ndarray:
-            try: locations = getattr(net,'get_'+element+'_indices')(locations)
-            except: pass
-        elif locations!='':
-            try: locations = locations.name
-            except: pass
-            if type(locations)==str: locations = getattr(net,'get_'+element+'_indices')([locations])
-        try: 
-            getattr(self,'_'+element+'_data')[prop]
-            temp_word = 'updated for '
-        except: temp_word = 'added to '            
-        if sp.shape(data)[0]==1:
-            if locations!='':                
-                try: getattr(self,'_'+element+'_data')[prop]
-                except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
-                getattr(self,'_'+element+'_data')[prop][locations] = data
-                self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-            else:
+         
+        if mode=='remove':
+            if data=='':
                 try: 
                     getattr(self,'_'+element+'_data')[prop]
-                    if sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:
-                        print('Warning: '+prop+' '+element+' property in '+self.name+' was an array which has been overwritten with a scalar value')
+                    if locations!='':   
+                        getattr(self,'_'+element+'_data')[prop][locations] = sp.nan
+                        self._logger.debug('For the '+element+' property '+prop+', the specified data have been deleted in '+self.name)                        
+                    else:
+                        del getattr(self,'_'+element+'_data')[prop]
+                        self._logger.debug(element+' property '+prop+' has been deleted from the dictionary in '+self.name)
+                except: self._logger.error(element+' property '+prop+' in '+self.name+' has not been defined. Therefore, no data can be removed!')                              
+                
+            else:   self._logger.error('For the '+element+' property '+prop+' in '+self.name+': The (remove) mode, will remove the property from the dictionary or specified locations. No data should be sent!')
+                    
+        else:
+            
+            data = sp.array(data,ndmin=1)
+            if data.ndim > 1: data = data.squeeze()
+            if 'OpenPNM.Network' in str(self.__class__): net = self
+            else: net = self._net
+            if type(locations)==list:
+                try: locations = getattr(net,'get_'+element+'_indices')(locations)
+                except: locations = sp.array(locations,ndmin=1)
+            elif type(locations)==sp.ndarray:
+                try: locations = getattr(net,'get_'+element+'_indices')(locations)
                 except: pass
-                getattr(self,'_'+element+'_data')[prop] = data   
-                self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-        else:                
-            if locations!='':
-                if sp.shape(locations)[0]==sp.shape(data)[0]:
-                    try: getattr(self,'_'+element+'_data')[prop]
+            elif locations!='':
+                try: locations = locations.name
+                except: pass
+                if type(locations)==str: locations = getattr(net,'get_'+element+'_indices')([locations])
+            
+            try: 
+                getattr(self,'_'+element+'_data')[prop]
+                temp_word = 'updated for '
+            except: temp_word = 'added to '            
+            
+            if sp.shape(data)[0]==1:
+                if locations!='':                
+                    try: 
+                        getattr(self,'_'+element+'_data')[prop]
+                        if mode=='overwrite':
+                            getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
+                        elif mode=='merge' and sp.shape(getattr(self,'_'+element+'_data')[prop])[0]==1:
+                            getattr(self,'_'+element+'_data')[prop] = getattr(self,'_'+element+'_data')[prop]*sp.ones((getattr(self,'num_'+element+'s')(),))
                     except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
                     getattr(self,'_'+element+'_data')[prop][locations] = data
                     self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-                else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', locations and size of data do not match!')
-            else:
-                try: 
-                    getattr(self,'num_'+element+'s')()                        
-                    if sp.shape(data)[0]==getattr(self,'num_'+element+'s')():
+                else:
+                    try: 
+                        getattr(self,'_'+element+'_data')[prop]
+                        if mode=='overwrite':
+                            if sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:
+                                self._logger.debug(element+' property '+prop+' in '+self.name+' was an array which has been overwritten with a scalar value')
+                            getattr(self,'_'+element+'_data')[prop] = data
+                            self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
+                        if mode=='merge' and sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:  
+                            self._logger.error('a scalar data without specified locations cannot be merged into the '+element+' property '+prop+' in '+self.name+' which is (1*N) array. To do so, choose overwrite mode.')
+                    except:
                         getattr(self,'_'+element+'_data')[prop] = data
                         self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-                    else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', number of '+element+'s and size of data do not match!')
-                except: 
-                    getattr(self,'_'+element+'_data')[prop] = data
-                    self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
+
+            else:                
+                if locations!='':
+                    if sp.shape(locations)[0]==sp.shape(data)[0]:
+                        try:                                 
+                            getattr(self,'_'+element+'_data')[prop]
+                            if mode=='overwrite':
+                                getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
+                        except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan                            
+                        getattr(self,'_'+element+'_data')[prop][locations] = data
+                        self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
+                    else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', locations and size of data do not match!')
+                else:
+                    try: 
+                        getattr(self,'num_'+element+'s')()                        
+                        if sp.shape(data)[0]==getattr(self,'num_'+element+'s')():
+                            getattr(self,'_'+element+'_data')[prop] = data
+                            self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
+                        else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', no locations have been specified. Also size of the data and number of '+element+'s do not match! To add this property, specify locations or change the size of the data.')
+                    except: 
+                        getattr(self,'_'+element+'_data')[prop] = data
+                        self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
 
 
 
