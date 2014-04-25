@@ -10,7 +10,7 @@ def constant(fluid,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def na(fluid,network,propname,**params):
     r"""
@@ -19,7 +19,7 @@ def na(fluid,network,propname,**params):
     but introduces the possibility of being misused.
     """
     value = -1
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def Antoine(fluid,network,propname,A,B,C,**params):
     r"""
@@ -31,6 +31,6 @@ def Antoine(fluid,network,propname,A,B,C,**params):
             Antoine vapor pressure constants for pure compounds
 
     """
-    T = network.get_pore_data(phase=fluid,prop='temperature')
+    T = fluid.get_pore_data(prop='temperature')
     value = (10**(A-B/(C+T-273.15)))*1.333e2
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)

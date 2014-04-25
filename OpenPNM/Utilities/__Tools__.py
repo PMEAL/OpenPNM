@@ -41,16 +41,18 @@ class Tools(Base):
         '''
         data = sp.array(data,ndmin=1)
         if data.ndim > 1: data = data.squeeze()
+        if 'OpenPNM.Network' in str(self.__class__): net = self
+        else: net = self._net
         if type(locations)==list:
-            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            try: locations = getattr(net,'get_'+element+'_indices')(locations)
             except: locations = sp.array(locations,ndmin=1)
         elif type(locations)==sp.ndarray:
-            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            try: locations = getattr(net,'get_'+element+'_indices')(locations)
             except: pass
         elif locations!='':
             try: locations = locations.name
             except: pass
-            if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])
+            if type(locations)==str: locations = getattr(net,'get_'+element+'_indices')([locations])
         try: 
             getattr(self,'_'+element+'_data')[prop]
             temp_word = 'updated for '
@@ -94,16 +96,19 @@ class Tools(Base):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''      
+        
+        if 'OpenPNM.Network' in str(self.__class__): net = self
+        else: net = self._net        
         if type(locations)==list: 
-            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            try: locations = getattr(net,'get_'+element+'_indices')(locations)
             except: locations = sp.array(locations,ndmin=1)
         elif type(locations)==sp.ndarray:
-            try: locations = getattr(self,'get_'+element+'_indices')(locations)
+            try: locations = getattr(net,'get_'+element+'_indices')(locations)
             except: pass            
         elif locations!='':
             try: locations = locations.name 
             except: pass
-            if type(locations)==str: locations = getattr(self,'get_'+element+'_indices')([locations])    
+            if type(locations)==str: locations = getattr(net,'get_'+element+'_indices')([locations])    
 
         if locations!='':                
             try: 

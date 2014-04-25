@@ -17,7 +17,7 @@ def constant(physics,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
+    fluid.set_throat_data(prop=propname,data=value,locations=geometry)
 
 def na(physics,
        network,
@@ -26,7 +26,7 @@ def na(physics,
        propname,
        **params):
     value = -1
-    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
+    fluid.set_throat_data(prop=propname,data=value,locations=geometry)
 
 def hagen_poiseuille(physics,
                      network,
@@ -47,7 +47,7 @@ def hagen_poiseuille(physics,
 
     fluid : OpenPNM Fluid Object
     """
-    mup = network.get_pore_data(phase=fluid,prop=viscosity)
+    mup = fluid.get_pore_data(prop=viscosity)
     mut = network.interpolate_throat_data(mup)
     #Get Nt-by-2 list of pores connected to each throat
     tind = network.get_throat_indices()
@@ -65,6 +65,6 @@ def hagen_poiseuille(physics,
     gt = 2.28*(tdia/2)**4/(2*tlen*mut)
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     mask = network.get_throat_indices(geometry)
-    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
+    fluid.set_throat_data(prop=propname,data=value[mask],locations=geometry)
 
 
