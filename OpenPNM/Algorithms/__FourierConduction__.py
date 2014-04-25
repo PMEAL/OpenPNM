@@ -43,7 +43,7 @@ class FourierConduction(LinearSolver):
         """
         self._logger.info("Setup for Fourier Algorithm")        
         self._fluid = params['active_fluid']
-        try: self._fluid = self.find_object_by_name(self._fluid) 
+        try: self._fluid = self._net._fluids[self._fluid] 
         except: pass #Accept object
         self._boundary_conditions_setup()
         # Building thermal conductance
@@ -63,5 +63,5 @@ class FourierConduction(LinearSolver):
     def update(self):
         
         T = self.get_pore_data(prop='temperature')
-        self._net.set_pore_data(phase=self._fluid,prop='temperature',data=T)
+        self._fluid.set_pore_data(prop='temperature',data=T)
         self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
