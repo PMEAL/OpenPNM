@@ -44,15 +44,15 @@ class FickianDiffusion(LinearSolver):
         """
         self._logger.info("Setup for Fickian Algorithm")        
         self._fluid = params['active_fluid']
-        try: self._fluid = self.find_object_by_name(self._fluid) 
+        try: self._fluid = self._net._fluids[self._fluid]
         except: pass #Accept object
         self._X_name = x_term
         self._boundary_conditions_setup()
         # Variable transformation for Fickian Algorithm from xA to ln(xB)
         Dir_pores = self._net.get_pore_indices('all')[self._BCtypes==1]
         self._BCvalues[Dir_pores] = sp.log(1-self._BCvalues[Dir_pores])
-        g = self._net.get_throat_data(phase=self._fluid,prop=conductance)
-        s = self._net.get_throat_data(phase=self._fluid,prop=occupancy)
+        g = self._fluid.get_throat_data(prop=conductance)
+        s = self._fluid.get_throat_data(prop=occupancy)
         self._conductance = g*s+g*(-s)/1e3
         
 
@@ -66,7 +66,7 @@ class FickianDiffusion(LinearSolver):
     def update(self):
         
         x = self.get_pore_data(prop=self._X_name)        
-        self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=x)
+        self._fluid.set_pore_data(prop=self._X_name,data=x)
         self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
         
 

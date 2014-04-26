@@ -17,7 +17,7 @@ def constant(physics,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
+    fluid.set_throat_data(prop=propname,data=value,locations=geometry)
 
 def na(physics,
        network,
@@ -26,7 +26,7 @@ def na(physics,
        propname,
        **params):
     value = -1
-    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
+    fluid.set_throat_data(prop=propname,data=value,locations=geometry)
 
 def parallel_resistors(physics,
                        network,
@@ -47,7 +47,7 @@ def parallel_resistors(physics,
 
     fluid : OpenPNM Fluid Object
     """
-    sigmap = network.get_pore_data(phase=fluid,prop=electrical_conductivity)
+    sigmap = fluid.get_pore_data(prop=electrical_conductivity)
     sigmat = network.interpolate_throat_data(sigmap)
     #Get Nt-by-2 list of pores connected to each throat
     tind = network.get_throat_indices()
@@ -65,5 +65,5 @@ def parallel_resistors(physics,
     gt = sigmat*tdia**2/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     mask = network.get_throat_indices(geometry)
-    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry)
+    fluid.set_throat_data(prop=propname,data=value[mask],locations=geometry)
 

@@ -17,7 +17,7 @@ def constant(physics,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry.get_throat_locations())
+    fluid.set_throat_data(prop=propname,data=value,locations=geometry)
 
 def na(physics,
        network,
@@ -28,7 +28,7 @@ def na(physics,
     r"""
     """
     value = -1
-    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry.get_throat_locations())
+    fluid.set_throat_data(prop=propname,data=value,locations=geometry)
 
 def bulk_diffusion(physics,
                    network,
@@ -59,8 +59,8 @@ def bulk_diffusion(physics,
 
     """    
     #Get fluid properties
-    cp = network.get_pore_data(phase=fluid,prop=molar_density)
-    DABp = network.get_pore_data(phase=fluid,prop=diffusivity)
+    cp = fluid.get_pore_data(prop=molar_density)
+    DABp = fluid.get_pore_data(prop=diffusivity)
     #Interpolate pore values to throats
     ct = network.interpolate_throat_data(cp)
     DABt = network.interpolate_throat_data(DABp)
@@ -79,6 +79,6 @@ def bulk_diffusion(physics,
     tlen = network.get_throat_data(prop=throat_length)
     gt = ct*DABt*tdia**2/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    mask = geometry.get_throat_locations()
-    network.set_throat_data(phase=fluid,prop=propname,data=value[mask],locations=geometry.get_throat_locations())
+    mask = network.get_throat_indices(geometry)
+    fluid.set_throat_data(prop=propname,data=value[mask],locations=geometry)
 

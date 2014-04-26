@@ -9,7 +9,7 @@ def constant(fluid,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def na(fluid,network,propname,**params):
     r"""
@@ -18,7 +18,7 @@ def na(fluid,network,propname,**params):
     but introduces the possibility of being misused.
     """
     value = -1
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def Fuller(fluid, network, propname, MA, MB, vA, vB, **params): 
     r"""
@@ -41,13 +41,13 @@ def Fuller(fluid, network, propname, MA, MB, vA, vB, **params):
         Sum of atomic diffusion volumes for component B
     """
 
-    T = network.get_pore_data(phase=fluid,prop='temperature')
-    P = network.get_pore_data(phase=fluid,prop='pressure')
+    T = fluid.get_pore_data(prop='temperature')
+    P = fluid.get_pore_data(prop='pressure')
     MAB = 2*(1/MA+1/MB)**(-1)
     MAB = MAB*1e3
     P = P*1e-5
     value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3)+vB**(1./3))**2)*1e-4
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def Fuller_scaling(fluid,network,propname,DABo, To, Po,**params):
     r"""
@@ -63,10 +63,10 @@ def Fuller_scaling(fluid,network,propname,DABo, To, Po,**params):
     Po, To : float, array_like
         Pressure & temperature at reference conditions, respectively
     """
-    Ti = network.get_pore_data(phase=fluid,prop='temperature')
-    Pi = network.get_pore_data(phase=fluid,prop='pressure')
+    Ti = fluid.get_pore_data(prop='temperature')
+    Pi = fluid.get_pore_data(prop='pressure')
     value = DABo*(Ti/To)**1.75*(Po/Pi)
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def TynCalus(fluid,network,propname,VA ,VB ,sigma_A ,sigma_B,viscosity='viscosity',**params):
     r"""
@@ -88,10 +88,10 @@ def TynCalus(fluid,network,propname,VA ,VB ,sigma_A ,sigma_B,viscosity='viscosit
         Surface tension of component B at boiling temperature (N/m)
 
     """
-    T = network.get_pore_data(phase=fluid,prop='temperature')
-    mu = network.get_pore_data(phase=fluid,prop=viscosity)
+    T = fluid.get_pore_data(prop='temperature')
+    mu = fluid.get_pore_data(prop=viscosity)
     value = 8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T*(sigma_B/sigma_A)**0.15/(mu*1e3)
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def TynCalus_Scaling(fluid,network,propname,DABo ,To ,mu_o ,viscosity='viscosity', **params):
     r"""
@@ -107,7 +107,7 @@ def TynCalus_Scaling(fluid,network,propname,DABo ,To ,mu_o ,viscosity='viscosity
     mu_o, To : float, array_like
         Viscosity & temperature at reference conditions, respectively
     """
-    Ti = network.get_pore_data(phase=fluid,prop='temperature')
-    mu_i = network.get_pore_data(phase=fluid,prop=viscosity)
+    Ti = fluid.get_pore_data(prop='temperature')
+    mu_i = fluid.get_pore_data(prop=viscosity)
     value = DABo*(Ti/To)*(mu_o/mu_i)
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
