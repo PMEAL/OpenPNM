@@ -10,7 +10,7 @@ def constant(fluid,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def na(fluid,network,propname,**params):
     r"""
@@ -19,7 +19,7 @@ def na(fluid,network,propname,**params):
     but introduces the possibility of being misused.
     """
     value = -1
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def Chung(fluid,network,propname,Cv,MW,acentric,viscosity='viscosity',**params):
     r"""
@@ -36,8 +36,8 @@ def Chung(fluid,network,propname,Cv,MW,acentric,viscosity='viscosity',**params):
 
     """
     R = 8.314
-    T = network.get_pore_data(phase=fluid,prop='temperature')
-    mu = network.get_pore_data(phase=fluid,prop=viscosity)
+    T = fluid.get_pore_data(prop='temperature')
+    mu = fluid.get_pore_data(prop=viscosity)
     Tc = fluid.get_pore_data(prop='Tc')
     Tr = T/Tc
     z = 2.0 + 10.5*Tr**2
@@ -45,7 +45,7 @@ def Chung(fluid,network,propname,Cv,MW,acentric,viscosity='viscosity',**params):
     alpha = Cv/R -3/2
     s = 1 + alpha*((0.215+0.28288*alpha-1.061*beta+0.26665*z)/(0.6366+beta*z+1.061*alpha*beta))
     value = 3.75*s*(mu)*R/(MW)
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def Sato(fluid,network,propname,Tb,MW,**params):
     r"""
@@ -59,9 +59,9 @@ def Sato(fluid,network,propname,Tb,MW,**params):
         Molecular weight of the component (kg/mol)
 
     """
-    T = network.get_pore_data(phase=fluid,prop='temperature')
+    T = fluid.get_pore_data(prop='temperature')
     Tc = fluid.get_pore_data(prop='Tc')
     Tbr = Tb/Tc
     Tr = T/Tc
     value = (1.11/((MW*1e3)**0.5))*(3+20*(1-Tr)**(2/3))/(3+20*(1-Tbr)**(2/3))
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)

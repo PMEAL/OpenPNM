@@ -13,7 +13,7 @@ module __InvasionPercolation__: Invasion Percolation Algorithm
 .. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
 
 """
-
+import OpenPNM
 import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
@@ -117,8 +117,11 @@ class InvasionPercolation(GenericAlgorithm):
 #            try:defending_fluid = invading_fluid.partner
 #            except: self._logger.error("invading_fluid.partner does not exist. Please specify defending fluid")
 #        else: invading_fluid.set_pair(defending_fluid)
-        self._fluid = invading_fluid
-        self._fluid_def = defending_fluid
+        try:    self._fluid = self._net._fluids[invading_fluid]
+        except: self._fluid = invading_fluid
+        try:    self._fluid_def = self._net._fluids[defending_fluid]
+        except: self._fluid_def = defending_fluid        
+
         if sp.size(inlets) == 1:
             self._inlets = [inlets]
         if sp.size(outlets) == 1:
@@ -587,14 +590,14 @@ class InvasionPercolation(GenericAlgorithm):
         #    self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data= ~self._Tinv>0)
         #except:
         #    print('A partner fluid has not been set so inverse occupancy cannot be set')
-        self._net.set_pore_data(phase=self._fluid,prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
-        self._net.set_pore_data(phase=self._fluid,prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
-        self._net.set_throat_data(phase=self._fluid,prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
-        self._net.set_pore_data(phase=self._fluid,prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
-        self._net.set_throat_data(phase=self._fluid,prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
+        self._fluid.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
+        self._fluid.set_pore_data(prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
+        self._fluid.set_throat_data(prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
+        self._fluid.set_pore_data(prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
+        self._fluid.set_throat_data(prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
         if self._timing:
-            self._net.set_pore_data(phase=self._fluid,prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
-            self._net.set_throat_data(phase=self._fluid,prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))            
+            self._fluid.set_pore_data(prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
+            self._fluid.set_throat_data(prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))            
             
             
 

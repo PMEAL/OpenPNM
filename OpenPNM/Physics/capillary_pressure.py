@@ -11,11 +11,11 @@ def constant(physics,fluid,geometry,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(phase=fluid,prop=propname,locations=geometry,data=value)
+    fluid.set_throat_data(prop=propname,locations=geometry,data=value)
 
 def na(physics,fluid,geometry,network,propname,**params):
     value = -1
-    network.set_throat_data(phase=fluid,prop=propname,data=value,locations=geometry)
+    fluid.set_throat_data(prop=propname,data=value,locations=geometry)
 
 def washburn(physics,
              fluid,
@@ -46,14 +46,14 @@ def washburn(physics,
     This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
-    sigma = network.get_pore_data(phase=fluid,prop=pore_surface_tension)
+    sigma = fluid.get_pore_data(prop=pore_surface_tension)
     sigma = network.interpolate_throat_data(sigma)
-    theta = network.get_pore_data(phase=fluid,prop=pore_contact_angle)
+    theta = fluid.get_pore_data(prop=pore_contact_angle)
     theta = network.interpolate_throat_data(theta)
     r = network.get_throat_data(prop=throat_diameter)/2
     value = -2*sigma*sp.cos(sp.radians(theta))/r
-    indices = network.get_throat_indices(geometry)
-    network.set_throat_data(phase=fluid,prop=propname,data=value[indices],locations=indices)
+    mask = network.get_throat_indices(geometry)
+    fluid.set_throat_data(prop=propname,data=value[mask],locations=geometry)
 
 def purcell(physics,
             network,
@@ -94,14 +94,14 @@ def purcell(physics,
     """TODO:
     Triple check the accuracy of this equation
     """
-    sigma = network.get_pore_data(phase=fluid,prop=pore_surface_tension)
+    sigma = fluid.get_pore_data(prop=pore_surface_tension)
     sigma = network.interpolate_throat_data(sigma)
-    theta = network.get_pore_data(phase=fluid,prop=pore_contact_angle)
+    theta = fluid.get_pore_data(prop=pore_contact_angle)
     theta = network.interpolate_throat_data(theta)
     r = network.get_throat_data(prop=throat_diameter)/2
     R = r_toroid
     alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
-    indices = geometry.get_throat_locations()
-    network.set_throat_data(phase=fluid,prop=propname,data=value[indices],locations=indices)
+    mask = network.get_throat_indices(geometry)
+    fluid.set_throat_data(prop=propname,data=value[mask],locations=geometry)
 

@@ -42,7 +42,7 @@ class OhmicConduction(LinearSolver):
         This function executes the essential mathods for building matrices for Linear solution
         """
         self._fluid = params['active_fluid']
-        try: self._fluid = self.find_object_by_name(self._fluid) 
+        try: self._fluid = self._net._fluids[self._fluid]
         except: pass #Accept object
         self._X_name = voltage
         self._boundary_conditions_setup()
@@ -59,6 +59,6 @@ class OhmicConduction(LinearSolver):
     def update(self):
         
         v = self.get_pore_data(prop=self._X_name)
-        self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=v)
+        self._fluid.set_pore_data(prop=self._X_name,data=v)
         self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
         

@@ -43,7 +43,7 @@ class StokesFlow(LinearSolver):
         """
         self._logger.info("Setup for Stokes Flow Algorithm")
         self._fluid = params['active_fluid']
-        try: self._fluid = self.find_object_by_name(self._fluid) 
+        try: self._fluid = self._net._fluids[self._fluid] 
         except: pass #Accept object
         self._X_name = 'pressure'
         self._boundary_conditions_setup()
@@ -62,7 +62,7 @@ class StokesFlow(LinearSolver):
     def update(self):
         
         p = self.get_pore_data(prop='pressure')
-        self._net.set_pore_data(phase=self._fluid,prop='pressure',data=p)
+        self._fluid.set_pore_data(prop='pressure',data=p)
         self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
 
 

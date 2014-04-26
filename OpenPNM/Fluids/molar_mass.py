@@ -10,7 +10,7 @@ def constant(fluid,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def na(fluid,network,propname,**params):
     r"""
@@ -19,7 +19,7 @@ def na(fluid,network,propname,**params):
     but introduces the possibility of being misused.
     """
     value = -1
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)
 
 def mixture(fluid,network,propname,MWs=[],mole_fracs=[],**params):
     r"""
@@ -31,4 +31,4 @@ def mixture(fluid,network,propname,MWs=[],mole_fracs=[],**params):
     fsum = sp.sum(mole_fracs)
     if fsum != 1: print(fluid._logger.warning('mole fractions do not add to 1, so performing normalization'))
     value = sp.sum(MWs*mole_fracs)/fsum
-    network.set_pore_data(phase=fluid,prop=propname,data=value)
+    fluid.set_pore_data(prop=propname,data=value)

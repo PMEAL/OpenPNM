@@ -9,12 +9,12 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=20).generate(divisions=[15, 1
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='geom')
+geom = OpenPNM.Geometry.Toray090(network=pn, name='geom')
 geom.set_pore_locations(pn.get_pore_indices(labels='all'))
 geom.set_throat_locations(pn.get_throat_indices(labels='all'))
 geom.regenerate()
 
-geom2 = pn.add_geometry(name='test',subclass='Stick_and_Ball')
+geom2 = pn.add_geometry(name='test',subclass='Toray090')
 
 #==============================================================================
 '''Build Fluids'''
