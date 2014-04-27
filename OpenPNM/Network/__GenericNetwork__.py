@@ -775,8 +775,79 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.incidence_matrix['coo'] = {}
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
+        
+    def pores(self,label='all'):
+        r'''
+        Returns a list of pore indices
+        
+        Parameters
+        ----------
+        label : string
+            Accepts a *single* label specifying the pore label of interest
+            
+        Returns
+        -------
+        indices : array_like
+            A (1,) array of pore indices
+        
+        See Also
+        --------
+        get_pore_indices
+        
+        Notes
+        -----
+        This is a helper function to simplify the process of retrieving pores
+        
+        '''
+        if type(label) == str:
+            return self.get_pore_indices(labels=label)
+        else:
+            raise Exception('The pores() method only accepts a single label, for more complex queries use get_pore_indicies')
+        
+        
+    def throats(self,label='all'):
+        r'''
+        Returns a list of throat indices
+        
+        Parameters
+        ----------
+        label : string
+            Accepts a *single* label specifying the throat label of interest
+            
+        Returns
+        -------
+        indices : array_like
+            A (1,) array of throat indices
+        
+        See Also
+        --------
+        get_throat_indices
+        
+        Notes
+        -----
+        This is a helper function to simplify the process of retrieving throats
+        
+        '''
+        if type(label) == str:
+            return self.get_throat_indices(labels=label)
+        else:
+            raise Exception('The throats() method only accepts a single label, for more complex queries use get_throat_indicies')
+        
+        
+        
+        
 
 if __name__ == '__main__':
     #Run doc tests
     import doctest
     doctest.testmod(verbose=True)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

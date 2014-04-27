@@ -69,7 +69,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         network.set_pore_info(label=self.name,locations=[])
         network.set_throat_info(label=self.name,locations=[])
         
-    def set_pore_locations(self,locations=None):
+    def set_pore_locations(self,locations):
         r'''
         '''
         geoms = list(self._net._geometries.keys())
@@ -84,7 +84,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         '''
         return self._net.get_pore_info(label=self.name,return_indices=True)
         
-    def set_throat_locations(self,locations=None):
+    def set_throat_locations(self,locations):
         r'''
         '''
         geoms = list(self._net._geometries.keys())
@@ -98,6 +98,10 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         r'''
         '''
         return self._net.get_throat_info(label=self.name,return_indices=True)
+        
+    pores = property(get_pore_locations,set_pore_locations)
+    
+    throats = property(get_throat_locations,set_throat_locations)
         
     def regenerate(self, prop_list='',mode=None):
         r'''
