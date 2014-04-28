@@ -71,7 +71,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         network.set_pore_info(label=self.name,locations=[])
         network.set_throat_info(label=self.name,locations=[])
     
-    def set_pore_indices(self,pores):
+    def set_pore_indices(self,pores,mode='overwrite'):
         r'''
         '''
         if pores == 'all':
@@ -81,14 +81,14 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         temp = self._net.get_pore_indices(labels=geoms,mode='union',return_indices=False)
         if sum(temp[pores]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
-        self._net.set_pore_info(label=self.name,locations=pores,mode='overwrite')
+        self._net.set_pore_info(label=self.name,locations=pores,mode=mode)
         
     def get_pore_indices(self):
         r'''
         '''
-        return self._net.get_pore_indices(labels=self.name)   
+        return self._net.get_pore_indices(labels=self.name)
         
-    pores = property(get_pore_indices,set_pore_indices)  
+    pores = property(get_pore_indices,set_pore_indices)
     
     def set_throat_indices(self,throats):
         r'''
