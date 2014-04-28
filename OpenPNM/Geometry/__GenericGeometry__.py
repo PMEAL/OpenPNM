@@ -51,7 +51,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     0.123
     """
 
-    def __init__(self, network,name,**kwargs):
+    def __init__(self,network,name,**kwargs):
         r"""
         Initialize
         """
@@ -66,43 +66,48 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         self._net = network #Attach network to self
         self._physics = {} #Create list for physics to append themselves to
         self._prop_list = []
+        #Initialize geometry to NOWHERE
         network.set_pore_info(label=self.name,locations=[])
         network.set_throat_info(label=self.name,locations=[])
-        
-    def set_pore_locations(self,locations):
+    
+    def set_pore_indices(self,pores):
         r'''
         '''
+        if pores == 'all':
+            pores = self._net.get_pore_indices(labels='all')
         geoms = list(self._net._geometries.keys())
         geoms.remove(self.name)
         temp = self._net.get_pore_indices(labels=geoms,mode='union',return_indices=False)
-        if sum(temp[locations]) >= 1:
+        if sum(temp[pores]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
-        self._net.set_pore_info(label=self.name,locations=locations,mode='overwrite')
+        self._net.set_pore_info(label=self.name,locations=pores,mode='overwrite')
         
-    def get_pore_locations(self):
+    def get_pore_indices(self):
         r'''
         '''
-        return self._net.get_pore_info(label=self.name,return_indices=True)
+        return self._net.get_pore_indices(labels=self.name)   
         
-    def set_throat_locations(self,locations):
+    pores = property(get_pore_indices,set_pore_indices)  
+    
+    def set_throat_indices(self,throats):
         r'''
         '''
+        if throats == 'all':
+            throats = self._net.get_throat_indices(labels='all')
         geoms = list(self._net._geometries.keys())
         geoms.remove(self.name)
         temp = self._net.get_throat_indices(labels=geoms,mode='union',return_indices=False)
-        if sum(temp[locations]) >= 1:
+        if sum(temp[throats]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
-        self._net.set_throat_info(label=self.name,locations=locations,mode='overwrite')
-
-    def get_throat_locations(self):
+        self._net.set_throat_info(label=self.name,locations=throats,mode='overwrite')
+        
+    def get_throat_indices(self):
         r'''
         '''
-        return self._net.get_throat_info(label=self.name,return_indices=True)
-        
-    pores = property(get_pore_locations,set_pore_locations)
+        return self._net.get_throat_indices(labels=self.name)
+          
+    throats = property(get_throat_indices,set_throat_indices) 
     
-    throats = property(get_throat_locations,set_throat_locations)
-        
     def regenerate(self, prop_list='',mode=None):
         r'''
         This updates all properties using the selected methods

@@ -15,7 +15,7 @@ def constant(geometry,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
+    network.set_data(prop=propname,throats=geometry.throats,data=value)
 
 def cylinder(geometry,
              network,
@@ -26,10 +26,10 @@ def cylinder(geometry,
     r"""
     Calculate throat area for a cylindrical throat
     """
-    D = network.get_throat_data(prop=diameter,locations=geometry)
-    L = network.get_throat_data(prop=length,locations=geometry)
+    D = network.get_data(prop=diameter,throats=geometry.throats)
+    L = network.get_data(prop=length,throats=geometry.throats)
     value = sp.constants.pi/(D)*L
-    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
+    network.set_data(prop=propname,throats=geometry.throats,data=value)
 
 def cuboid(geometry,
            network,
@@ -40,8 +40,8 @@ def cuboid(geometry,
     r"""
     Calculate throat area for a cuboid throat
     """
-    D = network.get_throat_data(prop=diameter,locations=geometry)
-    L = network.get_throat_data(prop=length,locations=geometry)
+    D = network.get_data(prop=diameter,throats=geometry.throats)
+    L = network.get_data(prop=length,throats=geometry.throats)
     value = 4*D*L
-    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
+    network.set_data(prop=propname,throats=geometry.throats,data=value)
     

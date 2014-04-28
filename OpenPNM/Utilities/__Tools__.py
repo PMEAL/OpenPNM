@@ -52,10 +52,8 @@ class Tools(Base):
                         self._logger.debug(element+' property '+prop+' has been deleted from the dictionary in '+self.name)
                 except: self._logger.error(element+' property '+prop+' in '+self.name+' has not been defined. Therefore, no data can be removed!')                              
                 
-            else:   self._logger.error('For the '+element+' property '+prop+' in '+self.name+': The (remove) mode, will remove the property from the dictionary or specified locations. No data should be sent!')
-                    
+            else:   self._logger.error('For the '+element+' property '+prop+' in '+self.name+': The (remove) mode, will remove the property from the dictionary or specified locations. No data should be sent!')        
         else:
-            
             data = sp.array(data,ndmin=1)
             if data.ndim > 1: data = data.squeeze()
             if 'OpenPNM.Network' in str(self.__class__): net = self
@@ -70,12 +68,10 @@ class Tools(Base):
                 try: locations = locations.name
                 except: pass
                 if type(locations)==str: locations = getattr(net,'get_'+element+'_indices')([locations])
-            
             try: 
                 getattr(self,'_'+element+'_data')[prop]
                 temp_word = 'updated for '
             except: temp_word = 'added to '            
-            
             if sp.shape(data)[0]==1:
                 if locations!='':                
                     try: 
@@ -100,7 +96,6 @@ class Tools(Base):
                     except:
                         getattr(self,'_'+element+'_data')[prop] = data
                         self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-
             else:                
                 if locations!='':
                     if sp.shape(locations)[0]==sp.shape(data)[0]:
@@ -123,13 +118,10 @@ class Tools(Base):
                         getattr(self,'_'+element+'_data')[prop] = data
                         self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
 
-
-
     def _get_data(self,element='',prop='',locations=''):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''      
-        
         if 'OpenPNM.Network' in str(self.__class__): net = self
         else: net = self._net        
         if type(locations)==list: 
@@ -142,7 +134,6 @@ class Tools(Base):
             try: locations = locations.name 
             except: pass
             if type(locations)==str: locations = getattr(net,'get_'+element+'_indices')([locations])    
-
         if locations!='':                
             try: 
                 getattr(self,'_'+element+'_data')[prop]
@@ -152,21 +143,20 @@ class Tools(Base):
         else:
             try: return getattr(self,'_'+element+'_data')[prop]
             except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop)           
-      
  
     def set_pore_data(self,prop='',data='',locations='',mode='merge'):
         r'''
-        Writes data to fluid or network objects according to input arguments.
+        Writes data according to input arguments.
         
         Parameters
         ----------
         prop : string
             Name of property to write
-        phase : OpenPNM Fluid object or fluid name string, optional
-            Fluid to which data is written.  If omitted data is written to network object.
         data : array_like
             Data values to write to object
-        locations: It can be object, location string (or a list of strings), boolean array or indices.   
+        locations: array_like
+            It can be object, location string (or a list of strings), boolean array or indices.   
+        
         See Also
         --------
         set_throat_data, set_pore_info, set_throat_info
@@ -186,20 +176,20 @@ class Tools(Base):
         
     def get_pore_data(self,prop='',locations=''):
         r'''
-        Retrieves data from fluid or network objects according to input arguments.
+        Retrieves data according to input arguments.
         
         Parameters
         ----------
         prop : string
-            Name of property to retrieve.  Requesting property 'all' prints a list of existing properties.
-        phase : string, optional
-            Name of fluid from which to retrieve data.  If omitted data is retrieved from network object.
-        locations: It can be object, location string (or a list of strings), boolean array or indices.   
+            Name of property to retrieve.
+        locations : array_like
+            List of pore locations from which to retrieve data
 
         Returns
         -------
         array_like
-            An ndarray containing the requested property data from the specified object
+            An ndarray containing the requested property data from the 
+            specified locations
             
         See Also
         --------
@@ -207,7 +197,8 @@ class Tools(Base):
 
         Notes
         -----
-        This is a wrapper method that calls get_data, which is generic for pores and throats
+        This is a wrapper method that calls _get_data.  Only one of pores or
+        throats should be sent.
             
         Examples
         --------
@@ -217,6 +208,90 @@ class Tools(Base):
         array([ 1.1])
         '''
         return self._get_data(element='pore',prop=prop,locations=locations)
+        
+    def get_data(self,prop='',pores=[],throats=[]):
+        r'''
+        Retrieves data from fluid or network objects according to input arguments.
+        
+        Parameters
+        ----------
+        prop : string
+            Name of property to retrieve.
+        pores : array_like, or string 'all'
+            List of pore indices from which to retrieve data.  If set to 'all',
+            then ALL values are returned
+        throats : array_like, or string 'all'
+            List of throat indies from which to retrieve data.  If set to 'all'
+            , then ALL values are returned.  
+
+        Returns
+        -------
+        array_like
+            An ndarray containing the requested property data from the 
+            specified locations
+            
+        See Also
+        --------
+        get_throat_data, get_pore_info, get_throat_info
+
+        Notes
+        -----
+        This is a wrapper method that calls _get_data.  Only one of pores or
+        throats should be sent.
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.set_data(prop='test',pores=[0],data=1.1)
+        >>> pn.get_data(prop='test',pores=[0])
+        array([ 1.1])
+        '''
+        if pores != []:
+            if pores == 'all':
+                pores = self.get_pore_indices(labels='all')
+            return self._get_data(element='pore',prop=prop,locations=pores)
+        if throats != []:
+            if throats == 'all':
+                throats = self.get_throat_indices(labels='all')
+            return self._get_data(element='throat',prop=prop,locations=throats)
+            
+    def set_data(self,prop='',data='',pores=[],throats=[],mode='merge'):
+        r'''
+        Write data according to input arguments.
+        
+        Parameters
+        ----------
+        prop : string
+            Name of property to retrieve.
+        pores : array_like, or string 'all'
+            List of pore indices to which data will be written.
+        throats : array_like, or string 'all'
+            List of throat indices to which data will be written.
+            
+        See Also
+        --------
+        set_throat_data, set_pore_info, set_throat_info
+
+        Notes
+        -----
+        This is a wrapper method that calls _set_data.  Only one of pores or
+        throats should be sent.
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.set_data(prop='test',pores=[0],data=1.1)
+        >>> pn.get_data(prop='test',pores=[0])
+        array([ 1.1])
+        '''
+        if pores != []:
+            if pores == 'all':
+                pores = self.get_pore_indices(labels='all')
+            self._set_data(element='pore',prop=prop,data=data,locations=pores,mode=mode)
+        if throats != []:
+            if throats == 'all':
+                throats = self.get_throat_indices(labels='all')
+            self._set_data(element='throat',prop=prop,data=data,locations=throats,mode=mode)     
 
     def set_throat_data(self,prop='',data='',locations='',mode='merge'):
         r'''
@@ -228,8 +303,6 @@ class Tools(Base):
         ----------
         prop : string
             Name of property to write
-        phase : OpenPNM fluid object or fluid name string, optional
-            Fluid to which data is written.  If omitted data is written to network object.
         data : array_like
             Data values to write to object
         locations: It can be object, location string (or a list of strings), boolean array or indices.   
@@ -256,8 +329,6 @@ class Tools(Base):
         ----------
         prop : string
             Name of property to retrieve.  Requesting property 'all' prints a list of existing properties.
-        phase : string, optional
-            Name of fluid from which to retrieve data.  If omitted data is retrieved from network object.
         locations: It can be geometry object, location string (or a list of strings), boolean array or indices.   
 
         Returns
