@@ -45,7 +45,7 @@ class VTK(GenericVisualization):
         super(VTK,self).__init__(**kwargs)
 #        self._logger.debug("Execute constructor")
 
-    def write(self, net, fluids='none', filename='output.vtp'):
+    def write(self, net, fluids='none', filename=None):
         r"""
         Write Network to a VTK file for visualizing in Paraview
 
@@ -57,7 +57,10 @@ class VTK(GenericVisualization):
             Full path to desired file location
 
         """
-        output_path = os.path.join( os.path.expanduser('~'), filename )
+        if not filename:
+            output_path = os.path.join( os.path.expanduser('~'), filename )
+        else:
+            output_path = filename
         self._file_name = filename
         self._f = open(output_path,'w')
         self._net=net
