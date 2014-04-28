@@ -209,7 +209,7 @@ class Tools(Base):
         '''
         return self._get_data(element='pore',prop=prop,locations=locations)
         
-    def get_data(self,prop='',pores=[],throats=[]):
+    def get_data(self,prop='',data=[],pores=[],throats=[]):
         r'''
         Retrieves data from fluid or network objects according to input arguments.
         
@@ -291,7 +291,7 @@ class Tools(Base):
         if throats != []:
             if throats == 'all':
                 throats = self.get_throat_indices(labels='all')
-            self._set_data(element='throat',prop=prop,data=data,locations=throats,mode=mode)     
+            self._set_data(element='throat',prop=prop,data=data,locations=throats,mode=mode)    
 
     def set_throat_data(self,prop='',data='',locations='',mode='merge'):
         r'''
@@ -526,6 +526,26 @@ class Tools(Base):
         See set_pore_info for usage
         '''
         self._set_info(element='throat',label=label,locations=locations,mode=mode)
+        
+    def set_info(self,label,pores=[],throats=[],mode='merge'):
+        r'''
+        '''
+        if pores != []:
+            if pores == 'all':
+                pores = self.get_pore_indices(labels='all')
+            self._set_info(element='pore',label=label,locations=pores,mode=mode)
+        if throats != []:
+            if throats == 'all':
+                throats = self.get_throat_indices(labels='all')
+            self._set_info(element='throat',label=label,locations=throats,mode=mode)
+    
+    def get_info(self,label,pores=False,throats=False):
+        r'''
+        '''
+        if pores:
+            return self._get_info(element='pore',label=label)
+        if throats:
+            return self._get_info(element='throat',label=label)    
         
     def get_throat_info(self,label='',return_indices=False):
         r'''
