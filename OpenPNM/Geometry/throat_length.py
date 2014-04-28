@@ -14,7 +14,7 @@ def constant(geometry,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
+    network.set_data(prop=propname,throats=geometry.throats,data=value)
 
 def straight(geometry,
              network,
@@ -25,12 +25,14 @@ def straight(geometry,
     Calculate throat length 
     """
     #Initialize throat_property['length']
-    C1 = network.get_pore_data(prop='coords')[network.get_throat_data(prop='connections',locations=geometry)[:,0]]
-    C2 = network.get_pore_data(prop='coords')[network.get_throat_data(prop='connections',locations=geometry)[:,1]]
+    pore1 = network.get_data(prop='connections',throats=geometry.throats)[:,0]
+    pore2 = network.get_data(prop='connections',throats=geometry.throats)[:,1]
+    C1 = network.get_data(prop='coords',pores=pore1)
+    C2 = network.get_data(prop='coords',pores=pore2)
     E = sp.sqrt(sp.sum((C1-C2)**2,axis=1))  #Euclidean distance between pores
-    D1 = network.get_pore_data(prop=pore_diameter)[network.get_throat_data(prop='connections',locations=geometry)[:,0]]
-    D2 = network.get_pore_data(prop=pore_diameter)[network.get_throat_data(prop='connections',locations=geometry)[:,1]]
+    D1 = network.get_data(prop=pore_diameter,pores=pore1)
+    D2 = network.get_data(prop=pore_diameter,pores=pore2)
     value = E-(D1+D2)/2
-    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
+    network.set_data(prop=propname,throats=geometry.throats,data=value)
         
     

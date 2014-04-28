@@ -16,7 +16,7 @@ def constant(geometry,
     r"""
     Assign specified constant value
     """
-    network.set_pore_data(locations=geometry.get_pore_locations(),prop=propname,data=value)
+    network.set_data(prop=propname,pores=geometry.pores,data=value)
 
 def sphere(geometry,
            network,
@@ -28,7 +28,7 @@ def sphere(geometry,
     """
     prob_fn = getattr(spst,params['name'])
     P = prob_fn(params['shape'],loc=params['loc'],scale=params['scale'])
-    value = P.ppf(network.get_pore_data(prop=seed,locations=geometry))
-    network.set_pore_data(locations=geometry.get_pore_locations(),prop=propname,data=value)
+    value = P.ppf(network.get_data(prop=seed,pores=geometry.pores))
+    network.set_data(prop=propname,pores=geometry.pores,data=value)
 
     

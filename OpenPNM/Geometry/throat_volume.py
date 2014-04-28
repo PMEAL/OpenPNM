@@ -14,7 +14,7 @@ def constant(geometry,
     r"""
     Assigns specified constant value
     """
-    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
+    network.set_data(prop=propname,throats=geometry.throats,data=value)
 
 def cylinder(geometry,
              network,
@@ -26,8 +26,10 @@ def cylinder(geometry,
     Calculate throat diameter from seeds for a cylindrical throat
     - note: this will need to account for volume taken up by spherical pore bodies
     """
-    value=sp.pi/4*network.get_throat_data(prop=throat_length,locations=geometry)*network.get_throat_data(prop=throat_diameter,locations=geometry)**2
-    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
+    Tlen = network.get_data(prop=throat_length,throats=geometry.throats)
+    Tdia = network.get_data(prop=throat_diameter,throats=geometry.throats)
+    value = sp.pi/4*Tlen*Tdia**2
+    network.set_data(prop=propname,throats=geometry.throats,data=value)
 
 def cuboid(geometry,
            network,
@@ -39,5 +41,7 @@ def cuboid(geometry,
     Calculate throat volume of cuboidal throat
     - note: this will need to account for volume taken up by spherical pore bodies
     """
-    value=network.get_throat_data(prop=throat_length,locations=geometry)*network.get_throat_data(prop=throat_diameter,locations=geometry)**2
-    network.set_throat_data(locations=geometry.get_throat_locations(),prop=propname,data=value)
+    Tlen = network.get_data(prop=throat_length,throats=geometry.throats)
+    Tdia = network.get_data(prop=throat_diameter,throats=geometry.throats)
+    value = Tlen*Tdia**2
+    network.set_data(prop=propname,throats=geometry.throats,data=value)

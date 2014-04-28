@@ -61,6 +61,9 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         geometry._physics.update({name:self})
         # Attach this physics to network
         network._physics.update({name:self})
+        
+        self.pores = geometry.pores
+        self.throats = geometry.throats
 
     def regenerate(self, prop_list='',mode=None):
         r'''
