@@ -71,7 +71,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         network.set_pore_info(label=self.name,locations=[])
         network.set_throat_info(label=self.name,locations=[])
     
-    def set_pore_indices(self,pores,mode='overwrite'):
+    def set_pore_indices(self,pores,mode='add'):
         r'''
         '''
         if pores == 'all':
@@ -81,7 +81,13 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         temp = self._net.get_pore_indices(labels=geoms,mode='union',return_indices=False)
         if sum(temp[pores]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
-        self._net.set_pore_info(label=self.name,locations=pores,mode=mode)
+        if mode == 'add':
+            self._net.set_pore_info(label=self.name,locations=pores,mode='merge')
+        elif mode == 'remove':
+            self._net.set_pore_info(label=self.name,locations=pores,mode='remove')
+        else:
+            print('invalid mode received')
+        
         
     def get_pore_indices(self):
         r'''
@@ -90,7 +96,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         
     pores = property(get_pore_indices,set_pore_indices)
     
-    def set_throat_indices(self,throats):
+    def set_throat_indices(self,throats,mode='add'):
         r'''
         '''
         if throats == 'all':
@@ -100,14 +106,19 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         temp = self._net.get_throat_indices(labels=geoms,mode='union',return_indices=False)
         if sum(temp[throats]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
-        self._net.set_throat_info(label=self.name,locations=throats,mode='overwrite')
+        if mode == 'add':
+            self._net.set_throat_info(label=self.name,locations=throats,mode='merge')
+        elif mode == 'remove':
+            self._net.set_throat_info(label=self.name,locations=throats,mode='remove')
+        else:
+            print('invalid mode received')
         
     def get_throat_indices(self):
         r'''
         '''
         return self._net.get_throat_indices(labels=self.name)
           
-    throats = property(get_throat_indices,set_throat_indices) 
+    throats = property(get_throat_indices,set_throat_indices)
     
     def regenerate(self, prop_list='',mode=None):
         r'''
