@@ -996,18 +996,20 @@ class Tools(Base):
                 if sp.sum(sp.isnan(temp)) > 0:
                     self._logger.warning('Nans found in: '+item)
                     success = 0
+                else: self._logger.info('Checks for property: '+item+', passed successfully.')
             except:
-                self._logger.warning('Property: '+item+' not found!')
+                self._logger.error('Property: '+item+' not found!')
                 success = 0
         if success == 1:
-            self._logger.info('All checks passed successfully')
+            self._logger.info('All checks passed successfully.')
+            return success
         
-    def check_pore_health(self,props=''):
+    def check_pore_health(self,props=[]):
         r'''
         '''
         self._check_health(element='pore',props=props)
         
-    def check_throat_health(self,props=''):
+    def check_throat_health(self,props=[]):
         r'''
         '''
         self._check_health(element='throat',props=props)
