@@ -137,7 +137,10 @@ class Tools(Base):
         if locations!='':                
             try: 
                 getattr(self,'_'+element+'_data')[prop]
-                try: return getattr(self,'_'+element+'_data')[prop][locations]
+                try: 
+                    if  sp.shape(getattr(self,'_'+element+'_data')[prop])[0]==1 and max(locations)<getattr(self,'num_'+element+'s')():
+                        return getattr(self,'_'+element+'_data')[prop]                        
+                    else: return getattr(self,'_'+element+'_data')[prop][locations]
                 except: self._logger.error('data for these locations cannot be returned')
             except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop) 
         else:
