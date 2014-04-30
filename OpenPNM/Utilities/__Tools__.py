@@ -920,7 +920,7 @@ class Tools(Base):
             elif sp.shape(values)[0] == 1: #if scalar was sent
                 return values
             else:
-                print('Received data of an ambiguous length')
+                self._logger.error('Received data of an ambiguous length')
                 return
         if sp.shape(pores)[0] > 0:
             throats = net.find_neighbor_throats(pores,flatten=False)
@@ -1136,7 +1136,7 @@ class Tools(Base):
                 success = 0
         if success == 1:
             self._logger.info('All checks passed successfully.')
-            return success
+        return success
         
     def check_pore_health(self,props=[]):
         r'''

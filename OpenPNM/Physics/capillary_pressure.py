@@ -47,9 +47,9 @@ def washburn(physics,
 
     """
     sigma = fluid.get_data(prop=pore_surface_tension,pores='all')
-    sigma = network.interpolate_throat_data(sigma)
+    sigma = fluid.interpolate_data(data=sigma)
     theta = fluid.get_data(prop=pore_contact_angle,pores='all')
-    theta = network.interpolate_throat_data(theta)
+    theta = network.interpolate_data(data=theta)
     r = network.get_data(prop=throat_diameter,throats='all')/2
     value = -2*sigma*sp.cos(sp.radians(theta))/r
     value = value[geometry.throats]
@@ -92,9 +92,9 @@ def purcell(physics,
     TODO: Triple check the accuracy of this equation
     """
     sigma = fluid.get_data(prop=pore_surface_tension,pores='all')
-    sigma = network.interpolate_throat_data(sigma)
+    sigma = fluid.interpolate_data(data=sigma)
     theta = fluid.get_data(prop=pore_contact_angle,pores='all')
-    theta = network.interpolate_throat_data(theta)
+    theta = fluid.interpolate_data(data=theta)
     r = network.get_data(prop=throat_diameter,throats='all')/2
     R = r_toroid
     alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
