@@ -123,9 +123,9 @@ class Tools(Base):
     def _get_data(self,element='',prop='',locations='',mode=''):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
-        '''      
-        if 'OpenPNM.Network' in str(self.__class__): net = self
-        else: net = self._net        
+        '''
+        if self.__module__.split('.')[1] == 'Network': net = self
+        else: net = self._net
         if type(locations)==list: 
             try: locations = getattr(net,'get_'+element+'_indices')(locations)
             except: locations = sp.array(locations,ndmin=1)
@@ -140,15 +140,9 @@ class Tools(Base):
             if mode != '':
                 if mode == 'interpolate':
                     if element == 'pore':
-                        temp = getattr(self,'_throat_data')[prop]   
-                    elif element == 'throat':
-                        temp = getattr(self,'_pore_data')[prop]  
-                    temp = getattr(self,'interpolate_'+element+'_data')(temp)
-                    return temp[locations]
-#                    if element == 'pore':
-#                        return getattr(self,'interpolate_data')(prop=prop,pores=locations)
-#                    else:
-#                        return getattr(self,'interpolate_data')(prop=prop,throats=locations)
+                        return getattr(self,'interpolate_data')(prop=prop,pores=locations)
+                    else:
+                        return getattr(self,'interpolate_data')(prop=prop,throats=locations)
                 else:
                     self._logger.error('The requested mode is not valid: ', mode) 
             else:
@@ -903,24 +897,27 @@ class Tools(Base):
 
         Notes
         -----
-        - This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-        - Only pores OR throats are accepted
+        - This uses an unweighted average, without attempting to account for 
+        distances or sizes of pores and throats.
+        - Only on of pores, throats OR values are accepted
         
         Examples
         --------
         
 
         """
+        if self.__module__.split('.')[1] == 'Network': net = self
+        else: net = self._net
         if values != []:
             prop='tmp'
-            if sp.shape(values)[0] == self.num_pores():
-                throats = self.get_throat_indices('all')
+            if sp.shape(values)[0] == net.num_pores():
+                throats = net.get_throat_indices('all')
                 self.set_data(prop=prop,pores='all',data=values)
-            elif sp.shape(values)[0] == self.num_throats():
+            elif sp.shape(values)[0] == net.num_throats():
                 pores = self.get_pore_indices('all')
                 self.set_data(prop=prop,throats='all',data=values)
         if pores != []:
-            throats = self.find_neighbor_throats(pores,flatten=False)
+            throats = net.find_neighbor_throats(pores,flatten=False)
             throat_data = self.get_data(prop=prop,throats='all')
             values = sp.ones((sp.shape(pores)[0],))*sp.nan
             if sp.shape(throat_data)[0] == 1:
@@ -929,7 +926,7 @@ class Tools(Base):
                 for i in pores:
                     values[i] = sp.mean(throat_data[throats[i]])
         elif throats != []:
-            pores = self.find_connected_pores(throats,flatten=False)
+            pores = net.find_connected_pores(throats,flatten=False)
             pore_data = self.get_data(prop=prop,pores='all')
             values = sp.ones((sp.shape(throats)[0],))*sp.nan
             if sp.shape(pore_data)[0] == 1:
@@ -1040,233 +1037,61 @@ class Tools(Base):
         temp = self.get_throat_indices(labels=labels,mode=mode,return_indices=False)
         return sp.sum(temp) #return sum of Trues
         
-    def find_connected_pores(self,tnums=[],flatten=False):
-        r"""
-        Return a list of pores connected to a list of throats
-
+    def pores(self,label='all'):
+        r'''
+        Returns a list of pore indices
+        
         Parameters
         ----------
-        tnums : array_like
-            List of throats numbers
-        flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique pore numbers
-            is returned. If flatten is False each location in the the returned 
-            array contains a sub-arras of neighboring pores for each input 
-            throat, in the order they were sent.
-
+        label : string
+            Accepts a *single* label specifying the pore label of interest
+            
         Returns
         -------
-        1D array (if flatten is True) or ndarray of arrays (if flatten is False)
-
-        Examples
+        indices : array_like
+            A (1,) array of pore indices
+        
+        See Also
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.find_connected_pores(tnums=[0,1])
-        array([[0, 1],
-               [0, 5]])
-        >>> pn.find_connected_pores(tnums=[0,1],flatten=True)
-        array([0, 1, 5])
-        """
-        Ps = self._throat_data['connections'][tnums]
-        #Ps = [sp.asarray(x) for x in Ps if x]
-        if flatten:
-            Ps = sp.unique(sp.hstack(Ps))
-        return Ps
-
-    def find_connecting_throat(self,P1,P2):
-        r"""
-        Return a the throat number connecting two given pores connected
-
-        Parameters
-        ----------
-        P1 , P2 : int
-            The pore numbers connected by the desired throat
-
-        Returns
-        -------
-        Tnum : int
-            Returns throat number, or empty array if pores are not connected
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.find_connecting_throat(0,1)
-        array([0])
-        """
-        return sp.intersect1d(self.find_neighbor_throats(P1),self.find_neighbor_throats(P2))
-
-    def find_neighbor_pores(self,pnums,flatten=True,mode='union',excl_self=False):
-        r"""
-        Returns a list of pores neighboring the given pore(s)
-
-        Parameters
-        ----------
-        pnums : array_like
-            ID numbers of pores whose neighbors are sought.
-        flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique pore ID numbers
-            is returned. If flatten is False the returned array contains arrays
-            of neighboring pores for each input pore, in the order they were 
-            sent.
-        excl_self : bool, optional
-            If this is True (default) then the input pores are not included
-            in the returned list.  This option only applies when input pores
-            are in fact neighbors to each other, otherwise they are not
-            part of the returned list.  
-        mode : string, optional
-            Specifies which neighbors should be returned.  The options are: 
-            
-            * 'union' : All neighbors of the input pores
-
-            * 'intersection' : Only neighbors shared by all input pores 
-            
-            * 'not_intersection' : Only neighbors not shared by any input pores
-
-        Returns
-        -------
-        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if 
-        flatten if False)
-
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.find_neighbor_pores(pnums=[0,2])
-        array([ 1,  3,  5,  7, 25, 27])
-        >>> pn.find_neighbor_pores(pnums=[0,1]) #Find all neighbors, excluding selves (default behavior)
-        array([ 2,  5,  6, 25, 26])
-        >>> pn.find_neighbor_pores(pnums=[0,2],flatten=False)
-        array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
-        >>> pn.find_neighbor_pores(pnums=[0,2],mode='intersection') #Find only common neighbors
-        array([1], dtype=int64)
-        >>> pn.find_neighbor_pores(pnums=[0,2],mode='not_intersection') #Exclude common neighbors
-        array([ 3,  5,  7, 25, 27], dtype=int64)
-        >>> pn.find_neighbor_pores(pnums=[0,1],mode='union') #Find all neighbors, including selves
-        array([ 0,  1,  2,  5,  6, 25, 26])
-        """
-        #Count neighboring pores
-        try:
-            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
-        except:
-            self._logger.info('Creating adjacency matrix, please wait')
-            self.create_adjacency_matrix()
-            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
-        if flatten:
-            #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-            neighborPs = [sp.asarray(x) for x in neighborPs if x]
-            neighborPs = sp.hstack(neighborPs)
-            #neighborPs = sp.concatenate((neighborPs,pnums))
-            #Remove references to input pores and duplicates
-            if mode == 'not_intersection':
-                neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)==1)[0])
-            elif mode == 'union':
-                neighborPs = sp.unique(neighborPs)
-            elif mode == 'intersection':
-                neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)>1)[0])
-            if excl_self:
-                neighborPs = neighborPs[~sp.in1d(neighborPs,pnums)]
+        get_pore_indices
+        
+        Notes
+        -----
+        This is a helper function to simplify the process of retrieving pores
+        
+        '''
+        if type(label) == str:
+            return self.get_pore_indices(labels=label)
         else:
-            for i in range(0,sp.size(pnums)):
-                neighborPs[i] = sp.array(neighborPs[i])
-        return sp.array(neighborPs,ndmin=1)
-
-    def find_neighbor_throats(self,pnums,flatten=True,mode='union'):
-        r"""
-        Returns a list of throats neighboring the given pore(s)
-
+            raise Exception('The pores() method only accepts a single label, for more complex queries use get_pore_indicies')
+        
+    def throats(self,label='all'):
+        r'''
+        Returns a list of throat indices
+        
         Parameters
         ----------
-        pnums : array_like
-            Indices of pores whose neighbors are sought
-        flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique throat ID numbers
-            is returned. If flatten is False the returned array contains arrays
-            of neighboring throat ID numbers for each input pore, in the order
-            they were sent.
-        mode : string, optional
-            Specifies which neighbors should be returned.  The options are: 
+        label : string
+            Accepts a *single* label specifying the throat label of interest
             
-            * 'union' : All neighbors of the input pores
-
-            * 'intersection' : Only neighbors shared by all input pores 
-            
-            * 'not_intersection' : Only neighbors not shared by any input pores
-
         Returns
         -------
-        neighborTs : 1D array (if flatten is True) or ndarray of arrays (if
-            flatten if False)
-
-        Examples
+        indices : array_like
+            A (1,) array of throat indices
+        
+        See Also
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.find_neighbor_throats(pnums=[0,1])
-        array([0, 1, 2, 3, 4, 5])
-        >>> pn.find_neighbor_throats(pnums=[0,1],flatten=False)
-        array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
-        """
-        #Test for existance of incidence matrix
-        try:
-            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
-        except:
-            self._logger.info('Creating incidence matrix, please wait')
-            self.create_incidence_matrix()
-            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
-        if flatten:
-            #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
-            neighborTs = [sp.asarray(x) for x in neighborTs if x]
-            neighborTs = sp.hstack(neighborTs)
-            #Remove references to input pores and duplicates
-            if mode == 'not_intersection':
-                neighborTs = sp.unique(sp.where(sp.bincount(neighborTs)==1)[0])
-            elif mode == 'union':
-                neighborTs = sp.unique(neighborTs)
-            elif mode == 'intersection':
-                neighborTs = sp.unique(sp.where(sp.bincount(neighborTs)>1)[0])
+        get_throat_indices
+        
+        Notes
+        -----
+        This is a helper function to simplify the process of retrieving throats
+        
+        '''
+        if type(label) == str:
+            return self.get_throat_indices(labels=label)
         else:
-            for i in range(0,sp.size(pnums)):
-                neighborTs[i] = sp.array(neighborTs[i])
-        return sp.array(neighborTs,ndmin=1)
-
-    def num_neighbors(self,pnums,flatten=False):
-        r"""
-        Returns an ndarray containing the number of neigbhor pores for each 
-        element in pnums
-
-        Parameters
-        ----------
-        pnums : array_like
-            Pores whose neighbors are to be counted
-        flatten : boolean (optional)
-            If False (default) the number pore neighbors for each input are
-            returned as an array.  If True the sum total number of unique 
-            neighbors is counted, not including the input pores even if they 
-            neighbor each other.  
-
-        Returns
-        -------
-        num_neighbors : 1D array with number of neighbors in each element
-
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.num_neighbors(pnums=[0,1],flatten=False)
-        array([3, 4], dtype=int8)
-        >>> pn.num_neighbors(pnums=[0,1],flatten=True)  # Sum excludes pores 0 & 1
-        5
-        >>> pn.num_neighbors(pnums=[0,2],flatten=True)  # Sum includes pore 1, but not 0 & 2
-        6
-        """
-
-        #Count number of neighbors
-        if flatten:
-            neighborPs = self.find_neighbor_pores(pnums,flatten=True,mode='union',excl_self=True)
-            num = sp.shape(neighborPs)[0]
-        else:
-            neighborPs = self.find_neighbor_pores(pnums,flatten=False)
-            num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
-            for i in range(0,sp.shape(num)[0]):
-                num[i] = sp.size(neighborPs[i])
-        return num
+            raise Exception('The throats() method only accepts a single label, for more complex queries use get_throat_indicies')
 
     def get_result(self,alg_obj,**kwargs):
         r'''
@@ -1282,16 +1107,14 @@ class Tools(Base):
         For specific details refer to the `update` of the algorithm.
         '''
         alg_obj.update(**kwargs)
-        
 
-    
     def _check_health(self,element='',props=[]):
         r'''
         '''
         success = 1
         if type(props)==str: 
             props = [props]
-        if props != []: 
+        if props != []:
             items = props
         else: 
             items = getattr(self,'_'+element+'_data').keys()
@@ -1318,7 +1141,7 @@ class Tools(Base):
         r'''
         '''
         self._check_health(element='throat',props=props)
-            
+        
 
 if __name__ == '__main__':
     import doctest

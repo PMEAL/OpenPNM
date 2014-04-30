@@ -70,6 +70,8 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         #Initialize geometry to NOWHERE
         network.set_pore_info(label=self.name,locations=[])
         network.set_throat_info(label=self.name,locations=[])
+        self.num_pores = partial(network.num_pores,labels=self.name)
+        self.num_throats = partial(network.num_throats,labels=self.name)
     
     def set_pore_indices(self,pores,mode='add'):
         r'''
