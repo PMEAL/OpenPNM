@@ -144,7 +144,7 @@ class Tools(Base):
                     else:
                         return getattr(self,'interpolate_data')(prop=prop,throats=locations)
                 else:
-                    self._logger.error('The requested mode is not valid: ', mode) 
+                    self._logger.error('The requested mode '+mode+' is not valid')
             else:
                 try: 
                     getattr(self,'_'+element+'_data')[prop]
@@ -875,7 +875,7 @@ class Tools(Base):
         ind = self._get_indices(element='throat',labels=labels,return_indices=return_indices,mode=mode)
         return ind
         
-    def interpolate_data(self,prop='',throats=[],pores=[],values=[]):
+    def interpolate_data(self,prop='',throats=[],pores=[],data=[]):
         r"""
         Determines a pore (or throat) property as the average of it's neighboring 
         throats (or pores)
@@ -886,7 +886,7 @@ class Tools(Base):
             The pores for which values are desired
         throats : array_like
             The throats for which values are desired
-        values : array_like
+        data : array_like
             A list of specific values to be interploated.  List MUST be either
             Np or Nt long
         
@@ -899,7 +899,7 @@ class Tools(Base):
         -----
         - This uses an unweighted average, without attempting to account for 
         distances or sizes of pores and throats.
-        - Only on of pores, throats OR values are accepted
+        - Only on of pores, throats OR data are accepted
         
         Examples
         --------
@@ -908,29 +908,35 @@ class Tools(Base):
         """
         if self.__module__.split('.')[1] == 'Network': net = self
         else: net = self._net
-        if values != []:
+        if sp.shape(data)[0] > 0:
             prop='tmp'
+            values = sp.array(data,ndmin=1)
             if sp.shape(values)[0] == net.num_pores():
                 throats = net.get_throat_indices('all')
                 self.set_data(prop=prop,pores='all',data=values)
             elif sp.shape(values)[0] == net.num_throats():
                 pores = self.get_pore_indices('all')
                 self.set_data(prop=prop,throats='all',data=values)
-        if pores != []:
+            elif sp.shape(values)[0] == 1: #if scalar was sent
+                return values
+            else:
+                print('Received data of an ambiguous length')
+                return
+        if sp.shape(pores)[0] > 0:
             throats = net.find_neighbor_throats(pores,flatten=False)
             throat_data = self.get_data(prop=prop,throats='all')
             values = sp.ones((sp.shape(pores)[0],))*sp.nan
             if sp.shape(throat_data)[0] == 1:
-                values[pores] = throat_data
+                values = throat_data
             else:
                 for i in pores:
                     values[i] = sp.mean(throat_data[throats[i]])
-        elif throats != []:
+        elif sp.shape(throats)[0] > 0:
             pores = net.find_connected_pores(throats,flatten=False)
             pore_data = self.get_data(prop=prop,pores='all')
             values = sp.ones((sp.shape(throats)[0],))*sp.nan
             if sp.shape(pore_data)[0] == 1:
-                values[throats] = pore_data
+                values = pore_data
             else:
                 values = sp.mean(pore_data[pores],axis=1)
         return values
