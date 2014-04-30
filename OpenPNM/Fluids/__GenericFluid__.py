@@ -45,6 +45,8 @@ class GenericFluid(OpenPNM.Utilities.Tools):
                 raise Exception('A Fluid Object with the supplied name already exists')
         self.name = name
         self._net = network
+        self._pore_data['coords'] = network._pore_data['coords']
+        self._throat_data['connections'] = network._throat_data['connections']
         #Initialize physics tracking lists
         self._physics = {}
         self._prop_list = []
