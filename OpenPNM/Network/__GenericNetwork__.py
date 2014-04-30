@@ -98,7 +98,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         else:
             Pvals = sp.zeros((self.num_pores()))
             #Only interpolate conditions for internal pores, type=0
-            Pnums = sp.r_[0:self.num_pores(Ptype=[0])]
+            Pnums = self.get_pore_indices()
             nTs = self.find_neighbor_throats(Pnums,flatten=False)
             for i in sp.r_[0:sp.shape(nTs)[0]]:
                 Pvals[i] = sp.mean(Tvals[nTs[i]])

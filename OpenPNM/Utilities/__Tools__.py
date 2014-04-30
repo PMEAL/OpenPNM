@@ -140,9 +140,15 @@ class Tools(Base):
             if mode != '':
                 if mode == 'interpolate':
                     if element == 'pore':
-                        return getattr(self,'interpolate_data')(prop=prop,pores=locations)
-                    else:
-                        return getattr(self,'interpolate_data')(prop=prop,throats=locations)
+                        temp = getattr(self,'_throat_data')[prop]   
+                    elif element == 'throat':
+                        temp = getattr(self,'_pore_data')[prop]  
+                    temp = getattr(self,'interpolate_'+element+'_data')(temp)
+                    return temp[locations]
+#                    if element == 'pore':
+#                        return getattr(self,'interpolate_data')(prop=prop,pores=locations)
+#                    else:
+#                        return getattr(self,'interpolate_data')(prop=prop,throats=locations)
                 else:
                     self._logger.error('The requested mode is not valid: ', mode) 
             else:
@@ -875,10 +881,7 @@ class Tools(Base):
         ind = self._get_indices(element='throat',labels=labels,return_indices=return_indices,mode=mode)
         return ind
         
-    #--------------------------------------------------------------------------
-    '''pore_data and throat_data interpolation methods'''
-    #--------------------------------------------------------------------------
-    def interpolate_data(self,prop,throats=[],pores=[]):
+    def interpolate_data(self,prop='',throats=[],pores=[],values=[]):
         r"""
         Determines a pore (or throat) property as the average of it's neighboring 
         throats (or pores)
@@ -889,6 +892,9 @@ class Tools(Base):
             The pores for which values are desired
         throats : array_like
             The throats for which values are desired
+        values : array_like
+            A list of specific values to be interploated.  List MUST be either
+            Np or Nt long
         
         Returns
         -------
@@ -905,9 +911,15 @@ class Tools(Base):
         
 
         """
-        if (pores != []) and (throats != []):
-            print('error')
-        elif pores != []:
+        if values != []:
+            prop='tmp'
+            if sp.shape(values)[0] == self.num_pores():
+                throats = self.get_throat_indices('all')
+                self.set_data(prop=prop,pores='all',data=values)
+            elif sp.shape(values)[0] == self.num_throats():
+                pores = self.get_pore_indices('all')
+                self.set_data(prop=prop,throats='all',data=values)
+        if pores != []:
             throats = self.find_neighbor_throats(pores,flatten=False)
             throat_data = self.get_data(prop=prop,throats='all')
             values = sp.ones((sp.shape(pores)[0],))*sp.nan
@@ -916,7 +928,7 @@ class Tools(Base):
             else:
                 for i in pores:
                     values[i] = sp.mean(throat_data[throats[i]])
-        else:
+        elif throats != []:
             pores = self.find_connected_pores(throats,flatten=False)
             pore_data = self.get_data(prop=prop,pores='all')
             values = sp.ones((sp.shape(throats)[0],))*sp.nan
