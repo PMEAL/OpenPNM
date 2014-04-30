@@ -19,6 +19,7 @@ geom.regenerate()
 #==============================================================================
 air = OpenPNM.Fluids.Air(network=pn, loglevel=20)
 air.apply_conditions(temperature=350, pressure=200000)
+air.add_method(prop='electrical_conductivity',model='constant',value=5e-12)
 air.regenerate()
 
 water = OpenPNM.Fluids.Water(network=pn,loglevel=20)
@@ -37,6 +38,7 @@ phys_water.regenerate()
 phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air,geometry=geom, name='phys_air')
 phys_air.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
 phys_air.add_method(prop='diffusive_conductance', model='bulk_diffusion')
+phys_air.add_method(prop='electronic_conductance', model='series_resistors')
 phys_air.regenerate()
 
 #==============================================================================

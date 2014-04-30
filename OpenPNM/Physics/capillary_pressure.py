@@ -11,11 +11,11 @@ def constant(physics,fluid,geometry,network,propname,value,**params):
     r"""
     Assigns specified constant value
     """
-    fluid.set_throat_data(prop=propname,locations=geometry,data=value)
+    fluid.set_data(prop=propname,throats=geometry.throats,data=value)
 
 def na(physics,fluid,geometry,network,propname,**params):
     value = -1
-    fluid.set_throat_data(prop=propname,data=value,locations=geometry)
+    fluid.set_data(prop=propname,throats=geometry.throats,data=value)
 
 def washburn(physics,
              fluid,
@@ -46,14 +46,14 @@ def washburn(physics,
     This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
-    sigma = fluid.get_pore_data(prop=pore_surface_tension)
+    sigma = fluid.get_data(prop=pore_surface_tension,pores='all')
     sigma = network.interpolate_throat_data(sigma)
-    theta = fluid.get_pore_data(prop=pore_contact_angle)
+    theta = fluid.get_data(prop=pore_contact_angle,pores='all')
     theta = network.interpolate_throat_data(theta)
-    r = network.get_throat_data(prop=throat_diameter)/2
+    r = network.get_data(prop=throat_diameter,throats='all')/2
     value = -2*sigma*sp.cos(sp.radians(theta))/r
-    mask = network.get_throat_indices(geometry)
-    fluid.set_throat_data(prop=propname,data=value[mask],locations=geometry)
+    value = value[geometry.throats]
+    fluid.set_data(prop=propname,throats=geometry.throats,data=value)
 
 def purcell(physics,
             network,
@@ -89,19 +89,16 @@ def purcell(physics,
     .. [1] G. Mason, N. R. Morrow, Effect of contact angle on capillary displacement curvatures in pore throats formed by spheres. J. Colloid Interface Sci. 168, 130 (1994).
     .. [2] J. Gostick, Random pore network modeling of fibrous PEMFC gas diffusion media using Voronoi and Delaunay tessellations. J. Electrochem. Soc. 160, F731 (2013).
 
+    TODO: Triple check the accuracy of this equation
     """
-    #This seesm to work, but I wrote it quickly and lost track of the degree-radians conversions
-    """TODO:
-    Triple check the accuracy of this equation
-    """
-    sigma = fluid.get_pore_data(prop=pore_surface_tension)
+    sigma = fluid.get_data(prop=pore_surface_tension,pores='all')
     sigma = network.interpolate_throat_data(sigma)
-    theta = fluid.get_pore_data(prop=pore_contact_angle)
+    theta = fluid.get_data(prop=pore_contact_angle,pores='all')
     theta = network.interpolate_throat_data(theta)
-    r = network.get_throat_data(prop=throat_diameter)/2
+    r = network.get_data(prop=throat_diameter,throats='all')/2
     R = r_toroid
     alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
-    mask = network.get_throat_indices(geometry)
-    fluid.set_throat_data(prop=propname,data=value[mask],locations=geometry)
+    value = value[geometry.throats]
+    fluid.set_data(prop=propname,throats=geometry.throats,data=value)
 
