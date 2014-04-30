@@ -10,8 +10,8 @@ import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
-import OpenPNM
 import scipy as sp
+import OpenPNM
 from OpenPNM.Utilities import Base
 
 class Tools(Base):
@@ -30,7 +30,9 @@ class Tools(Base):
         self._pore_info = {}
         self._throat_data = {}
         self._throat_info = {}
-        self._logger.debug("Construction of Base class complete")
+        self.connections = 'empty'
+        self.coordinates = 'empty'
+        self._logger.debug("Construction of Tools class complete")
         
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
@@ -878,41 +880,50 @@ class Tools(Base):
     #--------------------------------------------------------------------------
     def interpolate_data(self,prop,throats=[],pores=[]):
         r"""
-        Determines a pore property as the average of it's neighboring throats
+        Determines a pore (or throat) property as the average of it's neighboring 
+        throats (or pores)
 
         Parameters
         ----------
         pores : array_like
-            the pores for which throat values should be interpreted to find
+            The pores for which values are desired
+        throats : array_like
+            The throats for which values are desired
         
         Returns
         -------
         values : array_like
-            An array containing interpolated throat data
-            
-        See Also
-        --------
-        interpolate_throat_data
+            An array containing interpolated pore (or throat) data
 
         Notes
         -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+        - This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+        - Only pores OR throats are accepted
         
         Examples
         --------
         
 
         """
-        if pores != []:
+        if (pores != []) and (throats != []):
+            print('error')
+        elif pores != []:
             throats = self.find_neighbor_throats(pores,flatten=False)
             throat_data = self.get_data(prop=prop,throats='all')
             values = sp.ones((sp.shape(pores)[0],))*sp.nan
-            for i in pores:
-                values[i] = sp.mean(throat_data[throats[i]])
+            if sp.shape(throat_data)[0] == 1:
+                values[pores] = throat_data
+            else:
+                for i in pores:
+                    values[i] = sp.mean(throat_data[throats[i]])
         else:
             pores = self.find_connected_pores(throats,flatten=False)
             pore_data = self.get_data(prop=prop,pores='all')
-            values = sp.mean(pore_data[pores],axis=1)
+            values = sp.ones((sp.shape(throats)[0],))*sp.nan
+            if sp.shape(pore_data)[0] == 1:
+                values[throats] = pore_data
+            else:
+                values = sp.mean(pore_data[pores],axis=1)
         return values
         
     def num_pores(self,labels=['all'],mode='union'):
