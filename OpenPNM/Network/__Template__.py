@@ -61,6 +61,9 @@ class Template(GenericNetwork):
     def from_dir(cls, dirname, ext='.tif', dmax=100):
         filenames = list(sorted(os.path.join(dirname, fn) \
                          for fn in os.listdir(dirname) if ext in fn))
+        if not filenames:
+            raise Exception("No filenames with '{}' extension found.".format(ext))
+
         images = []
         for fn in filenames:
             im = imread(fn)
@@ -149,13 +152,19 @@ class Template(GenericNetwork):
         self.set_throat_info(label='all', locations=np.ones_like(heads).astype(bool))
 
     def asarray(self, values=None):
-        _ndarray = np.zeros(self.resolution)
-        rel_coords = np.true_divide(self.points, self.dims)*(self.resolution-1)
+        # reconstituted facts about the network
+        points = self.get_pore_data(prop='coords')
+        x,y,z = points.T
+        span = [(d.max()-d.min()) for d in [x,y,z]]
+        res = [len(set(d)) for d in [x,y,z]]
+
+        _ndarray = np.zeros(res)
+        rel_coords = np.true_divide(points, span)*(np.subtract(res,1))
         rel_coords = np.rint(rel_coords).astype(int) # absolutely bizarre bug
 
-        actual_indexes = np.ravel_multi_index(rel_coords.T, self.resolution)
+        actual_indexes = np.ravel_multi_index(rel_coords.T, res)
         if values==None:
-            values = self['intensity']
+            values = self._pore_data['values']
         _ndarray.flat[actual_indexes] = values.ravel()
         return _ndarray
 
