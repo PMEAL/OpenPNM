@@ -161,6 +161,8 @@ class Tools(Base):
  
     def set_pore_data(self,prop='',data='',locations='',mode='merge'):
         r'''
+        THIS METHOD IS DEPRECATED, USE set_data INSTEAD
+        
         Writes data according to input arguments.
         
         Parameters
@@ -170,27 +172,15 @@ class Tools(Base):
         data : array_like
             Data values to write to object
         locations: array_like
-            It can be object, location string (or a list of strings), boolean array or indices.   
-        
-        See Also
-        --------
-        set_throat_data, set_pore_info, set_throat_info
-        
-        Notes
-        -----
-        This is wrapper method that calls set_data, which is generic for pores and throats
+            It boolean array or indices of pore to set
             
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_pore_data(prop='test',data=1.1)
-        >>> pn.get_pore_data(prop='test')
-        array([ 1.1])
         '''
         self._set_data(element='pore',prop=prop,data=data,locations=locations,mode=mode)
         
     def get_pore_data(self,prop='',locations=''):
         r'''
+        THIS METHOD IS DEPRECATED, USE get_data INSTEAD
+        
         Retrieves data according to input arguments.
         
         Parameters
@@ -206,21 +196,6 @@ class Tools(Base):
             An ndarray containing the requested property data from the 
             specified locations
             
-        See Also
-        --------
-        get_throat_data, get_pore_info, get_throat_info
-
-        Notes
-        -----
-        This is a wrapper method that calls _get_data.  Only one of pores or
-        throats should be sent.
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_pore_data(prop='test',data=1.1)
-        >>> pn.get_pore_data(prop='test')
-        array([ 1.1])
         '''
         return self._get_data(element='pore',prop=prop,locations=locations)
         
@@ -310,6 +285,8 @@ class Tools(Base):
 
     def set_throat_data(self,prop='',data='',locations='',mode='merge'):
         r'''
+        THIS METHOD IS DEPRECATED, USE set_data INSTEAD
+        
         Writes data to fluid or network objects according to input arguments.  
         Network topology data and pore/throat geometry data is stored on the network object.
         Fluid properties and physics properties are stored on the corresponding fluid object.
@@ -320,48 +297,30 @@ class Tools(Base):
             Name of property to write
         data : array_like
             Data values to write to object
-        locations: It can be object, location string (or a list of strings), boolean array or indices.   
-
-        See Also
-        --------
-        set_pore_data, set_pore_info, set_throat_info
-            
-        Notes
-        -----
-        This is wrapper method that calls _set_data, which is generic for pores and throats
+        locations: array_like
+            A boolean array or indices of throats to set
         
-        Examples
-        --------
-        See set_pore_data
         '''
         self._set_data(element='throat',prop=prop,data=data,locations=locations,mode=mode)         
 
     def get_throat_data(self,prop='',locations=''):
         r'''
+        THIS METHOD IS DEPRECATED, USE get_data INSTEAD
+        
         Retrieves data from fluid or network objects according to input arguments.
         
         Parameters
         ----------
         prop : string
             Name of property to retrieve.  Requesting property 'all' prints a list of existing properties.
-        locations: It can be geometry object, location string (or a list of strings), boolean array or indices.   
+        locations : array_like
+            A boolean array or indices of throats to get   
 
         Returns
         -------
         array_like
             An ndarray containing the requested property data from the specified object
-            
-        See Also
-        --------
-        get_pore_data, get_pore_info, get_throat_info
 
-        Notes
-        -----
-        This is a wrapper method that calls _get_data, which is generic for pores and throats
-        
-        Examples
-        --------
-        See get_pore_data
         '''
         return self._get_data(element='throat',prop=prop,locations=locations)     
 
@@ -430,9 +389,58 @@ class Tools(Base):
             return sp.where(getattr(self,'_'+element+'_info')[label]==True)[0]
         else:
             return getattr(self,'_'+element+'_info')[label]
+            
+    def set_info(self,label='',pores=[],throats=[],mode='merge'):
+        r'''
+        Apply a label to a selection of pores or throats
+        
+        Parameters
+        ----------
+        label : string
+            The name of the pore labels you wish to apply (e.g. 'top')
+        pores or throats : array_like
+            An array containing the pore (or throat) indices where the labels 
+            should be applied.  Can be either a boolean mask of Np length with 
+            True at labels locations (default), a list of indices where labels 
+            should be applied.
+        mode : string
+            Set the mode to be used for writing labels.  Options are:
+            
+            * 'merge' : (default) Adds label to specified locations while 
+            maintaining pre-existing labels
+            
+            * 'overwrite' : Adds label to specified locations while 
+            removing all pre-existing labels
+            
+            * 'remove' : Removes labels from specified locations.  If no
+            locations are given then this mode will remove the entire label
+            from the network.
+        '''
+        if sp.shape(pores)[0]>0:
+            if pores == 'all':
+                pores = self.get_pore_indices(labels='all')
+            self._set_info(element='pore',label=label,locations=pores,mode=mode)
+        if sp.shape(throats)[0]>0:
+            if throats == 'all':
+                throats = self.get_throat_indices(labels='all')
+            self._set_info(element='throat',label=label,locations=throats,mode=mode)
+            
+    def get_info(self,label='',pores='',throats='',mode=''):
+        r'''
+        '''
+        if sp.shape(pores)[0]>0:
+            if pores == 'all':
+                pores = self.get_pore_indices(labels='all')
+            self._get_info(element='pore',label=label,locations=pores,mode=mode)
+        if sp.shape(throats)[0]>0:
+            if throats == 'all':
+                throats = self.get_throat_indices(labels='all')
+            self._get_info(element='throat',label=label,locations=throats,mode=mode)
            
     def set_pore_info(self,label='',locations='',mode='merge'):
         r'''
+        THIS METHOD IS DEPRECATED, USE set_info INSTEAD
+        
         Apply a label to a selection of pores.  
         
         Parameters
@@ -456,27 +464,14 @@ class Tools(Base):
             locations are given then this mode will remove the entire label
             from the network.
             
-        See Also
-        --------
-        set_pore_data, set_throat_data, set_throat_info
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_pore_info(label='test',locations=[0,1]) #Set using index notation
-        >>> pn.get_pore_info(label='test',return_indices=True) #Retrieve values as indices
-        array([0, 1], dtype=int64)
-        >>> loc = sp.zeros((pn.num_pores(),),dtype=bool)
-        >>> loc[[0,1]] = True
-        >>> pn.set_pore_info(label='test',locations=loc) #Set using boolean mask
-        >>> pn.get_pore_info(label='test',return_indices=True) #Retrieve values as indices
-        array([0, 1], dtype=int64)
         '''
         self._set_info(element='pore',label=label,locations=locations,mode=mode)
 
     def get_pore_info(self,label='',return_indices=False):
         r'''
-        Retrieves locations where requested label is applies
+        THIS METHOD IS DEPRECATED, USE get_info INSTEAD
+        
+        Retrieves locations where requested label is applied
         
         Parameters
         ----------
@@ -491,24 +486,13 @@ class Tools(Base):
         A boolean mask of length Np with True at all locations where labels apply, 
         or a list of indices where labels apply.
         
-        See Also
-        --------
-        get_pore_data, get_throat_data, get_throat_info
-        
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> result = pn.get_pore_info(label='top',return_indices=True) #Retrieve values as indices
-        >>> result[0:10]
-        array([100, 101, 102, 103, 104, 105, 106, 107, 108, 109], dtype=int64)
-        >>> result = pn.get_pore_info(label='top') #Retrieve values as boolean mask
-        >>> result[97:103]
-        array([False, False, False,  True,  True,  True], dtype=bool)
         '''
         return self._get_info(element='pore',label=label,return_indices=return_indices)
         
     def set_throat_info(self,label='',locations='',mode='merge'):
         r'''
+        THIS METHOD IS DEPRECATED, USE set_info INSTEAD
+        
         Apply a label to a selection of throats
         
         Parameters
@@ -542,28 +526,10 @@ class Tools(Base):
         '''
         self._set_info(element='throat',label=label,locations=locations,mode=mode)
         
-    def set_info(self,label,pores=[],throats=[],mode='merge'):
-        r'''
-        '''
-        if pores != []:
-            if pores == 'all':
-                pores = self.get_pore_indices(labels='all')
-            self._set_info(element='pore',label=label,locations=pores,mode=mode)
-        if throats != []:
-            if throats == 'all':
-                throats = self.get_throat_indices(labels='all')
-            self._set_info(element='throat',label=label,locations=throats,mode=mode)
-    
-    def get_info(self,label,pores=False,throats=False):
-        r'''
-        '''
-        if pores:
-            return self._get_info(element='pore',label=label)
-        if throats:
-            return self._get_info(element='throat',label=label)    
-        
     def get_throat_info(self,label='',return_indices=False):
         r'''
+        THIS METHOD IS DEPRECATED, USE get_info INSTEAD
+        
         Retrieves locations where requested labels are applied
         
         Parameters
