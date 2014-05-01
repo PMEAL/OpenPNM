@@ -87,7 +87,7 @@ class Template(GenericNetwork):
         Parameters
         ----------
         im : 3D array-like
-            A monochrome image obtained by ie: scipy.misc.imresize
+            An image obtained by ie: scipy.misc.imresize
         '''
 
         if len(im.shape) == 2:
@@ -128,34 +128,11 @@ class Template(GenericNetwork):
             ]:
             self.set_pore_info(label=label, locations=locations)
 
-    def prune(self, inaccessible):
-        accessible = np.arange(len(self._pore_data['coords']))[~inaccessible.flatten()]
-        heads, tails = self._throat_data['connections'].T
-        good_heads = np.in1d(heads, accessible)
-        good_tails = np.in1d(tails, accessible)
-        heads = heads[good_heads & good_tails]
-        tails = tails[good_heads & good_tails]
-
-        # every id in tails maps somewhere in accessible,
-        # so prune isolated pores too
-        coords = self._pore_data['coords'][accessible]
-        translate = dict(zip(accessible, np.arange(accessible.size)))
-        heads = np.array(map(translate.get, heads))
-        tails = np.array(map(translate.get, tails))
-
-        # insert into sub-structure
-        self._pore_data['values'] = self._pore_data['values'][accessible]
-        self._pore_data['coords'] = coords
-        self._throat_data['connections'] = np.vstack([heads, tails]).T
-
-        self.set_pore_info(label='all', locations=np.ones(len(coords)).astype(bool))
-        self.set_throat_info(label='all', locations=np.ones_like(heads).astype(bool))
-
     def asarray(self, values=None):
         # reconstituted facts about the network
         points = self.get_pore_data(prop='coords')
         x,y,z = points.T
-        span = [(d.max()-d.min()) for d in [x,y,z]]
+        span = [(d.max()-d.min() or 1) for d in [x,y,z]]
         res = [len(set(d)) for d in [x,y,z]]
 
         _ndarray = np.zeros(res)
@@ -167,18 +144,3 @@ class Template(GenericNetwork):
             values = self._pore_data['values']
         _ndarray.flat[actual_indexes] = values.ravel()
         return _ndarray
-
-if __name__ == '__main__':
-    import os
-
-    # four ways of importing
-    dirname = '/home/harday/Media/2014-05/A 850-C'
-    filenames = list(sorted(os.path.join(dirname, fn) for fn in os.listdir(dirname)))
-    image = zoom(imread(filenames[0])[:,:,0], 0.01, order=1)
-    array = image.reshape(image.shape+(1,))
-
-    pn = Template.from_dir(dirname)
-    bad = pn._pore_data['values'] > pn._pore_data['values'].mean()
-    pn.prune(bad)
-
-    OpenPNM.Graphics.preview(pn, pn._pore_data['values'])
