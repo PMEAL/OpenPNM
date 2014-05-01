@@ -30,5 +30,17 @@ def test_linear_solver():
     sol = OpenPNM.Shortcuts.solve_linear(pn, ics)
     assert( np.allclose(sol, np.array([2,1.5,1]*9)) )
 
+def test_rectilinear_integrity_after_prune():
+    R = np.random.rand(50,40,30)
+    # some simple visual pruning, for comparison
+    M = np.where(R > R.mean(), R, 0)
+    # the convoluted graph way
+    pn = OpenPNM.Network.Template(name='net')
+    pn.generate(R)
+    pn.prune(R<=R.mean())
+    O = pn.asarray()
+    # what it would look like normally
+    assert np.allclose(M, O)
+
 if __name__ == '__main__':
     pytest.main([__file__])
