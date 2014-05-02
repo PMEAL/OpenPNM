@@ -826,6 +826,57 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                     if primary_key == 'all':
                         dictionary[key] = dictionary[key].astype(bool)
 
+    def trim(self, pores=[], throats=[]):
+        '''
+        Remove pores (or throats) from the network
+        
+        Parameters
+        ----------
+        pores (or throats) : array_like
+            A boolean mask of length Np (or Nt) or a list of indices of the
+            pores (or throats) to be removed.
+
+        Notes
+        -----
+        The prune affects the ~selected~ pores. If you want to remove all pores
+        where the diameter is less than 0.5, get a mask ie:
+        self.get_pore_data(prop='diameter') < 0.5 # [True, False, ...]
+        And send it over as an argument. 
+        '''
+        if sp.shape(pores)[0]>0:
+            Pdrop = sp.zeros((self.num_pores(),),dtype=bool)
+            Pdrop[pores] = 1
+            Pkeep = ~Pdrop
+            Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
+            Ts = self.find_neighbor_throats(pores)
+            Tdrop[Ts] = 1
+            Tkeep = ~Tdrop            
+        if sp.shape(throats)[0]>0:
+            print('sorry, this method can not remove throats yet')
+        
+        #Remap throat connections
+        Pnew = sp.arange(0,sum(Pkeep),dtype=int)
+        Pmap = sp.ones((self.num_pores(),),dtype=int)*-1
+        Pmap[Pkeep] = Pnew
+        tpore1 = self.get_throat_data(prop='connections')[:,0]
+        tpore2 = self.get_throat_data(prop='connections')[:,1]
+        tpore1 = Pmap[tpore1[Tkeep]]
+        tpore2 = Pmap[tpore2[Tkeep]]
+        
+        # Insert new indices into network
+        # Write connections specifically
+        self._throat_data['connections'] = sp.vstack((tpore1,tpore2)).T
+        # Over-write remaining data
+        for item in self.list_pore_props():
+            self._pore_data[item] = self._pore_data[item][Pkeep]
+        for item in self.list_pore_labels():
+            self._pore_info[item] = self._pore_info[item][Pkeep]            
+        for item in self.list_throat_props():
+            if item != 'connections':
+                self._throat_data[item] = self._throat_data[item][Tkeep]  
+        for item in self.list_throat_labels():
+                self._throat_info[item] = self._throat_info[item][Tkeep]  
+
 if __name__ == '__main__':
     #Run doc tests
     import doctest
