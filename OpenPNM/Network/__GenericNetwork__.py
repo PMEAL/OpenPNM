@@ -777,55 +777,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.incidence_matrix['csr'] = {}
         self.incidence_matrix['lil'] = {}
 
-    def prune(self, inaccessible):
-        '''
-        Treat an array of a suitable size as a mask, and reduce the network
-        according to that condition.
-
-        The prune affects the ~selected~ pores. If you want to remove all pores
-        where the diameter is less than 0.5, get a mask ie:
-        self.get_pore_data(prop='diameter' < 0.5) # [True, False, ...]
-        And send it over as an argument. 
-        '''
-        nV = len(self.get_pore_data(prop='coords'))
-        accessible = np.arange(nV)[~inaccessible.flatten()]
-        heads, tails = self._throat_data['connections'].T
-        good_heads = np.in1d(heads, accessible)
-        good_tails = np.in1d(tails, accessible)
-        heads = heads[good_heads & good_tails]
-        tails = tails[good_heads & good_tails]
-
-        # every id in tails maps somewhere in accessible,
-        # so prune isolated pores too
-        coords = self.get_pore_data(prop='coords')[accessible]
-        # translate acts as a hashmap between old ids and new ids
-        translate = dict(zip(accessible, np.arange(accessible.size)))
-        heads = np.array(map(translate.get, heads))
-        tails = np.array(map(translate.get, tails))
-        connections = np.vstack([heads, tails]).T
-
-        # insert into sub-structure
-        # first circumvent protections by setting directly to info dict,
-        # then use higher level methods for the properties
-        # CORE
-        self._pore_info['all'] = np.ones(len(coords)).astype(bool)
-        self.set_pore_data(prop='coords', data=coords)
-        self._throat_info['all'] = np.ones(len(connections)).astype(bool)
-        self.set_throat_data(prop='connections', data=connections)
-
-        # OTHER
-        for dictionary, primary_key, mask in [
-            (self._pore_info, 'all', accessible),
-            (self._pore_data, 'coords', accessible),
-            (self._throat_info, 'all', good_heads & good_tails),
-            (self._throat_data, 'connections', good_heads & good_tails),
-            ]:
-            for key in dictionary:
-                if key != primary_key:
-                    dictionary[key] = dictionary[key][mask]
-                    if primary_key == 'all':
-                        dictionary[key] = dictionary[key].astype(bool)
-
     def trim(self, pores=[], throats=[]):
         '''
         Remove pores (or throats) from the network
@@ -843,6 +794,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.get_pore_data(prop='diameter') < 0.5 # [True, False, ...]
         And send it over as an argument. 
         '''
+        pores = np.ravel(pores)
+        throats = np.ravel(throats)
+
         if sp.shape(pores)[0]>0:
             Pdrop = sp.zeros((self.num_pores(),),dtype=bool)
             Pdrop[pores] = 1
