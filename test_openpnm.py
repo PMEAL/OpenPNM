@@ -13,7 +13,7 @@ def test_template_generator():
     R = np.array([[[0,0],[0,1]]])
     pn = OpenPNM.Network.Template(name='template')
     pn.generate(R)
-    pn.prune(R>0.5)
+    pn.trim(R>0.5)
     assert len(pn.get_pore_data(prop='coords'))==3
     assert len(pn.get_throat_data(prop='connections'))==2
 
@@ -37,7 +37,7 @@ def test_rectilinear_integrity_after_prune():
     # the convoluted graph way
     pn = OpenPNM.Network.Template(name='net')
     pn.generate(R)
-    pn.prune(R<=R.mean())
+    pn.trim(R<=R.mean())
     O = pn.asarray()
     # what it would look like normally
     assert np.allclose(M, O)
