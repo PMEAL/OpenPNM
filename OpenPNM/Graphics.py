@@ -1,5 +1,8 @@
 import numpy as np
-import vtk
+try:
+    import vtk
+except ImportError:
+    pass
 
 def preview(pn, values=[]):
 
