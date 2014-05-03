@@ -412,8 +412,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         pnums : array_like
             ID numbers of pores whose neighbors are sought.
         flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique pore ID numbers
-            is returned. If flatten is False the returned array contains arrays
+            If flatten is True  a 1D array of unique pore ID numbers is 
+            returned. If flatten is False the returned array contains arrays
             of neighboring pores for each input pore, in the order they were 
             sent.
         excl_self : bool, optional
@@ -768,6 +768,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r'''
         '''
         #Initialize adjacency and incidence matrix dictionaries
+        self._logger.info('Resetting adjacency and incidence matrices')
         self.adjacency_matrix = {}
         self.incidence_matrix = {}
         self.adjacency_matrix['coo'] = {}
@@ -845,14 +846,17 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         if sp.shape(pores)[0]>0:
             Pdrop = sp.zeros((self.num_pores(),),dtype=bool)
-            Pdrop[pores] = 1
+            Pdrop[pores] = True
             Pkeep = ~Pdrop
             Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
             Ts = self.find_neighbor_throats(pores)
             Tdrop[Ts] = 1
-            Tkeep = ~Tdrop            
+            Tkeep = ~Tdrop
         if sp.shape(throats)[0]>0:
-            print('sorry, this method can not remove throats yet')
+            Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
+            Tdrop[throats] = 1
+            Tkeep = ~Tdrop
+            Pkeep = self.get_pore_indices(labels='all',return_indices=False)
         
         #Remap throat connections
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
@@ -860,12 +864,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Pmap[Pkeep] = Pnew
         tpore1 = self.get_throat_data(prop='connections')[:,0]
         tpore2 = self.get_throat_data(prop='connections')[:,1]
-        tpore1 = Pmap[tpore1[Tkeep]]
-        tpore2 = Pmap[tpore2[Tkeep]]
-        
+        temp1 = Pmap[tpore1[Tkeep]]
+        temp2 = Pmap[tpore2[Tkeep]]
+
         # Insert new indices into network
         # Write connections specifically
-        self._throat_data['connections'] = sp.vstack((tpore1,tpore2)).T
+        self._throat_data['connections'] = sp.vstack((temp1,temp2)).T
         # Over-write remaining data
         for item in self.list_pore_props():
             self._pore_data[item] = self._pore_data[item][Pkeep]
@@ -875,7 +879,21 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             if item != 'connections':
                 self._throat_data[item] = self._throat_data[item][Tkeep]  
         for item in self.list_throat_labels():
-                self._throat_info[item] = self._throat_info[item][Tkeep]  
+            self._throat_info[item] = self._throat_info[item][Tkeep]
+            
+        #Reset network
+        self._reset_network()
+        
+        #Check for individual isolated pores
+        Ps = sp.sum(self.num_neighbors(self.get_pore_indices())==0)
+        if Ps > 0:
+            self._logger.warning(str(Ps)+' pores no longer have neighbors')
+            
+        #Check for clusters of isolated pores
+        Cs = self.find_clusters(self.get_throat_indices(return_indices=False))
+        if sp.shape(sp.unique(Cs))[0] > (Ps+1):
+            self._logger.warning('Isolated clusters exist in the network')
+        
     def find_clusters(self,throat_array):
         r'''
         '''
