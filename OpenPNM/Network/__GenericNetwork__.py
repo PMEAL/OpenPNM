@@ -876,6 +876,16 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 self._throat_data[item] = self._throat_data[item][Tkeep]  
         for item in self.list_throat_labels():
                 self._throat_info[item] = self._throat_info[item][Tkeep]  
+    def find_clusters(self,throat_array):
+        r'''
+        '''
+        #Convert to boolean mask if not already
+        temp = sp.zeros((self.num_throats(),),dtype=bool)
+        temp[throat_array] = True
+        self.create_adjacency_matrix(prop='temp', data=temp, sprsfmt='csr', dropzeros=True)
+        clusters = sprs.csgraph.connected_components(self.adjacency_matrix['csr']['temp'])[1]
+        del self.adjacency_matrix['csr']['temp']
+        return clusters
 
 if __name__ == '__main__':
     #Run doc tests
