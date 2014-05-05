@@ -767,6 +767,18 @@ class Tools(Base):
 
     def get_pore_indices(self,labels=['all'],return_indices=True,mode='union'):
         r'''
+        This method is deprecated, use pores() instead
+        '''
+        return self.pores(labels=labels,return_indices=return_indices,mode=mode)
+
+    def get_throat_indices(self,labels=['all'],return_indices=True,mode='union'):
+        r'''
+        This method is deprecated, use throats() instead.
+        '''
+        return self.throats(labels=labels,return_indices=return_indices,mode=mode)
+        
+    def pores(self,labels='all',return_indices=True,mode='union'):
+        r'''
         Returns pore locations where given labels exist.
         
         Parameters
@@ -803,8 +815,8 @@ class Tools(Base):
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         ind = self._get_indices(element='pore',labels=labels,return_indices=return_indices,mode=mode)
         return ind
-
-    def get_throat_indices(self,labels=['all'],return_indices=True,mode='union'):
+        
+    def throats(self,labels='all',return_indices=True,mode='union'):
         r'''
         Returns throat locations where given labels exist.
         
@@ -812,10 +824,10 @@ class Tools(Base):
         ----------
         labels : list of strings, optional
             The throat label(s) whose locations are requested.
-            If omitted, all throat inidices are returned.
+            If omitted, 'all' throat inidices are returned.
         return_indices : boolean, optional
-            This flag specifies whether throat locations are returned as a boolean mask of length Np,
-            or as a list of indices (default).
+            This flag specifies whether throat locations are returned as a 
+            boolean mask of length Np, or as a list of indices (default).
         mode : string, optional
             Specifies how the query should be performed.  The options are: 
 
@@ -830,17 +842,22 @@ class Tools(Base):
             
             * 'none' : Only throats with none of the given labels are returned.
         
+        Notes
+        -----
+        This method replaces get_throat_indices
+        
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> Tind = pn.get_throat_indices()
         >>> Tind[0:5]
         array([0, 1, 2, 3, 4], dtype=int64)
+        
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         ind = self._get_indices(element='throat',labels=labels,return_indices=return_indices,mode=mode)
         return ind
-        
+
     def interpolate_data(self,prop='',throats=[],pores=[],data=[]):
         r"""
         Determines a pore (or throat) property as the average of it's neighboring 
@@ -1009,62 +1026,6 @@ class Tools(Base):
         temp = self.get_throat_indices(labels=labels,mode=mode,return_indices=False)
         return sp.sum(temp) #return sum of Trues
         
-    def pores(self,label='all'):
-        r'''
-        Returns a list of pore indices
-        
-        Parameters
-        ----------
-        label : string
-            Accepts a *single* label specifying the pore label of interest
-            
-        Returns
-        -------
-        indices : array_like
-            A (1,) array of pore indices
-        
-        See Also
-        --------
-        get_pore_indices
-        
-        Notes
-        -----
-        This is a helper function to simplify the process of retrieving pores
-        
-        '''
-        if type(label) == str:
-            return self.get_pore_indices(labels=label)
-        else:
-            raise Exception('The pores() method only accepts a single label, for more complex queries use get_pore_indicies')
-        
-    def throats(self,label='all'):
-        r'''
-        Returns a list of throat indices
-        
-        Parameters
-        ----------
-        label : string
-            Accepts a *single* label specifying the throat label of interest
-            
-        Returns
-        -------
-        indices : array_like
-            A (1,) array of throat indices
-        
-        See Also
-        --------
-        get_throat_indices
-        
-        Notes
-        -----
-        This is a helper function to simplify the process of retrieving throats
-        
-        '''
-        if type(label) == str:
-            return self.get_throat_indices(labels=label)
-        else:
-            raise Exception('The throats() method only accepts a single label, for more complex queries use get_throat_indicies')
-
     def get_result(self,alg_obj,**kwargs):
         r'''
         This method invokes the update method on the given OpenPNM Algorithm object
