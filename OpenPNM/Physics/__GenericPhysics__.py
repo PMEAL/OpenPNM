@@ -37,13 +37,13 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         Sets a custom name for the logger, to help identify logger messages
 
     """
-    def __init__(self,network,name,fluid,geometry,**kwargs):
+
+    def __init__(self,network,fluid,geometry,name='default',**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        for item in network._physics.keys():
-            if item == name:
-                raise Exception('A Physics Object with the supplied name already exists')
+        
         self.name = name
+        
         self._prop_list = []
         # Attach network to this physics
         self._net = network

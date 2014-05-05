@@ -53,6 +53,7 @@ class Base(object):
        
     """
     _instances = []
+    _name = None
     name = ''
     def __init__(self,**kwargs):
         super(Base,self).__init__()
@@ -180,29 +181,38 @@ class Base(object):
         Parameters
         ----------
         obj_type : string
-            The type of object to found found.  Options are 'network', 'geometry',
-            'fluid', 'physics', or 'algorithm'.
+            The type of object to found found.  
+            Options the module names (e.g. Network, Geometry, etc). 
+            These can be found from obj.__module__, 
+            and extracted with obj.__module.split('.')[1]
             
         Returns
         -------
-        A list containing the objects of the type requested.
+        A dict containing the objects of the type requested.
             
         '''
-        obj = []
-        if obj_type == 'fluid':
-            for item in self._fluids:
-                obj.append(item)
-        if obj_type == 'geometry':
-            for item in self._geometries:
-                obj.append(item)
-        if obj_type == 'network':
-            obj = [self]
-        if obj_type == 'physics':
-            for item in self._physics:
-                obj.append(item)
+        obj = {}
+        for item in self._instances:
+            if item.__module__.split('.')[1] == obj_type:
+                obj.update({item.name : item})
         return obj
+
+    def _set_name(self,name):
+        obj_type = self.__module__.split('.')[1]
+        temp = self.find_object_by_type(obj_type)
+        for item in temp.keys():
+            if obj_type == 'Geometry':
+                if self.name:
+                    raise Exception('Cannot rename a Geometry')
+            if item == name:
+                raise Exception('A '+obj_type+' Object with the supplied name already exists')
+            
+        self._name = name
+                
+    def _get_name(self):
+        return self._name
         
-        
+    name = property(_get_name,_set_name)
         
 
 if __name__ == '__main__':

@@ -37,13 +37,11 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         Sets a custom name for the logger, to help identify logger messages
 
     """
-    def __init__(self,network,name,**kwargs):
+    def __init__(self,network,name='default',**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        for item in network._fluids:
-            if item == name:
-                raise Exception('A Fluid Object with the supplied name already exists')
         self.name = name
+
         self._net = network
         #Initialize physics tracking lists
         self._physics = {}

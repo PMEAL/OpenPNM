@@ -34,7 +34,7 @@ class GenericAlgorithm(OpenPNM.Utilities.Tools):
 
     """
 
-    def __init__(self,name,network=None,**kwords):
+    def __init__(self,network=None,name='default',**kwords):
         r"""
         Initialize
         """

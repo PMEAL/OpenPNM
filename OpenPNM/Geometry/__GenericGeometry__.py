@@ -52,17 +52,13 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     0.123
     """
 
-    def __init__(self,network,name,**kwargs):
+    def __init__(self,network,name='default',**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
         
-        for item in network._geometries.keys():
-            if item == name:
-                raise Exception('A Geometry Object with the supplied name already exists')
-        network._geometries.update({name:self}) #attach this geometry to network
         self.name = name
         self._net = network #Attach network to self
         self._physics = {} #Create list for physics to append themselves to
