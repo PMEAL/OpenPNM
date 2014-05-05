@@ -276,11 +276,17 @@ class Tools(Base):
         '''
         if pores != []:
             if pores == 'all':
-                pores = self.get_pore_indices(labels='all')
+                if sp.shape(data)[1] == 1:
+                    pores = ''
+                else:
+                    pores = self.get_pore_indices(labels='all')
             self._set_data(element='pore',prop=prop,data=data,locations=pores,mode=mode)
         if throats != []:
             if throats == 'all':
-                throats = self.get_throat_indices(labels='all')
+                if sp.shape(data)[1] == 1:
+                    throats = ''
+                else:
+                    throats = self.get_throat_indices(labels='all')
             self._set_data(element='throat',prop=prop,data=data,locations=throats,mode=mode)    
 
     def set_throat_data(self,prop='',data='',locations='',mode='merge'):
