@@ -9,7 +9,7 @@ pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=20).generate(divisions=[15, 1
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-geom = OpenPNM.Geometry.Toray090(network=pn, name='geom')
+geom = OpenPNM.Geometry.Toray090(network=pn)
 geom.set_pore_indices(pores='all')
 geom.set_throat_indices(throats='all')
 geom.regenerate()

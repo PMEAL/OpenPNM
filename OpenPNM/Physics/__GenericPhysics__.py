@@ -44,24 +44,19 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         
         self.name = name
         
+        #Setup containers for ojecct linking
         self._prop_list = []
-        # Attach network to this physics
+
+        # Append objects for internal access
         self._net = network
-        # Attach fluid to this physics
-        try: fluid.name  # See if string or object was passed
-        except: fluid = network.find_object_by_name(fluid)
         self._fluid = fluid
-        # Attach geometry to this physics
-        try: geometry.name  # See if string or object was passed
-        except: geometry = network.find_object_by_name(geometry)
         self._geometry = geometry
-        # Attach this physics to fluid
-        fluid._physics.update({name:self})
-        # Attach this physics to geometry
-        geometry._physics.update({name:self})
-        # Attach this physics to network
-        network._physics.update({name:self})
         
+        # Connect this physics with it's geometry
+        geometry._physics.update({name:self})
+        fluid._physics.update({name:self})
+
+        #Use composition to assign pores and throats to this physics
         self.pores = geometry.pores
         self.throats = geometry.throats
 

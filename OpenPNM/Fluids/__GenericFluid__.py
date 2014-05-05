@@ -41,20 +41,26 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         self.name = name
-
+        
+        # Attach objects for internal access
         self._net = network
-        #Initialize physics tracking lists
+        
+        # Link this Fluid to the Network
+        network._fluids.update({name:self}) 
+        
+        # Initialize tracking lists
         self._physics = {}
         self._prop_list = []
-        network._fluids.update({name:self}) #attach this fluid to network
-        #Set default T and P since most propery models require it
+        
+        # Set default T and P since most propery models require it
         self.set_pore_data(prop='temperature',data=298.0)
         self.set_pore_data(prop='pressure',data=101325.0)
         self.set_pore_data(prop='occupancy',data=1)
         self.set_throat_data(prop='occupancy',data=1)
-        #Initialize label 'all' in the object's own info dictionaries
-        self.set_pore_info(label='all',locations=self._net.get_pore_indices())
-        self.set_throat_info(label='all',locations=self._net.get_throat_indices())
+        
+        # Initialize label 'all' in the object's own info dictionaries
+        self.set_info(label='all',pores=network.pores('all'))
+        self.set_info(label='all',throats=network.throats('all'))
         
     def apply_conditions(self,**kwargs):
         r'''
