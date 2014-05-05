@@ -32,7 +32,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
     """
 
-    def __init__(self, name,**kwargs):
+    def __init__(self, name='default',**kwargs):
         r"""
         Initialize
         """
