@@ -274,16 +274,17 @@ class Tools(Base):
         >>> pn.get_data(prop='test',pores=[0])
         array([ 1.1])
         '''
+        data= sp.array(data,ndmin=1)
         if pores != []:
             if pores == 'all':
-                if sp.shape(data)[1] == 1:
+                if sp.shape(data)[0] == 1:
                     pores = ''
                 else:
                     pores = self.get_pore_indices(labels='all')
             self._set_data(element='pore',prop=prop,data=data,locations=pores,mode=mode)
         if throats != []:
             if throats == 'all':
-                if sp.shape(data)[1] == 1:
+                if sp.shape(data)[0] == 1:
                     throats = ''
                 else:
                     throats = self.get_throat_indices(labels='all')

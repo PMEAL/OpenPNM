@@ -67,8 +67,8 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         self._prop_list = []
         
         #Initialize geometry to NOWHERE
-        network.set_pore_info(label=self.name,locations=[])
-        network.set_throat_info(label=self.name,locations=[])
+        network.set_info(label=self.name,pores=[])
+        network.set_info(label=self.name,throats=[])
         self.num_pores = partial(network.num_pores,labels=self.name)
         self.num_throats = partial(network.num_throats,labels=self.name)
     
@@ -76,13 +76,13 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         r'''
         '''
         if pores == 'all':
-            pores = self._net.get_pore_indices(labels='all')
+            pores = self._net.pores(labels='all')
         geoms = self._net.find_object_by_type(self.__module__.split('.')[1])
         for item in geoms.keys():
             if geoms[item] is self:
                 del geoms[item]
                 break
-        temp = self._net.get_pore_indices(labels=geoms,mode='union',return_indices=False)
+        temp = self._net.pores(labels=geoms,mode='union',return_indices=False)
         if sum(temp[pores]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
         if mode == 'add':
@@ -91,7 +91,6 @@ class GenericGeometry(OpenPNM.Utilities.Base):
             self._net.set_pore_info(label=self.name,locations=pores,mode='remove')
         else:
             print('invalid mode received')
-        
         
     def get_pore_indices(self):
         r'''

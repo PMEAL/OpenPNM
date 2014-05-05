@@ -24,7 +24,10 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         The network to which this Physics should be attached
         
     fluid : OpenPNM Fluid object 
-        The Fluid object to which the Physics applies
+        The Fluid object to which this Physics applies
+        
+    geometry : OpenPNM Geometry object
+        The Geometry object to which this Physics applies
     
     name : str
         A unique string name to identify the Physics object, typically same as 

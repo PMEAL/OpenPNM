@@ -53,21 +53,32 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         self._prop_list = []
         
         # Set default T and P since most propery models require it
-        self.set_pore_data(prop='temperature',data=298.0)
-        self.set_pore_data(prop='pressure',data=101325.0)
-        self.set_pore_data(prop='occupancy',data=1)
-        self.set_throat_data(prop='occupancy',data=1)
+        self.set_data(prop='temperature',pores='all',data=298.0)
+        self.set_data(prop='pressure',pores='all',data=101325.0)
+        self.set_data(prop='occupancy',pores='all',data=1)
+        self.set_data(prop='occupancy',throats='all',data=1)
         
         # Initialize label 'all' in the object's own info dictionaries
         self.set_info(label='all',pores=network.pores('all'))
         self.set_info(label='all',throats=network.throats('all'))
         
-    def apply_conditions(self,**kwargs):
+    def apply_conditions(self,**values):
         r'''
-        Documentation for this method is being updated, we are sorry for the inconvenience.
+        Apply multiple scalar conditions to the fluid in a single step
+        
+        Parameters
+        ----------
+        values : name / value pair ()
+            Any arguments can be passed, along with a corresponding values.  
+            These arguments will be assigned to the fluid's pore data
+            
+        Examples
+        --------
+        >>> air = OpenPNM.Fluids.Air(loglevel=50,network=pn)
+        >>> air.apply_conditions(molar_mass=18,density=1000})
         '''
-        for item in kwargs.keys():
-            self.set_pore_data(prop=item,data=kwargs[item])
+        for item in values.keys():
+            self.set_data(prop=item,pores='all',data=values[item])
 
     def regenerate(self,prop_list='',mode=None):
         r'''
