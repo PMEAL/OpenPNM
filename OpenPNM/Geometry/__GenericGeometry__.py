@@ -60,9 +60,12 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         self._logger.debug("Method: Constructor")
         
         self.name = name
+        
+        #Setup containers for object linking
         self._net = network #Attach network to self
         self._physics = {} #Create list for physics to append themselves to
         self._prop_list = []
+        
         #Initialize geometry to NOWHERE
         network.set_pore_info(label=self.name,locations=[])
         network.set_throat_info(label=self.name,locations=[])
@@ -74,8 +77,11 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         '''
         if pores == 'all':
             pores = self._net.get_pore_indices(labels='all')
-        geoms = list(self._net._geometries.keys())
-        geoms.remove(self.name)
+        geoms = self._net.find_object_by_type(self.__module__.split('.')[1])
+        for item in geoms.keys():
+            if geoms[item] is self:
+                del geoms[item]
+                break
         temp = self._net.get_pore_indices(labels=geoms,mode='union',return_indices=False)
         if sum(temp[pores]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
@@ -91,7 +97,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         r'''
         '''
         return self._net.get_pore_indices(labels=self.name)
-        
+
     pores = property(get_pore_indices,set_pore_indices)
     
     def set_throat_indices(self,throats,mode='add'):
@@ -99,8 +105,11 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         '''
         if throats == 'all':
             throats = self._net.get_throat_indices(labels='all')
-        geoms = list(self._net._geometries.keys())
-        geoms.remove(self.name)
+        geoms = self._net.find_object_by_type(self.__module__.split('.')[1])
+        for item in geoms.keys():
+            if geoms[item] is self:
+                del geoms[item]
+                break
         temp = self._net.get_throat_indices(labels=geoms,mode='union',return_indices=False)
         if sum(temp[throats]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
