@@ -16,9 +16,7 @@ from functools import partial
 
 class GenericGeometry(OpenPNM.Utilities.Base):
     r"""
-    GenericGeometry - Base class to construct pore networks
-
-    This class contains the interface definition for the construction of networks
+    GenericGeometry - Base class to construct a Geometry object
 
     Parameters
     ----------
@@ -27,11 +25,6 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     name : string
         A unique name to apply to the object.  This name will also be used as a
         label to identify where this this geometry applies.
-        
-    pnums and tnums : boolean mask or list of indices
-        The pore (pnums) and throat (tnums) locations in the network where this 
-        geometry applies.  By default it will apply everywhere.  To create an 
-        empty geometry set pnums and tnums to empty lists [].  
     
     loglevel : int
         Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
@@ -82,20 +75,20 @@ class GenericGeometry(OpenPNM.Utilities.Base):
             if geoms[item] is self:
                 del geoms[item]
                 break
-        temp = self._net.pores(labels=geoms,mode='union',return_indices=False)
+        temp = self._net.pores(labels=geoms,return_indices=False)
         if sum(temp[pores]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
         if mode == 'add':
-            self._net.set_pore_info(label=self.name,locations=pores,mode='merge')
+            self._net.set_info(label=self.name,pores=pores,mode='merge')
         elif mode == 'remove':
-            self._net.set_pore_info(label=self.name,locations=pores,mode='remove')
+            self._net.set_info(label=self.name,pores=pores,mode='remove')
         else:
             print('invalid mode received')
         
     def get_pore_indices(self):
         r'''
         '''
-        return self._net.get_pore_indices(labels=self.name)
+        return self._net.pores(labels=self.name)
 
     pores = property(get_pore_indices,set_pore_indices)
     
@@ -109,13 +102,13 @@ class GenericGeometry(OpenPNM.Utilities.Base):
             if geoms[item] is self:
                 del geoms[item]
                 break
-        temp = self._net.get_throat_indices(labels=geoms,mode='union',return_indices=False)
+        temp = self._net.throats(labels=geoms,return_indices=False)
         if sum(temp[throats]) > 0:
             raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
         if mode == 'add':
-            self._net.set_throat_info(label=self.name,locations=throats,mode='merge')
+            self._net.set_info(label=self.name,throats=throats,mode='merge')
         elif mode == 'remove':
-            self._net.set_throat_info(label=self.name,locations=throats,mode='remove')
+            self._net.set_info(label=self.name,throats=throats,mode='remove')
         else:
             print('invalid mode received')
         
@@ -197,7 +190,8 @@ class GenericGeometry(OpenPNM.Utilities.Base):
 
     def check_consistency(self):
         r'''
-        Checks to see if the current geometry conflicts with any other geometry
+        Checks to see if the current geometry conflicts with other geometries, 
+        and ensures that geometries have been applied to all locations
         '''
         temp = sp.zeros_like(self._net.get_pore_info(label=self.name),dtype=int)
         for item in self._net._geometries:

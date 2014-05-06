@@ -7,7 +7,6 @@ import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(1, parent_dir)
 import OpenPNM
-
 import logging as _logging
 import scipy.constants
 
@@ -16,7 +15,7 @@ _logging.basicConfig(level=_logging.ERROR,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
                     )
-
+                    
 class Base(object):
     r"""
     .. class:: `OpenPNM.Utilities.OpenPNMbase` -- Base class for OpenPNM
@@ -44,7 +43,7 @@ class Base(object):
        ======== =====   =============================================================
        Level    Value   When it is used
        ======== =====   =============================================================
-       DEBUG    10      Detailed information, at d.iagnostic stage
+       DEBUG    10      Detailed information, at diagnostic stage
        INFO     20      Confirmation that things are working as expected.
        WARNING  30      An indication that something unexpected happened.
        ERROR    40      Due to a more serious problem, program might still execute.
@@ -54,7 +53,6 @@ class Base(object):
     """
     _instances = []
     _name = None
-    name = ''
     def __init__(self,**kwargs):
         super(Base,self).__init__()
         self._instances.append(self) #Track all instances derived from this class for kicks
@@ -214,6 +212,5 @@ class Base(object):
         
     name = property(_get_name,_set_name)
         
-
 if __name__ == '__main__':
     pass
