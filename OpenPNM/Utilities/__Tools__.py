@@ -157,7 +157,7 @@ class Tools(Base):
             try: return getattr(self,'_'+element+'_data')[prop]
             except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop)           
  
-    def get_data(self,prop='',data=[],pores=[],throats=[],mode=''):
+    def get_data(self,prop='',pores=[],throats=[],mode=''):
         r'''
         Retrieves data from the object to which it is associated according to 
         input arguments.
@@ -172,6 +172,8 @@ class Tools(Base):
         throats : array_like, or string 'all'
             List of throat indies from which to retrieve data.  If set to 'all'
             , then ALL values are returned.
+        modes : string
+            None yet
 
         Returns
         -------
@@ -219,8 +221,8 @@ class Tools(Base):
             
         See Also
         --------
-        set_throat_data, set_pore_info, set_throat_info
-
+        set_info
+        
         Notes
         -----
         This is a wrapper method that calls _set_data.  
@@ -276,11 +278,7 @@ class Tools(Base):
     def _set_info(self,element='',label='',locations='',mode='merge'):
         r'''
         This is the actual info setter method, but it should not be called directly.  
-        Wrapper methods have been created.  Use set_pore_info and get_pore_info.
-        
-        See Also
-        --------
-        set_pore_info, set_throat_info
+        Wrapper methods have been created.  Use set_info().
         '''
         if type(locations)==list: 
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
@@ -324,15 +322,10 @@ class Tools(Base):
         elif mode=='remove':  del getattr(self,'_'+element+'_info')[label]
         else:  getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
 
-    def _get_info(self,element='',label='',return_indices=False):
+    def _get_info(self,element='',label='',return_indices=False,mode=''):
         r'''
         This is the actual info getter method, but it should not be called directly.  
-        Wrapper methods have been created.  Use get_pore_info and get_throat_info
-        
-        See Also
-        --------
-        get_pore_info, get_throat_info
-        
+        Wrapper methods have been created.  Use get_info().        
         '''
         if return_indices:
             return sp.where(getattr(self,'_'+element+'_info')[label]==True)[0]
@@ -387,6 +380,10 @@ class Tools(Base):
         return_indices : boolean
             Controls whether a list of indices (default) or a boolean mask is
             returned
+            
+        See Also
+        --------
+        get_labels
             
         '''
         if pores != []:
@@ -554,7 +551,7 @@ class Tools(Base):
         mode : string, optional
             Controls how the query should be performed
             
-            * 'union' : A list of labels applied to ANY of the given locations        
+            * 'union' : A list of labels applied to ANY of the given locations
             
             * 'intersection' : Label applied to ALL of the given locations
             
