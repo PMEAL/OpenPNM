@@ -41,7 +41,7 @@ class GenericPhysics(OpenPNM.Utilities.Base):
 
     """
 
-    def __init__(self,network,fluid,geometry,name='default',**kwargs):
+    def __init__(self,network,fluid,geometry,name='default_physics',**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
