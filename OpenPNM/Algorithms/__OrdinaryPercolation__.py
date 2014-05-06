@@ -55,14 +55,8 @@ class OrdinaryPercolation(GenericAlgorithm):
               AL=True,
               **params):
         # Parse params
-        try: self._fluid_inv
-        except:             
-            try:    self._fluid_inv = self._net._fluids[invading_fluid]
-            except: self._fluid_inv = invading_fluid
-        try:    self._fluid_def
-        except: 
-            try:    self._fluid_def = self._net._fluids[defending_fluid]
-            except: self._fluid_def = defending_fluid
+        self._fluid_inv = invading_fluid
+        self._fluid_def = defending_fluid
         try: self._inv_sites
         except: self._inv_sites = inlets
         self._npts = npts
@@ -73,8 +67,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         #See if setup has been run
         try: capillary_pressure = self._p_cap
         except: 
-            raise Exception('setup has not been run, cannot proceed!')
-        #Create a pore and throat conditions list to store inv_val at which each is invaded
+            raise Exception('setup has not been run, cannot proceed')
+        #Create pore and throat conditions lists to store inv_val at which each is invaded
         self._p_inv = sp.zeros((self._net.num_pores(),))
         self._p_seq = sp.zeros_like(self._p_inv)
         self._t_inv = sp.zeros((self._net.num_throats(),))

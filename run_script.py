@@ -47,8 +47,8 @@ phys_air.regenerate()
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,loggername='OP',name='OP_1',network=pn)
-a = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
+a = pn.pores(labels=['bottom','boundary'],mode='intersection')
+OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=20)
 OP_1.run()
 #OP_1.plot_drainage_curve()
 
@@ -57,12 +57,12 @@ OP_1.run()
 #------------------------------------------------------------------------------
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, loggername='Fickian', name='Fickian_alg',network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
-Fickian_alg.set_pore_data(prop='BCval', data=0.6, locations=BC1_pores)
-BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
-Fickian_alg.set_pore_data(prop='BCval', data=0.2, locations=BC2_pores)
+BC1_pores = pn.pores(labels=['top','boundary'],mode='intersection')
+Fickian_alg.set_info(label='Dirichlet', pores=BC1_pores)
+Fickian_alg.set_data(prop='BCval', data=0.6, pores=BC1_pores)
+BC2_pores = pn.pores(labels=['bottom','boundary'],mode='intersection')
+Fickian_alg.set_info(label='Dirichlet', pores=BC2_pores)
+Fickian_alg.set_data(prop='BCval', data=0.2, pores=BC2_pores)
 
 # Updating data based on the result of Percolation Algorithms
 OP_1.update(Pc=3000)
