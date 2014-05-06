@@ -229,12 +229,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Returns
         -------
-        adj_mat : sparse_matrix, optional
+        adj_mat : sparse_matrix
             Returns adjacency matrix in specified format for local use.
 
         Notes
         -----
-        This 'can' return the specified sparse matrix, but will always write the generated matrix to the network object
+        This also stores the adjacency matrix in a nested dictionary called
+        _adjacency_matrix.  This top level keys are the storage type, and
+        under each type they keys are the property name.
 
         Examples
         --------
@@ -268,8 +270,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         col  = conn[:,1]
         data = dataset[ind]
 
-        #Append row & col to each other, and data to itself
-        if sym:
+        if sym: #Append row & col to each other, and data to itself
             row  = sp.append(row,conn[:,1])
             col  = sp.append(col,conn[:,0])
             data = sp.append(data,data)
@@ -307,6 +308,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Notes
         -----
+        This also stores the incidence matrix in a nested dictionary called
+        _incidence_matrix.  This top level keys are the storage type, and
+        under each type they keys are the property name.
 
         Examples
         --------
