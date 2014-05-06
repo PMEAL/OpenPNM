@@ -348,6 +348,23 @@ class Delaunay(GenericNetwork):
         self._net.throat_data['type'] = np.append(self._net.throat_data['type'],bt_type)
         self._net.throat_data['connections'] =  np.concatenate((self._net.throat_data['connections'],bt_connections))
 
+    " Temporary fix for domain size - need something more generic if labels change such as Lx = x.max - x.min "
+    def domain_size(self,dimension=''):
+        if dimension == 'front' or dimension == 'back':
+            return self._Ly*self._Lz
+        if dimension == 'left' or dimension == 'right':
+            return self._Lx*self._Lz
+        if dimension == 'top' or dimension == 'bottom':
+            return self._Lx*self._Ly
+        if dimension == 'volume':
+            return self._Lx*self._Ly*self._Lz
+        if dimension == 'height':
+            return self._Lz
+        if dimension == 'width':
+            return self._Lx
+        if dimension == 'depth':
+            return self._Ly
+            
 if __name__ == '__main__':
     pn = OpenPNM.Network.Delaunay(name='delaunay_1').generate(num_pores=100, domain_size=[3,3,3])
     print(pn.name)
