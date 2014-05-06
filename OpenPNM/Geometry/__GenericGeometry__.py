@@ -65,59 +65,55 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         self.num_pores = partial(network.num_pores,labels=self.name)
         self.num_throats = partial(network.num_throats,labels=self.name)
     
-    def set_pore_indices(self,pores,mode='add'):
+    def set_locations(self,pores=[],throats=[],mode='add'):
         r'''
+        Assign Geometry object to specifed pores (or throats)
         '''
-        if pores == 'all':
-            pores = self._net.pores(labels='all')
-        geoms = self._net.find_object_by_type(self.__module__.split('.')[1])
-        for item in geoms.keys():
-            if geoms[item] is self:
-                del geoms[item]
-                break
-        temp = self._net.pores(labels=geoms,return_indices=False)
-        if sum(temp[pores]) > 0:
-            raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
-        if mode == 'add':
-            self._net.set_info(label=self.name,pores=pores,mode='merge')
-        elif mode == 'remove':
-            self._net.set_info(label=self.name,pores=pores,mode='remove')
-        else:
-            print('invalid mode received')
+        if pores != []:
+            if pores == 'all':
+                pores = self._net.pores(labels='all')
+            geoms = self._net.find_object_by_type(self.__module__.split('.')[1])
+            for item in geoms.keys():
+                if geoms[item] is self:
+                    del geoms[item]
+                    break
+            temp = self._net.pores(labels=geoms,return_indices=False)
+            if sum(temp[pores]) > 0:
+                raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
+            if mode == 'add':
+                self._net.set_info(label=self.name,pores=pores,mode='merge')
+            elif mode == 'remove':
+                self._net.set_info(label=self.name,pores=pores,mode='remove')
+            else:
+                print('invalid mode received')
         
-    def get_pore_indices(self):
+        if throats != []:
+            if throats == 'all':
+                throats = self._net.get_throat_indices(labels='all')
+            geoms = self._net.find_object_by_type(self.__module__.split('.')[1])
+            for item in geoms.keys():
+                if geoms[item] is self:
+                    del geoms[item]
+                    break
+            temp = self._net.throats(labels=geoms,return_indices=False)
+            if sum(temp[throats]) > 0:
+                raise Exception('You are trying to assign a geometry to a throat that has already been asssigned')
+            if mode == 'add':
+                self._net.set_info(label=self.name,throats=throats,mode='merge')
+            elif mode == 'remove':
+                self._net.set_info(label=self.name,throats=throats,mode='remove')
+            else:
+                print('invalid mode received')
+        
+    def pores(self):
         r'''
         '''
         return self._net.pores(labels=self.name)
-
-    pores = property(get_pore_indices,set_pore_indices)
-    
-    def set_throat_indices(self,throats,mode='add'):
-        r'''
-        '''
-        if throats == 'all':
-            throats = self._net.get_throat_indices(labels='all')
-        geoms = self._net.find_object_by_type(self.__module__.split('.')[1])
-        for item in geoms.keys():
-            if geoms[item] is self:
-                del geoms[item]
-                break
-        temp = self._net.throats(labels=geoms,return_indices=False)
-        if sum(temp[throats]) > 0:
-            raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
-        if mode == 'add':
-            self._net.set_info(label=self.name,throats=throats,mode='merge')
-        elif mode == 'remove':
-            self._net.set_info(label=self.name,throats=throats,mode='remove')
-        else:
-            print('invalid mode received')
         
-    def get_throat_indices(self):
+    def throats(self):
         r'''
         '''
-        return self._net.get_throat_indices(labels=self.name)
-          
-    throats = property(get_throat_indices,set_throat_indices)
+        return self._net.throats(labels=self.name)
     
     def regenerate(self, prop_list='',mode=None):
         r'''

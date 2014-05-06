@@ -17,7 +17,7 @@ def constant(physics,
     r"""
     Assigns specified constant value
     """
-    fluid.set_data(prop=propname,throats=geometry.throats,data=value)
+    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
 
 def na(physics,
        network,
@@ -26,7 +26,7 @@ def na(physics,
        propname,
        **params):
     value = -1
-    fluid.set_data(prop=propname,throats=geometry.throats,data=value)
+    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
 
 def series_resistors(physics,
                      network,
@@ -63,6 +63,6 @@ def series_resistors(physics,
     tlen = network.get_data(prop=throat_length,throats='all')
     gt = sigmat*tdia**2/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[geometry.throats]
-    fluid.set_data(prop=propname,throats=geometry.throats,data=value)
+    value = value[geometry.throats()]
+    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
 
