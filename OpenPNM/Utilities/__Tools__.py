@@ -439,7 +439,7 @@ class Tools(Base):
 
         See Also
         --------
-        print_dicts
+        list_throat_props, list_pore_labels, list_throat_labels
         '''
         temp = list(self._pore_data.keys())
         temp.sort()
@@ -457,7 +457,7 @@ class Tools(Base):
 
         See Also
         --------
-        print_dicts
+        list_pore_props, list_pore_labels, list_throat_labels
         '''
         temp = list(self._throat_data.keys())
         temp.sort()
@@ -475,7 +475,7 @@ class Tools(Base):
 
         See Also
         --------
-        print_dicts
+        list_throat_props, list_pore_props, list_throat_labels
         '''
         temp = list(self._pore_info.keys())
         temp.sort()
@@ -493,7 +493,7 @@ class Tools(Base):
         
         See Also
         --------
-        print_dicts
+        list_throat_props, list_pore_props, list_pore_labels
         '''
         temp = list(self._throat_info.keys())
         temp.sort()
@@ -502,12 +502,7 @@ class Tools(Base):
     def _get_labels(self,element,locations,mode='union',flatten=False):
         r'''
         This is the actual label getter method, but it should not be called directly.  
-        Wrapper methods have been created.  Use get_pore_labels and get_throat_labels
-        
-        See Also
-        --------
-        get_pore_labels, get_throat_labels
-        
+        Wrapper methods have been created.  Use get_labels().
         '''
         if element == 'pore':
             element_info = self._pore_info
