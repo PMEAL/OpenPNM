@@ -157,7 +157,7 @@ class Tools(Base):
             try: return getattr(self,'_'+element+'_data')[prop]
             except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop)           
  
-    def get_data(self,prop='',pores=[],throats=[],mode=''):
+    def get_data(self,prop='',pores=None,throats=None,mode=''):
         r'''
         Retrieves data from the object to which it is associated according to 
         input arguments.
@@ -197,16 +197,16 @@ class Tools(Base):
         >>> pn.get_data(prop='test',pores=[0])
         array([ 1.1])
         '''
-        if pores != []:
+        if pores != None:
             if pores == 'all':
                 pores = self.get_pore_indices(labels='all')
             return self._get_data(element='pore',prop=prop,locations=pores,mode=mode)
-        if throats != []:
+        if throats != None:
             if throats == 'all':
                 throats = self.get_throat_indices(labels='all')
             return self._get_data(element='throat',prop=prop,locations=throats,mode=mode)
             
-    def set_data(self,prop='',data='',pores=[],throats=[],mode='merge'):
+    def set_data(self,prop='',data='',pores=None,throats=None,mode='merge'):
         r'''
         Write data according to input arguments.
         
@@ -236,14 +236,14 @@ class Tools(Base):
         array([ 1.1])
         '''
         data= sp.array(data,ndmin=1)
-        if pores != []:
+        if pores != None:
             if pores == 'all':
                 if sp.shape(data)[0] == 1:
                     pores = ''
                 else:
                     pores = self.get_pore_indices(labels='all')
             self._set_data(element='pore',prop=prop,data=data,locations=pores,mode=mode)
-        if throats != []:
+        if throats != None:
             if throats == 'all':
                 if sp.shape(data)[0] == 1:
                     throats = ''
@@ -332,7 +332,7 @@ class Tools(Base):
         else:
             return getattr(self,'_'+element+'_info')[label]
             
-    def set_info(self,label='',pores=[],throats=[],mode='merge'):
+    def set_info(self,label='',pores=None,throats=None,mode='merge'):
         r'''
         Apply a label to a selection of pores or throats
         
@@ -358,16 +358,16 @@ class Tools(Base):
             locations are given then this mode will remove the entire label
             from the network.
         '''
-        if pores != []:
+        if pores:
             if pores == 'all':
                 pores = self.pores(labels='all')
             self._set_info(element='pore',label=label,locations=pores,mode=mode)
-        if throats != []:
+        if throats:
             if throats == 'all':
                 throats = self.get_throat_indices(labels='all')
             self._set_info(element='throat',label=label,locations=throats,mode=mode)
             
-    def get_info(self,label='',pores=[],throats=[],return_indices=True):
+    def get_info(self,label='',pores=None,throats=None,return_indices=True):
         r'''
         Retrieves the locations where the specified label is applied
         
@@ -386,7 +386,7 @@ class Tools(Base):
         get_labels
             
         '''
-        if pores != []:
+        if pores != None:
             if pores == 'all':
                 pores = self.pores(labels='all')
             temp = self._get_info(element='pore',label=label,return_indices=return_indices)
@@ -394,7 +394,7 @@ class Tools(Base):
                 return temp[pores]
             else:
                 return temp[sp.in1d(temp,pores)]
-        if throats != []:
+        if throats != None:
             if throats == 'all':
                 throats = self.throats(labels='all')
             temp = self._get_info(element='throat',label=label,return_indices=return_indices)
@@ -529,7 +529,7 @@ class Tools(Base):
                 temp[i] = list(labels[arr[i,:]])
             return temp
                 
-    def labels(self,pores=[],throats=[],mode=''):
+    def labels(self,pores=None,throats=None,mode=''):
         r'''
         Returns the labels applied to specified pore locations
         
@@ -551,12 +551,12 @@ class Tools(Base):
             * 'mask' : returns an N x Lt array, where each row corresponds to a pore (or throat) location, and each column contains the truth value for the existance of labels as returned from labels(pores='all',mode='union')).
             
         '''
-        if pores != []:
+        if pores != None:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             return self._get_labels(element='pore',locations=pores, mode=mode)
-        if throats != []:
+        if throats != None:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
