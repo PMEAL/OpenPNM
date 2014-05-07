@@ -90,3 +90,22 @@ class FickianDiffusion(LinearSolver):
                                   x_term=x_term,
                                   conductance=conductance,
                                   occupancy=occupancy)
+    
+    def rate(self,pores='',throats=''):
+
+        if throats!='':
+            p1 = self._net.find_connected_pores(throats)[:,0]
+            p2 = self._net.find_connected_pores(throats)[:,1]
+        elif pores!='': 
+            throats = self._net.find_neighbor_throats(pores,flatten=True,mode='not_intersection')
+            p1 = self._net.find_connected_pores(throats)[:,0]
+            p2 = self._net.find_connected_pores(throats)[:,1]
+        pores1 = sp.copy(p1)
+        pores2 = sp.copy(p2)
+        pores1[-sp.in1d(p1,pores)] = p2[-sp.in1d(p1,pores)]        
+        pores2[-sp.in1d(p1,pores)] = p1[-sp.in1d(p1,pores)]
+        X1 = sp.log(1-self.get_pore_data(locations=pores1,prop=self._X_name))
+        X2 = sp.log(1-self.get_pore_data(locations=pores2,prop=self._X_name))
+        g = self._conductance[throats]
+        R = sp.sum(sp.multiply(g,(X1-X2)))
+        return(R)

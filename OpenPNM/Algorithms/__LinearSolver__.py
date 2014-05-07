@@ -178,8 +178,8 @@ class LinearSolver(GenericAlgorithm):
         pores2 = sp.copy(p2)
         pores1[-sp.in1d(p1,pores)] = p2[-sp.in1d(p1,pores)]        
         pores2[-sp.in1d(p1,pores)] = p1[-sp.in1d(p1,pores)]
-        X1 = self._result[pores1]
-        X2 = self._result[pores2]
+        X1 = self.get_pore_data(locations=pores1,prop=self._X_name)
+        X2 = self.get_pore_data(locations=pores2,prop=self._X_name)
         g = self._conductance[throats]
         R = sp.sum(sp.multiply(g,(X1-X2)))
         return(R)
@@ -281,15 +281,8 @@ class LinearSolver(GenericAlgorithm):
             elif  face1=='front' or face1=='back':
                 L = self._net.domain_size('width')
                 A = self._net.domain_size('front')
-            fn = network.find_neighbor_pores(face1_pores,excl_self=True)
-            fn = fn[sp.in1d(fn,network.get_pore_indices('internal'))]
-            ft = network.find_connecting_throat(face1_pores,fn)
-            if alg=='Fickian': X_temp = sp.log(1-x[fn])
-            elif alg=='Stokes':
-                X_temp = x[fn]
-                d_force = 1/d_force
-            cond = self._conductance
-            N = sp.sum(cond[ft]*sp.absolute(X1-X_temp))
+            d_force = 1/d_force
+            N = sp.absolute(self.rate(pores=face1_pores))
             eff = N*L/(d_force*A*delta_X)
             effective_prop.append(eff)
             del self._pore_info['Dirichlet']
