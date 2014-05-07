@@ -905,14 +905,14 @@ class Tools(Base):
             try: 
                 temp = getattr(self,'_'+element+'_data')[item]
                 if sp.sum(sp.isnan(temp)) > 0:
-                    self._logger.warning('Nans found in: '+item)
+                    self._logger.error('Nans found in: '+item)
                     success = 0
-                else: self._logger.info('Checks for property: '+item+', passed successfully.')
+                else: self._logger.debug('Checks for property: '+item+', passed successfully.')
             except:
-                self._logger.error('Property: '+item+' not found!')
+                self._logger.error(element+' property '+item+': not found!')
                 success = 0
-        if success == 1:
-            self._logger.info('All checks passed successfully.')
+        if success == 1:     self._logger.info('All '+element+' property checks passed successfully.')
+        else:   self._logger.error('Problem found in checking '+element+' properties.')
         return success
         
     def check_pore_health(self,props=[]):
