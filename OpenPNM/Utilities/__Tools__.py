@@ -492,11 +492,11 @@ class Tools(Base):
         '''
         if element == 'pore':
             element_info = self._pore_info
-            labels = self.list_pore_labels()
+            labels = sp.array(list(self._pore_info.keys()))
         elif element == 'throat':
             element_info = self._throat_info
-            labels = self.list_throat_labels()
-        arr = sp.ndarray((sp.shape(locations,)[0],len(labels)),dtype=bool)
+            labels = sp.array(list(self._throat_info.keys()))
+        arr = sp.zeros((sp.shape(locations,)[0],len(labels)),dtype=bool)
         col = 0
         for item in labels:
             arr[:,col] = element_info[item][locations]
@@ -504,18 +504,20 @@ class Tools(Base):
         if mode == 'count':
             return sp.sum(arr,axis=1)
         if mode == 'union':
-            return labels[sp.sum(arr,axis=0)>0]
+            return list(labels[sp.sum(arr,axis=0)>0])
         if mode == 'intersection':
             return labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
         if mode == 'mask':
             return arr
-        else:
+        if mode == 'none':
             temp = sp.ndarray((sp.shape(locations,)[0],),dtype=object)
             for i in sp.arange(0,sp.shape(locations,)[0]):
                 temp[i] = list(labels[arr[i,:]])
             return temp
+        else:
+            print('unrecognized mode')
                 
-    def labels(self,pores=None,throats=None,mode=''):
+    def labels(self,pores=None,throats=None,mode='union'):
         r'''
         Returns the labels applied to specified pore locations
         
