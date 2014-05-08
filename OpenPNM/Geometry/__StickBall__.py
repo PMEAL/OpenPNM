@@ -16,14 +16,20 @@ from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
 class Stick_and_Ball(GenericGeometry):
     r"""
-    Stick and Ball subclass of GenericGeometry.  This subclass produces a 
-    generic set of geometry models with pore sizes distributed between 0 and 1,
-    and volumes and other info based on spherical pores and cylindrical throats
+    Stick and Ball subclass of GenericGeometry.  This subclass is meant as a 
+    basic default geometry to get started quickly.  It's main limitation is 
+    that the pore and throat sizes are hard-coded to be weibull distributions
+    with specified values.  You *can* override these values by assigning new
+    methods to the 'pore_diameter' and 'throat_diameter' attributes using 
+    the distribution values you wish.  
 
     Parameters
     ----------
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+    name : string
+        The name of the object, which is also used as the label where this 
+        geometry is defined.
+        
+    
 
     """
 

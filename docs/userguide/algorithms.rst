@@ -1,4 +1,4 @@
-. _algorithms:
+.. _algorithms:
 
 ###############################################################################
 Algorithms
@@ -8,13 +8,11 @@ Algorithms
 Percolation Algorithms
 ===============================================================================
 
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Invasion Percolation
--------------------------------------------------------------------------------
-OpenPNM employs a sophisticated drainage algorithm that allows for a wide 
-variety of initial conditions. The algorithm follows the basic tenants of the 
-invasion percolation scheme, which was first described here [1]_, with a few 
-clarifications.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+OpenPNM employs a sophisticated drainage algorithm that allows for a wide variety of initial conditions. The algorithm follows the basic tenants of the invasion percolation scheme, which was first described here [1]_, with a few clarifications.
 
 1) Multiple, independent clusters of the invading phase can be simulated, originating from any pore, or group of pores in the network.
 2) Clusters grow simultaneously. Pore invasion times are calculated from cluster volumes and prescribed cluster growth rates.
@@ -30,13 +28,17 @@ At each pore filling step, the subsequent filling step is anticipated by searchi
 
 .. [1] D Wilkinson and J F Willemsen 1983 J. Phys. A: Math. Gen. 16 3365 http://dx.doi.org/10.1088/0305-4470/16/14/028
 
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Access Limited Ordinary Percolation
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 OpenPNM also includes an algorithm for simulating drainage capillary pressure curves, where a specified pressure is applied and the volume of non-wetting liquid injected is monitored.  The most common version of this experiment is Mercury Intrusion Porosimetry, which is commonly used to measure pore size distributions.  The drainage process is best simulated with a so-called 'access limited ordinary percolation' algorithm (ALOP).  
 
 ===============================================================================
-Transport Algorithms===============================================================================This documentation is being rewritten, sorry for the inconvenience.
+Transport Algorithms
+===============================================================================
+
+This documentation is being rewritten, sorry for the inconvenience.
 
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

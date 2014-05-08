@@ -1,14 +1,15 @@
 .. _examples:
 
 ###############################################################################
-**OpenPNM Examples**
+Examples and Tutorials
 ###############################################################################
 
-Available Examples:
+Available Examples and Tutorials:
 
 .. toctree::
    :maxdepth: 1
    
-   cubic.rst
-   template.rst
-   delaunay.rst
+   getting_started.rst
+   geometries.rst
+   drainage.rst
+   boundary_conditions.rst

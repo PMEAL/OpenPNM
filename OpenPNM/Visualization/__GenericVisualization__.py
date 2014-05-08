@@ -20,9 +20,6 @@ class GenericVisualization(OpenPNM.Utilities.Base):
     --------
     >>> print('nothing yet')
 
-    .. note::
-    n/a
-
     """
 
     def __init__(self,**kwargs):
