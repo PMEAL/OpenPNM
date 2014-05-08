@@ -7,8 +7,9 @@ import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(1, parent_dir)
 import OpenPNM
-import logging as _logging
 import scipy.constants
+import logging as _logging
+import time
 
 # set up logging to file - see previous section for more details
 _logging.basicConfig(level=_logging.ERROR,
@@ -67,8 +68,12 @@ class Base(object):
             loglevel = 20
             self.set_loglevel(loglevel)
             
-        self.constants = scipy.constants
-        
+    def delete(self):
+        print('deleting')
+        for item in self._instances:
+            if self is item:
+                self._instances.remove(item)
+
     def save_object(self):
         r'''
         This method saves the object and all of its associated objects. 
@@ -160,19 +165,14 @@ class Base(object):
         Returns
         -------
         OpenPNM Object
-            
-        Notes
-        -----
-        If any objects are instantiated without a name (i.e. name = ''), then
-        this method may start failing since the default name in many method calls
-        is name = ''.
+        
         
         '''
         for item in self._instances:
             if item.name == name:
                 obj = item
         return obj
-        
+
     def find_object_by_type(self,obj_type):
         r'''
         
@@ -211,6 +211,17 @@ class Base(object):
         return self._name
         
     name = property(_get_name,_set_name)
+        
+    def tic(self):
+        #Homemade version of matlab tic and toc functions
+        global startTime_for_tictoc
+        startTime_for_tictoc = time.time()
+
+    def toc(self):
+        if 'startTime_for_tictoc' in globals():
+            print("Elapsed time is " + str(time.time() - startTime_for_tictoc) + " seconds.")
+        else:
+            print("Toc: start time not set")
         
 if __name__ == '__main__':
     pass

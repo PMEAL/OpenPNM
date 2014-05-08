@@ -1,5 +1,10 @@
-def preview(pn, values=[]):
+import numpy as np
+try:
     import vtk
+except ImportError:
+    pass
+
+def preview(pn, values=[]):
 
     coords = pn.get_pore_data(prop='coords')
     heads, tails = pn.get_throat_data(prop='connections').T
@@ -17,6 +22,10 @@ def preview(pn, values=[]):
 
     colors = vtk.vtkUnsignedCharArray()
     colors.SetNumberOfComponents(3)
+    if any(values):
+        values = np.array(values)
+        values -= values.min()
+        values = np.true_divide(values, values.max())
     for v in values:
         r = 255*(v)
         g = 0
@@ -28,7 +37,7 @@ def preview(pn, values=[]):
     polydata.SetLines(polys)
     if colors.GetNumberOfTuples() == len(coords):
         polydata.GetPointData().SetScalars(colors)
-    else:
+    elif colors.GetNumberOfTuples() != 0:
         raise Exception("Mismatch: {} points, {} scalars".format(
                         len(coords), colors.GetNumberOfTuples()))
 
