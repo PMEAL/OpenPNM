@@ -1,6 +1,6 @@
-
-"""
-module hydraulic_conductance
+r"""
+===============================================================================
+Submodule -- hydraulic_conductance
 ===============================================================================
 
 """
@@ -39,7 +39,7 @@ def hagen_poiseuille(physics,
                      pore_diameter = 'diameter',
                      **params):
     r"""
-    Calculates the hydraulic conductvity of throat assuming square geometry using a modified Hagen Poiseuille model
+    Calculates the hydraulic conductivity of throat assuming square geometry using a modified Hagen-Poiseuille model
 
     Parameters
     ----------

@@ -16,25 +16,21 @@ Classes
 .. autoclass:: GenericNetwork
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
        
 .. autoclass:: Cubic
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
 
 .. autoclass:: Delaunay
    :members:
    :undoc-members:
-   :private-members:
    :show-inheritance:
    
 .. autoclass:: TestNet
    :members:
-   :undoc-members:
-   :private-members:
+   :undoc-members:w
    :show-inheritance:
    
 """

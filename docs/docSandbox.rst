@@ -1,19 +1,21 @@
  .. _sandbox: 'Table of contents for Sandbox'
 
 
-###############################################################
+###############################################################################
 Sandbox - Use pound symbol (above and below) to indicate a part
-###############################################################
+###############################################################################
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++
+===============================================================================
 Chapters are identified by asterisks (above and below)
-++++++++++++++++++++++++++++++++++++++++++++++++++++++
+===============================================================================
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Sections are identified by equal signs placed underneath
-========================================================
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+-------------------------------------------------------------------------------
 Subsections are identified by dashes placed underneath
-------------------------------------------------------
+-------------------------------------------------------------------------------
 
 To give an example expression, we follow text by two colons.  For example::
 
@@ -27,9 +29,9 @@ ftp://ftp.ams.org/pub/tex/doc/amsmath/amsldoc.pdf
 A very handy link for testing Latex math expressions:
 http://www.codecogs.com/latex/eqneditor.php
 
-+++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Late pore filling
-+++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Due to the presence of acute internal features, the pressure required to completely fill 
 a pore with the non-wetting phase may be higher than the pressure required for entry. The 

@@ -1,7 +1,9 @@
-
-"""
-module vapor_pressure
+r"""
 ===============================================================================
+Submodule -- vapor_pressure
+===============================================================================
+
+Methods for predicing the vapor pressure of pure species
 
 """
 import scipy as sp
