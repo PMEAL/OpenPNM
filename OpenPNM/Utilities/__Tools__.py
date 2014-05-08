@@ -358,11 +358,11 @@ class Tools(Base):
             locations are given then this mode will remove the entire label
             from the network.
         '''
-        if pores:
+        if pores != None:
             if pores == 'all':
                 pores = self.pores(labels='all')
             self._set_info(element='pore',label=label,locations=pores,mode=mode)
-        if throats:
+        if throats != None:
             if throats == 'all':
                 throats = self.get_throat_indices(labels='all')
             self._set_info(element='throat',label=label,locations=throats,mode=mode)
@@ -427,82 +427,68 @@ class Tools(Base):
         '''
         return self._get_info(element='throat',label=label,return_indices=return_indices)
         
-    def list_pore_props(self):
+    def _get_props(self,element='',mode='all'):
         r'''
-        Returns a list containing the names of all defined pore properties.
-        This list is an iterable, so is useful for scanning through labels.
+        This is the actual prop list getter method, but it should not be
+        called directly.  Wrapper methods have been created, use props().
+        '''
+        props = []
+        data_dict = getattr(self,'_'+element+'_data')
+        temp = list(data_dict.keys())
+        if mode == 'all':
+            props = temp
+        if mode == 'vectors':
+            for item in temp:
+                try: 
+                    data_dict[item][1]
+                    props.append(item)
+                except: pass
+        if mode == 'scalars':
+            for item in temp:
+                try: data_dict[item][1]
+                except: props.append(item)
+        props.sort()
+        return props
+            
+    def props(self,pores=None,throats=None,mode='all'):
+        r'''
+        Returns a list containing the names of all defined pore or throat
+        properties. 
+        
+        Parameters
+        ----------
+        pores or throats : boolean 
+            Properties exist on all pores and throats, so there is no reason
+            to request properties from some pores or throats.  These arguments
+            only control whether pore or throat properties are returned.
+        mode : string, optional
+            Set the mode to be used for retrieving props.  Options are:
+            
+            * 'all' : (default) Returns all pore or throat properties
+            
+            * 'scalars' : Only return properties that are stored as scalars
+            
+            * 'vectors' : Only return properties that are stored as vectors
 
         Returns
         -------
         A an alphabetically sorted list containing the string name of all 
-        pore properties currently defined.  
+        pore or throat properties currently defined.  This list is an iterable,
+        so is useful for scanning through properties.
 
         See Also
         --------
-        list_throat_props, list_pore_labels, list_throat_labels
+        labels
         '''
-        temp = list(self._pore_data.keys())
-        temp.sort()
-        return temp
-
-    def list_throat_props(self):
-        r'''
-        Returns a list containing the names of all defined throat properties. 
-        This list is an iterable, so is useful for scanning through labels.
-
-        Returns
-        -------
-        A an alphabetically sorted list containing the string name of all 
-        throat properties currently defined.  
-
-        See Also
-        --------
-        list_pore_props, list_pore_labels, list_throat_labels
-        '''
-        temp = list(self._throat_data.keys())
-        temp.sort()
-        return temp
-        
-    def list_pore_labels(self):
-        r'''
-        Returns a list containing the names of all defined pore labels. This
-        list is an iterable, so is useful for scanning through labels.
-
-        Returns
-        -------
-        A an alphabetically sorted list containing the string name of all 
-        pore labels currently defined.  
-
-        See Also
-        --------
-        list_throat_props, list_pore_props, list_throat_labels
-        '''
-        temp = list(self._pore_info.keys())
-        temp.sort()
-        return sp.array(temp,ndmin=1)
-
-    def list_throat_labels(self):
-        r'''
-        Returns a list containing the names of all defined throat labels. This
-        list is an iterable, so is useful for scanning through labels.
-        
-        Returns
-        -------
-        A an alphabetically sorted list containing the string name of all 
-        throat labels currently defined.  
-        
-        See Also
-        --------
-        list_throat_props, list_pore_props, list_pore_labels
-        '''
-        temp = list(self._throat_info.keys())
-        temp.sort()
-        return sp.array(temp,ndmin=1)
-        
+        if pores != None:
+            return self._get_props(element='pore',mode=mode)
+        if throats != None:
+            return self._get_props(element='throat',mode=mode)
+            
     def _get_labels(self,element,locations,mode):
         r'''
         This is the actual label getter method, but it should not be called directly.  
-        Wrapper methods have been created.  Use get_labels().
+        Wrapper methods have been created, use get_labels().
         '''
         if element == 'pore':
             element_info = self._pore_info
@@ -593,18 +579,6 @@ class Tools(Base):
             ind = (none == 0)
         if return_indices: ind = sp.where(ind==True)[0]
         return ind
-
-    def get_pore_indices(self,labels=['all'],return_indices=True,mode='union'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE pores() INSTEAD
-        '''
-        return self.pores(labels=labels,return_indices=return_indices,mode=mode)
-
-    def get_throat_indices(self,labels=['all'],return_indices=True,mode='union'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE throats() INSTEAD
-        '''
-        return self.throats(labels=labels,return_indices=return_indices,mode=mode)
         
     def pores(self,labels='all',return_indices=True,mode='union'):
         r'''
@@ -686,6 +660,18 @@ class Tools(Base):
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         ind = self._get_indices(element='throat',labels=labels,return_indices=return_indices,mode=mode)
         return ind
+        
+    def get_pore_indices(self,labels=['all'],return_indices=True,mode='union'):
+        r'''
+        THIS METHOD IS DEPRECATED, USE pores() INSTEAD
+        '''
+        return self.pores(labels=labels,return_indices=return_indices,mode=mode)
+
+    def get_throat_indices(self,labels=['all'],return_indices=True,mode='union'):
+        r'''
+        THIS METHOD IS DEPRECATED, USE throats() INSTEAD
+        '''
+        return self.throats(labels=labels,return_indices=return_indices,mode=mode)
 
     def interpolate_data(self,prop='',throats=[],pores=[],data=[]):
         r"""
