@@ -124,6 +124,7 @@ from . import Physics
 from . import Algorithms
 from . import Visualization
 from . import Graphics
+from . import Shortcuts
 
 
 
