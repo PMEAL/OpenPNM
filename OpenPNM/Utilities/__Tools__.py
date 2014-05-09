@@ -550,7 +550,7 @@ class Tools(Base):
             throats = sp.array(throats,ndmin=1)
             return self._get_labels(element='throat',locations=throats,mode=mode)
         
-    def _get_indices(self,element,labels,return_indices,mode):
+    def _get_indices(self,element,labels,mode):
         r'''
         This is the actual method for getting indices, but should not be called
         directly.  
@@ -579,10 +579,11 @@ class Tools(Base):
                 info = self._get_info(element=element,label=item)
                 none = none - sp.int8(info)
             ind = (none == 0)
-        if return_indices: ind = sp.where(ind==True)[0]
+        #Extract indices from boolean mask
+        ind = sp.where(ind==True)[0]
         return ind
         
-    def pores(self,labels='all',return_indices=True,mode='union'):
+    def pores(self,labels='all',mode='union'):
         r'''
         Returns pore locations where given labels exist.
         
@@ -618,10 +619,10 @@ class Tools(Base):
         array([100, 105, 110, 115, 120], dtype=int64)
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
-        ind = self._get_indices(element='pore',labels=labels,return_indices=return_indices,mode=mode)
+        ind = self._get_indices(element='pore',labels=labels,mode=mode)
         return ind
         
-    def throats(self,labels='all',return_indices=True,mode='union'):
+    def throats(self,labels='all',mode='union'):
         r'''
         Returns throat locations where given labels exist.
         
@@ -660,20 +661,49 @@ class Tools(Base):
         
         '''
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
-        ind = self._get_indices(element='throat',labels=labels,return_indices=return_indices,mode=mode)
+        ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
         
-    def get_pore_indices(self,labels=['all'],return_indices=True,mode='union'):
+    def to_mask(self,pores=None,throats=None):
+        r'''
+        Convert a list of pore or throat indices into a boolean mask
+        
+        Parameters
+        ----------
+        pores or throats : array_like
+            List of pore or throat indices
+            
+        Returns
+        -------
+        mask : array_like
+            A boolean mask of length Np or Nt with True in the locations of
+            pores or throats received.  
+        
+        '''
+        if pores != None:
+            Np = sp.shape(self._pore_info['all'])[0]
+            pores = sp.array(pores,ndmin=1)
+            mask = sp.zeros((Np,),dtype=bool)
+            mask[pores] = True
+            return mask
+        if throats != None:
+            Nt = sp.shape(self._throat_info['all'])[0]
+            throats = sp.array(throats,ndmin=1)
+            mask = sp.zeros((Nt,),dtype=bool)
+            mask[throats] = True
+            return mask
+        
+    def get_pore_indices(self,labels=['all'],mode='union'):
         r'''
         THIS METHOD IS DEPRECATED, USE pores() INSTEAD
         '''
-        return self.pores(labels=labels,return_indices=return_indices,mode=mode)
+        return self.pores(labels=labels,mode=mode)
 
-    def get_throat_indices(self,labels=['all'],return_indices=True,mode='union'):
+    def get_throat_indices(self,labels=['all'],mode='union'):
         r'''
         THIS METHOD IS DEPRECATED, USE throats() INSTEAD
         '''
-        return self.throats(labels=labels,return_indices=return_indices,mode=mode)
+        return self.throats(labels=labels,mode=mode)
 
     def interpolate_data(self,prop='',throats=[],pores=[],data=[]):
         r"""
@@ -786,8 +816,9 @@ class Tools(Base):
         #convert string to list, if necessary
         if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
-        temp = self.get_pore_indices(labels=labels,mode=mode,return_indices=False)
-        return sp.sum(temp) #return sum of Trues
+        Np = self.pores(labels=labels,mode=mode)
+        Np = self.to_mask(pores=Np)
+        return sp.sum(Np) #return sum of Trues
             
     def num_throats(self,labels=['all'],mode='union'):
         r'''
@@ -836,8 +867,9 @@ class Tools(Base):
         #convert string to list, if necessary
         if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
-        temp = self.get_throat_indices(labels=labels,mode=mode,return_indices=False)
-        return sp.sum(temp) #return sum of Trues
+        Nt = self.throats(labels=labels,mode=mode)
+        Nt = self.to_mask(throats=Nt)
+        return sp.sum(Nt) #return sum of Trues
         
     def get_result(self,alg_obj,**kwargs):
         r'''
