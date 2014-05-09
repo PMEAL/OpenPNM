@@ -208,7 +208,7 @@ class Cubic(GenericNetwork):
         
         for label in ['front','back','left','right','bottom','top']:
             ps = self.get_pore_indices(labels=[label,'internal'],mode='intersection')
-            self.clone_pores(pnums=ps,apply_label=[label,'boundary']) 
+            self.clone_pores(pores=ps,apply_label=[label,'boundary']) 
             #Translate cloned pores
             ind = self.get_pore_indices(labels=[label,'boundary'],mode='intersection')
             coords = self.get_pore_data(prop='coords',locations=ind) 

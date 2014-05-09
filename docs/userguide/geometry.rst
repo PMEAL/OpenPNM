@@ -73,10 +73,10 @@ A single **Network** can have a many different **Geometry** objects associated w
 	pn = OpenPNM.Network.TestNet()  # This generates a 5x5x5 cubic network for testing purposes
 	ps = pn.get_pore_indices(labels='subdomain1')
 	ts = pn.get_throat_indicies(labels='subdomain1')
-	geom1 = OpenPNM.Geometry.GenericNetwork(network=pn, name='geom_1',pnums=ps,tnums=ts)
+	geom1 = OpenPNM.Geometry.GenericNetwork(network=pn, name='geom_1',pores=ps,throats=ts)
 	ps = pn.get_pore_indices(labels='subdomain2')
 	ts = pn.get_throat_indicies(labels='subdomain2')
-	geom2 = OpenPNM.Geometry.GenericNetwork(network=pn, name='geom_2',pnums=ps,tnums=ts)
+	geom2 = OpenPNM.Geometry.GenericNetwork(network=pn, name='geom_2',pores=ps,throats=ts)
 	
 There are a number of 'helper' methods available as well.  For instance, if the 'subdomain1' and 'subdomain2' labels have only been applied to pores, then it is necessary to apply labels to throats.  Finding which throats are only connected to one subdomain or the other can be done with:
 

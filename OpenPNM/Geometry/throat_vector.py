@@ -31,7 +31,7 @@ def pore_to_pore(geometry,
     'connections' array as stored on the network.
     """
     Ts = network.get_throat_indices(geometry.name)
-    Ps = network.find_connected_pores(tnums=Ts,flatten=False)
+    Ps = network.find_connected_pores(throats=Ts,flatten=False)
     C0 = network.get_data(prop='coords',pores=Ps[:,0])
     C1 = network.get_data(prop='coords',pores=Ps[:,1])
     V = C1 - C0
