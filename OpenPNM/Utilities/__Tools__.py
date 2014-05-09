@@ -322,15 +322,12 @@ class Tools(Base):
         elif mode=='remove':  del getattr(self,'_'+element+'_info')[label]
         else:  getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
 
-    def _get_info(self,element='',label='',return_indices=False,mode=''):
+    def _get_info(self,element='',label='',mode=''):
         r'''
         This is the actual info getter method, but it should not be called directly.  
         Wrapper methods have been created.  Use get_info().        
         '''
-        if return_indices:
-            return sp.where(getattr(self,'_'+element+'_info')[label]==True)[0]
-        else:
-            return getattr(self,'_'+element+'_info')[label]
+        return getattr(self,'_'+element+'_info')[label]
             
     def set_info(self,label='',pores=None,throats=None,mode='merge'):
         r'''
@@ -367,7 +364,7 @@ class Tools(Base):
                 throats = self.get_throat_indices(labels='all')
             self._set_info(element='throat',label=label,locations=throats,mode=mode)
             
-    def get_info(self,label='',pores=None,throats=None,return_indices=True):
+    def get_info(self,label='',pores=None,throats=None):
         r'''
         Retrieves the locations where the specified label is applied
         
@@ -389,19 +386,13 @@ class Tools(Base):
         if pores != None:
             if pores == 'all':
                 pores = self.pores(labels='all')
-            temp = self._get_info(element='pore',label=label,return_indices=return_indices)
-            if return_indices == False:
-                return temp[pores]
-            else:
-                return temp[sp.in1d(temp,pores)]
+            temp = self._get_info(element='pore',label=label)
+            return temp[sp.in1d(temp,pores)]
         if throats != None:
             if throats == 'all':
                 throats = self.throats(labels='all')
-            temp = self._get_info(element='throat',label=label,return_indices=return_indices)
-            if return_indices == False:
-                return temp[throats]
-            else:
-                return temp[sp.in1d(temp,throats)]
+            temp = self._get_info(element='throat',label=label)
+            return temp[sp.in1d(temp,throats)]
            
     def set_pore_info(self,label='',locations='',mode='merge'):
         r'''
@@ -413,7 +404,7 @@ class Tools(Base):
         r'''
         THIS METHOD IS DEPRECATED, USE get_info INSTEAD
         '''
-        return self._get_info(element='pore',label=label,return_indices=return_indices)
+        return self._get_info(element='pore',label=label)
         
     def set_throat_info(self,label='',locations='',mode='merge'):
         r'''
@@ -425,7 +416,7 @@ class Tools(Base):
         r'''
         THIS METHOD IS DEPRECATED, USE get_info INSTEAD
         '''
-        return self._get_info(element='throat',label=label,return_indices=return_indices)
+        return self._get_info(element='throat',label=label)
         
     def _get_props(self,element='',mode='all'):
         r'''
