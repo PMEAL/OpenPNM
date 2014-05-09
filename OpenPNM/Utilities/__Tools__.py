@@ -374,9 +374,6 @@ class Tools(Base):
             Label of interest
         pores (or throats) : array_like
             List of pores or throats
-        return_indices : boolean
-            Controls whether a list of indices (default) or a boolean mask is
-            returned
             
         See Also
         --------
@@ -400,7 +397,7 @@ class Tools(Base):
         '''
         self._set_info(element='pore',label=label,locations=locations,mode=mode)
 
-    def get_pore_info(self,label='',return_indices=False):
+    def get_pore_info(self,label=''):
         r'''
         THIS METHOD IS DEPRECATED, USE get_info INSTEAD
         '''
@@ -412,7 +409,7 @@ class Tools(Base):
         '''
         self._set_info(element='throat',label=label,locations=locations,mode=mode)
         
-    def get_throat_info(self,label='',return_indices=False):
+    def get_throat_info(self,label=''):
         r'''
         THIS METHOD IS DEPRECATED, USE get_info INSTEAD
         '''
@@ -622,9 +619,6 @@ class Tools(Base):
         labels : list of strings, optional
             The throat label(s) whose locations are requested.
             If omitted, 'all' throat inidices are returned.
-        return_indices : boolean, optional
-            This flag specifies whether throat locations are returned as a 
-            boolean mask of length Np, or as a list of indices (default).
         mode : string, optional
             Specifies how the query should be performed.  The options are: 
 
