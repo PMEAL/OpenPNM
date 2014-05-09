@@ -77,7 +77,8 @@ class GenericGeometry(OpenPNM.Utilities.Base):
                 if geoms[item] is self:
                     del geoms[item]
                     break
-            temp = self._net.pores(labels=geoms,return_indices=False)
+            temp = self._net.pores(labels=geoms)
+            temp = self._net.to_mask(pores=temp)
             if sum(temp[pores]) > 0:
                 raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
             if mode == 'add':
@@ -95,7 +96,8 @@ class GenericGeometry(OpenPNM.Utilities.Base):
                 if geoms[item] is self:
                     del geoms[item]
                     break
-            temp = self._net.throats(labels=geoms,return_indices=False)
+            temp = self._net.throats(labels=geoms)
+            temp = self._net.to_mask(throats=temp)
             if sum(temp[throats]) > 0:
                 raise Exception('You are trying to assign a geometry to a throat that has already been asssigned')
             if mode == 'add':
