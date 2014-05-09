@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
-# Author: Andreas Putz
-# Copyright (c) 2013, OpenPNM
-# License: TBD.
 
 r"""
 ##################################################################################
-:mod:`OpenPNM` --  A scientific pore network calculator for porous transport media
+:mod:`OpenPNM` --  A scientific pore network simulator for porous transport media
 ##################################################################################
 .. module:: OpenPNM
     :platform: Linux, Windows

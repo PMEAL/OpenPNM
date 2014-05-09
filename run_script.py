@@ -4,7 +4,7 @@ import scipy as sp
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=20).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001],add_boundaries=True)
+pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=20).generate(divisions=[20, 20, 20], lattice_spacing=[0.0001],add_boundaries=True)
 
 #==============================================================================
 '''Build Geometry'''
@@ -56,21 +56,30 @@ OP_1.run()
 #------------------------------------------------------------------------------
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, loggername='Fickian', name='Fickian_alg',network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.pores(labels=['top','boundary'],mode='intersection')
+BC1_pores = pn.pores(labels=['top','front'],mode='intersection')
 Fickian_alg.set_info(label='Dirichlet', pores=BC1_pores)
 Fickian_alg.set_data(prop='BCval', data=0.6, pores=BC1_pores)
-BC2_pores = pn.pores(labels=['bottom','boundary'],mode='intersection')
+BC2_pores = pn.pores(labels=['top','back'],mode='intersection')
 Fickian_alg.set_info(label='Dirichlet', pores=BC2_pores)
 Fickian_alg.set_data(prop='BCval', data=0.2, pores=BC2_pores)
 
 # Updating data based on the result of Percolation Algorithms
-OP_1.update(Pc=3000)
+OP_1.update(Pc=11000)
 # Run simulation
 Fickian_alg.run(active_fluid=air)
 Fickian_alg.update()
 
 #------------------------------------------------------------------------------
-#Export to VTK
-#del pn._pore_data['domain']
-#del pn._throat_data['domain']
-#OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
+'''Export to VTK'''
+#------------------------------------------------------------------------------
+#OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water], filename='output.vtp')
+OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
+
+
+
+
+
+
+
+
+
