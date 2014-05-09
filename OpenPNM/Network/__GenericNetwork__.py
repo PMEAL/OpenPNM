@@ -352,13 +352,13 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         if sprsfmt != 'all':
             return self.incidence_matrix[sprsfmt][tprop]
             
-    def find_connected_pores(self,tnums=[],flatten=False):
+    def find_connected_pores(self,throats=[],flatten=False):
         r"""
         Return a list of pores connected to a list of throats
 
         Parameters
         ----------
-        tnums : array_like
+        throats : array_like
             List of throats numbers
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore numbers
@@ -373,13 +373,13 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.find_connected_pores(tnums=[0,1])
+        >>> pn.find_connected_pores(throats=[0,1])
         array([[0, 1],
                [0, 5]])
-        >>> pn.find_connected_pores(tnums=[0,1],flatten=True)
+        >>> pn.find_connected_pores(throats=[0,1],flatten=True)
         array([0, 1, 5])
         """
-        Ps = self._throat_data['connections'][tnums]
+        Ps = self._throat_data['connections'][throats]
         #Ps = [sp.asarray(x) for x in Ps if x]
         if flatten:
             Ps = sp.unique(sp.hstack(Ps))
@@ -407,13 +407,13 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         return sp.intersect1d(self.find_neighbor_throats(P1),self.find_neighbor_throats(P2))
 
-    def find_neighbor_pores(self,pnums,flatten=True,mode='union',excl_self=False):
+    def find_neighbor_pores(self,pores,flatten=True,mode='union',excl_self=False):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
         Parameters
         ----------
-        pnums : array_like
+        pores : array_like
             ID numbers of pores whose neighbors are sought.
         flatten : boolean, optional
             If flatten is True  a 1D array of unique pore ID numbers is 
@@ -442,31 +442,31 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.find_neighbor_pores(pnums=[0,2])
+        >>> pn.find_neighbor_pores(pores=[0,2])
         array([ 1,  3,  5,  7, 25, 27])
-        >>> pn.find_neighbor_pores(pnums=[0,1]) #Find all neighbors, excluding selves (default behavior)
+        >>> pn.find_neighbor_pores(pores=[0,1]) #Find all neighbors, excluding selves (default behavior)
         array([ 2,  5,  6, 25, 26])
-        >>> pn.find_neighbor_pores(pnums=[0,2],flatten=False)
+        >>> pn.find_neighbor_pores(pores=[0,2],flatten=False)
         array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
-        >>> pn.find_neighbor_pores(pnums=[0,2],mode='intersection') #Find only common neighbors
+        >>> pn.find_neighbor_pores(pores=[0,2],mode='intersection') #Find only common neighbors
         array([1], dtype=int64)
-        >>> pn.find_neighbor_pores(pnums=[0,2],mode='not_intersection') #Exclude common neighbors
+        >>> pn.find_neighbor_pores(pores=[0,2],mode='not_intersection') #Exclude common neighbors
         array([ 3,  5,  7, 25, 27], dtype=int64)
-        >>> pn.find_neighbor_pores(pnums=[0,1],mode='union') #Find all neighbors, including selves
+        >>> pn.find_neighbor_pores(pores=[0,1],mode='union') #Find all neighbors, including selves
         array([ 0,  1,  2,  5,  6, 25, 26])
         """
         #Count neighboring pores
         try:
-            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
+            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pores]]
         except:
             self._logger.info('Creating adjacency matrix, please wait')
             self.create_adjacency_matrix()
-            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pnums]]
+            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pores]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
             neighborPs = sp.hstack(neighborPs)
-            #neighborPs = sp.concatenate((neighborPs,pnums))
+            #neighborPs = sp.concatenate((neighborPs,pores))
             #Remove references to input pores and duplicates
             if mode == 'not_intersection':
                 neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)==1)[0])
@@ -475,19 +475,19 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             elif mode == 'intersection':
                 neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)>1)[0])
             if excl_self:
-                neighborPs = neighborPs[~sp.in1d(neighborPs,pnums)]
+                neighborPs = neighborPs[~sp.in1d(neighborPs,pores)]
         else:
-            for i in range(0,sp.size(pnums)):
+            for i in range(0,sp.size(pores)):
                 neighborPs[i] = sp.array(neighborPs[i])
         return sp.array(neighborPs,ndmin=1)
 
-    def find_neighbor_throats(self,pnums,flatten=True,mode='union'):
+    def find_neighbor_throats(self,pores,flatten=True,mode='union'):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
         Parameters
         ----------
-        pnums : array_like
+        pores : array_like
             Indices of pores whose neighbors are sought
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique throat ID numbers
@@ -511,18 +511,18 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> pn.find_neighbor_throats(pnums=[0,1])
+        >>> pn.find_neighbor_throats(pores=[0,1])
         array([0, 1, 2, 3, 4, 5])
-        >>> pn.find_neighbor_throats(pnums=[0,1],flatten=False)
+        >>> pn.find_neighbor_throats(pores=[0,1],flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
         #Test for existance of incidence matrix
         try:
-            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
+            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pores]]
         except:
             self._logger.info('Creating incidence matrix, please wait')
             self.create_incidence_matrix()
-            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pnums]]
+            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pores]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborTs = [sp.asarray(x) for x in neighborTs if x]
@@ -535,18 +535,18 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             elif mode == 'intersection':
                 neighborTs = sp.unique(sp.where(sp.bincount(neighborTs)>1)[0])
         else:
-            for i in range(0,sp.size(pnums)):
+            for i in range(0,sp.size(pores)):
                 neighborTs[i] = sp.array(neighborTs[i])
         return sp.array(neighborTs,ndmin=1)
 
-    def num_neighbors(self,pnums,flatten=False):
+    def num_neighbors(self,pores,flatten=False):
         r"""
         Returns an ndarray containing the number of neigbhor pores for each 
-        element in pnums
+        element in pores
 
         Parameters
         ----------
-        pnums : array_like
+        pores : array_like
             Pores whose neighbors are to be counted
         flatten : boolean (optional)
             If False (default) the number pore neighbors for each input are
@@ -561,20 +561,20 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.num_neighbors(pnums=[0,1],flatten=False)
+        >>> pn.num_neighbors(pores=[0,1],flatten=False)
         array([3, 4], dtype=int8)
-        >>> pn.num_neighbors(pnums=[0,1],flatten=True)  # Sum excludes pores 0 & 1
+        >>> pn.num_neighbors(pores=[0,1],flatten=True)  # Sum excludes pores 0 & 1
         5
-        >>> pn.num_neighbors(pnums=[0,2],flatten=True)  # Sum includes pore 1, but not 0 & 2
+        >>> pn.num_neighbors(pores=[0,2],flatten=True)  # Sum includes pore 1, but not 0 & 2
         6
         """
 
         #Count number of neighbors
         if flatten:
-            neighborPs = self.find_neighbor_pores(pnums,flatten=True,mode='union',excl_self=True)
+            neighborPs = self.find_neighbor_pores(pores,flatten=True,mode='union',excl_self=True)
             num = sp.shape(neighborPs)[0]
         else:
-            neighborPs = self.find_neighbor_pores(pnums,flatten=False)
+            neighborPs = self.find_neighbor_pores(pores,flatten=False)
             num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
             for i in range(0,sp.shape(num)[0]):
                 num[i] = sp.size(neighborPs[i])
@@ -644,20 +644,20 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #            ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
         #        plt.show()
         
-    def clone_pores(self,pnums,mode='parent',apply_label=['clone']):
+    def clone_pores(self,pores,mode='parent',apply_label=['clone']):
         r'''
         mode options should be 'parent', 'siblings'
         '''
-        if type(pnums) == str: 
-            pnums = self.get_pore_indices(labels=[pnums])
+        if type(pores) == str: 
+            pores = self.get_pore_indices(labels=[pnums])
         if self._geometries != {} or self._fluids != {}:
             raise Exception('Cannot clone an active network')
         apply_label = list(apply_label)
         #Clone pores
         Np = self.num_pores()
-        parents = sp.array(pnums,ndmin=1)
+        parents = sp.array(pores,ndmin=1)
         pcurrent = self.get_pore_data(prop='coords')
-        pclone = pcurrent[pnums,:]
+        pclone = pcurrent[pores,:]
         pnew = sp.concatenate((pcurrent,pclone),axis=0)
         Npnew = sp.shape(pnew)[0]
         clones = sp.arange(Np,Npnew)

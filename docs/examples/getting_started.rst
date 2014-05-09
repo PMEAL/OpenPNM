@@ -30,8 +30,8 @@ This generates a topological network called *pn* which contains pores at the cor
 
 	pn.num_pores()  # 1000
 	pn.num_throats()  # 2700
-	pn.find_neighbor_pores(pnums=[1])  # [0,2,11,101]
-	pn.get_pore_lables(pnums=[1])  # ['all','bottom','left']
+	pn.find_neighbor_pores(pores=[1])  # [0,2,11,101]
+	pn.get_pore_lables(pores=[1])  # ['all','bottom','left']
 	pn.get_pore_indices(labels=['all','bottom','left'],mode='intersection')  # [0,1,2,3,4,5,6,7,8,9]
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
