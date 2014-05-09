@@ -15,24 +15,16 @@ Classes
     
 .. autoclass:: GenericNetwork
    :members:
-   :undoc-members:
-   :show-inheritance:
        
 .. autoclass:: Cubic
    :members:
-   :undoc-members:
-   :show-inheritance:
 
 .. autoclass:: Delaunay
    :members:
-   :undoc-members:
-   :show-inheritance:
-   
+
 .. autoclass:: TestNet
    :members:
-   :undoc-members:w
-   :show-inheritance:
-   
+
 """
 
 from .__GenericNetwork__ import GenericNetwork
