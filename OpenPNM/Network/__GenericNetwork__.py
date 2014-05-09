@@ -798,6 +798,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         where the diameter is less than 0.5, get a mask ie:
         self.get_pore_data(prop='diameter') < 0.5 # [True, False, ...]
         And send it over as an argument. 
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.trim(pores=[35])
         '''
         pores = np.ravel(pores)
         throats = np.ravel(throats)
@@ -814,7 +819,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
             Tdrop[throats] = 1
             Tkeep = ~Tdrop
-            Pkeep = self.get_pore_indices(labels='all',return_indices=False)
+            Pkeep = self.get_pore_indices(labels='all')
+            Pkeep = self.to_mask(pores=Pkeep)
         
         #Remap throat connections
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
@@ -829,14 +835,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         # Write connections specifically
         self._throat_data['connections'] = sp.vstack((temp1,temp2)).T
         # Over-write remaining data
-        for item in self.list_pore_props():
+        for item in self._pore_data.keys():
             self._pore_data[item] = self._pore_data[item][Pkeep]
-        for item in self.list_pore_labels():
+        for item in self._pore_info.keys():
             self._pore_info[item] = self._pore_info[item][Pkeep]            
-        for item in self.list_throat_props():
+        for item in self._throat_data.keys():
             if item != 'connections':
                 self._throat_data[item] = self._throat_data[item][Tkeep]  
-        for item in self.list_throat_labels():
+        for item in self._throat_info.keys():
             self._throat_info[item] = self._throat_info[item][Tkeep]
             
         #Reset network
@@ -848,7 +854,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._logger.warning(str(Ps)+' pores no longer have neighbors')
             
         #Check for clusters of isolated pores
-        Cs = self.find_clusters(self.get_throat_indices(return_indices=False))
+        Cs = self.find_clusters(self.throats('all'))
         if sp.shape(sp.unique(Cs))[0] > (Ps+1):
             self._logger.warning('Isolated clusters exist in the network')
         

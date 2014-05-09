@@ -291,7 +291,7 @@ class Delaunay(GenericNetwork):
         img[im_subs[:,0],im_subs[:,1],im_subs[:,2]] = pnum
 
         #Perform distance transform on points and also get 'indicies' of each point
-        img_dt, ind_dt = spim.distance_transform_edt(img==0,return_indices=True)
+        img_dt, ind_dt = spim.distance_transform_edt(img==0)
 
         #Project all* internal points to x face
         #*Note that it's possible/likely that mutliple internal points map to the same boundary point
