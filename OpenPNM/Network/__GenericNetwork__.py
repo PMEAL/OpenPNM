@@ -42,17 +42,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.name = name
         #Initialize fluid, physics, and geometry tracking lists
         self._fluids = {}
-        self._geometries ={}
-        self._physics = {}
+        self._geometries = {}
         #Initialize adjacency and incidence matrix dictionaries
-        self.adjacency_matrix = {}
-        self.incidence_matrix = {}
-        self.adjacency_matrix['coo'] = {}
-        self.adjacency_matrix['csr'] = {}
-        self.adjacency_matrix['lil'] = {}
-        self.incidence_matrix['coo'] = {}
-        self.incidence_matrix['csr'] = {}
-        self.incidence_matrix['lil'] = {}
+        self.reset_graphs()
         self._logger.debug("Construction of Network container")
 
         
@@ -648,9 +640,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r'''
         mode options should be 'parent', 'siblings'
         '''
-        if type(pores) == str: 
-            pores = self.get_pore_indices(labels=[pnums])
-        if self._geometries != {} or self._fluids != {}:
+        if sp.shape(self.props(pores='all'))[0] > 1:
             raise Exception('Cannot clone an active network')
         apply_label = list(apply_label)
         #Clone pores
@@ -680,7 +670,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.set_throat_data(prop='connections',data=tnew)
         
         # Any existing adjacency and incidence matrices will be invalid
-        self._reset_network()
+        self.reset_graphs()
         
     def __str__(self):
         r"""
@@ -768,11 +758,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
         
-    def _reset_network(self):
+    def reset_graphs(self):
         r'''
+        Clears the adjacency and incidence matrices
         '''
-        #Initialize adjacency and incidence matrix dictionaries
-        self._logger.info('Resetting adjacency and incidence matrices')
+        #Re-initialize adjacency and incidence matrix dictionaries
+        self._logger.debug('Resetting adjacency and incidence matrices')
         self.adjacency_matrix = {}
         self.incidence_matrix = {}
         self.adjacency_matrix['coo'] = {}
