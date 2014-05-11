@@ -57,6 +57,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         #Setup containers for object linking
         self._net = network #Attach network to self
         self._physics = {} #Create list for physics to append themselves to
+        self._net._geometries.update({self.name : self})
         self._prop_list = []
         
         #Initialize geometry to NOWHERE
