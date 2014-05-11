@@ -111,8 +111,14 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         for item in prop_list:
             self._logger.debug('Refreshing: '+item)
             getattr(self,item)()
-        
+            
     def add_method(self,prop='',prop_name='',**kwargs):
+        r'''
+        THIS METHOD IS DEPRECATED USE add_property() INSTEAD
+        '''
+        self.add_property(prop=prop,prop_name=prop_name,**kwargs)
+        
+    def add_property(self,prop='',prop_name='',**kwargs):
         r'''
         Add specified property estimation model to the fluid object.
         

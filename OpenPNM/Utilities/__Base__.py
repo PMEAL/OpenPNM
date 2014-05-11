@@ -68,11 +68,14 @@ class Base(object):
             loglevel = 20
             self.set_loglevel(loglevel)
             
-    def delete(self):
-        print('deleting')
+    def __del__(self):
         for item in self._instances:
             if self is item:
                 self._instances.remove(item)
+        if self.__module__.split('.')[1] == 'Geometry':
+            for item in self._physics:
+                del self._physics[item].geometry
+        print('deleting')
 
     def save_object(self):
         r'''
