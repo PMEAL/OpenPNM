@@ -73,7 +73,6 @@ class Delaunay(GenericNetwork):
 #        self._add_boundaries()
         self._add_labels()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
-        return self
 
     def _generate_setup(self, **params):
         r"""

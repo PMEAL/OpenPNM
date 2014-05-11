@@ -92,8 +92,6 @@ class MatFile(GenericNetwork):
         self._add_geometry()
         self._add_xtra_pore_data()
         self._add_xtra_throat_data()
- 
-        return self
         
     def _add_pores(self):
         Pind = sp.arange(0,self._Np)

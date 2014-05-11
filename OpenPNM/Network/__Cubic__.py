@@ -72,7 +72,6 @@ class Cubic(GenericNetwork):
         if params['add_boundaries']:
             self._add_boundaries()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
-        return self
 
     def _generate_setup(self,   domain_size = [],
                                 divisions = [],
