@@ -215,12 +215,12 @@ class Base(object):
                 raise Exception('A '+obj_type+' Object with the supplied name already exists')
             
         self._name = name
-                
+    
     def _get_name(self):
         return self._name
         
     name = property(_get_name,_set_name)
-        
+    
     def tic(self):
         #Homemade version of matlab tic and toc functions
         global startTime_for_tictoc
@@ -231,6 +231,42 @@ class Base(object):
             print("Elapsed time is " + str(time.time() - startTime_for_tictoc) + " seconds.")
         else:
             print("Toc: start time not set")
-        
+            
+    def print_methods(self):
+        a = dir(self)
+        for item in a:
+            if item.split('_')[0] != '':
+                print(item)
+                
+    def print_inheritance(self):
+        a = type.mro(type(self))
+        a.reverse()
+        b = []
+        for item in a:
+            b.append(dir(item))
+        #Remove inherited methods
+        for i in range(1,len(b)):
+            print('==========================================================')            
+            print(a[i])
+            print('==========================================================')
+            print('Private Methods')
+            print('----------------------------------------------------------')
+            temp = list(set(b[i]).difference(set(b[i-1])))
+            for item in temp:
+                if item.split('_')[0] == '':
+                    print(item)
+                    temp.remove(item)
+            temp.sort()
+            print('----------------------------------------------------------')
+            print('Public Methods')
+            print('----------------------------------------------------------')
+            for item in temp:
+                print(item)
+            print('')
+            
+            
+            
+            
+            
 if __name__ == '__main__':
     pass
