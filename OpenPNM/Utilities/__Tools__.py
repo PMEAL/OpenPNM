@@ -580,9 +580,6 @@ class Tools(Base):
         labels : list of strings, optional
             The pore label(s) whose locations are requested.
             If omitted, all pore inidices are returned.
-        indices : boolean, optional
-            This flag specifies whether pore locations are returned a boolean mask of length Np,
-            or as a list of indices (default).
         mode : string, optional
             Specifies how the query should be performed.  The options are:    
 
