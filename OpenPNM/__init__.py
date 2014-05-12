@@ -95,22 +95,12 @@ Package Documentation
    :show-inheritance:
 """
 
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 
 __requires__ = [
-    'scipy',
-    'numpy',
+    'scipy'
 ]
 
-__extras_require__ = {
-    'app': [
-        'envisage',
-    ],
-}
-
-# __all__ = ['Base']
-
-#_local_files_path = os.path.join(os.path.abspath(OpenPNM),'LocalFiles')
 
 from . import Utilities
 from . import Network
