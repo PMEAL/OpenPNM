@@ -11,8 +11,13 @@ pn.generate(divisions=[20, 20, 20], lattice_spacing=[0.0001],add_boundaries=True
 '''Build Geometry'''
 #==============================================================================
 geom = OpenPNM.Geometry.Toray090(network=pn)
-geom.set_locations(pores='all',throats='all')
-geom.regenerate()
+geom.set_locations(pores=pn.pores('internal'),throats='all')
+
+boun = pn.add_geometry(name='boundary_geometry',subclass='Boundary')
+boun.set_locations(pores=pn.pores('boundary'))
+
+#Use Network's Geometry regeneration method to ensure proper order of calculations
+pn.regenerate_geometries()
 
 #==============================================================================
 '''Build Fluids'''
@@ -20,11 +25,12 @@ geom.regenerate()
 air = OpenPNM.Fluids.Air(network=pn, loglevel=20)
 air.apply_conditions(temperature=350, pressure=200000)
 air.add_property(prop='electrical_conductivity',model='constant',value=5e-12)
-air.regenerate()
 
 water = OpenPNM.Fluids.Water(network=pn,loglevel=20)
 water.add_property(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
-water.regenerate()
+
+#Use Network's Fluid regeneration method
+pn.regenerate_fluids()
 
 #==============================================================================
 '''Build Physics Objects'''
@@ -33,13 +39,14 @@ phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry=geo
 phys_water.add_property(prop='capillary_pressure', model='washburn')
 phys_water.add_property(prop='hydraulic_conductance', model='hagen_poiseuille')
 phys_water.add_property(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
-phys_water.regenerate()
 
 phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air,geometry=geom, name='phys_air')
 phys_air.add_property(prop='hydraulic_conductance', model='hagen_poiseuille')
 phys_air.add_property(prop='diffusive_conductance', model='bulk_diffusion')
 phys_air.add_property(prop='electronic_conductance', model='series_resistors')
-phys_air.regenerate()
+
+#Use Network's Physics regeneration method
+pn.regenerate_physics()
 
 #==============================================================================
 '''Begin Simulations'''
@@ -73,10 +80,7 @@ Fickian_alg.update()
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-#OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water], filename='output.vtp')
-OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
-
-
+#OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
 
 
 

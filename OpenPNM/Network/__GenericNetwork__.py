@@ -14,7 +14,6 @@ import OpenPNM
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
-import pprint
 
 class GenericNetwork(OpenPNM.Utilities.Tools):
     r"""
@@ -699,39 +698,47 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         return str_overview+str_pore+str_throat
 
-    def regenerate_fluid(self,fluids='all',prop_list=''):
-        
-        if type(fluids)!= sp.ndarray and fluids=='all':
-            fluids = self._fluids
-        elif type(fluids)!= sp.ndarray: 
-            fluids = sp.array(fluids,ndmin=1)
+    def regenerate_fluids(self):
+        r'''
+        '''
+        fluids = []
+        for item in self._fluids.keys():
+            fluids.append(self._fluids[item])
         for item in fluids:
-            try: item = self.find_object_by_name(item) 
-            except: pass #Accept object
-            item.regenerate(prop_list=prop_list)
-      
+            self._logger.info('Regenerating properties for '+item.name)
+            for prop in item._prop_list:
+                item.regenerate(prop_list=prop)
 
-    def regenerate_physics(self,physics='all',prop_list=''):
-        
-        if type(physics)!= sp.ndarray and physics=='all':
-            physics = self._physics
-        elif type(physics)!= sp.ndarray: 
-            physics = sp.array(physics,ndmin=1)
+    def regenerate_physics(self):
+        r'''
+        '''
+        physics = []
+        for item1 in self._fluids.keys():
+            for item2 in self._fluids[item1]._physics.keys():
+                physics.append(self._fluids[item1]._physics[item2])
         for item in physics:
-            try: item = self.find_object_by_name(item) 
-            except: pass #Accept object
-            item.regenerate(prop_list=prop_list) 
+            self._logger.info('Regenerating pore properties for '+item.name)
+            for prop in item._prop_list:
+                item.regenerate(prop_list=prop)
                 
-    def regenerate_geometry(self,geometry='all',prop_list=''):
-        
-        if type(geometry)!= sp.ndarray and geometry=='all':
-            geometry = self._geometry
-        elif type(geometry)!= sp.ndarray: 
-            geometry = sp.array(geometry,ndmin=1)
+    def regenerate_geometries(self):
+        r'''
+        '''
+        geometry = []
+        for item in self._geometries.keys():
+            geometry.append(self._geometries[item])
+        #Regenerate pores first
         for item in geometry:
-            try: item = self.find_object_by_name(item) 
-            except: pass #Accept object
-            item.regenerate(prop_list=prop_list) 
+            self._logger.info('Regenerating pore properties for '+item.name)
+            for prop in item._prop_list:
+                if prop.split('_')[0] == 'pore':
+                    item.regenerate(prop_list=prop)
+        #Regenerate throats second
+        for item in geometry:
+            self._logger.info('Regenerating throat properties for '+item.name)
+            for prop in item._prop_list:
+                if prop.split('_')[0] == 'throat':
+                    item.regenerate(prop_list=prop)
             
     def add_geometry(self,name,subclass='GenericGeometry',**kwargs):
         r'''
@@ -797,7 +804,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         pores = np.ravel(pores)
         throats = np.ravel(throats)
-
+        
         if sp.shape(pores)[0]>0:
             Pdrop = sp.zeros((self.num_pores(),),dtype=bool)
             Pdrop[pores] = True
@@ -821,7 +828,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         tpore2 = self.get_throat_data(prop='connections')[:,1]
         temp1 = Pmap[tpore1[Tkeep]]
         temp2 = Pmap[tpore2[Tkeep]]
-
+        
         # Insert new indices into network
         # Write connections specifically
         self._throat_data['connections'] = sp.vstack((temp1,temp2)).T
