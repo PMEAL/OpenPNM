@@ -877,12 +877,17 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             #Convert to boolean mask if not already
             temp = sp.zeros((self.num_throats(),),dtype=bool)
             temp[mask] = True
-            self.create_adjacency_matrix(prop='temp', data=temp, sprsfmt='csr', dropzeros=True)
-            clusters = sprs.csgraph.connected_components(self.adjacency_matrix['csr']['temp'])[1]
-            del self.adjacency_matrix['csr']['temp']
-            return clusters
-        if sp.shape(mask)[0] == self.num_pores():
-            print('Not implemented yet')
+        elif sp.shape(mask)[0] == self.num_pores():
+            conns = self.find_connected_pores(throats=self.throats())
+            conns[:,0] = mask[conns[:,0]]
+            conns[:,1] = mask[conns[:,1]]
+            temp = sp.array(conns[:,0]*conns[:,1],dtype=bool)
+        else: 
+            raise Exception('Mask received was neither Nt nor Np long')
+        self.create_adjacency_matrix(prop='temp', data=temp, sprsfmt='csr', dropzeros=True)
+        clusters = sprs.csgraph.connected_components(self.adjacency_matrix['csr']['temp'])[1]
+        del self.adjacency_matrix['csr']['temp']
+        return clusters
 
 if __name__ == '__main__':
     #Run doc tests
