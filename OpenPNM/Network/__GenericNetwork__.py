@@ -398,7 +398,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         return sp.intersect1d(self.find_neighbor_throats(P1),self.find_neighbor_throats(P2))
 
-    def find_neighbor_pores(self,pores,flatten=True,mode='union',excl_self=False):
+    def find_neighbor_pores(self,pores,mode='union',flatten=True,excl_self=False):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
@@ -472,7 +472,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 neighborPs[i] = sp.array(neighborPs[i])
         return sp.array(neighborPs,ndmin=1)
 
-    def find_neighbor_throats(self,pores,flatten=True,mode='union'):
+    def find_neighbor_throats(self,pores,mode='union',flatten=True):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
