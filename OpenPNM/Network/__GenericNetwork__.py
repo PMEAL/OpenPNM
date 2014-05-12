@@ -835,30 +835,47 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 self._throat_data[item] = self._throat_data[item][Tkeep]  
         for item in self._throat_info.keys():
             self._throat_info[item] = self._throat_info[item][Tkeep]
-            
+        
         #Reset network
-        self._reset_network()
+        self.reset_graphs()
         
         #Check for individual isolated pores
         Ps = sp.sum(self.num_neighbors(self.get_pore_indices())==0)
         if Ps > 0:
             self._logger.warning(str(Ps)+' pores no longer have neighbors')
-            
+        
         #Check for clusters of isolated pores
         Cs = self.find_clusters(self.throats('all'))
         if sp.shape(sp.unique(Cs))[0] > (Ps+1):
             self._logger.warning('Isolated clusters exist in the network')
         
-    def find_clusters(self,throat_array):
+    def find_clusters(self,mask):
         r'''
+        Identify connected clusters of pores in the network.  
+        
+        Parameters
+        ----------
+        mask : array_like, boolean
+            A list of active nodes.  This method will automatically search 
+            for clusters based on site or bond connectivity depending on 
+            wheather the received mask is Np or Nt long.
+            
+        Returns
+        -------
+        clusters : array_like
+            An Np long list of clusters numbers
+            
         '''
-        #Convert to boolean mask if not already
-        temp = sp.zeros((self.num_throats(),),dtype=bool)
-        temp[throat_array] = True
-        self.create_adjacency_matrix(prop='temp', data=temp, sprsfmt='csr', dropzeros=True)
-        clusters = sprs.csgraph.connected_components(self.adjacency_matrix['csr']['temp'])[1]
-        del self.adjacency_matrix['csr']['temp']
-        return clusters
+        if sp.shape(mask)[0] == self.num_throats():
+            #Convert to boolean mask if not already
+            temp = sp.zeros((self.num_throats(),),dtype=bool)
+            temp[mask] = True
+            self.create_adjacency_matrix(prop='temp', data=temp, sprsfmt='csr', dropzeros=True)
+            clusters = sprs.csgraph.connected_components(self.adjacency_matrix['csr']['temp'])[1]
+            del self.adjacency_matrix['csr']['temp']
+            return clusters
+        if sp.shape(mask)[0] == self.num_pores():
+            print('Not implemented yet')
 
 if __name__ == '__main__':
     #Run doc tests
