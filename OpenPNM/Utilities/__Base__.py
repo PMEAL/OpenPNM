@@ -205,6 +205,12 @@ class Base(object):
             if obj_type == 'Geometry':
                 if self.name:
                     raise Exception('Cannot rename a Geometry')
+                for item in self._net.labels(pores='all'):
+                    if item == name:
+                        raise Exception('Pore label '+name+' already exists')
+                for item in self._net.labels(throats='all'):
+                    if item == name:
+                        raise Exception('Throat label '+name+' already exists')
             if item == name:
                 raise Exception('A '+obj_type+' Object with the supplied name already exists')
             
