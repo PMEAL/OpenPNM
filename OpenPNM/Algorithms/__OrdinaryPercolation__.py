@@ -95,7 +95,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self.set_pore_data(prop='inv_seq',data=self._p_seq)
         self.set_throat_data(prop='inv_seq',data=self._t_seq)
         #Remove temporary arrays and adjacency matrices
-        del self._net.adjacency_matrix['csr']['invaded']
+        del self._net._adjacency_matrix['csr']['invaded']
 
     def _do_one_inner_iteration(self,inv_val):
         r"""
@@ -108,7 +108,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         Tinvaded = self._t_cap<=inv_val
         #Fill adjacency matrix with invasion state info
         self._net.create_adjacency_matrix(data=Tinvaded,prop='invaded',sprsfmt='csr',dropzeros=True)
-        clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['invaded'])[1]
+        clusters = sprs.csgraph.connected_components(self._net._adjacency_matrix['csr']['invaded'])[1]
         #Find all pores with at least 1 invaded throat (invaded)
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
         nums = self._net.get_throat_indices('all')
