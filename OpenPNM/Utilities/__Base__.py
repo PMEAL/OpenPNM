@@ -244,6 +244,8 @@ class Base(object):
         b = []
         for item in a:
             b.append(dir(item))
+        b[-1] = list(set(b[-1]).union(set(dir(self))))
+        
         #Remove inherited methods
         for i in range(1,len(b)):
             print('==========================================================')            
@@ -252,11 +254,11 @@ class Base(object):
             print('Private Methods')
             print('----------------------------------------------------------')
             temp = list(set(b[i]).difference(set(b[i-1])))
+            temp.sort()
             for item in temp:
                 if item.split('_')[0] == '':
                     print(item)
                     temp.remove(item)
-            temp.sort()
             print('----------------------------------------------------------')
             print('Public Methods')
             print('----------------------------------------------------------')
