@@ -43,6 +43,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._fluids = {}
         self._geometries = {}
         #Initialize adjacency and incidence matrix dictionaries
+        self._incidence_matrix = {}
+        self._adjacency_matrix = {}
         self.reset_graphs()
         self._logger.debug("Construction of Network container")
 
@@ -269,13 +271,13 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         temp = sprs.coo_matrix((data,(row,col)),(Np,Np))
         if sprsfmt == 'coo' or sprsfmt == 'all':
-            self.adjacency_matrix['coo'][tprop] = temp
+            self._adjacency_matrix['coo'][tprop] = temp
         if sprsfmt == 'csr' or sprsfmt == 'all':
-            self.adjacency_matrix['csr'][tprop] = temp.tocsr()
+            self._adjacency_matrix['csr'][tprop] = temp.tocsr()
         if sprsfmt == 'lil' or sprsfmt == 'all':
-            self.adjacency_matrix['lil'][tprop] = temp.tolil()
+            self._adjacency_matrix['lil'][tprop] = temp.tolil()
         if sprsfmt != 'all':
-            return self.adjacency_matrix[sprsfmt][tprop]
+            return self._adjacency_matrix[sprsfmt][tprop]
 
     def create_incidence_matrix(self,data=None,prop=None,sprsfmt='all',dropzeros=True):
         r"""
@@ -335,13 +337,13 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         temp = sprs.coo.coo_matrix((data,(row,col)),(Np,Nt))
         if sprsfmt == 'coo' or sprsfmt == 'all':
-            self.incidence_matrix['coo'][tprop] = temp
+            self._incidence_matrix['coo'][tprop] = temp
         if sprsfmt == 'csr' or sprsfmt == 'all':
-            self.incidence_matrix['csr'][tprop] = temp.tocsr()
+            self._incidence_matrix['csr'][tprop] = temp.tocsr()
         if sprsfmt == 'lil' or sprsfmt == 'all':
-            self.incidence_matrix['lil'][tprop] = temp.tolil()
+            self._incidence_matrix['lil'][tprop] = temp.tolil()
         if sprsfmt != 'all':
-            return self.incidence_matrix[sprsfmt][tprop]
+            return self._incidence_matrix[sprsfmt][tprop]
             
     def find_connected_pores(self,throats=[],flatten=False):
         r"""
@@ -448,11 +450,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         #Count neighboring pores
         try:
-            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pores]]
+            neighborPs = self._adjacency_matrix['lil']['connections'].rows[[pores]]
         except:
             self._logger.info('Creating adjacency matrix, please wait')
             self.create_adjacency_matrix()
-            neighborPs = self.adjacency_matrix['lil']['connections'].rows[[pores]]
+            neighborPs = self._adjacency_matrix['lil']['connections'].rows[[pores]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
@@ -509,11 +511,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         #Test for existance of incidence matrix
         try:
-            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pores]]
+            neighborTs = self._incidence_matrix['lil']['connections'].rows[[pores]]
         except:
             self._logger.info('Creating incidence matrix, please wait')
             self.create_incidence_matrix()
-            neighborTs = self.incidence_matrix['lil']['connections'].rows[[pores]]
+            neighborTs = self._incidence_matrix['lil']['connections'].rows[[pores]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborTs = [sp.asarray(x) for x in neighborTs if x]
@@ -771,14 +773,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         #Re-initialize adjacency and incidence matrix dictionaries
         self._logger.debug('Resetting adjacency and incidence matrices')
-        self.adjacency_matrix = {}
-        self.incidence_matrix = {}
-        self.adjacency_matrix['coo'] = {}
-        self.adjacency_matrix['csr'] = {}
-        self.adjacency_matrix['lil'] = {}
-        self.incidence_matrix['coo'] = {}
-        self.incidence_matrix['csr'] = {}
-        self.incidence_matrix['lil'] = {}        
+        self._adjacency_matrix['coo'] = {}
+        self._adjacency_matrix['csr'] = {}
+        self._adjacency_matrix['lil'] = {}
+        self._incidence_matrix['coo'] = {}
+        self._incidence_matrix['csr'] = {}
+        self._incidence_matrix['lil'] = {}        
 
     def trim(self, pores=[], throats=[]):
         '''
