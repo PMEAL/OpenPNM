@@ -885,8 +885,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         else: 
             raise Exception('Mask received was neither Nt nor Np long')
         self.create_adjacency_matrix(prop='temp', data=temp, sprsfmt='csr', dropzeros=True)
-        clusters = sprs.csgraph.connected_components(self.adjacency_matrix['csr']['temp'])[1]
-        del self.adjacency_matrix['csr']['temp']
+        clusters = sprs.csgraph.connected_components(self._adjacency_matrix['csr']['temp'])[1]
+        del self._adjacency_matrix['csr']['temp']
         return clusters
 
 if __name__ == '__main__':
