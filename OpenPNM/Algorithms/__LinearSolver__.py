@@ -132,34 +132,6 @@ class LinearSolver(GenericAlgorithm):
                 self._BCvalues = getattr(self,'_BCvalues_pore')
         self.bc_setup = setup
 
-    def _boundary_conditions_setup(self,types=[],values=[]):
-        r"""
-        Assigning Type and Value for Boundary Pores.
-        Documentation for this method is being updated, we are sorry for the inconvenience.
-
-        """
-        self._BCtypes = sp.zeros(self._net.num_pores())
-        self._BCvalues = sp.zeros(self._net.num_pores())
-        for bctype in self._pore_info.keys():
-            if bctype=='Dirichlet':
-                bcpores = self.get_pore_info(label='Dirichlet')
-                self._BCtypes[bcpores] = 1 
-                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
-            elif bctype=='Neumann_insulated':
-                bcpores = self.get_pore_info(label='Neumann_insulated')
-                self._BCtypes[bcpores] = 2
-                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
-            elif bctype=='Neumann_rate_group':
-                bcpores = self.get_pore_info(label='Neumann_rate_group')
-                self._BCtypes[bcpores] = 3
-                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')
-            elif bctype=='Neumann_rate_single':
-                bcpores = self.get_pore_info(label='Neumann_rate_single')
-                self._BCtypes[bcpores] = 4
-                self._BCvalues[bcpores] = self.get_pore_data(locations=bcpores,prop='BCval')                
-                
-        self._logger.info("Boundary conditions have been applied successfully.")
-
     def _build_coefficient_matrix(self):
        
         # Filling coefficient matrix
