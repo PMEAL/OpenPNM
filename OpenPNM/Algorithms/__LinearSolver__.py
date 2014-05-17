@@ -49,6 +49,89 @@ class LinearSolver(GenericAlgorithm):
             self._result = X[sp.r_[0:self._net.num_pores()]]        
         return(self._result)
 
+    def set_boundary_conditions(self,bctype='',bcvalue=[],pores=[],throats=[],mode='merge'):
+        r"""
+        
+        """
+        BC_default = ['Dirichlet','Neumann_insulated','Neumann_rate_group','Neumann_rate_single']
+        if pores==[] and throats==[]:  
+            self._logger.error('No pore/throat has been assigned for this boundary condition!') 
+            setup = 0
+        else:
+            elements =[]
+            if pores!= []: elements.append('pore')
+            if throats != []: elements.append('throat')
+            for element in elements:                
+                try:
+                    getattr(self,'_BCtypes_'+element)
+                    getattr(self,'_BCvalues_'+element)
+                except: 
+                    setattr(self,'_BCtypes_'+element, sp.zeros(getattr(self,'num_'+element+'s')()))
+                    setattr(self,'_BCvalues_'+element,sp.zeros(getattr(self,'num_'+element+'s')()))
+                existing_bc = []
+                temp ='None'
+                if element=='pore':
+                    if pores=='all':    
+                        loc = self.pores()
+                        temp = 'all'
+                    else:   loc = pores
+                elif    element=='throat':
+                    if throats=='all':    
+                        loc = self.throats()
+                        temp = 'all'
+                    else:   loc = throats 
+                for label in getattr(self,'_'+element+'_info').keys():
+                    if label in BC_default and label not in existing_bc:    existing_bc.append(label)
+                if mode=='remove':
+                    getattr(self,'_BCtypes_'+element)[loc] = 0
+                    getattr(self,'_BCvalues_'+element)[loc] = 0
+                    getattr(self,'_set_data')(element=element,prop='BCval',locations=loc,mode='remove')
+                    for bc_type in existing_bc:
+                        if temp=='all':
+                            getattr(self,'_set_info')(element=element,label=bc_type,mode='remove')
+                        else:
+                            getattr(self,'_set_info')(element=element,label=bc_type,locations=loc,mode='remove')
+                    
+                    if not (bctype=='' and bcvalue==[]):
+                        self._logger.info('To remove boundary conditions from some locations, no value or type should be sent!')
+                    setup = 1
+                else:
+                    if bctype in BC_default:
+                        if bctype=='Dirichlet': bc_num = 1                    
+                        elif bctype=='Neumann_insulated': bc_num = 2
+                        elif bctype=='Neumann_rate_group': bc_num = 3
+                        elif bctype=='Neumann_rate_single': bc_num = 4
+                        if mode=='overwrite':
+                            setattr(self,'_BCtypes_'+element, sp.zeros(getattr(self,'num_'+element+'s')()))
+                            setattr(self,'_BCvalues_'+element,sp.zeros(getattr(self,'num_'+element+'s')()))
+                            getattr(self,'_set_info')(element=element,label=bc_type,locations=loc,mode='overwrite')
+                            getattr(self,'_set_data')(element=element,prop='BCval',locations=loc,mode='remove')
+                            self._logger.info('Boundary conditions have been overwritten for the algorithm: '+self.name)
+                            setup = 1
+                        elif mode=='merge':                         
+                            if (getattr(self,'_BCtypes_'+element)[loc] == 0).all():     setup = 1
+                            else:
+                                ind = loc[getattr(self,'_BCtypes_'+element)[loc] != 0]
+                                self._logger.error('Boundary conditions have already been assigned to the '+element+'s: '+str(ind))
+                                self._logger.info('To apply new bounday conditions to these locations, the existing BCs should be removed.')
+                                setup = 0
+                        if setup==1:
+                            getattr(self,'_BCtypes_'+element)[loc] = bc_num
+                            if bc_num!=2:
+                                getattr(self,'_BCvalues_'+element)[loc] = bcvalue
+                                getattr(self,'_set_data')(element=element,prop='BCval',locations=loc,mode='merge',data=getattr(self,'_BCvalues_'+element)[loc])
+                                                  
+                    else:
+                        self._logger.error('The bctype: '+bctype+' has not been defined for the algorithm!')
+            try:
+                getattr(self,'_BCtypes_throat')
+                setup = 0
+                self._logger.error('The section for assigning throat boundary conditions is not implemented in this solver yet.')
+            except:
+                self._BCtypes = getattr(self,'_BCtypes_pore')
+                self._BCvalues = getattr(self,'_BCvalues_pore')
+        self.bc_setup = setup
+
     def _boundary_conditions_setup(self,types=[],values=[]):
         r"""
         Assigning Type and Value for Boundary Pores.
