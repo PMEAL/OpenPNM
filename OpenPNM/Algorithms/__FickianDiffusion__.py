@@ -42,7 +42,9 @@ class FickianDiffusion(LinearSolver):
         r"""
         This function executes the essential methods specific to Fickian diffusion simulations
         """
+        self._setup = 0 
         try :
+            self.bc_setup
             if self.bc_setup==1:
                 self._logger.info("Setup for Fickian Algorithm")        
                 self._fluid = params['active_fluid']
@@ -57,6 +59,7 @@ class FickianDiffusion(LinearSolver):
                 if not success_1:  
                     self._fluid.set_data(prop=occupancy,throats='all',data=1)
                     self._fluid.set_data(prop=occupancy,pores='all',data=1)
+                    self._logger.info('By default, it will be assumed that occupancy for '+self._fluid.name+' is equal to 1 in the entire network!')
                 if success_2:    
                     g = self._fluid.get_throat_data(prop=diffusive_conductance)
                     s = self._fluid.get_throat_data(prop=occupancy)
@@ -69,7 +72,7 @@ class FickianDiffusion(LinearSolver):
                 self._logger.error('There is an error in applying boundary conditions!')
                 self._setup = 0
         except:
-            raise Exception('Boundary condition is not implemented yet!!') 
+            self._logger.error('No boundary condition has been implemented for algorithm: '+self.name+'!') 
         
 
     def _do_inner_iteration_stage(self):

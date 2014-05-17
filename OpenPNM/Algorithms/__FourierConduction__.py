@@ -41,7 +41,9 @@ class FourierConduction(LinearSolver):
 
         This function executes the essential mathods for building matrices in Linear solution 
         """
+        self._setup = 0 
         try :
+            self.bc_setup
             if self.bc_setup==1:
                 self._logger.info("Setup for Fourier Algorithm")        
                 self._fluid = params['active_fluid']
@@ -53,6 +55,7 @@ class FourierConduction(LinearSolver):
                 if not success_1:  
                     self._fluid.set_data(prop=occupancy,throats='all',data=1)
                     self._fluid.set_data(prop=occupancy,pores='all',data=1)
+                    self._logger.info('By default, it will be assumed that occupancy for '+self._fluid.name+' is equal to 1 in the entire network!')
                 if success_2: 
                     # Building thermal conductance based on occupancy
                     g = self._fluid.get_throat_data(prop=thermal_conductance)
@@ -66,7 +69,7 @@ class FourierConduction(LinearSolver):
                 self._logger.error('There is an error in applying boundary conditions!')
                 self._setup = 0
         except:
-            raise Exception('Boundary condition is not implemented yet!!') 
+            self._logger.error('No boundary condition has been implemented for algorithm: '+self.name+'!') 
 
     
     def _do_inner_iteration_stage(self):
