@@ -35,29 +35,47 @@ class StokesFlow(LinearSolver):
 
             
     def _setup(self,
-               conductance='hydraulic_conductance',
+               hydraulic_conductance='hydraulic_conductance',
                occupancy='occupancy',
                **params):
         r"""
         This function executes the essential mathods before building matrices in Linear solution 
         """
-        self._logger.info("Setup for Stokes Flow Algorithm")
-        self._fluid = params['active_fluid']
-        try: self._fluid = self._net._fluids[self._fluid] 
-        except: pass #Accept object
-        self._X_name = 'pressure'
-        self._boundary_conditions_setup()
-        # Building hydraulic conductance
-        g = self._fluid.get_throat_data(prop=conductance)
-        s = self._fluid.get_throat_data(prop=occupancy)
-        self._conductance = g*s+g*(-s)/1e3
+        try :
+            if self.bc_setup==1:
+                self._logger.info("Setup for Stokes Flow Algorithm")
+                self._fluid = params['active_fluid']
+                try: self._fluid = self._net._fluids[self._fluid] 
+                except: pass #Accept object
+                self._X_name = 'pressure'
+                success_1 = self._fluid.check_throat_health(props=occupancy)
+                success_2 = self._fluid.check_throat_health(props=hydraulic_conductance)
+                if not success_1:  
+                    self._fluid.set_data(prop=occupancy,throats='all',data=1)
+                    self._fluid.set_data(prop=occupancy,pores='all',data=1)
+                if success_2: 
+                    # Building hydraulic conductance based on occupancy
+                    g = self._fluid.get_throat_data(prop=hydraulic_conductance)
+                    s = self._fluid.get_throat_data(prop=occupancy)
+                    self._conductance = g*s+g*(-s)/1e3
+                    self._setup = 1
+                else: 
+                    self._logger.error('In '+self._fluid.name+', there is an error for the property: '+hydraulic_conductance)
+                    self._setup = 0
+            else: 
+                self._logger.error('There is an error in applying boundary conditions!')
+                self._setup = 0
+        except:
+            raise Exception('Boundary condition is not implemented yet!!') 
+
 
     def _do_inner_iteration_stage(self):
-
-        p = self._do_one_inner_iteration()
-        self.set_pore_data(prop='pressure',data = p)
-        self._logger.info('Solving process finished successfully!')
         
+        if self._setup==1:
+            p = self._do_one_inner_iteration()
+            self.set_pore_data(prop='pressure',data = p)
+            self._logger.info('Solving process finished successfully!')
+        else: raise Exception('Error in setup section of the algorithm!'+self.name+' cannot be executed!')
 
     def update(self):
         
