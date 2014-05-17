@@ -35,7 +35,7 @@ class FickianDiffusion(LinearSolver):
 
 
     def _setup(self,
-               conductance='diffusive_conductance',
+               diffusive_conductance='diffusive_conductance',
                occupancy='occupancy',
                x_term='mole_fraction',               
                **params):
@@ -53,17 +53,17 @@ class FickianDiffusion(LinearSolver):
                 Dir_pores = self._net.get_pore_indices('all')[self._BCtypes==1]
                 self._BCvalues[Dir_pores] = sp.log(1-self._BCvalues[Dir_pores])
                 success_1 = self._fluid.check_throat_health(props=occupancy)
-                success_2 = self._fluid.check_throat_health(props=conductance)
+                success_2 = self._fluid.check_throat_health(props=diffusive_conductance)
                 if not success_1:  
                     self._fluid.set_data(prop=occupancy,throats='all',data=1)
                     self._fluid.set_data(prop=occupancy,pores='all',data=1)
                 if success_2:    
-                    g = self._fluid.get_throat_data(prop=conductance)
+                    g = self._fluid.get_throat_data(prop=diffusive_conductance)
                     s = self._fluid.get_throat_data(prop=occupancy)
                     self._conductance = g*s+g*(-s)/1e3
                     self._setup = 1
                 else: 
-                    self._logger.error('In '+self._fluid.name+', there is an error for the property: '+conductance)
+                    self._logger.error('In '+self._fluid.name+', there is an error for the property: '+diffusive_conductance)
                     self._setup = 0
             else: 
                 self._logger.error('There is an error in applying boundary conditions!')
