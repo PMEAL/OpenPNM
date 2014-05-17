@@ -64,10 +64,10 @@ OP_1.run()
 #------------------------------------------------------------------------------
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, loggername='Fickian', name='Fickian_alg',network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.pores(labels=['top','boundary'],mode='intersection')
+BC1_pores = pn.pores(labels=['top','front'],mode='intersection')
 Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
 
-BC2_pores = pn.pores(labels=['bottom','boundary'],mode='intersection')
+BC2_pores = pn.pores(labels=['top','back'],mode='intersection')
 Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.2, pores=BC2_pores)
 
 # Updating data based on the result of Percolation Algorithms
