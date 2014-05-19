@@ -248,21 +248,26 @@ class Base(object):
         
         #Remove inherited methods
         for i in range(1,len(b)):
+            temp = list(set(b[i]).difference(set(b[i-1])))
+            temp.sort()
+            priv = []
+            pub = []
+            for item in temp:
+                if item[0] == '_':
+                    priv.append(item)
+                else:
+                    pub.append(item)
             print('==========================================================')            
             print(a[i])
             print('==========================================================')
             print('Private Methods')
             print('----------------------------------------------------------')
-            temp = list(set(b[i]).difference(set(b[i-1])))
-            temp.sort()
-            for item in temp:
-                if item.split('_')[0] == '':
-                    print(item)
-                    temp.remove(item)
+            for item in priv:
+                print(item)
             print('----------------------------------------------------------')
             print('Public Methods')
             print('----------------------------------------------------------')
-            for item in temp:
+            for item in pub:
                 print(item)
             print('')
             

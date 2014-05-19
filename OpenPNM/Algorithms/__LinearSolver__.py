@@ -166,6 +166,10 @@ class LinearSolver(GenericAlgorithm):
         return(B)
 
     def rate(self,pores='',throats=''):
+        r'''
+        Send a list of pores (or throats) and recieve the cumulative rate
+        of material moving into them
+        '''
 
         if throats!='':
             p1 = self._net.find_connected_pores(throats)[:,0]

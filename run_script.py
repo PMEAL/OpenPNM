@@ -16,7 +16,6 @@ geom.set_locations(pores=pn.pores('internal'),throats='all')
 boun = pn.add_geometry(name='boundary_geometry',subclass='Boundary')
 boun.set_locations(pores=pn.pores('boundary'))
 
-#Use Network's Geometry regeneration method to ensure proper order of calculations
 pn.regenerate_geometries()
 
 #==============================================================================
@@ -80,7 +79,7 @@ Fickian_alg.update()
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-#OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
+OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
 
 
 
