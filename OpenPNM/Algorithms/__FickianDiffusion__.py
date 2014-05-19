@@ -42,7 +42,7 @@ class FickianDiffusion(LinearSolver):
         r"""
         This function executes the essential methods specific to Fickian diffusion simulations
         """
-        self._logger.info("Setup for Fickian Algorithm")        
+        self._logger.info("Setup for Fickian Algorithm")
         self._fluid = params['active_fluid']
         try: self._fluid = self._net._fluids[self._fluid]
         except: pass #Accept object
@@ -62,13 +62,12 @@ class FickianDiffusion(LinearSolver):
         xA = 1-sp.exp(X)        
         self.set_pore_data(prop=self._X_name,data = xA)
         self._logger.info('Solving process finished successfully!')
-              
+        
     def update(self):
         
         x = self.get_pore_data(prop=self._X_name)        
         self._fluid.set_pore_data(prop=self._X_name,data=x)
         self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
-        
 
     def effective_diffusivity(self,
                               fluid,

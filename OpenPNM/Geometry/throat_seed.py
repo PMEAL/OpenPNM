@@ -23,10 +23,13 @@ def random(geometry,
            seed=None,
            **params):
     r"""
-    Assign random number to throats
+    Assign random number to pore bodies
     note: should this be called 'poisson'?  
     """
-    print('random: nothing yet')
+    sp.random.seed(seed)
+    Nt = network.num_throats(geometry.name)
+    value=sp.random.rand(Nt)
+    network.set_data(prop=propname,throats=geometry.throats(),data=value)
 
 def neighbor_min(geometry,
                  network,
