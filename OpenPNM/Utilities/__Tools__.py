@@ -881,25 +881,24 @@ class Tools(Base):
             try: 
                 temp = getattr(self,'_'+element+'_data')[item]
                 if sp.sum(sp.isnan(temp)) > 0:
-                    self._logger.warning('Nans found in: '+item)
+                    self._logger.error('Nans found in: '+item)
                     success = 0
-                else: self._logger.info('Checks for property: '+item+', passed successfully.')
+                else: self._logger.info('Checks for '+element+' property '+item+': passed successfully.')
             except:
-                self._logger.error('Property: '+item+' not found!')
+                self._logger.error(element+' property '+item+': not found!')
                 success = 0
-        if success == 1:
-            self._logger.info('All checks passed successfully.')
+        if success == 0:   self._logger.error('Problem found in checking '+element+' properties.')
         return success
         
     def check_pore_health(self,props=[]):
         r'''
         '''
-        self._check_health(element='pore',props=props)
+        return self._check_health(element='pore',props=props)
         
     def check_throat_health(self,props=[]):
         r'''
         '''
-        self._check_health(element='throat',props=props)
+        return self._check_health(element='throat',props=props)
         
 
 if __name__ == '__main__':

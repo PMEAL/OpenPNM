@@ -55,8 +55,6 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         # Set default T and P since most propery models require it
         self.set_data(prop='temperature',pores='all',data=298.0)
         self.set_data(prop='pressure',pores='all',data=101325.0)
-        self.set_data(prop='occupancy',pores='all',data=1)
-        self.set_data(prop='occupancy',throats='all',data=1)
         
         # Initialize label 'all' in the object's own info dictionaries
         self.set_info(label='all',pores=network.pores('all'))
