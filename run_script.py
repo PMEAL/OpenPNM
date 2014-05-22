@@ -16,6 +16,8 @@ geom.set_locations(pores=pn.pores('internal'),throats='all')
 boun = pn.add_geometry(name='boundary_geometry',subclass='Boundary')
 boun.set_locations(pores=pn.pores('boundary'))
 
+
+
 pn.regenerate_geometries()
 
 #==============================================================================

@@ -17,7 +17,7 @@ _logging.basicConfig(level=_logging.ERROR,
                     datefmt='%m-%d %H:%M',
                     )
                     
-class Base(object):
+class Base(dict):
     r"""
     .. class:: `OpenPNM.Utilities.OpenPNMbase` -- Base class for OpenPNM
     
@@ -68,66 +68,9 @@ class Base(object):
             loglevel = 20
             self.set_loglevel(loglevel)
             
-    def __del__(self):
-        for item in self._instances:
-            if self is item:
-                self._instances.remove(item)
-        if self.__module__.split('.')[1] == 'Geometry':
-            for item in self._physics:
-                del self._physics[item].geometry
-        print('deleting')
-
-    def save_object(self):
-        r'''
-        This method saves the object and all of its associated objects. 
-        This method is being implemented, we are sorry for the inconvenience.
-        '''
-        print('not implemented')
-        
-    def load_object(self):
-        r'''
-        This method loads an object and all of its associated objects.
-        This method is being implemented, we are sorry for the inconvenience.
-        '''
-        print('not implemented')
-        
-    def save_object_tocsv(self,path='', filename='', p_prop='all',t_prop='all'):
-        r'''
-        '''
-        if path=='':    path = os.path.abspath('')+'\\LocalFiles\\'
-        if filename=='':    filename = self.name
-        if type(p_prop)==str:
-            if p_prop=='all':
-                p_temp = True
-                p_prop = self._pore_data.keys()               
-            elif p_prop=='not': p_temp = False
-            else:
-                p_prop = sp.array(p_prop,ndmin=1)
-                p_temp = True
-        else:
-             p_prop = sp.array(p_prop,ndmin=1)
-             p_temp = True
-        if type(t_prop)==str:
-            if t_prop=='all':
-                t_temp = True
-                t_prop = self._throat_data.keys()               
-            elif t_prop=='not': t_temp = False
-            else:
-                t_prop = sp.array(t_prop,ndmin=1)
-                t_temp = True
-        else:
-             t_prop = sp.array(t_prop,ndmin=1)
-             t_temp = True        
-    
-        if p_temp :
-            for p in p_prop:
-                if sp.shape(sp.shape(self.get_pore_data(prop=p)))==(1,):
-                    sp.savetxt(path+'\\'+filename+'_pores_'+p+'.csv',self.get_pore_data(prop=p))
-        if t_temp:
-            for t in t_prop:
-                if sp.shape(sp.shape(self.get_throat_data(prop=t)))==(1,):
-                    sp.savetxt(path+'\\'+filename+'_throats_'+t+'.csv',self.get_throat_data(prop=t))
-        
+    def __setitem__(self,**kwargs):
+        print('Setter not implimented')
+              
     def set_loglevel(self,level=50):
         r"""
         Sets the effective log level for this class
@@ -139,20 +82,6 @@ class Base(object):
         """
         self._logger.setLevel(level)
         self._logger.debug("Changed log level")
-        
-    def print_dicts(self):
-        print('Pore data dictionaries:')
-        for item in self._pore_data.keys():
-            print('  '+item)
-        print('Pore info dictionaries:')
-        for item in self._pore_info.keys():
-            print('  '+item)
-        print('Throat data dictionaries:')
-        for item in self._throat_data.keys():
-            print('  '+item)
-        print('Throat info dictionaries:')
-        for item in self._throat_info.keys():
-            print('  '+item)
             
     def find_object_by_name(self,name):
         r'''
@@ -232,48 +161,7 @@ class Base(object):
         else:
             print("Toc: start time not set")
             
-    def print_methods(self):
-        a = dir(self)
-        for item in a:
-            if item.split('_')[0] != '':
-                print(item)
-                
-    def print_inheritance(self):
-        a = type.mro(type(self))
-        a.reverse()
-        b = []
-        for item in a:
-            b.append(dir(item))
-        b[-1] = list(set(b[-1]).union(set(dir(self))))
-        
-        #Remove inherited methods
-        for i in range(1,len(b)):
-            temp = list(set(b[i]).difference(set(b[i-1])))
-            temp.sort()
-            priv = []
-            pub = []
-            for item in temp:
-                if item[0] == '_':
-                    priv.append(item)
-                else:
-                    pub.append(item)
-            print('==========================================================')            
-            print(a[i])
-            print('==========================================================')
-            print('Private Methods')
-            print('----------------------------------------------------------')
-            for item in priv:
-                print(item)
-            print('----------------------------------------------------------')
-            print('Public Methods')
-            print('----------------------------------------------------------')
-            for item in pub:
-                print(item)
-            print('')
-            
-            
-            
-            
+
             
 if __name__ == '__main__':
     pass
