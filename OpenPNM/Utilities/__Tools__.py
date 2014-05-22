@@ -11,7 +11,6 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import scipy as sp
-import OpenPNM
 from OpenPNM.Utilities import Base
 
 class Tools(Base):
@@ -31,6 +30,32 @@ class Tools(Base):
         self._throat_data = {}
         self._throat_info = {}
         self._logger.debug("Construction of Tools class complete")
+        
+    def __setitem__(self,key,value):
+        r'''
+        This is a subclass of the default setitem behavior
+        '''
+        element = key.split('.')[0]
+        value = sp.array((value,))
+        if (element == 'pore') or (element == 'throat'):
+            if (sp.shape(value)[0] == 1):
+                    print('writing scalar value')
+                    super(Base, self).__setitem__(key,value)
+                    return
+            if (key == 'pore.coords') or (key == 'throat.conns'):
+                super(Base, self).__setitem__(key,value)
+                return
+            else:
+                if (sp.shape(value)[0] == self.Np()):
+                    print('writing Np length vector value')
+                    super(Base, self).__setitem__(key,value)
+                    return
+                if (sp.shape(value)[0] == self.Nt()):
+                    print('writing Nt length vector value')
+                    super(Base, self).__setitem__(key,value)
+                    return
+        else:
+            print('Data name must begin with \'pore\' or \'throat\'')
         
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
