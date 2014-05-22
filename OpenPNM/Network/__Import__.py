@@ -118,6 +118,7 @@ class MatFile(GenericNetwork):
         data = self._dictionary['tdiameter']
         geom.add_property(prop='throat_diameter',model='constant',value=data)
         
+        geom.add_property(prop='throat_length',model='straight')
         geom.regenerate()
     
     def _add_xtra_pore_data(self):
