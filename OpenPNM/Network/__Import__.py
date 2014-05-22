@@ -108,14 +108,15 @@ class MatFile(GenericNetwork):
     def _add_geometry(self):
         
         geom = OpenPNM.Geometry.GenericGeometry(network=self,name='imported')
+        geom.set_locations(pores='all',throats='all')
         
         data = self._dictionary['pvolume']
-        geom.add_method(prop='pore_volume',model='constant',value=data)
+        geom.add_property(prop='pore_volume',model='constant',value=data)
         data = self._dictionary['pdiameter']
         geom.add_method(prop='pore_diameter',model='constant',value=data)
         
         data = self._dictionary['tdiameter']
-        geom.add_method(prop='throat_diameter',model='constant',value=data)
+        geom.add_property(prop='throat_diameter',model='constant',value=data)
         
         geom.regenerate()
     
