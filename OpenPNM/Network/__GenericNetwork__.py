@@ -808,33 +808,28 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Pmap[Pkeep] = Pnew
         tpore1 = self['throat.conns'][:,0]
         tpore2 = self['throat.conns'][:,1]
-        temp1 = Pmap[tpore1[Tkeep]]
-        temp2 = Pmap[tpore2[Tkeep]]
+        Tnew1 = Pmap[tpore1[Tkeep]]
+        Tnew2 = Pmap[tpore2[Tkeep]]
         
         #Adjust throat lists
-        items = self.props()['throat'] + self.labels()['throat']
+        items = self.props() + self.labels()
         #Write 'all' label specifically
         del self['throat.all']
-        self['throat.all'] = sp.ones_like(temp1,dtype=bool)
+        self['throat.all'] = sp.ones_like(Tnew1,dtype=bool)
+        del self['pore.all']
+        self['pore.all'] = sp.ones_like(Pnew,dtype=bool)
         # Write connections specifically
         del self['throat.conns']
-        self['throat.conns'] = sp.vstack((temp1,temp2)).T
-        # Over-write remaining throat data
+        self['throat.conns'] = sp.vstack((Tnew1,Tnew2)).T
+        # Over-write remaining data and info
         for key in items:
-            if key not in ['conns','all']:
-                temp = self['throat.'+key]
-                del self['throat.'+key]
-                self['throat.'+key] = temp[Tkeep]
-        #Adjust pore lists
-        items = self.props()['pore'] + self.labels()['pore']
-        #Write 'all' label specifically
-        del self['pore.all']
-        self['pore.all'] = sp.ones_like(Pkeep,dtype=bool)
-        # Over-write remaining pore data
-        for key in items:
-            temp = self['pore.'+key]
-            del self['pore.'+key]
-            self['pore.'+key] = temp[Pkeep]
+            if key.split('.')[1] not in ['conns','all']:
+                temp = self[key]
+                del self[key]
+                if key.split('.')[0] == 'throat':
+                    self[key] = temp[Tkeep]
+                if key.split('.')[0] == 'pore':
+                    self[key] = temp[Pkeep]
         
         #Reset network
         self.reset_graphs()
