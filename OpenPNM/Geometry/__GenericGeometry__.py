@@ -45,7 +45,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     0.123
     """
 
-    def __init__(self,network,name='default_geometry',**kwargs):
+    def __init__(self,network,name=None,**kwargs):
         r"""
         Initialize
         """

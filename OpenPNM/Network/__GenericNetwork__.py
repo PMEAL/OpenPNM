@@ -32,7 +32,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
     """
 
-    def __init__(self, name='default_network',**kwargs):
+    def __init__(self, name=None,**kwargs):
         r"""
         Initialize
         """
@@ -742,19 +742,19 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 if prop.split('_')[0] == 'throat':
                     item.regenerate(prop_list=prop)
             
-    def add_geometry(self,name,subclass='GenericGeometry',**kwargs):
+    def add_geometry(self,name=None,subclass='GenericGeometry',**kwargs):
         r'''
         '''
         temp = OpenPNM.Geometry.__getattribute__(subclass)
         return temp(network=self,name=name,**kwargs)
 
-    def add_fluid(self,name,subclass='GenericFluid',**kwargs):
+    def add_fluid(self,name=None,subclass='GenericFluid',**kwargs):
         r'''
         '''
         temp = OpenPNM.Fluids.__getattribute__(subclass)
         return temp(network=self,name=name,**kwargs)
         
-    def add_physics(self,name,fluid,geometry,subclass='GenericPhysics',**kwargs):
+    def add_physics(self,fluid,geometry,name=None,subclass='GenericPhysics',**kwargs):
         r'''
         '''
         temp = OpenPNM.Physics.__getattribute__(subclass)
