@@ -82,7 +82,7 @@ class FickianDiffusion(LinearSolver):
             xA = 1-sp.exp(X)        
             self.set_pore_data(prop=self._X_name,data = xA)
             self._logger.info('Solving process finished successfully!')
-        else: raise Exception('Error in setup section of the algorithm!'+self.name+' cannot be executed!')
+        else: raise Exception('Error in setup section of the algorithm! '+self.name+' cannot be executed!')
               
     def update(self):
         

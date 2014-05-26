@@ -101,9 +101,9 @@ class VTK(GenericVisualization):
     def _write_vtk_connections(self):
         self._f.write('<Lines>\n<DataArray type="Int32" Name="connectivity" format="ascii">\n')
         for i in list(range(self._net.num_throats())):
-            self._f.write(str(self._net.get_throat_data(prop='connections')[i,0]))
+            self._f.write(str(self._net.get_throat_data(prop='conns')[i,0]))
             self._f.write(' ')
-            self._f.write(str(self._net.get_throat_data(prop='connections')[i,1]))
+            self._f.write(str(self._net.get_throat_data(prop='conns')[i,1]))
             self._f.write(' ')
         self._f.write('\n</DataArray>\n<DataArray type="Int32" Name="offsets" format="ascii">\n')
         for i in list(range(self._net.num_throats())):

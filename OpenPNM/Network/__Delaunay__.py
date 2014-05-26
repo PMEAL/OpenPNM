@@ -139,8 +139,8 @@ class Delaunay(GenericNetwork):
         #and convert to coo
         adjmat = sprs.triu(adjmat,k=1,format="coo")
         self._logger.debug(sys._getframe().f_code.co_name+": Conversion to adjacency matrix complete")
-        self.set_throat_data(prop='connections',data=sp.vstack((adjmat.row, adjmat.col)).T)
-        tpore1 = self.get_throat_data(prop='connections')[:,0]
+        self.set_throat_data(prop='conns',data=sp.vstack((adjmat.row, adjmat.col)).T)
+        tpore1 = self.get_throat_data(prop='conns')[:,0]
         self.set_throat_info(label='all',locations=np.ones_like(tpore1))
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         
@@ -204,7 +204,7 @@ class Delaunay(GenericNetwork):
             #Add periodic throats to the netowrk (if any)
             tpore2 = pnum[adjmat.rows[i]][ptype[adjmat.rows[i]]<0]
             tpore1 = np.ones_like(tpore2,dtype=int)*i
-            conns = self.get_throat_data(prop='connections')
+            conns = self.get_throat_data(prop='conns')
             conns = np.concatenate((conns,np.vstack((tpore1,tpore2)).T),axis=0)
             #Add boundary pores and throats to the network
             newporetyps = np.unique(ptype[adjmat.rows[i]][ptype[adjmat.rows[i]]>0])
@@ -212,7 +212,7 @@ class Delaunay(GenericNetwork):
             tpore2 = newporenums
             tpore1 = np.ones_like(tpore2,dtype=int)*i
             conns = np.concatenate((conns,np.vstack((tpore1,tpore2)).T),axis=0)
-            self.set_throat_data(prop='connections',data=conns)
+            self.set_throat_data(prop='conns',data=conns)
             bcoords = np.zeros((7,3),dtype=float)
             coords = self.get_pore_data(prop='coords')
             bcoords[1,:] = [coords[i,0], coords[i,1], 0-Lz*boffset]
@@ -345,7 +345,7 @@ class Delaunay(GenericNetwork):
         bt_connections[:,1] = bp_numbering
         self._net.throat_data['numbering'] = np.append(self._net.throat_data['numbering'],bt_numbering)
         self._net.throat_data['type'] = np.append(self._net.throat_data['type'],bt_type)
-        self._net.throat_data['connections'] =  np.concatenate((self._net.throat_data['connections'],bt_connections))
+        self._net.throat_data['conns'] =  np.concatenate((self._net.throat_data['conns'],bt_connections))
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.Delaunay(name='delaunay_1').generate(num_pores=100, domain_size=[3,3,3])

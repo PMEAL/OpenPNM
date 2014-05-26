@@ -7,7 +7,7 @@ except ImportError:
 def preview(pn, values=[]):
 
     coords = pn.get_pore_data(prop='coords')
-    heads, tails = pn.get_throat_data(prop='connections').T
+    heads, tails = pn.get_throat_data(prop='conns').T
 
     points = vtk.vtkPoints()
     for x,y,z in coords:

@@ -75,13 +75,15 @@ class LinearSolver(GenericAlgorithm):
                         loc = self.pores()
                         temp = 'all'
                     else:   loc = pores
+                    for label in self.labels(pores='all'):
+                        label = label.split('.')[-1]
+                        if label in BC_default and label not in existing_bc:    
+                            existing_bc.append(label)
                 elif    element=='throat':
                     if throats=='all':    
                         loc = self.throats()
                         temp = 'all'
                     else:   loc = throats 
-                for label in getattr(self,'_'+element+'_info').keys():
-                    if label in BC_default and label not in existing_bc:    existing_bc.append(label)
                 if mode=='remove':
                     getattr(self,'_BCtypes_'+element)[loc] = 0
                     getattr(self,'_BCvalues_'+element)[loc] = 0
@@ -136,8 +138,8 @@ class LinearSolver(GenericAlgorithm):
        
         # Filling coefficient matrix
         pnum = self._net.get_pore_indices()
-        tpore1 = self._net.get_throat_data(prop='connections')[:,0]
-        tpore2 = self._net.get_throat_data(prop='connections')[:,1]
+        tpore1 = self._net.get_throat_data(prop='conns')[:,0]
+        tpore2 = self._net.get_throat_data(prop='conns')[:,1]
 
         loc1 = sp.in1d(tpore1,pnum[self._BCtypes!=1])
         modified_tpore1 = tpore1[loc1]
@@ -279,12 +281,12 @@ class LinearSolver(GenericAlgorithm):
                     ftype2.append('bottom') 
                 else: self._logger.error('wrong input for direction!')
         
-        if 'Dirichlet' in self._pore_info:
+        if 'pore.Dirichlet' in self:
             self._dir = self.get_pore_info(label='Dirichlet')
-            del self._pore_info['Dirichlet']
-        if 'BCval' in self._pore_data:
+            del self['pore.Dirichlet']
+        if 'pore.BCval' in self:
             self._BCval_temp = self.get_pore_data(prop='BCval')
-            del self._pore_data['BCval']
+            del self['pore.BCval']
             try:
                 self._BCtypes_temp = sp.copy(self._BCtypes)
                 delattr (self,'_BCtypes')
