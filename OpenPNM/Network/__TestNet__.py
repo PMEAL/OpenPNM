@@ -92,7 +92,7 @@ class TestNet(GenericNetwork):
         connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
         self.set_throat_data(prop='numbering',data=sp.arange(0,sp.shape(tpore1)[0]))
         self.set_throat_info(label='all',locations=sp.ones_like(sp.arange(0,sp.shape(tpore1)[0])))
-        self.set_throat_data(prop='connections',data=connections)       
+        self.set_throat_data(prop='conns',data=connections)       
         
     def _add_labels(self):
         coords = self.get_pore_data(prop='coords')

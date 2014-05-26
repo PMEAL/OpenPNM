@@ -40,7 +40,7 @@ def neighbor_min(geometry,
     Adopt the minimum seed value from the neighboring pores
     """
     pseeds = network.get_data(prop=pore_seed,pores='all')
-    conns = network.get_data(prop='connections',throats=geometry.throats())
+    conns = network.get_data(prop='conns',throats=geometry.throats())
     value = sp.amin(pseeds[conns],axis=1)
     network.set_data(prop=propname,throats=geometry.throats(),data=value)
 
@@ -53,7 +53,7 @@ def neighbor_max(geometry,
     Adopt the maximum seed value from the neighboring pores
     """
     pseeds = network.get_data(prop=pore_seed,pores='all')
-    conns = network.get_data(prop='connections',throats=geometry.throats())
+    conns = network.get_data(prop='conns',throats=geometry.throats())
     value = sp.amax(pseeds[conns],axis=1)
     network.set_data(prop=propname,throats=geometry.throats(),data=value)
     

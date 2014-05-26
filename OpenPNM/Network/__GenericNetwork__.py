@@ -137,67 +137,22 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 Tvals[i] = sp.mean(Pvals[nPs[i]])
         return Tvals
 
-    def amalgamate_pore_data(self,fluids='all'):
+    def amalgamate_data(self,fluids=[]):
         r"""
         Returns a dictionary containing ALL pore data from all fluids, physics and geometry objects
         """
-        self._pore_data_amalgamate = {}
-        if type(fluids)!= sp.ndarray and fluids=='all':
-            fluids = self._fluids
-        elif type(fluids)!= sp.ndarray: 
-            fluids = sp.array(fluids,ndmin=1)
-        #Add fluid data
+        fluids = [fluids]
+        self._data_amalgamated = {}
+        #Add geometry and network data
+        for item in self:
+            self._data_amalgamated.update({item : self[item]})
+        #Add fluid and physics data
         for item in fluids:
-            if type(item)==sp.str_: item =  self.find_object_by_name(item)
-            for key in item._pore_data.keys():
-                if sp.amax(item._pore_data[key]) < sp.inf:
-                    dict_name = item.name+'_pore_'+key
-                    self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
-            for key in item._pore_info.keys():
-                if sp.amax(item._pore_info[key]) < sp.inf:
-                    dict_name = item.name+'_pore_label_'+key
-                    self._pore_data_amalgamate.update({dict_name : item._pore_info[key]})
-        #Add geometry data
-        for key in self._pore_data.keys():
-            if sp.amax(self._pore_data[key]) < sp.inf:
-                dict_name = 'pore'+'_'+key
-                self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
-        for key in self._pore_info.keys():
-            if sp.amax(self._pore_info[key]) < sp.inf:
-                dict_name = 'pore'+'_label_'+key
-                self._pore_data_amalgamate.update({dict_name : self._pore_info[key]})
-        return self._pore_data_amalgamate
-
-    def amalgamate_throat_data(self,fluids='all'):
-        r"""
-        Returns a dictionary containing ALL throat data from all fluids, physics and geometry objects
-        """
-        self._throat_data_amalgamate = {}
-        if type(fluids)!= sp.ndarray and fluids=='all':
-            fluids = self._fluids
-        elif type(fluids)!= sp.ndarray: 
-            fluids = sp.array(fluids,ndmin=1)
-        #Add fluid data
-        for item in fluids:
-            if type(item)==sp.str_: item =  self.find_object_by_name(item)
-            for key in item._throat_data.keys():
-                if sp.amax(item._throat_data[key]) < sp.inf:
-                    dict_name = item.name+'_throat_'+key
-                    self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
-            for key in item._throat_info.keys():
-                if sp.amax(item._throat_info[key]) < sp.inf:
-                    dict_name = item.name+'_throat_label_'+key
-                    self._throat_data_amalgamate.update({dict_name : item._throat_info[key]})
-        #Add geometry data
-        for key in self._throat_data.keys():
-            if sp.amax(self._throat_data[key]) < sp.inf:
-                dict_name = 'throat'+'_'+key
-                self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
-        for key in self._throat_info.keys():
-            if sp.amax(self._throat_info[key]) < sp.inf:
-                dict_name = 'throat'+'_label_'+key
-                self._throat_data_amalgamate.update({dict_name : self._throat_info[key]})
-        return self._throat_data_amalgamate
+            for key in item.keys():
+                if sp.amax(item[key]) < sp.inf:
+                    dict_name = item.name+'.'+key
+                    self._data_amalgamated.update({dict_name : item[key]})
+        return self._data_amalgamated
 
     #--------------------------------------------------------------------------
     '''Graph theory and topology related methods'''
@@ -252,14 +207,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 raise Exception('Received dataset of incorrect length')
         else:
             dataset = sp.ones(Nt)
-            tprop = 'connections'
+            tprop = 'conns'
 
         if dropzeros:
             ind = dataset>0
         else:
             ind = sp.ones_like(dataset,dtype=bool)
 
-        conn = self._throat_data["connections"][ind]
+        conn = self['throat.conns'][ind]
         row  = conn[:,0]
         col  = conn[:,1]
         data = dataset[ind]
@@ -321,14 +276,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             tprop = prop
         else:
             dataset = sp.ones(Nt)
-            tprop = 'connections'
+            tprop = 'conns'
 
         if dropzeros:
             ind = dataset > 0
         else:
             ind = sp.ones_like(dataset, dtype=bool)
 
-        conn = self._throat_data['connections'][ind]
+        conn = self['throat.conns'][ind]
         row  = conn[:,0]
         row = sp.append(row,conn[:,1])
         col = self.get_throat_indices('all')[ind]
@@ -372,7 +327,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn.find_connected_pores(throats=[0,1],flatten=True)
         array([0, 1, 5])
         """
-        Ps = self._throat_data['connections'][throats]
+        Ps = self['throat.conns'][throats]
         #Ps = [sp.asarray(x) for x in Ps if x]
         if flatten:
             Ps = sp.unique(sp.hstack(Ps))
@@ -450,11 +405,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         #Count neighboring pores
         try:
-            neighborPs = self._adjacency_matrix['lil']['connections'].rows[[pores]]
+            neighborPs = self._adjacency_matrix['lil']['conns'].rows[[pores]]
         except:
             self._logger.info('Creating adjacency matrix, please wait')
             self.create_adjacency_matrix()
-            neighborPs = self._adjacency_matrix['lil']['connections'].rows[[pores]]
+            neighborPs = self._adjacency_matrix['lil']['conns'].rows[[pores]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
@@ -511,11 +466,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         #Test for existance of incidence matrix
         try:
-            neighborTs = self._incidence_matrix['lil']['connections'].rows[[pores]]
+            neighborTs = self._incidence_matrix['lil']['conns'].rows[[pores]]
         except:
             self._logger.info('Creating incidence matrix, please wait')
             self.create_incidence_matrix()
-            neighborTs = self._incidence_matrix['lil']['connections'].rows[[pores]]
+            neighborTs = self._incidence_matrix['lil']['conns'].rows[[pores]]
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborTs = [sp.asarray(x) for x in neighborTs if x]
@@ -615,63 +570,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 Tmask = sp.in1d(T1,T2)
                 Tind = T1[Tmask]
         return Tind
-
-    def show_boundaries(self,Ptype=[]):
-        r'''
-        Documentation for this method is being updated, we are sorry for the inconvenience.
-        '''
-        pass
-        #        from mpl_toolkits.mplot3d import Axes3D
-        #        #Parse Ptype input argument
-        #        if Ptype == [] or Ptype == 'all':
-        #            Ptype = self.get_type_definitions()[1]
-        #        elif type(Ptype[0]) == str:
-        #            Ptype = self.get_type_definitions(Ptype)
-        #        fig = plt.figure()
-        #        ax = fig.add_subplot(111, projection='3d')
-        #        for i in Ptype:
-        #
-        #            xs = self._pore_data['coords'][:,0]
-        #            ys = self._pore_data['coords'][:,1]
-        #            zs = self._pore_data['coords'][:,2]
-        #            ax.scatter(xs, ys, zs, zdir='z', s=20, c='b')
-        #        plt.show()
-        
-    def clone_pores(self,pores,mode='parent',apply_label=['clone']):
-        r'''
-        mode options should be 'parent', 'siblings'
-        '''
-        if sp.shape(self.props(pores='all'))[0] > 1:
-            raise Exception('Cannot clone an active network')
-        apply_label = list(apply_label)
-        #Clone pores
-        Np = self.num_pores()
-        parents = sp.array(pores,ndmin=1)
-        pcurrent = self.get_pore_data(prop='coords')
-        pclone = pcurrent[pores,:]
-        pnew = sp.concatenate((pcurrent,pclone),axis=0)
-        Npnew = sp.shape(pnew)[0]
-        clones = sp.arange(Np,Npnew)
-        #Increase size of 'all' to accomodate new pores
-        self.set_pore_info(label='all', locations=sp.ones((Npnew,),dtype=bool))
-        #Insert cloned pore coordinates into network
-        self.set_pore_data(prop='coords',data=pnew)
-        #Apply specified labels to cloned pores
-        for item in apply_label:
-            self.set_pore_info(label=item,locations=clones)
-
-        #Add connections between parents and clones
-        tcurrent = self.get_throat_data(prop='connections')
-        tclone = sp.vstack((parents,clones)).T
-        tnew = sp.concatenate((tcurrent,tclone),axis=0)
-        Ntnew = sp.shape(tnew)[0]
-        #Increase size of 'all' to accomodate new throats
-        self.set_throat_info(label='all', locations=sp.ones((Ntnew,),dtype=bool))
-        #Insert new throats into network
-        self.set_throat_data(prop='connections',data=tnew)
-        
-        # Any existing adjacency and incidence matrices will be invalid
-        self.reset_graphs()
         
     def __str__(self):
         r"""
@@ -778,8 +676,91 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._adjacency_matrix['lil'] = {}
         self._incidence_matrix['coo'] = {}
         self._incidence_matrix['csr'] = {}
-        self._incidence_matrix['lil'] = {}        
+        self._incidence_matrix['lil'] = {}
+        
+    def clone(self,pores,mode='parent',apply_label=['clone']):
+        r'''
+        mode options should be 'parent', 'siblings'
+        '''
+        if sp.shape(self.props(pores=True))[0] > 1:
+            raise Exception('Cannot clone an active network')
+        self._logger.debug(sys._getframe().f_code.co_name+': Cloning pores')
+        apply_label = list(apply_label)
+        #Clone pores
+        Np = self.num_pores()
+        parents = sp.array(pores,ndmin=1)
+        pcurrent = self.get_pore_data(prop='coords')
+        pclone = pcurrent[pores,:]
+        pnew = sp.concatenate((pcurrent,pclone),axis=0)
+        Npnew = sp.shape(pnew)[0]
+        clones = sp.arange(Np,Npnew)
+        #Add connections between parents and clones
+        tclone = sp.vstack((parents,clones)).T
+        self.extend(pore_coords=pclone,throat_conns=tclone)
+        Np = self.num_pores()
+        for item in apply_label:
+            try:
+                self['pore.'+item][clones] = True
+            except: 
+                self['pore.'+item] = sp.zeros((self.num_pores(),),dtype=bool)
+                self['pore.'+item][clones] = True
+                
+        # Any existing adjacency and incidence matrices will be invalid
+        self.reset_graphs()
+        
+    def stitch(self,heads,tails):
+        r'''
+        Adds throat connections between specified pores
+        
+        Parameters
+        ----------
+        pores : array_like
+            An Np x 2 array contains pairs of pores that should be connected
+        '''
+        tc = sp.vstack((heads,tails)).T
+        self.extend(throat_conns=tc)
 
+    def extend(self,pore_coords=[],throat_conns=[]):
+        r'''
+        Add pores (or throats) to the network
+        
+        Parameters
+        ----------
+        pore_coords : array_like
+            The coordinates of the pores to add
+        throat_conns : array_like
+            The throat connections to add
+        
+        '''
+        self._logger.debug(sys._getframe().f_code.co_name+': Extending network')
+        Nt = self.num_throats() + int(sp.size(throat_conns)/2)
+        Np = self.num_pores() + int(sp.size(pore_coords)/3)
+        #Adjust 'all' labels
+        del self['pore.all'], self['throat.all']
+        self['pore.all'] = sp.ones((Np,),dtype=bool)
+        self['throat.all'] = sp.ones((Nt,),dtype=bool)
+        #Add coords and conns
+        if pore_coords != []:
+            coords = sp.vstack((self['pore.coords'],pore_coords))
+            self['pore.coords'] = coords
+        if throat_conns != []:
+            conns = sp.vstack((self['throat.conns'],throat_conns))
+            self['throat.conns'] = conns
+        for item in self.keys():
+            if item.split('.')[1] not in ['coords','conns','all']:
+                if item.split('.')[0] == 'pore':
+                    N = Np
+                else:
+                    N = Nt
+                if self[item].dtype == bool:
+                    temp = self[item]
+                    self[item] = sp.zeros((N,),dtype=bool)
+                    self[item][temp] = True
+                else:
+                    temp = self[item]
+                    self[item] = sp.ones((N,),dtype=float)*sp.nan
+                    self[item][sp.arange(0,sp.shape(temp)[0])] = temp
+        
     def trim(self, pores=[], throats=[]):
         '''
         Remove pores (or throats) from the network
@@ -794,14 +775,15 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         -----
         The prune affects the ~selected~ pores. If you want to remove all pores
         where the diameter is less than 0.5, get a mask ie:
-        self.get_pore_data(prop='diameter') < 0.5 # [True, False, ...]
-        And send it over as an argument. 
+        pn.['pore.diameter'] < 0.5 # [True, False, ...]
+        and send it over as an argument. 
         
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.trim(pores=[35])
+        >>> pn.trim(pores=[5])
         '''
+        self._logger.debug(sys._getframe().f_code.co_name+': Trimming network')
         pores = np.ravel(pores)
         throats = np.ravel(throats)
         
@@ -824,30 +806,41 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
         Pmap = sp.ones((self.num_pores(),),dtype=int)*-1
         Pmap[Pkeep] = Pnew
-        tpore1 = self.get_throat_data(prop='connections')[:,0]
-        tpore2 = self.get_throat_data(prop='connections')[:,1]
+        tpore1 = self['throat.conns'][:,0]
+        tpore2 = self['throat.conns'][:,1]
         temp1 = Pmap[tpore1[Tkeep]]
         temp2 = Pmap[tpore2[Tkeep]]
         
-        # Insert new indices into network
+        #Adjust throat lists
+        items = self.props()['throat'] + self.labels()['throat']
+        #Write 'all' label specifically
+        del self['throat.all']
+        self['throat.all'] = sp.ones_like(temp1,dtype=bool)
         # Write connections specifically
-        self._throat_data['connections'] = sp.vstack((temp1,temp2)).T
-        # Over-write remaining data
-        for item in self._pore_data.keys():
-            self._pore_data[item] = self._pore_data[item][Pkeep]
-        for item in self._pore_info.keys():
-            self._pore_info[item] = self._pore_info[item][Pkeep]            
-        for item in self._throat_data.keys():
-            if item != 'connections':
-                self._throat_data[item] = self._throat_data[item][Tkeep]  
-        for item in self._throat_info.keys():
-            self._throat_info[item] = self._throat_info[item][Tkeep]
+        del self['throat.conns']
+        self['throat.conns'] = sp.vstack((temp1,temp2)).T
+        # Over-write remaining throat data
+        for key in items:
+            if key not in ['conns','all']:
+                temp = self['throat.'+key]
+                del self['throat.'+key]
+                self['throat.'+key] = temp[Tkeep]
+        #Adjust pore lists
+        items = self.props()['pore'] + self.labels()['pore']
+        #Write 'all' label specifically
+        del self['pore.all']
+        self['pore.all'] = sp.ones_like(Pkeep,dtype=bool)
+        # Over-write remaining pore data
+        for key in items:
+            temp = self['pore.'+key]
+            del self['pore.'+key]
+            self['pore.'+key] = temp[Pkeep]
         
         #Reset network
         self.reset_graphs()
         
         #Check for individual isolated pores
-        Ps = sp.sum(self.num_neighbors(self.get_pore_indices())==0)
+        Ps = sp.sum(self.num_neighbors(self.pores())==0)
         if Ps > 0:
             self._logger.warning(str(Ps)+' pores no longer have neighbors')
         

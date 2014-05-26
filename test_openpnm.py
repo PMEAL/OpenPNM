@@ -15,7 +15,7 @@ def test_template_generator():
     pn.generate(R)
     pn.trim(R>0.5)
     assert len(pn.get_pore_data(prop='coords'))==3
-    assert len(pn.get_throat_data(prop='connections'))==2
+    assert len(pn.get_throat_data(prop='conns'))==2
 
 def test_linear_solver():
     # fix cube dimensions?

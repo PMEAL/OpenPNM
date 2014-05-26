@@ -133,7 +133,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Store result of invasion step
         self._p_inv[(self._p_inv==0)*(pmask)] = inv_val
         #Determine Pc_invaded for throats as well
-        temp = self._net.get_throat_data(prop='connections')
+        temp = self._net.get_throat_data(prop='conns')
         tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(Tinvaded)
         self._t_inv[(self._t_inv==0)*(tmask)] = inv_val
 

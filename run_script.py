@@ -4,19 +4,17 @@ import scipy as sp
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=20)
-pn.generate(divisions=[20, 20, 20], lattice_spacing=[0.0001],add_boundaries=True)
+pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10)
+pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=1)
 
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
 geom = OpenPNM.Geometry.Toray090(network=pn)
-geom.set_locations(pores=pn.pores('internal'),throats='all')
+geom.set_locations(pores=pn.pores('all'),throats='all')
 
-boun = pn.add_geometry(name='boundary_geometry',subclass='Boundary')
-boun.set_locations(pores=pn.pores('boundary'))
-
-
+#boun = pn.add_geometry(name='boundary_geometry',subclass='Boundary')
+#boun.set_locations(pores=pn.pores('boundary'))
 
 pn.regenerate_geometries()
 
@@ -55,7 +53,7 @@ pn.regenerate_physics()
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,loggername='OP',name='OP_1',network=pn)
-a = pn.pores(labels=['bottom','boundary'],mode='intersection')
+a = pn.pores(labels=['bottom'],mode='intersection')
 OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=20)
 OP_1.run()
 #OP_1.plot_drainage_curve()
@@ -80,7 +78,7 @@ Fickian_alg.update()
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
+#OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
 
 
 

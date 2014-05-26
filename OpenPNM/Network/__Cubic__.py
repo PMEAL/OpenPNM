@@ -132,8 +132,8 @@ class Cubic(GenericNetwork):
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
         pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
-        self.set_pore_data(prop='coords',data=pore_coords)
-        self.set_pore_info(label='all',locations=np.ones_like(ind))
+        self['pore.coords'] = pore_coords
+        self['pore.all'] = np.ones_like(ind,dtype=bool)
         self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
 
     def _generate_throats(self):
@@ -159,8 +159,8 @@ class Cubic(GenericNetwork):
         tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
         connections = np.vstack((tpore1,tpore2)).T
         connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
-        self.set_throat_data(prop='connections',data=connections)      
-        self.set_throat_info(label='all',locations=np.ones_like(tpore1))
+        self['throat.conns'] = connections
+        self['throat.all'] = np.ones_like(tpore1,dtype=bool)
         self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
         
     def _add_labels(self):
@@ -207,7 +207,7 @@ class Cubic(GenericNetwork):
         
         for label in ['front','back','left','right','bottom','top']:
             ps = self.get_pore_indices(labels=[label,'internal'],mode='intersection')
-            self.clone_pores(pores=ps,apply_label=[label,'boundary']) 
+            self.clone(pores=ps,apply_label=[label,'boundary']) 
             #Translate cloned pores
             ind = self.get_pore_indices(labels=[label,'boundary'],mode='intersection')
             coords = self.get_pore_data(prop='coords',locations=ind) 
