@@ -4,7 +4,7 @@ import scipy as sp
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10)
+pn = OpenPNM.Network.Cubic(loglevel=10)
 pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=1)
 
 #==============================================================================

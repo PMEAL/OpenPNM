@@ -11,7 +11,7 @@ import numpy as np
 
 def test_template_generator():
     R = np.array([[[0,0],[0,1]]])
-    pn = OpenPNM.Network.Template(name='template')
+    pn = OpenPNM.Network.Template()
     pn.generate(R)
     pn.trim(R>0.5)
     assert len(pn.get_pore_data(prop='coords'))==3
@@ -19,7 +19,7 @@ def test_template_generator():
 
 def test_linear_solver():
     # fix cube dimensions?
-    pn = OpenPNM.Network.Cubic(name='net')
+    pn = OpenPNM.Network.Cubic()
     pn.generate(add_boundaries=False)
 
     x,y,z = pn.get_pore_data(prop='coords').T
@@ -35,7 +35,7 @@ def test_rectilinear_integrity_after_prune():
     # some simple visual pruning, for comparison
     M = np.where(R > R.mean(), R, 0)
     # the convoluted graph way
-    pn = OpenPNM.Network.Template(name='net')
+    pn = OpenPNM.Network.Template()
     pn.generate(R)
     pn.trim(R<=R.mean())
     O = pn.asarray()
