@@ -72,8 +72,9 @@ class GenericFluid(OpenPNM.Utilities.Tools):
             
         Examples
         --------
+        >>> pn = OpenPNM.Network.TestNet()
         >>> air = OpenPNM.Fluids.Air(loglevel=50,network=pn)
-        >>> air.apply_conditions(molar_mass=18,density=1000})
+        >>> air.apply_conditions(molar_mass=18,density=1000)
         '''
         for item in values.keys():
             self.set_data(prop=item,pores='all',data=values[item])
@@ -135,12 +136,10 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> fluid = OpenPNM.Fluids.GenericFluid(network=pn,name='test_fluid')
+        >>> fluid = OpenPNM.Fluids.GenericFluid(network=pn)
         >>> fluid.add_method(prop='diffusivity',model='constant',value=1.234)
         >>> fluid.regenerate()
-        >>> fluid.get_pore_data(prop='diffusivity') #Use fluid's getter
-        array([ 1.234])
-        >>> pn.get_pore_data(prop='diffusivity',phase=fluid) #Use network's getter
+        >>> fluid.get_pore_data(prop='diffusivity')
         array([ 1.234])
         
         In cases where the same property is needed multiple times (like 
@@ -149,8 +148,6 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         
         >>> fluid.add_method(prop='diffusivity',prop_name='diffusivity_of_species_2',model='constant',value=3.333)
         >>> fluid.regenerate()
-        >>> pn.get_pore_data(prop='diffusivity_of_species_2',phase=fluid)
-        array([ 3.333])
         '''
         try:
             function = getattr( getattr(OpenPNM.Fluids, prop), kwargs['model'] ) # this gets the method from the file

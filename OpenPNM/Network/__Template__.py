@@ -37,12 +37,7 @@ class Template(GenericNetwork):
 
     Examples
     --------
-    >>> img = sp.ones((30,30,30),dtype=int)
-    >>> pn = OpenPNM.Network.Template(name='template_1').generate(template=img,lattice_spacing=0.001)
-    >>> pn.num_pores()
-    27000
-    >>> pn.num_throats()
-    78300
+    This class is a work in progress, examples forthcoming.
     """
 
     @classmethod

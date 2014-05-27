@@ -39,7 +39,8 @@ class Delaunay(GenericNetwork):
 
     Examples
     --------
-    >>> pn = OpenPNM.Network.Delaunay(name='test_delaunay').generate(num_pores=100,domain_size=[100,100,100])
+    >>> pn = OpenPNM.Network.Delaunay()
+    >>> pn.generate(num_pores=100,domain_size=[100,100,100])
     >>> pn.num_pores()
     100
     >>> type(pn.num_throats())
@@ -348,5 +349,6 @@ class Delaunay(GenericNetwork):
         self._net.throat_data['connections'] =  np.concatenate((self._net.throat_data['connections'],bt_connections))
 
 if __name__ == '__main__':
-    pn = OpenPNM.Network.Delaunay(name='delaunay_1').generate(num_pores=100, domain_size=[3,3,3])
-    print(pn.name)
+    #Run doc tests
+    import doctest
+    doctest.testmod(verbose=True)
