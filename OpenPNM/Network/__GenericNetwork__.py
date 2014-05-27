@@ -32,7 +32,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
     """
 
-    def __init__(self, name='default_network',**kwargs):
+    def __init__(self, name=None,**kwargs):
         r"""
         Initialize
         """
@@ -189,11 +189,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> vals = pn.get_throat_data(prop='numbering')
-        >>> temp = pn.create_adjacency_matrix(data=vals,prop='numbering',sprsfmt='csr')
-        >>> print(pn.adjacency_matrix['csr'].keys())
-        dict_keys(['numbering'])
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> vals = sp.rand(pn.num_throats(),) < 0.5
+        >>> temp = pn.create_adjacency_matrix(data=vals,prop='temp_name',sprsfmt='csr')
+        >>> print(pn._adjacency_matrix['csr'].keys())
+        dict_keys(['temp_name'])
 
         """
         self._logger.debug('create_adjacency_matrix: Start of method')
@@ -320,7 +320,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_connected_pores(throats=[0,1])
         array([[0, 1],
                [0, 5]])
@@ -349,7 +349,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_connecting_throat(0,1)
         array([0])
         """
@@ -392,7 +392,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_neighbor_pores(pores=[0,2])
         array([ 1,  3,  5,  7, 25, 27])
-        >>> pn.find_neighbor_pores(pores=[0,1]) #Find all neighbors, excluding selves (default behavior)
+        >>> pn.find_neighbor_pores(pores=[0,1],excl_self=True) #Find all neighbors, excluding selves
         array([ 2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0,2],flatten=False)
         array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
@@ -458,7 +458,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_neighbor_throats(pores=[0,1])
         array([0, 1, 2, 3, 4, 5])
         >>> pn.find_neighbor_throats(pores=[0,1],flatten=False)
@@ -640,19 +640,19 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 if prop.split('_')[0] == 'throat':
                     item.regenerate(prop_list=prop)
             
-    def add_geometry(self,name,subclass='GenericGeometry',**kwargs):
+    def add_geometry(self,name=None,subclass='GenericGeometry',**kwargs):
         r'''
         '''
         temp = OpenPNM.Geometry.__getattribute__(subclass)
         return temp(network=self,name=name,**kwargs)
 
-    def add_fluid(self,name,subclass='GenericFluid',**kwargs):
+    def add_fluid(self,name=None,subclass='GenericFluid',**kwargs):
         r'''
         '''
         temp = OpenPNM.Fluids.__getattribute__(subclass)
         return temp(network=self,name=name,**kwargs)
         
-    def add_physics(self,name,fluid,geometry,subclass='GenericPhysics',**kwargs):
+    def add_physics(self,fluid,geometry,name=None,subclass='GenericPhysics',**kwargs):
         r'''
         '''
         temp = OpenPNM.Physics.__getattribute__(subclass)
@@ -781,9 +781,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.trim(pores=[5])
+        >>> pn.trim(pores=[1])
         '''
-        self._logger.debug(sys._getframe().f_code.co_name+': Trimming network')
         pores = np.ravel(pores)
         throats = np.ravel(throats)
         

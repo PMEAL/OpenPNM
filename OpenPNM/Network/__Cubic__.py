@@ -38,7 +38,8 @@ class Cubic(GenericNetwork):
 
     Examples
     --------
-    >>> pn = OpenPNM.Network.Cubic(name='test_cubic').generate(lattice_spacing=[1],divisions=[5,5,5])
+    >>> pn = OpenPNM.Network.Cubic()
+    >>> pn.generate(lattice_spacing=[1],divisions=[5,5,5],add_boundaries=False)
 
     """
 

@@ -58,6 +58,7 @@ class VTK(GenericVisualization):
 
         """
         if not filename:
+            filename='output_file.vtp'
             output_path = os.path.join( os.path.expanduser('~'), filename )
         else:
             output_path = filename

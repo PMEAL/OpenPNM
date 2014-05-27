@@ -35,17 +35,17 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     Examples
     --------
     >>> pn = OpenPNM.Network.TestNet()
-    >>> loc = pn.get_pore_indices() #Get all pores to define geometry everywhere
-    >>> geo = OpenPNM.Geometry.GenericGeometry(name='geo_test',network=pn)
-    >>> geo.pores = loc
+    >>> loc = pn.pores() #Get all pores to define geometry everywhere
+    >>> geo = OpenPNM.Geometry.GenericGeometry(network=pn)
+    >>> geo.set_locations(pores=loc)
     >>> geo.add_method(prop='pore_seed',model='constant',value=0.123)
     >>> geo.regenerate()
-    >>> seeds = pn.get_pore_data(locations='geo_test',prop='seed')
+    >>> seeds = pn.get_pore_data(locations=geo.name,prop='seed')
     >>> seeds[0]
     0.123
     """
 
-    def __init__(self,network,name='default_geometry',**kwargs):
+    def __init__(self,network,name=None,**kwargs):
         r"""
         Initialize
         """
@@ -131,8 +131,8 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pind = pn.get_pore_indices()
-        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='geo_test', locations=pind)
+        >>> pind = pn.pores()
+        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn)
         >>> geom.regenerate()  # Regenerate all properties at once
         >>> geom.regenerate('pore_seed')  # only one property
         >>> geom.regenerate(['pore_seed', 'pore_diameter'])  # or several
@@ -175,7 +175,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         
         Examples
         --------
-        >>> pn = OpenPNM.Network.TestNet()
+        None yet
         '''
         try:
             function = getattr( getattr(OpenPNM.Geometry, prop), kwargs['model'] ) # this gets the method from the file
@@ -210,7 +210,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         print('Geometry not yet applied to',sp.sum(temp==0),'throats')
 
 if __name__ == '__main__':
-    pn = OpenPNM.Network.TestNet()
-    loc = pn.get_pore_indices()
-    test = OpenPNM.Geometry.GenericGeometry(name='doc_test',locations=loc,network=pn)
+    #Run doc tests
+    import doctest
+    doctest.testmod(verbose=True)
 
