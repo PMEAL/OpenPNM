@@ -25,7 +25,7 @@ class TestNet(GenericNetwork):
 
     """
 
-    def __init__(self, name='test_net', **kwargs):
+    def __init__(self, name=None, **kwargs):
         super(TestNet, self).__init__(name, **kwargs)
         self.generate()
 
@@ -65,7 +65,6 @@ class TestNet(GenericNetwork):
         Lc = self._Lc
         Np = Nx*Ny*Nz
         ind = sp.arange(0,Np)
-        self.set_pore_data(prop='numbering',data=ind)
         self.set_pore_info(label='all',locations=sp.ones_like(ind))
         pore_coords = Lc/2+Lc*sp.array(sp.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=sp.float64).T
         self.set_pore_data(prop='coords',data=pore_coords)
@@ -90,7 +89,6 @@ class TestNet(GenericNetwork):
         tpore2 = sp.hstack((tpore2_1,tpore2_2,tpore2_3))
         connections = sp.vstack((tpore1,tpore2)).T
         connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
-        self.set_throat_data(prop='numbering',data=sp.arange(0,sp.shape(tpore1)[0]))
         self.set_throat_info(label='all',locations=sp.ones_like(sp.arange(0,sp.shape(tpore1)[0])))
         self.set_throat_data(prop='connections',data=connections)       
         

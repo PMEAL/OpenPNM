@@ -234,11 +234,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
-        >>> vals = pn.get_throat_data(prop='numbering')
-        >>> temp = pn.create_adjacency_matrix(data=vals,prop='numbering',sprsfmt='csr')
-        >>> print(pn.adjacency_matrix['csr'].keys())
-        dict_keys(['numbering'])
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> vals = sp.rand(pn.num_throats(),) < 0.5
+        >>> temp = pn.create_adjacency_matrix(data=vals,prop='temp_name',sprsfmt='csr')
+        >>> print(pn._adjacency_matrix['csr'].keys())
+        dict_keys(['temp_name'])
 
         """
         self._logger.debug('create_adjacency_matrix: Start of method')
@@ -365,7 +365,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_connected_pores(throats=[0,1])
         array([[0, 1],
                [0, 5]])
@@ -394,7 +394,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_connecting_throat(0,1)
         array([0])
         """
@@ -437,7 +437,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_neighbor_pores(pores=[0,2])
         array([ 1,  3,  5,  7, 25, 27])
-        >>> pn.find_neighbor_pores(pores=[0,1]) #Find all neighbors, excluding selves (default behavior)
+        >>> pn.find_neighbor_pores(pores=[0,1],excl_self=True) #Find all neighbors, excluding selves
         array([ 2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0,2],flatten=False)
         array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
@@ -503,7 +503,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Examples
         --------
-        >>> pn = OpenPNM.Network.Cubic(name='doc_test').generate(divisions=[5,5,5],lattice_spacing=[1])
+        >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_neighbor_throats(pores=[0,1])
         array([0, 1, 2, 3, 4, 5])
         >>> pn.find_neighbor_throats(pores=[0,1],flatten=False)
@@ -800,7 +800,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.trim(pores=[35])
+        >>> pn.trim(pores=[1])
         '''
         pores = np.ravel(pores)
         throats = np.ravel(throats)
