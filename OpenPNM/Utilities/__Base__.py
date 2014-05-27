@@ -17,7 +17,7 @@ _logging.basicConfig(level=_logging.ERROR,
                     datefmt='%m-%d %H:%M',
                     )
                     
-class Base(dict):
+class Base(object):
     r"""
     .. class:: `OpenPNM.Utilities.OpenPNMbase` -- Base class for OpenPNM
     
