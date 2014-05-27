@@ -8,6 +8,7 @@ import pytest
 
 import OpenPNM
 import numpy as np
+import scipy as sp
 
 def test_template_generator():
     R = np.array([[[0,0],[0,1]]])
@@ -41,6 +42,20 @@ def test_rectilinear_integrity_after_prune():
     O = pn.asarray()
     # what it would look like normally
     assert np.allclose(M, O)
+    
+def test_graph_queries():
+    pn = OpenPNM.Network.TestNet()
+    pn.clone(pores=[0])
+    pn.num_pores()
+    assert pn.find_neighbor_pores(pores=pn.pores()[-1]) == [0]
+    assert sp.all(pn.find_neighbor_pores(pores=[0]) == [  1,   5,  25, 125])
+    pn.stitch(heads=[124],tails=[125])
+    assert pn.num_throats() == 302
+    pn.extend(pore_coords=[[1,1,1]])
+    assert pn.find_neighbor_pores(pores=126) == []
+    assert pn.find_neighbor_throats(pores=126) == []    
+    
+    
 
 if __name__ == '__main__':
     pytest.main([__file__])
