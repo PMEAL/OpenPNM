@@ -11,9 +11,11 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import scipy as sp
+import OpenPNM
 from OpenPNM.Utilities import Base
 
-class Tools(Base):
+
+class Tools(Base,dict):
     r'''
     This class contains tools to read and write data in OpenPNM objects
 
@@ -986,6 +988,9 @@ class Tools(Base):
         else: 
             items = self.props()[element]
         for item in items:
+            #Make sure pore or throat is present on item name
+            item = item.split('.')[-1]
+            item = element + '.' + item
             try: 
                 temp = self[item]
                 if sp.sum(sp.isnan(temp)) > 0:
@@ -993,7 +998,7 @@ class Tools(Base):
                     success = 0
                 else: self._logger.info('Checks for '+element+' property '+item+': passed successfully.')
             except:
-                self._logger.error(element+' property '+item+': not found!')
+                self._logger.error(element+' property '+item+': not found.')
                 success = 0
         if success == 0:   self._logger.error('Problem found in checking '+element+' properties.')
         return success
