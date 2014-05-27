@@ -544,16 +544,16 @@ class Tools(Base):
                     temp['throat'].append(item)
             return temp
         elif pores != []:
-            temp = []
+            temp = {}
             for item in props:
                 if item.split('.')[0] == 'pore':
-                    temp.append(item)
+                    temp.update({item:self[item][pores]})
             return temp
         elif throats != []:
-            temp = []
+            temp = {}
             for item in props:
                 if item.split('.')[0] == 'throat':
-                    temp.append(item)
+                    temp.update({item:self[item][throats]})
             return temp
             
     def _get_labels(self,element,locations,mode='union'):
@@ -733,7 +733,7 @@ class Tools(Base):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> Tind = pn.get_throat_indices()
+        >>> Tind = pn.throats()
         >>> Tind[0:5]
         array([0, 1, 2, 3, 4], dtype=int64)
         
@@ -949,7 +949,7 @@ class Tools(Base):
         Nt = self.to_mask(throats=Nt)
         return sp.sum(Nt) #return sum of Trues
         
-    def count(self):
+    def count(self,element=None):
         r'''
         Returns a dictionary containing the number of pores and throats in 
         the network, stored under the keys 'pore' or 'throat'
@@ -957,6 +957,8 @@ class Tools(Base):
         temp = {}
         temp['pore'] = self.num_pores()
         temp['throat'] = self.num_throats()
+        if element != None:
+            temp = temp[element]
         return temp
         
     def get_result(self,alg_obj,**kwargs):
