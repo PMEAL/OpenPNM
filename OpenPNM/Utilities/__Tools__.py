@@ -503,17 +503,15 @@ class Tools(Base):
         props.sort()
         return props
             
-    def props(self,pores=False,throats=False,mode='all'):
+    def props(self,pores=[],throats=[],mode='all'):
         r'''
         Returns a list containing the names of all defined pore or throat
         properties. 
         
         Parameters
         ----------
-        pores or throats : boolean 
-            Properties exist on all pores and throats, so there is no reason
-            to request properties from some pores or throats.  These arguments
-            only control whether pore or throat properties are returned.
+        pores or throats : array_like
+            hmmm
         mode : string, optional
             Set the mode to be used for retrieving props.  Options are:
             
@@ -535,22 +533,30 @@ class Tools(Base):
         '''
         
         props = self._get_props(mode=mode)
-        if (pores == False) and (throats == False):
-            return props
-        elif pores == True:
+        if (pores == []) and (throats == []):
+            temp = {}
+            temp['pore'] = []
+            temp['throat'] = []
+            for item in props:
+                if item.split('.')[0] == 'pore':
+                    temp['pore'].append(item)
+                else:
+                    temp['throat'].append(item)
+            return temp
+        elif pores != []:
             temp = []
             for item in props:
                 if item.split('.')[0] == 'pore':
                     temp.append(item)
             return temp
-        elif throats == True:
+        elif throats != []:
             temp = []
             for item in props:
                 if item.split('.')[0] == 'throat':
                     temp.append(item)
             return temp
             
-    def _get_labels(self,element,locations,mode):
+    def _get_labels(self,element,locations,mode='union'):
         r'''
         This is the actual label getter method, but it should not be called directly.  
         Wrapper methods have been created, use get_labels().
@@ -585,14 +591,15 @@ class Tools(Base):
         else:
             print('unrecognized mode')
                 
-    def labels(self,pores=None,throats=None,mode='union'):
+    def labels(self,pores=[],throats=[],mode='union'):
         r'''
         Returns the labels applied to specified pore locations
         
         Parameters
         ----------
         pores (or throats) : array_like
-            The pores (or throats) whos labels are sought
+            The pores (or throats) whose labels are sought.  If left empty a 
+            dictionary containing all pore and throat labels is returned.
         mode : string, optional
             Controls how the query should be performed
             
@@ -609,18 +616,18 @@ class Tools(Base):
             * 'mask' : returns an N x Lt array, where each row corresponds to a pore (or throat) location, and each column contains the truth value for the existance of labels as returned from labels(pores='all',mode='union')).
             
         '''
-        if (pores == None) and (throats == None):
-            ps = self._get_labels(element='pore',locations=self.pores(), mode=mode)
-            ts = self._get_labels(element='throat',locations=self.throats(),mode=mode)
-            temp = ps + ts
+        if (pores == []) and (throats == []):
+            temp = {}
+            temp['pore'] = self._get_labels(element='pore',locations=self.pores(), mode=mode)
+            temp['throat'] = self._get_labels(element='throat',locations=self.throats(),mode=mode)
             return temp
-        if pores != None:
+        elif pores != []:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             temp = self._get_labels(element='pore',locations=pores, mode=mode)
             return temp
-        if throats != None:
+        elif throats != []:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
@@ -942,6 +949,16 @@ class Tools(Base):
         Nt = self.to_mask(throats=Nt)
         return sp.sum(Nt) #return sum of Trues
         
+    def count(self):
+        r'''
+        Returns a dictionary containing the number of pores and throats in 
+        the network, stored under the keys 'pore' or 'throat'
+        '''
+        temp = {}
+        temp['pore'] = self.num_pores()
+        temp['throat'] = self.num_throats()
+        return temp
+        
     def get_result(self,alg_obj,**kwargs):
         r'''
         This method invokes the update method on the given OpenPNM Algorithm object
@@ -968,7 +985,7 @@ class Tools(Base):
             items = self.props()[element]
         for item in items:
             try: 
-                temp = self[element+'.'+item]
+                temp = self[item]
                 if sp.sum(sp.isnan(temp)) > 0:
                     self._logger.error('Nans found in: '+item)
                     success = 0

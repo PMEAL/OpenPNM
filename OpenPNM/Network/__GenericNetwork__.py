@@ -410,6 +410,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._logger.info('Creating adjacency matrix, please wait')
             self.create_adjacency_matrix()
             neighborPs = self._adjacency_matrix['lil']['conns'].rows[[pores]]
+        if [sp.asarray(x) for x in neighborPs if x] == []:
+            return []
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
@@ -471,6 +473,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._logger.info('Creating incidence matrix, please wait')
             self.create_incidence_matrix()
             neighborTs = self._incidence_matrix['lil']['conns'].rows[[pores]]
+        if [sp.asarray(x) for x in neighborTs if x] == []:
+            return []
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborTs = [sp.asarray(x) for x in neighborTs if x]
@@ -678,12 +682,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._incidence_matrix['csr'] = {}
         self._incidence_matrix['lil'] = {}
         
-    def clone(self,pores,mode='parent',apply_label=['clone']):
+    def clone(self,pores,mode='parents',apply_label=['clone']):
         r'''
-        mode options should be 'parent', 'siblings'
+        mode options should be 'parents', 'siblings', 'isolated', etc
         '''
         if sp.shape(self.props(pores=True))[0] > 1:
-            raise Exception('Cannot clone an active network')
+            self._logger.warning('Cloning an active network is messy')
         self._logger.debug(sys._getframe().f_code.co_name+': Cloning pores')
         apply_label = list(apply_label)
         #Clone pores
@@ -694,16 +698,22 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         pnew = sp.concatenate((pcurrent,pclone),axis=0)
         Npnew = sp.shape(pnew)[0]
         clones = sp.arange(Np,Npnew)
-        #Add connections between parents and clones
-        tclone = sp.vstack((parents,clones)).T
-        self.extend(pore_coords=pclone,throat_conns=tclone)
-        Np = self.num_pores()
+        #Add clone labels to network
         for item in apply_label:
-            try:
-                self['pore.'+item][clones] = True
-            except: 
-                self['pore.'+item] = sp.zeros((self.num_pores(),),dtype=bool)
-                self['pore.'+item][clones] = True
+            try: self['pore.'+item]
+            except: self['pore.'+item] = sp.zeros((self.num_pores(),),dtype=bool)
+        #Add connections between parents and clones
+        if mode == 'parents':
+            tclone = sp.vstack((parents,clones)).T
+            self.extend(pore_coords=pclone,throat_conns=tclone)
+        if mode == 'siblings':
+            pass
+        if mode == 'isolated':
+            print(clones)
+            self.extend(pore_coords=pclone)
+        #Apply provided labels to cloned pores
+        for item in apply_label:
+            self['pore.'+item][clones] = True
                 
         # Any existing adjacency and incidence matrices will be invalid
         self.reset_graphs()
@@ -760,6 +770,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                     temp = self[item]
                     self[item] = sp.ones((N,),dtype=float)*sp.nan
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
+        self.reset_graphs()
         
     def trim(self, pores=[], throats=[]):
         '''
