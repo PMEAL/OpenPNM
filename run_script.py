@@ -4,17 +4,17 @@ import scipy as sp
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(loglevel=10)
-pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=1)
+pn = OpenPNM.Network.Cubic(loglevel=20)
+pn.generate(divisions=[20, 20, 20], lattice_spacing=[0.0001],add_boundaries=True)
 
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
 geom = OpenPNM.Geometry.Toray090(network=pn)
-geom.set_locations(pores=pn.pores('all'),throats='all')
+geom.set_locations(pores=pn.pores('internal'),throats='all')
 
-#boun = pn.add_geometry(name='boundary_geometry',subclass='Boundary')
-#boun.set_locations(pores=pn.pores('boundary'))
+boun = pn.add_geometry(subclass='Boundary')
+boun.set_locations(pores=pn.pores('boundary'))
 
 pn.regenerate_geometries()
 
@@ -34,12 +34,12 @@ pn.regenerate_fluids()
 #==============================================================================
 '''Build Physics Objects'''
 #==============================================================================
-phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry=geom,name='phys_water')
+phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry=geom)
 phys_water.add_property(prop='capillary_pressure', model='washburn')
 phys_water.add_property(prop='hydraulic_conductance', model='hagen_poiseuille')
-phys_water.add_property(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
+phys_water.add_property(prop='diffusive_conductance', model='bulk_diffusion', diffusivity='DAB')
 
-phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air,geometry=geom, name='phys_air')
+phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air,geometry=geom)
 phys_air.add_property(prop='hydraulic_conductance', model='hagen_poiseuille')
 phys_air.add_property(prop='diffusive_conductance', model='bulk_diffusion')
 phys_air.add_property(prop='electronic_conductance', model='series_resistors')
@@ -52,8 +52,8 @@ pn.regenerate_physics()
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,loggername='OP',name='OP_1',network=pn)
-a = pn.pores(labels=['bottom'],mode='intersection')
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,network=pn)
+a = pn.pores(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=20)
 OP_1.run()
 #OP_1.plot_drainage_curve()
@@ -61,7 +61,7 @@ OP_1.run()
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
-Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, loggername='Fickian', name='Fickian_alg',network=pn)
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.pores(labels=['top','front'],mode='intersection')
 Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)

@@ -10,10 +10,10 @@ report = True
 #------------------------------------------------------------------------------
 '''Test Base Classes'''
 #------------------------------------------------------------------------------
-import OpenPNM.Base.__OpenPNMbase__ as mod_to_test
+import OpenPNM.Utilities.__Base__ as mod_to_test
 doctest.testmod(mod_to_test,report=report,verbose=verbose)
 
-import OpenPNM.Base.__Tools__ as mod_to_test
+import OpenPNM.Utilities.__Tools__ as mod_to_test
 doctest.testmod(mod_to_test,report=report,verbose=verbose)
 
 #------------------------------------------------------------------------------

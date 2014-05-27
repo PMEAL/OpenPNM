@@ -28,7 +28,7 @@ def empirical(fluid,network,propname,a=[0],**params):
     r"""
     Uses a polynomial fit of empirical data to calculate property
     """
-    T = fluid.get_pore_data(phase=fluid,prop='temperature')
+    T = fluid.get_pore_data(prop='temperature')
     value = sp.zeros_like(T)
     for i in range(0,sp.size(a)):
         value = value + a[i]*(T**i)

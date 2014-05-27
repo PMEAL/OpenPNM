@@ -3,7 +3,7 @@ module __OpenPNMbase__: contains OpenPNM base classes
 =====================================================
 
 """
-import sys, os
+import sys, os, string, random, time
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(1, parent_dir)
 import OpenPNM
@@ -130,6 +130,9 @@ class Base(dict):
     def _set_name(self,name):
         obj_type = self.__module__.split('.')[1]
         temp = self.find_object_by_type(obj_type)
+        if name == None:
+            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(20))
+            name = obj_type + '_' + name
         for item in temp.keys():
             if obj_type == 'Geometry':
                 if self.name:
@@ -142,7 +145,6 @@ class Base(dict):
                         raise Exception('Throat label '+name+' already exists')
             if item == name:
                 raise Exception('A '+obj_type+' Object with the supplied name already exists')
-            
         self._name = name
     
     def _get_name(self):
