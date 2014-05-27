@@ -686,7 +686,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r'''
         mode options should be 'parents', 'siblings', 'isolated', etc
         '''
-        if sp.shape(self.props(pores=True))[0] > 1:
+        if sp.shape(self.props('pore'))[0] > 1:
             self._logger.warning('Cloning an active network is messy')
         self._logger.debug(sys._getframe().f_code.co_name+': Cloning pores')
         apply_label = list(apply_label)
@@ -822,7 +822,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Tnew2 = Pmap[tpore2[Tkeep]]
         
         #Adjust throat lists
-        items = self.props() + self.labels()
+        items = self.keys()
         #Write 'all' label specifically
         del self['throat.all']
         self['throat.all'] = sp.ones_like(Tnew1,dtype=bool)
