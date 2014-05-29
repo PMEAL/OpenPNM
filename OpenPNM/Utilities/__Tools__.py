@@ -6,7 +6,7 @@ module __Tools__: Base class to construct pore network tools
 
 """
 
-import sys, os
+import sys, os,pprint
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -505,7 +505,7 @@ class Tools(Base,dict):
         props.sort()
         return props
             
-    def props(self,pores=[],throats=[],mode='all'):
+    def props(self,element='',pores=[],throats=[],mode='all'):
         r'''
         Returns a list containing the names of all defined pore or throat
         properties. 
@@ -536,14 +536,15 @@ class Tools(Base,dict):
         
         props = self._get_props(mode=mode)
         if (pores == []) and (throats == []):
-            temp = {}
-            temp['pore'] = []
-            temp['throat'] = []
-            for item in props:
-                if item.split('.')[0] == 'pore':
-                    temp['pore'].append(item)
-                else:
-                    temp['throat'].append(item)
+            if element == '':
+                return props            
+            elif element == 'pore':
+                temp = [item for item in props if item.split('.')[0]=='pore']
+            elif element == 'throat':
+                temp = [item for item in props if item.split('.')[0]=='throat']
+            else:
+                self._logger.error('Unrecognized element')
+                return
             return temp
         elif pores != []:
             temp = {}
@@ -558,7 +559,7 @@ class Tools(Base,dict):
                     temp.update({item:self[item][throats]})
             return temp
             
-    def _get_labels(self,element,locations,mode='union'):
+    def _get_labels(self,element='',locations=[],mode='union'):
         r'''
         This is the actual label getter method, but it should not be called directly.  
         Wrapper methods have been created, use get_labels().
@@ -593,7 +594,7 @@ class Tools(Base,dict):
         else:
             print('unrecognized mode')
                 
-    def labels(self,pores=[],throats=[],mode='union'):
+    def labels(self,element='',pores=[],throats=[],mode='union'):
         r'''
         Returns the labels applied to specified pore locations
         
@@ -619,9 +620,17 @@ class Tools(Base,dict):
             
         '''
         if (pores == []) and (throats == []):
-            temp = {}
-            temp['pore'] = self._get_labels(element='pore',locations=self.pores(), mode=mode)
-            temp['throat'] = self._get_labels(element='throat',locations=self.throats(),mode=mode)
+            if element == '':
+                temp = []
+                temp = self._get_labels(element='pore',locations=self.pores(), mode=mode)
+                temp = temp + self._get_labels(element='throat',locations=self.throats(),mode=mode)
+            elif element == 'pore':
+                temp = self._get_labels(element='pore',locations=self.pores(), mode=mode)
+            elif element == 'throat':
+                temp = self._get_labels(element='throat',locations=self.pores(), mode=mode)
+            else:
+                self._logger.error('Unrecognized element')
+                return
             return temp
         elif pores != []:
             if pores == 'all':
@@ -981,13 +990,13 @@ class Tools(Base,dict):
         r'''
         '''
         success = 1
-        if type(props)==str: 
+        if type(props) == str: 
             props = [props]
         if props != []:
-            items = props
-        else: 
-            items = self.props()[element]
-        for item in items:
+            props = props
+        else:
+            props = self.props(element)
+        for item in props:
             #Make sure pore or throat is present on item name
             item = item.split('.')[-1]
             item = element + '.' + item
