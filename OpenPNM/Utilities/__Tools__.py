@@ -1012,15 +1012,55 @@ class Tools(Base,dict):
         if success == 0:   self._logger.error('Problem found in checking '+element+' properties.')
         return success
         
+    def data_health(self,element='',props=[]):
+        health = {}
+        flag = True
+        if props == []:
+            props = self.props(element)
+        else:
+            if type(props) == str:
+                props = [props]
+            if props[0].split('.')[0] not in ['pore','throat']:
+                self._logger.error('Properties must be either pore or throat')
+        for item in props:
+            if sp.sum(sp.isnan(self[item])) > 0:
+                health[item] = 'Has NaNs'
+                flag = False
+            elif sp.shape(self[item])[0] == 1:
+                health[item] = 'Healthy Scalar'
+            elif sp.shape(self[item])[0] == self.count(item.split('.')[0]):
+                health[item] = 'Healthy Vector'
+            else:
+                health[item] = 'Wrong Length'
+                flag = False
+        pprint.pprint(health)
+        return flag
+            
     def check_pore_health(self,props=[]):
         r'''
         '''
-        return self._check_health(element='pore',props=props)
+        if props != []:
+            if type(props) == str:
+                props = [props]
+            temp = []
+            for item in props:
+                item = item.split('.')[-1]
+                temp.append('pore.' + item)
+            props = temp
+        return self.data_health(element='pore',props=props)            
         
     def check_throat_health(self,props=[]):
         r'''
         '''
-        return self._check_health(element='throat',props=props)
+        if props != []:
+            if type(props) == str:
+                props = [props]
+            temp = []
+            for item in props:
+                item = item.split('.')[-1]
+                temp.append('throat.' + item)
+            props = temp
+        return self.data_health(element='throat',props=props)
         
 
 if __name__ == '__main__':

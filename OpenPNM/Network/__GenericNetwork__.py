@@ -886,6 +886,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         clusters = sprs.csgraph.connected_components(self._adjacency_matrix['csr']['temp'])[1]
         del self._adjacency_matrix['csr']['temp']
         return clusters
+        
+    def network_health(self):
+        pass
 
 if __name__ == '__main__':
     #Run doc tests
