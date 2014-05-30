@@ -692,6 +692,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         apply_label = list(apply_label)
         #Clone pores
         Np = self.num_pores()
+        Nt = self.num_throats()
         parents = sp.array(pores,ndmin=1)
         pcurrent = self.get_pore_data(prop='coords')
         pclone = pcurrent[pores,:]
@@ -702,18 +703,22 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         for item in apply_label:
             try: self['pore.'+item]
             except: self['pore.'+item] = sp.zeros((self.num_pores(),),dtype=bool)
+            try: self['throat.'+item]
+            except: self['throat.'+item] = sp.zeros((self.num_throats(),),dtype=bool)
         #Add connections between parents and clones
         if mode == 'parents':
             tclone = sp.vstack((parents,clones)).T
             self.extend(pore_coords=pclone,throat_conns=tclone)
         if mode == 'siblings':
-            pass
+            ts = self.find_neighbor_throats(pores=pores,mode='intersection')
+            tclone = self['throat.conns'][ts] + self.num_pores()
+            self.extend(pore_coords=pclone,throat_conns=tclone)
         if mode == 'isolated':
-            print(clones)
             self.extend(pore_coords=pclone)
         #Apply provided labels to cloned pores
         for item in apply_label:
-            self['pore.'+item][clones] = True
+            self['pore.'+item][self.pores('all')>=Np] = True
+            self['throat.'+item][self.throats('all')>=Nt] = True
                 
         # Any existing adjacency and incidence matrices will be invalid
         self.reset_graphs()
