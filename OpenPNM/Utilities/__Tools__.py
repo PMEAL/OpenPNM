@@ -631,18 +631,21 @@ class Tools(Base,dict):
             else:
                 self._logger.error('Unrecognized element')
                 return
+            temp.sort()
             return temp
         elif pores != []:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             temp = self._get_labels(element='pore',locations=pores, mode=mode)
+            temp.sort()
             return temp
         elif throats != []:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
             temp = self._get_labels(element='throat',locations=throats,mode=mode)
+            temp.sort()
             return temp
         
     def _get_indices(self,element,labels,mode):
@@ -752,6 +755,18 @@ class Tools(Base,dict):
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
+
+    def get_pore_indices(self,labels=['all'],mode='union'):
+        r'''
+        THIS METHOD IS DEPRECATED, USE pores() INSTEAD
+        '''
+        return self.pores(labels=labels,mode=mode)
+
+    def get_throat_indices(self,labels=['all'],mode='union'):
+        r'''
+        THIS METHOD IS DEPRECATED, USE throats() INSTEAD
+        '''
+        return self.throats(labels=labels,mode=mode)
         
     def to_mask(self,pores=None,throats=None):
         r'''
@@ -781,18 +796,6 @@ class Tools(Base,dict):
             mask = sp.zeros((Nt,),dtype=bool)
             mask[throats] = True
             return mask
-        
-    def get_pore_indices(self,labels=['all'],mode='union'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE pores() INSTEAD
-        '''
-        return self.pores(labels=labels,mode=mode)
-
-    def get_throat_indices(self,labels=['all'],mode='union'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE throats() INSTEAD
-        '''
-        return self.throats(labels=labels,mode=mode)
 
     def interpolate_data(self,prop='',throats=[],pores=[],data=[]):
         r"""

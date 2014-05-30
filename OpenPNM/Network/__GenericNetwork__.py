@@ -146,12 +146,13 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #Add geometry and network data
         for item in self:
             self._data_amalgamated.update({item : self[item]})
-        #Add fluid and physics data
-        for item in fluids:
-            for key in item.keys():
-                if sp.amax(item[key]) < sp.inf:
-                    dict_name = item.name+'.'+key
-                    self._data_amalgamated.update({dict_name : item[key]})
+        if fluids != []:
+            #Add fluid and physics data
+            for item in fluids:
+                for key in item.keys():
+                    if sp.amax(item[key]) < sp.inf:
+                        dict_name = item.name+'.'+key
+                        self._data_amalgamated.update({dict_name : item[key]})
         return self._data_amalgamated
 
     #--------------------------------------------------------------------------
