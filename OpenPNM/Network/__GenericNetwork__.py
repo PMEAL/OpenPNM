@@ -850,17 +850,10 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #Reset network
         self.reset_graphs()
         
-        #Check for individual isolated pores
-        Ps = sp.sum(self.num_neighbors(self.pores())==0)
-        if Ps > 0:
-            self._logger.warning(str(Ps)+' pores no longer have neighbors')
+        #Check network health
+        self.network_health()
         
-        #Check for clusters of isolated pores
-        Cs = self.find_clusters(self.throats('all'))
-        if sp.shape(sp.unique(Cs))[0] > (Ps+1):
-            self._logger.warning('Isolated clusters exist in the network')
-        
-    def find_clusters(self,mask):
+    def find_clusters(self,mask=[]):
         r'''
         Identify connected clusters of pores in the network.  
         
@@ -894,7 +887,15 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         return clusters
         
     def network_health(self):
-        pass
+        #Check for individual isolated pores
+        Ps = sp.sum(self.num_neighbors(self.pores())==0)
+        if Ps > 0:
+            self._logger.warning(str(Ps)+' pores have no neighbors')
+        
+        #Check for clusters of isolated pores
+        Cs = self.find_clusters(self.to_mask(throats=self.throats('all')))
+        if sp.shape(sp.unique(Cs))[0] > 1:
+            self._logger.warning('Isolated clusters exist in the network')
 
 if __name__ == '__main__':
     #Run doc tests
