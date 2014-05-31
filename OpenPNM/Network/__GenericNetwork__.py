@@ -6,7 +6,7 @@ module __GenericNetwork__: Abstract class to construct pore networks
 
 """
 
-import sys, os
+import sys, os, collections
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -888,14 +888,20 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         
     def network_health(self):
         #Check for individual isolated pores
-        Ps = sp.sum(self.num_neighbors(self.pores())==0)
-        if Ps > 0:
-            self._logger.warning(str(Ps)+' pores have no neighbors')
-        
+        health = collections.namedtuple('network_health',['disconnected_clusters','isolated_pores'])
+        health.isolated_pores = []
+        health.disconnected_clusters = []
+        Ps = self.num_neighbors(self.pores())
+        if sp.sum(Ps==0) > 0:
+            self._logger.warning(str(sp.sum(Ps==0))+' pores have no neighbors')
+            health.isolated_pores = sp.where(Ps==0)[0]
         #Check for clusters of isolated pores
         Cs = self.find_clusters(self.to_mask(throats=self.throats('all')))
         if sp.shape(sp.unique(Cs))[0] > 1:
             self._logger.warning('Isolated clusters exist in the network')
+            for i in sp.unique(Cs):
+                health.disconnected_clusters.append(sp.where(Cs==i)[0])
+        return health
 
 if __name__ == '__main__':
     #Run doc tests
