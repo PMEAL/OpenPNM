@@ -65,8 +65,8 @@ class VTK(GenericVisualization):
         self._file_name = filename
         self._f = open(output_path,'w')
         self._net=net
-        if type(fluids)!= sp.ndarray and fluids!='none': 
-            fluids = sp.array(fluids,ndmin=1)
+#        if type(fluids)!= sp.ndarray and fluids!='none': 
+#            fluids = sp.array(fluids,ndmin=1)
         self._fluids = fluids
         self._write_vtk_header()
         self._write_vtk_points()
@@ -114,7 +114,7 @@ class VTK(GenericVisualization):
 
     def _write_point_data(self):
         network = self._net
-        pore_amalgamate = network.amalgamate_pore_data(fluids=self._fluids)
+        pore_amalgamate = network.amalgamate_data(fluids=self._fluids)
 #        throat_amalgamate = network.amalgamate_throat_data(fluids=self._fluids)
 #        total_amalgamate = dict(pore_amalgamate,**throat_amalgamate)
         total_amalgamate = pore_amalgamate
