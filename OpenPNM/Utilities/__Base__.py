@@ -52,11 +52,9 @@ class Base(object):
        ======== =====   =============================================================
        
     """
-    _instances = []
     _name = None
     def __init__(self,**kwargs):
         super(Base,self).__init__()
-        self._instances.append(self) #Track all instances derived from this class for kicks
         if 'loggername' in kwargs.keys():
             self._logger = _logging.getLogger(kwargs['loggername'])
         else:
@@ -83,7 +81,7 @@ class Base(object):
         self._logger.setLevel(level)
         self._logger.debug("Changed log level")
             
-    def find_object_by_name(self,name):
+    def find_object(self,obj_name='',obj_type=''):
         r'''
         This is a short-cut method.  Given the string name of an 
         OpenPNM Fluid, Geometry, Physics, Algorithm, or Network object 
@@ -91,8 +89,8 @@ class Base(object):
         
         Parameters
         ----------
-        name : string
-            Unique name of desired object
+        obj_name : string
+           Name of sought object
         
         Returns
         -------
@@ -100,51 +98,45 @@ class Base(object):
         
         
         '''
-        for item in self._instances:
-            if item.name == name:
-                obj = item
-        return obj
-
-    def find_object_by_type(self,obj_type):
-        r'''
+        if self.__class__.__module__.split('.')[1] == 'Network':
+            net = self
+        else:
+            net = self._net
         
-        Parameters
-        ----------
-        obj_type : string
-            The type of object to found found.  
-            Options the module names (e.g. Network, Geometry, etc). 
-            These can be found from obj.__module__, 
-            and extracted with obj.__module.split('.')[1]
-            
-        Returns
-        -------
-        A dict containing the objects of the type requested.
-            
-        '''
-        obj = {}
-        for item in self._instances:
-            if item.__module__.split('.')[1] == obj_type:
-                obj.update({item.name : item})
-        return obj
+        if obj_name != '':
+            objs = []
+            if self.name == obj_name:
+                return self
+            for geom in net._geometries:
+                if geom == obj_name:
+                    return net._geometries[geom]
+                for phys in net._geometries[geom]._physics:
+                    if phys == obj_name:
+                        return net._geometries[geom]._physics[phys]
+                    if net._geometries[geom]._physics[phys]._fluid.name == obj_name:
+                        return net._geometries[geom]._physics[phys]._fluid
+            return objs # Return empty list if none found
+        elif obj_type != '':
+            objs = []
+            if self.__class__.__module__.split('.')[1] == obj_type:
+                return self
+            for geom in net._geometries:
+                if net._geometries[geom].__class__.__module__.split('.')[1] == obj_type:
+                    objs.append(net._geometries[geom])
+                for phys in net._geometries[geom]._physics:
+                    if net._geometries[geom]._physics[phys].__class__.__module__.split('.')[1] == obj_type:
+                        objs.append(net._geometries[geom]._physics[phys])
+                    if net._geometries[geom]._physics[phys]._fluid.__class__.__module__.split('.')[1] == obj_type:
+                        objs.append(net._geometries[geom]._physics[phys]._fluid)
+            return objs
 
     def _set_name(self,name):
         obj_type = self.__module__.split('.')[1]
-        temp = self.find_object_by_type(obj_type)
         if name == None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(20))
             name = obj_type + '_' + name
-        for item in temp.keys():
-            if obj_type == 'Geometry':
-                if self.name:
-                    raise Exception('Cannot rename a Geometry')
-                for item in self._net.labels(pores='all'):
-                    if item == name:
-                        raise Exception('Pore label '+name+' already exists')
-                for item in self._net.labels(throats='all'):
-                    if item == name:
-                        raise Exception('Throat label '+name+' already exists')
-            if item == name:
-                raise Exception('A '+obj_type+' Object with the supplied name already exists')
+#        else:
+#            self.find_object(obj_name=name)
         self._name = name
     
     def _get_name(self):
