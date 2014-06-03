@@ -4,16 +4,16 @@ import scipy as sp
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(loglevel=20)
+pn = OpenPNM.Network.Cubic(loglevel=20,name='net')
 pn.generate(divisions=[20, 20, 20], lattice_spacing=[0.0001],add_boundaries=True)
 
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-geom = OpenPNM.Geometry.Toray090(network=pn)
+geom = OpenPNM.Geometry.Toray090(network=pn,name='geom')
 geom.set_locations(pores=pn.pores('internal'),throats='all')
 
-boun = pn.add_geometry(subclass='Boundary')
+boun = pn.add_geometry(subclass='Boundary',name='bound')
 boun.set_locations(pores=pn.pores('boundary'))
 
 pn.regenerate_geometries()
@@ -21,11 +21,11 @@ pn.regenerate_geometries()
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, loglevel=20)
+air = OpenPNM.Fluids.Air(network=pn, loglevel=20,name='air')
 air.apply_conditions(temperature=350, pressure=200000)
 air.add_property(prop='electrical_conductivity',model='constant',value=5e-12)
 
-water = OpenPNM.Fluids.Water(network=pn,loglevel=20)
+water = OpenPNM.Fluids.Water(network=pn,loglevel=20,name='water')
 water.add_property(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
 
 #Use Network's Fluid regeneration method
