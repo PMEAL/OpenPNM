@@ -480,6 +480,24 @@ class Tools(Base,dict):
         '''
         return self._get_info(element='throat',label=label)
         
+    def amalgamate_data(self,objs=[]):
+        r"""
+        Returns a dictionary containing ALL pore data from all netowrk and/or
+        fluid objects received as arguments
+        """
+        if type(objs) != list:
+            objs = list(objs)
+        data_amalgamated = {}
+        for item in objs:
+            try:
+                for key in item.keys():
+                    if sp.amax(item[key]) < sp.inf:
+                        dict_name = item.name+'.'+key
+                        data_amalgamated.update({dict_name : item[key]})
+            except: 
+                self._logger.error('Only network and fluid items contain data')
+        return data_amalgamated
+        
     def _get_props(self,mode='all'):
         r'''
         This is the actual prop list getter method, but it should not be
