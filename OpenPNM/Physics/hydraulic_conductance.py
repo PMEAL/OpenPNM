@@ -47,8 +47,7 @@ def hagen_poiseuille(physics,
 
     fluid : OpenPNM Fluid Object
     """
-    mup = fluid.get_pore_data(prop=viscosity)
-    mut = network.interpolate_throat_data(mup)
+    mut = fluid.get_data(prop='viscosity',throats='all',mode='interpolate')
     #Get Nt-by-2 list of pores connected to each throat
     tind = network.get_throat_indices()
     pores = network.find_connected_pores(tind,flatten=0)
