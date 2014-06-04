@@ -13,7 +13,7 @@ pn.generate(divisions=[20, 20, 20], lattice_spacing=[0.0001],add_boundaries=True
 geom = OpenPNM.Geometry.Toray090(network=pn,name='geom')
 geom.set_locations(pores=pn.pores('internal'),throats='all')
 
-boun = pn.add_geometry(subclass='Boundary',name='bound')
+boun = pn.add_geometry(subclass='Boundary',name='boun')
 boun.set_locations(pores=pn.pores('boundary'))
 
 pn.regenerate_geometries()

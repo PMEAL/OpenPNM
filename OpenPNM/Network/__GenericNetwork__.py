@@ -38,16 +38,17 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         super(GenericNetwork,self).__init__(**kwargs)
         self._logger.info("Construct Network")
-        self.name = name
+
         #Initialize fluid, physics, and geometry tracking lists
-        self._fluids = {}
-        self._geometries = {}
+        self._fluids = []
+        self._geometries = []
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
         self._adjacency_matrix = {}
         self.reset_graphs()
         self._logger.debug("Construction of Network container")
 
+        self.name = name
         
     def generate(self, **params):
         r"""
@@ -508,8 +509,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r'''
         '''
         fluids = []
-        for item in self._fluids.keys():
-            fluids.append(self._fluids[item])
+        for item in self._fluids:
+            fluids.append(item)
         for item in fluids:
             self._logger.info('Regenerating properties for '+item.name)
             for prop in item._prop_list:
@@ -519,9 +520,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r'''
         '''
         physics = []
-        for item1 in self._fluids.keys():
-            for item2 in self._fluids[item1]._physics.keys():
-                physics.append(self._fluids[item1]._physics[item2])
+        for item1 in self._fluids:
+            for item2 in item1._physics:
+                physics.append(item2)
         for item in physics:
             self._logger.info('Regenerating pore properties for '+item.name)
             for prop in item._prop_list:
@@ -530,17 +531,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
     def regenerate_geometries(self):
         r'''
         '''
-        geometry = []
-        for item in self._geometries.keys():
-            geometry.append(self._geometries[item])
         #Regenerate pores first
-        for item in geometry:
+        for item in self._geometries:
             self._logger.info('Regenerating pore properties for '+item.name)
             for prop in item._prop_list:
                 if prop.split('_')[0] == 'pore':
                     item.regenerate(prop_list=prop)
         #Regenerate throats second
-        for item in geometry:
+        for item in self._geometries:
             self._logger.info('Regenerating throat properties for '+item.name)
             for prop in item._prop_list:
                 if prop.split('_')[0] == 'throat':
