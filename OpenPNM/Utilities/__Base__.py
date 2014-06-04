@@ -108,35 +108,57 @@ class Base(object):
             if self.name == obj_name:
                 return self
             for geom in net._geometries:
-                if geom == obj_name:
-                    return net._geometries[geom]
-                for phys in net._geometries[geom]._physics:
-                    if phys == obj_name:
-                        return net._geometries[geom]._physics[phys]
-                    if net._geometries[geom]._physics[phys]._fluid.name == obj_name:
-                        return net._geometries[geom]._physics[phys]._fluid
+                if geom.name == obj_name:
+                    return geom
+                for phys in geom._physics:
+                    if phys.name == obj_name:
+                        return phys
+                    if phys._fluid.name == obj_name:
+                        return phys._fluid
             return objs # Return empty list if none found
         elif obj_type != '':
             objs = []
-            if self.__class__.__module__.split('.')[1] == obj_type:
-                return self
             for geom in net._geometries:
-                if net._geometries[geom].__class__.__module__.split('.')[1] == obj_type:
-                    objs.append(net._geometries[geom])
-                for phys in net._geometries[geom]._physics:
-                    if net._geometries[geom]._physics[phys].__class__.__module__.split('.')[1] == obj_type:
-                        objs.append(net._geometries[geom]._physics[phys])
-                    if net._geometries[geom]._physics[phys]._fluid.__class__.__module__.split('.')[1] == obj_type:
-                        objs.append(net._geometries[geom]._physics[phys]._fluid)
+                if geom.__class__.__module__.split('.')[1] == obj_type:
+                    objs.append(geom)
+                for phys in geom._physics:
+                    if phys.__class__.__module__.split('.')[1] == obj_type:
+                        objs.append(phys)
+                    if phys._fluid.__class__.__module__.split('.')[1] == obj_type:
+                        objs.append(phys._fluid)
             return objs
-
+            
+    def delete_object(self,name):
+        if self.__class__.__module__.split('.')[1] == 'Network':
+            net = self
+        else:
+            net = self._net
+        #Get object type, so we know where to delete from
+        temp = self.find_object(obj_name=name)
+        obj_type = temp.__class__.__module__.split('.')[1]
+        if obj_type == 'Geometry':
+            for geom in net._geometries:
+                if geom.name == name:
+                    for phys in geom._physics:
+                        phys._geometry = None
+                    net._geometries.remove(geom)
+                    del geom
+                    
     def _set_name(self,name):
         obj_type = self.__module__.split('.')[1]
         if name == None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(20))
             name = obj_type + '_' + name
-#        else:
-#            self.find_object(obj_name=name)
+        obj_type = self.__class__.__module__.split('.')[1]
+        if obj_type == 'Geometry':
+            if self._name != None:
+                self._logger.error('Geometry objects cannot be renamed')
+                raise Exception('Geometry objects cannot be renamed')  
+        objs = self.find_object(obj_type=obj_type)
+        for item in objs:
+            if item.name == name:
+                self._logger.error('A '+obj_type+' object with that name already exists')
+                raise Exception('A '+obj_type+' object with that name already exists')
         self._name = name
     
     def _get_name(self):

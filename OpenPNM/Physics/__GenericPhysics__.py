@@ -45,8 +45,6 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
-        self.name = name
-        
         #Setup containers for ojecct linking
         self._prop_list = []
 
@@ -56,8 +54,10 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         self._geometry = geometry
         
         # Connect this physics with it's geometry
-        geometry._physics.update({self.name:self})
-        fluid._physics.update({self.name:self})
+        geometry._physics.append(self)
+        fluid._physics.append(self)
+
+        self.name = name
 
         #Use composition to assign pores and throats to this physics
         self.pores = geometry.pores()
