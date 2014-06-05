@@ -587,8 +587,9 @@ class Tools(Base,dict):
             if item.split('.')[0] == element:
                 if self[item].dtype == bool:
                     labels.append(item)
+        labels.sort()        
         labels = sp.array(labels)
-        arr = sp.zeros((sp.shape(locations,)[0],len(labels)),dtype=bool)
+        arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
         col = 0
         for item in labels:
             arr[:,col] = self[item][locations]
@@ -649,27 +650,45 @@ class Tools(Base,dict):
             else:
                 self._logger.error('Unrecognized element')
                 return
-            temp.sort()
             return temp
         elif pores != []:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             temp = self._get_labels(element='pore',locations=pores, mode=mode)
-            temp.sort()
             return temp
         elif throats != []:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
             temp = self._get_labels(element='throat',locations=throats,mode=mode)
-            temp.sort()
             return temp
+            
+    def filter_by_label(self,pores=[],throats=[],label=''):
+        r'''
+        Returns which of the supplied pores (or throats) has the specified label
+        '''
+        if pores != []:
+            label = 'pore.'+label.split('.')[-1]
+            all_labels = self.labels('pore')
+            mask = self.labels(pores=pores,mode='mask')
+            ind = all_labels.index(label)
+            temp = mask[:,ind]
+            pores = sp.array(pores,ndmin=1)
+            return pores[temp]
+        elif throats != []:
+            label = 'throat.'+label.split('.')[-1]
+            all_labels = self.labels('throat')
+            mask = self.labels(throats=throats,mode='mask')
+            ind = all_labels.index(label)
+            temp = mask[:,ind]
+            throats = sp.array(throats,ndmin=1)
+            return throats[temp]            
         
     def _get_indices(self,element,labels,mode):
         r'''
         This is the actual method for getting indices, but should not be called
-        directly.  
+        directly.  Use pores or throats instead.
         '''
         try: labels = [labels.name]  # Check if object was sent
         except: pass
@@ -773,7 +792,7 @@ class Tools(Base,dict):
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
-
+        
     def get_pore_indices(self,labels=['all'],mode='union'):
         r'''
         THIS METHOD IS DEPRECATED, USE pores() INSTEAD
