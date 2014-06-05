@@ -83,9 +83,7 @@ class Base(object):
             
     def find_object(self,obj_name='',obj_type=''):
         r'''
-        This is a short-cut method.  Given the string name of an 
-        OpenPNM Fluid, Geometry, Physics, Algorithm, or Network object 
-        this method will return that object
+        Find objects associated with a given network model by name or type
         
         Parameters
         ----------
@@ -94,8 +92,18 @@ class Base(object):
         
         Returns
         -------
-        OpenPNM Object
+        OpenPNM object or list of objects
         
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geom = pn.add_geometry(name='geo1')
+        >>> temp = pn.find_object(obj_name='geo1')
+        >>> temp.name
+        'geo1'
+        >>> temp = pn.find_object(obj_type='Geometry')
+        >>> temp[0].name
+        'geo1'
         
         '''
         if self.__class__.__module__.split('.')[1] == 'Network':
@@ -129,6 +137,25 @@ class Base(object):
             return objs
             
     def delete_object(self,name):
+        r'''
+        Remove specific objects from a network model
+        
+        Parameters
+        ----------
+        name : string
+            The name of the object to delete
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geom = pn.add_geometry(name='geo')
+        >>> geom.name
+        'geo'
+        >>> pn.delete_object(name='geo')
+        >>> pn.find_object(obj_name='geo')
+        []
+        
+        '''
         if self.__class__.__module__.split('.')[1] == 'Network':
             net = self
         else:
@@ -167,11 +194,18 @@ class Base(object):
     name = property(_get_name,_set_name)
     
     def tic(self):
-        #Homemade version of matlab tic and toc functions
+        r'''
+        Homemade version of matlab tic and toc function, tic starts or resets 
+        the clock, toc reports the time since the last call of tic.
+        '''
         global startTime_for_tictoc
         startTime_for_tictoc = time.time()
 
     def toc(self):
+        r'''
+        Homemade version of matlab tic and toc function, tic starts or resets 
+        the clock, toc reports the time since the last call of tic.
+        '''
         if 'startTime_for_tictoc' in globals():
             print("Elapsed time is " + str(time.time() - startTime_for_tictoc) + " seconds.")
         else:
