@@ -35,18 +35,15 @@ class LinearSolver(GenericAlgorithm):
 
     def _do_one_inner_iteration(self):
 
-        if (self._BCtypes==0).all():
-            raise Exception('No boundary condition has been applied to this network.')
-            self._result = sp.zeros(self._net.num_pores())
-        else:
-            self._logger.info("Creating Coefficient matrix for the algorithm")
-            A = self._build_coefficient_matrix()
-            self._logger.info("Creating RHS matrix for the algorithm")
-            B = self._build_RHS_matrix()
-            self._logger.info("Solving AX = B for the sparse matrices")
-            X = sprslin.spsolve(A,B)
-            self._Neumann_super_X = X[-sp.in1d(sp.r_[0:len(X)],sp.r_[0:self._net.num_pores()])]
-            self._result = X[sp.r_[0:self._net.num_pores()]]        
+
+        self._logger.info("Creating Coefficient matrix for the algorithm")
+        A = self._build_coefficient_matrix()
+        self._logger.info("Creating RHS matrix for the algorithm")
+        B = self._build_RHS_matrix()
+        self._logger.info("Solving AX = B for the sparse matrices")
+        X = sprslin.spsolve(A,B)
+        self._Neumann_super_X = X[-sp.in1d(sp.r_[0:len(X)],sp.r_[0:self.num_pores()])]
+        self._result = X[sp.r_[0:self.num_pores()]]        
         return(self._result)
 
     def set_boundary_conditions(self,bctype='',bcvalue=[],pores=[],throats=[],mode='merge'):
@@ -55,124 +52,140 @@ class LinearSolver(GenericAlgorithm):
         """
         BC_default = ['Dirichlet','Neumann_insulated','Neumann_rate_group','Neumann_rate_single']
         if pores==[] and throats==[]:  
-            self._logger.error('No pore/throat has been assigned for this boundary condition!') 
-            setup = 0
+            raise Exception('No pore/throat has been assigned for this boundary condition!') 
         else:
             elements =[]
             if pores!= []: elements.append('pore')
             if throats != []: elements.append('throat')
             for element in elements:                
-                try:
-                    getattr(self,'_BCtypes_'+element)
-                    getattr(self,'_BCvalues_'+element)
-                except: 
-                    setattr(self,'_BCtypes_'+element, sp.zeros(getattr(self,'num_'+element+'s')()))
-                    setattr(self,'_BCvalues_'+element,sp.zeros(getattr(self,'num_'+element+'s')()))
-                existing_bc = []
-                temp ='None'
+                
+                try:    self.existing_bc
+                except: self.existing_bc = []
+                for label in getattr(self,'_get_labels')(element=element,locations=getattr(self,'get_'+element+'_indices')(),mode='union'):
+                    if label in BC_default and label not in self.existing_bc:    self.existing_bc.append(label)
+                
+                temp ='not_all'
                 if element=='pore':
-                    if pores=='all':    
+                    if pores=='all' or (sp.in1d(self.pores(),pores)).all():    
                         loc = self.pores()
                         temp = 'all'
                     else:   loc = pores
                     for label in self.labels(pores='all'):
                         label = label.split('.')[-1]
-                        if label in BC_default and label not in existing_bc:    
-                            existing_bc.append(label)
+                        if label in BC_default and label not in self.existing_bc:    
+                            self.existing_bc.append(label)
                 elif    element=='throat':
-                    if throats=='all':    
+                    if throats=='all' or (sp.in1d(self.throats(),throats)).all():    
                         loc = self.throats()
                         temp = 'all'
                     else:   loc = throats 
+
                 if mode=='remove':
-                    getattr(self,'_BCtypes_'+element)[loc] = 0
-                    getattr(self,'_BCvalues_'+element)[loc] = 0
-                    getattr(self,'_set_data')(element=element,prop='BCval',locations=loc,mode='remove')
-                    for bc_type in existing_bc:
-                        if temp=='all':
-                            getattr(self,'_set_info')(element=element,label=bc_type,mode='remove')
-                        else:
-                            getattr(self,'_set_info')(element=element,label=bc_type,locations=loc,mode='remove')
-                    
-                    if not (bctype=='' and bcvalue==[]):
-                        self._logger.info('To remove boundary conditions from some locations, no value or type should be sent!')
-                    setup = 1
+
+                    if bctype!='': 
+                        bctype_group = sp.array(bctype,ndmin=1)
+                        bctype = bctype_group[sp.in1d(bctype_group,self.existing_bc)]
+                    else:   bctype = sp.array(self.existing_bc,ndmin=1)
+
+                    if temp=='all':
+                        for bc in  bctype:
+                            try:
+                                getattr(self,'_'+element+'_data')['bcval_'+bc] 
+                                getattr(self,'_set_data')(element=element,prop= 'bcval_'+bc,mode='remove')
+                            except:
+                                self._logger.debug('In '+self.name+' for '+bc+', there are no BCvalues to be removed!') 
+                            getattr(self,'_set_info')(element=element,label=bc,mode='remove')
+                        self._logger.info('All of the boundary conditions have been removed from the dictionaries in '+self.name)
+                    elif temp == 'not_all':
+                        for bc in bctype:
+                            getattr(self,'_set_info')(element=element,label=bc,locations=loc,mode='remove')
+                            getattr(self,'_set_data')(element=element,prop= 'bcval_'+bc,locations=loc,mode='remove')
+                        self._logger.info('The BC values are removed from the specified '+element+'s in the dictionaries of '+self.name)
+            
+                    if bcvalue!=[]:
+                        self._logger.debug('To remove boundary conditions from some indices, no value should be sent!')
+
                 else:
                     if bctype in BC_default:
-                        if bctype=='Dirichlet': bc_num = 1                    
-                        elif bctype=='Neumann_insulated': bc_num = 2
-                        elif bctype=='Neumann_rate_group': bc_num = 3
-                        elif bctype=='Neumann_rate_single': bc_num = 4
+
                         if mode=='overwrite':
-                            setattr(self,'_BCtypes_'+element, sp.zeros(getattr(self,'num_'+element+'s')()))
-                            setattr(self,'_BCvalues_'+element,sp.zeros(getattr(self,'num_'+element+'s')()))
-                            getattr(self,'_set_info')(element=element,label=bc_type,locations=loc,mode='overwrite')
-                            getattr(self,'_set_data')(element=element,prop='BCval',locations=loc,mode='remove')
-                            self._logger.info('Boundary conditions have been overwritten for the algorithm: '+self.name)
-                            setup = 1
-                        elif mode=='merge':                         
-                            if (getattr(self,'_BCtypes_'+element)[loc] == 0).all():     setup = 1
-                            else:
-                                ind = loc[getattr(self,'_BCtypes_'+element)[loc] != 0]
-                                self._logger.error('Boundary conditions have already been assigned to the '+element+'s: '+str(ind))
-                                self._logger.info('To apply new bounday conditions to these locations, the existing BCs should be removed.')
-                                setup = 0
-                        if setup==1:
-                            getattr(self,'_BCtypes_'+element)[loc] = bc_num
-                            if bc_num!=2:
-                                getattr(self,'_BCvalues_'+element)[loc] = bcvalue
-                                getattr(self,'_set_data')(element=element,prop='BCval',locations=loc,mode='merge',data=getattr(self,'_BCvalues_'+element)[loc])
-                                                  
+
+                            getattr(self,'_set_info')(element=element,label=bctype,locations=loc,mode='overwrite')
+                            if bctype!= 'Neumann_insulated':    getattr(self,'_set_data')(element=element,prop='bcval_'+bctype,data=bcvalue,locations=loc,mode='overwrite')
+                            self._logger.info('The boundary condition values for '+bctype+' have been overwritten in the specified '+element+'s for the algorithm: '+self.name)
+                       
+                        elif mode=='merge': 
+                            try:
+                                temp_info = getattr(self,'_'+element+'_info')[bctype]
+                               
+                                if sp.sum(temp_info[loc]) > 0:
+                                    self._logger.error('By using the merge mode, '+bctype+' boundary condition cannot be applied to the specified '+element+'s.')
+                                    self._logger.error(bctype+' BC has already been assigned to some of these '+element+'s in '+self.name+'. To apply new values, the existing BCs should be removed.')
+                                
+                                else:   safe_check = 1                              
+                                    
+                            except: safe_check = 1
+                            
+                            try:    safe_check
+                            except: raise Exception('Error in applying boundary conditions')
+                            if bctype!= 'Neumann_insulated':    getattr(self,'_set_data')(element=element,prop='bcval_'+bctype,data=bcvalue,locations=loc,mode='merge')
+                            getattr(self,'_set_info')(element=element,label=bctype,locations=loc,mode='merge')
+                            self._logger.info(bctype+' boundary condition has been successfully applied to the specified '+element+' locations.')
+
                     else:
                         self._logger.error('The bctype: '+bctype+' has not been defined for the algorithm!')
-            try:
-                getattr(self,'_BCtypes_throat')
-                setup = 0
-                self._logger.error('The section for assigning throat boundary conditions is not implemented in this solver yet.')
-            except:
-                self._BCtypes = getattr(self,'_BCtypes_pore')
-                self._BCvalues = getattr(self,'_BCvalues_pore')
-        self.bc_setup = setup
+            if  (sp.in1d(self.labels(throats='all',mode='union'),BC_default)).any():
+                self._logger.warning('The section for assigning throat boundary conditions is not implemented in this solver yet.')
 
     def _build_coefficient_matrix(self):
        
         # Filling coefficient matrix
-        pnum = self._net.get_pore_indices()
         tpore1 = self._net.get_throat_data(prop='conns')[:,0]
         tpore2 = self._net.get_throat_data(prop='conns')[:,1]
 
-        loc1 = sp.in1d(tpore1,pnum[self._BCtypes!=1])
+        try:            
+            Dir_pores = self.pores('Dirichlet')
+            non_Dir_pores = self.pores('Dirichlet',mode='none')
+            loc1 = sp.in1d(tpore1,non_Dir_pores)
+            loc2 = sp.in1d(tpore2,non_Dir_pores)
+        except: 
+            loc1 = sp.ones(len(tpore1),dtype=bool)
+            loc2 = sp.ones(len(tpore2),dtype=bool)
+        
         modified_tpore1 = tpore1[loc1]
         modified_tpore2 = tpore2[loc1]
         row = modified_tpore1
         col = modified_tpore2
         if sp.size(self._conductance)==1:
-            self._conductance = self._conductance*sp.ones(self._net.num_throats())
+            self._conductance = self._conductance*sp.ones(self.num_throats())
         data_main = self._conductance
-        if (self._BCtypes==2).any():
-            insulated_pores = self._net.get_pore_indices()[self._BCtypes==2]
+        try:
+            self.pores('Neumann_insulated')
+            insulated_pores = self.pores('Neumann_insulated')
             insulated_throats = self._net.find_neighbor_throats(insulated_pores,flatten=True,mode='not_intersection')
             data_main[insulated_throats] = 1e-60
+        except: pass
+        
         data = data_main[loc1]
 
-        loc2 = sp.in1d(tpore2,pnum[self._BCtypes!=1])
         modified_tpore2 = tpore2[loc2]
         modified_tpore1 = tpore1[loc2]
         row = sp.append(row,modified_tpore2)
         col = sp.append(col,modified_tpore1)
         data = sp.append(data,data_main[loc2])
 
-        A_dim = self._net.num_pores()
-           
-        if (self._BCtypes==3).any():
-            self._extera_Neumann_equations = sp.unique(self._BCvalues[self._BCtypes==3])
-            A_dim = A_dim + len(self._extera_Neumann_equations)
-            extera_neu = self._extera_Neumann_equations
+        A_dim = self.num_pores()
+
+        try:
+            self.pores('Neumann_rate_group')
+            group_values = self.get_data(prop='bcval_Neumann_rate_group',pores=self.pores('Neumann_rate_group'))
+            self._group_Neumann_vals = sp.unique(group_values)
+            A_dim = A_dim + len(self._group_Neumann_vals)
+            extera_neu = self._group_Neumann_vals
             self._g_super = 1e-60            
-            mask = self._BCtypes==3
             for item in sp.r_[0:len(extera_neu)]:
-                neu_tpore2 = pnum[mask]
-                neu_tpore2 = neu_tpore2[self._BCvalues[neu_tpore2]==extera_neu[item]]
+                neu_tpore2 = self.pores('Neumann_rate_group')
+                neu_tpore2 = neu_tpore2[group_values==extera_neu[item]]
                 row = sp.append(row,neu_tpore2)
                 col = sp.append(col,len(neu_tpore2)*[A_dim-item-1])
                 data = sp.append(data,len(neu_tpore2)*[self._g_super])
@@ -180,47 +193,54 @@ class LinearSolver(GenericAlgorithm):
                 col = sp.append(col,neu_tpore2)
                 data = sp.append(data,len(neu_tpore2)*[self._g_super])
 
-        else:
-            self._extera_Neumann_equations = 0
-
-        self._Coeff_dimension = A_dim
-
+        except: pass
         # Adding positions for diagonal
         dia = sp.r_[0:A_dim]
-        row = sp.append(row,dia[self._BCtypes==1])
-        col = sp.append(col,dia[self._BCtypes==1])
-        data = sp.append(data,sp.ones_like(dia[self._BCtypes==1]))
-
-        temp_data = sp.copy(data)
-        temp_data[sp.in1d(row,dia[self._BCtypes==1])] = 0
+        try:
+            Dir_pores
+            row = sp.append(row,dia[Dir_pores])
+            col = sp.append(col,dia[Dir_pores])
+            data = sp.append(data,sp.ones_like(dia[Dir_pores]))
+            temp_data = sp.copy(data)
+            temp_data[sp.in1d(row,dia[Dir_pores])] = 0
+            non_Dir_dia = dia[-sp.in1d(dia,dia[Dir_pores])]
+        except:
+            temp_data = sp.copy(data)
+            non_Dir_dia = dia
         S_temp = sp.zeros(A_dim)
         for i in sp.r_[0:len(row)]:
             S_temp[row[i]] = S_temp[row[i]] - temp_data[i]
-        non_Dir = dia[-sp.in1d(dia,dia[self._BCtypes==1])]
-        data = sp.append(data,S_temp[non_Dir])
-        row = sp.append(row,non_Dir)
-        col = sp.append(col,non_Dir)
-
+        data = sp.append(data,S_temp[non_Dir_dia])
+        row = sp.append(row,non_Dir_dia)
+        col = sp.append(col,non_Dir_dia)
+        
+        self._Coeff_dimension = A_dim
         a = sprs.coo.coo_matrix((data,(row,col)),(A_dim,A_dim))
         A = a.tocsr()
-
         return(A)
 
 
-    def _build_RHS_matrix(self):
-
-        extera_neu = self._extera_Neumann_equations
+    def _build_RHS_matrix(self):        
+        
         A_dim = self._Coeff_dimension
         B = sp.zeros([A_dim,1])
-        Dir_pores = self._net.get_pore_indices()[self._BCtypes==1]
-        B[Dir_pores] = sp.reshape(self._BCvalues[Dir_pores],[len(Dir_pores),1])
-        individual_Neu_pores = self._net.get_pore_indices()[self._BCtypes==4]
-        B[individual_Neu_pores] = sp.reshape(self._BCvalues[individual_Neu_pores],[len(individual_Neu_pores),1])
-        if (self._BCtypes==3).any():
-            for item in sp.r_[0:len(extera_neu)]:
-                B[A_dim-item-1,0] = extera_neu[item]
-            
+        try:
+            Dir_pores = self.pores('Dirichlet')
+            Dir_pores_vals = self.get_data(prop='bcval_Dirichlet',pores=Dir_pores)
+            B[Dir_pores] = sp.reshape(Dir_pores_vals,[len(Dir_pores),1])
+        except: pass
+        try:
+            individual_Neu_pores = self.pores('Neumann_rate_single')
+            individual_Neu_pores_vals = self.get_data(prop='bcval_Neumann_rate_single',pores=individual_Neu_pores)
+            B[individual_Neu_pores] = sp.reshape(individual_Neu_pores_vals,[len(individual_Neu_pores),1])
+        except: pass
+        try:
+            self.pores('Neumann_rate_group')
+            pnum = self._net.num_pores()
+            B[sp.r_[pnum:(pnum+len(self._group_Neumann_vals))]] = sp.reshape(self._group_Neumann_vals[sp.r_[0:len(self._group_Neumann_vals)]],[len(self._group_Neumann_vals),1])
+        except: pass
         return(B)
+
 
     def rate(self,pores='',throats=''):
         r'''
