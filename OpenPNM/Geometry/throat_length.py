@@ -35,4 +35,22 @@ def straight(geometry,
     value = E-(D1+D2)/2
     network.set_data(prop=propname,throats=geometry.throats(),data=value)
         
-    
+def voronoi(geometry,
+            network,
+            propname,
+            **params):
+    r"""
+    Calculate the centre to centre distance from centroid of pore1 to centroid of throat to centroid of pore2
+    """
+    import numpy as np    
+    connections = network.get_data(prop='connections',throats=geometry.throats())
+    pore1 = connections[:,0]
+    pore2 = connections[:,1]
+    pore_centroids = network.get_pore_data(prop='centroid')
+    throat_centroids = network.get_throat_data(prop='centroid')
+    v1 =throat_centroids-pore_centroids[pore1]
+    v2 =throat_centroids-pore_centroids[pore2]
+    value = np.ndarray(len(connections), dtype=object)
+    for i in range(len(connections)):
+        value[i] = np.linalg.norm(v1[i])+np.linalg.norm(v2[i])
+    network.set_data(prop=propname,throats=geometry.throats(),data=value)

@@ -45,3 +45,15 @@ def cuboid(geometry,
     Tdia = network.get_data(prop=throat_diameter,throats=geometry.throats())
     value = Tlen*Tdia**2
     network.set_data(prop=propname,throats=geometry.throats(),data=value)
+
+def voronoi(geometry,
+            network,
+            propname,
+            throat_length='length',
+            throat_area='area',
+            **params):
+    r"""
+    Calculate volume from the voronoi facet area and the throat length
+    """
+    value=network.get_throat_data(prop=throat_length,locations=geometry)*network.get_throat_data(prop=throat_area,locations=geometry)
+    network.set_data(prop=propname,throats=geometry.throats(),data=value)
