@@ -667,6 +667,14 @@ class Tools(Base,dict):
     def filter_by_label(self,pores=[],throats=[],label=''):
         r'''
         Returns which of the supplied pores (or throats) has the specified label
+        
+        Parameters
+        ----------
+        pores, or throats : array_like
+            List of pores or throats to be filtered
+            
+        label : string
+            The label to apply as a filter
         '''
         if pores != []:
             label = 'pore.'+label.split('.')[-1]
