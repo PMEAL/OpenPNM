@@ -150,7 +150,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         for item in fluids:
             if type(item)==sp.str_: item =  self.find_object_by_name(item)
             for key in item._pore_data.keys():
-                if sp.amax(item._pore_data[key]) < sp.inf:
+                if (sp.amax(item._pore_data[key]) < sp.inf) and (key != 'vertices') and (key != 'centroid'):
                     dict_name = item.name+'_pore_'+key
                     self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
             for key in item._pore_info.keys():
@@ -159,9 +159,10 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                     self._pore_data_amalgamate.update({dict_name : item._pore_info[key]})
         #Add geometry data
         for key in self._pore_data.keys():
-            if sp.amax(self._pore_data[key]) < sp.inf:
-                dict_name = 'pore'+'_'+key
-                self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
+            if (key != 'vertices') and (key != 'centroid'):
+                if sp.amax(self._pore_data[key]) < sp.inf:
+                    dict_name = 'pore'+'_'+key
+                    self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
         for key in self._pore_info.keys():
             if sp.amax(self._pore_info[key]) < sp.inf:
                 dict_name = 'pore'+'_label_'+key
@@ -181,18 +182,20 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         for item in fluids:
             if type(item)==sp.str_: item =  self.find_object_by_name(item)
             for key in item._throat_data.keys():
-                if sp.amax(item._throat_data[key]) < sp.inf:
-                    dict_name = item.name+'_throat_'+key
-                    self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
+                if key != 'offset_verts':
+                    if sp.amax(item._throat_data[key]) < sp.inf:
+                        dict_name = item.name+'_throat_'+key
+                        self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
             for key in item._throat_info.keys():
                 if sp.amax(item._throat_info[key]) < sp.inf:
                     dict_name = item.name+'_throat_label_'+key
                     self._throat_data_amalgamate.update({dict_name : item._throat_info[key]})
         #Add geometry data
         for key in self._throat_data.keys():
-            if sp.amax(self._throat_data[key]) < sp.inf:
-                dict_name = 'throat'+'_'+key
-                self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
+                if key != 'offset_verts':
+                    if sp.amax(self._throat_data[key]) < sp.inf:
+                        dict_name = 'throat'+'_'+key
+                        self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
         for key in self._throat_info.keys():
             if sp.amax(self._throat_info[key]) < sp.inf:
                 dict_name = 'throat'+'_label_'+key
