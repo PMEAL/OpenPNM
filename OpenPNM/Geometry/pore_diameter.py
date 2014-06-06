@@ -6,7 +6,7 @@ Submodule -- pore_diameter
 """
 import scipy as sp
 import scipy.stats as spst
-
+from scipy.special import cbrt
 
 def constant(geometry,
              network,
@@ -31,4 +31,13 @@ def sphere(geometry,
     value = P.ppf(network.get_data(prop=seed,pores=geometry.pores()))
     network.set_data(prop=propname,pores=geometry.pores(),data=value)
 
-    
+def voronoi(geometry,
+            network,
+            propname,
+            **params):
+    r"""
+    Calculate pore diameter from equivalent sphere - volumes must be calculated first
+    """
+    pore_vols = network.get_pore_data(prop='volume')
+    value = cbrt(6*pore_vols/sp.pi)
+    network.set_data(prop=propname,pores=geometry.pores(),data=value)
