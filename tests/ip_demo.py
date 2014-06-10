@@ -68,5 +68,5 @@ ip = OpenPNM.Algorithms.InvasionPercolation(name='ip',network=pn,loglevel=30)
 ip.run(inlets=pn.get_pore_indices('bottom'),outlets=pn.get_pore_indices('top'),invading_fluid=water,defending_fluid=air)
 ip.update()
 
-vis = OpenPNM.Visualization.Vtp
-vis.write(pn,fluids=water)
+vis = OpenPNM.Visualization.Vtp_class()
+vis.write(network=pn,fluids=water)
