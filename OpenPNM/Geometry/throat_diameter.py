@@ -50,6 +50,6 @@ def voronoi(geometry,
     Could do better here and work out minimum diameter from verts
     """
     areas = network.get_throat_data(prop='area')   
-    value = np.sqrt(areas/np.pi)#64 bit sqrt doesn't work!
+    value = 2*np.sqrt(areas/np.pi)#64 bit sqrt doesn't work!
     network.set_data(prop=propname,throats=geometry.throats(),data=value)
     #print('voronoi: nothing yet')
