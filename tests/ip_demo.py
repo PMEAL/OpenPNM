@@ -34,12 +34,12 @@ pn.regenerate_geometries()
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, loglevel=20)
+air = OpenPNM.Fluids.Air(network=pn, name='water', loglevel=20)
 air.apply_conditions(temperature=350, pressure=200000)
 air.add_property(prop='electrical_conductivity',model='constant',value=5e-12)
 
-water = OpenPNM.Fluids.Water(network=pn,loglevel=20)
-water.add_property(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
+water = OpenPNM.Fluids.Water(network=pn, name='water', loglevel=20)
+water.add_property(prop='diffusivity', prop_name='DAB', model='constant', value=5e-12)
 
 #Use Network's Fluid regeneration method
 pn.regenerate_fluids()
@@ -68,5 +68,5 @@ ip = OpenPNM.Algorithms.InvasionPercolation(name='ip',network=pn,loglevel=30)
 ip.run(inlets=pn.get_pore_indices('bottom'),outlets=pn.get_pore_indices('top'),invading_fluid=water,defending_fluid=air)
 ip.update()
 
-vis = OpenPNM.Visualization.VTK()
+vis = OpenPNM.Visualization.Vtp
 vis.write(pn,fluids=water)
