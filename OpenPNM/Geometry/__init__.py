@@ -86,7 +86,7 @@ Classes
 #            exec('from . import ' + format(item.split('.')[0]))
         
 from .__GenericGeometry__ import GenericGeometry
-from .__StickBall__ import Stick_and_Ball
+from .__Stick_and_Ball__ import Stick_and_Ball
 from .__SGL10__ import SGL10
 from .__Toray090__ import Toray090
 from .__Boundary__ import Boundary
