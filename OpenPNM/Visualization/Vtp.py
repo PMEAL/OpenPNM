@@ -1,6 +1,7 @@
 from xml.etree import ElementTree as ET
 
 import numpy as np
+import os
 
 TEMPLATE = '''
 <?xml version="1.0" ?>
@@ -48,7 +49,7 @@ def _element_to_array(element, n=1):
         array = array.reshape(array.size//n, n)
     return array
 
-def write(filename, network, fluids=[], pretty=True):
+def write(network, filename='output_file.vtp', fluids=[], pretty=True):
     r"""
     Write Network to a VTK file for visualizing in Paraview
 
@@ -63,11 +64,17 @@ def write(filename, network, fluids=[], pretty=True):
 
     pretty : Add linebreaks at the end of tag closures
     """
+    
     root = ET.fromstring(TEMPLATE)
-
-    am = network.amalgamate_data(fluids=fluids)
+    objs = []
+    if np.shape(fluids)==():
+        fluids = [fluids]
+    for fluid in fluids:
+        objs.append(fluid)
+    objs.append(network)
+    am = network.amalgamate_data(objs=objs)
     key_list = list(sorted(am.keys()))
-    points = am['pore_coords']
+    points = am[network.name+'.pore.coords']
     pairs = network.get_throat_data(prop='conns')
 
     num_points = len(points)
