@@ -174,9 +174,8 @@ class Base(object):
     def _set_name(self,name):
         obj_type = self.__module__.split('.')[1]
         if name == None:
-            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(20))
-            name = obj_type + '_' + name
-        obj_type = self.__class__.__module__.split('.')[1]
+            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+            name = self.__module__.split('.')[-1].strip('__') + '_' + name
         if obj_type == 'Geometry':
             if self._name != None:
                 self._logger.error('Geometry objects cannot be renamed')
