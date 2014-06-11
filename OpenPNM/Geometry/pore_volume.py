@@ -140,7 +140,7 @@ def voronoi2(geometry,
     r"""
     Calculate volume from the convex hull of the offset vertices making the throats
     """
-    conns = network.get_throat_data(prop='connections')
+    conns = network.get_throat_data(prop='conns')
     verts = network.get_throat_data(prop='offset_verts') #This won't work as pore data is done before throat, need to calculate offset verts at network generation stage 
     num_pores = network.num_pores()
     value = sp.ndarray(num_pores,dtype=object)

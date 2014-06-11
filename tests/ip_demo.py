@@ -24,22 +24,20 @@ import OpenPNM
 #==============================================================================
 
 pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=30)
-pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=True)
+pn.generate(divisions=[3, 3, 3], lattice_spacing=[0.0001],add_boundaries=True)
 geom = OpenPNM.Geometry.Toray090(network=pn)
-geom.set_locations(pores=pn.pores('internal'),throats='all')
-boun = pn.add_geometry(name='boundary_geometry',subclass='Boundary')
-boun.set_locations(pores=pn.pores('boundary'))
+geom.set_locations(pores=pn.pores('all'),throats='all')
 pn.regenerate_geometries()
 
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, loglevel=20)
+air = OpenPNM.Fluids.Air(network=pn, name='water', loglevel=20)
 air.apply_conditions(temperature=350, pressure=200000)
 air.add_property(prop='electrical_conductivity',model='constant',value=5e-12)
 
-water = OpenPNM.Fluids.Water(network=pn,loglevel=20)
-water.add_property(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
+water = OpenPNM.Fluids.Water(network=pn, name='water', loglevel=20)
+water.add_property(prop='diffusivity', prop_name='DAB', model='constant', value=5e-12)
 
 #Use Network's Fluid regeneration method
 pn.regenerate_fluids()
@@ -65,8 +63,8 @@ pn.regenerate_physics()
 #==============================================================================
 
 ip = OpenPNM.Algorithms.InvasionPercolation(name='ip',network=pn,loglevel=30)
-ip.run(inlets=pn.get_pore_indices('bottom'),outlets=pn.get_pore_indices('top'),invading_fluid=water,defending_fluid=air)
+ip.run(inlets=pn.get_pore_indices(['bottom','boundary'],mode='intersection'),outlets=pn.get_pore_indices(['top','boundary'],mode='intersection'),invading_fluid=water,defending_fluid=air,end_condition='total')
 ip.update()
 
-vis = OpenPNM.Visualization.VTK()
-vis.write(pn,fluids=water)
+vis = OpenPNM.Visualization.Vtp_class()
+vis.write(network=pn,fluids=water)

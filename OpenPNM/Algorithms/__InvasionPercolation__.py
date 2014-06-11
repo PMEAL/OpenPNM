@@ -16,10 +16,8 @@ module __InvasionPercolation__: Invasion Percolation Algorithm
 import OpenPNM
 import scipy as sp
 import numpy as np
-import scipy.sparse as sprs
 from time import clock
 import heapq
-import itertools
 
 from .__GenericAlgorithm__ import GenericAlgorithm
 
@@ -109,10 +107,14 @@ class InvasionPercolation(GenericAlgorithm):
                 throat_volume_name='volume',
                 throat_diameter_name = 'diameter',               
                 timing='ON',
+                flowrate=1e-12, #default flowrate is 1 nanoliter/sec/cluster
                 report=20):
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets
         self._outlets = outlets
+        if end_condition=='total':
+            self._brkevent = []
+        self._flowrate = flowrate
 #        if defending_fluid == 'auto':
 #            try:defending_fluid = invading_fluid.partner
 #            except: self._logger.error("invading_fluid.partner does not exist. Please specify defending fluid")
@@ -189,7 +191,7 @@ class InvasionPercolation(GenericAlgorithm):
         # Storage for cluster information
         self._cluster_data = {}
         if self._timing:
-            self._cluster_data['flow_rate'] = np.ones((self._clusterCount),dtype=np.float64)
+            self._cluster_data['flow_rate'] = np.ones((self._clusterCount),dtype=np.float64)*self._flowrate
             self._cluster_data['haines_pressure'] = np.zeros((self._clusterCount),dtype=np.float64)
             self._cluster_data['haines_time'] = np.zeros((self._clusterCount),dtype=np.float64)
             self._cluster_data['vol_coef'] = np.zeros((self._clusterCount),dtype=np.float64)
@@ -535,147 +537,82 @@ class InvasionPercolation(GenericAlgorithm):
                 self._cluster_data['haines_time'][self._current_cluster-1] = self._sim_time
             self._logger.debug('haines time at the end of the throat stuff')
             self._logger.debug(self._cluster_data['haines_time'])
-
+            
     def _condition_update(self):
          # Calculate the distance between the new pore and outlet pores
-        newpore_position = self._net.get_pore_data(prop='coords')[self._NewPore]
-        dist_sqrd = (self._outlet_position-newpore_position)*(self._outlet_position-newpore_position)
-        newpore_distance = np.sqrt(dist_sqrd[0]+dist_sqrd[1]+dist_sqrd[2])
-        self._logger.debug( 'newpore distance')
-        self._logger.debug( newpore_distance)
-        if newpore_distance < self._current_distance:
-            self._percent_complete = np.round((self._initial_distance-newpore_distance)/self._initial_distance*100, decimals = 1)
-            self._logger.info( 'percent complete')
-            self._logger.info( self._percent_complete)
-            self._current_distance = newpore_distance
-            if self._end_condition == 'breakthrough':
-                if self._percent_complete > self._rough_complete + self._rough_increment:
-                    self._rough_complete = np.floor(self._percent_complete/self._rough_increment)*self._rough_increment
-                    print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds')
-        # Determine if a new breakthrough position has occured
         if self._end_condition == 'breakthrough':
-            if self._NewPore in self._outlets:
-                self._logger.info( ' ')
-                self._logger.info( 'BREAKTHROUGH AT PORE: ')
-                self._logger.info(self._NewPore)
-                self._logger.info('in cluster ')
-                self._logger.info(self._current_cluster)
-                if self._timing:
-                    self._logger.info('at time')
-                    self._logger.info(self._sim_time)
+            newpore_position = self._net.get_pore_data(prop='coords')[self._NewPore]
+            dist_sqrd = (self._outlet_position-newpore_position)*(self._outlet_position-newpore_position)
+            if dist_sqrd[0].shape==(3,):     # need to do this for MatFile networks because newpore_position is a nested array, not a vector (?)
+                dist_sqrd = dist_sqrd[0]
+            newpore_distance = np.sqrt(dist_sqrd[0]+dist_sqrd[1]+dist_sqrd[2])
+            self._logger.debug( 'newpore distance')
+            self._logger.debug( newpore_distance)
+            if newpore_distance < self._current_distance:
+                self._percent_complete = np.round((self._initial_distance-newpore_distance)/self._initial_distance*100, decimals = 1)
+                self._logger.info( 'percent complete')
+                self._logger.info( self._percent_complete)
+                self._current_distance = newpore_distance
+        elif self._end_condition == 'total':
+            self._percent_complete = np.round((np.sum(self._Pinv>0)/self._net.num_pores())*100, decimals = 1)
+        if self._percent_complete > self._rough_complete + self._rough_increment:
+            self._rough_complete = np.floor(self._percent_complete/self._rough_increment)*self._rough_increment
+            print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds')
+           
+    
+        # Determine if a new breakthrough position has occured
+        if self._NewPore in self._outlets:
+            self._logger.info( ' ')
+            self._logger.info( 'BREAKTHROUGH AT PORE: ')
+            self._logger.info(self._NewPore)
+            self._logger.info('in cluster ')
+            self._logger.info(self._current_cluster)
+            if self._timing:
+                self._logger.info('at time')
+                self._logger.info(self._sim_time)
+            if self._end_condition == 'breakthrough':
+                self._condition = 0
                 self._cluster_data['active'][self._current_cluster-1] = 0
                 if self._timing:
                     self._cluster_data['haines_time'][self._current_cluster-1] = 100000000000000000000000000000000
-            if np.sum(self._cluster_data['active']) == 0:
-                self._logger.info( ' ')
-                self._logger.info( 'SIMULATION FINISHED; no more active clusters')
-                if self._timing:
-                    self._logger.info('at time')
-                    self._logger.info(self._sim_time)
-                self._condition = 0
-                print('     IP algorithm at 100% completion at ',np.int(np.round(clock())),' seconds')
-        elif self._end_condition == 'total':
-            self._condition = not self._Tinv.all()
+            elif self._end_condition == 'total':
+                self._brkevent.append(self._NewPore)
+#        if self._end_condition == 'total':
+        if np.sum(self._cluster_data['active']) == 0:
+            self._logger.info( ' ')
+            self._logger.info( 'SIMULATION FINISHED; no more active clusters')
+            if self._timing:
+                self._logger.info('at time')
+                self._logger.info(self._sim_time)
+            self._condition = 0
+            print('     IP algorithm at 100% completion at ',np.int(np.round(clock())),' seconds')
+        # TODO Need to check how total condition will work, and end. All pores or all throats?
+#            self._condition = not self._Tinv.all()
 
-    def update(self,occupancy='occupancy'):
+    def update(self,occupancy='occupancy',IPseq='None'):
         r"""
         """
-        #try:
-        #    self._net.set_pore_data(phase=self._fluid,prop=occupancy,data=self._Pinv>0)
-        #    self._net.set_pore_data(phase=self._fluid,prop=occupancy,data=self._Tinv>0)
-        #except:
-        #    print('Something bad happened while trying to update fluid',self._fluid.name)
-        #try:
-        #    self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data= ~self._Pinv>0)
-        #    self._net.set_pore_data(phase=self._fluid_def,prop=occupancy,data= ~self._Tinv>0)
-        #except:
-        #    print('A partner fluid has not been set so inverse occupancy cannot be set')
-        self._fluid.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
-        self._fluid.set_pore_data(prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
-        self._fluid.set_throat_data(prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
-        self._fluid.set_pore_data(prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
-        self._fluid.set_throat_data(prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
-        if self._timing:
-            self._fluid.set_pore_data(prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
-            self._fluid.set_throat_data(prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))            
+        if IPseq=='None':
+            IPseq = self._pseq
+
+        try:
+            self._fluid.set_pore_data(prop=occupancy,data=((self._psequence>0)&(self._psequence<=IPseq)))
+            self._fluid.set_throat_data(prop=occupancy,data=((self._tsequence>0)&(self._tsequence<=IPseq)))
+        except:
+            print('Something bad happened while trying to update fluid',self._fluid.name)
+        try:
+            self._fluid_def.set_pore_data(prop=occupancy,data=~((self._psequence>0)&(self._psequence<=IPseq)))
+            self._fluid_def.set_throat_data(prop=occupancy,data=~((self._tsequence>0)&(self._tsequence<=IPseq)))
+        except:
+            print('A partner fluid has not been set so inverse occupancy cannot be set')
+
+        if IPseq==self._pseq:            
+            self._fluid.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
+            self._fluid.set_pore_data(prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
+            self._fluid.set_throat_data(prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
+            self._fluid.set_pore_data(prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
+            self._fluid.set_throat_data(prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
+            if self._timing:
+                self._fluid.set_pore_data(prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
+                self._fluid.set_throat_data(prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))              
             
-            
-
-if __name__ =="__main__":
-    print('')
-    print('')
-    print('************Testing InvasionPercolation Algorithm**************')
-    clock()
-    print("="*50)
-    print("= Example: Create random network and run an invasion\n= percolation algorithm")
-    print("-"*50)
-    print("- * generate invading and defending fluids")
-    #======================================================================
-    '''Build Topological Network'''
-    #======================================================================
-    pn = OpenPNM.Network.Cubic(name='cubic_1').generate(divisions=[15,15,15],lattice_spacing=[0.0001])  
-    #======================================================================
-    '''Build Fluids'''
-    #======================================================================
-    air = OpenPNM.Fluids.Air(network=pn,name='air')
-    water = OpenPNM.Fluids.Water(network=pn,name='water')
-    print("-"*50)
-    print("- * generate a simple cubic network")  
-    #======================================================================
-    '''Build Geometry'''
-    #======================================================================
-    geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='stick_and_ball',locations=pn.get_pore_indices())
-    geom.regenerate()     
-    #======================================================================
-    '''Build Physics Objects'''
-    #======================================================================
-    phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water,name='standard_water_physics')
-    phys_water.add_method(prop='capillary_pressure',model='purcell',r_toroid=1e-5)
-    print("+"*50)
-    print("Sample generated at t =",clock(),"seconds.")
-    print("+"*50)
-
-    print('- * Assign boundary pore volumes = 0')
-    diameter = pn.get_pore_data(prop='diameter')
-    diameter[-pn.get_pore_indices('internal',indices=False)] = 0 
-    pn.set_pore_data(prop='diameter',data=diameter)
-
-    print("- * Define inlet and outlet faces")
-    face = pn.get_pore_data(prop='coords')[:,2]>2
-    quarter = sp.rand(pn.num_pores(),)<.01
-    inlets = pn.get_pore_indices()[face&quarter]
-    outlets = pn.get_pore_indices()[pn.get_pore_data(prop='coords')[:,2]<1]
-
-    print("- * Run Invasion percolation algorithm")
-    #IP = InvasionPercolation(net=pn,inlets=inlets,outlets=outlets,report=1,loglevel=30,loggername="TestInvPercAlg")
-    IP_timing = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg",name='IP_timing',network=pn)
-    ip_timing_params = {'invading_fluid':water,
-                 'defending_fluid':air,
-                 'inlets':inlets,
-                 'outlets':outlets,
-                 'timing':'ON',
-                 }
-    IP_timing.run(**ip_timing_params)
-    print("+"*50)
-    print("IP completed at t =",clock(),"seconds.")
-    print("+"*50)
-    print("- * Save output to IP_timing.vtp")
-    OpenPNM.Visualization.VTK().write(net=pn,fluid=water,filename="IP_timing.vtp")
-    IP_notiming = InvasionPercolation(loglevel=30,loggername="TestInvPercAlg",name='IP_notiming',network=pn)
-
-    ip_notiming_params = {'invading_fluid':water,
-                 'defending_fluid':air,
-                 'inlets':inlets,
-                 'outlets':outlets,
-                 'timing':'OFF',
-                 }
-    IP_notiming.run(**ip_notiming_params)
-    print("+"*50)
-    print("IP completed at t =",clock(),"seconds.")
-    print("+"*50)
-    print("- Save output to IP_notiming.vtp")
-    OpenPNM.Visualization.VTK().write(net=pn,fluid=water,filename="IP_notiming.vtp")
-
-    print("="*50)
-    print("Program Finished at t = ",clock(),"seconds.")
-    print("="*50)
