@@ -58,12 +58,9 @@ def bulk_diffusion(physics,
     calculated.
 
     """    
-    #Get fluid properties
-    cp = fluid.get_data(prop=molar_density,pores='all')
-    DABp = fluid.get_data(prop=diffusivity,pores='all')
-    #Interpolate pore values to throats
-    ct = network.interpolate_throat_data(cp)
-    DABt = network.interpolate_throat_data(DABp)
+    #Interpolate pore fluid property values to throats
+    ct = fluid.get_data(prop='molar_density',throats='all',mode='interpolate')
+    DABt = fluid.get_data(prop='diffusivity',throats='all',mode='interpolate')
     #Get Nt-by-2 list of pores connected to each throat
     Ts= network.get_throat_indices()
     Ps = network.find_connected_pores(Ts,flatten=0)

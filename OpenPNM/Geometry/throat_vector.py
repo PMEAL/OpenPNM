@@ -28,7 +28,7 @@ def pore_to_pore(geometry,
     There is an important impicit assumption here: the positive direction is
     taken as the direction from the pore with the lower index to the higher.
     This corresponds to the pores in the 1st and 2nd columns of the 
-    'connections' array as stored on the network.
+    'conns' array as stored on the network.
     """
     Ts = network.get_throat_indices(geometry.name)
     Ps = network.find_connected_pores(throats=Ts,flatten=False)
@@ -37,5 +37,5 @@ def pore_to_pore(geometry,
     V = C1 - C0
     L = sp.array(sp.sqrt(sp.sum(V[:,:]**2,axis=1)),ndmin=1)
     value = V/sp.array(L,ndmin=2).T
-    network._throat_data[propname] = value
+    network['throat'+'.'+propname] = value
 #    network.set_data(prop=propname,throats=geometry.throats(),data=value)

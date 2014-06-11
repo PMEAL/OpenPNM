@@ -70,6 +70,10 @@ class LinearSolver(GenericAlgorithm):
                         loc = self.pores()
                         temp = 'all'
                     else:   loc = pores
+                    for label in self.labels(pores='all'):
+                        label = label.split('.')[-1]
+                        if label in BC_default and label not in self.existing_bc:    
+                            self.existing_bc.append(label)
                 elif    element=='throat':
                     if throats=='all' or (sp.in1d(self.throats(),throats)).all():    
                         loc = self.throats()
@@ -136,8 +140,8 @@ class LinearSolver(GenericAlgorithm):
     def _build_coefficient_matrix(self):
        
         # Filling coefficient matrix
-        tpore1 = self._net.get_throat_data(prop='connections')[:,0]
-        tpore2 = self._net.get_throat_data(prop='connections')[:,1]
+        tpore1 = self._net.get_throat_data(prop='conns')[:,0]
+        tpore2 = self._net.get_throat_data(prop='conns')[:,1]
 
         try:            
             Dir_pores = self.pores('Dirichlet')
@@ -297,12 +301,12 @@ class LinearSolver(GenericAlgorithm):
                     ftype2.append('bottom') 
                 else: self._logger.error('wrong input for direction!')
         
-        if 'Dirichlet' in self._pore_info:
+        if 'pore.Dirichlet' in self:
             self._dir = self.get_pore_info(label='Dirichlet')
-            del self._pore_info['Dirichlet']
-        if 'BCval' in self._pore_data:
+            del self['pore.Dirichlet']
+        if 'pore.BCval' in self:
             self._BCval_temp = self.get_pore_data(prop='BCval')
-            del self._pore_data['BCval']
+            del self['pore.BCval']
             try:
                 self._BCtypes_temp = sp.copy(self._BCtypes)
                 delattr (self,'_BCtypes')

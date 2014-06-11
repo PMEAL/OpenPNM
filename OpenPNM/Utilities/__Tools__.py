@@ -6,7 +6,7 @@ module __Tools__: Base class to construct pore network tools
 
 """
 
-import sys, os
+import sys, os,pprint
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -14,7 +14,8 @@ import scipy as sp
 import OpenPNM
 from OpenPNM.Utilities import Base
 
-class Tools(Base):
+
+class Tools(Base,dict):
     r'''
     This class contains tools to read and write data in OpenPNM objects
 
@@ -26,12 +27,74 @@ class Tools(Base):
         super(Tools,self).__init__(**kwargs)
         self._logger.info("Construct Base class from Tools subclass")
         #Initialize network properties dictionaries
-        self._pore_data = {}
-        self._pore_info = {}
-        self._throat_data = {}
-        self._throat_info = {}
         self._logger.debug("Construction of Tools class complete")
         
+    def __setitem__(self,key,value):
+        r'''
+        This is a subclass of the default __setitem__ behavior.  The main aim
+        is to limit what type and shape of data can be written to protect
+        the integrity of the network.
+        '''
+        element = key.split('.')[0]
+        if type(value) == int:
+            value = [value]
+        value = sp.array(value,ndmin=0)
+        if (element != 'pore') and (element != 'throat'):
+            self._logger.error('Array name must begin with \'pore\' or \'throat\'')
+            return
+        if (key == 'pore.coords') or (key == 'throat.conns'):
+            super(Base, self).__setitem__(key,value)
+            return
+        elif key.split('.')[1] == 'all':
+            try: 
+                self[key]
+                self._logger.error(key+' is already defined.')
+            except: super(Base, self).__setitem__(key,value)
+            return
+        else:
+            if key not in self:
+                if (sp.shape(value)[0] == 1):
+                    self._logger.debug('Adding scalar: '+key)
+                    super(Base, self).__setitem__(key,value)
+                elif (sp.shape(value)[0] == self.num_pores()):
+                    self._logger.debug('Adding Np length vector: ' +key)
+                    super(Base, self).__setitem__(key,value)
+                elif (sp.shape(value)[0] == self.num_throats()):
+                    self._logger.debug('Adding Nt length vector: '+key)
+                    super(Base, self).__setitem__(key,value)
+                else:
+                    self._logger.error('Cannot create a label or property of the wrong length')
+            else:
+                if (sp.shape(value)[0] == 1):
+                    if sp.shape(self[key]) == 1:
+                        self._logger.debug('Updating scalar: '+key)
+                        super(Base, self).__setitem__(key,value)
+                    else:
+                        self._logger.debug('Overwriting vector with scalar: '+key)
+                        super(Base, self).__setitem__(key,value)
+                else:
+                    if sp.shape(value)[0] == sp.shape(self[key])[0]:
+                        self._logger.debug('Updating vector :'+key)
+                        super(Base, self).__setitem__(key,value)
+                    else:
+                        if sp.shape(value)[0] == self.num_pores():
+                            self._logger.debug('Updating vector: '+key)
+                            super(Base, self).__setitem__(key,value)
+                        elif sp.shape(value)[0] == self.num_throats():
+                            self._logger.debug('Updating vector: '+key)
+                            super(Base, self).__setitem__(key,value)
+                        else:
+                            self._logger.error('Cannot overwrite '+key+' with an array of the wrong length')
+    
+#    def __getitem__(self,key):
+#        try:
+#            temp = super(Base, self).__getitem__(key)
+#        except:
+#            self._logger.warning('Requested array will be created')
+#            self.__setitem__(key,[])
+#            temp = super(Base, self).__getitem__(key)
+#        return temp
+    
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
@@ -39,19 +102,20 @@ class Tools(Base):
         r'''
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
-         
+#        if locations = 'all'
+#            locations 
+#        self[element+'.'+prop] = data
         if mode=='remove':
             if data=='':
                 try: 
-                    getattr(self,'_'+element+'_data')[prop]
+                    self[element+'.'+prop]
                     if locations!='':   
-                        getattr(self,'_'+element+'_data')[prop][locations] = sp.nan
+                        self[element+'.'+prop][locations] = sp.nan
                         self._logger.debug('For the '+element+' property '+prop+', the specified data have been deleted in '+self.name)                        
                     else:
-                        del getattr(self,'_'+element+'_data')[prop]
+                        del self[element+'.'+prop]
                         self._logger.debug(element+' property '+prop+' has been deleted from the dictionary in '+self.name)
                 except: self._logger.error(element+' property '+prop+' in '+self.name+' has not been defined. Therefore, no data can be removed!')                              
-                
             else:   self._logger.error('For the '+element+' property '+prop+' in '+self.name+': The (remove) mode, will remove the property from the dictionary or specified locations. No data should be sent!')        
         else:
             data = sp.array(data,ndmin=1)
@@ -68,54 +132,54 @@ class Tools(Base):
                 try: locations = locations.name
                 except: pass
                 if type(locations)==str: locations = getattr(net,'get_'+element+'_indices')([locations])
-            try: 
-                getattr(self,'_'+element+'_data')[prop]
+            try:
+                self[element+'.'+prop]
                 temp_word = 'updated for '
             except: temp_word = 'added to '            
             if sp.shape(data)[0]==1:
                 if locations!='':                
                     try: 
-                        getattr(self,'_'+element+'_data')[prop]
+                        self[element+'.'+prop]
                         if mode=='overwrite':
-                            getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
-                        elif mode=='merge' and sp.shape(getattr(self,'_'+element+'_data')[prop])[0]==1:
-                            getattr(self,'_'+element+'_data')[prop] = getattr(self,'_'+element+'_data')[prop]*sp.ones((getattr(self,'num_'+element+'s')(),))
-                    except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
-                    getattr(self,'_'+element+'_data')[prop][locations] = data
+                            self[element+'.'+prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
+                        elif mode=='merge' and sp.shape(self[element+'.'+prop])[0]==1:
+                            self[element+'.'+prop] = self[element+'.'+prop]*sp.ones((getattr(self,'num_'+element+'s')(),))
+                    except: self[element+'.'+prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
+                    self[element+'.'+prop][locations] = data
                     self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
                 else:
                     try: 
-                        getattr(self,'_'+element+'_data')[prop]
+                        self[element+'.'+prop]
                         if mode=='overwrite':
-                            if sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:
+                            if sp.shape(self[element+'.'+prop])[0]!=1:
                                 self._logger.debug(element+' property '+prop+' in '+self.name+' was an array which has been overwritten with a scalar value')
-                            getattr(self,'_'+element+'_data')[prop] = data
+                            self[element+'.'+prop] = data
                             self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-                        if mode=='merge' and sp.shape(getattr(self,'_'+element+'_data')[prop])[0]!=1:  
+                        if mode=='merge' and sp.shape(self[element+'.'+prop])[0]!=1:  
                             self._logger.error('a scalar data without specified locations cannot be merged into the '+element+' property '+prop+' in '+self.name+' which is (1*N) array. To do so, choose overwrite mode.')
                     except:
-                        getattr(self,'_'+element+'_data')[prop] = data
+                        self[element+'.'+prop] = data
                         self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
             else:                
                 if locations!='':
                     if sp.shape(locations)[0]==sp.shape(data)[0]:
                         try:                                 
-                            getattr(self,'_'+element+'_data')[prop]
+                            self[element+'.'+prop]
                             if mode=='overwrite':
-                                getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
-                        except: getattr(self,'_'+element+'_data')[prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan                            
-                        getattr(self,'_'+element+'_data')[prop][locations] = data
+                                self[element+'.'+prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
+                        except: self[element+'.'+prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan                            
+                        self[element+'.'+prop][locations] = data
                         self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
                     else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', locations and size of data do not match!')
                 else:
                     try: 
                         getattr(self,'num_'+element+'s')()                        
                         if sp.shape(data)[0]==getattr(self,'num_'+element+'s')():
-                            getattr(self,'_'+element+'_data')[prop] = data
+                            self[element+'.'+prop] = data
                             self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
                         else: self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', no locations have been specified. Also size of the data and number of '+element+'s do not match! To add this property, specify locations or change the size of the data.')
                     except: 
-                        getattr(self,'_'+element+'_data')[prop] = data
+                        self[element+'.'+prop] = data
                         self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
 
     def _get_data(self,element='',prop='',locations='',mode=''):
@@ -145,16 +209,16 @@ class Tools(Base):
                     self._logger.error('The requested mode '+mode+' is not valid')
             else:
                 try: 
-                    getattr(self,'_'+element+'_data')[prop]
+                    self[element+'.'+prop]
                     try: 
-                        if  sp.shape(getattr(self,'_'+element+'_data')[prop])[0]==1 and max(locations)<getattr(self,'num_'+element+'s')():
-                            return getattr(self,'_'+element+'_data')[prop]                        
-                        else: return getattr(self,'_'+element+'_data')[prop][locations]
+                        if  sp.shape(self[element+'.'+prop])[0]==1 and max(locations)<getattr(self,'num_'+element+'s')():
+                            return self[element+'.'+prop]                        
+                        else: return self[element+'.'+prop][locations]
                     except: self._logger.error('data for these locations cannot be returned')
                 except: 
                     self._logger.error(self.name+' does not have the requested '+element+' property: '+prop) 
         else:
-            try: return getattr(self,'_'+element+'_data')[prop]
+            try: return self[element+'.'+prop]
             except: self._logger.error(self.name+' does not have the requested '+element+' property: '+prop)           
  
     def get_data(self,prop='',pores=None,throats=None,mode=''):
@@ -280,10 +344,8 @@ class Tools(Base):
         This is the actual info setter method, but it should not be called directly.  
         Wrapper methods have been created.  Use set_info().
         '''
-        if type(locations)==list: 
-            try: locations = getattr(self,'get_'+element+'_indices')(locations)
-            except: locations = sp.array(locations,ndmin=1)
-        elif type(locations)==sp.ndarray:
+        locations = sp.array(locations,ndmin=1)
+        if type(locations)==sp.ndarray:
             try: locations = getattr(self,'get_'+element+'_indices')(locations)
             except : pass 
         if locations!='':
@@ -297,9 +359,9 @@ class Tools(Base):
             if label:
                 if label=='all':
                     try: 
-                        old_label = getattr(self,'_'+element+'_info')[label]
+                        old_label = self[element+'.'+label]
                         if sp.shape(old_label)[0]<sp.shape(locations)[0]:
-                            getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
+                            self[element+'.'+label] = sp.ones_like(locations,dtype=bool)
                             self._logger.info('label=all for '+element+'has been updated to a bigger size!')
                             for info_labels in getattr(self,'_'+element+'_info').keys():
                                 if info_labels!=label:
@@ -308,26 +370,29 @@ class Tools(Base):
                                     getattr(self,'_'+element+'_info')[info_labels] = temp
                         elif sp.shape(old_label)[0]>sp.shape(locations)[0]: 
                             self._logger.error('To apply a new numbering label (label=all) to '+element+'s, size of the locations cannot be less than total number of '+element+'s!!')
-                    except: getattr(self,'_'+element+'_info')[label] = sp.ones_like(locations,dtype=bool)
+                    except: self[element+'.'+label] = sp.ones_like(locations,dtype=bool)
                 else:    
-                    try: getattr(self,'_'+element+'_info')[label]
-                    except: getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+                    try: self[element+'.'+label]
+                    except: self[element+'.'+label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
                     if mode=='overwrite':
-                        getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
-                        getattr(self,'_'+element+'_info')[label][locations] = True
-                    elif mode=='remove':  getattr(self,'_'+element+'_info')[label][locations] = False                           
-                    elif mode=='merge':  getattr(self,'_'+element+'_info')[label][locations] = True
+                        self[element+'.'+label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+                        self[element+'.'+label][locations] = True
+                    elif mode=='remove':  self[element+'.'+label][locations] = False
+                    elif mode=='merge':  self[element+'.'+label][locations] = True
             else: self._logger.error('No label has been defined for these locations')                
 
-        elif mode=='remove':  del getattr(self,'_'+element+'_info')[label]
-        else:  getattr(self,'_'+element+'_info')[label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
+        elif mode=='remove':  del self[element+'.'+label]
+        else:  self[element+'.'+label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
 
     def _get_info(self,element='',label='',mode=''):
         r'''
         This is the actual info getter method, but it should not be called directly.  
         Wrapper methods have been created.  Use get_info().        
         '''
-        return getattr(self,'_'+element+'_info')[label]
+        #Clean up label argument to remove leading 'pore' or 'throat'
+        if label.split('.')[0] == element:
+            label = label.split('.')[1]
+        return self[element+'.'+label]
             
     def set_info(self,label='',pores=None,throats=None,mode='merge'):
         r'''
@@ -415,40 +480,58 @@ class Tools(Base):
         '''
         return self._get_info(element='throat',label=label)
         
-    def _get_props(self,element='',mode='all'):
+    def amalgamate_data(self,objs=[]):
+        r"""
+        Returns a dictionary containing ALL pore data from all netowrk and/or
+        fluid objects received as arguments
+        """
+        if type(objs) != list:
+            objs = list(objs)
+        data_amalgamated = {}
+        for item in objs:
+            try:
+                for key in item.keys():
+                    if sp.amax(item[key]) < sp.inf:
+                        dict_name = item.name+'.'+key
+                        data_amalgamated.update({dict_name : item[key]})
+            except: 
+                self._logger.error('Only network and fluid items contain data')
+        return data_amalgamated
+        
+    def _get_props(self,mode='all'):
         r'''
         This is the actual prop list getter method, but it should not be
         called directly.  Wrapper methods have been created, use props().
         '''
         props = []
-        data_dict = getattr(self,'_'+element+'_data')
-        temp = list(data_dict.keys())
+        temp = []
+        for item in self.keys():
+            if self[item].dtype != bool:
+                temp.append(item)
         if mode == 'all':
             props = temp
         if mode == 'vectors':
             for item in temp:
                 try: 
-                    data_dict[item][1]
+                    self[item][1]
                     props.append(item)
                 except: pass
         if mode == 'scalars':
             for item in temp:
-                try: data_dict[item][1]
+                try: self[item][1]
                 except: props.append(item)
         props.sort()
         return props
             
-    def props(self,pores=None,throats=None,mode='all'):
+    def props(self,element='',pores=[],throats=[],mode='all'):
         r'''
         Returns a list containing the names of all defined pore or throat
         properties. 
         
         Parameters
         ----------
-        pores or throats : boolean 
-            Properties exist on all pores and throats, so there is no reason
-            to request properties from some pores or throats.  These arguments
-            only control whether pore or throat properties are returned.
+        pores or throats : array_like
+            hmmm
         mode : string, optional
             Set the mode to be used for retrieving props.  Options are:
             
@@ -468,33 +551,58 @@ class Tools(Base):
         --------
         labels
         '''
-        if pores != None:
-            return self._get_props(element='pore',mode=mode)
-        if throats != None:
-            return self._get_props(element='throat',mode=mode)
+        
+        props = self._get_props(mode=mode)
+        if (pores == []) and (throats == []):
+            if element == '':
+                return props            
+            elif element == 'pore':
+                temp = [item for item in props if item.split('.')[0]=='pore']
+            elif element == 'throat':
+                temp = [item for item in props if item.split('.')[0]=='throat']
+            else:
+                self._logger.error('Unrecognized element')
+                return
+            return temp
+        elif pores != []:
+            temp = {}
+            for item in props:
+                if item.split('.')[0] == 'pore':
+                    temp.update({item:self[item][pores]})
+            return temp
+        elif throats != []:
+            temp = {}
+            for item in props:
+                if item.split('.')[0] == 'throat':
+                    temp.update({item:self[item][throats]})
+            return temp
             
-    def _get_labels(self,element,locations,mode):
+    def _get_labels(self,element='',locations=[],mode='union'):
         r'''
         This is the actual label getter method, but it should not be called directly.  
         Wrapper methods have been created, use get_labels().
         '''
-        if element == 'pore':
-            element_info = self._pore_info
-            labels = sp.array(list(self._pore_info.keys()))
-        elif element == 'throat':
-            element_info = self._throat_info
-            labels = sp.array(list(self._throat_info.keys()))
-        arr = sp.zeros((sp.shape(locations,)[0],len(labels)),dtype=bool)
+        labels = []
+        for item in self.keys():
+            if item.split('.')[0] == element:
+                if self[item].dtype == bool:
+                    labels.append(item)
+        labels.sort()        
+        labels = sp.array(labels)
+        arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
         col = 0
         for item in labels:
-            arr[:,col] = element_info[item][locations]
+            arr[:,col] = self[item][locations]
             col = col + 1
         if mode == 'count':
             return sp.sum(arr,axis=1)
         if mode == 'union':
-            return list(labels[sp.sum(arr,axis=0)>0])
+            temp = list(labels[sp.sum(arr,axis=0)>0])
+            return temp
         if mode == 'intersection':
             return labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
+        if mode == 'difference':
+            return labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
         if mode == 'mask':
             return arr
         if mode == 'none':
@@ -505,14 +613,15 @@ class Tools(Base):
         else:
             print('unrecognized mode')
                 
-    def labels(self,pores=None,throats=None,mode='union'):
+    def labels(self,element='',pores=[],throats=[],mode='union'):
         r'''
         Returns the labels applied to specified pore locations
         
         Parameters
         ----------
         pores (or throats) : array_like
-            The pores (or throats) whos labels are sought
+            The pores (or throats) whose labels are sought.  If left empty a 
+            dictionary containing all pore and throat labels is returned.
         mode : string, optional
             Controls how the query should be performed
             
@@ -522,26 +631,64 @@ class Tools(Base):
             
             * 'intersection' : Label applied to ALL of the given pores (or throats)
             
+            * 'difference' : Labels NOT applied to ALL pores (or throats)
+            
             * 'count' : The number of labels on each pores (or throats)
             
             * 'mask' : returns an N x Lt array, where each row corresponds to a pore (or throat) location, and each column contains the truth value for the existance of labels as returned from labels(pores='all',mode='union')).
             
         '''
-        if pores != None:
+        if (pores == []) and (throats == []):
+            if element == '':
+                temp = []
+                temp = self._get_labels(element='pore',locations=self.pores(), mode=mode)
+                temp = temp + self._get_labels(element='throat',locations=self.throats(),mode=mode)
+            elif element == 'pore':
+                temp = self._get_labels(element='pore',locations=self.pores(), mode=mode)
+            elif element == 'throat':
+                temp = self._get_labels(element='throat',locations=self.pores(), mode=mode)
+            else:
+                self._logger.error('Unrecognized element')
+                return
+            return temp
+        elif pores != []:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
-            return self._get_labels(element='pore',locations=pores, mode=mode)
-        if throats != None:
+            temp = self._get_labels(element='pore',locations=pores, mode=mode)
+            return temp
+        elif throats != []:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
-            return self._get_labels(element='throat',locations=throats,mode=mode)
+            temp = self._get_labels(element='throat',locations=throats,mode=mode)
+            return temp
+            
+    def filter_by_label(self,pores=[],throats=[],label=''):
+        r'''
+        Returns which of the supplied pores (or throats) has the specified label
+        '''
+        if pores != []:
+            label = 'pore.'+label.split('.')[-1]
+            all_labels = self.labels('pore')
+            mask = self.labels(pores=pores,mode='mask')
+            ind = all_labels.index(label)
+            temp = mask[:,ind]
+            pores = sp.array(pores,ndmin=1)
+            return pores[temp]
+        elif throats != []:
+            label = 'throat.'+label.split('.')[-1]
+            all_labels = self.labels('throat')
+            mask = self.labels(throats=throats,mode='mask')
+            ind = all_labels.index(label)
+            temp = mask[:,ind]
+            throats = sp.array(throats,ndmin=1)
+            return throats[temp]            
         
     def _get_indices(self,element,labels,mode):
         r'''
         This is the actual method for getting indices, but should not be called
-        directly.  
+        directly.  Use pores or throats instead.
         '''
         try: labels = [labels.name]  # Check if object was sent
         except: pass
@@ -561,7 +708,7 @@ class Tools(Base):
                 info = self._get_info(element=element,label=item)
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
-        elif mode == 'none':
+        elif mode == 'difference':
             none = sp.zeros_like(self._get_info(element=element,label='all'),dtype=int)
             for item in labels: #iterate over labels list and collect all indices
                 info = self._get_info(element=element,label=item)
@@ -592,7 +739,7 @@ class Tools(Base):
             * 'not_intersection' : Only pores with exactly one of the given 
             labels are returned.
             
-            * 'none' : Only pores with none of the given labels are returned.
+            * 'difference' : Only pores with none of the given labels are returned.
         
         Examples
         --------
@@ -628,7 +775,7 @@ class Tools(Base):
             * 'not_intersection' : Only throats with exactly one of the given 
             labels are counted.
             
-            * 'none' : Only throats with none of the given labels are returned.
+            * 'difference' : Only throats with none of the given labels are returned.
         
         Notes
         -----
@@ -637,7 +784,7 @@ class Tools(Base):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> Tind = pn.get_throat_indices()
+        >>> Tind = pn.throats()
         >>> Tind[0:5]
         array([0, 1, 2, 3, 4], dtype=int64)
         
@@ -645,6 +792,18 @@ class Tools(Base):
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
+        
+    def get_pore_indices(self,labels=['all'],mode='union'):
+        r'''
+        THIS METHOD IS DEPRECATED, USE pores() INSTEAD
+        '''
+        return self.pores(labels=labels,mode=mode)
+
+    def get_throat_indices(self,labels=['all'],mode='union'):
+        r'''
+        THIS METHOD IS DEPRECATED, USE throats() INSTEAD
+        '''
+        return self.throats(labels=labels,mode=mode)
         
     def to_mask(self,pores=None,throats=None):
         r'''
@@ -663,29 +822,17 @@ class Tools(Base):
         
         '''
         if pores != None:
-            Np = sp.shape(self._pore_info['all'])[0]
+            Np = sp.shape(self['pore.all'])[0]
             pores = sp.array(pores,ndmin=1)
             mask = sp.zeros((Np,),dtype=bool)
             mask[pores] = True
             return mask
         if throats != None:
-            Nt = sp.shape(self._throat_info['all'])[0]
+            Nt = sp.shape(self['throat.all'])[0]
             throats = sp.array(throats,ndmin=1)
             mask = sp.zeros((Nt,),dtype=bool)
             mask[throats] = True
             return mask
-        
-    def get_pore_indices(self,labels=['all'],mode='union'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE pores() INSTEAD
-        '''
-        return self.pores(labels=labels,mode=mode)
-
-    def get_throat_indices(self,labels=['all'],mode='union'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE throats() INSTEAD
-        '''
-        return self.throats(labels=labels,mode=mode)
 
     def interpolate_data(self,prop='',throats=[],pores=[],data=[]):
         r"""
@@ -769,7 +916,7 @@ class Tools(Base):
             
             * 'not_intersection' : Only pores with exactly one of the given labels are counted.
             
-            * 'none' : Only pores with none of the given labels are counted.
+            * 'difference' : Only pores with none of the given labels are counted.
             
         Returns
         -------
@@ -820,7 +967,7 @@ class Tools(Base):
 
             * 'not_intersection' : Only throats with exactly one of the given labels are counted.
             
-            * 'none' : Only throats with none of the given labels are counted.
+            * 'difference' : Only throats with none of the given labels are counted.
 
         Returns
         -------
@@ -853,6 +1000,18 @@ class Tools(Base):
         Nt = self.to_mask(throats=Nt)
         return sp.sum(Nt) #return sum of Trues
         
+    def count(self,element=None):
+        r'''
+        Returns a dictionary containing the number of pores and throats in 
+        the network, stored under the keys 'pore' or 'throat'
+        '''
+        temp = {}
+        temp['pore'] = self.num_pores()
+        temp['throat'] = self.num_throats()
+        if element != None:
+            temp = temp[element]
+        return temp
+        
     def get_result(self,alg_obj,**kwargs):
         r'''
         This method invokes the update method on the given OpenPNM Algorithm object
@@ -871,34 +1030,77 @@ class Tools(Base):
         r'''
         '''
         success = 1
-        if type(props)==str: 
+        if type(props) == str: 
             props = [props]
         if props != []:
-            items = props
-        else: 
-            items = getattr(self,'_'+element+'_data').keys()
-        for item in items:
+            props = props
+        else:
+            props = self.props(element)
+        for item in props:
+            #Make sure pore or throat is present on item name
+            item = item.split('.')[-1]
+            item = element + '.' + item
             try: 
-                temp = getattr(self,'_'+element+'_data')[item]
+                temp = self[item]
                 if sp.sum(sp.isnan(temp)) > 0:
                     self._logger.error('Nans found in: '+item)
                     success = 0
                 else: self._logger.info('Checks for '+element+' property '+item+': passed successfully.')
             except:
-                self._logger.error(element+' property '+item+': not found!')
+                self._logger.error(element+' property '+item+': not found.')
                 success = 0
         if success == 0:   self._logger.error('Problem found in checking '+element+' properties.')
         return success
         
+    def data_health(self,element='',props=[]):
+        health = {}
+        flag = True
+        if props == []:
+            props = self.props(element)
+        else:
+            if type(props) == str:
+                props = [props]
+            if props[0].split('.')[0] not in ['pore','throat']:
+                self._logger.error('Properties must be either pore or throat')
+        for item in props:
+            if sp.sum(sp.isnan(self[item])) > 0:
+                health[item] = 'Has NaNs'
+                flag = False
+            elif sp.shape(self[item])[0] == 1:
+                health[item] = 'Healthy Scalar'
+            elif sp.shape(self[item])[0] == self.count(item.split('.')[0]):
+                health[item] = 'Healthy Vector'
+            else:
+                health[item] = 'Wrong Length'
+                flag = False
+        pprint.pprint(health)
+        return flag
+            
     def check_pore_health(self,props=[]):
         r'''
         '''
-        return self._check_health(element='pore',props=props)
+        if props != []:
+            if type(props) == str:
+                props = [props]
+            temp = []
+            for item in props:
+                item = item.split('.')[-1]
+                temp.append('pore.' + item)
+            props = temp
+        return self.data_health(element='pore',props=props)            
         
     def check_throat_health(self,props=[]):
         r'''
         '''
-        return self._check_health(element='throat',props=props)
+        if props != []:
+            if type(props) == str:
+                props = [props]
+            temp = []
+            for item in props:
+                item = item.split('.')[-1]
+                temp.append('throat.' + item)
+            props = temp
+        return self.data_health(element='throat',props=props)
         
 
 if __name__ == '__main__':
