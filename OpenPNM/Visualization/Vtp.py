@@ -66,8 +66,13 @@ def write(network, filename='output_file.vtp', fluids=[], pretty=True):
     """
     
     root = ET.fromstring(TEMPLATE)
-
-    am = network.amalgamate_data(objs=[fluids,network])
+    objs = []
+    if np.shape(fluids)==():
+        fluids = [fluids]
+    for fluid in fluids:
+        objs.append(fluid)
+    objs.append(network)
+    am = network.amalgamate_data(objs=objs)
     key_list = list(sorted(am.keys()))
     points = am[network.name+'.pore.coords']
     pairs = network.get_throat_data(prop='conns')
