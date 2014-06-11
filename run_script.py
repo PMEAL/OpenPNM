@@ -56,7 +56,7 @@ OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,network=pn)
 a = pn.pores(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=20)
 OP_1.run()
-#OP_1.plot_drainage_curve()
+OP_1.plot_drainage_curve()
 
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
@@ -78,7 +78,7 @@ Fickian_alg.update()
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-#OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
+OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water,pn],network=pn)
 
 
 
