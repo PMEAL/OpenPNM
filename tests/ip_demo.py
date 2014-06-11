@@ -24,11 +24,9 @@ import OpenPNM
 #==============================================================================
 
 pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=30)
-pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=True)
+pn.generate(divisions=[3, 3, 3], lattice_spacing=[0.0001],add_boundaries=True)
 geom = OpenPNM.Geometry.Toray090(network=pn)
-geom.set_locations(pores=pn.pores('internal'),throats='all')
-boun = pn.add_geometry(name='boundary_geometry',subclass='Boundary')
-boun.set_locations(pores=pn.pores('boundary'))
+geom.set_locations(pores=pn.pores('all'),throats='all')
 pn.regenerate_geometries()
 
 #==============================================================================
@@ -65,7 +63,7 @@ pn.regenerate_physics()
 #==============================================================================
 
 ip = OpenPNM.Algorithms.InvasionPercolation(name='ip',network=pn,loglevel=30)
-ip.run(inlets=pn.get_pore_indices('bottom'),outlets=pn.get_pore_indices('top'),invading_fluid=water,defending_fluid=air)
+ip.run(inlets=pn.get_pore_indices(['bottom','boundary'],mode='intersection'),outlets=pn.get_pore_indices(['top','boundary'],mode='intersection'),invading_fluid=water,defending_fluid=air,end_condition='total')
 ip.update()
 
 vis = OpenPNM.Visualization.Vtp_class()
