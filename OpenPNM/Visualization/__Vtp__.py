@@ -91,8 +91,13 @@ class Vtp_class(GenericVisualization):
         """
         
         root = ET.fromstring(self._TEMPLATE)
-    
-        am = network.amalgamate_data(objs=[fluids,network])
+        objs = []
+        if np.shape(fluids)==():
+            fluids = [fluids]
+        for fluid in fluids:
+            objs.append(fluid)
+        objs.append(network)
+        am = network.amalgamate_data(objs=objs)
         key_list = list(sorted(am.keys()))
         points = am[network.name+'.pore.coords']
         pairs = network.get_throat_data(prop='conns')
