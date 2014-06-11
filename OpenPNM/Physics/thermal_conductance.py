@@ -55,7 +55,7 @@ def thermal_fluid(physics,
 
     """
     kp = fluid.get_pore_data(prop=thermal_conductivity)
-    kt = network.interpolate_throat_data(kp)
+    kt = network.interpolate_data(kp)
 
     #Get Nt-by-2 list of pores connected to each throat
     tind = network.get_throat_indices()
@@ -100,7 +100,7 @@ def parallel_resistors(physics,
 
     """
     kp = fluid.get_pore_data(prop=thermal_conductivity)
-    kt = network.interpolate_throat_data(kp)
+    kt = network.interpolate_data(kp)
     value = kt #A physical model of parallel resistors representing the solid phase surrouding each pore is required here
     mask = network.get_throat_indices(geometry)
     fluid.set_throat_data(prop=propname,data=value[mask],locations=geometry)

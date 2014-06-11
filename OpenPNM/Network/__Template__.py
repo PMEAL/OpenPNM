@@ -107,7 +107,7 @@ class Template(GenericNetwork):
         # insert into sub-structure
         self.set_pore_data(prop='coords', data=coords)
         self.set_pore_info(label='all', locations=np.ones(len(coords)).astype(bool))
-        self.set_throat_data(prop='connections', data=np.vstack([heads, tails]).T)
+        self.set_throat_data(prop='conns', data=np.vstack([heads, tails]).T)
         self.set_throat_info(label='all', locations=np.ones_like(heads).astype(bool))
         self.set_pore_data(prop='values', data=im.ravel())
 

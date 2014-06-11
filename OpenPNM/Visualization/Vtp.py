@@ -65,10 +65,10 @@ def write(filename, network, fluids=[], pretty=True):
     """
     root = ET.fromstring(TEMPLATE)
 
-    am = network.amalgamate_pore_data(fluids=fluids)
+    am = network.amalgamate_data(fluids=fluids)
     key_list = list(sorted(am.keys()))
     points = am['pore_coords']
-    pairs = network.get_throat_data(prop='connections')
+    pairs = network.get_throat_data(prop='conns')
 
     num_points = len(points)
     num_throats = len(pairs)

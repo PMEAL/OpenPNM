@@ -40,17 +40,18 @@ class GenericFluid(OpenPNM.Utilities.Tools):
     def __init__(self,network,name=None,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        self.name = name
         
         # Attach objects for internal access
         self._net = network
         
         # Link this Fluid to the Network
-        network._fluids.update({self.name:self}) 
+        network._fluids.append(self) 
         
         # Initialize tracking lists
-        self._physics = {}
+        self._physics = []
         self._prop_list = []
+        
+        self.name = name
         
         # Set default T and P since most propery models require it
         self.set_data(prop='temperature',pores='all',data=298.0)

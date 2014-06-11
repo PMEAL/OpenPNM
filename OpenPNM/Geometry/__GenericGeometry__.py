@@ -53,10 +53,9 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         self._logger.debug("Method: Constructor")
         self._net = network #Attach network to self        
         self.name = name
-        
         #Setup containers for object linking
-        self._physics = {} #Create list for physics to append themselves to
-        self._net._geometries.update({self.name : self})
+        self._physics = [] #Create list for physics to append themselves to
+        self._net._geometries.append(self)
         self._prop_list = []
         
         #Initialize geometry to NOWHERE
@@ -72,15 +71,6 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         if pores != []:
             if pores == 'all':
                 pores = self._net.pores(labels='all')
-            geoms = self._net.find_object_by_type(self.__module__.split('.')[1])
-            for item in geoms.keys():
-                if geoms[item] is self:
-                    del geoms[item]
-                    break
-            temp = self._net.pores(labels=geoms)
-            temp = self._net.to_mask(pores=temp)
-            if sum(temp[pores]) > 0:
-                raise Exception('You are trying to assign a geometry to a pore that has already been asssigned')
             if mode == 'add':
                 self._net.set_info(label=self.name,pores=pores,mode='merge')
             elif mode == 'remove':
@@ -91,15 +81,6 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         if throats != []:
             if throats == 'all':
                 throats = self._net.get_throat_indices(labels='all')
-            geoms = self._net.find_object_by_type(self.__module__.split('.')[1])
-            for item in geoms.keys():
-                if geoms[item] is self:
-                    del geoms[item]
-                    break
-            temp = self._net.throats(labels=geoms)
-            temp = self._net.to_mask(throats=temp)
-            if sum(temp[throats]) > 0:
-                raise Exception('You are trying to assign a geometry to a throat that has already been asssigned')
             if mode == 'add':
                 self._net.set_info(label=self.name,throats=throats,mode='merge')
             elif mode == 'remove':

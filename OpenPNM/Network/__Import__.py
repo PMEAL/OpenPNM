@@ -103,7 +103,7 @@ class MatFile(GenericNetwork):
         Tind = sp.arange(0,self._Nt)
         self.set_throat_info(label='all',locations=sp.ones_like(Tind))
         self._logger.info('Writing throat data')
-        self.set_throat_data(prop='connections',data=self._dictionary['tconnections'])
+        self.set_throat_data(prop='conns',data=self._dictionary['tconnections'])
         
     def _add_geometry(self):
         

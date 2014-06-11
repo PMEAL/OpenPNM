@@ -26,8 +26,8 @@ def Overview(net,
   ax2 = fig.add_subplot(222)
   net.find_neighbor_pores(1)
   x = sp.zeros(net.num_pores())
-  for i in list(range(0,sp.shape(net.adjacency_matrix['lil']['connections'].rows)[0])):
-    x[i] = sp.shape(net.adjacency_matrix['lil']['connections'].rows[i])[0]
+  for i in list(range(0,sp.shape(net.adjacency_matrix['lil']['conns'].rows)[0])):
+    x[i] = sp.shape(net.adjacency_matrix['lil']['conns'].rows[i])[0]
   ax2.hist(x,25,facecolor='yellow')
   ax2.set_xlabel('Coordination Number')
   ax2.set_ylabel('Frequency')
