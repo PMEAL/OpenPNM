@@ -43,6 +43,7 @@ This submodule contains all pore scale physics models applied to a pore network.
 """
 
 from .__GenericPhysics__ import GenericPhysics
+from .__BasePhysics__ import BasePhysics
 from . import electronic_conductance
 from . import capillary_pressure
 from . import diffusive_conductance
