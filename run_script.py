@@ -23,7 +23,6 @@ pn.regenerate_geometries()
 #==============================================================================
 air = OpenPNM.Fluids.Air(network=pn, loglevel=20,name='air')
 air.apply_conditions(temperature=350, pressure=200000)
-air.add_property(prop='electrical_conductivity',model='constant',value=5e-12)
 
 water = OpenPNM.Fluids.Water(network=pn,loglevel=20,name='water')
 water.add_property(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
@@ -34,15 +33,9 @@ pn.regenerate_fluids()
 #==============================================================================
 '''Build Physics Objects'''
 #==============================================================================
-phys_water = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry=geom)
-phys_water.add_property(prop='capillary_pressure', model='washburn')
-phys_water.add_property(prop='hydraulic_conductance', model='hagen_poiseuille')
-phys_water.add_property(prop='diffusive_conductance', model='bulk_diffusion', diffusivity='DAB')
+phys_water = OpenPNM.Physics.BasePhysics(network=pn, fluid=water,geometry=geom)
 
-phys_air = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air,geometry=geom)
-phys_air.add_property(prop='hydraulic_conductance', model='hagen_poiseuille')
-phys_air.add_property(prop='diffusive_conductance', model='bulk_diffusion')
-phys_air.add_property(prop='electronic_conductance', model='series_resistors')
+phys_air = OpenPNM.Physics.BasePhysics(network=pn, fluid=air,geometry=geom)
 
 #Use Network's Physics regeneration method
 pn.regenerate_physics()
