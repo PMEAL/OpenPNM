@@ -25,18 +25,18 @@ import OpenPNM
 
 pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=30)
 pn.generate(divisions=[3, 3, 3], lattice_spacing=[0.0001],add_boundaries=True)
-geom = OpenPNM.Geometry.Toray090(network=pn)
+geom = OpenPNM.Geometry.Toray090(network=pn,name='everything')
 geom.set_locations(pores=pn.pores('all'),throats='all')
 pn.regenerate_geometries()
 
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, name='water', loglevel=20)
+air = OpenPNM.Fluids.Air(network=pn, name='water', loglevel=30)
 air.apply_conditions(temperature=350, pressure=200000)
 air.add_property(prop='electrical_conductivity',model='constant',value=5e-12)
 
-water = OpenPNM.Fluids.Water(network=pn, name='water', loglevel=20)
+water = OpenPNM.Fluids.Water(network=pn, name='water', loglevel=30)
 water.add_property(prop='diffusivity', prop_name='DAB', model='constant', value=5e-12)
 
 #Use Network's Fluid regeneration method
@@ -62,9 +62,11 @@ pn.regenerate_physics()
 '''Begin Simulations'''
 #==============================================================================
 
-ip = OpenPNM.Algorithms.InvasionPercolation(name='ip',network=pn,loglevel=30)
-ip.run(inlets=pn.get_pore_indices(['bottom','boundary'],mode='intersection'),outlets=pn.get_pore_indices(['top','boundary'],mode='intersection'),invading_fluid=water,defending_fluid=air,end_condition='total')
+ip = OpenPNM.Algorithms.InvasionPercolationForImbibition(name='ip',network=pn,loglevel=30)
+ip.run(inlets=[pn.get_pore_indices(['bottom','boundary'],mode='intersection')],
+               outlets=pn.get_pore_indices('top'),
+                invading_fluid=air,defending_fluid=water,end_condition='total')
 ip.update()
 
 vis = OpenPNM.Visualization.Vtp_class()
-vis.write(network=pn,fluids=water)
+vis.write(network=pn,fluids=[water,air])

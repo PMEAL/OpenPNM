@@ -63,7 +63,7 @@ class Base(object):
             loglevel = kwargs['loglevel']
             self.set_loglevel(loglevel)
         else:
-            loglevel = 20
+            loglevel = 30
             self.set_loglevel(loglevel)
             
     def __setitem__(self,**kwargs):
