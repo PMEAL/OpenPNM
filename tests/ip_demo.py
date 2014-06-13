@@ -68,5 +68,5 @@ ip.run(inlets=[pn.get_pore_indices(['bottom','boundary'],mode='intersection')],
                 invading_fluid=air,defending_fluid=water,end_condition='total')
 ip.update()
 
-vis = OpenPNM.Visualization.Vtp_class()
+vis = OpenPNM.Visualization.VTK()
 vis.write(network=pn,fluids=[water,air])
