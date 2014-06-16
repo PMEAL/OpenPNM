@@ -16,6 +16,7 @@ import numpy as np
 import _transformations as tr
 from scipy.spatial import ConvexHull
 from math import atan2
+from scipy.spatial import Delaunay
 
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
@@ -39,14 +40,12 @@ class Voronoi(GenericGeometry):
         self._add_throat_props() # This sets the key throat data for calculating pore and throat properties later
         self.add_property(prop='pore_seed',model='random')
         self.add_property(prop='throat_seed',model='neighbor_min')
-        self.add_property(prop='pore_volume',model='voronoi2') # Volume must come before diameter
+        self.add_property(prop='pore_volume',model='voronoi') # Volume must come before diameter
         self.add_property(prop='pore_diameter',model='voronoi')
         self.add_property(prop='pore_centroid',model='voronoi')
-        # Throat must come before Pore to get the offset vertices
-        #self.add_property(prop='throat_area', model='voronoi') # Area must come before diameter, also sets face centroid and perimeter
+        " Throat must come before Pore to get the offset vertices "
         self.add_property(prop='throat_diameter',model='voronoi')
         self.add_property(prop='throat_centroid',model='voronoi')
-        #self.add_property(prop='throat_length',model='voronoi') # Length must come before volume
         self.add_property(prop='throat_length',model='constant',value=1e-06)
         self.add_property(prop='throat_volume',model='voronoi')
         self.add_property(prop='throat_vector',model='pore_to_pore') # Not sure how to do this for centre to centre as we might need to split into two vectors
@@ -54,6 +53,7 @@ class Voronoi(GenericGeometry):
 
     def _add_throat_props(self,radius=1e-06):
         r"""
+        Main Loop         
         This method does all the throat properties for the voronoi cages 
         including offseting the vertices surrounding each pore by an amount that
         replicates erroding the facet of each throat by the fibre radius 
@@ -71,7 +71,6 @@ class Voronoi(GenericGeometry):
         normals = coords[connections[:,0]]-coords[connections[:,1]]
         area = sp.ndarray(len(connections),dtype=object)
         perimeter = sp.ndarray(len(connections),dtype=object)
-        #centroids = sp.ndarray(len(connections),dtype=object)
         offset_verts = sp.ndarray(len(connections),dtype=object)
         for i,throat_pair in enumerate(connections):
             shared_verts = []
@@ -85,34 +84,29 @@ class Voronoi(GenericGeometry):
             if len(shared_verts) >=3:
                 shared_verts = np.asarray(shared_verts)
                 area[i],perimeter[i],offset_verts[i] = self._get_throat_geom(shared_verts,normals[i])
-                #centroids[i]=self._centroid(shared_verts)
             else:
                 area[i]=0.0
 
         self._net.set_data(prop='area',throats='all',data=area)
-        #self._net['throat.area']=area
-        #self._net.set_data(prop='perimeter',throats='all',data=perimeter)
         self._net['throat.perimeter']=perimeter
-        #self.set_throat_data(prop='centroid',data=centroids)
-        #self._net.set_throat_data(prop='offset_verts',data=offset_verts)
         self._net['throat.offset_verts']=offset_verts
         " Temporary Code to remove the smallest 2% of throat area connections "
         " This can be used in algorithms to ignore certain connections if required - like in the range of capillary pressures in OP "
-        #smallest_throat = min(area)
-        #largest_throat = max(area)
+
         average_area = sp.mean(area)
         cutoff = average_area/100
-        #remove_range = smallest_throat + ((largest_throat-smallest_throat)*0.02)
         excluded_throats = []
         for i,throat in enumerate(connections):
             if area[i]<=cutoff:
-            #if area[i]==0.0:
                 excluded_throats.append(i)
         excluded_throats = np.asarray(excluded_throats)
         if len(excluded_throats) > 0:
             self._net.trim(throats=excluded_throats)
     
     def _get_throat_geom(self,verts,normal):
+        r"""
+        For one set of vertices defining a throat return the key properties
+        """        
         z_axis = [0,0,1]
         " For boundaries some facets will already be aligned with the axis - if this is the case a rotation is unnecessary and could also cause problems "
         angle = tr.angle_between_vectors(normal,z_axis)
@@ -226,9 +220,15 @@ class Voronoi(GenericGeometry):
         return output
 
     def _dist2(self,p1, p2):
+        r"""
+        Pythagoras
+        """
         return (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2
 
     def _fuse(self,points, d):
+        r"""
+        Fuse points together wihin a certain range
+        """
         ret = []
         d2 = d * d
         n = len(points)
@@ -250,6 +250,9 @@ class Voronoi(GenericGeometry):
         return ret
 
     def _fuse_verts(self,verts,percentage=0.05):
+        r"""
+        Work out the span of the points and therefore the range for fusing them together then call fuse
+        """
         #Work out largest span
         x_span = max(verts[:,0])- min(verts[:,0])
         y_span = max(verts[:,1])- min(verts[:,1])
@@ -261,14 +264,82 @@ class Voronoi(GenericGeometry):
         return self._fuse(verts,tolerance)
 
     def _PolyArea2D(self,pts):
+        r"""
+        returns the area of a 2D polygon given the set of points defining the convex hull in correct order
+        """
         lines = np.hstack([pts,np.roll(pts,-1,axis=0)])
         area = 0.5*abs(sum(x1*y2-x2*y1 for x1,y1,x2,y2 in lines))
         return area
 
     def _PolyPerimeter2D(self,pts):
+        r"""
+        returns the perimeter of a 2D polygon given the set of points defining the convex hull in correct order
+        """
         lines = np.hstack([pts,np.roll(pts,-1,axis=0)])
         perimeter = sum(np.sqrt((x2-x1)**2+(y2-y1)**2) for x1,y1,x2,y2 in lines)
         return perimeter
+    
+    def _get_hull_volume(self,points):
+        
+        r"""
+        Calculate the volume of a set of points by dividing the bounding surface into triangles and working out the volume of all the pyramid elements
+        connected to the volume centroid
+        """
+        " remove any duplicate points - this messes up the triangulation "        
+        points = np.asarray(self._unique_list(points))       
+        try:
+            tri = Delaunay(points)
+        except sp.spatial.qhull.QhullError:
+            print(points)
+        " We only want points included in the convex hull to calculate the centroid "
+        #hull_points = np.unique(tri.convex_hull)#could technically use network pore centroids here but this function may be called at other times
+        hull_centroid = sp.array([points[:,0].mean(),points[:,1].mean(),points[:,2].mean()])
+        hull_volume = 0.0
+        for ia, ib, ic in tri.convex_hull:
+            " Points making each triangular face "
+            " Collection of co-ordinates of each point in this face "
+            face_x = points[[ia,ib,ic]][:,0]
+            face_y = points[[ia,ib,ic]][:,1]
+            face_z = points[[ia,ib,ic]][:,2]
+            " Average of each co-ordinate is the centroid of the face "
+            face_centroid = [face_x.mean(),face_y.mean(),face_z.mean()]
+            face_centroid_vector = face_centroid - hull_centroid
+            " Vectors of the sides of the face used to find normal vector and area "
+            vab = points[ib] - points[ia]
+            vac = points[ic] - points[ia]
+            vbc = points[ic] - points[ib] # used later for area
+            " As vectors are co-planar the cross-product will produce the normal vector of the face "
+            face_normal = np.cross(vab,vac)
+            face_unit_normal = face_normal/np.linalg.norm(face_normal)
+            " As triangles are orientated randomly in 3D we could either transform co-ordinates to align with a plane and perform 2D operations "
+            " to work out the area or we could work out the lengths of each side and use Heron's formula which is easier"
+            " Using Delaunay traingulation will always produce triangular faces but if dealing with other polygons co-ordinate transfer may be necessary "
+            a = np.linalg.norm(vab)
+            b = np.linalg.norm(vbc)
+            c = np.linalg.norm(vac)
+            " Semiperimeter "
+            s = 0.5*(a+b+c)
+            face_area = np.sqrt(s*(s-a)*(s-b)*(s-c))
+            " Now the volume of the pyramid section defined by the 3 face points and the hull centroid can be calculated "
+            pyramid_volume = np.abs(np.dot(face_centroid_vector,face_unit_normal)*face_area/3)
+            " Each pyramid is summed together to calculate the total volume "
+            hull_volume += pyramid_volume
+    
+        return hull_volume
+    
+    def _unique_list(self,input_list):
+        r"""
+        For a given list (of points) remove any duplicates
+        """
+        output_list = []
+        for i in input_list:
+            match=False
+            for j in output_list:
+                if (i[0]==j[0]) and (i[1]==j[1]) and (i[2]==j[2]):
+                    match=True
+            if match==False:
+                output_list.append(i)
+        return output_list
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.Delaunay(name='test_net')

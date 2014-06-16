@@ -11,12 +11,10 @@ def voronoi(geometry,
             propname,
             **params):
     r"""
-    Calculate the centroid of the pore from the voronoi vertices
+    Calculate the centroid of the pore from the voronoi vertices - C.O.M
     """
     verts = network['throat.offset_verts']
     value = sp.ndarray(len(verts),dtype=object)
     for i,vert in enumerate(verts):
         value[i] = sp.array([vert[:,0].mean(),vert[:,1].mean(),vert[:,2].mean()])
-    #network.set_data(prop=propname,throats=geometry.throats(),data=value)
-    #network.set_throat_data(prop=propname,data=value)
     network['throat.'+propname]=value
