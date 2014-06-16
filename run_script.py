@@ -33,9 +33,9 @@ pn.regenerate_fluids()
 #==============================================================================
 '''Build Physics Objects'''
 #==============================================================================
-phys_water = OpenPNM.Physics.BasePhysics(network=pn, fluid=water,geometry=geom)
+phys_water = OpenPNM.Physics.BasePhysics(network=pn, fluid=water,geometry=geom,name='physwater')
 
-phys_air = OpenPNM.Physics.BasePhysics(network=pn, fluid=air,geometry=geom)
+phys_air = OpenPNM.Physics.BasePhysics(network=pn, fluid=air,geometry=geom,name='physair')
 
 #Use Network's Physics regeneration method
 pn.regenerate_physics()
