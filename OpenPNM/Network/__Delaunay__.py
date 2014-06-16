@@ -179,17 +179,17 @@ class Delaunay(GenericNetwork):
         # Do Voronoi diagram - creating voronoi polyhedra around each pore and save vertex information
         vor = Voronoi(pts)
         all_verts = sp.ndarray(Np,dtype=object)
-        centroids = sp.ndarray(Np,dtype=object)
+        #centroids = sp.ndarray(Np,dtype=object)
         for i,polygon in enumerate(vor.point_region[0:Np]):
             if -1 not in vor.regions[polygon]:
                 all_verts[i]=vor.vertices[vor.regions[polygon]]
-                centroids[i]=self._centroid(all_verts[i])
+                #centroids[i]=self._centroid(all_verts[i])
             else:
                 all_verts[i]="unbounded"
-                centroids[i]=pts[i]
+                #centroids[i]=pts[i]
         self.set_pore_data(prop='vertices',data=all_verts)
-        self.set_pore_data(prop='centroid',data=centroids)
-        self._add_throat_props()
+        #self.set_pore_data(prop='centroid',data=centroids)
+        #self._add_throat_props()
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         
     def _add_labels(self):
@@ -414,7 +414,7 @@ class Delaunay(GenericNetwork):
         normals = coords[connections[:,0]]-coords[connections[:,1]]
         area = sp.ndarray(len(connections),dtype=object)
         perimeter = sp.ndarray(len(connections),dtype=object)
-        centroids = sp.ndarray(len(connections),dtype=object)
+        #centroids = sp.ndarray(len(connections),dtype=object)
         offset_verts = sp.ndarray(len(connections),dtype=object)
         for i,throat_pair in enumerate(connections):
             shared_verts = []
@@ -428,13 +428,13 @@ class Delaunay(GenericNetwork):
             if len(shared_verts) >=3:
                 shared_verts = np.asarray(shared_verts)
                 area[i],perimeter[i],offset_verts[i] = self._get_throat_geom(shared_verts,normals[i])
-                centroids[i]=self._centroid(shared_verts)
+                #centroids[i]=self._centroid(shared_verts)
             else:
                 area[i]=0.0
 
         self.set_data(prop='area',throats='all',data=area)
         self.set_data(prop='perimeter',throats='all',data=perimeter)
-        self.set_throat_data(prop='centroid',data=centroids)
+        #self.set_throat_data(prop='centroid',data=centroids)
         self.set_throat_data(prop='offset_verts',data=offset_verts)
         " Temporary Code to remove the smallest 2% of throat area connections "
         " This can be used in algorithms to ignore certain connections if required - like in the range of capillary pressures in OP "

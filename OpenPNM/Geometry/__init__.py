@@ -84,6 +84,8 @@ from .__Voronoi__ import Voronoi
 from . import pore_diameter
 from . import pore_seed
 from . import pore_volume
+from . import pore_centroid
+from . import throat_centroid
 from . import throat_diameter
 from . import throat_length
 from . import throat_seed
