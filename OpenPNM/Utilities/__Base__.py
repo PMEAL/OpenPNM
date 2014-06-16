@@ -136,7 +136,7 @@ class Base(object):
                         objs.append(phys._fluid)
             return objs
             
-    def delete_object(self,name):
+    def delete_object(self,obj=None,obj_name=''):
         r'''
         Remove specific objects from a network model
         
@@ -160,16 +160,31 @@ class Base(object):
             net = self
         else:
             net = self._net
+        if obj_name != '':
+            obj = self.find_object(obj_name=obj_name)
         #Get object type, so we know where to delete from
-        temp = self.find_object(obj_name=name)
-        obj_type = temp.__class__.__module__.split('.')[1]
+        obj_type = obj.__class__.__module__.split('.')[1]
         if obj_type == 'Geometry':
-            for geom in net._geometries:
-                if geom.name == name:
-                    for phys in geom._physics:
-                        phys._geometry = None
-                    net._geometries.remove(geom)
-                    del geom
+            for phys in obj._physics:
+                #Remove geometry from physics
+                phys._geometry = None
+                phys._fluid._physics.remove(phys)
+                obj._physics.remove(phys)
+            #Remove geometry from network
+            net._geometries.remove(obj)
+        elif obj_type == 'Fluids':
+            for fluid in net._fluids:
+                if fluid == obj:
+                    phys._fluid = None
+                net._flud.remove(fluid)
+                del fluid
+        elif obj_type == 'Physics':
+            for fluid in net._fluids:
+                for physics in fluid._physics:
+                    if physics == obj:
+                         pass
+                net._fluid.remove(fluid)
+                del fluid
                     
     def _set_name(self,name):
         obj_type = self.__module__.split('.')[1]

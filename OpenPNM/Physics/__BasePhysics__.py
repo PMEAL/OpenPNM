@@ -43,7 +43,7 @@ class BasePhysics(GenericPhysics):
     """
 
     def __init__(self,network,fluid,geometry,name=None,**kwargs):
-        super(BasePhysics,self).__init__(network=network,fluid=fluid,geometry=geometry)
+        super(BasePhysics,self).__init__(network=network,fluid=fluid,geometry=geometry,name=name)
         self._logger.debug("Construct class")
         temp = [item.split('.')[1] for item in fluid.props()]
         if 'viscosity' in temp:
