@@ -78,17 +78,7 @@ Fickian_alg.update()
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-<<<<<<< HEAD
-OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water,pn],network=pn)
 
-=======
 #OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
 vis = OpenPNM.Visualization.Vtp_class()
 vis.write(network=pn,fluids=[air,water])
->>>>>>> upstream/feature/NewPNM
-
-
-
-
-
-
