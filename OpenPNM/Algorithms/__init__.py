@@ -34,6 +34,7 @@ This submodule contains algorithms for performing simulations on pore networks
 
 from .__GenericAlgorithm__ import GenericAlgorithm
 from .__InvasionPercolation__ import InvasionPercolation
+from .__InvasionPercolationForImbibition__ import InvasionPercolationForImbibition
 from .__OrdinaryPercolation__ import OrdinaryPercolation
 from .__FickianDiffusion__ import FickianDiffusion
 from .__StokesFlow__ import StokesFlow

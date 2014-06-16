@@ -33,6 +33,8 @@ class Air(GenericFluid):
         self.add_property(prop='diffusivity',model='Fuller',MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
         self.add_property(prop='viscosity',model='constant',value=1.9e-5)
         self.add_property(prop='molar_density',model='ideal_gas',R=8.314)
+        self.add_property(prop='surface_tension',model='constant',value=0.072)
+        self.add_property(prop='contact_angle',model='constant',value=70)
         self.regenerate()
 
 if __name__ =="__main__":

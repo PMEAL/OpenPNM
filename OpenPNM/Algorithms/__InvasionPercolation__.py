@@ -26,13 +26,23 @@ class InvasionPercolation(GenericAlgorithm):
 
     def __init__(self,**kwords):
         r"""
-        Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
+        Invasion percolation with cluster growth timing - Class to run IP algorithm on constructed networks
 
         Parameters
         ----------
         network : Descendent of OpenPNM.Network.GenericNetwork
             A valid network for this algorithm
-        name : name of this algorithm
+        name : string
+            The name this algorithm will go by
+        loglevel : int (30)
+            Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+
+        Input Network
+        -------------
+        The algorithm expects a pore network with the following pore properties:
+            volume, diameter, numbering, coords, type
+        and throat properties:
+            diameter, numbering, connections, type
 
         """
         super(InvasionPercolation,self).__init__(**kwords)
@@ -41,7 +51,8 @@ class InvasionPercolation(GenericAlgorithm):
     def run(self,**params):
         r"""
 
-        Invasion_Percolation with cluster growth timing - Class to run IP algorithm on constructed networks
+
+        Invasion percolation with cluster growth timing - Class to run IP algorithm on constructed networks
 
         Parameters
         ----------
@@ -53,19 +64,31 @@ class InvasionPercolation(GenericAlgorithm):
             list of inlet nodes
         outlets : list of integers (default: [-1])
             list of outlet nodes
-        end_condition : string('breaktrhough')
+        end_condition : string('breakthrough')
             choice between 'breakthrough' and 'total'
-
-        Input Network
-        -------------
-        The algorithm expects a pore network with the following pore properties:
-            volume, diameter, numbering, coords, type
-        and throat properties:
-            diameter, numbering, connections, type
-
+        capillary_pressure : string('capillary_pressure')
+            name given to throat capillary pressure property
+        pore_volume_name : string('volume')
+            name given to pore volume property
+        throat_diameter_name : string('diameter')
+            name given to throat diameter property
+        timing : string ('ON')
+            turns volume and flowrate calculations 'ON' or 'OFF'
+        inlet_flow : float (1)
+            m3/s for each cluster (affects timestamp of pore filling)
+        report : int (20)
+            percentage multiple at which a progress report is printed
+        
+            
+        Input Fluids
+        ------------
+        The algorithm expects an invading fluid with the following throat properties:
+            contact_angle, surface_tension
+        and some defending fluid
+            
         Output
         ------
-        The invading fluid automatically gains pore conditions ::
+        The invading fluid automatically gains pore data ::
 
             occupancy       : 0 for univaded, 1 for invaded
             IP_inv_final    : 0 for uninvaded, merged cluster number for invaded
@@ -73,7 +96,7 @@ class InvasionPercolation(GenericAlgorithm):
             IP_inv_seq      : 0 for uninvaded, simulation step for invaded
             IP_inv_time     : 0 for uninvaded, simulation time for invaded
 
-        and throat conditions ::
+        and throat data ::
 
             occupancy       : 0 for univaded, 1 for invaded
             IP_inv          : 0 for uninvaded, merged cluster number for invaded
@@ -82,15 +105,13 @@ class InvasionPercolation(GenericAlgorithm):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Geometry.Cubic().generate(domain_size=[3,3,3], lattice_spacing=[1.0], btype=[0,0,0])
         >>> IP_timing = InvasionPercolation(net=pn,timing='ON')
+        >>> IP_timing.run(invading_fluid=air,defending_fluid=water,inlets=inlets,outlets=outlets)
 
         Suggested Improvements ::
 
-            a) Allow input of cluster flow-rates (condensation rates)
-            b) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
-            c) Allow for a non-linear relationship between pressure and throat-cap volume.
+            a) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
+            b) Allow for a non-linear relationship between pressure and throat-cap volume.
 
         """
         super(InvasionPercolation,self).run(**params)
@@ -103,18 +124,16 @@ class InvasionPercolation(GenericAlgorithm):
                 end_condition='breakthrough',
                 capillary_pressure='capillary_pressure',
                 pore_volume_name='volume',
-                pore_diameter_name='diameter',
-                throat_volume_name='volume',
-                throat_diameter_name = 'diameter',               
+                throat_diameter_name='diameter',               
                 timing='ON',
-                flowrate=1e-12, #default flowrate is 1 nanoliter/sec/cluster
+                inlet_flow=1, #default flowrate is 1 nanoliter/sec/cluster
                 report=20):
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets
         self._outlets = outlets
         if end_condition=='total':
             self._brkevent = []
-        self._flowrate = flowrate
+        self._inlet_flow = inlet_flow
 #        if defending_fluid == 'auto':
 #            try:defending_fluid = invading_fluid.partner
 #            except: self._logger.error("invading_fluid.partner does not exist. Please specify defending fluid")
@@ -137,8 +156,6 @@ class InvasionPercolation(GenericAlgorithm):
         self._timing = timing=='ON'
         self._capillary_pressure_name = capillary_pressure
         self._pore_volume_name = pore_volume_name
-        self._pore_diameter_name = pore_diameter_name
-        self._throat_volume_name = throat_volume_name
         self._throat_diameter_name = throat_diameter_name 
         
         
@@ -191,7 +208,7 @@ class InvasionPercolation(GenericAlgorithm):
         # Storage for cluster information
         self._cluster_data = {}
         if self._timing:
-            self._cluster_data['flow_rate'] = np.ones((self._clusterCount),dtype=np.float64)*self._flowrate
+            self._cluster_data['flow_rate'] = np.ones((self._clusterCount),dtype=np.float64)*self._inlet_flow
             self._cluster_data['haines_pressure'] = np.zeros((self._clusterCount),dtype=np.float64)
             self._cluster_data['haines_time'] = np.zeros((self._clusterCount),dtype=np.float64)
             self._cluster_data['vol_coef'] = np.zeros((self._clusterCount),dtype=np.float64)
