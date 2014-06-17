@@ -215,13 +215,16 @@ class Base(object):
         global startTime_for_tictoc
         startTime_for_tictoc = time.time()
 
-    def toc(self):
+    def toc(self,quiet=False):
         r'''
         Homemade version of matlab tic and toc function, tic starts or resets 
         the clock, toc reports the time since the last call of tic.
         '''
         if 'startTime_for_tictoc' in globals():
-            print("Elapsed time is " + str(time.time() - startTime_for_tictoc) + " seconds.")
+            t = time.time() - startTime_for_tictoc
+            if quiet == False:
+                print('Elapsed time in seconds: ', t)
+            return t
         else:
             print("Toc: start time not set")
             
