@@ -568,13 +568,21 @@ class Tools(Base,dict):
             temp = {}
             for item in props:
                 if item.split('.')[0] == 'pore':
-                    temp.update({item:self[item][pores]})
+                    if sp.shape(self[item])[0] == 1: #is scalar
+                        vals = sp.ones((sp.shape(pores)[0],))*self[item]
+                    else:
+                        vals = self[item][pores]
+                    temp.update({item:vals})
             return temp
         elif throats != []:
             temp = {}
             for item in props:
                 if item.split('.')[0] == 'throat':
-                    temp.update({item:self[item][throats]})
+                    if sp.shape(self[item])[0] == 1: #is scalar
+                        vals = sp.ones((sp.shape(throats)[0],))*self[item]
+                    else:
+                        vals = self[item][throats]
+                    temp.update({item:vals})
             return temp
             
     def _get_labels(self,element='',locations=[],mode='union'):
