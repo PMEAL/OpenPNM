@@ -188,21 +188,25 @@ class OrdinaryPercolation(GenericAlgorithm):
         as determined by the OP algorithm
 
         """
-        #Apply occupancy to invading fluid
+        #Apply invasion pressure to invading fluid
         p_inv = self.get_pore_data(prop='inv_Pc')
         self._fluid_inv.set_pore_data(prop='inv_Pc',data=p_inv)
-        t_inv = self.get_throat_data(prop='inv_Pc')
+        t_inv = self.get_throat_data(prop='inv_Pc')    
         self._fluid_inv.set_throat_data(prop='inv_Pc',data=t_inv)
         #Find invasion sequence values (to correspond with IP algorithm)
         p_seq = self.get_pore_data(prop='inv_seq')
         self._fluid_inv.set_pore_data(prop='inv_seq',data=p_seq)
         t_seq = self.get_throat_data(prop='inv_seq')
         self._fluid_inv.set_throat_data(prop='inv_seq',data=t_seq)
-        #Remove temporary arrays and adjacency matrices
+        
+        
         p_inv = self.get_pore_data(prop='inv_Pc')<=Pc
         t_inv = self.get_throat_data(prop='inv_Pc')<=Pc
-        self._fluid_inv.set_pore_data(prop=occupancy,data=p_inv)
-        self._fluid_inv.set_throat_data(prop=occupancy,data=t_inv)
+        #Apply occupancy to invading fluid
+        temp = sp.array(p_inv,dtype=sp.float64,ndmin=1)
+        self._fluid_inv.set_pore_data(prop=occupancy,data=temp)
+        temp = sp.array(t_inv,dtype=sp.float64,ndmin=1)
+        self._fluid_inv.set_throat_data(prop=occupancy,data=temp)
         #Apply occupancy to defending fluid
         temp = sp.array(~p_inv,dtype=sp.float64,ndmin=1)
         self._fluid_def.set_pore_data(prop=occupancy,data=temp)
