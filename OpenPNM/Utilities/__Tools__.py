@@ -550,6 +550,14 @@ class Tools(Base,dict):
         See Also
         --------
         labels
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.props()
+        ['pore.coords', 'throat.conns']
+        >>> pn.props('pore')
+        ['pore.coords']
         '''
         
         props = self._get_props(mode=mode)
@@ -605,12 +613,14 @@ class Tools(Base,dict):
         if mode == 'count':
             return sp.sum(arr,axis=1)
         if mode == 'union':
-            temp = list(labels[sp.sum(arr,axis=0)>0])
-            return temp
+            temp = labels[sp.sum(arr,axis=0)>0]
+            return temp.tolist()
         if mode == 'intersection':
-            return labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
+            temp = labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
+            return temp.tolist()
         if mode == 'difference':
-            return labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
+            temp = labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
+            return temp.tolist()
         if mode == 'mask':
             return arr
         if mode == 'none':
@@ -645,6 +655,13 @@ class Tools(Base,dict):
             
             * 'mask' : returns an N x Lt array, where each row corresponds to a pore (or throat) location, and each column contains the truth value for the existance of labels as returned from labels(pores='all',mode='union')).
             
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.labels(pores=[0,1,5,6])
+        ['pore.all', 'pore.bottom', 'pore.front', 'pore.internal', 'pore.left']
+        >>> pn.labels(pores=[0,1,5,6],mode='intersection')
+        ['pore.all', 'pore.bottom', 'pore.internal']
         '''
         if (pores == []) and (throats == []):
             if element == '':
@@ -683,6 +700,12 @@ class Tools(Base,dict):
             
         label : string
             The label to apply as a filter
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
+        array([0,1])
         '''
         if pores != []:
             label = 'pore.'+label.split('.')[-1]
@@ -941,7 +964,7 @@ class Tools(Base,dict):
             
         See Also
         --------
-        num_throats
+        num_throats, count
             
         Examples
         --------
@@ -992,7 +1015,7 @@ class Tools(Base,dict):
             
         See Also
         --------
-        num_pores
+        num_pores, count
 
         Examples
         --------
@@ -1020,6 +1043,28 @@ class Tools(Base,dict):
         r'''
         Returns a dictionary containing the number of pores and throats in 
         the network, stored under the keys 'pore' or 'throat'
+        
+        Parameters
+        ----------
+        element : string, optional
+            Can be either 'pore' or 'throat', which specifies which count to return.
+            
+        Returns
+        -------
+        A dictionary containing the number of pores and throats under the 
+        'pore' and 'throat' key respectively.  
+        
+        See Also
+        --------
+        num_pores, num_throats
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.count()
+        {'pore': 125, 'throat': 300}
+        >>> pn.count('pore')
+        125
         '''
         temp = {}
         temp['pore'] = self.num_pores()
@@ -1028,47 +1073,29 @@ class Tools(Base,dict):
             temp = temp[element]
         return temp
         
-    def get_result(self,alg_obj,**kwargs):
+    def data_health(self,element='',props=[],quiet=False):
         r'''
-        This method invokes the update method on the given OpenPNM Algorithm object
+        Check the health of pore and throat data arrays.  
         
         Parameters
         ----------
-        alg_obj : OpenPNM Algorithm object
+        element : string, optional
+            Can be either 'pore' or 'throat', which will limit the checks to 
+            only those data arrays.
+        props : list of pore (or throat) properties, optional
+            If given, will limit the health checks to only the specfied
+            properties.  Also useful for checking existance.
+        quiet : bool, optional
+            By default this method will output a summary of the health check.
+            This can be disabled by setting quiet to False.
+            
+        Returns
+        -------
+        Returns a True if all check pass, and False if any checks fail.  This
+        is ideal for programatically checking data integrity prior to running
+        an algorithm.
         
-        Notes
-        -----
-        For specific details refer to the `update` of the algorithm.
         '''
-        alg_obj.update(**kwargs)
-
-    def _check_health(self,element='',props=[]):
-        r'''
-        '''
-        success = 1
-        if type(props) == str: 
-            props = [props]
-        if props != []:
-            props = props
-        else:
-            props = self.props(element)
-        for item in props:
-            #Make sure pore or throat is present on item name
-            item = item.split('.')[-1]
-            item = element + '.' + item
-            try: 
-                temp = self[item]
-                if sp.sum(sp.isnan(temp)) > 0:
-                    self._logger.error('Nans found in: '+item)
-                    success = 0
-                else: self._logger.info('Checks for '+element+' property '+item+': passed successfully.')
-            except:
-                self._logger.error(element+' property '+item+': not found.')
-                success = 0
-        if success == 0:   self._logger.error('Problem found in checking '+element+' properties.')
-        return success
-        
-    def data_health(self,element='',props=[]):
         health = {}
         flag = True
         if props == []:
@@ -1089,11 +1116,13 @@ class Tools(Base,dict):
             else:
                 health[item] = 'Wrong Length'
                 flag = False
-        pprint.pprint(health)
+        if quiet == False:
+            pprint.pprint(health)
         return flag
             
     def check_pore_health(self,props=[]):
         r'''
+        This method is deprecated, use data_health instead
         '''
         if props != []:
             if type(props) == str:
@@ -1107,6 +1136,7 @@ class Tools(Base,dict):
         
     def check_throat_health(self,props=[]):
         r'''
+        This method is deprecated, use data_health instead
         '''
         if props != []:
             if type(props) == str:
