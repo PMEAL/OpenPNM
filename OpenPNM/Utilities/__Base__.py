@@ -7,6 +7,7 @@ import sys, os, string, random, time
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(1, parent_dir)
 import OpenPNM
+import scipy as sp
 import scipy.constants
 import logging as _logging
 import time
@@ -228,7 +229,41 @@ class Base(object):
         else:
             print("Toc: start time not set")
             
+    def save_object(self,filename):
+        r'''
+        '''
+        temp = filename.split('.')[0]
+        temp = temp+'.npz'
+        sp.savez_compressed(temp,**self)
+        
+            
 
             
 if __name__ == '__main__':
     pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
