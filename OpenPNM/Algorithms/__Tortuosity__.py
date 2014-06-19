@@ -64,9 +64,8 @@ class Tortuosity(GenericAlgorithm):
     def run(self,fluid=None):
         r'''
         '''
-        self._logger.warning("This algorithm can take some time. \
-        Use the estimate_time method to check time requirements for present network.")
-        graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],sprsfmt='csr')
+        self._logger.warning('This algorithm can take some time...')
+        graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],prop='temp',sprsfmt='csr')
         
         if fluid != None:
             self._fluid = fluid
