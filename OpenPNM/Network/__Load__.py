@@ -1,8 +1,7 @@
 """
-module __Cubic__: Generate simple cubic networks
+module __Load__: Load saved network data
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
 
 """
 
@@ -13,33 +12,29 @@ if sys.path[1] != parent_dir:
 import OpenPNM
 
 import scipy as sp
-import numpy as np
-import scipy.stats as spst
-import scipy.spatial as sptl
-import itertools as itr
 from OpenPNM.Network import GenericNetwork
 
 
 class Load(GenericNetwork):
     r"""
-    This class contains the methods for creating a *Cubic* network topology.  
-    To invoke the actual generation it is necessary to run the `generate` method.
+    This class loads data stored in an NPZ file from a previously saved
+    network
 
     Parameters
     ----------
+    filename : string
+        The file name containing the into to be imported
+
     name : string
         A unique name for the network
 
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-        
-    loggername : string
-        Overwrite the name of the logger, which defaults to the class name
-
     Examples
     --------
-    >>> pn = OpenPNM.Network.Cubic()
-    >>> pn.generate(lattice_spacing=[1],divisions=[5,5,5],add_boundaries=False)
+    >>> pn = OpenPNM.Network.Load(name='testnet',filename='test.npz')
+    >>> pn.name
+    'testnet'
+    >>> pn.num_pores()
+    10400
 
     """
 
@@ -52,12 +47,7 @@ class Load(GenericNetwork):
         a = sp.load(temp)
         for item in a:
             self.update({item:a[item]})
-
-
-
-
-
         
 if __name__ == '__main__':
-    pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(lattice_spacing=[1.0],domain_size=[3,3,3])
+    pn = OpenPNM.Network.Load('test.npz')
     print(pn.name)
