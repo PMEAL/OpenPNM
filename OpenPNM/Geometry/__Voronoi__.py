@@ -37,16 +37,15 @@ class Voronoi(GenericGeometry):
         """
         super(Voronoi,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        self._add_throat_props() # This sets the key throat data for calculating pore and throat properties later
+        self._add_throat_props(radius=2e-06) # This sets the key throat data for calculating pore and throat properties later
         self.add_property(prop='pore_seed',model='random')
         self.add_property(prop='throat_seed',model='neighbor_min')
         self.add_property(prop='pore_volume',model='voronoi') # Volume must come before diameter
         self.add_property(prop='pore_diameter',model='voronoi')
         self.add_property(prop='pore_centroid',model='voronoi')
-        " Throat must come before Pore to get the offset vertices "
         self.add_property(prop='throat_diameter',model='voronoi')
         self.add_property(prop='throat_centroid',model='voronoi')
-        self.add_property(prop='throat_length',model='constant',value=1e-06)
+        self.add_property(prop='throat_length',model='constant',value=2e-06)
         self.add_property(prop='throat_volume',model='voronoi')
         self.add_property(prop='throat_vector',model='pore_to_pore') # Not sure how to do this for centre to centre as we might need to split into two vectors
         self.add_property(prop='throat_surface_area',model='voronoi')
@@ -55,15 +54,8 @@ class Voronoi(GenericGeometry):
         r"""
         Main Loop         
         This method does all the throat properties for the voronoi cages 
-        including offseting the vertices surrounding each pore by an amount that
+        including calling the offseting routine which offsets the vertices surrounding each pore by an amount that
         replicates erroding the facet of each throat by the fibre radius 
-
-        For each connection or throat find the shared vertices
-        Rotate the vertices to align with the xy-plane and get rid of z-coordinate
-        Merge vertices within a certain distance of each other based on the range of data points
-        Compute the convex hull of the 2D points giving a set of simplices which define neighbouring vertices in a clockwise fashion
-        For each triplet calculate the offset position given the fibre radius
-        Translate back into 3D
         """
         connections = self._net['throat.conns']
         coords = self._net['pore.coords']
@@ -83,7 +75,7 @@ class Voronoi(GenericGeometry):
                         shared_verts.append(vert_a)
             if len(shared_verts) >=3:
                 shared_verts = np.asarray(shared_verts)
-                area[i],perimeter[i],offset_verts[i] = self._get_throat_geom(shared_verts,normals[i])
+                area[i],perimeter[i],offset_verts[i] = self._get_throat_geom(shared_verts,normals[i],radius)
             else:
                 area[i]=0.0
 
@@ -103,11 +95,31 @@ class Voronoi(GenericGeometry):
         if len(excluded_throats) > 0:
             self._net.trim(throats=excluded_throats)
     
-    def _get_throat_geom(self,verts,normal):
+    def _get_throat_geom(self,verts,normal,fibre_rad):
         r"""
         For one set of vertices defining a throat return the key properties
+        This is the main loop for calling other sub-routines.
+        General Method:
+            For each connection or throat defined by the shared vertices
+            Rotate the vertices to align with the xy-plane and get rid of z-coordinate
+            Compute the convex hull of the 2D points giving a set of simplices which define neighbouring vertices in a clockwise fashion
+            For each triplet calculate the offset position given the fibre radius
+            Check for overlapping vertices and ones that lie outside the original hull - recalculate position to offset from or ignore if all overlapping
+            Calculate Area and Perimeter if successfully generated offset vertices to replicate eroded throat            
+            Translate back into 3D
+        Any Errors encountered result in the throat area being zero and no vertices being passed back
+        These Errors are not coding mistakes but failures to obtain an eroded facet with non-zero area:
+        Error 1: Less than 3 vertices in the convex hull - Should never happen (unless 2 points are incredibly close together)
+        Error 2: The largest span of points is less than twice the fibre radius (i.e. throat will definitley be occluded)
+        Error 3: All the offset vertices overlap with at least one other vertex - Throat fully occluded
+        Error 4: Not enough offset vertices to continue - Throat fully occluded
+        Error 5: An offset vertex is outside the original set of points - Throat fully occluded
         """        
         z_axis = [0,0,1]
+        throat_area = 0.0
+        throat_perimeter = 0.0
+        output_offset = []
+        Error = 0
         " For boundaries some facets will already be aligned with the axis - if this is the case a rotation is unnecessary and could also cause problems "
         angle = tr.angle_between_vectors(normal,z_axis)
         if (angle==0.0)or(angle==np.pi):
@@ -121,52 +133,115 @@ class Voronoi(GenericGeometry):
         x = facet[:,0]
         y = facet[:,1]
         z = facet[:,2]
+        " Work out span of points and set axes scales to cover this and be equal in both dimensions "
+        x_range = x.max() - x.min()
+        y_range = y.max() - y.min()
+        if (x_range > y_range):
+            my_range = x_range
+        else:
+            my_range = y_range
         if (np.around(z.std(),3)!=0.000):
             print("Rotation failed")
         facet_coords_2D = np.column_stack((x,y))
         hull = ConvexHull(facet_coords_2D)
         verts_2D = facet_coords_2D[hull.vertices]
-        fused_verts=self._fuse_verts(verts_2D)
-        if len(fused_verts) <3:
-            #we fused too many
-            fused_verts=self._fuse_verts(verts_2D,0.0025)
-        offset = []
-        fibre_rad = 3e-06
-        for i,vert in enumerate(fused_verts):
-            " Collect three adjacent points and compute the offset of the first "
-            triplet = (vert, np.roll(fused_verts,-1,axis=0)[i],np.roll(fused_verts,1,axis=0)[i])
-            offset.append(self._offset_vertex(triplet,fibre_rad))
-        offset = np.asarray(offset)
-    
-        original_area = self._PolyArea2D(verts_2D)            
-        all_points = np.concatenate((verts_2D,offset),axis=0)
-        try:
-            total_hull = ConvexHull(all_points,qhull_options='Pp') #ignores very small angles
-            total_area = self._PolyArea2D(all_points[total_hull.vertices])
-        except sp.spatial.qhull.QhullError:
-            print(all_points)
-            total_area =999
-
-        if (total_area>original_area): # Throat is fully occluded
-            throat_area = 0.0
-            throat_perimeter = 0.0
-            output_offset = []
+        offset = self._outer_offset(verts_2D,fibre_rad)
+        " At this point we may have overlapping areas for which we need to offset from a new point "
+        overlap_array,sweep_radius,line_points = self._set_overlap(verts_2D,offset)
+        temp_vert_list=[]
+        #new_vert_list=[]
+        if (len(verts_2D) <3):
+            "Error: Fused Too Many Verts"
+            Error = 1
+        elif(my_range < fibre_rad*2):
+            "Error: Facet Too small to Erode"
+            Error = 2
         else:
-            offset_hull = ConvexHull(offset)
-            offset_verts_2D = offset[offset_hull.vertices]
-            throat_area = self._PolyArea2D(offset_verts_2D)
-            throat_perimeter = self._PolyPerimeter2D(offset_verts_2D)
-            " Make 3D again in rotated plane "
-            offset_verts_3D = np.column_stack((offset_verts_2D,z[0:len(offset_verts_2D)]))
-            " Get matrix to un-rotate the co-ordinates back to the original orientation if we rotated in the first place"
-            if (rotate_input):
-                M1 = tr.inverse_matrix(M)
-                " Unrotate the offset coordinates "
-                output_offset = np.dot(offset_verts_3D,M1[:3,:3].T)
+            if overlap_array.any()==False:
+                " If no overlaps don't worry"
+                "no overlaps"
+            elif self._all_overlap(overlap_array)==True:
+                " If all overlaps then throat is fully occluded"
+                "Error: Throat fully occluded"
+                Error = 3
             else:
-                output_offset = offset_verts_3D
+                " If one or two sets of overlaps exist and at least one vertex is not overlapped then we need to do a bit more work "
+                " Do some linalg to find a new point to offset from saving un-overlapped verts and newly created verts in a temporary list "
+ 
+                for i in range(np.shape(line_points)[0]):
+                    if np.sum(overlap_array[i])==0.0:
+                        temp_vert_list.append(verts_2D[i])
+                    else:
+                        my_lines=[]
+                        for j in range(np.shape(line_points)[0]):
+                        
+                            if overlap_array[i][j] ==1 and overlap_array[j][i]==1:
+                                list_a = line_points[i][j]
+                                list_b = line_points[j][i]
+                                my_lines = self._symmetric_difference(list_a,list_b)
+ 
+                        my_lines=np.asarray(my_lines)
+ 
+                        if len(my_lines)==2:
+                            try:
+                                quad_points=verts_2D[my_lines]
+                            except IndexError:
+                                print(verts_2D, my_lines)
+                            my_new_point = self._new_point(quad_points)
+                            temp_vert_list.append(my_new_point)
+                            #new_vert_list.append(my_new_point)
+                        
+                verts_2D=np.asarray(self._unique_list(temp_vert_list))
+                #new_vert_list=np.asarray(self._unique_list(new_vert_list))
+                if len(verts_2D) >=3:
+                    offset = self._outer_offset(verts_2D,fibre_rad)
+                    overlap_array,sweep_radius,line_points = self._set_overlap(verts_2D,offset)
+                else:
+                    Error = 4
+
+        if len(offset) >= 3 and Error == 0:    
+            " Now also check whether any of the offset points lie outside the original convex hull "
+            original_area = self._PolyArea2D(verts_2D)            
+            all_points = np.concatenate((verts_2D,offset),axis=0)
+            try:
+                total_hull = ConvexHull(all_points,qhull_options='Pp') #ignores very small angles
+                total_area = self._PolyArea2D(all_points[total_hull.vertices])
+            except sp.spatial.qhull.QhullError:
+                print(all_points)
+                total_area =999
+
+            if (total_area>original_area): # Throat is fully occluded
+                " Don't do anything "
+                Error = 5
+            else:
+                offset_hull = ConvexHull(offset)
+                offset_verts_2D = offset[offset_hull.vertices]
+                throat_area = self._PolyArea2D(offset_verts_2D)
+                throat_perimeter = self._PolyPerimeter2D(offset_verts_2D)
+                " Make 3D again in rotated plane "
+                offset_verts_3D = np.column_stack((offset_verts_2D,z[0:len(offset_verts_2D)]))
+                " Get matrix to un-rotate the co-ordinates back to the original orientation if we rotated in the first place"
+                if (rotate_input):
+                    M1 = tr.inverse_matrix(M)
+                    " Unrotate the offset coordinates "
+                    output_offset = np.dot(offset_verts_3D,M1[:3,:3].T)
+                else:
+                    output_offset = offset_verts_3D
 
         return throat_area, throat_perimeter, output_offset
+    
+    def _outer_offset(self,verts,fibre_rad):
+        r"""
+        Routine to loop through all verts and calculate offset position based on neighbours either side. Verts must be in hull order
+        """    
+        offset = []
+        for i,vert in enumerate(verts):
+            " Collect three adjacent points and compute the offset of the first "
+            triplet = (vert, np.roll(verts,-1,axis=0)[i],np.roll(verts,1,axis=0)[i])
+            offset.append(self._offset_vertex(triplet,fibre_rad))
+        offset = np.asarray(offset)
+        
+        return offset    
     
     def _offset_vertex(self,points,rad = 0.01):
         " We are passed in a set of 3 points forming vertices of two adjoining simplexes of the convex hull of a voronoi facet "
@@ -211,8 +286,14 @@ class Voronoi(GenericGeometry):
                 else:
                     theta = q2
     
-        x = rad*np.cos(alpha+theta)/np.sin(alpha)
-        y = rad*np.sin(alpha+theta)/np.sin(alpha)
+        if alpha == 0: # this may cause problems in terms of which way to offset!!!
+            #x = rad*np.cos(theta)
+            #y = rad*np.sin(theta)
+            x=0
+            y=0
+        else:
+            x = rad*np.cos(alpha+theta)/np.sin(alpha)
+            y = rad*np.sin(alpha+theta)/np.sin(alpha)
 
         "Add the midpoint back in"
         output = [x+p0[0],y+p0[1]]    
@@ -221,13 +302,14 @@ class Voronoi(GenericGeometry):
 
     def _dist2(self,p1, p2):
         r"""
-        Pythagoras
+        Pythagoras to compute the square of the distance between two points (in 2D)
         """
         return (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2
 
     def _fuse(self,points, d):
         r"""
         Fuse points together wihin a certain range
+        !!!! Not used anymore - superceded by line methods !!!!
         """
         ret = []
         d2 = d * d
@@ -252,6 +334,7 @@ class Voronoi(GenericGeometry):
     def _fuse_verts(self,verts,percentage=0.05):
         r"""
         Work out the span of the points and therefore the range for fusing them together then call fuse
+        !!!! Not used anymore - superceded by line methods !!!!
         """
         #Work out largest span
         x_span = max(verts[:,0])- min(verts[:,0])
@@ -332,14 +415,177 @@ class Voronoi(GenericGeometry):
         For a given list (of points) remove any duplicates
         """
         output_list = []
+        dim = np.shape(input_list)[1]
         for i in input_list:
             match=False
             for j in output_list:
-                if (i[0]==j[0]) and (i[1]==j[1]) and (i[2]==j[2]):
-                    match=True
+                if dim == 3:
+                    if (i[0]==j[0]) and (i[1]==j[1]) and (i[2]==j[2]):
+                        match=True
+                elif dim == 2:
+                    if (i[0]==j[0]) and (i[1]==j[1]):
+                        match=True
+                elif dim ==1:
+                    if (i[0]==j[0]):
+                        match=True
             if match==False:
                 output_list.append(i)
         return output_list
+        
+    def _symmetric_difference(self,list_a,list_b):
+        r"""
+        Return the combination of two lists without common elements (necessary as sets cannot contain mutable objects)
+        """
+        sym_diff=[]
+        sorted_list_a = np.sort(list_a)
+        sorted_list_b = np.sort(list_b)
+        " Add elements in list a if not in list b "
+        for element_a in sorted_list_a:
+            match = False
+            for element_b in sorted_list_b:
+                if all(element_a==element_b):
+                    match = True
+            if match==False:
+                sym_diff.append(element_a)
+        " Add elements in list b if not in list a "
+        for element_b in sorted_list_b:
+            match = False
+            for element_a in sorted_list_a:
+                if all(element_a==element_b):
+                    match = True
+            if match==False:
+                sym_diff.append(element_b)
+        return sym_diff
+        
+    def _new_point(self,pairs):
+        " Passed 2 pairs of points defining lines either side of overlapped offset vertices "
+        " need to calculate the new point to offset from given the orientation of the outer fibres "
+
+        m1,c1 = self._line_equation(pairs[0])
+        m2,c2 = self._line_equation(pairs[1])
+
+        if (m1 == np.inf):
+            "line1 is a straight line x=c1"
+            x=c1
+            y=(m2*c1)+c2
+        elif (m2 == np.inf):
+            "line2 is a straight line x=c2"
+            x=c2
+            y=(m1*c2)+c1
+        else:
+            x=(c2-c1)/(m1-m2)
+            y=(m1*c2 - m2*c1)/(m1-m2)
+
+        return x,y
+    
+    def _line_equation(self,points):
+        r"""
+        Return the gradient and x intercept of a straight line given 2 points
+        """
+        x_coords, y_coords = zip(*points)
+        dy = y_coords[1]-y_coords[0]
+        dx = x_coords[1]-x_coords[0]
+        if dx==0:
+            m=np.inf
+            c=x_coords[1]
+        else:
+            m=dy/dx
+            c=y_coords[1] - m*x_coords[1]
+
+        return m,c
+        
+    def _set_overlap(self,verts,offset):
+        r"""
+        Given a set of vertices and a set of offset vertices, evaluate whether any of the offset vertices overlap
+        This is then used to recalculate points from which to offset
+        """    
+        dim = len(verts)
+        overlap_array = np.zeros(shape=(dim,dim))
+        sweep_radius = np.zeros(len(verts))
+        for i,zone_centre in enumerate(verts):
+            sweep_radius[i] = np.sqrt(self._dist2(zone_centre,offset[i]))
+            for j,test_point in enumerate(offset):
+                test_radius = np.sqrt(self._dist2(zone_centre,test_point))
+                if (test_radius < sweep_radius[i]):
+                    overlap_array[i][j]=1
+                    overlap_array[j][i]=1 # Fill in both so that they are both recalculated later i overlapping j doesn't necessarily mean j overlaps i
+    
+        line_points=self._line_points(overlap_array)
+    
+        return overlap_array,sweep_radius,line_points
+
+    def _line_points(self,array):
+        r"""
+        We are passed a square array containing a list of overlap results. rows represent vertices and columns represent offset vertices
+        If an overlap occurs in the span between offset j and offset i then a 1 will result in [i][j]
+        As the vertices are in hull order and our aim is to create a new point from which to offset using connected fibres we want to
+        identify the correct points to use to define our lines
+        
+          e__________ d  
+           |        | c  
+           |       /     
+           |     /       
+           |   /         
+           |_/           
+           a b           
+        if we have 5 points in a hull a,b,c,d,e where a overlaps with b and c overlaps with d (and visa versa) the array will look like
+        [0,1,0,0,0]
+        [1,0,0,0,0]
+        [0,0,0,1,0]
+        [0,0,1,0,0]
+        [0,0,0,0,0]
+        
+        This means that c and d are within a fibre's width of each other and the line between them does not represent the fibre
+        Instead we want to extend the outer lines (bc and de) to see where they would meet and offset from this point.
+        Roll up and down to find the first unoverlapped index from which to start each line from then go back one to get the two
+        points to form a line.
+        """
+        dim=np.shape(array)[0]
+        index=range(dim)
+        line_points=np.ndarray(shape=[dim,dim],dtype=object)
+        for i in range(dim):
+            for j in range(dim):
+                if array[i][j]==1 and array[j][i]==1:
+                    " Roll forwards to find the first unoverlapped index"
+                    k=1                    
+                    while k < dim:
+                        if np.roll(array[i],-k,axis=0)[j]==0:
+                            break
+                        else:
+                            k+=1
+                    " Save the indices of the first unoverlapped index and the one before to create the line "
+                    forward_line = [np.roll(index,-k,axis=0)[j],np.roll(index,-(k-1),axis=0)[j]]
+                    forward_line.sort()
+                    " Roll backwards to find the first unoverlapped index "
+                    k=1
+                    while k < dim:
+                        if np.roll(array[i],k,axis=0)[j]==0:
+                            break
+                        else:
+                            k+=1
+                    " Save the indices of the first unoverlapped index and the one before to create the line "
+                    backward_line = [np.roll(index,k,axis=0)[j],np.roll(index,(k-1),axis=0)[j]]
+                    backward_line.sort()
+                    line_points[i][j]=(forward_line,backward_line)
+    
+        return line_points  
+        
+    def _all_overlap(self,array):
+        r""" 
+        Find out whether all offset vertices (columns) are overlapped by at least one other
+        If so then throat is fully occluded 
+        """
+        dim=np.shape(array)[0]
+        overlap=[False]*dim
+        all_overlap=False
+        for i in range(dim):
+            for j in range(dim):
+                if array[j][i]==1:
+                    overlap[i]=True
+        if sum(overlap)==dim:
+            all_overlap = True
+        
+        return all_overlap
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.Delaunay(name='test_net')
