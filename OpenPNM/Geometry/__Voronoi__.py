@@ -82,7 +82,7 @@ class Voronoi(GenericGeometry):
         self._net.set_data(prop='area',throats='all',data=area)
         self._net['throat.perimeter']=perimeter
         self._net['throat.offset_verts']=offset_verts
-        " Temporary Code to remove the smallest 2% of throat area connections "
+        " Temporary Code to remove throats with areas smaller than 1% of the mean value "
         " This can be used in algorithms to ignore certain connections if required - like in the range of capillary pressures in OP "
 
         average_area = sp.mean(area)
@@ -209,6 +209,7 @@ class Voronoi(GenericGeometry):
             except sp.spatial.qhull.QhullError:
                 print(all_points)
                 total_area =999
+            #total_area=0
 
             if (total_area>original_area): # Throat is fully occluded
                 " Don't do anything "
@@ -458,9 +459,10 @@ class Voronoi(GenericGeometry):
         return sym_diff
         
     def _new_point(self,pairs):
-        " Passed 2 pairs of points defining lines either side of overlapped offset vertices "
-        " need to calculate the new point to offset from given the orientation of the outer fibres "
-
+        r"""
+        Passed 2 pairs of points defining lines either side of overlapped offset vertices
+        need to calculate the new point to offset from given the orientation of the outer fibres
+        """
         m1,c1 = self._line_equation(pairs[0])
         m2,c2 = self._line_equation(pairs[1])
 
@@ -480,7 +482,7 @@ class Voronoi(GenericGeometry):
     
     def _line_equation(self,points):
         r"""
-        Return the gradient and x intercept of a straight line given 2 points
+        Return the gradient and y intercept of a straight line given 2 points
         """
         x_coords, y_coords = zip(*points)
         dy = y_coords[1]-y_coords[0]
