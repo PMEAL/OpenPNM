@@ -1106,15 +1106,19 @@ class Tools(Base,dict):
             if props[0].split('.')[0] not in ['pore','throat']:
                 self._logger.error('Properties must be either pore or throat')
         for item in props:
-            if sp.sum(sp.isnan(self[item])) > 0:
-                health[item] = 'Has NaNs'
-                flag = False
-            elif sp.shape(self[item])[0] == 1:
-                health[item] = 'Healthy Scalar'
-            elif sp.shape(self[item])[0] == self.count(item.split('.')[0]):
-                health[item] = 'Healthy Vector'
-            else:
-                health[item] = 'Wrong Length'
+            try: 
+                if sp.sum(sp.isnan(self[item])) > 0:
+                    health[item] = 'Has NaNs'
+                    flag = False
+                elif sp.shape(self[item])[0] == 1:
+                    health[item] = 'Healthy Scalar'
+                elif sp.shape(self[item])[0] == self.count(item.split('.')[0]):
+                    health[item] = 'Healthy Vector'
+                else:
+                    health[item] = 'Wrong Length'
+                    flag = False
+            except: 
+                health[item] = 'Does not exist'
                 flag = False
         if quiet == False:
             pprint.pprint(health)
