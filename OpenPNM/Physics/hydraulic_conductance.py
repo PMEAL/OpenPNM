@@ -53,10 +53,12 @@ def hagen_poiseuille(physics,
     pores = network.find_connected_pores(tind,flatten=0)
     #Find g for half of pore 1
     pdia = network.get_pore_data(prop=pore_diameter)
-    gp1 = 2.28*(pdia[pores[:,0]]/2)**4/(pdia[pores[:,0]]*mut)
+    #gp1 = 2.28*(pdia[pores[:,0]]/2)**4/(pdia[pores[:,0]]*mut)
+    gp1 = 2.28*(pdia[pores[:,0]])**3/(16*mut)
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = 2.28*(pdia[pores[:,1]]/2)**4/(pdia[pores[:,1]]*mut)
+    #gp2 = 2.28*(pdia[pores[:,1]]/2)**4/(pdia[pores[:,1]]*mut)
+    gp2 = 2.28*(pdia[pores[:,1]])**3/(16*mut)
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     tdia = network.get_throat_data(prop=throat_diameter)
