@@ -6,6 +6,8 @@ Drainange Curve on a cubic network example
 """
 import OpenPNM
 import matplotlib.pyplot as plt
+import time
+start_time = time.time()
 " Create Network Object "
 " Simple Cubic "
 #pn = OpenPNM.Network.Cubic(name='test').generate(lattice_spacing=[0.0001],divisions=[10,10,10],add_boundaries=True)
@@ -18,6 +20,8 @@ pn = OpenPNM.Network.Delaunay(name='del')
 pn.generate(num_pores=250, domain_size=[0.0001,0.0001,0.0001],add_boundaries=True) # Good pore stats 
 #pn.generate(num_pores=1000, domain_size=[0.0002,0.0002,0.0001],add_boundaries=True) # Good pore stats 
 #pn.generate(num_pores=4000, domain_size=[0.0004,0.0004,0.0001],add_boundaries=True) # Same as above on larger domain
+net_time = time.time()
+print("Network Generation time: " +str(net_time-start_time))
 #loc = pn.pores()
 " Create Geometry Object and invoke "
 #geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='basic')
@@ -27,12 +31,16 @@ geom = OpenPNM.Geometry.Voronoi(network=pn,loglevel=20,name='vor')  # instantiat
 " Add desired methods to geometry object "# All put inside new class
 geom.set_locations(pores=pn.pores('internal'),throats='all')
 pn.regenerate_geometries()
+geom_time = time.time()
+print("Geometry Generation time: " +str(geom_time-net_time))
 " Create Fluid Objects and invoke "
 air = OpenPNM.Fluids.Air(network=pn,loglevel=20,name='air')
 air.regenerate()
 water = OpenPNM.Fluids.Water(network=pn,loglevel=20,name='water')
 water.add_property(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
 water.regenerate()
+fluid_time = time.time()
+print("Fluid Generation time: " +str(fluid_time-geom_time))
 #==============================================================================
 '''Build Physics Objects'''
 #==============================================================================
@@ -48,6 +56,8 @@ phys_air.add_property(prop='diffusive_conductance', model='bulk_diffusion')
 
 #Use Network's Physics regeneration method
 pn.regenerate_physics()
+phys_time = time.time()
+print("Physics Generation time: " +str(phys_time-fluid_time))
 " Change contact angle "
 #water.add_method(prop='contact_angle',model='constant',value=100)
 #water.regenerate()
@@ -58,7 +68,8 @@ OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,network=pn)
 a = pn.pores(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=100)
 OP_1.run()
-
+alg_time = time.time()
+print("Algorithm Generation time: " +str(alg_time-phys_time))
 #OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,name='OP_1')
 #injection_sites = pn.get_pore_indices(labels='bottom')
 #OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=injection_sites,npts=20)
@@ -91,3 +102,7 @@ plt.figure()
 plt.title("Histogram of Throat Diameters")
 num,bins,patches = plt.hist(throat_d,bins=20,normed=1,histtype='bar',color='g')
 plt.show()
+output_time = time.time()
+print("Output Generation time: " +str(output_time-alg_time))
+print("Simulation time: " +str(time.time()-start_time))
+print("Np: " + str(pn.num_pores()) + ", Nt: " + str(pn.num_throats()))
