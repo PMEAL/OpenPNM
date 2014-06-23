@@ -145,7 +145,7 @@ class LinearSolver(GenericAlgorithm):
 
         try:            
             Dir_pores = self.pores('Dirichlet')
-            non_Dir_pores = self.pores('Dirichlet',mode='none')
+            non_Dir_pores = self.pores('Dirichlet',mode='difference')
             loc1 = sp.in1d(tpore1,non_Dir_pores)
             loc2 = sp.in1d(tpore2,non_Dir_pores)
         except: 
