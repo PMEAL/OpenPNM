@@ -63,7 +63,7 @@ class FickianDiffusion(LinearSolver):
         if success_2:    
             g = self._fluid.get_throat_data(prop=diffusive_conductance)
             s = self._fluid.get_throat_data(prop=occupancy)
-            self._conductance = g*s+g*(-s)/1e3
+            self._conductance = g*s+g*(s==0)/1e3
             setup_conductance = True
         try:    setup_conductance
         except: raise Exception('There is an error for the throat property: '+diffusive_conductance+'!')
