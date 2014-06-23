@@ -236,6 +236,7 @@ class OrdinaryPercolation(GenericAlgorithm):
           plt.plot(PcPoints,Snwp_p,'r.-')
           plt.plot(PcPoints,Snwp_t,'b.-')
           plt.xlim(xmin=0)
+          plt.show()
 
 if __name__ == '__main__':
     print('no tests yet')
