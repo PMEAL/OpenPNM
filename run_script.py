@@ -4,7 +4,7 @@ import scipy as sp
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(loglevel=20,name='net')
+pn = OpenPNM.Network.Cubic(loglevel=30,name='net')
 pn.generate(divisions=[20, 20, 20], lattice_spacing=[0.0001],add_boundaries=True)
 
 #==============================================================================
@@ -21,10 +21,10 @@ pn.regenerate_geometries()
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, loglevel=20,name='air')
+air = OpenPNM.Fluids.Air(network=pn, loglevel=30,name='air')
 air.apply_conditions(temperature=350, pressure=200000)
 
-water = OpenPNM.Fluids.Water(network=pn,loglevel=20,name='water')
+water = OpenPNM.Fluids.Water(network=pn,loglevel=30,name='water')
 water.add_property(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
 
 #Use Network's Fluid regeneration method
@@ -45,7 +45,7 @@ pn.regenerate_physics()
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=20,network=pn)
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=30,network=pn)
 a = pn.pores(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=20)
 OP_1.run()
@@ -54,7 +54,7 @@ OP_1.run()
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
-Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn)
+Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=30, network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.pores(labels=['top','front'],mode='intersection')
 Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
@@ -67,6 +67,7 @@ OP_1.update(Pc=11000)
 # Run simulation
 Fickian_alg.run(active_fluid=air)
 Fickian_alg.update()
+Fickian_alg.effective_diffusivity(fluid='air')
 
 #------------------------------------------------------------------------------
 '''Export to VTK'''
