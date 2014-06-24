@@ -1,5 +1,5 @@
 """
-module __GenericAlgorithm__: Base class to construct pore networks
+module __GenericAlgorithm__: Base class to build custom algorithms
 ==================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Algorithms/__init__.py' file.
