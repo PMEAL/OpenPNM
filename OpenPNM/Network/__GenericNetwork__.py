@@ -271,11 +271,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             returned. If flatten is False the returned array contains arrays
             of neighboring pores for each input pore, in the order they were 
             sent.
-        excl_self : bool, optional
-            If this is True (default) then the input pores are not included
-            in the returned list.  This option only applies when input pores
+        excl_self : bool, optional (Default is False)
+            If this is True then the input pores are not included in the 
+            returned list.  This option only applies when input pores
             are in fact neighbors to each other, otherwise they are not
-            part of the returned list.  
+            part of the returned list anyway.
         mode : string, optional
             Specifies which neighbors should be returned.  The options are: 
             
@@ -306,7 +306,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn.find_neighbor_pores(pores=[0,1],mode='union') #Find all neighbors, including selves
         array([ 0,  1,  2,  5,  6, 25, 26])
         """
-        #Count neighboring pores
         try:
             neighborPs = self._adjacency_matrix['lil']['conns'].rows[[pores]]
         except:
@@ -319,7 +318,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
             neighborPs = sp.hstack(neighborPs)
-            #neighborPs = sp.concatenate((neighborPs,pores))
+            neighborPs = sp.concatenate((neighborPs,pores))
             #Remove references to input pores and duplicates
             if mode == 'not_intersection':
                 neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)==1)[0])
@@ -801,6 +800,48 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             for i in sp.unique(Cs):
                 health.disconnected_clusters.append(sp.where(Cs==i)[0])
         return health
+        
+    def iscoplanar(self,pores):
+        r'''
+        Determines if given pores are coplanar with each other
+        
+        Parameters
+        ----------
+        pores : array_like
+            List of pores to check for coplanarity.  At least 3 points are 
+            required.
+            
+        Returns
+        -------
+        A boolean value of whether given points are colplanar or not
+        '''
+        pores = sp.array(pores,ndmin=1)
+        if sp.shape(pores)[0] < 3:
+            raise Exception('At least 3 input pores are required')
+        
+        Px = self['pore.coords'][pores,0]
+        Py = self['pore.coords'][pores,1]
+        Pz = self['pore.coords'][pores,2]
+        
+        #Do easy check first, for common coordinate
+        if sp.shape(sp.unique(Px))[0] == 1:
+            return True
+        if sp.shape(sp.unique(Py))[0] == 1:
+            return True
+        if sp.shape(sp.unique(Pz))[0] == 1:
+            return True
+            
+        #Perform rigorous check using vector algebra
+        n = sp.array((Px - Px[0],Py - Py[0],Pz - Pz[0])).T
+        n0 = sp.array((Px[-1] - Px[0],Py[-1] - Py[0],Pz[-1] - Pz[0])).T
+        
+        n_cross = sp.cross(n0,n)
+        n_dot = sp.multiply(n0,n_cross)
+        
+        if sp.sum(sp.absolute(n_dot)) == 0:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     #Run doc tests
