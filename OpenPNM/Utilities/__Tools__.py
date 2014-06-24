@@ -1132,7 +1132,7 @@ class Tools(Base,dict):
             pprint.pprint(health)
         return flag
             
-    def check_pore_health(self,props=[]):
+    def check_pore_health(self,props=[],quiet=False):
         r'''
         This method is deprecated, use data_health instead
         '''
@@ -1144,9 +1144,9 @@ class Tools(Base,dict):
                 item = item.split('.')[-1]
                 temp.append('pore.' + item)
             props = temp
-        return self.data_health(element='pore',props=props)            
+        return self.data_health(element='pore',props=props,quiet=quiet)            
         
-    def check_throat_health(self,props=[]):
+    def check_throat_health(self,props=[],quiet=False):
         r'''
         This method is deprecated, use data_health instead
         '''
@@ -1158,7 +1158,7 @@ class Tools(Base,dict):
                 item = item.split('.')[-1]
                 temp.append('throat.' + item)
             props = temp
-        return self.data_health(element='throat',props=props)
+        return self.data_health(element='throat',props=props,quiet=quiet)
         
 
 if __name__ == '__main__':
