@@ -34,8 +34,9 @@ class FourierConduction(LinearSolver):
         self._logger.info("Create Fourier Conduction Algorithm Object")
             
     def _setup(self,
-               thermal_conductance='thermal_conductance',
+               conductance='thermal_conductance',
                occupancy='occupancy',
+               quantity='temperature',
                **params):
         r"""
 
@@ -47,19 +48,19 @@ class FourierConduction(LinearSolver):
         try: self._fluid = self._net._fluids[self._fluid] 
         except: pass #Accept object
         success_1 = self._fluid.check_throat_health(props=occupancy)
-        success_2 = self._fluid.check_throat_health(props=thermal_conductance)
+        success_2 = self._fluid.check_throat_health(props=conductance)
         if not success_1:  
             self._fluid.set_data(prop=occupancy,throats='all',data=1)
             self._fluid.set_data(prop=occupancy,pores='all',data=1)
             self._logger.info('By default, it will be assumed that occupancy for '+self._fluid.name+' is equal to 1 in the entire network!')
         if success_2: 
             # Building thermal conductance based on occupancy
-            g = self._fluid.get_throat_data(prop=thermal_conductance)
+            g = self._fluid.get_throat_data(prop=conductance)
             s = self._fluid.get_throat_data(prop=occupancy)
             self._conductance = g*s+g*(s==0)/1e3
             setup_conductance = True
         try:    setup_conductance
-        except: raise Exception('There is an error for the throat property: '+thermal_conductance+'!')
+        except: raise Exception('There is an error for the throat property: '+conductance+'!')
         try:    self.existing_bc
         except: raise Exception('There is an error in applying boundary conditions!')
 
