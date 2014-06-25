@@ -33,11 +33,11 @@ class EffectiveProperty(GenericAlgorithm):
         '''
         #Determine boundary conditions by analyzing algorithm object
         Ps = self._alg.pores(labels='pore.Dirichlet')
-        BCs = sp.unique(self._alg['pore.mole_fraction'][Ps])
+        BCs = sp.unique(self._alg['pore.bcval_Dirichlet'][Ps])
         if sp.shape(BCs)[0] != 2:
             raise Exception('The supplied algorithm did not have appropriate BCs')
-        inlets = sp.where(self._alg['pore.mole_fraction']==sp.amax(BCs))[0]
-        outlets = sp.where(self._alg['pore.mole_fraction']==sp.amin(BCs))[0]
+        inlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amax(BCs))[0]
+        outlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amin(BCs))[0]
 
         #Analyze input and output pores
         #Check for coplanarity
@@ -62,7 +62,11 @@ class EffectiveProperty(GenericAlgorithm):
         #Find flow through inlet face
         Pn = self._net.find_neighbor_pores(pores=Pin,excl_self=True)
         Ts = self._net.find_connecting_throat(Pin,Pn)
-        flow = self._fluid['throat.diffusive_conductance'][Ts]*(self._alg['pore.mole_fraction'][Pin] - self._alg['pore.mole_fraction'][Pn])
+        g = self._fluid[self._conductance][Ts]
+        s = self._fluid['throat.occupancy'][Ts]
+        xin = self._alg[self._quantity][Pin]
+        xout = self._alg[self._quantity][Pn]
+        flow = g*s*(xin - xout)
         
         #Calculate effective property for given algorithm
         if self._alg.__class__.__name__ == 'FickianDiffusion':
