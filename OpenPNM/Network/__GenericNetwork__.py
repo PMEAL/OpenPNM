@@ -55,17 +55,17 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r"""
         Generate the network
         """
-        self._logger.error('This method is not implemented')
+        raise NotImplementedError()
 
     def domain_bulk_volume(self):
         r'''
         '''
-        self._logger.error('This method is not implemented')
+        raise NotImplementedError()
 
     def domain_pore_volume(self):
         r'''
         '''
-        raise NotImplemented
+        raise NotImplementedError()
         
     def domain_length(self,face_1,face_2):
         r'''
@@ -373,6 +373,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn.find_neighbor_pores(pores=[0,1],mode='union') #Find all neighbors, including selves
         array([ 0,  1,  2,  5,  6, 25, 26])
         """
+        pores = sp.array(pores,ndmin=1)
         try:
             neighborPs = self._adjacency_matrix['lil']['conns'].rows[[pores]]
         except:
