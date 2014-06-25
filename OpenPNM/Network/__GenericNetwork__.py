@@ -65,7 +65,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
     def domain_pore_volume(self):
         r'''
         '''
-        self._logger.error('This method is not implemented')
+        raise NotImplemented
         
     def domain_length(self,face_1,face_2):
         r'''
@@ -867,48 +867,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             for i in sp.unique(Cs):
                 health.disconnected_clusters.append(sp.where(Cs==i)[0])
         return health
-        
-    def iscoplanar(self,pores):
-        r'''
-        Determines if given pores are coplanar with each other
-        
-        Parameters
-        ----------
-        pores : array_like
-            List of pores to check for coplanarity.  At least 3 pores are 
-            required.
-            
-        Returns
-        -------
-        A boolean value of whether given points are colplanar (True) or not (False)
-        '''
-        pores = sp.array(pores,ndmin=1)
-        if sp.shape(pores)[0] < 3:
-            raise Exception('At least 3 input pores are required')
-        
-        Px = self['pore.coords'][pores,0]
-        Py = self['pore.coords'][pores,1]
-        Pz = self['pore.coords'][pores,2]
-        
-        #Do easy check first, for common coordinate
-        if sp.shape(sp.unique(Px))[0] == 1:
-            return True
-        if sp.shape(sp.unique(Py))[0] == 1:
-            return True
-        if sp.shape(sp.unique(Pz))[0] == 1:
-            return True
-            
-        #Perform rigorous check using vector algebra
-        n = sp.array((Px - Px[0],Py - Py[0],Pz - Pz[0])).T
-        n0 = sp.array((Px[-1] - Px[0],Py[-1] - Py[0],Pz[-1] - Pz[0])).T
-        
-        n_cross = sp.cross(n0,n)
-        n_dot = sp.multiply(n0,n_cross)
-        
-        if sp.sum(sp.absolute(n_dot)) == 0:
-            return True
-        else:
-            return False
 
 if __name__ == '__main__':
     #Run doc tests
