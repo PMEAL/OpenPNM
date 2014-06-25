@@ -611,33 +611,36 @@ class Tools(Base,dict):
             if item.split('.')[0] == element:
                 if self[item].dtype == bool:
                     labels.append(item)
-        labels.sort()        
-        labels = sp.array(labels)
-        arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
-        col = 0
-        for item in labels:
-            arr[:,col] = self[item][locations]
-            col = col + 1
-        if mode == 'count':
-            return sp.sum(arr,axis=1)
-        if mode == 'union':
-            temp = labels[sp.sum(arr,axis=0)>0]
-            return temp.tolist()
-        if mode == 'intersection':
-            temp = labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
-            return temp.tolist()
-        if mode == 'difference':
-            temp = labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
-            return temp.tolist()
-        if mode == 'mask':
-            return arr
-        if mode == 'none':
-            temp = sp.ndarray((sp.shape(locations,)[0],),dtype=object)
-            for i in sp.arange(0,sp.shape(locations,)[0]):
-                temp[i] = list(labels[arr[i,:]])
-            return temp
+        labels.sort()
+        if locations == []:
+            return labels
         else:
-            print('unrecognized mode')
+            labels = sp.array(labels)
+            arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
+            col = 0
+            for item in labels:
+                arr[:,col] = self[item][locations]
+                col = col + 1
+            if mode == 'count':
+                return sp.sum(arr,axis=1)
+            if mode == 'union':
+                temp = labels[sp.sum(arr,axis=0)>0]
+                return temp.tolist()
+            if mode == 'intersection':
+                temp = labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
+                return temp.tolist()
+            if mode == 'difference':
+                temp = labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
+                return temp.tolist()
+            if mode == 'mask':
+                return arr
+            if mode == 'none':
+                temp = sp.ndarray((sp.shape(locations,)[0],),dtype=object)
+                for i in sp.arange(0,sp.shape(locations,)[0]):
+                    temp[i] = list(labels[arr[i,:]])
+                return temp
+            else:
+                print('unrecognized mode')
                 
     def labels(self,element='',pores=[],throats=[],mode='union'):
         r'''
@@ -674,8 +677,8 @@ class Tools(Base,dict):
         if (pores == []) and (throats == []):
             if element == '':
                 temp = []
-                temp = self._get_labels(element='pore',locations=self.pores(), mode=mode)
-                temp = temp + self._get_labels(element='throat',locations=self.throats(),mode=mode)
+                temp = self._get_labels(element='pore')
+                temp = temp + self._get_labels(element='throat')
             elif element == 'pore':
                 temp = self._get_labels(element='pore',locations=self.pores(), mode=mode)
             elif element == 'throat':
@@ -852,7 +855,7 @@ class Tools(Base,dict):
         '''
         return self.throats(labels=labels,mode=mode)
         
-    def to_mask(self,pores=None,throats=None):
+    def tomask(self,pores=None,throats=None):
         r'''
         Convert a list of pore or throat indices into a boolean mask
         
@@ -993,7 +996,7 @@ class Tools(Base,dict):
         if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
         Np = self.pores(labels=labels,mode=mode)
-        Np = self.to_mask(pores=Np)
+        Np = self.tomask(pores=Np)
         return sp.sum(Np) #return sum of Trues
             
     def num_throats(self,labels=['all'],mode='union'):
@@ -1044,7 +1047,7 @@ class Tools(Base,dict):
         if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
         Nt = self.throats(labels=labels,mode=mode)
-        Nt = self.to_mask(throats=Nt)
+        Nt = self.tomask(throats=Nt)
         return sp.sum(Nt) #return sum of Trues
         
     def count(self,element=None):
