@@ -14,6 +14,8 @@ import OpenPNM
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
+import scipy.spatial as sptl
+import scipy.signal as spsg
 
 class GenericNetwork(OpenPNM.Utilities.Tools):
     r"""
@@ -47,7 +49,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._adjacency_matrix = {}
         self.reset_graphs()
         self._logger.debug("Construction of Network container")
-
         self.name = name
         
     def generate(self, **params):
@@ -55,8 +56,74 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Generate the network
         """
         self._logger.error('This method is not implemented')
- 
 
+    def domain_bulk_volume(self):
+        r'''
+        '''
+        self._logger.error('This method is not implemented')
+
+    def domain_pore_volume(self):
+        r'''
+        '''
+        self._logger.error('This method is not implemented')
+        
+    def domain_length(self,face_1,face_2):
+        r'''
+        Calculate the distance between two faces of the network
+        
+        Parameters
+        ----------
+        face_1 and face_2 : array_like
+            Lists of pores belonging to opposite faces of the network
+            
+        Returns
+        -------
+        The length of the domain in the specified direction
+        
+        Notes
+        -----
+        - Does not yet check if input faces are perpendicular to each other
+        '''
+        #Ensure given points are coplanar before proceeding
+        if self.iscoplanar(face_1) and self.iscoplanar(face_2):
+            #Find distance between given faces
+            x = self['pore.coords'][face_1]
+            y = self['pore.coords'][face_2]
+            Ds = sptl.distance_matrix(x,y)
+            L = sp.median(sp.amin(Ds,axis=0))
+        else:
+            raise Exception('The supplied pores are not coplanar')
+        return L
+        
+    def domain_area(self,face):
+        r'''
+        Calculate the area of a given network face
+        
+        Parameters
+        ----------
+        face : array_like
+            List of pores of pore defining the face of interest
+            
+        Returns
+        -------
+        The area of the specified face
+        '''
+        if self.iscoplanar(face):
+            #Find area of inlet face
+            x = self['pore.coords'][face]
+            y = x
+            As = sptl.distance_matrix(x,y)
+            temp = sp.amax(As,axis=0)
+            h = sp.amax(temp)
+            corner1 = sp.where(temp==h)[0][0]
+            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
+            a = sp.amin(As[corner1,p])
+            o = h*sp.sin(sp.arccos((a/h)))
+            A = o*a
+        else:
+            raise Exception('The supplied pores are not coplanar')
+        return A
+        
     #--------------------------------------------------------------------------
     '''Graph theory and topology related methods'''
     #--------------------------------------------------------------------------
@@ -808,12 +875,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Parameters
         ----------
         pores : array_like
-            List of pores to check for coplanarity.  At least 3 points are 
+            List of pores to check for coplanarity.  At least 3 pores are 
             required.
             
         Returns
         -------
-        A boolean value of whether given points are colplanar or not
+        A boolean value of whether given points are colplanar (True) or not (False)
         '''
         pores = sp.array(pores,ndmin=1)
         if sp.shape(pores)[0] < 3:
