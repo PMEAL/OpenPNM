@@ -10,7 +10,7 @@ import OpenPNM
 import scipy as sp
 import scipy.constants
 import logging as _logging
-import time
+
 
 # set up logging to file - see previous section for more details
 _logging.basicConfig(level=_logging.ERROR,
@@ -207,27 +207,6 @@ class Base(object):
         return self._name
         
     name = property(_get_name,_set_name)
-    
-    def tic(self):
-        r'''
-        Homemade version of matlab tic and toc function, tic starts or resets 
-        the clock, toc reports the time since the last call of tic.
-        '''
-        global startTime_for_tictoc
-        startTime_for_tictoc = time.time()
-
-    def toc(self,quiet=False):
-        r'''
-        Homemade version of matlab tic and toc function, tic starts or resets 
-        the clock, toc reports the time since the last call of tic.
-        '''
-        if 'startTime_for_tictoc' in globals():
-            t = time.time() - startTime_for_tictoc
-            if quiet == False:
-                print('Elapsed time in seconds: ', t)
-            return t
-        else:
-            print("Toc: start time not set")
             
     def save_object(self,filename):
         r'''
