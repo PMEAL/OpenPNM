@@ -56,18 +56,22 @@ OP_1.run()
 #------------------------------------------------------------------------------
 Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=30, network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.pores(labels=['top','front'],mode='intersection')
+BC1_pores = pn.pores(labels=['top','boundary'],mode='intersection')
 Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
 
-BC2_pores = pn.pores(labels=['top','back'],mode='intersection')
+BC2_pores = pn.pores(labels=['bottom','boundary'],mode='intersection')
 Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.2, pores=BC2_pores)
 
 # Updating data based on the result of Percolation Algorithms
-OP_1.update(Pc=11000)
+OP_1.update(Pc=13000)
 # Run simulation
 Fickian_alg.run(active_fluid=air)
 Fickian_alg.update()
-Fickian_alg.effective_diffusivity(fluid='air')
+#Fickian_alg.effective_diffusivity(fluid='air')
+
+Deff = OpenPNM.Algorithms.EffectiveProperty(network=pn)
+Deff.setup(algorithm=Fickian_alg,fluid=air,conductance='diffusive_conductance',quantity='mole_fraction')
+a = Deff.run()
 
 #------------------------------------------------------------------------------
 '''Export to VTK'''
