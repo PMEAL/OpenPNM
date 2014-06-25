@@ -137,6 +137,88 @@ class LinearSolver(GenericAlgorithm):
             if  (sp.in1d(self.labels(throats='all',mode='union'),BC_default)).any():
                 self._logger.warning('The section for assigning throat boundary conditions is not implemented in this solver yet.')
 
+    def apply_boundary_conditions(self,bctype='',bcvalue=[],pores=[],mode='merge'):
+        r"""
+        Apply boundary conditions to specified pores.  This does not support
+        throat boundary conditions yet.
+        
+        Parameters
+        ----------
+        bctype : string
+            Specifies the type of boundary condition to apply.  Can be one of:
+            
+            - 'Dirichlet'
+            - 'Neumann_rate_group'
+            - 'Neumann_rate_single'
+            - 'Neumann_insulated'
+            
+        bcvalue : array_like
+            The boundary value to apply, such as concentration or rate
+        pores : array_like
+            The pores where the boundary conditions should be applied
+        mode : string, optional
+            Controls how the conditions are applied.  Options are:
+            
+            - 'merge': Inserts the specified values, leaving existing values elsewhere
+            - 'overwrite': Inserts specified values, clearing all other values
+            - 'remove': Removes boundary conditions from specified pores
+            - 'clear_all': Removes ALL boundary conditions
+        """
+        BC_default = ['Dirichlet','Neumann_insulated','Neumann_rate_group','Neumann_rate_single']
+        
+        #If mode is 'clear_all' then bypass checks
+        if mode == 'clear_all':
+            for item in self.labels():
+                bcname = item.split('.')[1]
+                if bcname in BC_default:
+                    del self['pore.bcval_'+bcname]
+                    del self['pore.'+bcname]
+            return
+                    
+        #Validate input pores
+        if pores == []:
+            if mode not in ['remove','clear_all']:
+                raise Exception('Pores must be specified')
+        
+        #Validate bctype
+        if bctype.split('.')[-1] not in BC_default:
+            raise Exception('Unrecognized bctype') 
+            
+        #Validate bcvalue
+        if bctype == 'Neumann_rate_group':
+            if sp.size(bcvalue) != 1:
+                raise Exception('When specifying Neumann_rate_group, bcval shoud be scalar')
+        
+        #Parse bcvalue
+        bcvalue = sp.array(bcvalue,ndmin=1)
+        if sp.shape(bcvalue)[0] == 1:
+            bcvalue = sp.ones(sp.shape(pores))*bcvalue
+        elif sp.shape(bcvalue) != sp.shape(pores):
+            raise Exception('The pore list and bcvalue list are different lengths')
+            
+        #Confirm that prop and label arrays exist
+        if 'pore.bcval_'+bctype not in self.props():
+            self['pore.bcval_'+bctype] = sp.ones((self.num_pores(),),dtype=float)*sp.nan
+        if 'pore.'+bctype not in self.labels():
+            self['pore.'+bctype] = sp.zeros((self.num_pores(),),dtype=bool)
+        
+        #Set boundary conditions based on supplied mode
+        if mode == 'merge':
+            self['pore.bcval_'+bctype][pores] = bcvalue
+            self['pore.'+bctype][pores] = True
+        elif mode == 'overwrite':
+            self['pore.bcval_'+bctype] = sp.ones((self.num_pores(),),dtype=float)*sp.nan
+            self['pore.bcval_'+bctype][pores] = bcvalue
+            self['pore.'+bctype] = sp.zeros((self.num_pores(),),dtype=bool)
+            self['pore.'+bctype][pores] = True
+        elif mode == 'remove':
+            if pores == []:
+                del self['pore.bcval_'+bctype]
+                del self['pore.'+bctype]
+            else:
+                self['pore.bcval_'+bctype][pores] = sp.nan
+                self['pore.'+bctype][pores] = False
+
     def _build_coefficient_matrix(self):
        
         # Filling coefficient matrix
