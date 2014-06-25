@@ -35,8 +35,8 @@ class StokesFlow(LinearSolver):
 
             
     def _setup(self,
-               hydraulic_conductance='hydraulic_conductance',
-               x_term = 'pressure',
+               conductance='hydraulic_conductance',
+               species = 'pressure',
                occupancy='occupancy',
                **params):
         r"""
@@ -47,21 +47,21 @@ class StokesFlow(LinearSolver):
         self._fluid = params['active_fluid']
         try: self._fluid = self._net._fluids[self._fluid] 
         except: pass #Accept object
-        self._X_name = x_term
+        self._X_name = species
         success_1 = self._fluid.check_throat_health(props=occupancy)
-        success_2 = self._fluid.check_throat_health(props=hydraulic_conductance)
+        success_2 = self._fluid.check_throat_health(props=conductance)
         if not success_1:  
             self._fluid.set_data(prop=occupancy,throats='all',data=1)
             self._fluid.set_data(prop=occupancy,pores='all',data=1)
             self._logger.info('By default, it will be assumed that occupancy for '+self._fluid.name+' is equal to 1 in the entire network!')
         if success_2: 
             # Building hydraulic conductance based on occupancy
-            g = self._fluid.get_throat_data(prop=hydraulic_conductance)
+            g = self._fluid.get_throat_data(prop=conductance)
             s = self._fluid.get_throat_data(prop=occupancy)
             self._conductance = g*s+g*(s==0)/1e3
             setup_conductance = True
         try:    setup_conductance
-        except: raise Exception('There is an error for the throat property: '+ hydraulic_conductance+'!')
+        except: raise Exception('There is an error for the throat property: '+ conductance+'!')
         try:    self.existing_bc
         except: raise Exception('There is an error in applying boundary conditions!')
 
@@ -85,7 +85,7 @@ class StokesFlow(LinearSolver):
                                fluid,
                                direction='',
                                d_term='viscosity',
-                               x_term='pressure',
+                               species='pressure',
                                conductance='hydraulic_conductance',
                                occupancy='occupancy',
                                **params):
@@ -98,6 +98,6 @@ class StokesFlow(LinearSolver):
                                   fluid=fluid,
                                   direction=direction,
                                   d_term=d_term,
-                                  x_term=x_term,
+                                  species=species,
                                   conductance=conductance,
                                   occupancy=occupancy)
