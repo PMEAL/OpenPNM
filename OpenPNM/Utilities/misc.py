@@ -1,5 +1,5 @@
 import scipy as _sp
-import time
+import time as _time
 
 def iscoplanar(coords):
     r'''
@@ -48,8 +48,8 @@ def tic():
     Homemade version of matlab tic and toc function, tic starts or resets 
     the clock, toc reports the time since the last call of tic.
     '''
-    global startTime_for_tictoc
-    startTime_for_tictoc = time.time()
+    global _startTime_for_tictoc
+    _startTime_for_tictoc = _time.time()
 
 def toc(quiet=False):
     r'''
@@ -62,8 +62,8 @@ def toc(quiet=False):
         If False (default) then a message is output to the console.  If True
         the message is not displayed and the elapsed time is returned.
     '''
-    if 'startTime_for_tictoc' in globals():
-        t = time.time() - startTime_for_tictoc
+    if '_startTime_for_tictoc' in globals():
+        t = _time.time() - _startTime_for_tictoc
         if quiet == False:
             print('Elapsed time in seconds: ', t)
         else:
