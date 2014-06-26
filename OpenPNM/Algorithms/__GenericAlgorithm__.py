@@ -38,23 +38,16 @@ class GenericAlgorithm(OpenPNM.Utilities.Tools):
         r"""
         Initialize
         """
-        super(GenericAlgorithm,self).__init__(**kwords)
+        super(GenericAlgorithm,self).__init__(**kwords)    
         self._logger.debug("Construct class")
         self._net = network
-        self.name = name        
+        self.name = name         
+
         # Initialize label 'all' in the object's own info dictionaries
-        self.set_info(label='all',pores=network.pores('all'))
-        self.set_info(label='all',throats=network.throats('all'))
+        self['pore.all'] = network['pore.all']
+        self['throat.all'] = network['throat.all']
 
-    def run(self,**params):
-        r"""
-        Main run command for the algorithm
-        """
-#        self._logger.info("Execute run(): Basic version")
-        self._setup(**params)
-        self._do_outer_iteration_stage()
-
-    def _setup(self, **params):
+    def setup(self, **params):
         r"""
         Perform applicable preliminary checks and calculations required for algorithm
 
@@ -64,6 +57,21 @@ class GenericAlgorithm(OpenPNM.Utilities.Tools):
         """
 #        self._logger.error("_setup: not implemented")
 
+    def run(self,**params):
+        r"""
+        Main run command for the algorithm
+        """
+#        self._logger.info("Execute run(): Basic version")
+
+        self._do_outer_iteration_stage()
+
+    def _do_outer_iteration_stage(self):
+        r"""
+        Executes the outer iteration stage
+        """
+#        self._logger.info("Outer Iteration Stage: Basic version")
+        self._do_one_outer_iteration()
+        
     def _do_one_outer_iteration(self):
         r"""
         One iteration of an outer iteration loop for an algorithm
@@ -72,25 +80,18 @@ class GenericAlgorithm(OpenPNM.Utilities.Tools):
 #        self._logger.info("One Outer Iteration: Basic version")
         self._do_inner_iteration_stage()
 
-    def _do_outer_iteration_stage(self):
-        r"""
-        Executes the outer iteration stage
-        """
-#        self._logger.info("Outer Iteration Stage: Basic version")
-        self._do_one_outer_iteration()
-
-    def _do_one_inner_iteration(self):
-        r"""
-        Executes one inner iteration
-        """
-#        self._logger.warning("One Inner Iteration: Implement me")
-
     def _do_inner_iteration_stage(self):
         r"""
         Executes the inner iteration stage
         """
 #        self._logger.info("Inner Iteration Stage: Basic version")
         self._do_one_inner_iteration()
+        
+    def _do_one_inner_iteration(self):
+        r"""
+        Executes one inner iteration
+        """
+#        self._logger.warning("One Inner Iteration: Implement me")
         
     def update(self,**kwargs):
         print('not implemented')
@@ -99,8 +100,8 @@ class GenericAlgorithm(OpenPNM.Utilities.Tools):
         
         self.update(**kwargs)
 
-if __name__ =="__main__":
+if __name__ == '__main__':
     print('    ************Testing Generic Algorithm**************')
-    pn = OpenPNM.Geometry.Cubic().generate()
-    test = GenericAlgorithm(loggername="TestGenericAlg")
-    test.run(pn)
+    pn = OpenPNM.Network.TestNet()
+    test = OpenPNM.Algorithms.GenericAlgorithm(network=pn)
+    test.run()
