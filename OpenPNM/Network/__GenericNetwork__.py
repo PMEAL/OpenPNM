@@ -11,6 +11,7 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
+import OpenPNM.Utilities.misc as misc
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
@@ -85,7 +86,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         - Does not yet check if input faces are perpendicular to each other
         '''
         #Ensure given points are coplanar before proceeding
-        if self.iscoplanar(face_1) and self.iscoplanar(face_2):
+        if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
             #Find distance between given faces
             x = self['pore.coords'][face_1]
             y = self['pore.coords'][face_2]
@@ -108,7 +109,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         -------
         The area of the specified face
         '''
-        if self.iscoplanar(face):
+        if misc.iscoplanar(self['pore.coords'][face]):
             #Find area of inlet face
             x = self['pore.coords'][face]
             y = x
