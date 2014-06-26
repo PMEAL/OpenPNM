@@ -884,7 +884,7 @@ class Tools(Base,dict):
             mask[throats] = True
             return mask
 
-    def interpolate_data(self,prop='',throats=[],pores=[],data=[]):
+    def interpolate_data(self,data=[],prop='',throats=[],pores=[]):
         r"""
         Determines a pore (or throat) property as the average of it's neighboring 
         throats (or pores)
