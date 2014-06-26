@@ -73,9 +73,20 @@ Classes
    :show-inheritance:
    
 """
-
+#Import every file in the directory, including both classes and methods
+#import os,sys
+#dir = os.path.dirname(os.path.abspath(__file__))
+#for item in os.listdir(dir):
+#    if item.split('.')[-1] == 'py':
+#        if item == '__init__.py':
+#            pass
+#        elif item[0:2] == '__':
+#            exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
+#        else:
+#            exec('from . import ' + format(item.split('.')[0]))
+        
 from .__GenericGeometry__ import GenericGeometry
-from .__StickBall__ import Stick_and_Ball
+from .__Stick_and_Ball__ import Stick_and_Ball
 from .__SGL10__ import SGL10
 from .__Toray090__ import Toray090
 from .__Boundary__ import Boundary

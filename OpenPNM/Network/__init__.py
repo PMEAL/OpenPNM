@@ -29,10 +29,8 @@ Classes
 
 from .__GenericNetwork__ import GenericNetwork
 from .__Cubic__ import Cubic
-from .__Sphere__ import Sphere
-from .__Cylinder__ import Cylinder
 from .__Delaunay__ import Delaunay
 from .__Template__ import Template
 from .__TestNet__ import TestNet
-from .__NullNet__ import NullNet
 from .__Import__ import MatFile
+from .__Load__ import Load
