@@ -183,7 +183,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         for item in fluids:
             if type(item)==sp.str_: item =  self.find_object_by_name(item)
             for key in item._throat_data.keys():
-                if key != 'offset_verts':
+                if key != 'offset_verts' and key != 'verts':
                     if sp.amax(item._throat_data[key]) < sp.inf:
                         dict_name = item.name+'_throat_'+key
                         self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
@@ -193,7 +193,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                     self._throat_data_amalgamate.update({dict_name : item._throat_info[key]})
         #Add geometry data
         for key in self._throat_data.keys():
-                if key != 'offset_verts':
+                if key != 'offset_verts' and key != 'verts':
                     if sp.amax(self._throat_data[key]) < sp.inf:
                         dict_name = 'throat'+'_'+key
                         self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
