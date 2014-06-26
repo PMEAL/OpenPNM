@@ -207,13 +207,15 @@ class Cubic(GenericNetwork):
         scale['bottom'] = scale['top']   = [1,1,0]
         
         for label in ['front','back','left','right','bottom','top']:
-            ps = self.get_pore_indices(labels=[label,'internal'],mode='intersection')
-            self.clone(pores=ps,apply_label=[label,'boundary']) 
+            ps = self.pores(labels=[label,'internal'],mode='intersection')
+            self.clone(pores=ps,apply_label=[label,'boundary',label+'_face'])
             #Translate cloned pores
-            ind = self.get_pore_indices(labels=[label,'boundary'],mode='intersection')
-            coords = self.get_pore_data(prop='coords',locations=ind) 
+            ind = self.pores(labels=[label,'boundary'],mode='intersection')
+            coords = self['pore.coords'][ind] 
             coords = coords*scale[label] + offset[label]
-            self.set_pore_data(prop='coords', locations=ind, data=coords)
+            self['pore.coords'][ind] = coords
+            
+        
     
     def domain_size(self,dimension=''):
         if dimension == 'front' or dimension == 'back':
