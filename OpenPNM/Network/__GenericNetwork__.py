@@ -67,6 +67,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         raise NotImplementedError()
         
+    def iscoplanar(self,face):###Fudge to make alg work### Real code is missing
+        return True
+        
     def domain_length(self,face_1,face_2):
         r'''
         Calculate the distance between two faces of the network
@@ -782,7 +785,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             Tdrop[throats] = 1
             Tkeep = ~Tdrop
             Pkeep = self.get_pore_indices(labels='all')
-            Pkeep = self.to_mask(pores=Pkeep)
+            Pkeep = self.tomask(pores=Pkeep)
         
         #Remap throat connections
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
@@ -862,7 +865,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._logger.warning(str(sp.sum(Ps==0))+' pores have no neighbors')
             health.isolated_pores = sp.where(Ps==0)[0]
         #Check for clusters of isolated pores
-        Cs = self.find_clusters(self.to_mask(throats=self.throats('all')))
+        Cs = self.find_clusters(self.tomask(throats=self.throats('all')))
         if sp.shape(sp.unique(Cs))[0] > 1:
             self._logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):
