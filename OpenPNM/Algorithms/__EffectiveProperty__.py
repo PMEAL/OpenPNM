@@ -41,17 +41,17 @@ class EffectiveProperty(GenericAlgorithm):
 
         #Analyze input and output pores
         #Check for coplanarity
-        if self._net.iscoplanar(inlets) == False:
-            raise Exception('The inlet pores do not define a plane')
-        if self._net.iscoplanar(outlets) == False:
-            raise Exception('The outlet pores do not define a plane')
+        #if self._net.iscoplanar(inlets) == False:
+        #    raise Exception('The inlet pores do not define a plane')
+        #if self._net.iscoplanar(outlets) == False:
+        #    raise Exception('The outlet pores do not define a plane')
         #Ensure pores are on a face of domain (only 1 non-self neighbor each)
-        PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
-        if sp.shape(PnI) != sp.shape(inlets):
-            raise Exception('The inlet pores have too many neighbors')
-        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
-        if sp.shape(PnO) != sp.shape(outlets):
-            raise Exception('The outlet pores have too many neighbors')
+        #PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
+        #if sp.shape(PnI) != sp.shape(inlets):
+        #    raise Exception('The inlet pores have too many neighbors')
+        #PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
+        #if sp.shape(PnO) != sp.shape(outlets):
+        #    raise Exception('The outlet pores have too many neighbors')
         Pin = inlets
         Pout = outlets
         
@@ -62,12 +62,12 @@ class EffectiveProperty(GenericAlgorithm):
         #Find flow through inlet face
         Pn = self._net.find_neighbor_pores(pores=Pin,excl_self=True)
         Ts = self._net.find_connecting_throat(Pin,Pn)
-        g = self._fluid[self._conductance][Ts]
-        s = self._fluid['throat.occupancy'][Ts]
-        xin = self._alg[self._quantity][Pin]
-        xout = self._alg[self._quantity][Pn]
-        flow = g*s*(xin - xout)
-        
+        #g = self._fluid[self._conductance][Ts]
+        #s = self._fluid['throat.occupancy'][Ts]
+        #xin = self._alg[self._quantity][Pin]
+        #xout = self._alg[self._quantity][Pn]
+        #flow = g*s*(xin - xout)
+        flow = self.rate(throats=Ts)
         #Calculate effective property for given algorithm
         if self._alg.__class__.__name__ == 'FickianDiffusion':
             if 'pore.molar_density' in self._fluid.props(mode='scalars'):
@@ -75,6 +75,29 @@ class EffectiveProperty(GenericAlgorithm):
                 return D
         
         
+    def rate(self,pores='',throats=''):
+
+        if throats!='':
+            p1 = self._net.find_connected_pores(throats)[:,0]
+            p2 = self._net.find_connected_pores(throats)[:,1]
+        elif pores!='': 
+            throats = self._net.find_neighbor_throats(pores,flatten=True,mode='not_intersection')
+            p1 = self._net.find_connected_pores(throats)[:,0]
+            p2 = self._net.find_connected_pores(throats)[:,1]
+        pores1 = sp.copy(p1)
+        pores2 = sp.copy(p2)
+        pores1[-sp.in1d(p1,pores)] = p2[-sp.in1d(p1,pores)]        
+        pores2[-sp.in1d(p1,pores)] = p1[-sp.in1d(p1,pores)]
+        #X1 = self.get_pore_data(locations=pores1,prop=self._X_name)
+        #X2 = self.get_pore_data(locations=pores2,prop=self._X_name)
+        X1 = self._alg[self._quantity][pores1]
+        X2 = self._alg[self._quantity][pores2]
+        #g = self._conductance[throats]
+        g = self._fluid[self._conductance][throats]
+        s = self._fluid['throat.occupancy'][throats]
+        #R = sp.sum(sp.multiply(g,(X1-X2)))
+        R = sp.sum(sp.multiply(g,(X1-X2))*s)
+        return(R)
         
     def _calc_eff_prop(self,                            
                        fluid,
@@ -133,7 +156,7 @@ class EffectiveProperty(GenericAlgorithm):
             if face1=='front' or face1=='back': direct = 'X'
             elif face1=='left' or face1=='right': direct = 'Y'
             elif face1=='top' or face1=='bottom': direct = 'Z'
-            if 'boundary' in self._net._pore_info:
+            if 'pore.boundary' in self._net.labels():
                 face1_pores = network.get_pore_indices(labels=[face1,'boundary'],mode='intersection')
                 face2_pores = network.get_pore_indices(labels=[face2,'boundary'],mode='intersection')
             else:    
@@ -150,11 +173,8 @@ class EffectiveProperty(GenericAlgorithm):
             self.set_pore_info(label='Dirichlet',locations=BC2_pores)
             BC2_values = 0.4
             self.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)        
-            self.run(active_fluid=fluid,
-                           x_term=x_term,
-                           conductance=conductance,
-                           occupancy=occupancy) 
-            x = self.get_pore_data(prop=x_term)
+            self.run() 
+            x = self._alg.get_pore_data(prop=x_term)
             if alg=='Fickian':
                 X1 = sp.log(1-x[face1_pores])
                 X2 = sp.log(1-x[face2_pores])
@@ -181,22 +201,23 @@ class EffectiveProperty(GenericAlgorithm):
                 X_temp = x[fn]
                 d_force = 1/d_force
             cond = self._conductance
-            N = sp.sum(cond[ft]*sp.absolute(X1-X_temp))
+            N = sp.absolute(self.rate(pores=face1_pores))
+            #N = sp.sum(cond[ft]*sp.absolute(X1-X_temp))
             eff = N*L/(d_force*A*delta_X)
             effective_prop.append(eff)
-            del self._pore_info['Dirichlet']
-            del self._pore_data['BCval']
-            delattr (self,'_BCtypes')
-            delattr(self,'_BCvalues')            
+            del self['pore.Dirichlet']
+            del self['pore.BCval']
+            #delattr (self,'_BCtypes')
+            #delattr(self,'_BCvalues')            
             result[ftype1[i]+'/'+ftype2[i]+'('+direct+')'] = sp.array(effective_prop[i],ndmin=1)
             if ftype1[i]=='top' or ftype1[i]=='bottom': tensor[2,2] = effective_prop[i]
             elif ftype1[i]=='right' or ftype1[i]=='left': tensor[1,1] = effective_prop[i]
             elif ftype1[i]=='front' or ftype1[i]=='back': tensor[0,0] = effective_prop[i]
         
-        try:
-            self.set_pore_data(prop=self._X_name,data=self._X_temp)
-            delattr (self,'_X_temp')
-        except : del self._pore_data[self._X_name]
+        #try:
+        #    self.set_pore_data(prop=self._X_name,data=self._X_temp)
+        #    delattr (self,'_X_temp')
+        #except : del self._pore_data[self._X_name]
         try:
             self.set_pore_info(label='Dirichlet',locations=self._dir,mode='overwrite')
             delattr (self,'_dir')

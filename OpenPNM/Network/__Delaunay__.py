@@ -375,7 +375,23 @@ class Delaunay(GenericNetwork):
         self._net.throat_data['numbering'] = np.append(self._net.throat_data['numbering'],bt_numbering)
         self._net.throat_data['type'] = np.append(self._net.throat_data['type'],bt_type)
         self._net.throat_data['conns'] =  np.concatenate((self._net.throat_data['conns'],bt_connections))
-
+    
+    def domain_size(self,dimension=''):
+        if dimension == 'front' or dimension == 'back':
+            return self._Ly*self._Lz
+        if dimension == 'left' or dimension == 'right':
+            return self._Lx*self._Lz
+        if dimension == 'top' or dimension == 'bottom':
+            return self._Lx*self._Ly
+        if dimension == 'volume':
+            return self._Lx*self._Ly*self._Lz
+        if dimension == 'height':
+            return self._Lz
+        if dimension == 'width':
+            return self._Lx
+        if dimension == 'depth':
+            return self._Ly
+            
 if __name__ == '__main__':
     #Run doc tests
     import doctest

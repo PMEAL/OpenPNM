@@ -488,7 +488,7 @@ class Tools(Base,dict):
         if type(objs) != list:
             objs = list(objs)
         data_amalgamated = {}
-        exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals']
+        exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
         for item in objs:
             try:
                 for key in item.keys():
