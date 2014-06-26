@@ -35,6 +35,8 @@ class VTK(GenericVisualization):
                     </Lines>
                     <PointData>
                     </PointData>
+                    <CellData>
+                    </CellData>
                 </Piece>
             </PolyData>
         </VTKFile>
@@ -105,7 +107,7 @@ class VTK(GenericVisualization):
         num_points = len(points)
         num_throats = len(pairs)
         
-        piece_node = root.find('PolyData').find('Piece')
+        piece_node = root.find('PolyData').find('Piece')        
         piece_node.set("NumberOfPoints", str(num_points))
         piece_node.set("NumberOfLines", str(num_throats))
     
@@ -126,7 +128,15 @@ class VTK(GenericVisualization):
             if array.size != num_points: continue
             element = self._array_to_element(key, array)
             point_data_node.append(element)
-    
+            
+        cell_data_node = piece_node.find('CellData')
+        for key in key_list:
+            array = am[key]            
+            if array.dtype == np.bool: array = array.astype(int)
+            if array.size != num_throats: continue
+            element = self._array_to_element(key, array)            
+            cell_data_node.append(element)
+        
         tree = ET.ElementTree(root)
         tree.write(filename)
     
@@ -137,7 +147,7 @@ class VTK(GenericVisualization):
                 f.seek(0)
                 # consider adding header: '<?xml version="1.0"?>\n'+
                 f.write(string)
-    
+                                
     def read(filename):
         network = {}
         tree = ET.parse(filename)
