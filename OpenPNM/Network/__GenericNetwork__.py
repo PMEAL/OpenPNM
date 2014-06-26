@@ -14,6 +14,8 @@ import OpenPNM
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
+import scipy.spatial as sptl
+import scipy.signal as spsg
 
 class GenericNetwork(OpenPNM.Utilities.Tools):
     r"""
@@ -47,162 +49,81 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._adjacency_matrix = {}
         self.reset_graphs()
         self._logger.debug("Construction of Network container")
-
         self.name = name
         
     def generate(self, **params):
         r"""
         Generate the network
         """
-        self._logger.error('This method is not implemented')
- 
-    #--------------------------------------------------------------------------
-    '''pore_data and throat_data interpolation methods'''
-    #--------------------------------------------------------------------------
-    def interpolate_pore_data(self,Tvals=None):
-        r"""
-        Determines a pore property as the average of it's neighboring throats
+        raise NotImplementedError()
 
+    def domain_bulk_volume(self):
+        r'''
+        '''
+        raise NotImplementedError()
+
+    def domain_pore_volume(self):
+        r'''
+        '''
+        raise NotImplementedError()
+        
+    def domain_length(self,face_1,face_2):
+        r'''
+        Calculate the distance between two faces of the network
+        
         Parameters
         ----------
-        Tvals : array_like
-            The array of throat information to be interpolated
-        
+        face_1 and face_2 : array_like
+            Lists of pores belonging to opposite faces of the network
+            
         Returns
         -------
-        Pvals : array_like
-            An array of size Np contain interpolated throat data
-            
-        See Also
-        --------
-        interpolate_throat_data
-
+        The length of the domain in the specified direction
+        
         Notes
         -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-        
-        Examples
-        --------
-        
-
-        """
-        if sp.size(Tvals)==1:
-            Pvals = Tvals
-        elif sp.size(Tvals) != self.num_throats():
-            raise Exception('The list of throat information received was the wrong length')
+        - Does not yet check if input faces are perpendicular to each other
+        '''
+        #Ensure given points are coplanar before proceeding
+        if self.iscoplanar(face_1) and self.iscoplanar(face_2):
+            #Find distance between given faces
+            x = self['pore.coords'][face_1]
+            y = self['pore.coords'][face_2]
+            Ds = sptl.distance_matrix(x,y)
+            L = sp.median(sp.amin(Ds,axis=0))
         else:
-            Pvals = sp.zeros((self.num_pores()))
-            #Only interpolate conditions for internal pores, type=0
-            Pnums = self.get_pore_indices()
-            nTs = self.find_neighbor_throats(Pnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nTs)[0]]:
-                Pvals[i] = sp.mean(Tvals[nTs[i]])
-        return Pvals
-
-    def interpolate_throat_data(self,Pvals=None):
-        r"""
-        Determines a throat property as the average of it's neighboring pores
-
+            raise Exception('The supplied pores are not coplanar')
+        return L
+        
+    def domain_area(self,face):
+        r'''
+        Calculate the area of a given network face
+        
         Parameters
         ----------
-        Pvals : array_like
-            The array of the pore condition to be interpolated
-        
+        face : array_like
+            List of pores of pore defining the face of interest
+            
         Returns
         -------
-        Tvals : array_like
-            An array of size Nt contain interpolated pore data
-            
-        See Also
-        --------
-        interpolate_throat_data
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
-
-        Examples
-        --------
-
-        """
-        if sp.size(Pvals)==1:
-            Tvals = Pvals
-        elif sp.size(Pvals) != self.num_pores():
-            raise Exception('The list of pore information received was the wrong length')
+        The area of the specified face
+        '''
+        if self.iscoplanar(face):
+            #Find area of inlet face
+            x = self['pore.coords'][face]
+            y = x
+            As = sptl.distance_matrix(x,y)
+            temp = sp.amax(As,axis=0)
+            h = sp.amax(temp)
+            corner1 = sp.where(temp==h)[0][0]
+            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
+            a = sp.amin(As[corner1,p])
+            o = h*sp.sin(sp.arccos((a/h)))
+            A = o*a
         else:
-            Tvals = sp.zeros((self.num_throats()))
-            #Interpolate values for all throats, including those leading to boundary pores
-            Tnums = sp.r_[0:self.num_throats()]
-            nPs = self.find_connected_pores(Tnums,flatten=False)
-            for i in sp.r_[0:sp.shape(nPs)[0]]:
-                Tvals[i] = sp.mean(Pvals[nPs[i]])
-        return Tvals
-
-    def amalgamate_pore_data(self,fluids='all'):
-        r"""
-        Returns a dictionary containing ALL pore data from all fluids, physics and geometry objects
-        """
-        self._pore_data_amalgamate = {}
-        if type(fluids)!= sp.ndarray and fluids=='all':
-            fluids = self._fluids
-        elif type(fluids)!= sp.ndarray: 
-            fluids = sp.array(fluids,ndmin=1)
-        #Add fluid data
-        for item in fluids:
-            if type(item)==sp.str_: item =  self.find_object_by_name(item)
-            for key in item._pore_data.keys():
-                if (sp.amax(item._pore_data[key]) < sp.inf) and (key != 'vertices') and (key != 'centroid'):
-                    dict_name = item.name+'_pore_'+key
-                    self._pore_data_amalgamate.update({dict_name : item._pore_data[key]})
-            for key in item._pore_info.keys():
-                if sp.amax(item._pore_info[key]) < sp.inf:
-                    dict_name = item.name+'_pore_label_'+key
-                    self._pore_data_amalgamate.update({dict_name : item._pore_info[key]})
-        #Add geometry data
-        for key in self._pore_data.keys():
-            if (key != 'vertices') and (key != 'centroid'):
-                if sp.amax(self._pore_data[key]) < sp.inf:
-                    dict_name = 'pore'+'_'+key
-                    self._pore_data_amalgamate.update({dict_name : self._pore_data[key]})
-        for key in self._pore_info.keys():
-            if sp.amax(self._pore_info[key]) < sp.inf:
-                dict_name = 'pore'+'_label_'+key
-                self._pore_data_amalgamate.update({dict_name : self._pore_info[key]})
-        return self._pore_data_amalgamate
-
-    def amalgamate_throat_data(self,fluids='all'):
-        r"""
-        Returns a dictionary containing ALL throat data from all fluids, physics and geometry objects
-        """
-        self._throat_data_amalgamate = {}
-        if type(fluids)!= sp.ndarray and fluids=='all':
-            fluids = self._fluids
-        elif type(fluids)!= sp.ndarray: 
-            fluids = sp.array(fluids,ndmin=1)
-        #Add fluid data
-        for item in fluids:
-            if type(item)==sp.str_: item =  self.find_object_by_name(item)
-            for key in item._throat_data.keys():
-                if key != 'offset_verts' and key != 'verts':
-                    if sp.amax(item._throat_data[key]) < sp.inf:
-                        dict_name = item.name+'_throat_'+key
-                        self._throat_data_amalgamate.update({dict_name : item._throat_data[key]})
-            for key in item._throat_info.keys():
-                if sp.amax(item._throat_info[key]) < sp.inf:
-                    dict_name = item.name+'_throat_label_'+key
-                    self._throat_data_amalgamate.update({dict_name : item._throat_info[key]})
-        #Add geometry data
-        for key in self._throat_data.keys():
-                if key != 'offset_verts' and key != 'verts':
-                    if sp.amax(self._throat_data[key]) < sp.inf:
-                        dict_name = 'throat'+'_'+key
-                        self._throat_data_amalgamate.update({dict_name : self._throat_data[key]})
-        for key in self._throat_info.keys():
-            if sp.amax(self._throat_info[key]) < sp.inf:
-                dict_name = 'throat'+'_label_'+key
-                self._throat_data_amalgamate.update({dict_name : self._throat_info[key]})
-        return self._throat_data_amalgamate
-
+            raise Exception('The supplied pores are not coplanar')
+        return A
+        
     #--------------------------------------------------------------------------
     '''Graph theory and topology related methods'''
     #--------------------------------------------------------------------------
@@ -417,11 +338,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             returned. If flatten is False the returned array contains arrays
             of neighboring pores for each input pore, in the order they were 
             sent.
-        excl_self : bool, optional
-            If this is True (default) then the input pores are not included
-            in the returned list.  This option only applies when input pores
+        excl_self : bool, optional (Default is False)
+            If this is True then the input pores are not included in the 
+            returned list.  This option only applies when input pores
             are in fact neighbors to each other, otherwise they are not
-            part of the returned list.  
+            part of the returned list anyway.
         mode : string, optional
             Specifies which neighbors should be returned.  The options are: 
             
@@ -452,7 +373,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn.find_neighbor_pores(pores=[0,1],mode='union') #Find all neighbors, including selves
         array([ 0,  1,  2,  5,  6, 25, 26])
         """
-        #Count neighboring pores
+        pores = sp.array(pores,ndmin=1)
         try:
             neighborPs = self._adjacency_matrix['lil']['conns'].rows[[pores]]
         except:
@@ -465,7 +386,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
             neighborPs = sp.hstack(neighborPs)
-            #neighborPs = sp.concatenate((neighborPs,pores))
+            neighborPs = sp.concatenate((neighborPs,pores))
             #Remove references to input pores and duplicates
             if mode == 'not_intersection':
                 neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)==1)[0])
