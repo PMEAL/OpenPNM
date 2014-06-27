@@ -28,15 +28,17 @@ class EffectiveProperty(GenericAlgorithm):
         self._conductance = algorithm._conductance
         self._quantity =  algorithm._quantity
         self._clean = clean
-        if self._clean:
-            self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
-        else:
-            if 'pore.Dirichlet' in algorithm.labels():
-                code that calls _execute for the algorithms preset boundaries.
-            else:
-                self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
-        else:
-            
+        
+        _execute(self)
+#        if self._clean:
+#            self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
+#        else:
+#            if 'pore.Dirichlet' in algorithm.labels():
+#                #code that calls _execute for the algorithms preset boundaries.
+#                _execute(self)
+#            else:
+#                self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
+#            
                 
         
         
@@ -56,30 +58,39 @@ class EffectiveProperty(GenericAlgorithm):
 #        if self._net.iscoplanar(outlets) == False:
 #            raise Exception('The outlet pores do not define a plane')
         #Ensure pores are on a face of domain (only 1 non-self neighbor each)
-        PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
-        if sp.shape(PnI) != sp.shape(inlets):
-            raise Exception('The inlet pores have too many neighbors')
-        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
-        if sp.shape(PnO) != sp.shape(outlets):
-            raise Exception('The outlet pores have too many neighbors')
-        Pin = inlets
-        Pout = outlets
+#        PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
+#        if sp.shape(PnI) != sp.shape(inlets):
+#            raise Exception('The inlet pores have too many neighbors')
+#        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
+#        if sp.shape(PnO) != sp.shape(outlets):
+#            raise Exception('The outlet pores have too many neighbors')
+#        Pin = inlets
+#        Pout = outlets
         
         #Fetch area and length of domain
-        A = self._net.domain_area(face=Pin)
-        L = self._net.domain_length(face_1=Pin,face_2=Pout)
-        
+        A = self._net.domain_area(face=inlets)
+        L = self._net.domain_length(face_1=inlets,face_2=outlets)
+    
+        x = self._net.get_pore_data(prop=x_term)
         #Find flow through inlet face
-        Pn = self._net.find_neighbor_pores(pores=Pin,excl_self=True)
+        Pin = []
+        Pn = []
+        for pore in inlets:
+            pore_concentration = x[pore]
+            neighbors = self._net.find_neighbor_pores(pore, excl_self = True)
+            for neighbor in neighbors:
+                neighbor_concentration = x[neighbor]
+                if(sp.absolute(neighbor_concentration - pore_concentration) > .000001):
+                    Pin.append(pore)
+                    Pn.append(neighbor)
+        
         Ts = self._net.find_connecting_throat(Pin,Pn)
         g = self._fluid[self._conductance][Ts]
         s = self._fluid['throat.occupancy'][Ts]
         xin = self._alg[self._quantity][Pin]
         xout = self._alg[self._quantity][Pn]
-        flow = g*s*(xin - xout)
+        flow = g*s*(sp.log(1-xin) - sp.log(1-xout))
         D = sp.sum(flow)*L/A/sp.absolute(BCs[0]-BCs[1])
-        
-        
         
     def _calc_eff_prop_tensor(self,                            
                        fluid,
