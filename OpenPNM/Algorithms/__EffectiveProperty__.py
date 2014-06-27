@@ -19,13 +19,14 @@ class EffectiveProperty(GenericAlgorithm):
         super(EffectiveProperty,self).__init__(**kwargs)
         self._logger.info("Construct Algorithm")
         
-    def calculate(self,algorithm,fluid,conductance=str,quantity=str,clean=False):
+    def calculate(self,algorithm,clean=False):
         r'''
         '''
         self._alg = algorithm
-        self._fluid = fluid
-        self._conductance = 'throat.'+conductance.split('.')[-1]
-        self._quantity = 'pore.'+quantity.split('.')[-1]
+        self._fluid = algorithm._fluid
+        conductance = algorithm._conductance
+        self._conductance = algorithm._conductance
+        self._quantity =  algorithm._quantity
         self._clean = clean
         if self._clean:
             self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
