@@ -27,10 +27,22 @@ class EffectiveProperty(GenericAlgorithm):
         self._fluid = fluid
         self._conductance = 'throat.'+conductance.split('.')[-1]
         self._quantity = 'pore.'+quantity.split('.')[-1]
+            
         
     def run(self):
         r'''
         '''
+        if clean:
+            self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,)
+            
+        'pore.Dirichlet' in algorithm.labels():
+            
+        else:
+            
+                
+        
+        
+    def _execute(self):
         #Determine boundary conditions by analyzing algorithm object
         Ps = self._alg.pores(labels='pore.Dirichlet')
         BCs = sp.unique(self._alg['pore.bcval_Dirichlet'][Ps])
@@ -67,16 +79,16 @@ class EffectiveProperty(GenericAlgorithm):
         xin = self._alg[self._quantity][Pin]
         xout = self._alg[self._quantity][Pn]
         flow = g*s*(xin - xout)
+        D = sp.sum(flow)*L/A/sp.absolute(BCs[0]-BCs[1])
         
         #Calculate effective property for given algorithm
         if self._alg.__class__.__name__ == 'FickianDiffusion':
             if 'pore.molar_density' in self._fluid.props(mode='scalars'):
-                D = sp.sum(flow)*L/A/self._fluid['pore.molar_density']/sp.absolute(BCs[0]-BCs[1])
                 return D
         
         
         
-    def _calc_eff_prop(self,                            
+    def _calc_eff_prop_tensor(self,                            
                        fluid,
                        alg,
                        d_term,

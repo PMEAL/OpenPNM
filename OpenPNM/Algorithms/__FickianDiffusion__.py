@@ -23,6 +23,13 @@ class FickianDiffusion(LinearSolver):
         '''  
         self._logger.info("Setup "+self.__class__.__name__)        
         super(FickianDiffusion,self).setup(fluid=fluid,conductance=conductance,quantity=quantity)
+        
+    def calc_eff_diffusivity(self, clean=False):
+        self._eff_property = OpenPNM.Algorithms.EffectiveProperty(alg=self,clean=clean)
+        
+        
+        super(FickianDiffusion,self).calc_eff_propety(**kwargs)
+        
 
 
 
