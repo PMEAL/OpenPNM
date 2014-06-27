@@ -54,8 +54,7 @@ class EffectiveProperty(GenericAlgorithm):
         #Fetch area and length of domain
         A = self._net.domain_area(face=inlets)
         L = self._net.domain_length(face_1=inlets,face_2=outlets)
-    
-        x = self._alg.get_data(self._quantity)
+        x = self._alg[self._quantity]
         #Find flow through inlet face
         Pin = []
         Pn = []
@@ -71,8 +70,8 @@ class EffectiveProperty(GenericAlgorithm):
         Ts = self._net.find_connecting_throat(Pin,Pn)
         g = self._fluid[self._conductance][Ts]
         s = self._fluid['throat.occupancy'][Ts]
-        xin = self._alg[self._quantity][Pin]
-        xout = self._alg[self._quantity][Pn]
+        xin = x[Pin]
+        xout = x[Pn]
         flow = g*s*(sp.log(1-xin) - sp.log(1-xout))
         D = sp.sum(flow)*L/A/sp.absolute(BCs[0]-BCs[1])
         return D
