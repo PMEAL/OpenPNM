@@ -36,7 +36,7 @@ def conduit_conductance(physics,
                    geometry,
                    conductance,
                    shape = 'circular',
-                   propname = 'conduit_conductance',
+                   prop_name = 'conduit_conductance',
                    mode = 'strict',
                    factor = 1/1e3,
                    **params):
@@ -56,56 +56,30 @@ def conduit_conductance(physics,
     This function requires that all the necessary fluid properties already be 
     calculated.
 
-    """    
-    #Interpolate pore fluid property values to throats
-    ct = fluid.get_data(prop='molar_density',throats='all',mode='interpolate')
-    DABt = fluid.get_data(prop='diffusivity',throats='all',mode='interpolate')
-    #Get Nt-by-2 list of pores connected to each throat
-    Ts= network.get_throat_indices()
-    Ps = network.find_connected_pores(Ts,flatten=0)
-    #Find g for half of pore 1
-    pdia = network.get_data(prop='diameter',pores='all')
-    gp1 = ct*DABt*pdia[Ps[:,0]]**2/(0.5*pdia[Ps[:,0]])
-    gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
-    #Find g for half of pore 2
-    gp2 = ct*DABt*pdia[Ps[:,1]]**2/(0.5*pdia[Ps[:,1]])
-    gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
-    #Find g for full throat
-    tdia = network.get_data(prop='diameter',throats='all')
-    tlen = network.get_data(prop='length',throats='all')
-    if (shape == 'circular'):
-        gt = sp.pi*ct*DABt*tdia**2/(tlen*4)
-    elif (shape == 'square'):
-        gt = ct*DABt*tdia**2/tlen
-    else:
-        print('invalid shape chosen.  Either circular or square')
-        return
-    gt = ct*DABt*tdia**2/tlen
-    value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[geometry.throats()]
+    """
+    value = fluid['throat.'+conductance]    
     
     throat_occupancy = fluid['throat.occupancy'] == 0
     connected_pores = network.find_connected_pores(geometry.throats())
     
     if (mode == 'loose'):
-        s = throat_occupancy
-        
-    if(mode == 'medium'):
+        s = list(throat_occupancy)
+    else:
         pores_1 = [x[0] for x in connected_pores]
         pores_2 = [x[1] for x in connected_pores]
-        pores_1_occupancy = fluid['occupancy'][pores_1] == 0
-        pores_2_occupancy = fluid['occupancy'][pores_2] == 0
-        s = throat_occupancy or (pores_1_occupancy and pores_2_occupancy)
+        pores_1_occupancy = list(fluid['pore.occupancy'][pores_1] == 0)
+        pores_2_occupancy = list(fluid['pore.occupancy'][pores_2] == 0)
         
-    if(mode == 'strict'):
-        pores_1 = [x[0] for x in connected_pores]
-        pores_2 = [x[1] for x in connected_pores]
-        pores_1_occupancy = fluid['occupancy'][pores_1] == 0
-        pores_2_occupancy = fluid['occupancy'][pores_2] == 0
-        s = pores_1_occupancy or throat_occupancy or pores_2_occupancy 
+        if(mode == 'medium'):
+            s = throat_occupancy or (pores_1_occupancy and pores_2_occupancy)
+            
+        if(mode == 'strict'):
+            print(list(pores_1_occupancy))
+            print(pores_2_occupancy)
+            s = pores_1_occupancy or throat_occupancy or pores_2_occupancy
         
-    value = value*(-s) + value*s/1.0e3
+    value = value*(not s) + value*s/1.0e3
     print(value)
         
-    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
+    fluid.set_data(prop=prop_name,throats=geometry.throats(),data=value)
 
