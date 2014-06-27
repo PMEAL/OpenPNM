@@ -74,6 +74,7 @@ alg.setup(fluid=air)
 alg.run()
 alg.update()
 alg.calc_eff_diffusivity()
+print(alg._eff_property/air['pore.diffusivity'])
 
 
 #------------------------------------------------------------------------------
