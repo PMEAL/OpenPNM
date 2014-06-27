@@ -27,15 +27,15 @@ class EffectiveProperty(GenericAlgorithm):
         self._conductance = 'throat.'+conductance.split('.')[-1]
         self._quantity = 'pore.'+quantity.split('.')[-1]
         self._clean = clean
-        if self._clean:
-            self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
-        else:
-            if 'pore.Dirichlet' in algorithm.labels():
-                code that calls _execute for the algorithms preset boundaries.
-            else:
-                self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
-        else:
-            
+#        if self._clean:
+#            self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
+#        else:
+#            if 'pore.Dirichlet' in algorithm.labels():
+#                #code that calls _execute for the algorithms preset boundaries.
+#                _execute(self)
+#            else:
+#                self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
+#            
                 
         
         
