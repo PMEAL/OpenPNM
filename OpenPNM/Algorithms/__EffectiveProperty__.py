@@ -28,7 +28,7 @@ class EffectiveProperty(GenericAlgorithm):
         self._quantity = 'pore.'+quantity.split('.')[-1]
         self._clean = clean
         
-        _execute(self)
+        self._execute()
 #        if self._clean:
 #            self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
 #        else:
@@ -49,28 +49,12 @@ class EffectiveProperty(GenericAlgorithm):
             raise Exception('The supplied algorithm did not have appropriate BCs')
         inlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amax(BCs))[0]
         outlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amin(BCs))[0]
-
-        #Analyze input and output pores
-        #Check for coplanarity
-#        if self._net.iscoplanar(inlets) == False:
-#            raise Exception('The inlet pores do not define a plane')
-#        if self._net.iscoplanar(outlets) == False:
-#            raise Exception('The outlet pores do not define a plane')
-        #Ensure pores are on a face of domain (only 1 non-self neighbor each)
-#        PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
-#        if sp.shape(PnI) != sp.shape(inlets):
-#            raise Exception('The inlet pores have too many neighbors')
-#        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
-#        if sp.shape(PnO) != sp.shape(outlets):
-#            raise Exception('The outlet pores have too many neighbors')
-#        Pin = inlets
-#        Pout = outlets
         
         #Fetch area and length of domain
         A = self._net.domain_area(face=inlets)
         L = self._net.domain_length(face_1=inlets,face_2=outlets)
     
-        x = self._net.get_pore_data(prop=x_term)
+        x = self._alg.get_data(self._quantity)
         #Find flow through inlet face
         Pin = []
         Pn = []
@@ -90,6 +74,7 @@ class EffectiveProperty(GenericAlgorithm):
         xout = self._alg[self._quantity][Pn]
         flow = g*s*(sp.log(1-xin) - sp.log(1-xout))
         D = sp.sum(flow)*L/A/sp.absolute(BCs[0]-BCs[1])
+        return D
         
     def _calc_eff_prop_tensor(self,                            
                        fluid,
