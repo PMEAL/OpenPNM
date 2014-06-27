@@ -19,24 +19,21 @@ class EffectiveProperty(GenericAlgorithm):
         super(EffectiveProperty,self).__init__(**kwargs)
         self._logger.info("Construct Algorithm")
         
-        
-    def setup(self,algorithm,fluid,conductance=str,quantity=str):
+    def calculate(self,algorithm,fluid,conductance=str,quantity=str,clean=False):
         r'''
         '''
         self._alg = algorithm
         self._fluid = fluid
         self._conductance = 'throat.'+conductance.split('.')[-1]
         self._quantity = 'pore.'+quantity.split('.')[-1]
-            
-        
-    def run(self):
-        r'''
-        '''
-        if clean:
-            self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,)
-            
-        'pore.Dirichlet' in algorithm.labels():
-            
+        self._clean = clean
+        if self._clean:
+            self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
+        else:
+            if 'pore.Dirichlet' in algorithm.labels():
+                code that calls _execute for the algorithms preset boundaries.
+            else:
+                self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
         else:
             
                 
@@ -80,11 +77,6 @@ class EffectiveProperty(GenericAlgorithm):
         xout = self._alg[self._quantity][Pn]
         flow = g*s*(xin - xout)
         D = sp.sum(flow)*L/A/sp.absolute(BCs[0]-BCs[1])
-        
-        #Calculate effective property for given algorithm
-        if self._alg.__class__.__name__ == 'FickianDiffusion':
-            if 'pore.molar_density' in self._fluid.props(mode='scalars'):
-                return D
         
         
         
