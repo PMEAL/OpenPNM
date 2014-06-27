@@ -6,6 +6,7 @@ module __FickianDiffusion__
 """
 
 import scipy as sp
+import OpenPNM
 from .__LinearSolver__ import LinearSolver
 
 class FickianDiffusion(LinearSolver):
@@ -25,10 +26,9 @@ class FickianDiffusion(LinearSolver):
         super(FickianDiffusion,self).setup(fluid=fluid,conductance=conductance,quantity=quantity)
         
     def calc_eff_diffusivity(self, clean=False):
-        self._eff_property = OpenPNM.Algorithms.EffectiveProperty(alg=self,clean=clean)
-        
-        
-        super(FickianDiffusion,self).calc_eff_propety(**kwargs)
+        D_normal = OpenPNM.Algorithms.EffectiveProperty().calculate(alg=self,clean=clean)
+        self._eff_property = D_normal*self._fluid['pore.molar_density']
+        return self._eff_property
         
 
 
