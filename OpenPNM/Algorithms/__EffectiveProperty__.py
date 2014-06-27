@@ -26,20 +26,18 @@ class EffectiveProperty(GenericAlgorithm):
         self._conductance = algorithm._conductance
         self._quantity =  algorithm._quantity
         self._clean = clean
-        if self._clean:
-            D = self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm)
+        if self._clean | ('pore.Dirichlet' in algorithm.labels()):
+            #code that calls _execute for the algorithms preset boundaries.
+            #Determine boundary conditions by analyzing algorithm object
+            self._Ps = self._alg.pores(labels='pore.Dirichlet')
+            self._BCs = sp.unique(self._alg['pore.bcval_Dirichlet'][self._Ps])
+            if sp.shape(self._BCs)[0] != 2:
+                raise Exception('The supplied algorithm did not have appropriate BCs')
+            self._inlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amax(self._BCs))[0]
+            self._outlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amin(self._BCs))[0]
+            D = self._execute()
         else:
-            if 'pore.Dirichlet' in algorithm.labels():
-                #code that calls _execute for the algorithms preset boundaries.
-                self._Ps = self._alg.pores(labels='pore.Dirichlet')
-                self._BCs = sp.unique(self._alg['pore.bcval_Dirichlet'][self._Ps])
-                if sp.shape(self._BCs)[0] != 2:
-                    raise Exception('The supplied algorithm did not have appropriate BCs')
-                self._inlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amax(self._BCs))[0]
-                self._outlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amin(self._BCs))[0]
-                D = self._execute()
-            else:
-                D = self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm)
+            D = self._calc_eff_prop_tensor(fluid=self._fluid,alg=algorithm)
                 
         return D
             
@@ -47,7 +45,6 @@ class EffectiveProperty(GenericAlgorithm):
         
         
     def _execute(self):
-        #Determine boundary conditions by analyzing algorithm object
         
 
         #Analyze input and output pores
@@ -63,8 +60,6 @@ class EffectiveProperty(GenericAlgorithm):
 #        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
 #        if sp.shape(PnO) != sp.shape(outlets):
 #            raise Exception('The outlet pores have too many neighbors')
-#        Pin = inlets
-#        Pout = outlets
         inlets = self._inlets
         outlets = self._outlets
         
