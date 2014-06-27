@@ -3,7 +3,6 @@ module __EffectiveProperty__: Base class to estimate transport properties
 ===============================================================================
 
 """
-import OpenPNM
 import scipy as sp
 import scipy.signal as spsg
 import scipy.spatial as sptl
@@ -19,41 +18,55 @@ class EffectiveProperty(GenericAlgorithm):
         super(EffectiveProperty,self).__init__(**kwargs)
         self._logger.info("Construct Algorithm")
         
-    def calculate(self,algorithm,clean=False):
+    def run(self,algorithm,clean=False):
         r'''
         '''
         self._alg = algorithm
         self._fluid = algorithm._fluid
-        conductance = algorithm._conductance
         self._conductance = algorithm._conductance
         self._quantity =  algorithm._quantity
         self._clean = clean
-        
-        self._execute()
-#        if self._clean:
-#            self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
-#        else:
-#            if 'pore.Dirichlet' in algorithm.labels():
-#                #code that calls _execute for the algorithms preset boundaries.
-#                _execute(self)
-#            else:
-#                self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
-#            
+        if self._clean | ('pore.Dirichlet' in algorithm.labels()):
+            #code that calls _execute for the algorithms preset boundaries.
+            #Determine boundary conditions by analyzing algorithm object
+            self._Ps = self._alg.pores(labels='pore.Dirichlet')
+            self._BCs = sp.unique(self._alg['pore.bcval_Dirichlet'][self._Ps])
+            if sp.shape(self._BCs)[0] != 2:
+                raise Exception('The supplied algorithm did not have appropriate BCs')
+            self._inlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amax(self._BCs))[0]
+            self._outlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amin(self._BCs))[0]
+            D = self._execute()
+        else:
+            D = self._calc_eff_prop_tensor(fluid=self._fluid,alg=algorithm)
+                
+        return D
+            
                 
         
         
     def _execute(self):
-        #Determine boundary conditions by analyzing algorithm object
-        Ps = self._alg.pores(labels='pore.Dirichlet')
-        BCs = sp.unique(self._alg['pore.bcval_Dirichlet'][Ps])
-        if sp.shape(BCs)[0] != 2:
-            raise Exception('The supplied algorithm did not have appropriate BCs')
-        inlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amax(BCs))[0]
-        outlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amin(BCs))[0]
+        
+
+        #Analyze input and output pores
+        #Check for coplanarity
+#        if self._net.iscoplanar(inlets) == False:
+#            raise Exception('The inlet pores do not define a plane')
+#        if self._net.iscoplanar(outlets) == False:
+#            raise Exception('The outlet pores do not define a plane')
+        #Ensure pores are on a face of domain (only 1 non-self neighbor each)
+#        PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
+#        if sp.shape(PnI) != sp.shape(inlets):
+#            raise Exception('The inlet pores have too many neighbors')
+#        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
+#        if sp.shape(PnO) != sp.shape(outlets):
+#            raise Exception('The outlet pores have too many neighbors')
+        inlets = self._inlets
+        outlets = self._outlets
+        
         
         #Fetch area and length of domain
-        A = self._net.domain_area(face=inlets)
-        L = self._net.domain_length(face_1=inlets,face_2=outlets)
+        A = self._net.domain_area(face=self._inlets)
+        L = self._net.domain_length(face_1=self._inlets,face_2=self._outlets)
         x = self._alg[self._quantity]
         #Find flow through inlet face
         Pin = []
@@ -72,8 +85,8 @@ class EffectiveProperty(GenericAlgorithm):
         s = self._fluid['throat.occupancy'][Ts]
         xin = x[Pin]
         xout = x[Pn]
-        flow = g*s*(sp.log(1-xin) - sp.log(1-xout))
-        D = sp.sum(flow)*L/A/sp.absolute(BCs[0]-BCs[1])
+        flow = g*s*(xin - xout)
+        D = sp.sum(flow)*L/A/sp.absolute(self._BCs[0]-self._BCs[1])
         return D
         
     def _calc_eff_prop_tensor(self,                            
