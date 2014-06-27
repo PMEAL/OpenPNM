@@ -41,10 +41,10 @@ class EffectiveProperty(GenericAlgorithm):
 
         #Analyze input and output pores
         #Check for coplanarity
-        if self._net.iscoplanar(inlets) == False:
-            raise Exception('The inlet pores do not define a plane')
-        if self._net.iscoplanar(outlets) == False:
-            raise Exception('The outlet pores do not define a plane')
+#        if self._net.iscoplanar(inlets) == False:
+#            raise Exception('The inlet pores do not define a plane')
+#        if self._net.iscoplanar(outlets) == False:
+#            raise Exception('The outlet pores do not define a plane')
         #Ensure pores are on a face of domain (only 1 non-self neighbor each)
         PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
         if sp.shape(PnI) != sp.shape(inlets):

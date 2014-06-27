@@ -39,6 +39,7 @@ pn.regenerate_fluids()
 phys_water = OpenPNM.Physics.BasePhysics(network=pn, fluid=water,geometry=geom,name='physwater')
 
 phys_air = OpenPNM.Physics.BasePhysics(network=pn, fluid=air,geometry=geom,name='physair')
+phys_air.add_property(prop='multiphase',model='conduit_conductance',propname='conduit_diffusive_conductance',mode='strict')
 
 #Use Network's Physics regeneration method
 pn.regenerate_physics()
@@ -73,9 +74,9 @@ alg.run()
 alg.update()
 
 
-#Deff = OpenPNM.Algorithms.EffectiveProperty(network=pn)
-#Deff.setup(algorithm=Fickian_alg,fluid=air,conductance='diffusive_conductance',quantity='mole_fraction')
-#a = Deff.run()
+Deff = OpenPNM.Algorithms.EffectiveProperty(network=pn)
+Deff.setup(algorithm=alg,fluid=air,conductance='diffusive_conductance',quantity='mole_fraction')
+a = Deff.run()
 
 #------------------------------------------------------------------------------
 '''Export to VTK'''
