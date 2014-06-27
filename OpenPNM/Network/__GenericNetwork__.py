@@ -88,12 +88,19 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #Ensure given points are coplanar before proceeding
         if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
             #Find distance between given faces
-            x = self['pore.coords'][face_1]
-            y = self['pore.coords'][face_2]
-            Ds = sptl.distance_matrix(x,y)
+            f1 = self['pore.coords'][face_1]
+            f2 = self['pore.coords'][face_2]
+            Ds = sptl.distance_matrix(f1,f2)
             L = sp.median(sp.amin(Ds,axis=0))
         else:
-            raise Exception('The supplied pores are not coplanar')
+            f1 = self['pore.coords'][face_1]
+            f2 = self['pore.coords'][face_2]
+            distavg = [0,0,0]
+            distavg[0] = sp.absolute(sp.average(f1[:,0]) - sp.average(f2[:,0]))
+            distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
+            distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
+            L = max(distavg)
+            self._logger.warn('The supplied pores are not coplanar, estimating given')
         return L
         
     def domain_area(self,face):
