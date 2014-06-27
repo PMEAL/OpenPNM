@@ -682,7 +682,7 @@ class Tools(Base,dict):
             elif element == 'pore':
                 temp = self._get_labels(element='pore',locations=self.pores(), mode=mode)
             elif element == 'throat':
-                temp = self._get_labels(element='throat',locations=self.pores(), mode=mode)
+                temp = self._get_labels(element='throat',locations=self.throats(), mode=mode)
             else:
                 self._logger.error('Unrecognized element')
                 return

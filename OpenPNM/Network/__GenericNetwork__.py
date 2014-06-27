@@ -90,7 +90,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             #Find distance between given faces
             x = self['pore.coords'][face_1]
             y = self['pore.coords'][face_2]
-            Ds = sptl.distance_matrix(x,y)
+            Ds = misc.dist(x,y)
             L = sp.median(sp.amin(Ds,axis=0))
         else:
             raise Exception('The supplied pores are not coplanar')
@@ -113,7 +113,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             #Find area of inlet face
             x = self['pore.coords'][face]
             y = x
-            As = sptl.distance_matrix(x,y)
+            As = misc.dist(x,y)
             temp = sp.amax(As,axis=0)
             h = sp.amax(temp)
             corner1 = sp.where(temp==h)[0][0]
@@ -194,7 +194,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             row  = sp.append(row,conn[:,1])
             col  = sp.append(col,conn[:,0])
             data = sp.append(data,data)
-
+        
         temp = sprs.coo_matrix((data,(row,col)),(Np,Np))
         if sprsfmt == 'coo' or sprsfmt == 'all':
             self._adjacency_matrix['coo'][tprop] = temp
@@ -202,6 +202,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._adjacency_matrix['csr'][tprop] = temp.tocsr()
         if sprsfmt == 'lil' or sprsfmt == 'all':
             self._adjacency_matrix['lil'][tprop] = temp.tolil()
+            
+        self._logger.debug('create_incidence_matrix: End of method')
         if sprsfmt != 'all':
             return self._adjacency_matrix[sprsfmt][tprop]
 
@@ -253,7 +255,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             ind = dataset > 0
         else:
             ind = sp.ones_like(dataset, dtype=bool)
-
+        
         conn = self['throat.conns'][ind]
         row  = conn[:,0]
         row = sp.append(row,conn[:,1])
@@ -268,6 +270,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._incidence_matrix['csr'][tprop] = temp.tocsr()
         if sprsfmt == 'lil' or sprsfmt == 'all':
             self._incidence_matrix['lil'][tprop] = temp.tolil()
+            
+        self._logger.debug('create_incidence_matrix: End of method')
         if sprsfmt != 'all':
             return self._incidence_matrix[sprsfmt][tprop]
             
@@ -691,6 +695,41 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         # Any existing adjacency and incidence matrices will be invalid
         self.reset_graphs()
         
+    def propagate_labels(self,pores=[],throats=[]):
+        r'''
+        The labels from pores (or throats) will propagate to their neighoring 
+        throats (or pores)
+        '''
+        if pores != []:
+            labels = self.labels(pores=pores)
+            labels.remove('pore.all')
+            for item in labels:
+                p = self.pores(item)
+                t = self.find_neighbor_throats(p)
+                try:
+                    self['throat.'+item.split('.')[-1]][t] = True
+                except:
+                    self['throat.'+item.split('.')[-1]] = sp.zeros_like(self['throat.all'],dtype=bool)
+                    self['throat.'+item.split('.')[-1]][t] = True
+        if throats != []:
+            labels = self.labels(throats=throats)
+            labels.remove('throat.all')
+            for item in labels:
+                t = self.throats(item)
+                p = self.find_neighbor_pores(t)
+                try:
+                    self['pore.'+item.split('.')[-1]][p] = True
+                except:
+                    self['pore.'+item.split('.')[-1]] = sp.zeros_like(self['pore.all'],dtype=bool)
+                    self['pore.'+item.split('.')[-1]][p] = True
+        
+    def adopt_labels(self,pores=[],throats=[]):
+        r'''
+        The given pores (or throats) will adopt the labels from their 
+        neighboring throats (or pores)
+        '''
+        pass
+        
     def stitch(self,heads,tails):
         r'''
         Adds throat connections between specified pores
@@ -745,7 +784,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
         self.reset_graphs()
         
-    def trim(self, pores=[], throats=[]):
+    def trim(self, pores=[], throats=[], check_health=False):
         '''
         Remove pores (or throats) from the network
         
@@ -778,12 +817,15 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             Ts = self.find_neighbor_throats(pores)
             Tdrop[Ts] = 1
             Tkeep = ~Tdrop
-        if sp.shape(throats)[0]>0:
+        elif sp.shape(throats)[0]>0:
             Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
             Tdrop[throats] = 1
             Tkeep = ~Tdrop
             Pkeep = self.get_pore_indices(labels='all')
-            Pkeep = self.to_mask(pores=Pkeep)
+            Pkeep = self.tomask(pores=Pkeep)
+        else:
+            self._logger.warning('No pores or throats recieved')
+            return
         
         #Remap throat connections
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
@@ -818,7 +860,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.reset_graphs()
         
         #Check network health
-        self.network_health()
+        if check_health:
+            self.network_health()
         
     def find_clusters(self,mask=[]):
         r'''
@@ -863,7 +906,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._logger.warning(str(sp.sum(Ps==0))+' pores have no neighbors')
             health.isolated_pores = sp.where(Ps==0)[0]
         #Check for clusters of isolated pores
-        Cs = self.find_clusters(self.to_mask(throats=self.throats('all')))
+        Cs = self.find_clusters(self.tomask(throats=self.throats('all')))
         if sp.shape(sp.unique(Cs))[0] > 1:
             self._logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):
