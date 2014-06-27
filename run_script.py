@@ -73,11 +73,8 @@ OP_1.update(Pc=1000)
 alg.setup(fluid=air)
 alg.run()
 alg.update()
+alg.calc_eff_diffusivity()
 
-
-Deff = OpenPNM.Algorithms.EffectiveProperty(network=pn)
-Deff.setup(algorithm=alg,fluid=air,conductance='conduit_diffusive_conductance',quantity='mole_fraction')
-a = Deff.run()
 
 #------------------------------------------------------------------------------
 '''Export to VTK'''

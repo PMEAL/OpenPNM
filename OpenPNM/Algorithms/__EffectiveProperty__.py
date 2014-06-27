@@ -3,7 +3,6 @@ module __EffectiveProperty__: Base class to estimate transport properties
 ===============================================================================
 
 """
-import OpenPNM
 import scipy as sp
 import scipy.signal as spsg
 import scipy.spatial as sptl
@@ -28,7 +27,7 @@ class EffectiveProperty(GenericAlgorithm):
         self._quantity =  algorithm._quantity
         self._clean = clean
         if self._clean:
-            D = self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
+            D = self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm)
         else:
             if 'pore.Dirichlet' in algorithm.labels():
                 #code that calls _execute for the algorithms preset boundaries.
@@ -40,7 +39,7 @@ class EffectiveProperty(GenericAlgorithm):
                 self._outlets = sp.where(self._alg['pore.bcval_Dirichlet']==sp.amin(self._BCs))[0]
                 D = self._execute()
             else:
-                D = self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm,...)
+                D = self._calc_eff_prop_tensor(fluid=fluid,alg=algorithm)
                 
         return D
             
