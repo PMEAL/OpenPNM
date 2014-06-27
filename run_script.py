@@ -50,12 +50,17 @@ pn.regenerate_physics()
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=30,network=pn)
-a = pn.pores(labels=['bottom','boundary'],mode='intersection')
-OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=20)
-OP_1.run()
+#OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=30,network=pn)
+#a = pn.pores(labels=['bottom','boundary'],mode='intersection')
+#OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=20)
+#OP_1.run()
 #OP_1.plot_drainage_curve()
+inlets = pn.get_pore_indices(labels = ['bottom'])
+outlets = pn.get_pore_indices(labels = ['top'])
 
+OP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1', loglevel = 30)
+OP_1.run(invading_fluid = water, defending_fluid = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
+OP_1.update()
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
@@ -77,7 +82,9 @@ alg.update()
 
 Deff = OpenPNM.Algorithms.EffectiveProperty(network=pn)
 Deff.setup(algorithm=alg,fluid=air,conductance='conduit_diffusive_conductance',quantity='mole_fraction')
-a = Deff.run()
+a = Deff.calculate(algorithm = alg)
+
+
 
 #------------------------------------------------------------------------------
 '''Export to VTK'''
