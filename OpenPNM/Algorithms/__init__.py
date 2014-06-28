@@ -42,4 +42,3 @@ from .__FourierConduction__ import FourierConduction
 from .__OhmicConduction__ import OhmicConduction
 from .__LinearSolver__ import LinearSolver
 from .__Tortuosity__ import Tortuosity
-from .__EffectiveProperty__ import EffectiveProperty
