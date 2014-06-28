@@ -27,7 +27,7 @@ class StokesFlow(LinearSolver):
         super(StokesFlow,self).setup(fluid=fluid,conductance=conductance,quantity=quantity)
                 
     def calc_eff_permeability(self, clean=False):
-        D_normal = EffectiveProperty(network=self._net,name='EffectivePermeability').run(alg=self,clean=clean)
+        D_normal = self._calc_eff_prop()
         self._eff_property = D_normal*self._fluid['pore.viscosity']
         return self._eff_property
         
