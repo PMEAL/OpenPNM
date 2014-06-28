@@ -21,14 +21,13 @@ class FickianDiffusion(LinearSolver):
     def setup(self,fluid,conductance='diffusive_conductance',quantity='mole_fraction',**params):
         r'''
         '''  
-        self._logger.info("Setup "+self.__class__.__name__)        
+        self._logger.info("Setup "+self.__class__.__name__)   
         super(FickianDiffusion,self).setup(fluid=fluid,conductance=conductance,quantity=quantity)
         
     def calc_eff_diffusivity(self, clean=False):
-        self._eff_property = OpenPNM.Algorithms.EffectiveProperty(alg=self,clean=clean)
-        
-        
-        super(FickianDiffusion,self).calc_eff_propety(**kwargs)
+        D_normal = self._calc_eff_prop()
+        self._eff_property = D_normal/self._fluid['pore.molar_density']
+        return self._eff_property
         
 
 
