@@ -57,26 +57,29 @@ def conduit_conductance(physics,
     calculated.
 
     """
-    value = fluid['throat.'+conductance]   
+    throat_value = fluid['throat.'+conductance]   
     
-    throat_occupancy = list(fluid['throat.occupancy'] == 0)
-    connected_pores = network.find_connected_pores(geometry.throats())
-    
+    throat_occupancy = fluid['throat.occupancy'] == 1
+    pore_occupancy = fluid['pore.occupancy'] == 1
+                     
     if (mode == 'loose'):
-        s = throat_occupancy
+        closed_conduits = -throat_occupancy
     else:
+        thoats_closed = -throat_occupancy
+        connected_pores = network.find_connected_pores(geometry.throats())
         pores_1 = connected_pores[:,0]
         pores_2 = connected_pores[:,1]
-        pores_1_occupancy = list(fluid['pore.occupancy'][pores_1] == 0)
-        pores_2_occupancy = list(fluid['pore.occupancy'][pores_2] == 0)
+        pores_1_closed = -pore_occupancy[pores_1]
+        pores_2_closed = -pore_occupancy[pores_2]
         
         if(mode == 'medium'):
-            s = throat_occupancy or (pores_1_occupancy and pores_2_occupancy)
+            closed_conduits = thoats_closed | (pores_1_closed & pores_2_closed)
             
         if(mode == 'strict'):
-            s = pores_1_occupancy or throat_occupancy or pores_2_occupancy
-    s = sp.array(s)    
-    value = value*(-s) + value*s/1.0e3
-        
+            closed_conduits = pores_1_closed | thoats_closed | pores_2_closed
+    open_conduits = -closed_conduits
+    print(closed_conduits.sum())
+    value = throat_value*open_conduits + throat_value*closed_conduits/1.0e3
+    
     fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
 

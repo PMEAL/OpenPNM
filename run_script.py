@@ -49,7 +49,7 @@ pn.regenerate_physics()
 #------------------------------------------------------------------------------
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=30,network=pn)
 a = pn.pores(labels=['bottom','boundary'],mode='intersection')
-OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a[10],npts=20)
+OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=100)
 OP_1.run()
 #OP_1.plot_drainage_curve()
 #inlets = pn.get_pore_indices(labels = ['bottom'])
@@ -70,7 +70,7 @@ BC2_pores = pn.pores(labels=['bottom','boundary'],mode='intersection')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=sp.log(1-0.4), pores=BC2_pores)
 
 # Updating data based on the result of Percolation Algorithms
-OP_1.update(Pc=15000)
+OP_1.update(Pc=11000)
 phys_air.add_property(prop='multiphase',model='conduit_conductance',
                       conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='strict')
 pn.regenerate_physics()
