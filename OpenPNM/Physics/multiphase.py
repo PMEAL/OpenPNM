@@ -36,7 +36,7 @@ def conduit_conductance(physics,
                    geometry,
                    conductance,
                    shape = 'circular',
-                   prop_name = 'conduit_conductance',
+                   propname = 'conduit_conductance',
                    mode = 'strict',
                    factor = 1/1e3,
                    **params):
@@ -57,16 +57,16 @@ def conduit_conductance(physics,
     calculated.
 
     """
-    value = fluid['throat.'+conductance]    
+    value = fluid['throat.'+conductance]   
     
-    throat_occupancy = fluid['throat.occupancy'] == 0
+    throat_occupancy = list(fluid['throat.occupancy'] == 0)
     connected_pores = network.find_connected_pores(geometry.throats())
     
     if (mode == 'loose'):
-        s = list(throat_occupancy)
+        s = throat_occupancy
     else:
-        pores_1 = [x[0] for x in connected_pores]
-        pores_2 = [x[1] for x in connected_pores]
+        pores_1 = connected_pores[:,0]
+        pores_2 = connected_pores[:,1]
         pores_1_occupancy = list(fluid['pore.occupancy'][pores_1] == 0)
         pores_2_occupancy = list(fluid['pore.occupancy'][pores_2] == 0)
         
@@ -74,12 +74,9 @@ def conduit_conductance(physics,
             s = throat_occupancy or (pores_1_occupancy and pores_2_occupancy)
             
         if(mode == 'strict'):
-            print(list(pores_1_occupancy))
-            print(pores_2_occupancy)
             s = pores_1_occupancy or throat_occupancy or pores_2_occupancy
+    s = sp.array(s)    
+    value = value*(-s) + value*s/1.0e3
         
-    value = value*(not s) + value*s/1.0e3
-    print(value)
-        
-    fluid.set_data(prop=prop_name,throats=geometry.throats(),data=value)
+    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
 
