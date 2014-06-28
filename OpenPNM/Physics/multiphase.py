@@ -78,7 +78,6 @@ def conduit_conductance(physics,
         if(mode == 'strict'):
             closed_conduits = pores_1_closed | thoats_closed | pores_2_closed
     open_conduits = -closed_conduits
-    print(closed_conduits.sum())
     value = throat_value*open_conduits + throat_value*closed_conduits/1.0e3
     
     fluid.set_data(prop=propname,throats=geometry.throats(),data=value)

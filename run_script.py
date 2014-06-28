@@ -51,13 +51,16 @@ OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=30,network=pn)
 a = pn.pores(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=100)
 OP_1.run()
+# Updating data based on the result of Percolation Algorithms
+OP_1.update(Pc=11000)
 #OP_1.plot_drainage_curve()
-#inlets = pn.get_pore_indices(labels = ['bottom'])
-#outlets = pn.get_pore_indices(labels = ['top'])
-#
-#OP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1', loglevel = 30)
-#OP_1.run(invading_fluid = water, defending_fluid = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
-#OP_1.update()
+inlets = pn.get_pore_indices(labels = ['bottom'])
+outlets = pn.get_pore_indices(labels = ['top'])
+
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1', loglevel = 30)
+IP_1.setup(invading_fluid = water, defending_fluid = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
+IP_1.run()
+IP_1.update()
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
@@ -69,10 +72,8 @@ alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=sp.log(1-.6), pores=BC1_
 BC2_pores = pn.pores(labels=['bottom','boundary'],mode='intersection')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=sp.log(1-0.4), pores=BC2_pores)
 
-# Updating data based on the result of Percolation Algorithms
-OP_1.update(Pc=11000)
 phys_air.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='strict')
+                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='loose')
 pn.regenerate_physics()
 
 # Run simulation
