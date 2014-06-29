@@ -695,41 +695,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         # Any existing adjacency and incidence matrices will be invalid
         self.reset_graphs()
         
-    def propagate_labels(self,pores=[],throats=[]):
-        r'''
-        The labels from pores (or throats) will propagate to their neighoring 
-        throats (or pores)
-        '''
-        if pores != []:
-            labels = self.labels(pores=pores)
-            labels.remove('pore.all')
-            for item in labels:
-                p = self.pores(item)
-                t = self.find_neighbor_throats(p)
-                try:
-                    self['throat.'+item.split('.')[-1]][t] = True
-                except:
-                    self['throat.'+item.split('.')[-1]] = sp.zeros_like(self['throat.all'],dtype=bool)
-                    self['throat.'+item.split('.')[-1]][t] = True
-        if throats != []:
-            labels = self.labels(throats=throats)
-            labels.remove('throat.all')
-            for item in labels:
-                t = self.throats(item)
-                p = self.find_neighbor_pores(t)
-                try:
-                    self['pore.'+item.split('.')[-1]][p] = True
-                except:
-                    self['pore.'+item.split('.')[-1]] = sp.zeros_like(self['pore.all'],dtype=bool)
-                    self['pore.'+item.split('.')[-1]][p] = True
-        
-    def adopt_labels(self,pores=[],throats=[]):
-        r'''
-        The given pores (or throats) will adopt the labels from their 
-        neighboring throats (or pores)
-        '''
-        pass
-        
     def stitch(self,heads,tails):
         r'''
         Adds throat connections between specified pores
