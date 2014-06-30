@@ -6,7 +6,6 @@ module __Permeability__:
 """
 
 import scipy as sp
-from .__EffectiveProperty__ import EffectiveProperty
 from .__LinearSolver__ import LinearSolver
 
 class StokesFlow(LinearSolver):
