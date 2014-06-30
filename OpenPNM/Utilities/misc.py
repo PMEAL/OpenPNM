@@ -1,5 +1,6 @@
 import scipy as _sp
 import time as _time
+from scipy.spatial.distance import cdist as dist
 
 def iscoplanar(coords):
     r'''
