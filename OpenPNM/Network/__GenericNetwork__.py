@@ -94,6 +94,14 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             L = sp.median(sp.amin(Ds,axis=0))
         else:
             raise Exception('The supplied pores are not coplanar')
+            f1 = self['pore.coords'][face_1]
+            f2 = self['pore.coords'][face_2]
+            distavg = [0,0,0]
+            distavg[0] = sp.absolute(sp.average(f1[:,0]) - sp.average(f2[:,0]))
+            distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
+            distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
+            L = max(distavg)
+            self._logger.warn('The supplied pores are not coplanar, estimating given')
         return L
         
     def domain_area(self,face):
@@ -194,7 +202,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             row  = sp.append(row,conn[:,1])
             col  = sp.append(col,conn[:,0])
             data = sp.append(data,data)
-        
+
         temp = sprs.coo_matrix((data,(row,col)),(Np,Np))
         if sprsfmt == 'coo' or sprsfmt == 'all':
             self._adjacency_matrix['coo'][tprop] = temp
@@ -255,7 +263,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             ind = dataset > 0
         else:
             ind = sp.ones_like(dataset, dtype=bool)
-        
+
         conn = self['throat.conns'][ind]
         row  = conn[:,0]
         row = sp.append(row,conn[:,1])
@@ -826,7 +834,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         
         #Check network health
         if check_health:
-            self.network_health()
+        self.network_health()
         
     def find_clusters(self,mask=[]):
         r'''

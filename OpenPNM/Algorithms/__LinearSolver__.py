@@ -295,6 +295,56 @@ class LinearSolver(GenericAlgorithm):
         self._result = X[sp.r_[0:self.num_pores()]]        
         self._logger.info('Writing result to '+self.__class__.__name__+'[\''+self._conductance+'\']')
         self[self._quantity] = self._result
+    
+    def _calc_eff_prop(self):
+        try:
+            self._result
+        except:
+            raise Exception('The algorithm has not been run yet. Cannot calculate effective property.')               
+        #Determine boundary conditions by analyzing algorithm object
+        Ps = self.pores(labels='pore.Dirichlet')
+        BCs = sp.unique(self['pore.bcval_Dirichlet'][Ps])
+        if sp.shape(BCs)[0] != 2:
+            raise Exception('The supplied algorithm did not have appropriate BCs')
+        inlets = sp.where(self['pore.bcval_Dirichlet']==sp.amax(BCs))[0]
+        outlets = sp.where(self['pore.bcval_Dirichlet']==sp.amin(BCs))[0]        
+
+        #Analyze input and output pores
+        #Check for coplanarity
+#        if self._net.iscoplanar(inlets) == False:
+#            raise Exception('The inlet pores do not define a plane. Effective property will be approximation')
+#        if self._net.iscoplanar(outlets) == False:
+#            raise Exception('The outlet pores do not define a plane. Effective property will be approximation')
+        #Ensure pores are on a face of domain (only 1 non-self neighbor each)
+        PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
+        if sp.shape(PnI) != sp.shape(inlets):
+            raise Exception('The inlet pores have too many neighbors. Internal pores appear to be selected.')
+        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
+        if sp.shape(PnO) != sp.shape(outlets):
+            raise Exception('The outlet pores have too many neighbors. Internal pores appear to be selected.')        
         
+        #Fetch area and length of domain
+        A = self._net.domain_area(face=inlets)
+        L = self._net.domain_length(face_1=inlets,face_2=outlets)
+        x = self._result
+        #Find flow through inlet face
+        Pin = []
+        Pn = []
+        for pore in inlets:
+            pore_value = x[pore]
+            neighbors = self._net.find_neighbor_pores(pore, excl_self = True)
+            for neighbor in neighbors:
+                neighbor_value = x[neighbor]
+                if(sp.absolute(neighbor_value - pore_value) > .000001):
+                    Pin.append(pore)
+                    Pn.append(neighbor)
+        
+        Ts = self._net.find_connecting_throat(Pin,Pn)
+        g = self._fluid[self._conductance][Ts]
+        xin = x[Pin]
+        xout = x[Pn]
+        flow = g*(xin - xout)
+        D = sp.sum(flow)*L/A/sp.absolute(BCs[0]-BCs[1])
+        return D
         
         

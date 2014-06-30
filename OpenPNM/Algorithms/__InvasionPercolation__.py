@@ -117,7 +117,7 @@ class InvasionPercolation(GenericAlgorithm):
         super(InvasionPercolation,self).run(**params)
         return self
 
-    def _setup(self,invading_fluid,
+    def setup(self,invading_fluid,
                defending_fluid,
                inlets=[0],
                 outlets=[-1],
@@ -167,7 +167,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._logger.debug( '+='*25)
         self._logger.debug( 'INITIAL SETUP (STEP 1)')
         # if empty, add Pc_entry to throat_properties
-        tdia = self._net.get_throat_data(prop=self._throat_diameter_name)
+        tdia = self._net['throat.'+self._throat_diameter_name]
         # calculate Pc_entry from diameters
         try:
             Pc_entry = self._fluid.get_throat_data(prop=self._capillary_pressure_name)
