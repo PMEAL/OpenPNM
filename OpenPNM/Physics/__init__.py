@@ -47,5 +47,6 @@ from .__BasePhysics__ import BasePhysics
 from . import electronic_conductance
 from . import capillary_pressure
 from . import diffusive_conductance
+from . import multiphase
 from . import thermal_conductance
 from . import hydraulic_conductance

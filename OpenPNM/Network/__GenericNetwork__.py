@@ -11,6 +11,7 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
+import OpenPNM.Utilities.misc as misc
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
@@ -88,14 +89,22 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         - Does not yet check if input faces are perpendicular to each other
         '''
         #Ensure given points are coplanar before proceeding
-        if self.iscoplanar(face_1) and self.iscoplanar(face_2):
+        if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
             #Find distance between given faces
             x = self['pore.coords'][face_1]
             y = self['pore.coords'][face_2]
-            Ds = sptl.distance_matrix(x,y)
+            Ds = misc.dist(x,y)
             L = sp.median(sp.amin(Ds,axis=0))
         else:
             raise Exception('The supplied pores are not coplanar')
+            f1 = self['pore.coords'][face_1]
+            f2 = self['pore.coords'][face_2]
+            distavg = [0,0,0]
+            distavg[0] = sp.absolute(sp.average(f1[:,0]) - sp.average(f2[:,0]))
+            distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
+            distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
+            L = max(distavg)
+            self._logger.warn('The supplied pores are not coplanar, estimating given')
         return L
         
     def domain_area(self,face):
@@ -111,11 +120,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         -------
         The area of the specified face
         '''
-        if self.iscoplanar(face):
+        if misc.iscoplanar(self['pore.coords'][face]):
             #Find area of inlet face
             x = self['pore.coords'][face]
             y = x
-            As = sptl.distance_matrix(x,y)
+            As = misc.dist(x,y)
             temp = sp.amax(As,axis=0)
             h = sp.amax(temp)
             corner1 = sp.where(temp==h)[0][0]
@@ -204,6 +213,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._adjacency_matrix['csr'][tprop] = temp.tocsr()
         if sprsfmt == 'lil' or sprsfmt == 'all':
             self._adjacency_matrix['lil'][tprop] = temp.tolil()
+            
+        self._logger.debug('create_incidence_matrix: End of method')
         if sprsfmt != 'all':
             return self._adjacency_matrix[sprsfmt][tprop]
 
@@ -270,6 +281,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._incidence_matrix['csr'][tprop] = temp.tocsr()
         if sprsfmt == 'lil' or sprsfmt == 'all':
             self._incidence_matrix['lil'][tprop] = temp.tolil()
+            
+        self._logger.debug('create_incidence_matrix: End of method')
         if sprsfmt != 'all':
             return self._incidence_matrix[sprsfmt][tprop]
             
@@ -747,7 +760,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
         self.reset_graphs()
         
-    def trim(self, pores=[], throats=[]):
+    def trim(self, pores=[], throats=[], check_health=False):
         '''
         Remove pores (or throats) from the network
         
@@ -780,12 +793,16 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             Ts = self.find_neighbor_throats(pores)
             Tdrop[Ts] = 1
             Tkeep = ~Tdrop
-        if sp.shape(throats)[0]>0:
+        elif sp.shape(throats)[0]>0:
             Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
             Tdrop[throats] = 1
             Tkeep = ~Tdrop
             Pkeep = self.get_pore_indices(labels='all')
             Pkeep = self.tomask(pores=Pkeep)
+        else:
+            self._logger.warning('No pores or throats recieved')
+            return
+
         
         #Remap throat connections
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
@@ -820,6 +837,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self.reset_graphs()
         
         #Check network health
+        if check_health:
         self.network_health()
         
     def find_clusters(self,mask=[]):
