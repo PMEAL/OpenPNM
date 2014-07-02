@@ -66,9 +66,12 @@ class Base(object):
         else:
             loglevel = 30
             self.set_loglevel(loglevel)
-            
-    def __setitem__(self,**kwargs):
-        print('Setter not implimented')
+        
+    def __repr__(self):
+        return '<%s.%s object at %s>' % (
+        self.__class__.__module__,
+        self.__class__.__name__,
+        hex(id(self)))
               
     def set_loglevel(self,level=50):
         r"""
