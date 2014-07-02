@@ -93,7 +93,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             Ds = misc.dist(x,y)
             L = sp.median(sp.amin(Ds,axis=0))
         else:
-            raise Exception('The supplied pores are not coplanar')
+            self._logger.warn('The supplied pores are not coplanar. Length will be approximate.')
             f1 = self['pore.coords'][face_1]
             f2 = self['pore.coords'][face_2]
             distavg = [0,0,0]
@@ -101,7 +101,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
             distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
             L = max(distavg)
-            self._logger.warn('The supplied pores are not coplanar, estimating given')
         return L
         
     def domain_area(self,face):
@@ -130,7 +129,17 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             o = h*sp.sin(sp.arccos((a/h)))
             A = o*a
         else:
-            raise Exception('The supplied pores are not coplanar')
+            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
+            x = self['pore.coords'][face]
+            y = x
+            As = misc.dist(x,y)
+            temp = sp.amax(As,axis=0)
+            h = sp.amax(temp)
+            corner1 = sp.where(temp==h)[0][0]
+            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
+            a = sp.amin(As[corner1,p])
+            o = h*sp.sin(sp.arccos((a/h)))
+            A = o*a
         return A
         
     #--------------------------------------------------------------------------
