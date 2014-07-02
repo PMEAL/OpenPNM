@@ -836,7 +836,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         if check_health:
             self.network_health()
             
-    def subset(self,pores,name=None,keep_labels=True,keep_props=True):
+    def subset(self,pores,name=None,incl_labels=True,incl_props=True):
         r'''
         Create a new sub-network from a list of pores.
         
@@ -844,9 +844,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         ----------
         pores : array_like
             A list of pores from which to create the new network
-        keep_labels : bool, default is True
+        incl_labels : bool, default is True
             Specifies whether to keep labels from main network
-        keep_props : bool, default is True
+        incl_props : bool, default is True
             Specifies whather to keep properties from main network
         name : string, optional
             The name to apply to the new network object
@@ -855,6 +855,29 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         -------
         newpnm : OpenPNM Object
             Returns a new network object
+            
+        Notes
+        -----
+        This method adds a pore and throat label to the master network (pn) 
+        indicating which pores and throats were part of the sub-network (sn).  
+        This means that the results of the sub-network can be applied to the 
+        correct pores and throats in the main network by calling 
+        pn.pores(sn.name), and pn.throats(sn.name).
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.count()
+        {'pore': 125, 'throat': 300}
+        >>> Ps = pn.pores(['top','bottom','front'])
+        >>> pn2 = pn.subset(pores=Ps)
+        >>> pn2.count()
+        {'pore': 65, 'throat': 112}
+        >>> pn2.labels()[0:3]  # It automatically transfers labels and props
+        ['pore.all', 'pore.back', 'pore.bottom']
+        >>> pn2 = pn.subset(pores=Ps,incl_labels=False)
+        >>> pn2.labels()
+        ['pore.all', 'throat.all']
         '''
         newpnm = OpenPNM.Network.GenericNetwork(name=name)
         pores = sp.array(pores,ndmin=1)
@@ -868,7 +891,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         newpnm['throat.conns'] = sp.vstack((tpore1,tpore2)).T
         
         #Now scan through labels and props, and keep if needed
-        if keep_labels == True:
+        if incl_labels == True:
             labels = self.labels()
             for item in labels:
                 if item.split('.')[0] == 'pore':
@@ -878,7 +901,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         else:
             newpnm['pore.all'] = self['pore.all'][pores]
             newpnm['throat.all'] = self['throat.all'][throats]
-        if keep_props == True:
+        if incl_props == True:
             props = self.props()
             props.remove('throat.conns')
             for item in props:
@@ -888,6 +911,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                     newpnm[item] = self[item][throats]
         else:
             newpnm['pore.coords'] = self['pore.coords'][pores]
+        
+        #Append pore and throat mapping to main network as attributes and data
+        self['pore.'+newpnm.name] = sp.zeros_like(self['pore.all'],dtype=bool)
+        self['pore.'+newpnm.name][pores] = True
+        self['throat.'+newpnm.name] = sp.zeros_like(self['throat.all'],dtype=bool)
+        self['throat.'+newpnm.name][throats] = True
         
         return newpnm
         
