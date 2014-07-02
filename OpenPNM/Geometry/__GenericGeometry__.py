@@ -71,6 +71,14 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     @property
     def Nt(self):
         return self.num_throats()
+        
+    def count(self,element=None):
+        temp = {}
+        temp['pore'] = self.num_pores()
+        temp['throat'] = self.num_throats()
+        if element != None:
+            temp = temp[element]
+        return temp
     
     def set_locations(self,pores=[],throats=[],mode='add'):
         r'''
