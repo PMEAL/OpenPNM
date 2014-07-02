@@ -68,9 +68,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         raise NotImplementedError()
         
-    def iscoplanar(self,face):###Fudge to make alg work### Real code is missing
-        return True
-        
     def domain_length(self,face_1,face_2):
         r'''
         Calculate the distance between two faces of the network
@@ -838,7 +835,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         
         #Check network health
         if check_health:
-        self.network_health()
+            self.network_health()
         
     def find_clusters(self,mask=[]):
         r'''
