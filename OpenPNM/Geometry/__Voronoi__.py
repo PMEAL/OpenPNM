@@ -38,8 +38,8 @@ class Voronoi(GenericGeometry):
         super(Voronoi,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
     
-    def setup(self):
-        self._add_throat_props(radius=2e-06) # This sets the key throat data for calculating pore and throat properties later
+    def setup(self, fibre_rad=3e-06):
+        self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
         self.add_property(prop='pore_seed',model='random')
         self.add_property(prop='throat_seed',model='neighbor_min')
         self.add_property(prop='pore_volume',model='voronoi') # Volume must come before diameter
@@ -47,7 +47,7 @@ class Voronoi(GenericGeometry):
         self.add_property(prop='pore_centroid',model='voronoi')
         self.add_property(prop='throat_diameter',model='voronoi')
         self.add_property(prop='throat_centroid',model='voronoi')
-        self.add_property(prop='throat_length',model='constant',value=2e-06)
+        self.add_property(prop='throat_length',model='constant',value=fibre_rad)
         self.add_property(prop='throat_volume',model='voronoi')
         self.add_property(prop='throat_vector',model='pore_to_pore') # Not sure how to do this for centre to centre as we might need to split into two vectors
         self.add_property(prop='throat_surface_area',model='voronoi')
@@ -640,6 +640,12 @@ class Voronoi(GenericGeometry):
         return all_overlap
     
     def print_throat(self,throats):
+        r"""
+        Print a given throat or list of throats accepted as [1,2,3,...,n]
+        e.g geom.print_throat([34,65,99])
+        Original vertices plus offset vertices are rotated to align with 
+        the z-axis and then printed in 2D
+        """
         import matplotlib.pyplot as plt
         if len(throats) > 0:
             verts = self._net['throat.verts'][throats]
@@ -680,6 +686,15 @@ class Voronoi(GenericGeometry):
             print("Please provide throat indices")
 
     def print_pore(self,pores):
+        r"""
+        Print all throats around a given pore or list of pores accepted as [1,2,3,...,n]
+        e.g geom.print_pore([34,65,99])
+        Original vertices plus offset vertices used to create faces and 
+        then printed in 3D
+        To print all pores (n)
+        pore_range = np.arange(0,n-1,1)
+        geom.print_pore(pore_range)
+        """
         import matplotlib.pyplot as plt
         from mpl_toolkits.mplot3d import Axes3D
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -734,6 +749,13 @@ class Voronoi(GenericGeometry):
             print("Please provide pore indices")
     
     def _rotate_and_chop(self,verts,normal,axis=[0,0,1]):
+        r"""
+        Method to rotate a set of vertices (or coords) to align with an axis
+        points must be coplanar and normal must be given
+        Chops axis coord to give vertices back in 2D
+        Used to prepare verts for printing or calculating convex hull in order to arrange
+        them in hull order for calculations and printing
+        """
         xaxis=[1,0,0]
         yaxis=[0,1,0]
         zaxis=[0,0,1]
