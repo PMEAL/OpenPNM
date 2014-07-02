@@ -159,12 +159,27 @@ class GenericFluid(OpenPNM.Utilities.Tools):
             self._prop_list.append(prop)
         except AttributeError: print('could not find',kwargs['model'])
         
-    def physics_listing(self):
-        r"""
-        Prints the names of all physics objects attached to the fluid
-        """
-        for item in self._physics:
-            print(item.name+': ',item)
+    def physics(self,name=''):
+        r'''
+        Retrieves Physics assocaiated with the Fluid
+        
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Physics object to retrieve
+        Returns
+        -------
+            If name is NOT provided, then a list of Physics names is returned. 
+            If a name IS provided, then the Physics object of that name is 
+            returned.
+        '''
+        if name == '':
+            phys = []
+            for item in self._physics:
+                phys.append(item.name)
+        else:
+            phys = self.find_object(obj_name=name)
+        return phys
 
     def physics_update(self,name='all'):
         r"""
@@ -179,9 +194,6 @@ class GenericFluid(OpenPNM.Utilities.Tools):
             if (item.name == name) or (name == 'all'):
                 item.regenerate()
                 self._logger.info('Refreshed '+item.name)
-        
-    def __str__(self):
-        return('This is the __str__ methods of the generic_fluid being overwritten')
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()
