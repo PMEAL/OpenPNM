@@ -567,33 +567,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 Tind = T1[Tmask]
         return Tind
         
-    def __str__(self):
-        r"""
-        Print some basic properties
-        """
-        self._logger.debug("Method: print_overview")
-
-        str_overview = (
-        '==================================================\n'
-        'Overview of network properties\n'
-        '--------------------------------------------------\n'
-        'Basic properties of the network\n'
-        '- Number of pores:   {num_pores}\n'
-        '- Number of throats: {num_throats}\n'
-        ).format(num_pores=self.num_pores(),
-                   num_throats=self.num_throats())
-
-        str_pore = "\nPore properties:"
-        for key, value in self._pore_data.items():
-            str_pore += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,value)
-
-        str_throat = "\nThroat properties:"
-        for key, value in self._throat_data.items():
-            str_throat += "\n\t{0:20}{1.dtype:20}{1.shape:20}".format(key,value)
-
-
-        return str_overview+str_pore+str_throat
-
     def regenerate_fluids(self):
         r'''
         '''
@@ -635,12 +608,54 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             
     def add_geometry(self,name=None,subclass='GenericGeometry',**kwargs):
         r'''
+        This is a helper function for creating Geometry objects.
+        
+        Parameters
+        ----------
+        name : string, optional
+            Name to apply to the newly created geometry object.  If no name is
+            supplied, one will be randomly generated.
+        subclass : string, optional
+            The subclass to use.  If nothing is specified the GenericGeometry
+            class is used.
+            
+        Returns
+        -------
+        A handle to the generated OpenPNM Geometry object.  If this handle is 
+        not stored, it can be found under pn._geometries.
+        
+        Notes
+        -----
+        This method is equivalent to calling the OpenPNM module directly as:
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geo = OpenPNM.Geometry.GenericGeometry(network=pn,name='geom1')
         '''
         temp = OpenPNM.Geometry.__getattribute__(subclass)
         return temp(network=self,name=name,**kwargs)
 
     def add_fluid(self,name=None,subclass='GenericFluid',**kwargs):
         r'''
+        This is a helper function for creating Fluid objects.
+        
+        Parameters
+        ----------
+        name : string, optional
+            Name to apply to the newly created fluid object.  If no name is
+            supplied, one will be randomly generated.
+        subclass : string, optional
+            The subclass to use.  If nothing is specified the GenericFluid
+            class is used.
+            
+        Returns
+        -------
+        A handle to the generated OpenPNM Fluid object.  If this handle is 
+        not stored, it can be found under pn._fluids.
+        
+        Notes
+        -----
+        This method is equivalent to calling the OpenPNM module directly as:
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> fluid = OpenPNM.Fluids.GenericFluid(network=pn,name='fluid1')
         '''
         temp = OpenPNM.Fluids.__getattribute__(subclass)
         return temp(network=self,name=name,**kwargs)
@@ -653,14 +668,15 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
     def update_network(self):
         r'''
-        Documentation for this method is being updated, we are sorry for the inconvenience.
+        Regenerates the adjacency and incidence matrices
         '''
         self.create_adjacency_matrix()
         self.create_incidence_matrix()
         
     def reset_graphs(self):
         r'''
-        Clears the adjacency and incidence matrices
+        Clears the adjacency and incidence matrices.  This is necessary after
+        any manipulations functions such as trim, extend, clone, etc.
         '''
         #Re-initialize adjacency and incidence matrix dictionaries
         self._logger.debug('Resetting adjacency and incidence matrices')
@@ -671,9 +687,22 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._incidence_matrix['csr'] = {}
         self._incidence_matrix['lil'] = {}
         
-    def clone(self,pores,mode='parents',apply_label=['clone']):
+    def clone(self,pores,apply_label=['clone'],mode='parents'):
         r'''
-        mode options should be 'parents', 'siblings', 'isolated', etc
+        Clones the specified pores and adds them to the network
+        
+        Parameters
+        ----------
+        pores : array_like
+            List of pores to clone
+        apply_labels : string, or list of strings
+            The labels to apply to the clones, default is 'clone'
+        mode : string
+            Controls the connections between parents and clones.  Options are:
+            
+            - 'parents': (Default) Each clone is connected only the its parent
+            - 'siblings': Clones are only connected to each other in the same manner as parents were connected
+            - 'isolated': No connections between parents or siblings
         '''
         if sp.shape(self.props('pore'))[0] > 1:
             self._logger.warning('Cloning an active network is messy')
@@ -786,11 +815,19 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.count()
+        {'pore': 125, 'throat': 300}
         >>> pn.trim(pores=[1])
+        >>> pn.count()
+        {'pore': 124, 'throat': 296}  # 1 pore and it's 6 throats are missing
+        
         '''
         pores = np.ravel(pores)
         throats = np.ravel(throats)
         
+        r'''
+        TODO: This logic works but can be shorted as done in subnet
+        '''
         if sp.shape(pores)[0]>0:
             Pdrop = sp.zeros((self.num_pores(),),dtype=bool)
             Pdrop[pores] = True
@@ -808,7 +845,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         else:
             self._logger.warning('No pores or throats recieved')
             return
-        
         #Remap throat connections
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
         Pmap = sp.ones((self.num_pores(),),dtype=int)*-1
@@ -963,6 +999,16 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         return clusters
         
     def network_health(self):
+        r'''
+        This method check the network topological health by:
+        
+            (1) Checking for isolated pores
+            (2) Checking for islands or isolated clusters of pores
+            
+        Returns
+        -------
+        A named tuple containing isolated pores and disconnected cluters
+        '''
         #Check for individual isolated pores
         health = collections.namedtuple('network_health',['disconnected_clusters','isolated_pores'])
         health.isolated_pores = []
