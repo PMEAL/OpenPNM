@@ -977,28 +977,29 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         tpore1 = Pmap[self['throat.conns'][throats,0]]
         tpore2 = Pmap[self['throat.conns'][throats,1]]
         newpnm['throat.conns'] = sp.vstack((tpore1,tpore2)).T
+        newpnm['pore.coords'] = self['pore.coords'][pores]
         
         #Now scan through labels and props, and keep if needed
+        newpnm['pore.all'] = self['pore.all'][pores]
+        newpnm['throat.all'] = self['throat.all'][throats]
         if incl_labels == True:
             labels = self.labels()
+            labels.remove('pore.all')
+            labels.remove('throat.all')
             for item in labels:
                 if item.split('.')[0] == 'pore':
                     newpnm[item] = self[item][pores]
                 if item.split('.')[0] == 'throat':
                     newpnm[item] = self[item][throats]
-        else:
-            newpnm['pore.all'] = self['pore.all'][pores]
-            newpnm['throat.all'] = self['throat.all'][throats]
         if incl_props == True:
             props = self.props()
             props.remove('throat.conns')
+            props.remove('pore.coords')
             for item in props:
                 if item.split('.')[0] == 'pore':
                     newpnm[item] = self[item][pores]
                 if item.split('.')[0] == 'throat':
                     newpnm[item] = self[item][throats]
-        else:
-            newpnm['pore.coords'] = self['pore.coords'][pores]
         
         #Append pore and throat mapping to main network as attributes and data
         self['pore.'+newpnm.name] = sp.zeros_like(self['pore.all'],dtype=bool)

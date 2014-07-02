@@ -884,7 +884,33 @@ class Tools(Base,dict):
             mask = sp.zeros((Nt,),dtype=bool)
             mask[throats] = True
             return mask
-
+            
+    def toindices(self,mask):
+        r'''
+        Convert a boolean mask a list of pore or throat indices
+        
+        Parameters
+        ----------
+        mask : array_like booleans
+            A boolean array with True at locations where indices are desired.
+            The appropriate indices are returned based an the length of mask, 
+            which must be either Np or Nt long.  
+            
+        Returns
+        -------
+        indices : array_like
+            A list of pore or throat indices corresponding the locations where
+            the received mask was True.
+        
+        '''
+        if sp.shape(mask)[0] == self.num_pores():
+            indices = self.pores()[mask]
+        elif sp.shape(mask)[0] == self.num_throats():
+            indices = self.throats()[mask]
+        else:
+            raise Exception('Mask received was neither Np nor Nt long')
+        return indices
+        
     def interpolate_data(self,data=[],prop='',throats=[],pores=[]):
         r"""
         Determines a pore (or throat) property as the average of it's neighboring 
