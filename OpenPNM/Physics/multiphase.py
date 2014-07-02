@@ -35,14 +35,17 @@ def conduit_conductance(physics,
                    fluid,
                    geometry,
                    conductance,
-                   shape = 'circular',
+                   occupied_condition = 'occupancy',
                    propname = 'conduit_conductance',
                    mode = 'strict',
                    factor = 1/1e3,
                    **params):
     r"""
-    Calculate the diffusive conductance of conduits in network, where a 
-    conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
+    Add a new multiphase conductance property to the conduits of network, where a 
+    conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas. 
+    
+    This method "closes" conduits that are not sufficiently filled with the 
+    specified fluid by multiplying the original conductance by a very small *factor*.
 
     Parameters
     ----------
@@ -50,6 +53,27 @@ def conduit_conductance(physics,
 
     fluid : OpenPNM Fluid Object
         The fluid of interest
+    
+    geometry : OpenPNM Geometry Object
+        The geometry containing the conduits to be updated
+        
+    conductance : str
+        The name of the conductance that should be updated
+        
+    occupied_condition : 'occupancy'
+        The name of the pore and throat property that dictates whether conduit is "closed" or not
+        
+    propname : 'conduit_conductance'
+        The name of the new throat property created by this method
+        
+    mode : 'strict' or 'medium' or 'loose'
+        How agressive the method should be in "closing" conduits. 
+        'strict' implies that if any pore or throat in the conduit is unoccupied by the given fluid, the conduit is closed.
+        'medium' implies that if either the throat or both pores are unoccupied, the conduit is closed
+        'loose' will only close the conduit if the throat is unoccupied.
+        
+    factor : 1/1e3
+        The "closing factor" which becomes multiplied to the original conduit's conductance to severely limit transport.
 
     Notes
     -----
@@ -57,10 +81,11 @@ def conduit_conductance(physics,
     calculated.
 
     """
-    throat_value = fluid['throat.'+conductance]   
+    throats = geometry.throats()
+    throat_value = fluid['throat.'+conductance][throats]   
     
-    throat_occupancy = fluid['throat.occupancy'] == 1
-    pore_occupancy = fluid['pore.occupancy'] == 1
+    throat_occupancy = fluid['throat.'+occupied_condition][throats] == 1
+    pore_occupancy = fluid['pore.'+occupied_condition] == 1
                      
     if (mode == 'loose'):
         closed_conduits = -throat_occupancy
@@ -78,7 +103,7 @@ def conduit_conductance(physics,
         if(mode == 'strict'):
             closed_conduits = pores_1_closed | thoats_closed | pores_2_closed
     open_conduits = -closed_conduits
-    value = throat_value*open_conduits + throat_value*closed_conduits/1.0e3
+    value = throat_value*open_conduits + throat_value*closed_conduits*factor
     
     fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
 

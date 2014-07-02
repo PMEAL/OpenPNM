@@ -6,7 +6,7 @@ import OpenPNM.Utilities.misc as misc
 '''Build Topological Network'''
 #==============================================================================
 pn = OpenPNM.Network.Cubic(loglevel=30,name='net')
-pn.generate(divisions=[20, 20, 20], lattice_spacing=[0.0001],add_boundaries=True)
+pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=True)
 
 #==============================================================================
 '''Build Geometry'''
@@ -73,7 +73,7 @@ BC2_pores = pn.pores(labels=['bottom','boundary'],mode='intersection')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=sp.log(1-0.4), pores=BC2_pores)
 
 phys_air.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='loose')
+                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='strict')
 pn.regenerate_physics()
 
 # Run simulation

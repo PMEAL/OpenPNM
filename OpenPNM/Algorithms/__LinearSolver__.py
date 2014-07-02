@@ -298,7 +298,7 @@ class LinearSolver(GenericAlgorithm):
     
     def _calc_eff_prop(self):
         try:
-            self._result
+            self[self._quantity]
         except:
             raise Exception('The algorithm has not been run yet. Cannot calculate effective property.')               
         #Determine boundary conditions by analyzing algorithm object
