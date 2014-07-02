@@ -37,6 +37,8 @@ class Voronoi(GenericGeometry):
         """
         super(Voronoi,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+    
+    def setup(self):
         self._add_throat_props(radius=2e-06) # This sets the key throat data for calculating pore and throat properties later
         self.add_property(prop='pore_seed',model='random')
         self.add_property(prop='throat_seed',model='neighbor_min')
@@ -65,7 +67,6 @@ class Voronoi(GenericGeometry):
         area = sp.ndarray(len(connections),dtype=object)
         perimeter = sp.ndarray(len(connections),dtype=object)
         offset_verts = sp.ndarray(len(connections),dtype=object)
-        shared_verts = sp.ndarray(len(connections),dtype=object)
         shared_verts = sp.ndarray(len(connections),dtype=object)
         offset_error = sp.ndarray(len(connections),dtype=object)
         for i,throat_pair in enumerate(connections):
@@ -677,6 +678,60 @@ class Voronoi(GenericGeometry):
                 fig.show()
         else:
             print("Please provide throat indices")
+
+    def print_pore(self,pores):
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.mplot3d import Axes3D
+        from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+        if len(pores) > 0:
+            throats = self._net.find_neighbor_throats(pores=pores)
+            verts = self._net['throat.verts'][throats]
+            normals = self._net['throat.normals'][throats]
+            " Get verts in hull order "
+            ordered_verts=[]
+            for i in range(len(verts)):
+                vert_2D = self._rotate_and_chop(verts[i],normals[i],[0,0,1])
+                hull = ConvexHull(vert_2D)
+                ordered_verts.append(verts[i][hull.vertices])
+            offsets = self._net['throat.offset_verts'][throats]
+
+            xmin = 999
+            xmax = -999
+            ymin = 999
+            ymax = -999
+            zmin = 999
+            zmax = -999
+            " Find the span of points "
+            for vert in verts:
+                if vert[:,0].min() < xmin:
+                    xmin = vert[:,0].min()
+                if vert[:,0].max() > xmax:
+                    xmax = vert[:,0].max()
+                if vert[:,1].min() < ymin:
+                    ymin = vert[:,1].min()
+                if vert[:,1].max() > ymax:
+                    ymax = vert[:,1].max()
+                if vert[:,2].min() < zmin:
+                    zmin = vert[:,2].min()
+                if vert[:,2].max() > zmax:
+                    zmax = vert[:,2].max()
+                
+            fig = plt.figure()
+            ax = fig.gca(projection='3d')
+            outer_items = Poly3DCollection(ordered_verts,linewidths=1, alpha=0.2)
+            outer_face_colours=[(0.5, 0, 0.5, 0.05)]
+            outer_items.set_facecolor(outer_face_colours)
+            ax.add_collection(outer_items)
+            inner_items = Poly3DCollection(offsets,linewidths=1, alpha=0.2)
+            inner_face_colours=[(0.7, 0, 0.3, 0.0)]
+            inner_items.set_facecolor(inner_face_colours)
+            ax.add_collection(inner_items)
+            ax.set_xlim(xmin,xmax)
+            ax.set_ylim(ymin,ymax)
+            ax.set_zlim(zmin,zmax)
+            plt.show()
+        else:
+            print("Please provide pore indices")
     
     def _rotate_and_chop(self,verts,normal,axis=[0,0,1]):
         xaxis=[1,0,0]
