@@ -63,6 +63,14 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         network.set_info(label=self.name,throats=[])
         self.num_pores = partial(network.num_pores,labels=self.name)
         self.num_throats = partial(network.num_throats,labels=self.name)
+        
+    @property
+    def Np(self):
+        return self.num_pores()
+        
+    @property
+    def Nt(self):
+        return self.num_throats()
     
     def set_locations(self,pores=[],throats=[],mode='add'):
         r'''
@@ -92,7 +100,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         r'''
         '''
         return self._net.pores(labels=self.name)
-        
+
     def throats(self):
         r'''
         '''
