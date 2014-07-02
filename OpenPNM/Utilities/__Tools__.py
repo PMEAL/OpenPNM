@@ -999,6 +999,10 @@ class Tools(Base,dict):
         Np = self.pores(labels=labels,mode=mode)
         Np = self.tomask(pores=Np)
         return sp.sum(Np) #return sum of Trues
+        
+    @property
+    def Np(self):
+        return self.num_pores()  
             
     def num_throats(self,labels=['all'],mode='union'):
         r'''
@@ -1050,6 +1054,10 @@ class Tools(Base,dict):
         Nt = self.throats(labels=labels,mode=mode)
         Nt = self.tomask(throats=Nt)
         return sp.sum(Nt) #return sum of Trues
+        
+    @property
+    def Nt(self):
+        return self.num_throats()    
         
     def count(self,element=None):
         r'''
