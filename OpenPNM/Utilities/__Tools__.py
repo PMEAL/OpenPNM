@@ -496,14 +496,15 @@ class Tools(Base,dict):
                         data_amalgamated.update({dict_name : item[key]})
             except: 
                 self._logger.error('Only network and fluid items contain data')
-                
+        
         #Add geometry labels as pore values for Paraview plotting
-        geoms = self.find_object(obj_type='Geometry')
-        data_amalgamated[self.name+'.pore.geometry'] = sp.ones((self.num_pores(),))*sp.nan
-        index = 0;
-        for item in geoms:
-            index = index + 1
-            data_amalgamated[self.name+'.pore.geometry'][item.pores()] = index
+        if self._geometries != []:
+            geoms = self.find_object(obj_type='Geometry')
+            data_amalgamated[self.name+'.pore.geometry'] = sp.ones((self.num_pores(),))*sp.nan
+            index = 0;
+            for item in geoms:
+                index = index + 1
+                data_amalgamated[self.name+'.pore.geometry'][item.pores()] = index
         return data_amalgamated
         
     def _get_props(self,mode='all'):

@@ -338,7 +338,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         return sp.intersect1d(self.find_neighbor_throats(P1),self.find_neighbor_throats(P2))
 
-    def find_neighbor_pores(self,pores,mode='union',flatten=True,excl_self=False):
+    def find_neighbor_pores(self,pores,mode='union',flatten=True,excl_self=True):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
@@ -834,7 +834,62 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         
         #Check network health
         if check_health:
-        self.network_health()
+            self.network_health()
+            
+    def subset(self,pores,name=None,keep_labels=True,keep_props=True):
+        r'''
+        Create a new sub-network from a list of pores.
+        
+        Parameters
+        ----------
+        pores : array_like
+            A list of pores from which to create the new network
+        keep_labels : bool, default is True
+            Specifies whether to keep labels from main network
+        keep_props : bool, default is True
+            Specifies whather to keep properties from main network
+        name : string, optional
+            The name to apply to the new network object
+            
+        Returns
+        -------
+        newpnm : OpenPNM Object
+            Returns a new network object
+        '''
+        newpnm = OpenPNM.Network.GenericNetwork(name=name)
+        pores = sp.array(pores,ndmin=1)
+        throats = self.find_neighbor_throats(pores=pores,mode='intersection',flatten=True)
+        
+        #Remap throats on to new pore numbering
+        Pmap = sp.zeros_like(self.pores())*sp.nan
+        Pmap[pores] = sp.arange(0,sp.shape(pores)[0])
+        tpore1 = Pmap[self['throat.conns'][throats,0]]
+        tpore2 = Pmap[self['throat.conns'][throats,1]]
+        newpnm['throat.conns'] = sp.vstack((tpore1,tpore2)).T
+        
+        #Now scan through labels and props, and keep if needed
+        if keep_labels == True:
+            labels = self.labels()
+            for item in labels:
+                if item.split('.')[0] == 'pore':
+                    newpnm[item] = self[item][pores]
+                if item.split('.')[0] == 'throat':
+                    newpnm[item] = self[item][throats]
+        else:
+            newpnm['pore.all'] = self['pore.all'][pores]
+            newpnm['throat.all'] = self['throat.all'][throats]
+        if keep_props == True:
+            props = self.props()
+            props.remove('throat.conns')
+            for item in props:
+                if item.split('.')[0] == 'pore':
+                    newpnm[item] = self[item][pores]
+                if item.split('.')[0] == 'throat':
+                    newpnm[item] = self[item][throats]
+        else:
+            newpnm['pore.coords'] = self['pore.coords'][pores]
+        
+        return newpnm
         
     def find_clusters(self,mask=[]):
         r'''
@@ -884,7 +939,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):
                 health.disconnected_clusters.append(sp.where(Cs==i)[0])
-        return health
+        return health   
 
 if __name__ == '__main__':
     #Run doc tests
