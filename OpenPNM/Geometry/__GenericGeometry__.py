@@ -113,6 +113,28 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         r'''
         '''
         return self._net.throats(labels=self.name)
+        
+    def physics(self,name=''):
+        r'''
+        Retrieves Physics assocaiated with the Geometry
+        
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Physics object to retrieve
+        Returns
+        -------
+            If name is NOT provided, then a list of Physics names is returned. 
+            If a name IS provided, then the Physics object of that name is 
+            returned.
+        '''
+        if name == '':
+            phys = []
+            for item in self._physics:
+                phys.append(item.name)
+        else:
+            phys = self.find_object(obj_name=name)
+        return phys
     
     def regenerate(self, prop_list='',mode=None):
         r'''

@@ -62,6 +62,9 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         #Use composition to assign pores and throats to this physics
         self.pores = geometry.pores()
         self.throats = geometry.throats()
+        self.Np = geometry.Np
+        self.Nt = geometry.Nt
+        self.count = geometry.count
 
     def regenerate(self, prop_list='',mode=None):
         r'''
