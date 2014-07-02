@@ -665,6 +665,49 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         '''
         temp = OpenPNM.Physics.__getattribute__(subclass)
         return temp(network=self,name=name,fluid=fluid,geometry=geometry,**kwargs)
+        
+    def geometries(self,name=''):
+        r'''
+        Retrieves Geoemtry assocaiated with the network
+        
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Geometry object to retrieve.  
+        Returns
+        -------
+            If name is NOT provided, then a list of Geometry names is returned. 
+            If a name IS provided, then the Geometry object of that name is 
+            returned.
+        '''
+        if name == '':
+            geoms = []
+            for item in self._geometries:
+                geoms.append(item.name)
+        else:
+            geoms = self.find_object(obj_name=name)
+        return geoms
+        
+    def fluids(self,name=''):
+        r'''
+        Retrieves Fluids assocaiated with the network
+        
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Fluid object to retrieve.  
+        Returns
+        -------
+            If name is NOT provided, then a list of fluid names is returned. If
+            a name IS provided, then the Fluid object of that name is returned.
+        '''
+        if name == '':
+            fluids = []
+            for item in self._fluids:
+                fluids.append(item.name)
+        else:
+            fluids = self.find_object(obj_name=name)
+        return fluids
 
     def update_network(self):
         r'''
