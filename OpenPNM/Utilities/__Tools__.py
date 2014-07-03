@@ -1093,7 +1093,7 @@ class Tools(Base,dict):
             temp = temp[element]
         return temp
         
-    def data_health(self,element='',props=[],quiet=False):
+    def data_health(self,element='',props=[],quiet=True):
         r'''
         Check the health of pore and throat data arrays.  
         
@@ -1144,7 +1144,7 @@ class Tools(Base,dict):
             pprint.pprint(health)
         return flag
             
-    def check_pore_health(self,props=[],quiet=False):
+    def check_pore_health(self,props=[],quiet=True):
         r'''
         This method is deprecated, use data_health instead
         '''
@@ -1158,7 +1158,7 @@ class Tools(Base,dict):
             props = temp
         return self.data_health(element='pore',props=props,quiet=quiet)            
         
-    def check_throat_health(self,props=[],quiet=False):
+    def check_throat_health(self,props=[],quiet=True):
         r'''
         This method is deprecated, use data_health instead
         '''
