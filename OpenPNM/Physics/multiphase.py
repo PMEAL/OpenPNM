@@ -90,7 +90,7 @@ def conduit_conductance(physics,
     if (mode == 'loose'):
         closed_conduits = -throat_occupancy
     else:
-        thoats_closed = -throat_occupancy
+        thoats_closed = -throat_occupancy[throats]
         connected_pores = network.find_connected_pores(geometry.throats())
         pores_1 = connected_pores[:,0]
         pores_2 = connected_pores[:,1]
@@ -104,6 +104,5 @@ def conduit_conductance(physics,
             closed_conduits = pores_1_closed | thoats_closed | pores_2_closed
     open_conduits = -closed_conduits
     value = throat_value*open_conduits + throat_value*closed_conduits*factor
-    
     fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
 
