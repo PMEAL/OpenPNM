@@ -114,6 +114,7 @@ class InvasionPercolation(GenericAlgorithm):
             b) Allow for a non-linear relationship between pressure and throat-cap volume.
 
         """
+        
         super(InvasionPercolation,self).run(**params)
         return self
 
