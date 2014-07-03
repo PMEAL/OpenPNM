@@ -901,6 +901,12 @@ class Tools(Base,dict):
         indices : array_like
             A list of pore or throat indices corresponding the locations where
             the received mask was True.
+            
+        Notes
+        -----
+        This behavior could just as easily be accomplished by using the mask
+        in pn.pores()[mask] or pn.throats()[mask].  This method is just a thin
+        convenience function and is a compliment to tomask().
         
         '''
         if sp.shape(mask)[0] == self.num_pores():

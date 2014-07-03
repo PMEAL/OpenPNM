@@ -18,6 +18,7 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 import scipy.signal as spsg
 
+
 class GenericNetwork(OpenPNM.Utilities.Tools):
     r"""
     GenericNetwork - Base class to construct pore networks
@@ -958,13 +959,13 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn.count()
         {'pore': 125, 'throat': 300}
         >>> Ps = pn.pores(['top','bottom','front'])
-        >>> pn2 = pn.subset(pores=Ps)
-        >>> pn2.count()
+        >>> psn = pn.subset(pores=Ps)
+        >>> sn.count()
         {'pore': 65, 'throat': 112}
-        >>> pn2.labels()[0:3]  # It automatically transfers labels and props
+        >>> sn.labels()[0:3]  # It automatically transfers labels and props
         ['pore.all', 'pore.back', 'pore.bottom']
-        >>> pn2 = pn.subset(pores=Ps,incl_labels=False)
-        >>> pn2.labels()
+        >>>  sn = pn.subset(pores=Ps,incl_labels=False)
+        >>> sn.labels()
         ['pore.all', 'throat.all']
         '''
         newpnm = OpenPNM.Network.GenericNetwork(name=name)
@@ -974,8 +975,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #Remap throats on to new pore numbering
         Pmap = sp.zeros_like(self.pores())*sp.nan
         Pmap[pores] = sp.arange(0,sp.shape(pores)[0])
-        tpore1 = Pmap[self['throat.conns'][throats,0]]
-        tpore2 = Pmap[self['throat.conns'][throats,1]]
+        tpore1 = sp.array(Pmap[self['throat.conns'][throats,0]],dtype=int)
+        tpore2 = sp.array(Pmap[self['throat.conns'][throats,1]],dtype=int)
         newpnm['throat.conns'] = sp.vstack((tpore1,tpore2)).T
         newpnm['pore.coords'] = self['pore.coords'][pores]
         
@@ -1006,6 +1007,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self['pore.'+newpnm.name][pores] = True
         self['throat.'+newpnm.name] = sp.zeros_like(self['throat.all'],dtype=bool)
         self['throat.'+newpnm.name][throats] = True
+        
+        import types
+        newpnm.subset_fluid = types.MethodType(subset_fluid, newpnm)     
         
         return newpnm
         
@@ -1067,7 +1071,43 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):
                 health.disconnected_clusters.append(sp.where(Cs==i)[0])
-        return health   
+        return health
+        
+#------------------------------------------------------------------------------
+'''Additional Functions'''
+#------------------------------------------------------------------------------
+# These functions are not automatically attached to the network, but can be
+# using object.method_name = types.MethodType(method_name, object)
+  
+def subset_fluid(self,fluid):
+    r'''
+    This method is appended to subset networks. It takes a fluid from the main
+    network, and converts it to the size and shape of the sub-network.
+    
+    Parameters
+    ----------
+    fluid : OpenPNM Fluid Object
+        A fluid object that is associated with the main network from which the
+        subnetwork was extracted.
+        
+    Returns
+    -------
+    newfluid : OpenPNM Fluid Object
+        A fluid object with the same shape as the sub-network.  It contains all
+        the data of the main fluid, but not the property calculation methods.
+    '''
+    newfluid = OpenPNM.Fluids.GenericFluid(network=self)
+    for item in fluid.props(mode='vectors'):
+        if item.split('.')[0] == 'pore':
+            newfluid[item] = fluid[item][fluid._net['pore.'+self.name]]
+        if item.split('.')[0] == 'throat':
+            newfluid[item] = fluid[item][fluid._net['throat.'+self.name]]
+    for item in fluid.props(mode='scalars'):
+        if item.split('.')[0] == 'pore':
+            newfluid[item] = fluid[item]
+        if item.split('.')[0] == 'throat':
+            newfluid[item] = fluid[item]
+    return newfluid
 
 if __name__ == '__main__':
     #Run doc tests
