@@ -48,6 +48,7 @@ class Delaunay(GenericNetwork):
     <class 'numpy.int32'>
 
     """
+    add_boundaries = False
 
     def __init__(self,**kwargs):
         '''
@@ -70,10 +71,11 @@ class Delaunay(GenericNetwork):
         '''
         self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
         self._generate_setup(**params)
+        if params['add_boundaries']:
+            self.add_boundaries = True
         self._generate_pores()
         self._generate_throats()
-#        self._add_boundaries()
-        self._add_labels()
+        #self._add_labels()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
 
     def _generate_setup(self, **params):
@@ -140,7 +142,7 @@ class Delaunay(GenericNetwork):
         Pzp[:,2]=(2*Lz-Pxp[:,2])
         Pzm = pts.copy()
         Pzm[:,2] = Pxm[:,2]*(-1)
-        pts = np.vstack((pts,Pxp,Pxm,Pyp,Pym,Pzp,Pzm))
+        pts = np.vstack((pts,Pxp,Pxm,Pyp,Pym,Pzp,Pzm)) #Order important for boundary logic
         #Add dummy domains to real domain
         #pts = sp.concatenate([pts,ptsX0,ptsXX,ptsY0,ptsYY,ptsZ0,ptsZZ])
         #Perform tessellation
@@ -161,6 +163,62 @@ class Delaunay(GenericNetwork):
         self.set_throat_data(prop='conns',data=sp.vstack((adjmat.row, adjmat.col)).T)
         tpore1 = self.get_throat_data(prop='conns')[:,0]
         self.set_throat_info(label='all',locations=np.ones_like(tpore1))
+        
+        if self.add_boundaries:
+            " New code to identify boundary pores - those that connect to pores inside and outside original set of pores "
+            boundary_pores=[False]*Np
+            boundary_pore_list = []
+            xp = []
+            xm = []
+            yp = []
+            ym = []
+            zp = []
+            zm = []
+            for i in sp.arange(0,sp.shape(Tri.simplices)[0]):
+                pores_in = Tri.simplices[i] < Np # Pores in the original domain
+                if (sum(pores_in) >= 1) and (sum(pores_in) < len(pores_in)):
+                    # We have connections between at least one pore in and out of the domain
+                    # Identify which boundary we are connected to. At corners could be more than one
+                    pores_xp = (Tri.simplices[i] >= Np) & (Tri.simplices[i] < 2*Np) # Pores in positive x dummy reflection
+                    pores_xm = (Tri.simplices[i] >= 2*Np) & (Tri.simplices[i] < 3*Np) # Pores in negative x dummy reflection
+                    pores_yp = (Tri.simplices[i] >= 3*Np) & (Tri.simplices[i] < 4*Np) # Pores in positive y dummy reflection
+                    pores_ym = (Tri.simplices[i] >= 4*Np) & (Tri.simplices[i] < 5*Np) # Pores in negative y dummy reflection            
+                    pores_zp = (Tri.simplices[i] >= 5*Np) & (Tri.simplices[i] < 6*Np) # Pores in positive z dummy reflection
+                    pores_zm = (Tri.simplices[i] >= 6*Np) & (Tri.simplices[i] < 7*Np) # Pores in negative z dummy reflection            
+                    for j in range(len(Tri.simplices[i])):
+                        if pores_in[j] == True:
+                            pore_id = Tri.simplices[i][j]
+                            boundary_pores[pore_id]=True
+                            if pore_id not in boundary_pore_list:
+                                boundary_pore_list.append(pore_id)
+                            if sum(pores_xp) >= 1 and pore_id not in xp:
+                                xp.append(pore_id)
+                            if sum(pores_xm) >= 1 and pore_id not in xm:
+                                xm.append(pore_id)
+                            if sum(pores_yp) >= 1 and pore_id not in yp:
+                                yp.append(pore_id)
+                            if sum(pores_ym) >= 1 and pore_id not in ym:
+                                ym.append(pore_id)
+                            if sum(pores_zp) >= 1 and pore_id not in zp:
+                                zp.append(pore_id)
+                            if sum(pores_zm) >= 1 and pore_id not in zm:
+                                zm.append(pore_id)
+                            
+            vor_bounds=sp.asarray(boundary_pore_list)
+            vor_bound_back = sp.asarray(xp)
+            vor_bound_front = sp.asarray(xm)
+            vor_bound_right = sp.asarray(yp)
+            vor_bound_left = sp.asarray(ym)
+            vor_bound_top = sp.asarray(zp)
+            vor_bound_bottom = sp.asarray(zm)
+            self.set_pore_info(label='boundary',locations=vor_bounds)
+            self.set_pore_info(label='right',locations=vor_bound_right) 
+            self.set_pore_info(label='left',locations=vor_bound_left) 
+            self.set_pore_info(label='front',locations=vor_bound_front) 
+            self.set_pore_info(label='back',locations=vor_bound_back) 
+            self.set_pore_info(label='top',locations=vor_bound_top) 
+            self.set_pore_info(label='bottom',locations=vor_bound_bottom)
+            self.set_pore_info(label='internal',locations='all')
         
         # Do Voronoi diagram - creating voronoi polyhedra around each pore and save vertex information
         vor = Voronoi(pts)
