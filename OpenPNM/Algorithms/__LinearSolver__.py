@@ -316,12 +316,12 @@ class LinearSolver(GenericAlgorithm):
 #        if self._net.iscoplanar(outlets) == False:
 #            raise Exception('The outlet pores do not define a plane. Effective property will be approximation')
         #Ensure pores are on a face of domain (only 1 non-self neighbor each)
-        PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
-        if sp.shape(PnI) != sp.shape(inlets):
-            raise Exception('The inlet pores have too many neighbors. Internal pores appear to be selected.')
-        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
-        if sp.shape(PnO) != sp.shape(outlets):
-            raise Exception('The outlet pores have too many neighbors. Internal pores appear to be selected.')        
+#TT        PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
+#        if sp.shape(PnI) != sp.shape(inlets):
+#            raise Exception('The inlet pores have too many neighbors. Internal pores appear to be selected.')
+#        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
+#        if sp.shape(PnO) != sp.shape(outlets):
+#TT            raise Exception('The outlet pores have too many neighbors. Internal pores appear to be selected.')        
         
         #Fetch area and length of domain
         A = self._net.domain_area(face=inlets)
