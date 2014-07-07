@@ -20,7 +20,7 @@ N = 10
 
 #setting up network
 sgl = OpenPNM.Network.Cubic(name = 'SGL10BA')
-sgl.generate(divisions = [N, N, N], add_boundaries = False, lattice_spacing = [Lc])
+sgl.generate(divisions = [N, N, N], add_boundaries = True, lattice_spacing = [Lc])
 
 #pore size distribution parameters
 lmbda = 9e-6
@@ -84,8 +84,8 @@ sgl.regenerate_physics()
 #late pore filling?!
 
 #running invasion percolation
-inlets = sgl.get_pore_indices(labels = ['front'])
-outlets = sgl.get_pore_indices(labels = ['back'])
+inlets = sgl.get_pore_indices(labels = ['top','boundary'],mode='intersection')
+outlets = sgl.get_pore_indices(labels = ['bottom','boundary'],mode='intersection')
 
 end_condition = 'breakthrough'
     
@@ -108,13 +108,13 @@ for x in range(50):
     
     #adding multiphase conductances
     phys_air.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='loose')
+                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='strict')
     phys_water.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='loose')
+                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='strict')
     phys_air.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode='loose')
+                      conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode='strict')
     phys_water.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode='loose')
+                      conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode='strict')
     sgl.regenerate_physics()
     
     
