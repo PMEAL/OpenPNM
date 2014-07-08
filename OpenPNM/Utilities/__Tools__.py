@@ -1099,7 +1099,8 @@ class Tools(Base,dict):
         Parameters
         ----------
         element : string, optional
-            Can be either 'pore' or 'throat', which specifies which count to return.
+            Can be either 'pore' , 'pores', 'throat' or 'throats', which 
+            specifies which count to return.
             
         Returns
         -------
@@ -1109,6 +1110,13 @@ class Tools(Base,dict):
         See Also
         --------
         num_pores, num_throats
+        
+        Notes
+        -----
+        The ability to send plurals is useful for some types of 'programmatic'
+        access.  For instance, the standard argument for locations is pores
+        or throats.  If these are bundled up in a **kwargs dict then you can 
+        just use the dict key in count() without remove the 's'.
             
         Examples
         --------
@@ -1118,6 +1126,11 @@ class Tools(Base,dict):
         >>> pn.count('pore')
         125
         '''
+        #Remove pluralizaton
+        if element == 'pores':
+            element = 'pore'
+        if element == 'throats':
+            element = 'throat'
         temp = {}
         temp['pore'] = self.num_pores()
         temp['throat'] = self.num_throats()
