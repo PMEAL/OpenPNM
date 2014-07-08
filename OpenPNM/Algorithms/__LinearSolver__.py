@@ -278,7 +278,7 @@ class LinearSolver(GenericAlgorithm):
         pores2[-sp.in1d(p1,pores)] = p1[-sp.in1d(p1,pores)]
         X1 = self._result[pores1]
         X2 = self._result[pores2]
-        g = self._conductance[throats]
+        g = self._fluid[self._conductance][throats]
         R = sp.sum(sp.multiply(g,(X1-X2)))
         return(R)
         
@@ -326,24 +326,25 @@ class LinearSolver(GenericAlgorithm):
         #Fetch area and length of domain
         A = self._net.domain_area(face=inlets)
         L = self._net.domain_length(face_1=inlets,face_2=outlets)
-        x = self._result
+        #x = self._result
         #Find flow through inlet face
-        Pin = []
-        Pn = []
-        for pore in inlets:
-            pore_value = x[pore]
-            neighbors = self._net.find_neighbor_pores(pore, excl_self = True)
-            for neighbor in neighbors:
-                neighbor_value = x[neighbor]
-                if(sp.absolute(neighbor_value - pore_value) > .000001):
-                    Pin.append(pore)
-                    Pn.append(neighbor)
-        
-        Ts = self._net.find_connecting_throat(Pin,Pn)
-        g = self._fluid[self._conductance][Ts]
-        xin = x[Pin]
-        xout = x[Pn]
-        flow = g*(xin - xout)
+        #Pin = []
+        #Pn = []
+        #for pore in inlets:
+        #    pore_value = x[pore]
+        #    neighbors = self._net.find_neighbor_pores(pore, excl_self = True)
+        #    for neighbor in neighbors:
+        #        neighbor_value = x[neighbor]
+        #        if(sp.absolute(neighbor_value - pore_value) > .000001):
+        #            Pin.append(pore)
+        #            Pn.append(neighbor)
+        # 
+        #Ts = self._net.find_connecting_throat(Pin,Pn)
+        #g = self._fluid[self._conductance][Ts]
+        #xin = x[Pin]
+        #xout = x[Pn]
+        #flow = g*(xin - xout)
+        flow = self.rate(pores=inlets)
         D = sp.sum(flow)*L/A/sp.absolute(BCs[0]-BCs[1])
         return D
         
