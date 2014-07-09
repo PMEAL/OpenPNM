@@ -5,7 +5,6 @@ Submodule -- throat_area
 
 """
 import scipy as sp
-import scipy.stats as spst
 
 def constant(geometry,
              network,
@@ -40,4 +39,3 @@ def cuboid(geometry,
     D = network.get_data(prop=diameter,throats=geometry.throats())
     value = (D)**2
     network.set_data(prop=propname,throats=geometry.throats(),data=value)
-    

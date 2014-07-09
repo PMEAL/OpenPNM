@@ -66,10 +66,12 @@ def bulk_diffusion(physics,
     Ps = network.find_connected_pores(Ts,flatten=0)
     #Find g for half of pore 1
     pdia = network.get_data(prop=pore_diameter,pores='all')
-    gp1 = ct*DABt*pdia[Ps[:,0]]**2/(0.5*pdia[Ps[:,0]])
+    #gp1 = ct*DABt*pdia[Ps[:,0]]**2/(0.5*pdia[Ps[:,0]])
+    gp1 = ct*DABt*pdia[Ps[:,0]]*2
     gp1[~(gp1>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = ct*DABt*pdia[Ps[:,1]]**2/(0.5*pdia[Ps[:,1]])
+    #gp2 = ct*DABt*pdia[Ps[:,1]]**2/(0.5*pdia[Ps[:,1]])
+    gp2 = ct*DABt*pdia[Ps[:,1]]*2
     gp2[~(gp2>0)] = sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     tdia = network.get_data(prop=throat_diameter,throats='all')

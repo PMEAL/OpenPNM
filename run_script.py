@@ -51,11 +51,13 @@ OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=30,network=pn)
 a = pn.pores(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=100)
 OP_1.run()
+
 # Updating data based on the result of Percolation Algorithms
 OP_1.update(Pc=11000)
 #OP_1.plot_drainage_curve()
 inlets = pn.get_pore_indices(labels = ['bottom'])
 outlets = pn.get_pore_indices(labels = ['top'])
+
 
 IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1', loglevel = 30)
 IP_1.setup(invading_fluid = water, defending_fluid = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
@@ -92,12 +94,8 @@ print(Deff)
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
+
 #OpenPNM.Visualization.Vtp.write(filename='test.vtp',fluids=[air,water],network=pn)
+
 vis = OpenPNM.Visualization.VTK()
 vis.write(network=pn,fluids=[air,water])
-
-
-
-
-
-

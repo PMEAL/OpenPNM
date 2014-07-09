@@ -889,6 +889,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         else:
             self._logger.warning('No pores or throats recieved')
             return
+
+        
         #Remap throat connections
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
         Pmap = sp.ones((self.num_pores(),),dtype=int)*-1

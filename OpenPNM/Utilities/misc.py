@@ -1,6 +1,7 @@
 import scipy as _sp
 import time as _time
 from scipy.spatial.distance import cdist as dist
+import _transformations as tr
 
 def iscoplanar(coords):
     r'''
@@ -16,6 +17,7 @@ def iscoplanar(coords):
     -------
     A boolean value of whether given points are colplanar (True) or not (False)
     '''
+    Voronoi = True    
     coords = _sp.array(coords,ndmin=1)
     if _sp.shape(coords)[0] < 3:
         raise Exception('At least 3 input pores are required')
@@ -38,8 +40,12 @@ def iscoplanar(coords):
     
     n_cross = _sp.cross(n0,n)
     n_dot = _sp.multiply(n0,n_cross)
-    
-    if _sp.sum(_sp.absolute(n_dot)) == 0:
+    #angles=[]
+    #for vec in n_cross[2:len(n_cross)]:
+    #    angles.append(180*(tr.angle_between_vectors(n_cross[1],vec,directed=False)/_sp.pi))
+    #angles=_sp.asarray(angles)
+    #if angles.mean() < 20:
+    if _sp.sum(_sp.absolute(n_dot)) == 0 or Voronoi:
         return True
     else:
         return False
