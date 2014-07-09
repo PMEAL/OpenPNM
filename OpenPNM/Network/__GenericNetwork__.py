@@ -94,7 +94,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             Ds = misc.dist(x,y)
             L = sp.median(sp.amin(Ds,axis=0))
         else:
-            self._logger.warn('The supplied pores are not coplanar. Length will be approximate.')
+            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
             f1 = self['pore.coords'][face_1]
             f2 = self['pore.coords'][face_2]
             distavg = [0,0,0]
