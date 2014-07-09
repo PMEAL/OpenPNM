@@ -35,6 +35,8 @@ class Voronoi(GenericGeometry):
         r"""
         Initialize
         """
+        if int(sp.__version__.split('.')[1]) < 13:
+            raise Exception('The installed version of Scipy is too old, Voronoi cannot run')
         super(Voronoi,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
     
