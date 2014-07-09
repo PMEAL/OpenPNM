@@ -17,7 +17,6 @@ def iscoplanar(coords):
     -------
     A boolean value of whether given points are colplanar (True) or not (False)
     '''
-    Voronoi = True    
     coords = _sp.array(coords,ndmin=1)
     if _sp.shape(coords)[0] < 3:
         raise Exception('At least 3 input pores are required')
@@ -45,7 +44,7 @@ def iscoplanar(coords):
     #    angles.append(180*(tr.angle_between_vectors(n_cross[1],vec,directed=False)/_sp.pi))
     #angles=_sp.asarray(angles)
     #if angles.mean() < 20:
-    if _sp.sum(_sp.absolute(n_dot)) == 0 or Voronoi:
+    if _sp.sum(_sp.absolute(n_dot)) == 0:
         return True
     else:
         return False

@@ -296,7 +296,7 @@ class LinearSolver(GenericAlgorithm):
         self._logger.info('Writing result to '+self.__class__.__name__+'[\''+self._conductance+'\']')
         self[self._quantity] = self._result
     
-    def _calc_eff_prop(self):
+    def _calc_eff_prop(self,check_health=False):
         try:
             self[self._quantity]
         except:
@@ -310,18 +310,19 @@ class LinearSolver(GenericAlgorithm):
         outlets = sp.where(self['pore.bcval_Dirichlet']==sp.amin(BCs))[0]        
 
         #Analyze input and output pores
-        #Check for coplanarity
-#        if self._net.iscoplanar(inlets) == False:
-#            raise Exception('The inlet pores do not define a plane. Effective property will be approximation')
-#        if self._net.iscoplanar(outlets) == False:
-#            raise Exception('The outlet pores do not define a plane. Effective property will be approximation')
-        #Ensure pores are on a face of domain (only 1 non-self neighbor each)
-#TT        PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
-#        if sp.shape(PnI) != sp.shape(inlets):
-            self._logger.warning('The inlet pores have too many neighbors. Internal pores appear to be selected.')
-#        PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
-#        if sp.shape(PnO) != sp.shape(outlets):
-            self._logger.warning('The outlet pores have too many neighbors. Internal pores appear to be selected.')        
+        if check_health:
+            #Check for coplanarity
+            if self._net.iscoplanar(inlets) == False:
+                raise Exception('The inlet pores do not define a plane. Effective property will be approximation')
+            if self._net.iscoplanar(outlets) == False:
+                raise Exception('The outlet pores do not define a plane. Effective property will be approximation')
+            #Ensure pores are on a face of domain (only 1 non-self neighbor each)
+            PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
+            if sp.shape(PnI) != sp.shape(inlets):
+                self._logger.warning('The inlet pores have too many neighbors. Internal pores appear to be selected.')
+            PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
+            if sp.shape(PnO) != sp.shape(outlets):
+                self._logger.warning('The outlet pores have too many neighbors. Internal pores appear to be selected.')        
         
         #Fetch area and length of domain
         A = self._net.domain_area(face=inlets)
