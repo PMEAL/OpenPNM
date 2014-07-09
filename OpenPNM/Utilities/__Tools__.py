@@ -489,12 +489,14 @@ class Tools(Base,dict):
         if type(objs) != list:
             objs = list(objs)
         data_amalgamated = {}
+        exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
         for item in objs:
             try:
                 for key in item.keys():
-                    if sp.amax(item[key]) < sp.inf:
-                        dict_name = item.name+'.'+key
-                        data_amalgamated.update({dict_name : item[key]})
+                    if key not in exclusion_list:
+                        if sp.amax(item[key]) < sp.inf:
+                            dict_name = item.name+'.'+key
+                            data_amalgamated.update({dict_name : item[key]})
             except: 
                 self._logger.error('Only network and fluid items contain data')
         
