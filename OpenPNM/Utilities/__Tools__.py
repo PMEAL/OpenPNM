@@ -13,6 +13,7 @@ if sys.path[1] != parent_dir:
 import scipy as sp
 import OpenPNM
 from OpenPNM.Utilities import Base
+from OpenPNM.Utilities import misc
 
 
 class Tools(Base,dict):
@@ -572,7 +573,7 @@ class Tools(Base,dict):
         props = self._get_props(mode=mode)
         if (pores == []) and (throats == []):
             if element == '':
-                return props            
+                temp = props
             elif element == 'pore':
                 temp = [item for item in props if item.split('.')[0]=='pore']
             elif element == 'throat':
@@ -580,7 +581,6 @@ class Tools(Base,dict):
             else:
                 self._logger.error('Unrecognized element')
                 return
-            return temp
         elif pores != []:
             temp = {}
             for item in props:
@@ -590,7 +590,6 @@ class Tools(Base,dict):
                     else:
                         vals = self[item][pores]
                     temp.update({item:vals})
-            return temp
         elif throats != []:
             temp = {}
             for item in props:
@@ -600,7 +599,7 @@ class Tools(Base,dict):
                     else:
                         vals = self[item][throats]
                     temp.update({item:vals})
-            return temp
+        return misc.PrintableList(temp)
             
     def _get_labels(self,element='',locations=[],mode='union'):
         r'''
@@ -687,19 +686,17 @@ class Tools(Base,dict):
             else:
                 self._logger.error('Unrecognized element')
                 return
-            return temp
         elif pores != []:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             temp = self._get_labels(element='pore',locations=pores, mode=mode)
-            return temp
         elif throats != []:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
             temp = self._get_labels(element='throat',locations=throats,mode=mode)
-            return temp
+        return misc.PrintableList(temp)
             
     def filter_by_label(self,pores=[],throats=[],label=''):
         r'''
