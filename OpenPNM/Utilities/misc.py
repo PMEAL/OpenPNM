@@ -71,3 +71,37 @@ def toc(quiet=False):
             return t
     else:
         print("Toc: start time not set")
+        
+class PrintableList(list):
+    def __str__(self):
+        count = 0
+        header = '-'*50
+        print(header)
+        for item in self:
+            count = count + 1
+            print(count,'\t: ',item)
+        return header
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
