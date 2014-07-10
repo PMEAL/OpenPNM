@@ -197,7 +197,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         elif element == 'throat':
             locations = 'throats'
         #Build partial function from given and updated kwargs
-        fn = partial(model,network=self._net,propname=propname,**kwargs)
+        fn = partial(model,network=self._net,propname=propname,pores=self.pores(),throats=self.throats(),**kwargs)
         if propname not in self._net.keys():
             self._net[propname] = sp.ones((self._net.count(element),))*sp.nan
         self._net[propname][fn.keywords[locations]] = fn()
