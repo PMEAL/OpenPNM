@@ -45,7 +45,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     0.123
     """
 
-    def __init__(self,network,name=None,**kwargs):
+    def __init__(self,network,pores,throats,name=None,**kwargs):
         r"""
         Initialize
         """
@@ -57,6 +57,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         self._physics = [] #Create list for physics to append themselves to
         self._net._geometries.append(self)
         self._prop_list = []
+        self.set_locations(pores=pores,throats=throats,mode='add')
         
         #Initialize geometry to NOWHERE
         network.set_info(label=self.name,pores=[])

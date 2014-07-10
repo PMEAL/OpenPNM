@@ -60,8 +60,8 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         self.name = name
 
         #Use composition to assign pores and throats to this physics
-        self.pores = geometry.pores()
-        self.throats = geometry.throats()
+        self.pores = geometry.pores
+        self.throats = geometry.throats
         self.Np = geometry.Np
         self.Nt = geometry.Nt
         self.count = geometry.count
@@ -100,35 +100,34 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         '''
         self.add_property(prop=prop,prop_name=prop_name,**kwargs)
             
-    def add_property(self,prop='',prop_name='',**kwargs):
+    def add_property(self,model,propname,**kwargs):
         r'''
-        Add specified property estimation model to the physics object.
+        Add specified property estimation model to the fluid object.
         
         Parameters
         ----------
-        prop : string
-            The name of the pore scale physics property attribute to add.
-            This name must correspond with a file in the Physics folder.  
-            To add a new property simply add a file with the appropriate name and the necessary methods.
-           
-        prop_name : string, optional
-            This argument will be used as the method name and the dictionary key
-            where data is written by method. This option is provided for occasions
-            when multiple properties of the same type are required, such as
-            diffusive conductance of each species in a multicomponent mixture.
+        na
         
         Examples
         --------
-        >>> pn = OpenPNM.Network.TestNet()
+        None yet
+
         '''
-        try:
-            function = getattr( getattr(OpenPNM.Physics, prop), kwargs['model'] ) # this gets the method from the file
-            if prop_name: prop = prop_name #overwrite the default prop with user supplied name  
-            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid, geometry=self._geometry, **kwargs) #
-            setattr(self, prop, preloaded_fn)
-            self._logger.info("Successfully loaded {}.".format(prop))
-            self._prop_list.append(prop)
-        except AttributeError: print('could not find',kwargs['model'])
+        #Determine element and locations
+        element = propname.split('.')[0]
+        if element == 'pore':
+            locations = 'pores'
+        elif element == 'throat':
+            locations = 'throats'
+        #Build partial function from given and updated kwargs
+        self._fluid
+        self._net
+        self.pores()
+        self.throats()
+        fn = partial(model,fluid=self._fluid,network=self._net,pores=self.pores(),throats=self.throats(),**kwargs)
+        if propname not in self._net.keys():
+            self._fluid[propname] = sp.ones((self.count(element),))*sp.nan
+        self._fluid[propname][fn.keywords[locations]] = fn()
 
 if __name__ == '__main__':
     print('none yet')

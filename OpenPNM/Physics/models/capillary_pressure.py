@@ -5,27 +5,9 @@ Submodule -- capillary_pressure
 
 """
 
-import scipy as sp
+import scipy as _sp
 
-def constant(physics,fluid,geometry,network,propname,value,**params):
-    r"""
-    Assigns specified constant value
-    """
-    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
-
-def na(physics,fluid,geometry,network,propname,**params):
-    value = -1
-    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
-
-def washburn(physics,
-             fluid,
-             geometry,
-             network,
-             propname,
-             pore_surface_tension='surface_tension',
-             pore_contact_angle='contact_angle',
-             throat_diameter='diameter',
-             **params):
+def washburn(fluid,network,throats,**kwargs):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
@@ -46,25 +28,16 @@ def washburn(physics,
     This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
-    sigma = fluid.get_data(prop=pore_surface_tension,pores='all')
+    sigma = fluid['pore.surface_tension']
     sigma = fluid.interpolate_data(data=sigma)
-    theta = fluid.get_data(prop=pore_contact_angle,pores='all')
+    theta = fluid['pore.contact_angle']
     theta = network.interpolate_data(data=theta)
-    r = network.get_data(prop=throat_diameter,throats='all')/2
-    value = -2*sigma*sp.cos(sp.radians(theta))/r
-    value = value[geometry.throats()]
-    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
+    r = network['throat.diameter']/2
+    value = -2*sigma*_sp.cos(_sp.radians(theta))/r
+    value = value[throats]
+    return value
 
-def purcell(physics,
-            network,
-            geometry,
-            fluid,
-            propname,
-            r_toroid,
-            pore_surface_tension='surface_tension',
-            pore_contact_angle='contact_angle',
-            throat_diameter='diameter',
-            **params):
+def purcell(network,fluid,throats,r_toroid,**kwargss):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a toroid.
 
@@ -91,14 +64,14 @@ def purcell(physics,
 
     TODO: Triple check the accuracy of this equation
     """
-    sigma = fluid.get_data(prop=pore_surface_tension,pores='all')
+    sigma = fluid['pore.surface_tension']
     sigma = fluid.interpolate_data(data=sigma)
-    theta = fluid.get_data(prop=pore_contact_angle,pores='all')
-    theta = fluid.interpolate_data(data=theta)
-    r = network.get_data(prop=throat_diameter,throats='all')/2
+    theta = fluid['pore.contact_angle']
+    theta = network.interpolate_data(data=theta)
+    r = network['throat.diameter']/2
     R = r_toroid
-    alpha = theta - 180 + sp.arcsin(sp.sin(sp.radians(theta)/(1+r/R)))
-    value = (-2*sigma/r)*(sp.cos(sp.radians(theta - alpha))/(1 + R/r*(1-sp.cos(sp.radians(alpha)))))
-    value = value[geometry.throats()]
-    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
+    alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
+    value = (-2*sigma/r)*(_sp.cos(_sp.radians(theta - alpha))/(1 + R/r*(1-_sp.cos(_sp.radians(alpha)))))
+    value = value[throats]
+    return value
 
