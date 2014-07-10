@@ -18,7 +18,6 @@ Lc = 40.5e-6
 
 
 #setting up network
-=======
 sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40)
 sgl.generate(divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
 
@@ -104,7 +103,9 @@ max_inv_seq = max(OP_1.get_throat_data(prop = 'inv_seq'))
 for x in range(21):
     OP_1.update(seq = max_inv_seq*(x/20))
     
-    print('seq = '+str(round(max_inv_seq*(x/20)))+' Pa out of '+str(round(max_inv_seq))+' total sequences')
+    print('seq = '+str(round(max_inv_seq*(x/20)))+' Seq out of '+str(round(max_inv_seq))+' total sequences')
+    
+    modes = ['strict', 'loose']
     
     for mode_increment in range(len(modes)):
         #adding multiphase conductances
