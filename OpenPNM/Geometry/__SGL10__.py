@@ -34,13 +34,13 @@ class SGL10(GenericGeometry):
    
         self.add_property(prop='pore_seed',model='random')
         self.add_property(prop='throat_seed',model='neighbor_min')
-        self.add_property(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc=9e-6,scale=5e-6)
-        self.add_property(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=9e-6,scale=5e-5)
-        self.add_property(prop='pore_volume',model='sphere')
+        self.add_property(prop='pore_diameter',model='sphere',name='weibull_min',shape=.987,loc=1.58e-5,scale=5.01e-6)
+        self.add_property(prop='throat_diameter',model='cylinder',name='weibull_min',shape=.987,loc=1.58e-5,scale=5.01e-6)
+        self.add_property(prop='pore_volume',model='cube')
         self.add_property(prop='throat_length',model='straight')
-        self.add_property(prop='throat_volume',model='cylinder')
+        self.add_property(prop='throat_volume',model='cuboid')
         self.add_property(prop='throat_vector',model='pore_to_pore')
-        self.add_property(prop='throat_area',model='cylinder')
+        self.add_property(prop='throat_area',model='cuboid')
         self.add_property(prop='throat_surface_area',model='cylinder')
         
 if __name__ == '__main__':
