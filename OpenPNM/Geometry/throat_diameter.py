@@ -6,6 +6,7 @@ Submodule -- throat_diameter
 """
 import scipy as sp
 import scipy.stats as spst
+import numpy as np
 
 def constant(geometry,
              network,
@@ -45,5 +46,10 @@ def voronoi(geometry,
             **params):
     r"""
     Calculate throat diameter from analysis of Voronoi facets
+    Equivalent circular diameter from voronoi area
+    Could do better here and work out minimum diameter from verts
     """
-    print('voronoi: nothing yet')
+    areas = network.get_throat_data(prop='area')   
+    value = 2*np.sqrt(areas/np.pi)#64 bit sqrt doesn't work!
+    network.set_data(prop=propname,throats=geometry.throats(),data=value)
+    #print('voronoi: nothing yet')
