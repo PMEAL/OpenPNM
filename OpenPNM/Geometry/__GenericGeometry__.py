@@ -186,9 +186,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         Examples
         --------
         None yet
-        '''
-        
-        r'''
+
         '''
         #Determine element and locations
         element = propname.split('.')[0]

@@ -6,51 +6,32 @@ Submodule -- diffusivity
 """
 import scipy as sp
 
-def constant(fluid,network,propname,value,**params):
-    r"""
-    Assigns specified constant value
-    """
-    fluid.set_pore_data(prop=propname,data=value)
-
-def na(fluid,network,propname,**params):
-    r"""
-    Assigns nonsensical, but numerical value of -1.  
-    This ensurse stability of other methods 
-    but introduces the possibility of being misused.
-    """
-    value = -1
-    fluid.set_pore_data(prop=propname,data=value)
-
-def Fuller(fluid, network, propname, MA, MB, vA, vB, **params): 
+def fuller(fluid,MA,MB,vA,vB,**kwargs): 
     r"""
     Uses Fuller model to estimate diffusion coefficient for gases from first 
     principles at conditions of interest
 
     Parameters
     ----------
-    T :  float, array_like
-        Temperature of interest [K]
-    P :  float, array_like
-        Pressure of interest [Pa]
     MA : float, array_like
         Molecular weight of component A [kg/mol]
     MB : float, array_like
         Molecular weight of component B [kg/mol]
-    VA:  float, array_like
+    vA:  float, array_like
         Sum of atomic diffusion volumes for component A
-    VB:  float, array_like
+    vB:  float, array_like
         Sum of atomic diffusion volumes for component B
     """
 
-    T = fluid.get_pore_data(prop='temperature')
-    P = fluid.get_pore_data(prop='pressure')
+    T = fluid['pore.temperature']
+    P = fluid['pore.pressure']
     MAB = 2*(1/MA+1/MB)**(-1)
     MAB = MAB*1e3
     P = P*1e-5
     value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3)+vB**(1./3))**2)*1e-4
-    fluid.set_pore_data(prop=propname,data=value)
+    return value
 
-def Fuller_scaling(fluid,network,propname,DABo, To, Po,**params):
+def fuller_scaling(fluid,DABo,To,Po,**kwargs):
     r"""
     Uses Fuller model to adjust a diffusion coefficient for gases from reference conditions to conditions of interest
 
@@ -64,12 +45,12 @@ def Fuller_scaling(fluid,network,propname,DABo, To, Po,**params):
     Po, To : float, array_like
         Pressure & temperature at reference conditions, respectively
     """
-    Ti = fluid.get_pore_data(prop='temperature')
-    Pi = fluid.get_pore_data(prop='pressure')
+    Ti = fluid['pore.temperature']
+    Pi = fluid['pore.pressure']
     value = DABo*(Ti/To)**1.75*(Po/Pi)
-    fluid.set_pore_data(prop=propname,data=value)
+    return value
 
-def TynCalus(fluid,network,propname,VA ,VB ,sigma_A ,sigma_B,viscosity='viscosity',**params):
+def tyn_calus(fluid,VA,VB,sigma_A,sigma_B,**kwargs):
     r"""
     Uses Tyn_Calus model to estimate diffusion coefficient in a dilute liquid solution of A in B from first principles at conditions of interest
 
@@ -89,12 +70,12 @@ def TynCalus(fluid,network,propname,VA ,VB ,sigma_A ,sigma_B,viscosity='viscosit
         Surface tension of component B at boiling temperature (N/m)
 
     """
-    T = fluid.get_pore_data(prop='temperature')
-    mu = fluid.get_pore_data(prop=viscosity)
+    T = fluid['pore.temperature']
+    mu = fluid['pore.viscosity']
     value = 8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T*(sigma_B/sigma_A)**0.15/(mu*1e3)
-    fluid.set_pore_data(prop=propname,data=value)
+    return value
 
-def TynCalus_Scaling(fluid,network,propname,DABo ,To ,mu_o ,viscosity='viscosity', **params):
+def tyn_calus_Scaling(fluid,DABo,To,mu_o,**kwargs):
     r"""
     Uses Tyn_Calus model to adjust a diffusion coeffciient for liquids from reference conditions to conditions of interest
 
@@ -108,7 +89,7 @@ def TynCalus_Scaling(fluid,network,propname,DABo ,To ,mu_o ,viscosity='viscosity
     mu_o, To : float, array_like
         Viscosity & temperature at reference conditions, respectively
     """
-    Ti = fluid.get_pore_data(prop='temperature')
-    mu_i = fluid.get_pore_data(prop=viscosity)
+    Ti = fluid['pore.temperature']
+    mu_i = fluid['pore.viscosity']
     value = DABo*(Ti/To)*(mu_o/mu_i)
-    fluid.set_pore_data(prop=propname,data=value)
+    return value
