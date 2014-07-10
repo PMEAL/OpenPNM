@@ -13,6 +13,7 @@ if sys.path[1] != parent_dir:
 import scipy as sp
 import OpenPNM
 from OpenPNM.Utilities import Base
+from OpenPNM.Utilities import misc
 
 
 class Tools(Base,dict):
@@ -488,12 +489,14 @@ class Tools(Base,dict):
         if type(objs) != list:
             objs = list(objs)
         data_amalgamated = {}
+        exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
         for item in objs:
             try:
                 for key in item.keys():
-                    if sp.amax(item[key]) < sp.inf:
-                        dict_name = item.name+'.'+key
-                        data_amalgamated.update({dict_name : item[key]})
+                    if key not in exclusion_list:
+                        if sp.amax(item[key]) < sp.inf:
+                            dict_name = item.name+'.'+key
+                            data_amalgamated.update({dict_name : item[key]})
             except: 
                 self._logger.error('Only network and fluid items contain data')
         
@@ -572,7 +575,7 @@ class Tools(Base,dict):
         props = self._get_props(mode=mode)
         if (pores == []) and (throats == []):
             if element == '':
-                return props            
+                temp = props
             elif element == 'pore':
                 temp = [item for item in props if item.split('.')[0]=='pore']
             elif element == 'throat':
@@ -580,7 +583,6 @@ class Tools(Base,dict):
             else:
                 self._logger.error('Unrecognized element')
                 return
-            return temp
         elif pores != []:
             temp = {}
             for item in props:
@@ -590,7 +592,6 @@ class Tools(Base,dict):
                     else:
                         vals = self[item][pores]
                     temp.update({item:vals})
-            return temp
         elif throats != []:
             temp = {}
             for item in props:
@@ -600,7 +601,7 @@ class Tools(Base,dict):
                     else:
                         vals = self[item][throats]
                     temp.update({item:vals})
-            return temp
+        return misc.PrintableList(temp)
             
     def _get_labels(self,element='',locations=[],mode='union'):
         r'''
@@ -687,19 +688,17 @@ class Tools(Base,dict):
             else:
                 self._logger.error('Unrecognized element')
                 return
-            return temp
         elif pores != []:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             temp = self._get_labels(element='pore',locations=pores, mode=mode)
-            return temp
         elif throats != []:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
             temp = self._get_labels(element='throat',locations=throats,mode=mode)
-            return temp
+        return misc.PrintableList(temp)
             
     def filter_by_label(self,pores=[],throats=[],label=''):
         r'''
@@ -884,7 +883,39 @@ class Tools(Base,dict):
             mask = sp.zeros((Nt,),dtype=bool)
             mask[throats] = True
             return mask
-
+            
+    def toindices(self,mask):
+        r'''
+        Convert a boolean mask a list of pore or throat indices
+        
+        Parameters
+        ----------
+        mask : array_like booleans
+            A boolean array with True at locations where indices are desired.
+            The appropriate indices are returned based an the length of mask, 
+            which must be either Np or Nt long.  
+            
+        Returns
+        -------
+        indices : array_like
+            A list of pore or throat indices corresponding the locations where
+            the received mask was True.
+            
+        Notes
+        -----
+        This behavior could just as easily be accomplished by using the mask
+        in pn.pores()[mask] or pn.throats()[mask].  This method is just a thin
+        convenience function and is a compliment to tomask().
+        
+        '''
+        if sp.shape(mask)[0] == self.num_pores():
+            indices = self.pores()[mask]
+        elif sp.shape(mask)[0] == self.num_throats():
+            indices = self.throats()[mask]
+        else:
+            raise Exception('Mask received was neither Np nor Nt long')
+        return indices
+        
     def interpolate_data(self,data=[],prop='',throats=[],pores=[]):
         r"""
         Determines a pore (or throat) property as the average of it's neighboring 
@@ -1067,7 +1098,8 @@ class Tools(Base,dict):
         Parameters
         ----------
         element : string, optional
-            Can be either 'pore' or 'throat', which specifies which count to return.
+            Can be either 'pore' , 'pores', 'throat' or 'throats', which 
+            specifies which count to return.
             
         Returns
         -------
@@ -1077,6 +1109,13 @@ class Tools(Base,dict):
         See Also
         --------
         num_pores, num_throats
+        
+        Notes
+        -----
+        The ability to send plurals is useful for some types of 'programmatic'
+        access.  For instance, the standard argument for locations is pores
+        or throats.  If these are bundled up in a **kwargs dict then you can 
+        just use the dict key in count() without remove the 's'.
             
         Examples
         --------
@@ -1086,6 +1125,11 @@ class Tools(Base,dict):
         >>> pn.count('pore')
         125
         '''
+        #Remove pluralizaton
+        if element == 'pores':
+            element = 'pore'
+        if element == 'throats':
+            element = 'throat'
         temp = {}
         temp['pore'] = self.num_pores()
         temp['throat'] = self.num_throats()

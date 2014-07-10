@@ -22,21 +22,21 @@ from .__GenericAlgorithm__ import GenericAlgorithm
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""
-    Simulates a capillary drainage experiment by looping through a list of capillary pressures
-
-    This function produces a pore_properties array called 'Pc_invaded' which contains the pressure at which a given pore was invaded. This list can be useful for reproducing the simulation for plotting or determining late pore filling.
+    Simulates a capillary drainage experiment by looping through a list of 
+    capillary pressures.  
 
     Parameters
     ----------
+    network : OpenPNM Network Object
+        The network upon which the simulation will be run
+    name : string, optional
+        The name to assign to the Algorithm Object
 
-    loglevel : integer, optional
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    loggername : string, optional
-        Set the name of the logger to be output on the console. Defaults to class name.
-
-    Note
-    ----
-    Some info about OP?
+    Notes
+    -----
+    To run this algorithm, use 'setup()' to provide the necessary simulation 
+    parameters, and then use 'run()' to execute it.  Use 'update()' to send
+    the results of the simulation out of the algorithm object.
     """
 
     def __init__(self, **kwargs):
@@ -46,14 +46,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
         
-    def setup(self,
-              invading_fluid = None,
-              defending_fluid = None,
-              inlets = [0],
-              npts = 25,
-              capillary_pressure = 'capillary_pressure',
-              AL=True,
-              **params):
+    def setup(self,invading_fluid = None,defending_fluid = None,inlets = [0],npts = 25,capillary_pressure = 'capillary_pressure',AL=True,**params):
+        r'''
+        '''
         # Parse params
         self._fluid_inv = invading_fluid
         self._fluid_def = defending_fluid
@@ -64,6 +59,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._p_cap = capillary_pressure
 
     def run(self):
+        r'''
+        '''
         #See if setup has been run
         try: capillary_pressure = self._p_cap
         except: 
@@ -94,8 +91,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_seq = sp.searchsorted(sp.unique(self._t_inv),self._t_inv)
         self.set_pore_data(prop='inv_seq',data=self._p_seq)
         self.set_throat_data(prop='inv_seq',data=self._t_seq)
-        #Remove temporary arrays and adjacency matrices
-        del self._net._adjacency_matrix['csr']['invaded']
 
     def _do_one_inner_iteration(self,inv_val):
         r"""
@@ -107,11 +102,10 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Generate a tlist containing boolean values for throat state
         Tinvaded = self._t_cap<=inv_val
         #Fill adjacency matrix with invasion state info
-        self._net.create_adjacency_matrix(data=Tinvaded,prop='invaded',sprsfmt='csr',dropzeros=True)
-        clusters = sprs.csgraph.connected_components(self._net._adjacency_matrix['csr']['invaded'])[1]
+        clusters = self._net.find_clusters(Tinvaded)
         #Find all pores with at least 1 invaded throat (invaded)
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
-        nums = self._net.get_throat_indices('all')
+        nums = self._net.throats()
         temp = self._net.find_connected_pores(nums)
         temp = temp[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
@@ -207,6 +201,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             temp = sp.array(t_inv,dtype=sp.float64,ndmin=1)
             self._fluid_inv.set_throat_data(prop=occupancy,data=temp)
             #Apply occupancy to defending fluid
+        if self._fluid_def != None:
             temp = sp.array(~p_inv,dtype=sp.float64,ndmin=1)
             self._fluid_def.set_pore_data(prop=occupancy,data=temp)
             temp = sp.array(~t_inv,dtype=sp.float64,ndmin=1)

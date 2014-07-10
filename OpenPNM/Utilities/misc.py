@@ -1,6 +1,7 @@
 import scipy as _sp
 import time as _time
 from scipy.spatial.distance import cdist as dist
+import _transformations as tr
 
 def iscoplanar(coords):
     r'''
@@ -38,7 +39,11 @@ def iscoplanar(coords):
     
     n_cross = _sp.cross(n0,n)
     n_dot = _sp.multiply(n0,n_cross)
-    
+    #angles=[]
+    #for vec in n_cross[2:len(n_cross)]:
+    #    angles.append(180*(tr.angle_between_vectors(n_cross[1],vec,directed=False)/_sp.pi))
+    #angles=_sp.asarray(angles)
+    #if angles.mean() < 20:
     if _sp.sum(_sp.absolute(n_dot)) == 0:
         return True
     else:
@@ -71,3 +76,37 @@ def toc(quiet=False):
             return t
     else:
         print("Toc: start time not set")
+        
+class PrintableList(list):
+    def __str__(self):
+        count = 0
+        header = '-'*50
+        print(header)
+        for item in self:
+            count = count + 1
+            print(count,'\t: ',item)
+        return header
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
