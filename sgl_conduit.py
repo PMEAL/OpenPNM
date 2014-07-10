@@ -6,7 +6,6 @@ Created on Wed Jul  2 16:38:29 2014
 """
 import OpenPNM
 import matplotlib.pyplot as plt
-import scipy as sp
 
 
 r"""
@@ -16,36 +15,28 @@ array[1] = relative permeability
 array[2] = relative effective diffusivity
 """  
 Lc = 40.5e-6
-N = 10
 
 #setting up network
 sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 30)
-sgl.generate(divisions = [N, N, N], add_boundaries = True, lattice_spacing = [Lc])
-
-#pore size distribution parameters
-lmbda = 9e-6
-k = 3.5
-bmin = 9e-6
-xmax = .9
+#divisions = [26, 26, 10]
+sgl.generate(divisions = [5, 5, 5], add_boundaries = True, lattice_spacing = [Lc])
 
 #set up geometries
-geo = OpenPNM.Geometry.GenericGeometry(name = 'sgl', network = sgl)
-geo.set_locations(pores = sgl.pores('all'), throats = 'all')
+geo = OpenPNM.Geometry.SGL10(name = 'geo', network = sgl)
+geo.set_locations(pores=sgl.pores('internal'),throats='all')
 
-Np = sgl.num_pores('sgl')
-value = [min(lmbda*(-sp.log(1-sp.random.rand()*xmax))**(-1/k) + bmin, Lc) for x in sgl.pores()]
-sgl.set_data(prop='diameter',pores=geo.pores(),data=value)
-
-geo.add_method(prop='pore_volume',model='sphere')
-geo.add_method(prop='throat_length',model='straight')
-geo.add_method(prop='throat_volume',model='cuboid')
-
-connected_pores = sgl.find_connected_pores(geo.throats())
-value = [min(sgl.get_data(pores = pair[0], prop = 'diameter'), sgl.get_data(pores = pair[1], prop = 'diameter')) for pair in connected_pores]
-sgl.set_data(prop = 'diameter', throats = geo.throats(), data = value)
+boun = sgl.add_geometry(subclass='Boundary',name='boun')
+boun.set_locations(pores=sgl.pores('boundary'))
 
 
 sgl.regenerate_geometries()
+
+#account for pores that are too big
+value = [min(sgl.get_pore_data(prop = 'diameter', locations = x), Lc) for x in geo.pores()]
+sgl.set_data(prop='diameter',pores=geo.pores(),data=value)
+#account for throats that are too big
+value = [min(sgl.get_throat_data(prop = 'diameter', locations = x), Lc) for x in geo.throats()]
+sgl.set_data(prop='diameter',throats=geo.throats(),data=value)
 
 #spatial correlation of pore sizes?!
 
@@ -59,13 +50,19 @@ factor = [s*.95 + (not s)*1 for s in same_x]
 throat_diameters = sgl['throat.diameter'][throats]*factor
 sgl.set_data(throats = throats, prop = 'diameter', data = throat_diameters)
 
+#reset aspects relying on pore and throat sizes
+geo.pore_volume()
+geo.throat_volume()
+geo.throat_surface_area()
+
 #set up fluids 
 air = OpenPNM.Fluids.Air(network = sgl, name = 'air')
 water = OpenPNM.Fluids.Water(network = sgl, name = 'water')
 #MYSTERIOUSLY BROKEN LINE
 #water_sgl.add_property(prop = 'contact_angle', model = 'constant', value = 100)
-water['pore.contact_angle'] = 100
+
 sgl.regenerate_fluids()
+water['pore.contact_angle'] = 100
 
 #set up physics 
 phys_water = OpenPNM.Physics.GenericPhysics(network=sgl,fluid=water, geometry = geo, name='standard_water_physics')
@@ -101,12 +98,10 @@ OP_1.setup(invading_fluid = water, defending_fluid = air, inlets = inlets,npts=1
 OP_1.run() 
 
 
-max_capillary_pressure = max(OP_1.get_throat_data(prop = 'inv_Pc'))
-#    OP_1.update(max(OP_1.get_throat_data(prop='inv_Pc')))
-#    OP_1.update(sp.stats.mstats.mode(OP_1.get_pore_data(prop='inv_Pc')))
+max_inv_seq = max(OP_1.get_throat_data(prop = 'inv_seq'))
     
-for x in range(100):
-    OP_1.update(max_capillary_pressure*(x/100.0))
+for x in range(21):
+    OP_1.update(seq = max_inv_seq*(x/20))
     
     modes = ['loose', 'strict']
     
@@ -205,20 +200,7 @@ for x in range(100):
             final_throats = water.get_throat_data('occupancy')*1
             throat_volumes = sgl.get_throat_data(prop = 'volume')
             
-            sum_volume = 0
-            filled_volume = 0
-            
-            for i in range(len(sgl.pores())):
-                sum_volume += pore_volumes[i]
-                if final_pores[i] != 0:
-                    filled_volume += pore_volumes[i]
-                    
-            for j in range(len(sgl.throats())):
-                sum_volume += throat_volumes[j]
-                if final_throats[j] != 0:
-                    filled_volume += throat_volumes[j]
-                
-            saturation = filled_volume/sum_volume
+            saturation = (sum(final_pores*pore_volumes) + sum(final_throats*throat_volumes))/(sum(pore_volumes) + sum(throat_volumes))
             
             relative_eff_perm_air = effective_permeability_air_multi/effective_permeability_air_single
             relative_eff_perm_water = effective_permeability_water_multi/effective_permeability_water_single
@@ -231,52 +213,88 @@ for x in range(100):
             perm_water[str(bound_increment) + str(mode_increment)].append(relative_eff_perm_water)
             diff_water[str(bound_increment) + str(mode_increment)].append(relative_eff_diff_water)
 
+from matplotlib.font_manager import FontProperties
+
+fontP = FontProperties()
+fontP.set_size('small')
+#setting up subplots
+#f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col', sharey='row')
+fig = plt.figure(num=1, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
+ax1 = fig.add_subplot(221)   #top left
+ax2 = fig.add_subplot(222)   #top right
+ax3 = fig.add_subplot(223)   #bottom left
+ax4 = fig.add_subplot(224)
+
 x_values1 = [x/20 for x in range(21)]
 z = '.75'
 
-p1, = plt.plot(sat['00'], perm_water['00'], color = 'k', linestyle = '-', marker = 'o')
-p2, = plt.plot(sat['10'], perm_water['10'], color = z, linestyle = '-', marker = 'o')
-p3, = plt.plot(sat['20'], perm_water['20'], color = 'w', linestyle = '-', marker = 'o')
-p4, = plt.plot(sat['00'], perm_air['00'], color = 'k', linestyle = '-', marker = 'D')
-p5, = plt.plot(sat['10'], perm_air['10'], color = z, linestyle = '-', marker = 'D')
-p6, = plt.plot(sat['20'], perm_air['20'], color = 'w', linestyle = '-', marker = 'D')
-p7, = plt.plot(sat['01'], perm_air['01'], color = 'k', linestyle = '-', marker = '^')
-p8, = plt.plot(sat['11'], perm_air['11'], color = z, linestyle = '-', marker = '^')
-p9, = plt.plot(sat['21'], perm_air['21'], color = 'w', linestyle = '-', marker = '^')
-p10, = plt.plot(x_values1, [x**(3) for x in x_values1], 'k--')
-plt.plot(x_values1, [(1-x)**(3) for x in x_values1], 'k--')
+#plots for subplot1 - loose permeability
+p1, = ax1.plot(sat['00'], perm_water['00'], color = 'k', linestyle = '-', marker = 'o')
+p2, = ax1.plot(sat['10'], perm_water['10'], color = z, linestyle = '-', marker = 'o')
+p3, = ax1.plot(sat['20'], perm_water['20'], color = 'w', linestyle = '-', marker = 'o')
+p4, = ax1.plot(sat['00'], perm_air['00'], color = 'k', linestyle = '-', marker = 'D')
+p5, = ax1.plot(sat['10'], perm_air['10'], color = z, linestyle = '-', marker = 'D')
+p6, = ax1.plot(sat['20'], perm_air['20'], color = 'w', linestyle = '-', marker = 'D')
+p10, = ax1.plot(x_values1, [x**(3) for x in x_values1], 'k--')
+ax1.plot(x_values1, [(1-x)**(3) for x in x_values1], 'k--')
+ax1.set_title("loose permeability")
+ax1.set_ylabel('permeability')
+ax1.set_ylim([0,1])
 
-plt.legend([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10],
+
+#plots for subplot2 - strict permeability
+p1, = ax2.plot(sat['00'], perm_water['00'], color = 'k', linestyle = '-', marker = 'o')
+p2, = ax2.plot(sat['10'], perm_water['10'], color = z, linestyle = '-', marker = 'o')
+p3, = ax2.plot(sat['20'], perm_water['20'], color = 'w', linestyle = '-', marker = 'o')
+p7, = ax2.plot(sat['01'], perm_air['01'], color = 'k', linestyle = '-', marker = '^')
+p8, = ax2.plot(sat['11'], perm_air['11'], color = z, linestyle = '-', marker = '^')
+p9, = ax2.plot(sat['21'], perm_air['21'], color = 'w', linestyle = '-', marker = '^')
+p10, = ax2.plot(x_values1, [x**(3) for x in x_values1], 'k--')
+ax2.plot(x_values1, [(1-x)**(3) for x in x_values1], 'k--')
+ax2.set_title("strict permeability")
+ax2.set_ylim([0,1])
+
+#need to work on legend to match up with the right things
+lgd1 = ax2.legend([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10],
            ["KrWater,x", "KrWater,y", "KrWater,z",
            "KrAir,x (loose)","KrAir,y (loose)","KrAir,z (loose)",
-           "KrAir,x (strict)","KrAir,y (strict)","KrAir,z (strict)", "a = 3"], 
-loc = 'lower left', bbox_to_anchor = (1, .05)) 
+           "KrAir,x (strict)","KrAir,y (strict)","KrAir,z (strict)", "a = 3"], loc='center left', bbox_to_anchor=(1, 0.5), prop = fontP)
+
+#plots for subplot3 - loose diffusivity
+p11, = ax3.plot(sat['00'], diff_water['00'], color = 'k', linestyle = '-', marker = 'o')
+p12, = ax3.plot(sat['10'], diff_water['10'], color = z, linestyle = '-', marker = 'o')
+p13, = ax3.plot(sat['20'], diff_water['20'], color = 'w', linestyle = '-', marker = 'o')
+p14, = ax3.plot(sat['00'], diff_air['00'], color = 'k', linestyle = '-', marker = 'D')
+p15, = ax3.plot(sat['10'], diff_air['10'], color = z, linestyle = '-', marker = 'D')
+p16, = ax3.plot(sat['20'], diff_air['20'], color = 'w', linestyle = '-', marker = 'D')
+p20, = ax3.plot(x_values1, [x**(2) for x in x_values1], 'k--')
+ax3.plot(x_values1, [(1-x)**(2) for x in x_values1], 'k--')
+ax3.set_title("loose diffusivity")
+ax3.set_ylabel("diffusivity")
+ax3.set_xlabel("saturation")
+ax3.set_ylim([0,1])
 
 
-#plt.title('relative permeability versus saturation')
-plt.xlabel('saturation')
-plt.ylabel('relative permeability')
-plt.show()
+#plots for subplot4 - strict diffusivity
+p11, = ax4.plot(sat['00'], diff_water['00'], color = 'k', linestyle = '-', marker = 'o')
+p12, = ax4.plot(sat['10'], diff_water['10'], color = z, linestyle = '-', marker = 'o')
+p13, = ax4.plot(sat['20'], diff_water['20'], color = 'w', linestyle = '-', marker = 'o')
+p17, = ax4.plot(sat['01'], diff_air['01'], color = 'k', linestyle = '-', marker = '^')
+p18, = ax4.plot(sat['11'], diff_air['11'], color = z, linestyle = '-', marker = '^')
+p19, = ax4.plot(sat['21'], diff_air['21'], color = 'w', linestyle = '-', marker = '^')
+p20, = ax4.plot(x_values1, [x**(2) for x in x_values1], 'k--')
+ax4.plot(x_values1, [(1-x)**(2) for x in x_values1], 'k--')
+ax4.set_title("strict diffusivity")
+ax4.set_xlabel("saturation")
+ax4.set_ylim([0,1])
 
-p1, = plt.plot(sat['00'], diff_water['00'], color = 'k', linestyle = '-', marker = 'o')
-p2, = plt.plot(sat['10'], diff_water['10'], color = z, linestyle = '-', marker = 'o')
-p3, = plt.plot(sat['20'], diff_water['20'], color = 'w', linestyle = '-', marker = 'o')
-p4, = plt.plot(sat['00'], diff_air['00'], color = 'k', linestyle = '-', marker = 'D')
-p5, = plt.plot(sat['10'], diff_air['10'], color = z, linestyle = '-', marker = 'D')
-p6, = plt.plot(sat['20'], diff_air['20'], color = 'w', linestyle = '-', marker = 'D')
-p7, = plt.plot(sat['01'], diff_air['01'], color = 'k', linestyle = '-', marker = '^')
-p8, = plt.plot(sat['11'], diff_air['11'], color = z, linestyle = '-', marker = '^')
-p9, = plt.plot(sat['21'], diff_air['21'], color = 'w', linestyle = '-', marker = '^')
-p10, = plt.plot(x_values1, [x**(2) for x in x_values1], 'k--')
-plt.plot(x_values1, [(1-x)**(2) for x in x_values1], 'k--')
-
-plt.legend([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10],
+lgd2 = ax4.legend([p11, p12, p13, p14, p15, p16, p17, p18, p19, p20],
            ["DrWater,x", "DrWater,y", "DrWater,z",
            "DrAir,x (loose)","DrAir,y (loose)","DrAir,z (loose)",
-           "DrAir,x (strict)","DrAir,y (strict)","DrAir,z (strict)", "a = 2"],
-           loc = 'lower left', bbox_to_anchor = (1, .05))
+           "DrAir,x (strict)","DrAir,y (strict)","DrAir,z (strict)", "a = 3"], loc='center left', bbox_to_anchor=(1, 0.5), prop = fontP)
 
-#plt.title('relative diffusivity versus saturation')
-plt.xlabel('saturation')
-plt.ylabel('relative diffusivity')
-plt.show()
+fig.subplots_adjust(left=0.1, right=0.8, top=0.9, bottom=0.1) 
+         
+fig.show()
+
+
