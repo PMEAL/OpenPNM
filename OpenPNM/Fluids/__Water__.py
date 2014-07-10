@@ -29,11 +29,8 @@ class Water(GenericFluid):
         super(Water,self).__init__(name=name,**kwargs)
         self._logger.debug("Construct class")
         self.add_property(propname='pore.diffusivity',
-                          model=fm.diffusivity.fuller,
-                          MA=18,
-                          MB=20,
-                          vA=1,
-                          vB=1)
+                          model=fm.misc.constant,
+                          value=1e-9)
         self.add_property(propname='pore.surface_tension',
                           model=fm.misc.constant,
                           value=0.072)
@@ -41,9 +38,8 @@ class Water(GenericFluid):
                           model=fm.misc.constant,
                           value=110)
         self.add_property(propname='pore.molar_density',
-                          model=fm.molar_density.ideal_gas,
-                          sigma_sl=0.02,
-                          sigma_sg=0.09)
+                          model=fm.misc.constant,
+                          value=44445.0)
         self.add_property(propname='pore.viscosity',
                           model=fm.viscosity.reynolds,
                           uo=0.002,

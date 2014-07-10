@@ -10,7 +10,7 @@ if sys.path[1] != parent_dir:
 
 import OpenPNM
 import scipy as sp
-
+from OpenPNM.Physics import models as pm
 from OpenPNM.Physics.__GenericPhysics__ import GenericPhysics
 
 class BasePhysics(GenericPhysics):
@@ -47,16 +47,21 @@ class BasePhysics(GenericPhysics):
         self._logger.debug("Construct class")
         temp = [item.split('.')[1] for item in fluid.props()]
         if 'viscosity' in temp:
-            self.add_property(prop='hydraulic_conductance', model='hagen_poiseuille')
+            self.add_property(propname='throat.hydraulic_conductance',
+                              model=pm.hydraulic_conductance.hagen_poiseuille)
         if 'diffusivity' in temp:
-            self.add_property(prop='diffusive_conductance', model='bulk_diffusion')
+            self.add_property(propname='throat.diffusive_conductance',
+                              model=pm.diffusive_conductance.bulk_diffusion)
         if 'surface_tension' in temp:
-            self.add_property(prop='capillary_pressure', model='washburn')
-        if 'thermal_conductivity' in temp:
-            self.add_property(prop='thermal_conductance', model='thermal_fluid')
-        if 'electrical_conductivity' in temp:
-            self.add_property(prop='electronic_conductance', model='series_resistors')
-        self.regenerate()
+            self.add_property(propname='throat.capillary_pressure',
+                              model=pm.capillary_pressure.washburn)
+
+        
+
+
+
+
+
 
 
 if __name__ == '__main__':

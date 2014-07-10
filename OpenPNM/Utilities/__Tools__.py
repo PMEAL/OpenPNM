@@ -39,7 +39,7 @@ class Tools(Base,dict):
         element = key.split('.')[0]
         if type(value) == int:
             value = [value]
-        value = sp.array(value,ndmin=0)
+        value = sp.array(value,ndmin=1)
         if (element != 'pore') and (element != 'throat'):
             self._logger.error('Array name must begin with \'pore\' or \'throat\'')
             return

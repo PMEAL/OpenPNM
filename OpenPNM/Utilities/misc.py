@@ -81,6 +81,7 @@ class PrintableList(list):
     def __str__(self):
         count = 0
         header = '-'*50
+        print('\n')
         print(header)
         for item in self:
             count = count + 1
