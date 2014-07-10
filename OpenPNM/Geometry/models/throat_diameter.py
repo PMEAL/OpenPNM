@@ -4,52 +4,24 @@ Submodule -- throat_diameter
 ===============================================================================
 
 """
-import scipy as sp
-import scipy.stats as spst
-import numpy as np
+import scipy as _sp
 
-def constant(geometry,
-             network,
-             propname,
-             value,
-             **params):
-    r"""
-    Assigns specified constant value
-    """
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
-
-def cylinder(geometry,
-             network,
-             propname,
-             seed='seed',
-             **params):
+def cylinder(network,throats,tsd_name,tsd_shape,tsd_loc,tsd_scale,**kwargs):
     r"""
     Calculate throat diameter from seeds for a cylindrical throat
     """
-    prob_fn = getattr(spst,params['name'])
-    P = prob_fn(params['shape'],loc=params['loc'],scale=params['scale'])
-    value=P.ppf(network.get_data(prop=seed,throats=geometry.throats()))
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
+    import scipy.stats as spst
+    prob_fn = getattr(spst,tsd_name)
+    P = prob_fn(tsd_shape,loc=tsd_loc,scale=tsd_scale)
+    value=P.ppf(network['throat.seed'][throats])
+    return value
 
-def cuboid(geometry,
-           network,
-           propname,
-           **params):
-    r"""
-    Calculate throat diameter from seeds for a cuboidal throat
-    """
-    print('cuboid: nothing yet')
-    
-def voronoi(geometry,
-            network,
-            propname,
-            **params):
+def voronoi(network,throats,**kwargs):
     r"""
     Calculate throat diameter from analysis of Voronoi facets
     Equivalent circular diameter from voronoi area
     Could do better here and work out minimum diameter from verts
     """
-    areas = network.get_throat_data(prop='area')   
-    value = 2*np.sqrt(areas/np.pi)#64 bit sqrt doesn't work!
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
-    #print('voronoi: nothing yet')
+    areas = network['throat.area'][throats]
+    value = 2*_sp.sqrt(areas/_sp.pi)#64 bit sqrt doesn't work!
+    return value

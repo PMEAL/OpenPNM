@@ -175,41 +175,33 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         '''
         self.add_property(prop=prop,prop_name=prop_name,**kwargs)
     
-    def add_property(self,prop='',prop_name='',**kwargs):
+    def add_property(self,model,propname,**kwargs):
         r'''
         Add specified property estimation model to the fluid object.
         
         Parameters
         ----------
-        prop : string
-            The name of the fluid property attribute to add.
-            This name must correspond with a file in the Fluids folder.  
-            To add a new property simply add a file with the appropriate name and the necessary methods.
-           
-        prop_name : string, optional
-            This argument will be used as the method name and the dictionary key
-            where data is written by method. This option is provided for occasions
-            when multiple properties of the same type are required, such as
-            diffusivity coefficients of each species in a multicomponent mixture.
+        na
         
         Examples
         --------
         None yet
         '''
-        try:
-            function = getattr( getattr(OpenPNM.Geometry, prop), kwargs['model'] ) # this gets the method from the file
-            if prop_name: propname = prop = prop_name #overwrite the default prop with user supplied name
-            else:
-                #remove leading pore_ or throat_ from dictionary key
-                propname = prop.split('_')[1]
-                element = prop.split('_')[0]
-                if len(prop.split('_')) > 2:
-                    propname = prop.split(element+'_')[1] 
-            preloaded_fn = partial(function, geometry=self, network=self._net,propname=propname, **kwargs) #
-            setattr(self, prop, preloaded_fn)
-            self._logger.info("Successfully loaded {}.".format(prop))
-            self._prop_list.append(prop)
-        except AttributeError: print('could not find',kwargs['model'])
+        
+        r'''
+        '''
+        #Determine element and locations
+        element = propname.split('.')[0]
+        if element == 'pore':
+            locations = 'pores'
+        elif element == 'throat':
+            locations = 'throats'
+        #Build partial function from given and updated kwargs
+        fn = partial(model,network=self._net,propname=propname,**kwargs)
+        if propname not in self._net.keys():
+            self._net[propname] = sp.ones((self._net.count(element),))*sp.nan
+        self._net[propname][fn.keywords[locations]] = fn()
+
 
     def check_consistency(self):
         r'''

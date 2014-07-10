@@ -4,58 +4,32 @@ Submodule -- throat_surface_area
 ===============================================================================
 
 """
-import scipy as sp
-import scipy.stats as spst
+import scipy as _sp
 
-def constant(geometry,
-             network,
-             propname,
-             value,
-             **params):
-    r"""
-    Assigns specified constant value
-    """
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
-
-def cylinder(geometry,
-             network,
-             propname,
-             diameter='diameter',
-             length='length',
-             **params):
+def cylinder(network,throats,**kwargs):
     r"""
     Calculate throat area for a cylindrical throat
     """
-    D = network.get_data(prop=diameter,throats=geometry.throats())
-    L = network.get_data(prop=length,throats=geometry.throats())
-    value = sp.constants.pi/(D)*L
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
+    D = network['throat.diameter'][throats]
+    L = network['throat.length'][throats]
+    value = _sp.constants.pi/(D)*L
+    return value
 
-def cuboid(geometry,
-           network,
-           propname,
-           diameter='diameter',
-           length='length',
-           **params):
+def cuboid(network,throats,**kwargs):
     r"""
     Calculate throat area for a cuboid throat
     """
-    D = network.get_data(prop=diameter,throats=geometry.throats())
-    L = network.get_data(prop=length,throats=geometry.throats())
+    D = network['throat.diameter'][throats]
+    L = network['throat.length'][throats]
     value = 4*D*L
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
+    return value
     
-def voronoi(geometry,
-            network,
-            propname,
-            perimeter='perimeter',
-            length='length',
-            **params):
+def voronoi(network,throats,**kwargs):
     r"""
     Calculate surface area from perimeter and lenght - 
     perimeter calculated when throat area is calculated so must be run in correct order
     """
-    P = network.get_data(prop=perimeter,throats=geometry.throats())
-    L = network.get_data(prop=length,throats=geometry.throats())
+    P = network['throat.perimeter'][throats]
+    L = network['throat.length'][throats]
     value = P*L
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
+    return value

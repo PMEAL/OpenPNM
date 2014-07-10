@@ -4,40 +4,23 @@ Submodule -- pore_diameter
 ===============================================================================
 
 """
-import scipy as sp
-import scipy.stats as spst
-from scipy.special import cbrt
+import scipy as _sp
 
-def constant(geometry,
-             network,
-             propname,
-             value,
-             **params):
-    r"""
-    Assign specified constant value
-    """
-    network.set_data(prop=propname,pores=geometry.pores(),data=value)
-
-def sphere(geometry,
-           network,
-           propname,
-           seed='seed',
-           **params):
+def sphere(network,pores,psd_name,psd_shape,psd_loc,psd_scale,**kwargs):
     r"""
     Calculate pore diameter from seed values for a spherical pore body
     """
-    prob_fn = getattr(spst,params['name'])
-    P = prob_fn(params['shape'],loc=params['loc'],scale=params['scale'])
-    value = P.ppf(network.get_data(prop=seed,pores=geometry.pores()))
-    network.set_data(prop=propname,pores=geometry.pores(),data=value)
+    import scipy.stats as spst
+    prob_fn = getattr(spst,psd_name)
+    P = prob_fn(psd_shape,loc=psd_loc,scale=psd_scale)
+    value = P.ppf(network['pore.seed'][pores])
+    return value
 
-def voronoi(geometry,
-            network,
-            propname,
-            **params):
+def voronoi(network,pores,**kwargs):
     r"""
     Calculate pore diameter from equivalent sphere - volumes must be calculated first
     """
-    pore_vols = network.get_pore_data(prop='volume')
-    value = cbrt(6*pore_vols/sp.pi)
-    network.set_data(prop=propname,pores=geometry.pores(),data=value)
+    from scipy.special import cbrt
+    pore_vols = network['pore.volume'][pores]
+    value = cbrt(6*pore_vols/_sp.pi)
+    return value

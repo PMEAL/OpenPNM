@@ -4,52 +4,32 @@ Submodule -- pore_volume
 ===============================================================================
 
 """
-import scipy as sp
+import scipy as _sp
 
-def constant(geometry,
-             network,
-             propname,
-             value,
-             **params):
-    r"""
-    Assigns specified constant value
-    """
-    network.set_data(prop=propname,pores=geometry.pores(),data=value)
-
-def sphere(geometry,
-           network,
-           propname,
-           diameter='diameter',
-           **params):
+def sphere(network,pores,**kwargs):
     r"""
     Calculate pore volume from diameter for a spherical pore body
     """
-    value=sp.pi/6*network.get_data(prop=diameter,pores=geometry.pores())**3
-    network.set_data(prop=propname,pores=geometry.pores(),data=value)
+    diams = network['pore.diameter']
+    value=_sp.pi/6*diams**3
+    return value
     
-def cube(geometry,
-         network,
-         propname,
-         diameter='diameter',
-         **params):
+def cube(network,pores,**kwargs):
     r"""
     Calculate pore volume from diameter for a cubic pore body
     """
-    value=network.get_data(prop=diameter,pores=geometry.pores())**3
-    network.set_data(prop=propname,pores=geometry.pores(),data=value)
+    value=network['pore.diameter'][pores]**3
+    return value
     
-def voronoi(geometry,
-            network,
-            propname,
-            **params):
+def voronoi(network,pores,**kwargs):
     r"""
     Calculate volume from the convex hull of the offset vertices making the throats
     """
     conns = network.get_throat_data(prop='conns')
     verts = network.get_throat_data(prop='offset_verts') 
-    num_pores = network.num_pores()
-    value = sp.ndarray(num_pores,dtype=object)
-    for my_pore in range(num_pores):
+    Np = network.num_pores()
+    value = _sp.ndarray(Np,dtype=object)
+    for my_pore in range(Np):
         throat_vert_list = []
         num_connections = 0
         for idx,check_pores in enumerate(conns):
@@ -58,9 +38,8 @@ def voronoi(geometry,
                 for vertex in range(len(verts[idx])):
                     throat_vert_list.append(verts[idx][vertex])
         if num_connections > 1:
-            throat_array=sp.asarray(throat_vert_list)
+            throat_array=_sp.asarray(throat_vert_list)
             value[my_pore]= geometry._get_hull_volume(throat_array)
         else:
             value[my_pore]=0.0
-
-    network.set_data(prop=propname,pores=geometry.pores(),data=value)
+    return value[pores]

@@ -4,38 +4,20 @@ Submodule -- throat_area
 ===============================================================================
 
 """
-import scipy as sp
+import scipy as _sp
 
-def constant(geometry,
-             network,
-             propname,
-             value,
-             **params):
-    r"""
-    Assigns specified constant value
-    """
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
-
-def cylinder(geometry,
-             network,
-             propname,
-             diameter='diameter',
-             **params):
+def cylinder(network,throats,**kwargs):
     r"""
     Calculate throat area for a cylindrical throat
     """
-    D = network.get_data(prop=diameter,throats=geometry.throats())
-    value = sp.constants.pi/4*(D)**2
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
+    diams = network['throat.diameter'][throats]
+    value = _sp.constants.pi/4*(diams)**2
+    return value
 
-def cuboid(geometry,
-           network,
-           propname,
-           diameter='diameter',
-           **params):
+def cuboid(network,throats,**kwargs):
     r"""
     Calculate throat area for a cuboid throat
     """
-    D = network.get_data(prop=diameter,throats=geometry.throats())
-    value = (D)**2
-    network.set_data(prop=propname,throats=geometry.throats(),data=value)
+    diams = network['throat.diameter'][throats]
+    value = (diams)**2
+    return value
