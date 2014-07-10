@@ -18,4 +18,4 @@ This submodule contains all pore scale physics models applied to a pore network.
 """
 
 from .__GenericPhysics__ import GenericPhysics
-from .__BasePhysics__ import BasePhysics
+from .__Standard__ import Standard
