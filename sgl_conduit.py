@@ -16,10 +16,11 @@ array[2] = relative effective diffusivity
 """  
 Lc = 40.5e-6
 
+
 #setting up network
-sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 30)
-#divisions = [26, 26, 10]
-sgl.generate(divisions = [5, 5, 5], add_boundaries = True, lattice_spacing = [Lc])
+=======
+sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40)
+sgl.generate(divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
 
 #set up geometries
 geo = OpenPNM.Geometry.SGL10(name = 'geo', network = sgl)
@@ -99,11 +100,11 @@ OP_1.run()
 
 
 max_inv_seq = max(OP_1.get_throat_data(prop = 'inv_seq'))
-    
+
 for x in range(21):
     OP_1.update(seq = max_inv_seq*(x/20))
     
-    modes = ['loose', 'strict']
+    print('seq = '+str(round(max_inv_seq*(x/20)))+' Pa out of '+str(round(max_inv_seq))+' total sequences')
     
     for mode_increment in range(len(modes)):
         #adding multiphase conductances
@@ -120,17 +121,17 @@ for x in range(21):
         
         #run Stokes Flow and find Permeability
         #single phase
-        Stokes_alg_single_phase_air = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes', name = 'Stokes_alg_single_phase_air', network = sgl, loglevel = 30)
-        Stokes_alg_single_phase_water = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes_2', name = 'Stokes_alg_single_phase_water', network = sgl, loglevel = 30)
+        Stokes_alg_single_phase_air = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes', name = 'Stokes_alg_single_phase_air', network = sgl, loglevel = 40)
+        Stokes_alg_single_phase_water = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes_2', name = 'Stokes_alg_single_phase_water', network = sgl, loglevel = 40)
         
-        Fickian_alg_single_phase_air = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian_alg_single_phase_air', network = sgl, loglevel = 30)
-        Fickian_alg_single_phase_water = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian_2', name = 'Fickian_alg_single_phase_water', network = sgl, loglevel = 30)
+        Fickian_alg_single_phase_air = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian_alg_single_phase_air', network = sgl, loglevel = 40)
+        Fickian_alg_single_phase_water = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian_2', name = 'Fickian_alg_single_phase_water', network = sgl, loglevel = 40)
         
-        Stokes_alg_multi_phase_air = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes', name = 'Stokes_alg_multi_phase_air', network = sgl, loglevel = 30)
-        Stokes_alg_multi_phase_water = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes_2', name = 'Stokes_alg_multi_phase_water', network = sgl, loglevel = 30)
+        Stokes_alg_multi_phase_air = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes', name = 'Stokes_alg_multi_phase_air', network = sgl, loglevel = 40)
+        Stokes_alg_multi_phase_water = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes_2', name = 'Stokes_alg_multi_phase_water', network = sgl, loglevel = 40)
         
-        Fickian_alg_multi_phase_air = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian_alg_multi_phase_air', network = sgl, loglevel = 30)
-        Fickian_alg_multi_phase_water = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian_2', name = 'Fickian_alg_multi_phase_water', network = sgl, loglevel = 30)
+        Fickian_alg_multi_phase_air = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian_alg_multi_phase_air', network = sgl, loglevel = 40)
+        Fickian_alg_multi_phase_water = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian_2', name = 'Fickian_alg_multi_phase_water', network = sgl, loglevel = 40)
         
         #setting up boundary conditions and calculating effective_permeability
         #BC1
@@ -174,15 +175,15 @@ for x in range(21):
             Fickian_alg_multi_phase_water.setup(conductance = 'conduit_diffusive_conductance',fluid=water)
             
             #run
-            Stokes_alg_single_phase_air.run(loglevel = 30)
-            Stokes_alg_single_phase_water.run(loglevel = 30)
-            Fickian_alg_single_phase_air.run(loglevel = 30)
-            Fickian_alg_single_phase_water.run(loglevel = 30)
+            Stokes_alg_single_phase_air.run()
+            Stokes_alg_single_phase_water.run()
+            Fickian_alg_single_phase_air.run()
+            Fickian_alg_single_phase_water.run()
             
-            Stokes_alg_multi_phase_air.run(loglevel = 30)
-            Stokes_alg_multi_phase_water.run(loglevel = 30)
-            Fickian_alg_multi_phase_air.run(loglevel = 30)
-            Fickian_alg_multi_phase_water.run(loglevel = 30)
+            Stokes_alg_multi_phase_air.run()
+            Stokes_alg_multi_phase_water.run()
+            Fickian_alg_multi_phase_air.run()
+            Fickian_alg_multi_phase_water.run()
             
             #calc effective properties
             effective_permeability_air_single = Stokes_alg_single_phase_air.calc_eff_permeability(clean = False)  
