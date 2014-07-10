@@ -45,3 +45,17 @@ def cuboid(geometry,
     value = 4*D*L
     network.set_data(prop=propname,throats=geometry.throats(),data=value)
     
+def voronoi(geometry,
+            network,
+            propname,
+            perimeter='perimeter',
+            length='length',
+            **params):
+    r"""
+    Calculate surface area from perimeter and lenght - 
+    perimeter calculated when throat area is calculated so must be run in correct order
+    """
+    P = network.get_data(prop=perimeter,throats=geometry.throats())
+    L = network.get_data(prop=length,throats=geometry.throats())
+    value = P*L
+    network.set_data(prop=propname,throats=geometry.throats(),data=value)
