@@ -6,7 +6,12 @@ Submodule -- thermal_conductance
 """
 import scipy as _sp
 
-def chung(fluid,Cv,MW,acentric,**kwargs):
+def chung(fluid,
+          Cv,
+          MW,
+          acentric,
+          pore_viscosity='pore.viscosity',
+          **kwargs):
     r"""
     Uses Chung et al. model to estimate thermal conductivity for gases with 
     low pressure(<10 bar) from first principles at conditions of interest
@@ -23,7 +28,7 @@ def chung(fluid,Cv,MW,acentric,**kwargs):
     """
     R = 8.314
     T = fluid['pore.temperature']
-    mu = fluid['pore.viscosity']
+    mu = fluid[pore_viscosity]
     Tc = fluid['pore.Tc']
     Tr = T/Tc
     z = 2.0 + 10.5*Tr**2

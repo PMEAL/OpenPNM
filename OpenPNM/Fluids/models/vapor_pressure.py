@@ -8,7 +8,9 @@ Methods for predicing the vapor pressure of pure species
 """
 import scipy as _sp
 
-def Antoine(fluid,A,B,C,**kwargs):
+def Antoine(fluid,
+            A,B,C,
+            **kwargs):
     r"""
     Uses Antoine equation to estimate vapor pressure of a pure component
 

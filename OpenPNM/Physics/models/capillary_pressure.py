@@ -7,7 +7,13 @@ Submodule -- capillary_pressure
 
 import scipy as _sp
 
-def washburn(fluid,network,throats,**kwargs):
+def washburn(fluid,
+             network,
+             throats,
+             pore_surface_tension='pore.surface_tension',
+             pore_contact_angle='pore.contact_angle',
+             throat_diameter='throat.diameter',
+             **kwargs):
     r"""
     Computes the capillary entry pressure assuming the throat is a cylindrical tube.
 
@@ -28,16 +34,23 @@ def washburn(fluid,network,throats,**kwargs):
     This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
-    sigma = fluid['pore.surface_tension']
+    sigma = fluid[pore_surface_tension]
     sigma = fluid.interpolate_data(data=sigma)
-    theta = fluid['pore.contact_angle']
+    theta = fluid[pore_contact_angle]
     theta = network.interpolate_data(data=theta)
-    r = network['throat.diameter']/2
+    r = network[throat_diameter]/2
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
     value = value[throats]
     return value
 
-def purcell(network,fluid,throats,r_toroid,**kwargss):
+def purcell(network,
+            fluid,
+            throats,
+            r_toroid,
+            pore_surface_tension='pore.surfac_tension',
+            pore_contact_angle='pore.contact_angle',
+            throat_diameter='throat.diameter',
+            **kwargss):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a toroid.
 
@@ -64,11 +77,11 @@ def purcell(network,fluid,throats,r_toroid,**kwargss):
 
     TODO: Triple check the accuracy of this equation
     """
-    sigma = fluid['pore.surface_tension']
+    sigma = fluid[pore_surface_tension]
     sigma = fluid.interpolate_data(data=sigma)
-    theta = fluid['pore.contact_angle']
+    theta = fluid[pore_contact_angle]
     theta = network.interpolate_data(data=theta)
-    r = network['throat.diameter']/2
+    r = network[throat_diameter]/2
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r)*(_sp.cos(_sp.radians(theta - alpha))/(1 + R/r*(1-_sp.cos(_sp.radians(alpha)))))

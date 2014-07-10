@@ -6,7 +6,10 @@ Submodule -- throat_length
 """
 import scipy as _sp
 
-def straight(network,throats,**kwargs):
+def straight(network,
+             throats,
+             pore_diameter='pore.diameter',
+             **kwargs):
     r"""
     Calculate throat length 
     """
@@ -16,12 +19,14 @@ def straight(network,throats,**kwargs):
     C1 = network['pore.coords'][pore1]
     C2 = network['pore.coords'][pore2]
     E = _sp.sqrt(_sp.sum((C1-C2)**2,axis=1))  #Euclidean distance between pores
-    D1 = network['pore.diameter'][pore1]
-    D2 = network['pore.diameter'][pore2]
+    D1 = network[pore_diameter][pore1]
+    D2 = network[pore_diameter][pore2]
     value = E-(D1+D2)/2
     return value
         
-def voronoi(network,throats,**kwargs):
+def voronoi(network,
+            throats,
+            **kwargs):
     r"""
     Calculate the centre to centre distance from centroid of pore1 to centroid of throat to centroid of pore2
     """

@@ -44,6 +44,8 @@ class Toray090(GenericGeometry):
                           psd_shape=2.5,
                           psd_loc=5e-6,
                           psd_scale=4e-6)
+        self.add_property(propname='pore.area',
+                          model=gm.pore_area.spherical)
         self.add_property(propname='throat.diameter',
                           model=gm.throat_diameter.cylinder,
                           tsd_name='weibull_min',

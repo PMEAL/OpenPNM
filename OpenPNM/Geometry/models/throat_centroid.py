@@ -6,7 +6,9 @@ Submodule -- throat_centroid
 """
 import scipy as _sp
 
-def voronoi(network,throats,**kwargs):
+def voronoi(network,
+            throats,
+            **kwargs):
     r"""
     Calculate the centroid of the pore from the voronoi vertices - C.O.M
     """

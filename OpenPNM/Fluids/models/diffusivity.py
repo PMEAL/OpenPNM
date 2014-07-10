@@ -4,7 +4,7 @@ Submodule -- diffusivity
 ===============================================================================
 
 """
-import scipy as sp
+import scipy as _sp
 
 def fuller(fluid,MA,MB,vA,vB,**kwargs): 
     r"""

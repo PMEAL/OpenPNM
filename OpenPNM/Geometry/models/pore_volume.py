@@ -6,27 +6,35 @@ Submodule -- pore_volume
 """
 import scipy as _sp
 
-def sphere(network,pores,**kwargs):
+def sphere(network,
+           pores,
+           pore_diameter='pore.diameter',
+           **kwargs):
     r"""
     Calculate pore volume from diameter for a spherical pore body
     """
-    diams = network['pore.diameter']
+    diams = network[pore_diameter]
     value=_sp.pi/6*diams**3
     return value
     
-def cube(network,pores,**kwargs):
+def cube(network,
+         pores,
+         pore_diameter='pore.diameter',
+         **kwargs):
     r"""
     Calculate pore volume from diameter for a cubic pore body
     """
-    value=network['pore.diameter'][pores]**3
+    value=network[pore_diameter][pores]**3
     return value
     
-def voronoi(network,pores,**kwargs):
+def voronoi(network,
+            pores,
+            **kwargs):
     r"""
     Calculate volume from the convex hull of the offset vertices making the throats
     """
-    conns = network.get_throat_data(prop='conns')
-    verts = network.get_throat_data(prop='offset_verts') 
+    conns = network['throat.conns']
+    verts = network['throat.offset_verts']
     Np = network.num_pores()
     value = _sp.ndarray(Np,dtype=object)
     for my_pore in range(Np):

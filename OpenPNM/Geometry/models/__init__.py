@@ -40,6 +40,7 @@ Classes
 #        else:
 #            exec('from . import ' + format(item.split('.')[0]))
 
+from . import pore_area
 from . import pore_misc
 from . import pore_diameter
 from . import pore_seed

@@ -6,14 +6,18 @@ Submodule -- pore_seeds
 """
 import scipy as _sp
 
-def constant(pores,value,**kwargs):
+def constant(pores,
+             value,
+             **kwargs):
     r"""
     Assign specified constant value
     """
     value = _sp.ones(_sp.shape(pores)[0])*value
     return value
 
-def random(pores,seed=None,**kwargs):
+def random(pores,
+           seed=None,
+           **kwargs):
     r"""
     Assign random number to pore bodies
     note: should this be called 'poisson'?  

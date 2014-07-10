@@ -9,27 +9,23 @@ Some text here?
 
 import scipy as _sp
 
-def empirical(fluid,a=[0],**kwargs):
-    r"""
-    Uses a polynomial fit of empirical data to calculate property
-    """
-    T = fluid['pore.temperature']
-    value = _sp.zeros_like(T)
-    for i in range(0,_sp.size(a)):
-        value = value + a[i]*(T**i)
-    return value
-
-def eotvos(fluid,k,**kwargs):
+def eotvos(fluid,
+           k,
+           pore_molar_density='pore.molar_density',
+           **kwargs):
     r'''
     Documentation for this method is being updated, we are sorry for the inconvenience.
     '''
     Tc = fluid['pore.Tc']
     T = fluid['pore.temperature']
-    Vm = 1/fluid['pore.molar_density']
+    Vm = 1/fluid[pore_molar_density]
     value = k*(Tc-T)/(Vm**(2/3))
     return value
 
-def guggenheim_katayama(fluid,K2,n,**kwargs):
+def guggenheim_katayama(fluid,
+                        K2,
+                        n,
+                        **kwargs):
     r'''
     Documentation for this method is being updated, we are sorry for the inconvenience.
     '''
@@ -40,7 +36,10 @@ def guggenheim_katayama(fluid,K2,n,**kwargs):
     value = sigma_o*(1-T/Tc)**n
     return value
 
-def brock_bird_scaling(fluid,sigma_o,To,**params):
+def brock_bird_scaling(fluid,
+                       sigma_o,
+                       To,
+                       **params):
     r"""
     Uses Brock_Bird model to adjust surface tension from it's value at a given 
     reference temperature to temperature of interest
