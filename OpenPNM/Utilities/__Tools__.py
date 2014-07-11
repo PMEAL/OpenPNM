@@ -36,65 +36,57 @@ class Tools(Base,dict):
         is to limit what type and shape of data can be written to protect
         the integrity of the network.
         '''
+        #--- Enforce correct dict naming ---#
         element = key.split('.')[0]
-        if type(value) == int:
-            value = [value]
-        value = sp.array(value,ndmin=1)
         if (element != 'pore') and (element != 'throat'):
             self._logger.error('Array name must begin with \'pore\' or \'throat\'')
             return
+        #--- Convert value to an ndarray ---#
+        value = sp.array(value,ndmin=1)
+        #--- Skip checks for 'coords', 'conns' ---#
         if (key == 'pore.coords') or (key == 'throat.conns'):
             super(Base, self).__setitem__(key,value)
             return
-        elif key.split('.')[1] == 'all':
-            try: 
-                self[key]
+        #--- Skip checks for 'all', and prevent changes if defined ---#
+        if key.split('.')[1] == 'all':
+            if key in self.keys():
                 self._logger.error(key+' is already defined.')
-            except: super(Base, self).__setitem__(key,value)
-            return
-        else:
-            if key not in self:
-                if (sp.shape(value)[0] == 1):
-                    self._logger.debug('Adding scalar: '+key)
-                    super(Base, self).__setitem__(key,value)
-                elif (sp.shape(value)[0] == self.num_pores()):
-                    self._logger.debug('Adding Np length vector: ' +key)
-                    super(Base, self).__setitem__(key,value)
-                elif (sp.shape(value)[0] == self.num_throats()):
-                    self._logger.debug('Adding Nt length vector: '+key)
-                    super(Base, self).__setitem__(key,value)
-                else:
-                    self._logger.error('Cannot create a label or property of the wrong length')
             else:
-                if (sp.shape(value)[0] == 1):
-                    if sp.shape(self[key]) == 1:
-                        self._logger.debug('Updating scalar: '+key)
-                        super(Base, self).__setitem__(key,value)
-                    else:
-                        self._logger.debug('Overwriting vector with scalar: '+key)
-                        super(Base, self).__setitem__(key,value)
-                else:
-                    if sp.shape(value)[0] == sp.shape(self[key])[0]:
-                        self._logger.debug('Updating vector :'+key)
-                        super(Base, self).__setitem__(key,value)
-                    else:
-                        if sp.shape(value)[0] == self.num_pores():
-                            self._logger.debug('Updating vector: '+key)
-                            super(Base, self).__setitem__(key,value)
-                        elif sp.shape(value)[0] == self.num_throats():
-                            self._logger.debug('Updating vector: '+key)
-                            super(Base, self).__setitem__(key,value)
-                        else:
-                            self._logger.error('Cannot overwrite '+key+' with an array of the wrong length')
+                self._logger.debug(key+' is being defined.')
+                super(Base, self).__setitem__(key,value)
+            return
+        #--- Write value to dictionary  ---#
+        if sp.shape(value)[0] == 1:  # If value is scalar
+            self._logger.debug('Broadcasting scalar value into vector: '+key)
+            value = sp.ones((self.count(element),),dtype=value.dtype)*value
+            super(Base, self).__setitem__(key,value)
+        elif sp.shape(value)[0] == self.count(element):
+            self._logger.debug('Updating vector: '+key)
+            super(Base, self).__setitem__(key,value)
+        else:
+            self._logger.error('Cannot write vector with an array of the wrong length: '+key)
     
-#    def __getitem__(self,key):
-#        try:
-#            temp = super(Base, self).__getitem__(key)
-#        except:
-#            self._logger.warning('Requested array will be created')
-#            self.__setitem__(key,[])
-#            temp = super(Base, self).__getitem__(key)
-#        return temp
+    def __str__(self):
+        header = '-'*60
+        print(header)
+        print(self.__module__.replace('__','')+': \t'+self.name)
+        print(header)
+        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Info'))
+        print(header)
+        count = 0
+        for item in self.props():
+            count = count + 1
+            print("{a:<5d} {b:<35s}".format(a=count, b=item))
+        print(header)
+        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Locations'))
+        print(header)
+        count = 0
+        for item in self.labels():
+            count = count + 1
+            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=item, c=sum(self[item])))
+        print(header)
+        return ''
+        
     
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
@@ -740,28 +732,29 @@ class Tools(Base,dict):
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         '''
-        try: labels = [labels.name]  # Check if object was sent
-        except: pass
+        if element+'.all' not in self.keys():
+            raise Exception('Cannot proceed without {}.all'.format(element))
+        if type(labels) == str: labels = [labels] #convert string to list, if necessary
         if mode == 'union':
-            union = sp.zeros_like(self._get_info(element=element,label='all'),dtype=bool)
+            union = sp.zeros_like(self[element+'.all'],dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                    union = union + self._get_info(element=element,label=item)
+                    union = union + self[element+'.'+item.split('.')[-1]]
             ind = union
         elif mode == 'intersection':
-            intersect = sp.ones_like(self._get_info(element=element,label='all'),dtype=bool)
+            intersect = sp.ones_like(self[element+'.all'],dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
-                    intersect = intersect*self._get_info(element=element,label=item)
+                    intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
         elif mode == 'not_intersection':
-            not_intersect = sp.zeros_like(self._get_info(element=element,label='all'),dtype=int)
+            not_intersect = sp.zeros_like(self[element+'.all'],dtype=int)
             for item in labels: #iterate over labels list and collect all indices
-                info = self._get_info(element=element,label=item)
+                info = self[element+'.'+item.split('.')[-1]]
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
         elif mode == 'difference':
-            none = sp.zeros_like(self._get_info(element=element,label='all'),dtype=int)
+            none = sp.zeros_like(self[element+'.all'],dtype=int)
             for item in labels: #iterate over labels list and collect all indices
-                info = self._get_info(element=element,label=item)
+                info = self[element+'.'+item.split('.')[-1]]
                 none = none - sp.int8(info)
             ind = (none == 0)
         #Extract indices from boolean mask
@@ -800,7 +793,6 @@ class Tools(Base,dict):
         >>> pn.get_pore_indices(labels=['top','front'],mode='intersection')
         array([100, 105, 110, 115, 120], dtype=int64)
         '''
-        if type(labels) == str: labels = [labels] #convert string to list, if necessary
         ind = self._get_indices(element='pore',labels=labels,mode=mode)
         return ind
         
@@ -839,7 +831,6 @@ class Tools(Base,dict):
         array([0, 1, 2, 3, 4], dtype=int64)
         
         '''
-        if type(labels) == str: labels = [labels] #convert string to list, if necessary
         ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
         
