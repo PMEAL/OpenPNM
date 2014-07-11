@@ -83,7 +83,7 @@ alg.setup(conductance = 'conduit_diffusive_conductance',fluid=air)
 alg.run()
 alg.update()
 Deff = alg.calc_eff_diffusivity()
-print(Deff)
+
 
 #Deff = OpenPNM.Algorithms.EffectiveProperty(network=pn)
 #Deff.setup(algorithm=alg,fluid=air,conductance='conduit_diffusive_conductance',quantity='mole_fraction')

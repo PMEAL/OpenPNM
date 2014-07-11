@@ -65,7 +65,6 @@ def hagen_poiseuille(physics,
     tlen = network.get_throat_data(prop=throat_length)
     gt = 2.28*(tdia/2)**4/(2*tlen*mut)
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    mask = network.get_throat_indices(geometry)
-    fluid.set_throat_data(prop=propname,data=value[mask],locations=geometry)
+    fluid.set_throat_data(prop=propname,data=value[geometry.throats()],locations=geometry)
 
 
