@@ -96,6 +96,28 @@ class Tools(Base,dict):
 #            temp = super(Base, self).__getitem__(key)
 #        return temp
     
+    def __str__(self):
+        header = '-'*60
+        print(header)
+        print(self.__module__.replace('__','')+': \t'+self.name)
+        print(header)
+        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Info'))
+        print(header)
+        count = 0
+        for item in self.props():
+            count = count + 1
+            print("{a:<5d} {b:<35s}".format(a=count, b=item))
+        print(header)
+        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Locations'))
+        print(header)
+        count = 0
+        for item in self.labels():
+            count = count + 1
+            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=item, c=sum(self[item])))
+        print(header)
+        return ''
+        
+    
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
