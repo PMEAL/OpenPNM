@@ -36,69 +36,35 @@ class Tools(Base,dict):
         is to limit what type and shape of data can be written to protect
         the integrity of the network.
         '''
+        #--- Enforce correct dict naming ---#
         element = key.split('.')[0]
-        value = sp.array(value,ndmin=1)
-        #Enforce correct dict naming
         if (element != 'pore') and (element != 'throat'):
             self._logger.error('Array name must begin with \'pore\' or \'throat\'')
             return
-        
-        #Skip checks for 'coords', 'conns', and 'all' arrays
+        #--- Convert value to an ndarray ---#
+        value = sp.array(value,ndmin=1)
+        #--- Skip checks for 'coords', 'conns' ---#
         if (key == 'pore.coords') or (key == 'throat.conns'):
             super(Base, self).__setitem__(key,value)
             return
-        #Don't let 'all' be changed
-        elif key.split('.')[1] == 'all':
+        #--- Skip checks for 'all', and prevent changes if defined ---#
+        if key.split('.')[1] == 'all':
             if key in self.keys():
                 self._logger.error(key+' is already defined.')
             else:
                 self._logger.debug(key+' is being defined.')
                 super(Base, self).__setitem__(key,value)
             return
-        
-        #This a a shortcut to intantiate an empty prop or label list
-        if value[0] == 'prop':
-            value = sp.ones((self.count(element),),dtype=float)*sp.nan
+        #--- Write value to dictionary  ---#
+        if sp.shape(value)[0] == 1:  # If value is scalar
+            self._logger.debug('Broadcasting scalar value into vector: '+key)
+            value = sp.ones((self.count(element),),dtype=value.dtype)*value
             super(Base, self).__setitem__(key,value)
-            return
-        if value[0] == 'label':
-            value = sp.zeros((self.count(element),),dtype=bool)
-            super(Base, self).__setitem__(key,value)
-            return
-
-        #If item is a scalar
-        if (sp.shape(value)[0] == 1):
-            value = sp.ones((self.count(element),))*value
+        elif sp.shape(value)[0] == self.count(element):
+            self._logger.debug('Updating vector: '+key)
             super(Base, self).__setitem__(key,value)
         else:
-            if sp.shape(value)[0] == sp.shape(self[key])[0]:
-                self._logger.debug('Updating vector :'+key)
-                super(Base, self).__setitem__(key,value)
-            else:
-                if sp.shape(value)[0] == self.num_pores():
-                    self._logger.debug('Updating vector: '+key)
-                    super(Base, self).__setitem__(key,value)
-                elif sp.shape(value)[0] == self.num_throats():
-                    self._logger.debug('Updating vector: '+key)
-                    super(Base, self).__setitem__(key,value)
-                else:
-                    self._logger.error('Cannot overwrite '+key+' with an array of the wrong length')
-    
-    def __getitem__(self,key):
-        if key not in self.keys():
-            self._logger.warning('Requested array will be created: '+key)
-            if key.split('.')[0] == 'pore':
-                value = sp.zeros(sp.shape(self.pores()))*sp.nan
-            elif key.split('.')[0] == 'throat':
-                value = sp.zeros(sp.shape(self.throats()))*sp.nan
-            else:
-                self._logger.error('Array name must begin with \'pore\' or \'throat\'')
-                return
-            dict.__setitem__(self,key,value)
-            temp = dict.__getitem__(self,key)
-        else:
-            temp = dict.__getitem__(self,key)
-        return temp
+            self._logger.error('Cannot write vector with an array of the wrong length: '+key)
     
     def __str__(self):
         header = '-'*60
@@ -766,6 +732,8 @@ class Tools(Base,dict):
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         '''
+        if element+'.all' not in self.keys():
+            raise Exception('Cannot proceed without {}.all'.format(element))
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
         if mode == 'union':
             union = sp.zeros_like(self[element+'.all'],dtype=bool)

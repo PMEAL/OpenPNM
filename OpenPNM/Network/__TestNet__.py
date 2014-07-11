@@ -93,23 +93,21 @@ class TestNet(GenericNetwork):
         self['throat.conns'] = connections
         
     def _add_labels(self):
-        coords = self.get_pore_data(prop='coords')
-        self['pore.front'][coords[:,0]<=self._Lc]
-        self.set_pore_info(label='left',locations=coords[:,1]<=self._Lc)
-        self.set_pore_info(label='bottom',locations=coords[:,2]<=self._Lc)
-        self.set_pore_info(label='back',locations=coords[:,0]>=(self._Lc*(self._Nx-1)))
-        self.set_pore_info(label='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
-        self.set_pore_info(label='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
-        self.set_pore_info(label='internal',locations=self.get_pore_indices())
+        coords = self['pore.coords']
+        self['pore.front'] = self.tomask(coords[:,0]<=self._Lc)
+        self['pore.left'] = self.tomask(coords[:,1]<=self._Lc)
+        self['pore.bottom'] = self.tomask(coords[:,2]<=self._Lc)
+        self['pore.back'] = self.tomask(coords[:,0]>=(self._Lc*(self._Nx-1)))
+        self['pore.right'] = self.tomask(coords[:,1]>=(self._Lc*(self._Ny-1)))
+        self['pore.top'] = self.tomask(coords[:,2]>=(self._Lc*(self._Nz-1)))
         for item in ['top','bottom','left','right','front','back']:
-            ps = self.get_pore_indices(item)
+            ps = self.pores(item)
             ts = self.find_neighbor_throats(ps)
             ps = self.find_connected_pores(ts)
-            ps0 = self.get_pore_info(label=item)[ps[:,0]]
-            ps1 = self.get_pore_info(label=item)[ps[:,1]]
+            ps0 = self['pore.'+item][ps[:,0]]
+            ps1 = self['pore.'+item][ps[:,1]]
             ts = ts[ps1*ps0]
-            self.set_throat_info(label=item,locations=ts)
-        self.set_throat_info(label='internal',locations=self.get_throat_indices())
+            self['throat.'+item] = ts
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()

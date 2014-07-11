@@ -53,13 +53,13 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         
         self.name = name
         
-        # Set default T and P since most propery models require it
-        self.set_data(prop='temperature',pores='all',data=298.0)
-        self.set_data(prop='pressure',pores='all',data=101325.0)
-        
         # Initialize label 'all' in the object's own info dictionaries
-        self.set_info(label='all',pores=network.pores('all'))
-        self.set_info(label='all',throats=network.throats('all'))
+        self['pore.all'] = self._net['pore.all']
+        self['throat.all'] = self._net['throat.all']        
+        
+        # Set default T and P since most propery models require it
+        self['pore.temperature'] = 298.0
+        self['pore.pressure'] = 101325.0
         
     def apply_conditions(self,**values):
         r'''
