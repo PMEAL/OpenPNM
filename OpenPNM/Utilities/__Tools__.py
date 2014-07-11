@@ -148,8 +148,6 @@ class Tools(Base,dict):
                                 self._logger.debug(element+' property '+prop+' in '+self.name+' was an array which has been overwritten with a scalar value')
                             self[element+'.'+prop] = data
                             self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-                        if mode=='merge' and sp.shape(self[element+'.'+prop])[0]!=1:  
-                            self._logger.error('a scalar data without specified locations cannot be merged into the '+element+' property '+prop+' in '+self.name+' which is (1*N) array. To do so, choose overwrite mode.')
                     except:
                         self[element+'.'+prop] = data
                         self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
