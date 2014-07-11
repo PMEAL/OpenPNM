@@ -16,7 +16,7 @@ import numpy as np
 import _transformations as tr
 from scipy.spatial import ConvexHull
 from math import atan2
-from scipy.spatial import Delaunay
+import OpenPNM.Utilities.misc as misc
 
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
@@ -214,7 +214,7 @@ class Voronoi(GenericGeometry):
                                 
                                 #new_vert_list.append(my_new_point)
                         
-                    temp_verts=np.asarray(self._unique_list(temp_vert_list))
+                    temp_verts=np.asarray(misc.unique_list(temp_vert_list))
                     #new_vert_list=np.asarray(self._unique_list(new_vert_list))
                     #if len(verts_2D) >=3:
                     offset = self._outer_offset(temp_verts,fibre_rad)
@@ -404,77 +404,6 @@ class Voronoi(GenericGeometry):
         lines = np.hstack([pts,np.roll(pts,-1,axis=0)])
         perimeter = sum(np.sqrt((x2-x1)**2+(y2-y1)**2) for x1,y1,x2,y2 in lines)
         return perimeter
-    
-    def _get_hull_volume(self,points):
-        
-        r"""
-        Calculate the volume of a set of points by dividing the bounding surface into triangles and working out the volume of all the pyramid elements
-        connected to the volume centroid
-        """
-        " remove any duplicate points - this messes up the triangulation "        
-        points = np.asarray(self._unique_list(points))       
-        try:
-            tri = Delaunay(points)
-        except sp.spatial.qhull.QhullError:
-            print(points)
-        " We only want points included in the convex hull to calculate the centroid "
-        #hull_points = np.unique(tri.convex_hull)#could technically use network pore centroids here but this function may be called at other times
-        hull_centroid = sp.array([points[:,0].mean(),points[:,1].mean(),points[:,2].mean()])
-        hull_volume = 0.0
-        for ia, ib, ic in tri.convex_hull:
-            " Points making each triangular face "
-            " Collection of co-ordinates of each point in this face "
-            face_x = points[[ia,ib,ic]][:,0]
-            face_y = points[[ia,ib,ic]][:,1]
-            face_z = points[[ia,ib,ic]][:,2]
-            " Average of each co-ordinate is the centroid of the face "
-            face_centroid = [face_x.mean(),face_y.mean(),face_z.mean()]
-            face_centroid_vector = face_centroid - hull_centroid
-            " Vectors of the sides of the face used to find normal vector and area "
-            vab = points[ib] - points[ia]
-            vac = points[ic] - points[ia]
-            vbc = points[ic] - points[ib] # used later for area
-            " As vectors are co-planar the cross-product will produce the normal vector of the face "
-            face_normal = np.cross(vab,vac)
-            face_unit_normal = face_normal/np.linalg.norm(face_normal)
-            " As triangles are orientated randomly in 3D we could either transform co-ordinates to align with a plane and perform 2D operations "
-            " to work out the area or we could work out the lengths of each side and use Heron's formula which is easier"
-            " Using Delaunay traingulation will always produce triangular faces but if dealing with other polygons co-ordinate transfer may be necessary "
-            a = np.linalg.norm(vab)
-            b = np.linalg.norm(vbc)
-            c = np.linalg.norm(vac)
-            " Semiperimeter "
-            s = 0.5*(a+b+c)
-            face_area = np.sqrt(s*(s-a)*(s-b)*(s-c))
-            " Now the volume of the pyramid section defined by the 3 face points and the hull centroid can be calculated "
-            pyramid_volume = np.abs(np.dot(face_centroid_vector,face_unit_normal)*face_area/3)
-            " Each pyramid is summed together to calculate the total volume "
-            hull_volume += pyramid_volume
-    
-        return hull_volume
-    
-    def _unique_list(self,input_list):
-        r"""
-        For a given list (of points) remove any duplicates
-        """
-        output_list = []
-        if len(input_list) > 0:
-            dim = np.shape(input_list)[1]
-            for i in input_list:
-                match=False
-                for j in output_list:
-                    if dim == 3:
-                        if (i[0]==j[0]) and (i[1]==j[1]) and (i[2]==j[2]):
-                            match=True
-                    elif dim == 2:
-                        if (i[0]==j[0]) and (i[1]==j[1]):
-                            match=True
-                    elif dim ==1:
-                        if (i[0]==j[0]):
-                            match=True
-                if match==False:
-                    output_list.append(i)
-        return output_list
         
     def _symmetric_difference(self,list_a,list_b):
         r"""

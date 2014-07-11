@@ -1,7 +1,7 @@
 import scipy as _sp
 import time as _time
 from scipy.spatial.distance import cdist as dist
-import _transformations as tr
+
 
 def iscoplanar(coords):
     r'''
@@ -39,11 +39,7 @@ def iscoplanar(coords):
     
     n_cross = _sp.cross(n0,n)
     n_dot = _sp.multiply(n0,n_cross)
-    #angles=[]
-    #for vec in n_cross[2:len(n_cross)]:
-    #    angles.append(180*(tr.angle_between_vectors(n_cross[1],vec,directed=False)/_sp.pi))
-    #angles=_sp.asarray(angles)
-    #if angles.mean() < 20:
+
     if _sp.sum(_sp.absolute(n_dot)) == 0:
         return True
     else:
@@ -76,6 +72,31 @@ def toc(quiet=False):
             return t
     else:
         print("Toc: start time not set")
+
+
+def unique_list(input_list):
+    r"""
+    For a given list (of points) remove any duplicates
+    """
+    output_list = []
+    if len(input_list) > 0:
+        dim = _sp.shape(input_list)[1]
+        for i in input_list:
+            match=False
+            for j in output_list:
+                if dim == 3:
+                    if (i[0]==j[0]) and (i[1]==j[1]) and (i[2]==j[2]):
+                        match=True
+                elif dim == 2:
+                    if (i[0]==j[0]) and (i[1]==j[1]):
+                        match=True
+                elif dim ==1:
+                    if (i[0]==j[0]):
+                        match=True
+            if match==False:
+                output_list.append(i)
+    return output_list
+
         
 class PrintableList(list):
     def __str__(self):
