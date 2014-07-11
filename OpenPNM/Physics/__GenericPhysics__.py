@@ -91,8 +91,17 @@ class GenericPhysics(OpenPNM.Utilities.Base):
             c = a[sp.where(~sp.in1d(a,b))[0]]
             prop_list = list(c)
         for item in prop_list:
+            prop_attr = item.replace('.','_')
+            element = 'throat'
+            prop_key = element+'.'+prop_attr.split(element+'_')[-1]
+            if element == 'pore':
+                locations = self.pores()
+            elif element == 'throat':
+                locations = self.throats()
+            if prop_key not in self._fluid.keys():
+                self._fluid[prop_key] = sp.nan
             self._logger.debug('Refreshing: '+item)
-            getattr(self,item)()
+            self._fluid[prop_key][locations] = getattr(self,prop_attr)()
             
     def add_method(self,prop='',prop_name='',**kwargs):
         r'''
@@ -151,9 +160,9 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         >>> pn = OpenPNM.Network.TestNet()
         '''
         try:
-            function = getattr( getattr(OpenPNM.Physics, prop), kwargs['model'] ) # this gets the method from the file
+            function = getattr( getattr(OpenPNM.Physics.models, prop), kwargs['model'] ) # this gets the method from the file
             if prop_name: prop = prop_name #overwrite the default prop with user supplied name  
-            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid, geometry=self._geometry, **kwargs) #
+            preloaded_fn = partial(function, network=self._net, fluid=self._fluid, pores=self.pores(),throats=self.throats(),**kwargs) #
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)

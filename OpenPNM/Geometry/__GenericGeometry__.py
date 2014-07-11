@@ -11,6 +11,7 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
+
 import scipy as sp
 from functools import partial
 
@@ -167,8 +168,17 @@ class GenericGeometry(OpenPNM.Utilities.Base):
             c = a[sp.where(~sp.in1d(a,b))[0]]
             prop_list = list(c)
         for item in prop_list:
+            prop_attr = item.replace('.','_')
+            element = prop_attr.split('_')[0]
+            prop_key = element+'.'+prop_attr.split(element+'_')[-1]
+            if element == 'pore':
+                locations = self.pores()
+            elif element == 'throat':
+                locations = self.throats()
+            if prop_key not in self._net.keys():
+                self._net[prop_key] = sp.nan
             self._logger.debug('Refreshing: '+item)
-            getattr(self,item)()
+            self._net[prop_key][locations] = getattr(self,prop_attr)()
     
     def add_method(self,prop='',prop_name='',**kwargs):
         r'''
@@ -223,7 +233,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         None yet
         '''
         try:
-            function = getattr( getattr(OpenPNM.Geometry, prop), kwargs['model'] ) # this gets the method from the file
+            function = getattr( getattr(OpenPNM.Geometry.models, prop), kwargs['model'] ) # this gets the method from the file
             if prop_name: propname = prop = prop_name #overwrite the default prop with user supplied name
             else:
                 #remove leading pore_ or throat_ from dictionary key
@@ -231,7 +241,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
                 element = prop.split('_')[0]
                 if len(prop.split('_')) > 2:
                     propname = prop.split(element+'_')[1] 
-            preloaded_fn = partial(function, geometry=self, network=self._net,propname=propname, **kwargs) #
+            preloaded_fn = partial(function, network=self._net,pores=self.pores(),throats=self.throats(), **kwargs) #
             setattr(self, prop, preloaded_fn)
             self._logger.info("Successfully loaded {}.".format(prop))
             self._prop_list.append(prop)

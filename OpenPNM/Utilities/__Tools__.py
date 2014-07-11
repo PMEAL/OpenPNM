@@ -71,14 +71,15 @@ class Tools(Base,dict):
         print(header)
         print(self.__module__.replace('__','')+': \t'+self.name)
         print(header)
-        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Info'))
+        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values'))
         print(header)
         count = 0
         for item in self.props():
             count = count + 1
-            print("{a:<5d} {b:<35s}".format(a=count, b=item))
+            defined = self.count(item.split('.')[0]) - sp.sum(sp.isnan(self[item]))
+            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=item, c=defined))
         print(header)
-        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Locations'))
+        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations'))
         print(header)
         count = 0
         for item in self.labels():

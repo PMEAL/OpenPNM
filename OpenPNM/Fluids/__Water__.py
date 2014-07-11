@@ -28,22 +28,22 @@ class Water(GenericFluid):
     def __init__(self,name=None,**kwargs):
         super(Water,self).__init__(name=name,**kwargs)
         self._logger.debug("Construct class")
-        self.add_property(propname='pore.diffusivity',
-                          model=fm.misc.constant,
-                          value=1e-9)
-        self.add_property(propname='pore.surface_tension',
-                          model=fm.misc.constant,
-                          value=0.072)
-        self.add_property(propname='pore.contact_angle',
-                          model=fm.misc.constant,
-                          value=110)
-        self.add_property(propname='pore.molar_density',
-                          model=fm.misc.constant,
-                          value=44445.0)
-        self.add_property(propname='pore.viscosity',
-                          model=fm.viscosity.reynolds,
-                          uo=0.002,
-                          b=0.001)
+        self.add_model(propname='pore.diffusivity',
+                       model=fm.misc.constant,
+                       value=1e-9)
+        self.add_model(propname='pore.surface_tension',
+                       model=fm.misc.constant,
+                       value=0.072)
+        self.add_model(propname='pore.contact_angle',
+                       model=fm.misc.constant,
+                       value=110)
+        self.add_model(propname='pore.molar_density',
+                       model=fm.misc.constant,
+                       value=44445.0)
+        self.add_model(propname='pore.viscosity',
+                       model=fm.viscosity.reynolds,
+                       uo=0.002,
+                       b=0.001)
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

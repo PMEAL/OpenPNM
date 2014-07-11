@@ -28,18 +28,19 @@ class Air(GenericFluid):
     def __init__(self,name=None,**kwargs):
         super(Air,self).__init__(name=name,**kwargs)
         self._logger.debug("Construct class")
-        self.add_property(propname='pore.diffusivity',
-                          model=fm.diffusivity.fuller,
+        self.add_property(prop='diffusivity',
+                          model='fuller',
                           MA=18,
                           MB=20,
                           vA=1,
                           vB=1)
-        self.add_property(propname='pore.molar_density',
-                          model=fm.molar_density.ideal_gas)
-        self.add_property(propname='pore.viscosity',
-                          model=fm.viscosity.reynolds,
+        self.add_property(prop='molar_density',
+                          model='ideal_gas')
+        self.add_property(prop='viscosity',
+                          model='reynolds',
                           uo=0.0002,
                           b=0.0001)
+        self.regenerate()
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

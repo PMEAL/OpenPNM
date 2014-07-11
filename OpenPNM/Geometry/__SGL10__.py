@@ -33,9 +33,9 @@ class SGL10(GenericGeometry):
         self._logger.debug("Method: Constructor")
    
         self.add_property(prop='pore_seed',model='random')
-        self.add_property(prop='throat_seed',model='neighbor_min')
-        self.add_property(prop='pore_diameter',model='sphere',name='weibull_min',shape=2.5,loc=9e-6,scale=5e-6)
-        self.add_property(prop='throat_diameter',model='cylinder',name='weibull_min',shape=2.5,loc=9e-6,scale=5e-5)
+        self.add_property(prop='throat_seed',model='neighbor',mode='min')
+        self.add_property(prop='pore_diameter',model='sphere',psd_name='weibull_min',psd_shape=2.5,psd_loc=9e-6,psd_scale=5e-6)
+        self.add_property(prop='throat_diameter',model='cylinder',tsd_name='weibull_min',tsd_shape=2.5,tsd_loc=9e-6,tsd_scale=5e-5)
         self.add_property(prop='pore_volume',model='sphere')
         self.add_property(prop='throat_length',model='straight')
         self.add_property(prop='throat_volume',model='cylinder')
