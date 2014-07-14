@@ -71,7 +71,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_inv = sp.zeros((self._net.num_throats(),))
         self._t_seq = sp.zeros_like(self._t_inv)
         #Determine the invasion pressures to apply
-        self._t_cap = self._fluid_inv.get_throat_data(prop=capillary_pressure)
+        self._t_cap = self._fluid_inv['throat.capillary_pressure']
         min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
         max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
         self._inv_points = sp.logspace(sp.log10(min_p),sp.log10(max_p),self._npts)

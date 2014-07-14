@@ -12,6 +12,7 @@ sys.path.insert(1, parent_dir)
 import OpenPNM
 from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
+import scipy as sp
 
 class Boundary(GenericGeometry):
     r"""
@@ -36,9 +37,9 @@ class Boundary(GenericGeometry):
         '''
         self.add_model(propname='pore.seed',model=gm.pore_misc.constant,value=1.0)
         self.add_model(propname='throat.seed',model=gm.pore_misc.constant,value=1.0)
-        self.add_model(propname='pore.diameter',model=gm.pore_misc.constant,value=0)
+        self.add_model(propname='pore.diameter',model=gm.pore_misc.constant,value=sp.inf)
         self.add_model(propname='pore.area',model=gm.pore_misc.constant,value=0)
-        self.add_model(propname='throat.diameter',model=gm.pore_misc.constant,value=0)
+        self.add_model(propname='throat.diameter',model=gm.pore_misc.constant,value=sp.inf)
         self.add_model(propname='pore.volume',model=gm.pore_misc.constant,value=0.0)
         self.add_model(propname='throat.length',model=gm.pore_misc.constant,value=0.0)
         self.add_model(propname='throat.volume',model=gm.pore_misc.constant,value=0.0)

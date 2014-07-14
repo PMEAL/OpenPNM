@@ -25,13 +25,16 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         
     fluid : OpenPNM Fluid object 
         The Fluid object to which this Physics applies
-        
-    geometry : OpenPNM Geometry object
-        The Geometry object to which this Physics applies
     
-    name : str
+    pores and/or throats : array_like
+        The list of pores and throats where this physics applies. If either are
+        left blank this will apply the physics nowhere.  The locations can be
+        change after instantiation using ``set_locations()``.
+    
+    name : str, optional
         A unique string name to identify the Physics object, typically same as 
-        instance name but can be anything.
+        instance name but can be anything.  If left blank, and name will be
+        generated that include the class name and a random string.  
     
     """
 
