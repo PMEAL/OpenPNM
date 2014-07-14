@@ -169,24 +169,21 @@ class Cubic(GenericNetwork):
         Documentation for this method is being updated, we are sorry for the inconvenience.
         '''
         self._logger.info(sys._getframe().f_code.co_name+": Applying labels")
-        coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(label='front',locations=coords[:,0]<=self._Lc)
-        self.set_pore_info(label='left',locations=coords[:,1]<=self._Lc)
-        self.set_pore_info(label='bottom',locations=coords[:,2]<=self._Lc)
-        self.set_pore_info(label='back',locations=coords[:,0]>=(self._Lc*(self._Nx-1)))
-        self.set_pore_info(label='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
-        self.set_pore_info(label='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
-        self.set_pore_info(label='internal',locations=self.get_pore_indices())
-        #Add throat labels based IF both throat's neighbors have label in common
+        coords = self['pore.coords']
+        self['pore.front'] = self.tomask(coords[:,0]<=self._Lc)
+        self['pore.left'] = self.tomask(coords[:,1]<=self._Lc)
+        self['pore.bottom'] = self.tomask(coords[:,2]<=self._Lc)
+        self['pore.back'] = self.tomask(coords[:,0]>=(self._Lc*(self._Nx-1)))
+        self['pore.right'] = self.tomask(coords[:,1]>=(self._Lc*(self._Ny-1)))
+        self['pore.top'] = self.tomask(coords[:,2]>=(self._Lc*(self._Nz-1)))
         for item in ['top','bottom','left','right','front','back']:
-            ps = self.get_pore_indices(item)
+            ps = self.pores(item)
             ts = self.find_neighbor_throats(ps)
             ps = self.find_connected_pores(ts)
-            ps0 = self.get_pore_info(label=item)[ps[:,0]]
-            ps1 = self.get_pore_info(label=item)[ps[:,1]]
+            ps0 = self['pore.'+item][ps[:,0]]
+            ps1 = self['pore.'+item][ps[:,1]]
             ts = ts[ps1*ps0]
-            self.set_throat_info(label=item,locations=ts)
-        self.set_throat_info(label='internal',locations=self.get_throat_indices())
+            self['throat.'+item] = self.tomask(throats=ts)
         self._logger.debug(sys._getframe().f_code.co_name+": End")
         
     def _add_boundaries(self):
@@ -207,10 +204,10 @@ class Cubic(GenericNetwork):
         scale['bottom'] = scale['top']   = [1,1,0]
         
         for label in ['front','back','left','right','bottom','top']:
-            ps = self.pores(labels=[label,'internal'],mode='intersection')
-            self.clone(pores=ps,apply_label=[label,'boundary',label+'_face'])
+            ps = self.pores(label)
+            self.clone(pores=ps,apply_label=['boundary',label+'_face'])
             #Translate cloned pores
-            ind = self.pores(labels=[label,'boundary'],mode='intersection')
+            ind = self.pores(label+'_face')
             coords = self['pore.coords'][ind] 
             coords = coords*scale[label] + offset[label]
             self['pore.coords'][ind] = coords

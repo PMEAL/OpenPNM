@@ -1,6 +1,5 @@
 import OpenPNM
 import scipy as sp
-import OpenPNM.Utilities.misc as misc
 
 #==============================================================================
 '''Build Topological Network'''
@@ -11,43 +10,50 @@ pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=True)
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-geom = OpenPNM.Geometry.Toray090(network=pn,name='geom')
-geom.set_locations(pores=pn.pores('internal'),throats='all')
+#Example of assigning pores/throats AFTER instantiation
+geom = OpenPNM.Geometry.Toray090(network=pn)
+Ps = pn.pores('boundary',mode='difference')
+Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
+geom.set_locations(pores=Ps,throats=Ts)
+geom.generate()
 
-boun = pn.add_geometry(subclass='Boundary',name='boun')
-boun.set_locations(pores=pn.pores('boundary'))
-
-pn.regenerate_geometries()
+#Example of assigning pores/throats DURING initialization.
+Ps = pn.pores('boundary')
+Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
+boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
+boun.generate()
 
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, loglevel=30,name='air')
-air.apply_conditions(temperature=350, pressure=200000)
-air.add_property(prop='thermal_conductivity',model='constant',value=0.0262)
-air.add_property(prop='electrical_conductivity',model='constant',value=1)
+#Fluids exist everywhere so don't need to be given pores/throats
+air = OpenPNM.Fluids.Air(network=pn)
+air['pore.thermal_conductivity'] = 0.0262
+air['pore.electrical_conductivity'] = 1
+air.generate()
 
-water = OpenPNM.Fluids.Water(network=pn,loglevel=30,name='water')
-water.add_property(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
-
-#Use Network's Fluid regeneration method
-pn.regenerate_fluids()
+water = OpenPNM.Fluids.Water(network=pn)
+water['pore.DAB'] = 5e-12
+water.generate()
 
 #==============================================================================
-'''Build Physics Objects'''
+'''Build Physics'''
 #==============================================================================
-phys_water = OpenPNM.Physics.BasePhysics(network=pn, fluid=water,geometry=geom,name='physwater')
+#Example of assigning pores/throats DURING initialization.
+phys_water = OpenPNM.Physics.Standard(network=pn,fluid=water,pores=pn.pores(),throats=pn.throats())
+phys_water.generate()
 
-phys_air = OpenPNM.Physics.BasePhysics(network=pn, fluid=air,geometry=geom,name='physair')
-#Use Network's Physics regeneration method
-pn.regenerate_physics()
+#Example of assigning pores/throats AFTER instantiation
+phys_air = OpenPNM.Physics.Standard(network=pn,fluid=air)
+phys_air.set_locations(pores=pn.pores(),throats=pn.throats())
+phys_air.generate()
 
 #==============================================================================
 '''Begin Simulations'''
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=30,network=pn)
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn)
 a = pn.pores(labels=['bottom','boundary'],mode='intersection')
 OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=a,npts=100)
 OP_1.run()
@@ -79,7 +85,7 @@ phys_air.add_property(prop='multiphase',model='conduit_conductance',
 pn.regenerate_physics()
 
 # Run simulation
-alg.setup(conductance = 'conduit_diffusive_conductance',fluid=air)
+alg.setup(conductance = 'diffusive_conductance',fluid=air)
 alg.run()
 alg.update()
 Deff = alg.calc_eff_diffusivity()

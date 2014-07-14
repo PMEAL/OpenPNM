@@ -33,39 +33,88 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         A unique string name to identify the Physics object, typically same as 
         instance name but can be anything.
     
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    
-    loggername : string (optional)
-        Sets a custom name for the logger, to help identify logger messages
-
     """
 
-    def __init__(self,network,fluid,geometry,name=None,**kwargs):
+    def __init__(self,network,fluid,pores=[],throats=[],name=None,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
         #Setup containers for ojecct linking
         self._prop_list = []
-
+        
         # Append objects for internal access
         self._net = network
         self._fluid = fluid
-        self._geometry = geometry
         
-        # Connect this physics with it's geometry
-        geometry._physics.append(self)
-        fluid._physics.append(self)
-
         self.name = name
-
+        
         #Use composition to assign pores and throats to this physics
-        self.pores = geometry.pores
-        self.throats = geometry.throats
-        self.Np = geometry.Np
-        self.Nt = geometry.Nt
-        self.count = geometry.count
-
+        fluid['pore.'+self.name] = False
+        fluid['throat.'+self.name] = False
+        fluid['pore.'+self.name][pores] = True
+        fluid['throat.'+self.name][throats] = True
+        fluid['pore.'+self.name] = False
+        fluid['throat.'+self.name] = False
+        fluid['pore.'+self.name][pores] = True
+        fluid['throat.'+self.name][throats] = True
+        self.pores = partial(fluid.pores,labels=self.name)
+        self.throats = partial(fluid.throats,labels=self.name)
+        
+    @property
+    def Np(self):
+        return self.num_pores()
+        
+    @property
+    def Nt(self):
+        return self.num_throats()
+    
+    def num_pores(self):
+        return sp.shape(self.pores())[0]
+        
+    def num_throats(self):
+        return sp.shape(self.throats())[0]
+        
+    def count(self,element):
+        #Remove pluralizaton
+        if element == 'pores':
+            element = 'pore'
+        if element == 'throats':
+            element = 'throat'
+        temp = {}
+        temp['pore'] = self.num_pores()
+        temp['throat'] = self.num_throats()
+        if element != None:
+            temp = temp[element]
+        return temp
+        
+    def generate(self):
+        raise NotImplementedError('This method must be implemented in a subclass')
+    
+    def set_locations(self,pores=[],throats=[],mode='add'):
+        r'''
+        Assign Physics object to specifed pores and/or throats
+        '''
+        if pores != []:
+            if mode == 'add':
+                self._fluid['pore.'+self.name][pores] = True
+            elif mode == 'overwrite':
+                self._fluid['pore.'+self.name] = False
+                self._fluid['pore.'+self.name][pores] = True
+            elif mode == 'remove':
+                self._fluid['pore.'+self.name][pores] = False
+            else:
+                print('invalid mode received')
+        if throats != []:
+            if mode == 'add':
+                self._fluid['throat.'+self.name][throats] = True
+            elif mode == 'overwrite':
+                self._fluid['throat.'+self.name] = False
+                self._fluid['throat.'+self.name][throats] = True
+            elif mode == 'remove':
+                self._fluid['throat.'+self.name][throats] = False
+            else:
+                print('invalid mode received')
+        
     def regenerate(self, prop_list='',mode=None):
         r'''
         This updates all properties using the selected methods
@@ -134,7 +183,7 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         self.pores()
         self.throats()
         fn = partial(model,fluid=self._fluid,network=self._net,pores=self.pores(),throats=self.throats(),**kwargs)
-        if propname not in self._net.keys():
+        if propname not in self._fluid.keys():
             self._fluid[propname] = sp.ones((self.count(element),))*sp.nan
         self._fluid[propname][fn.keywords[locations]] = fn()
         

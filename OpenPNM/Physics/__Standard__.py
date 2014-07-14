@@ -42,10 +42,12 @@ class Standard(GenericPhysics):
 
     """
 
-    def __init__(self,network,fluid,geometry,name=None,**kwargs):
-        super(Standard,self).__init__(network=network,fluid=fluid,geometry=geometry,name=name)
+    def __init__(self,**kwargs):
+        super(Standard,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        temp = [item.split('.')[1] for item in fluid.props()]
+        
+    def generate(self):
+        temp = [item.split('.')[1] for item in self._fluid.props()]
         if 'viscosity' in temp:
             self.add_property(prop='hydraulic_conductance',
                               model='hagen_poiseuille')

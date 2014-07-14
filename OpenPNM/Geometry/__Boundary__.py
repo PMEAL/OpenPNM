@@ -10,7 +10,7 @@ import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(1, parent_dir)
 import OpenPNM
-
+from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
 class Boundary(GenericGeometry):
@@ -30,17 +30,20 @@ class Boundary(GenericGeometry):
         """
         super(Boundary,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-   
-        self.add_property(prop='pore_seed',model='constant',value=1.0)
-        self.add_property(prop='throat_seed',model='constant',value=1.0)
-        self.add_property(prop='pore_diameter',model='constant',value=0)
-        self.add_property(prop='throat_diameter',model='constant',value=0)
-        self.add_property(prop='pore_volume',model='constant',value=0.0)
-        self.add_property(prop='throat_length',model='constant',value=0.0)
-        self.add_property(prop='throat_volume',model='constant',value=0.0)
-        self.add_property(prop='throat_vector',model='pore_to_pore')
-        self.add_property(prop='throat_area',model='cylinder')
-        self.add_property(prop='throat_surface_area',model='constant',value=0.0)
+        
+    def generate(self):
+        r'''
+        '''
+        self.add_model(propname='pore.seed',model=gm.pore_misc.constant,value=1.0)
+        self.add_model(propname='throat.seed',model=gm.pore_misc.constant,value=1.0)
+        self.add_model(propname='pore.diameter',model=gm.pore_misc.constant,value=0)
+        self.add_model(propname='pore.area',model=gm.pore_misc.constant,value=0)
+        self.add_model(propname='throat.diameter',model=gm.pore_misc.constant,value=0)
+        self.add_model(propname='pore.volume',model=gm.pore_misc.constant,value=0.0)
+        self.add_model(propname='throat.length',model=gm.pore_misc.constant,value=0.0)
+        self.add_model(propname='throat.volume',model=gm.pore_misc.constant,value=0.0)
+        self.add_model(propname='throat.area',model=gm.pore_misc.constant,value=0.0)
+        self.add_model(propname='throat.surface_area',model=gm.pore_misc.constant,value=0.0)
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()

@@ -60,25 +60,9 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         # Set default T and P since most propery models require it
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
-        
-    def apply_conditions(self,**values):
-        r'''
-        Apply multiple scalar conditions to the fluid in a single step
-        
-        Parameters
-        ----------
-        values : name / value pair ()
-            Any arguments can be passed, along with a corresponding values.  
-            These arguments will be assigned to the fluid's pore data
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> air = OpenPNM.Fluids.Air(loglevel=50,network=pn)
-        >>> air.apply_conditions(molar_mass=18,density=1000)
-        '''
-        for item in values.keys():
-            self.set_data(prop=item,pores='all',data=values[item])
+    
+    def generate(self):
+        raise NotImplementedError('This method must be implemented in a subclass')
 
     def regenerate(self,prop_list='',mode=None):
         r'''

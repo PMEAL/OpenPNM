@@ -28,6 +28,8 @@ class Air(GenericFluid):
     def __init__(self,name=None,**kwargs):
         super(Air,self).__init__(name=name,**kwargs)
         self._logger.debug("Construct class")
+        
+    def generate(self):
         self.add_property(prop='diffusivity',
                           model='fuller',
                           MA=18,
@@ -40,7 +42,7 @@ class Air(GenericFluid):
                           model='reynolds',
                           uo=0.0002,
                           b=0.0001)
-        self.regenerate()
+        self.regenerate()  # Include this to allow for old school add_property
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

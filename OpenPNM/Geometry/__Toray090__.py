@@ -33,6 +33,10 @@ class Toray090(GenericGeometry):
         """
         super(Toray090,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+                       
+    def generate(self):
+        r'''
+        '''        
         self.add_model(propname='pore.seed',
                        model=gm.pore_seed.random,
                        seed=None)
@@ -47,6 +51,8 @@ class Toray090(GenericGeometry):
                        psd_scale=4e-6)
         self.add_model(propname='pore.area',
                        model=gm.pore_area.spherical)
+        self.add_model(propname='pore.volume',
+                       model=gm.pore_volume.sphere)
         self.add_model(propname='throat.diameter',
                        model=gm.throat_diameter.cylinder,
                        tsd_name='weibull_min',

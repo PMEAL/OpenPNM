@@ -46,7 +46,7 @@ class GenericGeometry(OpenPNM.Utilities.Base):
     0.123
     """
 
-    def __init__(self,network,pores,throats,name=None,**kwargs):
+    def __init__(self,network,pores=[],throats=[],name=None,**kwargs):
         r"""
         Initialize
         """
@@ -58,13 +58,17 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         self._physics = [] #Create list for physics to append themselves to
         self._net._geometries.append(self)
         self._prop_list = []
-        self.set_locations(pores=pores,throats=throats,mode='add')
         
-        #Initialize geometry to NOWHERE
-        network.set_info(label=self.name,pores=[])
-        network.set_info(label=self.name,throats=[])
+        #Initialize geometry locations if given
+        network['pore.'+self.name] = False
+        network['pore.'+self.name][pores] = True
+        network['throat.'+self.name] = False
+        network['throat.'+self.name][throats] = True
         self.num_pores = partial(network.num_pores,labels=self.name)
         self.num_throats = partial(network.num_throats,labels=self.name)
+        
+    def generate(self):
+        raise NotImplementedError('This method must be implemented in a subclass')
         
     @property
     def Np(self):
@@ -87,8 +91,6 @@ class GenericGeometry(OpenPNM.Utilities.Base):
         Assign Geometry object to specifed pores (or throats)
         '''
         if pores != []:
-            if pores == 'all':
-                pores = self._net.pores(labels='all')
             if mode == 'add':
                 self._net.set_info(label=self.name,pores=pores,mode='merge')
             elif mode == 'remove':
@@ -97,8 +99,6 @@ class GenericGeometry(OpenPNM.Utilities.Base):
                 print('invalid mode received')
         
         if throats != []:
-            if throats == 'all':
-                throats = self._net.get_throat_indices(labels='all')
             if mode == 'add':
                 self._net.set_info(label=self.name,throats=throats,mode='merge')
             elif mode == 'remove':
