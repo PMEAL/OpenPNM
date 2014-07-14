@@ -46,7 +46,15 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
         
-    def setup(self,invading_fluid = None,defending_fluid = None,inlets = [0],npts = 25,capillary_pressure = 'capillary_pressure',AL=True,**params):
+    def setup(self,
+              invading_fluid=None,
+              defending_fluid=None,
+              inlets=[0], 
+              npts=25, 
+              inv_points=[],
+              capillary_pressure = 'capillary_pressure', 
+              AL=True,
+              **params):
         r'''
         '''
         # Parse params
@@ -55,6 +63,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         try: self._inv_sites
         except: self._inv_sites = inlets
         self._npts = npts
+        self._inv_points = inv_points
         self._AL = AL
         self._p_cap = capillary_pressure
 
@@ -74,7 +83,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_cap = self._fluid_inv['throat.capillary_pressure']
         min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
         max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
-        self._inv_points = sp.logspace(sp.log10(min_p),sp.log10(max_p),self._npts)
+        if type(self._inv_points) == []:
+            self._inv_points = sp.logspace(sp.log10(min_p),sp.log10(max_p),self._npts)
         self._do_outer_iteration_stage()
 
     def _do_outer_iteration_stage(self):
