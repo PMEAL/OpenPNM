@@ -83,7 +83,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_cap = self._fluid_inv.get_throat_data(prop=capillary_pressure)
         min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
         max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
-        if type(self._inv_points) == []:
+        if type(self._inv_points) == list:
+            if min_p == 0:
+                min_p = sp.linspace(min_p,max_p,self._npts)[1]
             self._inv_points = sp.logspace(sp.log10(min_p),sp.log10(max_p),self._npts)
         self._do_outer_iteration_stage()
 
