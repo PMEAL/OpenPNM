@@ -51,6 +51,7 @@ throat_diameters = sgl['throat.diameter'][throats]*factor
 sgl.set_data(throats = throats, prop = 'diameter', data = throat_diameters)
 
 #reset aspects relying on pore and throat sizes
+geo.throat_length()
 geo.pore_volume()
 geo.throat_volume()
 geo.throat_surface_area()
