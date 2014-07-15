@@ -35,16 +35,20 @@ class Boundary(GenericGeometry):
     def generate(self):
         r'''
         '''
-        self.add_model(propname='pore.seed',model=gm.pore_misc.constant,value=1.0)
-        self.add_model(propname='throat.seed',model=gm.pore_misc.constant,value=1.0)
-        self.add_model(propname='pore.diameter',model=gm.pore_misc.constant,value=sp.inf)
-        self.add_model(propname='pore.area',model=gm.pore_misc.constant,value=0)
-        self.add_model(propname='throat.diameter',model=gm.pore_misc.constant,value=sp.inf)
+        self.add_model(propname='pore.seed',model=gm.pore_misc.constant,value=0.9999)
+        self.add_model(propname='pore.diameter',model=gm.pore_misc.constant,value=0)
+        self.add_model(propname='throat.seed',
+                       model=gm.throat_misc.neighbor,
+                       pore_prop='pore.seed',
+                       mode='max')
+        self.add_model(propname='throat.diameter',
+                       model=gm.throat_misc.neighbor,
+                       pore_prop='pore.diameter',
+                       mode='max')
         self.add_model(propname='pore.volume',model=gm.pore_misc.constant,value=0.0)
-        self.add_model(propname='throat.length',model=gm.pore_misc.constant,value=0.0)
+        self.add_model(propname='throat.length',model=gm.throat_length.straight)
         self.add_model(propname='throat.volume',model=gm.pore_misc.constant,value=0.0)
         self.add_model(propname='throat.area',model=gm.pore_misc.constant,value=0.0)
-        self.add_model(propname='throat.surface_area',model=gm.pore_misc.constant,value=0.0)
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()

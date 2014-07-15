@@ -11,8 +11,8 @@ def conduit_conductance(network,
                         fluid,
                         throats,
                         throat_conductance,
-                        throat_occupancy,
-                        pore_occupancy,
+                        throat_occupancy='throat.occupancy',
+                        pore_occupancy='pore.occupancy',
                         mode='strict',
                         factor=1e-5,
                         **kwargs):
@@ -29,12 +29,6 @@ def conduit_conductance(network,
 
     fluid : OpenPNM Fluid Object
         The fluid of interest
-    
-    geometry : OpenPNM Geometry Object
-        The geometry containing the conduits to be updated
-        
-    conductance : str
-        The name of the conductance that should be updated
         
     occupied_condition : 'occupancy'
         The name of the pore and throat property that dictates whether conduit is "closed" or not
@@ -54,26 +48,22 @@ def conduit_conductance(network,
     calculated.
 
     """
-    throat_value = fluid[throat_conductance][throats]   
-    throat_occupancy = fluid[throat_occupancy][throats] == 1
-    pores = network.find_connected_pores(throats,flatten=0)
-    pore_occupancy = fluid[pore_occupancy][pores] == 1
-                     
     if (mode == 'loose'):
-        closed_conduits = -throat_occupancy
+        closed_conduits = -fluid[throat_occupancy]
     else:
-        thoats_closed = -throat_occupancy
+        throats_closed = -fluid[throat_occupancy]
         connected_pores = network.find_connected_pores(throats)
         pores_1 = connected_pores[:,0]
         pores_2 = connected_pores[:,1]
-        pores_1_closed = -pore_occupancy[pores_1]
-        pores_2_closed = -pore_occupancy[pores_2]
+        pores_1_closed = -fluid[pore_occupancy][pores_1]
+        pores_2_closed = -fluid[pore_occupancy][pores_2]
         if(mode == 'medium'):
-            closed_conduits = thoats_closed | (pores_1_closed & pores_2_closed)
+            closed_conduits = throats_closed | (pores_1_closed & pores_2_closed)
             
         if(mode == 'strict'):
-            closed_conduits = pores_1_closed | thoats_closed | pores_2_closed
+            closed_conduits = pores_1_closed | throats_closed | pores_2_closed
     open_conduits = -closed_conduits
+    throat_value = fluid[throat_conductance]
     value = throat_value*open_conduits + throat_value*closed_conduits*factor
     return value
 

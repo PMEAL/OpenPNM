@@ -71,19 +71,19 @@ class OrdinaryPercolation(GenericAlgorithm):
         r'''
         '''
         #See if setup has been run
-        try: capillary_pressure = self._p_cap
-        except: 
-            raise Exception('setup has not been run, cannot proceed')
+        try: self._p_cap
+        except: raise Exception('setup has not been run, cannot proceed')
         #Create pore and throat conditions lists to store inv_val at which each is invaded
-        self._p_inv = sp.zeros((self._net.num_pores(),))
-        self._p_seq = sp.zeros_like(self._p_inv)
-        self._t_inv = sp.zeros((self._net.num_throats(),))
-        self._t_seq = sp.zeros_like(self._t_inv)
+        self._p_inv = sp.zeros((self._net.num_pores(),),dtype=float)
+        self._p_seq = sp.zeros_like(self._p_inv,dtype=int)
+        self._t_inv = sp.zeros((self._net.num_throats(),),dtype=float)
+        self._t_seq = sp.zeros_like(self._t_inv,dtype=int)
         #Determine the invasion pressures to apply
-        self._t_cap = self._fluid_inv['throat.capillary_pressure']
-        min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
-        max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
+        self._t_cap = self._fluid_inv['throat.'+self._p_cap]
         if type(self._inv_points) == list:
+            min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
+            max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
+            self._logger.info('Generating list of invasion pressures')
             if min_p == 0:
                 min_p = sp.linspace(min_p,max_p,self._npts)[1]
             self._inv_points = sp.logspace(sp.log10(min_p),sp.log10(max_p),self._npts)
@@ -117,9 +117,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         clusters = self._net.find_clusters(Tinvaded)
         #Find all pores with at least 1 invaded throat (invaded)
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
-        nums = self._net.throats()
-        temp = self._net.find_connected_pores(nums)
-        temp = temp[Tinvaded]
+        Ts = self._net.throats()
+        P12 = self._net.find_connected_pores(Ts)
+        temp = P12[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
         Pinvaded[temp] = True
         if self._AL:
@@ -139,7 +139,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Store result of invasion step
         self._p_inv[(self._p_inv==0)*(pmask)] = inv_val
         #Determine Pc_invaded for throats as well
-        temp = self._net.get_throat_data(prop='conns')
+        temp = self._net['throat.conns']
         tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(Tinvaded)
         self._t_inv[(self._t_inv==0)*(tmask)] = inv_val
 

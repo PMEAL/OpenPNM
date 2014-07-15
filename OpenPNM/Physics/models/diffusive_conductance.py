@@ -40,7 +40,7 @@ def bulk_diffusion(network,
     DABp = fluid[pore_diffusivity]
     DABt = network.interpolate_data(data=DABp)
     #Get Nt-by-2 list of pores connected to each throat
-    Ps = network['throat.conns']
+    Ps = network.find_connected_pores(throats=throats)
     #Find g for half of pore 1
     parea = network[pore_area]
     pdia = network[pore_diameter]

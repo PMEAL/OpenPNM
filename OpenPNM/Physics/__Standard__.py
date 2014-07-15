@@ -58,15 +58,7 @@ class Standard(GenericPhysics):
             self.add_model(propname='throat.capillary_pressure',
                            model=pm.capillary_pressure.washburn)
         self.regenerate()
-
         
-
-
-
-
-
-
-
 if __name__ == '__main__':
     print('none yet')
 
