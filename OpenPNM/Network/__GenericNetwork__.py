@@ -188,42 +188,54 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._logger.debug('create_adjacency_matrix: Start of method')
         Np   = self.num_pores()
         Nt   = self.num_throats()
-
-        if (data is not None) and (prop is not None):
+        
+        #Check if data was provided
+        if (data is None) and (prop is None):
+            prop = 'conns'
+            dataset = sp.ones((Nt,))
+        elif (data is not None):
             dataset = data
-            tprop = prop
             if sp.shape(dataset)[0] != Nt:
                 raise Exception('Received dataset of incorrect length')
-        else:
-            dataset = sp.ones(Nt)
-            tprop = 'conns'
-
+        elif (prop is not None) and (data is None):
+            dataset = self['throat.'+prop.split('.')[-1]]
+            
+        #Clear zero-weighted connections if any
         if dropzeros:
             ind = dataset>0
         else:
             ind = sp.ones_like(dataset,dtype=bool)
-
+            
+        #Get connectivity info from network
         conn = self['throat.conns'][ind]
         row  = conn[:,0]
         col  = conn[:,1]
         data = dataset[ind]
-
+        
         if sym: #Append row & col to each other, and data to itself
             row  = sp.append(row,conn[:,1])
             col  = sp.append(col,conn[:,0])
             data = sp.append(data,data)
-
+        
+        #Generate sparse adjacency matrix in 'coo' format
         temp = sprs.coo_matrix((data,(row,col)),(Np,Np))
-        if sprsfmt == 'coo' or sprsfmt == 'all':
-            self._adjacency_matrix['coo'][tprop] = temp
-        if sprsfmt == 'csr' or sprsfmt == 'all':
-            self._adjacency_matrix['csr'][tprop] = temp.tocsr()
-        if sprsfmt == 'lil' or sprsfmt == 'all':
-            self._adjacency_matrix['lil'][tprop] = temp.tolil()
-            
-        self._logger.debug('create_incidence_matrix: End of method')
-        if sprsfmt != 'all':
-            return self._adjacency_matrix[sprsfmt][tprop]
+        
+        #Convert to requested format
+        if prop is None:  # Return adjacency matrix
+            if sprsfmt == 'coo':
+                pass #temp is already in coo format
+            if sprsfmt == 'csr':
+                temp = temp.tocsr()
+            if sprsfmt == 'lil':
+                temp = temp.tolil()
+            return temp
+        else:  # Write adjacency matrix to network
+            if sprsfmt == 'coo' or sprsfmt == 'all':
+                self._adjacency_matrix['coo'][prop] = temp
+            if sprsfmt == 'csr' or sprsfmt == 'all':
+                self._adjacency_matrix['csr'][prop] = temp.tocsr()
+            if sprsfmt == 'lil' or sprsfmt == 'all':
+                self._adjacency_matrix['lil'][prop] = temp.tolil()
 
     def create_incidence_matrix(self,data=None,prop=None,sprsfmt='all',dropzeros=True):
         r"""
