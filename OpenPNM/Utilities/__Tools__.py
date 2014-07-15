@@ -76,14 +76,22 @@ class Tools(Base,dict):
         count = 0
         for item in self.props():
             count = count + 1
-            print("{a:<5d} {b:<35s}".format(a=count, b=item))
+            prop=item
+            if len(prop)>35:
+                prop = prop[0:32]+'...'
+            required = self.count(item.split('.')[0])
+            defined = required - sp.sum(sp.isnan(self[item]))
+            print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
         print(header)
         print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Locations'))
         print(header)
         count = 0
         for item in self.labels():
             count = count + 1
-            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=item, c=sum(self[item])))
+            prop=item
+            if len(prop)>35:
+                prop = prop[0:32]+'...'
+            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sum(self[item])))
         print(header)
         return ''
         
