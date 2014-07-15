@@ -67,3 +67,66 @@ def conduit_conductance(network,
     value = throat_value*open_conduits + throat_value*closed_conduits*factor
     return value
 
+def late_throat_filling(network,fluid,throats,Pc_star,eta):
+    pass
+
+def late_pore_filling(network,
+                      fluid,
+                      pores,
+                      Pc,
+                      Swp_star=0.2,
+                      eta=3,
+                      wetting_fluid=False,
+                      pore_occupancy='pore.occupancy',
+                      throat_capillary_pressure='throat.capillary_pressure',
+                      **kwargs):
+    r'''
+    Applies a late pore filling model to calculate fractional pore filling as 
+    a function of applied capillary pressure.
+    
+    Parameters
+    ----------
+    Pc : float
+        The capillary pressure in the non-wetting phase (Pc > 0)
+    Swp_star : float
+        The residual wetting phase in an invaded pore immediately after
+        nonwetting phase invasion
+    eta : float
+        Exponent to control the rate at which wetting phase is displaced
+    wetting_fluid : boolean
+        Indicates whether supplied fluid is the wetting or non-wetting phase
+    
+    
+    '''
+    
+    prop = fluid[throat_capillary_pressure]
+    neighborTs = network.find_neighbor_throats(pores,flatten=False)
+    Pc_star = sp.array([sp.amin(prop[row]) for row in neighborTs])
+    Swp = Swp_star*(Pc_star/Pc)**eta
+    if wetting_fluid:
+        values = Swp*fluid[pore_occupancy]*(Pc_star<Pc)
+    else:
+        values = (1-Swp)*(~fluid[pore_occupancy])*(Pc_star<Pc)
+    return values
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
