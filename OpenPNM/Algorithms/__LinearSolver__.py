@@ -36,8 +36,10 @@ class LinearSolver(GenericAlgorithm):
         #Check health of conductance vector
         if self._fluid.check_throat_health(props=self._conductance):
             #If no nans, check for 0's
-            temp = sp.where(self._fluid[self._conductance]==0)[0]
-            self._fluid[self._conductance][temp] = 1e-30
+            ind = sp.nonzero(fluid[self._conductance])[0]
+            gmin = sp.amin(self._fluid[self._conductance][ind])
+            ind = sp.where(fluid[self._conductance]==0)[0]
+            self._fluid[self._conductance][ind] = gmin/1000000
         else:
             raise Exception('The provided throat conductance has problems')
             
