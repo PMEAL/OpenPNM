@@ -49,7 +49,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
         self._adjacency_matrix = {}
-        self.reset_graphs()
         self._logger.debug("Construction of Network container")
         self.name = name
         
@@ -487,19 +486,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         r'''
         Regenerates the adjacency and incidence matrices
         '''
-        self._adjacency_matrix['coo'] = self.create_adjacency_matrix(sprsfmt='coo')
-        self._adjacency_matrix['csr'] = self.create_adjacency_matrix(sprsfmt='csr')
-        self._adjacency_matrix['lil'] = self.create_adjacency_matrix(sprsfmt='lil')
-        self._incidence_matrix['coo'] = self.create_incidence_matrix(sprsfmt='coo')
-        self._incidence_matrix['csr'] = self.create_incidence_matrix(sprsfmt='csr')
-        self._incidence_matrix['lil'] = self.create_incidence_matrix(sprsfmt='lil')
-        
-    def reset_graphs(self):
-        r'''
-        Clears the adjacency and incidence matrices.  This is necessary after
-        any manipulations functions such as trim, extend, clone, etc.
-        '''
-        #Re-initialize adjacency and incidence matrix dictionaries
         self._logger.debug('Resetting adjacency and incidence matrices')
         self._adjacency_matrix['coo'] = {}
         self._adjacency_matrix['csr'] = {}
@@ -507,6 +493,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._incidence_matrix['coo'] = {}
         self._incidence_matrix['csr'] = {}
         self._incidence_matrix['lil'] = {}
+        self._adjacency_matrix['coo'] = self.create_adjacency_matrix(sprsfmt='coo')
+        self._adjacency_matrix['csr'] = self.create_adjacency_matrix(sprsfmt='csr')
+        self._adjacency_matrix['lil'] = self.create_adjacency_matrix(sprsfmt='lil')
+        self._incidence_matrix['coo'] = self.create_incidence_matrix(sprsfmt='coo')
+        self._incidence_matrix['csr'] = self.create_incidence_matrix(sprsfmt='csr')
+        self._incidence_matrix['lil'] = self.create_incidence_matrix(sprsfmt='lil')
         
     #--------------------------------------------------------------------------
     '''Object Association Related Methods'''
@@ -708,7 +700,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self['throat.'+item][self.throats('all')>=Nt] = True
                 
         # Any existing adjacency and incidence matrices will be invalid
-        self.reset_graphs()
+        self.update_network()
         
     def stitch(self,heads,tails):
         r'''
@@ -762,7 +754,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                     temp = self[item]
                     self[item] = sp.ones((N,),dtype=float)*sp.nan
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
-        self.reset_graphs()
+        self.update_network()
         
     def trim(self, pores=[], throats=[], check_health=False):
         '''
@@ -845,7 +837,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                     self[key] = temp[Pkeep]
         
         #Reset network
-        self.reset_graphs()
+        self.update_network()
         
         #Check network health
         if check_health:
