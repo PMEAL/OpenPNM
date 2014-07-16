@@ -152,16 +152,18 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Parameters
         ----------
-        data : array_like (optional)
-            An ndarray containing the throat values to place into the I,J locations of the IJV sparse matrix.
-            If no argument is supplied then the standard adjacency matrix is assumed.
-        prop : String (optional)
-            The name of the property being written to the adjacency matrix.
-            If no argument is supplied then the standard adjacency matrix is assumed.
-        sprsfmt : String, optional
-            The sparse storage format to use. If no type is specified then all are generated (coo, csr & lil)
-        dropzeros : Boolean, optional
-            Remove 0 elements from the values, instead of creating 0-weighted links, the default is True.
+        data : array_like, optional
+            An ndarray containing the throat values to place into the V 
+            locations of the IJV sparse matrix.  If this value is not given
+            then pn['throat.prop'] is assumed to refer to the desired data.
+        prop : string, optional
+            The adjacency matrix is stored under this name for subsequent access.
+            If not given, then 
+        sprsfmt : string, optional
+            The sparse storage format to use. 
+        dropzeros : boolean, optional
+            Remove 0 elements from the values, instead of creating 0-weighted 
+            links, the default is True.
         sym : Boolean, optional
             Makes the matrix symmetric about the diagonal, the default is true.
 
@@ -244,11 +246,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Parameters
         ----------
         data : array_like (optional)
-            An ndarray containing the throat values to place into the I,J locations of the IJV sparse matrix.
-            If no argument is supplied then the standard adjacency matrix is assumed.
+            An ndarray containing the throat values to place into the V 
+            locations of the IJV sparse matrix.  If no argument is supplied 
+            then the standard adjacency matrix is assumed.
         prop : String (optional)
-            The name of the property being written to the adjacency matrix.
-            If no argument is supplied then the standard adjacency matrix is assumed.
+            The name of the property being written to the incidence matrix.
+            If no argument is supplied then the standard incidence matrix is assumed.
         sprsfmt : String, optional
             The sparse storage format to use. If none type is given, all are generated (coo, csr & lil)
         dropzeros : Boolean, optional
@@ -274,12 +277,16 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Nt = self.num_throats()
         Np = self.num_pores()
 
-        if (data is not None) and (prop is not None):
+        #Check if data was provided
+        if (data is None) and (prop is None):
+            prop = 'conns'
+            dataset = sp.ones((Nt,))
+        elif (data is not None):
             dataset = data
-            tprop = prop
-        else:
-            dataset = sp.ones(Nt)
-            tprop = 'conns'
+            if sp.shape(dataset)[0] != Nt:
+                raise Exception('Received dataset of incorrect length')
+        elif (prop is not None) and (data is None):
+            dataset = self['throat.'+prop.split('.')[-1]]
 
         if dropzeros:
             ind = dataset > 0
@@ -294,16 +301,23 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         data = sp.append(dataset[ind],dataset[ind])
 
         temp = sprs.coo.coo_matrix((data,(row,col)),(Np,Nt))
-        if sprsfmt == 'coo' or sprsfmt == 'all':
-            self._incidence_matrix['coo'][tprop] = temp
-        if sprsfmt == 'csr' or sprsfmt == 'all':
-            self._incidence_matrix['csr'][tprop] = temp.tocsr()
-        if sprsfmt == 'lil' or sprsfmt == 'all':
-            self._incidence_matrix['lil'][tprop] = temp.tolil()
-            
-        self._logger.debug('create_incidence_matrix: End of method')
-        if sprsfmt != 'all':
-            return self._incidence_matrix[sprsfmt][tprop]
+
+        #Convert to requested format
+        if prop is None:  # Return adjacency matrix
+            if sprsfmt == 'coo':
+                pass #temp is already in coo format
+            if sprsfmt == 'csr':
+                temp = temp.tocsr()
+            if sprsfmt == 'lil':
+                temp = temp.tolil()
+            return temp
+        else:  # Write adjacency matrix to network
+            if sprsfmt == 'coo' or sprsfmt == 'all':
+                self._incidence_matrix['coo'][prop] = temp
+            if sprsfmt == 'csr' or sprsfmt == 'all':
+                self._incidence_matrix['csr'][prop] = temp.tocsr()
+            if sprsfmt == 'lil' or sprsfmt == 'all':
+                self._incidence_matrix['lil'][prop] = temp.tolil()
             
     def find_connected_pores(self,throats=[],flatten=False):
         r"""
@@ -340,12 +354,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
     def find_connecting_throat(self,P1,P2):
         r"""
-        Return a the throat number connecting two given pores connected
+        Return the throat number connecting pairs of pores
 
         Parameters
         ----------
         P1 , P2 : int
-            The pore numbers connected by the desired throat
+            The pore numbers whose throats are sought
 
         Returns
         -------
