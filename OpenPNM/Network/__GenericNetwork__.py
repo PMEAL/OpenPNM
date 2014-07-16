@@ -58,109 +58,30 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Generate the network
         """
         raise NotImplementedError()
-
-    def domain_bulk_volume(self):
-        r'''
-        '''
-        raise NotImplementedError()
-
-    def domain_pore_volume(self):
-        r'''
-        '''
-        raise NotImplementedError()
-        
-    def domain_length(self,face_1,face_2):
-        r'''
-        Calculate the distance between two faces of the network
-        
-        Parameters
-        ----------
-        face_1 and face_2 : array_like
-            Lists of pores belonging to opposite faces of the network
-            
-        Returns
-        -------
-        The length of the domain in the specified direction
-        
-        Notes
-        -----
-        - Does not yet check if input faces are perpendicular to each other
-        '''
-        #Ensure given points are coplanar before proceeding
-        if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
-            #Find distance between given faces
-            x = self['pore.coords'][face_1]
-            y = self['pore.coords'][face_2]
-            Ds = misc.dist(x,y)
-            L = sp.median(sp.amin(Ds,axis=0))
-        else:
-            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
-            f1 = self['pore.coords'][face_1]
-            f2 = self['pore.coords'][face_2]
-            distavg = [0,0,0]
-            distavg[0] = sp.absolute(sp.average(f1[:,0]) - sp.average(f2[:,0]))
-            distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
-            distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
-            L = max(distavg)
-        return L
-        
-    def domain_area(self,face):
-        r'''
-        Calculate the area of a given network face
-        
-        Parameters
-        ----------
-        face : array_like
-            List of pores of pore defining the face of interest
-            
-        Returns
-        -------
-        The area of the specified face
-        '''
-        if misc.iscoplanar(self['pore.coords'][face]):
-            #Find area of inlet face
-            x = self['pore.coords'][face]
-            y = x
-            As = misc.dist(x,y)
-            temp = sp.amax(As,axis=0)
-            h = sp.amax(temp)
-            corner1 = sp.where(temp==h)[0][0]
-            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
-            a = sp.amin(As[corner1,p])
-            o = h*sp.sin(sp.arccos((a/h)))
-            A = o*a
-        else:
-            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
-            x = self['pore.coords'][face]
-            y = x
-            As = misc.dist(x,y)
-            temp = sp.amax(As,axis=0)
-            h = sp.amax(temp)
-            corner1 = sp.where(temp==h)[0][0]
-            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
-            a = sp.amin(As[corner1,p])
-            o = h*sp.sin(sp.arccos((a/h)))
-            A = o*a
-        return A
         
     #--------------------------------------------------------------------------
-    '''Graph theory and topology related methods'''
+    '''Graph Theory and Network Query Methods'''
     #--------------------------------------------------------------------------
-    def create_adjacency_matrix(self,data=None,prop=None,sprsfmt='all',dropzeros=True,sym=True):
+    def create_adjacency_matrix(self,data=None,sprsfmt='coo',dropzeros=True,sym=True):
         r"""
-        Generates adjacency matricies in various sparse storage formats
+        Generates a weighted adjacency matrix in a desired sparse storage format
 
         Parameters
         ----------
         data : array_like, optional
-            An ndarray containing the throat values to place into the V 
-            locations of the IJV sparse matrix.  If this value is not given
-            then pn['throat.prop'] is assumed to refer to the desired data.
-        prop : string, optional
-            The adjacency matrix is stored under this name for subsequent access.
-            If not given, then 
+            An array containing the throat values to enter into the matrix (In
+            graph theory these are known as the 'weights').  If omitted, ones 
+            are used to create a standard adjacency matrix representing 
+            connectivity only.  
         sprsfmt : string, optional
-            The sparse storage format to use. 
+            The sparse storage format to return.  Options are:
+            
+            * 'coo' : (default) This is the native format of OpenPNMs data
+            
+            * 'lil' : Enables row-wise slice of data
+            
+            * 'csr' : Favored by most linear algebra routines
+            
         dropzeros : boolean, optional
             Remove 0 elements from the values, instead of creating 0-weighted 
             links, the default is True.
@@ -169,50 +90,36 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Returns
         -------
-        adj_mat : sparse_matrix
-            Returns adjacency matrix in specified format for local use.
-
-        Notes
-        -----
-        This also stores the adjacency matrix in a nested dictionary called
-        _adjacency_matrix.  This top level keys are the storage type, and
-        under each type they keys are the property name.
-
+        Returns an adjacency matrix in the specified Scipy sparse format
+        
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> vals = sp.rand(pn.num_throats(),) < 0.5
-        >>> temp = pn.create_adjacency_matrix(data=vals,prop='temp_name',sprsfmt='csr')
-        >>> print(pn._adjacency_matrix['csr'].keys())
-        dict_keys(['temp_name'])
+        >>> temp = pn.create_adjacency_matrix(data=vals,sprsfmt='csr')
 
         """
         self._logger.debug('create_adjacency_matrix: Start of method')
         Np   = self.num_pores()
         Nt   = self.num_throats()
         
-        #Check if data was provided
-        if (data is None) and (prop is None):
-            prop = 'conns'
-            dataset = sp.ones((Nt,))
-        elif (data is not None):
-            dataset = data
-            if sp.shape(dataset)[0] != Nt:
-                raise Exception('Received dataset of incorrect length')
-        elif (prop is not None) and (data is None):
-            dataset = self['throat.'+prop.split('.')[-1]]
+        #Check if provided data is correct
+        if data == None:
+            data = sp.ones((self.num_throats(),))
+        elif sp.shape(data)[0] != Nt:
+            raise Exception('Received dataset of incorrect length')
             
-        #Clear zero-weighted connections if any
+        #Clear any zero-weighted connections
         if dropzeros:
-            ind = dataset>0
+            ind = data>0
         else:
-            ind = sp.ones_like(dataset,dtype=bool)
+            ind = sp.ones_like(data,dtype=bool)
             
         #Get connectivity info from network
         conn = self['throat.conns'][ind]
         row  = conn[:,0]
         col  = conn[:,1]
-        data = dataset[ind]
+        data = data[ind]
         
         if sym: #Append row & col to each other, and data to itself
             row  = sp.append(row,conn[:,1])
@@ -223,49 +130,42 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         temp = sprs.coo_matrix((data,(row,col)),(Np,Np))
         
         #Convert to requested format
-        if prop is None:  # Return adjacency matrix
-            if sprsfmt == 'coo':
-                pass #temp is already in coo format
-            if sprsfmt == 'csr':
-                temp = temp.tocsr()
-            if sprsfmt == 'lil':
-                temp = temp.tolil()
-            return temp
-        else:  # Write adjacency matrix to network
-            if sprsfmt == 'coo' or sprsfmt == 'all':
-                self._adjacency_matrix['coo'][prop] = temp
-            if sprsfmt == 'csr' or sprsfmt == 'all':
-                self._adjacency_matrix['csr'][prop] = temp.tocsr()
-            if sprsfmt == 'lil' or sprsfmt == 'all':
-                self._adjacency_matrix['lil'][prop] = temp.tolil()
+        if sprsfmt == 'coo':
+            pass #temp is already in coo format
+        if sprsfmt == 'csr':
+            temp = temp.tocsr()
+        if sprsfmt == 'lil':
+            temp = temp.tolil()
+        return temp
 
-    def create_incidence_matrix(self,data=None,prop=None,sprsfmt='all',dropzeros=True):
+    def create_incidence_matrix(self,data=None,sprsfmt='coo',dropzeros=True):
         r"""
         Creates an incidence matrix filled with supplied throat values
 
         Parameters
         ----------
-        data : array_like (optional)
-            An ndarray containing the throat values to place into the V 
-            locations of the IJV sparse matrix.  If no argument is supplied 
-            then the standard adjacency matrix is assumed.
-        prop : String (optional)
-            The name of the property being written to the incidence matrix.
-            If no argument is supplied then the standard incidence matrix is assumed.
-        sprsfmt : String, optional
-            The sparse storage format to use. If none type is given, all are generated (coo, csr & lil)
+        data : array_like, optional
+            An array containing the throat values to enter into the matrix (In
+            graph theory these are known as the 'weights').  If omitted, ones 
+            are used to create a standard incidence matrix representing 
+            connectivity only. 
+        sprsfmt : string, optional
+            The sparse storage format to return.  Options are:
+            
+            * 'coo' : (default) This is the native format of OpenPNMs data
+            
+            * 'lil' : Enables row-wise slice of data
+            
+            * 'csr' : Favored by most linear algebra routines
+            
         dropzeros : Boolean, optional
-            Remove 0 elements from values, instead of creating 0-weighted links, the default is True.
+            Remove 0 elements from values, instead of creating 0-weighted 
+            links, the default is True.
 
         Returns
         -------
-        An incidence matrix (a cousin to the adjacency matrix, useful for finding throats of given a pore)
-
-        Notes
-        -----
-        This also stores the incidence matrix in a nested dictionary called
-        _incidence_matrix.  This top level keys are the storage type, and
-        under each type they keys are the property name.
+        An incidence matrix (a cousin to the adjacency matrix, useful for 
+        finding throats of given a pore)
 
         Examples
         --------
@@ -277,47 +177,34 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Nt = self.num_throats()
         Np = self.num_pores()
 
-        #Check if data was provided
-        if (data is None) and (prop is None):
-            prop = 'conns'
-            dataset = sp.ones((Nt,))
-        elif (data is not None):
-            dataset = data
-            if sp.shape(dataset)[0] != Nt:
-                raise Exception('Received dataset of incorrect length')
-        elif (prop is not None) and (data is None):
-            dataset = self['throat.'+prop.split('.')[-1]]
+        #Check if provided data is valid
+        if data == None:
+            data = sp.ones((self.num_throats(),))
+        elif sp.shape(data)[0] != Nt:
+            raise Exception('Received dataset of incorrect length')
 
         if dropzeros:
-            ind = dataset > 0
+            ind = data > 0
         else:
-            ind = sp.ones_like(dataset, dtype=bool)
+            ind = sp.ones_like(data, dtype=bool)
 
         conn = self['throat.conns'][ind]
         row  = conn[:,0]
         row = sp.append(row,conn[:,1])
         col = self.get_throat_indices('all')[ind]
         col = sp.append(col,col)
-        data = sp.append(dataset[ind],dataset[ind])
+        data = sp.append(data[ind],data[ind])
 
         temp = sprs.coo.coo_matrix((data,(row,col)),(Np,Nt))
 
         #Convert to requested format
-        if prop is None:  # Return adjacency matrix
-            if sprsfmt == 'coo':
-                pass #temp is already in coo format
-            if sprsfmt == 'csr':
-                temp = temp.tocsr()
-            if sprsfmt == 'lil':
-                temp = temp.tolil()
-            return temp
-        else:  # Write adjacency matrix to network
-            if sprsfmt == 'coo' or sprsfmt == 'all':
-                self._incidence_matrix['coo'][prop] = temp
-            if sprsfmt == 'csr' or sprsfmt == 'all':
-                self._incidence_matrix['csr'][prop] = temp.tocsr()
-            if sprsfmt == 'lil' or sprsfmt == 'all':
-                self._incidence_matrix['lil'][prop] = temp.tolil()
+        if sprsfmt == 'coo':
+            pass #temp is already in coo format
+        if sprsfmt == 'csr':
+            temp = temp.tocsr()
+        if sprsfmt == 'lil':
+            temp = temp.tolil()
+        return temp
             
     def find_connected_pores(self,throats=[],flatten=False):
         r"""
@@ -424,11 +311,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         pores = sp.array(pores,ndmin=1)
         try:
-            neighborPs = self._adjacency_matrix['lil']['conns'].rows[[pores]]
+            neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
         except:
             self._logger.info('Creating adjacency matrix, please wait')
-            self.create_adjacency_matrix()
-            neighborPs = self._adjacency_matrix['lil']['conns'].rows[[pores]]
+            temp = self.create_adjacency_matrix(sprsfmt='lil')
+            self._adjacency_matrix['lil'] = temp
+            neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
         if [sp.asarray(x) for x in neighborPs if x] == []:
             return []
         if flatten:
@@ -487,11 +375,12 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         """
         #Test for existance of incidence matrix
         try:
-            neighborTs = self._incidence_matrix['lil']['conns'].rows[[pores]]
+            neighborTs = self._incidence_matrix['lil'].rows[[pores]]
         except:
             self._logger.info('Creating incidence matrix, please wait')
-            self.create_incidence_matrix()
-            neighborTs = self._incidence_matrix['lil']['conns'].rows[[pores]]
+            temp = self.create_incidence_matrix(sprsfmt='lil')
+            self._incidence_matrix['lil'] = temp
+            neighborTs = self._incidence_matrix['lil'].rows[[pores]]
         if [sp.asarray(x) for x in neighborTs if x] == []:
             return []
         if flatten:
@@ -594,6 +483,30 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 Tind = T1[Tmask]
         return Tind
         
+    def update_network(self):
+        r'''
+        Regenerates the adjacency and incidence matrices
+        '''
+        self.create_adjacency_matrix()
+        self.create_incidence_matrix()
+        
+    def reset_graphs(self):
+        r'''
+        Clears the adjacency and incidence matrices.  This is necessary after
+        any manipulations functions such as trim, extend, clone, etc.
+        '''
+        #Re-initialize adjacency and incidence matrix dictionaries
+        self._logger.debug('Resetting adjacency and incidence matrices')
+        self._adjacency_matrix['coo'] = {}
+        self._adjacency_matrix['csr'] = {}
+        self._adjacency_matrix['lil'] = {}
+        self._incidence_matrix['coo'] = {}
+        self._incidence_matrix['csr'] = {}
+        self._incidence_matrix['lil'] = {}
+        
+    #--------------------------------------------------------------------------
+    '''Object Association Related Methods'''
+    #--------------------------------------------------------------------------
     def regenerate_fluids(self):
         r'''
         '''
@@ -735,28 +648,10 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         else:
             fluids = self.find_object(obj_name=name)
         return fluids
-
-    def update_network(self):
-        r'''
-        Regenerates the adjacency and incidence matrices
-        '''
-        self.create_adjacency_matrix()
-        self.create_incidence_matrix()
         
-    def reset_graphs(self):
-        r'''
-        Clears the adjacency and incidence matrices.  This is necessary after
-        any manipulations functions such as trim, extend, clone, etc.
-        '''
-        #Re-initialize adjacency and incidence matrix dictionaries
-        self._logger.debug('Resetting adjacency and incidence matrices')
-        self._adjacency_matrix['coo'] = {}
-        self._adjacency_matrix['csr'] = {}
-        self._adjacency_matrix['lil'] = {}
-        self._incidence_matrix['coo'] = {}
-        self._incidence_matrix['csr'] = {}
-        self._incidence_matrix['lil'] = {}
-        
+    #--------------------------------------------------------------------------
+    '''Network Manipulation Methods'''
+    #--------------------------------------------------------------------------
     def clone(self,pores,apply_label=['clone'],mode='parents'):
         r'''
         Clones the specified pores and adds them to the network
@@ -916,7 +811,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             self._logger.warning('No pores or throats recieved')
             return
 
-        
         #Remap throat connections
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
         Pmap = sp.ones((self.num_pores(),),dtype=int)*-1
@@ -952,7 +846,156 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #Check network health
         if check_health:
             self.network_health()
+        
+    def find_clusters(self,mask=[]):
+        r'''
+        Identify connected clusters of pores in the network.  
+        
+        Parameters
+        ----------
+        mask : array_like, boolean
+            A list of active nodes.  This method will automatically search 
+            for clusters based on site or bond connectivity depending on 
+            wheather the received mask is Np or Nt long.
             
+        Returns
+        -------
+        clusters : array_like
+            An Np long list of clusters numbers
+            
+        '''
+        if sp.shape(mask)[0] == self.num_throats():
+            #Convert to boolean mask if not already
+            temp = sp.zeros((self.num_throats(),),dtype=bool)
+            temp[mask] = True
+        elif sp.shape(mask)[0] == self.num_pores():
+            conns = self.find_connected_pores(throats=self.throats())
+            conns[:,0] = mask[conns[:,0]]
+            conns[:,1] = mask[conns[:,1]]
+            temp = sp.array(conns[:,0]*conns[:,1],dtype=bool)
+        else: 
+            raise Exception('Mask received was neither Nt nor Np long')
+        temp = self.create_adjacency_matrix(data=temp, sprsfmt='csr', dropzeros=True)
+        clusters = sprs.csgraph.connected_components(temp)[1]
+        return clusters
+        
+    def network_health(self):
+        r'''
+        This method check the network topological health by:
+        
+            (1) Checking for isolated pores
+            (2) Checking for islands or isolated clusters of pores
+            
+        Returns
+        -------
+        A named tuple containing isolated pores and disconnected cluters
+        '''
+        #Check for individual isolated pores
+        health = collections.namedtuple('network_health',['disconnected_clusters','isolated_pores'])
+        health.isolated_pores = []
+        health.disconnected_clusters = []
+        Ps = self.num_neighbors(self.pores())
+        if sp.sum(Ps==0) > 0:
+            self._logger.warning(str(sp.sum(Ps==0))+' pores have no neighbors')
+            health.isolated_pores = sp.where(Ps==0)[0]
+        #Check for clusters of isolated pores
+        Cs = self.find_clusters(self.tomask(throats=self.throats('all')))
+        if sp.shape(sp.unique(Cs))[0] > 1:
+            self._logger.warning('Isolated clusters exist in the network')
+            for i in sp.unique(Cs):
+                health.disconnected_clusters.append(sp.where(Cs==i)[0])
+        return health
+        
+    #--------------------------------------------------------------------------
+    '''Domain Geometry Methods'''
+    #--------------------------------------------------------------------------
+    def domain_bulk_volume(self):
+        r'''
+        '''
+        raise NotImplementedError()
+
+    def domain_pore_volume(self):
+        r'''
+        '''
+        raise NotImplementedError()
+        
+    def domain_length(self,face_1,face_2):
+        r'''
+        Calculate the distance between two faces of the network
+        
+        Parameters
+        ----------
+        face_1 and face_2 : array_like
+            Lists of pores belonging to opposite faces of the network
+            
+        Returns
+        -------
+        The length of the domain in the specified direction
+        
+        Notes
+        -----
+        - Does not yet check if input faces are perpendicular to each other
+        '''
+        #Ensure given points are coplanar before proceeding
+        if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
+            #Find distance between given faces
+            x = self['pore.coords'][face_1]
+            y = self['pore.coords'][face_2]
+            Ds = misc.dist(x,y)
+            L = sp.median(sp.amin(Ds,axis=0))
+        else:
+            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
+            f1 = self['pore.coords'][face_1]
+            f2 = self['pore.coords'][face_2]
+            distavg = [0,0,0]
+            distavg[0] = sp.absolute(sp.average(f1[:,0]) - sp.average(f2[:,0]))
+            distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
+            distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
+            L = max(distavg)
+        return L
+        
+    def domain_area(self,face):
+        r'''
+        Calculate the area of a given network face
+        
+        Parameters
+        ----------
+        face : array_like
+            List of pores of pore defining the face of interest
+            
+        Returns
+        -------
+        The area of the specified face
+        '''
+        if misc.iscoplanar(self['pore.coords'][face]):
+            #Find area of inlet face
+            x = self['pore.coords'][face]
+            y = x
+            As = misc.dist(x,y)
+            temp = sp.amax(As,axis=0)
+            h = sp.amax(temp)
+            corner1 = sp.where(temp==h)[0][0]
+            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
+            a = sp.amin(As[corner1,p])
+            o = h*sp.sin(sp.arccos((a/h)))
+            A = o*a
+        else:
+            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
+            x = self['pore.coords'][face]
+            y = x
+            As = misc.dist(x,y)
+            temp = sp.amax(As,axis=0)
+            h = sp.amax(temp)
+            corner1 = sp.where(temp==h)[0][0]
+            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
+            a = sp.amin(As[corner1,p])
+            o = h*sp.sin(sp.arccos((a/h)))
+            A = o*a
+        return A        
+        
+    #--------------------------------------------------------------------------
+    '''Miscillaneous Methods'''
+    #--------------------------------------------------------------------------
     def subset(self,pores,name=None,incl_labels=True,incl_props=True):
         r'''
         Create a new sub-network from a list of pores.
@@ -1040,66 +1083,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         newpnm.subset_fluid = types.MethodType(subset_fluid, newpnm)     
         
         return newpnm
-        
-    def find_clusters(self,mask=[]):
-        r'''
-        Identify connected clusters of pores in the network.  
-        
-        Parameters
-        ----------
-        mask : array_like, boolean
-            A list of active nodes.  This method will automatically search 
-            for clusters based on site or bond connectivity depending on 
-            wheather the received mask is Np or Nt long.
-            
-        Returns
-        -------
-        clusters : array_like
-            An Np long list of clusters numbers
-            
-        '''
-        if sp.shape(mask)[0] == self.num_throats():
-            #Convert to boolean mask if not already
-            temp = sp.zeros((self.num_throats(),),dtype=bool)
-            temp[mask] = True
-        elif sp.shape(mask)[0] == self.num_pores():
-            conns = self.find_connected_pores(throats=self.throats())
-            conns[:,0] = mask[conns[:,0]]
-            conns[:,1] = mask[conns[:,1]]
-            temp = sp.array(conns[:,0]*conns[:,1],dtype=bool)
-        else: 
-            raise Exception('Mask received was neither Nt nor Np long')
-        self.create_adjacency_matrix(prop='temp', data=temp, sprsfmt='csr', dropzeros=True)
-        clusters = sprs.csgraph.connected_components(self._adjacency_matrix['csr']['temp'])[1]
-        del self._adjacency_matrix['csr']['temp']
-        return clusters
-        
-    def network_health(self):
-        r'''
-        This method check the network topological health by:
-        
-            (1) Checking for isolated pores
-            (2) Checking for islands or isolated clusters of pores
-            
-        Returns
-        -------
-        A named tuple containing isolated pores and disconnected cluters
-        '''
-        #Check for individual isolated pores
-        health = collections.namedtuple('network_health',['disconnected_clusters','isolated_pores'])
-        health.isolated_pores = []
-        health.disconnected_clusters = []
-        Ps = self.num_neighbors(self.pores())
-        if sp.sum(Ps==0) > 0:
-            self._logger.warning(str(sp.sum(Ps==0))+' pores have no neighbors')
-            health.isolated_pores = sp.where(Ps==0)[0]
-        #Check for clusters of isolated pores
-        Cs = self.find_clusters(self.tomask(throats=self.throats('all')))
-        if sp.shape(sp.unique(Cs))[0] > 1:
-            self._logger.warning('Isolated clusters exist in the network')
-            for i in sp.unique(Cs):
-                health.disconnected_clusters.append(sp.where(Cs==i)[0])
-        return health
         
 #------------------------------------------------------------------------------
 '''Additional Functions'''
