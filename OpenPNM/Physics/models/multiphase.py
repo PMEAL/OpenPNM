@@ -14,7 +14,7 @@ def conduit_conductance(network,
                         throat_occupancy='throat.occupancy',
                         pore_occupancy='pore.occupancy',
                         mode='strict',
-                        factor=1e-5,
+                        factor=1e-6,
                         **kwargs):
     r"""
     Add a new multiphase conductance property to the conduits of network, where a 
@@ -106,7 +106,7 @@ def late_pore_filling(network,
     if wetting_fluid:
         values = Swp*fluid[pore_occupancy]*(Pc_star<Pc)
     else:
-        values = (1-Swp)*(~fluid[pore_occupancy])*(Pc_star<Pc)
+        values = (1-Swp)*(1-fluid[pore_occupancy])*(Pc_star<Pc)
     return values
     
     
