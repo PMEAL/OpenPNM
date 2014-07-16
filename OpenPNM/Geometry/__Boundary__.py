@@ -53,4 +53,4 @@ class Boundary(GenericGeometry):
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
-    test = OpenPNM.Geometry.Boundary(loglevel=10,name='test_geom',locations=[0],network=pn)
+    pass

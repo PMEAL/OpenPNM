@@ -34,7 +34,6 @@ air.generate()
 
 water = OpenPNM.Fluids.Water(network=pn)
 #Overwrite existing models
-air['pore.diffusivity'] = 1e-8
 water.generate()
 
 #==============================================================================

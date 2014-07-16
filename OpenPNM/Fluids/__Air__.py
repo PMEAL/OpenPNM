@@ -30,19 +30,18 @@ class Air(GenericFluid):
         self._logger.debug("Construct class")
         
     def generate(self):
-        self.add_property(prop='diffusivity',
-                          model='fuller',
-                          MA=18,
-                          MB=20,
-                          vA=1,
-                          vB=1)
-        self.add_property(prop='molar_density',
-                          model='ideal_gas')
-        self.add_property(prop='viscosity',
-                          model='reynolds',
-                          uo=0.0002,
-                          b=0.0001)
-        self.regenerate()  # Include this to allow for old school add_property
+        self.add_model(propname='pore.diffusivity',
+                       model=fm.diffusivity.fuller,
+                       MA=18,
+                       MB=20,
+                       vA=1,
+                       vB=1)
+        self.add_model(propname='pore.molar_density',
+                       model=fm.molar_density.ideal_gas)
+        self.add_model(propname='pore.viscosity',
+                       model=fm.viscosity.reynolds,
+                       uo=0.0002,
+                       b=0.0001)
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

@@ -15,7 +15,6 @@ import OpenPNM
 from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
-
 class Toray090(GenericGeometry):
     r"""
     Toray090 subclass of GenericGeometry
@@ -70,4 +69,4 @@ class Toray090(GenericGeometry):
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
-    test = OpenPNM.Geometry.Stick_and_Ball(loglevel=10,name='test_geom',locations=[0],network=pn)
+    pass

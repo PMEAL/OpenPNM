@@ -191,19 +191,19 @@ class Base(object):
                 del fluid
                     
     def _set_name(self,name):
-        obj_type = self.__module__.split('.')[1]
+#        obj_type = self.__module__.split('.')[1]
         if name == None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
-        if obj_type == 'Geometry':
-            if self._name != None:
-                self._logger.error('Geometry objects cannot be renamed')
-                raise Exception('Geometry objects cannot be renamed')  
-        objs = self.find_object(obj_type=obj_type)
-        for item in objs:
-            if item.name == name:
-                self._logger.error('A '+obj_type+' object with that name already exists')
-                raise Exception('A '+obj_type+' object with that name already exists')
+#        if obj_type == 'Geometry':
+#            if self._name != None:
+#                self._logger.error('Geometry objects cannot be renamed')
+#                raise Exception('Geometry objects cannot be renamed')  
+#        objs = self.find_object(obj_type=obj_type)
+#        for item in objs:
+#            if item.name == name:
+#                self._logger.error('A '+obj_type+' object with that name already exists')
+#                raise Exception('A '+obj_type+' object with that name already exists')
         self._name = name
     
     def _get_name(self):
