@@ -9,36 +9,16 @@ Contents
 --------
 This submodule contains all pore scale physics models applied to a pore network.
    
-.. automodule:: OpenPNM.Physics.capillary_pressure
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Physics.diffusive_conductance
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Physics.electronic_conductance
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Physics.hydraulic_conductance
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   
-.. automodule:: OpenPNM.Physics.thermal_conductance
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 """
 
-from . import electronic_conductance
-from . import capillary_pressure
-from . import diffusive_conductance
-from . import multiphase
-from . import thermal_conductance
-from . import hydraulic_conductance
+#Import every file in the directory
+import os as _os
+dir = _os.path.dirname(_os.path.abspath(__file__))
+for item in _os.listdir(dir):
+    if item.split('.')[-1] == 'py':
+        if item == '__init__.py':
+            pass
+        elif item[0:2] == '__':
+            exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
+        else:
+            exec('from . import ' + format(item.split('.')[0]))
