@@ -5,7 +5,7 @@ import scipy as sp
 '''Build Topological Network'''
 #==============================================================================
 pn = OpenPNM.Network.Cubic(name='net')
-pn.generate(divisions=[15, 15, 15], lattice_spacing=[0.0001],add_boundaries=True)
+pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=True)
 
 #==============================================================================
 '''Build Geometry'''
@@ -81,10 +81,9 @@ IP_1.update()
 alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.pores(labels=['top_face'])
-alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=sp.log(1-.6), pores=BC1_pores)
-
+alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
 BC2_pores = pn.pores(labels=['bottom_face'])
-alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=sp.log(1-0.4), pores=BC2_pores)
+alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
 
 phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    propname='throat.conduit_diffusive_conductance',

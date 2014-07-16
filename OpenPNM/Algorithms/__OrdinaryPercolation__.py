@@ -170,8 +170,6 @@ class OrdinaryPercolation(GenericAlgorithm):
             Cstate = sp.sum(Pinvaded[conns], axis=1)
             Tinvaded = self._t_inv <= inv_val
             Cstate = Cstate + Tinvaded #0 = all open, 1=1 pore filled, 2=2 pores filled 3=2 pores + 1 throat filled
-#            self._net.create_adjacency_matrix(data=(Cstate == 0), prop='defended', sprsfmt='csr', dropzeros=True)
-#            clusters = sprs.csgraph.connected_components(self._net.adjacency_matrix['csr']['defended'])[1]
             clusters = self._net.find_clusters(Cstate==0)
             ##Clean up clusters (invaded = -1, defended >=0)
             clusters = clusters*(~Pinvaded) - (Pinvaded)

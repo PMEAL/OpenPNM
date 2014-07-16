@@ -65,7 +65,7 @@ class Tortuosity(GenericAlgorithm):
         r'''
         '''
         self._logger.warning('This algorithm can take some time...')
-        graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],prop='temp',sprsfmt='csr')
+        graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],sprsfmt='csr')
         
         if fluid != None:
             self._fluid = fluid
