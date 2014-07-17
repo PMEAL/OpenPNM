@@ -45,6 +45,7 @@ class GenericPhysics(OpenPNM.Utilities.Base,dict):
         self._fluid = fluid
         self._net._physics.append(self)
         self._fluid._physics.append(self)
+        self._models = {}
         
         self.name = name
         
@@ -133,9 +134,7 @@ class GenericPhysics(OpenPNM.Utilities.Base,dict):
         elif type(prop_list) == str:
             props = [prop_list]
         for item in prop_list:
-            element = item.split('.')[0]
-            locations = self[item].keywords[element+'s']
-            self._fluid[item][locations] = self[item]()
+            self[item] = self._models[item]()
             
     def add_model(self,model,propname,**kwargs):
         r'''
@@ -157,15 +156,12 @@ class GenericPhysics(OpenPNM.Utilities.Base,dict):
         elif element == 'throat':
             locations = 'throats'
         #Build partial function from given and updated kwargs
-        self._fluid
-        self._net
-        self.pores()
-        self.throats()
         fn = partial(model,fluid=self._fluid,network=self._net,pores=self.pores(),throats=self.throats(),**kwargs)
         if propname not in self._fluid.keys():
             self._fluid[propname] = sp.ones((self.count(element),))*sp.nan
         self._fluid[propname][fn.keywords[locations]] = fn()
-        self[propname] = fn
+        self._models[propname] = fn
+        self[propname] = fn()
         
     def fluids(self):
         temp = []

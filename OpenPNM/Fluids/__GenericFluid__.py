@@ -49,7 +49,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         
         # Initialize tracking lists
         self._physics = []
-        self._static = {}
+        self._models = {}
         
         self.name = name
         
@@ -90,18 +90,29 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         >>> air.regenerate('molar_density')  # only one property
         >>> air.regenerate(['molar_density', 'diffusivity'])  # or several
         '''
+        #First regenerate itself
         if props == '':
-            prop_list = self._static.keys()
+            prop_list = self._models.keys()
         elif type(prop_list) == str:
             props = [prop_list]
         for item in prop_list:
-            temp = dict.__getitem__(self,item)
-            if temp.__class__.__name__ == 'partial':
-                self._static[item] = temp()
+            self[item] = self._models[item]
+            
+        #Then pull in data from associated Physics objects
+        for phys in self._physics:
+            for item in phys.keys():
+                element = item.split('.')[0]
+                if element == 'pore':
+                    locations = phys.pores()
+                elif element == 'throat':
+                    locations = phys.throats()
+                if item not in self.keys():
+                    self[item] = sp.nan
+                self[item][locations] = phys[item]
         
     def add_model(self,model,propname,**kwargs):
         r'''
-        Add specified property estimation model to the fluid object.
+        Add specified property estimation model to the Fluid object.
         
         Parameters
         ----------
@@ -112,16 +123,12 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         None yet
 
         '''
-        #Determine element and locations
-        element = propname.split('.')[0]
         #Build partial function from given and updated kwargs
         fn = partial(model,fluid=self,propname=propname,pores=self.pores(),throats=self.throats(),**kwargs)
-        if propname not in self._net.keys():
-            self[propname] = sp.ones((self.count(element),))*sp.nan
-        #Assign function to fluid dictionary
-        dict.__setitem__(self,propname,fn)
-        #Store a static copy of the data in fluid._static
-        self._static[propname] = fn()
+        #Write static values to self
+        self[propname] = fn()
+        #Store model in a private ditionary
+        self._models[propname] = fn
         
     def physics(self,name=''):
         r'''

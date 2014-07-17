@@ -52,6 +52,7 @@ class GenericGeometry(OpenPNM.Utilities.Base,dict):
         self.name = name
         #Register self with network.geometries
         self._net._geometries.append(self)
+        self._models = {}
         
         #Initialize geometry locations if given
         network['pore.'+self.name] = False
@@ -115,7 +116,7 @@ class GenericGeometry(OpenPNM.Utilities.Base,dict):
     
     def regenerate(self, props=''):
         r'''
-        This updates all properties using the selected methods
+        This updates all properties of the Geometry object
         
         Parameters
         ----------
@@ -137,13 +138,11 @@ class GenericGeometry(OpenPNM.Utilities.Base,dict):
         elif type(prop_list) == str:
             props = [prop_list]
         for item in prop_list:
-            element = item.split('.')[0]
-            locations = self[item].keywords[element+'s']
-            self._net[item][locations] = self[item]()
+            self[item] = self._models[item]()
         
     def add_model(self,model,propname,**kwargs):
         r'''
-        Add specified pore scale model to the Geometry object.
+        Add specified pore scale model to the Geometry object
         
         Parameters
         ----------
@@ -169,7 +168,10 @@ class GenericGeometry(OpenPNM.Utilities.Base,dict):
         if propname not in self._net.keys():
             self._net[propname] = sp.nan
         self._net[propname][locations] = fn()
-        self[propname] = fn
+        #Assign static data to self
+        self[propname] = fn()
+        #Save function to private dictionary
+        self._models[propname] = fn
 
 if __name__ == '__main__':
     #Run doc tests
