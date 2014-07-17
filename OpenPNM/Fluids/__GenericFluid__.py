@@ -49,7 +49,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         
         # Initialize tracking lists
         self._physics = []
-        self._models = {}
+        self._static = {}
         
         self.name = name
         
@@ -60,7 +60,14 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         # Set default T and P since most propery models require it
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
-    
+        
+    def __getitem__(self,key):
+        temp = dict.__getitem__(self,key)
+        if temp.__class__.__name__ == 'partial':
+            self._logger.debug('Getting static data: '+key)
+            temp = self._static[key]
+        return temp
+        
     def generate(self):
         raise NotImplementedError('This method must be implemented in a subclass')
 
@@ -84,13 +91,13 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         >>> air.regenerate(['molar_density', 'diffusivity'])  # or several
         '''
         if props == '':
-            prop_list = self._models.keys()
+            prop_list = self._static.keys()
         elif type(prop_list) == str:
             props = [prop_list]
         for item in prop_list:
-            element = item.split('.')[0]
-            locations = self._models[item].keywords[element+'s']
-            self[item][locations] = self._models[item]()
+            temp = dict.__getitem__(self,item)
+            if temp.__class__.__name__ == 'partial':
+                self._static[item] = temp()
         
     def add_model(self,model,propname,**kwargs):
         r'''
@@ -107,16 +114,14 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         '''
         #Determine element and locations
         element = propname.split('.')[0]
-        if element == 'pore':
-            locations = 'pores'
-        elif element == 'throat':
-            locations = 'throats'
         #Build partial function from given and updated kwargs
         fn = partial(model,fluid=self,propname=propname,pores=self.pores(),throats=self.throats(),**kwargs)
         if propname not in self._net.keys():
             self[propname] = sp.ones((self.count(element),))*sp.nan
-        self[propname][fn.keywords[locations]] = fn()
-        self._models[propname] = fn
+        #Assign function to fluid dictionary
+        dict.__setitem__(self,propname,fn)
+        #Store a static copy of the data in fluid._static
+        self._static[propname] = fn()
         
     def physics(self,name=''):
         r'''

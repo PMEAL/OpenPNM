@@ -63,7 +63,30 @@ class GenericGeometry(OpenPNM.Utilities.Base,dict):
         
     def generate(self):
         raise NotImplementedError('This method must be implemented in a subclass')
-        
+
+    def set_locations(self,pores=[],throats=[],mode='add'):
+        r'''
+        Assign Geometry object to specifed pores (or throats)
+        '''
+        if pores != []:
+            if mode == 'add':
+                if 'pore.'+self.name not in self._net.labels():
+                    self._net['pore.'+self.name] = False
+                self._net['pore.'+self.name][pores] = True
+            elif mode == 'remove':
+                self._net['pore.'+self.name][pores] = False
+            else:
+                print('invalid mode received')
+        if throats != []:
+            if mode == 'add':
+                if 'throat.'+self.name not in self._net.labels():
+                    self._net['throat.'+self.name] = False
+                self._net['throat.'+self.name][throats] = True
+            elif mode == 'remove':
+                self._net['throat.'+self.name][throats] = False
+            else:
+                print('invalid mode received')
+
     @property
     def Np(self):
         return self.num_pores()
@@ -79,25 +102,6 @@ class GenericGeometry(OpenPNM.Utilities.Base,dict):
         if element != None:
             temp = temp[element]
         return temp
-    
-    def set_locations(self,pores=[],throats=[],mode='add'):
-        r'''
-        Assign Geometry object to specifed pores (or throats)
-        '''
-        if pores != []:
-            if mode == 'add':
-                self._net.set_info(label=self.name,pores=pores,mode='merge')
-            elif mode == 'remove':
-                self._net.set_info(label=self.name,pores=pores,mode='remove')
-            else:
-                print('invalid mode received')
-        if throats != []:
-            if mode == 'add':
-                self._net.set_info(label=self.name,throats=throats,mode='merge')
-            elif mode == 'remove':
-                self._net.set_info(label=self.name,throats=throats,mode='remove')
-            else:
-                print('invalid mode received')
         
     def pores(self):
         r'''

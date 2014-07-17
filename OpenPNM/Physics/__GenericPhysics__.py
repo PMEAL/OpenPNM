@@ -14,9 +14,7 @@ from functools import partial
 
 class GenericPhysics(OpenPNM.Utilities.Base,dict):
     r"""
-    Base class to generate a generic Physics object.  The user must specify models
-    and parameters for the all the properties they require. Classes for several
-    common Physics are included with OpenPNM and can be found under OpenPNM.Physics.
+    Generic class to generate Physics objects  
 
     Parameters
     ----------
@@ -42,10 +40,7 @@ class GenericPhysics(OpenPNM.Utilities.Base,dict):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
-        #Setup containers for ojecct linking
-        self._prop_list = []
-        
-        # Append objects for internal access
+        #Append objects for internal access
         self._net = network
         self._fluid = fluid
         self._net._physics.append(self)
@@ -79,7 +74,7 @@ class GenericPhysics(OpenPNM.Utilities.Base,dict):
     def num_throats(self):
         return sp.shape(self.throats())[0]
         
-    def count(self,element):
+    def count(self,element=None):
         #Remove pluralizaton
         if element == 'pores':
             element = 'pore'
