@@ -29,7 +29,6 @@ boun.generate()
 #Fluids exist everywhere so don't need to be given pores/throats
 air = OpenPNM.Fluids.Air(network=pn)
 #Add custom properties directly, not using 'apply_conditions'
-air['pore.Dac'] = 0.0000333
 air.generate()
 
 water = OpenPNM.Fluids.Water(network=pn)

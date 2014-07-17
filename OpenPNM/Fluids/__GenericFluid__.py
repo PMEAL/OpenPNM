@@ -118,7 +118,6 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         self[propname][fn.keywords[locations]] = fn()
         self._models[propname] = fn
         
-        
     def physics(self,name=''):
         r'''
         Retrieves Physics assocaiated with the Fluid

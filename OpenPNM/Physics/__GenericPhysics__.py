@@ -48,6 +48,7 @@ class GenericPhysics(OpenPNM.Utilities.Base,dict):
         # Append objects for internal access
         self._net = network
         self._fluid = fluid
+        self._net._physics.append(self)
         self._fluid._physics.append(self)
         
         self.name = name
@@ -170,6 +171,11 @@ class GenericPhysics(OpenPNM.Utilities.Base,dict):
             self._fluid[propname] = sp.ones((self.count(element),))*sp.nan
         self._fluid[propname][fn.keywords[locations]] = fn()
         self[propname] = fn
+        
+    def fluids(self):
+        temp = []
+        temp.append(self._fluid.name)
+        return temp
         
 if __name__ == '__main__':
     print('none yet')

@@ -46,6 +46,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #Initialize fluid, physics, and geometry tracking lists
         self._fluids = []
         self._geometries = []
+        self._physics = []
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
         self._adjacency_matrix = {}
@@ -667,6 +668,27 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         else:
             fluids = self.find_object(obj_name=name)
         return fluids
+        
+    def physics(self,name=''):
+        r'''
+        Retrieves Physics assocaiated with the network
+        
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Fluid object to retrieve.  
+        Returns
+        -------
+            If name is NOT provided, then a list of physics names is returned. If
+            a name IS provided, then the Fluid object of that name is returned.
+        '''
+        if name == '':
+            physics = []
+            for item in self._physics:
+                physics.append(item.name)
+        else:
+            physicss = self.find_object(obj_name=name)
+        return physics
         
     #--------------------------------------------------------------------------
     '''Network Manipulation Methods'''
