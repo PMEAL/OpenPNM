@@ -52,15 +52,19 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         self._net._geometries.append(self)
         self._models = {}
         
-        #Initialize geometry locations if given
+        #Initialize geometry locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
         network['pore.'+self.name] = False
         network['pore.'+self.name][pores] = True
         network['throat.'+self.name] = False
         network['throat.'+self.name][throats] = True
-        self.pores = partial(network.pores,labels=self.name)
-        self.throats = partial(network.throats,labels=self.name)
+        
+    def pores(self,**kwargs):
+        return self._net.pores(labels=self.name)
+
+    def throats(self,**kwargs):
+        return self._net.throats(labels=self.name)
 
     def regenerate(self, props=''):
         r'''
@@ -82,7 +86,7 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         >>> geom.regenerate(['pore.seed', 'pore.diameter'])  # or several
         '''
         if props == '':
-            prop_list = self.keys()
+            prop_list = self.props()
         elif type(prop_list) == str:
             props = [prop_list]
         for item in prop_list:
@@ -113,13 +117,11 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         #Determine element and locations
         element = propname.split('.')[0]
         locations = fn.keywords[element+'s']
-        if propname not in self._net.keys():
+        if propname not in self._net.props():
             self._net[propname] = sp.nan
         self._net[propname][locations] = fn()
-        #Assign static data to self
-        self[propname] = fn()
-        #Save function to private dictionary
         self._models[propname] = fn
+        self[propname] = fn()
 
 if __name__ == '__main__':
     #Run doc tests

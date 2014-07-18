@@ -81,13 +81,17 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         '''
         #First regenerate itself
         if props == '':
-            prop_list = self._models.keys()
+            prop_list = self._models.props()
         elif type(prop_list) == str:
             props = [prop_list]
         for item in prop_list:
             self[item] = self._models[item]()
+        
+        #Then regenerate all physics objects associated with fluid
+        for item in self._physics:
+            item.regenerate()
             
-        #Then pull in data from associated Physics objects
+        #Then pull in data from freshly regenerated Physics objects
         for phys in self._physics:
             for item in phys.keys():
                 element = item.split('.')[0]

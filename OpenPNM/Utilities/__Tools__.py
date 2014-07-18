@@ -616,13 +616,16 @@ class Tools(Base,dict):
                 return sp.sum(arr,axis=1)
             if mode == 'union':
                 temp = labels[sp.sum(arr,axis=0)>0]
-                return temp.tolist()
+                temp.tolist()
+                return misc.PrintableList(temp)
             if mode == 'intersection':
                 temp = labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
-                return temp.tolist()
+                temp.tolist()
+                return misc.PrintableList(temp)
             if mode == 'difference':
                 temp = labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
-                return temp.tolist()
+                temp.tolist()
+                return misc.PrintableList(temp)
             if mode == 'mask':
                 return arr
             if mode == 'none':
@@ -661,9 +664,9 @@ class Tools(Base,dict):
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.labels(pores=[0,1,5,6])
-        ['pore.all', 'pore.bottom', 'pore.front', 'pore.internal', 'pore.left']
+        ['pore.all', 'pore.bottom', 'pore.front', 'pore.left']
         >>> pn.labels(pores=[0,1,5,6],mode='intersection')
-        ['pore.all', 'pore.bottom', 'pore.internal']
+        ['pore.all', 'pore.bottom']
         '''
         if (pores == []) and (throats == []):
             if element == '':
@@ -687,7 +690,7 @@ class Tools(Base,dict):
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
             temp = self._get_labels(element='throat',locations=throats,mode=mode)
-        return misc.PrintableList(temp)
+        return temp
             
     def filter_by_label(self,pores=[],throats=[],label=''):
         r'''
@@ -1070,7 +1073,7 @@ class Tools(Base,dict):
         if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
         Nt = self.throats(labels=labels,mode=mode)
-        return sp.shape(Nt)[0] 
+        return sp.shape(Nt)[0]
         
     @property
     def Nt(self):

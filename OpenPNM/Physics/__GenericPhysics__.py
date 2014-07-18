@@ -52,15 +52,19 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         self._models = {}
         self.name = name
         
-        #Use composition to assign pores and throats to this physics
+        #Initialize Physics locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
         fluid['pore.'+self.name] = False
         fluid['pore.'+self.name][pores] = True
         fluid['throat.'+self.name] = False
         fluid['throat.'+self.name][throats] = True
-        self.pores = partial(fluid.pores,labels=self.name)
-        self.throats = partial(fluid.throats,labels=self.name)
+        
+    def pores(self,**kwargs):
+        return self._fluid.pores(labels=self.name)
+
+    def throats(self,**kwargs):
+        return self._fluid.throats(labels=self.name)
         
     def regenerate(self, props=''):
         r'''
@@ -76,7 +80,7 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         na
         '''
         if props == '':
-            prop_list = self.keys()
+            prop_list = self.props()
         elif type(prop_list) == str:
             props = [prop_list]
         for item in prop_list:
@@ -95,17 +99,14 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         None yet
 
         '''
-        #Determine element and locations
-        element = propname.split('.')[0]
-        if element == 'pore':
-            locations = 'pores'
-        elif element == 'throat':
-            locations = 'throats'
         #Build partial function from given and updated kwargs
         fn = partial(model,fluid=self._fluid,network=self._net,pores=self.pores(),throats=self.throats(),**kwargs)
-        if propname not in self._fluid.keys():
+        #Determine element and locations
+        element = propname.split('.')[0]
+        locations = fn.keywords[element+'s']        
+        if propname not in self._fluid.props():
             self._fluid[propname] = sp.ones((self.count(element),))*sp.nan
-        self._fluid[propname][fn.keywords[locations]] = fn()
+        self._fluid[propname][locations] = fn()
         self._models[propname] = fn
         self[propname] = fn()
         
