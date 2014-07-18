@@ -189,19 +189,15 @@ class Base(object):
                     del fluid
                     
     def _set_name(self,name):
-#        obj_type = self.__module__.split('.')[1]
+        if self._name != None:
+            self._logger.error('Renaming objects can have catastrophic consequences')
+            return
         if name == None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
-#        if obj_type == 'Geometry':
-#            if self._name != None:
-#                self._logger.error('Geometry objects cannot be renamed')
-#                raise Exception('Geometry objects cannot be renamed')  
-#        objs = self.find_object(obj_type=obj_type)
-#        for item in objs:
-#            if item.name == name:
-#                self._logger.error('A '+obj_type+' object with that name already exists')
-#                raise Exception('A '+obj_type+' object with that name already exists')
+        if self.find_object(obj_name=name) != []:
+            self._logger.error('An object with this name already exists')
+            return
         self._name = name
     
     def _get_name(self):
@@ -211,6 +207,12 @@ class Base(object):
             
     def save_object(self,filename):
         r'''
+        Save the current object's data to a Numpy zip file.
+        
+        Parameters
+        ----------
+        filename : string
+            File name (including path if desired) to save to
         '''
         temp = filename.split('.')[0]
         temp = temp+'.npz'
