@@ -81,7 +81,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         '''
         #First regenerate itself
         if props == '':
-            prop_list = self._models.props()
+            prop_list = self._models.keys()
         elif type(prop_list) == str:
             props = [prop_list]
         for item in prop_list:
@@ -144,20 +144,6 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         else:
             phys = self.find_object(obj_name=name)
         return phys
-
-    def physics_update(self,name='all'):
-        r"""
-        Updates ALL properties of specified physics object attached to the fluid
-
-        Parameters
-        ----------
-        name : string (optional)
-            The name of physics object to be updated.  An empty string (default) refreshes all physics.
-        """
-        for item in self._physics:
-            if (item.name == name) or (name == 'all'):
-                item.regenerate()
-                self._logger.info('Refreshed '+item.name)
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

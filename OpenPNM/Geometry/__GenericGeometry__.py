@@ -124,6 +124,9 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         self[propname] = fn()
         
     def geometry_health(self):
+        r'''
+        Perform a check to find pores with overlapping or undefined Geometries
+        '''
         geoms = self._net.geometries()
         temp = sp.zeros((self._net.Np,))
         for item in geoms:

@@ -111,10 +111,13 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         self[propname] = fn()
         
     def physics_health(self):
+        r'''
+        Perform a check to find pores with overlapping or undefined Physics.
+        '''
         phys = self._net.physics()
-        temp = sp.zeros((self._net.Np,))
+        temp = sp.zeros((self._fluid.Np,))
         for item in phys:
-            ind = self._net['pore.'+item]
+            ind = self._fluid['pore.'+item]
             temp[ind] = temp[ind] + 1
         health = {}
         health['overlaps'] = sp.where(temp>1)[0].tolist()
@@ -122,6 +125,9 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         return health
         
     def fluids(self):
+        r'''
+        Return a list of Fluid object names associated with this Physics
+        '''
         temp = []
         temp.append(self._fluid.name)
         return temp
