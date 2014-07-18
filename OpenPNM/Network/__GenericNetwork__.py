@@ -192,8 +192,9 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
         Examples
         --------
-        >>> print('nothing yet')
-        nothing yet
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> vals = sp.rand(pn.num_throats(),) < 0.5
+        >>> temp = pn.create_incidence_matrix(data=vals,sprsfmt='csr')
         """
         self._logger.debug('create_incidence_matrix: Start of method')
 
@@ -321,16 +322,16 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_neighbor_pores(pores=[0,2])
         array([ 1,  3,  5,  7, 25, 27])
-        >>> pn.find_neighbor_pores(pores=[0,1],excl_self=True) #Find all neighbors, excluding selves
+        >>> pn.find_neighbor_pores(pores=[0,1]) #Find all neighbors, excluding selves
         array([ 2,  5,  6, 25, 26])
+        >>> pn.find_neighbor_pores(pores=[0,1],mode='union',excl_self=False) #Find all neighbors, including selves
+        array([ 0,  1,  2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0,2],flatten=False)
         array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
         >>> pn.find_neighbor_pores(pores=[0,2],mode='intersection') #Find only common neighbors
         array([1], dtype=int64)
         >>> pn.find_neighbor_pores(pores=[0,2],mode='not_intersection') #Exclude common neighbors
         array([ 3,  5,  7, 25, 27], dtype=int64)
-        >>> pn.find_neighbor_pores(pores=[0,1],mode='union') #Find all neighbors, including selves
-        array([ 0,  1,  2,  5,  6, 25, 26])
         """
         pores = sp.array(pores,ndmin=1)
         try:
@@ -825,7 +826,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         {'pore': 125, 'throat': 300}
         >>> pn.trim(pores=[1])
         >>> pn.count()
-        {'pore': 124, 'throat': 296}  # 1 pore and it's 6 throats are missing
+        {'pore': 124, 'throat': 296}  # 1 pore and it's 4 throats are missing
         
         '''
         pores = np.ravel(pores)
@@ -1071,7 +1072,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         >>> pn.count()
         {'pore': 125, 'throat': 300}
         >>> Ps = pn.pores(['top','bottom','front'])
-        >>> psn = pn.subset(pores=Ps)
+        >>> sn = pn.subset(pores=Ps)
         >>> sn.count()
         {'pore': 65, 'throat': 112}
         >>> sn.labels()[0:3]  # It automatically transfers labels and props
