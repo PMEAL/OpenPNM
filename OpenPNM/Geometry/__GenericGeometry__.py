@@ -2,8 +2,6 @@
 module __GenericGeometry__: Base class to construct pore networks
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
-
 """
 
 import sys, os
@@ -15,7 +13,7 @@ import OpenPNM
 import scipy as sp
 from functools import partial
 
-class GenericGeometry(OpenPNM.Utilities.Base,dict):
+class GenericGeometry(OpenPNM.Utilities.Tools):
     r"""
     GenericGeometry - Base class to construct a Geometry object
 
@@ -55,65 +53,15 @@ class GenericGeometry(OpenPNM.Utilities.Base,dict):
         self._models = {}
         
         #Initialize geometry locations if given
+        self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
+        self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
         network['pore.'+self.name] = False
         network['pore.'+self.name][pores] = True
         network['throat.'+self.name] = False
         network['throat.'+self.name][throats] = True
-        self.num_pores = partial(network.num_pores,labels=self.name)
-        self.num_throats = partial(network.num_throats,labels=self.name)
-        
-    def generate(self):
-        raise NotImplementedError('This method must be implemented in a subclass')
+        self.pores = partial(network.pores,labels=self.name)
+        self.throats = partial(network.throats,labels=self.name)
 
-    def set_locations(self,pores=[],throats=[],mode='add'):
-        r'''
-        Assign Geometry object to specifed pores (or throats)
-        '''
-        if pores != []:
-            if mode == 'add':
-                if 'pore.'+self.name not in self._net.labels():
-                    self._net['pore.'+self.name] = False
-                self._net['pore.'+self.name][pores] = True
-            elif mode == 'remove':
-                self._net['pore.'+self.name][pores] = False
-            else:
-                print('invalid mode received')
-        if throats != []:
-            if mode == 'add':
-                if 'throat.'+self.name not in self._net.labels():
-                    self._net['throat.'+self.name] = False
-                self._net['throat.'+self.name][throats] = True
-            elif mode == 'remove':
-                self._net['throat.'+self.name][throats] = False
-            else:
-                print('invalid mode received')
-
-    @property
-    def Np(self):
-        return self.num_pores()
-        
-    @property
-    def Nt(self):
-        return self.num_throats()
-        
-    def count(self,element=None):
-        temp = {}
-        temp['pore'] = self.num_pores()
-        temp['throat'] = self.num_throats()
-        if element != None:
-            temp = temp[element]
-        return temp
-        
-    def pores(self):
-        r'''
-        '''
-        return self._net.pores(labels=self.name)
-
-    def throats(self):
-        r'''
-        '''
-        return self._net.throats(labels=self.name)
-    
     def regenerate(self, props=''):
         r'''
         This updates all properties of the Geometry object

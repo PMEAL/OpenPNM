@@ -28,8 +28,9 @@ class Water(GenericFluid):
     def __init__(self,name=None,**kwargs):
         super(Water,self).__init__(name=name,**kwargs)
         self._logger.debug("Construct class")
+        self._generate()
         
-    def generate(self):
+    def _generate(self):
         self.add_model(propname='pore.diffusivity',
                        model=fm.misc.constant,
                        value=1e-9)

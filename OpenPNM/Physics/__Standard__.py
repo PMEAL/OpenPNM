@@ -35,8 +35,9 @@ class Standard(GenericPhysics):
     def __init__(self,**kwargs):
         super(Standard,self).__init__(**kwargs)
         self._logger.debug("Construct class")
+        self._generate()
         
-    def generate(self):
+    def _generate(self):
         temp = [item.split('.')[1] for item in self._fluid.props()]
         if 'viscosity' in temp:
             self.add_model(propname='throat.hydraulic_conductance',

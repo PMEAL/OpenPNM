@@ -41,16 +41,15 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
-        # Attach objects for internal access
+        # Attach objects to self for internal access
         self._net = network
         
         # Link this Fluid to the Network
         network._fluids.append(self) 
         
-        # Initialize tracking lists
+        # Initialize attributes
         self._physics = []
         self._models = {}
-        
         self.name = name
         
         # Initialize label 'all' in the object's own info dictionaries
@@ -60,16 +59,6 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         # Set default T and P since most propery models require it
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
-        
-    def __getitem__(self,key):
-        temp = dict.__getitem__(self,key)
-        if temp.__class__.__name__ == 'partial':
-            self._logger.debug('Getting static data: '+key)
-            temp = self._static[key]
-        return temp
-        
-    def generate(self):
-        raise NotImplementedError('This method must be implemented in a subclass')
 
     def regenerate(self,props=''):
         r'''
@@ -96,7 +85,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         elif type(prop_list) == str:
             props = [prop_list]
         for item in prop_list:
-            self[item] = self._models[item]
+            self[item] = self._models[item]()
             
         #Then pull in data from associated Physics objects
         for phys in self._physics:

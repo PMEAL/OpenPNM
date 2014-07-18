@@ -31,8 +31,9 @@ class Boundary(GenericGeometry):
         """
         super(Boundary,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        self._generate()
         
-    def generate(self):
+    def _generate(self):
         r'''
         '''
         self.add_model(propname='pore.seed',model=gm.pore_misc.constant,value=0.9999)

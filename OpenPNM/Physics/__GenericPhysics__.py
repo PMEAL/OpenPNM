@@ -12,7 +12,7 @@ import OpenPNM
 import scipy as sp
 from functools import partial
 
-class GenericPhysics(OpenPNM.Utilities.Base,dict):
+class GenericPhysics(OpenPNM.Utilities.Tools):
     r"""
     Generic class to generate Physics objects  
 
@@ -40,81 +40,27 @@ class GenericPhysics(OpenPNM.Utilities.Base,dict):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
-        #Append objects for internal access
+        #Append objects self for internal access
         self._net = network
         self._fluid = fluid
-        self._net._physics.append(self)
-        self._fluid._physics.append(self)
-        self._models = {}
+
+        #Append self to other objects
+        network._physics.append(self)
+        fluid._physics.append(self)
         
+        #Initialize attributes
+        self._models = {}
         self.name = name
         
         #Use composition to assign pores and throats to this physics
+        self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
+        self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
         fluid['pore.'+self.name] = False
-        fluid['throat.'+self.name] = False
         fluid['pore.'+self.name][pores] = True
-        fluid['throat.'+self.name][throats] = True
-        fluid['pore.'+self.name] = False
         fluid['throat.'+self.name] = False
-        fluid['pore.'+self.name][pores] = True
         fluid['throat.'+self.name][throats] = True
         self.pores = partial(fluid.pores,labels=self.name)
         self.throats = partial(fluid.throats,labels=self.name)
-        
-    @property
-    def Np(self):
-        return self.num_pores()
-        
-    @property
-    def Nt(self):
-        return self.num_throats()
-    
-    def num_pores(self):
-        return sp.shape(self.pores())[0]
-        
-    def num_throats(self):
-        return sp.shape(self.throats())[0]
-        
-    def count(self,element=None):
-        #Remove pluralizaton
-        if element == 'pores':
-            element = 'pore'
-        if element == 'throats':
-            element = 'throat'
-        temp = {}
-        temp['pore'] = self.num_pores()
-        temp['throat'] = self.num_throats()
-        if element != None:
-            temp = temp[element]
-        return temp
-        
-    def generate(self):
-        raise NotImplementedError('This method must be implemented in a subclass')
-    
-    def set_locations(self,pores=[],throats=[],mode='add'):
-        r'''
-        Assign Physics object to specifed pores and/or throats
-        '''
-        if pores != []:
-            if mode == 'add':
-                self._fluid['pore.'+self.name][pores] = True
-            elif mode == 'overwrite':
-                self._fluid['pore.'+self.name] = False
-                self._fluid['pore.'+self.name][pores] = True
-            elif mode == 'remove':
-                self._fluid['pore.'+self.name][pores] = False
-            else:
-                print('invalid mode received')
-        if throats != []:
-            if mode == 'add':
-                self._fluid['throat.'+self.name][throats] = True
-            elif mode == 'overwrite':
-                self._fluid['throat.'+self.name] = False
-                self._fluid['throat.'+self.name][throats] = True
-            elif mode == 'remove':
-                self._fluid['throat.'+self.name][throats] = False
-            else:
-                print('invalid mode received')
         
     def regenerate(self, props=''):
         r'''

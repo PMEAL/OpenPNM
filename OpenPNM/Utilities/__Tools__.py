@@ -497,15 +497,6 @@ class Tools(Base,dict):
                             data_amalgamated.update({dict_name : item[key]})
             except: 
                 self._logger.error('Only network and fluid items contain data')
-        
-        #Add geometry labels as pore values for Paraview plotting
-        if self._geometries != []:
-            geoms = self.find_object(obj_type='Geometry')
-            data_amalgamated[self.name+'.pore.geometry'] = sp.ones((self.num_pores(),))*sp.nan
-            index = 0;
-            for item in geoms:
-                index = index + 1
-                data_amalgamated[self.name+'.pore.geometry'][item.pores()] = index
         return data_amalgamated
         
     def _get_props(self,mode='all'):
@@ -1025,8 +1016,7 @@ class Tools(Base,dict):
         if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
         Np = self.pores(labels=labels,mode=mode)
-        Np = self.tomask(pores=Np)
-        return sp.sum(Np) #return sum of Trues
+        return sp.shape(Np)[0] 
         
     @property
     def Np(self):
@@ -1080,8 +1070,7 @@ class Tools(Base,dict):
         if type(labels) == str: labels = [labels]
         #Count number of pores of specified type
         Nt = self.throats(labels=labels,mode=mode)
-        Nt = self.tomask(throats=Nt)
-        return sp.sum(Nt) #return sum of Trues
+        return sp.shape(Nt)[0] 
         
     @property
     def Nt(self):

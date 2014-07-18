@@ -32,8 +32,9 @@ class Toray090(GenericGeometry):
         """
         super(Toray090,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        self._generate()
                        
-    def generate(self):
+    def _generate(self):
         r'''
         '''        
         self.add_model(propname='pore.seed',
