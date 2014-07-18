@@ -122,6 +122,17 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         self._net[propname][locations] = fn()
         self._models[propname] = fn
         self[propname] = fn()
+        
+    def geometry_health(self):
+        geoms = self._net.geometries()
+        temp = sp.zeros((self._net.Np,))
+        for item in geoms:
+            ind = self._net['pore.'+item]
+            temp[ind] = temp[ind] + 1
+        health = {}
+        health['overlaps'] = sp.where(temp>1)[0].tolist()
+        health['undefined'] = sp.where(temp==0)[0].tolist()
+        return health
 
 if __name__ == '__main__':
     #Run doc tests

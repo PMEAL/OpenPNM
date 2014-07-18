@@ -110,6 +110,17 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         self._models[propname] = fn
         self[propname] = fn()
         
+    def physics_health(self):
+        phys = self._net.physics()
+        temp = sp.zeros((self._net.Np,))
+        for item in phys:
+            ind = self._net['pore.'+item]
+            temp[ind] = temp[ind] + 1
+        health = {}
+        health['overlaps'] = sp.where(temp>1)[0].tolist()
+        health['undefined'] = sp.where(temp==0)[0].tolist()
+        return health
+        
     def fluids(self):
         temp = []
         temp.append(self._fluid.name)

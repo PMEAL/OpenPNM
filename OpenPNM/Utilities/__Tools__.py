@@ -708,7 +708,7 @@ class Tools(Base,dict):
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
-        array([0,1])
+        array([0, 1])
         '''
         if pores != []:
             label = 'pore.'+label.split('.')[-1]
