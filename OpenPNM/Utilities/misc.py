@@ -88,6 +88,16 @@ class PrintableList(list):
             print(count,'\t: ',item)
         return header
 
+class ObjectView(object):
+    def __init__(self, d):
+        temp = {}
+        for item in d:
+            if type(d[item][0]) == _sp.bool_:
+                key = 'label_'+item.replace('.','_')
+            else:
+                key = 'prop_'+item.replace('.','_')
+            temp[key] =d[item]
+        self.__dict__ = temp
 
 
 
