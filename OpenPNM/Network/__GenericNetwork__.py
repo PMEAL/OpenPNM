@@ -528,104 +528,24 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
     #--------------------------------------------------------------------------
     '''Object Association Related Methods'''
     #--------------------------------------------------------------------------
-    def regenerate_fluids(self):
+    def regenerate(self):
         r'''
         '''
-        fluids = []
-        for item in self._fluids:
-            fluids.append(item)
-        for item in fluids:
-            self._logger.info('Regenerating properties for '+item.name)
-            for prop in item._prop_list:
-                item.regenerate(prop_list=prop)
-
-    def regenerate_physics(self):
-        r'''
-        '''
-        physics = []
-        for item1 in self._fluids:
-            for item2 in item1._physics:
-                physics.append(item2)
-        for item in physics:
-            self._logger.info('Regenerating pore properties for '+item.name)
-            for prop in item._prop_list:
-                item.regenerate(prop_list=prop)
-                
-    def regenerate_geometries(self):
-        r'''
-        '''
-        #Regenerate pores first
+        #Regenerate all geometry objects associated with network
         for item in self._geometries:
-            self._logger.info('Regenerating pore properties for '+item.name)
-            for prop in item._prop_list:
-                if prop.split('_')[0] == 'pore':
-                    item.regenerate(prop_list=prop)
-        #Regenerate throats second
-        for item in self._geometries:
-            self._logger.info('Regenerating throat properties for '+item.name)
-            for prop in item._prop_list:
-                if prop.split('_')[0] == 'throat':
-                    item.regenerate(prop_list=prop)
+            item.regenerate()
             
-    def add_geometry(self,name=None,subclass='GenericGeometry',**kwargs):
-        r'''
-        This is a helper function for creating Geometry objects.
-        
-        Parameters
-        ----------
-        name : string, optional
-            Name to apply to the newly created geometry object.  If no name is
-            supplied, one will be randomly generated.
-        subclass : string, optional
-            The subclass to use.  If nothing is specified the GenericGeometry
-            class is used.
-            
-        Returns
-        -------
-        A handle to the generated OpenPNM Geometry object.  If this handle is 
-        not stored, it can be found under pn._geometries.
-        
-        Notes
-        -----
-        This method is equivalent to calling the OpenPNM module directly as:
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geo = OpenPNM.Geometry.GenericGeometry(network=pn,name='geom1')
-        '''
-        temp = OpenPNM.Geometry.__getattribute__(subclass)
-        return temp(network=self,name=name,**kwargs)
-
-    def add_fluid(self,name=None,subclass='GenericFluid',**kwargs):
-        r'''
-        This is a helper function for creating Fluid objects.
-        
-        Parameters
-        ----------
-        name : string, optional
-            Name to apply to the newly created fluid object.  If no name is
-            supplied, one will be randomly generated.
-        subclass : string, optional
-            The subclass to use.  If nothing is specified the GenericFluid
-            class is used.
-            
-        Returns
-        -------
-        A handle to the generated OpenPNM Fluid object.  If this handle is 
-        not stored, it can be found under pn._fluids.
-        
-        Notes
-        -----
-        This method is equivalent to calling the OpenPNM module directly as:
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> fluid = OpenPNM.Fluids.GenericFluid(network=pn,name='fluid1')
-        '''
-        temp = OpenPNM.Fluids.__getattribute__(subclass)
-        return temp(network=self,name=name,**kwargs)
-        
-    def add_physics(self,fluid,geometry,name=None,subclass='GenericPhysics',**kwargs):
-        r'''
-        '''
-        temp = OpenPNM.Physics.__getattribute__(subclass)
-        return temp(network=self,name=name,fluid=fluid,geometry=geometry,**kwargs)
+        #Then pull in data from freshly regenerated Physics objects
+        for geom in self._geometries:
+            for item in geom.keys():
+                element = item.split('.')[0]
+                if element == 'pore':
+                    locations = geom.pores()
+                elif element == 'throat':
+                    locations = geom.throats()
+                if item not in self.keys():
+                    self[item] = sp.nan
+                self[item][locations] = geom[item]
         
     def geometries(self,name=''):
         r'''

@@ -79,7 +79,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         >>> air.regenerate('molar_density')  # only one property
         >>> air.regenerate(['molar_density', 'diffusivity'])  # or several
         '''
-        #First regenerate itself
+        #First regenerate self
         if props == '':
             prop_list = self._models.keys()
         elif type(prop_list) == str:
