@@ -13,7 +13,7 @@ import scipy.sparse.linalg as sprslin
 from .__GenericAlgorithm__ import GenericAlgorithm
 
 
-class LinearSolver(GenericAlgorithm):
+class GenericLinearTransport(GenericAlgorithm):
     r"""
     This class provides essential methods for building and solving matrices in a transport process.
     It will be inherited during Fickian diffusion, Fourier heat conduction, Hagen Poiseuille permeability and electron conduction.
@@ -24,7 +24,7 @@ class LinearSolver(GenericAlgorithm):
         r'''
         Initializing the class
         '''
-        super(LinearSolver,self).__init__(**kwargs)
+        super(GenericLinearTransport,self).__init__(**kwargs)
         
     def setup(self,fluid,conductance,quantity):
         r'''

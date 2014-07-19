@@ -17,7 +17,7 @@ Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
 boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 
-#==============================================================================
+#=============================================================================
 '''Build Fluids'''
 #==============================================================================
 #Fluids exist everywhere so don't need to be given pores/throats
