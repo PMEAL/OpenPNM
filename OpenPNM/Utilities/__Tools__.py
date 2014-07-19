@@ -6,7 +6,7 @@ module __Tools__: Base class to construct pore network tools
 
 """
 
-import sys, os,pprint
+import sys,os,pprint
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)

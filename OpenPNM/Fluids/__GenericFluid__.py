@@ -95,10 +95,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         for phys in self._physics:
             for item in phys.keys():
                 element = item.split('.')[0]
-                if element == 'pore':
-                    locations = phys.pores()
-                elif element == 'throat':
-                    locations = phys.throats()
+                locations = self.locations(element)
                 if item not in self.keys():
                     self[item] = sp.nan
                 self[item][locations] = phys[item]

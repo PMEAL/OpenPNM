@@ -539,10 +539,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         for geom in self._geometries:
             for item in geom.keys():
                 element = item.split('.')[0]
-                if element == 'pore':
-                    locations = geom.pores()
-                elif element == 'throat':
-                    locations = geom.throats()
+                locations = geom.locations(element)
                 if item not in self.keys():
                     self[item] = sp.nan
                 self[item][locations] = geom[item]
@@ -608,7 +605,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             for item in self._physics:
                 physics.append(item.name)
         else:
-            physicss = self.find_object(obj_name=name)
+            physics = self.find_object(obj_name=name)
         return physics
         
     #--------------------------------------------------------------------------
