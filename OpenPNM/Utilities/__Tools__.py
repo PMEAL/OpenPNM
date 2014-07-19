@@ -246,7 +246,7 @@ class Tools(Base,dict):
             
         See Also
         --------
-        get_info
+        `get_info`
 
         Notes
         -----
@@ -284,7 +284,7 @@ class Tools(Base,dict):
             
         See Also
         --------
-        set_info
+        `set_info`
         
         Notes
         -----
@@ -441,7 +441,7 @@ class Tools(Base,dict):
             
         See Also
         --------
-        get_labels
+        `get_labels`
             
         '''
         if pores != None:
@@ -550,7 +550,7 @@ class Tools(Base,dict):
 
         See Also
         --------
-        labels
+        `labels`
         
         Examples
         --------
@@ -819,10 +819,6 @@ class Tools(Base,dict):
             
             * 'difference' : Only throats with none of the given labels are returned.
         
-        Notes
-        -----
-        This method replaces get_throat_indices
-        
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
@@ -833,6 +829,39 @@ class Tools(Base,dict):
         '''
         ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
+        
+    def locations(self,element,labels=['all'],mode='union'):
+        r'''
+        This is a generic version of `pores` and `throats` that accepts an
+        'element' argument which control which values are returned.  
+        
+        Parameters
+        ----------
+        element : string
+            Can be either 'pore' or 'throat' (or plurals), depending on whether
+            a list of pores or throats numbers is desired.
+        labels and mode : string
+            The label(s) of that should be used to filter the returned list.  
+            For further details see `pores` or `throats`.
+        
+        See Also
+        --------
+        `pores`, `throats`
+        
+        Notes
+        -----
+        This is intended for programatic access using keywords.
+        
+        Examples
+        --------
+        na
+            
+        '''
+        if element in ['pore', 'pores']:
+            temp = self.pores(labels=labels,mode=mode)
+        elif element in ['throat','throats']:
+            temp = self.throats(labels=labels,mode=mode)
+        return temp
         
     def get_pore_indices(self,labels=['all'],mode='union'):
         r'''
@@ -998,7 +1027,7 @@ class Tools(Base,dict):
             
         See Also
         --------
-        num_throats, count
+        `num_throats`, `count`
             
         Examples
         --------
@@ -1052,7 +1081,7 @@ class Tools(Base,dict):
             
         See Also
         --------
-        num_pores, count
+        `num_pores`, `count`
 
         Examples
         --------
@@ -1097,7 +1126,7 @@ class Tools(Base,dict):
         
         See Also
         --------
-        num_pores, num_throats
+        `num_pores`, `num_throats`
         
         Notes
         -----
@@ -1176,35 +1205,6 @@ class Tools(Base,dict):
         if quiet == False:
             pprint.pprint(health)
         return flag
-            
-    def check_pore_health(self,props=[],quiet=False):
-        r'''
-        This method is deprecated, use data_health instead
-        '''
-        if props != []:
-            if type(props) == str:
-                props = [props]
-            temp = []
-            for item in props:
-                item = item.split('.')[-1]
-                temp.append('pore.' + item)
-            props = temp
-        return self.data_health(element='pore',props=props,quiet=quiet)            
-        
-    def check_throat_health(self,props=[],quiet=False):
-        r'''
-        This method is deprecated, use data_health instead
-        '''
-        if props != []:
-            if type(props) == str:
-                props = [props]
-            temp = []
-            for item in props:
-                item = item.split('.')[-1]
-                temp.append('throat.' + item)
-            props = temp
-        return self.data_health(element='throat',props=props,quiet=quiet)
-        
 
 if __name__ == '__main__':
     import doctest
