@@ -543,25 +543,26 @@ class Tools(Base,dict):
                 self._logger.error('Unrecognized element')
                 return
             return misc.PrintableList(temp)
-        elif pores != []:
-            temp = {}
-            for item in props:
-                if item.split('.')[0] == 'pore':
-                    if sp.shape(self[item])[0] == 1: #is scalar
-                        vals = sp.ones((sp.shape(pores)[0],))*self[item]
-                    else:
-                        vals = self[item][pores]
-                    temp.update({item:vals})
-        elif throats != []:
-            temp = {}
-            for item in props:
-                if item.split('.')[0] == 'throat':
-                    if sp.shape(self[item])[0] == 1: #is scalar
-                        vals = sp.ones((sp.shape(throats)[0],))*self[item]
-                    else:
-                        vals = self[item][throats]
-                    temp.update({item:vals})
-        return temp
+        else:
+            if pores != []:
+                temp = {}
+                for item in props:
+                    if item.split('.')[0] == 'pore':
+                        if sp.shape(self[item])[0] == 1: #is scalar
+                            vals = sp.ones((sp.shape(pores)[0],))*self[item]
+                        else:
+                            vals = self[item][pores]
+                        temp.update({item:vals})
+            elif throats != []:
+                temp = {}
+                for item in props:
+                    if item.split('.')[0] == 'throat':
+                        if sp.shape(self[item])[0] == 1: #is scalar
+                            vals = sp.ones((sp.shape(throats)[0],))*self[item]
+                        else:
+                            vals = self[item][throats]
+                        temp.update({item:vals})
+            return misc.PrintableDict(temp)
             
     def _get_labels(self,element='',locations=[],mode='union'):
         r'''
