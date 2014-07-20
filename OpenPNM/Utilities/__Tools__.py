@@ -498,31 +498,6 @@ class Tools(Base,dict):
             except: 
                 self._logger.error('Only network and fluid items contain data')
         return data_amalgamated
-        
-    def _get_props(self,mode='all'):
-        r'''
-        This is the actual prop list getter method, but it should not be
-        called directly.  Wrapper methods have been created, use props().
-        '''
-        props = []
-        temp = []
-        for item in self.keys():
-            if self[item].dtype != bool:
-                temp.append(item)
-        if mode == 'all':
-            props = temp
-        if mode == 'vectors':
-            for item in temp:
-                try: 
-                    self[item][1]
-                    props.append(item)
-                except: pass
-        if mode == 'scalars':
-            for item in temp:
-                try: self[item][1]
-                except: props.append(item)
-        props.sort()
-        return props
             
     def props(self,element='',pores=[],throats=[],mode='all'):
         r'''
@@ -533,14 +508,6 @@ class Tools(Base,dict):
         ----------
         pores or throats : array_like
             hmmm
-        mode : string, optional
-            Set the mode to be used for retrieving props.  Options are:
-            
-            * 'all' : (default) Returns all pore or throat properties
-            
-            * 'scalars' : Only return properties that are stored as scalars
-            
-            * 'vectors' : Only return properties that are stored as vectors
 
         Returns
         -------
@@ -561,7 +528,10 @@ class Tools(Base,dict):
         ['pore.coords']
         '''
         
-        props = self._get_props(mode=mode)
+        props = []
+        for item in self.keys():
+            if self[item].dtype != bool:
+                props.append(item)
         if (pores == []) and (throats == []):
             if element == '':
                 temp = props
@@ -572,6 +542,7 @@ class Tools(Base,dict):
             else:
                 self._logger.error('Unrecognized element')
                 return
+            return misc.PrintableList(temp)
         elif pores != []:
             temp = {}
             for item in props:
@@ -590,7 +561,7 @@ class Tools(Base,dict):
                     else:
                         vals = self[item][throats]
                     temp.update({item:vals})
-        return misc.PrintableList(temp)
+        return temp
             
     def _get_labels(self,element='',locations=[],mode='union'):
         r'''
@@ -604,7 +575,7 @@ class Tools(Base,dict):
                     labels.append(item)
         labels.sort()
         if locations == []:
-            return labels
+            return misc.PrintableList(labels)
         else:
             labels = sp.array(labels)
             arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
