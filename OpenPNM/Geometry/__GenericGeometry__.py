@@ -79,7 +79,7 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         
         Parameters
         ----------
-        prop_list : string or list of strings
+        props: string or list of strings
             The names of the properties that should be updated, defaults to all
             
         Examples
@@ -93,11 +93,14 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         >>> geom.regenerate(['pore.seed', 'pore.diameter'])  # or several
         '''
         if props == '':
-            prop_list = self.props()
-        elif type(prop_list) == str:
-            props = [prop_list]
-        for item in prop_list:
-            self[item] = self._models[item]()
+            props = self._models.keys()
+        elif type(props) == str:
+            props = [props]
+        for item in props:
+            if item in self._models.keys():
+                self[item] = self._models[item]()
+            else:
+                self._logger.warning('Requested proptery is not a dynamic model: '+item)
         
     def add_model(self,model,propname,static=False,**kwargs):
         r'''

@@ -529,17 +529,26 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
     #--------------------------------------------------------------------------
     def regenerate(self):
         r'''
+        Update all the Geometry and Topology data on the network
+        
+        Notes
+        -----
+        It must still be decided how best to handle this process.  For instance
+        should this method regenerate the Geometry as well, or should that be
+        done manually?  Or, should data be regenerated each time it's called?
         '''
-        #Regenerate all geometry objects associated with network
+        #Regenerate all Geometry objects associated with network
+        #Note: This step is not necessary if (a) we use dynamic_data, or (2)
+        #we regenerate Geometry explicity/manually
         for item in self._geometries:
             item.regenerate()
             
-        #Then pull in data from freshly regenerated Physics objects
+        #Pull in data from freshly regenerated Geometry object(s)
         for geom in self._geometries:
-            for item in geom.keys():
+            for item in geom.props():
                 element = item.split('.')[0]
                 locations = geom.locations(element)
-                if item not in self.keys():
+                if item not in self.props():
                     self[item] = sp.nan
                 self[item][locations] = geom[item]
         

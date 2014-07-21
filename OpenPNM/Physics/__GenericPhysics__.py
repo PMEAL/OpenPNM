@@ -80,11 +80,14 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         na
         '''
         if props == '':
-            prop_list = self.props()
-        elif type(prop_list) == str:
-            props = [prop_list]
-        for item in prop_list:
-            self[item] = self._models[item]()
+            props = self._models.keys()
+        elif type(props) == str:
+            props = [props]
+        for item in props:
+            if item in self._models.keys():
+                self[item] = self._models[item]()
+            else:
+                self._logger.warning('Requested proptery is not a dynamic model: '+item)
             
     def add_model(self,model,propname,static=False,**kwargs):
         r'''
@@ -105,7 +108,7 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         element = propname.split('.')[0]
         locations = fn.keywords[element+'s']        
         if propname not in self._fluid.props():
-            self._fluid[propname] = sp.ones((self.count(element),))*sp.nan
+            self._fluid[propname] = sp.nan  # Create empty array of Nan's
         self._fluid[propname][locations] = fn()
         self[propname] = fn()
         if not static:

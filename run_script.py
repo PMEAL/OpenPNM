@@ -4,7 +4,7 @@ import OpenPNM
 '''Build Topological Network'''
 #==============================================================================
 pn = OpenPNM.Network.Cubic(name='net')
-pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=True)
+pn.generate(divisions=[5,5,5],lattice_spacing=[0.0001],add_boundaries=True)
 
 #==============================================================================
 '''Build Geometry'''
@@ -15,15 +15,15 @@ geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts,dynamic_data=Tru
 
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
-boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
+boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts,dynamic_data=True)
 
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
 #Fluids exist everywhere so don't need to be given pores/throats
-air = OpenPNM.Fluids.Air(network=pn)
+air = OpenPNM.Fluids.Air(network=pn,dynamic_data=True)
 air['pore.Dac'] = 1e-7  # Add custom properties directly
-water = OpenPNM.Fluids.Water(network=pn)
+water = OpenPNM.Fluids.Water(network=pn,dynamic_data=True)
 
 #==============================================================================
 '''Build Physics'''

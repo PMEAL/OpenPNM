@@ -50,6 +50,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         # Initialize attributes
         self._physics = []
         self._models = {}
+        self._dynamic_data = dynamic_data
         self.name = name
         
         # Initialize label 'all' in the object's own info dictionaries
@@ -81,11 +82,14 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         '''
         #First regenerate self
         if props == '':
-            prop_list = self._models.keys()
-        elif type(prop_list) == str:
-            props = [prop_list]
-        for item in prop_list:
-            self[item] = self._models[item]()
+            props = self._models.keys()
+        elif type(props) == str:
+            props = [props]
+        for item in props:
+            if item in self._models.keys():
+                self[item] = self._models[item]()
+            else:
+                self._logger.warning('Requested proptery is not a dynamic model: '+item)
         
         #Then regenerate all physics objects associated with fluid
         for item in self._physics:
@@ -93,10 +97,10 @@ class GenericFluid(OpenPNM.Utilities.Tools):
             
         #Then pull in data from freshly regenerated Physics objects
         for phys in self._physics:
-            for item in phys.keys():
+            for item in phys.props():
                 element = item.split('.')[0]
                 locations = self.locations(element)
-                if item not in self.keys():
+                if item not in self.props():
                     self[item] = sp.nan
                 self[item][locations] = phys[item]
         
