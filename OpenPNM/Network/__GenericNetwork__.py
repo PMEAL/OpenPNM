@@ -15,7 +15,6 @@ import OpenPNM.Utilities.misc as misc
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
-import scipy.spatial as sptl
 import scipy.signal as spsg
 
 
@@ -750,7 +749,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         throats = np.ravel(throats)
         
         r'''
-        TODO: This logic works but can be shorted as done in subnet
+        TODO: This logic works but can be shortened as done in subnet
         '''
         if sp.shape(pores)[0]>0:
             Pdrop = sp.zeros((self.num_pores(),),dtype=bool)
@@ -972,7 +971,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             
         Returns
         -------
-        newpnm : OpenPNM Object
+        OpenPNM Object
             Returns a new network object
             
         Notes

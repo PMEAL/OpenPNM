@@ -11,7 +11,7 @@ pn.generate(divisions=[5, 5, 5], lattice_spacing=[0.0001],add_boundaries=True)
 #==============================================================================
 Ps = pn.pores('boundary',mode='difference')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
-geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
+geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts,dynamic_data=True)
 
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')

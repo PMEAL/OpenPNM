@@ -65,6 +65,15 @@ class Tools(Base,dict):
             super(Base, self).__setitem__(key,value)
         else:
             self._logger.error('Cannot write vector with an array of the wrong length: '+key)
+            
+    def __getitem__(self,propname):
+        temp = dict.__getitem__(self,propname)
+        if hasattr(self,'_dynamic_data'):
+            if self._dynamic_data:
+                if propname in self._models.keys():
+                    temp = self._models[propname]()
+                    self[propname] = temp
+        return temp
     
     def __str__(self):
         header = '-'*60

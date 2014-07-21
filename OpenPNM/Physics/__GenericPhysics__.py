@@ -36,7 +36,7 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
     
     """
 
-    def __init__(self,network,fluid,pores=[],throats=[],name=None,**kwargs):
+    def __init__(self,network,fluid,pores=[],throats=[],name=None,dynamic_data=False,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
@@ -86,7 +86,7 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         for item in prop_list:
             self[item] = self._models[item]()
             
-    def add_model(self,model,propname,**kwargs):
+    def add_model(self,model,propname,static=False,**kwargs):
         r'''
         Add specified property estimation model to the fluid object.
         
@@ -107,8 +107,9 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         if propname not in self._fluid.props():
             self._fluid[propname] = sp.ones((self.count(element),))*sp.nan
         self._fluid[propname][locations] = fn()
-        self._models[propname] = fn
         self[propname] = fn()
+        if not static:
+            self._models[propname] = fn
         
     def physics_health(self):
         r'''

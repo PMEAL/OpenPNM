@@ -40,7 +40,7 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
     >>> geom.set_locations(pores=Ps,throats=Ts)
     """
 
-    def __init__(self,network,pores=[],throats=[],name=None,**kwargs):
+    def __init__(self,network,pores=[],throats=[],name=None,dynamic_data=False,**kwargs):
         r"""
         Initialize
         """
@@ -48,6 +48,7 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         self._logger.debug("Method: Constructor")
         self._net = network #Attach network to self        
         self.name = name
+        self._dynamic_data = dynamic_data
         #Register self with network.geometries
         self._net._geometries.append(self)
         self._models = {}
@@ -59,16 +60,22 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         network['pore.'+self.name][pores] = True
         network['throat.'+self.name] = False
         network['throat.'+self.name][throats] = True
-        
+    
     def pores(self,**kwargs):
+        r'''
+        Returns a list of pores to which this Geometry applies.
+        '''
         return self._net.pores(labels=self.name)
 
     def throats(self,**kwargs):
+        r'''
+        Returns a list of pores to which this Geometry applies.
+        '''
         return self._net.throats(labels=self.name)
 
     def regenerate(self, props=''):
         r'''
-        This updates all properties of the Geometry object
+        Update all properties of the Geometry object
         
         Parameters
         ----------
@@ -92,7 +99,7 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         for item in prop_list:
             self[item] = self._models[item]()
         
-    def add_model(self,model,propname,**kwargs):
+    def add_model(self,model,propname,static=False,**kwargs):
         r'''
         Add specified pore scale model to the Geometry object
         
@@ -120,8 +127,9 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         if propname not in self._net.props():
             self._net[propname] = sp.nan
         self._net[propname][locations] = fn()
-        self._models[propname] = fn
         self[propname] = fn()
+        if not static:
+            self._models[propname] = fn
         
     def geometry_health(self):
         r'''

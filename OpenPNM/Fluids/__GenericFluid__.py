@@ -37,7 +37,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         Sets a custom name for the logger, to help identify logger messages
 
     """
-    def __init__(self,network,name=None,**kwargs):
+    def __init__(self,network,name=None,dynamic_data=False,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
@@ -100,7 +100,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
                     self[item] = sp.nan
                 self[item][locations] = phys[item]
         
-    def add_model(self,model,propname,**kwargs):
+    def add_model(self,model,propname,static=False,**kwargs):
         r'''
         Add specified property estimation model to the Fluid object.
         
@@ -118,7 +118,8 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         #Write static values to self
         self[propname] = fn()
         #Store model in a private ditionary
-        self._models[propname] = fn
+        if not static:
+            self._models[propname] = fn
         
     def physics(self,name=''):
         r'''
