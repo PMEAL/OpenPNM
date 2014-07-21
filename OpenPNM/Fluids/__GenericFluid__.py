@@ -3,7 +3,7 @@ module Physics
 ===============================================================================
 
 """
-import sys, os
+import sys, os, collections
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -49,7 +49,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         
         # Initialize attributes
         self._physics = []
-        self._models = {}
+        self._models = collections.OrderedDict()
         self._dynamic_data = dynamic_data
         self.name = name
         
@@ -117,12 +117,12 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         None yet
 
         '''
-        #Build partial function from given and updated kwargs
-        fn = partial(model,fluid=self,propname=propname,pores=self.pores(),throats=self.throats(),**kwargs)
-        #Write static values to self
-        self[propname] = fn()
-        #Store model in a private ditionary
-        if not static:
+        #Build partial function from given kwargs
+        Ps = self.pores()
+        Ts = self.throats()
+        fn = partial(model,fluid=self,propname=propname,pores=Ps,throats=Ts,**kwargs)
+        self[propname] = fn()  # Write static values to self
+        if not static:  # Store model in a private ditionary
             self._models[propname] = fn
         
     def physics(self,name=''):

@@ -4,7 +4,7 @@ module __GenericGeometry__: Base class to construct pore networks
 
 """
 
-import sys, os
+import sys, os, collections
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -51,7 +51,7 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         self._dynamic_data = dynamic_data
         #Register self with network.geometries
         self._net._geometries.append(self)
-        self._models = {}
+        self._models = collections.OrderedDict()
         
         #Initialize geometry locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
@@ -123,16 +123,22 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
 
         '''
         #Build partial function from given kwargs
-        fn = partial(model,network=self._net,propname=propname,pores=self.pores(),throats=self.throats(),**kwargs)
+        Ps = self.pores()
+        Ts = self.throats()
+        fn = partial(model,network=self._net,propname=propname,pores=Ps,throats=Ts,**kwargs)
+        self[propname] = fn()  # Generate data and store it locally
+        if not static:  # Store model in a private attribute
+            self._models[propname] = fn
+        
+         #--- The following is ugly, but necessary for now ---#
+        #Create empty dictionary entry on master object (net or fluid)
+        if propname not in self._net.props():
+            self._net[propname] = sp.nan
         #Determine element and locations
         element = propname.split('.')[0]
         locations = fn.keywords[element+'s']
-        if propname not in self._net.props():
-            self._net[propname] = sp.nan
+        #Write a copy of the data to the master object
         self._net[propname][locations] = fn()
-        self[propname] = fn()
-        if not static:
-            self._models[propname] = fn
         
     def geometry_health(self):
         r'''

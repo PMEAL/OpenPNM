@@ -50,6 +50,7 @@ class Boundary(GenericGeometry):
         self.add_model(propname='throat.length',model=gm.throat_length.straight)
         self.add_model(propname='throat.volume',model=gm.pore_misc.constant,value=0.0)
         self.add_model(propname='throat.area',model=gm.throat_area.cylinder)
+        self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cylinder)
         self.add_model(propname='pore.area',model=gm.pore_misc.neighbor,pore_prop='throat.area')
         
 if __name__ == '__main__':

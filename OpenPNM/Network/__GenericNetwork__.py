@@ -46,6 +46,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._fluids = []
         self._geometries = []
         self._physics = []
+        self._models = collections.OrderedDict()
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
         self._adjacency_matrix = {}

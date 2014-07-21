@@ -3,7 +3,7 @@ module Physics
 ===============================================================================
 
 """
-import sys, os
+import sys, os, collections
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -49,7 +49,7 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         fluid._physics.append(self)
         
         #Initialize attributes
-        self._models = {}
+        self._models = collections.OrderedDict()
         self.name = name
         
         #Initialize Physics locations
@@ -102,17 +102,23 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         None yet
 
         '''
-        #Build partial function from given and updated kwargs
-        fn = partial(model,fluid=self._fluid,network=self._net,pores=self.pores(),throats=self.throats(),**kwargs)
+        #Build partial function from given kwargs
+        Ps = self.pores()
+        Ts = self.throats()
+        fn = partial(model,fluid=self._fluid,network=self._net,pores=Ps,throats=Ts,**kwargs)
+        self[propname] = fn()  # Generate data and store it locally
+        if not static:  # Store model in a private attribute
+            self._models[propname] = fn
+        
+        #--- The following is ugly, but necessary for now ---#
+        #Create empty dictionary entry on master object (net or fluid)
+        if propname not in self._fluid.props():
+            self._fluid[propname] = sp.nan
         #Determine element and locations
         element = propname.split('.')[0]
-        locations = fn.keywords[element+'s']        
-        if propname not in self._fluid.props():
-            self._fluid[propname] = sp.nan  # Create empty array of Nan's
+        locations = fn.keywords[element+'s']
+        #Write a copy of the data to the master object
         self._fluid[propname][locations] = fn()
-        self[propname] = fn()
-        if not static:
-            self._models[propname] = fn
         
     def physics_health(self):
         r'''
