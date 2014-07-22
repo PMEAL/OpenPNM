@@ -83,6 +83,7 @@ class PrintableList(list):
         header = '-'*79
         print('\n')
         print(header)
+        self.sort()
         for item in self:
             count = count + 1
             print(count,'\t: ',item)

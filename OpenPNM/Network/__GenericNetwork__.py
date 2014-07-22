@@ -645,17 +645,17 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Np = self.num_pores()
         Nt = self.num_throats()
         parents = sp.array(pores,ndmin=1)
-        pcurrent = self.get_pore_data(prop='coords')
+        pcurrent = self['pore.coords']
         pclone = pcurrent[pores,:]
         pnew = sp.concatenate((pcurrent,pclone),axis=0)
         Npnew = sp.shape(pnew)[0]
         clones = sp.arange(Np,Npnew)
         #Add clone labels to network
         for item in apply_label:
-            try: self['pore.'+item]
-            except: self['pore.'+item] = sp.zeros((self.num_pores(),),dtype=bool)
-            try: self['throat.'+item]
-            except: self['throat.'+item] = sp.zeros((self.num_throats(),),dtype=bool)
+            if ('pore.'+item) not in self.keys():
+                self['pore.'+item] = False
+            if ('throat.'+item) not in self.keys():
+                self['throat.'+item] = False
         #Add connections between parents and clones
         if mode == 'parents':
             tclone = sp.vstack((parents,clones)).T

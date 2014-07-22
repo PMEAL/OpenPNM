@@ -13,7 +13,7 @@ def sphere(network,
     r"""
     Calculate pore volume from diameter for a spherical pore body
     """
-    diams = network[pore_diameter]
+    diams = network[pore_diameter][pores]
     value=_sp.pi/6*diams**3
     return value
     

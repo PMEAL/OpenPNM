@@ -83,7 +83,9 @@ class Tools(Base,dict):
         print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values'))
         print(header)
         count = 0
-        for item in self.props():
+        props = self.props()
+        props.sort()
+        for item in props:
             count = count + 1
             prop=item
             if len(prop)>35:
@@ -95,7 +97,9 @@ class Tools(Base,dict):
         print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations'))
         print(header)
         count = 0
-        for item in self.labels():
+        labels = self.labels()
+        labels.sort()
+        for item in labels:
             count = count + 1
             prop=item
             if len(prop)>35:
