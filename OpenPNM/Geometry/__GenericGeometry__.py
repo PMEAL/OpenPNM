@@ -130,16 +130,6 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         if not static:  # Store model in a private attribute
             self._models[propname] = fn
         
-         #--- The following is ugly, but necessary for now ---#
-        #Create empty dictionary entry on master object (net or fluid)
-        if propname not in self._net.props():
-            self._net[propname] = sp.nan
-        #Determine element and locations
-        element = propname.split('.')[0]
-        locations = fn.keywords[element+'s']
-        #Write a copy of the data to the master object
-        self._net[propname][locations] = fn()
-        
     def geometry_health(self):
         r'''
         Perform a check to find pores with overlapping or undefined Geometries

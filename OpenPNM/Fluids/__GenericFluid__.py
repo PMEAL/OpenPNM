@@ -60,6 +60,24 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         # Set default T and P since most propery models require it
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
+        
+    def __getitem__(self,key):
+        if key not in self.keys():
+            return self.interleave_data(key)
+        else:
+            return super().__getitem__(key)
+        
+    def interleave_data(self,key):
+        element = key.split('.')[0]
+        temp = sp.ndarray((self.count(element),))
+        for item in self._physics:
+            locations = item.locations(element)
+            if key not in item.keys():
+                values = sp.ones_like(locations)*sp.nan
+            else:
+                values = item[key]
+            temp[locations] = values
+        return temp
 
     def regenerate(self,props=''):
         r'''

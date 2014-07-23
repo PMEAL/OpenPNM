@@ -53,6 +53,24 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._logger.debug("Construction of Network container")
         self.name = name
         
+    def __getitem__(self,key):
+        if key not in self.keys():
+            return self.interleave_data(key)
+        else:
+            return super().__getitem__(key)
+        
+    def interleave_data(self,key):
+        element = key.split('.')[0]
+        temp = sp.ndarray((self.count(element),))
+        for item in self._geometries:
+            locations = item.locations(element)
+            if key not in item.keys():
+                values = sp.ones_like(locations)*sp.nan
+            else:
+                values = item[key]
+            temp[locations] = values
+        return temp
+        
     def generate(self, coords=[], conns=[], **params):
         r"""
         Generate the network from a list of pores coordinate and throat connections

@@ -110,16 +110,6 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         if not static:  # Store model in a private attribute
             self._models[propname] = fn
         
-        #--- The following is ugly, but necessary for now ---#
-        #Create empty dictionary entry on master object (net or fluid)
-        if propname not in self._fluid.props():
-            self._fluid[propname] = sp.nan
-        #Determine element and locations
-        element = propname.split('.')[0]
-        locations = fn.keywords[element+'s']
-        #Write a copy of the data to the master object
-        self._fluid[propname][locations] = fn()
-        
     def physics_health(self):
         r'''
         Perform a check to find pores with overlapping or undefined Physics.
