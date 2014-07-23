@@ -31,18 +31,10 @@ class Water(GenericFluid):
         self._generate()
         
     def _generate(self):
-        self.add_model(propname='pore.diffusivity',
-                       model=fm.misc.constant,
-                       value=1e-9)
-        self.add_model(propname='pore.surface_tension',
-                       model=fm.misc.constant,
-                       value=0.072)
-        self.add_model(propname='pore.contact_angle',
-                       model=fm.misc.constant,
-                       value=110)
-        self.add_model(propname='pore.molar_density',
-                       model=fm.misc.constant,
-                       value=44445.0)
+        self['pore.diffusivity'] = 1e-9
+        self['pore.surface_tension'] = 0.072
+        self['pore.contact_angle'] = 110.0
+        self['pore.molar_density'] = 44445.0
         self.add_model(propname='pore.viscosity',
                        model=fm.viscosity.reynolds,
                        uo=0.002,
