@@ -37,7 +37,7 @@ def washburn(fluid,
     sigma = fluid[pore_surface_tension]
     sigma = fluid.interpolate_data(data=sigma)
     theta = fluid[pore_contact_angle]
-    theta = network.interpolate_data(data=theta)
+    theta = fluid.interpolate_data(data=theta)
     r = network[throat_diameter]/2
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
     value = value[throats]

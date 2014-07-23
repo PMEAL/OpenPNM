@@ -36,9 +36,9 @@ def bulk_diffusion(network,
     """    
     #Interpolate pore fluid property values to throats
     cp = fluid[pore_molar_density]
-    ct = network.interpolate_data(data=cp)
+    ct = fluid.interpolate_data(data=cp)
     DABp = fluid[pore_diffusivity]
-    DABt = network.interpolate_data(data=DABp)
+    DABt = fluid.interpolate_data(data=DABp)
     #Get Nt-by-2 list of pores connected to each throat
     Ps = network.find_connected_pores(throats=throats)
     #Find g for half of pore 1
