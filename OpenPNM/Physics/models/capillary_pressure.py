@@ -80,7 +80,7 @@ def purcell(network,
     sigma = fluid[pore_surface_tension]
     sigma = fluid.interpolate_data(data=sigma)
     theta = fluid[pore_contact_angle]
-    theta = network.interpolate_data(data=theta)
+    theta = fluid.interpolate_data(data=theta)
     r = network[throat_diameter]/2
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
