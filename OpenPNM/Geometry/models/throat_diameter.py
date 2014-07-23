@@ -6,8 +6,7 @@ Submodule -- throat_diameter
 """
 import scipy as _sp
 
-def cylinder(network,
-             throats,
+def cylinder(geometry,
              tsd_name,tsd_shape,tsd_loc,tsd_scale,
              throat_seed='throat.seed',
              **kwargs):
@@ -17,7 +16,7 @@ def cylinder(network,
     import scipy.stats as spst
     prob_fn = getattr(spst,tsd_name)
     P = prob_fn(tsd_shape,loc=tsd_loc,scale=tsd_scale)
-    value=P.ppf(network[throat_seed][throats])
+    value=P.ppf(geometry[throat_seed])
     return value
 
 def voronoi(network,

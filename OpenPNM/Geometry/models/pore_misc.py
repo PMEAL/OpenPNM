@@ -6,16 +6,17 @@ Submodule -- pore_misc
 """
 import scipy as _sp
 
-def constant(pores,
+def constant(geometry,
              value,
              **kwargs):
     r"""
-    Assign specified constant value
+    Assign specified constant value.  This function is redundant and could be
+    accomplished with geometry['pore.prop'] = value.
     """
-    value = _sp.ones(_sp.shape(pores)[0])*value
+    value = _sp.ones(geometry.num_pores(),)*value
     return value
 
-def random(pores,
+def random(geometry,
            seed=None,
            **kwargs):
     r"""
@@ -23,23 +24,28 @@ def random(pores,
     note: should this be called 'poisson'?  
     """
     _sp.random.seed(seed)
-    value = _sp.random.rand(_sp.shape(pores)[0])
+    value = _sp.random.rand(geometry.num_pores(),)
     return value
 
 def neighbor(network,
-             pores,
+             geometry,
+             throat_prop='',
              mode='min',
-             pore_prop='pore.seed',
              **kwargs):
     r"""
-    Adopt the minimum seed value from the neighboring pores
+    Adopt the minimum seed value from the neighboring throats
     """
-    pores = network.find_connected_pores(pores)
-    tvalues = network[pore_prop][pores]
+    Ps = geometry.pores()
+    data = geometry[throat_prop]
+    neighborTs = network.find_neighbor_throats(pores=Ps,flatten=False,mode='intersection')
+    values = _sp.ones((_sp.shape(Ps)[0],))*_sp.nan
     if mode == 'min':
-        value = _sp.amin(tvalues,axis=1)
+        for pore in Ps:
+            values[pore] = _sp.amin(data[neighborTs[pore]])
     if mode == 'max':
-        value = _sp.amax(tvalues,axis=1)
+        for pore in Ps:
+            values[pore] = _sp.amax(data[neighborTs[pore]])
     if mode == 'mean':
-        value = _sp.mean(tvalues,axis=1)
-    return value
+        for pore in Ps:
+            values[pore] = _sp.mean(data[neighborTs[pore]])
+    return values

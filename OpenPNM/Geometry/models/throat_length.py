@@ -7,6 +7,7 @@ Submodule -- throat_length
 import scipy as _sp
 
 def straight(network,
+             geometry,
              throats,
              pore_diameter='pore.diameter',
              **kwargs):

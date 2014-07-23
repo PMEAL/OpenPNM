@@ -6,25 +6,24 @@ Submodule -- pore_volume
 """
 import scipy as _sp
 
-def sphere(network,
-           pores,
+def sphere(geometry,
            pore_diameter='pore.diameter',
            **kwargs):
     r"""
     Calculate pore volume from diameter for a spherical pore body
     """
-    diams = network[pore_diameter][pores]
+    diams = geometry[pore_diameter]
     value=_sp.pi/6*diams**3
     return value
     
-def cube(network,
-         pores,
+def cube(geometry,
          pore_diameter='pore.diameter',
          **kwargs):
     r"""
     Calculate pore volume from diameter for a cubic pore body
     """
-    value=network[pore_diameter][pores]**3
+    diams = geometry[pore_diameter]
+    value = diams**3
     return value
     
 def voronoi(network,

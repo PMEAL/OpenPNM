@@ -6,8 +6,7 @@ Submodule -- pore_diameter
 """
 import scipy as _sp
 
-def sphere(network,
-           pores,
+def sphere(geometry,
            psd_name,psd_shape,psd_loc,psd_scale,
            pore_seed='pore.seed',
            **kwargs):
@@ -17,7 +16,7 @@ def sphere(network,
     import scipy.stats as spst
     prob_fn = getattr(spst,psd_name)
     P = prob_fn(psd_shape,loc=psd_loc,scale=psd_scale)
-    value = P.ppf(network[pore_seed][pores])
+    value = P.ppf(geometry[pore_seed])
     return value
 
 def voronoi(network,

@@ -100,7 +100,7 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         Examples
         --------
         None yet
-
+        
         '''
         #Build partial function from given kwargs
         Ps = self.pores()

@@ -38,10 +38,11 @@ class Toray090(GenericGeometry):
         r'''
         '''        
         self.add_model(propname='pore.seed',
-                       model=gm.pore_seed.random,
+                       model=gm.pore_misc.random,
                        seed=None)
         self.add_model(propname='throat.seed',
-                       model=gm.throat_seed.neighbor,
+                       model=gm.throat_misc.neighbor,
+                       pore_prop='pore.seed',
                        mode='min')
         self.add_model(propname='pore.diameter',
                        model=gm.pore_diameter.sphere,

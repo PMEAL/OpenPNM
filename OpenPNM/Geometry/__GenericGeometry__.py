@@ -125,7 +125,7 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         #Build partial function from given kwargs
         Ps = self.pores()
         Ts = self.throats()
-        fn = partial(model,network=self._net,propname=propname,pores=Ps,throats=Ts,**kwargs)
+        fn = partial(model,geometry=self,network=self._net,propname=propname,pores=Ps,throats=Ts,**kwargs)
         self[propname] = fn()  # Generate data and store it locally
         if not static:  # Store model in a private attribute
             self._models[propname] = fn
