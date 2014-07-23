@@ -110,18 +110,18 @@ class GenericFluid(OpenPNM.Utilities.Tools):
             else:
                 self._logger.warning('Requested proptery is not a dynamic model: '+item)
         
-        #Then regenerate all physics objects associated with fluid
-        for item in self._physics:
-            item.regenerate()
-            
-        #Then pull in data from freshly regenerated Physics objects
-        for phys in self._physics:
-            for item in phys.props():
-                element = item.split('.')[0]
-                locations = self.locations(element)
-                if item not in self.props():
-                    self[item] = sp.nan
-                self[item][locations] = phys[item]
+#        #Then regenerate all physics objects associated with fluid
+#        for item in self._physics:
+#            item.regenerate()
+#            
+#        #Then pull in data from freshly regenerated Physics objects
+#        for phys in self._physics:
+#            for item in phys.props():
+#                element = item.split('.')[0]
+#                locations = self.locations(element)
+#                if item not in self.props():
+#                    self[item] = sp.nan
+#                self[item][locations] = phys[item]
         
     def add_model(self,model,propname,static=False,**kwargs):
         r'''

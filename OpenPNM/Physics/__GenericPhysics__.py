@@ -50,6 +50,7 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         
         #Initialize attributes
         self._models = collections.OrderedDict()
+        self._dynamic_data = dynamic_data
         self.name = name
         
         #Initialize Physics locations

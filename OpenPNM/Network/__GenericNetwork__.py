@@ -557,20 +557,20 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         should this method regenerate the Geometry as well, or should that be
         done manually?  Or, should data be regenerated each time it's called?
         '''
-        #Regenerate all Geometry objects associated with network
-        #Note: This step is not necessary if (a) we use dynamic_data, or (2)
-        #we regenerate Geometry explicity/manually
-        for item in self._geometries:
-            item.regenerate()
-            
-        #Pull in data from freshly regenerated Geometry object(s)
-        for geom in self._geometries:
-            for item in geom.props():
-                element = item.split('.')[0]
-                locations = geom.locations(element)
-                if item not in self.props():
-                    self[item] = sp.nan
-                self[item][locations] = geom[item]
+        pass
+        
+#        #Regenerate all Geometry objects associated with network
+#        for item in self._geometries:
+#            item.regenerate()
+#            
+#        #Pull in data from freshly regenerated Geometry object(s)
+#        for geom in self._geometries:
+#            for item in geom.props():
+#                element = item.split('.')[0]
+#                locations = geom.locations(element)
+#                if item not in self.props():
+#                    self[item] = sp.nan
+#                self[item][locations] = geom[item]
         
     def geometries(self,name=''):
         r'''

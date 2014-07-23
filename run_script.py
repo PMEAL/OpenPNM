@@ -3,7 +3,7 @@ import OpenPNM
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(name='net',loglevel=10)
+pn = OpenPNM.Network.Cubic(name='net',loglevel=20)
 pn.generate(divisions=[5,5,5],lattice_spacing=[0.0001],add_boundaries=True)
 
 #==============================================================================
@@ -30,8 +30,8 @@ water = OpenPNM.Fluids.Water(network=pn,dynamic_data=True)
 #==============================================================================
 Ps = pn.pores()
 Ts = pn.throats()
-phys_water = OpenPNM.Physics.Standard(network=pn,fluid=water,pores=Ps,throats=Ts)
-phys_air = OpenPNM.Physics.Standard(network=pn,fluid=air,pores=Ps,throats=Ts)
+phys_water = OpenPNM.Physics.Standard(network=pn,fluid=water,pores=Ps,throats=Ts,dynamic_data=True)
+phys_air = OpenPNM.Physics.Standard(network=pn,fluid=air,pores=Ps,throats=Ts,dynamic_data=True)
 #Add some additional models to phys_air
 phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion,
                    propname='throat.gdiff_ac',
@@ -62,7 +62,7 @@ IP_1.update()
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
-alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, network=pn)
+alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.pores(labels=['top_face'])
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
