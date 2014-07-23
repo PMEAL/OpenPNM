@@ -921,25 +921,20 @@ class Tools(Base,dict):
             raise Exception('Mask received was neither Np nor Nt long')
         return indices
         
-    def interpolate_data(self,data=[],prop='',throats=[],pores=[]):
+    def interpolate_data(self,data):
         r"""
         Determines a pore (or throat) property as the average of it's neighboring 
         throats (or pores)
 
         Parameters
         ----------
-        pores : array_like
-            The pores for which values are desired
-        throats : array_like
-            The throats for which values are desired
         data : array_like
             A list of specific values to be interploated.  List MUST be either
             Np or Nt long
         
         Returns
         -------
-        values : array_like
-            An array containing interpolated pore (or throat) data
+        An array containing interpolated pore (or throat) data
 
         Notes
         -----
@@ -950,37 +945,19 @@ class Tools(Base,dict):
         """
         if self.__module__.split('.')[1] == 'Network': net = self
         else: net = self._net
-        if sp.shape(data)[0] > 0:
-            prop='tmp'
-            values = sp.array(data,ndmin=1)
-            if sp.shape(values)[0] == net.num_pores():
-                throats = net.get_throat_indices('all')
-                self.set_data(prop=prop,pores='all',data=values)
-            elif sp.shape(values)[0] == net.num_throats():
-                pores = self.get_pore_indices('all')
-                self.set_data(prop=prop,throats='all',data=values)
-            elif sp.shape(values)[0] == 1: #if scalar was sent
-                return values
-            else:
-                self._logger.error('Received data of an ambiguous length')
-                return
-        if sp.shape(pores)[0] > 0:
-            throats = net.find_neighbor_throats(pores,flatten=False)
-            throat_data = self.get_data(prop=prop,throats='all')
-            values = sp.ones((sp.shape(pores)[0],))*sp.nan
-            if sp.shape(throat_data)[0] == 1:
-                values = throat_data
-            else:
-                for i in pores:
-                    values[i] = sp.mean(throat_data[throats[i]])
-        elif sp.shape(throats)[0] > 0:
-            pores = net.find_connected_pores(throats,flatten=False)
-            pore_data = self.get_data(prop=prop,pores='all')
-            values = sp.ones((sp.shape(throats)[0],))*sp.nan
-            if sp.shape(pore_data)[0] == 1:
-                values = pore_data
-            else:
-                values = sp.mean(pore_data[pores],axis=1)
+        if sp.shape(data)[0] == self.Nt:
+            Ps = self.pores()
+            neighborTs = net.find_neighbor_throats(pores=Ps,flatten=False)
+            values = sp.ones((sp.shape(Ps)[0],))*sp.nan
+            for pore in Ps:
+                values[pore] = sp.mean(data[neighborTs[pore]])
+        elif sp.shape(data)[0] == self.Np:
+            Ts = self.throats()
+            Ps12 = net.find_connected_pores(throats=Ts,flatten=False)
+            values = sp.mean(data[Ps12],axis=1)
+        else:
+            self._logger.error('Received data was an ambiguous length')
+            raise Exception()
         return values
         
     def num_pores(self,labels=['all'],mode='union'):
