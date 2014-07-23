@@ -1105,16 +1105,14 @@ class Tools(Base,dict):
         >>> pn.count('pore')
         125
         '''
-        #Remove pluralizaton
-        if element == 'pores':
-            element = 'pore'
-        if element == 'throats':
-            element = 'throat'
-        temp = {}
-        temp['pore'] = self.num_pores()
-        temp['throat'] = self.num_throats()
-        if element != None:
-            temp = temp[element]
+        if element in ['pore','pores']:
+            temp = self.num_pores()
+        elif element in ['throat','throats']:
+            temp = self.num_throats()
+        elif element == None:
+            temp = {}
+            temp['pore'] = self.num_pores()
+            temp['throat'] = self.num_throats()
         return temp
         
     def data_health(self,element='',props=[],quiet=False):
