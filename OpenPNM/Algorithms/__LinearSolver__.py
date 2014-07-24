@@ -325,8 +325,12 @@ class LinearSolver(GenericAlgorithm):
                 self._logger.warning('The outlet pores have too many neighbors. Internal pores appear to be selected.')        
         
         #Fetch area and length of domain
-        A = self._net.domain_area(face=inlets)
-        L = self._net.domain_length(face_1=inlets,face_2=outlets)
+        if "pore.vertices" in self._net.props():
+            A = self._net.vertex_dimension(face1=inlets, parm='area')
+            L = self._net.vertex_dimension(face1=inlets,face2=outlets,parm='length')
+        else:
+            A = self._net.domain_area(face=inlets)
+            L = self._net.domain_length(face_1=inlets,face_2=outlets)
         #x = self._result
         #Find flow through inlet face
         #Pin = []
