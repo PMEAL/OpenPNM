@@ -75,7 +75,7 @@ class VTK(GenericVisualization):
             array = array.reshape(array.size//n, n)
         return array
     
-    def write(self, network, filename='output_file.vtp', fluids=[], pretty=True):
+    def write(self, network, geometry, filename='output_file.vtp', fluids=[], pretty=True):
         r"""
         Write Network to a VTK file for visualizing in Paraview
     
@@ -100,9 +100,26 @@ class VTK(GenericVisualization):
             objs.append(fluid)
         objs.append(network)
         am = network.amalgamate_data(objs=objs)
+        if "Geometry" in str(geometry.__class__):
+            pores = geometry.pores()
+            throats = geometry.throats()
+        else:
+            pores = network.pores()
+            throats = network.throats()
+        for key in am.keys():
+            if "pore" in key and len(am[key])==network.num_pores():
+                try:
+                    am[key]=am[key][pores]
+                except IndexError:
+                    "do nothing"
+            elif "throat" in key and len(am[key])==network.num_throats():
+                try:
+                    am[key]=am[key][throats]
+                except IndexError:
+                    "do nothing"
         key_list = list(sorted(am.keys()))
         points = am[network.name+'.pore.coords']
-        pairs = network.get_throat_data(prop='conns')
+        pairs = network.get_throat_data(prop='conns')[throats]
     
         num_points = len(points)
         num_throats = len(pairs)
