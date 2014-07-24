@@ -19,6 +19,8 @@ import scipy.spatial as sptl
 import scipy.ndimage as spim
 from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 from scipy.spatial import Voronoi
+from scipy import stats as st
+from scipy.special import cbrt
 
 class Delaunay(GenericNetwork):
     r"""
@@ -74,6 +76,7 @@ class Delaunay(GenericNetwork):
         if params['add_boundaries']:
             self.add_boundaries = True
         self._generate_pores()
+        #self._generate_cubic_pores() - Impose a quasi-cubic pore distribution - needs work
         self._generate_throats()
         #self._add_labels()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
@@ -83,6 +86,13 @@ class Delaunay(GenericNetwork):
         Perform applicable preliminary checks and calculations required for generation
         """
         self._logger.debug("generate_setup: Perform preliminary calculations")
+        if 'aniso' in params:
+            self._aniso = sp.asarray(params['aniso'])
+        else:
+            self._aniso = sp.array([1,1,1])
+        #self._rescale_factor = 1/cbrt(np.prod(self._aniso))
+        self._rescale_factor = 1/(self._aniso)
+        self._scale_factor = self._aniso*self._rescale_factor
         if params['domain_size'] and params['num_pores']:
             self._Lx = params['domain_size'][0]
             self._Ly = params['domain_size'][1]
@@ -96,15 +106,75 @@ class Delaunay(GenericNetwork):
             self._logger.error("domain_size and num_pores must be specified")
             raise Exception('domain_size and num_pores must be specified')
 
+
     def _generate_pores(self):
         r"""
         Generate the pores with numbering scheme.
         """
         self._logger.info(sys._getframe().f_code.co_name+": Place randomly located pores in the domain")
-        coords = sp.rand(self._Np,3)*[self._Lx,self._Ly,self._Lz]
+        "Original Random Point Generator"
+        #coords = sp.rand(self._Np,3)*[self._Lx,self._Ly,self._Lz]
+        "Introduce Anisotropy"
+        [self._Lx,self._Ly,self._Lz]=np.around([self._Lx,self._Ly,self._Lz]*self._aniso,10)
+        "Seeding Code"
+        coords = np.zeros([self._Np,3])
+        i = 0
+        while i < self._Np:            
+            coord = np.array([np.random.uniform(0,self._Lx,1),np.random.uniform(0,self._Ly,1),np.random.uniform(0,self._Lz,1)]).T  
+            if self._reject(coord) == False:
+                coords[i]=coord
+                i += 1 
+        "Seeding Code"
+        "Uniform Random Generator"
+        #coords = np.array([np.random.uniform(0,self._Lx,self._Np),np.random.uniform(0,self._Ly,self._Np),np.random.uniform(0,self._Lz,self._Np)]).T
+        
         self.set_pore_data(prop='coords',data=coords)
         self.set_pore_info(label='all',locations=np.ones_like(coords[:,0]))
-        self._logger.debug(sys._getframe().f_code.co_name+": End of method")    
+        self._logger.debug(sys._getframe().f_code.co_name+": End of method") 
+        
+    def _generate_cubic_pores(self):
+        self._logger.info(sys._getframe().f_code.co_name+": Place pores on cubic grid and jiggle")
+        Nx = 10
+        Ny = 10
+        Nz = 10
+        self._Np = Nx*Ny*Nz
+        equal_spacing = cbrt(self._Np)*3e-6
+        ind = np.arange(0,self._Np)
+        aniso_spacing = equal_spacing*self._scale_factor
+        Px = aniso_spacing[0]*(0.5+np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T)[:,0]+aniso_spacing[0]*(np.random.rand(self._Np)-0.5)/5
+        Py = aniso_spacing[1]*(0.5+np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T)[:,1]+aniso_spacing[0]*(np.random.rand(self._Np)-0.5)/5
+        Pz = aniso_spacing[2]*(0.5+np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T)[:,2]+aniso_spacing[0]*(np.random.rand(self._Np)-0.5)/5
+        coords = np.vstack((Px,Py,Pz)).T
+        self.set_pore_data(prop='coords',data=coords)
+        self.set_pore_info(label='all',locations=np.ones_like(coords[:,0]))
+        self._logger.debug(sys._getframe().f_code.co_name+": End of method")
+        self._Lx = Px.max()+aniso_spacing[0]/2
+        self._Ly = Py.max()+aniso_spacing[1]/2
+        self._Lz = Pz.max()+aniso_spacing[2]/2
+    
+    def _prob_func(self,m):
+        a = 35
+        b = 0.2
+        p = ((m**a) + ((1-m)**a) + (2*b))/(1 + (2*b))
+        #p = ((m**a) + b)/(1 + b)
+        return p
+
+    def _reject(self,point):
+    
+        x = point[0,0]
+        y = point[0,1]
+        #z = point[0,2]
+        Px = self._prob_func(x)
+        Py = self._prob_func(y)
+        #Pz = prob_func(z)
+        nrand = np.random.uniform(0,1,1)
+    
+        if Px < nrand and Py < nrand:
+            rejection = True
+        else:
+            rejection = False
+    
+        return rejection
     
     def _generate_throats(self):
         r"""
@@ -118,15 +188,7 @@ class Delaunay(GenericNetwork):
         Lx = self._Lx
         Ly = self._Ly
         Lz = self._Lz
-        #f = 0.1; #Scale factor to reduce size of dummy domains
-        #Np_f = sp.array(Np*f,dtype=int)
-        #ptsX0 = sp.rand(Np_f,3)*sp.array([-Lx*f,Ly*f,Lz*f])
-        #ptsY0 = sp.rand(Np_f,3)*[Lx*f,-Ly*f,Lz*f]
-        #ptsZ0 = sp.rand(Np_f,3)*[Lx*f,Ly*f,-Lz*f]
-        #ptsXX = sp.rand(Np_f,3)*[Lx*f,Ly*f,Lz*f]+[Lx,0,0]
-        #ptsYY = sp.rand(Np_f,3)*[Lx*f,Ly*f,Lz*f]+[0,Ly,0]
-        #ptsZZ = sp.rand(Np_f,3)*[Lx*f,Ly*f,Lz*f]+[0,0,Lz]
-        
+
         " Reflect in X = Lx and 0 "
         Pxp = pts.copy()
         Pxp[:,0]=(2*Lx-Pxp[:,0])
@@ -142,9 +204,8 @@ class Delaunay(GenericNetwork):
         Pzp[:,2]=(2*Lz-Pxp[:,2])
         Pzm = pts.copy()
         Pzm[:,2] = Pxm[:,2]*(-1)
-        pts = np.vstack((pts,Pxp,Pxm,Pyp,Pym,Pzp,Pzm)) #Order important for boundary logic
         #Add dummy domains to real domain
-        #pts = sp.concatenate([pts,ptsX0,ptsXX,ptsY0,ptsYY,ptsZ0,ptsZZ])
+        pts = np.vstack((pts,Pxp,Pxm,Pyp,Pym,Pzp,Pzm)) #Order important for boundary logic
         #Perform tessellation
         self._logger.debug(sys._getframe().f_code.co_name+": Beginning tessellation")
         Tri = sptl.Delaunay(pts)
@@ -155,7 +216,7 @@ class Delaunay(GenericNetwork):
             #this used to be vectorize, but it stopped working...change in scipy?
             for j in Tri.simplices[i]: 
                 if j < Np:
-                    adjmat[j,Tri.simplices[i][Tri.simplices[i]<Np]] = 1
+                    adjmat[j,Tri.simplices[i][Tri.simplices[i]<Np]] = 1 
         #Remove duplicate (lower triangle) and self connections (diagonal)
         #and convert to coo
         adjmat = sprs.triu(adjmat,k=1,format="coo")
@@ -163,77 +224,47 @@ class Delaunay(GenericNetwork):
         self.set_throat_data(prop='conns',data=sp.vstack((adjmat.row, adjmat.col)).T)
         tpore1 = self.get_throat_data(prop='conns')[:,0]
         self.set_throat_info(label='all',locations=np.ones_like(tpore1))
+
+        " New code to identify boundary pores - those that connect to pores inside and outside original set of pores "
+        boundary_pore_list = []
+        for i in sp.arange(0,sp.shape(Tri.simplices)[0]):
+            pores_in = Tri.simplices[i] < Np # Pores in the original domain
+            if (sum(pores_in) >= 1) and (sum(pores_in) < len(pores_in)):
+                for j in range(len(Tri.simplices[i])):
+                    if pores_in[j] == True:
+                        pore_id = Tri.simplices[i][j]
+                        if pore_id not in boundary_pore_list:
+                            boundary_pore_list.append(pore_id)
         
-        if self.add_boundaries:
-            " New code to identify boundary pores - those that connect to pores inside and outside original set of pores "
-            boundary_pores=[False]*Np
-            boundary_pore_list = []
-            xp = []
-            xm = []
-            yp = []
-            ym = []
-            zp = []
-            zm = []
-            for i in sp.arange(0,sp.shape(Tri.simplices)[0]):
-                pores_in = Tri.simplices[i] < Np # Pores in the original domain
-                if (sum(pores_in) >= 1) and (sum(pores_in) < len(pores_in)):
-                    # We have connections between at least one pore in and out of the domain
-                    # Identify which boundary we are connected to. At corners could be more than one
-                    pores_xp = (Tri.simplices[i] >= Np) & (Tri.simplices[i] < 2*Np) # Pores in positive x dummy reflection
-                    pores_xm = (Tri.simplices[i] >= 2*Np) & (Tri.simplices[i] < 3*Np) # Pores in negative x dummy reflection
-                    pores_yp = (Tri.simplices[i] >= 3*Np) & (Tri.simplices[i] < 4*Np) # Pores in positive y dummy reflection
-                    pores_ym = (Tri.simplices[i] >= 4*Np) & (Tri.simplices[i] < 5*Np) # Pores in negative y dummy reflection            
-                    pores_zp = (Tri.simplices[i] >= 5*Np) & (Tri.simplices[i] < 6*Np) # Pores in positive z dummy reflection
-                    pores_zm = (Tri.simplices[i] >= 6*Np) & (Tri.simplices[i] < 7*Np) # Pores in negative z dummy reflection            
-                    for j in range(len(Tri.simplices[i])):
-                        if pores_in[j] == True:
-                            pore_id = Tri.simplices[i][j]
-                            boundary_pores[pore_id]=True
-                            if pore_id not in boundary_pore_list:
-                                boundary_pore_list.append(pore_id)
-                            if sum(pores_xp) >= 1 and pore_id not in xp:
-                                xp.append(pore_id)
-                            if sum(pores_xm) >= 1 and pore_id not in xm:
-                                xm.append(pore_id)
-                            if sum(pores_yp) >= 1 and pore_id not in yp:
-                                yp.append(pore_id)
-                            if sum(pores_ym) >= 1 and pore_id not in ym:
-                                ym.append(pore_id)
-                            if sum(pores_zp) >= 1 and pore_id not in zp:
-                                zp.append(pore_id)
-                            if sum(pores_zm) >= 1 and pore_id not in zm:
-                                zm.append(pore_id)
-                            
-            vor_bounds=sp.asarray(boundary_pore_list)
-            vor_bound_back = sp.asarray(xp)
-            vor_bound_front = sp.asarray(xm)
-            vor_bound_right = sp.asarray(yp)
-            vor_bound_left = sp.asarray(ym)
-            vor_bound_top = sp.asarray(zp)
-            vor_bound_bottom = sp.asarray(zm)
-            self.set_pore_info(label='boundary',locations=vor_bounds)
-            self.set_pore_info(label='right',locations=vor_bound_right) 
-            self.set_pore_info(label='left',locations=vor_bound_left) 
-            self.set_pore_info(label='front',locations=vor_bound_front) 
-            self.set_pore_info(label='back',locations=vor_bound_back) 
-            self.set_pore_info(label='top',locations=vor_bound_top) 
-            self.set_pore_info(label='bottom',locations=vor_bound_bottom)
-            self.set_pore_info(label='internal',locations='all')
-        
+        vor_bounds=sp.asarray(boundary_pore_list)
+
+        self.set_pore_info(label='inner_boundary',locations=vor_bounds)
+        self.set_pore_info(label='internal',locations='all')
+        self.set_throat_info(label='internal',locations='all')
         # Do Voronoi diagram - creating voronoi polyhedra around each pore and save vertex information
         vor = Voronoi(pts)
         all_verts = sp.ndarray(Np,dtype=object)
         for i,polygon in enumerate(vor.point_region[0:Np]):
             if -1 not in vor.regions[polygon]:
-                all_verts[i]=vor.vertices[vor.regions[polygon]]
+                all_verts[i]=np.around(vor.vertices[vor.regions[polygon]],10)
             else:
                 all_verts[i]="unbounded"
         self.set_pore_data(prop='vertices',data=all_verts)
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
-        
+        " Add new pores at external throat centers to create coplanar boundaries "
+        self.boundary_pores()
+        self["pore.coords"]=self["pore.coords"]*self._rescale_factor
+        for i in range(len(self["pore.vertices"])):
+            self["pore.vertices"][i]=self["pore.vertices"][i]*self._rescale_factor
+        external_pores = self.pores(labels='internal',mode='difference')
+        external_throats = self.throats(labels='internal',mode='difference')
+        self.set_pore_info(label='external',locations=external_pores)
+        self.set_throat_info(label='external',locations=external_throats)
+
+
     def _add_labels(self):
         r'''
-        This finds surface pors simply by proximity to the domain boundaries.
+        This finds surface pores simply by proximity to the domain boundaries.
         A better approach is necessary 
         '''
         coords = self.get_pore_data(prop='coords')
@@ -245,7 +276,7 @@ class Delaunay(GenericNetwork):
         self.set_pore_info(label='top',locations=(coords[:,2]>(0.9*self._Lz)))
         bnds = self.get_pore_indices(labels=['front','back','left','right','bottom','top'])
         self.set_pore_info(label='boundary',locations=bnds)
-        self.set_pore_info(label='internal',locations='all')
+        
         
     def _add_boundaries(self):
         r"""
@@ -449,7 +480,93 @@ class Delaunay(GenericNetwork):
             return self._Lx
         if dimension == 'depth':
             return self._Ly
+    
+    def boundary_pores(self):
+        r"""
+        This method runs through the boundary pores and identifies the throats that align with the boundary plane
+        As there are no connections to the dummy pores we also need to generate the pores at the centroids of the 
+        boundary throats or at the boundary coordinate associated with the plane leaving the other pore coords the same
+        This will mean that normal vectors are correct for throat props
+        """
+        boundary_pores = self.get_pore_indices(labels='inner_boundary')
+        " Traditionally x will be back and front, y is left and right and z is top and bottom "
+        " However this could change in future and labels might also change so best to do things from scratch "
+        " Look at the number of occurences of a coordinate for the pore's vertices, if 3 or more we have a face "
+        boundary_throats = []
+        new_boundary_pores = []
+        throat_centers = []
+        new_conns=[]
+        pore_coords=[]
+        " Find boundary extent "
+        [x_min,x_max,y_min,y_max,z_min,z_max]=self.vertex_dimension(self.pores(),parm='minmax')
+        min_point = np.around(np.array([x_min,y_min,z_min]),10)
+        max_point = np.around(np.array([x_max,y_max,z_max]),10)
+        delta = (max_point - min_point)*0.25
+        N = self.num_pores()
+        new_throat_count = 0
+        for pore in boundary_pores:
+            verts = self["pore.vertices"][pore]
+            " Cycle through coordinates " 
+            for i in range(3):
+                throat_verts = []
+                extruded_verts = []
+                temp_coord = sp.copy(self["pore.coords"][pore])
+                freq = st.itemfreq(verts[:,i])
+                for coord in freq:
+                    " if more than 2 occurences "
+                    if coord[1]>2:
+                        " Pick up planar value for referencing "
+                        value = coord[0]
+                        " Are we at minimum or maximum extent? "
+                        " Extrude into the domain so as not to alter total dimensions "
+                        extrude_value = np.zeros(3)
+                        if value == min_point[i]:
+                            extrude_value[i] = delta[i]
+                            temp_coord[i] = min_point[i]
+                        else:
+                            extrude_value[i] = -delta[i]
+                            temp_coord[i] = max_point[i]
+                        for vert in verts:
+                            " Pick up all verts in the plane to define the throat "
+                            if vert[i] == value:
+                                throat_verts.append(vert)
+                                extruded_verts.append(vert+extrude_value)
+                                
+                " If we found a planar throat then add to the list "
+                if len(throat_verts) > 0:
+                    new_conns.append(np.array([pore,new_throat_count+N]))
+                    new_throat_count += 1
+                    new_boundary_pores.append(np.asarray(throat_verts+extruded_verts))
+                    throat_verts = np.asarray(throat_verts)
+                    boundary_throats.append(throat_verts)
+                    throat_centers.append(sp.array([throat_verts[:,0].mean(),throat_verts[:,1].mean(),throat_verts[:,2].mean()]))
+                    pore_coords.append(temp_coord)
             
+        " First Attempt to try and create new pores and new connections "
+        " Add new pores and connections "
+        self.extend(pore_coords=pore_coords, throat_conns=new_conns)
+        " Record new number of pores "
+        M = self.num_pores()
+        new_pores = np.arange(N,M)
+        "Identify which boundary the pore sits on "
+        front = self.pores()[self['pore.coords'][:,0]==x_min]
+        back = self.pores()[self['pore.coords'][:,0]==x_max]
+        left = self.pores()[self['pore.coords'][:,1]==y_min]
+        right = self.pores()[self['pore.coords'][:,1]==y_max]
+        bottom = self.pores()[self['pore.coords'][:,2]==z_min]
+        top = self.pores()[self['pore.coords'][:,2]==z_max]
+        " Assign labels "
+        self.set_pore_info(label='boundary',locations=new_pores)        
+        self.set_pore_info(label='right',locations=right) 
+        self.set_pore_info(label='left',locations=left) 
+        self.set_pore_info(label='front',locations=front) 
+        self.set_pore_info(label='back',locations=back) 
+        self.set_pore_info(label='top',locations=top) 
+        self.set_pore_info(label='bottom',locations=bottom)
+        " Apply the extruded throat verts and original boundary throat verts to create new pore volume "
+        " These volumes may need some attention later "
+        self["pore.vertices"][N:M] = new_boundary_pores
+       
 if __name__ == '__main__':
     #Run doc tests
     import doctest

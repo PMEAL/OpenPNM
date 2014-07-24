@@ -17,6 +17,7 @@ import _transformations as tr
 from scipy.spatial import ConvexHull
 from math import atan2
 import OpenPNM.Utilities.misc as misc
+from scipy import stats as st
 
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
@@ -49,7 +50,8 @@ class Voronoi(GenericGeometry):
         self.add_property(prop='pore_centroid',model='voronoi')
         self.add_property(prop='throat_diameter',model='voronoi')
         self.add_property(prop='throat_centroid',model='voronoi')
-        self.add_property(prop='throat_length',model='constant',value=fibre_rad)
+        #self.add_property(prop='throat_length',model='constant',value=fibre_rad) # This produces strange results when introducing anisotropy to the system for permeability
+        self.add_property(prop='throat_length',model='voronoi')
         self.add_property(prop='throat_volume',model='voronoi')
         self.add_property(prop='throat_vector',model='pore_to_pore') # Not sure how to do this for centre to centre as we might need to split into two vectors
         self.add_property(prop='throat_surface_area',model='voronoi')
@@ -62,10 +64,10 @@ class Voronoi(GenericGeometry):
         replicates erroding the facet of each throat by the fibre radius 
         """
         connections = self._net['throat.conns']
-        coords = self._net['pore.coords']
+        #coords = self._net['pore.coords']
         verts = self._net['pore.vertices']
         normals = sp.ndarray(len(connections),dtype=object)
-        normals = coords[connections[:,0]]-coords[connections[:,1]]
+        #normals = coords[connections[:,0]]-coords[connections[:,1]]
         area = sp.ndarray(len(connections),dtype=object)
         perimeter = sp.ndarray(len(connections),dtype=object)
         offset_verts = sp.ndarray(len(connections),dtype=object)
@@ -83,15 +85,17 @@ class Voronoi(GenericGeometry):
             if len(shared_verts) >=3:
                 my_shared_verts = np.asarray(my_shared_verts)
                 shared_verts[i]=my_shared_verts
+                normals[i] = self._get_throat_normal(my_shared_verts)
                 area[i],perimeter[i],offset_verts[i],offset_error[i] = self._get_throat_geom(my_shared_verts,normals[i],radius)
             else:
                 area[i]=0.0
-
+        
         self._net.set_data(prop='area',throats='all',data=area)
         self._net['throat.perimeter']=perimeter
         self._net['throat.verts']=shared_verts
         self._net['throat.offset_verts']=offset_verts
         self._net['throat.normals']=normals
+        
         #self._net['throat.offset_error']=offset_error
         #offset_error = pn['throat.offset_error']
         #for i in range(len(offset_error)):
@@ -110,6 +114,8 @@ class Voronoi(GenericGeometry):
         excluded_throats = np.asarray(excluded_throats)
         if len(excluded_throats) > 0:
             self._net.trim(throats=excluded_throats)
+        "Also get rid of isolated pores"
+        self._net.trim(self._net.isolated_pores())
     
     def _get_throat_geom(self,verts,normal,fibre_rad):
         r"""
@@ -159,7 +165,7 @@ class Voronoi(GenericGeometry):
         if (np.around(z.std(),3)!=0.000):
             print("Rotation failed")
         facet_coords_2D = np.column_stack((x,y))
-        hull = ConvexHull(facet_coords_2D)
+        hull = ConvexHull(facet_coords_2D,qhull_options='QJ')
         verts_2D = facet_coords_2D[hull.vertices]
         offset = self._outer_offset(verts_2D,fibre_rad)
         " At this point we may have overlapping areas for which we need to offset from a new point "
@@ -632,51 +638,35 @@ class Voronoi(GenericGeometry):
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
         if len(pores) > 0:
             throats = self._net.find_neighbor_throats(pores=pores)
-            verts = self._net['throat.verts'][throats]
-            normals = self._net['throat.normals'][throats]
-            " Get verts in hull order "
-            ordered_verts=[]
-            for i in range(len(verts)):
-                vert_2D = self._rotate_and_chop(verts[i],normals[i],[0,0,1])
-                hull = ConvexHull(vert_2D)
-                ordered_verts.append(verts[i][hull.vertices])
-            offsets = self._net['throat.offset_verts'][throats]
-
-            xmin = 999
-            xmax = -999
-            ymin = 999
-            ymax = -999
-            zmin = 999
-            zmax = -999
-            " Find the span of points "
-            for vert in verts:
-                if vert[:,0].min() < xmin:
-                    xmin = vert[:,0].min()
-                if vert[:,0].max() > xmax:
-                    xmax = vert[:,0].max()
-                if vert[:,1].min() < ymin:
-                    ymin = vert[:,1].min()
-                if vert[:,1].max() > ymax:
-                    ymax = vert[:,1].max()
-                if vert[:,2].min() < zmin:
-                    zmin = vert[:,2].min()
-                if vert[:,2].max() > zmax:
-                    zmax = vert[:,2].max()
-                
-            fig = plt.figure()
-            ax = fig.gca(projection='3d')
-            outer_items = Poly3DCollection(ordered_verts,linewidths=1, alpha=0.2)
-            outer_face_colours=[(0.5, 0, 0.5, 0.05)]
-            outer_items.set_facecolor(outer_face_colours)
-            ax.add_collection(outer_items)
-            inner_items = Poly3DCollection(offsets,linewidths=1, alpha=0.2)
-            inner_face_colours=[(0.7, 0, 0.3, 0.0)]
-            inner_items.set_facecolor(inner_face_colours)
-            ax.add_collection(inner_items)
-            ax.set_xlim(xmin,xmax)
-            ax.set_ylim(ymin,ymax)
-            ax.set_zlim(zmin,zmax)
-            plt.show()
+            "Can't create volume from one throat"
+            if len(throats)>1:
+                verts = self._net['throat.verts'][throats]
+                normals = self._net['throat.normals'][throats]
+                " Get verts in hull order "
+                ordered_verts=[]
+                for i in range(len(verts)):
+                    vert_2D = self._rotate_and_chop(verts[i],normals[i],[0,0,1])
+                    hull = ConvexHull(vert_2D)
+                    ordered_verts.append(verts[i][hull.vertices])
+                offsets = self._net['throat.offset_verts'][throats]
+                "Get domain extents for setting axis "
+                [xmin,xmax,ymin,ymax,zmin,zmax]=self._net.vertex_dimension(pores,parm='minmax')                
+                fig = plt.figure()
+                ax = fig.gca(projection='3d')
+                outer_items = Poly3DCollection(ordered_verts,linewidths=1, alpha=0.2)
+                outer_face_colours=[(0.5, 0, 0.5, 0.05)]
+                outer_items.set_facecolor(outer_face_colours)
+                ax.add_collection(outer_items)
+                inner_items = Poly3DCollection(offsets,linewidths=1, alpha=0.2)
+                inner_face_colours=[(0.7, 0, 0.3, 0.0)]
+                inner_items.set_facecolor(inner_face_colours)
+                ax.add_collection(inner_items)
+                ax.set_xlim(xmin,xmax)
+                ax.set_ylim(ymin,ymax)
+                ax.set_zlim(zmin,zmax)
+                plt.show()
+            else:
+                self.print_throat(throats)
         else:
             print("Please provide pore indices")
     
@@ -712,8 +702,31 @@ class Voronoi(GenericGeometry):
             output = facet
         
         return output
-            
+        
+    def _get_throat_normal(self,verts):
+        r"""
+        With a Delaunay Tesselation the throat normal is usually the vector connecting neighbouring pores as the throat is defined
+        by the plane which is equidistant from the 2 pores. However, if scaling of pore coordinates and vertices is introduced 
+        this will alter the normals so they must be recalculated.
+        The routine is passed a list of shared vertices which define the throat.
+        The normal is calculated by performing a convex hull algorithm to return the vertices in hull order. A coordinate must be lost to
+        do this as order only works in 2D.
+        Then the vectors of 3 neighbouring points are worked out and the cross product is taken to define the normal
+        """
+        "verts may already be coplanar so check an take the other coords"
+        if len(sp.unique(verts[:,0]))==1:
+            verts_2d = np.vstack((verts[:,1],verts[:,2])).T
+        elif len(sp.unique(verts[:,1]))==1:
+            verts_2d = np.vstack((verts[:,0],verts[:,2])).T
+        else:
+            verts_2d = np.vstack((verts[:,0],verts[:,1])).T
+        hull = ConvexHull(verts_2d)
+        sorted_verts = verts[hull.vertices]
+        v1 = sorted_verts[1]-sorted_verts[0]
+        v2 = sorted_verts[-1]-sorted_verts[0]
+        normal = sp.cross(v1,v2)
 
+        return normal
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.Delaunay(name='test_net')

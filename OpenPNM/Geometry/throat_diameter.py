@@ -49,7 +49,7 @@ def voronoi(geometry,
     Equivalent circular diameter from voronoi area
     Could do better here and work out minimum diameter from verts
     """
-    areas = network.get_throat_data(prop='area')   
-    value = 2*np.sqrt(areas/np.pi)#64 bit sqrt doesn't work!
+    
+    areas = network.get_data(prop='area',throats=geometry.throats())
+    value = 2*np.sqrt(areas/np.pi)
     network.set_data(prop=propname,throats=geometry.throats(),data=value)
-    #print('voronoi: nothing yet')

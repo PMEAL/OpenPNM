@@ -43,11 +43,11 @@ def voronoi(geometry,
     Calculate the centre to centre distance from centroid of pore1 to centroid of throat to centroid of pore2
     """
     import numpy as np    
-    connections = network.get_data(prop='connections',throats=geometry.throats())
+    connections = network["throat.conns"][geometry.throats()]
     pore1 = connections[:,0]
     pore2 = connections[:,1]
-    pore_centroids = network.get_pore_data(prop='centroid')
-    throat_centroids = network.get_throat_data(prop='centroid')
+    pore_centroids = network["pore.centroid"][network.pores()]
+    throat_centroids = network["throat.centroid"][geometry.throats()]
     v1 =throat_centroids-pore_centroids[pore1]
     v2 =throat_centroids-pore_centroids[pore2]
     value = np.ndarray(len(connections), dtype=object)

@@ -38,6 +38,6 @@ def voronoi(geometry,
     r"""
     Calculate pore diameter from equivalent sphere - volumes must be calculated first
     """
-    pore_vols = network.get_pore_data(prop='volume')
+    pore_vols = network.get_data(prop='volume',pores=geometry.pores())
     value = cbrt(6*pore_vols/sp.pi)
     network.set_data(prop=propname,pores=geometry.pores(),data=value)

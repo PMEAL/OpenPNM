@@ -99,10 +99,12 @@ def voronoi(geometry,
     Calculate volume from the convex hull of the offset vertices making the throats
     """
     conns = network.get_throat_data(prop='conns')
-    verts = network.get_throat_data(prop='offset_verts') 
-    num_pores = network.num_pores()
-    value = sp.ndarray(num_pores,dtype=object)
-    for my_pore in range(num_pores):
+    verts = network.get_throat_data(prop='offset_verts')
+    pore_verts = network.get_pore_data(prop='vertices')
+    pores = geometry.pores()
+    boundary_pores = network.pores("pore.external")
+    value = sp.ndarray(geometry.num_pores(),dtype=float)
+    for i, my_pore in enumerate(pores):
         throat_vert_list = []
         num_connections = 0
         for idx,check_pores in enumerate(conns):
@@ -112,8 +114,13 @@ def voronoi(geometry,
                     throat_vert_list.append(verts[idx][vertex])
         if num_connections > 1:
             throat_array=sp.asarray(throat_vert_list)
-            value[my_pore]= _get_hull_volume(throat_array)
+            value[i]= _get_hull_volume(throat_array)
+        elif num_connections == 1 and my_pore in boundary_pores:
+            value[i]=_get_hull_volume(pore_verts[my_pore])
         else:
-            value[my_pore]=0.0
-
+            value[i]=0.0
     network.set_data(prop=propname,pores=geometry.pores(),data=value)
+    " Remove pores with zero volume "
+    zero_vol_pores = network.pores()[network["pore.volume"]==0]
+    if len(zero_vol_pores) > 0:
+        network.trim(zero_vol_pores)
