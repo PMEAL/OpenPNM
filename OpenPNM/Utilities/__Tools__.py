@@ -548,9 +548,9 @@ class Tools(Base,dict):
         if (pores == []) and (throats == []):
             if element == '':
                 temp = props
-            elif element == 'pore':
+            elif element in ['pore','pores']:
                 temp = [item for item in props if item.split('.')[0]=='pore']
-            elif element == 'throat':
+            elif element in ['throat','throats']:
                 temp = [item for item in props if item.split('.')[0]=='throat']
             else:
                 self._logger.error('Unrecognized element')
@@ -658,9 +658,9 @@ class Tools(Base,dict):
                 temp = []
                 temp = self._get_labels(element='pore')
                 temp = temp + self._get_labels(element='throat')
-            elif element == 'pore':
+            elif element in ['pore','pores']:
                 temp = self._get_labels(element='pore',locations=[], mode=mode)
-            elif element == 'throat':
+            elif element in ['throat','throats']:
                 temp = self._get_labels(element='throat',locations=[], mode=mode)
             else:
                 self._logger.error('Unrecognized element')

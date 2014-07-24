@@ -810,13 +810,10 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         #Adjust throat lists
         items = self.keys()
         #Write 'all' label specifically
-        del self['throat.all']
-        self['throat.all'] = sp.ones_like(Tnew1,dtype=bool)
-        del self['pore.all']
-        self['pore.all'] = sp.ones_like(Pnew,dtype=bool)
+        dict.__setitem__(self,'throat.all',sp.ones_like(Tnew1,dtype=bool))
+        dict.__setitem__(self,'pore.all',sp.ones_like(Pnew,dtype=bool))
         # Write connections specifically
-        del self['throat.conns']
-        self['throat.conns'] = sp.vstack((Tnew1,Tnew2)).T
+        dict.__setitem__(self,'throat.conns', sp.vstack((Tnew1,Tnew2)).T)
         # Over-write remaining data and info
         for key in items:
             if key.split('.')[1] not in ['conns','all']:
@@ -827,7 +824,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
                 if key.split('.')[0] == 'pore':
                     self[key] = temp[Pkeep]
         
-        #Reset network
+        #Reset network graphs
         self.update_network()
         
         #Check network health
@@ -874,6 +871,17 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         ----------
         element : string
             Controls whethe to search for duplicate 'pore' or 'throat'
+            
+        mode : string
+            Controls how any duplicates are handled.  Options are:
+            
+            1. 'find' : In this mode a list of duplicates is returned, with all
+            groups of duplicates lumped into a single sublist
+            
+            2. 'remove' : Will attempt to remove the duplicates.  This option
+            should NOT be used on netorks with other assigned objects sine pore 
+            and throat numbering will change.  
+            
         '''
         if (self._geometries != []):
             raise Exception('Network has active Geometries, cannot proceed')
