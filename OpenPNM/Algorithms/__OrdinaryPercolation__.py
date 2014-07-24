@@ -73,8 +73,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Determine the invasion pressures to apply
         self._t_cap = self._fluid_inv.get_throat_data(prop=capillary_pressure)
         min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
-        max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
-        self._inv_points = sp.logspace(sp.log10(min_p),sp.log10(max_p),self._npts)
+        max_p = (self._t_cap.mean()+self._t_cap.std())
+        self._inv_points = sp.linspace(min_p,max_p,self._npts)
         self._do_outer_iteration_stage()
 
     def _do_outer_iteration_stage(self):
@@ -210,7 +210,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def plot_drainage_curve(self,
                             pore_volume='volume',
-                            throat_volume='volume'):
+                            throat_volume='volume',pore_label='all',throat_label='all'):
           r"""
           Plot drainage capillary pressure curve
           """
@@ -218,16 +218,18 @@ class OrdinaryPercolation(GenericAlgorithm):
             PcPoints = sp.unique(self.get_pore_data(prop='inv_Pc'))
           except:
             raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
+          pores=self._net.pores(labels=pore_label)
+          throats = self._net.throats(labels=throat_label)
           Snwp_t = sp.zeros_like(PcPoints)
           Snwp_p = sp.zeros_like(PcPoints)
-          Pvol = self._net.get_pore_data(prop=pore_volume)
-          Tvol = self._net.get_throat_data(prop=throat_volume)
+          Pvol = self._net.get_pore_data(prop=pore_volume)[pores]
+          Tvol = self._net.get_throat_data(prop=throat_volume)[throats]
           Pvol_tot = sum(Pvol)
           Tvol_tot = sum(Tvol)
           for i in range(0,sp.size(PcPoints)):
               Pc = PcPoints[i]
-              Snwp_p[i] = sum(Pvol[self._p_inv<=Pc])/Pvol_tot
-              Snwp_t[i] = sum(Tvol[self._t_inv<=Pc])/Tvol_tot
+              Snwp_p[i] = sum(Pvol[self._p_inv[pores]<=Pc])/Pvol_tot
+              Snwp_t[i] = sum(Tvol[self._t_inv[throats]<=Pc])/Tvol_tot
           plt.plot(PcPoints,Snwp_p,'r.-')
           plt.plot(PcPoints,Snwp_t,'b.-')
           plt.xlim(xmin=0)
