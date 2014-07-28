@@ -815,7 +815,7 @@ class Tools(Base,dict):
         ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
         
-    def locations(self,element,labels=['all'],mode='union'):
+    def locations(self,element=None,labels=['all'],mode='union'):
         r'''
         This is a generic version of `pores` and `throats` that accepts an
         'element' argument which control which values are returned.  
@@ -824,10 +824,14 @@ class Tools(Base,dict):
         ----------
         element : string
             Can be either 'pore' or 'throat' (or plurals), depending on whether
-            a list of pores or throats numbers is desired.
-        labels and mode : string
+            a list of pores or throats numbers is desired.  If element is not
+            specfied then a dictionary containing both 'pores' and 'throats'
+            is returned.
+        labels : string
             The label(s) of that should be used to filter the returned list.  
             For further details see `pores` or `throats`.
+        mode : string
+            The rules that should be used when filtering labels.
         
         See Also
         --------
@@ -846,6 +850,10 @@ class Tools(Base,dict):
             temp = self.pores(labels=labels,mode=mode)
         elif element in ['throat','throats']:
             temp = self.throats(labels=labels,mode=mode)
+        elif element == None:
+            temp={}
+            temp['pores'] = self.pores(labels=labels)
+            temp['throats'] = self.throats(labels=labels)
         return temp
         
     def get_pore_indices(self,labels=['all'],mode='union'):
