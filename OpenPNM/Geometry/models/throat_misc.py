@@ -14,7 +14,7 @@ def random(geometry,
     note: should this be called 'poisson'?  
     """
     _sp.random.seed(seed)
-    value = _sp.random.rand(geometry.throats(),)
+    value = _sp.random.rand(geometry.num_throats(),)
     return value
 
 def neighbor(network,
