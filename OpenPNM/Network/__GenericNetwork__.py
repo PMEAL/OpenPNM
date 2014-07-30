@@ -37,7 +37,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
 
     def __init__(self, name=None,**kwargs):
         r"""
-        Initialize
+        Initialize Network
         """
         super(GenericNetwork,self).__init__(**kwargs)
         self._logger.info("Construct Network")

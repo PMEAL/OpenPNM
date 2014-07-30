@@ -104,7 +104,7 @@ class Tools(Base,dict):
             prop=item
             if len(prop)>35:
                 prop = prop[0:32]+'...'
-            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sum(self[item])))
+            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item])))
         print(header)
         return ''
         
