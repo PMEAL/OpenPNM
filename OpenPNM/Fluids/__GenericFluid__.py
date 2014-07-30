@@ -68,16 +68,35 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         else:
             return super().__getitem__(key)
         
-    def interleave_data(self,key):
-        element = key.split('.')[0]
+    def interleave_data(self,prop):
+        r'''
+        Retrieves requested property from associated Physics objects, to
+        produce a full Np or Nt length array.
+        
+        Parameters
+        ----------
+        prop : string
+            The property name to be retrieved
+            
+        Returns
+        -------
+        A full length (Np or Nt) array of requested property values.  
+        
+        Notes
+        -----
+        Missing data are returned as NaNs.
+        '''
+        element = prop.split('.')[0]
         temp = sp.ndarray((self.count(element),))
         for item in self._physics:
             locations = item.locations(element)
-            if key not in item.keys():
+            if prop not in item.keys():
                 values = sp.ones_like(locations)*sp.nan
             else:
-                values = item[key]
+                values = item[prop]
             temp[locations] = values
+        if sp.all(sp.isnan(temp)):
+            raise KeyError(prop)
         return temp
 
     def regenerate(self,props=''):

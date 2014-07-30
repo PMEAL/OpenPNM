@@ -60,16 +60,35 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         else:
             return super().__getitem__(key)
         
-    def interleave_data(self,key):
-        element = key.split('.')[0]
+    def interleave_data(self,prop):
+        r'''
+        Retrieves requested property from associated Geometry objects, to
+        produce a full Np or Nt length array.
+        
+        Parameters
+        ----------
+        prop : string
+            The property name to be retrieved
+            
+        Returns
+        -------
+        A full length (Np or Nt) array of requested property values.  
+        
+        Notes
+        -----
+        Missing data are returned as NaNs.
+        '''
+        element = prop.split('.')[0]
         temp = sp.ndarray((self.count(element),))
         for item in self._geometries:
             locations = item.locations(element)
-            if key not in item.keys():
+            if prop not in item.keys():
                 values = sp.ones_like(locations)*sp.nan
             else:
-                values = item[key]
+                values = item[prop]
             temp[locations] = values
+        if sp.all(sp.isnan(temp)):
+            raise KeyError(prop)
         return temp
         
     def generate(self, coords=[], conns=[], **params):
@@ -178,6 +197,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             temp = temp.tocsr()
         if sprsfmt == 'lil':
             temp = temp.tolil()
+        self._logger.debug('create_adjacency_matrix: End of method')
         return temp
 
     def create_incidence_matrix(self,data=None,sprsfmt='coo',dropzeros=True):
@@ -247,6 +267,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             temp = temp.tocsr()
         if sprsfmt == 'lil':
             temp = temp.tolil()
+        self._logger.debug('create_incidence_matrix: End of method')
         return temp
             
     def find_connected_pores(self,throats=[],flatten=False):
@@ -356,7 +377,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         try:
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
         except:
-            self._logger.info('Creating adjacency matrix, please wait')
             temp = self.create_adjacency_matrix(sprsfmt='lil')
             self._adjacency_matrix['lil'] = temp
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
@@ -420,7 +440,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         try:
             neighborTs = self._incidence_matrix['lil'].rows[[pores]]
         except:
-            self._logger.info('Creating incidence matrix, please wait')
             temp = self.create_incidence_matrix(sprsfmt='lil')
             self._incidence_matrix['lil'] = temp
             neighborTs = self._incidence_matrix['lil'].rows[[pores]]
