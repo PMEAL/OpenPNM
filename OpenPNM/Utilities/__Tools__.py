@@ -57,9 +57,10 @@ class Tools(Base,dict):
                 super(Base, self).__setitem__(key,value)
             return
         #--- Check if key is a model  ---#
-#        temp = dict.__getitem__(self,key)
-#        if temp.__class__.__name__ == 'partial':
-#            return None
+        if key in self.keys():
+            temp = dict.__getitem__(self,key)
+            if temp.__class__.__name__ == 'partial':
+                self._logger.warning('Overwriting a function!')
         #--- Write value to dictionary  ---#
         if sp.shape(value)[0] == 1:  # If value is scalar
             self._logger.debug('Broadcasting scalar value into vector: '+key)

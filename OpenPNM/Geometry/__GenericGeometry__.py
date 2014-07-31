@@ -38,7 +38,7 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
     >>> geom.set_locations(pores=Ps,throats=Ts)
     """
 
-    def __init__(self,network,pores=[],throats=[],name=None,dynamic_data=False,**kwargs):
+    def __init__(self,network,pores=[],throats=[],name=None,**kwargs):
         r"""
         Initialize
         """
@@ -46,7 +46,6 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         self._logger.debug("Method: Constructor")
         self._net = network #Attach network to self        
         self.name = name
-        self._dynamic_data = dynamic_data
         #Register self with network.geometries
         self._net._geometries.append(self)
         self._models = collections.OrderedDict()

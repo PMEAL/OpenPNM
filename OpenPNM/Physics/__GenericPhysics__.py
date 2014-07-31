@@ -34,7 +34,7 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
     
     """
 
-    def __init__(self,network,fluid,pores=[],throats=[],name=None,dynamic_data=False,**kwargs):
+    def __init__(self,network,fluid,pores=[],throats=[],name=None,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
@@ -48,7 +48,6 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         
         #Initialize attributes
         self._models = collections.OrderedDict()
-        self._dynamic_data = dynamic_data
         self.name = name
         
         #Initialize Physics locations

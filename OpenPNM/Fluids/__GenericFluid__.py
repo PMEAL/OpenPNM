@@ -35,7 +35,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         Sets a custom name for the logger, to help identify logger messages
 
     """
-    def __init__(self,network,name=None,dynamic_data=False,**kwargs):
+    def __init__(self,network,name=None,**kwargs):
         super(GenericFluid,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
@@ -48,7 +48,6 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         # Initialize attributes
         self._physics = []
         self._models = collections.OrderedDict()
-        self._dynamic_data = dynamic_data
         self.name = name
         
         # Initialize label 'all' in the object's own info dictionaries

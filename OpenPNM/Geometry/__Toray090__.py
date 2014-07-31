@@ -39,6 +39,7 @@ class Toray090(GenericGeometry):
         '''        
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
+                       regen_mode='dynamic',
                        seed=None)
         self.add_model(propname='throat.seed',
                        model=gm.throat_misc.neighbor,
