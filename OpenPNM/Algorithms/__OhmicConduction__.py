@@ -6,9 +6,9 @@ module __OhmicConduction__:
 """
 
 import scipy as sp
-from .__LinearSolver__ import LinearSolver
+from .__GenericLinearTransport__ import GenericLinearTransport
 
-class OhmicConduction(LinearSolver):
+class OhmicConduction(GenericLinearTransport):
     r'''
 
     '''

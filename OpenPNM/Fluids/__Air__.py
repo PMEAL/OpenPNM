@@ -4,6 +4,7 @@ if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
 from OpenPNM.Fluids.__GenericFluid__ import GenericFluid
+from OpenPNM.Fluids import models as fm
 
 class Air(GenericFluid):
     r"""
@@ -27,15 +28,21 @@ class Air(GenericFluid):
     def __init__(self,name=None,**kwargs):
         super(Air,self).__init__(name=name,**kwargs)
         self._logger.debug("Construct class")
-        self.set_pore_data(prop='Tc',data=132.65)
-        self.set_pore_data(prop='Pc',data=3.771e6)
-        self.set_pore_data(prop='MW',data=0.0291)
-        self.add_property(prop='diffusivity',model='Fuller',MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
-        self.add_property(prop='viscosity',model='constant',value=1.9e-5)
-        self.add_property(prop='molar_density',model='ideal_gas',R=8.314)
-        self.add_property(prop='surface_tension',model='constant',value=0.072)
-        self.add_property(prop='contact_angle',model='constant',value=70)
-        self.regenerate()
+        self._generate()
+        
+    def _generate(self):
+        self.add_model(propname='pore.diffusivity',
+                       model=fm.diffusivity.fuller,
+                       MA=18,
+                       MB=20,
+                       vA=1,
+                       vB=1)
+        self.add_model(propname='pore.molar_density',
+                       model=fm.molar_density.ideal_gas)
+        self.add_model(propname='pore.viscosity',
+                       model=fm.viscosity.reynolds,
+                       uo=0.0002,
+                       b=0.0001)
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

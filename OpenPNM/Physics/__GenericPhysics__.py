@@ -3,20 +3,16 @@ module Physics
 ===============================================================================
 
 """
-import sys, os
+import sys, os, collections
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
-
 import OpenPNM
 import scipy as sp
-from functools import partial
 
-class GenericPhysics(OpenPNM.Utilities.Base):
+class GenericPhysics(OpenPNM.Utilities.Tools):
     r"""
-    Base class to generate a generic Physics object.  The user must specify models
-    and parameters for the all the properties they require. Classes for several
-    common Physics are included with OpenPNM and can be found under OpenPNM.Physics.
+    Generic class to generate Physics objects  
 
     Parameters
     ----------
@@ -25,111 +21,71 @@ class GenericPhysics(OpenPNM.Utilities.Base):
         
     fluid : OpenPNM Fluid object 
         The Fluid object to which this Physics applies
-        
-    geometry : OpenPNM Geometry object
-        The Geometry object to which this Physics applies
     
-    name : str
+    pores and/or throats : array_like
+        The list of pores and throats where this physics applies. If either are
+        left blank this will apply the physics nowhere.  The locations can be
+        change after instantiation using ``set_locations()``.
+    
+    name : str, optional
         A unique string name to identify the Physics object, typically same as 
-        instance name but can be anything.
+        instance name but can be anything.  If left blank, and name will be
+        generated that include the class name and a random string.  
     
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    
-    loggername : string (optional)
-        Sets a custom name for the logger, to help identify logger messages
-
     """
 
-    def __init__(self,network,fluid,geometry,name=None,**kwargs):
+    def __init__(self,network,fluid,pores=[],throats=[],name=None,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
-        #Setup containers for ojecct linking
-        self._prop_list = []
-
-        # Append objects for internal access
+        #Append objects self for internal access
         self._net = network
         self._fluid = fluid
-        self._geometry = geometry
-        
-        # Connect this physics with it's geometry
-        geometry._physics.append(self)
+
+        #Append self to other objects
+        network._physics.append(self)
         fluid._physics.append(self)
-
+        
+        #Initialize attributes
+        self._models = collections.OrderedDict()
         self.name = name
-
-        #Use composition to assign pores and throats to this physics
-        self.pores = geometry.pores()
-        self.throats = geometry.throats()
-        self.Np = geometry.Np
-        self.Nt = geometry.Nt
-        self.count = geometry.count
-
-    def regenerate(self, prop_list='',mode=None):
-        r'''
-        This updates all properties using the selected methods
-
-        Parameters
-        ----------
-        prop_list : string or list of strings
-            The names of the properties that should be updated, defaults to all
-        mode : string
-            Control how the regeneration occurs.  
-            
-        Examples
-        --------
-        For examples refer to usage of Fluid or Geometry refresh methods
-        '''
-        if prop_list == '':
-            prop_list = self._prop_list
-        elif type(prop_list) == str:
-            prop_list = [prop_list]
-        if mode == 'exclude':
-            a = sp.array(self._prop_list)
-            b = sp.array(prop_list)
-            c = a[sp.where(~sp.in1d(a,b))[0]]
-            prop_list = list(c)
-        for item in prop_list:
-            self._logger.debug('Refreshing: '+item)
-            getattr(self,item)()
-            
-    def add_method(self,prop='',prop_name='',**kwargs):
-        r'''
-        THIS METHOD IS DEPRECATED USE add_property() INSTEAD
-        '''
-        self.add_property(prop=prop,prop_name=prop_name,**kwargs)
-            
-    def add_property(self,prop='',prop_name='',**kwargs):
-        r'''
-        Add specified property estimation model to the physics object.
         
-        Parameters
-        ----------
-        prop : string
-            The name of the pore scale physics property attribute to add.
-            This name must correspond with a file in the Physics folder.  
-            To add a new property simply add a file with the appropriate name and the necessary methods.
-           
-        prop_name : string, optional
-            This argument will be used as the method name and the dictionary key
-            where data is written by method. This option is provided for occasions
-            when multiple properties of the same type are required, such as
-            diffusive conductance of each species in a multicomponent mixture.
+        #Initialize Physics locations
+        self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
+        self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
+        fluid['pore.'+self.name] = False
+        fluid['pore.'+self.name][pores] = True
+        fluid['throat.'+self.name] = False
+        fluid['throat.'+self.name][throats] = True
         
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        '''
-        try:
-            function = getattr( getattr(OpenPNM.Physics, prop), kwargs['model'] ) # this gets the method from the file
-            if prop_name: prop = prop_name #overwrite the default prop with user supplied name  
-            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid, geometry=self._geometry, **kwargs) #
-            setattr(self, prop, preloaded_fn)
-            self._logger.info("Successfully loaded {}.".format(prop))
-            self._prop_list.append(prop)
-        except AttributeError: print('could not find',kwargs['model'])
+    def pores(self,**kwargs):
+        return self._fluid.pores(labels=self.name)
 
+    def throats(self,**kwargs):
+        return self._fluid.throats(labels=self.name)
+        
+    def physics_health(self):
+        r'''
+        Perform a check to find pores with overlapping or undefined Physics.
+        '''
+        phys = self._net.physics()
+        temp = sp.zeros((self._fluid.Np,))
+        for item in phys:
+            ind = self._fluid['pore.'+item]
+            temp[ind] = temp[ind] + 1
+        health = {}
+        health['overlaps'] = sp.where(temp>1)[0].tolist()
+        health['undefined'] = sp.where(temp==0)[0].tolist()
+        return health
+        
+    def fluids(self):
+        r'''
+        Return a list of Fluid object names associated with this Physics
+        '''
+        temp = []
+        temp.append(self._fluid.name)
+        return temp
+        
 if __name__ == '__main__':
     print('none yet')
 

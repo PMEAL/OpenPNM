@@ -6,9 +6,9 @@ module __FickianDiffusion__
 """
 
 import scipy as sp
-from .__LinearSolver__ import LinearSolver
+from .__GenericLinearTransport__ import GenericLinearTransport
 
-class FickianDiffusion(LinearSolver):
+class FickianDiffusion(GenericLinearTransport):
     r'''
     '''
 

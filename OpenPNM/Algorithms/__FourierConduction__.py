@@ -6,9 +6,9 @@ module __FourierConduction__
 """
 
 import scipy as sp
-from .__LinearSolver__ import LinearSolver
+from .__GenericLinearTransport__ import GenericLinearTransport
 
-class FourierConduction(LinearSolver):
+class FourierConduction(GenericLinearTransport):
     r"""
     
     """

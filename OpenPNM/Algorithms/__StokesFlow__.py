@@ -1,14 +1,14 @@
 """
 
-module __Permeability__: 
+module __StokesFlow__: 
 ===============================================================================
 
 """
 
 import scipy as sp
-from .__LinearSolver__ import LinearSolver
+from .__GenericLinearTransport__ import GenericLinearTransport
 
-class StokesFlow(LinearSolver):
+class StokesFlow(GenericLinearTransport):
     r'''
         
     '''

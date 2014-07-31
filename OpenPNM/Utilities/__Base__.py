@@ -93,6 +93,14 @@ class Base(object):
         ----------
         obj_name : string
            Name of sought object
+           
+        obj_type : string
+            The type of object beign sought.  Options are:
+            
+            1. 'Network'
+            2. 'Geometry'
+            3. 'Fluids'
+            4. 'Physics'
         
         Returns
         -------
@@ -110,7 +118,7 @@ class Base(object):
         'geo1'
         
         '''
-        if self.__class__.__module__.split('.')[1] == 'Network':
+        if self.__module__.split('.')[1] == 'Network':
             net = self
         else:
             net = self._net
@@ -122,22 +130,24 @@ class Base(object):
             for geom in net._geometries:
                 if geom.name == obj_name:
                     return geom
-                for phys in geom._physics:
-                    if phys.name == obj_name:
-                        return phys
-                    if phys._fluid.name == obj_name:
-                        return phys._fluid
+            for fluid in net._fluids:
+                if fluid.name == obj_name:
+                    return fluid
+            for phys in net._physics:
+                if phys.name == obj_name:
+                    return phys
             return objs # Return empty list if none found
         elif obj_type != '':
             objs = []
             for geom in net._geometries:
                 if geom.__class__.__module__.split('.')[1] == obj_type:
                     objs.append(geom)
-                for phys in geom._physics:
-                    if phys.__class__.__module__.split('.')[1] == obj_type:
-                        objs.append(phys)
-                    if phys._fluid.__class__.__module__.split('.')[1] == obj_type:
-                        objs.append(phys._fluid)
+            for phys in net._physics:
+                if phys.__class__.__module__.split('.')[1] == obj_type:
+                    objs.append(phys)
+            for fluid in net._fluids:
+                if fluid.__class__.__module__.split('.')[1] == obj_type:
+                    objs.append(fluid)
             return objs
             
     def delete_object(self,obj=None,obj_name=''):
@@ -155,7 +165,7 @@ class Base(object):
         >>> geom = pn.add_geometry(name='geo')
         >>> geom.name
         'geo'
-        >>> pn.delete_object(name='geo')
+        >>> pn.delete_object(obj_name='geo')
         >>> pn.find_object(obj_name='geo')
         []
         
@@ -168,42 +178,34 @@ class Base(object):
             obj = self.find_object(obj_name=obj_name)
         #Get object type, so we know where to delete from
         obj_type = obj.__class__.__module__.split('.')[1]
-        if obj_type == 'Geometry':
-            for phys in obj._physics:
-                #Remove geometry from physics
-                phys._geometry = None
-                phys._fluid._physics.remove(phys)
-                obj._physics.remove(phys)
-            #Remove geometry from network
+        if obj_type == 'Geometry':  # Remove geometry from network
             net._geometries.remove(obj)
         elif obj_type == 'Fluids':
             for fluid in net._fluids:
                 if fluid == obj:
-                    phys._fluid = None
-                net._flud.remove(fluid)
-                del fluid
+                    for physics in fluid._physics:
+                        physics._fluid = None
+                        net._physics.remove(physics)
+                    net._fluids.remove(obj)
+                    del fluid
         elif obj_type == 'Physics':
-            for fluid in net._fluids:
-                for physics in fluid._physics:
-                    if physics == obj:
-                         pass
-                net._fluid.remove(fluid)
-                del fluid
+            for physics in net._physics:
+                if physics == obj:
+                    for fluid in physics._fluid:
+                        fluid._physics.remove(obj)
+                    net._physcis.remove(obj)
+                    del fluid
                     
     def _set_name(self,name):
-        obj_type = self.__module__.split('.')[1]
+        if self._name != None:
+            self._logger.error('Renaming objects can have catastrophic consequences')
+            return
         if name == None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
-        if obj_type == 'Geometry':
-            if self._name != None:
-                self._logger.error('Geometry objects cannot be renamed')
-                raise Exception('Geometry objects cannot be renamed')  
-        objs = self.find_object(obj_type=obj_type)
-        for item in objs:
-            if item.name == name:
-                self._logger.error('A '+obj_type+' object with that name already exists')
-                raise Exception('A '+obj_type+' object with that name already exists')
+        if self.find_object(obj_name=name) != []:
+            self._logger.error('An object with this name already exists')
+            return
         self._name = name
     
     def _get_name(self):
@@ -213,16 +215,21 @@ class Base(object):
             
     def save_object(self,filename):
         r'''
+        Save the current object's data to a Numpy zip file.
+        
+        Parameters
+        ----------
+        filename : string
+            File name (including path if desired) to save to
         '''
         temp = filename.split('.')[0]
         temp = temp+'.npz'
         sp.savez_compressed(temp,**self)
         
             
-
-            
 if __name__ == '__main__':
-    pass
+    import doctest
+    doctest.testmod(verbose=True)
 
 
 

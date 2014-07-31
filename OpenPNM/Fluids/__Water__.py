@@ -4,6 +4,7 @@ if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
 from OpenPNM.Fluids.__GenericFluid__ import GenericFluid
+from OpenPNM.Fluids import models as fm
 
 class Water(GenericFluid):
     r'''
@@ -27,15 +28,17 @@ class Water(GenericFluid):
     def __init__(self,name=None,**kwargs):
         super(Water,self).__init__(name=name,**kwargs)
         self._logger.debug("Construct class")
-        self.set_pore_data(prop='Tc',data=647.096)
-        self.set_pore_data(prop='Pc',data=22.06e6)
-        self.set_pore_data(prop='MW',data=0.0291)
-        self.add_property(prop='diffusivity',model='constant',value=2e-9)
-        self.add_property(prop='viscosity',model='constant',value=0.001)
-        self.add_property(prop='molar_density',model='constant',value=44445)
-        self.add_property(prop='surface_tension',model='constant',value=0.072)
-        self.add_property(prop='contact_angle',model='constant',value=110)
-        self.regenerate()
+        self._generate()
+        
+    def _generate(self):
+        self['pore.diffusivity'] = 1e-9
+        self['pore.surface_tension'] = 0.072
+        self['pore.contact_angle'] = 110.0
+        self['pore.molar_density'] = 44445.0
+        self.add_model(propname='pore.viscosity',
+                       model=fm.viscosity.reynolds,
+                       uo=0.002,
+                       b=0.001)
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()
