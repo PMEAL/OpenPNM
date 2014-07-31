@@ -86,7 +86,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         element = prop.split('.')[0]
         temp = sp.ndarray((self.count(element),))
         for item in self._physics:
-            locations = item.locations(element)
+            locations = self.locations(element=element,labels=item.name)
             if prop not in item.keys():
                 values = sp.ones_like(locations)*sp.nan
             else:

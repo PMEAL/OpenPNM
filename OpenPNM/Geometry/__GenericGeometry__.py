@@ -57,18 +57,6 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         network['pore.'+self.name][pores] = True
         network['throat.'+self.name] = False
         network['throat.'+self.name][throats] = True
-    
-    def pores(self,**kwargs):
-        r'''
-        Returns a list of pores to which this Geometry applies.
-        '''
-        return self._net.pores(labels=self.name)
-
-    def throats(self,**kwargs):
-        r'''
-        Returns a list of pores to which this Geometry applies.
-        '''
-        return self._net.throats(labels=self.name)
         
     def geometry_health(self):
         r'''
