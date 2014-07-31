@@ -8,9 +8,7 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
-
 import scipy as sp
-from functools import partial
 
 class GenericFluid(OpenPNM.Utilities.Tools):
     r"""
@@ -98,71 +96,7 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         if sp.all(sp.isnan(temp)):
             raise KeyError(prop)
         return temp
-
-    def regenerate(self,props=''):
-        r'''
-        This updates all properties of the fluid using the selected models
-        
-        Parameters
-        ----------
-        prop_list : string or list of strings
-            The names of the properties that should be updated, defaults to all
-        mode : string
-            Control how the regeneration occurs.  
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> air = OpenPNM.Fluids.Air(loglevel=50,network=pn)
-        >>> air.regenerate()  # Regenerate all properties at once
-        >>> air.regenerate('molar_density')  # only one property
-        >>> air.regenerate(['molar_density', 'diffusivity'])  # or several
-        '''
-        #First regenerate self
-        if props == '':
-            props = self._models.keys()
-        elif type(props) == str:
-            props = [props]
-        for item in props:
-            if item in self._models.keys():
-                self[item] = self._models[item]()
-            else:
-                self._logger.warning('Requested proptery is not a dynamic model: '+item)
-        
-#        #Then regenerate all physics objects associated with fluid
-#        for item in self._physics:
-#            item.regenerate()
-#            
-#        #Then pull in data from freshly regenerated Physics objects
-#        for phys in self._physics:
-#            for item in phys.props():
-#                element = item.split('.')[0]
-#                locations = self.locations(element)
-#                if item not in self.props():
-#                    self[item] = sp.nan
-#                self[item][locations] = phys[item]
-        
-    def add_model(self,model,propname,static=False,**kwargs):
-        r'''
-        Add specified property estimation model to the Fluid object.
-        
-        Parameters
-        ----------
-        na
-        
-        Examples
-        --------
-        None yet
-
-        '''
-        #Build partial function from given kwargs
-        Ps = self.pores()
-        Ts = self.throats()
-        fn = partial(model,fluid=self,propname=propname,pores=Ps,throats=Ts,**kwargs)
-        self[propname] = fn()  # Write static values to self
-        if not static:  # Store model in a private ditionary
-            self._models[propname] = fn
-        
+                
     def physics(self,name=''):
         r'''
         Retrieves Physics assocaiated with the Fluid

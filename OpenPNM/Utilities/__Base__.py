@@ -93,6 +93,14 @@ class Base(object):
         ----------
         obj_name : string
            Name of sought object
+           
+        obj_type : string
+            The type of object beign sought.  Options are:
+            
+            1. 'Network'
+            2. 'Geometry'
+            3. 'Fluids'
+            4. 'Physics'
         
         Returns
         -------
@@ -110,7 +118,7 @@ class Base(object):
         'geo1'
         
         '''
-        if self.__class__.__module__.split('.')[1] == 'Network':
+        if self.__module__.split('.')[1] == 'Network':
             net = self
         else:
             net = self._net

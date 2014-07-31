@@ -9,9 +9,7 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
-
 import scipy as sp
-from functools import partial
 
 class GenericGeometry(OpenPNM.Utilities.Tools):
     r"""
@@ -72,63 +70,6 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         Returns a list of pores to which this Geometry applies.
         '''
         return self._net.throats(labels=self.name)
-
-    def regenerate(self, props=''):
-        r'''
-        Update all properties of the Geometry object
-        
-        Parameters
-        ----------
-        props: string or list of strings
-            The names of the properties that should be updated, defaults to all
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> Ps = pn.pores()
-        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=Ps)
-        >>> geom.generate()
-        >>> geom.regenerate()  # Regenerate all properties at once
-        >>> geom.regenerate('pore.seed')  # only one property
-        >>> geom.regenerate(['pore.seed', 'pore.diameter'])  # or several
-        '''
-        if props == '':
-            props = self._models.keys()
-        elif type(props) == str:
-            props = [props]
-        for item in props:
-            if item in self._models.keys():
-                self[item] = self._models[item]()
-            else:
-                self._logger.warning('Requested proptery is not a dynamic model: '+item)
-        
-    def add_model(self,model,propname,static=False,**kwargs):
-        r'''
-        Add specified pore scale model to the Geometry object
-        
-        Parameters
-        ----------
-        model : function
-            The model retrieved from the ./Geometry/models library
-        propname : string
-            The name of the physical property calculated by the model.  This 
-            name is used as the dictionary key in the Network object.
-        kwargs : keyword arguments
-            These are the arguments required by the model, with the exception
-            of network, pores and throats which are passed automatically.
-        
-        Examples
-        --------
-        None yet
-
-        '''
-        #Build partial function from given kwargs
-        Ps = self.pores()
-        Ts = self.throats()
-        fn = partial(model,geometry=self,network=self._net,propname=propname,pores=Ps,throats=Ts,**kwargs)
-        self[propname] = fn()  # Generate data and store it locally
-        if not static:  # Store model in a private attribute
-            self._models[propname] = fn
         
     def geometry_health(self):
         r'''

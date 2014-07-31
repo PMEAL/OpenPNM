@@ -7,6 +7,7 @@ module __Tools__: Base class to construct pore network tools
 """
 
 import sys,os,pprint
+from functools import partial
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -55,6 +56,10 @@ class Tools(Base,dict):
                 self._logger.debug(key+' is being defined.')
                 super(Base, self).__setitem__(key,value)
             return
+        #--- Check if key is a model  ---#
+#        temp = dict.__getitem__(self,key)
+#        if temp.__class__.__name__ == 'partial':
+#            return None
         #--- Write value to dictionary  ---#
         if sp.shape(value)[0] == 1:  # If value is scalar
             self._logger.debug('Broadcasting scalar value into vector: '+key)
@@ -68,47 +73,77 @@ class Tools(Base,dict):
             
     def __getitem__(self,propname):
         temp = dict.__getitem__(self,propname)
-        if hasattr(self,'_dynamic_data'):
-            if self._dynamic_data:
-                if propname in self._models.keys():
-                    temp = self._models[propname]()
-                    self[propname] = temp
-        return temp
-    
-    def __str__(self):
-        header = '-'*60
-        print(header)
-        print(self.__module__.replace('__','')+': \t'+self.name)
-        print(header)
-        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values'))
-        print(header)
-        count = 0
-        props = self.props()
-        props.sort()
-        for item in props:
-            count = count + 1
-            prop=item
-            if len(prop)>35:
-                prop = prop[0:32]+'...'
-            required = self.count(item.split('.')[0])
-            defined = required - sp.sum(sp.isnan(self[item]))
-            print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
-        print(header)
-        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations'))
-        print(header)
-        count = 0
-        labels = self.labels()
-        labels.sort()
-        for item in labels:
-            count = count + 1
-            prop=item
-            if len(prop)>35:
-                prop = prop[0:32]+'...'
-            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item])))
-        print(header)
-        return ''
+        if temp.__class__.__name__ == 'partial':
+            return temp()
+        else:
+            return temp
+            
+    def add_model(self,propname,model,regen_mode='static',**kwargs):
+        r'''
+        Add specified property estimation model to the object.
         
-    
+        Parameters
+        ----------
+        propname : string
+            The name of the property to use as dictionary key, such as
+            'pore.diameter' or 'throat.length'
+            
+        model : function
+            The property estimation function to use
+            
+        regen_mode : string
+            Controls when and if the property is regenerated. Options are:
+            
+            * 'static' : The property is stored as static data and is only regenerated when the object's `regenerate` is called
+            * 'dynamic' : The property is regenerated each time it is accessed
+            * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
+        
+        '''
+        #Determine object type, and assign associated objects
+        self_type = self.__module__.split('.')[1]
+        network = self._net
+        fluid = None
+        geometry = None
+        physics = None
+        if self_type == 'Geometry':
+            geometry = self
+        elif self_type == 'Fluids':
+            fluid = self
+        elif self_type == 'Physics':
+            fluid = self._fluid
+            physics = self
+        Ps = self.pores()
+        Ts = self.throats()
+        #Build partial function from given kwargs
+        fn = partial(model,network=network,fluid=fluid,geometry=geometry,physics=physics,pores=Ps,throats=Ts,**kwargs)
+        if regen_mode == 'dynamic': 
+            dict.__setitem__(self,propname,fn)  # Store model in local dictionary
+        if regen_mode == 'static':
+            self[propname] = fn()  # Generate data and store it locally
+            self._models[propname] = fn  # Store model in a private attribute
+        if regen_mode == 'constant':
+             self[propname] = fn()  # Generate data and store it locally
+        
+    def regenerate(self, props=''):
+        r'''
+        This updates properties using the models assigned using `add_model`
+
+        Parameters
+        ----------
+        props : string or list of strings
+            The names of the properties that should be updated, defaults to 'all'
+                    
+        '''
+        if props == '':
+            props = self._models.keys()
+        elif type(props) == str:
+            props = [props]
+        for item in props:
+            if item in self._models.keys():
+                self[item] = self._models[item]()
+            else:
+                self._logger.warning('Requested proptery is not a dynamic model: '+item)
+
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
@@ -1173,6 +1208,39 @@ class Tools(Base,dict):
         if quiet == False:
             pprint.pprint(health)
         return flag
+        
+    def __str__(self):
+        header = '-'*60
+        print(header)
+        print(self.__module__.replace('__','')+': \t'+self.name)
+        print(header)
+        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values'))
+        print(header)
+        count = 0
+        props = self.props()
+        props.sort()
+        for item in props:
+            count = count + 1
+            prop=item
+            if len(prop)>35:
+                prop = prop[0:32]+'...'
+            required = self.count(item.split('.')[0])
+            defined = required - sp.sum(sp.isnan(self[item]))
+            print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
+        print(header)
+        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations'))
+        print(header)
+        count = 0
+        labels = self.labels()
+        labels.sort()
+        for item in labels:
+            count = count + 1
+            prop=item
+            if len(prop)>35:
+                prop = prop[0:32]+'...'
+            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item])))
+        print(header)
+        return ''
 
 if __name__ == '__main__':
     import doctest

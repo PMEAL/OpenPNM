@@ -7,10 +7,8 @@ import sys, os, collections
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
-
 import OpenPNM
 import scipy as sp
-from functools import partial
 
 class GenericPhysics(OpenPNM.Utilities.Tools):
     r"""
@@ -66,50 +64,6 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
 
     def throats(self,**kwargs):
         return self._fluid.throats(labels=self.name)
-        
-    def regenerate(self, props=''):
-        r'''
-        This updates all properties using the selected methods
-
-        Parameters
-        ----------
-        props : string or list of strings
-            The names of the properties that should be updated, defaults to all
-            
-        Examples
-        --------
-        na
-        '''
-        if props == '':
-            props = self._models.keys()
-        elif type(props) == str:
-            props = [props]
-        for item in props:
-            if item in self._models.keys():
-                self[item] = self._models[item]()
-            else:
-                self._logger.warning('Requested proptery is not a dynamic model: '+item)
-            
-    def add_model(self,model,propname,static=False,**kwargs):
-        r'''
-        Add specified property estimation model to the fluid object.
-        
-        Parameters
-        ----------
-        na
-        
-        Examples
-        --------
-        None yet
-        
-        '''
-        #Build partial function from given kwargs
-        Ps = self.pores()
-        Ts = self.throats()
-        fn = partial(model,fluid=self._fluid,network=self._net,pores=Ps,throats=Ts,**kwargs)
-        self[propname] = fn()  # Generate data and store it locally
-        if not static:  # Store model in a private attribute
-            self._models[propname] = fn
         
     def physics_health(self):
         r'''
