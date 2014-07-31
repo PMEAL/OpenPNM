@@ -62,7 +62,7 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         r'''
         Perform a check to find pores with overlapping or undefined Physics.
         '''
-        phys = self._net.physics()
+        phys = self._fluid.physics()
         temp = sp.zeros((self._fluid.Np,))
         for item in phys:
             ind = self._fluid['pore.'+item]
