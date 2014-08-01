@@ -212,24 +212,20 @@ class Cubic(GenericNetwork):
             coords = coords*scale[label] + offset[label]
             self['pore.coords'][ind] = coords
             
+    def toarray(self,data=None):
+        r'''
+        Returns a cubic array with each element representing a pore, containing
+        specified data values
         
-    
-    def domain_size(self,dimension=''):
-        if dimension == 'front' or dimension == 'back':
-            return self._Ly*self._Lz
-        if dimension == 'left' or dimension == 'right':
-            return self._Lx*self._Lz
-        if dimension == 'top' or dimension == 'bottom':
-            return self._Lx*self._Ly
-        if dimension == 'volume':
-            return self._Lx*self._Ly*self._Lz
-        if dimension == 'height':
-            return self._Lz
-        if dimension == 'width':
-            return self._Lx
-        if dimension == 'depth':
-            return self._Ly
-
+        Parameters
+        ----------
+        data : array_like
+            An Np-long array containing pore property values to enter in each
+            array element
+        '''
+        temp = sp.reshape(data,(self._Nx,self._Ny,self._Nz))
+        return temp
+        
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(lattice_spacing=[1.0],domain_size=[3,3,3])
