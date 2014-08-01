@@ -91,7 +91,7 @@ class GenericNetwork(OpenPNM.Core):
             raise KeyError(prop)
         return temp
         
-    def generate(self, coords=[], conns=[], **params):
+    def generate(self,coords=[],conns=[],**params):
         r"""
         Generate the network from a list of pores coordinate and throat connections
         
@@ -898,8 +898,8 @@ class GenericNetwork(OpenPNM.Core):
             groups of duplicates lumped into a single sublist
             
             2. 'remove' : Will attempt to remove the duplicates.  This option
-            should NOT be used on netorks with other assigned objects sine pore 
-            and throat numbering will change.  
+            should NOT be used on netorks with other associated objects since 
+            pore and throat numbering will change.  
             
         '''
         if (self._geometries != []):
@@ -1046,134 +1046,7 @@ class GenericNetwork(OpenPNM.Core):
             a = sp.amin(As[corner1,p])
             o = h*sp.sin(sp.arccos((a/h)))
             A = o*a
-        return A        
-        
-    #--------------------------------------------------------------------------
-    '''Miscillaneous Methods'''
-    #--------------------------------------------------------------------------
-    def subset(self,pores,name=None,incl_labels=True,incl_props=True):
-        r'''
-        Create a new sub-network from a list of pores.
-        
-        Parameters
-        ----------
-        pores : array_like
-            A list of pores from which to create the new network
-        incl_labels : bool, default is True
-            Specifies whether to keep labels from main network
-        incl_props : bool, default is True
-            Specifies whather to keep properties from main network
-        name : string, optional
-            The name to apply to the new network object
-            
-        Returns
-        -------
-        OpenPNM Object
-            Returns a new network object
-            
-        Notes
-        -----
-        This method adds a pore and throat label to the master network (pn) 
-        indicating which pores and throats were part of the sub-network (sn).  
-        This means that the results of the sub-network can be applied to the 
-        correct pores and throats in the main network by calling 
-        pn.pores(sn.name), and pn.throats(sn.name).
-        
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.count()
-        {'pore': 125, 'throat': 300}
-        >>> Ps = pn.pores(['top','bottom','front'])
-        >>> sn = pn.subset(pores=Ps)
-        >>> sn.count()
-        {'pore': 65, 'throat': 112}
-        >>> sn.labels()[0:3]  # It automatically transfers labels and props
-        ['pore.all', 'pore.back', 'pore.bottom']
-        >>>  sn = pn.subset(pores=Ps,incl_labels=False)
-        >>> sn.labels()
-        ['pore.all', 'throat.all']
-        '''
-        newpnm = OpenPNM.Network.GenericNetwork(name=name)
-        pores = sp.array(pores,ndmin=1)
-        throats = self.find_neighbor_throats(pores=pores,mode='intersection',flatten=True)
-        
-        #Remap throats on to new pore numbering
-        Pmap = sp.zeros_like(self.pores())*sp.nan
-        Pmap[pores] = sp.arange(0,sp.shape(pores)[0])
-        tpore1 = sp.array(Pmap[self['throat.conns'][throats,0]],dtype=int)
-        tpore2 = sp.array(Pmap[self['throat.conns'][throats,1]],dtype=int)
-        newpnm['throat.conns'] = sp.vstack((tpore1,tpore2)).T
-        newpnm['pore.coords'] = self['pore.coords'][pores]
-        
-        #Now scan through labels and props, and keep if needed
-        newpnm['pore.all'] = self['pore.all'][pores]
-        newpnm['throat.all'] = self['throat.all'][throats]
-        if incl_labels == True:
-            labels = self.labels()
-            labels.remove('pore.all')
-            labels.remove('throat.all')
-            for item in labels:
-                if item.split('.')[0] == 'pore':
-                    newpnm[item] = self[item][pores]
-                if item.split('.')[0] == 'throat':
-                    newpnm[item] = self[item][throats]
-        if incl_props == True:
-            props = self.props()
-            props.remove('throat.conns')
-            props.remove('pore.coords')
-            for item in props:
-                if item.split('.')[0] == 'pore':
-                    newpnm[item] = self[item][pores]
-                if item.split('.')[0] == 'throat':
-                    newpnm[item] = self[item][throats]
-        
-        #Append pore and throat mapping to main network as attributes and data
-        self['pore.'+newpnm.name] = sp.zeros_like(self['pore.all'],dtype=bool)
-        self['pore.'+newpnm.name][pores] = True
-        self['throat.'+newpnm.name] = sp.zeros_like(self['throat.all'],dtype=bool)
-        self['throat.'+newpnm.name][throats] = True
-        
-        import types
-        newpnm.subset_fluid = types.MethodType(subset_fluid, newpnm)     
-        
-        return newpnm
-        
-#------------------------------------------------------------------------------
-'''Additional Functions'''
-#------------------------------------------------------------------------------
-# These functions are not automatically attached to the network, but can be
-# using object.method_name = types.MethodType(method_name, object)
-  
-def subset_fluid(self,fluid):
-    r'''
-    This method is appended to subset networks. It takes a fluid from the main
-    network, and converts it to the size and shape of the sub-network.
-    
-    Parameters
-    ----------
-    fluid : OpenPNM Fluid Object
-        A fluid object that is associated with the main network from which the
-        subnetwork was extracted.
-        
-    Returns
-    -------
-    newfluid : OpenPNM Fluid Object
-        A fluid object with the same shape as the sub-network.  It contains all
-        the data of the main fluid, but not the property calculation methods.
-    '''
-    newfluid = OpenPNM.Fluids.GenericFluid(network=self)
-    for item in fluid.props(mode='vectors'):
-        if item.split('.')[0] == 'pore':
-            newfluid[item] = fluid[item][fluid._net['pore.'+self.name]]
-        if item.split('.')[0] == 'throat':
-            newfluid[item] = fluid[item][fluid._net['throat.'+self.name]]
-    for item in fluid.props(mode='scalars'):
-        if item.split('.')[0] == 'pore':
-            newfluid[item] = fluid[item]
-        if item.split('.')[0] == 'throat':
-            newfluid[item] = fluid[item]
-    return newfluid
+        return A
 
 if __name__ == '__main__':
     #Run doc tests
