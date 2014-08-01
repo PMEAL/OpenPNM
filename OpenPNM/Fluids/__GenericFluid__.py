@@ -10,7 +10,7 @@ if sys.path[1] != parent_dir:
 import OpenPNM
 import scipy as sp
 
-class GenericFluid(OpenPNM.Utilities.Tools):
+class GenericFluid(OpenPNM.Core):
     r"""
     Base class to generate a generic fluid object.  The user must specify models
     and parameters for the all the properties they require. Classes for several

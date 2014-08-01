@@ -13,11 +13,11 @@ if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import scipy as sp
 import OpenPNM
-from OpenPNM.Utilities import Base
+from OpenPNM import Base
 from OpenPNM.Utilities import misc
 
 
-class Tools(Base,dict):
+class Core(Base,dict):
     r'''
     This class contains tools to read and write data in OpenPNM objects
 
@@ -26,7 +26,7 @@ class Tools(Base,dict):
         r'''
         Initialize
         '''
-        super(Tools,self).__init__(**kwargs)
+        super(Core,self).__init__(**kwargs)
         self._logger.info("Construct Base class from Tools subclass")
         #Initialize network properties dictionaries
         self._logger.debug("Construction of Tools class complete")

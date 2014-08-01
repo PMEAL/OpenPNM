@@ -18,7 +18,7 @@ import scipy.sparse as sprs
 import scipy.signal as spsg
 
 
-class GenericNetwork(OpenPNM.Utilities.Tools):
+class GenericNetwork(OpenPNM.Core):
     r"""
     GenericNetwork - Base class to construct pore networks
 

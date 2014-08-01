@@ -11,7 +11,7 @@ if sys.path[1] != parent_dir:
 import OpenPNM
 import scipy as sp
 
-class GenericGeometry(OpenPNM.Utilities.Tools):
+class GenericGeometry(OpenPNM.Core):
     r"""
     GenericGeometry - Base class to construct a Geometry object
 

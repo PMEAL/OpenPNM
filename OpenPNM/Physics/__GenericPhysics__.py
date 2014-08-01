@@ -10,7 +10,7 @@ if sys.path[1] != parent_dir:
 import OpenPNM
 import scipy as sp
 
-class GenericPhysics(OpenPNM.Utilities.Tools):
+class GenericPhysics(OpenPNM.Core):
     r"""
     Generic class to generate Physics objects  
 
