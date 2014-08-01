@@ -1,5 +1,5 @@
 """
-module __Tools__: Base class to construct pore network tools
+module __Core__: Base class to construct pore network tools
 ==================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Base.__init__.py' file.
@@ -19,17 +19,16 @@ from OpenPNM.Utilities import misc
 
 class Core(Base,dict):
     r'''
-    This class contains tools to read and write data in OpenPNM objects
-
+    This is the core class from which OpenPNM objects derive.  
     '''
     def __init__(self, **kwargs):
         r'''
         Initialize
         '''
         super(Core,self).__init__(**kwargs)
-        self._logger.info("Construct Base class from Tools subclass")
+        self._logger.info("Construct Core subclass from Base")
         #Initialize network properties dictionaries
-        self._logger.debug("Construction of Tools class complete")
+        self._logger.debug("Construction of Core class complete")
         
     def __setitem__(self,key,value):
         r'''

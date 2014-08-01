@@ -34,8 +34,7 @@ class GenericGeometry(OpenPNM.Core):
     >>> pn = OpenPNM.Network.TestNet()
     >>> Ps = pn.pores()  # Get all pores
     >>> Ts = pn.throats()  # Get all throats
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn)
-    >>> geom.set_locations(pores=Ps,throats=Ts)
+    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)
     """
 
     def __init__(self,network,pores=[],throats=[],name=None,**kwargs):
@@ -48,6 +47,7 @@ class GenericGeometry(OpenPNM.Core):
         self.name = name
         #Register self with network.geometries
         self._net._geometries.append(self)
+        #Setup ordered dict to store property models
         self._models = collections.OrderedDict()
         
         #Initialize geometry locations

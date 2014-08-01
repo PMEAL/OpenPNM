@@ -11,19 +11,18 @@ pn.generate(divisions=[5,5,5],lattice_spacing=[0.0001],add_boundaries=True)
 #==============================================================================
 Ps = pn.pores('boundary',mode='difference')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
-geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts,dynamic_data=True)
+geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
 
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
-boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts,dynamic_data=True)
+boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-#Fluids exist everywhere so don't need to be given pores/throats
-air = OpenPNM.Fluids.Air(network=pn,dynamic_data=True)
+air = OpenPNM.Fluids.Air(network=pn)
 air['pore.Dac'] = 1e-7  # Add custom properties directly
-water = OpenPNM.Fluids.Water(network=pn,dynamic_data=True)
+water = OpenPNM.Fluids.Water(network=pn)
 
 #==============================================================================
 '''Build Physics'''

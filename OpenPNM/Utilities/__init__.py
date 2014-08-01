@@ -14,17 +14,5 @@ Import
 >>> import OpenPNM
 >>> OpenPNM.__version__
 
-Classes
--------
-
-.. autoclass:: Base
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: Tools
-   :members:
-   :undoc-members:
-   :show-inheritance:
 """
 
