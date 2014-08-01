@@ -53,6 +53,8 @@ class GenericPhysics(OpenPNM.Core):
         #Initialize Physics locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
+        self['pore.map'] = pores
+        self['throat.map'] = throats
         fluid['pore.'+self.name] = False
         fluid['pore.'+self.name][pores] = True
         fluid['throat.'+self.name] = False
@@ -60,7 +62,7 @@ class GenericPhysics(OpenPNM.Core):
         
     def physics_health(self):
         r'''
-        Perform a check to find pores with overlapping or undefined Physics.
+        Perform a check to find pores with overlapping or undefined Physics
         '''
         phys = self._fluid.physics()
         temp = sp.zeros((self._fluid.Np,))

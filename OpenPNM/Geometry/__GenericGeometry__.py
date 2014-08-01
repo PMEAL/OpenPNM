@@ -53,6 +53,8 @@ class GenericGeometry(OpenPNM.Core):
         #Initialize geometry locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
+        self['pore.map'] = pores
+        self['throat.map'] = throats
         network['pore.'+self.name] = False
         network['pore.'+self.name][pores] = True
         network['throat.'+self.name] = False
