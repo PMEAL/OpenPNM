@@ -110,12 +110,10 @@ class Core(Base,dict):
         elif self_type == 'Fluids':
             fluid = self
         elif self_type == 'Physics':
-            fluid = self._fluid
+            fluid = self._fluids[0]
             physics = self
-        Ps = self.pores()
-        Ts = self.throats()
         #Build partial function from given kwargs
-        fn = partial(model,network=network,fluid=fluid,geometry=geometry,physics=physics,pores=Ps,throats=Ts,**kwargs)
+        fn = partial(model,network=network,fluid=fluid,geometry=geometry,physics=physics,**kwargs)
         if regen_mode == 'dynamic': 
             dict.__setitem__(self,propname,fn)  # Store model in local dictionary
         if regen_mode == 'static':

@@ -7,9 +7,9 @@ Submodule -- diffusive_conductance
 
 import scipy as _sp
 
-def bulk_diffusion(network,
+def bulk_diffusion(physics,
                    fluid,
-                   throats,
+                   network,
                    pore_molar_density='pore.molar_density',
                    pore_diffusivity='pore.diffusivity',
                    pore_area='pore.area',
@@ -34,6 +34,7 @@ def bulk_diffusion(network,
     calculated.
 
     """    
+    throats = fluid.throats(physics.name)
     #Interpolate pore fluid property values to throats
     cp = fluid[pore_molar_density]
     ct = fluid.interpolate_data(data=cp)

@@ -7,9 +7,9 @@ Submodule -- capillary_pressure
 
 import scipy as _sp
 
-def washburn(fluid,
+def washburn(physics,
+             fluid,
              network,
-             throats,
              pore_surface_tension='pore.surface_tension',
              pore_contact_angle='pore.contact_angle',
              throat_diameter='throat.diameter',
@@ -34,6 +34,7 @@ def washburn(fluid,
     This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
 
     """
+    throats = fluid.throats(physics.name)
     sigma = fluid[pore_surface_tension]
     sigma = fluid.interpolate_data(data=sigma)
     theta = fluid[pore_contact_angle]
@@ -43,14 +44,14 @@ def washburn(fluid,
     value = value[throats]
     return value
 
-def purcell(network,
+def purcell(physics,
             fluid,
-            throats,
+            network,
             r_toroid,
             pore_surface_tension='pore.surfac_tension',
             pore_contact_angle='pore.contact_angle',
             throat_diameter='throat.diameter',
-            **kwargss):
+            **kwargs):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a toroid.
 
@@ -77,6 +78,7 @@ def purcell(network,
 
     TODO: Triple check the accuracy of this equation
     """
+    throats = fluid.throats(physics.name)
     sigma = fluid[pore_surface_tension]
     sigma = fluid.interpolate_data(data=sigma)
     theta = fluid[pore_contact_angle]
