@@ -27,11 +27,11 @@ def cube(geometry,
     return value
     
 def voronoi(network,
-            pores,
             **kwargs):
     r"""
     Calculate volume from the convex hull of the offset vertices making the throats
     """
+    pores = network.pores()
     conns = network['throat.conns']
     verts = network['throat.offset_verts']
     Np = network.num_pores()

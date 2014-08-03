@@ -17,14 +17,15 @@ def random(geometry,
     value = _sp.random.rand(geometry.num_throats(),)
     return value
 
-def neighbor(network,
-             throats,
+def neighbor(geometry,
+             network,
              pore_prop='pore.seed',
              mode='min',
              **kwargs):
     r"""
     Adopt a value based on the neighboring pores
     """
+    throats = network.throats(geometry.name)
     P12 = network.find_connected_pores(throats)
     pvalues = network[pore_prop][P12]
     if mode == 'min':
