@@ -4,7 +4,7 @@ module __GenericGeometry__: Base class to construct pore networks
 
 """
 
-import sys, os, collections
+import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -45,16 +45,13 @@ class GenericGeometry(OpenPNM.Core):
         self._logger.debug("Method: Constructor")
         self._net = network #Attach network to self        
         self.name = name
+
         #Register self with network.geometries
         self._net._geometries.append(self)
-        #Setup ordered dict to store property models
-        self._models = collections.OrderedDict()
         
         #Initialize geometry locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-        self['pore.map'] = pores
-        self['throat.map'] = throats
         network['pore.'+self.name] = False
         network['pore.'+self.name][pores] = True
         network['throat.'+self.name] = False

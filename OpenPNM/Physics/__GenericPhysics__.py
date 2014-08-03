@@ -3,7 +3,7 @@ module Physics
 ===============================================================================
 
 """
-import sys, os, collections
+import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -40,21 +40,16 @@ class GenericPhysics(OpenPNM.Core):
         
         #Append objects self for internal access
         self._net = network
-        self._fluid = fluid
-
+        self.name = name
+        
         #Append self to other objects
         network._physics.append(self)
         fluid._physics.append(self)
-        
-        #Initialize attributes
-        self._models = collections.OrderedDict()
-        self.name = name
+        self._fluids.append(fluid)
         
         #Initialize Physics locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-        self['pore.map'] = pores
-        self['throat.map'] = throats
         fluid['pore.'+self.name] = False
         fluid['pore.'+self.name][pores] = True
         fluid['throat.'+self.name] = False

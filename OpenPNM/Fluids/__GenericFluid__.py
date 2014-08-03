@@ -3,7 +3,7 @@ module Physics
 ===============================================================================
 
 """
-import sys, os, collections
+import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
@@ -41,14 +41,10 @@ class GenericFluid(OpenPNM.Core):
         
         # Attach objects to self for internal access
         self._net = network
-        
-        # Link this Fluid to the Network
-        network._fluids.append(self) 
-        
-        # Initialize attributes
-        self._physics = []
-        self._models = collections.OrderedDict()
         self.name = name
+        
+        # Append this Fluid to the Network
+        network._fluids.append(self) 
         
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = self._net['pore.all']

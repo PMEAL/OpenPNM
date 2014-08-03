@@ -42,11 +42,6 @@ class GenericNetwork(OpenPNM.Core):
         super(GenericNetwork,self).__init__(**kwargs)
         self._logger.info("Construct Network")
 
-        #Initialize fluid, physics, and geometry tracking lists
-        self._fluids = []
-        self._geometries = []
-        self._physics = []
-        self._models = collections.OrderedDict()
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
         self._adjacency_matrix = {}

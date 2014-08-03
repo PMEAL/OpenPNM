@@ -6,7 +6,7 @@ module __Core__: Base class to construct pore network tools
 
 """
 
-import sys,os,pprint
+import sys,os,pprint,collections
 from functools import partial
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
@@ -27,7 +27,15 @@ class Core(Base,dict):
         '''
         super(Core,self).__init__(**kwargs)
         self._logger.info("Construct Core subclass from Base")
-        #Initialize network properties dictionaries
+        
+        #Initialize fluid, physics, and geometry tracking lists
+        self._fluids = []
+        self._geometries = []
+        self._physics = []
+
+        #Initialize ordered dict for storing property models
+        self._models = collections.OrderedDict()
+
         self._logger.debug("Construction of Core class complete")
         
     def __setitem__(self,key,value):
@@ -47,8 +55,8 @@ class Core(Base,dict):
         if (key == 'pore.coords') or (key == 'throat.conns'):
             super(Base, self).__setitem__(key,value)
             return
-        #--- Skip checks for 'all', and prevent changes if defined ---#
-        if key.split('.')[1] == 'all':
+        #--- Skip checks for protect props, and prevent changes if defined ---#
+        if key.split('.')[1] in ['all','map']:
             if key in self.keys():
                 self._logger.error(key+' is already defined.')
             else:
