@@ -20,11 +20,10 @@ _logging.basicConfig(level=_logging.ERROR,
                     
 class Base(object):
     r"""
-    .. class:: `OpenPNM.Utilities.OpenPNMbase` -- Base class for OpenPNM
+    .. class:: `OpenPNM.Utilities.Base` -- Base class for OpenPNM
     
     
-    Base class with a few bells and whistles. Mainly output on screen, logging
-    and pickling. This is the class from which all other classes should inherit.
+    Base class with a few bells and whistles..
     
     Parameters
     ----------    
