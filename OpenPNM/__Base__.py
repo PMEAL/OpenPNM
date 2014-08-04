@@ -67,6 +67,12 @@ class Base(object):
             loglevel = 30
             self.set_loglevel(loglevel)
         
+        #Initialize fluid, physics, and geometry tracking lists
+        self._fluids = []
+        self._geometries = []
+        self._physics = []
+        self._net = []
+        
     def __repr__(self):
         return '<%s.%s object at %s>' % (
         self.__class__.__module__,
@@ -149,6 +155,90 @@ class Base(object):
                 if fluid.__class__.__module__.split('.')[1] == obj_type:
                     objs.append(fluid)
             return objs
+            
+    def physics(self,name=''):
+        r'''
+        Retrieves Physics assocaiated with the Fluid
+        
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Physics object to retrieve
+        Returns
+        -------
+            If name is NOT provided, then a list of Physics names is returned. 
+            If a name IS provided, then the Physics object of that name is 
+            returned.
+        '''
+        if name == '':
+            phys = []
+            for item in self._physics:
+                phys.append(item.name)
+        else:
+            phys = self.find_object(obj_name=name)
+        return phys
+        
+    def fluids(self,name=''):
+        r'''
+        Retrieves Fluids assocaiated with the network
+        
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Fluid object to retrieve.  
+        Returns
+        -------
+            If name is NOT provided, then a list of fluid names is returned. If
+            a name IS provided, then the Fluid object of that name is returned.
+        '''
+        if name == '':
+            fluids = []
+            for item in self._fluids:
+                fluids.append(item.name)
+        else:
+            fluids = self.find_object(obj_name=name)
+        return fluids
+        
+    def geometries(self,name=''):
+        r'''
+        Retrieves Geoemtry assocaiated with the network
+        
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Geometry object to retrieve.  
+        Returns
+        -------
+            If name is NOT provided, then a list of Geometry names is returned. 
+            If a name IS provided, then the Geometry object of that name is 
+            returned.
+        '''
+        if name == '':
+            geoms = []
+            for item in self._geometries:
+                geoms.append(item.name)
+        else:
+            geoms = self.find_object(obj_name=name)
+        return geoms
+        
+    def network(self,name=''):
+        r'''
+        Retrieves parent network from which current network derive
+        
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Geometry object to retrieve.  
+        Returns
+        -------
+            If name is NOT provided, then the name of the parent is returned. 
+            If a name IS provided, then the parent netowrk object is returned.
+        '''
+        if name == '':
+            net = self._net.name
+        else:
+            net = self._net
+        return net
             
     def delete_object(self,obj=None,obj_name=''):
         r'''

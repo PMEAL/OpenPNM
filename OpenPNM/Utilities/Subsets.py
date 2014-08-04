@@ -32,7 +32,7 @@ def subset_network(network,pores,name=None):
     '''
     
     subnet = OpenPNM.Network.GenericNetwork(name=name)
-    subnet._network = [network]  # Attach parent network
+    subnet._net = network  # Attach parent network
     pores = sp.array(pores,ndmin=1)
     throats = network.find_neighbor_throats(pores=pores,mode='intersection',flatten=True)
     

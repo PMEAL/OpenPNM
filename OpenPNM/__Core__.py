@@ -27,11 +27,6 @@ class Core(Base,dict):
         '''
         super(Core,self).__init__(**kwargs)
         self._logger.info("Construct Core subclass from Base")
-        
-        #Initialize fluid, physics, and geometry tracking lists
-        self._fluids = []
-        self._geometries = []
-        self._physics = []
 
         #Initialize ordered dict for storing property models
         self._models = collections.OrderedDict()

@@ -69,14 +69,6 @@ class GenericPhysics(OpenPNM.Core):
         health['undefined'] = sp.where(temp==0)[0].tolist()
         return health
         
-    def fluids(self):
-        r'''
-        Return a list of Fluid object names associated with this Physics
-        '''
-        temp = []
-        temp.append(self._fluid.name)
-        return temp
-        
 if __name__ == '__main__':
     print('none yet')
 
