@@ -49,6 +49,18 @@ OP_1.update(Pc=7000)
 #OP_1.plot_drainage_curve()
 
 #------------------------------------------------------------------------------
+'''Perform a Drainage Experiment on a SUB-network'''
+#------------------------------------------------------------------------------
+#Create a sub-network
+import OpenPNM.Utilities.Subsets as subs
+sub_pn = subs.subset_network(pn,pores=pn.pores(geom.name))
+sub_water = subs.subset_fluid(fluid=water,subnet=sub_pn)
+#Run standard algorithm on subnet, and subfluid
+OP_2 = OpenPNM.Algorithms.OrdinaryPercolation(network=sub_pn)
+OP_2.setup(invading_fluid=sub_water,inlets=sub_pn.pores('bottom'))
+OP_2.run()
+
+#------------------------------------------------------------------------------
 '''Perform Invasion Percolation'''
 #------------------------------------------------------------------------------
 inlets = pn.get_pore_indices(labels = ['bottom_face'])
