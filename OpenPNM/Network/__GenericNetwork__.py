@@ -75,15 +75,26 @@ class GenericNetwork(OpenPNM.Core):
         '''
         element = prop.split('.')[0]
         temp = sp.ndarray((self.count(element),))
+        dtypes = []
         for item in self._geometries:
             locations = self.locations(element=element,labels=item.name)
             if prop not in item.keys():
                 values = sp.ones_like(locations)*sp.nan
+                dtypes.append('nan')
             else:
                 values = item[prop]
-            temp[locations] = values
+                dtypes.append(values.dtype.name)
+            temp[locations] = values  #Assign values
+        #Check for all NaNs, meaning data was not found anywhere
         if sp.all(sp.isnan(temp)):
             raise KeyError(prop)
+        #Analyze and assign data type
+        if sp.all([t in ['bool','nan'] for t in dtypes]):  # If all entries are 'bool' (or 'nan')
+            temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
+        elif sp.all([t == dtypes[0] for t in dtypes]) :  # If all entries are same type
+            temp = sp.array(temp,dtype=dtypes[0])
+        else:
+            self._logger.warning('Retrieved data is of different type...converting to float')
         return temp
         
     def generate(self,coords=[],conns=[],**params):
