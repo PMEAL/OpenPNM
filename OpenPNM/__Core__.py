@@ -152,8 +152,19 @@ class Core(Base,dict):
         props : string or list of strings
             The names of the properties that should be updated, defaults to 'all'
             
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
+        >>> f = gm.pore_misc.random  # Get random seed generator model
+        >>> geom.add_model(propname='pore.seed',model=f,seed=None)  # Add model to Geometry object
+        >>> geom['pore.seed'][0]  # Look at seed value in pore 0
+        ...
+        >>> geom.regenerate()  # Regenerate all models
+        >>> geom['pore.seed'][0]  # Look at same seed value again
+        ...
         
-                    
         '''
         if props == '':
             props = self._models.keys()
@@ -981,7 +992,7 @@ class Core(Base,dict):
         Parameters
         ----------
         data : array_like
-            A list of specific values to be interploated.  List MUST be either
+            A list of specific values to be interpolated.  List MUST be either
             Np or Nt long
         
         Returns
