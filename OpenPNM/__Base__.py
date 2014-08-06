@@ -114,7 +114,7 @@ class Base(object):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = pn.add_geometry(name='geo1')
+        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo1')
         >>> temp = pn.find_object(obj_name='geo1')
         >>> temp.name
         'geo1'
@@ -157,7 +157,7 @@ class Base(object):
             
     def physics(self,name=''):
         r'''
-        Retrieves Physics assocaiated with the Fluid
+        Retrieves Physics assocaiated with the object
         
         Parameters
         ----------
@@ -179,7 +179,7 @@ class Base(object):
         
     def fluids(self,name=''):
         r'''
-        Retrieves Fluids assocaiated with the network
+        Retrieves Fluids assocaiated with the object
         
         Parameters
         ----------
@@ -200,7 +200,7 @@ class Base(object):
         
     def geometries(self,name=''):
         r'''
-        Retrieves Geoemtry assocaiated with the network
+        Retrieves Geometry associated with the object
         
         Parameters
         ----------
@@ -222,26 +222,32 @@ class Base(object):
         
     def network(self,name=''):
         r'''
-        Retrieves parent network from which current network derive
+        Retrieves the network associated with the object.  If the object is
+        a network, then it returns the parent network from which the present
+        object derives, or return an empty list if it has not parents.
         
         Parameters
         ----------
         name : string, optional
             The name of the Geometry object to retrieve.  
+            
         Returns
         -------
             If name is NOT provided, then the name of the parent is returned. 
             If a name IS provided, then the parent netowrk object is returned.
         '''
         if name == '':
-            net = self._net.name
+            try:
+                net = self._net.name
+            except:
+                net = []
         else:
             net = self._net
         return net
             
     def delete_object(self,obj=None,obj_name=''):
         r'''
-        Remove specific objects from a network model
+        Remove specific objects from a model
         
         Parameters
         ----------
@@ -251,7 +257,7 @@ class Base(object):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = pn.add_geometry(name='geo')
+        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo')
         >>> geom.name
         'geo'
         >>> pn.delete_object(obj_name='geo')

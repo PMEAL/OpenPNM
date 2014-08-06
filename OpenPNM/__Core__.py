@@ -100,6 +100,23 @@ class Core(Base,dict):
             * 'static' : The property is stored as static data and is only regenerated when the object's `regenerate` is called
             * 'dynamic' : The property is regenerated each time it is accessed
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
+
+        Notes
+        -----
+        This method is inherited by all net/geom/phys/fluid objects.  It takes
+        the received model and stores it on the object under private dictionary
+        called _models.  This dict is an 'OrderedDict', so that the models can
+        be run in the same order they are added.
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn)
+        >>> import OpenPNM.Geometry.models as gm
+        >>> f = gm.pore_misc.random  # Get model from Geometry library
+        >>> geom.add_model(propname='pore.seed',model=f)
+        >>> list(geom._models.keys())  # Look in private dict to verify model was added
+        ['pore.seed']
         
         '''
         #Determine object type, and assign associated objects
@@ -127,12 +144,15 @@ class Core(Base,dict):
         
     def regenerate(self, props=''):
         r'''
-        This updates properties using the models assigned using `add_model`
+        This updates properties using any models on the object that were 
+        assigned using ``add_model``
 
         Parameters
         ----------
         props : string or list of strings
             The names of the properties that should be updated, defaults to 'all'
+            
+        
                     
         '''
         if props == '':
@@ -301,13 +321,7 @@ class Core(Base,dict):
         -----
         This is a wrapper method that calls _get_data.  
         Only one of pores or throats should be sent.
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_data(prop='test',pores=[0],data=1.1)
-        >>> pn.get_data(prop='test',pores=[0])
-        array([ 1.1])
+        
         '''
         if pores != None:
             if pores == 'all':
@@ -339,13 +353,7 @@ class Core(Base,dict):
         -----
         This is a wrapper method that calls _set_data.  
         Only one of pores or throats should be sent.
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_data(prop='test',pores=[0],data=1.1)
-        >>> pn.get_data(prop='test',pores=[0])
-        array([ 1.1])
+        
         '''
         data= sp.array(data,ndmin=1)
         if pores != None:
@@ -1139,7 +1147,7 @@ class Core(Base,dict):
         The ability to send plurals is useful for some types of 'programmatic'
         access.  For instance, the standard argument for locations is pores
         or throats.  If these are bundled up in a **kwargs dict then you can 
-        just use the dict key in count() without remove the 's'.
+        just use the dict key in count() without removing the 's'.
             
         Examples
         --------

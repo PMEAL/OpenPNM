@@ -530,8 +530,10 @@ class GenericNetwork(OpenPNM.Core):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_pore_info(label='domain1',locations=[0,1,2])
-        >>> pn.set_pore_info(label='domain2',locations=[5,6,7])
+        >>> pn['pore.domain1'] = False
+        >>> pn['pore.domain2'] = False
+        >>> pn['pore.domain1'][[0,1,2]] = True
+        >>> pn['pore.domain2'][[5,6,7]] = True
         >>> pn.find_interface_throats(labels=['domain1','domain2'])
         array([1, 4, 7])
         '''
@@ -704,7 +706,7 @@ class GenericNetwork(OpenPNM.Core):
         {'pore': 125, 'throat': 300}
         >>> pn.trim(pores=[1])
         >>> pn.count()
-        {'pore': 124, 'throat': 296}  # 1 pore and it's 4 throats are missing
+        {'pore': 124, 'throat': 296}
         
         '''
         pores = np.ravel(pores)
