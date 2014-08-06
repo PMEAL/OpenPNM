@@ -1012,6 +1012,55 @@ class Core(Base,dict):
             raise Exception()
         return values
         
+    def interleave_data(self,prop,sources):
+        r'''
+        Retrieves requested property from associated objects, to produce a full 
+        Np or Nt length array.
+        
+        Parameters
+        ----------
+        prop : string
+            The property name to be retrieved
+            
+        sources : list
+            List of object names OR objects from which data is retrieved
+            
+        Returns
+        -------
+        A full length (Np or Nt) array of requested property values.  
+        
+        Notes
+        -----
+        This makes an effort to maintain the data 'type' when possible; however
+        when data is missing this can be tricky.  Float and boolean data is
+        fine, but missing ints are converted to float when nans are inserted.
+        '''
+        element = prop.split('.')[0]
+        temp = sp.ndarray((self.count(element),))
+        dtypes = []
+        for item in sources:
+            try: item.name
+            except: item = self.find_object(obj_name=item)
+            locations = self.locations(element=element,labels=item.name)
+            if prop not in item.keys():
+                values = sp.ones_like(locations)*sp.nan
+                dtypes.append('nan')
+            else:
+                values = item[prop]
+                dtypes.append(values.dtype.name)
+            temp[locations] = values  #Assign values
+        #Check for all NaNs, meaning data was not found anywhere
+        if sp.all(sp.isnan(temp)):
+            raise KeyError(prop)
+        #Analyze and assign data type
+        if sp.all([t in ['bool','nan'] for t in dtypes]):  # If all entries are 'bool' (or 'nan')
+            temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
+        elif sp.all([t == dtypes[0] for t in dtypes]) :  # If all entries are same type
+            temp = sp.array(temp,dtype=dtypes[0])
+        else:
+            self._logger.warning('Retrieved data is of different type...converting to float')
+        return temp
+        
     def num_pores(self,labels=['all'],mode='union'):
         r'''
         Returns the number of pores of the specified labels

@@ -51,51 +51,9 @@ class GenericNetwork(OpenPNM.Core):
     def __getitem__(self,key):
         if key not in self.keys():
             self._logger.debug(key+' not on Network, constructing data from Geometries')
-            return self.interleave_data(key)
+            return self.interleave_data(key,self.geometries())
         else:
             return super().__getitem__(key)
-        
-    def interleave_data(self,prop):
-        r'''
-        Retrieves requested property from associated Geometry objects, to
-        produce a full Np or Nt length array.
-        
-        Parameters
-        ----------
-        prop : string
-            The property name to be retrieved
-            
-        Returns
-        -------
-        A full length (Np or Nt) array of requested property values.  
-        
-        Notes
-        -----
-        Missing data are returned as NaNs.
-        '''
-        element = prop.split('.')[0]
-        temp = sp.ndarray((self.count(element),))
-        dtypes = []
-        for item in self._geometries:
-            locations = self.locations(element=element,labels=item.name)
-            if prop not in item.keys():
-                values = sp.ones_like(locations)*sp.nan
-                dtypes.append('nan')
-            else:
-                values = item[prop]
-                dtypes.append(values.dtype.name)
-            temp[locations] = values  #Assign values
-        #Check for all NaNs, meaning data was not found anywhere
-        if sp.all(sp.isnan(temp)):
-            raise KeyError(prop)
-        #Analyze and assign data type
-        if sp.all([t in ['bool','nan'] for t in dtypes]):  # If all entries are 'bool' (or 'nan')
-            temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
-        elif sp.all([t == dtypes[0] for t in dtypes]) :  # If all entries are same type
-            temp = sp.array(temp,dtype=dtypes[0])
-        else:
-            self._logger.warning('Retrieved data is of different type...converting to float')
-        return temp
         
     def generate(self,coords=[],conns=[],**params):
         r"""
