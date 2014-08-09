@@ -3,14 +3,14 @@ module Physics
 ===============================================================================
 
 """
-import sys, os, collections
+import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
 import scipy as sp
 
-class GenericPhysics(OpenPNM.Utilities.Tools):
+class GenericPhysics(OpenPNM.Core):
     r"""
     Generic class to generate Physics objects  
 
@@ -40,15 +40,12 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         
         #Append objects self for internal access
         self._net = network
-        self._fluid = fluid
-
+        self.name = name
+        
         #Append self to other objects
         network._physics.append(self)
         fluid._physics.append(self)
-        
-        #Initialize attributes
-        self._models = collections.OrderedDict()
-        self.name = name
+        self._fluids.append(fluid)
         
         #Initialize Physics locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
@@ -58,17 +55,11 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         fluid['throat.'+self.name] = False
         fluid['throat.'+self.name][throats] = True
         
-    def pores(self,**kwargs):
-        return self._fluid.pores(labels=self.name)
-
-    def throats(self,**kwargs):
-        return self._fluid.throats(labels=self.name)
-        
     def physics_health(self):
         r'''
-        Perform a check to find pores with overlapping or undefined Physics.
+        Perform a check to find pores with overlapping or undefined Physics
         '''
-        phys = self._net.physics()
+        phys = self._fluid.physics()
         temp = sp.zeros((self._fluid.Np,))
         for item in phys:
             ind = self._fluid['pore.'+item]
@@ -77,14 +68,6 @@ class GenericPhysics(OpenPNM.Utilities.Tools):
         health['overlaps'] = sp.where(temp>1)[0].tolist()
         health['undefined'] = sp.where(temp==0)[0].tolist()
         return health
-        
-    def fluids(self):
-        r'''
-        Return a list of Fluid object names associated with this Physics
-        '''
-        temp = []
-        temp.append(self._fluid.name)
-        return temp
         
 if __name__ == '__main__':
     print('none yet')

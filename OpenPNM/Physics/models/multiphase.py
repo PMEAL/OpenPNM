@@ -7,9 +7,9 @@ Submodule -- diffusive_conductance
 
 import scipy as sp
 
-def conduit_conductance(network,
+def conduit_conductance(physics,
                         fluid,
-                        throats,
+                        network,
                         throat_conductance,
                         throat_occupancy='throat.occupancy',
                         pore_occupancy='pore.occupancy',
@@ -48,6 +48,7 @@ def conduit_conductance(network,
     calculated.
 
     """
+    throats = fluid.throats(physics.name)
     if (mode == 'loose'):
         closed_conduits = -fluid[throat_occupancy]
     else:
@@ -67,12 +68,12 @@ def conduit_conductance(network,
     value = throat_value*open_conduits + throat_value*closed_conduits*factor
     return value
 
-def late_throat_filling(network,fluid,throats,Pc_star,eta):
+def late_throat_filling(network,fluid,Pc_star,eta):
     pass
 
-def late_pore_filling(network,
+def late_pore_filling(physics,
                       fluid,
-                      pores,
+                      network,
                       Pc,
                       Swp_star=0.2,
                       eta=3,
@@ -98,7 +99,7 @@ def late_pore_filling(network,
     
     
     '''
-    
+    pores = fluid.pores(physics.name)
     prop = fluid[throat_capillary_pressure]
     neighborTs = network.find_neighbor_throats(pores,flatten=False)
     Pc_star = sp.array([sp.amin(prop[row]) for row in neighborTs])

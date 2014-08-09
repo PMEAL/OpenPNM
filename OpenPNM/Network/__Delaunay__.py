@@ -41,11 +41,9 @@ class Delaunay(GenericNetwork):
     Examples
     --------
     >>> pn = OpenPNM.Network.Delaunay()
-    >>> pn.generate(num_pores=100,domain_size=[100,100,100])
+    >>> pn.generate(num_pores=100,domain_size=[100,100,100],add_boundaries=0)
     >>> pn.num_pores()
     100
-    >>> type(pn.num_throats())
-    <class 'numpy.int32'>
 
     """
     add_boundaries = False

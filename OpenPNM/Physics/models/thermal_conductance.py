@@ -7,9 +7,9 @@ Submodule -- thermal_conductance
 
 import scipy as _sp
 
-def thermal_fluid(network,
+def thermal_fluid(physics,
                   fluid,
-                  throats,
+                  network,
                   thermal_conductivity = 'pore.thermal_conductivity',
                   pore_diameter = 'pore.diameter',
                   throat_diameter = 'throat.diameter',
@@ -26,11 +26,10 @@ def thermal_fluid(network,
             The fluid of interest
 
     """
-    
+    throats = fluid.throats(physics.name)
     kt = fluid.get_data(prop=thermal_conductivity,pores='all',mode='interpolate')
     #Get Nt-by-2 list of pores connected to each throat
-    tind = network.get_throat_indices()
-    pores = network.find_connected_pores(tind,flatten=0)
+    pores = network.find_connected_pores(network.throats(),flatten=0)
     #Find g for half of pore 1
     pdia = network[pore_diameter]
     gp1 = kt*pdia[pores[:,0]]**2/(0.5*pdia[pores[:,0]])

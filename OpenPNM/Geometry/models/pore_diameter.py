@@ -20,13 +20,13 @@ def sphere(geometry,
     return value
 
 def voronoi(network,
-            pores,
             pore_volume='pore.volume',
             **kwargs):
     r"""
     Calculate pore diameter from equivalent sphere - volumes must be calculated first
     """
     from scipy.special import cbrt
+    pores = network.pores()
     pore_vols = network[pore_volume][pores]
     value = cbrt(6*pore_vols/_sp.pi)
     return value

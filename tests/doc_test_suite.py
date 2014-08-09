@@ -10,10 +10,10 @@ report = True
 #------------------------------------------------------------------------------
 '''Test Base Classes'''
 #------------------------------------------------------------------------------
-import OpenPNM.Utilities.__Base__ as mod_to_test
+import OpenPNM.__Base__ as mod_to_test
 doctest.testmod(mod_to_test,report=report,verbose=verbose)
 
-import OpenPNM.Utilities.__Tools__ as mod_to_test
+import OpenPNM.__Core__ as mod_to_test
 doctest.testmod(mod_to_test,report=report,verbose=verbose)
 
 #------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ doctest.testmod(mod_to_test,report=report,verbose=verbose)
 import OpenPNM.Geometry.__GenericGeometry__ as mod_to_test
 doctest.testmod(mod_to_test,report=report,verbose=verbose)
 
-import OpenPNM.Geometry.__StickBall__ as mod_to_test
+import OpenPNM.Geometry.__Stick_and_Ball__ as mod_to_test
 doctest.testmod(mod_to_test,report=report,verbose=verbose)
 
 #------------------------------------------------------------------------------

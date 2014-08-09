@@ -11,19 +11,18 @@ pn.generate(divisions=[5,5,5],lattice_spacing=[0.0001],add_boundaries=True)
 #==============================================================================
 Ps = pn.pores('boundary',mode='difference')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
-geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts,dynamic_data=True)
+geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
 
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
-boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts,dynamic_data=True)
+boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 
 #==============================================================================
 '''Build Fluids'''
 #==============================================================================
-#Fluids exist everywhere so don't need to be given pores/throats
-air = OpenPNM.Fluids.Air(network=pn,dynamic_data=True)
+air = OpenPNM.Fluids.Air(network=pn)
 air['pore.Dac'] = 1e-7  # Add custom properties directly
-water = OpenPNM.Fluids.Water(network=pn,dynamic_data=True)
+water = OpenPNM.Fluids.Water(network=pn)
 
 #==============================================================================
 '''Build Physics'''
@@ -48,6 +47,18 @@ OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=Ps)
 OP_1.run()
 OP_1.update(Pc=7000)
 #OP_1.plot_drainage_curve()
+
+#------------------------------------------------------------------------------
+'''Perform a Drainage Experiment on a SUB-network'''
+#------------------------------------------------------------------------------
+#Create a sub-network
+import OpenPNM.Utilities.Subsets as subs
+sub_pn = subs.subset_network(pn,pores=pn.pores(geom.name))
+sub_water = subs.subset_fluid(fluid=water,subnet=sub_pn)
+#Run standard algorithm on subnet, and subfluid
+OP_2 = OpenPNM.Algorithms.OrdinaryPercolation(network=sub_pn)
+OP_2.setup(invading_fluid=sub_water,inlets=sub_pn.pores('bottom'))
+OP_2.run()
 
 #------------------------------------------------------------------------------
 '''Perform Invasion Percolation'''

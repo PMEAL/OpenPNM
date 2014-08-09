@@ -8,21 +8,22 @@ import scipy as _sp
 
 def straight(network,
              geometry,
-             throats,
              pore_diameter='pore.diameter',
              **kwargs):
     r"""
     Calculate throat length 
     """
     #Initialize throat_property['length']
-    pore1 = network['throat.conns'][throats,0]
-    pore2 = network['throat.conns'][throats,1]
+    throats = network.throats(geometry.name)
+    pore1 = network['throat.conns'][:,0]
+    pore2 = network['throat.conns'][:,1]
     C1 = network['pore.coords'][pore1]
     C2 = network['pore.coords'][pore2]
     E = _sp.sqrt(_sp.sum((C1-C2)**2,axis=1))  #Euclidean distance between pores
     D1 = network[pore_diameter][pore1]
     D2 = network[pore_diameter][pore2]
     value = E-(D1+D2)/2
+    value = value[throats]
     return value
         
 def voronoi(network,

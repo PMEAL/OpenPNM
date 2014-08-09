@@ -1,35 +1,37 @@
 """
-module __Tools__: Base class to construct pore network tools
+module __Core__: Base class to construct pore network tools
 ==================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Base.__init__.py' file.
 
 """
 
-import sys, os,pprint
+import sys,os,pprint,collections
 from functools import partial
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import scipy as sp
 import OpenPNM
-from OpenPNM.Utilities import Base
+from OpenPNM import Base
 from OpenPNM.Utilities import misc
 
 
-class Tools(Base,dict):
+class Core(Base,dict):
     r'''
-    This class contains tools to read and write data in OpenPNM objects
-
+    This is the core class from which OpenPNM objects derive.  
     '''
     def __init__(self, **kwargs):
         r'''
         Initialize
         '''
-        super(Tools,self).__init__(**kwargs)
-        self._logger.info("Construct Base class from Tools subclass")
-        #Initialize network properties dictionaries
-        self._logger.debug("Construction of Tools class complete")
+        super(Core,self).__init__(**kwargs)
+        self._logger.info("Construct Core subclass from Base")
+
+        #Initialize ordered dict for storing property models
+        self._models = collections.OrderedDict()
+
+        self._logger.debug("Construction of Core class complete")
         
     def __setitem__(self,key,value):
         r'''
@@ -48,13 +50,13 @@ class Tools(Base,dict):
         if (key == 'pore.coords') or (key == 'throat.conns'):
             super(Base, self).__setitem__(key,value)
             return
-        #--- Skip checks for 'all', and prevent changes if defined ---#
-        if key.split('.')[1] == 'all':
+        #--- Skip checks for protect props, and prevent changes if defined ---#
+        if key.split('.')[1] in ['all','map']:
             if key in self.keys():
                 self._logger.error(key+' is already defined.')
-        else:
+            else:
                 self._logger.debug(key+' is being defined.')
-                    super(Base, self).__setitem__(key,value)
+                super(Base, self).__setitem__(key,value)
             return
         #--- Check if key is a model  ---#
         if key in self.keys():
@@ -65,24 +67,24 @@ class Tools(Base,dict):
         if sp.shape(value)[0] == 1:  # If value is scalar
             self._logger.debug('Broadcasting scalar value into vector: '+key)
             value = sp.ones((self.count(element),),dtype=value.dtype)*value
-                    super(Base, self).__setitem__(key,value)
+            super(Base, self).__setitem__(key,value)
         elif sp.shape(value)[0] == self.count(element):
-                        self._logger.debug('Updating vector :'+key)
-                        super(Base, self).__setitem__(key,value)
-                    else:
+            self._logger.debug('Updating vector: '+key)
+            super(Base, self).__setitem__(key,value)
+        else:
             self._logger.error('Cannot write vector with an array of the wrong length: '+key)
             
     def __getitem__(self,propname):
         temp = dict.__getitem__(self,propname)
         if temp.__class__.__name__ == 'partial':
             return temp()
-                        else:
+        else:
             return temp
-    
+            
     def add_model(self,propname,model,regen_mode='static',**kwargs):
         r'''
         Add specified property estimation model to the object.
-    
+        
         Parameters
         ----------
         propname : string
@@ -98,6 +100,23 @@ class Tools(Base,dict):
             * 'static' : The property is stored as static data and is only regenerated when the object's `regenerate` is called
             * 'dynamic' : The property is regenerated each time it is accessed
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
+
+        Notes
+        -----
+        This method is inherited by all net/geom/phys/fluid objects.  It takes
+        the received model and stores it on the object under private dictionary
+        called _models.  This dict is an 'OrderedDict', so that the models can
+        be run in the same order they are added.
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn)
+        >>> import OpenPNM.Geometry.models as gm
+        >>> f = gm.pore_misc.random  # Get model from Geometry library
+        >>> geom.add_model(propname='pore.seed',model=f)
+        >>> list(geom._models.keys())  # Look in private dict to verify model was added
+        ['pore.seed']
         
         '''
         #Determine object type, and assign associated objects
@@ -111,12 +130,10 @@ class Tools(Base,dict):
         elif self_type == 'Fluids':
             fluid = self
         elif self_type == 'Physics':
-            fluid = self._fluid
+            fluid = self._fluids[0]
             physics = self
-        Ps = self.pores()
-        Ts = self.throats()
         #Build partial function from given kwargs
-        fn = partial(model,network=network,fluid=fluid,geometry=geometry,physics=physics,pores=Ps,throats=Ts,**kwargs)
+        fn = partial(model,network=network,fluid=fluid,geometry=geometry,physics=physics,**kwargs)
         if regen_mode == 'dynamic': 
             dict.__setitem__(self,propname,fn)  # Store model in local dictionary
         if regen_mode == 'static':
@@ -127,13 +144,27 @@ class Tools(Base,dict):
         
     def regenerate(self, props=''):
         r'''
-        This updates properties using the models assigned using `add_model`
+        This updates properties using any models on the object that were 
+        assigned using ``add_model``
 
         Parameters
         ----------
         props : string or list of strings
             The names of the properties that should be updated, defaults to 'all'
-                    
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
+        >>> f = gm.pore_misc.random  # Get random seed generator model
+        >>> geom.add_model(propname='pore.seed',model=f,seed=None)  # Add model to Geometry object
+        >>> geom['pore.seed'][0]  # Look at seed value in pore 0
+        ...
+        >>> geom.regenerate()  # Regenerate all models
+        >>> geom['pore.seed'][0]  # Look at same seed value again
+        ...
+        
         '''
         if props == '':
             props = self._models.keys()
@@ -301,13 +332,7 @@ class Tools(Base,dict):
         -----
         This is a wrapper method that calls _get_data.  
         Only one of pores or throats should be sent.
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_data(prop='test',pores=[0],data=1.1)
-        >>> pn.get_data(prop='test',pores=[0])
-        array([ 1.1])
+        
         '''
         if pores != None:
             if pores == 'all':
@@ -339,13 +364,7 @@ class Tools(Base,dict):
         -----
         This is a wrapper method that calls _set_data.  
         Only one of pores or throats should be sent.
-            
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_data(prop='test',pores=[0],data=1.1)
-        >>> pn.get_data(prop='test',pores=[0])
-        array([ 1.1])
+        
         '''
         data= sp.array(data,ndmin=1)
         if pores != None:
@@ -527,7 +546,7 @@ class Tools(Base,dict):
         THIS METHOD IS DEPRECATED, USE get_info INSTEAD
         '''
         return self._get_info(element='throat',label=label)
-        
+                
     def amalgamate_data(self,objs=[]):
         r"""
         Returns a dictionary containing ALL pore data from all netowrk and/or
@@ -538,16 +557,34 @@ class Tools(Base,dict):
         data_amalgamated = {}
         exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
         for item in objs:
-            try:
+#            try:
+            if item.__module__[0:15] == 'OpenPNM.Network': #if network object, combine geometry and network keys
+                keys = []
                 for key in item.keys():
-                    if key not in exclusion_list:
-                        if sp.amax(item[key]) < sp.inf:
-                            dict_name = item.name+'.'+key
-                            data_amalgamated.update({dict_name : item[key]})
-            except: 
-                self._logger.error('Only network and fluid items contain data')
+                    keys.append(key)
+                for geom in item._geometries:
+                    for key in geom.keys():
+                        if key not in keys:
+                            keys.append(key)
+            else:
+                if item.__module__[0:14] == 'OpenPNM.Fluids':
+                    keys = []
+                    for key in item.keys():
+                        keys.append(key)
+                    for physics in item._physics:
+                        for key in physics.keys():
+                            if key not in keys:
+                                keys.append(key)
+            keys.sort()
+            for key in keys:
+                if key not in exclusion_list:
+                    if sp.amax(item[key]) < sp.inf:
+                        dict_name = item.name+'.'+key
+                        data_amalgamated.update({dict_name : item[key]})
+#            except: 
+#                self._logger.error('Only network and fluid items contain data')
         return data_amalgamated
-        
+            
     def props(self,element='',pores=[],throats=[],mode='all'):
         r'''
         Returns a list containing the names of all defined pore or throat
@@ -557,7 +594,7 @@ class Tools(Base,dict):
         ----------
         pores or throats : array_like
             hmmm
-            
+
         Returns
         -------
         A an alphabetically sorted list containing the string name of all 
@@ -594,23 +631,23 @@ class Tools(Base,dict):
             return misc.PrintableList(temp)
         else:
             if pores != []:
-            temp = {}
-            for item in props:
-                if item.split('.')[0] == 'pore':
-                    if sp.shape(self[item])[0] == 1: #is scalar
-                        vals = sp.ones((sp.shape(pores)[0],))*self[item]
-                    else:
-                        vals = self[item][pores]
-                    temp.update({item:vals})
-        elif throats != []:
-            temp = {}
-            for item in props:
-                if item.split('.')[0] == 'throat':
-                    if sp.shape(self[item])[0] == 1: #is scalar
-                        vals = sp.ones((sp.shape(throats)[0],))*self[item]
-                    else:
-                        vals = self[item][throats]
-                    temp.update({item:vals})
+                temp = {}
+                for item in props:
+                    if item.split('.')[0] == 'pore':
+                        if sp.shape(self[item])[0] == 1: #is scalar
+                            vals = sp.ones((sp.shape(pores)[0],))*self[item]
+                        else:
+                            vals = self[item][pores]
+                        temp.update({item:vals})
+            elif throats != []:
+                temp = {}
+                for item in props:
+                    if item.split('.')[0] == 'throat':
+                        if sp.shape(self[item])[0] == 1: #is scalar
+                            vals = sp.ones((sp.shape(throats)[0],))*self[item]
+                        else:
+                            vals = self[item][throats]
+                        temp.update({item:vals})
             return misc.PrintableDict(temp)
             
     def _get_labels(self,element='',locations=[],mode='union'):
@@ -729,7 +766,7 @@ class Tools(Base,dict):
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
-        array([0,1])
+        array([0, 1])
         '''
         if pores != []:
             label = 'pore.'+label.split('.')[-1]
@@ -973,12 +1010,12 @@ class Tools(Base,dict):
         Parameters
         ----------
         data : array_like
-            A list of specific values to be interploated.  List MUST be either
+            A list of specific values to be interpolated.  List MUST be either
             Np or Nt long
         
         Returns
         -------
-            An array containing interpolated pore (or throat) data
+        An array containing interpolated pore (or throat) data
 
         Notes
         -----
@@ -999,10 +1036,59 @@ class Tools(Base,dict):
             Ts = self.throats()
             Ps12 = net.find_connected_pores(throats=Ts,flatten=False)
             values = sp.mean(data[Ps12],axis=1)
-            else:
+        else:
             self._logger.error('Received data was an ambiguous length')
             raise Exception()
         return values
+        
+    def interleave_data(self,prop,sources):
+        r'''
+        Retrieves requested property from associated objects, to produce a full 
+        Np or Nt length array.
+        
+        Parameters
+        ----------
+        prop : string
+            The property name to be retrieved
+            
+        sources : list
+            List of object names OR objects from which data is retrieved
+            
+        Returns
+        -------
+        A full length (Np or Nt) array of requested property values.  
+        
+        Notes
+        -----
+        This makes an effort to maintain the data 'type' when possible; however
+        when data is missing this can be tricky.  Float and boolean data is
+        fine, but missing ints are converted to float when nans are inserted.
+        '''
+        element = prop.split('.')[0]
+        temp = sp.ndarray((self.count(element),))
+        dtypes = []
+        for item in sources:
+            try: item.name
+            except: item = self.find_object(obj_name=item)
+            locations = self.locations(element=element,labels=item.name)
+            if prop not in item.keys():
+                values = sp.ones_like(locations)*sp.nan
+                dtypes.append('nan')
+            else:
+                values = item[prop]
+                dtypes.append(values.dtype.name)
+            temp[locations] = values  #Assign values
+        #Check for all NaNs, meaning data was not found anywhere
+        if sp.all(sp.isnan(temp)):
+            raise KeyError(prop)
+        #Analyze and assign data type
+        if sp.all([t in ['bool','nan'] for t in dtypes]):  # If all entries are 'bool' (or 'nan')
+            temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
+        elif sp.all([t == dtypes[0] for t in dtypes]) :  # If all entries are same type
+            temp = sp.array(temp,dtype=dtypes[0])
+        else:
+            self._logger.warning('Retrieved data is of different type...converting to float')
+        return temp
         
     def num_pores(self,labels=['all'],mode='union'):
         r'''
@@ -1139,7 +1225,7 @@ class Tools(Base,dict):
         The ability to send plurals is useful for some types of 'programmatic'
         access.  For instance, the standard argument for locations is pores
         or throats.  If these are bundled up in a **kwargs dict then you can 
-        just use the dict key in count() without remove the 's'.
+        just use the dict key in count() without removing the 's'.
             
         Examples
         --------
@@ -1154,12 +1240,12 @@ class Tools(Base,dict):
         elif element in ['throat','throats']:
             temp = self.num_throats()
         elif element == None:
-        temp = {}
-        temp['pore'] = self.num_pores()
-        temp['throat'] = self.num_throats()
+            temp = {}
+            temp['pore'] = self.num_pores()
+            temp['throat'] = self.num_throats()
         return temp
         
-    def data_health(self,element='',props=[],quiet=True):
+    def data_health(self,element='',props=[],quiet=False):
         r'''
         Check the health of pore and throat data arrays.  
         
@@ -1209,7 +1295,7 @@ class Tools(Base,dict):
         if quiet == False:
             pprint.pprint(health)
         return flag
-            
+        
     def __str__(self):
         header = '-'*60
         print(header)
@@ -1220,7 +1306,7 @@ class Tools(Base,dict):
         count = 0
         props = self.props()
         props.sort()
-            for item in props:
+        for item in props:
             count = count + 1
             prop=item
             if len(prop)>35:
@@ -1242,7 +1328,7 @@ class Tools(Base,dict):
             print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item])))
         print(header)
         return ''
-        
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)

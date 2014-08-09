@@ -4,14 +4,14 @@ module __GenericGeometry__: Base class to construct pore networks
 
 """
 
-import sys, os, collections
+import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
 import scipy as sp
 
-class GenericGeometry(OpenPNM.Utilities.Tools):
+class GenericGeometry(OpenPNM.Core):
     r"""
     GenericGeometry - Base class to construct a Geometry object
 
@@ -34,8 +34,7 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
     >>> pn = OpenPNM.Network.TestNet()
     >>> Ps = pn.pores()  # Get all pores
     >>> Ts = pn.throats()  # Get all throats
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn)
-    >>> geom.set_locations(pores=Ps,throats=Ts)
+    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)
     """
 
     def __init__(self,network,pores=[],throats=[],name=None,**kwargs):
@@ -46,9 +45,9 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         self._logger.debug("Method: Constructor")
         self._net = network #Attach network to self        
         self.name = name
+
         #Register self with network.geometries
         self._net._geometries.append(self)
-        self._models = collections.OrderedDict()
         
         #Initialize geometry locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
@@ -57,18 +56,6 @@ class GenericGeometry(OpenPNM.Utilities.Tools):
         network['pore.'+self.name][pores] = True
         network['throat.'+self.name] = False
         network['throat.'+self.name][throats] = True
-    
-    def pores(self,**kwargs):
-        r'''
-        Returns a list of pores to which this Geometry applies.
-        '''
-        return self._net.pores(labels=self.name)
-
-    def throats(self,**kwargs):
-        r'''
-        Returns a list of pores to which this Geometry applies.
-        '''
-        return self._net.throats(labels=self.name)
         
     def geometry_health(self):
         r'''

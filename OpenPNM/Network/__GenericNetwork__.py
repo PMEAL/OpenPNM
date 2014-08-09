@@ -18,7 +18,7 @@ import scipy.sparse as sprs
 import scipy.signal as spsg
 
 
-class GenericNetwork(OpenPNM.Utilities.Tools):
+class GenericNetwork(OpenPNM.Core):
     r"""
     GenericNetwork - Base class to construct pore networks
 
@@ -42,11 +42,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         super(GenericNetwork,self).__init__(**kwargs)
         self._logger.info("Construct Network")
 
-        #Initialize fluid, physics, and geometry tracking lists
-        self._fluids = []
-        self._geometries = []
-        self._physics = []
-        self._models = collections.OrderedDict()
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
         self._adjacency_matrix = {}
@@ -56,42 +51,11 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
     def __getitem__(self,key):
         if key not in self.keys():
             self._logger.debug(key+' not on Network, constructing data from Geometries')
-            return self.interleave_data(key)
+            return self.interleave_data(key,self.geometries())
         else:
             return super().__getitem__(key)
         
-    def interleave_data(self,prop):
-        r'''
-        Retrieves requested property from associated Geometry objects, to
-        produce a full Np or Nt length array.
-        
-        Parameters
-        ----------
-        prop : string
-            The property name to be retrieved
-            
-        Returns
-        -------
-        A full length (Np or Nt) array of requested property values.  
-        
-        Notes
-        -----
-        Missing data are returned as NaNs.
-        '''
-        element = prop.split('.')[0]
-        temp = sp.ndarray((self.count(element),))
-        for item in self._geometries:
-            locations = item.locations(element)
-            if prop not in item.keys():
-                values = sp.ones_like(locations)*sp.nan
-            else:
-                values = item[prop]
-            temp[locations] = values
-        if sp.all(sp.isnan(temp)):
-            raise KeyError(prop)
-        return temp
-        
-    def generate(self, coords=[], conns=[], **params):
+    def generate(self,coords=[],conns=[],**params):
         r"""
         Generate the network from a list of pores coordinate and throat connections
         
@@ -524,8 +488,10 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.set_pore_info(label='domain1',locations=[0,1,2])
-        >>> pn.set_pore_info(label='domain2',locations=[5,6,7])
+        >>> pn['pore.domain1'] = False
+        >>> pn['pore.domain2'] = False
+        >>> pn['pore.domain1'][[0,1,2]] = True
+        >>> pn['pore.domain2'][[5,6,7]] = True
         >>> pn.find_interface_throats(labels=['domain1','domain2'])
         array([1, 4, 7])
         '''
@@ -562,98 +528,6 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         self._incidence_matrix['coo'] = self.create_incidence_matrix(sprsfmt='coo')
         self._incidence_matrix['csr'] = self.create_incidence_matrix(sprsfmt='csr')
         self._incidence_matrix['lil'] = self.create_incidence_matrix(sprsfmt='lil')
-        
-    #--------------------------------------------------------------------------
-    '''Object Association Related Methods'''
-    #--------------------------------------------------------------------------
-    def regenerate(self):
-        r'''
-        Update all the Geometry and Topology data on the network
-        
-        Notes
-        -----
-        It must still be decided how best to handle this process.  For instance
-        should this method regenerate the Geometry as well, or should that be
-        done manually?  Or, should data be regenerated each time it's called?
-        '''
-        pass
-        
-#        #Regenerate all Geometry objects associated with network
-#        for item in self._geometries:
-#            item.regenerate()
-#            
-#        #Pull in data from freshly regenerated Geometry object(s)
-#        for geom in self._geometries:
-#            for item in geom.props():
-#                element = item.split('.')[0]
-#                locations = geom.locations(element)
-#                if item not in self.props():
-#                    self[item] = sp.nan
-#                self[item][locations] = geom[item]
-        
-    def geometries(self,name=''):
-        r'''
-        Retrieves Geoemtry assocaiated with the network
-        
-        Parameters
-        ----------
-        name : string, optional
-            The name of the Geometry object to retrieve.  
-        Returns
-        -------
-            If name is NOT provided, then a list of Geometry names is returned. 
-            If a name IS provided, then the Geometry object of that name is 
-            returned.
-        '''
-        if name == '':
-            geoms = []
-            for item in self._geometries:
-                geoms.append(item.name)
-        else:
-            geoms = self.find_object(obj_name=name)
-        return geoms
-        
-    def fluids(self,name=''):
-        r'''
-        Retrieves Fluids assocaiated with the network
-        
-        Parameters
-        ----------
-        name : string, optional
-            The name of the Fluid object to retrieve.  
-        Returns
-        -------
-            If name is NOT provided, then a list of fluid names is returned. If
-            a name IS provided, then the Fluid object of that name is returned.
-        '''
-        if name == '':
-            fluids = []
-            for item in self._fluids:
-                fluids.append(item.name)
-        else:
-            fluids = self.find_object(obj_name=name)
-        return fluids
-        
-    def physics(self,name=''):
-        r'''
-        Retrieves Physics assocaiated with the network
-        
-        Parameters
-        ----------
-        name : string, optional
-            The name of the Fluid object to retrieve.  
-        Returns
-        -------
-            If name is NOT provided, then a list of physics names is returned. If
-            a name IS provided, then the Fluid object of that name is returned.
-        '''
-        if name == '':
-            physics = []
-            for item in self._physics:
-                physics.append(item.name)
-        else:
-            physics = self.find_object(obj_name=name)
-        return physics
         
     #--------------------------------------------------------------------------
     '''Network Manipulation Methods'''
@@ -790,7 +664,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
         {'pore': 125, 'throat': 300}
         >>> pn.trim(pores=[1])
         >>> pn.count()
-        {'pore': 124, 'throat': 296}  # 1 pore and it's 4 throats are missing
+        {'pore': 124, 'throat': 296}
         
         '''
         pores = np.ravel(pores)
@@ -898,8 +772,8 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             groups of duplicates lumped into a single sublist
             
             2. 'remove' : Will attempt to remove the duplicates.  This option
-            should NOT be used on netorks with other assigned objects sine pore 
-            and throat numbering will change.  
+            should NOT be used on netorks with other associated objects since 
+            pore and throat numbering will change.  
             
         '''
         if (self._geometries != []):
@@ -1046,134 +920,7 @@ class GenericNetwork(OpenPNM.Utilities.Tools):
             a = sp.amin(As[corner1,p])
             o = h*sp.sin(sp.arccos((a/h)))
             A = o*a
-        return A        
-        
-    #--------------------------------------------------------------------------
-    '''Miscillaneous Methods'''
-    #--------------------------------------------------------------------------
-    def subset(self,pores,name=None,incl_labels=True,incl_props=True):
-        r'''
-        Create a new sub-network from a list of pores.
-        
-        Parameters
-        ----------
-        pores : array_like
-            A list of pores from which to create the new network
-        incl_labels : bool, default is True
-            Specifies whether to keep labels from main network
-        incl_props : bool, default is True
-            Specifies whather to keep properties from main network
-        name : string, optional
-            The name to apply to the new network object
-            
-        Returns
-        -------
-        OpenPNM Object
-            Returns a new network object
-            
-        Notes
-        -----
-        This method adds a pore and throat label to the master network (pn) 
-        indicating which pores and throats were part of the sub-network (sn).  
-        This means that the results of the sub-network can be applied to the 
-        correct pores and throats in the main network by calling 
-        pn.pores(sn.name), and pn.throats(sn.name).
-        
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.count()
-        {'pore': 125, 'throat': 300}
-        >>> Ps = pn.pores(['top','bottom','front'])
-        >>> sn = pn.subset(pores=Ps)
-        >>> sn.count()
-        {'pore': 65, 'throat': 112}
-        >>> sn.labels()[0:3]  # It automatically transfers labels and props
-        ['pore.all', 'pore.back', 'pore.bottom']
-        >>>  sn = pn.subset(pores=Ps,incl_labels=False)
-        >>> sn.labels()
-        ['pore.all', 'throat.all']
-        '''
-        newpnm = OpenPNM.Network.GenericNetwork(name=name)
-        pores = sp.array(pores,ndmin=1)
-        throats = self.find_neighbor_throats(pores=pores,mode='intersection',flatten=True)
-        
-        #Remap throats on to new pore numbering
-        Pmap = sp.zeros_like(self.pores())*sp.nan
-        Pmap[pores] = sp.arange(0,sp.shape(pores)[0])
-        tpore1 = sp.array(Pmap[self['throat.conns'][throats,0]],dtype=int)
-        tpore2 = sp.array(Pmap[self['throat.conns'][throats,1]],dtype=int)
-        newpnm['throat.conns'] = sp.vstack((tpore1,tpore2)).T
-        newpnm['pore.coords'] = self['pore.coords'][pores]
-        
-        #Now scan through labels and props, and keep if needed
-        newpnm['pore.all'] = self['pore.all'][pores]
-        newpnm['throat.all'] = self['throat.all'][throats]
-        if incl_labels == True:
-            labels = self.labels()
-            labels.remove('pore.all')
-            labels.remove('throat.all')
-            for item in labels:
-                if item.split('.')[0] == 'pore':
-                    newpnm[item] = self[item][pores]
-                if item.split('.')[0] == 'throat':
-                    newpnm[item] = self[item][throats]
-        if incl_props == True:
-            props = self.props()
-            props.remove('throat.conns')
-            props.remove('pore.coords')
-            for item in props:
-                if item.split('.')[0] == 'pore':
-                    newpnm[item] = self[item][pores]
-                if item.split('.')[0] == 'throat':
-                    newpnm[item] = self[item][throats]
-        
-        #Append pore and throat mapping to main network as attributes and data
-        self['pore.'+newpnm.name] = sp.zeros_like(self['pore.all'],dtype=bool)
-        self['pore.'+newpnm.name][pores] = True
-        self['throat.'+newpnm.name] = sp.zeros_like(self['throat.all'],dtype=bool)
-        self['throat.'+newpnm.name][throats] = True
-        
-        import types
-        newpnm.subset_fluid = types.MethodType(subset_fluid, newpnm)     
-        
-        return newpnm
-        
-#------------------------------------------------------------------------------
-'''Additional Functions'''
-#------------------------------------------------------------------------------
-# These functions are not automatically attached to the network, but can be
-# using object.method_name = types.MethodType(method_name, object)
-  
-def subset_fluid(self,fluid):
-    r'''
-    This method is appended to subset networks. It takes a fluid from the main
-    network, and converts it to the size and shape of the sub-network.
-    
-    Parameters
-    ----------
-    fluid : OpenPNM Fluid Object
-        A fluid object that is associated with the main network from which the
-        subnetwork was extracted.
-        
-    Returns
-    -------
-    newfluid : OpenPNM Fluid Object
-        A fluid object with the same shape as the sub-network.  It contains all
-        the data of the main fluid, but not the property calculation methods.
-    '''
-    newfluid = OpenPNM.Fluids.GenericFluid(network=self)
-    for item in fluid.props(mode='vectors'):
-        if item.split('.')[0] == 'pore':
-            newfluid[item] = fluid[item][fluid._net['pore.'+self.name]]
-        if item.split('.')[0] == 'throat':
-            newfluid[item] = fluid[item][fluid._net['throat.'+self.name]]
-    for item in fluid.props(mode='scalars'):
-        if item.split('.')[0] == 'pore':
-            newfluid[item] = fluid[item]
-        if item.split('.')[0] == 'throat':
-            newfluid[item] = fluid[item]
-    return newfluid
+        return A
 
 if __name__ == '__main__':
     #Run doc tests

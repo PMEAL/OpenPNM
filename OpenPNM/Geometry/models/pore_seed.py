@@ -6,15 +6,13 @@ Submodule -- pore_seeds
 """
 import scipy as _sp
 
-def perlin_noise(pores,divisions,freq=1,octaves=4,mode='classic',**kwargs):
+def perlin_noise(divisions,freq=1,octaves=4,mode='classic',**kwargs):
     r'''
     Generate pore seed values using the Perlin noise algorithm.  This approach
     imparts some spatial clumpiness to the pore seeds.
     
     Parameters
     ----------
-    pores : array_like
-        The pores to apply the seeds
     divisions : list or tuple
         The x, y and z dimensions of the cubic network
     freq, octaves : int

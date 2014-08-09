@@ -34,13 +34,15 @@ class Stick_and_Ball(GenericGeometry):
         """
         super(Stick_and_Ball,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        self._generate()
         
-    def generate(self):   
+    def _generate(self):   
         self.add_model(propname='pore.seed',
-                       model=gm.pore_seed.random,
+                       model=gm.pore_misc.random,
+                       regen_mode='constant',
                        seed=None)
         self.add_model(propname='throat.seed',
-                       model=gm.throat_seed.neighbor,
+                       model=gm.throat_misc.neighbor,
                        mode='min')
         self.add_model(propname='pore.diameter',
                        model=gm.pore_diameter.sphere,

@@ -7,9 +7,9 @@ Submodule -- electronic_conductance
 
 import scipy as _sp
 
-def series_resistors(network,
+def series_resistors(physics,
                      fluid,
-                     throats,
+                     network,
                      pore_electrical_conductivity='pore.electrical_conductivity',
                      pore_area='pore.area',
                      pore_diameter='pore.diameter',
@@ -25,11 +25,11 @@ def series_resistors(network,
 
     fluid : OpenPNM Fluid Object
     """
+    throats = fluid.throats(physics.name)
     sigmap = fluid[pore_electrical_conductivity]
     sigmat = fluid.interpolate_data(sigmap)
     #Get Nt-by-2 list of pores connected to each throat
-    throats = network.throats()
-    pores = network.find_connected_pores(throats,flatten=0)
+    pores = network.find_connected_pores(throats=network.throats(),flatten=0)
     #Find g for half of pore 1
     parea = network[pore_area]
     pdia = network[pore_diameter]

@@ -3,14 +3,14 @@ module Physics
 ===============================================================================
 
 """
-import sys, os, collections
+import sys, os
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if sys.path[1] != parent_dir:
     sys.path.insert(1, parent_dir)
 import OpenPNM
 import scipy as sp
 
-class GenericFluid(OpenPNM.Utilities.Tools):
+class GenericFluid(OpenPNM.Core):
     r"""
     Base class to generate a generic fluid object.  The user must specify models
     and parameters for the all the properties they require. Classes for several
@@ -41,14 +41,10 @@ class GenericFluid(OpenPNM.Utilities.Tools):
         
         # Attach objects to self for internal access
         self._net = network
-        
-        # Link this Fluid to the Network
-        network._fluids.append(self) 
-        
-        # Initialize attributes
-        self._physics = []
-        self._models = collections.OrderedDict()
         self.name = name
+        
+        # Append this Fluid to the Network
+        network._fluids.append(self) 
         
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = self._net['pore.all']
@@ -61,63 +57,10 @@ class GenericFluid(OpenPNM.Utilities.Tools):
     def __getitem__(self,key):
         if key not in self.keys():
             self._logger.debug(key+' not on Fluid, constructing data from Physics')
-            return self.interleave_data(key)
+            return self.interleave_data(key,sources=self._physics)
         else:
             return super().__getitem__(key)
-        
-    def interleave_data(self,prop):
-        r'''
-        Retrieves requested property from associated Physics objects, to
-        produce a full Np or Nt length array.
-        
-        Parameters
-        ----------
-        prop : string
-            The property name to be retrieved
-            
-        Returns
-        -------
-        A full length (Np or Nt) array of requested property values.  
-        
-        Notes
-        -----
-        Missing data are returned as NaNs.
-        '''
-        element = prop.split('.')[0]
-        temp = sp.ndarray((self.count(element),))
-        for item in self._physics:
-            locations = item.locations(element)
-            if prop not in item.keys():
-                values = sp.ones_like(locations)*sp.nan
-            else:
-                values = item[prop]
-            temp[locations] = values
-        if sp.all(sp.isnan(temp)):
-            raise KeyError(prop)
-        return temp
-                
-    def physics(self,name=''):
-        r'''
-        Retrieves Physics assocaiated with the Fluid
-        
-        Parameters
-        ----------
-        name : string, optional
-            The name of the Physics object to retrieve
-        Returns
-        -------
-            If name is NOT provided, then a list of Physics names is returned. 
-            If a name IS provided, then the Physics object of that name is 
-            returned.
-        '''
-        if name == '':
-            phys = []
-            for item in self._physics:
-                phys.append(item.name)
-        else:
-            phys = self.find_object(obj_name=name)
-        return phys
-
+    
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()
     fluid = OpenPNM.Fluids.GenericFluid(name='test_fluid',network=pn)
