@@ -58,11 +58,6 @@ class Core(Base,dict):
                 self._logger.debug(key+' is being defined.')
                 super(Base, self).__setitem__(key,value)
             return
-        #--- Check if key is a model  ---#
-        if key in self.keys():
-            temp = dict.__getitem__(self,key)
-            if temp.__class__.__name__ == 'partial':
-                self._logger.warning('Overwriting a function!')
         #--- Write value to dictionary  ---#
         if sp.shape(value)[0] == 1:  # If value is scalar
             self._logger.debug('Broadcasting scalar value into vector: '+key)
@@ -73,13 +68,6 @@ class Core(Base,dict):
             super(Base, self).__setitem__(key,value)
         else:
             self._logger.error('Cannot write vector with an array of the wrong length: '+key)
-            
-    def __getitem__(self,propname):
-        temp = dict.__getitem__(self,propname)
-        if temp.__class__.__name__ == 'partial':
-            return temp()
-        else:
-            return temp
             
     def add_model(self,propname,model,regen_mode='static',**kwargs):
         r'''
@@ -98,7 +86,6 @@ class Core(Base,dict):
             Controls when and if the property is regenerated. Options are:
             
             * 'static' : The property is stored as static data and is only regenerated when the object's `regenerate` is called
-            * 'dynamic' : The property is regenerated each time it is accessed
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
 
         Notes
@@ -134,8 +121,6 @@ class Core(Base,dict):
             physics = self
         #Build partial function from given kwargs
         fn = partial(model,network=network,fluid=fluid,geometry=geometry,physics=physics,**kwargs)
-        if regen_mode == 'dynamic': 
-            dict.__setitem__(self,propname,fn)  # Store model in local dictionary
         if regen_mode == 'static':
             self[propname] = fn()  # Generate data and store it locally
             self._models[propname] = fn  # Store model in a private attribute
