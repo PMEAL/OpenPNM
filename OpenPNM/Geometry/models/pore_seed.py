@@ -42,29 +42,41 @@ def perlin_noise(divisions,freq=1,octaves=4,mode='classic',**kwargs):
             for i in range(x):
                 temp[i,j,k] = model(i / freq, j / freq, k / freq, octaves) + 0.5
     #Assuming that the noise is normally distributed, find seeds of that dist
-    temp = _sp.reshape(temp,(temp.size,))                
+    temp = _sp.reshape(temp,(temp.size,))
     x_mean = _sp.mean(temp)
     x_sigma = _sp.sqrt(1/(temp.size-1)*_sp.sum((temp - x_mean)**2))
     fn1 = spst.norm(loc=x_mean,scale=x_sigma)
     values = fn1.cdf(temp)
     return values
 
+def distance_from_solid(geometry,array,**kwargs):
+    r'''
+    '''
+    import scipy.ndimage as _spim
+    #Pad image by reflecting
+#    array = _sp.tile(array,(3,3,3))
+    #Perform distance transform
+    img = _spim.distance_transform_bf(array)
+#    img = img[25:50,25:50,25:50]
+    #Convert back to pore-list
+    seeds = _sp.reshape(img,(geometry.Np,),order='F')
+    return seeds
+    
+    
+    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

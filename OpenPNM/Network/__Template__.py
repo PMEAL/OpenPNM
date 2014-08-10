@@ -105,11 +105,11 @@ class Template(GenericNetwork):
         tails = np.hstack(tails)
 
         # insert into sub-structure
-        self.set_pore_data(prop='coords', data=coords)
-        self.set_pore_info(label='all', locations=np.ones(len(coords)).astype(bool))
-        self.set_throat_data(prop='conns', data=np.vstack([heads, tails]).T)
-        self.set_throat_info(label='all', locations=np.ones_like(heads).astype(bool))
-        self.set_pore_data(prop='values', data=im.ravel())
+        self['pore.coords'] = coords
+        self['pore.all'] = np.ones(len(coords)).astype(bool)
+        self['throat.conns'] = np.vstack([heads, tails]).T
+        self['throat.all'] = np.ones_like(heads).astype(bool)
+        self['pore.values'] = im.ravel()
 
         # some other labels
         x,y,z = coords.T
@@ -125,7 +125,7 @@ class Template(GenericNetwork):
 
     def asarray(self, values=None):
         # reconstituted facts about the network
-        points = self.get_pore_data(prop='coords')
+        points = self['pore.coords']
         x,y,z = points.T
         span = [(d.max()-d.min() or 1) for d in [x,y,z]]
         res = [len(set(d)) for d in [x,y,z]]
@@ -136,6 +136,6 @@ class Template(GenericNetwork):
 
         actual_indexes = np.ravel_multi_index(rel_coords.T, res)
         if values==None:
-            values = self._pore_data['values']
+            values = self.pores()
         _ndarray.flat[actual_indexes] = values.ravel()
         return _ndarray

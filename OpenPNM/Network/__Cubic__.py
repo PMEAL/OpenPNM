@@ -132,8 +132,7 @@ class Cubic(GenericNetwork):
         Lc = self._Lc
         Np = Nx*Ny*Nz
         ind = np.arange(0,Np)
-        pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
-        self['pore.coords'] = pore_coords
+        self['pore.coords'] = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
         self['pore.all'] = np.ones_like(ind,dtype=bool)
         self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
 
@@ -223,6 +222,8 @@ class Cubic(GenericNetwork):
             An Np-long array containing pore property values to enter in each
             array element
         '''
+        if data == None:
+            data = sp.ones((self.Np,))
         temp = sp.reshape(data,(self._Nx,self._Ny,self._Nz))
         return temp
         
