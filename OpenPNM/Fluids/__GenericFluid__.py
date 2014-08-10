@@ -53,6 +53,14 @@ class GenericFluid(OpenPNM.Core):
         # Set default T and P since most propery models require it
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
+
+        
+    def __setitem__(self,prop,value):
+        for phys in self._phsyics:
+            if prop in phys.keys():
+                self._logger.error(prop+' is already defined in at least one associated Geometry object')
+                return
+        super(GenericFluid,self).__setitem__(prop,value)
         
     def __getitem__(self,key):
         if key not in self.keys():

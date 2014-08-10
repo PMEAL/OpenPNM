@@ -48,6 +48,13 @@ class GenericNetwork(OpenPNM.Core):
         self._logger.debug("Construction of Network container")
         self.name = name
         
+    def __setitem__(self,prop,value):
+        for geom in self._geometries:
+            if prop in geom.keys():
+                self._logger.error(prop+' is already defined in at least one associated Geometry object')
+                return
+        super(GenericNetwork,self).__setitem__(prop,value)
+        
     def __getitem__(self,key):
         if key not in self.keys():
             self._logger.debug(key+' not on Network, constructing data from Geometries')
