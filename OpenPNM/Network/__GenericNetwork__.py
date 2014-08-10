@@ -60,7 +60,7 @@ class GenericNetwork(OpenPNM.Core):
             self._logger.debug(key+' not on Network, constructing data from Geometries')
             return self.interleave_data(key,self.geometries())
         else:
-            return super().__getitem__(key)
+            return super(GenericNetwork,self).__getitem__(key)
         
     def generate(self,coords=[],conns=[],**params):
         r"""
