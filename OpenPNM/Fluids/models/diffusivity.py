@@ -25,7 +25,7 @@ def fuller(fluid,MA,MB,vA,vB,**kwargs):
 
     T = fluid['pore.temperature']
     P = fluid['pore.pressure']
-    MAB = 2*(1/MA+1/MB)**(-1)
+    MAB = 2*(1.0/MA+1.0/MB)**(-1)
     MAB = MAB*1e3
     P = P*1e-5
     value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3)+vB**(1./3))**2)*1e-4
