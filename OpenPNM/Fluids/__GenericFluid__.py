@@ -56,7 +56,7 @@ class GenericFluid(OpenPNM.Core):
 
         
     def __setitem__(self,prop,value):
-        for phys in self._phsyics:
+        for phys in self._physics:
             if prop in phys.keys():
                 self._logger.error(prop+' is already defined in at least one associated Geometry object')
                 return
