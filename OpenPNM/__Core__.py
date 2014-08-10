@@ -546,7 +546,7 @@ class Core(Base,dict):
         THIS METHOD IS DEPRECATED, USE get_info INSTEAD
         '''
         return self._get_info(element='throat',label=label)
-        
+                
     def amalgamate_data(self,objs=[]):
         r"""
         Returns a dictionary containing ALL pore data from all netowrk and/or
@@ -557,14 +557,32 @@ class Core(Base,dict):
         data_amalgamated = {}
         exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
         for item in objs:
-            try:
+#            try:
+            if item.__module__[0:15] == 'OpenPNM.Network': #if network object, combine geometry and network keys
+                keys = []
                 for key in item.keys():
-                    if key not in exclusion_list:
-                        if sp.amax(item[key]) < sp.inf:
-                            dict_name = item.name+'.'+key
-                            data_amalgamated.update({dict_name : item[key]})
-            except: 
-                self._logger.error('Only network and fluid items contain data')
+                    keys.append(key)
+                for geom in item._geometries:
+                    for key in geom.keys():
+                        if key not in keys:
+                            keys.append(key)
+            else:
+                if item.__module__[0:14] == 'OpenPNM.Fluids':
+                    keys = []
+                    for key in item.keys():
+                        keys.append(key)
+                    for physics in item._physics:
+                        for key in physics.keys():
+                            if key not in keys:
+                                keys.append(key)
+            keys.sort()
+            for key in keys:
+                if key not in exclusion_list:
+                    if sp.amax(item[key]) < sp.inf:
+                        dict_name = item.name+'.'+key
+                        data_amalgamated.update({dict_name : item[key]})
+#            except: 
+#                self._logger.error('Only network and fluid items contain data')
         return data_amalgamated
             
     def props(self,element='',pores=[],throats=[],mode='all'):
