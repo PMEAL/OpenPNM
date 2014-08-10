@@ -549,7 +549,7 @@ class GenericNetwork(OpenPNM.Core):
             - 'siblings': Clones are only connected to each other in the same manner as parents were connected
             - 'isolated': No connections between parents or siblings
         '''
-        if sp.shape(self.props('pore'))[0] > 1:
+        if self.geometries() != []:
             self._logger.warning('Cloning an active network is messy')
         self._logger.debug(sys._getframe().f_code.co_name+': Cloning pores')
         apply_label = list(apply_label)

@@ -132,6 +132,8 @@ class Base(object):
             objs = []
             if self.name == obj_name:
                 return self
+            if net.name == obj_name:
+                return net
             for geom in net._geometries:
                 if geom.name == obj_name:
                     return geom
