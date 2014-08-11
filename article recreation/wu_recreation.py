@@ -41,9 +41,9 @@ geo['pore.diameter'] = 24e-6
 
 #setting throat diameters to be a uniform distribution
 radii = low + sp.rand(pn.num_throats())*(high - low)
-pn.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
+geo.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
 
-geo.regenerate()
+#geo.regenerate()
 
 
 air = OpenPNM.Fluids.Air(network = pn, name = 'air')
@@ -200,9 +200,9 @@ for x in range(20):
     
     #setting throat diameters to be a uniform distribution
     radii = low + np.random.random(pn.num_throats())*(high - low)
-    pn.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
+    geo.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
     
-    geo.regenerate()
+#    geo.regenerate()
     
     air = OpenPNM.Fluids.Air(network = pn, name = 'air')
     water = OpenPNM.Fluids.Water(network = pn, name = 'water')
@@ -322,18 +322,20 @@ for x in range(5):
         #code to run if we want to set add_boundaries to be False
         pn.generate(divisions = [n,n,2*n], add_boundaries= False, lattice_spacing = [Lc])
 
+        Ps = pn.pores()
+        Ts = pn.throats()
         geo = OpenPNM.Geometry.Toray090(name='wu_geometry',network=pn,pores=Ps,throats=Ts)
         
         low = .5e-6
         high = 9.5e-6
         
-        geo['pore.diameter'] = 24e-6
+        geo.set_data(prop = 'diameter', pores = Ps, data = 24e-6, mode = 'overwrite')
         
         #setting throat diameters to be a uniform distribution
         radii = low + sp.rand(pn.num_throats())*(high - low)
-        pn.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
-        
-        geo.regenerate()
+        geo.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
+#        
+#        geo.regenerate()
 
         #fluids
         air = OpenPNM.Fluids.Air(network = pn, name = 'air')
