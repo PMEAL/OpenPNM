@@ -186,37 +186,50 @@ class OrdinaryPercolation(GenericAlgorithm):
         self.set_pore_data(prop='inv_Pc', data=self._p_inv)
         self.set_throat_data(prop='inv_Pc', data=self._t_inv)
 
-    def update(self, Pc=0, occupancy='occupancy'):
+    def update(self, Pc=0, seq = None, occupancy='occupancy'):
         r"""
         Updates the occupancy status of invading and defending fluids
         as determined by the OP algorithm
 
         """
-        #Apply invasion pressure to invading fluid
-        p_inv = self['pore.inv_Pc']
-        self._fluid_inv['pore.inv_Pc'] = p_inv
-        t_inv = self['throat.inv_Pc']    
-        self._fluid_inv['throat.inv_Pc'] = t_inv
-        #Find invasion sequence values (to correspond with IP algorithm)
-        p_seq = self['pore.inv_seq']
-        self._fluid_inv['pore.inv_seq'] = p_seq
+        p_inv = self.get_pore_data(prop='inv_Pc')
+        self._fluid_inv.set_pore_data(prop='inv_Pc',data=p_inv)
+        t_inv = self.get_throat_data(prop='inv_Pc')    
+        self._fluid_inv.set_throat_data(prop='inv_Pc',data=t_inv)
+        #Apply invasion sequence values (to correspond with IP algorithm)
+        p_seq = self.get_pore_data(prop='inv_seq')
+        self._fluid_inv.set_pore_data(prop='inv_seq',data=p_seq)
         t_seq = self.get_throat_data(prop='inv_seq')
         self._fluid_inv.set_throat_data(prop='inv_seq',data=t_seq)
         
-        
-        p_inv = self.get_pore_data(prop='inv_Pc')<=Pc
-        t_inv = self.get_throat_data(prop='inv_Pc')<=Pc
-        #Apply occupancy to invading fluid
-        temp = sp.array(p_inv,dtype=sp.float64,ndmin=1)
-        self._fluid_inv.set_pore_data(prop=occupancy,data=temp)
-        temp = sp.array(t_inv,dtype=sp.float64,ndmin=1)
-        self._fluid_inv.set_throat_data(prop=occupancy,data=temp)
-        #Apply occupancy to defending fluid
-        if self._fluid_def != None:
-            temp = sp.array(~p_inv,dtype=sp.float64,ndmin=1)
-            self._fluid_def.set_pore_data(prop=occupancy,data=temp)
-            temp = sp.array(~t_inv,dtype=sp.float64,ndmin=1)
-            self._fluid_def.set_throat_data(prop=occupancy,data=temp)
+        if(seq == None):
+            p_inv = self.get_pore_data(prop='inv_Pc')<=Pc
+            t_inv = self.get_throat_data(prop='inv_Pc')<=Pc
+            #Apply occupancy to invading fluid
+            temp = sp.array(p_inv,dtype=bool,ndmin=1)
+            self._fluid_inv.set_pore_data(prop=occupancy,data=temp)
+            temp = sp.array(t_inv,dtype=bool,ndmin=1)
+            self._fluid_inv.set_throat_data(prop=occupancy,data=temp)
+            #Apply occupancy to defending fluid
+            if self._fluid_def != None:
+                temp = sp.array(~p_inv,dtype=bool,ndmin=1)
+                self._fluid_def.set_pore_data(prop=occupancy,data=temp)
+                temp = sp.array(~t_inv,dtype=bool,ndmin=1)
+                self._fluid_def.set_throat_data(prop=occupancy,data=temp)
+        else:
+            p_seq = self.get_pore_data(prop='inv_seq')<=seq
+            t_seq = self.get_throat_data(prop='inv_seq')<=seq
+            #Apply occupancy to invading fluid
+            temp = sp.array(p_seq,dtype=bool,ndmin=1)
+            self._fluid_inv.set_pore_data(prop=occupancy,data=temp)
+            temp = sp.array(t_seq,dtype=bool,ndmin=1)
+            self._fluid_inv.set_throat_data(prop=occupancy,data=temp)
+            #Apply occupancy to defending fluid
+            if self._fluid_def != None:
+                temp = sp.array(~p_seq,dtype=bool,ndmin=1)
+                self._fluid_def.set_pore_data(prop=occupancy,data=temp)
+                temp = sp.array(~t_seq,dtype=bool,ndmin=1)
+                self._fluid_def.set_throat_data(prop=occupancy,data=temp)
 
     def plot_drainage_curve(self,
                             pore_volume='volume',
