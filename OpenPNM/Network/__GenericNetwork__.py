@@ -674,8 +674,6 @@ class GenericNetwork(OpenPNM.Core):
         {'pore': 124, 'throat': 296}
         
         '''
-        pores = np.ravel(pores)
-        throats = np.ravel(throats)
         
         r'''
         TODO: This logic works but can be shortened as done in subnet

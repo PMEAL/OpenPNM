@@ -59,10 +59,9 @@ phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffu
 #OP_2 = OpenPNM.Algorithms.OrdinaryPercolation(network=sub_pn)
 #OP_2.setup(invading_fluid=sub_water,inlets=sub_pn.pores('bottom'))
 #OP_2.run()
-
 #------------------------------------------------------------------------------
 '''Perform Invasion Percolation'''
-##------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 #inlets = pn.get_pore_indices(labels = ['bottom_face'])
 #outlets = pn.get_pore_indices(labels = ['top_face'])
 #IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'IP_1', loglevel = 30)

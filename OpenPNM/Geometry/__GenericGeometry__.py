@@ -61,10 +61,11 @@ class GenericGeometry(OpenPNM.Core):
         r'''
         Perform a check to find pores with overlapping or undefined Geometries
         '''
+        network = self._net
         geoms = self._net.geometries()
         temp = sp.zeros((self._net.Np,))
         for item in geoms:
-            ind = self._net['pore.'+item]
+            ind = network['pore.'+item]
             temp[ind] = temp[ind] + 1
         health = {}
         health['overlaps'] = sp.where(temp>1)[0].tolist()
