@@ -27,6 +27,6 @@ class StokesFlow(GenericLinearTransport):
                 
     def calc_eff_permeability(self, clean=False):
         D_normal = self._calc_eff_prop()
-        self._eff_property = D_normal*self._fluid['pore.viscosity']
+        self._eff_property = D_normal*sp.mean(self._fluid['pore.viscosity'])
         return self._eff_property
         

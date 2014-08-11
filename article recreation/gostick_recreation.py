@@ -6,8 +6,8 @@ Lc = 40.5e-6
 
 #1 setting up network
 sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40)
-#sgl.generate(divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
-sgl.generate(divisions = [5, 5, 5], add_boundaries = True, lattice_spacing = [Lc])
+sgl.generate(divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
+#sgl.generate(divisions = [5, 5, 5], add_boundaries = True, lattice_spacing = [Lc])
 
 #2 set up geometries
 Ps = sgl.pores('boundary',mode='difference')
@@ -17,9 +17,6 @@ geo = OpenPNM.Geometry.Toray090(network=sgl,pores=Ps,throats=Ts)
 Ps = sgl.pores('boundary')
 Ts = sgl.find_neighbor_throats(pores=Ps,mode='not_intersection')
 boun = OpenPNM.Geometry.Boundary(network=sgl,pores=Ps,throats=Ts)
-#
-#boun = sgl.add_geometry(subclass='Boundary',name='boun')
-#boun.set_locations(pores=sgl.pores('boundary'))
 
 #3 calculating pore and throat diameters, volumes, etc
 #sgl.regenerate_geometries()
@@ -42,11 +39,6 @@ sgl.set_data(throats = throats, prop = 'diameter', data = throat_diameters)
 #reset aspects relying on pore and throat sizes
 geo.regenerate()
 
-#geo.throat_length()
-#geo.pore_volume()
-#geo.throat_volume()
-#geo.throat_surface_area()
-
 #set up fluids 
 air = OpenPNM.Fluids.Air(network = sgl, name = 'air')
 water = OpenPNM.Fluids.Water(network = sgl, name = 'water')
@@ -61,17 +53,12 @@ water['pore.contact_angle'] = 100
 #1 create physics objects associated with our fluids
 Ps = sgl.pores()
 Ts = sgl.throats()
-#phys_water = OpenPNM.Physics.Standard(network=sgl,fluid=water, geometry = geo, name='standard_water_physics')
-#phys_air = OpenPNM.Physics.BasePhysics(network=sgl,fluid=air, geometry = geo, name='standard_air_physics')
 phys_water = OpenPNM.Physics.Standard(network=sgl,fluid=water,pores=Ps,throats=Ts,dynamic_data=True,name='standard_water_physics')
 phys_air = OpenPNM.Physics.Standard(network=sgl,fluid=air,pores=Ps,throats=Ts,dynamic_data=True,name='standard_air_physics')
 
 #2 calculating physics properties (capillary pressure, hydraulic conductance, etc)
 phys_water.regenerate()
 phys_air.regenerate()
-
-#print(phys_air['throat.hydraulic_conductance'])
-#print(phys_water['throat.hydraulic_conductance'])
 
 inlets = sgl.get_pore_indices(labels = ['bottom','boundary'],mode='intersection')
 
@@ -110,19 +97,10 @@ for x in range(21):
     
     for mode_increment in range(len(modes)):
         #adding multiphase conductances
-#        phys_air.add_model(prop='multiphase',model='conduit_conductance',
-#                          conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode=modes[mode_increment])
-#        phys_water.add_property(prop='multiphase',model='conduit_conductance',
-#                          conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode=modes[mode_increment])
-#        phys_air.add_property(prop='multiphase',model='conduit_conductance',
-#                          conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode=modes[mode_increment])
-#        phys_water.add_property(prop='multiphase',model='conduit_conductance',
-#                          conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode=modes[mode_increment])
         phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    propname='throat.conduit_diffusive_conductance',
                    throat_conductance='throat.diffusive_conductance',
                    mode=modes[mode_increment])
-        print(phys_air['throat.conduit_diffusive_conductance'])
         phys_water.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    propname='throat.conduit_diffusive_conductance',
                    throat_conductance='throat.diffusive_conductance',
@@ -161,7 +139,6 @@ for x in range(21):
             BC1_pores = sgl.pores(labels=[bounds[bound_increment][0], 'boundary'],mode='intersection')
             BC2_pores = sgl.pores(labels=[bounds[bound_increment][1], 'boundary'],mode='intersection')
             
-            
             Stokes_alg_single_phase_air.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
             Stokes_alg_single_phase_water.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
             Fickian_alg_single_phase_air.set_boundary_conditions(bctype = 'Dirichlet', bcvalue = .6, pores = BC1_pores)
@@ -189,8 +166,8 @@ for x in range(21):
             Fickian_alg_single_phase_air.setup(conductance = 'diffusive_conductance',fluid=air) 
             Fickian_alg_single_phase_water.setup(conductance = 'diffusive_conductance',fluid=water)
             
-#            Stokes_alg_multi_phase_air.setup(conductance = 'conduit_hydraulic_conductance',fluid=air)
-#            Stokes_alg_multi_phase_water.setup(conductance = 'conduit_hydraulic_conductance',fluid=water)
+            Stokes_alg_multi_phase_air.setup(conductance = 'conduit_hydraulic_conductance',fluid=air)
+            Stokes_alg_multi_phase_water.setup(conductance = 'conduit_hydraulic_conductance',fluid=water)
             Fickian_alg_multi_phase_air.setup(conductance = 'conduit_diffusive_conductance',fluid=air) 
             Fickian_alg_multi_phase_water.setup(conductance = 'conduit_diffusive_conductance',fluid=water)
             
