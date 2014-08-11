@@ -230,6 +230,9 @@ class OrdinaryPercolation(GenericAlgorithm):
                 self._fluid_def.set_pore_data(prop=occupancy,data=temp)
                 temp = sp.array(~t_seq,dtype=bool,ndmin=1)
                 self._fluid_def.set_throat_data(prop=occupancy,data=temp)
+            
+ 
+            
 
     def plot_drainage_curve(self,
                             pore_volume='volume',

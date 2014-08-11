@@ -204,7 +204,7 @@ class Cubic(GenericNetwork):
         
         for label in ['front','back','left','right','bottom','top']:
             ps = self.pores(label)
-            self.clone(pores=ps,apply_label=['boundary',label+'_face'])
+            self.clone(pores=ps,apply_label=['boundary',label+'_face',label])
             #Translate cloned pores
             ind = self.pores(label+'_face')
             coords = self['pore.coords'][ind] 

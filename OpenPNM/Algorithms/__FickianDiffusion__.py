@@ -26,7 +26,7 @@ class FickianDiffusion(GenericLinearTransport):
         
     def calc_eff_diffusivity(self, clean=False):
         D_normal = self._calc_eff_prop()
-        self._eff_property = D_normal/self._fluid['pore.molar_density']
+        self._eff_property = D_normal/sp.mean(self._fluid['pore.molar_density'])
         return self._eff_property
         
 

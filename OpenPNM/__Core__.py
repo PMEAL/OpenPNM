@@ -266,9 +266,9 @@ class Core(Base):
             if mode != '':
                 if mode == 'interpolate':
                     if element == 'pore':
-                        return getattr(self,'interpolate_data')(prop=prop,pores=locations)
+                        return getattr(self,'interpolate_data')(self['throat.'+prop])
                     else:
-                        return getattr(self,'interpolate_data')(prop=prop,throats=locations)
+                        return getattr(self,'interpolate_data')(self['pore.'+prop])
                 else:
                     self._logger.error('The requested mode '+mode+' is not valid')
             else:
