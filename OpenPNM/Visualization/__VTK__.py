@@ -102,7 +102,7 @@ class VTK(GenericVisualization):
         am = network.amalgamate_data(objs=objs)
         key_list = list(sorted(am.keys()))
         points = am[network.name+'.pore.coords']
-        pairs = network.get_throat_data(prop='conns')
+        pairs = network['throat.conns']
     
         num_points = len(points)
         num_throats = len(pairs)

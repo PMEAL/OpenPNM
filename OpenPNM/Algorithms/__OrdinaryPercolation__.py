@@ -96,13 +96,13 @@ class OrdinaryPercolation(GenericAlgorithm):
             self._logger.info('Applying capillary pressure: '+str(inv_val))
             self._do_one_inner_iteration(inv_val)
         #Store results using networks' get/set method
-        self.set_pore_data(prop='inv_Pc',data=self._p_inv)
-        self.set_throat_data(prop='inv_Pc',data=self._t_inv)
+        self['pore.inv_Pc'] = self._p_inv
+        self['throat.inv_Pc'] = self._t_inv
         #Find invasion sequence values (to correspond with IP algorithm)
         self._p_seq = sp.searchsorted(sp.unique(self._p_inv),self._p_inv)
         self._t_seq = sp.searchsorted(sp.unique(self._t_inv),self._t_inv)
-        self.set_pore_data(prop='inv_seq',data=self._p_seq)
-        self.set_throat_data(prop='inv_seq',data=self._t_seq)
+        self['pore.inv_seq'] = self._p_seq
+        self['throat.inv_seq'] = self._t_seq
 
     def _do_one_inner_iteration(self,inv_val):
         r"""
@@ -193,13 +193,13 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         #Apply invasion pressure to invading fluid
-        p_inv = self.get_pore_data(prop='inv_Pc')
-        self._fluid_inv.set_pore_data(prop='inv_Pc',data=p_inv)
-        t_inv = self.get_throat_data(prop='inv_Pc')    
-        self._fluid_inv.set_throat_data(prop='inv_Pc',data=t_inv)
+        p_inv = self['pore.inv_Pc']
+        self._fluid_inv['pore.inv_Pc'] = p_inv
+        t_inv = self['throat.inv_Pc']    
+        self._fluid_inv['throat.inv_Pc'] = t_inv
         #Find invasion sequence values (to correspond with IP algorithm)
-        p_seq = self.get_pore_data(prop='inv_seq')
-        self._fluid_inv.set_pore_data(prop='inv_seq',data=p_seq)
+        p_seq = self['pore.inv_seq']
+        self._fluid_inv['pore.inv_seq'] = p_seq
         t_seq = self.get_throat_data(prop='inv_seq')
         self._fluid_inv.set_throat_data(prop='inv_seq',data=t_seq)
         

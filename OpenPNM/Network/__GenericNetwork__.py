@@ -225,7 +225,7 @@ class GenericNetwork(OpenPNM.Core):
         conn = self['throat.conns'][ind]
         row  = conn[:,0]
         row = sp.append(row,conn[:,1])
-        col = self.get_throat_indices('all')[ind]
+        col = self.throats('all')[ind]
         col = sp.append(col,col)
         data = sp.append(data[ind],data[ind])
 
@@ -506,8 +506,8 @@ class GenericNetwork(OpenPNM.Core):
         if sp.shape(labels)[0] != 2:
             self._logger.error('Exactly two labels must be given')
         else:
-            P1 = self.get_pore_indices(labels=labels[0])
-            P2 = self.get_pore_indices(labels=labels[1])
+            P1 = self.pores(labels=labels[0])
+            P2 = self.pores(labels=labels[1])
             #Check if labels overlap
             if sp.sum(sp.in1d(P1,P2)) > 0: 
                 self._logger.error('Some labels overlap, iterface cannot be found')
@@ -692,7 +692,7 @@ class GenericNetwork(OpenPNM.Core):
             Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
             Tdrop[throats] = 1
             Tkeep = ~Tdrop
-            Pkeep = self.get_pore_indices(labels='all')
+            Pkeep = self.pores(labels='all')
             Pkeep = self.tomask(pores=Pkeep)
         else:
             self._logger.warning('No pores or throats recieved')
