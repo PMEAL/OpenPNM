@@ -19,8 +19,9 @@ pn = OpenPNM.Network.Cubic(name = 'Wu')
 pn.generate(divisions = [n,n,2*n], add_boundaries= False, lattice_spacing = [Lc])
 
 #code to run if boundaries was set to false
-geo = OpenPNM.Geometry.GenericGeometry(name = 'wu_geometry', network = pn)
-geo.set_locations(pores = pn.pores('all'), throats = 'all')
+Ps = pn.pores()
+Ts = pn.throats()
+geo = OpenPNM.Geometry.Toray090(name='wu_geometry',network=pn,pores=Ps,throats=Ts)
 
 #code to run if boundaries was set to True
 #pn.generate(divisions = [n,n,2*n], add_boundaries= True, lattice_spacing = [Lc], loglevel = 30)
@@ -32,21 +33,23 @@ geo.set_locations(pores = pn.pores('all'), throats = 'all')
 low = .5e-6
 high = 9.5e-6
 
-geo.add_method(prop='pore_diameter',model='constant', value = 24e-6)
-geo.add_method(prop='pore_volume',model='sphere')
-geo.add_method(prop='throat_length',model='straight')
-geo.add_method(prop='throat_volume',model='cylinder')
+#geo.add_prop(prop='pore_diameter',model='constant', value = 24e-6)
+#geo.add_method(prop='pore_volume',model='sphere')
+#geo.add_method(prop='throat_length',model='straight')
+#geo.add_method(prop='throat_volume',model='cylinder')
+geo['pore.diameter'] = 24e-6
 
 #setting throat diameters to be a uniform distribution
 radii = low + sp.rand(pn.num_throats())*(high - low)
 pn.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
 
-pn.regenerate_geometries()
+geo.regenerate()
 
 
 air = OpenPNM.Fluids.Air(network = pn, name = 'air')
 water = OpenPNM.Fluids.Water(network = pn, name = 'water')
-pn.regenerate_fluids()
+air.regenerate()
+water.regenerate()
 
 
 def bulk_diffusion_wu(physics,
@@ -79,7 +82,7 @@ def bulk_diffusion_wu(physics,
         """
     #ct = fluid.get_data(prop='molar_density',throats='all',mode='interpolate')
     #Interpolate pore values to throats
-    DABt = fluid.get_data(prop='diffusivity',throats='all',mode='interpolate')
+    DABt = fluid.get_data(prop='diffusivity',throats=geometry.throats(),mode='interpolate')
     #Find g for full throat
     tdia = network.get_throat_data(prop=throat_diameter)
     tlen = network.get_throat_data(prop=throat_length)
@@ -87,16 +90,19 @@ def bulk_diffusion_wu(physics,
     g = gt[geometry.throats()]
     fluid.set_data(prop=propname,throats=geometry.throats(),data=g)
 
-phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water, geometry = geo, name='standard_water_physics')
-phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air, geometry = geo, name='standard_air_physics')
+Ps = geo.pores()
+Ts = geo.throats()
+phys_water = OpenPNM.Physics.Standard(network=pn,fluid=water, pores=Ps, throats=Ts, name='standard_water_physics')
+phys_air = OpenPNM.Physics.Standard(network=pn,fluid=air, pores=Ps, throats=Ts, geometry = geo, name='standard_air_physics')
 
-phys_water.add_method(prop='capillary_pressure', model='washburn') #accounts for cylindrical throats
-phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
-phys_water.add_method(prop='diffusive_conductance', model='bulk_diffusion', shape = 'circular')
-phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
+#phys_water.add_model(prop='capillary_pressure', model='washburn') #accounts for cylindrical throats
+#phys_water.add_model(prop='hydraulic_conductance',model='hagen_poiseuille')
+#phys_water.add_model(prop='diffusive_conductance', model='bulk_diffusion', shape = 'circular')
+#phys_air.add_model(prop='hydraulic_conductance',model='hagen_poiseuille')
 
 bulk_diffusion_wu(physics = phys_air, network = pn, fluid = air, geometry = geo, propname = 'diffusive_conductance')
-pn.regenerate_physics()
+phys_water.regenerate()
+phys_air.regenerate()
 
 inlets = pn.get_pore_indices(labels = ['bottom']) #can put in brackets so the whole bottom of the lattice is considered 1 inlet
 outlets = pn.get_pore_indices(labels = ['top'])
@@ -112,23 +118,31 @@ y_values = []
 for x in range(50):
     IP_1.update(IPseq = max_inv_seq*(x/50.0))
     
-    phys_air.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='strict')
-    phys_water.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='strict')
-    phys_air.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode='strict')
-    phys_water.add_property(prop='multiphase',model='conduit_conductance',
-                      conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode='strict')
-    pn.regenerate_physics()
+    phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+               propname='throat.conduit_diffusive_conductance',
+               throat_conductance='throat.diffusive_conductance',
+               mode='strict')
+    phys_water.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+               propname='throat.conduit_diffusive_conductance',
+               throat_conductance='throat.diffusive_conductance',
+               mode='strict')
+    phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+               propname='throat.conduit_hydraulic_conductance',
+               throat_conductance='throat.hydraulic_conductance',
+               mode='strict')
+    phys_water.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+               propname='throat.conduit_hydraulic_conductance',
+               throat_conductance='throat.hydraulic_conductance',
+               mode='strict')
     
     Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian', network = pn)
     
     #set labels for top boundary
     #set labels for bottom boundary
     A = pn._Nx**2
-    
-    z_dimension = int(pn.domain_size(dimension = 'height')/Lc) #number of pores in the z direction
+    top_pores = pn.get_pore_indices('top')
+    bottom_pores = pn.get_pore_indices('bottom')
+    z_dimension = int(pn.domain_length(top_pores,bottom_pores)/Lc) #number of pores in the z direction
     quarter_layer = z_dimension/4 #estimates which layer marks 1/4 up the lattice
     pore_number = int(quarter_layer*A) #gives the first pore in the layer 1/4 up the lattice
     
@@ -175,37 +189,39 @@ for x in range(20):
     pn.generate(divisions = [n,n,2*n], add_boundaries= False, lattice_spacing = [Lc])
     
     #code to run if boundaries was set to false
-    geo = OpenPNM.Geometry.GenericGeometry(name = 'wu_geometry', network = pn)
-    geo.set_locations(pores = pn.pores('all'), throats = 'all')
+    Ps = pn.pores()
+    Ts = pn.throats()
+    geo = OpenPNM.Geometry.Toray090(name='wu_geometry',network=pn,pores=Ps,throats=Ts)
     
     low = .5e-6
     high = 9.5e-6
     
-    geo.add_method(prop='pore_diameter',model='constant', value = 24e-6)
-    geo.add_method(prop='pore_volume',model='sphere')
-    geo.add_method(prop='throat_length',model='straight')
-    geo.add_method(prop='throat_volume',model='cylinder')
+    geo['pore.diameter'] = 24e-6
     
     #setting throat diameters to be a uniform distribution
     radii = low + np.random.random(pn.num_throats())*(high - low)
     pn.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
     
-    pn.regenerate_geometries()
+    geo.regenerate()
     
     air = OpenPNM.Fluids.Air(network = pn, name = 'air')
     water = OpenPNM.Fluids.Water(network = pn, name = 'water')
-    pn.regenerate_fluids()
+    air.regenerate()
+    water.regenerate()
     
-    phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water, geometry = geo, name='standard_water_physics')
-    phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air, geometry = geo, name='standard_air_physics')
-    
-    phys_water.add_method(prop='capillary_pressure', model='washburn') #accounts for cylindrical throats
-    phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
-    phys_water.add_method(prop='diffusive_conductance', model='bulk_diffusion', shape = 'circular')
-    phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
+    Ps = geo.pores()
+    Ts = geo.throats()
+    phys_water = OpenPNM.Physics.Standard(network=pn,fluid=water, pores=Ps, throats=Ts, name='standard_water_physics')
+    phys_air = OpenPNM.Physics.Standard(network=pn,fluid=air, pores=Ps, throats=Ts, geometry = geo, name='standard_air_physics')
+
+#    phys_water.add_method(prop='capillary_pressure', model='washburn') #accounts for cylindrical throats
+#    phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
+#    phys_water.add_method(prop='diffusive_conductance', model='bulk_diffusion', shape = 'circular')
+#    phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
     
     bulk_diffusion_wu(physics = phys_air, network = pn, fluid = air, geometry = geo, propname = 'diffusive_conductance')
-    pn.regenerate_physics()
+    phys_water.regenerate()
+    phys_air.regenerate()
     
     inlets = pn.get_pore_indices(labels = ['bottom']) #can put in brackets so the whole bottom of the lattice is considered 1 inlet
     outlets = pn.get_pore_indices(labels = ['top'])
@@ -219,23 +235,32 @@ for x in range(20):
     for x in range(50):
         IP_1.update(IPseq = max_inv_seq*(x/50.0))
         
-        phys_air.add_property(prop='multiphase',model='conduit_conductance',
-                          conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='strict')
-        phys_water.add_property(prop='multiphase',model='conduit_conductance',
-                          conductance = 'diffusive_conductance', prop_name='conduit_diffusive_conductance',mode='strict')
-        phys_air.add_property(prop='multiphase',model='conduit_conductance',
-                          conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode='strict')
-        phys_water.add_property(prop='multiphase',model='conduit_conductance',
-                          conductance = 'hydraulic_conductance', prop_name='conduit_hydraulic_conductance',mode='strict')
-        pn.regenerate_physics()
+        phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+                   propname='throat.conduit_diffusive_conductance',
+                   throat_conductance='throat.diffusive_conductance',
+                   mode='strict')
+        phys_water.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+                   propname='throat.conduit_diffusive_conductance',
+                   throat_conductance='throat.diffusive_conductance',
+                   mode='strict')
+        phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+                   propname='throat.conduit_hydraulic_conductance',
+                   throat_conductance='throat.hydraulic_conductance',
+                   mode='strict')
+        phys_water.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+                   propname='throat.conduit_hydraulic_conductance',
+                   throat_conductance='throat.hydraulic_conductance',
+                   mode='strict')
         
         Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian', network = pn)
         
         #set labels for top boundary
         #set labels for bottom boundary
         A = pn._Nx**2
-        
-        z_dimension = int(pn.domain_size(dimension = 'height')/Lc) #number of pores in the z direction
+    
+        top_pores = pn.get_pore_indices('top')
+        bottom_pores = pn.get_pore_indices('bottom')
+        z_dimension = int(pn.domain_length(top_pores,bottom_pores)/Lc) #number of pores in the z direction
         quarter_layer = z_dimension/4 #estimates which layer marks 1/4 up the lattice
         pore_number = int(quarter_layer*A) #gives the first pore in the layer 1/4 up the lattice
         
@@ -297,40 +322,37 @@ for x in range(5):
         #code to run if we want to set add_boundaries to be False
         pn.generate(divisions = [n,n,2*n], add_boundaries= False, lattice_spacing = [Lc])
 
-        geo = OpenPNM.Geometry.GenericGeometry(name = 'wu_geometry', network = pn)
-        geo.set_locations(pores = pn.pores('all'), throats = 'all')
-
+        geo = OpenPNM.Geometry.Toray090(name='wu_geometry',network=pn,pores=Ps,throats=Ts)
+        
         low = .5e-6
         high = 9.5e-6
-
-        geo.add_method(prop='pore_diameter',model='constant', value = 24e-6)
-        geo.add_method(prop='pore_volume',model='sphere')
-
+        
+        geo['pore.diameter'] = 24e-6
+        
         #setting throat diameters to be a uniform distribution
         radii = low + sp.rand(pn.num_throats())*(high - low)
         pn.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
-
-        geo.add_method(prop='throat_length',model='straight')
-        geo.add_method(prop='throat_volume',model='cylinder')
-
-        pn.regenerate_geometries()
+        
+        geo.regenerate()
 
         #fluids
         air = OpenPNM.Fluids.Air(network = pn, name = 'air')
         water = OpenPNM.Fluids.Water(network = pn, name = 'water')
-        pn.regenerate_fluids()
+        air.regenerate()
+        water.regenerate()
 
         #physics objects
         phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water, geometry = geo, name='standard_water_physics')
         phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air, geometry = geo, name='standard_air_physics')
 
-        phys_water.add_method(prop='capillary_pressure', model='washburn') #accounts for cylindrical throats
-        phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
-        phys_water.add_method(prop='diffusive_conductance', model='bulk_diffusion', shape = 'circular')
-        phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
+#        phys_water.add_method(prop='capillary_pressure', model='washburn') #accounts for cylindrical throats
+#        phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
+#        phys_water.add_method(prop='diffusive_conductance', model='bulk_diffusion', shape = 'circular')
+#        phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 
         bulk_diffusion_wu(physics = phys_air, network = pn, fluid = air, geometry = geo, propname = 'diffusive_conductance')
-        pn.regenerate_physics()
+        phys_water.regenerate()
+        phys_air.regenerate()
 
         #Invasion percolation
         inlets = pn.get_pore_indices(labels = ['bottom']) #can put in brackets so the whole bottom of the lattice is considered 1 inlet
@@ -348,7 +370,9 @@ for x in range(5):
         #set labels for bottom boundary
         A = pn._Nx**2
 
-        z_dimension = int(pn.domain_size(dimension = 'height')/Lc) #number of pores in the z direction
+        top_pores = pn.get_pore_indices('top')
+        bottom_pores = pn.get_pore_indices('bottom')
+        z_dimension = int(pn.domain_length(top_pores,bottom_pores)/Lc) #number of pores in the z direction
         quarter_layer = z_dimension/4 #estimates which layer marks 1/4 up the lattice
         pore_number = int(quarter_layer*A) #gives the first pore in the layer 1/4 up the lattice
 
