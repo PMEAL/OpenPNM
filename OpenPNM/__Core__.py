@@ -17,7 +17,7 @@ from OpenPNM import Base
 from OpenPNM.Utilities import misc
 
 
-class Core(Base,dict):
+class Core(Base):
     r'''
     This is the core class from which OpenPNM objects derive.  
     '''
