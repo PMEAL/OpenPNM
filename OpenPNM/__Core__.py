@@ -321,11 +321,11 @@ class Core(Base):
         '''
         if pores != None:
             if pores == 'all':
-                pores = self.get_pore_indices(labels='all')
+                pores = self.pores()
             return self._get_data(element='pore',prop=prop,locations=pores,mode=mode)
         if throats != None:
             if throats == 'all':
-                throats = self.get_throat_indices(labels='all')
+                throats = self.throats()
             return self._get_data(element='throat',prop=prop,locations=throats,mode=mode)
             
     def set_data(self,prop='',data='',pores=None,throats=None,mode='merge'):
