@@ -171,14 +171,14 @@ class InvasionPercolation(GenericAlgorithm):
         tdia = self._net['throat.'+self._throat_diameter_name]
         # calculate Pc_entry from diameters
         try:
-            Pc_entry = self._fluid.get_throat_data(prop=self._capillary_pressure_name)
+            Pc_entry = self._fluid.get_data(prop=self._capillary_pressure_name,throats='all')
         except:
             try:
                 OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._fluid)
             except:
                 OpenPNM.Fluids.ContactAngle.constant(self._fluid,120)
                 OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._fluid)
-            Pc_entry = self._fluid.get_throat_data(prop=self._capillary_pressure_name)
+            Pc_entry = self._fluid.get_data(prop=self._capillary_pressure_name,throats='all')
         if self._timing:
             # calculate Volume_coef for each throat
             self._Tvol_coef = tdia*tdia*tdia*np.pi/12/Pc_entry
@@ -229,7 +229,7 @@ class InvasionPercolation(GenericAlgorithm):
         for i in self._inlets:
             if self._timing:
                 # Calculate total volume in all invaded pores
-                self._cluster_data['pore_volume'][clusterNumber-1] = np.sum(self._net.get_pore_data(prop=self._pore_volume_name)[i])
+                self._cluster_data['pore_volume'][clusterNumber-1] = np.sum(self._net.get_data(prop=self._pore_volume_name,pores='all')[i])
                 # Label all invaded pores with their cluster
             self._Pinv[i] = clusterNumber
             self._Pinv_original[i] = clusterNumber
@@ -243,7 +243,7 @@ class InvasionPercolation(GenericAlgorithm):
                 # Sum all interfacial throats' volume coeffients for throat cap volume calculation
                 self._cluster_data['vol_coef'][clusterNumber-1] = np.sum(self._Tvol_coef[interface_throat_numbers])
             # Make a list of all entry pressures of the interfacial throats
-            interface_throat_pressures = self._fluid.get_throat_data(prop=self._capillary_pressure_name)[interface_throat_numbers]#[0]
+            interface_throat_pressures = self._fluid.get_data(prop=self._capillary_pressure_name,throats='all')[interface_throat_numbers]#[0]
             # Zip pressures and numbers together so that HeapQ can work its magic
             self._logger.debug('interface throat(s) found:')
             self._logger.debug(interface_throat_numbers)
@@ -285,8 +285,8 @@ class InvasionPercolation(GenericAlgorithm):
         self._pseq += 1
         self._current_cluster = 0
         # Calculate the distance between the inlet and outlet pores
-        self._outlet_position = np.average(self._net.get_pore_data(prop='coords')[self._outlets],0)
-        inlet_position = np.average(self._net.get_pore_data(prop='coords')[self._inlets],0)
+        self._outlet_position = np.average(self._net.get_data(prop='coords',pores='all')[self._outlets],0)
+        inlet_position = np.average(self._net.get_data(prop='coords',pores='all')[self._inlets],0)
         dist_sqrd = (self._outlet_position-inlet_position)*(self._outlet_position-inlet_position)
         self._initial_distance = np.sqrt(dist_sqrd[0]+dist_sqrd[1]+dist_sqrd[2])
         self._logger.debug( 'initial distance')
@@ -314,14 +314,14 @@ class InvasionPercolation(GenericAlgorithm):
         #self._Tinv = np.zeros(self._net.num_throats())
         while self._condition:
             self._do_one_outer_iteration()
-        self.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
-        self.set_pore_data(prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
-        self.set_throat_data(prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
-        self.set_pore_data(prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
-        self.set_throat_data(prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
+        self.set_data(prop='IP_inv_final',pores='all',data=np.array(self._Pinv,dtype=np.int))
+        self.set_data(prop='IP_inv_original',pores='all',data=np.array(self._Pinv_original,dtype=np.int))
+        self.set_data(prop='IP_inv',throats='all',data=np.array(self._Tinv,dtype=np.int))
+        self.set_data(prop='IP_inv_seq',pores='all',data=np.array(self._psequence,dtype=np.int))
+        self.set_data(prop='IP_inv_seq',throats='all',data=np.array(self._tsequence,dtype=np.int))
         if self._timing:
-            self.set_pore_data(prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
-            self.set_throat_data(prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))
+            self.set_data(prop='IP_inv_time',pores='all',data=np.array(self._Ptime,dtype=np.float))
+            self.set_data(prop='IP_inv_time',throats='all',data=np.array(self._Ttime,dtype=np.float))
 
     def _do_one_outer_iteration(self):
         r"""
@@ -491,7 +491,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._logger.debug('the other pore is one of: ')
             self._logger.debug(Pores)
             self._logger.debug( 'position: ')
-            self._logger.debug(self._net.get_pore_data(prop='coords')[self._NewPore])
+            self._logger.debug(self._net.get_data(prop='coords',pores='all')[self._NewPore])
             # label that pore as invaded
             self._Pinv[self._NewPore] = self._current_cluster
             self._Pinv_original[self._NewPore] = self._current_cluster
@@ -500,7 +500,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._psequence[self._NewPore] = self._tseq
             if self._timing:
                 # update self._cluster_data.['pore_volume']
-                self._cluster_data['pore_volume'][self._current_cluster-1] += self._net.get_pore_data(prop=self._pore_volume_name)[self._NewPore]
+                self._cluster_data['pore_volume'][self._current_cluster-1] += self._net.get_data(prop=self._pore_volume_name,pores='all')[self._NewPore]
             # Make a list of all throats neighboring pores in the cluster
             # Update interface list
             neighbors = self._net.find_neighbor_throats(self._NewPore)
@@ -512,7 +512,7 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.debug('connecting pores:')
                     self._logger.debug(self._net.find_connected_pores(j))
                     # Add this throat data (pressure, number) to this cluster's "heap" of throat data.
-                    heapq.heappush(self._tpoints[self._current_cluster-1],(self._fluid.get_throat_data(prop=self._capillary_pressure_name)[j],j))
+                    heapq.heappush(self._tpoints[self._current_cluster-1],(self._fluid.get_data(prop=self._capillary_pressure_name,throats='all')[j],j))
                     # Add new throat number to throat list for this cluster
                     self._tlists[self._current_cluster-1].append(j)
                     if self._timing:
@@ -559,7 +559,7 @@ class InvasionPercolation(GenericAlgorithm):
     def _condition_update(self):
          # Calculate the distance between the new pore and outlet pores
         if self._end_condition == 'breakthrough':
-            newpore_position = self._net.get_pore_data(prop='coords')[self._NewPore]
+            newpore_position = self._net.get_data(prop='coords',pores='all')[self._NewPore]
             dist_sqrd = (self._outlet_position-newpore_position)*(self._outlet_position-newpore_position)
             if dist_sqrd[0].shape==(3,):     # need to do this for MatFile networks because newpore_position is a nested array, not a vector (?)
                 dist_sqrd = dist_sqrd[0]
@@ -614,23 +614,23 @@ class InvasionPercolation(GenericAlgorithm):
             IPseq = self._tseq
 
         try:
-            self._fluid.set_pore_data(prop=occupancy,data=((self._psequence>0)&(self._psequence<=IPseq)))
-            self._fluid.set_throat_data(prop=occupancy,data=((self._tsequence>0)&(self._tsequence<=IPseq)))
+            self._fluid.set_data(prop=occupancy,pores='all',data=((self._psequence>0)&(self._psequence<=IPseq)))
+            self._fluid.set_data(prop=occupancy,throats='all',data=((self._tsequence>0)&(self._tsequence<=IPseq)))
         except:
             print('Something bad happened while trying to update fluid',self._fluid.name)
         try:
-            self._fluid_def.set_pore_data(prop=occupancy,data=~((self._psequence>0)&(self._psequence<=IPseq)))
-            self._fluid_def.set_throat_data(prop=occupancy,data=~((self._tsequence>0)&(self._tsequence<=IPseq)))
+            self._fluid_def.set_data(prop=occupancy,pores='all',data=~((self._psequence>0)&(self._psequence<=IPseq)))
+            self._fluid_def.set_data(prop=occupancy,throats='all',data=~((self._tsequence>0)&(self._tsequence<=IPseq)))
         except:
             print('A partner fluid has not been set so inverse occupancy cannot be set')
 
         if IPseq==self._pseq:            
-            self._fluid.set_pore_data(prop='IP_inv_final',data=np.array(self._Pinv,dtype=np.int))
-            self._fluid.set_pore_data(prop='IP_inv_original',data=np.array(self._Pinv_original,dtype=np.int))
-            self._fluid.set_throat_data(prop='IP_inv',data=np.array(self._Tinv,dtype=np.int))
-            self._fluid.set_pore_data(prop='IP_inv_seq',data=np.array(self._psequence,dtype=np.int))
-            self._fluid.set_throat_data(prop='IP_inv_seq',data=np.array(self._tsequence,dtype=np.int))
+            self._fluid.set_data(prop='IP_inv_final',pores='all',data=np.array(self._Pinv,dtype=np.int))
+            self._fluid.set_data(prop='IP_inv_original',pores='all',data=np.array(self._Pinv_original,dtype=np.int))
+            self._fluid.set_data(prop='IP_inv',throats='all',data=np.array(self._Tinv,dtype=np.int))
+            self._fluid.set_data(prop='IP_inv_seq',pores='all',data=np.array(self._psequence,dtype=np.int))
+            self._fluid.set_data(prop='IP_inv_seq',throats='all',data=np.array(self._tsequence,dtype=np.int))
             if self._timing:
-                self._fluid.set_pore_data(prop='IP_inv_time',data=np.array(self._Ptime,dtype=np.float))
-                self._fluid.set_throat_data(prop='IP_inv_time',data=np.array(self._Ttime,dtype=np.float))              
+                self._fluid.set_data(prop='IP_inv_time',pores='all',data=np.array(self._Ptime,dtype=np.float))
+                self._fluid.set_data(prop='IP_inv_time',throats='all',data=np.array(self._Ttime,dtype=np.float))              
             

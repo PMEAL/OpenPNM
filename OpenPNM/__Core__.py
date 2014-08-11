@@ -357,14 +357,14 @@ class Core(Base):
                 if sp.shape(data)[0] == 1:
                     pores = ''
                 else:
-                    pores = self.get_pore_indices(labels='all')
+                    pores = self.pores()
             self._set_data(element='pore',prop=prop,data=data,locations=pores,mode=mode)
         if throats != None:
             if throats == 'all':
                 if sp.shape(data)[0] == 1:
                     throats = ''
                 else:
-                    throats = self.get_throat_indices(labels='all')
+                    throats = self.throats()
             self._set_data(element='throat',prop=prop,data=data,locations=throats,mode=mode)    
 
     def _set_info(self,element='',label='',locations='',mode='merge'):
