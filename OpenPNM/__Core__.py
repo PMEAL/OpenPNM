@@ -367,30 +367,6 @@ class Core(Base):
                     throats = self.get_throat_indices(labels='all')
             self._set_data(element='throat',prop=prop,data=data,locations=throats,mode=mode)    
 
-    def set_pore_data(self,prop='',data='',locations='',mode='merge'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE set_data INSTEAD
-        '''
-        self._set_data(element='pore',prop=prop,data=data,locations=locations,mode=mode)
-        
-    def get_pore_data(self,prop='',locations=''):
-        r'''
-        THIS METHOD IS DEPRECATED, USE get_data INSTEAD
-        '''
-        return self._get_data(element='pore',prop=prop,locations=locations)
-
-    def set_throat_data(self,prop='',data='',locations='',mode='merge'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE set_data INSTEAD        
-        '''
-        self._set_data(element='throat',prop=prop,data=data,locations=locations,mode=mode)         
-
-    def get_throat_data(self,prop='',locations=''):
-        r'''
-        THIS METHOD IS DEPRECATED, USE get_data INSTEAD
-        '''
-        return self._get_data(element='throat',prop=prop,locations=locations)     
-
     def _set_info(self,element='',label='',locations='',mode='merge'):
         r'''
         This is the actual info setter method, but it should not be called directly.  
@@ -508,30 +484,6 @@ class Core(Base):
             temp = self._get_info(element='throat',label=label)
             return temp[sp.in1d(temp,throats)]
            
-    def set_pore_info(self,label='',locations='',mode='merge'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE set_info INSTEAD
-        '''
-        self._set_info(element='pore',label=label,locations=locations,mode=mode)
-
-    def get_pore_info(self,label=''):
-        r'''
-        THIS METHOD IS DEPRECATED, USE get_info INSTEAD
-        '''
-        return self._get_info(element='pore',label=label)
-        
-    def set_throat_info(self,label='',locations='',mode='merge'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE set_info INSTEAD
-        '''
-        self._set_info(element='throat',label=label,locations=locations,mode=mode)
-        
-    def get_throat_info(self,label=''):
-        r'''
-        THIS METHOD IS DEPRECATED, USE get_info INSTEAD
-        '''
-        return self._get_info(element='throat',label=label)
-                
     def amalgamate_data(self,objs=[]):
         r"""
         Returns a dictionary containing ALL pore data from all netowrk and/or
@@ -913,18 +865,6 @@ class Core(Base):
             temp['pores'] = self.pores(labels=labels)
             temp['throats'] = self.throats(labels=labels)
         return temp
-        
-    def get_pore_indices(self,labels=['all'],mode='union'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE pores() INSTEAD
-        '''
-        return self.pores(labels=labels,mode=mode)
-
-    def get_throat_indices(self,labels=['all'],mode='union'):
-        r'''
-        THIS METHOD IS DEPRECATED, USE throats() INSTEAD
-        '''
-        return self.throats(labels=labels,mode=mode)
         
     def tomask(self,pores=None,throats=None):
         r'''
