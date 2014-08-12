@@ -59,7 +59,7 @@ phys_air = OpenPNM.Physics.Standard(network=sgl,fluid=air,pores=Ps,throats=Ts,dy
 phys_water.regenerate()
 phys_air.regenerate()
 
-inlets = sgl.get_pore_indices(labels = ['bottom','boundary'],mode='intersection')
+inlets = sgl.pores(['bottom','boundary'],mode='intersection')
 
 #using every other pore in the bottom and boundary as an inlet
 #prevents extremely small diffusivity and permeability values in the z direction
@@ -75,7 +75,7 @@ diff_air = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
 perm_water = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
 diff_water = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
 
-max_inv_seq = max(OP_1.get_throat_data(prop = 'inv_seq'))
+max_inv_seq = max(OP_1['throat.inv_seq'])
 
 for x in range(21):
     OP_1.update(seq = max_inv_seq*(x/20))
@@ -83,10 +83,10 @@ for x in range(21):
     #printing out so we know how far along we are
     print('seq = '+str(round(max_inv_seq*(x/20)))+' Seq out of '+str(round(max_inv_seq))+' total sequences')
     
-    final_pores = water.get_pore_data('occupancy')*1
-    pore_volumes = sgl.get_pore_data(prop = 'volume')
-    final_throats = water.get_throat_data('occupancy')*1
-    throat_volumes = sgl.get_throat_data(prop = 'volume')
+    final_pores = water['pore.occupancy']
+    pore_volumes = sgl['pore.volume']
+    final_throats = water['throat.occupancy']
+    throat_volumes = sgl['throat.volume']
     
     saturation = (sum(final_pores*pore_volumes) + sum(final_throats*throat_volumes))/(sum(pore_volumes) + sum(throat_volumes))
             
