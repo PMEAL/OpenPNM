@@ -21,10 +21,7 @@ def distributions(net,
   ax1.set_ylabel('Frequency')
 
   ax2 = fig.add_subplot(222)
-  net.find_neighbor_pores(1)
-  x = _sp.zeros(net.num_pores())
-  for i in list(range(0,_sp.shape(net._adjacency_matrix['lil']['conns'].rows)[0])):
-    x[i] = _sp.shape(net._adjacency_matrix['lil']['conns'].rows[i])[0]
+  x = net.num_neighbors(net.pores(),flatten=False)
   ax2.hist(x,25,facecolor='yellow')
   ax2.set_xlabel('Coordination Number')
   ax2.set_ylabel('Frequency')
