@@ -23,6 +23,9 @@ from OpenPNM.Network import GenericNetwork
 class Cubic(GenericNetwork):
     r"""
     This class contains the methods for creating a *Cubic* network topology.  
+    The actual generation is carried out during the initialization based upon the 
+    passed parameters domain_size, lattice_spacing and divisions.
+    
     To invoke the actual generation it is necessary to run the `generate` method.
 
     Parameters
@@ -36,6 +39,18 @@ class Cubic(GenericNetwork):
     loggername : string
         Overwrite the name of the logger, which defaults to the class name
 
+    domain_size : [float,float,float]
+        domain_size = [3.0,3.0,3.0] (default)\n
+        Bounding cube for internal pore positions\n
+    lattice_spacing : [float]
+        lattice_spacing = [1.0] (default)\n
+        Distance between pore centers\n
+    divisions : [int,int,int]
+        divisions = [3,3,3]\n
+        Number of internal pores in each dimension.\n
+        (Optional input. Replaces one of the above.)\n
+
+
     Examples
     --------
     >>> pn = OpenPNM.Network.Cubic()
@@ -43,28 +58,10 @@ class Cubic(GenericNetwork):
 
     """
 
-    def __init__(self, **kwargs):
-        super(Cubic, self).__init__(**kwargs)
+    def __init__(self, **params):
+        super(Cubic, self).__init__(**params)
         self._logger.debug(self.__class__.__name__+": Execute constructor")
-
-    def generate(self,**params):
-        '''
-        Invokes the creation of a Cubic network
-
-        Parameters
-        ----------
-        domain_size : [float,float,float]
-            domain_size = [3.0,3.0,3.0] (default)\n
-            Bounding cube for internal pore positions\n
-        lattice_spacing : [float]
-            lattice_spacing = [1.0] (default)\n
-            Distance between pore centers\n
-        divisions : [int,int,int]
-            divisions = [3,3,3]\n
-            Number of internal pores in each dimension.\n
-            (Optional input. Replaces one of the above.)\n
-
-        '''
+        
         self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
         self._generate_setup(**params)
         self._generate_pores()
@@ -73,7 +70,7 @@ class Cubic(GenericNetwork):
         if params['add_boundaries']:
             self._add_boundaries()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
-
+        
     def _generate_setup(self,   domain_size = [],
                                 divisions = [],
                                 lattice_spacing = [],
