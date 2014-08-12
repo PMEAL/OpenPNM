@@ -44,7 +44,7 @@ class PlotTools(object):
         if not fig:
             fig = plt.figure()
         ax1 = fig.add_subplot(221)
-        ax1.hist(net.get_pore_data(prop=pore_diameter)[net.get_pore_indices('all')],25,facecolor='green')
+        ax1.hist(net.get_pore_data(prop=pore_diameter)[net.pores('all')],25,facecolor='green')
         ax1.set_xlabel('Pore Diameter [m]')
         ax1.set_ylabel('Frequency')
 
@@ -58,12 +58,12 @@ class PlotTools(object):
         ax2.set_ylabel('Frequency')
 
         ax3 = fig.add_subplot(223)
-        ax3.hist(net.get_throat_data(prop=throat_diameter)[net.get_throat_indices('all')],25,facecolor='blue')
+        ax3.hist(net.get_throat_data(prop=throat_diameter)[net.throats('all')],25,facecolor='blue')
         ax3.set_xlabel('Throat Diameter [m]')
         ax3.set_ylabel('Frequency')
         
         ax4 = fig.add_subplot(224)
-        ax4.hist(net.get_throat_data(prop=throat_length)[net.get_throat_indices('all')],25,facecolor='red')
+        ax4.hist(net.get_throat_data(prop=throat_length)[net.throats('all')],25,facecolor='red')
         ax4.set_xlabel('Throat Length [m]')
         ax4.set_ylabel('Frequency')
 

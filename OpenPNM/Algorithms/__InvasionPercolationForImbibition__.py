@@ -139,7 +139,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         self._Psecond = Psecond
         if Psecond:
             end_condition='secondary'
-            inlets = [self._net.get_pore_indices(labels='all')[self._fluid.get_pore_data(prop='occupancy')>0]]
+            inlets = [self._net.pores(labels='all')[self._fluid.get_pore_data(prop='occupancy')>0]]
 
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets

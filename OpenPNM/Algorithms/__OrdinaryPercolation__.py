@@ -162,7 +162,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         except:
             self._logger.error('Orindary percolation has not been run!')
             raise Exception('Aborting algorithm')
-        tind = self._net.get_throat_indices()
+        tind = self._net.throats()
         conns = self._net.find_connected_pores(tind)
         for inv_val in inv_points[0:-1]:
             #Find clusters of defender pores
