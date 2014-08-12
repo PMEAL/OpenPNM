@@ -237,6 +237,8 @@ class Core(Base):
             elif throats==None and pores==None:
                 self._logger.error('No pores or throats have been received!')
                 raise Exception()
+            if prop.split('.')[0] == element:
+                prop = prop.split('.')[1]
             if mode=='remove_data':
                 if data=='':
                     try: 
@@ -310,6 +312,8 @@ class Core(Base):
             elif throats==None and pores==None:
                 self._logger.error('No pores or throats have been received!')
                 raise Exception() 
+            if prop.split('.')[0] == element:
+                prop = prop.split('.')[1]
             try:
                 self[element+'.'+prop]
                 if mode != '':
