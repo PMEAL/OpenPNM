@@ -61,9 +61,9 @@ class Core(Base):
         #--- Write value to dictionary  ---#
         if sp.shape(value)[0] == 1:  # If value is scalar
             self._logger.debug('Broadcasting scalar value into vector: '+key)
-            value = sp.ones((self.count(element),),dtype=value.dtype)*value
+            value = sp.ones((self._count(element),),dtype=value.dtype)*value
             super(Base, self).__setitem__(key,value)
-        elif sp.shape(value)[0] == self.count(element):
+        elif sp.shape(value)[0] == self._count(element):
             self._logger.debug('Updating vector: '+key)
             super(Base, self).__setitem__(key,value)
         else:
@@ -853,7 +853,7 @@ class Core(Base):
         ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
         
-    def locations(self,element=None,labels=['all'],mode='union'):
+    def _indices(self,element=None,labels=['all'],mode='union'):
         r'''
         This is a generic version of `pores` and `throats` that accepts an
         'element' argument which control which values are returned.  
@@ -1018,12 +1018,12 @@ class Core(Base):
         fine, but missing ints are converted to float when nans are inserted.
         '''
         element = prop.split('.')[0]
-        temp = sp.ndarray((self.count(element),))
+        temp = sp.ndarray((self._count(element),))
         dtypes = []
         for item in sources:
             try: item.name
             except: item = self.find_object(obj_name=item)
-            locations = self.locations(element=element,labels=item.name)
+            locations = self._indices(element=element,labels=item.name)
             if prop not in item.keys():
                 values = sp.ones_like(locations)*sp.nan
                 dtypes.append('nan')
@@ -1153,7 +1153,7 @@ class Core(Base):
     def Nt(self):
         return self.num_throats()    
         
-    def count(self,element=None):
+    def _count(self,element=None):
         r'''
         Returns a dictionary containing the number of pores and throats in 
         the network, stored under the keys 'pore' or 'throat'
@@ -1183,9 +1183,9 @@ class Core(Base):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.count()
+        >>> pn._count()
         {'pore': 125, 'throat': 300}
-        >>> pn.count('pore')
+        >>> pn._count('pore')
         125
         '''
         if element in ['pore','pores']:
@@ -1237,7 +1237,7 @@ class Core(Base):
                     flag = False
                 elif sp.shape(self[item])[0] == 1:
                     health[item] = 'Healthy Scalar'
-                elif sp.shape(self[item])[0] == self.count(item.split('.')[0]):
+                elif sp.shape(self[item])[0] == self._count(item.split('.')[0]):
                     health[item] = 'Healthy Vector'
                 else:
                     health[item] = 'Wrong Length'
@@ -1264,7 +1264,7 @@ class Core(Base):
             prop=item
             if len(prop)>35:
                 prop = prop[0:32]+'...'
-            required = self.count(item.split('.')[0])
+            required = self._count(item.split('.')[0])
             defined = required - sp.sum(sp.isnan(self[item]))
             print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
         print(header)
