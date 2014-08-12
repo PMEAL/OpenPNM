@@ -43,6 +43,9 @@ class Air(GenericFluid):
                        model=fm.viscosity.reynolds,
                        uo=9.16656E-6,
                        b=-2.34621E-3)
+        self['pore.molecular_weight'] = 28.97
+        self['pore.critical_temperature'] = 132.5
+        self['pore.critical_volume'] = 0.0883
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

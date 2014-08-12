@@ -35,6 +35,9 @@ class Water(GenericFluid):
         self['pore.surface_tension'] = 0.072
         self['pore.contact_angle'] = 110.0
         self['pore.molar_density'] = 44445.0
+        self['pore.molecular_weight'] = 18.015
+        self['pore.critical_temperature'] = 647.1
+        self['pore.critical_volume'] = 0.0560
         self.add_model(propname='pore.viscosity',
                        model=fm.viscosity.reynolds,
                        uo=0.246914,
