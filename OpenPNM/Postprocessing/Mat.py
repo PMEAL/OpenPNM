@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 24 11:44:11 2014
-
-@author: Stephane
-"""
-import scipy as sp
+import scipy as _sp
 
 class save():
     
@@ -19,6 +13,7 @@ class save():
         r"""
         Initialize
         """
+        super().__init__(self,**kwargs)
         self._write(**kwargs)
         
     def _write(self, network, filename='output.mat', fluids=[]):
@@ -61,5 +56,5 @@ class save():
                 for i in range(len(fluids[j])):        
                     pnMatlab[new[i]] = fluids[j][old[i]]
             
-        sp.io.savemat(file_name=filename,mdict=pnMatlab)
+        _sp.io.savemat(file_name=filename,mdict=pnMatlab)
         
