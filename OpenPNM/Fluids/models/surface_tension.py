@@ -31,7 +31,7 @@ def guggenheim_katayama(fluid,
     '''
     T = fluid['pore.temperature']
     Pc = fluid['pore.Pc']
-    Tc = fluid.get_pore_data(prop='Tc')
+    Tc = fluid['pore.Tc']
     sigma_o = K2*Tc**(1/3)*Pc**(2/3)
     value = sigma_o*(1-T/Tc)**n
     return value

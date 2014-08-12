@@ -15,8 +15,8 @@ import OpenPNM
 #pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=30)
 #pn.generate(filename='OpenPNM_net_sample_image',xtra_pore_data='type')
 #geom = pn._geometries['imported']
-#pn.set_pore_info(label='top',locations=pn.get_pore_indices()[pn.get_pore_data(prop='type')==6])
-#pn.set_pore_info(label='bottom',locations=pn.get_pore_indices()[pn.get_pore_data(prop='type')==1])
+#pn['pore.top']=pn['pore.type']==6
+#pn['pore.bottom']=pn['pore.type']==1
 
 
 #==============================================================================
