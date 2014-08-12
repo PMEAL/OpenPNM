@@ -518,7 +518,7 @@ class GenericNetwork(OpenPNM.Core):
                 Tind = T1[Tmask]
         return Tind
         
-    def update_network(self):
+    def _update_network(self):
         r'''
         Regenerates the adjacency and incidence matrices
         '''
@@ -591,7 +591,7 @@ class GenericNetwork(OpenPNM.Core):
             self['throat.'+item][self.throats('all')>=Nt] = True
                 
         # Any existing adjacency and incidence matrices will be invalid
-        self.update_network()
+        self._update_network()
         
     def stitch(self,heads,tails):
         r'''
@@ -645,7 +645,7 @@ class GenericNetwork(OpenPNM.Core):
                     temp = self[item]
                     self[item] = sp.ones((N,),dtype=float)*sp.nan
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
-        self.update_network()
+        self._update_network()
         
     def trim(self, pores=[], throats=[], check_health=False):
         '''
@@ -729,7 +729,7 @@ class GenericNetwork(OpenPNM.Core):
                     self[key] = temp[Pkeep]
         
         #Reset network graphs
-        self.update_network()
+        self._update_network()
         
         #Check network health
         if check_health:
