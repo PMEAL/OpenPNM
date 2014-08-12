@@ -649,7 +649,7 @@ class GenericNetwork(OpenPNM.Core):
         
     def trim(self, pores=[], throats=[], check_health=False):
         '''
-        Remove pores (or throats) from the network
+        Remove pores (or throats) from the network.
         
         Parameters
         ----------
@@ -659,10 +659,9 @@ class GenericNetwork(OpenPNM.Core):
 
         Notes
         -----
-        The prune affects the ~selected~ pores. If you want to remove all pores
-        where the diameter is less than 0.5, get a mask ie:
-        pn.['pore.diameter'] < 0.5 # [True, False, ...]
-        and send it over as an argument. 
+        TIt can get very messy to 'trim' pores or throats from a Network that
+        has already been used to instantiate other objects.  It's not impossible
+        but at the present time attempting to do this will raise an error.
         
         Examples
         --------
@@ -678,7 +677,13 @@ class GenericNetwork(OpenPNM.Core):
         r'''
         TODO: This logic works but can be shortened as done in subnet
         '''
-        if sp.shape(pores)[0]>0:
+        if (self._geometries != []):
+            raise Exception('Network has active Geometries, cannot proceed')
+        if (self._fluids != []):
+            raise Exception('Network has active Fluids, cannot proceed')
+        
+        if pores != []:
+            pores = sp.array(pores,ndmin=1)
             Pdrop = sp.zeros((self.num_pores(),),dtype=bool)
             Pdrop[pores] = True
             Pkeep = ~Pdrop
@@ -686,7 +691,8 @@ class GenericNetwork(OpenPNM.Core):
             Ts = self.find_neighbor_throats(pores)
             Tdrop[Ts] = 1
             Tkeep = ~Tdrop
-        elif sp.shape(throats)[0]>0:
+        elif throats != []:
+            throats = sp.array(throats,ndmin=1)
             Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
             Tdrop[throats] = 1
             Tkeep = ~Tdrop
@@ -811,7 +817,7 @@ class GenericNetwork(OpenPNM.Core):
                 return dupPs
             if mode == 'remove':
                 print('not implemented yet')
-                pass        
+                pass   
         
     def network_health(self):
         r'''
