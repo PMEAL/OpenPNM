@@ -767,83 +767,62 @@ class GenericNetwork(OpenPNM.Core):
         clusters = sprs.csgraph.connected_components(temp)[1]
         return clusters
         
-    def find_duplicates(self,element='throat',mode='remove'):
-        r'''
-        Find duplicate pores or throats in the network
-        
-        Parameters
-        ----------
-        element : string
-            Controls whethe to search for duplicate 'pore' or 'throat'
-            
-        mode : string
-            Controls how any duplicates are handled.  Options are:
-            
-            1. 'find' : In this mode a list of duplicates is returned, with all
-            groups of duplicates lumped into a single sublist
-            
-            2. 'remove' : Will attempt to remove the duplicates.  This option
-            should NOT be used on netorks with other associated objects since 
-            pore and throat numbering will change.  
-            
-        '''
-        if (self._geometries != []):
-            raise Exception('Network has active Geometries, cannot proceed')
-                    
-        if element in ['throat','throats']:
-            i = self['throat.conns'][:,0]
-            j = self['throat.conns'][:,1]
-            v = sp.array(self['throat.all'],dtype=int)
-            Np = self.num_pores()
-            temp = sprs.coo_matrix((v,(i,j)),[Np,Np])
-            temp = temp.tocsr()  # Convert to CSR to combine duplicates
-            temp = temp.tocoo()  # And back to COO
-            if mode == 'find':
-                mergedTs = sp.where(temp.data>1)
-                Ps12 = sp.vstack((temp.row[mergedTs], temp.col[mergedTs])).T
-                dupTs = []
-                for i in range(0,sp.shape(Ps12)[0]):
-                    dupTs.append(self.find_connecting_throat(Ps12[i,0],Ps12[i,1]))
-                return dupTs
-            elif mode == 'remove':
-                self['throat.conns'] = sp.vstack((temp.row,temp.col)).T
-                dict.__setitem__(self,'throat.all',sp.array(temp.data,dtype=bool))
-        if element in ['pore','pores']:
-            temp = misc.dist(self['pore.coords'],self['pore.coords'])
-            temp = sp.triu(temp,k=1)  # Remove lower triangular of matrix
-            temp = sp.where(temp==0)  # Find 0 values in distance matrix
-            dupPs = temp[1]>temp[0]  # Find 0 values above diagonal
-            if mode == 'find':
-                return dupPs
-            if mode == 'remove':
-                print('not implemented yet')
-                pass   
-        
     def network_health(self):
         r'''
         This method check the network topological health by:
         
             (1) Checking for isolated pores
             (2) Checking for islands or isolated clusters of pores
+            (3) Checking for duplicate throats
             
         Returns
         -------
         A named tuple containing isolated pores and disconnected cluters
+        
+        Notes
+        -----
+        Does not yet check for duplicate pores.  This is just a 'check' method
+        and does not 'fix' the problems it finds.
         '''
+
         #Check for individual isolated pores
-        health = collections.namedtuple('network_health',['disconnected_clusters','isolated_pores'])
-        health.isolated_pores = []
-        health.disconnected_clusters = []
+        health = {}
+        health['disconnected_clusters'] = []
+        health['isolated_pores'] = []
         Ps = self.num_neighbors(self.pores())
         if sp.sum(Ps==0) > 0:
             self._logger.warning(str(sp.sum(Ps==0))+' pores have no neighbors')
-            health.isolated_pores = sp.where(Ps==0)[0]
+            health['isolated_pores'] = sp.where(Ps==0)[0]
+        
         #Check for clusters of isolated pores
         Cs = self.find_clusters(self.tomask(throats=self.throats('all')))
         if sp.shape(sp.unique(Cs))[0] > 1:
             self._logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):
-                health.disconnected_clusters.append(sp.where(Cs==i)[0])
+                health['disconnected_clusters'].append(sp.where(Cs==i)[0])
+        
+        #Check for duplicate throats
+        i = self['throat.conns'][:,0]
+        j = self['throat.conns'][:,1]
+        v = sp.array(self['throat.all'],dtype=int)
+        Np = self.num_pores()
+        temp = sprs.coo_matrix((v,(i,j)),[Np,Np])
+        temp = temp.tocsr()  # Convert to CSR to combine duplicates
+        temp = temp.tocoo()  # And back to COO
+        mergedTs = sp.where(temp.data>1)
+        Ps12 = sp.vstack((temp.row[mergedTs], temp.col[mergedTs])).T
+        dupTs = []
+        for i in range(0,sp.shape(Ps12)[0]):
+            dupTs.append(self.find_connecting_throat(Ps12[i,0],Ps12[i,1]))
+        health['duplicate_throats'] = dupTs
+        
+        #Check for duplicate pores
+#        temp = misc.dist(self['pore.coords'],self['pore.coords'])
+#        temp = sp.triu(temp,k=1)  # Remove lower triangular of matrix
+#        temp = sp.where(temp==0)  # Find 0 values in distance matrix
+#        dupPs = temp[1]>temp[0]  # Find 0 values above diagonal
+#        health['duplicate_pores'] = dupPs
+        
         return health
         
     #--------------------------------------------------------------------------
