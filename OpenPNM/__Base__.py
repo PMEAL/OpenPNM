@@ -20,7 +20,7 @@ _logging.basicConfig(level=_logging.ERROR,
                     
 class Base(dict):
     r"""
-    .. class:: `OpenPNM.Utilities.Base` -- Base class for OpenPNM
+    .. class:: `OpenPNM.Base` -- Base class for OpenPNM
     
     
     Base class with a few bells and whistles..
@@ -314,7 +314,7 @@ class Base(dict):
         
     name = property(_get_name,_set_name)
             
-    def save_object(self,filename):
+    def save_object(self,filename=''):
         r'''
         Save the current object's data to a Numpy zip file.
         
@@ -323,10 +323,26 @@ class Base(dict):
         filename : string
             File name (including path if desired) to save to
         '''
-        temp = filename.split('.')[0]
-        temp = temp+'.npz'
-        sp.savez_compressed(temp,**self)
         
+        if self.__module__.split('.')[1] == 'Network':
+            net = self
+        else:
+            net = self._net
+        
+        dirname = net.name
+        os.mkdir(dirname)
+        #Save network
+        sp.savez_compressed(dirname+'/'+net.name+'.npz',**self)
+        #Save other objects
+        for geom in net._geometries:
+            filename = dirname+'/'+net.name+'.'+geom.name+'.npz'
+            sp.savez_compressed(filename,**geom)
+        for fluid in net._fluids:
+            filename = dirname+'/'+net.name+'.'+fluid.name+'.npz'
+            sp.savez_compressed(filename,**fluid)
+            for phys in fluid._physics:
+                filename = dirname+'/'+net.name+'.'+fluid.name+'.'+phys.name+'.npz'
+                sp.savez_compressed(filename,**phys)
             
 if __name__ == '__main__':
     import doctest
