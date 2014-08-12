@@ -26,8 +26,6 @@ class Cubic(GenericNetwork):
     The actual generation is carried out during the initialization based upon the 
     passed parameters domain_size, lattice_spacing and divisions.
     
-    To invoke the actual generation it is necessary to run the `generate` method.
-
     Parameters
     ----------
     name : string
@@ -53,8 +51,7 @@ class Cubic(GenericNetwork):
 
     Examples
     --------
-    >>> pn = OpenPNM.Network.Cubic()
-    >>> pn.generate(lattice_spacing=[1],divisions=[5,5,5],add_boundaries=False)
+    >>> pn = OpenPNM.Network.Cubic(lattice_spacing=[1],divisions=[5,5,5],add_boundaries=False)
 
     """
 
