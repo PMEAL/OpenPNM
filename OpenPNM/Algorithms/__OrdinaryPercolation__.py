@@ -46,7 +46,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
         
-    def setup(self,
+    def run(self,
               invading_fluid=None,
               defending_fluid=None,
               inlets=[0], 
@@ -66,13 +66,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._inv_points = inv_points
         self._AL = AL
         self._p_cap = capillary_pressure
-
-    def run(self):
-        r'''
-        '''
-        #See if setup has been run
-        try: self._p_cap
-        except: raise Exception('setup has not been run, cannot proceed')
+        
         #Create pore and throat conditions lists to store inv_val at which each is invaded
         self._p_inv = sp.zeros((self._net.num_pores(),),dtype=float)
         self._p_seq = sp.zeros_like(self._p_inv,dtype=int)
