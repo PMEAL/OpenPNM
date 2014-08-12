@@ -1161,7 +1161,7 @@ class Core(Base):
             temp['throat'] = self.num_throats()
         return temp
         
-    def data_health(self,element='',props=[],quiet=False):
+    def data_health(self,props=[],element='',quiet=False):
         r'''
         Check the health of pore and throat data arrays.  
         
