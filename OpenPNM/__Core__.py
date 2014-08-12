@@ -324,9 +324,9 @@ class Core(Base):
                     if mode == 'interpolate':
                         if locations!='':
                             if element == 'pore':
-                                return getattr(self,'interpolate_data')(self['throat.'+prop])
+                                return self.interpolate_data(self['throat.'+prop])
                             else:
-                                return getattr(self,'interpolate_data')(self['pore.'+prop])
+                                return self.interpolate_data(self['pore.'+prop])
                         else:
                             self._logger.error('For getting '+element+' property '+prop+' to '+self.name+' using interpolate mode, no locations should be sent.')
                     else:
@@ -921,22 +921,35 @@ class Core(Base):
         """
         if self.__module__.split('.')[1] == 'Network': 
             net = self
-            Ps = net.pores()
             Ts = net.throats()
+            Ps = net.pores()
+            label = 'all'
         elif self.__module__.split('.')[1] == 'Fluids': 
             net = self._net
-            Ps = self.pores()
-            Ts = self.throats()
+            Ts = net.throats()
+            Ps = net.pores()
+            label = 'all'
         else:  # If self is a Geometry or Physics
             net = self._net
-            Ps = self.pores(self.name)
-            Ts = self.throats(self.name)
+            Ts = net.throats(self.name)
+            Ps = net.pores(self.name)
+            label = self.name
         if sp.shape(data)[0] == self.Nt:
-            neighborTs = net.find_neighbor_throats(pores=Ps,flatten=False)
-            values = sp.ones((sp.shape(Ps)[0],))*sp.nan
+            #Upcast data to full network size
+            temp = sp.ones((net.Nt,))*sp.nan
+            temp[Ts] = data
+            data = temp
+            temp = sp.ones((net.Np,))*sp.nan
             for pore in Ps:
-                values[pore] = sp.mean(data[neighborTs[pore]])
+                neighborTs = net.find_neighbor_throats(pore)
+                neighborTs = net.filter_by_label(throats=neighborTs,label=label)
+                temp[pore] = sp.mean(data[neighborTs])
+            values = temp[Ps]
         elif sp.shape(data)[0] == self.Np:
+            #Upcast data to full network size
+            temp = sp.ones((net.Np,))*sp.nan
+            temp[Ps] = data
+            data = temp
             Ps12 = net.find_connected_pores(throats=Ts,flatten=False)
             values = sp.mean(data[Ps12],axis=1)
         else:
@@ -1148,7 +1161,7 @@ class Core(Base):
             temp['throat'] = self.num_throats()
         return temp
         
-    def data_health(self,element='',props=[],quiet=False):
+    def check_data_health(self,props=[],element='',quiet=False):
         r'''
         Check the health of pore and throat data arrays.  
         

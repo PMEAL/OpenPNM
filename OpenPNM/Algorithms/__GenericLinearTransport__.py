@@ -34,7 +34,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self._quantity = 'pore.'+quantity.split('.')[-1]
         
         #Check health of conductance vector
-        if self._fluid.data_health(props=self._conductance,quiet=True):
+        if self._fluid.check_data_health(props=self._conductance,quiet=True):
             #If no nans, check for 0's
             ind = sp.nonzero(fluid[self._conductance])[0]
             gmin = sp.amin(self._fluid[self._conductance][ind])

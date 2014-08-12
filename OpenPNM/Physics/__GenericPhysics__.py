@@ -55,7 +55,7 @@ class GenericPhysics(OpenPNM.Core):
         fluid['throat.'+self.name] = False
         fluid['throat.'+self.name][throats] = True
         
-    def physics_health(self):
+    def check_physics_health(self):
         r'''
         Perform a check to find pores with overlapping or undefined Physics
         '''

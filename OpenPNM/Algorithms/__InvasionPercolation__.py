@@ -312,14 +312,14 @@ class InvasionPercolation(GenericAlgorithm):
         #self._Tinv = np.zeros(self._net.num_throats())
         while self._condition:
             self._do_one_outer_iteration()
-        self._fluid['pore.IP_inv_final']=np.array(self._Pinv,dtype=np.int)
-        self._fluid['pore.IP_inv_original']=np.array(self._Pinv_original,dtype=np.int)
-        self._fluid['throat.IP_inv']=np.array(self._Tinv,dtype=np.int)
-        self._fluid['pore.IP_inv_seq']=np.array(self._psequence,dtype=np.int)
-        self._fluid['throat.IP_inv_seq']=np.array(self._tsequence,dtype=np.int)
+        self._fluid['pore.IP_inv_final']=np.ravel(np.array(self._Pinv,dtype=np.int))
+        self._fluid['pore.IP_inv_original']=np.ravel(np.array(self._Pinv_original,dtype=np.int))
+        self._fluid['throat.IP_inv']=np.ravel(np.array(self._Tinv,dtype=np.int))
+        self._fluid['pore.IP_inv_seq']=np.ravel(np.array(self._psequence,dtype=np.int))
+        self._fluid['throat.IP_inv_seq']=np.ravel(np.array(self._tsequence,dtype=np.int))
         if self._timing:
-            self._fluid['pore.IP_inv_time']=np.array(self._Ptime,dtype=np.float)
-            self._fluid['throat.IP_inv_time']=np.array(self._Ttime,dtype=np.float)
+            self._fluid['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
+            self._fluid['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
 
     def _do_one_outer_iteration(self):
         r"""
@@ -612,23 +612,23 @@ class InvasionPercolation(GenericAlgorithm):
             IPseq = self._tseq
 
         try:
-            self._fluid['pore.'+occupancy]=((self._psequence>0)&(self._psequence<=IPseq))
-            self._fluid['throat.'+occupancy]=((self._tsequence>0)&(self._tsequence<=IPseq))
+            self._fluid['pore.'+occupancy]=np.ravel(np.array(((self._psequence>0)&(self._psequence<=IPseq)),dtype=np.float))
+            self._fluid['throat.'+occupancy]=np.ravel(np.array(((self._tsequence>0)&(self._tsequence<=IPseq)),dtype=np.float))
         except:
             print('Something bad happened while trying to update fluid',self._fluid.name)
         try:
-            self._fluid_def['pore.'+occupancy]=~((self._psequence>0)&(self._psequence<=IPseq))
-            self._fluid_def['throat.'+occupancy]=~((self._tsequence>0)&(self._tsequence<=IPseq))
+            self._fluid_def['pore.'+occupancy]=np.ravel(np.array(~((self._psequence>0)&(self._psequence<=IPseq)),dtype=np.float))
+            self._fluid_def['throat.'+occupancy]=np.ravel(np.array(~((self._tsequence>0)&(self._tsequence<=IPseq)),dtype=np.float))
         except:
             print('A partner fluid has not been set so inverse occupancy cannot be set')
 
         if IPseq==self._pseq:            
-            self._fluid['pore.IP_inv_final']=np.array(self._Pinv,dtype=np.int)
-            self._fluid['pore.IP_inv_original']=np.array(self._Pinv_original,dtype=np.int)
-            self._fluid['throat.IP_inv']=np.array(self._Tinv,dtype=np.int)
-            self._fluid['pore.IP_inv_seq']=np.array(self._psequence,dtype=np.int)
-            self._fluid['throat.IP_inv_seq']=np.array(self._tsequence,dtype=np.int)
+            self._fluid['pore.IP_inv_final']=np.ravel(np.array(self._Pinv,dtype=np.int))
+            self._fluid['pore.IP_inv_original']=np.ravel(np.array(self._Pinv_original,dtype=np.int))
+            self._fluid['throat.IP_inv']=np.ravel(np.array(self._Tinv,dtype=np.int))
+            self._fluid['pore.IP_inv_seq']=np.ravel(np.array(self._psequence,dtype=np.int))
+            self._fluid['throat.IP_inv_seq']=np.ravel(np.array(self._tsequence,dtype=np.int))
             if self._timing:
-                self._fluid['pore.IP_inv_time']=np.array(self._Ptime,dtype=np.float)
-                self._fluid['throat.IP_inv_time']=np.array(self._Ttime,dtype=np.float)
+                self._fluid['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
+                self._fluid['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
             
