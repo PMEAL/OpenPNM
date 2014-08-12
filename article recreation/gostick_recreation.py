@@ -66,8 +66,7 @@ inlets = sgl.pores(['bottom','boundary'],mode='intersection')
 used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
     
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,loglevel=30)
-OP_1.setup(invading_fluid = water, defending_fluid = air, inlets = used_inlets,npts=100)
-OP_1.run() 
+OP_1.run(invading_fluid = water, defending_fluid = air, inlets = used_inlets,npts=100)
 
 sat = []
 perm_air = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
@@ -160,26 +159,15 @@ for x in range(21):
             Fickian_alg_multi_phase_water.set_boundary_conditions(bctype = 'Dirichlet', bcvalue = .2, pores = BC2_pores)
             
             #conduit conductance
-            Stokes_alg_single_phase_air.setup(conductance = 'hydraulic_conductance',fluid=air)
-            Stokes_alg_single_phase_water.setup(conductance = 'hydraulic_conductance',fluid=water)
-            Fickian_alg_single_phase_air.setup(conductance = 'diffusive_conductance',fluid=air) 
-            Fickian_alg_single_phase_water.setup(conductance = 'diffusive_conductance',fluid=water)
+            Stokes_alg_single_phase_air.run(conductance = 'hydraulic_conductance',fluid=air)
+            Stokes_alg_single_phase_water.run(conductance = 'hydraulic_conductance',fluid=water)
+            Fickian_alg_single_phase_air.run(conductance = 'diffusive_conductance',fluid=air) 
+            Fickian_alg_single_phase_water.run(conductance = 'diffusive_conductance',fluid=water)
             
-            Stokes_alg_multi_phase_air.setup(conductance = 'conduit_hydraulic_conductance',fluid=air)
-            Stokes_alg_multi_phase_water.setup(conductance = 'conduit_hydraulic_conductance',fluid=water)
-            Fickian_alg_multi_phase_air.setup(conductance = 'conduit_diffusive_conductance',fluid=air) 
-            Fickian_alg_multi_phase_water.setup(conductance = 'conduit_diffusive_conductance',fluid=water)
-            
-            #run
-            Stokes_alg_single_phase_air.run()
-            Stokes_alg_single_phase_water.run()
-            Fickian_alg_single_phase_air.run()
-            Fickian_alg_single_phase_water.run()
-            
-            Stokes_alg_multi_phase_air.run()
-            Stokes_alg_multi_phase_water.run()
-            Fickian_alg_multi_phase_air.run()
-            Fickian_alg_multi_phase_water.run()
+            Stokes_alg_multi_phase_air.run(conductance = 'conduit_hydraulic_conductance',fluid=air)
+            Stokes_alg_multi_phase_water.run(conductance = 'conduit_hydraulic_conductance',fluid=water)
+            Fickian_alg_multi_phase_air.run(conductance = 'conduit_diffusive_conductance',fluid=air) 
+            Fickian_alg_multi_phase_water.run(conductance = 'conduit_diffusive_conductance',fluid=water)
             
             #calc effective properties
             effective_permeability_air_single = Stokes_alg_single_phase_air.calc_eff_permeability(clean = False)  

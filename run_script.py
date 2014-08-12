@@ -82,13 +82,27 @@ phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    propname='throat.conduit_diffusive_conductance',
                    throat_conductance='throat.diffusive_conductance')
 #Use newly defined diffusive_conductance in the diffusion calculation
-alg.setup(conductance='throat.diffusive_conductance',fluid=air)
-alg.run()
+alg.run(conductance='throat.diffusive_conductance',fluid=air)
 alg.update()
 Deff = alg.calc_eff_diffusivity()
 
-#------------------------------------------------------------------------------
-'''Export to VTK'''
-#------------------------------------------------------------------------------
-import OpenPNM.Postprocessing.VTK as vtk
-vtk.save(network=pn,fluids=[air,water])
+# this creates a time step x num_pores, which is what the animated object needs
+inv_seq = water['pore.IP_inv_seq'].squeeze()
+history = []
+for i in sorted(set(inv_seq)):
+  history.append( (inv_seq != 0) & (inv_seq < i) )
+
+try:
+  # try to perofrm an animated 3D rendering
+  from OpenPNM.Postprocessing.Graphics import Scene, Wires
+  wires = Wires(pn['pore.coords'], pn['throat.conns'], history)
+  scene = Scene()
+  scene.add_actors([wires])
+  scene.play()
+
+except Exception as e:
+  #------------------------------------------------------------------------------
+  '''Export to VTK'''
+  #------------------------------------------------------------------------------
+  import OpenPNM.Postprocessing.VTK as vtk
+  vtk.save(network=pn,fluids=[air,water])

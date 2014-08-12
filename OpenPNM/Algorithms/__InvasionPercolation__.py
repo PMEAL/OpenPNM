@@ -312,14 +312,14 @@ class InvasionPercolation(GenericAlgorithm):
         #self._Tinv = np.zeros(self._net.num_throats())
         while self._condition:
             self._do_one_outer_iteration()
-        self['pore.IP_inv_final']=np.array(self._Pinv,dtype=np.int)
-        self['pore.IP_inv_original']=np.array(self._Pinv_original,dtype=np.int)
-        self['throat.IP_inv']=np.array(self._Tinv,dtype=np.int)
-        self['pore.IP_inv_seq']=np.array(self._psequence,dtype=np.int)
-        self['throat.IP_inv_seq']=np.array(self._tsequence,dtype=np.int)
+        self._fluid['pore.IP_inv_final']=np.array(self._Pinv,dtype=np.int)
+        self._fluid['pore.IP_inv_original']=np.array(self._Pinv_original,dtype=np.int)
+        self._fluid['throat.IP_inv']=np.array(self._Tinv,dtype=np.int)
+        self._fluid['pore.IP_inv_seq']=np.array(self._psequence,dtype=np.int)
+        self._fluid['throat.IP_inv_seq']=np.array(self._tsequence,dtype=np.int)
         if self._timing:
-            self['pore.IP_inv_time']=np.array(self._Ptime,dtype=np.float)
-            self['throat.IP_inv_time']=np.array(self._Ttime,dtype=np.float)
+            self._fluid['pore.IP_inv_time']=np.array(self._Ptime,dtype=np.float)
+            self._fluid['throat.IP_inv_time']=np.array(self._Ttime,dtype=np.float)
 
     def _do_one_outer_iteration(self):
         r"""
@@ -625,10 +625,10 @@ class InvasionPercolation(GenericAlgorithm):
         if IPseq==self._pseq:            
             self._fluid['pore.IP_inv_final']=np.array(self._Pinv,dtype=np.int)
             self._fluid['pore.IP_inv_original']=np.array(self._Pinv_original,dtype=np.int)
-            self._fluid['throats.IP_inv']=np.array(self._Tinv,dtype=np.int)
-            self._fluid['pores.IP_inv_seq']=np.array(self._psequence,dtype=np.int)
-            self._fluid['throats.IP_inv_seq']=np.array(self._tsequence,dtype=np.int)
+            self._fluid['throat.IP_inv']=np.array(self._Tinv,dtype=np.int)
+            self._fluid['pore.IP_inv_seq']=np.array(self._psequence,dtype=np.int)
+            self._fluid['throat.IP_inv_seq']=np.array(self._tsequence,dtype=np.int)
             if self._timing:
-                self._fluid['pores.IP_inv_time']=np.array(self._Ptime,dtype=np.float)
-                self._fluid['throats.IP_inv_time']=np.array(self._Ttime,dtype=np.float)
+                self._fluid['pore.IP_inv_time']=np.array(self._Ptime,dtype=np.float)
+                self._fluid['throat.IP_inv_time']=np.array(self._Ttime,dtype=np.float)
             

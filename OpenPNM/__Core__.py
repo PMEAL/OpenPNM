@@ -246,12 +246,16 @@ class Core(Base):
                         self[element+'.'+prop][locations] = sp.nan
                         self._logger.debug('For the '+element+' property '+prop+', the specified data have been deleted in '+self.name)                        
                     except: self._logger.error(element+' property '+prop+' in '+self.name+' has not been defined. Therefore, no data can be removed!')                              
-                else:   self._logger.error('For the '+element+' property '+prop+' in '+self.name+': The (remove_data) mode, will remove data from the specified locations. No data should be sent!')        
+                else:   
+                    self._logger.error('For the '+element+' property '+prop+' in '+self.name+': The (remove_data) mode, will remove data from the specified locations. No data should be sent!')        
+                    raise Exception()             
             elif mode=='remove_prop':
                 if data=='':
                     del self[element+'.'+prop]
                     self._logger.debug(element+' property '+prop+' has been deleted from the dictionary in '+self.name)
-                else:   self._logger.error('For the property '+prop+' in '+self.name+': The (remove_prop) mode, will remove the property from the dictionary. No data should be sent!')        
+                else:   
+                    self._logger.error('For the property '+prop+' in '+self.name+': The (remove_prop) mode, will remove the property from the dictionary. No data should be sent!')        
+                    raise Exception() 
             else:
                 if data.ndim > 1: data = data.squeeze()
                 try:
@@ -318,7 +322,7 @@ class Core(Base):
                 self[element+'.'+prop]
                 if mode != '':
                     if mode == 'interpolate':
-                        if locations!=0:
+                        if locations!='':
                             if element == 'pore':
                                 return getattr(self,'interpolate_data')(self['throat.'+prop])
                             else:
@@ -411,42 +415,42 @@ class Core(Base):
         else: self._logger.error('For setting '+element+' '+label+' to '+self.name+', the mode '+mode+' cannot be applied!')    
 
     
-        def get_info(self,pores=None,throats=None,label=''):
-            r'''
-            Retrieves the locations where the specified label is applied
+    def get_info(self,pores=None,throats=None,label=''):
+        r'''
+        Retrieves the locations where the specified label is applied
+        
+        Parameters
+        ----------
+        label : string
+            Label of interest
+        pores (or throats) : array_like
+            List of pores or throats
             
-            Parameters
-            ----------
-            label : string
-                Label of interest
-            pores (or throats) : array_like
-                List of pores or throats
-                
-            See Also
-            --------
-            `get_labels`
-                
-            '''
-            #Clean up label argument to remove leading 'pore' or 'throat'
-            if pores != None:
-                if pores == 'all':  pores = self.pores()
-                else:   pores = sp.array(pores,ndmin=1)
-                element='pore'
-                locations = pores 
-            elif throats != None:
-                if throats == 'all':    throats = self.throats()
-                else:   throats = sp.array(throats,ndmin=1)
-                element='throat'
-                locations = throats 
+        See Also
+        --------
+        `get_labels`
+            
+        '''
+        #Clean up label argument to remove leading 'pore' or 'throat'
+        if pores != None:
+            if pores == 'all':  pores = self.pores()
+            else:   pores = sp.array(pores,ndmin=1)
+            element='pore'
+            locations = pores 
+        elif throats != None:
+            if throats == 'all':    throats = self.throats()
+            else:   throats = sp.array(throats,ndmin=1)
+            element='throat'
+            locations = throats 
 
-            elif throats==None and pores==None:
-                self._logger.error('No pores or throats have been received!')
-                raise Exception()
-            if label.split('.')[0] == element:
-                label = label.split('.')[1]
-                
-            temp = self[element+'.'+label]
-            return temp[sp.in1d(temp,locations)]
+        elif throats==None and pores==None:
+            self._logger.error('No pores or throats have been received!')
+            raise Exception()
+        if label.split('.')[0] == element:
+            label = label.split('.')[1]
+            
+        temp = self[element+'.'+label]
+        return temp[sp.in1d(temp,locations)]
             
 
            
