@@ -43,8 +43,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffu
 #------------------------------------------------------------------------------
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,loglevel=20)
 Ps = pn.pores(labels=['bottom_face'])
-OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=Ps)
-OP_1.run()
+OP_1.run(invading_fluid=water,defending_fluid=air,inlets=Ps)
 OP_1.update(Pc=7000)
 OP_1.plot_drainage_curve()
 
@@ -66,8 +65,7 @@ OP_1.plot_drainage_curve()
 inlets = pn.pores('bottom_face')
 outlets = pn.pores('top_face')
 IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'IP_1', loglevel = 30)
-IP_1.setup(invading_fluid = water, defending_fluid = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
-IP_1.run()
+IP_1.run(invading_fluid = water, defending_fluid = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
 IP_1.update()
 
 #------------------------------------------------------------------------------
