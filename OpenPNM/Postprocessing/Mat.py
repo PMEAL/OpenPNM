@@ -5,24 +5,12 @@ Created on Tue Jun 24 11:44:11 2014
 @author: Stephane
 """
 import scipy as sp
-from OpenPNM.Visualization import GenericVisualization
 
-
-class SaveMat(GenericVisualization):
+class save():
     
     r"""
     SaveMat - Class for writing a mat file to be read by Matlab/Scilab/Octave
 
-    
-    Examples
-    --------
-    Create and store a basic network.
-
-    >>> import OpenPNM
-    >>> net = OpenPNM.Network.Cubic(loglevel=20,name='net')
-    >>> net.generate(divisions=[20, 20, 20], lattice_spacing=[0.0001],add_boundaries=True)
-    >>> vis = OpenPNM.Visualization.SaveMat()
-    >>> vis.write(net)
 
     """
     
@@ -31,18 +19,15 @@ class SaveMat(GenericVisualization):
         r"""
         Initialize
         """
-
+        self._write(**kwargs)
         
-        super(SaveMat,self).__init__(**kwargs)
-#        self._logger.debug("Execute constructor")
-        
-    def write(self, network, filename='output.mat', fluids=[]):
+    def _write(self, network, filename='output.mat', fluids=[]):
         r"""
         Write Network to a VTK file for visualizing in Paraview
     
         Parameters
         ----------
-    
+        
         network : OpenPNM Network Object
     
         filename : string ('output.mat')
