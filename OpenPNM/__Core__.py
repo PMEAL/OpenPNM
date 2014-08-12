@@ -324,9 +324,9 @@ class Core(Base):
                     if mode == 'interpolate':
                         if locations!='':
                             if element == 'pore':
-                                return getattr(self,'interpolate_data')(self['throat.'+prop])
+                                return self.interpolate_data(self['throat.'+prop])
                             else:
-                                return getattr(self,'interpolate_data')(self['pore.'+prop])
+                                return self.interpolate_data(self['pore.'+prop])
                         else:
                             self._logger.error('For getting '+element+' property '+prop+' to '+self.name+' using interpolate mode, no locations should be sent.')
                     else:
