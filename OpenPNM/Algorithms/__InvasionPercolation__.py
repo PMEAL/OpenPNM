@@ -48,7 +48,17 @@ class InvasionPercolation(GenericAlgorithm):
         super(InvasionPercolation,self).__init__(**kwords)
         self._logger.info("Create IP Algorithm Object")
 
-    def run(self,**params):
+    def run(self,invading_fluid,
+               defending_fluid,
+               inlets=[0],
+                outlets=[-1],
+                end_condition='breakthrough',
+                capillary_pressure='capillary_pressure',
+                pore_volume_name='volume',
+                throat_diameter_name='diameter',               
+                timing='ON',
+                inlet_flow=1, #default flowrate is 1 nanoliter/sec/cluster
+                report=20):
         r"""
 
 
@@ -115,20 +125,6 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         
-        super(InvasionPercolation,self).run(**params)
-        return self
-
-    def setup(self,invading_fluid,
-               defending_fluid,
-               inlets=[0],
-                outlets=[-1],
-                end_condition='breakthrough',
-                capillary_pressure='capillary_pressure',
-                pore_volume_name='volume',
-                throat_diameter_name='diameter',               
-                timing='ON',
-                inlet_flow=1, #default flowrate is 1 nanoliter/sec/cluster
-                report=20):
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets
         self._outlets = outlets
@@ -159,6 +155,8 @@ class InvasionPercolation(GenericAlgorithm):
         self._pore_volume_name = pore_volume_name
         self._throat_diameter_name = throat_diameter_name 
         
+        super(InvasionPercolation,self).run()
+        return self        
         
     def _setup_for_IP(self):
         r"""
