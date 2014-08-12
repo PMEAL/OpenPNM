@@ -101,7 +101,7 @@ class MatFile(GenericNetwork):
         
     def _add_throats(self):
         Tind = sp.arange(0,self._Nt)
-        self.set_throat_info(label='all',locations=sp.ones_like(Tind))
+        self['throat.all']=sp.ones_like(Tind,dtype=bool)
         self._logger.info('Writing throat data')
         self['throat.conns']=self._dictionary['tconnections']
         
@@ -127,7 +127,7 @@ class MatFile(GenericNetwork):
             if type(xpdata) is type([]):
                 for pdata in xpdata:
                     try:
-                        self['pore.'+pdata]=self._dictionary['p'+pdata])
+                        self['pore.'+pdata]=self._dictionary['p'+pdata]
                     except:
                         self._logger.warning('Could not add pore data: '+pdata+' to network')
             else:

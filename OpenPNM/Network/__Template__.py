@@ -121,7 +121,7 @@ class Template(GenericNetwork):
             ('front',   z==z.min()),
             ('back',    z==z.max()),
             ]:
-            self.set_pore_info(label=label, locations=locations)
+            self['pore.'+label]=locations
 
     def asarray(self, values=None):
         # reconstituted facts about the network
