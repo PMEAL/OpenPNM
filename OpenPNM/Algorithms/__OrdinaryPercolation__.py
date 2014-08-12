@@ -192,44 +192,44 @@ class OrdinaryPercolation(GenericAlgorithm):
         as determined by the OP algorithm
 
         """
-        p_inv = self.get_data(prop='inv_Pc',pores='all')
-        self._fluid_inv.set_data(prop='inv_Pc',data=p_inv,pores='all')
-        t_inv = self.get_data(prop='inv_Pc',throats='all')    
-        self._fluid_inv.set_data(prop='inv_Pc',data=t_inv,throats='all')
+        p_inv = self['pore.inv_Pc']
+        self._fluid_inv['pore.inv_Pc']=p_inv
+        t_inv = self['throat.inv_Pc']    
+        self._fluid_inv['throat.inv_Pc']=t_inv
         #Apply invasion sequence values (to correspond with IP algorithm)
-        p_seq = self.get_data(prop='inv_seq',pores='all')
-        self._fluid_inv.set_data(prop='inv_seq',data=p_seq,pores='all')
-        t_seq = self.get_data(prop='inv_seq',throats='all')
-        self._fluid_inv.set_data(prop='inv_seq',data=t_seq,throats='all')
+        p_seq = self['pore.inv_seq']
+        self._fluid_inv['pore.inv_seq']=p_seq
+        t_seq = self['throat.inv_seq']
+        self._fluid_inv['throat.inv_seq']=t_seq
         
         if(seq == None):
-            p_inv = self.get_data(prop='inv_Pc',pores='all')<=Pc
-            t_inv = self.get_data(prop='inv_Pc',throats='all')<=Pc
+            p_inv = self['pore.inv_Pc']<=Pc
+            t_inv = self['throat.inv_Pc']<=Pc
             #Apply occupancy to invading fluid
             temp = sp.array(p_inv,dtype=sp.float_,ndmin=1)
-            self._fluid_inv.set_data(prop=occupancy,pores='all',data=temp)
+            self._fluid_inv['pore.'+occupancy]=temp
             temp = sp.array(t_inv,dtype=sp.float_,ndmin=1)
-            self._fluid_inv.set_data(prop=occupancy,throats='all',data=temp)
+            self._fluid_inv['throat.'+occupancy]=temp
             #Apply occupancy to defending fluid
             if self._fluid_def != None:
                 temp = sp.array(~p_inv,dtype=sp.float_,ndmin=1)
-                self._fluid_def.set_data(prop=occupancy,pores='all',data=temp)
+                self._fluid_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_inv,dtype=sp.float_,ndmin=1)
-                self._fluid_def.set_data(prop=occupancy,throats='all',data=temp)
+                self._fluid_def['throat.'+occupancy]=temp
         else:
-            p_seq = self.get_data(prop='inv_seq',pores='all')<=seq
-            t_seq = self.get_data(prop='inv_seq',throats='all')<=seq
+            p_seq = self['pore.inv_seq']<=seq
+            t_seq = self['throat.inv_seq']<=seq
             #Apply occupancy to invading fluid
             temp = sp.array(p_seq,dtype=sp.float_,ndmin=1)
-            self._fluid_inv.set_data(prop=occupancy,pores='all',data=temp)
+            self._fluid_inv['pore.'+occupancy]=temp
             temp = sp.array(t_seq,dtype=sp.float_,ndmin=1)
-            self._fluid_inv.set_data(prop=occupancy,throats='all',data=temp)
+            self._fluid_inv['throat.'+occupancy]=temp
             #Apply occupancy to defending fluid
             if self._fluid_def != None:
                 temp = sp.array(~p_seq,dtype=sp.float_,ndmin=1)
-                self._fluid_def.set_data(prop=occupancy,pores='all',data=temp)
+                self._fluid_def['pores.'+occupancy]=temp
                 temp = sp.array(~t_seq,dtype=sp.float_,ndmin=1)
-                self._fluid_def.set_data(prop=occupancy,throats='all',data=temp)
+                self._fluid_def['throats.'+occupancy]=temp
             
  
             
@@ -246,8 +246,8 @@ class OrdinaryPercolation(GenericAlgorithm):
             raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
           Snwp_t = sp.zeros_like(PcPoints)
           Snwp_p = sp.zeros_like(PcPoints)
-          Pvol = self._net.get_data(prop=pore_volume,pores='all')
-          Tvol = self._net.get_data(prop=throat_volume,throats='all')
+          Pvol = self._net['pore.'+pore_volume]
+          Tvol = self._net['throat.'+throat_volume]
           Pvol_tot = sum(Pvol)
           Tvol_tot = sum(Tvol)
           for i in range(0,sp.size(PcPoints)):
