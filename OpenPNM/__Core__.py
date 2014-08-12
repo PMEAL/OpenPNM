@@ -126,6 +126,24 @@ class Core(Base):
             self._models[propname] = fn  # Store model in a private attribute
         if regen_mode == 'constant':
              self[propname] = fn()  # Generate data and store it locally
+             
+    def remove_model(self,propname):
+        r'''
+        Remove pore scale property models from current object.
+        
+        Parameters
+        ----------
+        propname : string
+            The property name for which the model should be removed
+            
+        Notes
+        -----
+        This does not delete the data associated with the model, only the model.
+        With this model removed it is now possible to write constants to the
+        propname dictionary and they won't be overwritten when the object is 
+        regenerated.
+        '''
+        self.pop(propname,None)
         
     def regenerate(self, props='',mode='inclusive'):
         r'''
