@@ -349,11 +349,11 @@ class Core(Base):
         '''
         if pores != None:
             if pores == 'all':
-                pores = self.get_pore_indices(labels='all')
+                pores = self.pores()
             return self._get_data(element='pore',prop=prop,locations=pores,mode=mode)
         if throats != None:
             if throats == 'all':
-                throats = self.get_throat_indices(labels='all')
+                throats = self.throats()
             return self._get_data(element='throat',prop=prop,locations=throats,mode=mode)
             
     def set_data(self,prop='',data='',pores=None,throats=None,mode='merge'):
@@ -385,14 +385,14 @@ class Core(Base):
                 if sp.shape(data)[0] == 1:
                     pores = ''
                 else:
-                    pores = self.get_pore_indices(labels='all')
+                    pores = self.pores()
             self._set_data(element='pore',prop=prop,data=data,locations=pores,mode=mode)
         if throats != None:
             if throats == 'all':
                 if sp.shape(data)[0] == 1:
                     throats = ''
                 else:
-                    throats = self.get_throat_indices(labels='all')
+                    throats = self.throats()
             self._set_data(element='throat',prop=prop,data=data,locations=throats,mode=mode)    
 
     def _set_info(self,element='',label='',locations='',mode='merge'):
