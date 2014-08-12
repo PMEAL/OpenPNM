@@ -5,9 +5,9 @@ Lc = 40.5e-6
 
 
 #1 setting up network
-sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40)
-#sgl.generate(divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
-sgl.generate(divisions = [5, 5, 5], add_boundaries = True, lattice_spacing = [Lc])
+sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40,divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
+#sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40,divisions =  [5, 5, 5], add_boundaries = True, lattice_spacing = [Lc])
+
 
 #2 set up geometries
 Ps = sgl.pores('boundary',mode='difference')
@@ -77,10 +77,10 @@ diff_water = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
 max_inv_seq = max(OP_1['throat.inv_seq'])
 
 for x in range(21):
-    OP_1.update(seq = max_inv_seq*(x/20))
+    OP_1.update(seq = max_inv_seq*(x/20.))
     
     #printing out so we know how far along we are
-    print('seq = '+str(round(max_inv_seq*(x/20)))+' Seq out of '+str(round(max_inv_seq))+' total sequences')
+    print('seq = '+str(round(max_inv_seq*(x/20.)))+' Seq out of '+str(round(max_inv_seq))+' total sequences')
     
     final_pores = water['pore.occupancy']
     pore_volumes = sgl['pore.volume']
