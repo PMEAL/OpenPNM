@@ -6,8 +6,8 @@ Lc = 40.5e-6
 
 #1 setting up network
 sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40)
-sgl.generate(divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
-#sgl.generate(divisions = [5, 5, 5], add_boundaries = True, lattice_spacing = [Lc])
+#sgl.generate(divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
+sgl.generate(divisions = [5, 5, 5], add_boundaries = True, lattice_spacing = [Lc])
 
 #2 set up geometries
 Ps = sgl.pores('boundary',mode='difference')
@@ -21,11 +21,11 @@ boun = OpenPNM.Geometry.Boundary(network=sgl,pores=Ps,throats=Ts)
 #3 calculating pore and throat diameters, volumes, etc
 #sgl.regenerate_geometries()
 #4 account for pores that are too big
-value = [min(sgl.get_pore_data(prop = 'diameter', locations = x), Lc) for x in geo.pores()]
-sgl.set_data(prop='diameter',pores=geo.pores(),data=value)
+value = [min(sgl['pore.diameter'][x], Lc) for x in geo.pores()]
+geo['pore.diameter']=value
 #account for throats that are too big
-value = [min(sgl.get_throat_data(prop = 'diameter', locations = x), Lc) for x in geo.throats()]
-sgl.set_data(prop='diameter',throats=geo.throats(),data=value)
+value = [min(sgl['throat.diameter'][x], Lc) for x in geo.throats()]
+geo['throat.diameter']=value
 
 #constricting sgl by .95 in both the z and y direction  
 throats = geo.throats()
@@ -35,10 +35,9 @@ x2 = [sgl['pore.coords'][pair[1]][0] for pair in connected_pores]
 same_x = [x - y == 0 for x, y in zip(x1,x2)]
 factor = [s*.95 + (not s)*1 for s in same_x]
 throat_diameters = sgl['throat.diameter'][throats]*factor
-sgl.set_data(throats = throats, prop = 'diameter', data = throat_diameters)
+geo['throat.diameter']=throat_diameters
 #reset aspects relying on pore and throat sizes
-geo.regenerate()
-
+geo.regenerate(['pore.diameter','throat.diameter'],mode='exclude')
 #set up fluids 
 air = OpenPNM.Fluids.Air(network = sgl, name = 'air')
 water = OpenPNM.Fluids.Water(network = sgl, name = 'water')
@@ -60,7 +59,7 @@ phys_air = OpenPNM.Physics.Standard(network=sgl,fluid=air,pores=Ps,throats=Ts,dy
 phys_water.regenerate()
 phys_air.regenerate()
 
-inlets = sgl.get_pore_indices(labels = ['bottom','boundary'],mode='intersection')
+inlets = sgl.pores(['bottom','boundary'],mode='intersection')
 
 #using every other pore in the bottom and boundary as an inlet
 #prevents extremely small diffusivity and permeability values in the z direction
@@ -76,7 +75,7 @@ diff_air = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
 perm_water = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
 diff_water = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
 
-max_inv_seq = max(OP_1.get_throat_data(prop = 'inv_seq'))
+max_inv_seq = max(OP_1['throat.inv_seq'])
 
 for x in range(21):
     OP_1.update(seq = max_inv_seq*(x/20))
@@ -84,10 +83,10 @@ for x in range(21):
     #printing out so we know how far along we are
     print('seq = '+str(round(max_inv_seq*(x/20)))+' Seq out of '+str(round(max_inv_seq))+' total sequences')
     
-    final_pores = water.get_pore_data('occupancy')*1
-    pore_volumes = sgl.get_pore_data(prop = 'volume')
-    final_throats = water.get_throat_data('occupancy')*1
-    throat_volumes = sgl.get_throat_data(prop = 'volume')
+    final_pores = water['pore.occupancy']
+    pore_volumes = sgl['pore.volume']
+    final_throats = water['throat.occupancy']
+    throat_volumes = sgl['throat.volume']
     
     saturation = (sum(final_pores*pore_volumes) + sum(final_throats*throat_volumes))/(sum(pore_volumes) + sum(throat_volumes))
             
