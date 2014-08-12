@@ -60,6 +60,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         # Parse params
         self._fluid_inv = invading_fluid
         self._fluid_def = defending_fluid
+        print(defending_fluid)
         try: self._inv_sites
         except: self._inv_sites = inlets
         self._npts = npts
@@ -220,10 +221,11 @@ class OrdinaryPercolation(GenericAlgorithm):
             self._fluid_inv['throat.'+occupancy]=temp
             #Apply occupancy to defending fluid
             if self._fluid_def != None:
+                print(occupancy)
                 temp = sp.array(~p_seq,dtype=sp.float_,ndmin=1)
-                self._fluid_def['pores.'+occupancy]=temp
+                self._fluid_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_seq,dtype=sp.float_,ndmin=1)
-                self._fluid_def['throats.'+occupancy]=temp
+                self._fluid_def['throat.'+occupancy]=temp
             
  
             
