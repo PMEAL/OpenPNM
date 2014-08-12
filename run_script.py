@@ -46,7 +46,7 @@ Ps = pn.pores(labels=['bottom_face'])
 OP_1.setup(invading_fluid=water,defending_fluid=air,inlets=Ps)
 OP_1.run()
 OP_1.update(Pc=7000)
-#OP_1.plot_drainage_curve()
+OP_1.plot_drainage_curve()
 
 #------------------------------------------------------------------------------
 '''Perform a Drainage Experiment on a SUB-network'''

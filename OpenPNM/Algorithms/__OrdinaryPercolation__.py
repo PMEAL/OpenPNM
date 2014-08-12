@@ -183,8 +183,8 @@ class OrdinaryPercolation(GenericAlgorithm):
             self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
         self._p_inv[self._p_trap > 0] = sp.inf
         self._t_inv[self._t_trap > 0] = sp.inf        
-        self.set_pore_data(prop='inv_Pc', data=self._p_inv)
-        self.set_throat_data(prop='inv_Pc', data=self._t_inv)
+        self['pore.inv_Pc']=self._p_inv
+        self['throat.inv_Pc']=self._t_inv
 
     def update(self, Pc=0, seq = None, occupancy='occupancy'):
         r"""
@@ -206,29 +206,29 @@ class OrdinaryPercolation(GenericAlgorithm):
             p_inv = self.get_data(prop='inv_Pc',pores='all')<=Pc
             t_inv = self.get_data(prop='inv_Pc',throats='all')<=Pc
             #Apply occupancy to invading fluid
-            temp = sp.array(p_inv,dtype=bool,ndmin=1)
+            temp = sp.array(p_inv,dtype=sp.float_,ndmin=1)
             self._fluid_inv.set_data(prop=occupancy,pores='all',data=temp)
-            temp = sp.array(t_inv,dtype=bool,ndmin=1)
+            temp = sp.array(t_inv,dtype=sp.float_,ndmin=1)
             self._fluid_inv.set_data(prop=occupancy,throats='all',data=temp)
             #Apply occupancy to defending fluid
             if self._fluid_def != None:
-                temp = sp.array(~p_inv,dtype=bool,ndmin=1)
+                temp = sp.array(~p_inv,dtype=sp.float_,ndmin=1)
                 self._fluid_def.set_data(prop=occupancy,pores='all',data=temp)
-                temp = sp.array(~t_inv,dtype=bool,ndmin=1)
+                temp = sp.array(~t_inv,dtype=sp.float_,ndmin=1)
                 self._fluid_def.set_data(prop=occupancy,throats='all',data=temp)
         else:
             p_seq = self.get_data(prop='inv_seq',pores='all')<=seq
             t_seq = self.get_data(prop='inv_seq',throats='all')<=seq
             #Apply occupancy to invading fluid
-            temp = sp.array(p_seq,dtype=bool,ndmin=1)
+            temp = sp.array(p_seq,dtype=sp.float_,ndmin=1)
             self._fluid_inv.set_data(prop=occupancy,pores='all',data=temp)
-            temp = sp.array(t_seq,dtype=bool,ndmin=1)
+            temp = sp.array(t_seq,dtype=sp.float_,ndmin=1)
             self._fluid_inv.set_data(prop=occupancy,throats='all',data=temp)
             #Apply occupancy to defending fluid
             if self._fluid_def != None:
-                temp = sp.array(~p_seq,dtype=bool,ndmin=1)
+                temp = sp.array(~p_seq,dtype=sp.float_,ndmin=1)
                 self._fluid_def.set_data(prop=occupancy,pores='all',data=temp)
-                temp = sp.array(~t_seq,dtype=bool,ndmin=1)
+                temp = sp.array(~t_seq,dtype=sp.float_,ndmin=1)
                 self._fluid_def.set_data(prop=occupancy,throats='all',data=temp)
             
  
