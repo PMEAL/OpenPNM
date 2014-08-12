@@ -193,14 +193,14 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         p_inv = self.get_data(prop='inv_Pc',pores='all')
-        self._fluid_inv.set_data(prop='inv_Pc',data=p_inv)
+        self._fluid_inv.set_data(prop='inv_Pc',data=p_inv,pores='all')
         t_inv = self.get_data(prop='inv_Pc',throats='all')    
-        self._fluid_inv.set_data(prop='inv_Pc',data=t_inv)
+        self._fluid_inv.set_data(prop='inv_Pc',data=t_inv,throats='all')
         #Apply invasion sequence values (to correspond with IP algorithm)
         p_seq = self.get_data(prop='inv_seq',pores='all')
-        self._fluid_inv.set_data(prop='inv_seq',data=p_seq)
+        self._fluid_inv.set_data(prop='inv_seq',data=p_seq,pores='all')
         t_seq = self.get_data(prop='inv_seq',throats='all')
-        self._fluid_inv.set_data(prop='inv_seq',data=t_seq)
+        self._fluid_inv.set_data(prop='inv_seq',data=t_seq,throats='all')
         
         if(seq == None):
             p_inv = self.get_data(prop='inv_Pc',pores='all')<=Pc
