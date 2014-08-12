@@ -143,7 +143,7 @@ class Core(Base):
         propname dictionary and they won't be overwritten when the object is 
         regenerated.
         '''
-        self.pop(propname,None)
+        self._models.pop(propname,None)
         
     def regenerate(self, props='',mode='inclusive'):
         r'''
