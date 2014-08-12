@@ -41,8 +41,8 @@ class Air(GenericFluid):
                        model=fm.molar_density.ideal_gas)
         self.add_model(propname='pore.viscosity',
                        model=fm.viscosity.reynolds,
-                       uo=0.0002,
-                       b=0.0001)
+                       uo=9.16656E-6,
+                       b=-2.34621E-3)
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

@@ -6,8 +6,7 @@ Submodule -- molar_density
 """
 import scipy as _sp
 
-def ideal_gas(fluid,
-              **kwargs):
+def ideal_gas(fluid,**kwargs):
     r"""
     Uses ideal gas equation to estimate molar density of a pure gas
 

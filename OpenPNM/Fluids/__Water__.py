@@ -37,8 +37,8 @@ class Water(GenericFluid):
         self['pore.molar_density'] = 44445.0
         self.add_model(propname='pore.viscosity',
                        model=fm.viscosity.reynolds,
-                       uo=0.002,
-                       b=0.001)
+                       uo=0.246914,
+                       b=0.0186588)
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()
