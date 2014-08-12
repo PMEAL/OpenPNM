@@ -58,7 +58,7 @@ class GenericNetwork(OpenPNM.Core):
     def __getitem__(self,key):
         if key not in self.keys():
             self._logger.debug(key+' not on Network, constructing data from Geometries')
-            return self.interleave_data(key,self.geometries())
+            return self._interleave_data(key,self.geometries())
         else:
             return super(GenericNetwork,self).__getitem__(key)
         

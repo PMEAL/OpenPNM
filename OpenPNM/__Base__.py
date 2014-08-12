@@ -277,6 +277,8 @@ class Base(dict):
         obj_type = obj.__class__.__module__.split('.')[1]
         if obj_type == 'Geometry':  # Remove geometry from network
             net._geometries.remove(obj)
+            net.pop('pore.'+obj.name,None)
+            net.pop('throat.'+obj.name,None)
         elif obj_type == 'Fluids':
             for fluid in net._fluids:
                 if fluid == obj:
@@ -290,6 +292,8 @@ class Base(dict):
                 if physics == obj:
                     for fluid in physics._fluid:
                         fluid._physics.remove(obj)
+                        fluid.pop('pore.'+obj.name,None)
+                        fluid.pop('throat.'+obj.name,None)
                     net._physcis.remove(obj)
                     del fluid
                     

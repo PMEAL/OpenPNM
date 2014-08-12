@@ -966,7 +966,7 @@ class Core(Base):
             raise Exception()
         return values
         
-    def interleave_data(self,prop,sources):
+    def _interleave_data(self,prop,sources):
         r'''
         Retrieves requested property from associated objects, to produce a full 
         Np or Nt length array.

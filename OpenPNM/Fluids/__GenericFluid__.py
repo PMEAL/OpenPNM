@@ -65,7 +65,7 @@ class GenericFluid(OpenPNM.Core):
     def __getitem__(self,key):
         if key not in self.keys():
             self._logger.debug(key+' not on Fluid, constructing data from Physics')
-            return self.interleave_data(key,sources=self._physics)
+            return self._interleave_data(key,sources=self._physics)
         else:
             return super(GenericFluid,self).__getitem__(key)
     
