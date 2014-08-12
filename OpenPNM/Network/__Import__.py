@@ -95,15 +95,15 @@ class MatFile(GenericNetwork):
         
     def _add_pores(self):
         Pind = sp.arange(0,self._Np)
-        self.set_pore_info(label='all',locations=sp.ones_like(Pind))
+        self['pore.all'] = sp.ones_like(Pind,dtype=bool)
         self._logger.info('Writing pore data')
-        self.set_pore_data(prop='coords',data=self._dictionary['pcoords'])
+        self['pore.coords']=self._dictionary['pcoords']
         
     def _add_throats(self):
         Tind = sp.arange(0,self._Nt)
         self.set_throat_info(label='all',locations=sp.ones_like(Tind))
         self._logger.info('Writing throat data')
-        self.set_throat_data(prop='conns',data=self._dictionary['tconnections'])
+        self['throat.conns']=self._dictionary['tconnections']
         
     def _add_geometry(self):
         
@@ -127,12 +127,12 @@ class MatFile(GenericNetwork):
             if type(xpdata) is type([]):
                 for pdata in xpdata:
                     try:
-                        self.set_pore_data(prop=pdata,data=self._dictionary['p'+pdata])
+                        self['pore.'+pdata]=self._dictionary['p'+pdata])
                     except:
                         self._logger.warning('Could not add pore data: '+pdata+' to network')
             else:
                 try:
-                    self.set_pore_data(prop=xpdata,data=self._dictionary['p'+xpdata])
+                    self['pore.'+xpdata]=self._dictionary['p'+xpdata]
                 except:
                     self._logger.warning('Could not add pore data: '+xpdata+' to network')
 
@@ -142,11 +142,11 @@ class MatFile(GenericNetwork):
             if type(xtdata) is type([]):
                 for tdata in xtdata:
                     try:
-                        self.set_throat_data(prop=tdata,data=self._dictionary['t'+tdata])
+                        self['throat.'+tdata]=self._dictionary['t'+tdata]
                     except:
                         self._logger.warning('Could not add throat data: '+tdata+' to network')
             else:
                 try:
-                    self.set_throat_data(prop=xtdata,data=self._dictionary['t'+xtdata])
+                    self['throat.'+xtdata]=self._dictionary['t'+xtdata]
                 except:
                     self._logger.warning('Could not add throat data: '+xtdata+' to network')
