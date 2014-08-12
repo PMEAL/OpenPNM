@@ -1,26 +1,25 @@
-from xml.etree import ElementTree as ET
+from xml.etree import ElementTree as _ET
 
-import numpy as np
-from OpenPNM.Visualization import GenericVisualization
+import numpy as _np
 
-
-class VTK(GenericVisualization):
+class save():
     r"""
-    VTK - Class for writing a Vtp file to be read by ParaView
-
+    Class for writing a Vtp file to be read by ParaView
     
-    Examples
-    --------
-    Create and store a basic network.
-
-    >>> import OpenPNM as PNM
-    >>> net = PNM.Generators.SimpleCubic(divisions = [40,40,20],shape=[0.,4.,0.,4.,0.,2.]).generate()
-    >>> vis = PNM.Visualization.VTK()
-    >>> vis.write(net)
+    Parameters
+    ----------
+    filename : string
+        Filename to write data
+        
+    network : OpenPNM Network Object
+        The Network containing the data to be written
+        
+    fluid : OpenPNM Fluid Object, optional
+        The Fluid containing data to be written
 
     """
 
-    def __init__(self,**kwargs):
+    def __init__(self,network,filename='',fluids=[],**kwargs):
         r"""
         Initialize
         """
@@ -41,9 +40,11 @@ class VTK(GenericVisualization):
             </PolyData>
         </VTKFile>
         '''.strip()
-        
-        super(VTK,self).__init__(**kwargs)
-#        self._logger.debug("Execute constructor")
+        if filename == '':
+            filename = network.name+'.vtp'
+        self._net = network
+        self._fluids = fluids
+        self._write(filename)
     
     def _array_to_element(self, name, array, n=1):
         dtype_map = {
@@ -59,7 +60,7 @@ class VTK(GenericVisualization):
             'float64': 'Float64',
             'str'    : 'String',
         }
-        element = ET.Element('DataArray')
+        element = _ET.Element('DataArray')
         element.set("Name", name)
         element.set("NumberOfComponents", str(n))
         element.set("type", dtype_map[str(array.dtype)])
@@ -69,13 +70,13 @@ class VTK(GenericVisualization):
     def _element_to_array(self, element, n=1):
         string = element.text
         dtype = element.get("type")
-        array = np.fromstring(string, sep='\t')
+        array = _np.fromstring(string, sep='\t')
         array = array.astype(dtype)
         if n is not 1:
             array = array.reshape(array.size//n, n)
         return array
     
-    def write(self, network, filename='output_file.vtp', fluids=[], pretty=True):
+    def _write(self,filename):
         r"""
         Write Network to a VTK file for visualizing in Paraview
     
@@ -88,13 +89,14 @@ class VTK(GenericVisualization):
             Full path to desired file location
             
         fluids : Fluids that have properties we want to write to file
-    
-        pretty : Add linebreaks at the end of tag closures
+
         """
+        fluids = self._fluids
+        network = self._net
         
-        root = ET.fromstring(self._TEMPLATE)
+        root = _ET.fromstring(self._TEMPLATE)
         objs = []
-        if np.shape(fluids)==():
+        if _np.shape(fluids)==():
             fluids = [fluids]
         for fluid in fluids:
             objs.append(fluid)
@@ -118,13 +120,13 @@ class VTK(GenericVisualization):
         lines_node = piece_node.find('Lines')
         connectivity = self._array_to_element("connectivity", pairs)
         lines_node.append(connectivity)
-        offsets = self._array_to_element("offsets", 2*np.arange(len(pairs))+2)
+        offsets = self._array_to_element("offsets", 2*_np.arange(len(pairs))+2)
         lines_node.append(offsets)
     
         point_data_node = piece_node.find('PointData')
         for key in key_list:
             array = am[key]
-            if array.dtype == np.bool: array = array.astype(int)
+            if array.dtype == _np.bool: array = array.astype(int)
             if array.size != num_points: continue
             element = self._array_to_element(key, array)
             point_data_node.append(element)
@@ -132,25 +134,25 @@ class VTK(GenericVisualization):
         cell_data_node = piece_node.find('CellData')
         for key in key_list:
             array = am[key]            
-            if array.dtype == np.bool: array = array.astype(int)
+            if array.dtype == _np.bool: array = array.astype(int)
             if array.size != num_throats: continue
             element = self._array_to_element(key, array)            
             cell_data_node.append(element)
         
-        tree = ET.ElementTree(root)
+        tree = _ET.ElementTree(root)
         tree.write(filename)
     
-        if pretty:
-            with open(filename, "r+") as f:
-                string = f.read()
-                string = string.replace("</DataArray>", "</DataArray>\n\t\t\t")
-                f.seek(0)
-                # consider adding header: '<?xml version="1.0"?>\n'+
-                f.write(string)
+        #Make pretty
+        with open(filename, "r+") as f:
+            string = f.read()
+            string = string.replace("</DataArray>", "</DataArray>\n\t\t\t")
+            f.seek(0)
+            # consider adding header: '<?xml version="1.0"?>\n'+
+            f.write(string)
                                 
-    def read(filename):
+    def read(self,filename):
         network = {}
-        tree = ET.parse(filename)
+        tree = _ET.parse(filename)
         piece_node = tree.find('PolyData').find('Piece')
     
         # extract connectivity

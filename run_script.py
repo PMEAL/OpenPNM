@@ -92,5 +92,5 @@ Deff = alg.calc_eff_diffusivity()
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-vis = OpenPNM.Visualization.VTK()
-vis.write(network=pn,fluids=[air,water])
+#import OpenPNM.
+#vis.write(network=pn,fluids=[air,water])
