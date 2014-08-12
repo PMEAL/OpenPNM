@@ -284,7 +284,7 @@ class GenericLinearTransport(GenericAlgorithm):
             X1 = self[self._quantity][pores1]
             X2 = self[self._quantity][pores2]
             g = self['throat.conductance'][throats]
-            R.append(sp.sum(sp.multiply(g,(X1-X2))))
+            R.append(sp.sum(sp.multiply(g,(X2-X1))))
         return(sp.array(R,ndmin=1))
         
     def _do_one_inner_iteration(self):
