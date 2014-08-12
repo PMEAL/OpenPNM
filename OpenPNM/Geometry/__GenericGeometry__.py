@@ -57,7 +57,7 @@ class GenericGeometry(OpenPNM.Core):
         network['throat.'+self.name] = False
         network['throat.'+self.name][throats] = True
         
-    def geometry_health(self):
+    def check_geometry_health(self):
         r'''
         Perform a check to find pores with overlapping or undefined Geometries
         '''

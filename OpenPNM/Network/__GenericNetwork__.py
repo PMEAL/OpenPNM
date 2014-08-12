@@ -767,7 +767,7 @@ class GenericNetwork(OpenPNM.Core):
         clusters = sprs.csgraph.connected_components(temp)[1]
         return clusters
         
-    def network_health(self):
+    def check_network_health(self):
         r'''
         This method check the network topological health by:
         
