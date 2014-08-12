@@ -207,29 +207,29 @@ class OrdinaryPercolation(GenericAlgorithm):
             t_inv = self.get_data(prop='inv_Pc',throats='all')<=Pc
             #Apply occupancy to invading fluid
             temp = sp.array(p_inv,dtype=bool,ndmin=1)
-            self._fluid_inv.set_data(prop=occupancy,data=temp)
+            self._fluid_inv.set_data(prop=occupancy,pores='all',data=temp)
             temp = sp.array(t_inv,dtype=bool,ndmin=1)
-            self._fluid_inv.set_data(prop=occupancy,data=temp)
+            self._fluid_inv.set_data(prop=occupancy,throats='all',data=temp)
             #Apply occupancy to defending fluid
             if self._fluid_def != None:
                 temp = sp.array(~p_inv,dtype=bool,ndmin=1)
-                self._fluid_def.set_data(prop=occupancy,data=temp)
+                self._fluid_def.set_data(prop=occupancy,pores='all',data=temp)
                 temp = sp.array(~t_inv,dtype=bool,ndmin=1)
-                self._fluid_def.set_data(prop=occupancy,data=temp)
+                self._fluid_def.set_data(prop=occupancy,throats='all',data=temp)
         else:
             p_seq = self.get_data(prop='inv_seq',pores='all')<=seq
             t_seq = self.get_data(prop='inv_seq',throats='all')<=seq
             #Apply occupancy to invading fluid
             temp = sp.array(p_seq,dtype=bool,ndmin=1)
-            self._fluid_inv.set_data(prop=occupancy,data=temp)
+            self._fluid_inv.set_data(prop=occupancy,pores='all',data=temp)
             temp = sp.array(t_seq,dtype=bool,ndmin=1)
-            self._fluid_inv.set_data(prop=occupancy,data=temp)
+            self._fluid_inv.set_data(prop=occupancy,throats='all',data=temp)
             #Apply occupancy to defending fluid
             if self._fluid_def != None:
                 temp = sp.array(~p_seq,dtype=bool,ndmin=1)
-                self._fluid_def.set_data(prop=occupancy,data=temp)
+                self._fluid_def.set_data(prop=occupancy,pores='all',data=temp)
                 temp = sp.array(~t_seq,dtype=bool,ndmin=1)
-                self._fluid_def.set_data(prop=occupancy,data=temp)
+                self._fluid_def.set_data(prop=occupancy,throats='all',data=temp)
             
  
             
