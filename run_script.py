@@ -65,7 +65,7 @@ OP_1.plot_drainage_curve()
 ##------------------------------------------------------------------------------
 inlets = pn.pores('bottom_face')
 outlets = pn.pores('top_face')
-IP_1 = OpenPNM.Algorithms.InvasionPercolationForImbibition(network = pn, name = 'IP_1', loglevel = 30)
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'IP_1', loglevel = 30)
 IP_1.setup(invading_fluid = water, defending_fluid = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
 IP_1.run()
 IP_1.update()

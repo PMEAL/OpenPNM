@@ -47,9 +47,9 @@ class Toray090(GenericGeometry):
         self.add_model(propname='pore.diameter',
                        model=gm.pore_diameter.sphere,
                        psd_name='weibull_min',
-                       psd_shape=2.5,
-                       psd_loc=5e-6,
-                       psd_scale=4e-6)
+                       psd_shape=1.5,
+                       psd_loc=14e-6,
+                       psd_scale=2e-6)
         self.add_model(propname='pore.area',
                        model=gm.pore_area.spherical)
         self.add_model(propname='pore.volume',
@@ -57,9 +57,9 @@ class Toray090(GenericGeometry):
         self.add_model(propname='throat.diameter',
                        model=gm.throat_diameter.cylinder,
                        tsd_name='weibull_min',
-                       tsd_shape=2.5,
-                       tsd_loc=5e-6,
-                       tsd_scale=4e-6)                  
+                       tsd_shape=1.5,
+                       tsd_loc=14e-6,
+                       tsd_scale=2e-6)                  
         self.add_model(propname='throat.length',
                        model=gm.throat_length.straight)
         self.add_model(propname='throat.volume',
