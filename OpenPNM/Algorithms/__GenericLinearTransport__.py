@@ -39,7 +39,8 @@ class GenericLinearTransport(GenericAlgorithm):
             ind = sp.nonzero(fluid[self._conductance])[0]
             gmin = sp.amin(self._fluid[self._conductance][ind])
             ind = sp.where(fluid[self._conductance]==0)[0]
-            self._fluid[self._conductance][ind] = gmin/1000000
+            self['throat.conductance'] = self._fluid[self._conductance]
+            self['throat.conductance'][ind] = gmin/1000000
         else:
             raise Exception('The provided throat conductance has problems')
             
@@ -179,7 +180,7 @@ class GenericLinearTransport(GenericAlgorithm):
         col = modified_tpore2
         
         #Expand the conductance to a vector if necessary
-        g = self._fluid[self._conductance]
+        g = self['throat.conductance']
         if sp.size(g) == 1:
             g = g*sp.ones(self.num_throats())
         data_main = g
@@ -278,9 +279,9 @@ class GenericLinearTransport(GenericAlgorithm):
         pores2 = sp.copy(p2)
         pores1[-sp.in1d(p1,pores)] = p2[-sp.in1d(p1,pores)]        
         pores2[-sp.in1d(p1,pores)] = p1[-sp.in1d(p1,pores)]
-        X1 = self._result[pores1]
-        X2 = self._result[pores2]
-        g = self._fluid[self._conductance][throats]
+        X1 = self[self._quantity][pores1]
+        X2 = self[self._quantity][pores2]
+        g = self['throat.conductance'][throats]
         R = sp.sum(sp.multiply(g,(X1-X2)))
         return(R)
         
@@ -294,10 +295,9 @@ class GenericLinearTransport(GenericAlgorithm):
         self._logger.info("Solving AX = B for the sparse matrices")
         X = sprslin.spsolve(A,B)
         self._Neumann_super_X = X[-sp.in1d(sp.r_[0:len(X)],sp.r_[0:self.num_pores()])]
-        self._result = X[sp.r_[0:self.num_pores()]]        
-        self._logger.info('Writing result to '+self.__class__.__name__+'[\''+self._conductance+'\']')
-        self[self._quantity] = self._result
-    
+        self[self._quantity] = X[sp.r_[0:self.num_pores()]]        
+        self._logger.info('Writing the results to '+'[\''+self._quantity+'\'] in the '+self.name+' algorithm.')
+            
     def _calc_eff_prop(self,check_health=False):
         try:
             self[self._quantity]
