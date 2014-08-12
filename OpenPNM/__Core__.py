@@ -915,16 +915,24 @@ class Core(Base):
         - Only one of pores, throats OR data are accepted
 
         """
-        if self.__module__.split('.')[1] == 'Network': net = self
-        else: net = self._net
-        if sp.shape(data)[0] == self.Nt:
+        if self.__module__.split('.')[1] == 'Network': 
+            net = self
+            Ps = net.pores()
+            Ts = net.throats()
+        elif self.__module__.split('.')[1] == 'Fluids': 
+            net = self._net
             Ps = self.pores()
+            Ts = self.throats()
+        else:  # If self is a Geometry or Physics
+            net = self._net
+            Ps = self.pores(self.name)
+            Ts = self.throats(self.name)
+        if sp.shape(data)[0] == self.Nt:
             neighborTs = net.find_neighbor_throats(pores=Ps,flatten=False)
             values = sp.ones((sp.shape(Ps)[0],))*sp.nan
             for pore in Ps:
                 values[pore] = sp.mean(data[neighborTs[pore]])
         elif sp.shape(data)[0] == self.Np:
-            Ts = self.throats()
             Ps12 = net.find_connected_pores(throats=Ts,flatten=False)
             values = sp.mean(data[Ps12],axis=1)
         else:
