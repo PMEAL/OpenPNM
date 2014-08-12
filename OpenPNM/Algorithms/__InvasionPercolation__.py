@@ -612,13 +612,13 @@ class InvasionPercolation(GenericAlgorithm):
             IPseq = self._tseq
 
         try:
-            self._fluid['pore.'+occupancy]=((self._psequence>0)&(self._psequence<=IPseq))
-            self._fluid['throat.'+occupancy]=((self._tsequence>0)&(self._tsequence<=IPseq))
+            self._fluid['pore.'+occupancy]=np.ravel(np.array(((self._psequence>0)&(self._psequence<=IPseq)),dtype=np.float))
+            self._fluid['throat.'+occupancy]=np.ravel(np.array(((self._tsequence>0)&(self._tsequence<=IPseq)),dtype=np.float))
         except:
             print('Something bad happened while trying to update fluid',self._fluid.name)
         try:
-            self._fluid_def['pore.'+occupancy]=~((self._psequence>0)&(self._psequence<=IPseq))
-            self._fluid_def['throat.'+occupancy]=~((self._tsequence>0)&(self._tsequence<=IPseq))
+            self._fluid_def['pore.'+occupancy]=np.ravel(np.array(~((self._psequence>0)&(self._psequence<=IPseq)),dtype=np.float))
+            self._fluid_def['throat.'+occupancy]=np.ravel(np.array(~((self._tsequence>0)&(self._tsequence<=IPseq)),dtype=np.float))
         except:
             print('A partner fluid has not been set so inverse occupancy cannot be set')
 
