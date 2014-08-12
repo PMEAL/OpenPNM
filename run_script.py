@@ -82,8 +82,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    propname='throat.conduit_diffusive_conductance',
                    throat_conductance='throat.diffusive_conductance')
 #Use newly defined diffusive_conductance in the diffusion calculation
-alg.setup(conductance='throat.diffusive_conductance',fluid=air)
-alg.run()
+alg.run(conductance='throat.diffusive_conductance',fluid=air)
 alg.update()
 Deff = alg.calc_eff_diffusivity()
 
