@@ -127,7 +127,7 @@ class Core(Base):
         if regen_mode == 'constant':
              self[propname] = fn()  # Generate data and store it locally
         
-    def regenerate(self, props=''):
+    def regenerate(self, props='',mode='inclusive'):
         r'''
         This updates properties using any models on the object that were 
         assigned using ``add_model``
@@ -136,6 +136,11 @@ class Core(Base):
         ----------
         props : string or list of strings
             The names of the properties that should be updated, defaults to 'all'
+        mode : string
+            This controls which props are regenerated and how.  Options are:
+            
+            * 'inclusive': (default) This regenerates all given properties
+            * 'exclude': This generates all given properties EXCEPT the given ones
             
         Examples
         --------
@@ -155,6 +160,11 @@ class Core(Base):
             props = self._models.keys()
         elif type(props) == str:
             props = [props]
+        if mode == 'exclude':
+            temp = list(self._models.keys())
+            for item in props:
+                temp.remove(item)
+            props = temp
         for item in props:
             if item in self._models.keys():
                 self[item] = self._models[item]()
