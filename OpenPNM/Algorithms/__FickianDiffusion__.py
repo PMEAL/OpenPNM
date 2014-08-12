@@ -18,11 +18,13 @@ class FickianDiffusion(GenericLinearTransport):
         super(FickianDiffusion,self).__init__(**kwargs)
         self._logger.info('Create '+self.__class__.__name__+' Object')
         
-    def setup(self,fluid,conductance='diffusive_conductance',quantity='mole_fraction',**params):
+    def run(self,fluid,conductance='diffusive_conductance',quantity='mole_fraction',**params):
         r'''
         '''  
         self._logger.info("Setup "+self.__class__.__name__)   
         super(FickianDiffusion,self).setup(fluid=fluid,conductance=conductance,quantity=quantity)
+        
+        super(GenericLinearTransport,self).run()
         
     def calc_eff_diffusivity(self, clean=False):
         D_normal = self._calc_eff_prop()
