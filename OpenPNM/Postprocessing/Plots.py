@@ -35,5 +35,5 @@ def distributions(net,
   ax4.hist(net[throat_length],25,facecolor='red')
   ax4.set_xlabel('Throat Length [m]')
   ax4.set_ylabel('Frequency')
-
+  fig.show()
 

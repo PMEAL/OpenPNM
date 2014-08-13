@@ -192,7 +192,7 @@ class Core(Base):
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
-    def set_data(self,pores=None,throats=None,prop='',data='',mode=''):
+    def set_data(self,pores=None,throats=None,prop='',data='',mode='merge'):
         r'''
         Write data according to input arguments.
         
@@ -210,7 +210,7 @@ class Core(Base):
         mode : string
             Set the mode to be used for writing data to the specified indices.  Options are:
             
-            * '' : (default-merge) Adds data to specified locations while 
+            * 'merge' : (default) Adds data to specified locations while 
             maintaining pre-existing data
             
             * 'overwrite' : Adds data to specified locations while 
@@ -222,7 +222,7 @@ class Core(Base):
 
         '''        
 
-        if mode in ['','overwrite','remove_data','remove_prop']:
+        if mode in ['merge','overwrite','remove_data','remove_prop']:
             data= sp.array(data,ndmin=1)
             if pores != None:
                 if pores == 'all':  pores = self.pores()
@@ -315,29 +315,37 @@ class Core(Base):
                 locations = throats 
             elif throats==None and pores==None:
                 self._logger.error('No pores or throats have been received!')
-                raise Exception() 
-            if prop.split('.')[0] == element:
-                prop = prop.split('.')[1]
-            try:
-                self[element+'.'+prop]
-                if mode != '':
-                    if mode == 'interpolate':
-                        if locations!='':
-                            if element == 'pore':
-                                return self.interpolate_data(self['throat.'+prop])
-                            else:
-                                return self.interpolate_data(self['pore.'+prop])
-                        else:
-                            self._logger.error('For getting '+element+' property '+prop+' to '+self.name+' using interpolate mode, no locations should be sent.')
-                    else:
-                        self._logger.error('For getting '+element+' property '+prop+' to '+self.name+', the requested mode '+mode+' is not valid')
+                raise Exception('No pores/throats have been sent!') 
+            if prop.split('.')[0] in ['pore','throat']:
+                if prop.split('.')[0]==element:
+                    prop = prop.split('.')[1]
                 else:
-                    try: 
-                        return self[element+'.'+prop][locations]
-                    except: self._logger.error('data for '+element+' property '+prop+' in these locations cannot be returned.')
-            except: 
-                self._logger.error(element+' property '+prop+' does not exist for '+self.name) 
-        else: self._logger.error('For getting '+element+' property '+prop+' to '+self.name+', the mode '+mode+' cannot be applied!')    
+                    raise Exception('Wrong property has been sent for the locations! Pore property can only be returned for pore indices. The same applies to the throats.')                    
+            
+            if mode=='interpolate':
+                if element == 'pore':
+                    try:
+                        self['throat.'+prop]
+                    except:
+                        self._logger.error('For getting pore property using interpolate mode in '+self.name+' : throat property '+prop+' has not been found!')
+                        raise Exception('throat data for the property not found!')
+                    return self.interpolate_data(self['throat.'+prop])[locations]
+                elif element=='throat':
+                    try:
+                        self['pore.'+prop]
+                    except:
+                        self._logger.error('For getting throat property using interpolate mode in '+self.name+' : pore property '+prop+' has not been found!')
+                        raise Exception('pore data for the property not found!')
+                    return self.interpolate_data(self['pore.'+prop])[locations]
+            else:
+                try:    self[element+'.'+prop]
+                except: 
+                    self._logger.error(element+' property '+prop+' does not exist for '+self.name)
+                    raise Exception('No data found for the property!')
+                try:    return self[element+'.'+prop][locations]
+                except: self._logger.error('In '+self.name+', data for '+element+' property '+prop+' in these locations cannot be returned.')
+ 
+        else: self._logger.error('For getting property: '+prop+' in '+self.name+', the mode '+mode+' cannot be applied!')    
  
     
 
@@ -924,12 +932,12 @@ class Core(Base):
             Ts = net.throats()
             Ps = net.pores()
             label = 'all'
-        elif self.__module__.split('.')[1] == 'Fluids': 
+        elif self.__module__.split('.')[1] in ['Fluids','Algorithms']: 
             net = self._net
             Ts = net.throats()
             Ps = net.pores()
-            label = 'all'
-        else:  # If self is a Geometry or Physics
+            label = 'all'          
+        elif self.__module__.split('.')[1] in ['Geometry','Physics']:
             net = self._net
             Ts = net.throats(self.name)
             Ps = net.pores(self.name)
