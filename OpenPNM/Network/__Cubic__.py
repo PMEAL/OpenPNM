@@ -69,12 +69,12 @@ class Cubic(GenericNetwork):
         self['pore.values'] = ndarray.ravel()
 
         x,y,z = self['pore.coords'].T
-        self['pore.back'] = z == z.min()
-        self['pore.front'] = z == z.max()
-        self['pore.bottom'] = y == y.min()
-        self['pore.top'] = y == y.max()
+        self['pore.back'] = x == x.min()
+        self['pore.bottom'] = x == x.min()
+        self['pore.front'] = x == x.min()
         self['pore.left'] = x == x.min()
-        self['pore.right'] = x == x.max()
+        self['pore.right'] = x == x.min()
+        self['pore.top'] = x == x.min()
 
     def add_boundaries(self):
         x,y,z = self['pore.coords'].T
