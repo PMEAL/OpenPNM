@@ -7,9 +7,6 @@ Used with Delaunay Network but could work for others (not tested)
 
 """
 
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
 import OpenPNM
 import scipy as sp
 import numpy as np

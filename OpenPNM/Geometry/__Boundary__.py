@@ -6,9 +6,6 @@ module __Boundary__: Subclass of GenericGeometry for Boundary Pores
 
 """
 
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
 import OpenPNM
 from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry

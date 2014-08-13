@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if sys.path[1] != parent_dir:
-    sys.path.insert(1, parent_dir)
 import OpenPNM
 from OpenPNM.Fluids.__GenericFluid__ import GenericFluid
 from OpenPNM.Fluids import models as fm

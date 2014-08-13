@@ -6,10 +6,7 @@ module __GenericNetwork__: Abstract class to construct pore networks
 
 """
 
-import sys, os, collections
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if sys.path[1] != parent_dir:
-    sys.path.insert(1, parent_dir)
+import sys
 import OpenPNM
 import OpenPNM.Utilities.misc as misc
 import numpy as np

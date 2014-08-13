@@ -6,11 +6,8 @@ module __Core__: Base class to construct pore network tools
 
 """
 
-import sys,os,pprint,collections
+import pprint,collections
 from functools import partial
-parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if sys.path[1] != parent_dir:
-    sys.path.insert(1, parent_dir)
 import scipy as sp
 import OpenPNM
 from OpenPNM import Base

@@ -8,14 +8,15 @@ class VTK():
     
     Parameters
     ----------
-    filename : string
-        Filename to write data
-        
     network : OpenPNM Network Object
         The Network containing the data to be written
+
+    filename : string, optional
+        Filename to write data.  If no name is given the file is named after
+        ther network
         
-    fluid : OpenPNM Fluid Object, optional
-        The Fluid containing data to be written
+    fluid : list, optional
+        A list contain OpenPNM Fluid object(s) containing data to be written
 
     """
 
