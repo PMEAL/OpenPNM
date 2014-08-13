@@ -312,7 +312,7 @@ class Base(dict):
         
     name = property(_get_name,_set_name)
             
-    def save_object(self,filename=''):
+    def save_model(self):
         r'''
         Save the current object's data to a Numpy zip file.
         
@@ -328,18 +328,22 @@ class Base(dict):
             net = self._net
         
         dirname = net.name
-        os.mkdir(dirname)
+        try:
+            os.mkdir(dirname)
+        except:
+            raise Exception('A model with that name already exists')
+            
         #Save network
-        sp.savez_compressed(dirname+'/'+net.name+'.npz',**self)
+        sp.savez_compressed(dirname+'/'+'Network'+'.'+net.name+'.npz',**self)
         #Save other objects
         for geom in net._geometries:
-            filename = dirname+'/'+net.name+'.'+geom.name+'.npz'
+            filename = dirname+'/'+'Geometry'+'.'+geom.name+'.npz'
             sp.savez_compressed(filename,**geom)
         for fluid in net._fluids:
-            filename = dirname+'/'+net.name+'.'+fluid.name+'.npz'
+            filename = dirname+'/'+'Fluid'+'.'+fluid.name+'.npz'
             sp.savez_compressed(filename,**fluid)
             for phys in fluid._physics:
-                filename = dirname+'/'+net.name+'.'+fluid.name+'.'+phys.name+'.npz'
+                filename = dirname+'/'+'Physics'+'.'+phys.name+'.'+'Fluid'+'.'+fluid.name+'.npz'
                 sp.savez_compressed(filename,**phys)
             
 if __name__ == '__main__':
