@@ -2,7 +2,7 @@ from xml.etree import ElementTree as _ET
 
 import numpy as _np
 
-class save():
+class VTK():
     r"""
     Class for writing a Vtp file to be read by ParaView
     

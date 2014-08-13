@@ -9,10 +9,11 @@ r"""
 
 #Import every file in the directory
 import os as _os
-dir = _os.path.dirname(_os.path.abspath(__file__))
-for item in _os.listdir(dir):
+path = _os.path.dirname(_os.path.abspath(__file__))
+print(path)
+for item in _os.listdir(path):
     if item.split('.')[-1] == 'py':
-        if item == '__init__.py':
+        if item in ['__init__.py','__pycache__']:
             pass
         elif item[0:2] == '__':
             exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])

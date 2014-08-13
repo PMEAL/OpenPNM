@@ -1,9 +1,9 @@
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Postprocessing` -- 
+:mod:`OpenPNM.Postprocessing.Export` -- 
 *******************************************************************************
 
-.. module:: OpenPNM.Postprocessing
+.. module:: OpenPNM.Postprocessing.Export
 
 """
 
