@@ -100,6 +100,16 @@ class GenericLinearTransport(GenericAlgorithm):
                     del self['pore.bcval_'+bcname]
                     del self['pore.'+bcname]
             return
+            
+        #If mode is 'remove', also bypass checks
+        if mode == 'remove':
+            if pores == []:
+                self._logger.debug('Cannot remove BC values unless pores are specified')
+            else:
+                self._logger.debug('Removing '+bctype+' from specified pores')
+                self['pore.bcval_'+bctype][pores] = sp.nan
+                self['pore.'+bctype][pores] = False
+            return
 
         #Validate bctype
         if bctype.split('.')[-1] not in BC_default:
@@ -107,15 +117,13 @@ class GenericLinearTransport(GenericAlgorithm):
             
         #Validate pores
         if pores == []:
-            if mode not in ['remove','clear_all']:
-                raise Exception('Pores must be specified')
+            raise Exception('Pores must be specified')
         else:
             pores = sp.array(pores,ndmin=1)
                     
         #Validate bcvalue
         if bcvalue == []:
-            if mode not in ['remove','clear_all']:
-                raise Exception('bcvalue must be specified')
+            raise Exception('bcvalue must be specified')
         else:                        
             bcvalue = sp.array(bcvalue,ndmin=1)
         
@@ -151,15 +159,6 @@ class GenericLinearTransport(GenericAlgorithm):
             self['pore.bcval_'+bctype][pores] = bcvalue
             self['pore.'+bctype] = sp.zeros((self.num_pores(),),dtype=bool)
             self['pore.'+bctype][pores] = True
-        elif mode == 'remove':
-            if pores == []:
-                self._logger.debug('Removing '+bctype)
-                del self['pore.bcval_'+bctype]
-                del self['pore.'+bctype]
-            else:
-                self._logger.debug('Removing '+bctype+' from specified pores')
-                self['pore.bcval_'+bctype][pores] = sp.nan
-                self['pore.'+bctype][pores] = False
 
     def _build_coefficient_matrix(self):
         r'''
