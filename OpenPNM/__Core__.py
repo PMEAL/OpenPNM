@@ -1000,9 +1000,11 @@ class Core(Base):
         try:
             temp = self._temp[element]
         except:
+            Np = sp.shape(self['pore.all'])[0]
+            Nt = sp.shape(self['throat.all'])[0]
             self._temp = {}
-            self._temp['pore'] = sp.empty((self.Np,))
-            self._temp['throat'] = sp.empty((self.Nt,))
+            self._temp['pore'] = sp.empty((Np,))
+            self._temp['throat'] = sp.empty((Nt,))
             temp = self._temp[element]
         dtypes = []
         for item in sources:
@@ -1075,7 +1077,7 @@ class Core(Base):
         
         '''
         if labels == 'all':
-            Np = sp.shape(self['pore.all'])
+            Np = sp.shape(self['pore.all'])[0]
         else:
             #convert string to list, if necessary
             if type(labels) == str: 
