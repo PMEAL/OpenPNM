@@ -11,8 +11,8 @@ Building a Cubic Network
 The first thing you must do is import the OpenPNM code so you have access to the functions and methods, so in a blank *.py* file or at the python command line, start by entering the following line:
 
 .. code-block:: python
-
-   import OpenPNM
+    
+    	import OpenPNM
    
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Initialize the Network Topology
@@ -115,7 +115,7 @@ Then, water and air properties are then defined by the code below. Note that som
 .. code-block:: python
 
 	air.add_model(propname='pore.diffusivity',model=fm.diffusivity.fuller,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
-	ir.add_model(propname='pore.viscosity',model=fm.viscosity.reynolds,uo=0.001,b=0.1)
+    	air.add_model(propname='pore.viscosity',model=fm.viscosity.reynolds,uo=0.001,b=0.1)
 	air.add_model(propname='pore.molar_density',model=fm.molar_density.ideal_gas,R=8.314)
 	water.add_model(propname='pore.diffusivity',model=fm.misc.constant,value=1e-12)
 	water.add_model(propname='pore.viscosity',model=fm.misc.constant,value=0.001)
@@ -152,7 +152,7 @@ As with fluids and geometry objects, the next steps are first to load the model 
 
 	from OpenPNM.Physics import models as pm
 
-	hys_water.add_model(propname='throat.capillary_pressure',model=pm.capillary_pressure.purcell,r_toroid=1.e-5)
+	phys_water.add_model(propname='throat.capillary_pressure',model=pm.capillary_pressure.purcell,r_toroid=1.e-5)
 	phys_water.add_model(propname='throat.hydraulic_conductance',model=pm.hydraulic_conductance.hagen_poiseuille)
 	phys_water.add_model(propname='throat.diffusive_conductance',model=pm.diffusive_conductance.bulk_diffusion)
 
@@ -167,14 +167,16 @@ As with fluids and geometry objects, the next steps are first to load the model 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Visualise the results
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- We can now visualise our geometry and our fluid properties. 
+
+We can now visualise our geometry and our fluid properties. 
 
 
 
 -------------------------------------------------------------------------------
 Use the python vtk module
 -------------------------------------------------------------------------------
- For a quick look, it could be done thanks to the python vtk module. The following lines below allow you to create the 3D cubic network with sphere as pores. The throats are colored by the value of throats capilarity pressure.
+
+For a quick look, it could be done thanks to the python vtk module. The following lines below allow you to create the 3D cubic network with sphere as pores. The throats are colored by the value of throats capilarity pressure.
 
 
 
@@ -182,11 +184,11 @@ Use the python vtk module
 
 	from OpenPNM.Postprocessing.Graphics import Scene, Wires, Spheres
 	Cp = water.get_data(prop='capillary_pressure',pores='all',mode='interpolate')
-    wires = Wires(pn['pore.coords'], pn['throat.conns'],Cp)
-    sphere = Spheres(centers=pn['pore.coords'] ,radii=geom['pore.diameter']*1)  
-    scene = Scene()    
-    scene.add_actors([wires,sphere])
-    scene.play()
+	wires = Wires(pn['pore.coords'], pn['throat.conns'],Cp)
+	sphere = Spheres(centers=pn['pore.coords'] ,radii=geom['pore.diameter']*1)  
+	scene = Scene()    
+	scene.add_actors([wires,sphere])
+	scene.play()
 
 
 -------------------------------------------------------------------------------
