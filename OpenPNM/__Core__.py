@@ -192,7 +192,7 @@ class Core(Base):
     #--------------------------------------------------------------------------
     '''Setter and Getter Methods'''
     #--------------------------------------------------------------------------
-    def set_data(self,pores=None,throats=None,prop='',data='',mode=''):
+    def set_data(self,pores=None,throats=None,prop='',data='',mode='merge'):
         r'''
         Write data according to input arguments.
         
@@ -210,7 +210,7 @@ class Core(Base):
         mode : string
             Set the mode to be used for writing data to the specified indices.  Options are:
             
-            * '' : (default-merge) Adds data to specified locations while 
+            * 'merge' : (default) Adds data to specified locations while 
             maintaining pre-existing data
             
             * 'overwrite' : Adds data to specified locations while 
@@ -222,7 +222,7 @@ class Core(Base):
 
         '''        
 
-        if mode in ['','overwrite','remove_data','remove_prop']:
+        if mode in ['merge','overwrite','remove_data','remove_prop']:
             data= sp.array(data,ndmin=1)
             if pores != None:
                 if pores == 'all':  pores = self.pores()
