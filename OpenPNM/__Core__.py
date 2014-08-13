@@ -39,18 +39,18 @@ class Core(Base):
         is to limit what type and shape of data can be written to protect
         the integrity of the network.
         '''
-        #--- Enforce correct dict naming ---#
+        #Enforce correct dict naming
         element = key.split('.')[0]
         if (element != 'pore') and (element != 'throat'):
             self._logger.error('Array name must begin with \'pore\' or \'throat\'')
             return
-        #--- Convert value to an ndarray ---#
+        #Convert value to an ndarray
         value = sp.array(value,ndmin=1)
-        #--- Skip checks for 'coords', 'conns' ---#
+        #Skip checks for 'coords', 'conns'
         if (key == 'pore.coords') or (key == 'throat.conns'):
             super(Base, self).__setitem__(key,value)
             return
-        #--- Skip checks for protect props, and prevent changes if defined ---#
+        #Skip checks for protected props, and prevent changes if defined
         if key.split('.')[1] in ['all','map']:
             if key in self.keys():
                 self._logger.error(key+' is already defined.')
@@ -58,7 +58,7 @@ class Core(Base):
                 self._logger.debug(key+' is being defined.')
                 super(Base, self).__setitem__(key,value)
             return
-        #--- Write value to dictionary  ---#
+        #Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
             self._logger.debug('Broadcasting scalar value into vector: '+key)
             value = sp.ones((self._count(element),),dtype=value.dtype)*value
