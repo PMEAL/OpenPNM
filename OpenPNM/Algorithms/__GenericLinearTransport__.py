@@ -262,17 +262,17 @@ class GenericLinearTransport(GenericAlgorithm):
         except: pass
         return(B)
 
-    def rate(self,pores='',mode='union'):
+    def rate(self,pores='',mode='group'):
         r'''
         Send a list of pores and recieve the cumulative rate
         of material moving into them.
         '''
         pores = sp.array(pores,ndmin=1)
         R = []
-        if mode=='union':   iteration = 1
+        if mode=='group':   iteration = 1
         elif mode=='single':    iteration = sp.shape(pores)[0]
         for i in sp.r_[0:iteration]:
-            if mode=='union':   P = pores
+            if mode=='group':   P = pores
             elif mode=='single':    P = pores[i]
             throats = self._net.find_neighbor_throats(P,flatten=True,mode='not_intersection')
             p1 = self._net.find_connected_pores(throats)[:,0]
