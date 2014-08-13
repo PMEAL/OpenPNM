@@ -8,7 +8,6 @@ module __LinearSolver__: Algorithm for solving transport processes
 
 import scipy as sp
 import scipy.sparse as sprs
-import scipy.linalg as splin
 import scipy.sparse.linalg as sprslin
 from .__GenericAlgorithm__ import GenericAlgorithm
 
@@ -28,6 +27,7 @@ class GenericLinearTransport(GenericAlgorithm):
         
     def setup(self,fluid,conductance,quantity):
         r'''
+        This setup provides the initial data for the solver.
         '''
         self._fluid = fluid
         self._conductance = 'throat.'+conductance.split('.')[-1]
@@ -40,6 +40,7 @@ class GenericLinearTransport(GenericAlgorithm):
             gmin = sp.amin(self._fluid[self._conductance][ind])
             ind = sp.where(fluid[self._conductance]==0)[0]
             self['throat.conductance'] = self._fluid[self._conductance]
+            #To prevent singular matrix
             self['throat.conductance'][ind] = gmin/1000000
         else:
             raise Exception('The provided throat conductance has problems')
