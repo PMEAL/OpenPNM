@@ -29,7 +29,7 @@ class TestPhysics(GenericPhysics):
     """
 
     def __init__(self,**kwargs):
-        super(Standard,self).__init__(**kwargs)
+        super(TestPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         self._generate()
         
@@ -37,14 +37,11 @@ class TestPhysics(GenericPhysics):
         for fluid in self._fluids:
             temp = [item.split('.')[1] for item in fluid.props()]
             if 'viscosity' in temp:
-                self.add_model(propname='throat.hydraulic_conductance',
-                               model=pm.hydraulic_conductance.hagen_poiseuille)
+                self['throat.hydraulic_conductance'] = 1
             if 'diffusivity' in temp:
-                self.add_model(propname='throat.diffusive_conductance',
-                               model=pm.diffusive_conductance.bulk_diffusion)
+                self['throat.diffusive_conductance'] = 1
             if 'surface_tension' in temp:
-                self.add_model(propname='throat.capillary_pressure',
-                               model=pm.capillary_pressure.washburn)
+                self['throat.capillary_pressure'] = 1/self._Fluids[0]['throat.diameter']
         
 if __name__ == '__main__':
     print('none yet')
