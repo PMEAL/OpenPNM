@@ -766,7 +766,11 @@ class Core(Base):
         >>> pn.get_pore_indices(labels=['top','front'],mode='intersection')
         array([100, 105, 110, 115, 120], dtype=int64)
         '''
-        ind = self._get_indices(element='pore',labels=labels,mode=mode)
+        if labels == 'all':
+            Np = sp.shape(self['pore.all'])[0]
+            ind = sp.arange(0,Np)
+        else:
+            ind = self._get_indices(element='pore',labels=labels,mode=mode)
         return ind
         
     def throats(self,labels='all',mode='union'):
@@ -800,7 +804,11 @@ class Core(Base):
         array([0, 1, 2, 3, 4], dtype=int64)
         
         '''
-        ind = self._get_indices(element='throat',labels=labels,mode=mode)
+        if labels == 'all':
+            Nt = sp.shape(self['throat.all'])[0]
+            ind = sp.arange(0,Nt)
+        else:
+            ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
         
     def _indices(self,element=None,labels=['all'],mode='union'):
@@ -989,7 +997,13 @@ class Core(Base):
         fine, but missing ints are converted to float when nans are inserted.
         '''
         element = prop.split('.')[0]
-        temp = sp.ndarray((self._count(element),))
+        try:
+            temp = self._temp[element]
+        except:
+            self._temp = {}
+            self._temp['pore'] = sp.empty((self.Np,))
+            self._temp['throat'] = sp.empty((self.Nt,))
+            temp = self._temp[element]
         dtypes = []
         for item in sources:
             try: item.name
@@ -1014,7 +1028,7 @@ class Core(Base):
             self._logger.warning('Retrieved data is of different type...converting to float')
         return temp
         
-    def num_pores(self,labels=['all'],mode='union'):
+    def num_pores(self,labels='all',mode='union'):
         r'''
         Returns the number of pores of the specified labels
 
@@ -1060,17 +1074,22 @@ class Core(Base):
         40
         
         '''
-        #convert string to list, if necessary
-        if type(labels) == str: labels = [labels]
-        #Count number of pores of specified type
-        Np = self.pores(labels=labels,mode=mode)
-        return sp.shape(Np)[0] 
+        if labels == 'all':
+            Np = sp.shape(self['pore.all'])
+        else:
+            #convert string to list, if necessary
+            if type(labels) == str: 
+                labels = [labels]
+            #Count number of pores of specified type
+            Ps = self.pores(labels=labels,mode=mode)
+            Np = sp.shape(Ps)[0] 
+        return Np
         
     @property
     def Np(self):
         return self.num_pores()  
             
-    def num_throats(self,labels=['all'],mode='union'):
+    def num_throats(self,labels='all',mode='union'):
         r'''
         Return the number of throats of the specified labels
 
@@ -1114,11 +1133,15 @@ class Core(Base):
         72
         
         '''
-        #convert string to list, if necessary
-        if type(labels) == str: labels = [labels]
-        #Count number of pores of specified type
-        Nt = self.throats(labels=labels,mode=mode)
-        return sp.shape(Nt)[0]
+        if labels == 'all':
+            Nt = sp.shape(self['throat.all'])[0]
+        else:
+            #convert string to list, if necessary
+            if type(labels) == str: labels = [labels]
+            #Count number of pores of specified type
+            Ts = self.throats(labels=labels,mode=mode)
+            Nt = sp.shape(Ts)[0]
+        return Nt
         
     @property
     def Nt(self):
