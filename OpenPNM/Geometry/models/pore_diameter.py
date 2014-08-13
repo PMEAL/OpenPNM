@@ -19,6 +19,19 @@ def sphere(geometry,
     value = P.ppf(geometry[pore_seed])
     return value
 
+def sphere_from_radius(geometry,
+           psd_name,psd_shape,psd_loc,psd_scale,
+           pore_seed='pore.seed',
+           **kwargs):
+    r"""
+    Calculate pore diameter from seed values for a spherical pore body
+    """
+    import scipy.stats as spst
+    prob_fn = getattr(spst,psd_name)
+    P = prob_fn(psd_shape,loc=psd_loc,scale=psd_scale)
+    value = P.ppf(geometry[pore_seed])*2
+    return value
+
 def voronoi(network,
             pore_volume='pore.volume',
             **kwargs):

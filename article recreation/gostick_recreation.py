@@ -21,10 +21,10 @@ boun = OpenPNM.Geometry.Boundary(network=sgl,pores=Ps,throats=Ts)
 #3 calculating pore and throat diameters, volumes, etc
 #sgl.regenerate_geometries()
 #4 account for pores that are too big
-value = [min(sgl['pore.diameter'][x], Lc) for x in geo.pores()]
+value = [min(sgl['pore.diameter'][x], Lc*0.99) for x in geo.pores()]
 geo['pore.diameter']=value
 #account for throats that are too big
-value = [min(sgl['throat.diameter'][x], Lc) for x in geo.throats()]
+value = [min(sgl['throat.diameter'][x], Lc*0.99) for x in geo.throats()]
 geo['throat.diameter']=value
 
 #constricting sgl by .95 in both the z and y direction  
@@ -38,6 +38,7 @@ throat_diameters = sgl['throat.diameter'][throats]*factor
 geo['throat.diameter']=throat_diameters
 #reset aspects relying on pore and throat sizes
 geo.regenerate(['pore.diameter','throat.diameter'],mode='exclude')
+boun.regenerate(['pore.diameter','throat.diameter'],mode='exclude')
 #set up fluids 
 air = OpenPNM.Fluids.Air(network = sgl, name = 'air')
 water = OpenPNM.Fluids.Water(network = sgl, name = 'water')
