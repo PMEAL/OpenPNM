@@ -350,7 +350,7 @@ class GenericLinearTransport(GenericAlgorithm):
         #xout = x[Pn]
         #flow = g*(xin - xout)
         flow = self.rate(pores=inlets)
-        D = sp.sum(flow)*L/A/sp.absolute(BCs[0]-BCs[1])
+        D = sp.sum(flow)*L/A/(BCs[0]-BCs[1])
         return D
         
         
