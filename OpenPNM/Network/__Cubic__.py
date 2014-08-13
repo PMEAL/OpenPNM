@@ -74,13 +74,13 @@ class Cubic(GenericNetwork):
 
     def add_boundaries(self):
         x,y,z = self['pore.coords'].T
-        self['pore.back_face'] = x == x.min()
-        self['pore.bottom_face'] = x == x.min()
-        self['pore.boundary'] = x == x.min()
-        self['pore.front_face'] = x == x.min()
+        self['pore.back_face'] = z == z.min()
+        self['pore.front_face'] = z == z.max()
+        self['pore.bottom_face'] = y == y.min()
+        self['pore.top_face'] = y == y.max()
         self['pore.left_face'] = x == x.min()
-        self['pore.right_face'] = x == x.min()
-        self['pore.top_face'] = x == x.min()
+        self['pore.right_face'] = x == x.max()
+        self['pore.boundary'] = x == -1
 
         t,h = self['throat.conns'].T
         self['throat.back'] = np.ones_like(t, dtype=bool)

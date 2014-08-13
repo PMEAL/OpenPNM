@@ -31,6 +31,10 @@ def test_linear_solvers():
   print( alg_2['pore.mole_fraction'][BC1_pores] )
   print( alg_3['pore.mole_fraction'][BC1_pores] )
 
+def test_relative_pos_to_absolute_pos():
+  pn = OpenPNM.Network.Cubic.empty([1,1,1], spacing=0.0001)
+  np.testing.assert_array_equal( pn['pore.coords'], [0.5, 0.5, 0.5])
+
 def incomplete_test_spacing_setting():
   pn = OpenPNM.Network.Cubic.empty([5,5,5], spacing=0.0001)
   print( pn['pore.coords'] )

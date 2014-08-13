@@ -220,6 +220,7 @@ class Core(Base):
         '''        
 
         if mode in ['merge','overwrite','remove_data','remove_prop']:
+            #Checking for the indices
             data= sp.array(data,ndmin=1)
             if pores != None:
                 if pores == 'all':  pores = self.pores()
@@ -455,7 +456,7 @@ class Core(Base):
             label = label.split('.')[1]
             
         temp = self[element+'.'+label]
-        return temp[sp.in1d(temp,locations)]
+        return temp[locations]
             
 
            
