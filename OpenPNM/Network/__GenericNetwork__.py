@@ -407,7 +407,7 @@ class GenericNetwork(OpenPNM.Core):
         >>> pn.find_neighbor_throats(pores=[0,1],flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
-        #Test for existance of incidence matrix
+        #Test for existence of incidence matrix
         try:
             neighborTs = self._incidence_matrix['lil'].rows[[pores]]
         except:
@@ -518,23 +518,37 @@ class GenericNetwork(OpenPNM.Core):
                 Tind = T1[Tmask]
         return Tind
         
-    def _update_network(self):
+    def find_clusters(self,mask=[]):
         r'''
-        Regenerates the adjacency and incidence matrices
+        Identify connected clusters of pores in the network.  
+        
+        Parameters
+        ----------
+        mask : array_like, boolean
+            A list of active nodes.  This method will automatically search 
+            for clusters based on site or bond connectivity depending on 
+            wheather the received mask is Np or Nt long.
+            
+        Returns
+        -------
+        clusters : array_like
+            An Np long list of clusters numbers
+            
         '''
-        self._logger.debug('Resetting adjacency and incidence matrices')
-        self._adjacency_matrix['coo'] = {}
-        self._adjacency_matrix['csr'] = {}
-        self._adjacency_matrix['lil'] = {}
-        self._incidence_matrix['coo'] = {}
-        self._incidence_matrix['csr'] = {}
-        self._incidence_matrix['lil'] = {}
-        self._adjacency_matrix['coo'] = self.create_adjacency_matrix(sprsfmt='coo')
-        self._adjacency_matrix['csr'] = self.create_adjacency_matrix(sprsfmt='csr')
-        self._adjacency_matrix['lil'] = self.create_adjacency_matrix(sprsfmt='lil')
-        self._incidence_matrix['coo'] = self.create_incidence_matrix(sprsfmt='coo')
-        self._incidence_matrix['csr'] = self.create_incidence_matrix(sprsfmt='csr')
-        self._incidence_matrix['lil'] = self.create_incidence_matrix(sprsfmt='lil')
+        if sp.shape(mask)[0] == self.num_throats():
+            #Convert to boolean mask if not already
+            temp = sp.zeros((self.num_throats(),),dtype=bool)
+            temp[mask] = True
+        elif sp.shape(mask)[0] == self.num_pores():
+            conns = self.find_connected_pores(throats=self.throats())
+            conns[:,0] = mask[conns[:,0]]
+            conns[:,1] = mask[conns[:,1]]
+            temp = sp.array(conns[:,0]*conns[:,1],dtype=bool)
+        else: 
+            raise Exception('Mask received was neither Nt nor Np long')
+        temp = self.create_adjacency_matrix(data=temp, sprsfmt='csr', dropzeros=True)
+        clusters = sprs.csgraph.connected_components(temp)[1]
+        return clusters
         
     #--------------------------------------------------------------------------
     '''Network Manipulation Methods'''
@@ -552,7 +566,7 @@ class GenericNetwork(OpenPNM.Core):
         mode : string
             Controls the connections between parents and clones.  Options are:
             
-            - 'parents': (Default) Each clone is connected only the its parent
+            - 'parents': (Default) Each clone is connected only to its parent
             - 'siblings': Clones are only connected to each other in the same manner as parents were connected
             - 'isolated': No connections between parents or siblings
         '''
@@ -729,43 +743,38 @@ class GenericNetwork(OpenPNM.Core):
                     self[key] = temp[Pkeep]
         
         #Reset network graphs
-        self._update_network()
+        self._update_network(mode='regenerate')
         
         #Check network health
         if check_health:
             self.network_health()
-        
-    def find_clusters(self,mask=[]):
+            
+    def join(self,network,P1,P2,mode='delaunay'):
         r'''
-        Identify connected clusters of pores in the network.  
+        Joins the supplied network with the current network.  The pores to be
+        joined must be labeled as 'join' in each network.
         
         Parameters
         ----------
-        mask : array_like, boolean
-            A list of active nodes.  This method will automatically search 
-            for clusters based on site or bond connectivity depending on 
-            wheather the received mask is Np or Nt long.
+        network : OpenPNM Network Object
+            The network to join to the current network
             
-        Returns
-        -------
-        clusters : array_like
-            An Np long list of clusters numbers
+        P1 and P2 : array_like
+            The list of pores in the current network (P1) and the supplied 
+            network (P2) that should be joined.
+        
+        mode : string
+            The method to use for determining pore connections between
+            pores.  Options include:
             
+            - 'delaunay' : Uses a Delaunay tessellation to determine neighbors
+            - 'direct' : Connects each pore to its nearest single neighbor
         '''
-        if sp.shape(mask)[0] == self.num_throats():
-            #Convert to boolean mask if not already
-            temp = sp.zeros((self.num_throats(),),dtype=bool)
-            temp[mask] = True
-        elif sp.shape(mask)[0] == self.num_pores():
-            conns = self.find_connected_pores(throats=self.throats())
-            conns[:,0] = mask[conns[:,0]]
-            conns[:,1] = mask[conns[:,1]]
-            temp = sp.array(conns[:,0]*conns[:,1],dtype=bool)
-        else: 
-            raise Exception('Mask received was neither Nt nor Np long')
-        temp = self.create_adjacency_matrix(data=temp, sprsfmt='csr', dropzeros=True)
-        clusters = sprs.csgraph.connected_components(temp)[1]
-        return clusters
+        if mode == 'direct':
+            D = misc.dist(self['pore.coords'][P1],network['pore.coords'][P2])
+            conns = [P1,sp.min(D[P1])]
+        
+        
         
     def check_network_health(self):
         r'''
@@ -824,6 +833,42 @@ class GenericNetwork(OpenPNM.Core):
 #        health['duplicate_pores'] = dupPs
         
         return health
+        
+    def _update_network(self,mode='clear'):
+        r'''
+        Regenerates the adjacency and incidence matrices
+        
+        Parameters
+        ----------
+        mode : string
+            Controls the extent of the update.  Options are:
+            
+            - 'clear' : Removes exsiting adjacency and incidence matrices
+            - 'regenerate' : Removes the existing matrices and regenerates new ones.  
+            
+        Notes
+        -----
+        The 'regenerate' mode is more time consuming, so repeated calls to 
+        this function (ie. during network merges, and adding boundaries)
+        should use the 'clear' mode.  The other methods that require these
+        matrices will generate them as needed, so this pushes the 'generation' 
+        time to 'on demand'.
+        '''
+        self._logger.debug('Resetting adjacency and incidence matrices')
+        self._adjacency_matrix['coo'] = {}
+        self._adjacency_matrix['csr'] = {}
+        self._adjacency_matrix['lil'] = {}
+        self._incidence_matrix['coo'] = {}
+        self._incidence_matrix['csr'] = {}
+        self._incidence_matrix['lil'] = {}
+        
+        if mode == 'regenerate':
+            self._adjacency_matrix['coo'] = self.create_adjacency_matrix(sprsfmt='coo')
+            self._adjacency_matrix['csr'] = self.create_adjacency_matrix(sprsfmt='csr')
+            self._adjacency_matrix['lil'] = self.create_adjacency_matrix(sprsfmt='lil')
+            self._incidence_matrix['coo'] = self.create_incidence_matrix(sprsfmt='coo')
+            self._incidence_matrix['csr'] = self.create_incidence_matrix(sprsfmt='csr')
+            self._incidence_matrix['lil'] = self.create_incidence_matrix(sprsfmt='lil')
         
     #--------------------------------------------------------------------------
     '''Domain Geometry Methods'''
