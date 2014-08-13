@@ -38,14 +38,18 @@ class Cubic(GenericNetwork):
         arr = np.zeros(dims)
         return cls(arr, *a, **kw)
 
-    def __init__(self, ndarray, spacing=None, **kwargs):
+    def __init__(self, ndarray, spacing=None, unit_cube=False, **kwargs):
         super(Cubic, self).__init__(**kwargs)
         ndarray = np.atleast_3d(ndarray)
 
-        points_rel = np.array(
+        points = np.array(
             [idx for idx,val in np.ndenumerate(ndarray)],
             dtype=float)
-        self['pore.coords'] = points_rel
+
+        if unit_cube:
+            spacing = 1 / ( points_rel.max(axis=0) + 2 )
+            points = spacing + spacing * points_rel
+        self['pore.coords'] = points
 
         I = np.arange(ndarray.size).reshape(ndarray.shape)
         tails, heads = [], []
