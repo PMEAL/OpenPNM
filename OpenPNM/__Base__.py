@@ -3,9 +3,7 @@ module __OpenPNMbase__: contains OpenPNM base classes
 =====================================================
 
 """
-import sys, os, string, random, time
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
+import os, string, random, time
 import OpenPNM
 import scipy as sp
 import scipy.constants

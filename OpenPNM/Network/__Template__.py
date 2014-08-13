@@ -6,9 +6,7 @@ module __Template__: Generate cubic networks from domain templates
 
 """
 
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
+import os
 import OpenPNM
 
 import numpy as np

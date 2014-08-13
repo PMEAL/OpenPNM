@@ -5,10 +5,6 @@ module __Delaunay__: Generate random networks based on Delaunay Tessellations
 .. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
 
 """
-
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
 import OpenPNM
 
 import sys
