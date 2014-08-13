@@ -47,8 +47,11 @@ class Cubic(GenericNetwork):
             dtype=float)
 
         if unit_cube:
-            spacing = 1 / ( points_rel.max(axis=0) + 2 )
-            points = spacing + spacing * points_rel
+            spacing = 1 / ( points.max(axis=0))
+            points = spacing + spacing * points
+        else:
+            if spacing is not None:
+                points *= spacing
         self['pore.coords'] = points
 
         I = np.arange(ndarray.size).reshape(ndarray.shape)

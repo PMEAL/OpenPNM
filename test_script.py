@@ -4,7 +4,7 @@ import OpenPNM
 import pytest
 
 def test_linear_solvers():
-  pn = OpenPNM.Network.Cubic.empty(dims=[1,40,30], spacing=[0.0001])
+  pn = OpenPNM.Network.Cubic.empty(dims=[1,40,30], spacing=0.0001)
   geom = OpenPNM.Geometry.Toray090(network=pn,pores=pn.pores(),throats=pn.throats())
   air = OpenPNM.Fluids.Air(network=pn)
   phys_air = OpenPNM.Physics.Standard(network=pn,fluid=air,pores=pn.pores(),throats=pn.throats())
