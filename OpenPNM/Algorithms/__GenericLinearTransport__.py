@@ -162,6 +162,7 @@ class GenericLinearTransport(GenericAlgorithm):
 
     def _build_coefficient_matrix(self):
         r'''
+        This builds the sparse coefficient matrix for the linear solver.
         '''
         # Filling coefficient matrix
         tpore1 = self._net['throat.conns'][:,0]
@@ -225,15 +226,14 @@ class GenericLinearTransport(GenericAlgorithm):
             non_Dir_diag = diag[-sp.in1d(diag,diag[pores])]
         except:
             temp_data = sp.copy(data)
-            non_Dir_diag = diag
-            
+            non_Dir_diag = diag            
         S_temp = sp.zeros(A_dim)
         for i in sp.r_[0:len(row)]:
             S_temp[row[i]] = S_temp[row[i]] - temp_data[i]
         data = sp.append(data,S_temp[non_Dir_diag])
         row = sp.append(row,non_Dir_diag)
         col = sp.append(col,non_Dir_diag)
-        
+        #Convert the lists to the sparse matrix
         self._Coeff_dimension = A_dim
         a = sprs.coo.coo_matrix((data,(row,col)),(A_dim,A_dim))
         A = a.tocsr()
@@ -242,6 +242,7 @@ class GenericLinearTransport(GenericAlgorithm):
 
     def _build_RHS_matrix(self):        
         r'''
+        This builds the right-hand-side matrix for the linear solver.
         '''
         A_dim = self._Coeff_dimension
         B = sp.zeros([A_dim,1])
@@ -264,8 +265,19 @@ class GenericLinearTransport(GenericAlgorithm):
 
     def rate(self,pores='',mode='group'):
         r'''
-        Send a list of pores and recieve the cumulative rate
+        Send a list of pores and receive the net rate
         of material moving into them.
+        
+        Parameters
+        ----------
+        pores : array_like
+            The pores where the net rate will be calculated
+        mode : string, optional
+            Controls how to return the rate.  Options are:
+            
+            - 'group'(default): It returns the cumulative rate moving into them
+            - 'single': It calculates the rate for each pore individually.       
+        
         '''
         pores = sp.array(pores,ndmin=1)
         R = []
@@ -279,6 +291,7 @@ class GenericLinearTransport(GenericAlgorithm):
             p2 = self._net.find_connected_pores(throats)[:,1]
             pores1 = sp.copy(p1)
             pores2 = sp.copy(p2)
+            #Changes to pores1 and pores2 to make them as the internal and external pores
             pores1[-sp.in1d(p1,P)] = p2[-sp.in1d(p1,P)]
             pores2[-sp.in1d(p1,P)] = p1[-sp.in1d(p1,P)]
             X1 = self[self._quantity][pores1]
@@ -289,6 +302,7 @@ class GenericLinearTransport(GenericAlgorithm):
         
     def _do_one_inner_iteration(self):
         r'''
+        This method collects the A and B matrices, solves AX = B and returns the result to the corresponding algorithm.
         '''
         self._logger.info("Creating Coefficient matrix for the algorithm")
         A = self._build_coefficient_matrix()
@@ -297,10 +311,20 @@ class GenericLinearTransport(GenericAlgorithm):
         self._logger.info("Solving AX = B for the sparse matrices")
         X = sprslin.spsolve(A,B)
         self._Neumann_super_X = X[-sp.in1d(sp.r_[0:len(X)],sp.r_[0:self.num_pores()])]
+        #Removing the additional super pore variables from the results
         self[self._quantity] = X[sp.r_[0:self.num_pores()]]        
         self._logger.info('Writing the results to '+'[\''+self._quantity+'\'] in the '+self.name+' algorithm.')
             
     def _calc_eff_prop(self,check_health=False):
+        r'''
+        This returns the main parameters for calculating the effective property in a linear transport equation. 
+        It also checks for the proper boundary conditions, inlets and outlets.
+        
+        Parameters
+        ----------
+        check_health : boolean(optional)
+            It analyzes the inlet and outlet pores to check their spatial positions
+        '''
         try:
             self[self._quantity]
         except:
