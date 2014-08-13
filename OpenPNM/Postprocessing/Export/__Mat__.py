@@ -1,38 +1,33 @@
 import scipy as _sp
 
-class save():
+class Mat():
     
     r"""
-    SaveMat - Class for writing a mat file to be read by Matlab/Scilab/Octave
+    Write Network to a Mat file for exporting to Matlab
 
+    Parameters
+    ----------
+    
+    network : OpenPNM Network Object
+
+    filename : string
+        Desired file name, defaults to network name if not given
+        
+    fluids : list of fluid objects ([])
+        Fluids that have properties we want to write to file
 
     """
     
-    
-    def __init__(self,**kwargs):
+    def __init__(self,network, filename='', fluids=[],**kwargs):
         r"""
         Initialize
         """
-        super().__init__(self,**kwargs)
-        self._write(**kwargs)
+        if filename == '':
+            filename = network.name+'.mat'
+        self._write(network=network**kwargs)
         
     def _write(self, network, filename='output.mat', fluids=[]):
-        r"""
-        Write Network to a VTK file for visualizing in Paraview
-    
-        Parameters
-        ----------
-        
-        network : OpenPNM Network Object
-    
-        filename : string ('output.mat')
-            Full path to desired file location
-            
-        fluids : list of fluid objects ([])
-            Fluids that have properties we want to write to file
-            
-    
-        """
+
         pnMatlab = {}        
         new = []
         old = []
