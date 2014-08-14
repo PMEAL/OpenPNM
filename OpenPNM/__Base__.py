@@ -3,7 +3,7 @@ module __OpenPNMbase__: contains OpenPNM base classes
 =====================================================
 
 """
-import os, string, random, time
+import os, string, random, time, shutil
 import OpenPNM
 import scipy as sp
 import scipy.constants
@@ -335,14 +335,15 @@ class Base(dict):
             net = self
         else:
             net = self._net
-        
-        dirname = net.name
+        print('Make temporary directory to store numpy zip files')
+        dirname = 'temp'
         try:
             os.mkdir(dirname)
         except:
             raise Exception('A model with that name already exists')
             
         #Save network
+        print('Save numpy zip files for each object')
         sp.savez_compressed(dirname+'/'+'Network'+'.'+net.name+'.npz',**self)
         #Save other objects
         for geom in net._geometries:
@@ -354,7 +355,15 @@ class Base(dict):
             for phys in fluid._physics:
                 filename = dirname+'/'+'Physics'+'.'+phys.name+'.'+'Fluid'+'.'+fluid.name+'.npz'
                 sp.savez_compressed(filename,**phys)
-            
+        
+        #Convert 'temp' directory into a 'pnm' file and remove temp
+        print('Generate a zip archive from the temporary directory')
+        shutil.make_archive(base_name=net.name, format="zip", root_dir='temp')
+        print('Remove temporary directory')
+        shutil.rmtree('temp')
+        print('Rename zip file to a pnm file')
+        os.rename(net.name+'.zip',net.name+'.pnm')
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)
