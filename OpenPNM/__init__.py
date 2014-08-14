@@ -106,7 +106,7 @@ from .__Core__ import Core
 from . import Utilities
 from . import Network
 from . import Geometry
-from . import Fluids
+from . import Phases
 from . import Physics
 from . import Algorithms
 from . import Postprocessing

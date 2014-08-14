@@ -1,26 +1,26 @@
 import sys, os
 import OpenPNM
-from OpenPNM.Fluids.__GenericFluid__ import GenericFluid
-from OpenPNM.Fluids import models as fm
+from OpenPNM.Phases.__GenericPhase__ import GenericPhase
+from OpenPNM.Phases import models as fm
 
-class Air(GenericFluid):
+class Air(GenericPhase):
     r"""
-    Creates Fluid object with a default name 'air' and preset values for air
+    Creates Phase object with a default name 'air' and preset values for air
     
     Parameters
     ----------
     network : OpenPNM Network object
-        The network to which this fluid object will be attached.  
+        The network to which this phase object will be attached.  
         
     Notes
     -----
-    This explicit association is necessary so the Fluid object can initialize
+    This explicit association is necessary so the Phase object can initialize
     data arrays of the correct size to store network data.
     
     Examples
     --------
     >>> pn = OpenPNM.Network.TestNet()
-    >>> air = OpenPNM.Fluids.Air(network=pn)
+    >>> air = OpenPNM.Phases.Air(network=pn)
     """
     def __init__(self,name=None,**kwargs):
         super(Air,self).__init__(name=name,**kwargs)
@@ -46,4 +46,4 @@ class Air(GenericFluid):
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()
-    air = OpenPNM.Fluids.Air(network=pn)
+    air = OpenPNM.Phases.Air(network=pn)

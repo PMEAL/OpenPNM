@@ -8,7 +8,7 @@ Submodule -- diffusive_conductance
 import scipy as _sp
 
 def bulk_diffusion(physics,
-                   fluid,
+                   phase,
                    network,
                    pore_molar_density='pore.molar_density',
                    pore_diffusivity='pore.diffusivity',
@@ -25,21 +25,21 @@ def bulk_diffusion(physics,
     ----------
     network : OpenPNM Network Object
 
-    fluid : OpenPNM Fluid Object
-        The fluid of interest
+    phase : OpenPNM Phase Object
+        The phase of interest
 
     Notes
     -----
-    This function requires that all the necessary fluid properties already be 
+    This function requires that all the necessary phase properties already be 
     calculated.
 
     """    
-    throats = fluid.throats(physics.name)
-    #Interpolate pore fluid property values to throats
-    cp = fluid[pore_molar_density]
-    ct = fluid.interpolate_data(data=cp)
-    DABp = fluid[pore_diffusivity]
-    DABt = fluid.interpolate_data(data=DABp)
+    throats = phase.throats(physics.name)
+    #Interpolate pore phase property values to throats
+    cp = phase[pore_molar_density]
+    ct = phase.interpolate_data(data=cp)
+    DABp = phase[pore_diffusivity]
+    DABt = phase.interpolate_data(data=DABp)
     #Get Nt-by-2 list of pores connected to each throat
     Ps = network.find_connected_pores(throats=throats)
     #Find g for half of pore 1

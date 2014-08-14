@@ -4,9 +4,9 @@ Submodule -- diffusivity
 ===============================================================================
 
 """
-import scipy as _sp
+import scipy as sp
 
-def fuller(fluid,MA,MB,vA,vB,**kwargs): 
+def fuller(phase,MA,MB,vA,vB,**kwargs): 
     r"""
     Uses Fuller model to estimate diffusion coefficient for gases from first 
     principles at conditions of interest
@@ -23,21 +23,21 @@ def fuller(fluid,MA,MB,vA,vB,**kwargs):
         Sum of atomic diffusion volumes for component B
     """
 
-    T = fluid['pore.temperature']
-    P = fluid['pore.pressure']
+    T = phase['pore.temperature']
+    P = phase['pore.pressure']
     MAB = 2*(1.0/MA+1.0/MB)**(-1)
     MAB = MAB*1e3
     P = P*1e-5
     value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3)+vB**(1./3))**2)*1e-4
     return value
 
-def fuller_scaling(fluid,DABo,To,Po,**kwargs):
+def fuller_scaling(phase,DABo,To,Po,**kwargs):
     r"""
     Uses Fuller model to adjust a diffusion coefficient for gases from reference conditions to conditions of interest
 
     Parameters
     ----------
-    fluid : OpenPNM Fluid Object
+    phase : OpenPNM Phase Object
 
     DABo : float, array_like
         Diffusion coefficient at reference conditions
@@ -45,12 +45,12 @@ def fuller_scaling(fluid,DABo,To,Po,**kwargs):
     Po, To : float, array_like
         Pressure & temperature at reference conditions, respectively
     """
-    Ti = fluid['pore.temperature']
-    Pi = fluid['pore.pressure']
+    Ti = phase['pore.temperature']
+    Pi = phase['pore.pressure']
     value = DABo*(Ti/To)**1.75*(Po/Pi)
     return value
 
-def tyn_calus(fluid,VA,VB,sigma_A,sigma_B,**kwargs):
+def tyn_calus(phase,VA,VB,sigma_A,sigma_B,**kwargs):
     r"""
     Uses Tyn_Calus model to estimate diffusion coefficient in a dilute liquid solution of A in B from first principles at conditions of interest
 
@@ -70,18 +70,18 @@ def tyn_calus(fluid,VA,VB,sigma_A,sigma_B,**kwargs):
         Surface tension of component B at boiling temperature (N/m)
 
     """
-    T = fluid['pore.temperature']
-    mu = fluid['pore.viscosity']
+    T = phase['pore.temperature']
+    mu = phase['pore.viscosity']
     value = 8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T*(sigma_B/sigma_A)**0.15/(mu*1e3)
     return value
 
-def tyn_calus_Scaling(fluid,DABo,To,mu_o,**kwargs):
+def tyn_calus_Scaling(phase,DABo,To,mu_o,**kwargs):
     r"""
     Uses Tyn_Calus model to adjust a diffusion coeffciient for liquids from reference conditions to conditions of interest
 
     Parameters
     ----------
-    fluid : OpenPNM Fluid Object
+    phase : OpenPNM Phase Object
 
     DABo : float, array_like
         Diffusion coefficient at reference conditions
@@ -89,7 +89,7 @@ def tyn_calus_Scaling(fluid,DABo,To,mu_o,**kwargs):
     mu_o, To : float, array_like
         Viscosity & temperature at reference conditions, respectively
     """
-    Ti = fluid['pore.temperature']
-    mu_i = fluid['pore.viscosity']
+    Ti = phase['pore.temperature']
+    mu_i = phase['pore.viscosity']
     value = DABo*(Ti/To)*(mu_o/mu_i)
     return value

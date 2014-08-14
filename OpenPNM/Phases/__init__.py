@@ -1,13 +1,14 @@
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Fluids` -- Fluid Property Estimation Methods
+:mod:`OpenPNM.Phases` -- Phase Property Estimation Methods
 *******************************************************************************
 
-.. module:: OpenPNM.Fluids
+.. module:: OpenPNM.Phases
 
 Contents
 --------
-This module contains methods for estimating fluid properties
+This module contains subclasses for producing specific phases
+
 
 """
 

@@ -61,16 +61,16 @@ class Tortuosity(GenericAlgorithm):
         print("Based on the network size and PC performance, this algorithm will require: ",t_est,' seconds')
         return 
 
-    def run(self,fluid=None):
+    def run(self,phase=None):
         r'''
         '''
         self._logger.warning('This algorithm can take some time...')
         graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],sprsfmt='csr')
         
-        if fluid != None:
-            self._fluid = fluid
-            if 'throat.occupancy' in self._fluid.props():
-                temp = self._net['throat.length']*(self._fluid['throat.occupancy']==1)
+        if phase != None:
+            self._phase = phase
+            if 'throat.occupancy' in self._phase.props():
+                temp = self._net['throat.length']*(self._phase['throat.occupancy']==1)
                 graph = self._net.create_adjacency_matrix(data=temp,sprsfmt='csr',prop='temp')
         
         self._net.tic()

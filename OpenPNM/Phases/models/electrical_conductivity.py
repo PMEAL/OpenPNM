@@ -4,7 +4,7 @@ Submodule -- electrical_conductance
 ===============================================================================
 
 """
-import scipy as _sp
+import scipy as sp
 
 def na(**kwargs):
     print('Not Implemented Yet')

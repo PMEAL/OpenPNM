@@ -40,22 +40,22 @@ geo['throat.diameter']=throat_diameters
 #reset aspects relying on pore and throat sizes
 geo.regenerate(['pore.diameter','throat.diameter'],mode='exclude')
 boun.regenerate(['pore.diameter','throat.diameter'],mode='exclude')
-#set up fluids 
-air = OpenPNM.Fluids.Air(network = sgl, name = 'air')
-water = OpenPNM.Fluids.Water(network = sgl, name = 'water')
+#set up phases 
+air = OpenPNM.Phases.Air(network = sgl, name = 'air')
+water = OpenPNM.Phases.Water(network = sgl, name = 'water')
 
-#calculating all fluid values
+#calculating all phase values
 air.regenerate()
 water.regenerate()
 
 #reset pore contact angle
 water['pore.contact_angle'] = 100
 
-#1 create physics objects associated with our fluids
+#1 create physics objects associated with our phases
 Ps = sgl.pores()
 Ts = sgl.throats()
-phys_water = OpenPNM.Physics.Standard(network=sgl,fluid=water,pores=Ps,throats=Ts,dynamic_data=True,name='standard_water_physics')
-phys_air = OpenPNM.Physics.Standard(network=sgl,fluid=air,pores=Ps,throats=Ts,dynamic_data=True,name='standard_air_physics')
+phys_water = OpenPNM.Physics.Standard(network=sgl,phase=water,pores=Ps,throats=Ts,dynamic_data=True,name='standard_water_physics')
+phys_air = OpenPNM.Physics.Standard(network=sgl,phase=air,pores=Ps,throats=Ts,dynamic_data=True,name='standard_air_physics')
 
 #2 calculating physics properties (capillary pressure, hydraulic conductance, etc)
 phys_water.regenerate()
@@ -68,7 +68,7 @@ inlets = sgl.pores(['bottom','boundary'],mode='intersection')
 used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
     
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,loglevel=30)
-OP_1.run(invading_fluid = water, defending_fluid = air, inlets = used_inlets,npts=100)
+OP_1.run(invading_phase = water, defending_phase = air, inlets = used_inlets,npts=100)
 
 sat = []
 perm_air = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
@@ -161,15 +161,15 @@ for x in range(21):
             Fickian_alg_multi_phase_water.set_boundary_conditions(bctype = 'Dirichlet', bcvalue = .2, pores = BC2_pores)
             
             #conduit conductance
-            Stokes_alg_single_phase_air.run(conductance = 'hydraulic_conductance',fluid=air)
-            Stokes_alg_single_phase_water.run(conductance = 'hydraulic_conductance',fluid=water)
-            Fickian_alg_single_phase_air.run(conductance = 'diffusive_conductance',fluid=air) 
-            Fickian_alg_single_phase_water.run(conductance = 'diffusive_conductance',fluid=water)
+            Stokes_alg_single_phase_air.run(conductance = 'hydraulic_conductance',phase=air)
+            Stokes_alg_single_phase_water.run(conductance = 'hydraulic_conductance',phase=water)
+            Fickian_alg_single_phase_air.run(conductance = 'diffusive_conductance',phase=air) 
+            Fickian_alg_single_phase_water.run(conductance = 'diffusive_conductance',phase=water)
             
-            Stokes_alg_multi_phase_air.run(conductance = 'conduit_hydraulic_conductance',fluid=air)
-            Stokes_alg_multi_phase_water.run(conductance = 'conduit_hydraulic_conductance',fluid=water)
-            Fickian_alg_multi_phase_air.run(conductance = 'conduit_diffusive_conductance',fluid=air) 
-            Fickian_alg_multi_phase_water.run(conductance = 'conduit_diffusive_conductance',fluid=water)
+            Stokes_alg_multi_phase_air.run(conductance = 'conduit_hydraulic_conductance',phase=air)
+            Stokes_alg_multi_phase_water.run(conductance = 'conduit_hydraulic_conductance',phase=water)
+            Fickian_alg_multi_phase_air.run(conductance = 'conduit_diffusive_conductance',phase=air) 
+            Fickian_alg_multi_phase_water.run(conductance = 'conduit_diffusive_conductance',phase=water)
             
             #calc effective properties
             effective_permeability_air_single = Stokes_alg_single_phase_air.calc_eff_permeability(clean = False)  

@@ -4,12 +4,12 @@ r"""
 Submodule -- viscosity
 ===============================================================================
 
-Models for predicting fluid viscosity
+Models for predicting phase viscosity
 
 """
-import scipy as _sp
+import scipy as sp
 
-def reynolds(fluid,uo,b,**kwargs):
+def reynolds(phase,uo,b,**kwargs):
     r"""
     Uses exponential model by Reynolds [1]_ for the temperature dependance of 
     shear viscosity
@@ -23,11 +23,11 @@ def reynolds(fluid,uo,b,**kwargs):
     [1] Reynolds O. (1886). Phil Trans Royal Soc London, v. 177, p.157.
     
     """
-    T = fluid['pore.temperature']
-    value = uo*_sp.exp(-1*b*T)
+    T = phase['pore.temperature']
+    value = uo*sp.exp(-1*b*T)
     return value
 
-def chung(fluid,MW='molecular_weight',Tc='critical_temperature',Vc='critical_volume',**kwargs):
+def chung(phase,MW='molecular_weight',Tc='critical_temperature',Vc='critical_volume',**kwargs):
     r"""
     Uses Chung et al. [2]_ model to estimate viscosity for gases with low pressure 
     (much less than the critical pressure) at conditions of interest
@@ -46,14 +46,14 @@ def chung(fluid,MW='molecular_weight',Tc='critical_temperature',Vc='critical_vol
         Viscosity and Thermal Conductivity”, Ind. Eng. Chem. Fundam.23:8, 1984.
 
     """
-    T = fluid['pore.temperature']
-    MW = fluid['pore.'+MW]
-    Tc = fluid['pore.'+Tc]
-    Vc = fluid['pore.'+Vc]
+    T = phase['pore.temperature']
+    MW = phase['pore.'+MW]
+    Tc = phase['pore.'+Tc]
+    Vc = phase['pore.'+Vc]
     Tr= T/Tc
     Tstar = 1.2593*Tr
     A = 1.161415; B = 0.14874; C = 0.52487; D = 0.77320; E = 2.16178; F = 2.43787
-    omega = (A*(Tstar)**(-B)) + C*(_sp.exp(-D*Tstar)) + E*(_sp.exp(-F*Tstar))
+    omega = (A*(Tstar)**(-B)) + C*(sp.exp(-D*Tstar)) + E*(sp.exp(-F*Tstar))
     sigma=0.809*(Vc**(1/3))
-    value = 26.69E-9*_sp.sqrt(MW*T)/(omega*sigma**2)
+    value = 26.69E-9*sp.sqrt(MW*T)/(omega*sigma**2)
     return value

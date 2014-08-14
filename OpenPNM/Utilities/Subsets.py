@@ -74,15 +74,15 @@ def subset_network(network,pores,name=None):
     
     return subnet
   
-def subset_fluid(fluid,subnet,name=None):
+def subset_phase(phase,subnet,name=None):
     r'''
-    This method takes a fluid from the main network, and converts it to the 
+    This method takes a phase from the main network, and converts it to the 
     size and shape of the sub-network.
     
     Parameters
     ----------
-    fluid : OpenPNM Fluid Object
-        A fluid object that is associated with the main network from which the
+    phase : OpenPNM Phase Object
+        A phase object that is associated with the main network from which the
         subnetwork was extracted.
         
     subnet : OpenPNM Network Object
@@ -91,41 +91,41 @@ def subset_fluid(fluid,subnet,name=None):
         
     Returns
     -------
-    subfluid : OpenPNM Fluid Object
-        A fluid object with the same shape as the sub-network.  It contains all
-        the data of the main fluid, but not the property calculation methods.
+    subphase : OpenPNM Phase Object
+        A phase object with the same shape as the sub-network.  It contains all
+        the data of the main phase, but not the property calculation methods.
         
     Notes
     -----
     This method pulls the data in from the associated Physics objects and adds
-    a static copy to the new sub-fluid's dictionary.
+    a static copy to the new sub-phase's dictionary.
     '''
     
-    subfluid = OpenPNM.Fluids.GenericFluid(network=subnet,name=name)
+    subphase = OpenPNM.Phases.GenericPhase(network=subnet,name=name)
     pores = subnet['pore.map']
     throats = subnet['throat.map']
     
     #Transfer labels
-    labels = fluid.labels()
+    labels = phase.labels()
     labels.remove('pore.all')
     labels.remove('throat.all')
     for item in labels:
         if item.split('.')[0] == 'pore':
-            subfluid[item] = fluid[item][pores]
+            subphase[item] = phase[item][pores]
         if item.split('.')[0] == 'throat':
-            subfluid[item] = fluid[item][throats]
+            subphase[item] = phase[item][throats]
             
     #Transfer props
-    props = fluid.props()
-    for phys in fluid._physics:
+    props = phase.props()
+    for phys in phase._physics:
         props.extend(phys.props())
     for item in props:
         if item.split('.')[0] == 'pore':
-            subfluid[item] = fluid[item][pores]
+            subphase[item] = phase[item][pores]
         if item.split('.')[0] == 'throat':
-            subfluid[item] = fluid[item][throats]
+            subphase[item] = phase[item][throats]
 
-    return subfluid
+    return subphase
     
     
     

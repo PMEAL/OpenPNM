@@ -690,8 +690,8 @@ class GenericNetwork(OpenPNM.Core):
         '''
         if (self._geometries != []):
             raise Exception('Network has active Geometries, cannot proceed')
-        if (self._fluids != []):
-            raise Exception('Network has active Fluids, cannot proceed')
+        if (self._phases != []):
+            raise Exception('Network has active Phases, cannot proceed')
         
         if pores != []:
             pores = sp.array(pores,ndmin=1)

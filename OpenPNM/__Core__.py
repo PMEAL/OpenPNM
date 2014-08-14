@@ -87,7 +87,7 @@ class Core(Base):
 
         Notes
         -----
-        This method is inherited by all net/geom/phys/fluid objects.  It takes
+        This method is inherited by all net/geom/phys/phase objects.  It takes
         the received model and stores it on the object under private dictionary
         called _models.  This dict is an 'OrderedDict', so that the models can
         be run in the same order they are added.
@@ -106,18 +106,18 @@ class Core(Base):
         #Determine object type, and assign associated objects
         self_type = self.__module__.split('.')[1]
         network = self._net
-        fluid = None
+        phase = None
         geometry = None
         physics = None
         if self_type == 'Geometry':
             geometry = self
-        elif self_type == 'Fluids':
-            fluid = self
+        elif self_type == 'Phases':
+            phase = self
         elif self_type == 'Physics':
-            fluid = self._fluids[0]
+            phase = self._phases[0]
             physics = self
         #Build partial function from given kwargs
-        fn = partial(model,network=network,fluid=fluid,geometry=geometry,physics=physics,**kwargs)
+        fn = partial(model,network=network,phase=phase,geometry=geometry,physics=physics,**kwargs)
         if regen_mode == 'static':
             self[propname] = fn()  # Generate data and store it locally
             self._models[propname] = fn  # Store model in a private attribute
@@ -463,7 +463,7 @@ class Core(Base):
     def amalgamate_data(self,objs=[]):
         r"""
         Returns a dictionary containing ALL pore data from all netowrk and/or
-        fluid objects received as arguments
+        phase objects received as arguments
         """
         if type(objs) != list:
             objs = list(objs)
@@ -480,7 +480,7 @@ class Core(Base):
                         if key not in keys:
                             keys.append(key)
             else:
-                if item.__module__[0:14] == 'OpenPNM.Fluids':
+                if item.__module__[0:14] == 'OpenPNM.Phases':
                     keys = []
                     for key in item.keys():
                         keys.append(key)
@@ -495,7 +495,7 @@ class Core(Base):
                         dict_name = item.name+'.'+key
                         data_amalgamated.update({dict_name : item[key]})
 #            except: 
-#                self._logger.error('Only network and fluid items contain data')
+#                self._logger.error('Only network and phase items contain data')
         return data_amalgamated
             
     def props(self,element='',pores=[],throats=[],mode='all'):
@@ -938,7 +938,7 @@ class Core(Base):
             Ts = net.throats()
             Ps = net.pores()
             label = 'all'
-        elif self.__module__.split('.')[1] in ['Fluids','Algorithms']: 
+        elif self.__module__.split('.')[1] in ['Phases','Algorithms']: 
             net = self._net
             Ts = net.throats()
             Ps = net.pores()

@@ -3,22 +3,22 @@ r"""
 Submodule -- miscillaneous
 ===============================================================================
 
-Models for applying basic fluid properties
+Models for applying basic phase properties
 
 """
-import scipy as _sp
+import scipy as sp
 
-def constant(fluid,value,**kwargs):
+def constant(phase,value,**kwargs):
     r"""
     Assigns specified constant value
     """
-    temp = _sp.ones(_sp.shape(fluid.pores()))*value
+    temp = sp.ones(sp.shape(phase.pores()))*value
     return temp
 
-def random(fluid,seed=None,**kwargs):
+def random(phase,seed=None,**kwargs):
     r"""
     Assigns specified constant value
     """
-    _sp.random.seed(seed)
-    value = _sp.random.rand(_sp.shape(fluid.pores())[0])
+    sp.random.seed(seed)
+    value = sp.random.rand(sp.shape(phase.pores())[0])
     return value

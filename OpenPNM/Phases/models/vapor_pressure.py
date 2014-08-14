@@ -7,9 +7,9 @@ Submodule -- vapor_pressure
 Methods for predicing the vapor pressure of pure species
 
 """
-import scipy as _sp
+import scipy as sp
 
-def Antoine(fluid,A,B,C,**kwargs):
+def Antoine(phase,A,B,C,**kwargs):
     r"""
     Uses Antoine equation [1]_ to estimate vapor pressure of a pure component
 
@@ -25,6 +25,6 @@ def Antoine(fluid,A,B,C,**kwargs):
         (in French) 107: 681–684, 778–780, 836–837
     
     """
-    T = fluid['pore.temperature']
+    T = phase['pore.temperature']
     value = (10**(A-B/(C+T-273.15)))*133.3
     return value

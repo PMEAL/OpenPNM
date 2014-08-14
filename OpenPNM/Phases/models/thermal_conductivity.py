@@ -5,9 +5,9 @@ Submodule -- thermal_conductance
 ===============================================================================
 
 """
-import scipy as _sp
+import scipy as sp
 
-def chung(fluid,
+def chung(phase,
           Cv,
           MW,
           acentric,
@@ -28,9 +28,9 @@ def chung(fluid,
 
     """
     R = 8.314
-    T = fluid['pore.temperature']
-    mu = fluid[pore_viscosity]
-    Tc = fluid['pore.Tc']
+    T = phase['pore.temperature']
+    mu = phase[pore_viscosity]
+    Tc = phase['pore.Tc']
     Tr = T/Tc
     z = 2.0 + 10.5*Tr**2
     beta = 0.7862 - 0.7109*acentric + 1.3168*acentric**2
@@ -39,7 +39,7 @@ def chung(fluid,
     value = 3.75*s*(mu)*R/(MW)
     return value
 
-def sato(fluid,Tb,MW,**params):
+def sato(phase,Tb,MW,**params):
     r"""
     Uses Sato et al. model to estimate thermal conductivity for pure liquids 
     from first principles at conditions of interest
@@ -52,8 +52,8 @@ def sato(fluid,Tb,MW,**params):
         Molecular weight of the component (kg/mol)
 
     """
-    T = fluid['pore.temperature']
-    Tc = fluid['pore.Tc']
+    T = phase['pore.temperature']
+    Tc = phase['pore.Tc']
     Tbr = Tb/Tc
     Tr = T/Tc
     value = (1.11/((MW*1e3)**0.5))*(3+20*(1-Tr)**(2/3))/(3+20*(1-Tbr)**(2/3))

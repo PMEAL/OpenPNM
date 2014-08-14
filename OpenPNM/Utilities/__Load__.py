@@ -25,21 +25,21 @@ class Load():
         obj = sp.load(dirname+'/'+'Network'+'.'+basename+'.npz')
         for item in obj:
             net.update({item:obj[item]})
-        #Add Fluid, Geometry and Physics objects
+        #Add Phase, Geometry and Physics objects
         for filename in object_list:
             if filename.split('.')[0] == 'Geometry':
                 geom = OpenPNM.Geometry.GenericGeometry(network=net,name=filename.split('.')[1])
                 obj = sp.load(dirname+'/'+filename)
                 for item in obj:
                     geom.update({item:obj[item]})
-            if filename.split('.')[0] == 'Fluid':
-                fluid = OpenPNM.Fluids.GenericFluid(network=net,name=filename.split('.')[1])
+            if filename.split('.')[0] == 'Phase':
+                phase = OpenPNM.Phases.GenericPhase(network=net,name=filename.split('.')[1])
                 obj = sp.load(dirname+'/'+filename)
                 for item in obj:
-                    fluid.update({item:obj[item]})
+                    phase.update({item:obj[item]})
             if filename.split('.')[0] == 'Physics':
-                fluid = net.find_object(obj_name=filename.split('.')[3])
-                phys = OpenPNM.Physics.GenericPhysics(network=net,fluid=fluid,name=filename.split('.')[1])
+                phase = net.find_object(obj_name=filename.split('.')[3])
+                phys = OpenPNM.Physics.GenericPhysics(network=net,phase=phase,name=filename.split('.')[1])
                 obj = sp.load(dirname+'/'+filename)
                 for item in obj:
                     phys.update({item:obj[item]})
