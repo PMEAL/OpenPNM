@@ -3,7 +3,8 @@ import OpenPNM
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(name='net',loglevel=20,divisions=[5,5,5],lattice_spacing=[0.0001],add_boundaries=True)
+pn = OpenPNM.Network.Cubic.empty([5,6,7], unit_cube=True, spacing=0.0001, name='net', loglevel=20)
+pn.add_boundaries()
 
 #==============================================================================
 '''Build Geometry'''
