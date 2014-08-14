@@ -312,7 +312,7 @@ class Base(dict):
         
     name = property(_get_name,_set_name)
             
-    def save_model(self):
+    def save_object(self,filename):
         r'''
         Save the current object's data to a Numpy zip file.
         
@@ -320,6 +320,15 @@ class Base(dict):
         ----------
         filename : string
             File name (including path if desired) to save to
+        '''
+        temp = filename.split('.')[0]
+        temp = temp+'.npz'
+        sp.savez_compressed(temp,**self)
+        
+    def save_model(self):
+        r'''
+        Save the current simulation in it's entirity.  
+        
         '''
         
         if self.__module__.split('.')[1] == 'Network':
@@ -349,6 +358,7 @@ class Base(dict):
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)
+
 
 
 
