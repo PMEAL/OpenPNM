@@ -14,7 +14,7 @@ The OpenPNM framework is build upon 5 main objects.
 
 3 `Geometry`_: Geometry objects control the pore-scale geometrical properties of the network such as pore size.  A simulation may have 1 or more Geometry objects depending on whether the problem being modeled.  For instance, a stratified material may have a separate Geometry object for each layer if the pore and throat sizes differ between them.  
 
-4 `Phases`_: Phase 
+4 `Phases`_: Phases objects contain information about the thermophysical properties of the liquids, gases, solids that exist in the pore space.  
 
 5 `Physics`_: Contains methods for calculating pore scale physics properties which combine fluid and geometry values
 
