@@ -1,7 +1,7 @@
-.. _fluids:
+.. _phases:
 
 ###############################################################################
-Fluid Properties
+Phase Properties
 ###############################################################################
 
 Virtually all algorithms in OpenPNM require *fluid* properties of some sort, either directly or through the pore scale physics methods.  Many algorithms also produce new fluid properties.  Generating pure fluid properties, and storing the results of pore scale physics and algorithms is performed by the **Fluids** object, as outlined below.  

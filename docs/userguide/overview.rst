@@ -8,15 +8,13 @@ Overview of the OpenPNM Framework
 Main Modules
 ===============================================================================
 
-The OpenPNM framework contains 6 Modules:
+The OpenPNM framework is build upon 5 main objects.  
 
-1 `Utilities`_:  Contains the Base class and the Tools class.  
+1 `Network`_: The Network object is the main 'controller' object for framework.  It contains all the topological information about the Network, as well as numerous methods for querying and manipulating the topology.  Each simulation will have only 1 Network object.
 
-2 `Network`_: Consists of the (1) GenericNetwork class which contains numerous methods for working with networks, and (2) subclasses which generate various network topologies.  
+3 `Geometry`_: Geometry objects control the pore-scale geometrical properties of the network such as pore size.  A simulation may have 1 or more Geometry objects depending on whether the problem being modeled.  For instance, a stratified material may have a separate Geometry object for each layer if the pore and throat sizes differ between them.  
 
-3 `Geometry`_: Contains methods for applying pore scale geometry
-
-4 `Fluids`_: Contains methods for estimating physical properties of fluids as a function of conditions in the network
+4 `Phases`_: Phase 
 
 5 `Physics`_: Contains methods for calculating pore scale physics properties which combine fluid and geometry values
 
