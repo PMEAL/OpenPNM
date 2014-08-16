@@ -8,7 +8,7 @@ Submodule -- hydraulic_conductance
 import scipy as _sp
 
 def hagen_poiseuille(physics,
-                     fluid,
+                     phase,
                      network,
                      pore_diameter='pore.diameter',
                      pore_viscosity='pore.viscosity',
@@ -23,11 +23,11 @@ def hagen_poiseuille(physics,
     ----------
     network : OpenPNM Network Object
 
-    fluid : OpenPNM Fluid Object
+    phase : OpenPNM Phase Object
     """
-    throats = fluid.throats(physics.name)
-    mup = fluid[pore_viscosity]
-    mut = fluid.interpolate_data(mup)
+    throats = phase.throats(physics.name)
+    mup = phase[pore_viscosity]
+    mut = phase.interpolate_data(mup)
     #Get Nt-by-2 list of pores connected to each throat
     Ps = network.find_connected_pores(throats=network.throats(),flatten=0)
     #Find g for half of pore 1

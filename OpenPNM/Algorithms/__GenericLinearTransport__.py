@@ -25,21 +25,21 @@ class GenericLinearTransport(GenericAlgorithm):
         '''
         super(GenericLinearTransport,self).__init__(**kwargs)
         
-    def setup(self,fluid,conductance,quantity):
+    def setup(self,phase,conductance,quantity):
         r'''
         This setup provides the initial data for the solver.
         '''
-        self._fluid = fluid
+        self._phase = phase
         self._conductance = 'throat.'+conductance.split('.')[-1]
         self._quantity = 'pore.'+quantity.split('.')[-1]
         
         #Check health of conductance vector
-        if self._fluid.check_data_health(props=self._conductance,quiet=True):
+        if self._phase.check_data_health(props=self._conductance,quiet=True):
             #If no nans, check for 0's
-            ind = sp.nonzero(fluid[self._conductance])[0]
-            gmin = sp.amin(self._fluid[self._conductance][ind])
-            ind = sp.where(fluid[self._conductance]==0)[0]
-            self['throat.conductance'] = self._fluid[self._conductance]
+            ind = sp.nonzero(phase[self._conductance])[0]
+            gmin = sp.amin(self._phase[self._conductance][ind])
+            ind = sp.where(phase[self._conductance]==0)[0]
+            self['throat.conductance'] = self._phase[self._conductance]
             #To prevent singular matrix
             self['throat.conductance'][ind] = gmin/1000000
         else:
@@ -52,8 +52,8 @@ class GenericLinearTransport(GenericAlgorithm):
         This is a basic version of the update that simply sends out the main
         result (quantity). More elaborate updates should be subclassed.
         '''        
-        self._fluid[self._quantity] = self[self._quantity]
-        self._logger.debug('Results of '+self.name+' algorithm have been added to '+self._fluid.name)
+        self._phase[self._quantity] = self[self._quantity]
+        self._logger.debug('Results of '+self.name+' algorithm have been added to '+self._phase.name)
 
     def set_boundary_conditions(self,bctype='',bcvalue=[],pores=[],mode='merge'):
         r'''

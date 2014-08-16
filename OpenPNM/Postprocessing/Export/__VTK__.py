@@ -15,12 +15,12 @@ class VTK():
         Filename to write data.  If no name is given the file is named after
         ther network
         
-    fluid : list, optional
-        A list contain OpenPNM Fluid object(s) containing data to be written
+    phase : list, optional
+        A list contain OpenPNM Phase object(s) containing data to be written
 
     """
 
-    def __init__(self,network,filename='',fluids=[],**kwargs):
+    def __init__(self,network,filename='',phases=[],**kwargs):
         r"""
         Initialize
         """
@@ -44,7 +44,7 @@ class VTK():
         if filename == '':
             filename = network.name+'.vtp'
         self._net = network
-        self._fluids = fluids
+        self._phases = phases
         self._write(filename)
     
     def _array_to_element(self, name, array, n=1):
@@ -89,18 +89,18 @@ class VTK():
         filename : string
             Full path to desired file location
             
-        fluids : Fluids that have properties we want to write to file
+        phases : Phases that have properties we want to write to file
 
         """
-        fluids = self._fluids
+        phases = self._phases
         network = self._net
         
         root = _ET.fromstring(self._TEMPLATE)
         objs = []
-        if _np.shape(fluids)==():
-            fluids = [fluids]
-        for fluid in fluids:
-            objs.append(fluid)
+        if _np.shape(phases)==():
+            phases = [phases]
+        for phase in phases:
+            objs.append(phase)
         objs.append(network)
         am = network.amalgamate_data(objs=objs)
         key_list = list(sorted(am.keys()))

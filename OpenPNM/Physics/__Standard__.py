@@ -20,8 +20,8 @@ class Standard(GenericPhysics):
     network : OpenPNM Network object 
         The network to which this Physics should be attached
         
-    fluid : OpenPNM Fluid object 
-        The Fluid object to which this Physics applies
+    phase : OpenPNM Phase object 
+        The Phase object to which this Physics applies
         
     pores and throats : array_like
         The pores and throats where this Physics object applies
@@ -34,8 +34,8 @@ class Standard(GenericPhysics):
         self._generate()
         
     def _generate(self):
-        for fluid in self._fluids:
-            temp = [item.split('.')[1] for item in fluid.props()]
+        for phase in self._phases:
+            temp = [item.split('.')[1] for item in phase.props()]
             if 'viscosity' in temp:
                 self.add_model(propname='throat.hydraulic_conductance',
                                model=pm.hydraulic_conductance.hagen_poiseuille)

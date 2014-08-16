@@ -47,8 +47,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._logger.debug("Create Drainage Percolation Algorithm Object")
         
     def run(self,
-              invading_fluid=None,
-              defending_fluid=None,
+              invading_phase=None,
+              defending_phase=None,
               inlets=[0], 
               npts=25, 
               inv_points=[],
@@ -58,9 +58,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         r'''
         '''
         # Parse params
-        self._fluid_inv = invading_fluid
-        self._fluid_def = defending_fluid
-        print(defending_fluid)
+        self._phase_inv = invading_phase
+        self._phase_def = defending_phase
+        print(defending_phase)
         try: self._inv_sites
         except: self._inv_sites = inlets
         self._npts = npts
@@ -74,7 +74,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_inv = sp.zeros((self._net.num_throats(),),dtype=float)
         self._t_seq = sp.zeros_like(self._t_inv,dtype=int)
         #Determine the invasion pressures to apply
-        self._t_cap = self._fluid_inv['throat.'+self._p_cap]
+        self._t_cap = self._phase_inv['throat.'+self._p_cap]
         if type(self._inv_points) == list:
             min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
             max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
@@ -183,49 +183,49 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def update(self, Pc=0, seq = None, occupancy='occupancy'):
         r"""
-        Updates the occupancy status of invading and defending fluids
+        Updates the occupancy status of invading and defending phases
         as determined by the OP algorithm
 
         """
         p_inv = self['pore.inv_Pc']
-        self._fluid_inv['pore.inv_Pc']=p_inv
+        self._phase_inv['pore.inv_Pc']=p_inv
         t_inv = self['throat.inv_Pc']    
-        self._fluid_inv['throat.inv_Pc']=t_inv
+        self._phase_inv['throat.inv_Pc']=t_inv
         #Apply invasion sequence values (to correspond with IP algorithm)
         p_seq = self['pore.inv_seq']
-        self._fluid_inv['pore.inv_seq']=p_seq
+        self._phase_inv['pore.inv_seq']=p_seq
         t_seq = self['throat.inv_seq']
-        self._fluid_inv['throat.inv_seq']=t_seq
+        self._phase_inv['throat.inv_seq']=t_seq
         
         if(seq == None):
             p_inv = self['pore.inv_Pc']<=Pc
             t_inv = self['throat.inv_Pc']<=Pc
-            #Apply occupancy to invading fluid
+            #Apply occupancy to invading phase
             temp = sp.array(p_inv,dtype=sp.float_,ndmin=1)
-            self._fluid_inv['pore.'+occupancy]=temp
+            self._phase_inv['pore.'+occupancy]=temp
             temp = sp.array(t_inv,dtype=sp.float_,ndmin=1)
-            self._fluid_inv['throat.'+occupancy]=temp
-            #Apply occupancy to defending fluid
-            if self._fluid_def != None:
+            self._phase_inv['throat.'+occupancy]=temp
+            #Apply occupancy to defending phase
+            if self._phase_def != None:
                 temp = sp.array(~p_inv,dtype=sp.float_,ndmin=1)
-                self._fluid_def['pore.'+occupancy]=temp
+                self._phase_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_inv,dtype=sp.float_,ndmin=1)
-                self._fluid_def['throat.'+occupancy]=temp
+                self._phase_def['throat.'+occupancy]=temp
         else:
             p_seq = self['pore.inv_seq']<=seq
             t_seq = self['throat.inv_seq']<=seq
-            #Apply occupancy to invading fluid
+            #Apply occupancy to invading phase
             temp = sp.array(p_seq,dtype=sp.float_,ndmin=1)
-            self._fluid_inv['pore.'+occupancy]=temp
+            self._phase_inv['pore.'+occupancy]=temp
             temp = sp.array(t_seq,dtype=sp.float_,ndmin=1)
-            self._fluid_inv['throat.'+occupancy]=temp
-            #Apply occupancy to defending fluid
-            if self._fluid_def != None:
+            self._phase_inv['throat.'+occupancy]=temp
+            #Apply occupancy to defending phase
+            if self._phase_def != None:
                 print(occupancy)
                 temp = sp.array(~p_seq,dtype=sp.float_,ndmin=1)
-                self._fluid_def['pore.'+occupancy]=temp
+                self._phase_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_seq,dtype=sp.float_,ndmin=1)
-                self._fluid_def['throat.'+occupancy]=temp
+                self._phase_def['throat.'+occupancy]=temp
             
  
             

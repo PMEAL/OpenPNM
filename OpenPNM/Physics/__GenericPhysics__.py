@@ -15,8 +15,8 @@ class GenericPhysics(OpenPNM.Core):
     network : OpenPNM Network object 
         The network to which this Physics should be attached
         
-    fluid : OpenPNM Fluid object 
-        The Fluid object to which this Physics applies
+    phase : OpenPNM Phase object 
+        The Phase object to which this Physics applies
     
     pores and/or throats : array_like
         The list of pores and throats where this physics applies. If either are
@@ -30,7 +30,7 @@ class GenericPhysics(OpenPNM.Core):
     
     """
 
-    def __init__(self,network,fluid,pores=[],throats=[],name=None,**kwargs):
+    def __init__(self,network,phase,pores=[],throats=[],name=None,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
@@ -40,26 +40,26 @@ class GenericPhysics(OpenPNM.Core):
         
         #Append self to other objects
         network._physics.append(self)
-        fluid._physics.append(self)
-        self._fluids.append(fluid)
+        phase._physics.append(self)
+        self._phases.append(phase)
         
         #Initialize Physics locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-        fluid['pore.'+self.name] = False
-        fluid['pore.'+self.name][pores] = True
-        fluid['throat.'+self.name] = False
-        fluid['throat.'+self.name][throats] = True
+        phase['pore.'+self.name] = False
+        phase['pore.'+self.name][pores] = True
+        phase['throat.'+self.name] = False
+        phase['throat.'+self.name][throats] = True
         
     def check_physics_health(self):
         r'''
         Perform a check to find pores with overlapping or undefined Physics
         '''
-        fluid = self._fluids[0]
-        phys = fluid.physics()
-        temp = sp.zeros((fluid.Np,))
+        phase = self._phases[0]
+        phys = phase.physics()
+        temp = sp.zeros((phase.Np,))
         for item in phys:
-                ind = fluid['pore.'+item]
+                ind = phase['pore.'+item]
                 temp[ind] = temp[ind] + 1
         health = {}
         health['overlaps'] = sp.where(temp>1)[0].tolist()

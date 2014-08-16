@@ -13,12 +13,12 @@ class Mat():
     filename : string
         Desired file name, defaults to network name if not given
         
-    fluids : list of fluid objects ([])
-        Fluids that have properties we want to write to file
+    phases : list of phase objects ([])
+        Phases that have properties we want to write to file
 
     """
     
-    def __init__(self,network, filename='', fluids=[],**kwargs):
+    def __init__(self,network, filename='', phases=[],**kwargs):
         r"""
         Initialize
         """
@@ -26,7 +26,7 @@ class Mat():
             filename = network.name+'.mat'
         self._write(network=network**kwargs)
         
-    def _write(self, network, filename='output.mat', fluids=[]):
+    def _write(self, network, filename='output.mat', phases=[]):
 
         pnMatlab = {}        
         new = []
@@ -39,17 +39,17 @@ class Mat():
             pnMatlab[new[i]] = network[old[i]]
                 
         
-        if len(fluids) != 0:
-            for j in range(len(fluids)):
+        if len(phases) != 0:
+            for j in range(len(phases)):
                 new = []
                 old = []
                 
-                for keys in fluids[j].keys():    
+                for keys in phases[j].keys():    
                     old.append(keys)
-                    new.append(fluids[j].name+'_'+keys.replace('.','_'))
+                    new.append(phases[j].name+'_'+keys.replace('.','_'))
                                         
-                for i in range(len(fluids[j])):        
-                    pnMatlab[new[i]] = fluids[j][old[i]]
+                for i in range(len(phases[j])):        
+                    pnMatlab[new[i]] = phases[j][old[i]]
             
         _sp.io.savemat(file_name=filename,mdict=pnMatlab)
         

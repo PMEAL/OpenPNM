@@ -8,7 +8,7 @@ Submodule -- thermal_conductance
 import scipy as _sp
 
 def series_resistors(physics,
-                     fluid,
+                     phase,
                      network,
                      thermal_conductivity = 'pore.thermal_conductivity',
                      pore_diameter = 'pore.diameter',
@@ -23,13 +23,13 @@ def series_resistors(physics,
     ----------
     network : OpenPNM Network Object
 
-    fluid : OpenPNM Fluid Object
-            The fluid of interest
+    phase : OpenPNM Phase Object
+            The phase of interest
 
     """
-    throats = fluid.throats(physics.name)
-    kp = fluid[thermal_conductivity]
-    kt = fluid.interpolate_data(kp)
+    throats = phase.throats(physics.name)
+    kp = phase[thermal_conductivity]
+    kt = phase.interpolate_data(kp)
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.find_connected_pores(network.throats(),flatten=0)
     #Find g for half of pore 1

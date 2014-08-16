@@ -64,8 +64,8 @@ class Base(dict):
             loglevel = 30
             self.set_loglevel(loglevel)
         
-        #Initialize fluid, physics, and geometry tracking lists
-        self._fluids = []
+        #Initialize phase, physics, and geometry tracking lists
+        self._phases = []
         self._geometries = []
         self._physics = []
         self._net = []
@@ -102,7 +102,7 @@ class Base(dict):
             
             1. 'Network'
             2. 'Geometry'
-            3. 'Fluids'
+            3. 'Phases'
             4. 'Physics'
         
         Returns
@@ -135,9 +135,9 @@ class Base(dict):
             for geom in net._geometries:
                 if geom.name == obj_name:
                     return geom
-            for fluid in net._fluids:
-                if fluid.name == obj_name:
-                    return fluid
+            for phase in net._phases:
+                if phase.name == obj_name:
+                    return phase
             for phys in net._physics:
                 if phys.name == obj_name:
                     return phys
@@ -150,9 +150,9 @@ class Base(dict):
             for phys in net._physics:
                 if phys.__class__.__module__.split('.')[1] == obj_type:
                     objs.append(phys)
-            for fluid in net._fluids:
-                if fluid.__class__.__module__.split('.')[1] == obj_type:
-                    objs.append(fluid)
+            for phase in net._phases:
+                if phase.__class__.__module__.split('.')[1] == obj_type:
+                    objs.append(phase)
             return objs
             
     def physics(self,name=''):
@@ -177,26 +177,26 @@ class Base(dict):
             phys = self.find_object(obj_name=name)
         return phys
         
-    def fluids(self,name=''):
+    def phases(self,name=''):
         r'''
-        Retrieves Fluids assocaiated with the object
+        Retrieves Phases assocaiated with the object
         
         Parameters
         ----------
         name : string, optional
-            The name of the Fluid object to retrieve.  
+            The name of the Phase object to retrieve.  
         Returns
         -------
-            If name is NOT provided, then a list of fluid names is returned. If
-            a name IS provided, then the Fluid object of that name is returned.
+            If name is NOT provided, then a list of phase names is returned. If
+            a name IS provided, then the Phase object of that name is returned.
         '''
         if name == '':
-            fluids = []
-            for item in self._fluids:
-                fluids.append(item.name)
+            phases = []
+            for item in self._phases:
+                phases.append(item.name)
         else:
-            fluids = self.find_object(obj_name=name)
-        return fluids
+            phases = self.find_object(obj_name=name)
+        return phases
         
     def geometries(self,name=''):
         r'''
@@ -277,23 +277,23 @@ class Base(dict):
             net._geometries.remove(obj)
             net.pop('pore.'+obj.name,None)
             net.pop('throat.'+obj.name,None)
-        elif obj_type == 'Fluids':
-            for fluid in net._fluids:
-                if fluid == obj:
-                    for physics in fluid._physics:
-                        physics._fluid = None
+        elif obj_type == 'Phases':
+            for phase in net._phases:
+                if phase == obj:
+                    for physics in phase._physics:
+                        physics._phase = None
                         net._physics.remove(physics)
-                    net._fluids.remove(obj)
-                    del fluid
+                    net._phases.remove(obj)
+                    del phase
         elif obj_type == 'Physics':
             for physics in net._physics:
                 if physics == obj:
-                    for fluid in physics._fluid:
-                        fluid._physics.remove(obj)
-                        fluid.pop('pore.'+obj.name,None)
-                        fluid.pop('throat.'+obj.name,None)
+                    for phase in physics._phase:
+                        phase._physics.remove(obj)
+                        phase.pop('pore.'+obj.name,None)
+                        phase.pop('throat.'+obj.name,None)
                     net._physcis.remove(obj)
-                    del fluid
+                    del phase
                     
     def _set_name(self,name):
         if self._name != None:
@@ -349,11 +349,11 @@ class Base(dict):
         for geom in net._geometries:
             filename = dirname+'/'+'Geometry'+'.'+geom.name+'.npz'
             sp.savez_compressed(filename,**geom)
-        for fluid in net._fluids:
-            filename = dirname+'/'+'Fluid'+'.'+fluid.name+'.npz'
-            sp.savez_compressed(filename,**fluid)
-            for phys in fluid._physics:
-                filename = dirname+'/'+'Physics'+'.'+phys.name+'.'+'Fluid'+'.'+fluid.name+'.npz'
+        for phase in net._phases:
+            filename = dirname+'/'+'Phase'+'.'+phase.name+'.npz'
+            sp.savez_compressed(filename,**phase)
+            for phys in phase._physics:
+                filename = dirname+'/'+'Physics'+'.'+phys.name+'.'+'Phase'+'.'+phase.name+'.npz'
                 sp.savez_compressed(filename,**phys)
         
         #Convert 'temp' directory into a 'pnm' file and remove temp

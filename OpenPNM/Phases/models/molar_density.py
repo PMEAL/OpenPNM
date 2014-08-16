@@ -4,15 +4,15 @@ Submodule -- molar_density
 ===============================================================================
 
 """
-import scipy as _sp
+import scipy as sp
 
-def ideal_gas(fluid,**kwargs):
+def ideal_gas(phase,**kwargs):
     r"""
     Uses ideal gas equation to estimate molar density of a pure gas
 
     """
-    R = _sp.constants.R
-    T = fluid['pore.temperature']
-    P = fluid['pore.pressure']
+    R = sp.constants.R
+    T = phase['pore.temperature']
+    P = phase['pore.pressure']
     value = P/(R*T)
     return value

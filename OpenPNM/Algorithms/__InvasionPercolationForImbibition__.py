@@ -58,10 +58,10 @@ class InvasionPercolationForImbibition(InvasionPercolation):
 
         Parameters
         ----------
-        invading_fluid : OpenPNM Fluid Object
-            fluid which will displace defending fluid
-        defending_fluid : OpenPNM Fluid Object
-            fluid which will be displaced by invading fluid
+        invading_phase : OpenPNM Phase Object
+            phase which will displace defending phase
+        defending_phase : OpenPNM Phase Object
+            phase which will be displaced by invading phase
         inlets : list of integers (default: [0])
             list of inlet nodes
         outlets : list of integers (default: [-1])
@@ -84,15 +84,15 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             is this a secondary imbibition (after drainage)? 
         
             
-        Input Fluids
+        Input Phases
         ------------
-        The algorithm expects an invading fluid with the following pore properties:
+        The algorithm expects an invading phase with the following pore properties:
             contact_angle, surface_tension
-        and some defending fluid
+        and some defending phase
             
         Output
         ------
-        The invading fluid automatically gains pore data ::
+        The invading phase automatically gains pore data ::
 
             occupancy       : 0 for univaded, 1 for invaded
             IP_inv_final    : 0 for uninvaded, merged cluster number for invaded
@@ -110,7 +110,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         Examples
         --------
         >>> IP_timing = InvasionPercolation(net=pn,timing='ON')
-        >>> IP_timing.run(invading_fluid=air,defending_fluid=water,inlets=inlets,outlets=outlets)
+        >>> IP_timing.run(invading_phase=air,defending_phase=water,inlets=inlets,outlets=outlets)
 
         Suggested Improvements ::
 
@@ -121,8 +121,8 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         super(InvasionPercolationForImbibition,self).run(**params)
         return self
 
-    def setup(self,invading_fluid,
-               defending_fluid,
+    def setup(self,invading_phase,
+               defending_phase,
                inlets=[0],
                outlets=[-1],
                end_condition='breakthrough',
@@ -139,18 +139,18 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         self._Psecond = Psecond
         if Psecond:
             end_condition='secondary'
-            inlets = [self._net.pores()[self._fluid['pore.occupancy']>0]]
+            inlets = [self._net.pores()[self._phase['pore.occupancy']>0]]
 
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets
         self._outlets = outlets
         self._inlet_flow = inlet_flow
-#        if defending_fluid == 'auto':
-#            try:defending_fluid = invading_fluid.partner
-#            except: self._logger.error("invading_fluid.partner does not exist. Please specify defending fluid")
-#        else: invading_fluid.set_pair(defending_fluid)
-        self._fluid = invading_fluid
-        self._fluid_def = defending_fluid
+#        if defending_phase == 'auto':
+#            try:defending_phase = invading_phase.partner
+#            except: self._logger.error("invading_phase.partner does not exist. Please specify defending phase")
+#        else: invading_phase.set_pair(defending_phase)
+        self._phase = invading_phase
+        self._phase_def = defending_phase
         if sp.size(inlets) == 1:
             self._inlets = [inlets]
         if sp.size(outlets) == 1:
@@ -183,19 +183,19 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         # set the capillary pressure for pores, instead of throats         
         #   don't need to interpolate for throats
         # this is a Washburn setting, could use others
-        sigma = self._fluid['pore.surface_tension'][0]
-        theta = self._fluid['pore.contact_angle'][0]
+        sigma = self._phase['pore.surface_tension'][0]
+        theta = self._phase['pore.contact_angle'][0]
         if theta > 90:
-            print('WARNING!!!: The invading fluid has a contact angle greater than 90deg, so it must be drainage. Use Invasion_Percolation for drainage.' )
+            print('WARNING!!!: The invading phase has a contact angle greater than 90deg, so it must be drainage. Use Invasion_Percolation for drainage.' )
         pdia = self._net['pore.'+self._pore_diameter_name] # tdia = self._net.get_throat_data(prop=self._throat_diameter_name)
         if self._Psecond:
-            pdia = pdia[self._fluid['pore.occupancy']<=0]
+            pdia = pdia[self._phase['pore.occupancy']<=0]
         # entry pressure for the pore        
         # should be -4.. but use +4 to make heapq work correclty (we want highest Pcap)
         Pc_entry = -4*sigma*sp.cos(sp.radians(theta))/pdia     # -4*sigma*sp.cos(sp.radians(theta))/pdia     PCAP!!
         # add to the IPforImb object
         if ~self._Psecond:
-            self._fluid['pore.Pc_entryImb']=Pc_entry
+            self._phase['pore.Pc_entryImb']=Pc_entry
 
         if self._timing:
             # calculate Volume_coef for each pore, not throat, for imbib
@@ -203,8 +203,8 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             self._Pvol_coef = pdia**3*np.pi/12/(Pc_entry)      # Pc_entry is stored -ve, so must be converted for vol_coeff    PCAP!!
         # Creating an array for invaded Pores(Np long, 0 for uninvaded, cluster number for inaveded)
         if self._Psecond:
-            Np = sum(self._fluid['pore.occupancy']<=0)
-            Nt = sum(self._fluid['throat.occupancy']<=0)
+            Np = sum(self._phase['pore.occupancy']<=0)
+            Nt = sum(self._phase['throat.occupancy']<=0)
         else:
             Np = self._net.num_pores()
             Nt = self._net.num_throats()
@@ -281,7 +281,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             ''' Pc_entry as -ve (when calculated above)'''
             ''' interface_pore_pressure, heap values, ['haines_pressure'], and ppoints stored as -ve '''
             ''' Pvol_coeff, ['vol_coeff'], ['cap_volume'] are stored as +ve (ie multiply ['haines_pressure'] by -1 when calculating ie ['cap_volume'], etc.)'''
-            interface_pore_pressures = Pc_entry[interface_pore_numbers] # self._fluid.get_pore_data(prop=self._capillary_pressure_name)[interface_pore_numbers]#[0]
+            interface_pore_pressures = Pc_entry[interface_pore_numbers] # self._phase.get_pore_data(prop=self._capillary_pressure_name)[interface_pore_numbers]#[0]
             # Zip pressures and numbers together so that HeapQ can work its magic
             self._logger.debug('interface pores(s) found:')
             self._logger.debug(interface_pore_numbers)
@@ -315,12 +315,12 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             self._logger.debug( 'cap volumes')
             self._logger.debug(self._cluster_data['cap_volume'])
 #            self._logger.debug( 'max throat cap volumes')
-#            self._logger.debug( self._Tvol_coef*self._fluid.throat_conditions["Pc_entry"])
+#            self._logger.debug( self._Tvol_coef*self._phase.throat_conditions["Pc_entry"])
         self._logger.debug( 'haines_pore')
         self._logger.debug( self._cluster_data['haines_pore'])
 #        if self._timing:
 #            self._logger.debug( 'max throat cap volumes')
-#            self._logger.debug( self._Tvol_coef*self._fluid.throat_conditions["Pc_entry"])
+#            self._logger.debug( self._Tvol_coef*self._phase.throat_conditions["Pc_entry"])
 #        self._tseq += 1
 #        self._pseq += 1
         self._current_cluster = 0
@@ -589,7 +589,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
                 self._logger.debug(self._net.find_neighbor_throats(pneighbor))
                 # Add this pore data (pressure, number) to this cluster's "heap" of throat data. 
                 # TODO --> eventually, generalize to capillary_pressure_name
-                heapq.heappush(self._ppoints[self._current_cluster-1],(self._fluid['pore.Pc_entryImb'][pneighbor],pneighbor))
+                heapq.heappush(self._ppoints[self._current_cluster-1],(self._phase['pore.Pc_entryImb'][pneighbor],pneighbor))
                 # Add new pore number to throat list for this cluster
                 # TODO for now, a pore can be in multiple plists (ie not yet invaded, but ready and willing) -- need to watch this
                 self._plists[self._current_cluster-1].append(pneighbor)
@@ -692,24 +692,24 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             IPseq = self._pseq
 
         try:
-            self._fluid['pore.'+occupancy]=np.ravel(np.array(((self._psequence>0)&(self._psequence<=IPseq)),dtype=np.float))
-            self._fluid['throat.'+occupancy]=np.ravel(np.array(((self._tsequence>0)&(self._tsequence<=IPseq)),dtype=np.float))
+            self._phase['pore.'+occupancy]=np.ravel(np.array(((self._psequence>0)&(self._psequence<=IPseq)),dtype=np.float))
+            self._phase['throat.'+occupancy]=np.ravel(np.array(((self._tsequence>0)&(self._tsequence<=IPseq)),dtype=np.float))
         except:
-            print('Something bad happened while trying to update fluid',self._fluid.name)
+            print('Something bad happened while trying to update phase',self._phase.name)
         try:
-            self._fluid_def['pore.'+occupancy]=np.ravel(np.array(~((self._psequence>0)&(self._psequence<=IPseq)),dtype=np.float))
-            self._fluid_def['throat.'+occupancy]=np.ravel(np.array(~((self._tsequence>0)&(self._tsequence<=IPseq)),dtype=np.float))
+            self._phase_def['pore.'+occupancy]=np.ravel(np.array(~((self._psequence>0)&(self._psequence<=IPseq)),dtype=np.float))
+            self._phase_def['throat.'+occupancy]=np.ravel(np.array(~((self._tsequence>0)&(self._tsequence<=IPseq)),dtype=np.float))
         except:
-            print('A partner fluid has not been set so inverse occupancy cannot be set')
+            print('A partner phase has not been set so inverse occupancy cannot be set')
 
         if IPseq==self._pseq:            
-            self._fluid['pore.IP_inv_final']=np.ravel(np.array(self._Pinv,dtype=np.int))
-            self._fluid['pore.IP_inv_original']=np.ravel(np.array(self._Pinv_original,dtype=np.int))
-            self._fluid['throat.IP_inv']=np.ravel(np.array(self._Tinv,dtype=np.int))
-            self._fluid['pore.IP_inv_seq']=np.ravel(np.array(self._psequence,dtype=np.int))
-            self._fluid['throat.IP_inv_seq']=np.ravel(np.array(self._tsequence,dtype=np.int))
+            self._phase['pore.IP_inv_final']=np.ravel(np.array(self._Pinv,dtype=np.int))
+            self._phase['pore.IP_inv_original']=np.ravel(np.array(self._Pinv_original,dtype=np.int))
+            self._phase['throat.IP_inv']=np.ravel(np.array(self._Tinv,dtype=np.int))
+            self._phase['pore.IP_inv_seq']=np.ravel(np.array(self._psequence,dtype=np.int))
+            self._phase['throat.IP_inv_seq']=np.ravel(np.array(self._tsequence,dtype=np.int))
             if self._timing:
-                self._fluid['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
-                self._fluid['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
+                self._phase['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
+                self._phase['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
             
             

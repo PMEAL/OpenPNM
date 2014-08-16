@@ -8,7 +8,7 @@ Submodule -- capillary_pressure
 import scipy as _sp
 
 def washburn(physics,
-             fluid,
+             phase,
              network,
              pore_surface_tension='pore.surface_tension',
              pore_contact_angle='pore.contact_angle',
@@ -21,8 +21,8 @@ def washburn(physics,
     ----------
     network : OpenPNM Network Object
         The network on which to apply the calculation
-    fluid : OpenPNM Fluid Object
-        Fluid object for the invading fluids
+    phase : OpenPNM Phase Object
+        Phase object for the invading phases
 
     Notes
     -----
@@ -31,21 +31,21 @@ def washburn(physics,
     .. math::
         P_c = -\frac{2\sigma(cos(\theta))}{r}
 
-    This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading fluids in most materials.
+    This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading phases in most materials.
 
     """
-    throats = fluid.throats(physics.name)
-    sigma = fluid[pore_surface_tension]
-    sigma = fluid.interpolate_data(data=sigma)
-    theta = fluid[pore_contact_angle]
-    theta = fluid.interpolate_data(data=theta)
+    throats = phase.throats(physics.name)
+    sigma = phase[pore_surface_tension]
+    sigma = phase.interpolate_data(data=sigma)
+    theta = phase[pore_contact_angle]
+    theta = phase.interpolate_data(data=theta)
     r = network[throat_diameter]/2
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
     value = value[throats]
     return value
 
 def purcell(physics,
-            fluid,
+            phase,
             network,
             r_toroid,
             pore_surface_tension='pore.surfac_tension',
@@ -60,9 +60,9 @@ def purcell(physics,
     network : OpenPNM Network Object
         The network on which to apply the calculation
     sigma : float, array_like
-        Surface tension of the invading/defending fluid pair.  Units must be consistent with the throat size values, but SI is encouraged.
+        Surface tension of the invading/defending phase pair.  Units must be consistent with the throat size values, but SI is encouraged.
     theta : float, array_like
-        Contact angle formed by a droplet of the invading fluid and solid surface, measured through the defending fluid phase.  Angle must be given in degrees.
+        Contact angle formed by a droplet of the invading phase and solid surface, measured through the defending phase phase.  Angle must be given in degrees.
     r_toroid : float or array_like
         The radius of the solid
 
@@ -78,11 +78,11 @@ def purcell(physics,
 
     TODO: Triple check the accuracy of this equation
     """
-    throats = fluid.throats(physics.name)
-    sigma = fluid[pore_surface_tension]
-    sigma = fluid.interpolate_data(data=sigma)
-    theta = fluid[pore_contact_angle]
-    theta = fluid.interpolate_data(data=theta)
+    throats = phase.throats(physics.name)
+    sigma = phase[pore_surface_tension]
+    sigma = phase.interpolate_data(data=sigma)
+    theta = phase[pore_contact_angle]
+    theta = phase.interpolate_data(data=theta)
     r = network[throat_diameter]/2
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))

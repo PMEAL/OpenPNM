@@ -46,15 +46,15 @@ geo.set_data(prop = 'diameter', throats = pn.throats(), data = radii*2)
 #geo.regenerate()
 
 
-air = OpenPNM.Fluids.Air(network = pn, name = 'air')
-water = OpenPNM.Fluids.Water(network = pn, name = 'water')
+air = OpenPNM.Phases.Air(network = pn, name = 'air')
+water = OpenPNM.Phases.Water(network = pn, name = 'water')
 air.regenerate()
 water.regenerate()
 
 
 def bulk_diffusion_wu(physics,
                       network,
-                      fluid,
+                      phase,
                       geometry,
                       propname,
                       diffusivity = 'diffusivity',
@@ -71,36 +71,36 @@ def bulk_diffusion_wu(physics,
         ----------
         network : OpenPNM Network Object
         
-        fluid : OpenPNM Fluid Object
-        The fluid of interest
+        phase : OpenPNM Phase Object
+        The phase of interest
         
         Notes
         -----
-        This function requires that all the necessary fluid properties already be
+        This function requires that all the necessary phase properties already be
         calculated.
         
         """
-    #ct = fluid.get_data(prop='molar_density',throats='all',mode='interpolate')
+    #ct = phase.get_data(prop='molar_density',throats='all',mode='interpolate')
     #Interpolate pore values to throats
-    DABt = fluid.get_data(prop='diffusivity',throats=geometry.throats(),mode='interpolate')
+    DABt = phase.get_data(prop='diffusivity',throats=geometry.throats(),mode='interpolate')
     #Find g for full throat
     tdia = network.get_throat_data(prop=throat_diameter)
     tlen = network.get_throat_data(prop=throat_length)
     gt = (sp.pi*DABt*tdia**2)/(tlen*4)
     g = gt[geometry.throats()]
-    fluid.set_data(prop=propname,throats=geometry.throats(),data=g)
+    phase.set_data(prop=propname,throats=geometry.throats(),data=g)
 
 Ps = geo.pores()
 Ts = geo.throats()
-phys_water = OpenPNM.Physics.Standard(network=pn,fluid=water, pores=Ps, throats=Ts, name='standard_water_physics')
-phys_air = OpenPNM.Physics.Standard(network=pn,fluid=air, pores=Ps, throats=Ts, geometry = geo, name='standard_air_physics')
+phys_water = OpenPNM.Physics.Standard(network=pn,phase=water, pores=Ps, throats=Ts, name='standard_water_physics')
+phys_air = OpenPNM.Physics.Standard(network=pn,phase=air, pores=Ps, throats=Ts, geometry = geo, name='standard_air_physics')
 
 #phys_water.add_model(prop='capillary_pressure', model='washburn') #accounts for cylindrical throats
 #phys_water.add_model(prop='hydraulic_conductance',model='hagen_poiseuille')
 #phys_water.add_model(prop='diffusive_conductance', model='bulk_diffusion', shape = 'circular')
 #phys_air.add_model(prop='hydraulic_conductance',model='hagen_poiseuille')
 
-bulk_diffusion_wu(physics = phys_air, network = pn, fluid = air, geometry = geo, propname = 'diffusive_conductance')
+bulk_diffusion_wu(physics = phys_air, network = pn, phase = air, geometry = geo, propname = 'diffusive_conductance')
 phys_water.regenerate()
 phys_air.regenerate()
 
@@ -108,7 +108,7 @@ inlets = pn.get_pore_indices(labels = ['bottom']) #can put in brackets so the wh
 outlets = pn.get_pore_indices(labels = ['top'])
 
 IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1',loglevel=30)
-IP_1.setup(invading_fluid = water, defending_fluid = air, inlets = inlets, outlets = outlets, end_condition = 'total')
+IP_1.setup(invading_phase = water, defending_phase = air, inlets = inlets, outlets = outlets, end_condition = 'total')
 IP_1.run()
 
 max_inv_seq = max(IP_1.get_pore_data(prop = 'IP_inv_seq'))
@@ -152,7 +152,7 @@ for x in range(50):
     Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=bottom_boundary)
     Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.2, pores=top_boundary)
     
-    Fickian_alg.setup(conductance = 'conduit_diffusive_conductance',fluid=air)
+    Fickian_alg.setup(conductance = 'conduit_diffusive_conductance',phase=air)
     Fickian_alg.run()
      
     effective_diffusivity = Fickian_alg.calc_eff_diffusivity(clean = False) 
@@ -204,22 +204,22 @@ for x in range(20):
     
 #    geo.regenerate()
     
-    air = OpenPNM.Fluids.Air(network = pn, name = 'air')
-    water = OpenPNM.Fluids.Water(network = pn, name = 'water')
+    air = OpenPNM.Phases.Air(network = pn, name = 'air')
+    water = OpenPNM.Phases.Water(network = pn, name = 'water')
     air.regenerate()
     water.regenerate()
     
     Ps = geo.pores()
     Ts = geo.throats()
-    phys_water = OpenPNM.Physics.Standard(network=pn,fluid=water, pores=Ps, throats=Ts, name='standard_water_physics')
-    phys_air = OpenPNM.Physics.Standard(network=pn,fluid=air, pores=Ps, throats=Ts, geometry = geo, name='standard_air_physics')
+    phys_water = OpenPNM.Physics.Standard(network=pn,phase=water, pores=Ps, throats=Ts, name='standard_water_physics')
+    phys_air = OpenPNM.Physics.Standard(network=pn,phase=air, pores=Ps, throats=Ts, geometry = geo, name='standard_air_physics')
 
 #    phys_water.add_method(prop='capillary_pressure', model='washburn') #accounts for cylindrical throats
 #    phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 #    phys_water.add_method(prop='diffusive_conductance', model='bulk_diffusion', shape = 'circular')
 #    phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
     
-    bulk_diffusion_wu(physics = phys_air, network = pn, fluid = air, geometry = geo, propname = 'diffusive_conductance')
+    bulk_diffusion_wu(physics = phys_air, network = pn, phase = air, geometry = geo, propname = 'diffusive_conductance')
     phys_water.regenerate()
     phys_air.regenerate()
     
@@ -227,7 +227,7 @@ for x in range(20):
     outlets = pn.get_pore_indices(labels = ['top'])
     
     IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1',loglevel=30)
-    IP_1.setup(invading_fluid = water, defending_fluid = air, inlets = inlets, outlets = outlets, end_condition = 'total')
+    IP_1.setup(invading_phase = water, defending_phase = air, inlets = inlets, outlets = outlets, end_condition = 'total')
     IP_1.run()
     
     max_inv_seq = max(IP_1.get_pore_data(prop = 'IP_inv_seq'))
@@ -270,7 +270,7 @@ for x in range(20):
         Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=bottom_boundary)
         Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.2, pores=top_boundary)
         
-        Fickian_alg.setup(conductance = 'conduit_diffusive_conductance',fluid=air)
+        Fickian_alg.setup(conductance = 'conduit_diffusive_conductance',phase=air)
         Fickian_alg.run()
          
         effective_diffusivity = Fickian_alg.calc_eff_diffusivity(clean = False) 
@@ -337,22 +337,22 @@ for x in range(5):
 #        
 #        geo.regenerate()
 
-        #fluids
-        air = OpenPNM.Fluids.Air(network = pn, name = 'air')
-        water = OpenPNM.Fluids.Water(network = pn, name = 'water')
+        #phases
+        air = OpenPNM.Phases.Air(network = pn, name = 'air')
+        water = OpenPNM.Phases.Water(network = pn, name = 'water')
         air.regenerate()
         water.regenerate()
 
         #physics objects
-        phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water, geometry = geo, name='standard_water_physics')
-        phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air, geometry = geo, name='standard_air_physics')
+        phys_water = OpenPNM.Physics.GenericPhysics(network=pn,phase=water, geometry = geo, name='standard_water_physics')
+        phys_air = OpenPNM.Physics.GenericPhysics(network=pn,phase=air, geometry = geo, name='standard_air_physics')
 
 #        phys_water.add_method(prop='capillary_pressure', model='washburn') #accounts for cylindrical throats
 #        phys_water.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 #        phys_water.add_method(prop='diffusive_conductance', model='bulk_diffusion', shape = 'circular')
 #        phys_air.add_method(prop='hydraulic_conductance',model='hagen_poiseuille')
 
-        bulk_diffusion_wu(physics = phys_air, network = pn, fluid = air, geometry = geo, propname = 'diffusive_conductance')
+        bulk_diffusion_wu(physics = phys_air, network = pn, phase = air, geometry = geo, propname = 'diffusive_conductance')
         phys_water.regenerate()
         phys_air.regenerate()
 
@@ -384,7 +384,7 @@ for x in range(5):
         Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=bottom_boundary)
         Fickian_alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.2, pores=top_boundary)
 
-        Fickian_alg.setup(conductance = 'diffusive_conductance',fluid=air)
+        Fickian_alg.setup(conductance = 'diffusive_conductance',phase=air)
         Fickian_alg.run()
 
         effective_diffusivity = Fickian_alg.calc_eff_diffusivity(clean = False) 

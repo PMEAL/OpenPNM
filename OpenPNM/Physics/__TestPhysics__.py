@@ -20,8 +20,8 @@ class TestPhysics(GenericPhysics):
     network : OpenPNM Network object 
         The network to which this Physics should be attached
         
-    fluid : OpenPNM Fluid object 
-        The Fluid object to which this Physics applies
+    phase : OpenPNM Phase object 
+        The Phase object to which this Physics applies
         
     pores and throats : array_like
         The pores and throats where this Physics object applies
@@ -34,14 +34,14 @@ class TestPhysics(GenericPhysics):
         self._generate()
         
     def _generate(self):
-        for fluid in self._fluids:
-            temp = [item.split('.')[1] for item in fluid.props()]
+        for phase in self._phases:
+            temp = [item.split('.')[1] for item in phase.props()]
             if 'viscosity' in temp:
                 self['throat.hydraulic_conductance'] = 1
             if 'diffusivity' in temp:
                 self['throat.diffusive_conductance'] = 1
             if 'surface_tension' in temp:
-                self['throat.capillary_pressure'] = 1/self._Fluids[0]['throat.diameter']
+                self['throat.capillary_pressure'] = 1/self._Phases[0]['throat.diameter']
         
 if __name__ == '__main__':
     print('none yet')

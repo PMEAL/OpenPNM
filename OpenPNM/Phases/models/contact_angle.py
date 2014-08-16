@@ -4,9 +4,9 @@ Submodule -- contact_angle
 ===============================================================================
 
 """
-import scipy as _sp
+import scipy as sp
 
-def young(fluid,
+def young(phase,
           sigma_sg,
           sigma_sl,
           pore_surface_tension='pore.surface_tension',
@@ -23,6 +23,6 @@ def young(fluid,
     \gamma_\mathrm{LG} \cos \theta_\mathrm{C} \ = \gamma_\mathrm{SG} - \gamma_\mathrm{SL}
     
     '''
-    theta = _sp.arccos((sigma_sg - sigma_sl)/fluid[pore_surface_tension])
-    theta = _sp.rad2deg(theta)
+    theta = sp.arccos((sigma_sg - sigma_sl)/phase[pore_surface_tension])
+    theta = sp.rad2deg(theta)
     return theta
