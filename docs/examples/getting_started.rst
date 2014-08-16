@@ -18,11 +18,11 @@ The first thing you must do is import the OpenPNM code so you have access to the
 Initialize the Network Topology
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Next, it's time to generate a Network.  This is accomplished by choosing the desired network topology (e.g. cubic), then calling it's `generate()` method with the desired parameters:
+Next, it's time to generate a Network.  This is accomplished by choosing the desired network topology (e.g. cubic), then calling its respective method in OpenPNM with the desired parameters:
 
 .. code-block:: python
 
-	pn = OpenPNM.Network.Cubic([5,10,10], spacing=0.0001, name='net', loglevel=20)
+	pn = OpenPNM.Network.Cubic.empty(name='net',loglevel=20,dims=[10,10,10])
 
 This generates a topological network called *pn* which contains pores at the correct spatial positions and connections between the pores according the desired topology, but without boundary pores.  The network can be queried for certain topological information such as:
 
@@ -35,7 +35,7 @@ This generates a topological network called *pn* which contains pores at the cor
 	pn.pores(labels = 'bottom')  # [0,1,2,3,4,5,6,7,8,9]
 	pn.throats(labels = 'left')  # [0, 2, 3, 5, 6, .......]
 
-This data may also be stored in variable:
+This data may also be stored in a variable:
 
 .. code-block:: python
 
@@ -89,26 +89,26 @@ Each of the above commands looks into the submodule associated with the `propnam
 OpenPNM ships with many pre-written models available for each property, but adding custom models and even custom properties is designed to be easy.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Create Fluids
+Create Phases
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-At this point the model is now topologically and geometrically complete.  It has pore coordinates, pore and throat sizes and so on.  In order to perform any simulations, however, it is necessary to build Fluid objects.  This is done using the same composition technique used to build the Geometry.  Fluid objects are instantiated and attached to the Network as follows:
+At this point the model is now topologically and geometrically complete.  It has pore coordinates, pore and throat sizes and so on.  In order to perform any simulations, however, it is necessary to build Phases objects that e.g. represent the fluids in the simulations.  This is done using the same composition technique used to build the Geometry.  Phases objects are instantiated and attached to the Network as follows:
 
 .. code-block:: python
 
-	air = OpenPNM.Fluids.GenericFluid(network=pn,name='air')
-	water = OpenPNM.Fluids.GenericFluid(network=pn,name='water')
+	air = OpenPNM.Phases.GenericPhase(network=pn,name='air')
+	water = OpenPNM.Phases.GenericPhase(network=pn,name='water')
 	
 -------------------------------------------------------------------------------
-Add Desired Methods to Fluids
+Add Desired Methods to Phases
 -------------------------------------------------------------------------------
 	
-Now it is necessary to fill out these two objects with the desired property calculation model.  For instance, these fluids have a very different viscosity and these must be calculated differently.  
-As for the geometric object, the fluid models need to be load first:
+Now it is necessary to fill out these two objects with the desired property calculation model.  For instance, these phases have a very different viscosity and these must be calculated differently.  
+As for the geometric object, the phase models need to be load first:
 
 .. code-block:: python
 
-	from OpenPNM.Fluids import models as fm
+	from OpenPNM.Phases import models as fm
 
 Then, water and air properties are then defined by the code below. Note that some of the models, such as the Fuller model of diffusivity, needs input parameters as molar masses. These inputs are simply state in the add_model method.
 
@@ -123,12 +123,12 @@ Then, water and air properties are then defined by the code below. Note that som
 
 
 	
-The above lines retrieve the requested property estimation model from the submodule indicated by the `propname` argument, and assign that method to the corresponding property of the fluids on each pore location.  Setting a constant value, as for intance a constant water contact angle, may also be done by directly adding a new dictionnary entry:
+The above lines retrieve the requested property estimation model from the submodule indicated by the `propname` argument, and assign that method to the corresponding property of the phases on each pore location.  Setting a constant value, as for intance a constant water contact angle, may also be done by directly adding a new dictionnary entry:
 
 .. code-block:: python
 
-	water['pore.contact_angle']=110
-	water['pore.surface_tension']=0.072
+	water['pore.contact_angle'] = 110
+	water['pore.surface_tension'] = 0.072
 
 
 
@@ -136,17 +136,17 @@ The above lines retrieve the requested property estimation model from the submod
 Create Pore Scale Physics Objects
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-We are still not ready to perform any experiments, despite the fact that fluids are defined fully built up.  The last step is to define the desired pore scale physics, which defines how the fluid and solid objects interact.  A classic example of this is the Washburn equation which predicts the pressure required to push a non-wetting fluid through a capillary of known size.  OpenPNM attempts to permit a high degree of extensibility by using the same object construction approach used for Geometry and Fluid above.  Because the Physics object defines the interaction of a Fluid with the Geometry, it is necessary to build one physics object for each Fluid (and Geometry).  
+We are still not ready to perform any experiments, despite the fact that phases are defined fully built up.  The last step is to define the desired pore scale physics, which defines how the phase and solid objects interact.  A classic example of this is the Washburn equation which predicts the pressure required to push a non-wetting phase through a capillary of known size.  OpenPNM attempts to permit a high degree of extensibility by using the same object construction approach used for Geometry and Phase above.  Because the Physics object defines the interaction of a Phase with the Geometry, it is necessary to build one physics object for each Phase (and Geometry).  
 
 .. code-block:: python
-	phys_water = OpenPNM.Physics.GenericPhysics(network=pn,fluid=water,name='standard_water_physics',pores=Ps,throats=Ts)
-	phys_air = OpenPNM.Physics.GenericPhysics(network=pn,fluid=air,name='standard_air_physics',pores=Ps,throats=Ts)
+	phys_water = OpenPNM.Physics.GenericPhysics(network=pn,phase=water,name='standard_water_physics',pores=Ps,throats=Ts)
+	phys_air = OpenPNM.Physics.GenericPhysics(network=pn,phase=air,name='standard_air_physics',pores=Ps,throats=Ts)
 
 -------------------------------------------------------------------------------
 Add Desired Methods to Physics Objects
 -------------------------------------------------------------------------------
 	
-As with fluids and geometry objects, the next steps are first to load the model library and to build-up the bare objects with the desired models:
+As with phases and geometry objects, the next steps are first to load the model library and to build-up the bare objects with the desired models:
 
 .. code-block:: python
 
@@ -168,15 +168,15 @@ As with fluids and geometry objects, the next steps are first to load the model 
 Visualise the results
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-We can now visualise our geometry and our fluid properties. 
+We can now visualise our geometry and our phase properties. 
 
 
 
 -------------------------------------------------------------------------------
-Use the python vtk module
+Use the Python vtk module
 -------------------------------------------------------------------------------
 
-For a quick look, it could be done thanks to the python vtk module. The following lines below allow you to create the 3D cubic network with sphere as pores. The throats are colored by the value of throats capilarity pressure.
+For a quick look, it could be done thanks to the Python vtk module. The following lines below allow you to create the 3D cubic network with spheres 	 representing the pores. The throats are coloured by the value of throats capillary pressure.
 
 
 
@@ -194,9 +194,11 @@ For a quick look, it could be done thanks to the python vtk module. The followin
 -------------------------------------------------------------------------------
 Use Paraview
 -------------------------------------------------------------------------------
-For more detailed visualisaton, the data created by OpenPNM may be exported to vtk ASCII file to be loaded through paraview.
+For more detailed visualisaton, the data created by OpenPNM may be exported to a vtk ASCII file to be loaded through Paraview.
 
 .. code-block:: python
 
-	import OpenPNM.Postprocessing.VTK as vtk
-	vtk.save(network=pn,fluids=[air,water])
+	import OpenPNM.Postprocessing.Export as save
+	save.VTK(network=pn,phases=[air,water])
+	
+This creates a *net.vtp* file in the active directory, which can be loaded from ParaView. Visualisation of the pores can be achieved by using 3D Glyphs.
