@@ -955,6 +955,7 @@ class Core(Base):
         fine, but missing ints are converted to float when nans are inserted.
         '''
         element = prop.split('.')[0]
+        #Utilize a pre-existing dummy 'temp' variable on the object to save time
         try:
             temp = self._temp[element]
         except:
@@ -965,7 +966,9 @@ class Core(Base):
             self._temp['throat'] = sp.empty((Nt,))
             temp = self._temp[element]
         dtypes = []
+        prop_found = False  #Flag to indicate if prop was found on a sub-object
         for item in sources:
+            #Check sources were given as list of objects OR names
             try: item.name
             except: item = self.find_object(obj_name=item)
             locations = self._get_indices(element=element,labels=item.name,mode='union')
@@ -973,11 +976,12 @@ class Core(Base):
                 values = sp.ones_like(locations)*sp.nan
                 dtypes.append('nan')
             else:
+                prop_found = True
                 values = item[prop]
                 dtypes.append(values.dtype.name)
             temp[locations] = values  #Assign values
-        #Check for all NaNs, meaning data was not found anywhere
-        if sp.all(sp.isnan(temp)):
+        #Check if requested prop was found on any sub-objects
+        if prop_found == False:
             raise KeyError(prop)
         #Analyze and assign data type
         if sp.all([t in ['bool','nan'] for t in dtypes]):  # If all entries are 'bool' (or 'nan')
