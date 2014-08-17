@@ -17,19 +17,9 @@ class GenericPhase(OpenPNM.Core):
     ----------
     network : OpenPNM Network object 
         The network to which this phase should be attached
-    name : str
+    name : str, optional
         A unique string name to identify the phase object, typically same as 
         instance name but can be anything.
-    init_cond : dictionary, optional
-        A dictionary of 'key':value pairs to initize phase properties.  If omitted
-        the temperature and pressure of the phase are set to STP.  A typical 
-        additiona would be 'mole_fraction' for a mixture.  Temperature and
-        pressure can be set through init_cond, but will be set to STP if not 
-        only other properties are included.
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    loggername : string (optional)
-        Sets a custom name for the logger, to help identify logger messages
 
     """
     def __init__(self,network,name=None,**kwargs):
