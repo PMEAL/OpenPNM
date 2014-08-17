@@ -6,14 +6,26 @@ Submodule -- molar_mass
 """
 import scipy as sp
 
-def mixture(phase,MWs,mole_fracs,**kwargs):
+def mixture(phase,
+            molar_mass = 'pore.molar_mass',
+            mole_frac = 'pore.mole_fracton',
+            **kwargs):
     r"""
     Calculates the average molecular weight of a mixture using mole fraction weighting
+    
+    Parameters
+    ----------
+    phase : OpenPNM Phase Object
+        The phase for which the molar mass is to be calculated.  This phase
+        must have sub-phases
+        
+    molar_mass : string, optional (default = 'pore.molar_mass')
+        The property name for the molar masses of each sub-phase
+        
+    mole_frac : string, optional (default = 'pore.mole_fraction')
+        The property name for the mole fraction of each sub-phase
     """
-    MWs = sp.array(MWs)
-    mole_fracs = sp.array(mole_fracs)
-    #Ensure mole fraction sum to 1
-    fsum = sp.sum(mole_fracs)
-    if fsum != 1: print(phase._logger.warning('mole fractions do not add to 1, so performing normalization'))
-    value = sp.sum(MWs*mole_fracs)/fsum
-    return value
+    MW = sp.zeros((phase.Np,))
+    for comp in phase._phases:
+        MW = MW + comp[molar_mass]*comp[mole_frac]
+    return MW
