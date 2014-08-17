@@ -809,50 +809,10 @@ class Core(Base):
             ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
         
-    def _indices(self,element=None,labels=['all'],mode='union'):
-        r'''
-        This is a generic version of `pores` and `throats` that accepts an
-        'element' argument which control which values are returned.  
-        
-        Parameters
-        ----------
-        element : string
-            Can be either 'pore' or 'throat' (or plurals), depending on whether
-            a list of pores or throats numbers is desired.  If element is not
-            specfied then a dictionary containing both 'pores' and 'throats'
-            is returned.
-        labels : string
-            The label(s) of that should be used to filter the returned list.  
-            For further details see `pores` or `throats`.
-        mode : string
-            The rules that should be used when filtering labels.
-        
-        See Also
-        --------
-        `pores`, `throats`
-        
-        Notes
-        -----
-        This is intended for programatic access using keywords.
-        
-        Examples
-        --------
-        na
-            
-        '''
-        if element in ['pore', 'pores']:
-            temp = self.pores(labels=labels,mode=mode)
-        elif element in ['throat','throats']:
-            temp = self.throats(labels=labels,mode=mode)
-        elif element == None:
-            temp={}
-            temp['pores'] = self.pores(labels=labels)
-            temp['throats'] = self.throats(labels=labels)
-        return temp
-        
     def tomask(self,pores=None,throats=None):
         r'''
-        Convert a list of pore or throat indices into a boolean mask
+        Convert a list of pore or throat indices into a boolean mask of the 
+        correct length
         
         Parameters
         ----------
@@ -1008,7 +968,7 @@ class Core(Base):
         for item in sources:
             try: item.name
             except: item = self.find_object(obj_name=item)
-            locations = self._indices(element=element,labels=item.name)
+            locations = self._get_indices(element=element,labels=item.name,mode='union')
             if prop not in item.keys():
                 values = sp.ones_like(locations)*sp.nan
                 dtypes.append('nan')
