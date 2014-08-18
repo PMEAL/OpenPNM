@@ -9,13 +9,14 @@ module __GenericNetwork__: Abstract class to construct pore networks
 import sys
 import OpenPNM
 import OpenPNM.Utilities.misc as misc
+from OpenPNM.Base import Core
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.signal as spsg
 
 
-class GenericNetwork(OpenPNM.Core):
+class GenericNetwork(Core):
     r"""
     GenericNetwork - Base class to construct pore networks
 

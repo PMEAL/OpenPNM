@@ -1,12 +1,12 @@
 
 r"""
 ##################################################################################
-:mod:`OpenPNM` --  A scientific pore network simulator for porous transport media
+:mod:`OpenPNM` --  A scientific pore network simulator for porous media transport
 ##################################################################################
 .. module:: OpenPNM
     :platform: Linux, Windows
 
-Documentation is available in the docstrings and in ths sphinx documentation.
+Documentation is available in the docstrings and in the sphinx documentation.
 
 Contents
 --------
@@ -34,17 +34,6 @@ Subpackages
      - Module containing all algorithmic classes for networks.
    * - :mod:`OpenPNM.Physics`
      - Module containing pore scale physics models and equations.
-   * - :mod:`OpenPNM.Visualization`
-     - Module for performing vtk-based post-processing routines.
-
-
-
-
-Utility tools
--------------
-::
-
- TODO                --- Todo
 
 
 Import
@@ -58,6 +47,11 @@ Inheritance Diagram
 
 Package Documentation
 ---------------------
+
+.. automodule:: Base
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 .. automodule:: Utilities
    :members:
@@ -83,16 +77,12 @@ Package Documentation
    :members:
    :undoc-members:
    :show-inheritance:
-
-.. automodule:: Visualization
+   
+.. automodule:: Phases
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: GUI
-   :members:
-   :undoc-members:
-   :show-inheritance:
 """
 
 __version__ = '1.0.0'
@@ -101,8 +91,7 @@ __requires__ = [
     'scipy'
 ]
 
-from .__Base__ import Base
-from .__Core__ import Core
+from . import Base
 from . import Utilities
 from . import Network
 from . import Geometry
@@ -110,7 +99,6 @@ from . import Phases
 from . import Physics
 from . import Algorithms
 from . import Postprocessing
-from .Utilities.__Load__ import Load
 
 
 

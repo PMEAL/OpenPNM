@@ -6,7 +6,7 @@ module Physics
 import OpenPNM
 import scipy as sp
 
-class GenericPhysics(OpenPNM.Core):
+class GenericPhysics(OpenPNM.Base.Core):
     r"""
     Generic class to generate Physics objects  
 

@@ -2,8 +2,6 @@
 module __Boundary__: Subclass of GenericGeometry for Boundary Pores
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
-
 """
 
 import OpenPNM

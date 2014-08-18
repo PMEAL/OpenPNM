@@ -5,9 +5,10 @@ module Physics
 """
 import sys, os
 import OpenPNM
+from OpenPNM.Base import Core
 import scipy as sp
 
-class GenericPhase(OpenPNM.Core):
+class GenericPhase(Core):
     r"""
     Base class to generate a generic phase object.  The user must specify models
     and parameters for the all the properties they require. Classes for several

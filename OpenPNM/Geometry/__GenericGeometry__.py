@@ -5,9 +5,10 @@ module __GenericGeometry__: Base class to construct pore networks
 """
 
 import OpenPNM
+from OpenPNM.Base import Core
 import scipy as sp
 
-class GenericGeometry(OpenPNM.Core):
+class GenericGeometry(Core):
     r"""
     GenericGeometry - Base class to construct a Geometry object
 
