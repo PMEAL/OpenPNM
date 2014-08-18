@@ -587,7 +587,6 @@ class InvasionPercolation(GenericAlgorithm):
                 self._logger.info('at time')
                 self._logger.info(self._sim_time)
             if self._end_condition == 'breakthrough':
-                self._condition = 0
                 self._cluster_data['active'][self._current_cluster-1] = 0
                 if self._timing:
                     self._cluster_data['haines_time'][self._current_cluster-1] = 100000000000000000000000000000000

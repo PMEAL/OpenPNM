@@ -44,7 +44,8 @@ class MatFile(GenericNetwork):
         
     def generate(self,filename='standard_cubic_5x5x5.mat', path='LocalFiles', xtra_pore_data=None, xtra_throat_data=None):
         '''
-        Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() object.
+        Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() 
+        object. The extra data of 'type' will trigger internal and boundary pores
 
         Parameters
         ----------
@@ -69,7 +70,8 @@ class MatFile(GenericNetwork):
         generate network using example mat file
 
         >>> import OpenPNM as PNM
-        >>> pn=PNM.Geometry.MatFile(filename='standard_cubic_5x5x5.mat', path='LocalFiles')
+        >>> pn=PNM.Geometry.MatFile(name='matfile')
+        >>> pn.generate(filename='standard_cubic_5x5x5.mat', path='LocalFiles')
         '''
         if path == 'LocalFiles':
             long_path = os.path.abspath(__file__)
@@ -89,9 +91,9 @@ class MatFile(GenericNetwork):
         #Run through generation steps
         self._add_pores()
         self._add_throats()
-        self._add_geometry()
         self._add_xtra_pore_data()
         self._add_xtra_throat_data()
+        self._add_geometry()
         
     def _add_pores(self):
         Pind = sp.arange(0,self._Np)
@@ -106,20 +108,23 @@ class MatFile(GenericNetwork):
         self['throat.conns']=self._dictionary['tconnections']
         
     def _add_geometry(self):
+        try: 
+            boundary_pores = sp.where(self['pore.type']!=0)[0]
+            boundary_throats = sp.where(self['throat.type']!=0)[0]
+            add_boundaries = True
+        except: 
+            boundary_pores = sp.array([])
+            boundary_throats = sp.array([])
+            self._logger.info('No boundary pores added.')
+        Ps = sp.where([pore not in boundary_pores for pore in self.pores()])[0]
+        Ts = sp.where([throat not in boundary_throats for throat in self.throats()])[0]
+        geom = OpenPNM.Geometry.GenericGeometry(network=self,name='internal',pores=Ps,throats=Ts)
+        geom['pore.volume'] = sp.ravel(sp.array(self._dictionary['pvolume'][Ps]))
+        geom['pore.diameter'] = sp.ravel(sp.array(self._dictionary['pdiameter'][Ps]))
+        geom['throat.diameter'] = self._dictionary['tdiameter'][Ts]
         
-        geom = OpenPNM.Geometry.GenericGeometry(network=self,name='imported')
-        geom.set_locations(pores='all',throats='all')
-        
-        data = self._dictionary['pvolume']
-        geom.add_property(prop='pore_volume',model='constant',value=data)
-        data = self._dictionary['pdiameter']
-        geom.add_method(prop='pore_diameter',model='constant',value=data)
-        
-        data = self._dictionary['tdiameter']
-        geom.add_property(prop='throat_diameter',model='constant',value=data)
-        
-        geom.add_property(prop='throat_length',model='straight')
-        geom.regenerate()
+        if add_boundaries:
+            boun = OpenPNM.Geometry.Boundary(network=self,pores=boundary_pores,throats=boundary_throats,name='boundary')
     
     def _add_xtra_pore_data(self):
         xpdata = self._xtra_pore_data

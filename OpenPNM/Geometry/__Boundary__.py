@@ -33,9 +33,15 @@ class Boundary(GenericGeometry):
     def _generate(self):
         r'''
         '''
-        self.add_model(propname='pore.seed',model=gm.pore_misc.constant,value=0.9999)
+        try:
+            pn['pore.seed']
+            seeds = True
+        except:
+            seeds = False
+                
+        if seeds: self.add_model(propname='pore.seed',model=gm.pore_misc.constant,value=0.9999)
         self.add_model(propname='pore.diameter',model=gm.pore_misc.constant,value=0)
-        self.add_model(propname='throat.seed',
+        if seeds: self.add_model(propname='throat.seed',
                        model=gm.throat_misc.neighbor,
                        pore_prop='pore.seed',
                        mode='max')

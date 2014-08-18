@@ -24,6 +24,10 @@ def straight(network,
     D2 = network[pore_diameter][pore2]
     value = E-(D1+D2)/2
     value = value[throats]
+    if _sp.any(value<0):
+        geometry._logger.warn('Negative throat lengths are calculated. Arbitrary positive length assigned (1e9 meters)')
+        Ts = _sp.where(value<0)[0]
+        value[Ts] = 1e-9
     return value
         
 def voronoi(network,
