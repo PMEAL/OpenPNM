@@ -60,7 +60,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         # Parse params
         self._phase_inv = invading_phase
         self._phase_def = defending_phase
-        print(defending_phase)
         try: self._inv_sites
         except: self._inv_sites = inlets
         self._npts = npts
@@ -221,7 +220,6 @@ class OrdinaryPercolation(GenericAlgorithm):
             self._phase_inv['throat.'+occupancy]=temp
             #Apply occupancy to defending phase
             if self._phase_def != None:
-                print(occupancy)
                 temp = sp.array(~p_seq,dtype=sp.float_,ndmin=1)
                 self._phase_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_seq,dtype=sp.float_,ndmin=1)

@@ -10,7 +10,6 @@ r"""
 #Import every file in the directory
 import os as _os
 path = _os.path.dirname(_os.path.abspath(__file__))
-print(path)
 for item in _os.listdir(path):
     if item.split('.')[-1] == 'py':
         if item in ['__init__.py','__pycache__']:
