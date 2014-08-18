@@ -48,8 +48,6 @@ def conduit_conductance(physics,
     calculated.
 
     """
-    print('occupancy',phase[throat_occupancy])
-    print('conductance',phase[throat_conductance])
     throats = phase.throats(physics.name)
     if (mode == 'loose'):
         closed_conduits = -sp.array(phase[throat_occupancy],dtype=bool)
@@ -68,8 +66,6 @@ def conduit_conductance(physics,
     open_conduits = -closed_conduits
     throat_value = phase[throat_conductance]
     value = throat_value*open_conduits + throat_value*closed_conduits*factor
-    print('closed conduits',closed_conduits)
-    print('multiphase conductance',value)
     return value
 
 def late_throat_filling(network,phase,Pc_star,eta):
