@@ -8,7 +8,7 @@ import scipy as sp
 
 def mixture(phase,
             molar_mass = 'pore.molar_mass',
-            mole_frac = 'pore.mole_fracton',
+            mole_frac = 'pore.mole_fraction',
             **kwargs):
     r"""
     Calculates the average molecular weight of a mixture using mole fraction weighting
