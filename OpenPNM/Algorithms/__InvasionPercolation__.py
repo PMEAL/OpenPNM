@@ -224,10 +224,11 @@ class InvasionPercolation(GenericAlgorithm):
         # Creating a list for each cluster to store both potential throat and corresponding throat value
         self._tpoints = []
         # Initializing invasion percolation for each possible cluster
+        self._pore_volumes = self._net['pore.'+self._pore_volume_name]
         for i in self._inlets:
             if self._timing:
                 # Calculate total volume in all invaded pores
-                self._cluster_data['pore_volume'][clusterNumber-1] = np.sum(self._net.get_data(prop=self._pore_volume_name,pores='all')[i])
+                self._cluster_data['pore_volume'][clusterNumber-1] = np.sum(self._pore_volumes[i])
                 # Label all invaded pores with their cluster
             self._Pinv[i] = clusterNumber
             self._Pinv_original[i] = clusterNumber
@@ -498,7 +499,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._psequence[self._NewPore] = self._tseq
             if self._timing:
                 # update self._cluster_data.['pore_volume']
-                self._cluster_data['pore_volume'][self._current_cluster-1] += self._net.get_data(prop=self._pore_volume_name,pores='all')[self._NewPore]
+                self._cluster_data['pore_volume'][self._current_cluster-1] += self._pore_volumes[self._NewPore]
             # Make a list of all throats neighboring pores in the cluster
             # Update interface list
             neighbors = self._net.find_neighbor_throats(self._NewPore)

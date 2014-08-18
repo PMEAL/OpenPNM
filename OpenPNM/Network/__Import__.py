@@ -91,6 +91,7 @@ class MatFile(GenericNetwork):
         #Run through generation steps
         self._add_pores()
         self._add_throats()
+        self._remove_disconnected_clusters()
         self._add_xtra_pore_data()
         self._add_xtra_throat_data()
         self._add_geometry()
@@ -107,6 +108,42 @@ class MatFile(GenericNetwork):
         self._logger.info('Writing throat data')
         self['throat.conns']=self._dictionary['tconnections']
         
+    def _remove_disconnected_clusters(self):
+        bad_pores = sp.array([],dtype=int)
+        self._pore_map = self.pores()
+        self._throat_map = self.throats()
+        health = self.check_network_health()        
+        Np = self.num_pores()
+        Nt = self.num_throats()
+        cluster_sizes = [sp.shape(x)[0] for x in health['disconnected_clusters']]
+        acceptable_size = min([min([50,Np/2]),max(cluster_sizes)]) # 50 or less, if it's a really small network.
+        #step through each cluster of pores. If its a small cluster, add it to the list
+        for cluster in health['disconnected_clusters']:
+            if sp.shape(cluster)[0] < acceptable_size:
+                bad_pores = sp.append(bad_pores,sp.ravel(cluster))
+        bad_throats = sp.unique(self.find_neighbor_throats(bad_pores))
+        #Create map for pores
+        if sp.shape(bad_pores)[0] > 0:
+            i = 0
+            self._pore_map = sp.zeros((Np-sp.shape(bad_pores)[0],),dtype=int)
+            for pore in self.pores():
+                if pore not in bad_pores:
+                    self._pore_map[i] = pore                    
+                    i += 1
+        #Create map for throats
+        if sp.shape(bad_throats)[0] > 0:
+            i = 0
+            self._throat_map = sp.zeros((Nt-sp.shape(bad_throats)[0],),dtype=int)
+            for throat in self.throats():
+                if throat not in bad_throats:
+                    self._throat_map[i] = throat                    
+                    i += 1
+        self.trim(pores=bad_pores)
+            
+                
+        
+        
+        
     def _add_geometry(self):
         try: 
             boundary_pores = sp.where(self['pore.type']!=0)[0]
@@ -119,9 +156,9 @@ class MatFile(GenericNetwork):
         Ps = sp.where([pore not in boundary_pores for pore in self.pores()])[0]
         Ts = sp.where([throat not in boundary_throats for throat in self.throats()])[0]
         geom = OpenPNM.Geometry.GenericGeometry(network=self,name='internal',pores=Ps,throats=Ts)
-        geom['pore.volume'] = sp.ravel(sp.array(self._dictionary['pvolume'][Ps]))
-        geom['pore.diameter'] = sp.ravel(sp.array(self._dictionary['pdiameter'][Ps]))
-        geom['throat.diameter'] = self._dictionary['tdiameter'][Ts]
+        geom['pore.volume'] = sp.ravel(sp.array(self._dictionary['pvolume'][self._pore_map[Ps]]))
+        geom['pore.diameter'] = sp.ravel(sp.array(self._dictionary['pdiameter'][self._pore_map[Ps]]))
+        geom['throat.diameter'] = self._dictionary['tdiameter'][self._throat_map[Ts]]
         
         if add_boundaries:
             boun = OpenPNM.Geometry.Boundary(network=self,pores=boundary_pores,throats=boundary_throats,name='boundary')
@@ -132,12 +169,12 @@ class MatFile(GenericNetwork):
             if type(xpdata) is type([]):
                 for pdata in xpdata:
                     try:
-                        self['pore.'+pdata]=self._dictionary['p'+pdata]
+                        self['pore.'+pdata]=self._dictionary['p'+pdata][self._pore_map]
                     except:
                         self._logger.warning('Could not add pore data: '+pdata+' to network')
             else:
                 try:
-                    self['pore.'+xpdata]=self._dictionary['p'+xpdata]
+                    self['pore.'+xpdata]=self._dictionary['p'+xpdata][self._pore_map]
                 except:
                     self._logger.warning('Could not add pore data: '+xpdata+' to network')
 
@@ -147,11 +184,13 @@ class MatFile(GenericNetwork):
             if type(xtdata) is type([]):
                 for tdata in xtdata:
                     try:
-                        self['throat.'+tdata]=self._dictionary['t'+tdata]
+                        self['throat.'+tdata]=self._dictionary['t'+tdata][self._throat_map]
                     except:
                         self._logger.warning('Could not add throat data: '+tdata+' to network')
             else:
                 try:
-                    self['throat.'+xtdata]=self._dictionary['t'+xtdata]
+                    self['throat.'+xtdata]=self._dictionary['t'+xtdata][self._throat_map]
                 except:
                     self._logger.warning('Could not add throat data: '+xtdata+' to network')
+
+        
