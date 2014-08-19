@@ -20,16 +20,10 @@ class GenericNetwork(Core):
     r"""
     GenericNetwork - Base class to construct pore networks
 
-    This class contains the interface definition for the construction of networks
-
     Parameters
     ----------
     name : string
         Unique name for Network object
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    loggername : string (optional)
-        Define the logger name to be used on console output. Defaults to class name.
 
     """
 
@@ -94,19 +88,20 @@ class GenericNetwork(Core):
     #--------------------------------------------------------------------------
     def create_adjacency_matrix(self,data=None,sprsfmt='coo',dropzeros=True,sym=True):
         r"""
-        Generates a weighted adjacency matrix in a desired sparse storage format
+        Generates a weighted adjacency matrix in the desired sparse format
 
         Parameters
         ----------
         data : array_like, optional
-            An array containing the throat values to enter into the matrix (In
+            An array containing the throat values to enter into the matrix (in
             graph theory these are known as the 'weights').  If omitted, ones 
             are used to create a standard adjacency matrix representing 
             connectivity only.  
+            
         sprsfmt : string, optional
             The sparse storage format to return.  Options are:
             
-            * 'coo' : (default) This is the native format of OpenPNMs data
+            * 'coo' : (default) This is the native format of OpenPNM data
             
             * 'lil' : Enables row-wise slice of data
             
@@ -115,6 +110,7 @@ class GenericNetwork(Core):
         dropzeros : boolean, optional
             Remove 0 elements from the values, instead of creating 0-weighted 
             links, the default is True.
+            
         sym : Boolean, optional
             Makes the matrix symmetric about the diagonal, the default is true.
 
@@ -133,7 +129,7 @@ class GenericNetwork(Core):
         Np   = self.num_pores()
         Nt   = self.num_throats()
         
-        #Check if provided data is correct
+        #Check if provided data is valid
         if data == None:
             data = sp.ones((self.num_throats(),))
         elif sp.shape(data)[0] != Nt:
@@ -180,6 +176,7 @@ class GenericNetwork(Core):
             graph theory these are known as the 'weights').  If omitted, ones 
             are used to create a standard incidence matrix representing 
             connectivity only. 
+            
         sprsfmt : string, optional
             The sparse storage format to return.  Options are:
             
@@ -241,12 +238,13 @@ class GenericNetwork(Core):
             
     def find_connected_pores(self,throats=[],flatten=False):
         r"""
-        Return a list of pores connected to a list of throats
+        Return a list of pores connected to the given list of throats
 
         Parameters
         ----------
         throats : array_like
             List of throats numbers
+            
         flatten : boolean, optional
             If flatten is True (default) a 1D array of unique pore numbers
             is returned. If flatten is False each location in the the returned 
@@ -278,8 +276,9 @@ class GenericNetwork(Core):
 
         Parameters
         ----------
-        P1 , P2 : int
-            The pore numbers whose throats are sought
+        P1 , P2 : array_like
+            The pore numbers whose throats are sought.  These can be vectors
+            of pore numbers, but must be the same length
 
         Returns
         -------

@@ -609,7 +609,7 @@ class Core(Base):
                 
     def labels(self,element='',pores=[],throats=[],mode='union'):
         r'''
-        Returns the labels applied to specified pore locations
+        Returns the labels applied to specified pore or throat locations
         
         Parameters
         ----------
@@ -831,13 +831,12 @@ class Core(Base):
             pores = sp.array(pores,ndmin=1)
             mask = sp.zeros((Np,),dtype=bool)
             mask[pores] = True
-            return mask
         if throats != None:
             Nt = sp.shape(self['throat.all'])[0]
             throats = sp.array(throats,ndmin=1)
             mask = sp.zeros((Nt,),dtype=bool)
             mask[throats] = True
-            return mask
+        return mask
             
     def toindices(self,mask):
         r'''
