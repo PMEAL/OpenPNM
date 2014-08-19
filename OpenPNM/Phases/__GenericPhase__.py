@@ -66,10 +66,17 @@ class GenericPhase(Core):
             
     def set_component(self,phase,mode='add'):
         r'''
-        Pa
+        This method is used to add or remove a ficticious phase object to this 
+        object.  
+        
+        Parameters
+        ----------
+        phase : OpenPNM Phase object
+            This is the ficticious phase object defining a pure component. 
+            
+        mode : string
+            Indicates whether to 'add' or 'remove' the supplied object
         '''
-        if type(phase) == str:
-            phase = self.find_object(obj_name=phase.name)
         if mode == 'add':
             if phase.name in self.phases():
                 self._logger.error('Phase already present')
