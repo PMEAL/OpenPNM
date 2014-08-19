@@ -4,7 +4,7 @@
 The Network Object
 ###############################################################################
 
-The **Network** is the central object in OpenPNM.  In any simulation there will only be one network object.  This object is the *controller* and *coordinator* of the other objects.  For instance, each of the other objects (Phases, Geometries, and Physics) register themselves with the network so the network knows of their existence.
+The **Network** is the central object in OpenPNM.  In any simulation there will only be one network object.  This object is the *controller* and *coordinator* of the other objects.  For instance, each of the other objects (Phases, Geometries, and Physics) register themselves with the network so the network knows of their existence.  
 
 1.  **Query methods** which use the topology of the network.  For instance, for finding the neighbor pores connected to a given pore or set of pores
 

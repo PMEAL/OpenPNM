@@ -3,14 +3,13 @@
 ###############################################################################
 Overview of the OpenPNM Framework
 ###############################################################################
+The OpenPNM framework is build upon 5 main objects, each outlined below.  All of these objects are a sub-class of the Python 'dictionary', which is a data storage class similar to 'structs' in C or Matlab.  This essentially means that data can be stored and accessed by name (i.e.'pore.diameter').  Using this as a starting point, the OpenPNM classes provide an easy to use and understand data storage scheme.  The OpenPNM framework adds a wide variety of methods to each of these 'dictionary' objects that work with the data stored in the dictionary.  For instance, the Python *dict* class only has a few basic methods for reading and removing data from the dictionary, while an OpenPNM object has many additional methods related to pore network modeling.  An example of this is requesting the number of pores associated.  A description of the role and detailed usage of each object is aim of the remainder of this user guide.
 
 ===============================================================================
 Main Modules
 ===============================================================================
 
-The OpenPNM framework is build upon 5 main objects.  
-
-1 `Network`_: The Network object is the main 'controller' object for framework.  It contains all the topological information about the Network, as well as numerous methods for querying and manipulating the topology.  Each simulation will have only 1 Network object.
+1 `Network`_: The Network object is the main *controller* object for the framework.  It contains all the topological information about the **Network**, as well as numerous methods for querying and manipulating the topology. 
 
 3 `Geometry`_: Geometry objects control the pore-scale geometrical properties of the network such as pore size.  A simulation may have multiple Geometry objects depending on the problem being modeled.  For instance, a stratified material may have a separate Geometry object for each layer if the pore and throat sizes differ between them.  
 
