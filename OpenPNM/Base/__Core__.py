@@ -506,8 +506,16 @@ class Core(Base):
         
         Parameters
         ----------
-        pores or throats : array_like
-            hmmm
+        element : string, optional
+            Can be either 'pore' or 'throat' to specify what properties are
+            returned.  If no element is given, both are returned
+            
+        mode : string, optional
+            Controls what type of properties are returned.  Options are:
+            
+            - 'all' : Returns all properties on the object
+            - 'models' : Returns only properties that are associated with a model 
+            - 'constants' : Returns only properties that are set as constant values
 
         Returns
         -------
@@ -529,25 +537,29 @@ class Core(Base):
         '''
         
         props = []
+        for item in self.keys():
+            if self[item].dtype != bool:
+                props.append(item)
+        models = list(self._models.keys())
+        constants = props.copy()
+        for item in models:
+            constants.remove(item)
+        
+        if element in ['pore','pores']:
+            element = 'pore'
+        elif element in ['throat','throats']:
+            element = 'throat'
+            
         temp = []
         if mode == 'all':
-            for item in self.keys():
-                if self[item].dtype != bool:
-                    props.append(item)
-            if element == '':
-                temp = props
-            elif element in ['pore','pores']:
-                temp = [item for item in props if item.split('.')[0]=='pore']
-            elif element in ['throat','throats']:
-                temp = [item for item in props if item.split('.')[0]=='throat']
+            if element == '': temp = props
+            else: temp = [item for item in props if item.split('.')[0]==element]
         elif mode == 'models':
-            models = list(self._models.keys())
-            if element == '':
-                temp = models
-            elif element in ['pore','pores']:
-                temp = [item for item in models if item.split('.')[0]=='pore']
-            elif element in ['throat','throats']:
-                temp = [item for item in models if item.split('.')[0]=='throat']
+            if element == '': temp = models
+            else: temp = [item for item in models if item.split('.')[0]==element]
+        elif mode == 'constants':
+            if element == '': temp = constants
+            else: temp = [item for item in constants if item.split('.')[0]==element]
         return misc.PrintableList(temp)
 
             
