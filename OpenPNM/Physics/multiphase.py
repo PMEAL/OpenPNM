@@ -10,29 +10,29 @@ import scipy as sp
 def constant(physics,
              network,
              geometry,
-             fluid,
+             phase,
              propname,
              value,
              **params):
     r"""
     Assigns specified constant value
     """
-    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
+    phase.set_data(prop=propname,throats=geometry.throats(),data=value)
 
 def na(physics,
        network,
        geometry,
-       fluid,
+       phase,
        propname,
        **params):
     r"""
     """
     value = -1
-    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
+    phase.set_data(prop=propname,throats=geometry.throats(),data=value)
 
 def conduit_conductance(physics,
                    network,
-                   fluid,
+                   phase,
                    geometry,
                    conductance,
                    occupied_condition = 'occupancy',
@@ -45,14 +45,14 @@ def conduit_conductance(physics,
     conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas. 
     
     This method "closes" conduits that are not sufficiently filled with the 
-    specified fluid by multiplying the original conductance by a very small *factor*.
+    specified phase by multiplying the original conductance by a very small *factor*.
 
     Parameters
     ----------
     network : OpenPNM Network Object
 
-    fluid : OpenPNM Fluid Object
-        The fluid of interest
+    phase : OpenPNM Phase Object
+        The phase of interest
     
     geometry : OpenPNM Geometry Object
         The geometry containing the conduits to be updated
@@ -68,7 +68,7 @@ def conduit_conductance(physics,
         
     mode : 'strict' or 'medium' or 'loose'
         How agressive the method should be in "closing" conduits. 
-        'strict' implies that if any pore or throat in the conduit is unoccupied by the given fluid, the conduit is closed.
+        'strict' implies that if any pore or throat in the conduit is unoccupied by the given phase, the conduit is closed.
         'medium' implies that if either the throat or both pores are unoccupied, the conduit is closed
         'loose' will only close the conduit if the throat is unoccupied.
         
@@ -77,20 +77,20 @@ def conduit_conductance(physics,
 
     Notes
     -----
-    This function requires that all the necessary fluid properties already be 
+    This function requires that all the necessary phase properties already be 
     calculated.
 
     """
     throats = geometry.throats()
-    throat_value = fluid['throat.'+conductance][throats]   
+    throat_value = phase['throat.'+conductance][throats]   
     
-    throat_occupancy = fluid['throat.'+occupied_condition][throats] == 1
-    pore_occupancy = fluid['pore.'+occupied_condition] == 1
+    throat_occupancy = phase['throat.'+occupied_condition][throats] == 1
+    pore_occupancy = phase['pore.'+occupied_condition] == 1
                      
     if (mode == 'loose'):
         closed_conduits = -throat_occupancy
     else:
-        thoats_closed = -throat_occupancy
+        thoats_closed = -throat_occupancy[throats]
         connected_pores = network.find_connected_pores(geometry.throats())
         pores_1 = connected_pores[:,0]
         pores_2 = connected_pores[:,1]
@@ -104,6 +104,5 @@ def conduit_conductance(physics,
             closed_conduits = pores_1_closed | thoats_closed | pores_2_closed
     open_conduits = -closed_conduits
     value = throat_value*open_conduits + throat_value*closed_conduits*factor
-    
-    fluid.set_data(prop=propname,throats=geometry.throats(),data=value)
+    phase.set_data(prop=propname,throats=geometry.throats(),data=value)
 

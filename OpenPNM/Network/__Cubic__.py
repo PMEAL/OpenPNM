@@ -1,28 +1,21 @@
 """
-module __Cubic__: Generate simple cubic networks
+module __Cubic__: Generate lattice-like networks
 ==========================================================
 
-.. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the 'Geometry/__init__.py' file.
 
 """
-
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if sys.path[1] != parent_dir:
-    sys.path.insert(1, parent_dir)
 import OpenPNM
 
-import scipy as sp
 import numpy as np
-import scipy.stats as spst
-import scipy.spatial as sptl
-import itertools as itr
-from OpenPNM.Network import GenericNetwork
-
+import scipy as sp
+from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Cubic(GenericNetwork):
     r"""
-    This class contains the methods for creating a *Cubic* network topology.  
+    This class contains the methods to create a cubic network with an arbitrary
+    domain shape defined by a supplied template.
+
     To invoke the actual generation it is necessary to run the `generate` method.
 
     Parameters
@@ -32,208 +25,98 @@ class Cubic(GenericNetwork):
 
     loglevel : int
         Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-        
+
     loggername : string
         Overwrite the name of the logger, which defaults to the class name
 
     Examples
     --------
-    >>> pn = OpenPNM.Network.Cubic()
-    >>> pn.generate(lattice_spacing=[1],divisions=[5,5,5],add_boundaries=False)
-
+    This class is a work in progress, examples forthcoming.
     """
+    @classmethod
+    def empty(cls, dims, *a, **kw):
+        arr = np.zeros(dims)
+        return cls(arr, *a, **kw)
 
-    def __init__(self, **kwargs):
+    def __init__(self, ndarray, spacing=None, unit_cube=False, **kwargs):
         super(Cubic, self).__init__(**kwargs)
-        self._logger.debug(self.__class__.__name__+": Execute constructor")
+        ndarray = np.atleast_3d(ndarray)
 
-    def generate(self,**params):
-        '''
-        Invokes the creation of a Cubic network
+        points = np.array(
+            [idx for idx,val in np.ndenumerate(ndarray)],
+            dtype=float)
 
-        Parameters
-        ----------
-        domain_size : [float,float,float]
-            domain_size = [3.0,3.0,3.0] (default)\n
-            Bounding cube for internal pore positions\n
-        lattice_spacing : [float]
-            lattice_spacing = [1.0] (default)\n
-            Distance between pore centers\n
-        divisions : [int,int,int]
-            divisions = [3,3,3]\n
-            Number of internal pores in each dimension.\n
-            (Optional input. Replaces one of the above.)\n
-
-        '''
-        self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
-        self._generate_setup(**params)
-        self._generate_pores()
-        self._generate_throats()
-        self._add_labels()
-        if params['add_boundaries']:
-            self._add_boundaries()
-        self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
-
-    def _generate_setup(self,   domain_size = [],
-                                divisions = [],
-                                lattice_spacing = [],
-                                btype = [0,0,0],
-                                **params):
-        r"""
-        Perform applicable preliminary checks and calculations required for generation
-        """
-        self._logger.debug("generate_setup: Perform preliminary calculations")
-        #Parse the given network size variables
-        self._btype = btype
-        if domain_size and lattice_spacing and not divisions:
-            self._Lc = np.float(lattice_spacing[0])
-            self._Lx = np.float(domain_size[0])
-            self._Ly = np.float(domain_size[1])
-            self._Lz = np.float(domain_size[2])
-            self._Nx = np.int(self._Lx/self._Lc)
-            self._Ny = np.int(self._Ly/self._Lc)
-            self._Nz = np.int(self._Lz/self._Lc)
-        elif divisions and lattice_spacing and not domain_size:
-            self._Lc = np.float(lattice_spacing[0])
-            self._Nx = np.int(divisions[0])
-            self._Ny = np.int(divisions[1])
-            self._Nz = np.int(divisions[2])
-            self._Lx = np.float(self._Nx*self._Lc)
-            self._Ly = np.float(self._Ny*self._Lc)
-            self._Lz = np.float(self._Nz*self._Lc)
-        elif domain_size and divisions and not lattice_spacing:
-            self._Lc = np.min(np.array(domain_size,dtype=np.float)/np.array(divisions,dtype=np.float))
-            self._Nx = np.int(divisions[0])
-            self._Ny = np.int(divisions[1])
-            self._Nz = np.int(divisions[2])
-            self._Lx = np.float(self._Nx*self._Lc)
-            self._Ly = np.float(self._Ny*self._Lc)
-            self._Lz = np.float(self._Nz*self._Lc)
-        elif not domain_size and not divisions and not lattice_spacing:
-            self._Lc = np.float(1)
-            self._Lx = np.float(3)
-            self._Ly = np.float(3)
-            self._Lz = np.float(3)
-            self._Nx = np.int(self._Lx/self._Lc)
-            self._Ny = np.int(self._Ly/self._Lc)
-            self._Nz = np.int(self._Lz/self._Lc)
+        if unit_cube:
+            spacing = 1 / ( points.max(axis=0))
+            points = spacing + spacing * points
         else:
-            self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
-            raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
+            if spacing is not None:
+                points *= spacing
+        self['pore.coords'] = points
 
-    def _generate_pores(self):
-        r"""
-        Generate the pores (coordinates, numbering and types)
-        """
-        self._logger.info(sys._getframe().f_code.co_name+": Creating specified number of pores")
-        Nx = self._Nx
-        Ny = self._Ny
-        Nz = self._Nz
-        Lc = self._Lc
-        Np = Nx*Ny*Nz
-        ind = np.arange(0,Np)
-        pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
-        self['pore.coords'] = pore_coords
-        self['pore.all'] = np.ones_like(ind,dtype=bool)
-        self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
+        I = np.arange(ndarray.size).reshape(ndarray.shape)
+        tails, heads = [], []
+        for T,H in [
+            (I[:,:,:-1], I[:,:,1:]),
+            (I[:,:-1], I[:,1:]),
+            (I[:-1], I[1:]),
+            ]:
+            tails.extend(T.flat)
+            tails.extend(H.flat)
+            heads.extend(H.flat)
+            heads.extend(T.flat)
+        self['throat.conns'] = np.vstack([tails, heads]).T
 
-    def _generate_throats(self):
-        r"""
-        Generate the throats (connections, numbering and types)
-        """
-        self._logger.info(sys._getframe().f_code.co_name+": Creating specified number of throats")
+        self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
+        self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
+        self['pore.values'] = ndarray.ravel()
 
-        Nx = self._Nx
-        Ny = self._Ny
-        Nz = self._Nz
-        Np = Nx*Ny*Nz
-        ind = np.arange(0,Np)
+        x,y,z = self['pore.coords'].T
+        self['pore.back'] = x == x.min()
+        self['pore.bottom'] = x == x.min()
+        self['pore.front'] = x == x.min()
+        self['pore.left'] = x == x.min()
+        self['pore.right'] = x == x.min()
+        self['pore.top'] = x == x.min()
 
-        #Generate throats based on pattern of the adjacency matrix
-        tpore1_1 = ind[(ind%Nx)<(Nx-1)]
-        tpore2_1 = tpore1_1 + 1
-        tpore1_2 = ind[(ind%(Nx*Ny))<(Nx*(Ny-1))]
-        tpore2_2 = tpore1_2 + Nx
-        tpore1_3 = ind[(ind%Np)<(Nx*Ny*(Nz-1))]
-        tpore2_3 = tpore1_3 + Nx*Ny
-        tpore1 = np.hstack((tpore1_1,tpore1_2,tpore1_3))
-        tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
-        connections = np.vstack((tpore1,tpore2)).T
-        connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
-        self['throat.conns'] = connections
-        self['throat.all'] = np.ones_like(tpore1,dtype=bool)
-        self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
-        
-    def _add_labels(self):
-        r'''
-        Documentation for this method is being updated, we are sorry for the inconvenience.
-        '''
-        self._logger.info(sys._getframe().f_code.co_name+": Applying labels")
-        coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(label='front',locations=coords[:,0]<=self._Lc)
-        self.set_pore_info(label='left',locations=coords[:,1]<=self._Lc)
-        self.set_pore_info(label='bottom',locations=coords[:,2]<=self._Lc)
-        self.set_pore_info(label='back',locations=coords[:,0]>=(self._Lc*(self._Nx-1)))
-        self.set_pore_info(label='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
-        self.set_pore_info(label='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
-        self.set_pore_info(label='internal',locations=self.get_pore_indices())
-        #Add throat labels based IF both throat's neighbors have label in common
-        for item in ['top','bottom','left','right','front','back']:
-            ps = self.get_pore_indices(item)
-            ts = self.find_neighbor_throats(ps)
-            ps = self.find_connected_pores(ts)
-            ps0 = self.get_pore_info(label=item)[ps[:,0]]
-            ps1 = self.get_pore_info(label=item)[ps[:,1]]
-            ts = ts[ps1*ps0]
-            self.set_throat_info(label=item,locations=ts)
-        self.set_throat_info(label='internal',locations=self.get_throat_indices())
-        self._logger.debug(sys._getframe().f_code.co_name+": End")
-        
-    def _add_boundaries(self):
-        r'''
-        This method uses clone_pore to clone the surface pores (labeled 'left'
-        , 'right', etc), then shifts them to the periphery of the domain.
-        '''
-        
-        offset = {}
-        offset['front'] = offset['left'] = offset['bottom'] = [0,0,0]
-        offset['back']  = [self._Lx,0,0]
-        offset['right'] = [0,self._Ly,0]
-        offset['top']   = [0,0,self._Lz]
-        
-        scale = {}
-        scale['front']  = scale['back']  = [0,1,1]
-        scale['left']   = scale['right'] = [1,0,1]
-        scale['bottom'] = scale['top']   = [1,1,0]
-        
-        for label in ['front','back','left','right','bottom','top']:
-            ps = self.pores(labels=[label,'internal'],mode='intersection')
-            self.clone(pores=ps,apply_label=[label,'boundary',label+'_face'])
-            #Translate cloned pores
-            ind = self.pores(labels=[label,'boundary'],mode='intersection')
-            coords = self['pore.coords'][ind] 
-            coords = coords*scale[label] + offset[label]
-            self['pore.coords'][ind] = coords
-            
-        
-    
-    def domain_size(self,dimension=''):
-        if dimension == 'front' or dimension == 'back':
-            return self._Ly*self._Lz
-        if dimension == 'left' or dimension == 'right':
-            return self._Lx*self._Lz
-        if dimension == 'top' or dimension == 'bottom':
-            return self._Lx*self._Ly
-        if dimension == 'volume':
-            return self._Lx*self._Ly*self._Lz
-        if dimension == 'height':
-            return self._Lz
-        if dimension == 'width':
-            return self._Lx
-        if dimension == 'depth':
-            return self._Ly
+    def add_boundaries(self):
+        x,y,z = self['pore.coords'].T
+        self['pore.back_face'] = z == z.min()
+        self['pore.front_face'] = z == z.max()
+        self['pore.bottom_face'] = y == y.min()
+        self['pore.top_face'] = y == y.max()
+        self['pore.left_face'] = x == x.min()
+        self['pore.right_face'] = x == x.max()
+        self['pore.boundary'] = x == -1
 
-        
-if __name__ == '__main__':
-    pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(lattice_spacing=[1.0],domain_size=[3,3,3])
-    print(pn.name)
+        t,h = self['throat.conns'].T
+        self['throat.back'] = np.ones_like(t, dtype=bool)
+        self['throat.back_face'] = np.ones_like(t, dtype=bool)
+        self['throat.bottom'] = np.ones_like(t, dtype=bool)
+        self['throat.bottom_face'] = np.ones_like(t, dtype=bool)
+        self['throat.boundary'] = np.ones_like(t, dtype=bool)
+        self['throat.front'] = np.ones_like(t, dtype=bool)
+        self['throat.front_face'] = np.ones_like(t, dtype=bool)
+        self['throat.left'] = np.ones_like(t, dtype=bool)
+        self['throat.left_face'] = np.ones_like(t, dtype=bool)
+        self['throat.right'] = np.ones_like(t, dtype=bool)
+        self['throat.right_face'] = np.ones_like(t, dtype=bool)
+        self['throat.top'] = np.ones_like(t, dtype=bool)
+        self['throat.top_face'] = np.ones_like(t, dtype=bool)
+
+    def asarray(self, values=None):
+        # reconstituted facts about the network
+        points = self['pore.coords']
+        x,y,z = points.T
+        span = [(d.max()-d.min() or 1) for d in [x,y,z]]
+        res = [len(set(d)) for d in [x,y,z]]
+
+        _ndarray = np.zeros(res)
+        rel_coords = np.true_divide(points, span)*(np.subtract(res,1))
+        rel_coords = np.rint(rel_coords).astype(int) # absolutely bizarre bug
+
+        actual_indexes = np.ravel_multi_index(rel_coords.T, res)
+        if values==None:
+            values = self.pores()
+        _ndarray.flat[actual_indexes] = values.ravel()
+        return _ndarray

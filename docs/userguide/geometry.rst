@@ -13,7 +13,7 @@ In OpenPNM the pore and throat geometry are defined separately from the **Networ
 What is a Geometry Object?
 ===============================================================================
 
-**Geometry** objects have one main function in OpenPNM.  They contain the models the user wishes to use to calculate pore and throat properties, such as diamete and volume.  
+**Geometry** objects have one main function in OpenPNM.  They contain the models the user wishes to use to calculate pore and throat properties, such as diameter and volume.  
 
 ===============================================================================
 Creating a Geometry Object
@@ -23,14 +23,16 @@ The most general way to generate a **Geometry** object is as follows:
 .. code-block:: python
 
 	pn = OpenPNM.Network.TestNet()  # This generates a 5x5x5 cubic network for testing purposes
-	geom = OpenPNM.Geometry.GenericNetwork(network=pn, name='geom_1')
+	temp_ps = pn.pores()
+	temp_ts = pn.throats()
+	geom = OpenPNM.Geometry.GenericNetwork(network=pn, pores=temp_ps, throats = temp_ts, name='geom_1')
 	
-There are 2 arguments sent to ``GenericGeometry`` here.  Firstly, the **Geometry** object is associated with a **Network** with ``network=pn``.  This gives the **Geometry** object access to the network topology such as the number of pores and throats, where they are located in space, and how they are connected.  This is required for something like throat length which depends on the distance between two neighboring pores.  Secondly, each **Geometry** object (and all objects in OpenPNM) must be given a unique name (``name='geom_1'``).  This makes is possible for a human reader to differentiate between multiple different **Geometry** objects by simply checking their ``name`` attribute.  
+There are 4 arguments sent to ``GenericGeometry`` here.  Firstly, the **Geometry** object is associated with a **Network** via ``network=pn``.  This gives the **Geometry** object access to the network topology, and allows the **Geometry** to register itself with the network.  The ``pores`` and ``throats`` arguments tell the **Geometry** where in the overall network it is defined. Finally, each **Geometry** object (and all objects in OpenPNM) must be given a unique name (``name='geom_1'``).  This makes is possible for a human reader to differentiate between multiple different **Geometry** objects by simply checking their ``name`` attribute.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Adding Properties to a Geometry
+Adding Models to a Geometry
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Once a **Geometry** object has been instantiated, the next step is to add methods to the object that calculate the appropriate pore and throat properties.  The ``GenericGeometry`` class contains the ``add_method` function for this purpose.  It is typical to assign a random seed to each pore in the network which is subsequently used to calculate pore diameters from a statistical distribution.  The **Geometry** module comes with a submodule called **pore_seed** that contains several methods that can be used.  The desired method is added to the **Geometry** object as follows:
+Once a **Geometry** object has been instantiated, the next step is to add methods to the object that calculate the appropriate pore and throat properties.  The ``GenericGeometry`` class inherits the ``add_model` function for this purpose.  It is typical to assign a random seed to each pore in the network which is subsequently used to calculate pore diameters from a statistical distribution.  The **Geometry** module comes with a submodule called **pore_seed** that contains several methods that can be used.  The desired method is added to the **Geometry** object as follows:
 
 .. code-block:: python
 

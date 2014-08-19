@@ -12,10 +12,10 @@ and methods for querying existing networks for topological information.
 
 Classes
 -------
-    
+
 .. autoclass:: GenericNetwork
    :members:
-       
+
 .. autoclass:: Cubic
    :members:
 
@@ -30,7 +30,6 @@ Classes
 from .__GenericNetwork__ import GenericNetwork
 from .__Cubic__ import Cubic
 from .__Delaunay__ import Delaunay
-from .__Template__ import Template
 from .__TestNet__ import TestNet
 from .__Import__ import MatFile
 from .__Load__ import Load

@@ -4,9 +4,9 @@
 The Network Object
 ###############################################################################
 
-The **Network** is the central object in OpenPNM.  This object contains 3 main aspects:
+The **Network** is the central object in OpenPNM.  In any simulation there will only be one network object.  This object is the *controller* and *coordinator* of the other objects.  For instance, each of the other objects (Phases, Geometries, and Physics) register themselves with the network so the network knows of their existence.
 
-1.  **Query methods**:  There are methods for simple queries like finding the number of pores or throats in the network.  There are also more complex methods for finding the number of neighbor pores connected to a given pore or set of pores.  
+1.  **Query methods** which use the topology of the network.  For instance, for finding the neighbor pores connected to a given pore or set of pores
 
 2.  **Adjacency and Incidence Matrices**:  These matrices are stored on the network object as Scipy sparse arrays. They can be created using the ``create_adjacency`` or ``create_indicidence`` methods.  They can be accessed directly for use in algorithms as needed (as in ordinary percolation).  Some of the *query* type methods access these matrices to find connected throats and neighbors.  
 

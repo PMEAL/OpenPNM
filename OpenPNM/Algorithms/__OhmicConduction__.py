@@ -6,9 +6,9 @@ module __OhmicConduction__:
 """
 
 import scipy as sp
-from .__LinearSolver__ import LinearSolver
+from .__GenericLinearTransport__ import GenericLinearTransport
 
-class OhmicConduction(LinearSolver):
+class OhmicConduction(GenericLinearTransport):
     r'''
 
     '''
@@ -19,9 +19,10 @@ class OhmicConduction(LinearSolver):
         super(OhmicConduction,self).__init__(**kwargs)
         self._logger.info('Create '+self.__class__.__name__+' Object')
         
-    def setup(self,fluid,conductance='electronic_conductance',quantity='voltage',**params):
+    def run(self,phase,conductance='electronic_conductance',quantity='voltage',**params):
         r'''
         '''  
         self._logger.info("Setup "+self.__class__.__name__)        
-        super(OhmicConduction,self).setup(fluid=fluid,conductance=conductance,quantity=quantity)
+        super(OhmicConduction,self).setup(phase=phase,conductance=conductance,quantity=quantity)
         
+        super(GenericLinearTransport,self).run()

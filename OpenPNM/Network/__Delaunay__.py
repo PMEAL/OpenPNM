@@ -5,10 +5,6 @@ module __Delaunay__: Generate random networks based on Delaunay Tessellations
 .. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
 
 """
-
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
 import OpenPNM
 
 import sys
@@ -41,11 +37,9 @@ class Delaunay(GenericNetwork):
     Examples
     --------
     >>> pn = OpenPNM.Network.Delaunay()
-    >>> pn.generate(num_pores=100,domain_size=[100,100,100])
+    >>> pn.generate(num_pores=100,domain_size=[100,100,100],add_boundaries=0)
     >>> pn.num_pores()
     100
-    >>> type(pn.num_throats())
-    <class 'numpy.int32'>
 
     """
     add_boundaries = False
@@ -243,7 +237,7 @@ class Delaunay(GenericNetwork):
         self.set_pore_info(label='right',locations=(coords[:,1]>(0.9*self._Ly)))
         self.set_pore_info(label='bottom',locations=(coords[:,2]<(0.1*self._Lz)))
         self.set_pore_info(label='top',locations=(coords[:,2]>(0.9*self._Lz)))
-        bnds = self.get_pore_indices(labels=['front','back','left','right','bottom','top'])
+        bnds = self.pores(labels=['front','back','left','right','bottom','top'])
         self.set_pore_info(label='boundary',locations=bnds)
         self.set_pore_info(label='internal',locations='all')
         
@@ -278,7 +272,7 @@ class Delaunay(GenericNetwork):
             ptype = np.concatenate((ptype,np.ones((Np,),dtype=int)*bval[i]),axis=0)
 
         #pnum contains the internal ID number of the boundary pores (for connecting periodic points)
-        pnum = self.get_pore_indices()
+        pnum = self.pores()
         pnum = np.tile(pnum,7)
 
         Tri = sptl.Delaunay(pcoords)

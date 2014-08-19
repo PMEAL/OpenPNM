@@ -2,7 +2,7 @@
 
 import os
 import sys
-
+sys.path.append(os.getcwd())
 import OpenPNM
 
 try:
@@ -14,8 +14,9 @@ setup(
     name='OpenPNM',
     version=OpenPNM.__version__,
     description="A framework for conducting pore network modeling simulations of multiphase transport in porous materials.",
-    author='PMEAL',
+    author='OpenPNM Team',
     author_email='jeff.gostick@mcgill.ca',
     url='http://openpnm.org/',
     license='MIT',
+
 )
