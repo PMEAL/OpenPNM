@@ -1,7 +1,7 @@
 import scipy as _sp
 import time as _time
 from scipy.spatial.distance import cdist as dist
-import _transformations as tr
+import OpenPNM.Utilities.transformations as tr
 
 def reflect_pts(coords,nplane):
     r'''

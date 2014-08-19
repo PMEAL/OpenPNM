@@ -10,7 +10,7 @@ Used with Delaunay Network but could work for others (not tested)
 import OpenPNM
 import scipy as sp
 import numpy as np
-import _transformations as tr
+import OpenPNM.Utilities.transformations as tr
 from scipy.spatial import ConvexHull
 from math import atan2
 from scipy.spatial import Delaunay
