@@ -80,6 +80,14 @@ class GenericPhase(Core):
                 self._phases.remove(phase)
             else:
                 self._logger.error('Phase not found')
+                
+    def regenerate(self,**kwargs):
+        for item in self._phases:
+            item.regenerate(**kwargs)
+        super().regenerate(**kwargs)
+    
+    #Pull in doc string for the Core regenerate method
+    regenerate.__doc__ = Core.regenerate.__doc__
             
     def check_mixture_health(self):
         r'''
