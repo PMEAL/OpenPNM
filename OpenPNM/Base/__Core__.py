@@ -472,7 +472,7 @@ class Core(Base):
         exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
         for item in objs:
 #            try:
-            if item.__module__[0:15] == 'OpenPNM.Network': #if network object, combine geometry and network keys
+            if item.__module__.split('.')[1] == 'Network': #if network object, combine geometry and network keys
                 keys = []
                 for key in item.keys():
                     keys.append(key)
@@ -481,7 +481,7 @@ class Core(Base):
                         if key not in keys:
                             keys.append(key)
             else:
-                if item.__module__[0:14] == 'OpenPNM.Phases':
+                if item.__module__.split('.')[1] == 'Phases':
                     keys = []
                     for key in item.keys():
                         keys.append(key)
@@ -967,7 +967,7 @@ class Core(Base):
         dtypes = []
         prop_found = False  #Flag to indicate if prop was found on a sub-object
         for item in sources:
-            #Check sources were given as list of objects OR names
+            #Check if sources were given as list of objects OR names
             try: item.name
             except: item = self.find_object(obj_name=item)
             locations = self._get_indices(element=element,labels=item.name,mode='union')
@@ -988,7 +988,7 @@ class Core(Base):
         elif sp.all([t == dtypes[0] for t in dtypes]) :  # If all entries are same type
             temp = sp.array(temp,dtype=dtypes[0])
         else:
-            self._logger.warning('Retrieved data is of different type...converting to float')
+            self._logger.warning('Data type of '+prop+' differs between sub-objects...converting to float')
         return temp
         
     def num_pores(self,labels='all',mode='union'):

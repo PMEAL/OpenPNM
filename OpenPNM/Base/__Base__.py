@@ -157,7 +157,7 @@ class Base(dict):
             
     def physics(self,name=''):
         r'''
-        Retrieves Physics assocaiated with the object
+        Retrieves Physics associated with the object
         
         Parameters
         ----------
@@ -179,7 +179,7 @@ class Base(dict):
         
     def phases(self,name=''):
         r'''
-        Retrieves Phases assocaiated with the object
+        Retrieves Phases associated with the object
         
         Parameters
         ----------
@@ -224,7 +224,7 @@ class Base(dict):
         r'''
         Retrieves the network associated with the object.  If the object is
         a network, then it returns the parent network from which the present
-        object derives, or return an empty list if it has not parents.
+        object derives, or returns an empty list if it has no parents.
         
         Parameters
         ----------
@@ -235,6 +235,10 @@ class Base(dict):
         -------
             If name is NOT provided, then the name of the parent is returned. 
             If a name IS provided, then the parent netowrk object is returned.
+            
+        Notes
+        -----
+        This doesn't quite work yet...we have to decide how to treat sub-nets first
         '''
         if name == '':
             try:
