@@ -4,7 +4,8 @@ import OpenPNM
 import pytest
 
 def test_cubic_standard_call():
-  pn = OpenPNM.Network.Cubic(shape=[3,4,5], spacing=0.001)
+  pn = OpenPNM.Network.Cubic(shape=[3,4,5])
+  np.testing.assert_almost_equal(pn['pore.coords'][0], [0.5,0.5,0.5])
 
 def test_cubic_optional_call():
   image = np.random.rand(30,40)

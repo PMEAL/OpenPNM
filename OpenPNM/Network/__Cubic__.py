@@ -44,6 +44,7 @@ class Cubic(GenericNetwork):
         arr = np.atleast_3d(np.empty(shape))
 
         points = np.array([i for i,v in np.ndenumerate(arr)], dtype=float)
+        points += 0.5
         if spacing is not None:
             points *= spacing
         elif bbox is not None:
@@ -102,7 +103,7 @@ class Cubic(GenericNetwork):
         self['throat.top'] = np.ones_like(t, dtype=bool)
         self['throat.top_face'] = np.ones_like(t, dtype=bool)
 
-    def asarray(self, values=None):
+    def basarray(self, values=None):
         # reconstituted facts about the network
         points = self['pore.coords']
         x,y,z = points.T
@@ -118,3 +119,15 @@ class Cubic(GenericNetwork):
             values = self.pores()
         _ndarray.flat[actual_indexes] = values.ravel()
         return _ndarray
+
+    def asarray(self, values):
+        points = self['pore.coords']
+        spacing = map(np.diff, map(np.unique, points.T))
+        min_spacing = [min(a) if len(a) else 1.0 for a in spacing]
+        points = (points / min_spacing).astype(int)
+        bbox = points.max(axis=0) - points.min(axis=0)
+        bbox = (bbox / min_spacing + 1).astype(int)
+        actual_indexes = np.ravel_multi_index(points.T, bbox)
+        array = np.zeros(bbox)
+        array.flat[actual_indexes] = values.ravel()
+        return array.squeeze()
