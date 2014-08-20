@@ -9,7 +9,8 @@ def test_cubic_standard_call():
 
 def test_cubic_optional_call():
   image = np.random.rand(30,40)
-  pn = OpenPNM.Network.Cubic.from_image(image=image, spacing=0.001)
+  pn = OpenPNM.Network.Cubic.from_image(image=image)
+  np.testing.assert_almost_equal(image, pn.asarray(pn['pore.values']))
 
 def test_linear_solvers():
   pn = OpenPNM.Network.Cubic([1,40,30], spacing=0.0001)

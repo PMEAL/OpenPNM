@@ -103,23 +103,6 @@ class Cubic(GenericNetwork):
         self['throat.top'] = np.ones_like(t, dtype=bool)
         self['throat.top_face'] = np.ones_like(t, dtype=bool)
 
-    def basarray(self, values=None):
-        # reconstituted facts about the network
-        points = self['pore.coords']
-        x,y,z = points.T
-        span = [(d.max()-d.min() or 1) for d in [x,y,z]]
-        res = [len(set(d)) for d in [x,y,z]]
-
-        _ndarray = np.zeros(res)
-        rel_coords = np.true_divide(points, span)*(np.subtract(res,1))
-        rel_coords = np.rint(rel_coords).astype(int) # absolutely bizarre bug
-
-        actual_indexes = np.ravel_multi_index(rel_coords.T, res)
-        if values==None:
-            values = self.pores()
-        _ndarray.flat[actual_indexes] = values.ravel()
-        return _ndarray
-
     def asarray(self, values):
         points = self['pore.coords']
         spacing = map(np.diff, map(np.unique, points.T))
@@ -128,6 +111,7 @@ class Cubic(GenericNetwork):
         bbox = points.max(axis=0) - points.min(axis=0)
         bbox = (bbox / min_spacing + 1).astype(int)
         actual_indexes = np.ravel_multi_index(points.T, bbox)
+        print bbox
         array = np.zeros(bbox)
         array.flat[actual_indexes] = values.ravel()
         return array.squeeze()
