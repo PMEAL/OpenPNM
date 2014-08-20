@@ -32,4 +32,3 @@ from .__Cubic__ import Cubic
 from .__Delaunay__ import Delaunay
 from .__TestNet__ import TestNet
 from .__Import__ import MatFile
-from .__Load__ import Load

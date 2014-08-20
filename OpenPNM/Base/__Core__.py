@@ -966,7 +966,7 @@ class Core(Base):
         for item in sources:
             #Check if sources were given as list of objects OR names
             try: item.name
-            except: item = self.find_object(obj_name=item)
+            except: item = self._find_object(obj_name=item)
             locations = self._get_indices(element=element,labels=item.name,mode='union')
             if prop not in item.keys():
                 values = sp.ones_like(locations)*sp.nan

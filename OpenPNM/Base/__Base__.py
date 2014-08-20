@@ -88,7 +88,7 @@ class Base(dict):
         self._logger.setLevel(level)
         self._logger.debug("Changed log level")
             
-    def find_object(self,obj_name='',obj_type=''):
+    def _find_object(self,obj_name='',obj_type=''):
         r'''
         Find objects associated with a given network model by name or type
         
@@ -113,10 +113,10 @@ class Base(dict):
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo1')
-        >>> temp = pn.find_object(obj_name='geo1')
+        >>> temp = pn._find_object(obj_name='geo1')
         >>> temp.name
         'geo1'
-        >>> temp = pn.find_object(obj_type='Geometry')
+        >>> temp = pn._find_object(obj_type='Geometry')
         >>> temp[0].name
         'geo1'
         
@@ -174,7 +174,7 @@ class Base(dict):
             for item in self._physics:
                 phys.append(item.name)
         else:
-            phys = self.find_object(obj_name=name)
+            phys = self._find_object(obj_name=name)
         return phys
         
     def phases(self,name=''):
@@ -195,7 +195,7 @@ class Base(dict):
             for item in self._phases:
                 phases.append(item.name)
         else:
-            phases = self.find_object(obj_name=name)
+            phases = self._find_object(obj_name=name)
         return phases
         
     def geometries(self,name=''):
@@ -217,7 +217,7 @@ class Base(dict):
             for item in self._geometries:
                 geoms.append(item.name)
         else:
-            geoms = self.find_object(obj_name=name)
+            geoms = self._find_object(obj_name=name)
         return geoms
         
     def network(self,name=''):
@@ -265,7 +265,7 @@ class Base(dict):
         >>> geom.name
         'geo'
         >>> pn.delete_object(obj_name='geo')
-        >>> pn.find_object(obj_name='geo')
+        >>> pn._find_object(obj_name='geo')
         []
         
         Notes
@@ -280,7 +280,7 @@ class Base(dict):
         else:
             net = self._net
         if obj_name != '':
-            obj = self.find_object(obj_name=obj_name)
+            obj = self._find_object(obj_name=obj_name)
         #Get object type, so we know where to delete from
         obj_type = obj.__class__.__module__.split('.')[1]
         if obj_type == 'Geometry':  # Remove geometry from network
@@ -312,7 +312,7 @@ class Base(dict):
         if name == None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
-        if self.find_object(obj_name=name) != []:
+        if self._find_object(obj_name=name) != []:
             self._logger.error('An object with this name already exists')
             return
         self._name = name
