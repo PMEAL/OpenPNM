@@ -38,7 +38,7 @@ class Load():
                 for item in obj:
                     phase.update({item:obj[item]})
             if filename.split('.')[0] == 'Physics':
-                phase = net.find_object(obj_name=filename.split('.')[3])
+                phase = net._find_object(obj_name=filename.split('.')[3])
                 phys = OpenPNM.Physics.GenericPhysics(network=net,phase=phase,name=filename.split('.')[1])
                 obj = sp.load(dirname+'/'+filename)
                 for item in obj:
