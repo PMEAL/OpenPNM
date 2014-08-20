@@ -471,7 +471,6 @@ class Core(Base):
         data_amalgamated = {}
         exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
         for item in objs:
-#            try:
             if item.__module__.split('.')[1] == 'Network': #if network object, combine geometry and network keys
                 keys = []
                 for key in item.keys():
@@ -495,8 +494,6 @@ class Core(Base):
                     if sp.amax(item[key]) < sp.inf:
                         dict_name = item.name+'.'+key
                         data_amalgamated.update({dict_name : item[key]})
-#            except: 
-#                self._logger.error('Only network and phase items contain data')
         return data_amalgamated
             
     def props(self,element='',mode='all'):
@@ -1050,7 +1047,7 @@ class Core(Base):
         
     @property
     def Np(self):
-        return self.num_pores()  
+        return self.num_pores()
             
     def num_throats(self,labels='all',mode='union'):
         r'''

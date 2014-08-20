@@ -249,7 +249,7 @@ class Base(dict):
             net = self._net
         return net
             
-    def delete_object(self,obj=None,obj_name=''):
+    def remove_object(self,obj=None,obj_name=''):
         r'''
         Remove specific objects from a model
         
@@ -267,6 +267,12 @@ class Base(dict):
         >>> pn.delete_object(obj_name='geo')
         >>> pn.find_object(obj_name='geo')
         []
+        
+        Notes
+        -----
+        This disassociates the object from the simulation, but does not delete 
+        it from memory necessarily.  For instance, the object may still be 
+        reachable from the command line.
         
         '''
         if self.__class__.__module__.split('.')[1] == 'Network':
@@ -316,19 +322,6 @@ class Base(dict):
         
     name = property(_get_name,_set_name)
             
-    def save_object(self,filename):
-        r'''
-        Save the current object's data to a Numpy zip file.
-        
-        Parameters
-        ----------
-        filename : string
-            File name (including path if desired) to save to
-        '''
-        temp = filename.split('.')[0]
-        temp = temp+'.npz'
-        sp.savez_compressed(temp,**self)
-        
     def save_model(self):
         r'''
         Save the current simulation in it's entirity.  
