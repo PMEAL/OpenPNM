@@ -541,7 +541,7 @@ class Core(Base):
             if self[item].dtype != bool:
                 props.append(item)
         models = list(self._models.keys())
-        constants = props.copy()
+        constants = list(props)
         for item in models:
             constants.remove(item)
         
