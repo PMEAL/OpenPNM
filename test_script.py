@@ -3,8 +3,15 @@ import numpy as np
 import OpenPNM
 import pytest
 
+def test_cubic_standard_call():
+  pn = OpenPNM.Network.Cubic(shape=[3,4,5], spacing=0.001)
+
+def test_cubic_optional_call():
+  image = np.random.rand(30,40)
+  pn = OpenPNM.Network.Cubic.from_image(image=image, spacing=0.001)
+
 def test_linear_solvers():
-  pn = OpenPNM.Network.Cubic.empty(dims=[1,40,30], spacing=0.0001)
+  pn = OpenPNM.Network.Cubic([1,40,30], spacing=0.0001)
   geom = OpenPNM.Geometry.Toray090(network=pn,pores=pn.pores(),throats=pn.throats())
   air = OpenPNM.Phases.Air(network=pn)
   phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores(),throats=pn.throats())
@@ -31,16 +38,8 @@ def test_linear_solvers():
   print( alg_2['pore.mole_fraction'][BC1_pores] )
   print( alg_3['pore.mole_fraction'][BC1_pores] )
 
-def test_relative_pos_to_absolute_pos():
-  pn = OpenPNM.Network.Cubic.empty([1,1,1], spacing=0.0001)
-  np.testing.assert_array_equal( pn['pore.coords'], [0.5, 0.5, 0.5])
-
-def incomplete_test_spacing_setting():
-  pn = OpenPNM.Network.Cubic.empty([5,5,5], spacing=0.0001)
-  print( pn['pore.coords'] )
-
 def test_add_boundary():
-  pn = OpenPNM.Network.Cubic.empty([5,5,5])
+  pn = OpenPNM.Network.Cubic([5,5,5])
   pn.add_boundaries()
 
   keys_expected = {'pore.all', 'pore.back', 'pore.back_face', 'pore.bottom',
@@ -60,12 +59,12 @@ def test_add_boundary():
 def test_rectilinear_integrity():
   R = np.random.rand(3,4,5)
   # prune the network way
-  network = OpenPNM.Network.Cubic(R)
+  network = OpenPNM.Network.Cubic.from_image(R)
   network.trim( R.ravel() <= R.mean() )
   O = network.asarray(network['pore.values'])
   # what it would look like normally
   M = np.where(R > R.mean(), R, 0)
-  assert np.allclose(M, O)
+  np.testing.assert_almost_equal(M, O)
 
 if __name__ == '__main__':
   pytest.main()

@@ -34,27 +34,22 @@ class Cubic(GenericNetwork):
     This class is a work in progress, examples forthcoming.
     """
     @classmethod
-    def empty(cls, dims, *a, **kw):
-        arr = np.zeros(dims)
-        return cls(arr, *a, **kw)
-
-    def __init__(self, ndarray, spacing=None, unit_cube=False, **kwargs):
+    def from_image(cls, image, *args, **kwargs):
+        network = cls(image.shape, *args, **kwargs)
+        network['pore.values'] = image.ravel()
+        return network
+    
+    def __init__(self, shape, spacing=None, bbox=None, **kwargs):
         super(Cubic, self).__init__(**kwargs)
-        ndarray = np.atleast_3d(ndarray)
+        arr = np.atleast_3d(np.empty(shape))
 
-        points = np.array(
-            [idx for idx,val in np.ndenumerate(ndarray)],
-            dtype=float)
+        points = np.array([i for i,v in np.ndenumerate(arr)], dtype=float)
+        if spacing is not None:
+            points *= spacing
+        elif bbox is not None:
+            points *= bbox / self.points.max(axis=0)
 
-        if unit_cube:
-            spacing = 1 / ( points.max(axis=0))
-            points = spacing + spacing * points
-        else:
-            if spacing is not None:
-                points *= spacing
-        self['pore.coords'] = points
-
-        I = np.arange(ndarray.size).reshape(ndarray.shape)
+        I = np.arange(arr.size).reshape(arr.shape)
         tails, heads = [], []
         for T,H in [
             (I[:,:,:-1], I[:,:,1:]),
@@ -65,19 +60,22 @@ class Cubic(GenericNetwork):
             tails.extend(H.flat)
             heads.extend(H.flat)
             heads.extend(T.flat)
-        self['throat.conns'] = np.vstack([tails, heads]).T
+        pairs = np.vstack([tails, heads]).T
+
+        self['pore.coords'] = points
+        self['throat.conns'] = pairs
 
         self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
         self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
-        self['pore.values'] = ndarray.ravel()
+        self['pore.values'] = arr.ravel()
 
         x,y,z = self['pore.coords'].T
-        self['pore.back'] = x == x.min()
-        self['pore.bottom'] = x == x.min()
-        self['pore.front'] = x == x.min()
         self['pore.left'] = x == x.min()
-        self['pore.right'] = x == x.min()
-        self['pore.top'] = x == x.min()
+        self['pore.right'] = x == x.max()
+        self['pore.bottom'] = y == y.min()
+        self['pore.top'] = y == y.max()
+        self['pore.back'] = z == z.min()
+        self['pore.front'] = z == z.max()
 
     def add_boundaries(self):
         x,y,z = self['pore.coords'].T
