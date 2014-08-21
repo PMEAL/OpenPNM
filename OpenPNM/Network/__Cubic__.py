@@ -68,40 +68,42 @@ class Cubic(GenericNetwork):
 
         self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
         self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
-        self['pore.values'] = arr.ravel()
 
         x,y,z = self['pore.coords'].T
-        self['pore.left'] = x == x.min()
-        self['pore.right'] = x == x.max()
-        self['pore.bottom'] = y == y.min()
-        self['pore.top'] = y == y.max()
-        self['pore.back'] = z == z.min()
-        self['pore.front'] = z == z.max()
+        self['pore.front'] = x == x.min()
+        self['pore.back'] = x == x.max()
+        self['pore.left'] = y == y.min()
+        self['pore.right'] = y == y.max()
+        self['pore.bottom'] = z == z.min()
+        self['pore.top'] = z == z.max()
 
     def add_boundaries(self):
+        r'''
+        This method uses clone_pore to clone the surface pores (labeled 'left'
+        , 'right', etc), then shifts them to the periphery of the domain, and
+        gives them the label 'right_face', 'left_face', etc.
+        '''
         x,y,z = self['pore.coords'].T
-        self['pore.back_face'] = z == z.min()
-        self['pore.front_face'] = z == z.max()
-        self['pore.bottom_face'] = y == y.min()
-        self['pore.top_face'] = y == y.max()
-        self['pore.left_face'] = x == x.min()
-        self['pore.right_face'] = x == x.max()
-        self['pore.boundary'] = x == -1
-
-        t,h = self['throat.conns'].T
-        self['throat.back'] = np.ones_like(t, dtype=bool)
-        self['throat.back_face'] = np.ones_like(t, dtype=bool)
-        self['throat.bottom'] = np.ones_like(t, dtype=bool)
-        self['throat.bottom_face'] = np.ones_like(t, dtype=bool)
-        self['throat.boundary'] = np.ones_like(t, dtype=bool)
-        self['throat.front'] = np.ones_like(t, dtype=bool)
-        self['throat.front_face'] = np.ones_like(t, dtype=bool)
-        self['throat.left'] = np.ones_like(t, dtype=bool)
-        self['throat.left_face'] = np.ones_like(t, dtype=bool)
-        self['throat.right'] = np.ones_like(t, dtype=bool)
-        self['throat.right_face'] = np.ones_like(t, dtype=bool)
-        self['throat.top'] = np.ones_like(t, dtype=bool)
-        self['throat.top_face'] = np.ones_like(t, dtype=bool)
+        
+        offset = {}
+        offset['front'] = offset['left'] = offset['bottom'] = [0,0,0]
+        offset['back']  = [x.min(),0,0]
+        offset['right'] = [0,y.min(),0]
+        offset['top']   = [0,0,z.min()]
+        
+        scale = {}
+        scale['front']  = scale['back']  = [0,1,1]
+        scale['left']   = scale['right'] = [1,0,1]
+        scale['bottom'] = scale['top']   = [1,1,0]
+        
+        for label in ['front','back','left','right','bottom','top']:
+            ps = self.pores(label)
+            self.clone(pores=ps,apply_label=['boundary',label+'_face',label])
+            #Translate cloned pores
+            ind = self.pores(label+'_face')
+            coords = self['pore.coords'][ind]
+            coords = coords*scale[label] + offset[label]
+            self['pore.coords'][ind] = coords
 
     def asarray(self, values):
         points = self['pore.coords']
@@ -111,7 +113,7 @@ class Cubic(GenericNetwork):
         bbox = points.max(axis=0) - points.min(axis=0)
         bbox = (bbox / min_spacing + 1).astype(int)
         actual_indexes = np.ravel_multi_index(points.T, bbox)
-        print bbox
+        print(bbox)
         array = np.zeros(bbox)
         array.flat[actual_indexes] = values.ravel()
         return array.squeeze()
