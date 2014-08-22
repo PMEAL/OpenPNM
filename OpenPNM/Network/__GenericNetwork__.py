@@ -898,30 +898,45 @@ class GenericNetwork(Core):
         -------
         The area of the specified face
         '''
-        if misc.iscoplanar(self['pore.coords'][face]):
-            #Find area of inlet face
-            x = self['pore.coords'][face]
-            y = x
-            As = misc.dist(x,y)
-            temp = sp.amax(As,axis=0)
-            h = sp.amax(temp)
-            corner1 = sp.where(temp==h)[0][0]
-            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
-            a = sp.amin(As[corner1,p])
-            o = h*sp.sin(sp.arccos((a/h)))
-            A = o*a
-        else:
+        # The following code was not producing the correct areas. Temporarily 
+        # replaced with a less flexible calculation (assumes plane is normal 
+        # to one of the euclidean axes)
+#        if misc.iscoplanar(self['pore.coords'][face]):
+#            #Find area of inlet face
+#            x = self['pore.coords'][face]
+#            y = x
+#            As = misc.dist(x,y)
+#            temp = sp.amax(As,axis=0)
+#            h = sp.amax(temp)
+#            corner1 = sp.where(temp==h)[0][0]
+#            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
+#            a = sp.amin(As[corner1,p])
+#            o = h*sp.sin(sp.arccos((a/h)))
+#            A = o*a
+#        else:
+#            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
+#            x = self['pore.coords'][face]
+#            y = x
+#            As = misc.dist(x,y)
+#            temp = sp.amax(As,axis=0)
+#            h = sp.amax(temp)
+#            corner1 = sp.where(temp==h)[0][0]
+#            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
+#            a = sp.amin(As[corner1,p])
+#            o = h*sp.sin(sp.arccos((a/h)))
+#            A = o*a
+            
+        coords = self['pore.coords'][face]
+        dx = max(coords[:,0]) - min(coords[:,0])
+        dy = max(coords[:,1]) - min(coords[:,1])
+        dz = max(coords[:,2]) - min(coords[:,2])
+        xy = dx*dy
+        xz = dx*dz
+        yz = dy*dz
+        A = max([xy,xz,yz])
+        
+        if not misc.iscoplanar(self['pore.coords'][face]):
             self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
-            x = self['pore.coords'][face]
-            y = x
-            As = misc.dist(x,y)
-            temp = sp.amax(As,axis=0)
-            h = sp.amax(temp)
-            corner1 = sp.where(temp==h)[0][0]
-            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
-            a = sp.amin(As[corner1,p])
-            o = h*sp.sin(sp.arccos((a/h)))
-            A = o*a
         return A
 
 if __name__ == '__main__':
