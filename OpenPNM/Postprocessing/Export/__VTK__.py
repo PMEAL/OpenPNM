@@ -1,5 +1,5 @@
 from xml.etree import ElementTree as _ET
-
+import OpenPNM.Utilities.misc as misc
 import numpy as _np
 
 class VTK():
@@ -102,7 +102,7 @@ class VTK():
         for phase in phases:
             objs.append(phase)
         objs.append(network)
-        am = network.amalgamate_data(objs=objs)
+        am = misc.amalgamate_data(objs=objs)
         key_list = list(sorted(am.keys()))
         points = am[network.name+'.pore.coords']
         pairs = network['throat.conns']

@@ -458,44 +458,7 @@ class Core(Base):
             
         temp = self[element+'.'+label]
         return temp[locations]
-            
-
-           
-    def amalgamate_data(self,objs=[]):
-        r"""
-        Returns a dictionary containing ALL pore data from all netowrk and/or
-        phase objects received as arguments
-        """
-        if type(objs) != list:
-            objs = list(objs)
-        data_amalgamated = {}
-        exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
-        for item in objs:
-            if item.__module__.split('.')[1] == 'Network': #if network object, combine geometry and network keys
-                keys = []
-                for key in item.keys():
-                    keys.append(key)
-                for geom in item._geometries:
-                    for key in geom.keys():
-                        if key not in keys:
-                            keys.append(key)
-            else:
-                if item.__module__.split('.')[1] == 'Phases':
-                    keys = []
-                    for key in item.keys():
-                        keys.append(key)
-                    for physics in item._physics:
-                        for key in physics.keys():
-                            if key not in keys:
-                                keys.append(key)
-            keys.sort()
-            for key in keys:
-                if key not in exclusion_list:
-                    if sp.amax(item[key]) < sp.inf:
-                        dict_name = item.name+'.'+key
-                        data_amalgamated.update({dict_name : item[key]})
-        return data_amalgamated
-            
+        
     def props(self,element='',mode='all'):
         r'''
         Returns a list containing the names of all defined pore or throat
