@@ -760,17 +760,20 @@ class GenericNetwork(Core):
         and does not 'fix' the problems it finds.
         '''
 
-        #Check for individual isolated pores
         health = {}
         health['disconnected_clusters'] = []
         health['isolated_pores'] = []
+        health['duplicate_throats'] = []
+        health['bidirectional_throats'] = []
+        
+        #Check for individual isolated pores
         Ps = self.num_neighbors(self.pores())
         if sp.sum(Ps==0) > 0:
             self._logger.warning(str(sp.sum(Ps==0))+' pores have no neighbors')
             health['isolated_pores'] = sp.where(Ps==0)[0]
         
-        #Check for clusters of isolated pores
-        Cs = self._find_clusters(self.tomask(throats=self.throats('all')))
+        #Check for separated clusters of pores
+        Cs = self.find_clusters(self.tomask(throats=self.throats('all')))
         if sp.shape(sp.unique(Cs))[0] > 1:
             self._logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):
@@ -781,15 +784,22 @@ class GenericNetwork(Core):
         j = self['throat.conns'][:,1]
         v = sp.array(self['throat.all'],dtype=int)
         Np = self.num_pores()
-        temp = sprs.coo_matrix((v,(i,j)),[Np,Np])
-        temp = temp.tocsr()  # Convert to CSR to combine duplicates
-        temp = temp.tocoo()  # And back to COO
+        adjmat = sprs.coo_matrix((v,(i,j)),[Np,Np])
+        temp = adjmat.tocsr()  # Convert to CSR to combine duplicates
+        temp = adjmat.tocoo()  # And back to COO
         mergedTs = sp.where(temp.data>1)
         Ps12 = sp.vstack((temp.row[mergedTs], temp.col[mergedTs])).T
         dupTs = []
         for i in range(0,sp.shape(Ps12)[0]):
             dupTs.append(self.find_connecting_throat(Ps12[i,0],Ps12[i,1]))
         health['duplicate_throats'] = dupTs
+        
+        #Check for bidirectional throats
+        num_full = adjmat.sum()
+        temp = sprs.triu(adjmat,k=1)
+        num_upper = temp.sum()
+        if num_full > num_upper:
+            health['bidirectional_throats'] = str(num_full-num_upper)+' detected!'
         
         #Check for duplicate pores
 #        temp = misc.dist(self['pore.coords'],self['pore.coords'])

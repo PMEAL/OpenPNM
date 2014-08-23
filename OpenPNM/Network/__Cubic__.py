@@ -9,6 +9,7 @@ import OpenPNM
 
 import numpy as np
 import scipy as sp
+import scipy.sparse as sprs
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
@@ -63,9 +64,18 @@ class Cubic(GenericNetwork):
             heads.extend(H.flat)
             heads.extend(T.flat)
         pairs = np.vstack([tails, heads]).T
+        
+        #Convert 'pairs' to upper triangular
+        i = pairs[:,0]
+        j = pairs[:,1]
+        v = np.ones(len(pairs), dtype=int)
+        Np = len(points)
+        temp = sprs.coo_matrix((v,(i,j)),[Np,Np])
+        temp = sprs.triu(temp,k=1)
+        conns = sp.vstack((temp.row,temp.col)).T
 
         self['pore.coords'] = points
-        self['throat.conns'] = pairs
+        self['throat.conns'] = conns
 
         self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
         self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
