@@ -84,7 +84,7 @@ class Voronoi(GenericGeometry):
             else:
                 area[i]=0.0
 
-        self._net.set_data(prop='area',throats='all',data=area)
+        self._net['throat.area'] = area
         self._net['throat.perimeter']=perimeter
         self._net['throat.verts']=shared_verts
         self._net['throat.offset_verts']=offset_verts

@@ -567,8 +567,11 @@ class GenericNetwork(Core):
             - 'siblings': Clones are only connected to each other in the same manner as parents were connected
             - 'isolated': No connections between parents or siblings
         '''
-        if self.geometries() != []:
-            self._logger.warning('Cloning an active network is messy')
+        if (self._geometries != []):
+            raise Exception('Network has active Geometries, cannot proceed')
+        if (self._phases != []):
+            raise Exception('Network has active Phases, cannot proceed')
+            
         self._logger.debug(sys._getframe().f_code.co_name+': Cloning pores')
         apply_label = list(apply_label)
         #Clone pores
@@ -604,21 +607,10 @@ class GenericNetwork(Core):
         # Any existing adjacency and incidence matrices will be invalid
         self._update_network()
         
-    def stitch(self,heads,tails):
-        r'''
-        Adds throat connections between specified pores
-        
-        Parameters
-        ----------
-        pores : array_like
-            An Np x 2 array contains pairs of pores that should be connected
-        '''
-        tc = sp.vstack((heads,tails)).T
-        self.extend(throat_conns=tc)
-
     def extend(self,pore_coords=[],throat_conns=[]):
         r'''
-        Add pores (or throats) to the network
+        Add individual pores (or throats) to the network from a list of coords
+        or conns.
         
         Parameters
         ----------
@@ -628,6 +620,11 @@ class GenericNetwork(Core):
             The throat connections to add
         
         '''
+        if (self._geometries != []):
+            raise Exception('Network has active Geometries, cannot proceed')
+        if (self._phases != []):
+            raise Exception('Network has active Phases, cannot proceed')
+            
         self._logger.debug(sys._getframe().f_code.co_name+': Extending network')
         Nt = self.num_throats() + int(sp.size(throat_conns)/2)
         Np = self.num_pores() + int(sp.size(pore_coords)/3)
@@ -746,33 +743,6 @@ class GenericNetwork(Core):
         if check_health:
             self.network_health()
             
-    def join(self,network,P1,P2,mode='delaunay'):
-        r'''
-        Joins the supplied network with the current network.  The pores to be
-        joined must be labeled as 'join' in each network.
-        
-        Parameters
-        ----------
-        network : OpenPNM Network Object
-            The network to join to the current network
-            
-        P1 and P2 : array_like
-            The list of pores in the current network (P1) and the supplied 
-            network (P2) that should be joined.
-        
-        mode : string
-            The method to use for determining pore connections between
-            pores.  Options include:
-            
-            - 'delaunay' : Uses a Delaunay tessellation to determine neighbors
-            - 'direct' : Connects each pore to its nearest single neighbor
-        '''
-        if mode == 'direct':
-            D = misc.dist(self['pore.coords'][P1],network['pore.coords'][P2])
-            conns = [P1,sp.min(D[P1])]
-        
-        
-        
     def check_network_health(self):
         r'''
         This method check the network topological health by:
@@ -801,7 +771,7 @@ class GenericNetwork(Core):
             health['isolated_pores'] = sp.where(Ps==0)[0]
         
         #Check for clusters of isolated pores
-        Cs = self.find_clusters(self.tomask(throats=self.throats('all')))
+        Cs = self._find_clusters(self.tomask(throats=self.throats('all')))
         if sp.shape(sp.unique(Cs))[0] > 1:
             self._logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):

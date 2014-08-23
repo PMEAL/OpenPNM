@@ -1176,31 +1176,28 @@ class Core(Base):
         
         '''
         health = {}
-        flag = True
         if props == []:
             props = self.props(element)
         else:
             if type(props) == str:
                 props = [props]
-            if props[0].split('.')[0] not in ['pore','throat']:
-                self._logger.error('Properties must be either pore or throat')
         for item in props:
+            health[item] = 'Healthy'
             try: 
                 if sp.sum(sp.isnan(self[item])) > 0:
                     health[item] = 'Has NaNs'
-                    flag = False
-                elif sp.shape(self[item])[0] == 1:
-                    health[item] = 'Healthy Scalar'
-                elif sp.shape(self[item])[0] == self._count(item.split('.')[0]):
-                    health[item] = 'Healthy Vector'
-                else:
+                elif sp.shape(self[item])[0] != self._count(item.split('.')[0]):
                     health[item] = 'Wrong Length'
-                    flag = False
             except: 
                 health[item] = 'Does not exist'
-                flag = False
+        #Print health dictionary to console
         if quiet == False:
             pprint.pprint(health)
+        #Return single flag indicating overall health
+        flag = True
+        for item in health:
+            if health[item] != 'Healthy':
+                flag = False
         return flag
         
     def __str__(self):
