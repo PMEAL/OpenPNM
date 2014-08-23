@@ -680,11 +680,10 @@ class GenericNetwork(Core):
         >>> pn.count()
         {'pore': 124, 'throat': 296}
         
+        TODO: This logic works but can be shortened as done in subnet
+        
         '''
         
-        r'''
-        TODO: This logic works but can be shortened as done in subnet
-        '''
         if (self._geometries != []):
             raise Exception('Network has active Geometries, cannot proceed')
         if (self._phases != []):
@@ -852,92 +851,13 @@ class GenericNetwork(Core):
         
     def domain_length(self,face_1,face_2):
         r'''
-        Calculate the distance between two faces of the network
-        
-        Parameters
-        ----------
-        face_1 and face_2 : array_like
-            Lists of pores belonging to opposite faces of the network
-            
-        Returns
-        -------
-        The length of the domain in the specified direction
-        
-        Notes
-        -----
-        - Does not yet check if input faces are perpendicular to each other
         '''
-        #Ensure given points are coplanar before proceeding
-        if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
-            #Find distance between given faces
-            x = self['pore.coords'][face_1]
-            y = self['pore.coords'][face_2]
-            Ds = misc.dist(x,y)
-            L = sp.median(sp.amin(Ds,axis=0))
-        else:
-            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
-            f1 = self['pore.coords'][face_1]
-            f2 = self['pore.coords'][face_2]
-            distavg = [0,0,0]
-            distavg[0] = sp.absolute(sp.average(f1[:,0]) - sp.average(f2[:,0]))
-            distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
-            distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
-            L = max(distavg)
-        return L
+        raise NotImplementedError()
         
     def domain_area(self,face):
         r'''
-        Calculate the area of a given network face
-        
-        Parameters
-        ----------
-        face : array_like
-            List of pores of pore defining the face of interest
-            
-        Returns
-        -------
-        The area of the specified face
         '''
-        # The following code was not producing the correct areas. Temporarily 
-        # replaced with a less flexible calculation (assumes plane is normal 
-        # to one of the euclidean axes)
-#        if misc.iscoplanar(self['pore.coords'][face]):
-#            #Find area of inlet face
-#            x = self['pore.coords'][face]
-#            y = x
-#            As = misc.dist(x,y)
-#            temp = sp.amax(As,axis=0)
-#            h = sp.amax(temp)
-#            corner1 = sp.where(temp==h)[0][0]
-#            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
-#            a = sp.amin(As[corner1,p])
-#            o = h*sp.sin(sp.arccos((a/h)))
-#            A = o*a
-#        else:
-#            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
-#            x = self['pore.coords'][face]
-#            y = x
-#            As = misc.dist(x,y)
-#            temp = sp.amax(As,axis=0)
-#            h = sp.amax(temp)
-#            corner1 = sp.where(temp==h)[0][0]
-#            p = spsg.argrelextrema(As[corner1,:],sp.greater)[0]
-#            a = sp.amin(As[corner1,p])
-#            o = h*sp.sin(sp.arccos((a/h)))
-#            A = o*a
-            
-        coords = self['pore.coords'][face]
-        dx = max(coords[:,0]) - min(coords[:,0])
-        dy = max(coords[:,1]) - min(coords[:,1])
-        dz = max(coords[:,2]) - min(coords[:,2])
-        xy = dx*dy
-        xz = dx*dz
-        yz = dy*dz
-        A = max([xy,xz,yz])
-        
-        if not misc.iscoplanar(self['pore.coords'][face]):
-            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
-        return A
+        raise NotImplementedError()
 
 if __name__ == '__main__':
     #Run doc tests

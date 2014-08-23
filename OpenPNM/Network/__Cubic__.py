@@ -9,6 +9,7 @@ import OpenPNM
 
 import numpy as np
 import scipy as sp
+import OpenPNM.Utilities.misc as misc
 from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Cubic(GenericNetwork):
@@ -120,3 +121,69 @@ class Cubic(GenericNetwork):
         array = np.zeros(bbox)
         array.flat[actual_indexes] = values.ravel()
         return array.squeeze()
+        
+    def domain_length(self,face_1,face_2):
+        r'''
+        Calculate the distance between two faces of the network
+        
+        Parameters
+        ----------
+        face_1 and face_2 : array_like
+            Lists of pores belonging to opposite faces of the network
+            
+        Returns
+        -------
+        The length of the domain in the specified direction
+        
+        Notes
+        -----
+        - Does not yet check if input faces are perpendicular to each other
+        '''
+        #Ensure given points are coplanar before proceeding
+        if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
+            #Find distance between given faces
+            x = self['pore.coords'][face_1]
+            y = self['pore.coords'][face_2]
+            Ds = misc.dist(x,y)
+            L = sp.median(sp.amin(Ds,axis=0))
+        else:
+            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
+            f1 = self['pore.coords'][face_1]
+            f2 = self['pore.coords'][face_2]
+            distavg = [0,0,0]
+            distavg[0] = sp.absolute(sp.average(f1[:,0]) - sp.average(f2[:,0]))
+            distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
+            distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
+            L = max(distavg)
+        return L
+
+        
+    def domain_area(self,face):
+        r'''
+        Calculate the area of a given network face
+        
+        Parameters
+        ----------
+        face : array_like
+            List of pores of pore defining the face of interest
+            
+        Returns
+        -------
+        The area of the specified face
+        '''
+        coords = self['pore.coords'][face]
+        dx = max(coords[:,0]) - min(coords[:,0])
+        dy = max(coords[:,1]) - min(coords[:,1])
+        dz = max(coords[:,2]) - min(coords[:,2])
+        xy = dx*dy
+        xz = dx*dz
+        yz = dy*dz
+        A = max([xy,xz,yz])
+        
+        if not misc.iscoplanar(self['pore.coords'][face]):
+            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
+        return A
+    
+    
+    
+    
