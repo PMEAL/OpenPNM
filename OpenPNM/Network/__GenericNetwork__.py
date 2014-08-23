@@ -290,8 +290,21 @@ class GenericNetwork(Core):
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_connecting_throat(0,1)
         array([0])
+        
+        TODO: This now works on 'vector' inputs, but is not actually vectorized
+        in the Numpy sense, so could be slow with large P1,P2 inputs
         """
-        return sp.intersect1d(self.find_neighbor_throats(P1),self.find_neighbor_throats(P2))
+        Ts1 = self.find_neighbor_throats(P1,flatten=False)
+        Ts2 = self.find_neighbor_throats(P2,flatten=False)
+        Ts = []
+        for row in range(0,len(P1)):
+            if P1[row] == P2[row]:
+                throat = []
+            else:
+                throat = sp.intersect1d(Ts1[row],Ts2[row]).tolist()
+            Ts.insert(0,throat)
+        Ts.reverse()
+        return Ts
 
     def find_neighbor_pores(self,pores,mode='union',flatten=True,excl_self=True):
         r"""
