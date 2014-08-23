@@ -70,26 +70,29 @@ class Cubic(GenericNetwork):
         self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
 
         x,y,z = self['pore.coords'].T
-        self['pore.front'] = x == x.min()
-        self['pore.back'] = x == x.max()
-        self['pore.left'] = y == y.min()
-        self['pore.right'] = y == y.max()
-        self['pore.bottom'] = z == z.min()
-        self['pore.top'] = z == z.max()
+        self['pore.internal'] = self['pore.all']
+        self['pore.front'] = x <= x.min()
+        self['pore.back'] = x >= x.max()
+        self['pore.left'] = y <= y.min()
+        self['pore.right'] = y >= y.max()
+        self['pore.bottom'] = z <= z.min()
+        self['pore.top'] = z >= z.max()
 
     def add_boundaries(self):
         r'''
-        This method uses clone_pore to clone the surface pores (labeled 'left'
-        , 'right', etc), then shifts them to the periphery of the domain, and
+        This method uses ``clone`` to clone the surface pores (labeled 'left',
+        'right', etc), then shifts them to the periphery of the domain, and
         gives them the label 'right_face', 'left_face', etc.
         '''
         x,y,z = self['pore.coords'].T
         
+        Lc = sp.amax(sp.diff(x))
+        
         offset = {}
         offset['front'] = offset['left'] = offset['bottom'] = [0,0,0]
-        offset['back']  = [x.min(),0,0]
-        offset['right'] = [0,y.min(),0]
-        offset['top']   = [0,0,z.min()]
+        offset['back']  = [x.max()+Lc/2,0,0]
+        offset['right'] = [0,y.max()+Lc/2,0]
+        offset['top']   = [0,0,z.max()+Lc/2]
         
         scale = {}
         scale['front']  = scale['back']  = [0,1,1]
@@ -98,9 +101,9 @@ class Cubic(GenericNetwork):
         
         for label in ['front','back','left','right','bottom','top']:
             ps = self.pores(label)
-            self.clone(pores=ps,apply_label=['boundary',label+'_face',label])
+            self.clone(pores=ps,apply_label=[label+'_boundary','boundary'])
             #Translate cloned pores
-            ind = self.pores(label+'_face')
+            ind = self.pores(label+'_boundary')
             coords = self['pore.coords'][ind]
             coords = coords*scale[label] + offset[label]
             self['pore.coords'][ind] = coords
