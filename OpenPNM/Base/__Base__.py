@@ -321,45 +321,6 @@ class Base(dict):
         return self._name
         
     name = property(_get_name,_set_name)
-            
-    def save_model(self):
-        r'''
-        Save the current simulation in it's entirity.  
-        
-        '''
-        
-        if self.__module__.split('.')[1] == 'Network':
-            net = self
-        else:
-            net = self._net
-        print('Make temporary directory to store numpy zip files')
-        dirname = 'temp'
-        try:
-            os.mkdir(dirname)
-        except:
-            raise Exception('A model with that name already exists')
-            
-        #Save network
-        print('Save numpy zip files for each object')
-        sp.savez_compressed(dirname+'/'+'Network'+'.'+net.name+'.npz',**self)
-        #Save other objects
-        for geom in net._geometries:
-            filename = dirname+'/'+'Geometry'+'.'+geom.name+'.npz'
-            sp.savez_compressed(filename,**geom)
-        for phase in net._phases:
-            filename = dirname+'/'+'Phase'+'.'+phase.name+'.npz'
-            sp.savez_compressed(filename,**phase)
-            for phys in phase._physics:
-                filename = dirname+'/'+'Physics'+'.'+phys.name+'.'+'Phase'+'.'+phase.name+'.npz'
-                sp.savez_compressed(filename,**phys)
-        
-        #Convert 'temp' directory into a 'pnm' file and remove temp
-        print('Generate a zip archive from the temporary directory')
-        shutil.make_archive(base_name=net.name, format="zip", root_dir='temp')
-        print('Remove temporary directory')
-        shutil.rmtree('temp')
-        print('Rename zip file to a pnm file')
-        os.rename(net.name+'.zip',net.name+'.pnm')
 
 if __name__ == '__main__':
     import doctest
