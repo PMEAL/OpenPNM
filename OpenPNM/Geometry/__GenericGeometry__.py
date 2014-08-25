@@ -34,25 +34,25 @@ class GenericGeometry(Core):
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)
     """
 
-    def __init__(self,network,pores=[],throats=[],name=None,**kwargs):
+    def __init__(self,network=None,pores=[],throats=[],name=None,**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        self._net = network #Attach network to self        
-        self.name = name
 
-        #Register self with network.geometries
-        self._net._geometries.append(self)
-        
         #Initialize geometry locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-        network['pore.'+self.name] = False
-        network['pore.'+self.name][pores] = True
-        network['throat.'+self.name] = False
-        network['throat.'+self.name][throats] = True
+        
+        if network != None:
+            self._net = network  # Attach network to self
+            self._net._geometries.append(self)  # Register self with network.geometries
+            self.name = name
+            network['pore.'+self.name] = False
+            network['pore.'+self.name][pores] = True
+            network['throat.'+self.name] = False
+            network['throat.'+self.name][throats] = True
         
     def check_geometry_health(self):
         r'''

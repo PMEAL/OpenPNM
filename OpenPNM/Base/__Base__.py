@@ -166,8 +166,8 @@ class Base(dict):
         Returns
         -------
             If name is NOT provided, then a list of Physics names is returned. 
-            If a name IS provided, then the Physics object of that name is 
-            returned.  If a list of strings is provided
+            If a name or list of names IS provided, then the Physics object(s) 
+            with those name(s) is returned.
         '''
         # If arg given as string, convert to list
         if type(phys_name) == str:
@@ -187,12 +187,13 @@ class Base(dict):
         
         Parameters
         ----------
-        name : string, optional
-            The name of the Phase object to retrieve.  
+        name : string or list of strings, optional
+            The name(s) of the Phase object(s) to retrieve.  
         Returns
         -------
             If name is NOT provided, then a list of phase names is returned. If
-            a name IS provided, then the Phase object of that name is returned.
+            a name are provided, then a list containing the requested objects 
+            is returned.
         '''
         # If arg given as string, convert to list
         if type(phase_name) == str:
@@ -208,12 +209,12 @@ class Base(dict):
         
     def geometries(self,geom_name=[]):
         r'''
-        Retrieves Geometry associated with the object
+        Retrieves Geometry object(s) associated with the object
         
         Parameters
         ----------
-        name : string, optional
-            The name of the Geometry object to retrieve.  
+        name : string or list of strings, optional
+            The name(s) of the Geometry object to retrieve.  
         Returns
         -------
             If name is NOT provided, then a list of Geometry names is returned. 
@@ -317,6 +318,20 @@ class Base(dict):
                     net._physcis.remove(obj)
                     del phase
                     
+    def save(self,filename=''):
+        r'''
+        '''
+        if filename == '':
+            filename = self.name
+        sp.savez_compressed(filename,**self)
+    
+    def load(self,filename):
+        r'''
+        '''
+        filename = filename.split('.')[0] + '.npz'
+        temp = sp.load(filename)
+        return temp
+    
     def _set_name(self,name):
         if self._name != None:
             self._logger.error('Renaming objects can have catastrophic consequences')
