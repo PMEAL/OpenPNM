@@ -15,20 +15,23 @@ class Boundary(GenericGeometry):
 
     Parameters
     ----------
+    shape: str
+        Stick and Ball or Cube and Cuboid? ('spheres','cubes')
+        
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self,shape='spheres',**kwargs):
         r"""
         Initialize
         """
         super(Boundary,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        self._generate()
+        self._generate(shape)
         
-    def _generate(self):
+    def _generate(self,shape):
         r'''
         '''
         try:
@@ -50,8 +53,12 @@ class Boundary(GenericGeometry):
         self['pore.volume'] = 0.0
         self.add_model(propname='throat.length',model=gm.throat_length.straight)
         self.add_model(propname='throat.volume',model=gm.pore_misc.constant,value=0.0)
-        self.add_model(propname='throat.area',model=gm.throat_area.cylinder)
-        self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cylinder)
+        if shape == 'spheres':
+            self.add_model(propname='throat.area',model=gm.throat_area.cylinder)
+            self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cylinder)
+        elif shape == 'cubes':
+            self.add_model(propname='throat.area',model=gm.throat_area.cuboid)
+            self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cuboid)
         self['pore.area'] = 1.0
         
 if __name__ == '__main__':
