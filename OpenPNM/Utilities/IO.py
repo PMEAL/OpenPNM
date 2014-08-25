@@ -24,6 +24,10 @@ class Save():
         #Save other objects
         for geom in net._geometries:
             sim['Geometry'+'.'+geom.name] = geom.copy()
+            sim['Models'+'.'+geom.name] = {}
+            for prop in list(geom._models.keys()):
+                model = Save._save_model(geom,prop)
+                sim['Models'+'.'+geom.name][prop] = model
         for phase in net._phases:
             phase_name = 'Phase.'+phase.name
             if phase.phases() != []:  #If phase is a mixture of components
@@ -36,6 +40,23 @@ class Save():
         sim['save_info'] = 'just a test'
         _sp.savez_compressed(net.name,**sim)
         _os.rename(net.name+'.npz',net.name+'.pnm')
+        
+    def _save_model(obj,item):
+        r'''
+        '''
+        #Retrieve info from model
+        f = obj._models[item].func
+        a = obj._models[item].keywords
+        #Store path to model, name of model and argument key:value pairs in a dict
+        model = {}
+        model['propname'] = item
+        model['path'] = f.__module__
+        model['name'] = f.__name__
+        model['args'] = {}
+        for item in a:
+            if item not in ['physics','network','phase','geometry']:
+                model['args'][item] = a[item]
+        return model
 
 class Load():
     
@@ -82,5 +103,24 @@ class Load():
                 phase = net._find_object(obj_name=obj.split('.')[3])
                 phys = OpenPNM.Physics.GenericPhysics(network=net,phase=phase,name=obj.split('.')[1])
                 phys.update(sim[obj].item())
+        #Finally scan through and pick out 'Models' dictionaries
+        for obj in sim.keys():
+            if obj.split('.')[0] == 'Models':
+                temp = net._find_object(obj_name=obj.split('.')[1])
+                model_dict = sim[obj].item()
+                for model in model_dict.keys():
+                    Load._load_model(temp,model_dict[model])
         return net
+        
+    def _load_model(obj,model):
+        r'''
+        '''
+        #Import model using stored path and name
+        mod = eval(model['path']+'.'+model['name'])
+        print(model)
+        #Apply model to object using info in dict
+        obj.add_model(model=mod,propname=model['propname'],**model['args'])
+
+
+
     
