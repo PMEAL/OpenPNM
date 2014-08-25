@@ -97,7 +97,7 @@ class Cubic(GenericNetwork):
         '''
         x,y,z = self['pore.coords'].T
         
-        Lc = sp.amax(sp.diff(x))
+        Lc = sp.amax(sp.diff(x)) #this currently works but is very fragile
         
         offset = {}
         offset['front'] = offset['left'] = offset['bottom'] = [0,0,0]
@@ -182,14 +182,26 @@ class Cubic(GenericNetwork):
         The area of the specified face
         '''
         coords = self['pore.coords'][face]
-        dx = max(coords[:,0]) - min(coords[:,0])
-        dy = max(coords[:,1]) - min(coords[:,1])
-        dz = max(coords[:,2]) - min(coords[:,2])
-        xy = dx*dy
-        xz = dx*dz
-        yz = dy*dz
-        A = max([xy,xz,yz])
-        
+        rads = self['pore.diameter'][face]/2.
+        # calculate the area of the 3 principle faces of the bounding cuboid
+        dx = max(coords[:,0]+rads) - min(coords[:,0]-rads)
+        dy = max(coords[:,1]+rads) - min(coords[:,1]-rads)
+        dz = max(coords[:,2]+rads) - min(coords[:,2]-rads)
+        yz = dy*dz # x normal
+        xz = dx*dz # y normal
+        xy = dx*dy # z normal
+        # find the directions parallel to the plane
+        directions = sp.where([yz,xz,xy]!=max([yz,xz,xy]))[0] 
+        try:
+            # now, use the whole network to do the area calculation
+            coords = self['pore.coords']
+            rads = self['pore.diameter']/2.
+            d0 = (max(coords[:,directions[0]]+rads) - min(coords[:,directions[0]]-rads))
+            d1 = (max(coords[:,directions[1]]+rads) - min(coords[:,directions[1]]-rads))
+            A = d0*d1        
+        except:
+            # if that fails, use the max face area of the bounding cuboid
+            A = max([yz,xz,xy])
         if not misc.iscoplanar(self['pore.coords'][face]):
             self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
         return A
