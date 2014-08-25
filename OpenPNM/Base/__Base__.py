@@ -155,29 +155,33 @@ class Base(dict):
                     objs.append(phase)
             return objs
             
-    def physics(self,name=''):
+    def physics(self,phys_name=[]):
         r'''
         Retrieves Physics associated with the object
         
         Parameters
         ----------
-        name : string, optional
-            The name of the Physics object to retrieve
+        name : string or list of strings, optional
+            The name(s) of the Physics object to retrieve
         Returns
         -------
             If name is NOT provided, then a list of Physics names is returned. 
             If a name IS provided, then the Physics object of that name is 
-            returned.
+            returned.  If a list of strings is provided
         '''
-        if name == '':
+        # If arg given as string, convert to list
+        if type(phys_name) == str:
+            phys_name = [phys_name]
+        if phys_name == []:  # If default argument received
+            phys = [item.name for item in self._physics]
+        else:  # If list of names received
             phys = []
             for item in self._physics:
-                phys.append(item.name)
-        else:
-            phys = self._find_object(obj_name=name)
+                if item.name in phys_name:
+                    phys.append(item)
         return phys
         
-    def phases(self,name=''):
+    def phases(self,phase_name=[]):
         r'''
         Retrieves Phases associated with the object
         
@@ -190,15 +194,19 @@ class Base(dict):
             If name is NOT provided, then a list of phase names is returned. If
             a name IS provided, then the Phase object of that name is returned.
         '''
-        if name == '':
-            phases = []
+        # If arg given as string, convert to list
+        if type(phase_name) == str:
+            phase_name = [phase_name]
+        if phase_name == []:  # If default argument received
+            phase = [item.name for item in self._phases]
+        else:  # If list of names received
+            phase = []
             for item in self._phases:
-                phases.append(item.name)
-        else:
-            phases = self._find_object(obj_name=name)
-        return phases
+                if item.name in phase_name:
+                    phase.append(item)
+        return phase
         
-    def geometries(self,name=''):
+    def geometries(self,geom_name=[]):
         r'''
         Retrieves Geometry associated with the object
         
@@ -212,13 +220,17 @@ class Base(dict):
             If a name IS provided, then the Geometry object of that name is 
             returned.
         '''
-        if name == '':
-            geoms = []
+        # If arg given as string, convert to list
+        if type(geom_name) == str:
+            geom_name = [geom_name]
+        if geom_name == []:  # If default argument received
+            geom = [item.name for item in self._geometries]
+        else:  # If list of names received
+            geom = []
             for item in self._geometries:
-                geoms.append(item.name)
-        else:
-            geoms = self._find_object(obj_name=name)
-        return geoms
+                if item.name in geom_name:
+                    geom.append(item)
+        return geom
         
     def network(self,name=''):
         r'''
