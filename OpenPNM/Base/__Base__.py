@@ -323,14 +323,31 @@ class Base(dict):
         '''
         if filename == '':
             filename = self.name
-        sp.savez_compressed(filename,**self)
+        obj_dict = {}
+        obj_dict['data'] = self.copy()
+        obj_dict['info'] = {}
+        obj_dict['info']['name'] = self.name
+        obj_dict['info']['module'] = self.__module__
+        sp.savez_compressed(filename,**obj_dict)
     
     def load(self,filename):
         r'''
+        Loads a previously saved object's data onto new, empty Generic object
+        
+        Parameters
+        ----------
+        filename : string
+            The file containing the saved object data in Numpy zip format (npz)
         '''
-        filename = filename.split('.')[0] + '.npz'
-        temp = sp.load(filename)
-        return temp
+        if (self.Np == 0) and (self.Nt == 0):
+            filename = filename.split('.')[0] + '.npz'
+            temp = sp.load(filename)
+            data_dict = temp['data'].item()
+            info_dict = temp['info'].item()
+            self.update(data_dict)
+            self._name = info_dict['name']
+        else:
+            raise Exception('Cannot load saved data onto an active object')
     
     def _set_name(self,name):
         if self._name != None:
