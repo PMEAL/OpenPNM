@@ -129,7 +129,7 @@ class MatFile(GenericNetwork):
             self._pore_map = sp.zeros((Np-sp.shape(bad_pores)[0],),dtype=int)
             for pore in self.pores():
                 if pore not in bad_pores:
-                    self._pore_map[i] = pore                    
+                    self._pore_map[i] = pore 
                     i += 1
         #Create map for throats
         if sp.shape(bad_throats)[0] > 0:
@@ -140,8 +140,19 @@ class MatFile(GenericNetwork):
                     self._throat_map[i] = throat                    
                     i += 1
         self.trim(pores=bad_pores)
-            
-        
+        #Fix the pore transformer
+        try:        
+            if sp.shape(bad_pores)[0] > 0:
+                i = 0
+                old_transform = self._dictionary['pname_transform']
+                self._dictionary['pname_transform'] = sp.zeros((Np-sp.shape(bad_pores)[0],),dtype=int)
+                for pore in self.pores():
+                    if pore not in bad_pores:
+                        self._dictionary['pname_transform'][i] = old_transform[pore]
+                        i += 1
+        except:
+            self._logger.info('Could not update pname_transform. Imported network may not have had it.')
+
     def _add_geometry(self):
         try: 
             boundary_pores = sp.where(self['pore.type']!=0)[0]
