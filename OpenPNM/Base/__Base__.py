@@ -346,6 +346,7 @@ class Base(dict):
             info_dict = temp['info'].item()
             self.update(data_dict)
             self._name = info_dict['name']
+            temp.close()
         else:
             raise Exception('Cannot load saved data onto an active object')
     

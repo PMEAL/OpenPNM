@@ -81,6 +81,7 @@ class Load():
         sim['data'] = temp['data'].item()
         sim['tree'] = temp['tree'].item()
         sim['mods'] = temp['mods'].item()
+        temp.close()
 
         for obj in sim['data'].keys():  # Network object
             if obj.split('.')[0] == 'Network':
