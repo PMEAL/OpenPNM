@@ -50,7 +50,11 @@ class Core(Base):
         #Skip checks for protected props, and prevent changes if defined
         if key.split('.')[1] in ['all','map']:
             if key in self.keys():
-                self._logger.error(key+' is already defined.')
+                if sp.shape(self[key]) == (0,):
+                    self._logger.debug(key+' is being defined.')
+                    super(Base, self).__setitem__(key,value)
+                else:
+                    self._logger.error(key+' is already defined.')
             else:
                 self._logger.debug(key+' is being defined.')
                 super(Base, self).__setitem__(key,value)

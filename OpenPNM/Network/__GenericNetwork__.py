@@ -26,13 +26,21 @@ class GenericNetwork(Core):
 
     """
 
-    def __init__(self, name=None,**kwargs):
+    def __init__(self,name=None,coords=[],conns=[],**kwargs):
         r"""
         Initialize Network
         """
         super(GenericNetwork,self).__init__(**kwargs)
         self._logger.info("Construct Network")
-
+        
+        #Initialize properties to an empty network
+        Np = sp.shape(coords)[0]
+        Nt = sp.shape(conns)[0]
+        self.update({'pore.coords' : sp.array(coords)})
+        self.update({'throat.conns' :  sp.array(conns)})
+        self.update({'pore.all' : sp.ones((Np,),dtype=bool)})
+        self.update({'throat.all' : sp.ones((Nt,),dtype=bool)})
+        
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
         self._adjacency_matrix = {}
