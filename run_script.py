@@ -3,7 +3,7 @@ import OpenPNM
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic.empty([5,6,7], unit_cube=True, spacing=0.0001, name='net', loglevel=20)
+pn = OpenPNM.Network.Cubic(shape=[5,6,7], spacing=0.0001, name='net', loglevel=20)
 pn.add_boundaries()
 
 #==============================================================================
@@ -42,28 +42,15 @@ phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffu
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,loglevel=20)
-Ps = pn.pores(labels=['bottom_face'])
+Ps = pn.pores(labels=['bottom_boundary'])
 OP_1.run(invading_phase=water,defending_phase=air,inlets=Ps)
 OP_1.update(Pc=7000)
-#OP_1.plot_drainage_curve()
-
-#------------------------------------------------------------------------------
-'''Perform a Drainage Experiment on a SUB-network'''
-#------------------------------------------------------------------------------
-#Create a sub-network
-#import OpenPNM.Utilities.Subsets as subs
-#sub_pn = subs.subset_network(pn,pores=pn.pores(geom.name))
-#sub_water = subs.subset_phase(phase=water,subnet=sub_pn)
-##Run standard algorithm on subnet, and subphase
-#OP_2 = OpenPNM.Algorithms.OrdinaryPercolation(network=sub_pn)
-#OP_2.setup(invading_phase=sub_water,inlets=sub_pn.pores('bottom'))
-#OP_2.run()
 
 #------------------------------------------------------------------------------
 '''Perform Invasion Percolation'''
-##------------------------------------------------------------------------------
-inlets = pn.pores('bottom_face')
-outlets = pn.pores('top_face')
+#------------------------------------------------------------------------------
+inlets = pn.pores('bottom_boundary')
+outlets = pn.pores('top_boundary')
 IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'IP_1', loglevel = 30)
 IP_1.run(invading_phase = water, defending_phase = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
 IP_1.update()
@@ -73,9 +60,9 @@ IP_1.update()
 #------------------------------------------------------------------------------
 alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.pores(labels=['top_face'])
+BC1_pores = pn.pores(labels=['top_boundary'])
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
-BC2_pores = pn.pores(labels=['bottom_face'])
+BC2_pores = pn.pores(labels=['bottom_boundary'])
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
 #Add new model to air's physics that accounts for water occupancy
 phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
