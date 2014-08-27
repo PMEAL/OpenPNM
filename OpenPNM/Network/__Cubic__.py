@@ -44,7 +44,7 @@ class Cubic(GenericNetwork):
             arr = sp.array(template,ndmin=3,dtype=bool)
         
         self._shape = sp.shape(arr)  # Store original network shape
-        self._spacing = spacing
+        self._spacing = spacing  # Store network spacing instead of calculating it
         
         points = np.array([i for i,v in np.ndenumerate(arr)], dtype=float)
         points += 0.5
@@ -58,22 +58,11 @@ class Cubic(GenericNetwork):
             (I[:-1], I[1:]),
             ]:
             tails.extend(T.flat)
-            tails.extend(H.flat)
             heads.extend(H.flat)
-            heads.extend(T.flat)
         pairs = np.vstack([tails, heads]).T
         
-        #Convert 'pairs' to upper triangular
-        i = pairs[:,0]
-        j = pairs[:,1]
-        v = np.ones(len(pairs), dtype=int)
-        Np = len(points)
-        temp = sprs.coo_matrix((v,(i,j)),[Np,Np])
-        temp = sprs.triu(temp,k=1)
-        conns = sp.vstack((temp.row,temp.col)).T
-
         self['pore.coords'] = points
-        self['throat.conns'] = conns
+        self['throat.conns'] = pairs
         self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
         self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
         self['pore.index'] = sp.arange(0,len(self['pore.coords']))
@@ -145,7 +134,8 @@ class Cubic(GenericNetwork):
         
     def fromarray(self,array,propname):
         r'''
-        Apply data to the network based on a rectangular array
+        Apply data to the network based on a rectangular array filled with 
+        values.  Each array location corresponds to a pore in the network.
         
         Parameters
         ----------
