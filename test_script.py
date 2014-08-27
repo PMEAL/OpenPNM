@@ -8,9 +8,9 @@ def test_cubic_standard_call():
   np.testing.assert_almost_equal(pn['pore.coords'][0], [0.5,0.5,0.5])
 
 def test_cubic_optional_call():
-  image = np.random.rand(30,40)
-  pn = OpenPNM.Network.Cubic.from_image(image=image)
-  np.testing.assert_almost_equal(image, pn.asarray(pn['pore.values']))
+  image = np.random.rand(30,40,1)>0.5
+  pn = OpenPNM.Network.Cubic(shape=image)
+  np.testing.assert_almost_equal(image, pn.asarray(pn['pore.all']))
 
 def test_linear_solvers():
   pn = OpenPNM.Network.Cubic([1,40,30], spacing=0.0001)
@@ -41,33 +41,23 @@ def test_linear_solvers():
   print( alg_3['pore.mole_fraction'][BC1_pores] )
 
 def test_add_boundary():
-  pn = OpenPNM.Network.Cubic([5,5,5])
+  pn = OpenPNM.Network.Cubic(shape=[5,5,5])
   pn.add_boundaries()
 
-  keys_expected = {'pore.all', 'pore.back', 'pore.back_boundary', 'pore.bottom',
-  'pore.bottom_boundary','pore.boundary', 'pore.coords', 'pore.front',
-  'pore.front_boundary', 'pore.left', 'pore.left_boundary', 'pore.right',
-  'pore.right_boundary', 'pore.top', 'pore.top_boundary', 'pore.values',
-  'throat.all', 'throat.back', 'throat.back_boundary', 'throat.bottom',
-  'throat.bottom_boundary', 'throat.boundary', 'throat.conns', 'throat.front',
-  'throat.front_boundary', 'throat.left', 'throat.left_boundary', 'throat.right',
-  'throat.right_boundary', 'throat.top', 'throat.top_boundary'}
+  keys_expected = {'pore.back', 'pore.bottom', 'pore.top_boundary', 
+  'pore.right_boundary', 'throat.back_boundary', 'throat.all', 
+  'throat.bottom_boundary', 'throat.front_boundary', 'pore.boundary', 
+  'throat.left_boundary', 'throat.conns', 'throat.top_boundary', 
+  'pore.back_boundary', 'pore.top', 'pore.front_boundary', 'pore.all', 
+  'pore.front', 'pore.left_boundary', 'throat.boundary', 'pore.bottom_boundary', 
+  'throat.right_boundary', 'pore.coords', 'pore.internal', 'pore.index', 
+  'pore.left', 'pore.right'}
 
   keys_found = set(pn.keys())
 
   symmetric_diff = keys_found ^ keys_expected
   assert not symmetric_diff
 
-def test_rectilinear_integrity():
-  R = np.random.rand(3,4,5)
-  # prune the network way
-  network = OpenPNM.Network.Cubic.from_image(R)
-  network.trim( R.ravel() <= R.mean() )
-  O = network.asarray(network['pore.values'])
-  # what it would look like normally
-  M = np.where(R > R.mean(), R, 0)
-  np.testing.assert_almost_equal(M, O)
-  
 def test_open_air_diffusivity():
     pn = OpenPNM.Network.Cubic([5,5,5], spacing=1, name='net', loglevel=30)
     pn.add_boundaries()

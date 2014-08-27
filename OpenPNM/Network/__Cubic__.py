@@ -35,22 +35,22 @@ class Cubic(GenericNetwork):
     --------
     This class is a work in progress, examples forthcoming.
     """
-    @classmethod
-    def from_image(cls, image, *args, **kwargs):
-        network = cls(image.shape, *args, **kwargs)
-        network['pore.values'] = image.ravel()
-        return network
-    
-    def __init__(self, shape, spacing=None, bbox=None, **kwargs):
+    def __init__(self, shape, spacing=1, **kwargs):
         super(Cubic, self).__init__(**kwargs)
-        arr = np.atleast_3d(np.empty(shape))
-
+        
+        if type(shape) == list:
+            arr = np.atleast_3d(np.empty(shape))
+            trim = False
+        else:
+            arr = sp.array(shape,ndmin=3,dtype=bool)
+            trim = True
+        
+        self._shape = sp.shape(arr)  # Store original network shape
+        self._spacing = spacing
+        
         points = np.array([i for i,v in np.ndenumerate(arr)], dtype=float)
         points += 0.5
-        if spacing is not None:
-            points *= spacing
-        elif bbox is not None:
-            points *= bbox / self.points.max(axis=0)
+        points *= spacing
 
         I = np.arange(arr.size).reshape(arr.shape)
         tails, heads = [], []
@@ -76,9 +76,9 @@ class Cubic(GenericNetwork):
 
         self['pore.coords'] = points
         self['throat.conns'] = conns
-
         self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
         self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
+        self['pore.index'] = sp.arange(0,len(self['pore.coords']))
 
         x,y,z = self['pore.coords'].T
         self['pore.internal'] = self['pore.all']
@@ -88,6 +88,10 @@ class Cubic(GenericNetwork):
         self['pore.right'] = y >= y.max()
         self['pore.bottom'] = z <= z.min()
         self['pore.top'] = z >= z.max()
+        
+        #If an image was sent as the 'shape', then trim network to image shape
+        if trim:
+            self.trim(~arr.flatten())
 
     def add_boundaries(self):
         r'''
@@ -119,18 +123,48 @@ class Cubic(GenericNetwork):
             coords = coords*scale[label] + offset[label]
             self['pore.coords'][ind] = coords
 
-    def asarray(self, values):
-        points = self['pore.coords']
-        spacing = map(np.diff, map(np.unique, points.T))
-        min_spacing = [min(a) if len(a) else 1.0 for a in spacing]
-        points = (points / min_spacing).astype(int)
-        bbox = points.max(axis=0) - points.min(axis=0)
-        bbox = (bbox / min_spacing + 1).astype(int)
-        actual_indexes = np.ravel_multi_index(points.T, bbox)
-        print(bbox)
-        array = np.zeros(bbox)
-        array.flat[actual_indexes] = values.ravel()
-        return array.squeeze()
+    def asarray(self,values):
+        r'''
+        Retreive values as a rectangular array, rather than the OpenPNM list format
+        
+        Parameters
+        ----------
+        values : array_like
+            The values from the network (in a list) to insert into the array
+            
+        Notes
+        -----
+        This method can break on networks that have had boundaries added.  It
+        will usually work IF the list of values came only from 'internal' pores.
+        '''
+        if sp.shape(values)[0] > self.num_pores('internal'):
+            raise Exception('The received values are bigger than the original network')
+        Ps = sp.array(self['pore.index'][self.pores('internal')],dtype=int)
+        arr = sp.ones(self._shape)*sp.nan
+        ind = sp.unravel_index(Ps,self._shape)
+        arr[ind[0],ind[1],ind[2]] = values
+        return arr
+        
+    def fromarray(self,array,propname):
+        r'''
+        Apply data to the network based on a rectangular array
+        
+        Parameters
+        ----------
+        array : array_like
+            The rectangular array containing the values to be added to the
+            network. This array must be the same shape as the original network.
+            
+        propname : string
+            The name of the pore property being added.
+        '''
+        if sp.shape(array) != self._shape:
+            raise Exception('The received array does not match the original network')
+        temp = array.flatten()
+        Ps = sp.array(self['pore.index'][self.pores('internal')],dtype=int)
+        propname = 'pore.' + propname.split('.')[-1]
+        self[propname] = sp.nan
+        self[propname][self.pores('internal')] = temp[Ps]
         
     def domain_length(self,face_1,face_2):
         r'''
