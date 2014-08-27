@@ -35,15 +35,13 @@ class Cubic(GenericNetwork):
     --------
     This class is a work in progress, examples forthcoming.
     """
-    def __init__(self, shape, spacing=1, **kwargs):
+    def __init__(self, shape=None, template=None, spacing=1, **kwargs):
         super(Cubic, self).__init__(**kwargs)
         
-        if type(shape) == list:
+        if shape != None:
             arr = np.atleast_3d(np.empty(shape))
-            trim = False
-        else:
-            arr = sp.array(shape,ndmin=3,dtype=bool)
-            trim = True
+        elif template != None:
+            arr = sp.array(template,ndmin=3,dtype=bool)
         
         self._shape = sp.shape(arr)  # Store original network shape
         self._spacing = spacing
@@ -89,8 +87,8 @@ class Cubic(GenericNetwork):
         self['pore.bottom'] = z <= z.min()
         self['pore.top'] = z >= z.max()
         
-        #If an image was sent as the 'shape', then trim network to image shape
-        if trim:
+        #If an image was sent as 'template', then trim network to image shape
+        if template != None:
             self.trim(~arr.flatten())
 
     def add_boundaries(self):
