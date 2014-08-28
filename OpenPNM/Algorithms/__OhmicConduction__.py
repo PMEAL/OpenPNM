@@ -1,6 +1,6 @@
 """
-
-module __OhmicConduction__:
+===============================================================================
+module __OhmicConduction__: Electronic or ionic conduction
 ===============================================================================
 
 """
@@ -10,6 +10,10 @@ from .__GenericLinearTransport__ import GenericLinearTransport
 
 class OhmicConduction(GenericLinearTransport):
     r'''
+    A subclass of GenericLinearTransport to simulate electron and ionic 
+    conduction.  The 2 main roles of this subclass are to set the default 
+    property names and to implement a method for calculating the effective 
+    conductivity of the network.
 
     '''
 

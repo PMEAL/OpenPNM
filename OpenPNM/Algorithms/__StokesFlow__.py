@@ -1,6 +1,6 @@
 """
-
-module __StokesFlow__: 
+===============================================================================
+module __StokesFlow__: Viscous fluid flow
 ===============================================================================
 
 """
@@ -10,6 +10,9 @@ from .__GenericLinearTransport__ import GenericLinearTransport
 
 class StokesFlow(GenericLinearTransport):
     r'''
+    A subclass of GenericLinearTransport to simulate viscous flow.  The 2
+    main roles of this subclass are to set the default property names and to
+    implement a method for calculating the hydraulic permeability of the network.
         
     '''
     
@@ -27,7 +30,9 @@ class StokesFlow(GenericLinearTransport):
         
         super(GenericLinearTransport,self).run()
                 
-    def calc_eff_permeability(self, clean=False):
+    def calc_eff_permeability(self):
+        r'''
+        '''
         D_normal = self._calc_eff_prop()
         self._eff_property = D_normal*sp.mean(self._phase['pore.viscosity'])
         return self._eff_property

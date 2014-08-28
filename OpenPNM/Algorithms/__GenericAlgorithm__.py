@@ -1,8 +1,10 @@
 """
+===============================================================================
 module __GenericAlgorithm__: Base class to build custom algorithms
 ==================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Algorithms/__init__.py' file.
+This generic class contains the recommended methods for subclassed algorithms.
+It inherits from Core, so is Python Dict with the OpenPNM data control methods.
 
 """
 import OpenPNM

@@ -1,8 +1,7 @@
 """
-module __LinearSolver__: Algorithm for solving transport processes
-========================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
+===============================================================================
+module __GenericLinearTransport__: Class for solving linear transport processes
+===============================================================================
 
 """
 
@@ -14,8 +13,9 @@ from .__GenericAlgorithm__ import GenericAlgorithm
 
 class GenericLinearTransport(GenericAlgorithm):
     r"""
-    This class provides essential methods for building and solving matrices in a transport process.
-    It will be inherited during Fickian diffusion, Fourier heat conduction, Hagen Poiseuille permeability and electron conduction.
+    This class provides essential methods for building and solving matrices 
+    in a transport process.  It is inherited by FickianDiffusion, 
+    FourierConduction, StokesFlow and OhmicConduction.
 
     """
 
@@ -27,7 +27,7 @@ class GenericLinearTransport(GenericAlgorithm):
         
     def setup(self,phase,conductance,quantity):
         r'''
-        This setup provides the initial data for the solver.
+        This setup provides the initial data for the solver
         '''
         self._phase = phase
         self._conductance = 'throat.'+conductance.split('.')[-1]

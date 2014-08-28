@@ -1,7 +1,9 @@
 """
-
-module __FourierConduction__
 ===============================================================================
+module __FourierConduction__: Conductive heat transfer
+===============================================================================
+
+A subclass of GenericLinearTransport to simulate heat conduction
 
 """
 
@@ -10,7 +12,9 @@ from .__GenericLinearTransport__ import GenericLinearTransport
 
 class FourierConduction(GenericLinearTransport):
     r"""
-    
+    A subclass of GenericLinearTransport to simulate heat conduction.  The 2
+    main roles of this subclass are to set the default property names and to
+    implement a method for calculating the effective conductivity of the network.
     """
     
     def __init__(self,**kwargs):
