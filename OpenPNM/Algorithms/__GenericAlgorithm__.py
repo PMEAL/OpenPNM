@@ -6,12 +6,7 @@ module __GenericAlgorithm__: Base class to build custom algorithms
 
 """
 import OpenPNM
-import scipy as sp
-import numpy as np
-import scipy.sparse as sprs
-from time import clock
-import heapq
-import itertools
+import sys
 
 class GenericAlgorithm(OpenPNM.Base.Core):
     r"""
@@ -19,18 +14,17 @@ class GenericAlgorithm(OpenPNM.Base.Core):
 
     Parameters
     ----------
-    network : Descendent of OpenPNM.Network.GenericNetwork
-        A valid network for this algorithm
-    name : name of this algorithm
+    network : OpenPNM Network Object
+        The network object to which this algorithm will apply.  
+        
+    name : string, optional
+        Name of this algorithm
 
 
-
-    Examples
-    --------
-    >>> print('nothing yet')
-
-    .. note::
-    n/a
+    Notes
+    -----
+    If no network is supplied an empty algorithm object is returned.  This is
+    useful for loading in a saved algorithm from memory.
 
     """
 
@@ -38,38 +32,31 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         r"""
         Initialize
         """
-        super(GenericAlgorithm,self).__init__(**kwords)    
+        super(GenericAlgorithm,self).__init__(**kwords)
         self._logger.debug("Construct class")
-        self._net = network
-        self.name = name         
+        
+        if network == None:
+            self._net = OpenPNM.Network.GenericNetwork()
+        else:
+            self._net = network
+        self.name = name
 
         # Initialize label 'all' in the object's own info dictionaries
-        self['pore.all'] = network['pore.all']
-        self['throat.all'] = network['throat.all']
-
-    def setup(self, **params):
-        r"""
-        Perform applicable preliminary checks and calculations required for algorithm
-
-        Notes
-        -----
-        This method is not implemented in the GenericAlgorithm, and must be subclassed in each algorithm as necessary
-        """
-#        self._logger.error("_setup: not implemented")
+        self['pore.all'] = self._net['pore.all']
+        self['throat.all'] = self._net['throat.all']
 
     def run(self,**params):
         r"""
         Main run command for the algorithm
         """
-#        self._logger.info("Execute run(): Basic version")
-
+        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_outer_iteration_stage()
 
     def _do_outer_iteration_stage(self):
         r"""
         Executes the outer iteration stage
         """
-#        self._logger.info("Outer Iteration Stage: Basic version")
+        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_one_outer_iteration()
         
     def _do_one_outer_iteration(self):
@@ -77,31 +64,31 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         One iteration of an outer iteration loop for an algorithm
         (e.g. time or parametric study)
         """
-#        self._logger.info("One Outer Iteration: Basic version")
+        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_inner_iteration_stage()
 
     def _do_inner_iteration_stage(self):
         r"""
         Executes the inner iteration stage
         """
-#        self._logger.info("Inner Iteration Stage: Basic version")
+        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_one_inner_iteration()
         
     def _do_one_inner_iteration(self):
         r"""
         Executes one inner iteration
         """
-#        self._logger.warning("One Inner Iteration: Implement me")
+        self._logger.debug(sys._getframe().f_code.co_name)
+        
+    def return_results(self,**kwargs):
+        self._logger.debug(sys._getframe().f_code.co_name)
         
     def update(self,**kwargs):
-        print('not implemented')
+        self.return_results(**kwargs)
 
-    def set_result(self,**kwargs):
-        
-        self.update(**kwargs)
+
 
 if __name__ == '__main__':
-    print('    ************Testing Generic Algorithm**************')
     pn = OpenPNM.Network.TestNet()
-    test = OpenPNM.Algorithms.GenericAlgorithm(network=pn)
+    test = OpenPNM.Algorithms.GenericAlgorithm(network=pn,loglevel=10)
     test.run()
