@@ -48,6 +48,10 @@ class GenericPhase(Core):
         self['pore.all'] = self._net['pore.all']
         self['throat.all'] = self._net['throat.all']
         
+        #Set standard conditions on the fluid to get started
+        self['pore.temperature'] = 298.0
+        self['pore.pressure'] = 101325.0
+        
     def __setitem__(self,prop,value):
         for phys in self._physics:
             if prop in phys.keys():

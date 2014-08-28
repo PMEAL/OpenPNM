@@ -41,7 +41,7 @@ class GenericGeometry(Core):
         super(GenericGeometry,self).__init__(**kwargs)
         self._logger.debug("Class Constructor")
 
-        #Initialize geometry locations
+        #Initialize locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
         

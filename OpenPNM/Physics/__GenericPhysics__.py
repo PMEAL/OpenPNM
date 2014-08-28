@@ -30,26 +30,32 @@ class GenericPhysics(OpenPNM.Base.Core):
     
     """
 
-    def __init__(self,network,phase,pores=[],throats=[],name=None,**kwargs):
+    def __init__(self,network=None,phase=None,pores=[],throats=[],name=None,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        
-        #Append objects self for internal access
-        self._net = network
-        self.name = name
-        
-        #Append self to other objects
-        network._physics.append(self)
-        phase._physics.append(self)
-        self._phases.append(phase)
-        
-        #Initialize Physics locations
+
+        #Initialize locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-        phase['pore.'+self.name] = False
-        phase['pore.'+self.name][pores] = True
-        phase['throat.'+self.name] = False
-        phase['throat.'+self.name][throats] = True
+        
+        if network == None:
+            self._net = OpenPNM.Network.GenericNetwork()
+            self.name = name
+        else:
+            #Append objects self for internal access
+            self._net = network
+            self.name = name
+        
+            #Append self to other objects
+            network._physics.append(self)
+            phase._physics.append(self)
+            self._phases.append(phase)
+            
+            #Initialize Physics locations
+            phase['pore.'+self.name] = False
+            phase['pore.'+self.name][pores] = True
+            phase['throat.'+self.name] = False
+            phase['throat.'+self.name][throats] = True
         
     def check_physics_health(self):
         r'''
