@@ -44,6 +44,8 @@ class GenericGeometry(Core):
         #Initialize locations
         self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
         self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
+        self['pore.map'] = pores
+        self['throat.map'] = throats
         
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()
@@ -52,6 +54,7 @@ class GenericGeometry(Core):
             self._net = network  # Attach network to self
             self._net._geometries.append(self)  # Register self with network.geometries
             self.name = name
+            #Specify Geomtery locations in Network dictionary
             network['pore.'+self.name] = False
             network['pore.'+self.name][pores] = True
             network['throat.'+self.name] = False
