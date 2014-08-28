@@ -3,7 +3,6 @@ module Physics
 ===============================================================================
 
 """
-import sys, os
 import OpenPNM
 from OpenPNM.Base import Core
 import scipy as sp
@@ -16,8 +15,9 @@ class GenericPhase(Core):
 
     Parameters
     ----------
-    network : OpenPNM Network object 
+    network : OpenPNM Network object
         The network to which this Phase should be attached
+        
     components : list of OpenPNM Phase objects
         These Phase objects are ficticious or virtual phases that are the pure
         components from which the mixture is made.  These are used to calculate
@@ -25,30 +25,28 @@ class GenericPhase(Core):
         object will act like either a pure component, a mixture whose properties
         are well known (like air) and need not be found from consideration of
         the pure component properties.
+        
     name : str, optional
         A unique string name to identify the Phase object, typically same as 
         instance name but can be anything.
 
     """
-    def __init__(self,network,components=[],name=None,**kwargs):
+    def __init__(self,network=None,components=[],name=None,**kwargs):
         super(GenericPhase,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         
-        # Attach objects to self for internal access
-        self._net = network
-        self.name = name
-        [self._phases.append(comp) for comp in components]
+        if network == None:
+            self._net = OpenPNM.Network.GenericNetwork()
+        else:
+            self._net = network
         
-        # Append this Phase to the Network
-        network._phases.append(self)
+        self.name = name  # Assign name to object
+        [self._phases.append(comp) for comp in components]  # Associate any sub-phases
+        self._net._phases.append(self)  # Append this Phase to the Network
         
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = self._net['pore.all']
-        self['throat.all'] = self._net['throat.all']        
-        
-        # Set default T and P since most propery models require it
-        self['pore.temperature'] = 298.0
-        self['pore.pressure'] = 101325.0
+        self['throat.all'] = self._net['throat.all']
         
     def __setitem__(self,prop,value):
         for phys in self._physics:
