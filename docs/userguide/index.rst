@@ -8,9 +8,9 @@ Contents:
 
 .. toctree::
    :maxdepth: 3
-   
-   overview.rst
-   installation.rst
+
+   installation.rst   
+   getting_started.rst
    data_storage.rst
    network.rst
    geometry.rst
