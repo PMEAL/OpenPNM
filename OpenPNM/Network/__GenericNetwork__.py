@@ -701,11 +701,10 @@ class GenericNetwork(Core):
         {'pore': 124, 'throat': 296}
         
         TODO: This logic works but can be shortened as done in subnet
+        TODO: Enhance this to allow triming when phases and physics are present
         
         '''
         
-        if (self._geometries != []):
-            raise Exception('Network has active Geometries, cannot proceed')
         if (self._phases != []):
             raise Exception('Network has active Phases, cannot proceed')
         
@@ -738,14 +737,14 @@ class GenericNetwork(Core):
         Tnew1 = Pmap[tpore1[Tkeep]]
         Tnew2 = Pmap[tpore2[Tkeep]]
         
-        #Adjust throat lists
-        items = self.keys()
+
         #Write 'all' label specifically
         dict.__setitem__(self,'throat.all',sp.ones_like(Tnew1,dtype=bool))
         dict.__setitem__(self,'pore.all',sp.ones_like(Pnew,dtype=bool))
         # Write connections specifically
         dict.__setitem__(self,'throat.conns', sp.vstack((Tnew1,Tnew2)).T)
-        # Over-write remaining data and info
+        # Overwrite remaining data and info
+        items = self.keys()
         for key in items:
             if key.split('.')[1] not in ['conns','all']:
                 temp = self[key]
@@ -754,6 +753,26 @@ class GenericNetwork(Core):
                     self[key] = temp[Tkeep]
                 if key.split('.')[0] == 'pore':
                     self[key] = temp[Pkeep]
+        
+        #Trim associated Geometry objects
+        for geom in self._geometries:
+            Pgeom = sp.in1d(geom['pore.map'],sp.where(Pkeep)[0])
+            Tgeom = sp.in1d(geom['throat.map'],sp.where(Tkeep)[0])
+            dict.__setitem__(geom,'pore.all',Pgeom[Pgeom])
+            dict.__setitem__(geom,'throat.all',Tgeom[Tgeom])
+            dict.__setitem__(geom,'pore.map',self.pores(geom.name))
+            dict.__setitem__(geom,'throat.map',self.throats(geom.name))
+            # Overwrite remaining data and info
+            items = geom.keys()
+            for key in items:
+                if key.split('.')[1] not in ['all','map']:
+                    temp = geom[key]
+                    del geom[key]
+                    if key.split('.')[0] == 'throat':
+                        geom[key] = temp[Tgeom]
+                    if key.split('.')[0] == 'pore':
+                        geom[key] = temp[Pgeom]
+            
         
         #Reset network graphs
         self._update_network(mode='regenerate')
@@ -764,15 +783,17 @@ class GenericNetwork(Core):
             
     def check_network_health(self):
         r'''
-        This method check the network topological health by:
+        This method check the network topological health by checking for:
         
-            (1) Checking for isolated pores
-            (2) Checking for islands or isolated clusters of pores
-            (3) Checking for duplicate throats
+            (1) Isolated pores
+            (2) Islands or isolated clusters of pores
+            (3) Duplicate throats
+            (4) Bidirectional throats (ie. symmetrical adjacency matrix)
             
         Returns
         -------
-        A named tuple containing isolated pores and disconnected cluters
+        A dictionary containing the offending pores or throat numbers under
+        each named key
         
         Notes
         -----
@@ -821,11 +842,11 @@ class GenericNetwork(Core):
         if num_full > num_upper:
             health['bidirectional_throats'] = str(num_full-num_upper)+' detected!'
         
-        #Check for duplicate pores
+        #Check for coincident pores
 #        temp = misc.dist(self['pore.coords'],self['pore.coords'])
 #        temp = sp.triu(temp,k=1)  # Remove lower triangular of matrix
 #        temp = sp.where(temp==0)  # Find 0 values in distance matrix
-#        dupPs = temp[1]>temp[0]  # Find 0 values above diagonal
+#        dupPs = sp.where(temp[1]>temp[0])[0]  # Find 0 values above diagonal
 #        health['duplicate_pores'] = dupPs
         
         return health
