@@ -10,7 +10,7 @@ import scipy as _sp
 def series_resistors(physics,
                      phase,
                      network,
-                     pore_electrical_conductivity='pore.electrical_conductivity',
+                     pore_conductivity='pore.electrical_conductivity',
                      pore_area='pore.area',
                      pore_diameter='pore.diameter',
                      throat_area='throat.area',
@@ -26,7 +26,7 @@ def series_resistors(physics,
     phase : OpenPNM Phase Object
     """
     throats = phase.throats(physics.name)
-    sigmap = phase[pore_electrical_conductivity]
+    sigmap = phase[pore_conductivity]
     sigmat = phase.interpolate_data(sigmap)
     #Get Nt-by-2 list of pores connected to each throat
     pores = network.find_connected_pores(throats=network.throats(),flatten=0)

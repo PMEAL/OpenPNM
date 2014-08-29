@@ -53,6 +53,9 @@ class GenericLinearTransport(GenericAlgorithm):
         result (quantity). More elaborate updates should be subclassed.
         '''        
         self._phase[self._quantity] = self[self._quantity]
+        dx = sp.squeeze(sp.diff(self['pore.voltage'][self._net.find_connected_pores(self.throats())],n=1,axis=1))
+        g = self['throat.conductance']
+        self._phase['throat.rate'] = sp.absolute(g*dx)
         self._logger.debug('Results of '+self.name+' algorithm have been added to '+self._phase.name)
 
     def set_boundary_conditions(self,bctype='',bcvalue=[],pores=[],mode='merge'):
