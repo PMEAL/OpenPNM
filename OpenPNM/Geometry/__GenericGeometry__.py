@@ -15,17 +15,17 @@ class GenericGeometry(Core):
     Parameters
     ----------
     network : OpenPNM Network Object
-    
+
     name : string
         A unique name to apply to the object.  This name will also be used as a
         label to identify where this this geometry applies.
-    
+
     loglevel : int
         Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
 
     loggername : string (optional)
         Sets a custom name for the logger, to help identify logger messages
-        
+
     Examples
     --------
     >>> pn = OpenPNM.Network.TestNet()
@@ -42,24 +42,37 @@ class GenericGeometry(Core):
         self._logger.debug("Class Constructor")
 
         #Initialize locations
-        self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
-        self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-        self['pore.map'] = pores
-        self['throat.map'] = throats
-        
+        self['pore.all'] = sp.array([],ndmin=1,dtype=bool)
+        self['throat.all'] = sp.array([],ndmin=1,dtype=bool)
+
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()
-            self.name = name
         else:
             self._net = network  # Attach network to self
             self._net._geometries.append(self)  # Register self with network.geometries
-            self.name = name
-            #Specify Geomtery locations in Network dictionary
-            network['pore.'+self.name] = False
-            network['pore.'+self.name][pores] = True
-            network['throat.'+self.name] = False
-            network['throat.'+self.name][throats] = True
-        
+        self.name = name
+
+        #Initialize a label dictionary in the associated network
+        self._net['pore.'+self.name] = False
+        self._net['throat.'+self.name] = False
+        self.set_locations(pores=pores,throats=throats)
+
+    def set_locations(self,pores=[],throats=[]):
+        r'''
+        '''
+        if pores != []:
+            #Initialize locations
+            self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
+            self['pore.map'] = pores
+            #Specify Geometry locations in Network dictionary
+            self._net['pore.'+self.name][pores] = True
+        if throats != []:
+            #Initialize locations
+            self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
+            self['throat.map'] = throats
+            #Specify Geometry locations in Network dictionary
+            self._net['throat.'+self.name][throats] = True
+
     def check_geometry_health(self):
         r'''
         Perform a check to find pores with overlapping or undefined Geometries
