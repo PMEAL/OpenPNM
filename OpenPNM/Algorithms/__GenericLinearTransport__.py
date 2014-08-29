@@ -13,8 +13,8 @@ from .__GenericAlgorithm__ import GenericAlgorithm
 
 class GenericLinearTransport(GenericAlgorithm):
     r"""
-    This class provides essential methods for building and solving matrices 
-    in a transport process.  It is inherited by FickianDiffusion, 
+    This class provides essential methods for building and solving matrices
+    in a transport process.  It is inherited by FickianDiffusion,
     FourierConduction, StokesFlow and OhmicConduction.
 
     """
@@ -24,7 +24,7 @@ class GenericLinearTransport(GenericAlgorithm):
         Initializing the class
         '''
         super(GenericLinearTransport,self).__init__(**kwargs)
-        
+
     def setup(self,phase,conductance,quantity):
         r'''
         This setup provides the initial data for the solver
@@ -32,7 +32,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self._phase = phase
         self._conductance = 'throat.'+conductance.split('.')[-1]
         self._quantity = 'pore.'+quantity.split('.')[-1]
-        
+
         #Check health of conductance vector
         if self._phase.check_data_health(props=self._conductance,quiet=True):
             #If no nans, check for 0's
@@ -44,16 +44,16 @@ class GenericLinearTransport(GenericAlgorithm):
             self['throat.conductance'][ind] = gmin/1000000
         else:
             raise Exception('The provided throat conductance has problems')
-            
+
     def update(self):
         r'''
         Send results of simulation out the the appropriate locations.
-        
+
         This is a basic version of the update that simply sends out the main
         result (quantity). More elaborate updates should be subclassed.
-        '''        
+        '''
         self._phase[self._quantity] = self[self._quantity]
-        dx = sp.squeeze(sp.diff(self['pore.voltage'][self._net.find_connected_pores(self.throats())],n=1,axis=1))
+        dx = sp.squeeze(sp.diff(self[self._quantity][self._net.find_connected_pores(self.throats())],n=1,axis=1))
         g = self['throat.conductance']
         self._phase['throat.rate'] = sp.absolute(g*dx)
         self._logger.debug('Results of '+self.name+' algorithm have been added to '+self._phase.name)
@@ -62,36 +62,36 @@ class GenericLinearTransport(GenericAlgorithm):
         r'''
         Apply boundary conditions to specified pores.  This does not support
         throat boundary conditions yet.
-        
+
         Parameters
         ----------
         bctype : string
             Specifies the type of boundary condition to apply.  Can be one of:
-            
+
             - 'Dirichlet' : Specify the quantity in each pore
             - 'Neumann' : Specify the flow rate into each pore
             - 'Neumann_group' : Specify the net flow rate into a group of pores
-            
+
         bcvalue : array_like
             The boundary value to apply, such as concentration or rate
         pores : array_like
             The pores where the boundary conditions should be applied
         mode : string, optional
             Controls how the conditions are applied.  Options are:
-            
+
             - 'merge': Inserts the specified values, leaving existing values elsewhere
             - 'overwrite': Inserts specified values, clearing all other values
             - 'remove': Removes boundary conditions from specified pores
             - 'clear_all': Removes ALL boundary conditions
-            
+
         Notes
         -----
-        1. At the moment is it not possible to have multiple boundary conditions 
+        1. At the moment is it not possible to have multiple boundary conditions
         in the same pore, so when new conditions are applied any existing ones
         are removed from all other boundary types.
         2. It is also not yet possible to apply boundary conditions to throats.
         '''
-        
+
         BC_default = ['Dirichlet','Neumann','Neumann_group']
 
         #If mode is 'clear_all' then bypass checks
@@ -103,7 +103,7 @@ class GenericLinearTransport(GenericAlgorithm):
                     del self['pore.bcval_'+bcname]
                     del self['pore.'+bcname]
             return
-            
+
         #If mode is 'remove', also bypass checks
         if mode == 'remove':
             if pores == []:
@@ -116,43 +116,43 @@ class GenericLinearTransport(GenericAlgorithm):
 
         #Validate bctype
         if bctype.split('.')[-1] not in BC_default:
-            raise Exception('Unrecognized bctype') 
-            
+            raise Exception('Unrecognized bctype')
+
         #Validate pores
         if pores == []:
             raise Exception('Pores must be specified')
         else:
             pores = sp.array(pores,ndmin=1)
-                    
+
         #Validate bcvalue
         if bcvalue == []:
             raise Exception('bcvalue must be specified')
-        else:                        
+        else:
             bcvalue = sp.array(bcvalue,ndmin=1)
-        
+
         #Check bcvalues are compatible with bctypes
         if bctype == 'Neumann_group':  #Only scalars are acceptable
-            if sp.size(bcvalue) != 1: 
+            if sp.size(bcvalue) != 1:
                 raise Exception('When specifying Neumann_group, bcval should be a scalar')
         else: #Only scalars or Np-long are acceptable
             if sp.size(bcvalue) == 1:
                 bcvalue = sp.ones(sp.shape(pores))*bcvalue
             elif sp.size(bcvalue) != sp.size(pores):
                 raise Exception('The pore list and bcvalue list are different lengths')
-        
+
         #Confirm that prop and label arrays exist
         if 'pore.bcval_'+bctype not in self.props():
             self['pore.bcval_'+bctype] = sp.ones((self.num_pores(),),dtype=float)*sp.nan
         if 'pore.'+bctype not in self.labels():
             self['pore.'+bctype] = sp.zeros((self.num_pores(),),dtype=bool)
-            
+
         #Remove all BC from specified pores, prior to setting new ones
         for item in self.labels():
             bcname = item.split('.')[-1]
             if bcname in BC_default:
                 self['pore.bcval_'+bcname][pores] = sp.nan
                 self['pore.'+bcname][pores] = False
-        
+
         #Set boundary conditions based on supplied mode
         if mode == 'merge':
             self['pore.bcval_'+bctype][pores] = bcvalue
@@ -170,7 +170,7 @@ class GenericLinearTransport(GenericAlgorithm):
         # Filling coefficient matrix
         tpore1 = self._net['throat.conns'][:,0]
         tpore2 = self._net['throat.conns'][:,1]
-        
+
         #Identify Dirichlet pores, if any
         try:
             temp = self.pores('Dirichlet',mode='difference')
@@ -182,7 +182,7 @@ class GenericLinearTransport(GenericAlgorithm):
         modified_tpore2 = tpore2[loc1]
         row = modified_tpore1
         col = modified_tpore2
-        
+
         #Expand the conductance to a vector if necessary
         g = self['throat.conductance']
         if sp.size(g) == 1:
@@ -196,7 +196,7 @@ class GenericLinearTransport(GenericAlgorithm):
         col = sp.append(col,modified_tpore1)
         data = sp.append(data,data_main[loc2])
         A_dim = self.num_pores()
-        
+
         #Check for Neuman_group BCs and add superpores if necessary
         try:
             self.pores('Neumann_group')
@@ -204,7 +204,7 @@ class GenericLinearTransport(GenericAlgorithm):
             self._group_Neumann_vals = sp.unique(group_values)
             A_dim = A_dim + len(self._group_Neumann_vals)
             extera_neu = self._group_Neumann_vals
-            self._g_super = 1e-60            
+            self._g_super = 1e-60
             for item in sp.r_[0:len(extera_neu)]:
                 neu_tpore2 = self.pores('Neumann_group')
                 neu_tpore2 = neu_tpore2[group_values==extera_neu[item]]
@@ -214,9 +214,9 @@ class GenericLinearTransport(GenericAlgorithm):
                 row = sp.append(row,len(neu_tpore2)*[A_dim-item-1])
                 col = sp.append(col,neu_tpore2)
                 data = sp.append(data,len(neu_tpore2)*[self._g_super])
-        except: 
+        except:
             pass
-        
+
         # Adding positions for diagonal
         diag = sp.r_[0:A_dim]
         try:
@@ -229,7 +229,7 @@ class GenericLinearTransport(GenericAlgorithm):
             non_Dir_diag = diag[-sp.in1d(diag,diag[pores])]
         except:
             temp_data = sp.copy(data)
-            non_Dir_diag = diag            
+            non_Dir_diag = diag
         S_temp = sp.zeros(A_dim)
         for i in sp.r_[0:len(row)]:
             S_temp[row[i]] = S_temp[row[i]] - temp_data[i]
@@ -243,7 +243,7 @@ class GenericLinearTransport(GenericAlgorithm):
         return(A)
 
 
-    def _build_RHS_matrix(self):        
+    def _build_RHS_matrix(self):
         r'''
         This builds the right-hand-side matrix for the linear solver.
         '''
@@ -270,17 +270,17 @@ class GenericLinearTransport(GenericAlgorithm):
         r'''
         Send a list of pores and receive the net rate
         of material moving into them.
-        
+
         Parameters
         ----------
         pores : array_like
             The pores where the net rate will be calculated
         mode : string, optional
             Controls how to return the rate.  Options are:
-            
+
             - 'group'(default): It returns the cumulative rate moving into them
-            - 'single': It calculates the rate for each pore individually.       
-        
+            - 'single': It calculates the rate for each pore individually.
+
         '''
         pores = sp.array(pores,ndmin=1)
         R = []
@@ -302,7 +302,7 @@ class GenericLinearTransport(GenericAlgorithm):
             g = self['throat.conductance'][throats]
             R.append(sp.sum(sp.multiply(g,(X2-X1))))
         return(sp.array(R,ndmin=1))
-        
+
     def _do_one_inner_iteration(self):
         r'''
         This method collects the A and B matrices, solves AX = B and returns the result to the corresponding algorithm.
@@ -315,14 +315,14 @@ class GenericLinearTransport(GenericAlgorithm):
         X = sprslin.spsolve(A,B)
         self._Neumann_super_X = X[-sp.in1d(sp.r_[0:len(X)],sp.r_[0:self.num_pores()])]
         #Removing the additional super pore variables from the results
-        self[self._quantity] = X[sp.r_[0:self.num_pores()]]        
+        self[self._quantity] = X[sp.r_[0:self.num_pores()]]
         self._logger.info('Writing the results to '+'[\''+self._quantity+'\'] in the '+self.name+' algorithm.')
-            
+
     def _calc_eff_prop(self,check_health=False):
         r'''
-        This returns the main parameters for calculating the effective property in a linear transport equation. 
+        This returns the main parameters for calculating the effective property in a linear transport equation.
         It also checks for the proper boundary conditions, inlets and outlets.
-        
+
         Parameters
         ----------
         check_health : boolean(optional)
@@ -331,14 +331,14 @@ class GenericLinearTransport(GenericAlgorithm):
         try:
             self[self._quantity]
         except:
-            raise Exception('The algorithm has not been run yet. Cannot calculate effective property.')               
+            raise Exception('The algorithm has not been run yet. Cannot calculate effective property.')
         #Determine boundary conditions by analyzing algorithm object
         Ps = self.pores(labels='pore.Dirichlet')
         BCs = sp.unique(self['pore.bcval_Dirichlet'][Ps])
         if sp.shape(BCs)[0] != 2:
             raise Exception('The supplied algorithm did not have appropriate BCs')
         inlets = sp.where(self['pore.bcval_Dirichlet']==sp.amax(BCs))[0]
-        outlets = sp.where(self['pore.bcval_Dirichlet']==sp.amin(BCs))[0]        
+        outlets = sp.where(self['pore.bcval_Dirichlet']==sp.amin(BCs))[0]
 
         #Analyze input and output pores
         if check_health:
@@ -353,13 +353,12 @@ class GenericLinearTransport(GenericAlgorithm):
                 self._logger.warning('The inlet pores have too many neighbors. Internal pores appear to be selected.')
             PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
             if sp.shape(PnO) != sp.shape(outlets):
-                self._logger.warning('The outlet pores have too many neighbors. Internal pores appear to be selected.')        
-        
+                self._logger.warning('The outlet pores have too many neighbors. Internal pores appear to be selected.')
+
         #Fetch area and length of domain
         A = self._net.domain_area(face=inlets)
         L = self._net.domain_length(face_1=inlets,face_2=outlets)
         flow = self.rate(pores=inlets)
         D = sp.sum(flow)*L/A/(BCs[0]-BCs[1])
         return D
-        
-        
+
