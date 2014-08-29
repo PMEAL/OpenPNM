@@ -192,7 +192,6 @@ import math
 
 import numpy
 
-
 __version__ = '2013.06.29'
 __docformat__ = 'restructuredtext en'
 __all__ = []
@@ -1813,23 +1812,12 @@ def angle_between_vectors(v0, v1, directed=True, axis=0):
     True
 
     """
-    import warnings as w
-    w.simplefilter("error")
-    numpy.seterr(all='warn')
     v0 = numpy.array(v0, dtype=numpy.float64, copy=False)
     v1 = numpy.array(v1, dtype=numpy.float64, copy=False)
     dot = numpy.sum(v0 * v1, axis=axis)
-    try:
-        dot /= vector_norm(v0, axis=axis) * vector_norm(v1, axis=axis)
-    except RuntimeWarning:
-        #print(v0,v1)
-        dot =0
-    try:
-        angle= numpy.arccos(dot if directed else numpy.fabs(dot))
-    except RuntimeWarning:
-        angle=0
-        #print("Run time error on arccos, v0: " + str(v0) + " v1: " + str(v1) + " dot: " +str(dot))
-    return angle
+    dot /= vector_norm(v0, axis=axis) * vector_norm(v1, axis=axis)
+    return numpy.arccos(dot if directed else numpy.fabs(dot))
+
 
 def inverse_matrix(matrix):
     """Return inverse of square transformation matrix.
@@ -1879,42 +1867,3 @@ def is_same_transform(matrix0, matrix1):
     return numpy.allclose(matrix0, matrix1)
 
 
-def _import_module(name, package=None, warn=True, prefix='_py_', ignore='_'):
-    """Try import all public attributes from module into global namespace.
-
-    Existing attributes with name clashes are renamed with prefix.
-    Attributes starting with underscore are ignored by default.
-
-    Return True on successful import.
-
-    """
-    import warnings
-    from importlib import import_module
-    try:
-        if not package:
-            module = import_module(name)
-        else:
-            module = import_module('.' + name, package=package)
-    except ImportError:
-        if warn:
-            warnings.warn("failed to import module %s" % name)
-    else:
-        for attr in dir(module):
-            if ignore and attr.startswith(ignore):
-                continue
-            if prefix:
-                if attr in globals():
-                    globals()[prefix + attr] = globals()[attr]
-                elif warn:
-                    warnings.warn("no Python implementation of " + attr)
-            globals()[attr] = getattr(module, attr)
-        return True
-
-
-_import_module('OpenPNM.Utilities.transformations')
-
-if __name__ == "__main__":
-    import doctest
-    import random  # used in doctests
-    numpy.set_printoptions(suppress=True, precision=5)
-    doctest.testmod()
