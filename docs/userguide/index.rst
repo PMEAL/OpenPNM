@@ -14,7 +14,6 @@ Contents:
    data_storage.rst
    network.rst
    geometry.rst
-   fluids.rst
+   phases.rst
    physics.rst
    algorithms.rst
-   visualization.rst

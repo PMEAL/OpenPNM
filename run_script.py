@@ -9,7 +9,7 @@ pn.add_boundaries()
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-Ps = pn.pores('boundary',mode='difference')
+Ps = pn.pores('boundary',mode='not')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
 geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
 
