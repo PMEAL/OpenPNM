@@ -61,35 +61,6 @@ class GenericNetwork(Core):
         else:
             return super(GenericNetwork,self).__getitem__(key)
         
-    def generate(self,coords=[],conns=[],**params):
-        r"""
-        Generate the network from a list of pores coordinate and throat connections
-        
-        Parameters
-        ----------
-        coords : array_like
-            A Np x 3 array containing the [x,y,z] coordinates of the pores
-        conns : array_like
-            An Nt x 2 array list the [pore1,pore2] connected by each pore
-            
-        """
-        if coords != []:
-            coords = sp.array(coords)
-            assert sp.ndim(coords) == 2
-            if sp.shape(coords)[1] == 3:
-                self['pore.coords'] = coords
-                self['pore.all'] = sp.ones((sp.shape(coords)[0],),dtype=bool)
-            else:
-                self._logger.error('Pore coordinates were not the correct shape')
-        if conns != []:
-            conns = sp.array(conns)
-            assert sp.ndim(conns) == 2
-            if sp.shape(conns)[1] == 2:
-                self['throat.conns'] = conns
-                self['throat.all'] = sp.ones((sp.shape(conns)[0],),dtype=bool)
-            else:
-                self._logger.error('Throat connections were not the correct shape')
-        
     #--------------------------------------------------------------------------
     '''Graph Theory and Network Query Methods'''
     #--------------------------------------------------------------------------
@@ -759,7 +730,7 @@ class GenericNetwork(Core):
             Pgeom = sp.in1d(geom['pore.map'],sp.where(Pkeep)[0])
             Tgeom = sp.in1d(geom['throat.map'],sp.where(Tkeep)[0])
             dict.__setitem__(geom,'pore.all',Pgeom[Pgeom])
-            dict.__setitem__(geom,'throat.all',Tgeom[Tgeom])
+            dict.__setitem__(geom,'throat.all',Tgeom[Tgeom])p
             dict.__setitem__(geom,'pore.map',self.pores(geom.name))
             dict.__setitem__(geom,'throat.map',self.throats(geom.name))
             # Overwrite remaining data and info

@@ -557,7 +557,7 @@ class Core(Base):
                 temp = labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
                 temp.tolist()
                 return misc.PrintableList(temp)
-            if mode == 'difference':
+            if mode in ['difference', 'not']:
                 temp = labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
                 temp.tolist()
                 return misc.PrintableList(temp)
@@ -589,7 +589,7 @@ class Core(Base):
             
             * 'intersection' : Label applied to ALL of the given pores (or throats)
             
-            * 'difference' : Labels NOT applied to ALL pores (or throats)
+            * 'not' : Labels NOT applied to ALL pores (or throats)
             
             * 'count' : The number of labels on each pores (or throats)
             
@@ -686,7 +686,7 @@ class Core(Base):
                 info = self[element+'.'+item.split('.')[-1]]
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
-        elif mode == 'difference':
+        elif mode in ['difference','not']:
             none = sp.zeros_like(self[element+'.all'],dtype=int)
             for item in labels: #iterate over labels list and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
@@ -708,16 +708,13 @@ class Core(Base):
         mode : string, optional
             Specifies how the query should be performed.  The options are:    
 
-            * 'union' : (default) All pores with ANY of the given labels are 
-            returned.
+            * 'union' : (default) All pores with ANY of the given labels are returned.
 
-            * 'intersection' : Only pore with ALL the given labels are 
-            returned.
+            * 'intersection' : Only pore with ALL the given labels are returned.
 
-            * 'not_intersection' : Only pores with exactly one of the given 
-            labels are returned.
+            * 'not_intersection' : Only pores with exactly one of the given labels are returned.
             
-            * 'difference' : Only pores with none of the given labels are returned.
+            * 'not' : Only pores with none of the given labels are returned.
         
         Examples
         --------
@@ -747,16 +744,13 @@ class Core(Base):
         mode : string, optional
             Specifies how the query should be performed.  The options are: 
 
-            * 'union' : (default) All throats with ANY of the given labels are 
-            returned.
+            * 'union' : (default) All throats with ANY of the given labels are returned.
 
-            * 'intersection' : Only throats with ALL the given labels are 
-            counted.
+            * 'intersection' : Only throats with ALL the given labels are counted.
 
-            * 'not_intersection' : Only throats with exactly one of the given 
-            labels are counted.
+            * 'not_intersection' : Only throats with exactly one of the given labels are counted.
             
-            * 'difference' : Only throats with none of the given labels are returned.
+            * 'not' : Only throats with none of the given labels are returned.
         
         Examples
         --------
