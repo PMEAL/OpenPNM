@@ -5,15 +5,7 @@ Network
 ###############################################################################
 This module is the heart of OpenPNM.  It contains the ``GenericNetwork`` class which possesses a suite of network query methods, based the graph theory concepts of adjacency and incidence matrices.  The methods in ``GenericNetwork`` are fully agnostic to the type and topology of network due the generalized way that OpenPNM stores data.  This is explained in more detail in the :ref:`here<data_storage>`.
 
-The ``GenericNetwork`` class on its own has no topology.  If you instantiate a ``GenericNetwork`` it will have no pores or throats:
-
->>> pn = OpenPNM.Network.GenericNetwork()
->>> pn.num_pores()
-0
->>> pn.num_throats()
-0
-
-You can get a quick overview of the network properties by 'printing' it on the command line:
+The ``GenericNetwork`` class on its own has no topology.  If you instantiate a ``GenericNetwork`` it will have no pores or throats.  You can get a quick overview of the network properties by 'printing' it on the command line:
 
 >>> print(pn)
 ------------------------------------------------------------
@@ -30,9 +22,15 @@ OpenPNM.Network.GenericNetwork: 	GenericNetwork_GnSpz
 2     throat.all                          0         
 ------------------------------------------------------------
 
-As can be seen, a basic empty network has 0 pore coordinates and 0 throat connections, and the label 'all' exists but is applied nowhere.  
+As can be seen, a basic empty network has 0 pore coordinates and 0 throat connections, and the label 'all' exists but is applied nowhere.  It is also possible to just get the number of pores or throats on the object:
 
-The network module contains numerous subclasses of ``GenericNetwork``, which possess the code for actually generating specific network topologies (e.g. cubic, random, etc).  All subclasses derive from ``GenericNetwork`` so have its methods, as well as any additional methods relevant to the specific topology.  Generating a standard Cubic network is accomplished with:
+>>> pn = OpenPNM.Network.GenericNetwork()
+>>> pn.num_pores()
+0
+>>> pn.num_throats()
+0
+
+The Network module contains numerous subclasses of ``GenericNetwork``, which possess the code for actually generating specific network topologies (e.g. cubic, random, etc).  All subclasses derive from ``GenericNetwork`` so have its methods, as well as any additional methods relevant to the specific topology.  Generating a standard Cubic network is accomplished with:
 
 >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],name='demo')
 >>> print(pn)

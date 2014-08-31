@@ -3,7 +3,7 @@
 ###############################################################################
 Geometry
 ###############################################################################
-The *Geometry* module controls all the network pore and throat size information.  This module contains the ``GenericGeometry`` class, which like all OpenPNM objects is subclass of Python's ``dict`` class, but has numerous OpenPNM specific methods added to it.  An empty ``GenericGeometry`` object *can* be initialized with no arguments, but this is not a useful object since it isn't associated with a network or assigned to any pores.  A more useful *Geometry* object is obtained by instantiating a non-empty network, then assign a GenericGeometry to all pores and throats:
+The *Geometry* module manages the network pore and throat size information.  This module contains the ``GenericGeometry`` class, which like all OpenPNM objects is subclass of Python's ``dict`` class, but has numerous OpenPNM specific methods added to it.  An empty ``GenericGeometry`` object *can* be initialized with no arguments, but this is not a useful object since it isn't associated with a network or assigned to any pores.  A more useful *Geometry* object is obtained by instantiating a non-empty network, then assign a GenericGeometry to all pores and throats:
 
 >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
 >>> Ps = pn.pores('pore.all')

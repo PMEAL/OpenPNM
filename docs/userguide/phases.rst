@@ -21,10 +21,6 @@ OpenPNM.Phases.GenericPhase: 	GenericPhase_jypSa
 2     throat.all                          54        
 ------------------------------------------------------------
 
-.. note:: Phases Exist Everywhere
-	
-	Notice that pores and throats were *not* sent to the GenericPhase constructor.  This is because *Phases* exist everywhere.  This might seem counterintuitive in a multiphase simulation where one phase displaces another, but it is much easier to calculate the *Phase* properties everywhere, and separately track where each phase is present and in what amount.  
-
 The pore temperature and pressure are automatically set to standard conditions when the object is generated.  These can easily be changed:
 
 >>> air['pore.temperature'] = 363.0
