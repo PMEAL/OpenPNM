@@ -42,7 +42,7 @@ class Air(GenericPhase):
                        b=-2.34621E-3)
         self['pore.molecular_weight'] = 28.97
         self['pore.critical_temperature'] = 132.5
-        self['pore.critical_volume'] = 0.0883
+        self['pore.critical_pressure'] = 37.25*101325
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

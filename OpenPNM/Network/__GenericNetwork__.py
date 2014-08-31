@@ -730,7 +730,7 @@ class GenericNetwork(Core):
             Pgeom = sp.in1d(geom['pore.map'],sp.where(Pkeep)[0])
             Tgeom = sp.in1d(geom['throat.map'],sp.where(Tkeep)[0])
             dict.__setitem__(geom,'pore.all',Pgeom[Pgeom])
-            dict.__setitem__(geom,'throat.all',Tgeom[Tgeom])p
+            dict.__setitem__(geom,'throat.all',Tgeom[Tgeom])
             dict.__setitem__(geom,'pore.map',self.pores(geom.name))
             dict.__setitem__(geom,'throat.map',self.throats(geom.name))
             # Overwrite remaining data and info

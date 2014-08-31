@@ -35,8 +35,8 @@ class GenericPhysics(OpenPNM.Base.Core):
         self._logger.debug("Construct class")
 
         #Initialize locations
-        self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
-        self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
+        self['pore.all'] = sp.array([],dtype=bool)
+        self['throat.all'] = sp.array([],dtype=bool)
 
         #Associate with Network
         if network == None:
