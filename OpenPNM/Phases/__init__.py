@@ -1,7 +1,7 @@
 r"""
-*******************************************************************************
+###############################################################################
 :mod:`OpenPNM.Phases` -- Phase Property Estimation Methods
-*******************************************************************************
+###############################################################################
 
 .. module:: OpenPNM.Phases
 
@@ -9,6 +9,21 @@ Contents
 --------
 This module contains subclasses for producing specific phases
 
+
+Classes
+-------
+
+.. autoclass:: GenericPhase
+   :members:
+
+.. autoclass:: Air
+   :members:
+
+.. autoclass:: Water
+   :members:
+   
+.. autoclass:: Mercury
+   :members:
 
 """
 
