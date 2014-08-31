@@ -1,5 +1,6 @@
 """
-module Physics
+===============================================================================
+module __GenericPhase__: Base class for building Phase objects
 ===============================================================================
 
 """
@@ -109,5 +110,18 @@ class GenericPhase(Core):
                 pass
         return mole_sum
     
+    def check_physics_health(self):
+        r'''
+        Perform a check to find pores with overlapping or undefined Physics
+        '''
+        phys = self.physics()
+        temp = sp.zeros((self.Np,))
+        for item in phys:
+                ind = self['pore.'+item]
+                temp[ind] = temp[ind] + 1
+        health = {}
+        health['overlapping_pores'] = sp.where(temp>1)[0].tolist()
+        health['undefined_pores'] = sp.where(temp==0)[0].tolist()
+        return health
 
 

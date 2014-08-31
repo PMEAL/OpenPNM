@@ -1,8 +1,7 @@
 """
+===============================================================================
 module __GenericNetwork__: Abstract class to construct pore networks
-==================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Network.__init__.py' file.
+===============================================================================
 
 """
 
@@ -820,6 +819,20 @@ class GenericNetwork(Core):
 #        dupPs = sp.where(temp[1]>temp[0])[0]  # Find 0 values above diagonal
 #        health['duplicate_pores'] = dupPs
         
+        return health
+        
+    def check_geometry_health(self):
+        r'''
+        Perform a check to find pores with overlapping or undefined Geometries
+        '''
+        geoms = self.geometries()
+        temp = sp.zeros((self.Np,))
+        for item in geoms:
+            ind = self['pore.'+item]
+            temp[ind] = temp[ind] + 1
+        health = {}
+        health['overlapping_pores'] = sp.where(temp>1)[0].tolist()
+        health['undefined_pores'] = sp.where(temp==0)[0].tolist()
         return health
         
     def _update_network(self,mode='clear'):

@@ -1,6 +1,7 @@
 """
-module __GenericGeometry__: Base class to construct pore networks
-==================================================================
+===============================================================================
+module __GenericGeometry__: Base class to manage pore scale geometry
+===============================================================================
 
 """
 
@@ -59,6 +60,20 @@ class GenericGeometry(Core):
 
     def set_locations(self,pores=[],throats=[]):
         r'''
+        This method can be used to set the pore and throats locations of an
+        *empty* object.  Once locations have been set they can not be changed.
+        
+        Parameters
+        ----------
+        pores and throats : array_like
+            The list of pores and/or throats where the object should be applied.
+            
+        Notes
+        -----
+        This method is intended to assist in the process of loading saved
+        objects.  Save data can be loaded onto an empty object, then the object 
+        can be reassociated with a Network manually by setting the pore and 
+        throat locations on the object.  
         '''
         if pores != []:
             #Initialize locations
@@ -72,21 +87,6 @@ class GenericGeometry(Core):
             self['throat.map'] = throats
             #Specify Geometry locations in Network dictionary
             self._net['throat.'+self.name][throats] = True
-
-    def check_geometry_health(self):
-        r'''
-        Perform a check to find pores with overlapping or undefined Geometries
-        '''
-        network = self._net
-        geoms = self._net.geometries()
-        temp = sp.zeros((self._net.Np,))
-        for item in geoms:
-            ind = network['pore.'+item]
-            temp[ind] = temp[ind] + 1
-        health = {}
-        health['overlaps'] = sp.where(temp>1)[0].tolist()
-        health['undefined'] = sp.where(temp==0)[0].tolist()
-        return health
 
 if __name__ == '__main__':
     #Run doc tests
