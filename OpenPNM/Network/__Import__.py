@@ -1,15 +1,7 @@
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
-
 """
-module __GenericGeometry__: Base class to construct pore networks
-==================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
+===============================================================================
+module __Import__: Subclass to import Networks from a Matlab 'mat' file
+===============================================================================
 
 """
 
