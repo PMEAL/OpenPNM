@@ -7,7 +7,15 @@ r"""
 
 Contents
 --------
-This module contains subclasses for producing specific phases
+GenericPhase: The basic class which defines how a Phase is instantiated.  It
+also has a few specific method for querying the health of mixtures or physics
+objects.
+
+Subclasses: OpenPNM includes a few pre-written subclasses that describe the 
+most commonly used materials, like Air, Water and Mercury.  Creating a custom
+Phase subclass simply requires placing a file in the Phases directory and it 
+will be automatically loaded.  
+
 
 
 Classes
@@ -35,6 +43,9 @@ for item in _os.listdir(dir):
         if item == '__init__.py':
             pass
         elif item[0:2] == '__':
-            exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
+            try:
+                exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
+            except:
+                print('File name '+item+' does not match class name, cannot import automatically')
         else:
             exec('from . import ' + format(item.split('.')[0]))

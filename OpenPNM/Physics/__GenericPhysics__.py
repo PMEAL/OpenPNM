@@ -89,21 +89,6 @@ class GenericPhysics(OpenPNM.Base.Core):
             #Specify Physics locations in Phase dictionary
             self._phases[0]['throat.'+self.name][throats] = True
 
-    def check_physics_health(self):
-        r'''
-        Perform a check to find pores with overlapping or undefined Physics
-        '''
-        phase = self._phases[0]
-        phys = phase.physics()
-        temp = sp.zeros((phase.Np,))
-        for item in phys:
-                ind = phase['pore.'+item]
-                temp[ind] = temp[ind] + 1
-        health = {}
-        health['overlaps'] = sp.where(temp>1)[0].tolist()
-        health['undefined'] = sp.where(temp==0)[0].tolist()
-        return health
-
 if __name__ == '__main__':
     print('none yet')
 

@@ -10,7 +10,7 @@ Contents
 GenericNetwork: Contains many classes for working with the topology of the
 networks
 
-Subclasses: Inherit fro GenericNetwork, and contain additional methods for
+Subclasses: Inherit from GenericNetwork, and contain additional methods for
 actually generating topology.  Users can create thrir own topology generators
 by adding a file to the Network directory.  
 
