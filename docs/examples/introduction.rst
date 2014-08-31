@@ -22,7 +22,7 @@ Next, it's time to generate a Network.  This is accomplished by choosing the des
 
 .. code-block:: python
 
-	pn = OpenPNM.Network.Cubic.empty(name='net',loglevel=20,dims=[10,10,10])
+	pn = OpenPNM.Network.Cubic(name='net',shape=[10,10,10])
 
 This generates a topological network called *pn* which contains pores at the correct spatial positions and connections between the pores according the desired topology, but without boundary pores.  The network can be queried for certain topological information such as:
 
@@ -75,14 +75,6 @@ Then, the different geometry models are added one by one to the object geom.
 	geom.add_model(propname='throat.length',model=gm.throat_length.straight,regen_mode = 'static')
 	geom.add_model(propname='throat.volume',model=gm.throat_volume.cylinder,regen_mode = 'static')
 	geom.add_model(propname='throat.area',model=gm.throat_area.cylinder,regen_mode='static')
-
-The added model could be checked through the folowing list:
-
-.. code-block:: python
-
-	list(geom._models.keys()) #['pore.seed', 'throat.seed', 'pore.diameter', 'throat.diameter', 'pore.volume', 'pore.area', 'throat.length', 'throat.volume', 'throat.area']
-
-	
 	
 Each of the above commands looks into the submodule associated with the `propname` argument, extracts the model, assigns the specified parameters, and finally attaches the model to the Geometry object.  
 

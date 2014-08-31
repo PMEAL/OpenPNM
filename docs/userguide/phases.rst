@@ -1,9 +1,14 @@
 .. _phases:
 
-###############################################################################
+===============================================================================
 Phases
-###############################################################################
-The *Phase* module controls the physical properties of the phases used inside the pore network.  Fluid properties such as gas viscosity and liquid density are calculate by the *Phase* classes.  These are necessary when performing quantitative simulations of transport processes in the network.  The *Phase* module works very similar to the *Geometry* model outlined above.  There is a ``GenericPhase`` class that is associated with a network object during instantiation as follows:
+===============================================================================
+The *Phase* module controls the physical properties of the phases used inside the pore network.  Fluid properties such as gas viscosity and liquid density are calculate by the *Phase* classes.  These are necessary when performing quantitative simulations of transport processes in the network.  
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Basic Usage
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+There is a ``GenericPhase`` class that is associated with a network object during instantiation as follows:
 
 >>> air = OpenPNM.Phases.GenericPhase(network=pn,name='air')
 >>> print(air)
@@ -29,6 +34,9 @@ Note that sending a scalar (363.0) without including an index into 'pore.tempera
 
 >>> air['pore.temperature'][[0,1,2,3]] = 355.0
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Adding Models
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Phase objects are meant to do more than just track temperature.  Many models for estimating the various thermo-physical properties of fluids and solids have been included.  These are located in OpenPNM.Phases.models, with each file corresponding to a common property, containing several options for gas, liquid and solid properties.  Models are retrieved from this library and attached to the *Phase* objects as follows:
 
 >>> air['pore.temperature'] = 298.0
@@ -49,3 +57,8 @@ Note that the ``regenerate`` method must called for the change in temperature to
 **Phase** objects are 'built' by the user to contain the specific methods that are to be used to calculate the phase properties.  For instance, a **Phase** object can calculate viscosity assuming a constant value, or Reynolds equation.  The user can use the methods supplied with OpenPNM, or add their own.  
 
 Typically there will be multiple **Phase** objects defined for each simulation, since most models will have at least an invading fluid and a defending fluid.  There can be an unlimited number of phases associated with a **Network**.  
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Customizing Phases
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+For description of how to create customized subclasses, add properties to the model library, and add new models see :ref:`Customizing OpenPNM<customizing>`

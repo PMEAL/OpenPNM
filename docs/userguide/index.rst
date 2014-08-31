@@ -7,13 +7,14 @@
 Contents:
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
    installation.rst   
    getting_started.rst
-   data_storage.rst
    network.rst
    geometry.rst
    phases.rst
    physics.rst
    algorithms.rst
+   data_storage.rst
+   customizing.rst

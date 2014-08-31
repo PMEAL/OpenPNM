@@ -1,10 +1,13 @@
 .. _network:
 
-###############################################################################
+===============================================================================
 Network
-###############################################################################
+===============================================================================
 This module is the heart of OpenPNM.  It contains the ``GenericNetwork`` class which possesses a suite of network query methods, based the graph theory concepts of adjacency and incidence matrices.  The methods in ``GenericNetwork`` are fully agnostic to the type and topology of network due the generalized way that OpenPNM stores data.  This is explained in more detail in the :ref:`here<data_storage>`.
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Basic Usage
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 The ``GenericNetwork`` class on its own has no topology.  If you instantiate a ``GenericNetwork`` it will have no pores or throats.  You can get a quick overview of the network properties by 'printing' it on the command line:
 
 >>> print(pn)
@@ -58,9 +61,9 @@ OpenPNM.Network.Cubic: 	demo
 
 The print-out of the network information shows that it has 27 pores and 54 throats, with properties of 'pore.coords', 'pore.index' and 'throat.conns'.  Because the ``Cubic`` class only generates the topology, there is not any information about pore and throat sizes.  The only requirements of a topology are that the pores have spatial locations (given by 'pore.coords') and throats know which two pores they connect ('throat.conns').  ('pore.index' is required for other purposes).  
 
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Properties
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Accessing the pore and throat property can be accomplished using standard Python ``dict`` syntax:
 
 >>> pn['pore.index']
@@ -97,9 +100,9 @@ All the main OpenPNM objects have a method for quickly listing all of the define
 
 This is useful for iterating through all properties on the object, or just for visually inspecting the object.
 
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Labels
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 The print-out of ``Cubic`` also includes a number of labels that were automatically applied by the generator. Labels are quite useful as they allow a quick way to select a subset of pores:
 
 >>> pn.pores('pore.back')
@@ -114,9 +117,9 @@ Note that this could also have been achieved by checking pore coordinates and fi
 >>> pn.pores('pore.top_half')
 array([ 2,  5,  8, 11, 14, 17, 20, 23, 26], dtype=int64)
 
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Topology Queries
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 The OpenPNM subclass of the Python ``dict`` has numerous additional methods that are all available to all the main OpenPNM objects.  The GenericNetwork class has an additional suite of methods that are specifically relating to querying the Network topology, such as finding the neighbors of a pore, or finding the throat that connects 2 pores:
 
 >>> pn.find_neighbor_pores(pores=[0])
@@ -130,9 +133,9 @@ array([[0, 1],
 
 The best way to explore the available methods is to use an IDE or editor that support the autocomplete function, such as Spyder.  This way, you can type ``pn.`` and a pop-up list of available methods will appear.  Extensive documentation is also included inside the OpenPNM code itself in the form of 'docstrings' which will be interpreted by Spyder and shown in the *Object Inspector*.  These docstrings give a description of the required and optional arguments to each method, along with examples and notes where applicable.  
 
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Topology Manipulations and Operations
--------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 It is possible to add and remove pores and throats from the Network topology after it has been generated.  The ``trim`` command takes a list of pore or throat numbers and removes from the Network, while the 'extend' command receives a set of pore coordinates and/or throat connections and adds them to the Network:
 
 >>> pn.trim(pores=[0,2,4])
@@ -178,3 +181,8 @@ Extending the network can also be done.  For instance, it is possible to reconne
 array([0])
 
 This indicates that pore now has pore 0 as a connected neighbor.  A health check of the network would also pass cleanly.  
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Creating Custom Network Topology Generators
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+For description of how to create customized subclasses, see :ref:`Customizing OpenPNM<customizing>`
