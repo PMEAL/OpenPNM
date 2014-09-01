@@ -103,23 +103,6 @@ class VTK():
             objs.append(phase)
         objs.append(network)
         am = misc.amalgamate_data(objs=objs)
-        if "Geometry" in str(geometry.__class__):
-            pores = geometry.pores()
-            throats = geometry.throats()
-        else:
-            pores = network.pores()
-            throats = network.throats()
-        for key in am.keys():
-            if "pore" in key and len(am[key])==network.num_pores():
-                try:
-                    am[key]=am[key][pores]
-                except IndexError:
-                    "do nothing"
-            elif "throat" in key and len(am[key])==network.num_throats():
-                try:
-                    am[key]=am[key][throats]
-                except IndexError:
-                    "do nothing"
         key_list = list(sorted(am.keys()))
         points = am[network.name+'.pore.coords']
         pairs = network['throat.conns']

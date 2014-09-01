@@ -15,7 +15,7 @@ from scipy.spatial import ConvexHull
 from math import atan2
 import OpenPNM.Utilities.misc as misc
 from scipy import stats as st
-
+from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
 class Voronoi(GenericGeometry):
@@ -37,7 +37,43 @@ class Voronoi(GenericGeometry):
             raise Exception('The installed version of Scipy is too old, Voronoi cannot run')
         super(Voronoi,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        self._generate()
     
+    def _generate(self):
+        r'''
+        ''' 
+        fibre_rad = 3e-06
+        self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
+        self.add_model(propname='pore.seed',
+                       model=gm.pore_misc.random,
+                       seed=None)
+        self.add_model(propname='throat.seed',
+                       model=gm.throat_misc.neighbor,
+                       pore_prop='pore.seed',
+                       mode='min')
+        self.add_model(propname='pore.volume',
+                       model=gm.pore_volume.voronoi)
+        self.add_model(propname='pore.diameter',
+                       model=gm.pore_diameter.voronoi)
+        self.add_model(propname='pore.centroid',
+                       model=gm.pore_centroid.voronoi)
+        self.add_model(propname='pore.area',
+                       model=gm.pore_area.spherical)
+        self.add_model(propname='throat.area',
+                       model=gm.throat_area.voronoi)
+        self.add_model(propname='throat.centroid',
+                       model=gm.throat_centroid.voronoi)
+        self.add_model(propname='throat.perimeter',
+                       model=gm.throat_area.voronoi)
+        self.add_model(propname='throat.diameter',
+                       model=gm.throat_diameter.voronoi)                  
+        self.add_model(propname='throat.length',
+                       model=gm.throat_length.voronoi)
+        self.add_model(propname='throat.volume',
+                       model=gm.throat_volume.cylinder)
+        self.add_model(propname='throat.surface_area',
+                       model=gm.throat_surface_area.extrusion)
+					   
     def setup(self, fibre_rad=3e-06):
         self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
         self.add_property(prop='pore_seed',model='random')
@@ -47,7 +83,6 @@ class Voronoi(GenericGeometry):
         self.add_property(prop='pore_centroid',model='voronoi')
         self.add_property(prop='throat_diameter',model='voronoi')
         self.add_property(prop='throat_centroid',model='voronoi')
-        #self.add_property(prop='throat_length',model='constant',value=fibre_rad) # This produces strange results when introducing anisotropy to the system for permeability
         self.add_property(prop='throat_length',model='voronoi')
         self.add_property(prop='throat_volume',model='voronoi')
         self.add_property(prop='throat_vector',model='pore_to_pore') # Not sure how to do this for centre to centre as we might need to split into two vectors
@@ -61,12 +96,10 @@ class Voronoi(GenericGeometry):
         replicates erroding the facet of each throat by the fibre radius 
         """
         connections = self._net['throat.conns']
-        #coords = self._net['pore.coords']
         verts = self._net['pore.vertices']
         normals = sp.ndarray(len(connections),dtype=object)
-        #normals = coords[connections[:,0]]-coords[connections[:,1]]
-        area = sp.ndarray(len(connections),dtype=object)
-        perimeter = sp.ndarray(len(connections),dtype=object)
+        area = sp.ndarray(len(connections))
+        perimeter = sp.ndarray(len(connections))
         offset_verts = sp.ndarray(len(connections),dtype=object)
         shared_verts = sp.ndarray(len(connections),dtype=object)
         offset_error = sp.ndarray(len(connections),dtype=object)

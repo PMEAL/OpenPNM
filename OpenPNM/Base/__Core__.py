@@ -913,15 +913,16 @@ class Core(Base):
         '''
         element = prop.split('.')[0]
         #Utilize a pre-existing dummy 'temp' variable on the object to save time
-        try:
-            temp = self._temp[element]
-        except:
-            Np = sp.shape(self['pore.all'])[0]
-            Nt = sp.shape(self['throat.all'])[0]
-            self._temp = {}
-            self._temp['pore'] = sp.empty((Np,))
-            self._temp['throat'] = sp.empty((Nt,))
-            temp = self._temp[element]
+        #Don't do this anymore - temp arrays can change in length
+        #try:
+        #    temp = self._temp[element]
+        #except:
+        Np = sp.shape(self['pore.all'])[0]
+        Nt = sp.shape(self['throat.all'])[0]
+        self._temp = {}
+        self._temp['pore'] = sp.empty((Np,))
+        self._temp['throat'] = sp.empty((Nt,))
+        temp = self._temp[element]
         dtypes = []
         prop_found = False  #Flag to indicate if prop was found on a sub-object
         for item in sources:

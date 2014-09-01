@@ -122,8 +122,7 @@ class Delaunay(GenericNetwork):
         "Uniform Random Generator"
         #coords = np.array([np.random.uniform(0,self._Lx,self._Np),np.random.uniform(0,self._Ly,self._Np),np.random.uniform(0,self._Lz,self._Np)]).T
         
-        self.set_pore_data(prop='coords',data=coords)
-        self.set_pore_info(label='all',locations=np.ones_like(coords[:,0]))
+        self['pore.coords'] = coords
         self._logger.debug(sys._getframe().f_code.co_name+": End of method") 
         
     def _generate_cubic_pores(self):
@@ -175,8 +174,8 @@ class Delaunay(GenericNetwork):
         Generate the throats connections
         """
         self._logger.info(sys._getframe().f_code.co_name+": Define connections between pores")
-        Np = self.num_pores()
-        pts = self.get_pore_data(prop='coords')
+        Np = self._Np
+        pts = self['pore.coords']
         #Generate 6 dummy domains to pad onto each face of real domain
         #This prevents surface pores from making long range connections to each other
         Lx = self._Lx
@@ -215,9 +214,9 @@ class Delaunay(GenericNetwork):
         #and convert to coo
         adjmat = sprs.triu(adjmat,k=1,format="coo")
         self._logger.debug(sys._getframe().f_code.co_name+": Conversion to adjacency matrix complete")
-        self.set_throat_data(prop='conns',data=sp.vstack((adjmat.row, adjmat.col)).T)
-        tpore1 = self.get_throat_data(prop='conns')[:,0]
-        self.set_throat_info(label='all',locations=np.ones_like(tpore1))
+        self['throat.conns']=sp.vstack((adjmat.row, adjmat.col)).T
+        self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
+        self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
 
         " New code to identify boundary pores - those that connect to pores inside and outside original set of pores "
         boundary_pore_list = []
@@ -232,9 +231,9 @@ class Delaunay(GenericNetwork):
         
         vor_bounds=sp.asarray(boundary_pore_list)
 
-        self.set_pore_info(label='inner_boundary',locations=vor_bounds)
-        self.set_pore_info(label='internal',locations='all')
-        self.set_throat_info(label='internal',locations='all')
+        self.set_info(pores=vor_bounds,label='inner_boundary')
+        self.set_info(pores='all',label='internal')
+        self.set_info(throats='all',label='internal')
         # Do Voronoi diagram - creating voronoi polyhedra around each pore and save vertex information
         vor = Voronoi(pts)
         all_verts = sp.ndarray(Np,dtype=object)
@@ -243,7 +242,7 @@ class Delaunay(GenericNetwork):
                 all_verts[i]=np.around(vor.vertices[vor.regions[polygon]],10)
             else:
                 all_verts[i]="unbounded"
-        self.set_pore_data(prop='vertices',data=all_verts)
+        self['pore.vertices']=all_verts
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         " Add new pores at external throat centers to create coplanar boundaries "
         self.boundary_pores()
@@ -252,8 +251,8 @@ class Delaunay(GenericNetwork):
             self["pore.vertices"][i]=self["pore.vertices"][i]*self._rescale_factor
         external_pores = self.pores(labels='internal',mode='difference')
         external_throats = self.throats(labels='internal',mode='difference')
-        self.set_pore_info(label='external',locations=external_pores)
-        self.set_throat_info(label='external',locations=external_throats)
+        self.set_info(pores=external_pores,label='external')
+        self.set_info(throats=external_throats,label='external')
 
 
     def _add_labels(self):
@@ -482,7 +481,7 @@ class Delaunay(GenericNetwork):
         boundary throats or at the boundary coordinate associated with the plane leaving the other pore coords the same
         This will mean that normal vectors are correct for throat props
         """
-        boundary_pores = self.get_pore_indices(labels='inner_boundary')
+        boundary_pores = self.pores('inner_boundary')
         " Traditionally x will be back and front, y is left and right and z is top and bottom "
         " However this could change in future and labels might also change so best to do things from scratch "
         " Look at the number of occurences of a coordinate for the pore's vertices, if 3 or more we have a face "
@@ -499,7 +498,7 @@ class Delaunay(GenericNetwork):
         N = self.num_pores()
         new_throat_count = 0
         for pore in boundary_pores:
-            verts = self["pore.vertices"][pore]
+            verts = np.around(self["pore.vertices"][pore],10)
             " Cycle through coordinates " 
             for i in range(3):
                 throat_verts = []
@@ -543,24 +542,126 @@ class Delaunay(GenericNetwork):
         M = self.num_pores()
         new_pores = np.arange(N,M)
         "Identify which boundary the pore sits on "
-        front = self.pores()[self['pore.coords'][:,0]==x_min]
-        back = self.pores()[self['pore.coords'][:,0]==x_max]
-        left = self.pores()[self['pore.coords'][:,1]==y_min]
-        right = self.pores()[self['pore.coords'][:,1]==y_max]
-        bottom = self.pores()[self['pore.coords'][:,2]==z_min]
-        top = self.pores()[self['pore.coords'][:,2]==z_max]
-        " Assign labels "
-        self.set_pore_info(label='boundary',locations=new_pores)        
-        self.set_pore_info(label='right',locations=right) 
-        self.set_pore_info(label='left',locations=left) 
-        self.set_pore_info(label='front',locations=front) 
-        self.set_pore_info(label='back',locations=back) 
-        self.set_pore_info(label='top',locations=top) 
-        self.set_pore_info(label='bottom',locations=bottom)
+        front = self.pores()[self['pore.coords'][:,0]==min_point[0]]
+        back = self.pores()[self['pore.coords'][:,0]==max_point[0]]
+        left = self.pores()[self['pore.coords'][:,1]==min_point[1]]
+        right = self.pores()[self['pore.coords'][:,1]==max_point[1]]
+        bottom = self.pores()[self['pore.coords'][:,2]==min_point[2]]
+        top = self.pores()[self['pore.coords'][:,2]==max_point[2]]
+        " Assign labels "       
+        self.set_info(pores=new_pores,label='boundary')        
+        self.set_info(pores=right,label='right_boundary') 
+        self.set_info(pores=left,label='left_boundary') 
+        self.set_info(pores=front,label='front_boundary') 
+        self.set_info(pores=back,label='back_boundary') 
+        self.set_info(pores=top,label='top_boundary') 
+        self.set_info(pores=bottom,label='bottom_boundary')
         " Apply the extruded throat verts and original boundary throat verts to create new pore volume "
         " These volumes may need some attention later "
         self["pore.vertices"][N:M] = new_boundary_pores
-       
+		
+    def vertex_dimension(self,face1=[],face2=[],parm='volume'):
+        r"""
+        Return the domain extent based on the vertices
+        This function is better than using the pore coords as they may be far away from the original domain size
+        And will alter the effective properties which should be based on the original domain sizes
+        Takes one or two sets of pores and works out different geometric properties
+        if "length" is specified and two lists are given the planarity is determined and the appropriate length (x,y,z)
+        is returned.
+        It should work the same as domain length and area if vertices are not in network by using coordinates
+        e.g.    vertex_extent(face1=inlet,face2=outlet,parm='volume')
+                vertex_extent(geom.pores(),parm='area_xy')
+                vertex_extent(face1=inlet,parm='area')
+                vertex_extent(face1=inlet,face2=outlet,parm='length')
+
+        """
+        pores=np.array([],dtype=int)
+        if len(face1)>0:
+            pores=np.hstack((pores,face1))
+        if len(face2)>0:
+            pores=np.hstack((pores,face2))
+        
+        face1_coords = self["pore.coords"][face1]
+        face2_coords = self["pore.coords"][face2]
+        face1_planar = np.zeros(3)
+        face2_planar = np.zeros(3)
+        planar = np.zeros(3)
+        for i in range(3):
+            if len(np.unique(face1_coords[:,i]))==1:
+                face1_planar[i]=1
+            if len(np.unique(face2_coords[:,i]))==1:
+                face2_planar[i]=1
+        if len(face1)>0 and len(face2)>0:
+            planar = face1_planar*face2_planar
+        elif len(face1)>0:
+            planar = face1_planar
+        elif len(face2)>0:
+            planar = face2_planar
+        else:
+            return 0
+            
+        if "pore.vertices" in self.props():
+            vert_list = self["pore.vertices"][pores]
+        else:
+            vert_list = self["pore.coords"][pores]
+        vx_min = 1e32
+        vx_max = -1e32
+        vy_min = 1e32
+        vy_max = -1e32
+        vz_min = 1e32
+        vz_max = -1e32
+        output = 0
+        for verts in vert_list:
+            if verts[:,0].min()<vx_min:
+                vx_min=verts[:,0].min()
+            if verts[:,0].max()>vx_max:
+                vx_max=verts[:,0].max()
+            if verts[:,1].min()<vy_min:
+                vy_min=verts[:,1].min()
+            if verts[:,1].max()>vy_max:
+                vy_max=verts[:,1].max()
+            if verts[:,2].min()<vz_min:
+                vz_min=verts[:,2].min()
+            if verts[:,2].max()>vz_max:
+                vz_max=verts[:,2].max()
+        width = np.around(vx_max-vx_min,10)
+        depth = np.around(vy_max-vy_min,10)
+        height = np.around(vz_max-vz_min,10)
+        if parm == 'volume':
+            output =  width*depth*height
+        elif parm == 'area_xy' or (parm == 'area' and planar[2]==1):
+            output = width*depth
+        elif parm == 'area_xz' or (parm == 'area' and planar[1]==1):
+            output = width*height
+        elif parm == 'area_yz' or (parm == 'area' and planar[0]==1):
+            output = depth*height
+        elif parm == 'length_x' or (parm == 'length' and planar[0]==1):
+            output = width
+        elif parm == 'length_y'or (parm == 'length' and planar[1]==1):
+            output = depth
+        elif parm == 'length_z'or (parm == 'length' and planar[2]==1):
+            output = height
+        elif parm == 'minmax':
+            output = [vx_min,vx_max,vy_min,vy_max,vz_min,vz_max]
+        return output
+    
+    def domain_length(self,face_1,face_2):
+        r"""
+        Returns the distance between two faces
+        No coplanar checking this is done in vertex_dimension
+        """
+        L = self.vertex_dimension(face_1,face_2,parm='length')
+        return L
+
+    def domain_area(self,face):
+        r"""
+        Returns the area of a face
+        No coplanar checking this is done in vertex_dimension
+        """
+        A = self.vertex_dimension(face,parm='area')
+		
+        return A       
+
 if __name__ == '__main__':
     #Run doc tests
     import doctest

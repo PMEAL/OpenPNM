@@ -639,10 +639,13 @@ class GenericNetwork(Core):
                     temp = self[item]
                     self[item] = sp.zeros((N,),dtype=bool)
                     self[item][temp] = True
+                elif self[item].dtype == object:
+                    temp = self[item]
+                    self[item] = sp.ndarray(N,dtype=object)
+                    self[item][sp.arange(0,sp.shape(temp)[0])] = temp
                 else:
                     temp = self[item]
-                    #self[item] = sp.ones((N,),dtype=float)*sp.nan
-                    self[item] = sp.ndarray(N,dtype=object)
+                    self[item] = sp.ones((N,),dtype=float)*sp.nan
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
         self._update_network()
         

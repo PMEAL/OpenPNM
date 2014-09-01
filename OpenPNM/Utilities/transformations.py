@@ -1812,11 +1812,24 @@ def angle_between_vectors(v0, v1, directed=True, axis=0):
     True
 
     """
+    import warnings as w
+    w.simplefilter("error")
+    numpy.seterr(all='warn')
     v0 = numpy.array(v0, dtype=numpy.float64, copy=False)
     v1 = numpy.array(v1, dtype=numpy.float64, copy=False)
     dot = numpy.sum(v0 * v1, axis=axis)
-    dot /= vector_norm(v0, axis=axis) * vector_norm(v1, axis=axis)
-    return numpy.arccos(dot if directed else numpy.fabs(dot))
+    try:
+        dot /= vector_norm(v0, axis=axis) * vector_norm(v1, axis=axis)
+    except RuntimeWarning:
+        #print(v0,v1)
+        dot =0
+    try:
+        angle= numpy.arccos(dot if directed else numpy.fabs(dot))
+
+    except RuntimeWarning:
+        angle=0
+        #print("Run time error on arccos, v0: " + str(v0) + " v1: " + str(v1) + " dot: " +str(dot))
+    return angle
 
 
 def inverse_matrix(matrix):

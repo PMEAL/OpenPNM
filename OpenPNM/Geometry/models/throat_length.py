@@ -25,25 +25,27 @@ def straight(network,
     value = E-(D1+D2)/2
     value = value[throats]
     if _sp.any(value<0):
-        geometry._logger.warn('Negative throat lengths are calculated. Arbitrary positive length assigned (1e9 meters)')
+        geometry._logger.warning('Negative throat lengths are calculated. Arbitrary positive length assigned (1e9 meters)')
         Ts = _sp.where(value<0)[0]
         value[Ts] = 1e-9
     return value
         
 def voronoi(network,
-            throats,
+            geometry,
             **kwargs):
     r"""
     Calculate the centre to centre distance from centroid of pore1 to centroid of throat to centroid of pore2
     """
+    throats = network.throats(geometry.name)
     connections = network['throat.conns'][throats]
     pore1 = connections[:,0]
     pore2 = connections[:,1]
-    pore_centroids = network['pore.centroid']
-    throat_centroids = network['throat.centroid']
+    "This is probably wrong as indices are different"
+    pore_centroids = geometry['pore.centroid']
+    throat_centroids = geometry['throat.centroid']
     v1 = throat_centroids-pore_centroids[pore1]
     v2 = throat_centroids-pore_centroids[pore2]
-    value = _sp.ndarray(len(connections), dtype=object)
+    value = _sp.ndarray(len(connections))
     for i in range(len(connections)):
         value[i] = _sp.linalg.norm(v1[i])+_sp.linalg.norm(v2[i])
     return value
