@@ -4,7 +4,9 @@
 Installation Instructions 
 ###############################################################################
 
-OpenPNM utilizes Python 3.3 with Scipy 0.14 and Matplotlib.  OpenPNM outputs many of its results in the vtk format which is conveniently visualized with Paraview.  
+OpenPNM does not need to be installed because it does not need to be compiled.  It is only necessary to download a zip file containing the package, and have a functioning Python installation.  
+
+OpenPNM utilizes Python 3 with Scipy 0.14 and Matplotlib.  OpenPNM outputs many of its results in the vtk format which is conveniently visualized with Paraview.  
 
 The code is hosted on Github so it is also useful to have a Git client installed that can download the repository.  
 
@@ -32,4 +34,4 @@ If you are using Linux, then you probably don't need instructions!
 -------------------------------------------------------------------------------
 Setting Up the Code
 -------------------------------------------------------------------------------
-The source code for OpenPNM is hosted on `Github <http://github.com/PMEAL/OpenPNM>`_.  You can download this code as a zip file or 'clone' the repository into your Git client (as as `Sourcetree <http://sourcetreeapp.com>`_).  These files can be located at a location of your preference, such as C:\\user\\documents\\code\\OpenPNM.  
+The source code for OpenPNM is hosted on `Github <http://github.com/PMEAL/OpenPNM>`_.  You can download this code as a zip file or 'clone' the repository into your Git client (such as `Sourcetree <http://sourcetreeapp.com>`_).  These files can be located at a location of your preference, such as C:\\user\\documents\\code\\OpenPNM.  

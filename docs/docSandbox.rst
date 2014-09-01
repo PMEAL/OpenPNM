@@ -6,11 +6,11 @@ Sandbox - Use pound symbol (above and below) to indicate a part
 ###############################################################################
 
 ===============================================================================
-Chapters are identified by asterisks (above and below)
+Chapters are identified by equal sign (above and below)
 ===============================================================================
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Sections are identified by equal signs placed underneath
+Sections are identified by plus signs placed underneath
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 -------------------------------------------------------------------------------

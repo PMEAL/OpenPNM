@@ -1,120 +1,95 @@
 .. _geometry:
 
-###############################################################################
-Pore and Throat Geometry
-###############################################################################
-In OpenPNM the pore and throat geometry are defined separately from the **Network** topology.  In other words, creating a network simply places pores at certain coordinates and connects them in a certain pattern.  It is the job of the **Geometry** object(s) to calculate the physical properties of the pores and throats (i.e. sizes, volumes, lengths, etc), based on a given pore or throat model (i.e. sphere, cuboid, cylinder, etc).  
-
-.. note:: 
-
-	Fluid, Geometry and Physics modules are designed to function identically, so once you're familiar with the usage of one then all the others should be similar.  
-
 ===============================================================================
-What is a Geometry Object?
+Geometry
 ===============================================================================
+The *Geometry* module manages the network pore and throat size information.  This module contains the ``GenericGeometry`` class, which like all OpenPNM objects is subclass of Python's ``dict`` class, but has numerous OpenPNM specific methods added to it.  
 
-**Geometry** objects have one main function in OpenPNM.  They contain the models the user wishes to use to calculate pore and throat properties, such as diamete and volume.  
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Basic Usage
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+An empty ``GenericGeometry`` object *can* be initialized with no arguments, but this is not a useful object since it isn't associated with a network or assigned to any pores.  A more useful *Geometry* object is obtained by instantiating a non-empty network, then assign a GenericGeometry to all pores and throats:
 
-===============================================================================
-Creating a Geometry Object
-===============================================================================
-The most general way to generate a **Geometry** object is as follows:
+>>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+>>> Ps = pn.pores('pore.all')
+>>> Ts = pn.throats('throat.all')
+>>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)
+>>> print(geom)
+------------------------------------------------------------
+OpenPNM.Geometry.GenericGeometry: 	GenericGeometry_ZpKsC
+------------------------------------------------------------
+#     Properties                          Valid Values
+------------------------------------------------------------
+1     pore.map                               27 / 27   
+2     throat.map                             54 / 54   
+------------------------------------------------------------
+#     Labels                              Assigned Locations
+------------------------------------------------------------
+1     pore.all                            27        
+2     throat.all                          54        
+------------------------------------------------------------
 
-.. code-block:: python
+This Geometry object is now associated with the network, ``pn``, and applied to all the pores and throats in the network.  At this point, however, it is still an empty object with no pore or throat size *information*.  
 
-	pn = OpenPNM.Network.TestNet()  # This generates a 5x5x5 cubic network for testing purposes
-	geom = OpenPNM.Geometry.GenericNetwork(network=pn, name='geom_1')
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Adding Models
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+To begin assigning size information, it is possible to simply assign values:
+
+>>> geom['pore.seed'] = sp.rand(geom.Np)
+>>> geom['throat.constant'] = 1.4
+
+There are, however, very few cases where such a simple assignment is sufficient and usually more elaborate pore scale models will be invoked.  For instance, it is common for throats to adopt the smaller of the seed values in it's two neighboring pores.  OpenPNM includes a library of pre-written models.  Pore scale geometry models are located under ``OpenPNM.Geometry.models``.  There are numerous files in this library with names that indicate their contents (i.e. pore_volume), and each of these files contain a variety of functions for calculating that property.  Specifying which models to use for a given property is done using the ``add_model`` method:
+
+>>> import OpenPNM.Geometry.models as gm
+>>> geom.add_model(propname='pore.seed',model=gm.pore_misc.random)
+
+The above call to ``add_model`` does several things.  Firstly, it adds an array to the ``geom`` dictionary called 'pore.seed'.  Secondly, it runs the function it received for the model argument and stores the returned values in 'pore.seed'.  Finally, it saves the model in a private dictionary on the `geom` object.  This final step is essential so that the *Geometry* object can retain a memory of it's models.  This means that the properties of the *Geometry* can be *regenerated* (using ``regenerate``).  This also has the added benefit that the object can be saved to disk and still function fully when it's reloaded. 
 	
-There are 2 arguments sent to ``GenericGeometry`` here.  Firstly, the **Geometry** object is associated with a **Network** with ``network=pn``.  This gives the **Geometry** object access to the network topology such as the number of pores and throats, where they are located in space, and how they are connected.  This is required for something like throat length which depends on the distance between two neighboring pores.  Secondly, each **Geometry** object (and all objects in OpenPNM) must be given a unique name (``name='geom_1'``).  This makes is possible for a human reader to differentiate between multiple different **Geometry** objects by simply checking their ``name`` attribute.  
-
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Adding Properties to a Geometry
+Multiple Geometries on a Single Network
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Once a **Geometry** object has been instantiated, the next step is to add methods to the object that calculate the appropriate pore and throat properties.  The ``GenericGeometry`` class contains the ``add_method` function for this purpose.  It is typical to assign a random seed to each pore in the network which is subsequently used to calculate pore diameters from a statistical distribution.  The **Geometry** module comes with a submodule called **pore_seed** that contains several methods that can be used.  The desired method is added to the **Geometry** object as follows:
+There can be multiple *Geometry* objects defined for different locations in a *Network* simultaneously.  This was intended to allow for multi-layer media (such fuel cell gas diffusion layers with micro-porous layers on one side), but is also quite useful when applying boundary pores which usually need to have special pore geometry such as 0 volume to produce consistent results.  For instance:
 
-.. code-block:: python
+>>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+>>> Ps1 = pn.pores('top')
+>>> geom1 = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps1)
+>>> Ps2 = pn.pores('top',mode='not')
+>>> Ts2 = pn.throats('all')
+>>> geom2 = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps2,throats=Ts2)
 
-	geom.add_method(prop='pore_seed',method='random')
-	
-This command looks into the **pore_seed** submodule and finds a method named ``random``.  It attaches this method to itself under the attribute name ``pore_seed`` because the default is to use the name of ``prop``.  The **Geometry** object now knows how to generate pore seed values when they are needed.  
+-------------------------------------------------------------------------------
+Accessing Geometry data Via the Network
+-------------------------------------------------------------------------------
+One of the complications that arises from allowing multiple Geometry objects is that the pore size data for the Network becomes distributed across several objects.  This makes it challenging for algorithms to operate on the entire network at once.  To circumvent this problem, the Network object has the special ability to gather Geometry data from all of it's Geometry objects and return them as a single array:
 
-In the above case the seeds generated each time the code is run will differ since the state of the random number generator was not specified.  Many methods, including the ``random`` method in **pore_seed** accept or require additional parameters. In the case of ``random`` it is possible to send a seed value which initializes Scipy's random number generator to the specified state as follows:
+>>> geom1['pore.seed'] = 0.2
+>>> geom2['pore.seed'] = 0.8
+>>> pn['pore.seed']
+array([ 0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,  0.8,
+        0.2,  0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,
+        0.8,  0.2,  0.8,  0.8,  0.2])
 
-.. code::
+If any of the Geometry object do not have the requested property, then NaN values are inserted into it's pore/throat locations.  
 
-	geom.add_method(prop='pore_seed',method='random',seed=10)
+This special ability is not reversible, meaning that it is not possible to *write* to all Geometry objects from Network:
 
-Attaching the ``pore_seed`` method to the **Geometry** object in this way will always result in the same random numbers being placed inside each pore since the generator will always be initiated with to the same starting state.  The above procedure is repeated for all the desired methods.
+>>> pn['pore.seed'] = 0.5
 
+Attempting to do so will result in the error "pore.seed is already defined in at least one associated Geometry object".
+		
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Generating or Regenerating Geometry Data
+Customizing Geometry
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Once the **Geometry** object has been built and contains all the desired property models it is necessary to actually run all these methods to calculate their results.   When the time comes to generate the pore and throat size data (or regenerate it) one *can* manually run each method as:
+For description of how to create customized subclasses, add properties to the model library, and add new models see :ref:`Customizing OpenPNM<customizing>`
 
-.. code-block:: python
 
-	geom.pore_seed()
 
-If a large number of method have been added and/or they have custom names this can be an annoying task.  To avoid this, each time ``add_method`` is called, it appends the 'propname' to a private list of attached methods.  The ``GenericGeometry`` class includes a method called ``regenerate`` which simply scans through this list and calls each method.  The items in the list are stored in the order they were called in, and the methods are invoked in that order.  It is possible to regenerate only some methods by sending their attribute name ('propname') to the ``regenerate`` method as a list of strings.  It is also possible to exclude certain method from being run listing them in the ``exclude`` argument, if for some reason you don't want to regenerate certain properties.  
 
-.. code-block:: python
 
-	geom.regenerate()  # Calculate all properties
-	geom.regenerate('pore_seed')  # Calculate only pore seed
-	geom.regenerate('pore_seed',mode='exclude')  # Calculate all except pore_seed
 
-===============================================================================
-Applying Multiple Geometries to a Single Network
-===============================================================================
-A single **Network** can have a many different **Geometry** objects associated with it.  For instance a region of low permeability might be embedded in the middle of the domain, so the **Geometry** object for this region would calculate much smaller pore sizes.  In this case it is necessary to initialize each **Geometry** object with a list of which pores and throats it applies to.  Assuming that pores and throats for two domains have already been given labels of 'subdomain1' and 'subdomain2', the following procedure would generate two **Geometry** objects and apply them to the correct locations.  
 
-.. code-block:: python
 
-	pn = OpenPNM.Network.TestNet()  # This generates a 5x5x5 cubic network for testing purposes
-	ps = pn.get_pore_indices(labels='subdomain1')
-	ts = pn.get_throat_indicies(labels='subdomain1')
-	geom1 = OpenPNM.Geometry.GenericNetwork(network=pn, name='geom_1',pores=ps,throats=ts)
-	ps = pn.get_pore_indices(labels='subdomain2')
-	ts = pn.get_throat_indicies(labels='subdomain2')
-	geom2 = OpenPNM.Geometry.GenericNetwork(network=pn, name='geom_2',pores=ps,throats=ts)
-	
-There are a number of 'helper' methods available as well.  For instance, if the 'subdomain1' and 'subdomain2' labels have only been applied to pores, then it is necessary to apply labels to throats.  Finding which throats are only connected to one subdomain or the other can be done with:
 
-.. code-block:: python
 
-	ps = pn.get_pore_indices(labels='subdomain1')
-	ts = pn.find_neighbor_throats(ps,mode='intersection')
 
-===============================================================================
-Customizing the Geometry Submodules
-===============================================================================
-blah
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Changing the Default Property Name
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-blah
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Adding Custom Property Models
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-blah
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Adding Custom Properties
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-blah
-
-===============================================================================
-Sub-classing a Geometry
-===============================================================================
-blah
-
-===============================================================================
-Available Property Estimation Models
-===============================================================================
-For a complete list of available pore scale geometry models see the :ref:`Function Reference <geometry_ref>`.
-
-===============================================================================
-The Inheritance and Composition Diagram for Geometry Objects
-===============================================================================

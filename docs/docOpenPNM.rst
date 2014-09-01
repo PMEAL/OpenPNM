@@ -4,15 +4,6 @@
 Function Reference
 ===============================================================================
 
--------------------------------------------------------------------------------
-Utilities
--------------------------------------------------------------------------------
-
-.. automodule:: OpenPNM.Utilities
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 .. _network_ref:
 
 -------------------------------------------------------------------------------
@@ -35,13 +26,13 @@ Geometry
    :undoc-members:
    :show-inheritance:
 
-.. _fluids_ref:
+.. _phases_ref:
 
 -------------------------------------------------------------------------------
-Fluids
+Phases
 -------------------------------------------------------------------------------
 
-.. automodule:: OpenPNM.Fluids
+.. automodule:: OpenPNM.Phases
    :members:
    :undoc-members:
    :show-inheritance:
@@ -71,10 +62,10 @@ Algorithms
 .. _visualization_ref:
    
 -------------------------------------------------------------------------------
-Visualization
+Utilities
 -------------------------------------------------------------------------------
 
-.. automodule:: OpenPNM.Visualization
+.. automodule:: OpenPNM.Utilities
    :members:
    :undoc-members:
    :show-inheritance:

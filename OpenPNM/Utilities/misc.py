@@ -2,6 +2,53 @@ import scipy as _sp
 import time as _time
 from scipy.spatial.distance import cdist as dist
 
+def reflect_pts(coords,nplane):
+    r'''
+    Reflect points across the given plane
+
+    Parameters
+    ----------
+    coords : array_like
+        An Np x ndims array off [x,y,z] coordinates
+    
+    nplane : array_like
+        A vector of length ndims, specifying the normal to the plane.  The tail
+        of the vector is assume to lie on the plane, and the reflection will
+        be applied in the direction of the vector.
+        
+    Returns
+    -------
+    coords : array_like
+        An Np x ndmins vector of reflected point, not including the input points
+        
+    '''
+    pass
+
+def crop_pts(coords,box):
+    r'''
+    Drop all points lying outside the box
+    
+    Parameters
+    ----------
+    coords : array_like
+        An Np x ndims array off [x,y,z] coordinates
+        
+    box : array_like
+        A 2 x ndims array of diametrically opposed corner coordintes
+        
+    Returns
+    -------
+    coords : array_like
+        Inputs coordinates with outliers removed
+        
+    Notes
+    -----
+    This needs to be made more general so that an arbitray cuboid with any 
+    orientation can be supplied, using Np x 8 points
+    '''
+    coords = coords[_sp.any(coords<box[0],axis=1)]
+    coords = coords[_sp.any(coords>box[1],axis=1)]
+    return coords
 
 def iscoplanar(coords):
     r'''
@@ -101,15 +148,70 @@ def unique_list(input_list):
 class PrintableList(list):
     def __str__(self):
         count = 0
-        header = '-'*50
+        header = '-'*79
+        print('\n')
         print(header)
+        self.sort()
         for item in self:
             count = count + 1
             print(count,'\t: ',item)
         return header
 
+class PrintableDict(dict):
+    def __str__(self):
+        import pprint
+        header = '-'*79
+        print('\n')
+        print(header)
+        pprint.pprint(self)
+        print(header)
+        return ''
 
+class ObjectView(object):
+    def __init__(self, d):
+        temp = {}
+        for item in d:
+            if type(d[item][0]) == _sp.bool_:
+                key = 'label_'+item.replace('.','_')
+            else:
+                key = 'prop_'+item.replace('.','_')
+            temp[key] =d[item]
+        self.__dict__ = temp
 
+def amalgamate_data(objs=[]):
+    r"""
+    Returns a dictionary containing ALL pore data from all netowrk and/or
+    phase objects received as arguments
+    """
+    if type(objs) != list:
+        objs = list(objs)
+    data_amalgamated = {}
+    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
+    for item in objs:
+        if item.__module__.split('.')[1] == 'Network': #if network object, combine geometry and network keys
+            keys = []
+            for key in item.keys():
+                keys.append(key)
+            for geom in item._geometries:
+                for key in geom.keys():
+                    if key not in keys:
+                        keys.append(key)
+        else:
+            if item.__module__.split('.')[1] == 'Phases':
+                keys = []
+                for key in item.keys():
+                    keys.append(key)
+                for physics in item._physics:
+                    for key in physics.keys():
+                        if key not in keys:
+                            keys.append(key)
+        keys.sort()
+        for key in keys:
+            if key not in exclusion_list:
+                if _sp.amax(item[key]) < _sp.inf:
+                    dict_name = item.name+'.'+key
+                    data_amalgamated.update({dict_name : item[key]})
+    return data_amalgamated
 
 
 

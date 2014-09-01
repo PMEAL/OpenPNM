@@ -7,13 +7,10 @@ Used with Delaunay Network but could work for others (not tested)
 
 """
 
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
 import OpenPNM
 import scipy as sp
 import numpy as np
-import _transformations as tr
+import OpenPNM.Utilities.transformations as tr
 from scipy.spatial import ConvexHull
 from math import atan2
 import OpenPNM.Utilities.misc as misc
@@ -90,7 +87,7 @@ class Voronoi(GenericGeometry):
             else:
                 area[i]=0.0
         
-        self._net.set_data(prop='area',throats='all',data=area)
+        self._net['throat.area'] = area
         self._net['throat.perimeter']=perimeter
         self._net['throat.verts']=shared_verts
         self._net['throat.offset_verts']=offset_verts
