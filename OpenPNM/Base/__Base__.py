@@ -354,9 +354,14 @@ class Base(dict):
         r'''
         List the OpenPNM methods on the object
         '''
+        header = '-'*80
         a = []
         [a.append(item) for item in self.__dir__() if (item[0] != '_') and (item not in dict.__dir__({}))]
         a = sorted(a)
+        print(header)
+        print("{:<25s}".format('Method Name'),end='')
+        print(':  Docstring Blurb')
+        print(header)
         for item in a:
             print("{:<25s}".format(item),end='')
             print(':  ',end='')
@@ -364,6 +369,7 @@ class Base(dict):
             doc = doc.split('\n')[1]
             doc = doc.lstrip()
             print(doc)
+        print(header)
     
     def _set_name(self,name):
         if self._name != None:
