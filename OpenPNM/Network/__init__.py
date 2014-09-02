@@ -28,7 +28,7 @@ Classes
 
 
 """
-
+import OpenPNM.Base
 #Import every file in the directory
 import os as _os
 dir = _os.path.dirname(_os.path.abspath(__file__))
@@ -40,7 +40,7 @@ for item in _os.listdir(dir):
             try:
                 exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
             except:
-                print('File name '+item+' does not match class name, cannot import automatically')
+                OpenPNM.Base.Base()._logger.warning('File name '+item+' does not match class name so cannot import automatically')
         else:
             exec('from . import ' + format(item.split('.')[0]))
             
