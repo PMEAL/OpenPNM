@@ -35,6 +35,8 @@ Note that the Phase is defined everywhere in the Network:
 
 Unlike Geometry objects, Phases do not need to create any 'map' arrays or label arrays in the Network since Phases are applied everywhere.  Although it might seem counter-intuitive in a multiphase simulation to have Phases existing everywhere, it is simply a matter of convenience to calculate the Phase properties for the entire domain.  Tracking the actual locations of the Phases is handled separately, usually by an Algorithm object that performs some sort of percolation calculation.  
 
+Typically there will be multiple **Phase** objects defined for each simulation, since most models will have at least an invading fluid and a defending fluid.  There can be an unlimited number of phases associated with a **Network**.  
+
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Adding Models
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -62,8 +64,6 @@ Now if the temperature of the pores is changed, all the other properties will al
 34.522938057130261
 
 Note that the ``regenerate`` method must called for the change in temperature to propagate to the other properties.  
-
-Typically there will be multiple **Phase** objects defined for each simulation, since most models will have at least an invading fluid and a defending fluid.  There can be an unlimited number of phases associated with a **Network**.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Customizing Phases

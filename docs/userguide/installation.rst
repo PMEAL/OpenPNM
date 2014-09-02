@@ -1,12 +1,12 @@
 .. _installation::
 
-###############################################################################
+===============================================================================
 Installation Instructions 
-###############################################################################
+===============================================================================
 
-OpenPNM does not need to be installed because it does not need to be compiled.  It is only necessary to download a zip archive containing the package, and have a functioning Python installation.  
+OpenPNM does not need to be installed because it does not need to be compiled.  It is only necessary to download a zip archive containing the package, and have a functioning Python installation.  OpenPNM utilizes Python 3 with Scipy.  
 
-OpenPNM utilizes Python 3 with Scipy.  
+The source code for OpenPNM is hosted on `Github <http://github.com/PMEAL/OpenPNM>`_.  You can download this code as a zip file or 'clone' the repository into your Git client (such as `Sourcetree <http://sourcetreeapp.com>`_).  These files can be located at a location of your preference, such as C:\\user\\documents\\code\\OpenPNM.  
 
 OpenPNM outputs many of its results in the vtk format which is conveniently visualized with Paraview.  
 
@@ -26,14 +26,9 @@ Finally, it is also suggested to download `Paraview <http://www.paraview.org/>`_
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Apple Instructions
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-TODO
+Apple comes with Python 2.7 pre-installed.  OpenPNM is backward compatible with Python 2.7.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Linux Instructions
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 If you are using Linux, then you probably don't need instructions! 
-
-===============================================================================
-Setting Up the Code
-===============================================================================
-The source code for OpenPNM is hosted on `Github <http://github.com/PMEAL/OpenPNM>`_.  You can download this code as a zip file or 'clone' the repository into your Git client (such as `Sourcetree <http://sourcetreeapp.com>`_).  These files can be located at a location of your preference, such as C:\\user\\documents\\code\\OpenPNM.  

@@ -27,7 +27,7 @@ Accessing Physics Data Via the Phase
 -------------------------------------------------------------------------------
 Each Physics object must be associated with a single Phase object since a physical property like hydraulic conductance depends on the Phase viscosity, which is unique to a Phase.  Physics objects, however, do NOT need to be associated with a Geometry object despite the fact that a physical property like hydraulic conductance also depends on throat size.  The Physics objects use the ability of Network to query all the Geometry objects to extract the requested information from the specified pores and throats, even if they span across multiple Geometries. 
 
-Like Geometry object, Physics objects can lead to a sort of 'fragmentation' of data across multiple objects.  It is ofter desired to retrieve *all* the Physics properties for the entire Network in a single call.  For instance, in fluid flow simulations the hydraulic conductance of the entire Network is needed to construct the coefficient matrix in the solver.  To remedy this, Phase objects have the special ability to query all of their respective Physics objects and retrieve properties from any or all pore and throat locations.  For instance:
+Like Geometry object, the encapsulation of data on individual Physics objects can lead to a sort of 'fragmentation' of data across multiple objects.  It is ofter desired to retrieve *all* the Physics properties for the entire Network in a single call.  For instance, in fluid flow simulations the hydraulic conductance of the entire Network is needed to construct the coefficient matrix in the solver.  To remedy this, Phase objects have the special ability to query all of their respective Physics objects and retrieve properties from any or all pore and throat locations.  For instance:
 
 >>> phys1 = OpenPNM.Physics.GenericPhysics(network=pn,phase=air,pores=pn.pores('top'))
 >>> phys2 = OpenPNM.Physics.GenericPhysics(network=pn,phase=air,pores=pn.pores('top',mode='not'))
@@ -35,6 +35,20 @@ Like Geometry object, Physics objects can lead to a sort of 'fragmentation' of d
 >>> phys2['pore.test_vals'] = 2.0
 >>> air['pore.test_vals']
 array([ 2.,  2.,  1.,  2.,  2.,  1.,  2.,  2.,  1.,  2.,  2.,  1.,  2., 2.,  1.,  2.,  2.,  1.,  2.,  2.,  1.,  2.,  2.,  1.,  2.,  2.,  1.])
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Adding Models
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+OpenPNM ships with a collection of prewritten pore-scale physics models.  The are located under Physics.models.  They are further categorized into files according the phenomena they describe (i.e. Physics.models.capillary_pressure).  Inside each file there are several options (e.g. washburn, and purcell).  To utilize one of these models on a Physics object it must be added using ``add_model``:
+
+>>> model = OpenPNM.Physics.models.capillary_pressure.washburn
+>>> phys.add_model(propname='throat.capillary_pressure',model=model)
+
+This command tells Physics that you want to use the 'washburn' model to calculate throat entry pressures, and that you would like the values return by this function to be stored under the property name 'throat.capillary_pressure'.  
+
+Each Physics model assumes the pre-existence of the necessary Phase property data.  The 'capillary_pressure' models require that the 'surface tension' and 'contact angle' are present on the Phase object that the Physics is associated with.  To learn about using non-default property names, see :ref:`Customizing OpenPNM<customizing>`
+
+When ``add_model`` is called, the model being added is run and the data are stored in the Physics dictionary under the specified 'propname'.  If some conditions in the simulation change, like 'temperature', then this will impact the Phase properties (i.e. 'throat.surface_tension').  For such changes to propagate through the simulation the ``regenerate`` method must be called.  If the Phase temperature did change, then ``Phase.regenerate`` will update the 'surface_tension' values (assuming that a temperature dependent model is used to calculate it).  It is then necessary to call ``Physics.regenerate`` so that the 'capillary_pressure' values are recalculated to reflect the changed 'surface_tension' values.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Customizing Physics

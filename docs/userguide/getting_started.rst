@@ -21,7 +21,7 @@ Main Modules
 
 5 `Algorithms`_: This module is the home of the actual algorithms that use the network properties defined by the above modules.  OpenPNM ships with a good assortment of standard algorithms, but is meant to be extended by users adding custom algorithms.
 
-The 5 objects list above interact with each other to create a 'simulation'.  When viewed schematically, these objects interact as shown in the following figure:
+The 5 objects listed above interact with each other to create a 'simulation'.  When viewed schematically, these objects interact as shown in the following figure:
 
 .. figure:: ../ObjectHierarchy.png
     :width: 100%
