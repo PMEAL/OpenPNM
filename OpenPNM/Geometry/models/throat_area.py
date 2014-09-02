@@ -27,12 +27,21 @@ def cuboid(geometry,
     return value
         
 def voronoi(geometry,
+            fibre_rad,
             throat_area='throat.area',
             **kwargs):
     r"""
-    As the throat area is stored on the network, lookup the indices pertaining to the geom and retrieve 
+    Use the Voronoi verts and throat normals to work out the area
     """
+    Nt = geometry.num_throats()    
+    throats = geometry['throat.map']
     network = geometry._net
-    tindex = network.throats(geometry.name)
-    value = network[throat_area][tindex]
-    return value
+    verts = network['throat.verts'][throats]
+    normals = network['throat.normals'][throats]
+    area = _sp.ndarray(Nt)
+    perimeter = _sp.ndarrat(Nt)
+    offset_verts = _sp.ndarray(Nt,dtype=object)
+    error = _sp.ndarray(Nt)
+    for i in _sp.arange(0,Nt):
+        area[i],perimeter[i],offset_verts[i],error[i]=geometry._get_throat_geom(verts[i],normals[i],fibre_rad)
+    return area

@@ -13,7 +13,7 @@ def voronoi(geometry,
     Calculate the centroid of the pore from the voronoi vertices - C.O.M
     """
     network = geometry._net    
-    pores = network.pores()
+    pores = geometry['pore.map']
     verts = network[pore_vertices][pores]
     value = _sp.ndarray(len(verts),dtype=object)
     for i,vert in enumerate(verts):

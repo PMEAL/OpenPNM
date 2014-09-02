@@ -78,9 +78,11 @@ def voronoi(geometry,
             **kwargs):
     r"""
     Calculate volume from the convex hull of the offset vertices making the throats
+    
+    TODO: Optimise to only calculate volume of pores in geometry rather than selecting them afterwards
     """
     network = geometry._net    
-    pores = network.pores()
+    pores = geometry['pore.map']
     conns = network['throat.conns']
     verts = network['throat.offset_verts']
     Np = network.num_pores()

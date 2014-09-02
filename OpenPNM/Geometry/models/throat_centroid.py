@@ -12,7 +12,7 @@ def voronoi(geometry,
     Calculate the centroid of the throat from the voronoi vertices - C.O.M
     """
     network = geometry._net    
-    throats = network.throats(geometry.name)
+    throats = geometry['throat.map']
     verts = network['throat.offset_verts'][throats]
     value = _sp.ndarray(len(verts),dtype=object)
     for i,vert in enumerate(verts):

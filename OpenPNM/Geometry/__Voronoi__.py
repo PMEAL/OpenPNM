@@ -59,18 +59,14 @@ class Voronoi(GenericGeometry):
                        model=gm.pore_centroid.voronoi)
         self.add_model(propname='pore.area',
                        model=gm.pore_area.spherical)
-        self.add_model(propname='throat.area',
-                       model=gm.throat_area.voronoi)
         self.add_model(propname='throat.centroid',
                        model=gm.throat_centroid.voronoi)
-        self.add_model(propname='throat.perimeter',
-                       model=gm.throat_area.voronoi)
         self.add_model(propname='throat.diameter',
                        model=gm.throat_diameter.voronoi)                  
         self.add_model(propname='throat.length',
                        model=gm.throat_length.voronoi)
         self.add_model(propname='throat.volume',
-                       model=gm.throat_volume.cylinder)
+                       model=gm.throat_volume.extrusion)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.extrusion)
 					   
@@ -91,7 +87,7 @@ class Voronoi(GenericGeometry):
     def _add_throat_props(self,radius=1e-06):
         r"""
         Main Loop         
-        This method does all the throat properties for the voronoi cages 
+        This method does all the throat properties for the voronoi cages in the entire network 
         including calling the offseting routine which offsets the vertices surrounding each pore by an amount that
         replicates erroding the facet of each throat by the fibre radius 
         """
@@ -120,8 +116,8 @@ class Voronoi(GenericGeometry):
             else:
                 area[i]=0.0
         
-        self._net['throat.area'] = area
-        self._net['throat.perimeter']=perimeter
+        self['throat.area'] = area[self['throat.map']]
+        self['throat.perimeter']=perimeter[self['throat.map']]
         self._net['throat.verts']=shared_verts
         self._net['throat.offset_verts']=offset_verts
         self._net['throat.normals']=normals
