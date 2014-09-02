@@ -1008,6 +1008,9 @@ class Core(Base):
         
     @property
     def Np(self):
+        r'''
+        A shortcut to query the total number of pores on the object'
+        '''
         return self.num_pores()
             
     def num_throats(self,labels='all',mode='union'):
@@ -1066,7 +1069,10 @@ class Core(Base):
         
     @property
     def Nt(self):
-        return self.num_throats()    
+        r'''
+        A shortcut to query the total number of throats on the object'
+        '''
+        return self.num_throats()
         
     def _count(self,element=None):
         r'''

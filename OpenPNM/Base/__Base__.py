@@ -349,6 +349,21 @@ class Base(dict):
             temp.close()
         else:
             raise Exception('Cannot load saved data onto an active object')
+            
+    def OpenPNM_methods(self):
+        r'''
+        List the OpenPNM methods on the object
+        '''
+        a = []
+        [a.append(item) for item in self.__dir__() if (item[0] != '_') and (item not in dict.__dir__({}))]
+        a = sorted(a)
+        for item in a:
+            print("{:<25s}".format(item),end='')
+            print(':  ',end='')
+            doc = self.__getattribute__(item).__doc__
+            doc = doc.split('\n')[1]
+            doc = doc.lstrip()
+            print(doc)
     
     def _set_name(self,name):
         if self._name != None:
