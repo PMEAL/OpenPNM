@@ -11,10 +11,10 @@ Contents:
 
    installation.rst   
    getting_started.rst
+   general_usage.rst
    network.rst
    geometry.rst
    phases.rst
    physics.rst
    algorithms.rst
-   data_storage.rst
    customizing.rst

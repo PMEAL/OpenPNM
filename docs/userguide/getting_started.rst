@@ -3,9 +3,9 @@
 ###############################################################################
 Getting Started with OpenPNM
 ###############################################################################
-The OpenPNM framework is built upon 5 main objects, Networks, Geometries, Phases, Physics and Algorithms.  All of these objects are a subclassed from the Python 'dictionary' or ``dict``, which is a data storage class similar to a *struct* in C or Matlab.  Using a ``dict`` means that multiple pieces of data can be stored on each object, and accessed by name (i.e. object_name['pore.diameter']) which provide easy and direct access to the numerical data.  Each OpenPNM object stores its own data, so the *Network* object stores topological information, *Geometries* store pore and throat size related information, *Phases* store the physical properties of the fluids and solids in the network, *Physics* store pore-scale physics information, and *Algorithms* store the results of simulations and calculations.  A detailed discussion of the OpenPNM data storage scheme is provide :ref:`here<data_storage>`.
+The OpenPNM framework is built upon 5 main objects, Networks, Geometries, Phases, Physics and Algorithms.  All of these objects are subclassed from the Python 'dictionary' or ``dict``, which is a data storage class similar to a *struct* in C or Matlab.  Using a ``dict`` means that multiple pieces of data can be stored on each object, and accessed by name (i.e. object_name['pore.diameter']) which provide easy and direct access to the numerical data.  Each OpenPNM object stores its own data, so the *Network* object stores topological information, *Geometries* store pore and throat size related information, *Phases* store the physical properties of the fluids and solids in the network, *Physics* store pore-scale physics information, and *Algorithms* store the results of simulations and calculations.  A detailed discussion of the OpenPNM data storage scheme is provide :ref:`here<network>`.
 
-The OpenPNM classes use ``dict`` as a starting point, but augments the basic ``dict`` by adding a variety of methods that work with the data stored in the dictionaries.  For instance, the basic ``dict`` class only has a few methods for reading and removing data from the dictionary, while an OpenPNM object has many additional methods related to pore network modeling, such as querying the number of pores in the network.  
+The OpenPNM objects use ``dict`` as a starting point, but augment it by adding a variety of methods that work with the data stored in the dictionaries.  For instance, the basic ``dict`` class only has a few methods for reading and removing data from the dictionary, while an OpenPNM object has many additional methods related to pore network modeling, such as querying the number of pores in the network.  
 
 ===============================================================================
 Main Modules
@@ -15,7 +15,7 @@ Main Modules
 
 2 `Geometry`_: Geometry objects manage the pore-scale geometrical properties of the Network such as pore volume and throat diameter.  A simulation may have multiple Geometry objects depending on the problem being modeled.  For instance, a stratified material may have a separate Geometry object for each layer if the pore and throat sizes differ between them.  
 
-3 `Phases`_: Phase objects contain information about the thermo-physical properties of the liquids, gases, and solids that exist.  For instance, a Phase object for water would possess its temperature, as well as models for calculating its viscosity as a function of temperature (and any other relevant properties).
+3 `Phases`_: Phase objects contain information about the thermo-physical properties of the liquids, gases, and solids required in the simulation.  For instance, a Phase object for water would possess its temperature, as well as models for calculating its viscosity as a function of temperature (and any other relevant properties).
 
 4 `Physics`_: Physics objects contain methods for calculating pore scale physics properties which combine PHase and Geometry values.  For instance, the hydraulic conductance of a throat requires knowing the throat diameter and length, as well as the fluid viscosity.  
 
@@ -61,7 +61,7 @@ The Network object is explained further in the :ref:`Network Documentation<netwo
 ===============================================================================
 Geometry
 ===============================================================================
-You'll notice that the Network object has no 'pore scale' geometric information such as size and volume.  This type of data is managed by the Geometry objects.  A standard 'stick and ball' Geometry object can be created with:
+You'll notice that the Network object has no *pore-scale* geometric information such as 'size' and 'volume'.  This type of data is managed by the Geometry objects.  A standard 'stick and ball' Geometry object can be created with:
 
 >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores('all'),throats=pn.throats('all'))
 >>> print(geom)
@@ -89,12 +89,12 @@ You'll notice that the Network object has no 'pore scale' geometric information 
 
 As can be seen this Geometry object contains all the expected pore-scale geometric information.  The 'stick_and_ball' subclass is provided with OpenPNM and already contains all the pore scale models pre-selected.  Further details on creating a custom Geometry object are provided in the :ref:`Geometry Documentation<geometry>`.
 
-The instantiation of this object has a few requirements that should be pointed out.  Firstly, it must receive a Network object to which it is to be associated.  Secondly, it must receive a list of pores and throats where it is to apply.  In the above example, ``geom`` applies to 'all' pores and 'throats', but it possible and likely that multiple Geometry objects will be applied to the same Network.  
+The instantiation of this object has a few requirements that should be pointed out.  Firstly, it must receive a Network object to which it is to be associated.  Secondly, it must receive a list of pores and throats where it is to apply.  In the above example, ``geom`` applies to *all* pores and throats, but it possible and likely that multiple Geometry objects will be applied to the same Network.  
 
 ===============================================================================
 Phases
 ===============================================================================
-In any pore network simulation there are usually several fluids whose transport processes are to be simulated.  The thermo-physical properties of each of the fluids are manged a Phase object:
+In any pore network simulation there are usually several fluids whose transport processes are to be simulated.  The thermo-physical properties of each of the fluids are managed by a Phase object:
 
 >>> air = OpenPNM.Phases.Air(network=pn,name='air')
 >>> print(air)
@@ -148,7 +148,7 @@ The ``Standard`` Physics object is a special subclass included with OpenPNM.  It
 The Physics object requires several arguments in it's instantiation.  Like all other objects, it requires a Network object with which it is to be associated.  It also requires the Fluid to which is applies.  This enables it to ask 'air' for viscosity values when calculating hydraulic conductance.  Finally, it requires the pores and/or throats where the Physics should apply.  Notice that no Geometry object is sent as an argument, yet all pore scale physics models will clearly require geometric information.  Instead of associating a Physics directly with a Geometry object, a Physics object is applied to pores and throats independently.  When geometric data is required, the Physics object asks the Network object for the values, and the Network then retrieves them from the appropriate Geometry objects.  
 
 ===============================================================================
-Algorithm
+Algorithms
 ===============================================================================
 
 .. warning:: Work In Progress

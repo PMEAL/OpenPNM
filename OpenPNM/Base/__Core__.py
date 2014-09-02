@@ -1,5 +1,5 @@
 """
-module __Core__: Base class to construct pore network tools
+module __Core__: Core data management tools for OpenPNM
 ==================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Base.__init__.py' file.
@@ -662,7 +662,7 @@ class Core(Base):
             throats = sp.array(throats,ndmin=1)
             return throats[temp]            
         
-    def _get_indices(self,element,labels,mode):
+    def _get_indices(self,element,labels,mode='union'):
         r'''
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.

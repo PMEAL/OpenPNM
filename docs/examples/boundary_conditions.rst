@@ -13,7 +13,7 @@ Start by generating a basic cubic network and the other required components:
 .. code-block:: python
 
 	import OpenPNM
-	pn = OpenPNM.Network.Cubic.empty(name='net',loglevel=20,dims=[10,10,10])
+	pn = OpenPNM.Network.Cubic(name='net',shape=[10,10,10])
 	pn.add_boundaries()
 	
 In the last call, the method ``add_boundaries()`` is called, which means that a layer of boundary pores around the network is generated. These boundary pores will be used in the following calculations. Next we generate a geometry for the network and the phase, in this case air. A geometry can span over a part of the network only, so we need to specify to which pores and throats this geometry object should apply. For this example, we want it to apply to all pores and throats of the network. To do so, we can get all pore and throat indices of the network with the ``pn.pores()`` and ``pn.throats()`` calls, and pass these to the geometry object.

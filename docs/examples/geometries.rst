@@ -11,7 +11,7 @@ Start by importing OpenPNM and creating a Network object:
 .. code-block:: python
 
 	import OpenPNM
-	pn = OpenPNM.Network.Cubic.empty(name='net',loglevel=20,dims=[10,10,10])
+	pn = OpenPNM.Network.Cubic(name='net',shape=[10,10,10])
 	pn.add_boundaries()
 	
 .. note:: The Importance of Labels

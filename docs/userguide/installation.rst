@@ -4,7 +4,7 @@
 Installation Instructions 
 ###############################################################################
 
-OpenPNM does not need to be installed because it does not need to be compiled.  It is only necessary to download a zip file containing the package, and have a functioning Python installation.  
+OpenPNM does not need to be installed because it does not need to be compiled.  It is only necessary to download a zip archive containing the package, and have a functioning Python installation.  
 
 OpenPNM utilizes Python 3 with Scipy 0.14 and Matplotlib.  OpenPNM outputs many of its results in the vtk format which is conveniently visualized with Paraview.  
 

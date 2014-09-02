@@ -101,6 +101,8 @@ class GenericPhase(Core):
             
     def check_mixture_health(self):
         r'''
+        Query the properties of the 'virtual phases' that make up a mixture
+        to ensure they all add up
         '''
         mole_sum = sp.zeros((self.Np,))
         for comp in self._phases:
@@ -112,7 +114,7 @@ class GenericPhase(Core):
     
     def check_physics_health(self):
         r'''
-        Perform a check to find pores with overlapping or undefined Physics
+        Perform a check to find pores which have overlapping or undefined Physics
         '''
         phys = self.physics()
         temp = sp.zeros((self.Np,))
