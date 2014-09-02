@@ -295,13 +295,14 @@ class Base(dict):
             net = self._net
         if obj_name != '':
             obj = self._find_object(obj_name=obj_name)
-        #Get object type, so we know where to delete from
-        obj_type = obj.__class__.__module__.split('.')[1]
-        if obj_type == 'Geometry':  # Remove geometry from network
+        
+        #Get mro for self
+        mro = [item.__name__ for item in obj.__class__.__mro__]
+        if 'GenericGeometry' in mro:  
             net._geometries.remove(obj)
             net.pop('pore.'+obj.name,None)
             net.pop('throat.'+obj.name,None)
-        elif obj_type == 'Phases':
+        elif 'GenericPhase' in mro:
             for phase in net._phases:
                 if phase == obj:
                     for physics in phase._physics:
@@ -309,7 +310,7 @@ class Base(dict):
                         net._physics.remove(physics)
                     net._phases.remove(obj)
                     del phase
-        elif obj_type == 'Physics':
+        elif 'GenericPhysics' in mro:
             for physics in net._physics:
                 if physics == obj:
                     for phase in physics._phases:
