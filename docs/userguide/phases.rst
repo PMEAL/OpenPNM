@@ -31,7 +31,9 @@ Note that the Phase is defined everywhere in the Network:
 >>> pn.num_pores()
 27
 >>> air.num_pores()
-54
+27
+
+Unlike Geometry objects, Phases do not need to create any 'map' arrays or label arrays in the Network since Phases are applied everywhere.  Although it might seem counter-intuitive in a multiphase simulation to have Phases existing everywhere, it is simply a matter of convenience to calculate the Phase properties for the entire domain.  Tracking the actual locations of the Phases is handled separately, usually by an Algorithm object that performs some sort of percolation calculation.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Adding Models

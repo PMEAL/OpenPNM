@@ -21,8 +21,18 @@ Main Modules
 
 5 `Algorithms`_: This module is the home of the actual algorithms that use the network properties defined by the above modules.  OpenPNM ships with a good assortment of standard algorithms, but is meant to be extended by users adding custom algorithms.
 
-6 `Other Tools`_: There are two additional modules in OpenPNM that contain useful tool: Utilities and Postprocessing. Utilities contains a random assortment of helper tools, including Save and Load classes.  Postprocessing contains a number of visualization and analysis related tools.  
+The 5 objects list above interact with each other to create a 'simulation'.  When viewed schematically, these objects interact as shown in the following figure:
 
+.. figure:: ../ObjectHierarchy.png
+    :width: 100%
+    :align: center
+    :alt: alternate text
+    :figclass: align-left
+	
+    *Object relationship diagram for an arbitrary simulation with 3 Geometries, 2 Phases, 3 Physics and 3 Algorithms.  These numbers are entirely dependent on the model.*
+
+	
+The vertical positioning of the blocks in this image shows that Networks, Phases and Algorithms span the entire set of pores (and throats) in the Network, while Geometry and Physics objects are assigned to arbitrary sections of pores (and throats).  The color scheme represents the fact that Geometries are directly connected to a Network object, and Physics' are directly connected to a Phase object.  With this picture in mind, the relationships between objects and the flow of responsibility in the simulation as outlined below will be more clear.  
 
 ===============================================================================
 Network
@@ -185,14 +195,6 @@ As can be seen in the above print-out, the Algorithm object contains some bounda
 >>> air['pore.mole_fraction'] = alg['pore.mole_fraction']
 
 More detailed information about Algorithm objects can be found in the :ref:`Algorithm Documentation<algorithms>`
-
-===============================================================================
-Other Tools
-===============================================================================
-There are a variety of helpful tool and functions available under Utilities and Postprocessing.  The ability to export simulation data to a VTK file for visualization in Paraview is found under Postprocessing.  It must be imported to be used, as follows:
-
->>> import OpenPNM.Postprocessing.Export as sv
->>> sv.VTK(pn,phases=[air])
 
 
 
