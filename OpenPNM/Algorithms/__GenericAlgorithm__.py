@@ -200,7 +200,7 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         #Check all BC from specified locations, prior to setting new ones
         for item in self.labels():
             bcname = (item.split('.')[-1]).replace(self._phase.name+'_',"")
-            if bcname in BC_default and item.split('.')[-1]==element:
+            if bcname in BC_default and item.split('.')[0]==element:
                 if mode=='merge': 
                     if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
                         raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
