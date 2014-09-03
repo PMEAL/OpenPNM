@@ -42,17 +42,3 @@ def extrusion(geometry,
     L = geometry[throat_length]
     value = P*L
     return value
-    
-def voronoi(network,
-            throats,
-            throat_perimeter='throat.perimeter',
-            throat_length='throat.length',
-            **kwargs):
-    r"""
-    Calculate surface area from perimeter and length - 
-    perimeter calculated when throat area is calculated so must be run in correct order
-    """
-    P = network[throat_perimeter][throats]
-    L = network[throat_length][throats]
-    value = P*L
-    return value

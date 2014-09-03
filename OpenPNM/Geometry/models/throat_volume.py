@@ -43,16 +43,3 @@ def extrusion(geometry,
     area = geometry[throat_area]
     value = leng*area
     return value
-    
-def voronoi(network,
-            throats,
-            throat_length='throat.length',
-            throat_area='throat.area',
-            **kwargs):
-    r"""
-    Calculate volume from the throat area and the throat length
-    """
-    leng = network[throat_length][throats]
-    area = network[throat_area][throats]
-    value = leng*area
-    return value

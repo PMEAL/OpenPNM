@@ -13,8 +13,9 @@ import numpy as np
 import OpenPNM.Utilities.transformations as tr
 from scipy.spatial import ConvexHull
 from math import atan2
-from scipy.spatial import Delaunay
-
+import OpenPNM.Utilities.misc as misc
+from scipy import stats as st
+from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
 class Voronoi(GenericGeometry):
@@ -36,7 +37,39 @@ class Voronoi(GenericGeometry):
             raise Exception('The installed version of Scipy is too old, Voronoi cannot run')
         super(Voronoi,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
+        self._generate()
     
+    def _generate(self):
+        r'''
+        ''' 
+        fibre_rad = 3e-06
+        self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
+        self.add_model(propname='pore.seed',
+                       model=gm.pore_misc.random,
+                       seed=None)
+        self.add_model(propname='throat.seed',
+                       model=gm.throat_misc.neighbor,
+                       pore_prop='pore.seed',
+                       mode='min')
+        self.add_model(propname='pore.volume',
+                       model=gm.pore_volume.voronoi)
+        self.add_model(propname='pore.diameter',
+                       model=gm.pore_diameter.voronoi)
+        self.add_model(propname='pore.centroid',
+                       model=gm.pore_centroid.voronoi)
+        self.add_model(propname='pore.area',
+                       model=gm.pore_area.spherical)
+        self.add_model(propname='throat.centroid',
+                       model=gm.throat_centroid.voronoi)
+        self.add_model(propname='throat.diameter',
+                       model=gm.throat_diameter.voronoi)                  
+        self.add_model(propname='throat.length',
+                       model=gm.throat_length.voronoi)
+        self.add_model(propname='throat.volume',
+                       model=gm.throat_volume.extrusion)
+        self.add_model(propname='throat.surface_area',
+                       model=gm.throat_surface_area.extrusion)
+					   
     def setup(self, fibre_rad=3e-06):
         self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
         self.add_property(prop='pore_seed',model='random')
@@ -46,7 +79,7 @@ class Voronoi(GenericGeometry):
         self.add_property(prop='pore_centroid',model='voronoi')
         self.add_property(prop='throat_diameter',model='voronoi')
         self.add_property(prop='throat_centroid',model='voronoi')
-        self.add_property(prop='throat_length',model='constant',value=fibre_rad)
+        self.add_property(prop='throat_length',model='voronoi')
         self.add_property(prop='throat_volume',model='voronoi')
         self.add_property(prop='throat_vector',model='pore_to_pore') # Not sure how to do this for centre to centre as we might need to split into two vectors
         self.add_property(prop='throat_surface_area',model='voronoi')
@@ -54,17 +87,15 @@ class Voronoi(GenericGeometry):
     def _add_throat_props(self,radius=1e-06):
         r"""
         Main Loop         
-        This method does all the throat properties for the voronoi cages 
+        This method does all the throat properties for the voronoi cages in the entire network 
         including calling the offseting routine which offsets the vertices surrounding each pore by an amount that
         replicates erroding the facet of each throat by the fibre radius 
         """
         connections = self._net['throat.conns']
-        coords = self._net['pore.coords']
         verts = self._net['pore.vertices']
         normals = sp.ndarray(len(connections),dtype=object)
-        normals = coords[connections[:,0]]-coords[connections[:,1]]
-        area = sp.ndarray(len(connections),dtype=object)
-        perimeter = sp.ndarray(len(connections),dtype=object)
+        area = sp.ndarray(len(connections))
+        perimeter = sp.ndarray(len(connections))
         offset_verts = sp.ndarray(len(connections),dtype=object)
         shared_verts = sp.ndarray(len(connections),dtype=object)
         offset_error = sp.ndarray(len(connections),dtype=object)
@@ -80,15 +111,17 @@ class Voronoi(GenericGeometry):
             if len(shared_verts) >=3:
                 my_shared_verts = np.asarray(my_shared_verts)
                 shared_verts[i]=my_shared_verts
+                normals[i] = self._get_throat_normal(my_shared_verts)
                 area[i],perimeter[i],offset_verts[i],offset_error[i] = self._get_throat_geom(my_shared_verts,normals[i],radius)
             else:
                 area[i]=0.0
-
-        self._net['throat.area'] = area
-        self._net['throat.perimeter']=perimeter
+        
+        self['throat.area'] = area[self['throat.map']]
+        self['throat.perimeter']=perimeter[self['throat.map']]
         self._net['throat.verts']=shared_verts
         self._net['throat.offset_verts']=offset_verts
         self._net['throat.normals']=normals
+        
         #self._net['throat.offset_error']=offset_error
         #offset_error = pn['throat.offset_error']
         #for i in range(len(offset_error)):
@@ -107,6 +140,8 @@ class Voronoi(GenericGeometry):
         excluded_throats = np.asarray(excluded_throats)
         if len(excluded_throats) > 0:
             self._net.trim(throats=excluded_throats)
+        "Also get rid of isolated pores"
+        self._net.trim(self._net.isolated_pores())
     
     def _get_throat_geom(self,verts,normal,fibre_rad):
         r"""
@@ -156,7 +191,7 @@ class Voronoi(GenericGeometry):
         if (np.around(z.std(),3)!=0.000):
             print("Rotation failed")
         facet_coords_2D = np.column_stack((x,y))
-        hull = ConvexHull(facet_coords_2D)
+        hull = ConvexHull(facet_coords_2D,qhull_options='QJ')
         verts_2D = facet_coords_2D[hull.vertices]
         offset = self._outer_offset(verts_2D,fibre_rad)
         " At this point we may have overlapping areas for which we need to offset from a new point "
@@ -211,7 +246,7 @@ class Voronoi(GenericGeometry):
                                 
                                 #new_vert_list.append(my_new_point)
                         
-                    temp_verts=np.asarray(self._unique_list(temp_vert_list))
+                    temp_verts=np.asarray(misc.unique_list(temp_vert_list))
                     #new_vert_list=np.asarray(self._unique_list(new_vert_list))
                     #if len(verts_2D) >=3:
                     offset = self._outer_offset(temp_verts,fibre_rad)
@@ -401,77 +436,6 @@ class Voronoi(GenericGeometry):
         lines = np.hstack([pts,np.roll(pts,-1,axis=0)])
         perimeter = sum(np.sqrt((x2-x1)**2+(y2-y1)**2) for x1,y1,x2,y2 in lines)
         return perimeter
-    
-    def _get_hull_volume(self,points):
-        
-        r"""
-        Calculate the volume of a set of points by dividing the bounding surface into triangles and working out the volume of all the pyramid elements
-        connected to the volume centroid
-        """
-        " remove any duplicate points - this messes up the triangulation "        
-        points = np.asarray(self._unique_list(points))       
-        try:
-            tri = Delaunay(points)
-        except sp.spatial.qhull.QhullError:
-            print(points)
-        " We only want points included in the convex hull to calculate the centroid "
-        #hull_points = np.unique(tri.convex_hull)#could technically use network pore centroids here but this function may be called at other times
-        hull_centroid = sp.array([points[:,0].mean(),points[:,1].mean(),points[:,2].mean()])
-        hull_volume = 0.0
-        for ia, ib, ic in tri.convex_hull:
-            " Points making each triangular face "
-            " Collection of co-ordinates of each point in this face "
-            face_x = points[[ia,ib,ic]][:,0]
-            face_y = points[[ia,ib,ic]][:,1]
-            face_z = points[[ia,ib,ic]][:,2]
-            " Average of each co-ordinate is the centroid of the face "
-            face_centroid = [face_x.mean(),face_y.mean(),face_z.mean()]
-            face_centroid_vector = face_centroid - hull_centroid
-            " Vectors of the sides of the face used to find normal vector and area "
-            vab = points[ib] - points[ia]
-            vac = points[ic] - points[ia]
-            vbc = points[ic] - points[ib] # used later for area
-            " As vectors are co-planar the cross-product will produce the normal vector of the face "
-            face_normal = np.cross(vab,vac)
-            face_unit_normal = face_normal/np.linalg.norm(face_normal)
-            " As triangles are orientated randomly in 3D we could either transform co-ordinates to align with a plane and perform 2D operations "
-            " to work out the area or we could work out the lengths of each side and use Heron's formula which is easier"
-            " Using Delaunay traingulation will always produce triangular faces but if dealing with other polygons co-ordinate transfer may be necessary "
-            a = np.linalg.norm(vab)
-            b = np.linalg.norm(vbc)
-            c = np.linalg.norm(vac)
-            " Semiperimeter "
-            s = 0.5*(a+b+c)
-            face_area = np.sqrt(s*(s-a)*(s-b)*(s-c))
-            " Now the volume of the pyramid section defined by the 3 face points and the hull centroid can be calculated "
-            pyramid_volume = np.abs(np.dot(face_centroid_vector,face_unit_normal)*face_area/3)
-            " Each pyramid is summed together to calculate the total volume "
-            hull_volume += pyramid_volume
-    
-        return hull_volume
-    
-    def _unique_list(self,input_list):
-        r"""
-        For a given list (of points) remove any duplicates
-        """
-        output_list = []
-        if len(input_list) > 0:
-            dim = np.shape(input_list)[1]
-            for i in input_list:
-                match=False
-                for j in output_list:
-                    if dim == 3:
-                        if (i[0]==j[0]) and (i[1]==j[1]) and (i[2]==j[2]):
-                            match=True
-                    elif dim == 2:
-                        if (i[0]==j[0]) and (i[1]==j[1]):
-                            match=True
-                    elif dim ==1:
-                        if (i[0]==j[0]):
-                            match=True
-                if match==False:
-                    output_list.append(i)
-        return output_list
         
     def _symmetric_difference(self,list_a,list_b):
         r"""
@@ -700,51 +664,35 @@ class Voronoi(GenericGeometry):
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
         if len(pores) > 0:
             throats = self._net.find_neighbor_throats(pores=pores)
-            verts = self._net['throat.verts'][throats]
-            normals = self._net['throat.normals'][throats]
-            " Get verts in hull order "
-            ordered_verts=[]
-            for i in range(len(verts)):
-                vert_2D = self._rotate_and_chop(verts[i],normals[i],[0,0,1])
-                hull = ConvexHull(vert_2D)
-                ordered_verts.append(verts[i][hull.vertices])
-            offsets = self._net['throat.offset_verts'][throats]
-
-            xmin = 999
-            xmax = -999
-            ymin = 999
-            ymax = -999
-            zmin = 999
-            zmax = -999
-            " Find the span of points "
-            for vert in verts:
-                if vert[:,0].min() < xmin:
-                    xmin = vert[:,0].min()
-                if vert[:,0].max() > xmax:
-                    xmax = vert[:,0].max()
-                if vert[:,1].min() < ymin:
-                    ymin = vert[:,1].min()
-                if vert[:,1].max() > ymax:
-                    ymax = vert[:,1].max()
-                if vert[:,2].min() < zmin:
-                    zmin = vert[:,2].min()
-                if vert[:,2].max() > zmax:
-                    zmax = vert[:,2].max()
-                
-            fig = plt.figure()
-            ax = fig.gca(projection='3d')
-            outer_items = Poly3DCollection(ordered_verts,linewidths=1, alpha=0.2)
-            outer_face_colours=[(0.5, 0, 0.5, 0.05)]
-            outer_items.set_facecolor(outer_face_colours)
-            ax.add_collection(outer_items)
-            inner_items = Poly3DCollection(offsets,linewidths=1, alpha=0.2)
-            inner_face_colours=[(0.7, 0, 0.3, 0.0)]
-            inner_items.set_facecolor(inner_face_colours)
-            ax.add_collection(inner_items)
-            ax.set_xlim(xmin,xmax)
-            ax.set_ylim(ymin,ymax)
-            ax.set_zlim(zmin,zmax)
-            plt.show()
+            "Can't create volume from one throat"
+            if len(throats)>1:
+                verts = self._net['throat.verts'][throats]
+                normals = self._net['throat.normals'][throats]
+                " Get verts in hull order "
+                ordered_verts=[]
+                for i in range(len(verts)):
+                    vert_2D = self._rotate_and_chop(verts[i],normals[i],[0,0,1])
+                    hull = ConvexHull(vert_2D)
+                    ordered_verts.append(verts[i][hull.vertices])
+                offsets = self._net['throat.offset_verts'][throats]
+                "Get domain extents for setting axis "
+                [xmin,xmax,ymin,ymax,zmin,zmax]=self._net.vertex_dimension(pores,parm='minmax')                
+                fig = plt.figure()
+                ax = fig.gca(projection='3d')
+                outer_items = Poly3DCollection(ordered_verts,linewidths=1, alpha=0.2)
+                outer_face_colours=[(0.5, 0, 0.5, 0.05)]
+                outer_items.set_facecolor(outer_face_colours)
+                ax.add_collection(outer_items)
+                inner_items = Poly3DCollection(offsets,linewidths=1, alpha=0.2)
+                inner_face_colours=[(0.7, 0, 0.3, 0.0)]
+                inner_items.set_facecolor(inner_face_colours)
+                ax.add_collection(inner_items)
+                ax.set_xlim(xmin,xmax)
+                ax.set_ylim(ymin,ymax)
+                ax.set_zlim(zmin,zmax)
+                plt.show()
+            else:
+                self.print_throat(throats)
         else:
             print("Please provide pore indices")
     
@@ -780,8 +728,31 @@ class Voronoi(GenericGeometry):
             output = facet
         
         return output
-            
+        
+    def _get_throat_normal(self,verts):
+        r"""
+        With a Delaunay Tesselation the throat normal is usually the vector connecting neighbouring pores as the throat is defined
+        by the plane which is equidistant from the 2 pores. However, if scaling of pore coordinates and vertices is introduced 
+        this will alter the normals so they must be recalculated.
+        The routine is passed a list of shared vertices which define the throat.
+        The normal is calculated by performing a convex hull algorithm to return the vertices in hull order. A coordinate must be lost to
+        do this as order only works in 2D.
+        Then the vectors of 3 neighbouring points are worked out and the cross product is taken to define the normal
+        """
+        "verts may already be coplanar so check an take the other coords"
+        if len(sp.unique(verts[:,0]))==1:
+            verts_2d = np.vstack((verts[:,1],verts[:,2])).T
+        elif len(sp.unique(verts[:,1]))==1:
+            verts_2d = np.vstack((verts[:,0],verts[:,2])).T
+        else:
+            verts_2d = np.vstack((verts[:,0],verts[:,1])).T
+        hull = ConvexHull(verts_2d)
+        sorted_verts = verts[hull.vertices]
+        v1 = sorted_verts[1]-sorted_verts[0]
+        v2 = sorted_verts[-1]-sorted_verts[0]
+        normal = sp.cross(v1,v2)
 
+        return normal
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.Delaunay(name='test_net')

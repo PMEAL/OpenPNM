@@ -639,6 +639,10 @@ class GenericNetwork(Core):
                     temp = self[item]
                     self[item] = sp.zeros((N,),dtype=bool)
                     self[item][temp] = True
+                elif self[item].dtype == object:
+                    temp = self[item]
+                    self[item] = sp.ndarray(N,dtype=object)
+                    self[item][sp.arange(0,sp.shape(temp)[0])] = temp
                 else:
                     temp = self[item]
                     self[item] = sp.ones((N,),dtype=float)*sp.nan
@@ -878,6 +882,104 @@ class GenericNetwork(Core):
         r'''
         '''
         raise NotImplementedError()
+    
+    def isolated_pores(self):
+        r'''
+        This method checks to see whether any pores are isolated from the network and 
+        returns a boolean mask
+        '''
+        isolated = [False]*(self.num_pores())
+        for pore in self.pores():
+            if pore not in self["throat.conns"]:
+                isolated[pore]=True
+        return isolated
+    
+    def vertex_dimension(self,face1=[],face2=[],parm='volume'):
+        r"""
+        Return the domain extent based on the vertices
+        This function is better than using the pore coords as they may be far away from the original domain size
+        And will alter the effective properties which should be based on the original domain sizes
+        Takes one or two sets of pores and works out different geometric properties
+        if "length" is specified and two lists are given the planarity is determined and the appropriate length (x,y,z)
+        is returned.
+        It should work the same as domain length and area if vertices are not in network by using coordinates
+        e.g.    vertex_extent(face1=inlet,face2=outlet,parm='volume')
+                vertex_extent(geom.pores(),parm='area_xy')
+                vertex_extent(face1=inlet,parm='area')
+                vertex_extent(face1=inlet,face2=outlet,parm='length')
+
+        """
+        pores=np.array([],dtype=int)
+        if len(face1)>0:
+            pores=np.hstack((pores,face1))
+        if len(face2)>0:
+            pores=np.hstack((pores,face2))
+        
+        face1_coords = self["pore.coords"][face1]
+        face2_coords = self["pore.coords"][face2]
+        face1_planar = np.zeros(3)
+        face2_planar = np.zeros(3)
+        planar = np.zeros(3)
+        for i in range(3):
+            if len(np.unique(face1_coords[:,i]))==1:
+                face1_planar[i]=1
+            if len(np.unique(face2_coords[:,i]))==1:
+                face2_planar[i]=1
+        if len(face1)>0 and len(face2)>0:
+            planar = face1_planar*face2_planar
+        elif len(face1)>0:
+            planar = face1_planar
+        elif len(face2)>0:
+            planar = face2_planar
+        else:
+            return 0
+            
+        if "pore.vertices" in self.props():
+            vert_list = self["pore.vertices"][pores]
+        else:
+            vert_list = self["pore.coords"][pores]
+        vx_min = 1e32
+        vx_max = -1e32
+        vy_min = 1e32
+        vy_max = -1e32
+        vz_min = 1e32
+        vz_max = -1e32
+        output = 0
+        for verts in vert_list:
+            if verts[:,0].min()<vx_min:
+                vx_min=verts[:,0].min()
+            if verts[:,0].max()>vx_max:
+                vx_max=verts[:,0].max()
+            if verts[:,1].min()<vy_min:
+                vy_min=verts[:,1].min()
+            if verts[:,1].max()>vy_max:
+                vy_max=verts[:,1].max()
+            if verts[:,2].min()<vz_min:
+                vz_min=verts[:,2].min()
+            if verts[:,2].max()>vz_max:
+                vz_max=verts[:,2].max()
+        width = np.around(vx_max-vx_min,10)
+        depth = np.around(vy_max-vy_min,10)
+        height = np.around(vz_max-vz_min,10)
+        if parm == 'volume':
+            output =  width*depth*height
+        elif parm == 'area_xy' or (parm == 'area' and planar[2]==1):
+            output = width*depth
+        elif parm == 'area_xz' or (parm == 'area' and planar[1]==1):
+            output = width*height
+        elif parm == 'area_yz' or (parm == 'area' and planar[0]==1):
+            output = depth*height
+        elif parm == 'length_x' or (parm == 'length' and planar[0]==1):
+            output = width
+        elif parm == 'length_y'or (parm == 'length' and planar[1]==1):
+            output = depth
+        elif parm == 'length_z'or (parm == 'length' and planar[2]==1):
+            output = height
+        elif parm == 'minmax':
+            output = [vx_min,vx_max,vy_min,vy_max,vz_min,vz_max]
+
+        
+        return output
 
     def domain_pore_volume(self):
         r'''

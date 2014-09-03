@@ -32,7 +32,7 @@ def cylinder_from_radius(geometry,
     value=P.ppf(geometry[throat_seed])*2
     return value
 
-def voronoi(network,
+def voronoi(geometry,
             throat_area='throat.area',
             **kwargs):
     r"""
@@ -40,7 +40,6 @@ def voronoi(network,
     Equivalent circular diameter from voronoi area
     Could do better here and work out minimum diameter from verts
     """
-    throats = network.throats()
-    areas = network[throat_area][throats]
+    areas = geometry[throat_area]
     value = 2*_sp.sqrt(areas/_sp.pi)#64 bit sqrt doesn't work!
     return value
