@@ -45,4 +45,3 @@ for item in _os.listdir(dir):
             exec('from . import ' + format(item.split('.')[0]))
             
 #Manually added imports
-from .__Import__ import MatFile
