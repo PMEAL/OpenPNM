@@ -140,7 +140,7 @@ class GenericAlgorithm(OpenPNM.Base.Core):
                     raise Exception('No bctype/pore/throat is specified')
                 else:
                     for item in self.labels():                    
-                        if bctype==item.split('.')[-1]:
+                        if bctype == (item.split('.')[-1]).replace(self._phase.name+'_',"") :
                             element = item.split('.')[0]
                             try:
                                 del self[element+'.'+component.name+'_bcval_'+bctype]
@@ -199,7 +199,7 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         
         #Check all BC from specified locations, prior to setting new ones
         for item in self.labels():
-            bcname = item.split('.')[-1]
+            bcname = (item.split('.')[-1]).replace(self._phase.name+'_',"")
             if bcname in BC_default:
                 if mode=='merge': 
                     if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
