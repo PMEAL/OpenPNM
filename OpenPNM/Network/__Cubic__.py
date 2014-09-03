@@ -146,6 +146,7 @@ class Cubic(GenericNetwork):
         propname : string
             The name of the pore property being added.
         '''
+        array = sp.atleast_3d(array)
         if sp.shape(array) != self._shape:
             raise Exception('The received array does not match the original network')
         temp = array.flatten()
