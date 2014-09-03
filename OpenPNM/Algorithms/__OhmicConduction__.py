@@ -4,7 +4,6 @@ module __OhmicConduction__: Electronic or ionic conduction
 ===============================================================================
 
 """
-
 import scipy as sp
 from .__GenericLinearTransport__ import GenericLinearTransport
 
@@ -23,10 +22,10 @@ class OhmicConduction(GenericLinearTransport):
         super(OhmicConduction,self).__init__(**kwargs)
         self._logger.info('Create '+self.__class__.__name__+' Object')
         
-    def run(self,phase,conductance='electronic_conductance',quantity='voltage',**params):
+    def run(self,conductance='electronic_conductance',quantity='voltage',**params):
         r'''
         '''  
         self._logger.info("Setup "+self.__class__.__name__)        
-        super(OhmicConduction,self).setup(phase=phase,conductance=conductance,quantity=quantity)
+        super(OhmicConduction,self).setup(conductance=conductance,quantity=quantity)
         
         super(GenericLinearTransport,self).run()

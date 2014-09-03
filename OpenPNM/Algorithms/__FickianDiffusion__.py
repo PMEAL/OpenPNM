@@ -4,7 +4,6 @@ module __FickianDiffusion__: Diffusive mass transfer
 ===============================================================================
 
 """
-
 import scipy as sp
 from .__GenericLinearTransport__ import GenericLinearTransport
 
@@ -23,11 +22,11 @@ class FickianDiffusion(GenericLinearTransport):
         super(FickianDiffusion,self).__init__(**kwargs)
         self._logger.info('Create '+self.__class__.__name__+' Object')
         
-    def run(self,phase,conductance='diffusive_conductance',quantity='mole_fraction',**params):
+    def run(self,conductance='diffusive_conductance',quantity='mole_fraction',**params):
         r'''
         '''  
         self._logger.info("Setup "+self.__class__.__name__)   
-        super(FickianDiffusion,self).setup(phase=phase,conductance=conductance,quantity=quantity)
+        super(FickianDiffusion,self).setup(conductance=conductance,quantity=quantity)
         
         super(GenericLinearTransport,self).run()
         

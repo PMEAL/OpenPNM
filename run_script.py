@@ -20,9 +20,9 @@ boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 #==============================================================================
 '''Build Phases'''
 #==============================================================================
-air = OpenPNM.Phases.Air(network=pn)
+air = OpenPNM.Phases.Air(network=pn,name='air')
 air['pore.Dac'] = 1e-7  # Add custom properties directly
-water = OpenPNM.Phases.Water(network=pn)
+water = OpenPNM.Phases.Water(network=pn,name='water')
 
 #==============================================================================
 '''Build Physics'''
@@ -58,7 +58,7 @@ IP_1.update()
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
-alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn)
+alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn,phase=air)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.pores(labels=['top_boundary'])
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
@@ -69,7 +69,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    propname='throat.conduit_diffusive_conductance',
                    throat_conductance='throat.diffusive_conductance')
 #Use newly defined diffusive_conductance in the diffusion calculation
-alg.run(conductance='throat.diffusive_conductance',phase=air)
+alg.run(conductance='throat.diffusive_conductance')
 alg.update()
 Deff = alg.calc_eff_diffusivity()
 

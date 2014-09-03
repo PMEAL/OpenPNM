@@ -4,7 +4,6 @@ module __StokesFlow__: Viscous fluid flow
 ===============================================================================
 
 """
-
 import scipy as sp
 from .__GenericLinearTransport__ import GenericLinearTransport
 
@@ -22,11 +21,11 @@ class StokesFlow(GenericLinearTransport):
         super(StokesFlow,self).__init__(**kwargs)
         self._logger.info('Create '+self.__class__.__name__+' Object')
         
-    def run(self,phase,conductance='hydraulic_conductance',quantity='pressure',**params):
+    def run(self,conductance='hydraulic_conductance',quantity='pressure',**params):
         r'''
         '''
         self._logger.info("Setup "+self.__class__.__name__)         
-        super(StokesFlow,self).setup(phase=phase,conductance=conductance,quantity=quantity)
+        super(StokesFlow,self).setup(conductance=conductance,quantity=quantity)
         
         super(GenericLinearTransport,self).run()
                 
