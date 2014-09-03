@@ -18,6 +18,18 @@ This submodule contains algorithms for performing simulations on pore networks
 .. autoclass:: InvasionPercolation
    :members:
 
+.. autoclass:: FickianDiffusion
+   :members:
+
+.. autoclass:: StokesFlow
+   :members:
+   
+.. autoclass:: OhmicConduction
+   :members:
+   
+.. autoclass:: FourierConduction
+   :members:
+
 """
 
 #Import every file in the directory
