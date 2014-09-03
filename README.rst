@@ -26,7 +26,9 @@ please contact us through Github, or email one of the developer directly.
 Installation
 ------------
 
-For installation instructions, see ``INSTALL.txt``.
+.. code-block:: python
+
+    pip install openpnm
 
 
 Documentation
