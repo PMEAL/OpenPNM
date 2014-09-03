@@ -327,9 +327,9 @@ class GenericNetwork(Core):
         >>> pn.find_neighbor_pores(pores=[0,2],flatten=False)
         array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
         >>> pn.find_neighbor_pores(pores=[0,2],mode='intersection') #Find only common neighbors
-        array([1], dtype=int64)
+        array([1])
         >>> pn.find_neighbor_pores(pores=[0,2],mode='not_intersection') #Exclude common neighbors
-        array([ 3,  5,  7, 25, 27], dtype=int64)
+        array([ 3,  5,  7, 25, 27])
         """
         pores = sp.array(pores,ndmin=1)
         try:
@@ -442,7 +442,7 @@ class GenericNetwork(Core):
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.num_neighbors(pores=[0,1],flatten=False)
-        array([3, 4], dtype=int8)
+        array([3, 4])
         >>> pn.num_neighbors(pores=[0,1],flatten=True)  # Sum excludes pores 0 & 1
         5
         >>> pn.num_neighbors(pores=[0,2],flatten=True)  # Sum includes pore 1, but not 0 & 2
