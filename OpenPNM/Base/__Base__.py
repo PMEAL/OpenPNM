@@ -361,16 +361,13 @@ class Base(dict):
         [a.append(item) for item in self.__dir__() if (item[0] != '_') and (item not in dict.__dir__({}))]
         a = sorted(a)
         print(header)
-        print("{:<25s}".format('Method Name'),end='')
-        print(':  Docstring Blurb')
+        print("{:<25s}:  Docstring Blurb".format('Method Name'))
         print(header)
         for item in a:
-            print("{:<25s}".format(item),end='')
-            print(':  ',end='')
             doc = self.__getattribute__(item).__doc__
             doc = doc.split('\n')[1]
             doc = doc.lstrip()
-            print(doc)
+            print("{:<25s}:  {}".format(item, doc))
         print(header)
 
     def _set_name(self,name):
