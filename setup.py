@@ -10,7 +10,7 @@ versioneer.VCS = 'git'
 versioneer.versionfile_source = 'OpenPNM/_version.py'
 versioneer.versionfile_build = 'OpenPNM/_version.py'
 versioneer.tag_prefix = '' # tags are like 1.2.0
-versioneer.parentdir_prefix = 'OpenPNM-' # dirname like 'myproject-1.2.0'
+versioneer.parentdir_prefix = 'OpenPNM' # dirname like 'myproject-1.2.0'
 
 try:
     from setuptools import setup

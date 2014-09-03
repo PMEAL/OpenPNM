@@ -14,7 +14,7 @@ git_full = "$Format:%H$"
 
 # these strings are filled in when 'setup.py versioneer' creates _version.py
 tag_prefix = ""
-parentdir_prefix = "OpenPNM-"
+parentdir_prefix = "OpenPNM"
 versionfile_source = "OpenPNM/_version.py"
 
 import os, sys, re, subprocess, errno
