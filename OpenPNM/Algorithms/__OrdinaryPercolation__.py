@@ -22,8 +22,8 @@ from .__GenericAlgorithm__ import GenericAlgorithm
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""
-    Simulates a capillary drainage experiment by looping through a list of 
-    capillary pressures.  
+    Simulates a capillary drainage experiment by looping through a list of
+    capillary pressures.
 
     Parameters
     ----------
@@ -34,8 +34,8 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     Notes
     -----
-    To run this algorithm, use 'setup()' to provide the necessary simulation 
-    parameters, and then use 'run()' to execute it.  Use 'update()' to send
+    To run this algorithm, use 'setup()' to provide the necessary simulation
+    parameters, and then use 'run()' to execute it.  Use 'update_results()' to send
     the results of the simulation out of the algorithm object.
     """
 
@@ -45,14 +45,14 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._logger.debug("Create Drainage Percolation Algorithm Object")
-        
+
     def run(self,
               invading_phase=None,
               defending_phase=None,
-              inlets=[0], 
-              npts=25, 
+              inlets=[0],
+              npts=25,
               inv_points=[],
-              capillary_pressure = 'capillary_pressure', 
+              capillary_pressure = 'capillary_pressure',
               AL=True,
               **params):
         r'''
@@ -66,7 +66,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._inv_points = inv_points
         self._AL = AL
         self._p_cap = capillary_pressure
-        
+
         #Create pore and throat conditions lists to store inv_val at which each is invaded
         self._p_inv = sp.zeros((self._net.num_pores(),),dtype=float)
         self._p_seq = sp.zeros_like(self._p_inv,dtype=int)
@@ -172,15 +172,15 @@ class OrdinaryPercolation(GenericAlgorithm):
             trapped_pores = ~sp.in1d(clusters, out_clusters)
             self._p_trap[(self._p_trap == 0)[trapped_pores]] = inv_val
             trapped_throats = self._net.find_neighbor_throats(trapped_pores)
-            self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val       
+            self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
             trapped_throats = sp.where(Cstate==2)[0]
             self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
         self._p_inv[self._p_trap > 0] = sp.inf
-        self._t_inv[self._t_trap > 0] = sp.inf        
+        self._t_inv[self._t_trap > 0] = sp.inf
         self['pore.inv_Pc']=self._p_inv
         self['throat.inv_Pc']=self._t_inv
 
-    def update(self, Pc=0, seq = None, occupancy='occupancy'):
+    def update_results(self, Pc=0, seq = None, occupancy='occupancy'):
         r"""
         Updates the occupancy status of invading and defending phases
         as determined by the OP algorithm
@@ -188,14 +188,14 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         p_inv = self['pore.inv_Pc']
         self._phase_inv['pore.inv_Pc']=p_inv
-        t_inv = self['throat.inv_Pc']    
+        t_inv = self['throat.inv_Pc']
         self._phase_inv['throat.inv_Pc']=t_inv
         #Apply invasion sequence values (to correspond with IP algorithm)
         p_seq = self['pore.inv_seq']
         self._phase_inv['pore.inv_seq']=p_seq
         t_seq = self['throat.inv_seq']
         self._phase_inv['throat.inv_seq']=t_seq
-        
+
         if(seq == None):
             p_inv = self['pore.inv_Pc']<=Pc
             t_inv = self['throat.inv_Pc']<=Pc
@@ -224,9 +224,9 @@ class OrdinaryPercolation(GenericAlgorithm):
                 self._phase_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_seq,dtype=sp.float_,ndmin=1)
                 self._phase_def['throat.'+occupancy]=temp
-            
- 
-            
+
+
+
 
     def plot_drainage_curve(self,
                             pore_volume='volume',

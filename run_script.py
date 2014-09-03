@@ -44,7 +44,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffu
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,loglevel=20)
 Ps = pn.pores(labels=['bottom_boundary'])
 OP_1.run(invading_phase=water,defending_phase=air,inlets=Ps)
-OP_1.update(Pc=7000)
+OP_1.update_results(Pc=7000)
 
 #------------------------------------------------------------------------------
 '''Perform Invasion Percolation'''
@@ -53,7 +53,7 @@ inlets = pn.pores('bottom_boundary')
 outlets = pn.pores('top_boundary')
 IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'IP_1', loglevel = 30)
 IP_1.run(invading_phase = water, defending_phase = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
-IP_1.update()
+IP_1.update_results()
 
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
@@ -70,7 +70,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    throat_conductance='throat.diffusive_conductance')
 #Use newly defined diffusive_conductance in the diffusion calculation
 alg.run(conductance='throat.diffusive_conductance')
-alg.update()
+alg.update_results()
 Deff = alg.calc_eff_diffusivity()
 
 # this creates a time step x num_pores, which is what the animated object needs

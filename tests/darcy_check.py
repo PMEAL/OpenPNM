@@ -53,7 +53,7 @@ Darcy.set_boundary_conditions(bctype='Dirichlet',bcvalue=P_out,pores=outlets)
 phys.regenerate()  # Update the conductance values
 Darcy.setup(fluid=air)
 Darcy.run()
-Darcy.update()
+Darcy.update_results()
 
 Darcy2 = OpenPNM.Algorithms.StokesFlow(network=pn)
 inlets = pn.pores('bottom_face')

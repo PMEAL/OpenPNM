@@ -47,7 +47,7 @@ class InvasionPercolation(GenericAlgorithm):
                 end_condition='breakthrough',
                 capillary_pressure='capillary_pressure',
                 pore_volume_name='volume',
-                throat_diameter_name='diameter',               
+                throat_diameter_name='diameter',
                 timing='ON',
                 inlet_flow=1, #default flowrate is 1 nanoliter/sec/cluster
                 report=20):
@@ -80,14 +80,14 @@ class InvasionPercolation(GenericAlgorithm):
             m3/s for each cluster (affects timestamp of pore filling)
         report : int (20)
             percentage multiple at which a progress report is printed
-        
-            
+
+
         Input Phases
         ------------
         The algorithm expects an invading phase with the following throat properties:
             contact_angle, surface_tension
         and some defending phase
-            
+
         Output
         ------
         The invading phase automatically gains pore data ::
@@ -116,7 +116,7 @@ class InvasionPercolation(GenericAlgorithm):
             b) Allow for a non-linear relationship between pressure and throat-cap volume.
 
         """
-        
+
         self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets
         self._outlets = outlets
@@ -130,7 +130,7 @@ class InvasionPercolation(GenericAlgorithm):
         try:    self._phase = self._net._phases[invading_phase]
         except: self._phase = invading_phase
         try:    self._phase_def = self._net._phases[defending_phase]
-        except: self._phase_def = defending_phase        
+        except: self._phase_def = defending_phase
 
         if sp.size(inlets) == 1:
             self._inlets = [inlets]
@@ -145,11 +145,11 @@ class InvasionPercolation(GenericAlgorithm):
         self._timing = timing=='ON'
         self._capillary_pressure_name = capillary_pressure
         self._pore_volume_name = pore_volume_name
-        self._throat_diameter_name = throat_diameter_name 
-        
+        self._throat_diameter_name = throat_diameter_name
+
         super(InvasionPercolation,self).run()
-        return self        
-        
+        return self
+
     def _setup_for_IP(self):
         r"""
         Determines cluster labelling and condition for completion
@@ -522,7 +522,7 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.debug('inactive due to tpoints = [] ')
                     self._cluster_data['active'][self._current_cluster-1] = 0
                     break
-            if self._tpoints[self._current_cluster-1] != []:            
+            if self._tpoints[self._current_cluster-1] != []:
                 next_throat = self._tpoints[self._current_cluster-1][0][1]
                 self._cluster_data['haines_throat'][self._current_cluster-1] = next_throat
                 if self._timing:
@@ -546,7 +546,7 @@ class InvasionPercolation(GenericAlgorithm):
                 self._cluster_data['haines_time'][self._current_cluster-1] = self._sim_time
             self._logger.debug('haines time at the end of the throat stuff')
             self._logger.debug(self._cluster_data['haines_time'])
-            
+
     def _condition_update(self):
          # Calculate the distance between the new pore and outlet pores
         if self._end_condition == 'breakthrough':
@@ -567,8 +567,8 @@ class InvasionPercolation(GenericAlgorithm):
         if self._percent_complete > self._rough_complete + self._rough_increment:
             self._rough_complete = np.floor(self._percent_complete/self._rough_increment)*self._rough_increment
             print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds')
-           
-    
+
+
         # Determine if a new breakthrough position has occured
         if self._NewPore in self._outlets:
             self._logger.info( ' ')
@@ -597,7 +597,7 @@ class InvasionPercolation(GenericAlgorithm):
         # TODO Need to check how total condition will work, and end. All pores or all throats?
 #            self._condition = not self._Tinv.all()
 
-    def update(self,occupancy='occupancy',IPseq='None'):
+    def update_results(self,occupancy='occupancy',IPseq='None'):
         r"""
         """
         if IPseq=='None':
@@ -614,7 +614,7 @@ class InvasionPercolation(GenericAlgorithm):
         except:
             print('A partner phase has not been set so inverse occupancy cannot be set')
 
-        if IPseq==self._pseq:            
+        if IPseq==self._pseq:
             self._phase['pore.IP_inv_final']=np.ravel(np.array(self._Pinv,dtype=np.int))
             self._phase['pore.IP_inv_original']=np.ravel(np.array(self._Pinv_original,dtype=np.int))
             self._phase['throat.IP_inv']=np.ravel(np.array(self._Tinv,dtype=np.int))
@@ -623,4 +623,3 @@ class InvasionPercolation(GenericAlgorithm):
             if self._timing:
                 self._phase['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
                 self._phase['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
-            

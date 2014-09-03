@@ -48,14 +48,14 @@ class GenericLinearTransport(GenericAlgorithm):
         else:
             raise Exception('The provided throat conductance has problems')
 
-    def update(self):
+    def update_results(self):
         r'''
         Send results of simulation out the the appropriate locations.
 
         This is a basic version of the update that simply sends out the main
         result (quantity). More elaborate updates should be subclassed.
         '''
-        phase_quantity = self._quantity.replace(self._phase.name+'_',"")        
+        phase_quantity = self._quantity.replace(self._phase.name+'_',"")
         self._phase[phase_quantity] = self[self._quantity]
         dx = sp.squeeze(sp.diff(self[self._quantity][self._net.find_connected_pores(self.throats())],n=1,axis=1))
         g = self['throat.conductance']

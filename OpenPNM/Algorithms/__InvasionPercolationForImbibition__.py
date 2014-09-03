@@ -28,7 +28,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
 
     def __init__(self,**kwords):
         r"""
-        
+
         Invasion Percolation (Imbibition) with cluster growth timing - Class to run IP algorithm on constructed networks
 
         Parameters
@@ -81,15 +81,15 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         inlet_flow : float (1)
             m3/s for each cluster (affects timestamp of pore filling)
         Psecond : boul (False)
-            is this a secondary imbibition (after drainage)? 
-        
-            
+            is this a secondary imbibition (after drainage)?
+
+
         Input Phases
         ------------
         The algorithm expects an invading phase with the following pore properties:
             contact_angle, surface_tension
         and some defending phase
-            
+
         Output
         ------
         The invading phase automatically gains pore data ::
@@ -128,12 +128,12 @@ class InvasionPercolationForImbibition(InvasionPercolation):
                end_condition='breakthrough',
                pore_volume_name='volume',
                pore_diameter_name='diameter',
-               throat_volume_name='volume',              
+               throat_volume_name='volume',
                timing='ON',
                report=20,
                inlet_flow=1,
                Psecond=False):
-                   
+
         # if Psecond > 0 then we are doing a secondary imbibition,
         #   so end_condition, inlets, are treated differently
         self._Psecond = Psecond
@@ -168,19 +168,19 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         self._pore_diameter_name = pore_diameter_name
         self._throat_volume_name = throat_volume_name
 
-        
+
     def _setup_for_IP(self,**params):
         r"""
         Determines cluster labelling and condition for completion
 
         This code is taken from _setup_for_IP from parent InvasionPercolation, but is modified for imbibition
-        
+
         """
         self._clock_start = clock()
         self._logger.debug( '+='*25)
         self._logger.debug( 'INITIAL SETUP (STEP 1)')
         # if empty, add Pc_entry to pore_properties
-        # set the capillary pressure for pores, instead of throats         
+        # set the capillary pressure for pores, instead of throats
         #   don't need to interpolate for throats
         # this is a Washburn setting, could use others
         sigma = self._phase['pore.surface_tension'][0]
@@ -190,7 +190,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         pdia = self._net['pore.'+self._pore_diameter_name] # tdia = self._net.get_throat_data(prop=self._throat_diameter_name)
         if self._Psecond:
             pdia = pdia[self._phase['pore.occupancy']<=0]
-        # entry pressure for the pore        
+        # entry pressure for the pore
         # should be -4.. but use +4 to make heapq work correclty (we want highest Pcap)
         Pc_entry = -4*sigma*sp.cos(sp.radians(theta))/pdia     # -4*sigma*sp.cos(sp.radians(theta))/pdia     PCAP!!
         # add to the IPforImb object
@@ -230,7 +230,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         clusterNumber = 1
         # Determine how many clusters there are
         self._clusterCount = 0
-        # get boundary pores so they don't get included in cluster count       
+        # get boundary pores so they don't get included in cluster count
         bpores = self._net.pores(labels=['boundary','bottom'],mode='intersection')
         for i in self._inlets:
             #   ignore boundary pores
@@ -428,11 +428,11 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         self._logger.debug("    Inner Iteration")
         # Fill throat and connecting pore
         # Pop out the largest pore (lowest Pcap) in the list, read the pore number
-        try:        
+        try:
             pinvade = heapq.heappop(self._ppoints[self._current_cluster-1])[1]
         except:
             print('Something bad happened trying to invade')
-            import pdb            
+            import pdb
             pdb.set_trace()
         self._logger.debug( ' ')
         self._logger.debug( '--------------------------------------------------')
@@ -458,13 +458,13 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         # 1. remove invading throat and any throat already in this cluster (already invaded and part of same cluster)
         Throats = AllThroats[~sp.in1d(AllThroats,np.where(sp.in1d(self._Tinv,self._current_cluster))[0])]
         # 2. fidn other throats with an interface
-        # TODO if there is another interface, then start or continue co-operative filling 
+        # TODO if there is another interface, then start or continue co-operative filling
         # TODO need to add a cooperative filling method
         ThroatsInv = Throats[sp.in1d(Throats,np.where(self._Tinv>0)[0])]
         # if a throat is already invaded (the pore that was just invaded had another interface in it, so now we have cooperative filling)
         # for each already invaded throat
         if len(ThroatsInv):
-            # if this pore has multiple interfaces            
+            # if this pore has multiple interfaces
             self._NewPore = -1
             self._NewThroat = -1
             # Label invaded pore with smallest cluster number
@@ -481,7 +481,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
                         csize = sum(clusters==c)
                         maxCluster = c
                 # find the largest cluster -- FOR IMBIBITION, MERGING ALL SMALLER CLUSTERS INTO THE LARGEST. DIFFERENT FROM DRAININAGE SO BE CAREFUL
-                # update the cluster transform to name all clusters as the max  
+                # update the cluster transform to name all clusters as the max
                 self._current_cluster = maxCluster   #[0]
                 self._Pinv[pinvade] = self._current_cluster
                 self._logger.info(' ')
@@ -542,12 +542,12 @@ class InvasionPercolationForImbibition(InvasionPercolation):
                     # NO IDEA WHAT THIS LINE DOES PLEASE HELP MAHMOUD
                     #self._tpoints[self._current_cluster-1] = list(k for k,v in itertools.groupby(self._tpoints[self._current_cluster-1]))
                     self._ppoints[c-1] = []
-    
+
         # remove else and do over the length of throats that are not filled:
         # label invaded pore with current cluster
         self._Pinv[pinvade] = self._current_cluster
         self._NewPore = pinvade
-       
+
         # go through list of new invaded throats and assign to this cluster
         #   first remove all ThroatsInv
         Throats = Throats[~sp.in1d(Throats,ThroatsInv)]
@@ -587,7 +587,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
                 self._logger.debug(pneighbor)
                 self._logger.debug('connected throats:')
                 self._logger.debug(self._net.find_neighbor_throats(pneighbor))
-                # Add this pore data (pressure, number) to this cluster's "heap" of throat data. 
+                # Add this pore data (pressure, number) to this cluster's "heap" of throat data.
                 # TODO --> eventually, generalize to capillary_pressure_name
                 heapq.heappush(self._ppoints[self._current_cluster-1],(self._phase['pore.Pc_entryImb'][pneighbor],pneighbor))
                 # Add new pore number to throat list for this cluster
@@ -600,7 +600,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         # Make sure you are not re-invading a throat
         if self._ppoints[self._current_cluster-1] != []:
             while self._Pinv[self._ppoints[self._current_cluster-1][0][1]] > 0:
-                premove = heapq.heappop(self._ppoints[self._current_cluster-1])[1]                  
+                premove = heapq.heappop(self._ppoints[self._current_cluster-1])[1]
                 if self._timing:
                     self._cluster_data['vol_coef'][self._current_cluster-1] = self._cluster_data['vol_coef'][self._current_cluster-1]-self._Pvol_coef[premove]
                 if self._ppoints[self._current_cluster-1] == []:
@@ -609,13 +609,13 @@ class InvasionPercolationForImbibition(InvasionPercolation):
                     self._logger.debug('inactive due to ppoints = [] ')
                     self._cluster_data['active'][self._current_cluster-1] = 0
                     break
-            if self._ppoints[self._current_cluster-1] != []:                        
+            if self._ppoints[self._current_cluster-1] != []:
                 next_pore = self._ppoints[self._current_cluster-1][0][1]
                 self._cluster_data['haines_pore'][self._current_cluster-1] = next_pore
                 if self._timing:
                     self._cluster_data['haines_pressure'][self._current_cluster-1] = self._ppoints[self._current_cluster-1][0][0]
                     self._cluster_data['cap_volume'][self._current_cluster-1] = self._cluster_data['haines_pressure'][self._current_cluster-1]*self._cluster_data['vol_coef'][self._current_cluster-1]     # PCAP!!
-    
+
                 # Calculate the new Haines jump time
                 self._logger.debug( 'haines time before last stage:')
                 self._logger.debug( self._cluster_data['haines_time'])
@@ -654,8 +654,8 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         if self._percent_complete > self._rough_complete + self._rough_increment:
             self._rough_complete = np.floor(self._percent_complete/self._rough_increment)*self._rough_increment
             print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds')
-           
-    
+
+
         # Determine if a new breakthrough position has occured
         if self._NewPore in self._outlets:
             self._logger.info( ' ')
@@ -684,7 +684,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         # TODO Need to check how total condition will work, and end. All pores or all throats?
 #            self._condition = not self._Tinv.all()
 
-    def update(self,occupancy='occupancy',IPseq='None'):
+    def update_results(self,occupancy='occupancy',IPseq='None'):
         r"""
         """
         if IPseq=='None':
@@ -701,7 +701,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         except:
             print('A partner phase has not been set so inverse occupancy cannot be set')
 
-        if IPseq==self._pseq:            
+        if IPseq==self._pseq:
             self._phase['pore.IP_inv_final']=np.ravel(np.array(self._Pinv,dtype=np.int))
             self._phase['pore.IP_inv_original']=np.ravel(np.array(self._Pinv_original,dtype=np.int))
             self._phase['throat.IP_inv']=np.ravel(np.array(self._Tinv,dtype=np.int))
@@ -710,5 +710,5 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             if self._timing:
                 self._phase['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
                 self._phase['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
-            
-            
+
+

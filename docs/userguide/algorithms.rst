@@ -18,7 +18,7 @@ An Algorithm object can be instantiated by sending in a Network object:
 >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
 >>> alg = OpenPNM.Algorithms.FickianDiffusion(network=pn)
 
-However, before the ``run`` method for this Algorithm can be called several steps need to be taken.  At the present time, most Algorithms have different requirements for what needs to be specified.  It is recommended to consult the docstring in each Algorithm for specific instructions.  
+However, before the ``run`` method for this Algorithm can be called several steps need to be taken.  At the present time, most Algorithms have different requirements for what needs to be specified.  It is recommended to consult the docstring in each Algorithm for specific instructions.
 
 -------------------------------------------------------------------------------
 Adding Boundary Conditions
@@ -32,17 +32,17 @@ The ``set_boundary_conditions`` method in the GenericAlgorithm class *can be* us
 
 The ``set_boundary_conditions`` method does 2 things: it creates a 'label' dictionary on the Algorithm object named according the type of boundary conditions applied, and applies that label to the specified pores, and it creates a 'property' dictionary with the specified boundary values in the specified.
 
-The 'bctype' argument accepts 'reserved' keywords: 'Dirichlet', 'Neumann' and 'Neumann_group'.  The fist two should be self-explanatory, and the last one means that the total flux through 'all' the specified pores set.  
+The 'bctype' argument accepts 'reserved' keywords: 'Dirichlet', 'Neumann' and 'Neumann_group'.  The fist two should be self-explanatory, and the last one means that the total flux through 'all' the specified pores set.
 
 -------------------------------------------------------------------------------
 Sharing Simulation Results
 -------------------------------------------------------------------------------
-Because each Algorithm object is a ``dict`` it can internally store the results of any calculations it performs.  This prevents the objects in the simulation from becoming 'polluted' with a large number of 'property' arrays and prevent data from being overwritten.  In many situations, however, the results of one simulation are needed by another.  The GenericAlgorithm class provides a method called ``update`` which is not implemented.  It is the responsibility of each Algorithm object to implement this method so that the call to ``alg.update(args)`` will send the important data to the correct places.  For instance, the FickianDiffusion algorithm will write 'pore.mole_fraction' to the Phase object that it received as the 'active_phase' argument.  
+Because each Algorithm object is a ``dict`` it can internally store the results of any calculations it performs.  This prevents the objects in the simulation from becoming 'polluted' with a large number of 'property' arrays and prevent data from being overwritten.  In many situations, however, the results of one simulation are needed by another.  The GenericAlgorithm class provides a method called ``update_results`` which is not implemented.  It is the responsibility of each Algorithm object to implement this method so that the call to ``alg.update(args)`` will send the important data to the correct places.  For instance, the FickianDiffusion algorithm will write 'pore.mole_fraction' to the Phase object that it received as the 'active_phase' argument.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Overview of Included Algorithms
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-OpenPNM comes with several of the most common and widely used algorithms.  These include simulating transport phenomena in the pores space, ordinary percolation to simulate a drainage experiment, and invasion percolation to simulate fluid infiltration.  
+OpenPNM comes with several of the most common and widely used algorithms.  These include simulating transport phenomena in the pores space, ordinary percolation to simulate a drainage experiment, and invasion percolation to simulate fluid infiltration.
 
 -------------------------------------------------------------------------------
 FickianDiffusion

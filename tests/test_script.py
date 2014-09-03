@@ -44,13 +44,13 @@ def test_add_boundary():
   pn = OpenPNM.Network.Cubic(shape=[5,5,5])
   pn.add_boundaries()
 
-  keys_expected = {'pore.back', 'pore.bottom', 'pore.top_boundary', 
-  'pore.right_boundary', 'throat.back_boundary', 'throat.all', 
-  'throat.bottom_boundary', 'throat.front_boundary', 'pore.boundary', 
-  'throat.left_boundary', 'throat.conns', 'throat.top_boundary', 
-  'pore.back_boundary', 'pore.top', 'pore.front_boundary', 'pore.all', 
-  'pore.front', 'pore.left_boundary', 'throat.boundary', 'pore.bottom_boundary', 
-  'throat.right_boundary', 'pore.coords', 'pore.internal', 'pore.index', 
+  keys_expected = {'pore.back', 'pore.bottom', 'pore.top_boundary',
+  'pore.right_boundary', 'throat.back_boundary', 'throat.all',
+  'throat.bottom_boundary', 'throat.front_boundary', 'pore.boundary',
+  'throat.left_boundary', 'throat.conns', 'throat.top_boundary',
+  'pore.back_boundary', 'pore.top', 'pore.front_boundary', 'pore.all',
+  'pore.front', 'pore.left_boundary', 'throat.boundary', 'pore.bottom_boundary',
+  'throat.right_boundary', 'pore.coords', 'pore.internal', 'pore.index',
   'pore.left', 'pore.right'}
 
   keys_found = set(pn.keys())
@@ -83,7 +83,7 @@ def test_open_air_diffusivity():
     Diff.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
     Diff.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
     Diff.run(phase=air)
-    Diff.update()
+    Diff.update_results()
     Diff_deff = Diff.calc_eff_diffusivity()/np.mean(air['pore.diffusivity'])
     assert np.round(Diff_deff,3) == 1
 

@@ -64,7 +64,7 @@ phys.regenerate()  # Update the conductance values
 Keff.setup(fluid=Cu)
 Keff.run()
 
-Keff.update()
+Keff.update_results()
 
 #vis = OpenPNM.Visualization.VTK()
 #vis.write(network=pn,fluids=[Cu])
