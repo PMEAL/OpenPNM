@@ -85,7 +85,7 @@ Package Documentation
 
 """
 
-__version__ = '1.0.1'
+#__version__ = '1.0.1'
 
 __requires__ = [
     'scipy'
@@ -104,3 +104,7 @@ from . import Postprocessing
 
 
 
+
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
