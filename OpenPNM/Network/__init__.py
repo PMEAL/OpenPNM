@@ -37,10 +37,7 @@ for item in _os.listdir(dir):
         if item == '__init__.py':
             pass
         elif item[0:2] == '__':
-            try:
-                exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
-            except:
-                OpenPNM.Base.Base()._logger.warning('File name '+item+' does not match class name so cannot import automatically')
+            exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
         else:
             exec('from . import ' + format(item.split('.')[0]))
             
