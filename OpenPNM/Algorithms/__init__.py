@@ -9,6 +9,15 @@ Contents
 --------
 This submodule contains algorithms for performing simulations on pore networks
 
+.. autoclass:: GenericAlgorithm
+   :members:
+
+.. autoclass:: OrdinaryPercolation
+   :members:
+
+.. autoclass:: InvasionPercolation
+   :members:
+
 """
 
 #Import every file in the directory
