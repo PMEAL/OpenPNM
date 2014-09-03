@@ -126,6 +126,8 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         '''
 
         BC_default = ['Dirichlet','Neumann','Neumann_group']
+        try: self._existing_BC
+        except: self._existing_BC = [] 
         if component==None: 
             try:
                 component = self._phase
@@ -147,6 +149,7 @@ class GenericAlgorithm(OpenPNM.Base.Core):
                             except: pass
                             del self[item]
                     self._logger.debug('Removing '+bctype+' from all locations in '+self.name)
+                    self._existing_BC.remove(bctype)
             else:
                 if pores!=[]:
                     if bctype!='':                        
@@ -200,7 +203,7 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         #Check all BC from specified locations, prior to setting new ones
         for item in self.labels():
             bcname = (item.split('.')[-1]).replace(self._phase.name+'_',"")
-            if bcname in BC_default:
+            if bcname in self._existing_BC  and item.split('.')[0]==element:
                 if mode=='merge': 
                     if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
                         raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
@@ -208,11 +211,13 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         if mode == 'merge':
             if bcvalue != []:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
             self[element+'.'+component.name+'_'+bctype][loc] = True
+            if bctype not in self._existing_BC: self._existing_BC.append(bctype) 
         elif mode == 'overwrite':
             self[element+'.'+component.name+'_bcval_'+bctype] = sp.ones((all_length,),dtype=float)*sp.nan
             if bcvalue != []:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
             self[element+'.'+component.name+'_'+bctype] = sp.zeros((all_length,),dtype=bool)
             self[element+'.'+component.name+'_'+bctype][loc] = True
+            if bctype not in self._existing_BC: self._existing_BC.append(bctype) 
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
