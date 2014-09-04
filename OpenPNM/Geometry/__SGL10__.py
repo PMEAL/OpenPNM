@@ -41,7 +41,7 @@ class SGL10(GenericGeometry):
                        pore_prop='pore.seed',
                        mode='min')
         self.add_model(propname='pore.diameter',
-                       model=gm.pore_diameter.spher_from_radiuse,
+                       model=gm.pore_diameter.sphere,
                        psd_name='weibull_min',
                        psd_shape=1.,
                        psd_loc=1.39e-5,
@@ -51,7 +51,7 @@ class SGL10(GenericGeometry):
         self.add_model(propname='pore.volume',
                        model=gm.pore_volume.sphere)
         self.add_model(propname='throat.diameter',
-                       model=gm.throat_diameter.cylinder_from_radius,
+                       model=gm.throat_diameter.cylinder,
                        tsd_name='weibull_min',
                        tsd_shape=1.,
                        tsd_loc=1.39e-5,
