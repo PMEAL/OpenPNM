@@ -6,13 +6,13 @@ Lc = 40.5e-6
 
 #1 setting up network
 #sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40,divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
-sgl = OpenPNM.Network.Cubic([26, 26, 10], spacing=Lc, name='SGL10BA', loglevel=40)
+sgl = OpenPNM.Network.Cubic([10, 10, 10], spacing=Lc, name='SGL10BA', loglevel=40)
 sgl.add_boundaries()
 
 #2 set up geometries
 Ps = sgl.pores('boundary',mode='difference')
 Ts = sgl.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
-geo = OpenPNM.Geometry.Toray090(network=sgl,pores=Ps,throats=Ts)
+geo = OpenPNM.Geometry.SGL10(network=sgl,pores=Ps,throats=Ts)
 
 Ps = sgl.pores('boundary')
 Ts = sgl.find_neighbor_throats(pores=Ps,mode='not_intersection')
@@ -62,6 +62,7 @@ phys_water.regenerate()
 phys_air.regenerate()
 
 inlets = sgl.pores('bottom_boundary')
+used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
 
 #using every other pore in the bottom and boundary as an inlet
 #prevents extremely small diffusivity and permeability values in the z direction
@@ -126,17 +127,17 @@ for x in range(21):
 
             #run Stokes Flow and find Permeability
             #single phase
-            Stokes_alg_single_phase_air = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes', name = 'Stokes_alg_single_phase_air', network = sgl, loglevel = 40)
-            Stokes_alg_single_phase_water = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes_2', name = 'Stokes_alg_single_phase_water', network = sgl, loglevel = 40)
+            Stokes_alg_single_phase_air = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes', name = 'Stokes_alg_single_phase_air', network = sgl, phase = air, loglevel = 40)
+            Stokes_alg_single_phase_water = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes_2', name = 'Stokes_alg_single_phase_water', network = sgl, phase = water, loglevel = 40)
 
-            Fickian_alg_single_phase_air = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian_alg_single_phase_air', network = sgl, loglevel = 40)
-            Fickian_alg_single_phase_water = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian_2', name = 'Fickian_alg_single_phase_water', network = sgl, loglevel = 40)
+            Fickian_alg_single_phase_air = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian_alg_single_phase_air', network = sgl, phase = air, loglevel = 40)
+            Fickian_alg_single_phase_water = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian_2', name = 'Fickian_alg_single_phase_water', network = sgl, phase = water, loglevel = 40)
 
-            Stokes_alg_multi_phase_air = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes', name = 'Stokes_alg_multi_phase_air', network = sgl, loglevel = 40)
-            Stokes_alg_multi_phase_water = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes_2', name = 'Stokes_alg_multi_phase_water', network = sgl, loglevel = 40)
+            Stokes_alg_multi_phase_air = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes', name = 'Stokes_alg_multi_phase_air', network = sgl, phase = air, loglevel = 40)
+            Stokes_alg_multi_phase_water = OpenPNM.Algorithms.StokesFlow(loggername = 'Stokes_2', name = 'Stokes_alg_multi_phase_water', network = sgl, phase = water, loglevel = 40)
 
-            Fickian_alg_multi_phase_air = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian_alg_multi_phase_air', network = sgl, loglevel = 40)
-            Fickian_alg_multi_phase_water = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian_2', name = 'Fickian_alg_multi_phase_water', network = sgl, loglevel = 40)
+            Fickian_alg_multi_phase_air = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian', name = 'Fickian_alg_multi_phase_air', network = sgl, phase = air, loglevel = 40)
+            Fickian_alg_multi_phase_water = OpenPNM.Algorithms.FickianDiffusion(loggername = 'Fickian_2', name = 'Fickian_alg_multi_phase_water', network = sgl, phase = water, loglevel = 40)
 
             BC1_pores = sgl.pores(labels=bounds[bound_increment][0]+'_boundary')
             BC2_pores = sgl.pores(labels=bounds[bound_increment][1]+'_boundary')
@@ -163,27 +164,28 @@ for x in range(21):
             Fickian_alg_multi_phase_water.set_boundary_conditions(bctype = 'Dirichlet', bcvalue = .2, pores = BC2_pores)
 
             #conduit conductance
-            Stokes_alg_single_phase_air.run(conductance = 'hydraulic_conductance',phase=air)
-            Stokes_alg_single_phase_water.run(conductance = 'hydraulic_conductance',phase=water)
-            Fickian_alg_single_phase_air.run(conductance = 'diffusive_conductance',phase=air)
-            Fickian_alg_single_phase_water.run(conductance = 'diffusive_conductance',phase=water)
+            Stokes_alg_single_phase_air.run(conductance = 'hydraulic_conductance')
+            Stokes_alg_single_phase_water.run(conductance = 'hydraulic_conductance')
+            Fickian_alg_single_phase_air.run(conductance = 'diffusive_conductance')
+            Fickian_alg_single_phase_water.run(conductance = 'diffusive_conductance')
 
-            Stokes_alg_multi_phase_air.run(conductance = 'conduit_hydraulic_conductance',phase=air)
-            Stokes_alg_multi_phase_water.run(conductance = 'conduit_hydraulic_conductance',phase=water)
-            Fickian_alg_multi_phase_air.run(conductance = 'conduit_diffusive_conductance',phase=air)
-            Fickian_alg_multi_phase_water.run(conductance = 'conduit_diffusive_conductance',phase=water)
+            Stokes_alg_multi_phase_air.run(conductance = 'conduit_hydraulic_conductance')
+            Stokes_alg_multi_phase_water.run(conductance = 'conduit_hydraulic_conductance')
+            Fickian_alg_multi_phase_air.run(conductance = 'conduit_diffusive_conductance')
+            Fickian_alg_multi_phase_water.run(conductance = 'conduit_diffusive_conductance')
 
             #calc effective properties
-            effective_permeability_air_single = Stokes_alg_single_phase_air.calc_eff_permeability(clean = False)
-            effective_diffusivity_air_single = Fickian_alg_single_phase_air.calc_eff_diffusivity(clean = False)
-            effective_permeability_water_single = Stokes_alg_single_phase_water.calc_eff_permeability(clean = False)
-            effective_diffusivity_water_single = Fickian_alg_single_phase_water.calc_eff_diffusivity(clean = False)
-
-            effective_permeability_air_multi = Stokes_alg_multi_phase_air.calc_eff_permeability(clean = False)
-            effective_diffusivity_air_multi = Fickian_alg_multi_phase_air.calc_eff_diffusivity(clean = False)
-            effective_permeability_water_multi = Stokes_alg_multi_phase_water.calc_eff_permeability(clean = False)
-            effective_diffusivity_water_multi = Fickian_alg_multi_phase_water.calc_eff_diffusivity(clean = False)
-
+            
+            effective_permeability_air_single = Stokes_alg_single_phase_air.calc_eff_permeability()  
+            effective_diffusivity_air_single = Fickian_alg_single_phase_air.calc_eff_diffusivity()
+            effective_permeability_water_single = Stokes_alg_single_phase_water.calc_eff_permeability()  
+            effective_diffusivity_water_single = Fickian_alg_single_phase_water.calc_eff_diffusivity()
+            
+            effective_permeability_air_multi = Stokes_alg_multi_phase_air.calc_eff_permeability()  
+            effective_diffusivity_air_multi = Fickian_alg_multi_phase_air.calc_eff_diffusivity()
+            effective_permeability_water_multi = Stokes_alg_multi_phase_water.calc_eff_permeability()  
+            effective_diffusivity_water_multi = Fickian_alg_multi_phase_water.calc_eff_diffusivity()
+            
             relative_eff_perm_air = effective_permeability_air_multi/effective_permeability_air_single
             relative_eff_perm_water = effective_permeability_water_multi/effective_permeability_water_single
             relative_eff_diff_air = effective_diffusivity_air_multi/effective_diffusivity_air_single
@@ -300,7 +302,7 @@ ax4.set_xlim([0,1])
 lgd2 = ax4.legend([p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, gs3, gs4],
            ["DrWater,x", "DrWater,y", "DrWater,z",
            "DrAir,x (loose)","DrAir,y (loose)","DrAir,z (loose)",
-           "DrAir,x (strict)","DrAir,y (strict)","DrAir,z (strict)", "a = 3", "Gostick et al \n DrAir,x (case 1)", "Gostick et al \n DrWater,x"], loc='center left', bbox_to_anchor=(1, 0.5), prop = fontP)
+           "DrAir,x (strict)","DrAir,y (strict)","DrAir,z (strict)", "a = 2", "Gostick et al \n DrAir,x (case 1)", "Gostick et al \n DrWater,x"], loc='center left', bbox_to_anchor=(1, 0.5), prop = fontP)
 
 fig.subplots_adjust(left=0.1, right=0.8, top=0.9, bottom=0.1)
 
