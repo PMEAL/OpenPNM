@@ -3,25 +3,24 @@
 ===============================================================================
 Installation Instructions 
 ===============================================================================
+Installing OpenPNM is done with:
 
-OpenPNM does not need to be installed because it does not need to be compiled.  It is only necessary to download a zip archive containing the package, and have a functioning Python installation.  OpenPNM utilizes Python 3 with Scipy.  
+$ pip install openpnm
 
-The source code for OpenPNM is hosted on `Github <http://github.com/PMEAL/OpenPNM>`_.  You can download this code as a zip file or 'clone' the repository into your Git client (such as `Sourcetree <http://sourcetreeapp.com>`_).  These files can be located at a location of your preference, such as C:\\user\\documents\\code\\OpenPNM.  
+This will install OpenPNM into your Python environment.  To use OpenPNM, just import it:
 
-OpenPNM outputs many of its results in the vtk format which is conveniently visualized with Paraview.  
+>>> import OpenPNM
+>>> OpenPNM.__version__
+'1.0.0'
 
-The code is hosted on Github so it is also useful to have a Git client installed that can download the repository.  
-
-The installation of these requirements on specific platforms is described below.
+It is also possible to download the source code directly from Github and working from that.  This is not recommend unless you are planning to do 'development' work on the framework.  The pip install approach places the source code in the Python directory and out of harms way.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Windows Instructions
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-The simplest way to get Python, Scipy and Matplotlib is to download the `WinPython <http://code.google.com/p/winpython/>`_ package.  This package also comes with `Spyder <http://code.google.com/p/spyderlib/>`_, which provides an integrated development environment (IDE) that is very similar to Matlab, with an editor, command console, variable explorer and so on combined into the same window.  
+To use OpenPNM it is necessary to have Python installed on your system.  The simplest way to get Python and all the helpful add-ons. is to download the `WinPython <http://code.google.com/p/winpython/>`_ package.  This package also comes with `Spyder <http://code.google.com/p/spyderlib/>`_, which provides an integrated development environment (IDE) that is very similar to Matlab, with an editor, command console, variable explorer and so on combined into the same window.  
 
-Another useful tool is `Sourcetree <http://sourcetreeapp.com>`_ which provides a good interface to Github hosted repositories.  
-
-Finally, it is also suggested to download `Paraview <http://www.paraview.org/>`_ for visualizing the networks produced by OpenPNM.
+It is also suggested to download `Paraview <http://www.paraview.org/>`_ for visualizing the networks produced by OpenPNM.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Apple Instructions

@@ -1,15 +1,7 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: Jeff Gostick (jeff@gostick.ca)
-# License: TBD
-# Copyright (c) 2013
-
-
 """
+===============================================================================
 module __OrdinaryPercolation__: Ordinary Percolation Algorithm
-========================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
+===============================================================================
 
 """
 
@@ -143,7 +135,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         percolation drainage has been run
 
         Parameters
-        ---------
+        ----------
         outlets : array_like
             A list of pores that define the wetting phase outlets.
             Disconnection from these outlets results in trapping.

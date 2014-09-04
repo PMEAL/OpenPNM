@@ -1,6 +1,6 @@
 r"""
 ###############################################################################
-:mod:`OpenPNM.Geometry` -- Classes related to the creation of pore and throat geometry
+:mod:`OpenPNM.Geometry`: Classes related to the creation of pore-scale geometry
 ###############################################################################
 
 .. module:: OpenPNM.Geometry

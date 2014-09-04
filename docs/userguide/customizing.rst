@@ -146,15 +146,42 @@ The next step is to actually customize the class.  In OpenPNM, all the subclasse
                        psd_scale=4e-4)
 					   
 
-The first of the above two model creates a property called 'pore.seed', which is just random numbers.  The second model uses the Scipy.stats package to generate 'pore.diameter' values from the 'weibull_min' distribution using the given parameters.  
+The first of the above two models creates a property called 'pore.seed', which is just a list of random numbers that will be used to seed the pore size distribution.  The second model uses the Scipy.stats package to generate 'pore.diameter' values from the 'weibull_min' distribution using the given parameters.  
 
 -------------------------------------------------------------------------------
-Main Modules
+Creating Customized Networks
 -------------------------------------------------------------------------------
-in progress
+Unlike Geometry, Phase and Physics objects, a Network object requires more than a collection of methods.  The Network object must provide the 'pore.coords' and 'throat.conns' properties.  The 'pore.coords' is fairly straightforward, as it's just an Np x 3 list of [x,y,z] coordinates for each pore in the Network.  The 'throat.conns' list is much more difficult to produce.  This list is an Nt x 2 list of pairs of connected pore, such as [P1,P2].  OpenPNM comes with two main Network classes: Cubic and Delaunay.  The Cubic class connects each pore to it's immediate 6 neighbors on a cubic lattice, while the Delaunay class places pores randomly in space and determines connections via a Delaunay tessellation.  There are endless possible topology generation schemes that one may wish to develop.  
+
+The approach used to subclass GenericGeometry above would also work for Networks, but there is one additional consideration.  Every object must have a 'pore.all' and a 'throat.all' array so that they function properly.  The Network generation must therefore, produce these two arrays as well as the 'pore.coords' and 'throat.conns' described above.  
 
 -------------------------------------------------------------------------------
-Algorithms
+Creating Customized Algorithms
 -------------------------------------------------------------------------------
-in progress
+Algorithms can also be customized as described above.  The GenericAlgorithm has a few additional methods that are meant to be implemented by subclasses, such as ``update_results``.  The intention of this method is to send the pertinent results of a calculation 'out' of the Algorithm object and to the correct object in the simulation.  This step is handy, but is not actually necessary.  One can of course manually transfer data from an Algorithm to a Phase, for instance with:
+
+>>> air['pore.temperature'] = thermal_simulation['pore.T']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
