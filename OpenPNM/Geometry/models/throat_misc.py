@@ -8,14 +8,17 @@ import scipy as _sp
 
 def random(geometry,
            seed=None,
+           num_range=[0,1],
            **kwargs):
     r"""
     Assign random number to pore bodies
     note: should this be called 'poisson'?  
     """
+    range_size = num_range[1]-num_range[0]
+    range_min = num_range[0]
     _sp.random.seed(seed)
     value = _sp.random.rand(geometry.num_throats(),)
-    return value
+    value = value*range_size + range_min
 
 def neighbor(geometry,
              network,

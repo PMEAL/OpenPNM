@@ -9,6 +9,7 @@ import scipy as _sp
 def cylinder(geometry,
              tsd_name,tsd_shape,tsd_loc,tsd_scale,
              throat_seed='throat.seed',
+             tsd_offset=0,
              **kwargs):
     r"""
     Calculate throat diameter from seeds for a cylindrical throat
@@ -16,22 +17,9 @@ def cylinder(geometry,
     import scipy.stats as spst
     prob_fn = getattr(spst,tsd_name)
     P = prob_fn(tsd_shape,loc=tsd_loc,scale=tsd_scale)
-    value=P.ppf(geometry[throat_seed])
+    value=P.ppf(geometry[throat_seed])+tsd_offset
     return value
     
-def cylinder_from_radius(geometry,
-             tsd_name,tsd_shape,tsd_loc,tsd_scale,
-             throat_seed='throat.seed',
-             **kwargs):
-    r"""
-    Calculate throat diameter from seeds for a cylindrical throat
-    """
-    import scipy.stats as spst
-    prob_fn = getattr(spst,tsd_name)
-    P = prob_fn(tsd_shape,loc=tsd_loc,scale=tsd_scale)
-    value=P.ppf(geometry[throat_seed])*2
-    return value
-
 def voronoi(geometry,
             throat_area='throat.area',
             **kwargs):

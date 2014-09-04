@@ -18,13 +18,17 @@ def constant(geometry,
 
 def random(geometry,
            seed=None,
+           num_range=[0,1],
            **kwargs):
     r"""
     Assign random number to pore bodies
     note: should this be called 'poisson'?  
     """
+    range_size = num_range[1]-num_range[0]
+    range_min = num_range[0]
     _sp.random.seed(seed)
     value = _sp.random.rand(geometry.num_pores(),)
+    value = value*range_size + range_min
     return value
 
 def neighbor(network,

@@ -6,7 +6,7 @@ Lc = 40.5e-6
 
 #1 setting up network
 #sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40,divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
-sgl = OpenPNM.Network.Cubic([10, 10, 10], spacing=Lc, name='SGL10BA', loglevel=40)
+sgl = OpenPNM.Network.Cubic([26, 26, 10], spacing=Lc, name='SGL10BA', loglevel=40)
 sgl.add_boundaries()
 
 #2 set up geometries
