@@ -31,6 +31,7 @@ class TestPhase(GenericPhase):
         
     def _generate(self):
         self['pore.temperature'] = 298.0
+        self['pore.surface_tension'] = 0.072
         self['pore.pressure'] = 101325.0
         self['pore.diffusivity'] = 5.4785e-06
         self['pore.molar_density'] = 40.89

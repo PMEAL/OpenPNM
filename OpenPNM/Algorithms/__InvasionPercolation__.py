@@ -107,8 +107,17 @@ class InvasionPercolation(GenericAlgorithm):
 
         Examples
         --------
-        >>> IP_timing = InvasionPercolation(net=pn,timing='ON')
-        >>> IP_timing.run(invading_phase=air,defending_phase=water,inlets=inlets,outlets=outlets)
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
+        >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
+        >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
+        >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
+        >>> IP = OpenPNM.Algorithms.InvasionPercolation(network=pn, name='IP')
+        >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
+        >>> IP.update_results()
+        >>> print(max(phase1['pore.IP_inv_seq'])) #unless something changed with our test objects, this should print "61"
+        61
 
         Suggested Improvements ::
 
@@ -163,12 +172,7 @@ class InvasionPercolation(GenericAlgorithm):
         try:
             Pc_entry = self._phase.get_data(prop=self._capillary_pressure_name,throats='all')
         except:
-            try:
-                OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._phase)
-            except:
-                OpenPNM.Phases.ContactAngle.constant(self._phase,120)
-                OpenPNM.Physics.CapillaryPressure.Washburn(self._net,self._phase)
-            Pc_entry = self._phase.get_data(prop=self._capillary_pressure_name,throats='all')
+            self._logger.error('Capillary pressure not assigned to '+self._phase.name)
         if self._timing:
             # calculate Volume_coef for each throat
             self._Tvol_coef = tdia*tdia*tdia*np.pi/12/Pc_entry

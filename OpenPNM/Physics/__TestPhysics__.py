@@ -41,7 +41,7 @@ class TestPhysics(GenericPhysics):
             if 'diffusivity' in temp:
                 self['throat.diffusive_conductance'] = 1
             if 'surface_tension' in temp:
-                self['throat.capillary_pressure'] = 1/self._Phases[0]['throat.diameter']
+                self['throat.capillary_pressure'] = 1/self._net['throat.diameter']
         
 if __name__ == '__main__':
     print('none yet')

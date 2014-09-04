@@ -79,11 +79,12 @@ diff_water = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
 
 max_inv_seq = max(OP_1['throat.inv_seq'])
 
-for x in range(21):
-    OP_1.update_results(seq = max_inv_seq*(x/20.))
+num_seq = 40
+for x in range(num_seq+1):
+    OP_1.update_results(seq = max_inv_seq*(x/num_seq))
 
     #printing out so we know how far along we are
-    print('seq = '+str(round(max_inv_seq*(x/20.)))+' Seq out of '+str(round(max_inv_seq))+' total sequences')
+    print('seq = '+str(round(max_inv_seq*(x/num_seq)))+' Seq out of '+str(round(max_inv_seq))+' total sequences')
 
     final_pores = water['pore.occupancy']
     pore_volumes = sgl['pore.volume']
