@@ -28,8 +28,9 @@ class FickianDiffusion(GenericLinearTransport):
     >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
     >>> alg.run()
     >>> alg.update_results()
-    >>> print(max(phase1['pore.IP_inv_seq'])) #unless something changed with our test objects, this should print "61"
-    61
+    >>> Deff = round(alg.calc_eff_diffusivity(), 3)
+    >>> print(Deff) #unless something changed with our test objects, this should print "0.025"
+    0.025
     
     
     '''
