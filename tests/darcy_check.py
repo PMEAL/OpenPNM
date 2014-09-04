@@ -1,6 +1,5 @@
 import OpenPNM
 import scipy as sp
-from OpenPNM.Geometry import models as gm
 from OpenPNM.Physics import models as pm
 
 #==============================================================================
