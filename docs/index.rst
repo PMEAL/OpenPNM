@@ -11,8 +11,6 @@ OpenPNM: Pore Network Modeling in Python
 
 Working with *OpenPNM* is most effectively accomplished using scripts, but a GUI is also being developed to provide immediate access to the basic features of the software.  At present Paraview is used for visualization purposes.  *OpenPNM* outputs a VTK file  which can be imported into Paraview as a *polydata* file format.  Paraview is perfectly suited to visualizing the results of *OpenPNM*.
 
-*OpenPNM* is not yet ready for distribution.  The current version is 1.0-alphaX, where X is being regularly incremented.  It is expected that the *alpha* label will be replaced with a *beta* label very soon, and a full release will be available this spring.  
-
 The source code is hosted on Github for those wishing to take a closer look.
 
 
