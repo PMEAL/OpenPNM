@@ -174,9 +174,29 @@ The ``pores`` and ``throats`` methods both accept a 'mode' argument that allows 
 -------------------------------------------------------------------------------
 Add, Remove and Regenerate Models
 -------------------------------------------------------------------------------
-The final major functionality that is contained is Core is the ability to add 'models' to the various objects.  Models are one of the most important aspects of OpenPNM, as they allow the user to specify a 'model' for calculating 'pore.volume', rather than just entering values into geometry_object['pore.volume'] array.  This topic is so important that it will discussed specifically for each object in the following pages.
+The final major functionality that is contained is Core is the ability to add 'models' to the various objects.  Models are one of the most important aspects of OpenPNM, as they allow the user to specify a 'model' for calculating 'pore.volume', rather than just entering values into geometry_object['pore.volume'] array.  Models are also one of the more obscure and confusion parts of OpenPNM. In the remaining documentation, the use of models are demonstrated many times, so section will outline how models and the ``add_model`` method works in general.  
 
+Models are functions included with OpenPNM for calculating a pore or throat property.  For instance, given a list of pore seed values, there is a model for calculating the diameter of the pores based on a specified statistical distribution.  Models are stored in under each module in a folder called 'models'.  For instance, Geometry.models.pore_diameter contains several methods for calculating pore diameters.  
 
+The ``add_model`` method accept 3 main types of arguments.  
+
+(1) It needs to know which pore or throat property does this model calculate.  This is the *propname* argument, and would be 'pore.seed' or 'pore.diameter' for the example above.
+(2) It needs the actual function that should be used.  In Python it is possible to pass a function as an argument as easily as passing an integer.  The  *model* argument should be a handle to the function of choice such as Geometry.models.pore_size.sphere.
+(3) It can optionally accept an arbitrary number of arguments that will be passed directly to the 'model'.  
+
+These 3 requirements are well demonstrated by the random pore seed model:
+
+.. code-block:: python
+
+	geom = OpenPNM.Geometry.GenericGeometry()  # Creates an empty Geometry object
+	mod = OpenPNM.Geometry.models.pore_misc.random
+	geom.add_model(propname='pore.seed',model=mod,seed=0)
+	
+The *propname* and *model* arguments are required by the ``add_model`` method, but the *seed* argument is passed on the model, and it specifies the initialization value for the random number generator.  
+
+The ``add_model`` method actually runs the model and places the data in the dictionary given by *propname*. It also saves the model is a private dictionary (object._models) also under the same *propname*.  When the data is requested from the object it returns the 'static' copy located in the object's dictionary.  In order to recalculate the data the model stored in the private dictionary must be rerun.  This is accomplished with the ``regenerate`` method.  This method takes an optional list of *propnames* that should be regenerated.  It should also be pointed out that models are regenerated in the order that they were added to the object so some care must be taken to ensure that changes in property values cascade through the object correctly.  
+
+It is also possible to remove a model that is not longer needed using ``remove_model``.  This method requires only the *propname* of the model that is to be removed.  After removal of the model, the data (say 'pore.seed') will remain constant upon ``regeneration``.  The actual data can be removed by the usual dictionary methods (pop), or an optional *mode* = 'clean' argument can be sent to the ``remove_model`` method which will delete the model and the data dictionary.  
 
 
 
