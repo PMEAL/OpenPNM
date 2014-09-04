@@ -12,6 +12,7 @@ import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.signal as spsg
+import OpenPNM.Utilities.misc as misc
 
 
 class GenericNetwork(Core):
@@ -988,13 +989,77 @@ class GenericNetwork(Core):
         
     def domain_length(self,face_1,face_2):
         r'''
+        Calculate the distance between two faces of the network
+        
+        Parameters
+        ----------
+        face_1 and face_2 : array_like
+            Lists of pores belonging to opposite faces of the network
+            
+        Returns
+        -------
+        The length of the domain in the specified direction
+        
+        Notes
+        -----
+        - Does not yet check if input faces are perpendicular to each other
         '''
-        raise NotImplementedError()
+        #Ensure given points are coplanar before proceeding
+        if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
+            #Find distance between given faces
+            x = self['pore.coords'][face_1]
+            y = self['pore.coords'][face_2]
+            Ds = misc.dist(x,y)
+            L = sp.median(sp.amin(Ds,axis=0))
+        else:
+            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
+            f1 = self['pore.coords'][face_1]
+            f2 = self['pore.coords'][face_2]
+            distavg = [0,0,0]
+            distavg[0] = sp.absolute(sp.average(f1[:,0]) - sp.average(f2[:,0]))
+            distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
+            distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
+            L = max(distavg)
+        return L
+
         
     def domain_area(self,face):
         r'''
+        Calculate the area of a given network face
+        
+        Parameters
+        ----------
+        face : array_like
+            List of pores of pore defining the face of interest
+            
+        Returns
+        -------
+        The area of the specified face
         '''
-        raise NotImplementedError()
+        coords = self['pore.coords'][face]
+        rads = self['pore.diameter'][face]/2.
+        # calculate the area of the 3 principle faces of the bounding cuboid
+        dx = max(coords[:,0]+rads) - min(coords[:,0]-rads)
+        dy = max(coords[:,1]+rads) - min(coords[:,1]-rads)
+        dz = max(coords[:,2]+rads) - min(coords[:,2]-rads)
+        yz = dy*dz # x normal
+        xz = dx*dz # y normal
+        xy = dx*dy # z normal
+        # find the directions parallel to the plane
+        directions = sp.where([yz,xz,xy]!=max([yz,xz,xy]))[0] 
+        try:
+            # now, use the whole network to do the area calculation
+            coords = self['pore.coords']
+            rads = self['pore.diameter']/2.
+            d0 = (max(coords[:,directions[0]]+rads) - min(coords[:,directions[0]]-rads))
+            d1 = (max(coords[:,directions[1]]+rads) - min(coords[:,directions[1]]-rads))
+            A = d0*d1        
+        except:
+            # if that fails, use the max face area of the bounding cuboid
+            A = max([yz,xz,xy])
+        if not misc.iscoplanar(self['pore.coords'][face]):
+            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
+        return A
 
 if __name__ == '__main__':
     #Run doc tests

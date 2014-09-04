@@ -60,9 +60,9 @@ IP_1.update_results()
 #------------------------------------------------------------------------------
 alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn,phase=air)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.pores(labels=['top_boundary'])
+BC1_pores = pn.pores('top_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
-BC2_pores = pn.pores(labels=['bottom_boundary'])
+BC2_pores = pn.pores('bottom_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
 #Add new model to air's physics that accounts for water occupancy
 phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,

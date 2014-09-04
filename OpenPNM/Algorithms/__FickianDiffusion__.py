@@ -5,6 +5,7 @@ module __FickianDiffusion__: Diffusive mass transfer
 
 """
 import scipy as sp
+import OpenPNM
 from .__GenericLinearTransport__ import GenericLinearTransport
 
 class FickianDiffusion(GenericLinearTransport):
@@ -13,6 +14,24 @@ class FickianDiffusion(GenericLinearTransport):
     main roles of this subclass are to set the default property names and to
     implement a method for calculating the effective diffusion coefficient
     of the network.
+
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+    >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
+    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
+    >>> alg = OpenPNM.Algorithms.FickianDiffusion(network=pn, phase=phase1)
+    >>> BC1_pores = pn.pores('top')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
+    >>> BC2_pores = pn.pores('bottom')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
+    >>> alg.run()
+    >>> alg.update_results()
+    >>> print(max(phase1['pore.IP_inv_seq'])) #unless something changed with our test objects, this should print "61"
+    61
+    
+    
     '''
 
     def __init__(self,**kwargs):
