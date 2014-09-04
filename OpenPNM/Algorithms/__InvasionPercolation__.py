@@ -123,6 +123,7 @@ class InvasionPercolation(GenericAlgorithm):
 
             a) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
             b) Allow for a non-linear relationship between pressure and throat-cap volume.
+            c) Add throat volume to total volume calculation, currently assumes throat volume = 0.
 
         """
 
@@ -132,10 +133,6 @@ class InvasionPercolation(GenericAlgorithm):
         if end_condition=='total':
             self._brkevent = []
         self._inlet_flow = inlet_flow
-#        if defending_phase == 'auto':
-#            try:defending_phase = invading_phase.partner
-#            except: self._logger.error("invading_phase.partner does not exist. Please specify defending phase")
-#        else: invading_phase.set_pair(defending_phase)
         try:    self._phase = self._net._phases[invading_phase]
         except: self._phase = invading_phase
         try:    self._phase_def = self._net._phases[defending_phase]

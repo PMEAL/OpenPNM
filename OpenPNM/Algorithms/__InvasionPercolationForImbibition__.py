@@ -13,7 +13,7 @@ module __InvasionPercolationForImbibition__: Invasion Percolation Algorithm for 
 .. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
 
 """
-
+import OpenPNM
 import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
@@ -51,7 +51,19 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         super(InvasionPercolationForImbibition,self).__init__(**kwords)
         self._logger.info("Create IP Imbibition Algorithm Object")
 
-    def run(self,**params):
+    def run(self,invading_phase,
+               defending_phase,
+               inlets=[0],
+               outlets=[-1],
+               end_condition='breakthrough',
+               pore_volume_name='volume',
+               pore_diameter_name='diameter',
+               throat_volume_name='volume',
+               timing='ON',
+               report=20,
+               inlet_flow=1,
+               Psecond=False,
+               **params):
         r"""
 
         Invasion Percolation (Imbibition) with cluster growth timing - Class to run IP algorithm on constructed networks
@@ -109,30 +121,25 @@ class InvasionPercolationForImbibition(InvasionPercolation):
 
         Examples
         --------
-        >>> IP_timing = InvasionPercolation(net=pn,timing='ON')
-        >>> IP_timing.run(invading_phase=air,defending_phase=water,inlets=inlets,outlets=outlets)
-
+        >>> pn = OpenPNM.Network.TestNet(name='pn')
+        >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,name='geo',pores=pn.pores(),throats=pn.throats())
+        >>> phase1 = OpenPNM.Phases.TestPhase(network=pn,name='phase1')
+        >>> phase1['pore.contact_angle'] = 20
+        >>> phase2 = OpenPNM.Phases.TestPhase(network=pn,name='phase2')
+        >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
+        >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
+        >>> IP = OpenPNM.Algorithms.InvasionPercolationForImbibition(network=pn, name='IP')
+        >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
+        >>> IP.update_results()
+        >>> print(len(phase1.pores('occupancy')))
+        29
+        
         Suggested Improvements ::
 
             a) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
             b) Allow for a non-linear relationship between pressure and throat-cap volume.
 
         """
-        super(InvasionPercolationForImbibition,self).run(**params)
-        return self
-
-    def setup(self,invading_phase,
-               defending_phase,
-               inlets=[0],
-               outlets=[-1],
-               end_condition='breakthrough',
-               pore_volume_name='volume',
-               pore_diameter_name='diameter',
-               throat_volume_name='volume',
-               timing='ON',
-               report=20,
-               inlet_flow=1,
-               Psecond=False):
 
         # if Psecond > 0 then we are doing a secondary imbibition,
         #   so end_condition, inlets, are treated differently
@@ -140,34 +147,20 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         if Psecond:
             end_condition='secondary'
             inlets = [self._net.pores()[self._phase['pore.occupancy']>0]]
-
-        self._logger.info("\t end condition: "+end_condition)
-        self._inlets = inlets
-        self._outlets = outlets
-        self._inlet_flow = inlet_flow
-#        if defending_phase == 'auto':
-#            try:defending_phase = invading_phase.partner
-#            except: self._logger.error("invading_phase.partner does not exist. Please specify defending phase")
-#        else: invading_phase.set_pair(defending_phase)
-        self._phase = invading_phase
-        self._phase_def = defending_phase
-        if sp.size(inlets) == 1:
-            self._inlets = [inlets]
-        if sp.size(outlets) == 1:
-            self._outlets = [outlets]
-        self._end_condition = end_condition
-        if end_condition=='total':
-            self._brkevent = []
-        self._counter = 0
-        self._condition = 1
-        self._rough_increment = report
-        if report == 0:
-            self._rough_increment = 100
         self._timing = timing=='ON'
-        self._pore_volume_name = pore_volume_name
         self._pore_diameter_name = pore_diameter_name
         self._throat_volume_name = throat_volume_name
 
+        super(InvasionPercolationForImbibition,self).run(invading_phase=invading_phase,
+                                                       defending_phase=defending_phase,
+                                                       inlets=inlets,
+                                                       outlets=outlets,
+                                                       end_condition=end_condition,
+                                                       pore_volume_name=pore_volume_name,
+                                                       timing=timing,
+                                                       report=report,
+                                                       inlet_flow=inlet_flow)
+        return self
 
     def _setup_for_IP(self,**params):
         r"""
@@ -231,7 +224,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         # Determine how many clusters there are
         self._clusterCount = 0
         # get boundary pores so they don't get included in cluster count
-        bpores = self._net.pores(labels=['boundary','bottom'],mode='intersection')
+        # bpores = self._net.pores(labels=['boundary','bottom'],mode='intersection')
         for i in self._inlets:
             #   ignore boundary pores
 #            if ~sp.in1d(i,bpores): # don't need this anymore if all inlet pores are in the boundary
@@ -557,7 +550,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             Pores = self._net.find_connected_pores(i)
             pneighbor = Pores[Pores!=pinvade][0]
             # if it's a boundary throat/pore, print a warning and skip to next i in for loop
-            if self._net['pore.boundary'][pneighbor]:
+            if 'pore.boundary' in self._net.labels(pores=[pneighbor]):
                 self._logger.debug( ' ')
                 self._logger.debug( 'Throat: ')
                 self._logger.debug(self._NewThroat)

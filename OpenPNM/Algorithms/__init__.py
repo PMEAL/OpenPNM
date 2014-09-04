@@ -17,6 +17,9 @@ This submodule contains algorithms for performing simulations on pore networks
 
 .. autoclass:: InvasionPercolation
    :members:
+   
+.. autoclass:: InvasionPercolationForImbibition
+   :members:
 
 .. autoclass:: FickianDiffusion
    :members:

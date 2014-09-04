@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import sys, os
 import OpenPNM
 from OpenPNM.Phases.__GenericPhase__ import GenericPhase
-from OpenPNM.Phases import models as fm
 
 class TestPhase(GenericPhase):
     r'''
@@ -39,6 +37,7 @@ class TestPhase(GenericPhase):
         self['pore.molecular_weight'] = 28.97
         self['pore.critical_temperature'] = 132.5
         self['pore.critical_volume'] = 0.0883
+        self['pore.contact_angle'] = 120
 
 
 if __name__ =="__main__":
