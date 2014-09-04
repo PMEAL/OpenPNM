@@ -39,7 +39,7 @@ class Core(Base):
         #Enforce correct dict naming
         element = key.split('.')[0]
         if (element != 'pore') and (element != 'throat'):
-            self._logger.error('Array name must begin with \'pore\' or \'throat\'')
+            self._logger.error('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
             return
         #Convert value to an ndarray
         value = sp.array(value,ndmin=1)

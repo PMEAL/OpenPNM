@@ -91,5 +91,5 @@ except Exception as e:
   #------------------------------------------------------------------------------
   '''Export to VTK'''
   #------------------------------------------------------------------------------
-  import OpenPNM.Postprocessing.Export as save
-#  save.VTK(network=pn,phases=[air,water])
+  import OpenPNM.Utilities.IO
+  io.VTK.save(network=pn,phases=[air,water])
