@@ -4,8 +4,9 @@ module __OhmicConduction__: Electronic or ionic conduction
 ===============================================================================
 
 """
+import OpenPNM
 import scipy as sp
-from .__GenericLinearTransport__ import GenericLinearTransport
+from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
 
 class OhmicConduction(GenericLinearTransport):
     r'''
@@ -13,6 +14,25 @@ class OhmicConduction(GenericLinearTransport):
     conduction.  The 2 main roles of this subclass are to set the default 
     property names and to implement a method for calculating the effective 
     conductivity of the network.
+    
+    
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+    >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
+    >>> phase1['pore.voltage'] = 1
+    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
+    >>> phys1['throat.electronic_conductance'] = 1
+    >>> alg = OpenPNM.Algorithms.OhmicConduction(network=pn, phase=phase1)
+    >>> BC1_pores = pn.pores('top')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
+    >>> BC2_pores = pn.pores('bottom')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
+    >>> alg.run()
+    >>> alg.update_results()
+    >>> Ceff = round(alg._calc_eff_prop(), 3) #This line and the next line should fail until someone writes this function
+    >>> print(Ceff) #unless something changed with our test objects, this should print "0.025"
+    1.012
+    
 
     '''
 
@@ -29,3 +49,9 @@ class OhmicConduction(GenericLinearTransport):
         super(OhmicConduction,self).setup(conductance=conductance,quantity=quantity)
         
         super(GenericLinearTransport,self).run()
+        
+        
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)
+    
