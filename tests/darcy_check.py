@@ -1,5 +1,6 @@
 import OpenPNM
 import scipy as sp
+from OpenPNM.Geometry import models as gm
 from OpenPNM.Physics import models as pm
 
 #==============================================================================
@@ -50,6 +51,7 @@ P_out = 0  # Pa
 Q_in = 0.6667*(Lc**2)*divs[1]*divs[0]  # m^3/s
 Darcy.set_boundary_conditions(bctype='Neumann_group',bcvalue=-Q_in,pores=inlets)
 Darcy.set_boundary_conditions(bctype='Dirichlet',bcvalue=P_out,pores=outlets)
+
 Darcy.run()
 Darcy.update_results()
 
