@@ -9,8 +9,8 @@ import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import matplotlib.pyplot as plt
-
-from .__GenericAlgorithm__ import GenericAlgorithm
+import OpenPNM
+from OpenPNM.Algorithms.__GenericAlgorithm__ import GenericAlgorithm
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""
@@ -23,6 +23,21 @@ class OrdinaryPercolation(GenericAlgorithm):
         The network upon which the simulation will be run
     name : string, optional
         The name to assign to the Algorithm Object
+        
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+    >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
+    >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
+    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
+    >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
+    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn, name='OP')
+    >>> OP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'))
+    >>> med_Pc = sp.median(OP['pore.inv_Pc'])
+    >>> OP.update_results(med_Pc)
+    >>> print(len(phase1.pores('occupancy'))) #should return '71' filled pores if everything is working normally
+    71
 
     Notes
     -----
@@ -248,4 +263,5 @@ class OrdinaryPercolation(GenericAlgorithm):
           plt.show()
 
 if __name__ == '__main__':
-    print('no tests yet')
+    import doctest
+    doctest.testmod(verbose=True)
