@@ -6,7 +6,7 @@ module __FickianDiffusion__: Diffusive mass transfer
 """
 import scipy as sp
 import OpenPNM
-from .__GenericLinearTransport__ import GenericLinearTransport
+from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
 
 class FickianDiffusion(GenericLinearTransport):
     r'''
@@ -58,5 +58,7 @@ class FickianDiffusion(GenericLinearTransport):
         return self._eff_property
         
 
-
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)
 

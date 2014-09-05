@@ -38,6 +38,8 @@ class TestPhase(GenericPhase):
         self['pore.critical_temperature'] = 132.5
         self['pore.critical_volume'] = 0.0883
         self['pore.contact_angle'] = 120
+        self['pore.thermal_conductivity'] = 1
+        self['throat.thermal_conductivity'] = self.interpolate_data(data=self['pore.thermal_conductivity'])
 
 
 if __name__ =="__main__":

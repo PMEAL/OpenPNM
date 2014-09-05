@@ -624,3 +624,9 @@ class InvasionPercolation(GenericAlgorithm):
             if self._timing:
                 self._phase['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
                 self._phase['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)
+    
