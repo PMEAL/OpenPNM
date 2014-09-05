@@ -24,7 +24,19 @@ class PNM(object):
             associated with the Network, but will not save any Algorithms.
             
         filename : string, optional
-            The file name to save as.  Defaults to the Network's name.
+            The file name to yse for saving.  Defaults to the Network's name.
+            
+        Notes
+        -----
+        This stores the simulation in a nested dictionary with the data dict 
+        of the object stored under ['data'][object.name], the object linking 
+        under ['tree'][object.name] and the information to reproduce the models
+        under ['mods'][object.name].  The ``load`` method knows how to unpack
+        this dictionary.
+        
+        See Also
+        --------
+        IO.PNM.load
         '''
         
         if filename != '':
@@ -100,10 +112,11 @@ class PNM(object):
 
         for obj in sim['data'].keys():  # Network object
             if obj.split('.')[0] == 'Network':
-                if sim['tree'][obj] == 'Cubic':
-                    net = OpenPNM.Network.Cubic(name=obj.split('.')[1])
-                else:
-                    net = OpenPNM.Network.GenericNetwork(name=obj.split('.')[1])
+#                if sim['tree'][obj]['SelfType'] == 'Cubic':
+#                    net = OpenPNM.Network.Cubic(name=obj.split('.')[1])
+#                else:
+#                    net = OpenPNM.Network.GenericNetwork(name=obj.split('.')[1])
+                net = OpenPNM.Network.GenericNetwork(name=obj.split('.')[1])
                 net.update(sim['data'][obj])
         
         for obj in sim['data'].keys():  # Geometry objects
