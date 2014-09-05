@@ -160,11 +160,6 @@ The Physics object requires several arguments in it's instantiation.  Like all o
 ===============================================================================
 Algorithms
 ===============================================================================
-
-.. warning:: Work In Progress
-
-    The call signature for algorithms is a work in progress, so this might change
-
 The final step in performing a pore network simulation is to run some algorithms to model transport processes in the network.  OpenPNM comes with numerous algorithms, such as ``FickianDiffusion`` for modeling diffusion mass transport:
 
 >>> alg = OpenPNM.Algorithms.FickianDiffusion(network=pn)

@@ -5,7 +5,9 @@ Installation Instructions
 ===============================================================================
 Installing OpenPNM is done with:
 
-$ pip install openpnm
+.. code-block:: python
+
+    pip install openpnm
 
 This will install OpenPNM into your Python environment.  To use OpenPNM, just import it:
 

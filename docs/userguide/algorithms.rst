@@ -9,16 +9,16 @@ Algorithms
 Basic Usage
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. warning:: Work in progress
+.. warning::
 
-    The Algorithm class is currently a work in progress.  The wide variety of possible arguments and configurations for algorithms has made it difficult to finalize the common behavior and requirements of this class.  At present, an Algorithm can be instantiated by passing in a Network object and the rest is up to the programmer of the class.
+    The wide variety of possible arguments and configurations for algorithms makes it difficult to define a common behavior and requirements for this initialization of this class.  In general, an Algorithm is instantiated by passing in a Network object, and the rest is up to the programmer of the class.  
 
 An Algorithm object can be instantiated by sending in a Network object:
 
 >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
->>> alg = OpenPNM.Algorithms.FickianDiffusion(network=pn)
+>>> alg = OpenPNM.Algorithms.GenericAlgorithm(network=pn)
 
-However, before the ``run`` method for this Algorithm can be called several steps need to be taken.  At the present time, most Algorithms have different requirements for what needs to be specified.  It is recommended to consult the docstring in each Algorithm for specific instructions.
+However, before the ``run`` method for this Algorithm can be called several steps need to be taken.  Most Algorithms have different requirements for what needs to be specified.  It is recommended to consult the docstring in each Algorithm for specific instructions.
 
 -------------------------------------------------------------------------------
 Adding Boundary Conditions
