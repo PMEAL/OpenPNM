@@ -3,7 +3,7 @@ module __OpenPNMbase__: contains OpenPNM base classes
 =====================================================
 
 """
-import os, string, random, time, shutil
+import string, random
 import OpenPNM
 import scipy as sp
 import scipy.constants
