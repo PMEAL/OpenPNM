@@ -15,25 +15,32 @@ from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Cubic(GenericNetwork):
     r"""
-    This class contains the methods to create a cubic network with an arbitrary
-    domain shape defined by a supplied template.
-
-    To invoke the actual generation it is necessary to run the `generate` method.
+    This class generates a cubic network of the specified size and shape. 
+    Alternatively, an arbitrary domain shape defined by a supplied template.
 
     Parameters
     ----------
     name : string
         A unique name for the network
-
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-
-    loggername : string
-        Overwrite the name of the logger, which defaults to the class name
+        
+    shape : tuple of ints
+        The (i,j,k) size and shape of the network.
+        
+    template : array of booleans
+        An (i,j,k) array with True where the Network should be defiend and 
+        False elsewhere.  This approach is useful for creating networks of non-
+        cuboid shape like spheres or cylinders, but still with a cubic lattice 
+        topology.
 
     Examples
     --------
-    This class is a work in progress, examples forthcoming.
+    >>> pn = OpenPNM.Network.Cubic(shape=[3,4,5])
+    >>> pn.Np
+    60
+    >>> img = sp.ones([3,4,5])
+    >>> pn = OpenPNM.Network.Cubic(template=img)
+    >>> pn.Np
+    60
     """
     def __init__(self, shape=None, template=None, spacing=1, **kwargs):
         super(Cubic, self).__init__(**kwargs)
