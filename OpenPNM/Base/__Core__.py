@@ -109,17 +109,22 @@ class Core(Base):
         '''
         #Determine object type, and assign associated objects
         self_type = [item.__name__ for item in self.__class__.__mro__]
-        network = self._net
+        network = None
         phase = None
         geometry = None
         physics = None
         if 'GenericGeometry' in self_type:
+            network = self._net
             geometry = self
         elif 'GenericPhase' in self_type:
+            network = self._net
             phase = self
         elif 'GenericPhysics' in self_type:
+            network = self._net
             phase = self._phases[0]
             physics = self
+        else:
+            network = self
         #Build partial function from given kwargs
         fn = partial(model,network=network,phase=phase,geometry=geometry,physics=physics,**kwargs)
         if regen_mode == 'static':

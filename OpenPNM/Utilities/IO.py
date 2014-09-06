@@ -118,6 +118,8 @@ class PNM(object):
 #                    net = OpenPNM.Network.GenericNetwork(name=obj.split('.')[1])
                 net = OpenPNM.Network.GenericNetwork(name=obj.split('.')[1])
                 net.update(sim['data'][obj])
+                for model in sim['mods'][obj].keys():
+                    PNM._load_model(net,sim['mods'][obj][model])
         
         for obj in sim['data'].keys():  # Geometry objects
             if obj.split('.')[0] == 'Geometry':

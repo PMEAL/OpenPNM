@@ -41,7 +41,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffu
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,loglevel=20)
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,loglevel=30)
 Ps = pn.pores(labels=['bottom_boundary'])
 OP_1.run(invading_phase=water,defending_phase=air,inlets=Ps)
 OP_1.update_results(Pc=7000)
