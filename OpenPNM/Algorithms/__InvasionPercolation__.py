@@ -121,7 +121,7 @@ class InvasionPercolation(GenericAlgorithm):
              IP algorithm at 60 % completion at 0 seconds
              IP algorithm at 100% completion at  0  seconds
         >>> IP.update_results()
-        >>> print(max(phase1['pore.IP_inv_seq'])) #unless something changed with our test objects, this should print "61"
+        >>> max(phase1['pore.IP_inv_seq']) #unless something changed with our test objects, this should print "61"
         61
 
         Suggested Improvements ::

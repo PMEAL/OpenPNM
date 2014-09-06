@@ -35,6 +35,15 @@ class Core(Base):
         This is a subclass of the default __setitem__ behavior.  The main aim
         is to limit what type and shape of data can be written to protect
         the integrity of the network.
+        
+        
+        Example
+        -------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn['pore.example_property'] = 100
+        >>> pn['pore.example_property'][0]
+        100
+        
         '''
         #Enforce correct dict naming
         element = key.split('.')[0]
@@ -170,15 +179,17 @@ class Core(Base):
         --------
         >>> pn = OpenPNM.Network.TestNet()
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> geom['pore.diameter'] = 1
         >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
-        >>> f = gm.pore_misc.random  # Get random seed generator model
-        >>> geom.add_model(propname='pore.seed',model=f,seed=None)  # Add model to Geometry object
-        >>> geom['pore.seed'][0]  # Look at seed value in pore 0
-        ...
+        >>> f = gm.pore_area.cubic # Get random seed generator model
+        >>> geom.add_model(propname='pore.area',model=f)  # Add model to Geometry object
+        >>> round(geom['pore.area'][0],3)  # Look at seed value in pore 0
+        1
+        >>> geom['pore.diameter'] = 2
         >>> geom.regenerate()  # Regenerate all models
-        >>> geom['pore.seed'][0]  # Look at same seed value again
-        ...
-
+        >>> geom['pore.area'][0]  # Look at same seed value again
+        4
+        
         '''
         if props == '':
             props = self._models.keys()
@@ -499,10 +510,12 @@ class Core(Base):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.props()
-        ['pore.coords', 'throat.conns']
         >>> pn.props('pore')
         ['pore.coords']
+        >>> pn.props('throat')
+        ['throat.conns']
+        >>> #pn.props() # this lists both, but in random order, which breaks 
+        >>> #           # our automatic document testing so it's commented here
         '''
 
         props = []
@@ -724,10 +737,10 @@ class Core(Base):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pind = pn.get_pore_indices(labels=['top','front'],mode='union')
+        >>> pind = pn.pores(labels=['top','front'],mode='union')
         >>> pind[[0,1,2,-3,-2,-1]]
         array([  0,   5,  10, 122, 123, 124], dtype=int64)
-        >>> pn.get_pore_indices(labels=['top','front'],mode='intersection')
+        >>> pn.pores(labels=['top','front'],mode='intersection')
         array([100, 105, 110, 115, 120], dtype=int64)
         '''
         if labels == 'all':
@@ -762,7 +775,7 @@ class Core(Base):
         >>> pn = OpenPNM.Network.TestNet()
         >>> Tind = pn.throats()
         >>> Tind[0:5]
-        array([0, 1, 2, 3, 4], dtype=int64)
+        array([0, 1, 2, 3, 4])
 
         '''
         if labels == 'all':
@@ -1110,10 +1123,10 @@ class Core(Base):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn._count()
-        {'pore': 125, 'throat': 300}
         >>> pn._count('pore')
         125
+        >>> pn._count('throat')
+        300
         '''
         if element in ['pore','pores']:
             temp = self.num_pores()

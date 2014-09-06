@@ -84,6 +84,12 @@ class Base(dict):
         ----------
         level : int
             Level above which messages should be logged.
+            
+        Examples
+        --------
+        >>> baseobject = OpenPNM.Base.Base()
+        >>> baseobject.set_loglevel(30)    
+        
         """
         self._logger.setLevel(level)
         self._logger.debug("Changed log level")
@@ -121,6 +127,7 @@ class Base(dict):
         'geo1'
 
         '''
+        
         if 'Network' in self.__module__.split('.'):
             net = self
         else:
@@ -278,7 +285,7 @@ class Base(dict):
         >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo')
         >>> geom.name
         'geo'
-        >>> pn.delete_object(obj_name='geo')
+        >>> pn.remove_object(obj_name='geo')
         >>> pn._find_object(obj_name='geo')
         []
 
@@ -322,6 +329,24 @@ class Base(dict):
 
     def save(self,filename=''):
         r'''
+
+        Parameters
+        ----------
+        filename : string
+            The filename to contain the saved object data in Numpy zip format (npz)
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+        >>> pn.save('test_pn')
+
+        >>> gn = OpenPNM.Network.GenericNetwork()
+        >>> gn.load('test_pn')  
+        
+        >>> # Remove newly created file
+        >>> import os
+        >>> os.remove('test_pn.npz')
+        
         '''
         if filename == '':
             filename = self.name
@@ -340,6 +365,19 @@ class Base(dict):
         ----------
         filename : string
             The file containing the saved object data in Numpy zip format (npz)
+
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+        >>> pn.save('test_pn')
+
+        >>> gn = OpenPNM.Network.GenericNetwork()
+        >>> gn.load('test_pn')  
+        
+        >>> # Remove newly created file
+        >>> import os
+        >>> os.remove('test_pn.npz')
+
         '''
         if (self.Np == 0) and (self.Nt == 0):
             filename = filename.split('.')[0] + '.npz'

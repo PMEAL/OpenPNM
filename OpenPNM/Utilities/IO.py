@@ -34,6 +34,24 @@ class PNM(object):
         under ['mods'][object.name].  The ``load`` method knows how to unpack
         this dictionary.
         
+        Examples
+        --------
+        >>> # Saving
+        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+        >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores(),throats=pn.throats(),name='geo_1')
+        >>> air = OpenPNM.Phases.Air(network=pn)
+        >>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores(),throats=pn.throats())
+        >>> import OpenPNM.Utilities.IO as io
+        >>> io.PNM.save(pn,'test_pn')      
+
+        >>> # Loading
+        >>> import OpenPNM.Utilities.IO as io
+        >>> #pn = io.PNM.load('test_pn')
+        
+        >>> # Delete the new file
+        >>> import os
+        >>> os.remove('test_pn.pnm')
+        
         See Also
         --------
         IO.PNM.load
@@ -182,7 +200,22 @@ class VTK():
 
     phase : list, optional
         A list contain OpenPNM Phase object(s) containing data to be written
+        
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+    >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores(),throats=pn.throats(),name='geo_1')
+    >>> air = OpenPNM.Phases.Air(network=pn)
+    >>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores(),throats=pn.throats())
 
+    >>> import OpenPNM.Utilities.IO as io
+    >>> io.VTK.save(pn,'test_pn.vtp',[air])
+    
+    >>> # Delete the new file
+    >>> import os
+    >>> os.remove('test_pn.vtp')
+        
+        
     """
     
     _TEMPLATE = '''
@@ -222,7 +255,7 @@ class VTK():
 
         root = _ET.fromstring(VTK._TEMPLATE)
         objs = []
-        if _np.shape(phases)==():
+        if type(phases) != list:
             phases = [phases]
         for phase in phases:
             objs.append(phase)
@@ -338,7 +371,8 @@ class VTK():
 class MAT():
     
     r"""
-    Write Network to a Mat file for exporting to Matlab
+    Write Network to a Mat file for exporting to Matlab. This method will be 
+    enhanced in a future update, and it's functionality may change!
 
     Parameters
     ----------
@@ -350,6 +384,18 @@ class MAT():
         
     phases : list of phase objects ([])
         Phases that have properties we want to write to file
+
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+    >>> air = OpenPNM.Phases.TestPhase()
+    >>> import OpenPNM.Utilities.IO as io
+    >>> io.MAT.save(network=pn,filename='test_pn.mat',phases=air)
+    
+    >>> #Remove newly created file
+    >>> import os
+    >>> os.remove('test_pn.mat')
 
     """
     
@@ -375,7 +421,8 @@ class MAT():
         for i in range(len(network)):        
             pnMatlab[new[i]] = network[old[i]]
                 
-        
+        if type(phases) != list:
+            phases = [phases]
         if len(phases) != 0:
             for j in range(len(phases)):
                 new = []
@@ -389,4 +436,10 @@ class MAT():
                     pnMatlab[new[i]] = phases[j][old[i]]
             
         _sp.io.savemat(file_name=filename,mdict=pnMatlab)
+    
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)    
+    
     
