@@ -28,17 +28,18 @@ Classes
 
 
 """
-import OpenPNM.Base
 #Import every file in the directory
 import os as _os
 dir = _os.path.dirname(_os.path.abspath(__file__))
-for item in sorted(_os.listdir(dir)):
-    if item.endswith('.py'):
+for item in _os.listdir(dir):
+    if item.split('.')[-1] == 'py':
         if item == '__init__.py':
             pass
-        elif item.startswith('__'):
-            exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
+        elif item[0:2] == '__':
+            try:
+                exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
+            except:
+                print('File name '+item+' does not match class name, cannot import automatically')
         else:
             exec('from . import ' + format(item.split('.')[0]))
-            
-#Manually added imports
+from . import models

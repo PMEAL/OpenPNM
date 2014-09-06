@@ -68,20 +68,24 @@ class Cubic(GenericNetwork):
             heads.extend(H.flat)
         pairs = np.vstack([tails, heads]).T
         
-        self['pore.coords'] = points
+        self['pore.coords']  = points
         self['throat.conns'] = pairs
-        self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
-        self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
-        self['pore.index'] = sp.arange(0,len(self['pore.coords']))
+        self['pore.all']     = np.ones(len(self['pore.coords']), dtype=bool)
+        self['throat.all']   = np.ones(len(self['throat.conns']), dtype=bool)
+        self['pore.index']   = sp.arange(0,len(self['pore.coords']))
 
         x,y,z = self['pore.coords'].T
         self['pore.internal'] = self['pore.all']
-        self['pore.front'] = x <= x.min()
-        self['pore.back'] = x >= x.max()
-        self['pore.left'] = y <= y.min()
-        self['pore.right'] = y >= y.max()
-        self['pore.bottom'] = z <= z.min()
-        self['pore.top'] = z >= z.max()
+        self['pore.front']    = x <= x.min()
+        self['pore.back']     = x >= x.max()
+        self['pore.left']     = y <= y.min()
+        self['pore.right']    = y >= y.max()
+        self['pore.bottom']   = z <= z.min()
+        self['pore.top']      = z >= z.max()
+        
+        #Add some topology models to the Network
+        mod = OpenPNM.Network.models.pore_topology.get_subscripts
+        self.add_model(propname='pore.subscript',model=mod,shape=self._shape)
         
         #If an image was sent as 'template', then trim network to image shape
         if template != None:
