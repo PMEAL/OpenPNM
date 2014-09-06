@@ -19,7 +19,7 @@ import numpy as np
 from time import clock
 import heapq
 
-from .__GenericAlgorithm__ import GenericAlgorithm
+from OpenPNM.Algorithms.__GenericAlgorithm__ import GenericAlgorithm
 
 
 class InvasionPercolation(GenericAlgorithm):
@@ -115,6 +115,11 @@ class InvasionPercolation(GenericAlgorithm):
         >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
         >>> IP = OpenPNM.Algorithms.InvasionPercolation(network=pn, name='IP')
         >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
+             IP algorithm at 0 % completion at 0 seconds
+             IP algorithm at 20 % completion at 0 seconds
+             IP algorithm at 40 % completion at 0 seconds
+             IP algorithm at 60 % completion at 0 seconds
+             IP algorithm at 100% completion at  0  seconds
         >>> IP.update_results()
         >>> print(max(phase1['pore.IP_inv_seq'])) #unless something changed with our test objects, this should print "61"
         61
@@ -154,7 +159,6 @@ class InvasionPercolation(GenericAlgorithm):
         self._throat_diameter_name = throat_diameter_name
 
         super(InvasionPercolation,self).run()
-        return self
 
     def _setup_for_IP(self):
         r"""

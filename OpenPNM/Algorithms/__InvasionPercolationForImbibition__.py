@@ -21,8 +21,7 @@ from time import clock
 import heapq
 import itertools
 
-from .__GenericAlgorithm__ import GenericAlgorithm
-from .__InvasionPercolation__ import InvasionPercolation
+from OpenPNM.Algorithms.__InvasionPercolation__ import InvasionPercolation
 
 class InvasionPercolationForImbibition(InvasionPercolation):
 
@@ -130,6 +129,10 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
         >>> IP = OpenPNM.Algorithms.InvasionPercolationForImbibition(network=pn, name='IP')
         >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
+             IP algorithm at 0 % completion at 0 seconds
+             IP algorithm at 20 % completion at 0 seconds
+             IP algorithm at 40 % completion at 0 seconds
+             IP algorithm at 100% completion at  0  seconds
         >>> IP.update_results()
         >>> print(len(phase1.pores('occupancy')))
         29
@@ -160,8 +163,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
                                                        timing=timing,
                                                        report=report,
                                                        inlet_flow=inlet_flow)
-        return self
-
+        
     def _setup_for_IP(self,**params):
         r"""
         Determines cluster labelling and condition for completion
