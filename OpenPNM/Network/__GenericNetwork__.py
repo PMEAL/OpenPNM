@@ -609,6 +609,12 @@ class GenericNetwork(Core):
             The coordinates of the pores to add
         throat_conns : array_like
             The throat connections to add
+            
+        Notes
+        -----
+        This needs to be enhanced so that it increases the size of all pore 
+        and throat props and labels on ALL associated objects.  At the moment
+        if throws an error is there are ANY associated objects.
         
         '''
         if (self._geometries != []):
@@ -642,11 +648,14 @@ class GenericNetwork(Core):
                     self[item][temp] = True
                 elif self[item].dtype == object:
                     temp = self[item]
-                    self[item] = sp.ndarray(N,dtype=object)
+                    self[item] = sp.ndarray((N,),dtype=object)
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
                 else:
                     temp = self[item]
-                    self[item] = sp.ones((N,),dtype=float)*sp.nan
+                    try:
+                        self[item] = sp.ones((N,sp.shape(temp)[1]),dtype=float)*sp.nan
+                    except:
+                        self[item] = sp.ones((N,),dtype=float)*sp.nan
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
         self._update_network()
         
