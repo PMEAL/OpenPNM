@@ -25,3 +25,28 @@ def get_subscripts(network,
         vals = _sp.ones((network.Np,3))*_sp.nan
         vals[network.pores('internal')] = ind
         return vals
+        
+def set_spacing(network,
+                spacing,
+                subscripts='pore.subscript',
+                **kwargs):
+    r'''
+    Calculates the pore coordinates based on supplied spacing and pore 
+    subscript values.  The returned coordinates are offset by half of the 
+    lattice spacing so that pore are centered in each lattice cell.  
+    
+    Notes
+    -----
+    This model is intended for Cubic networks
+    '''
+    coords = (network[subscripts] + 0.5)*spacing
+    return coords
+    
+
+
+
+
+
+
+
+
