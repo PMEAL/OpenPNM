@@ -36,6 +36,7 @@ Documentation
 
    userguide/index.rst
    examples/index.rst
+   devguide/index.rst
    docOpenPNM.rst
    docExtraSidebar.rst
 

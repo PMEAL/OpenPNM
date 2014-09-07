@@ -4,6 +4,10 @@
 Developer Guide
 **************************************************
 
+.. warning:: Work in Progress
+
+    This developer guide is not complete or up to date.  If you have developer related questions just contact the developers.
+
 Useful Links:
 
 `Sphinx Documentation <http://sphinx-doc.org/contents.html>`_
