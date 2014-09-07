@@ -43,7 +43,7 @@ Classes
 #        else:
 #            exec('from . import ' + format(item.split('.')[0]))
 from . import models
-from .__GenericNetwork import GenericNetwork
+from .__GenericNetwork__ import GenericNetwork
 from .__Cubic__ import Cubic
 from .__Delaunay__ import Delaunay
 from .__MatFile__ import MatFile
