@@ -10,68 +10,44 @@ import OpenPNM.Utilities.misc as misc
 import scipy as sp
 import scipy.io as spio
 import os
-from .__GenericNetwork__ import GenericNetwork
+from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class MatFile(GenericNetwork):
-    r"""
+    r'''
     MatFile - constructs a pore network from a perfectly formatted .mat file (MATLAB)
-    
-    This class contains the interface definition for the construction
-    of networks
-    
+    Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() 
+    object. The extra data of 'type' will trigger internal and boundary pores.
+
     Parameters
     ----------
+    filename : string
+        filename = 'standard_cubic_5x5x5.mat' (default)
+        Name of mat file
+    path : string
+        path='' (default)
+        the full path to the mat file on your computer
+        leaving blank searches for the file in the local directory
+    xtra_pore_data : list of strings
+        xtra_pore_data = ['type','shape','material']
+        any additional props to look for in the dictionary
+    xtra_throat_data : list of strings
+        xtra_throat_data = ['type','shape','material']
+        any additional props to look for in the dictionary
 
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-    all other parameters are in the generate() command
-
+    Examples:
+    ---------
+    >>> fname = 'examples/test_pn' # or 'examples/test_pn.mat'
+    >>> pn = OpenPNM.Network.MatFile(name='test_pn',filename=fname,xtra_pore_data='type',xtra_throat_data='type')
     
-    """
-    def __init__(self, **kwargs):
+    '''
+    def __init__(self,filename='standard_cubic_5x5x5.mat', path='', xtra_pore_data=None, xtra_throat_data=None,**kwargs):
         
         r"""
-        Initialize
         """
         super(MatFile,self).__init__(**kwargs)
-        
-    def generate(self,filename='standard_cubic_5x5x5.mat', path='LocalFiles', xtra_pore_data=None, xtra_throat_data=None):
-        '''
-        Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() 
-        object. The extra data of 'type' will trigger internal and boundary pores
 
-        Parameters
-        ----------
-
-        Critical\n
-        filename : string
-            filename = 'standard_cubic_5x5x5.mat' (default)\n
-            Name of mat file\n
-        path : string
-            path='LocalFiles' (default)\n
-            the location of the mat file on your computer \n
-        xtra_pore_data : list of strings
-            xtra_pore_data = ['type','shape','material']
-            any additional props to look for in the dictionary
-        xtra_throat_data : list of strings
-            xtra_throat_data = ['type','shape','material']
-            any additional props to look for in the dictionary
-
-        Examples:
-        ---------
-
-        generate network using example mat file
-
-        >>> import OpenPNM as PNM
-        >>> pn=PNM.Geometry.MatFile(name='matfile')
-        >>> pn.generate(filename='standard_cubic_5x5x5.mat', path='LocalFiles')
-        '''
-        if path == 'LocalFiles':
-            long_path = os.path.abspath(__file__)
-            short_path, fname = os.path.split(long_path)
-            short_path, foldername = os.path.split(short_path)  
-            path, foldername = os.path.split(short_path)  
-            path = os.path.join(path,'LocalFiles')
+        if path == '':
+            path = os.path.abspath('.')
         self._path = path
         filepath = os.path.join(self._path,filename)
         self._xtra_pore_data=xtra_pore_data
@@ -105,55 +81,72 @@ class MatFile(GenericNetwork):
         bad_pores = sp.array([],dtype=int)
         self._pore_map = self.pores()
         self._throat_map = self.throats()
-        health = self.check_network_health()        
-        Np = self.num_pores()
-        Nt = self.num_throats()
-        cluster_sizes = [sp.shape(x)[0] for x in health['disconnected_clusters']]
-        acceptable_size = min([min([50,Np/2]),max(cluster_sizes)]) # 50 or less, if it's a really small network.
-        #step through each cluster of pores. If its a small cluster, add it to the list
-        for cluster in health['disconnected_clusters']:
-            if sp.shape(cluster)[0] < acceptable_size:
-                bad_pores = sp.append(bad_pores,sp.ravel(cluster))
-        bad_throats = sp.unique(self.find_neighbor_throats(bad_pores))
-        #Create map for pores
-        if sp.shape(bad_pores)[0] > 0:
-            i = 0
-            self._pore_map = sp.zeros((Np-sp.shape(bad_pores)[0],),dtype=int)
-            for pore in self.pores():
-                if pore not in bad_pores:
-                    self._pore_map[i] = pore 
-                    i += 1
-        #Create map for throats
-        if sp.shape(bad_throats)[0] > 0:
-            i = 0
-            self._throat_map = sp.zeros((Nt-sp.shape(bad_throats)[0],),dtype=int)
-            for throat in self.throats():
-                if throat not in bad_throats:
-                    self._throat_map[i] = throat                    
-                    i += 1
-        self.trim(pores=bad_pores)
-        #Fix the pore transformer
-        try:        
+        health = self.check_network_health()  
+        if health['disconnected_clusters'] == []:
+            self._throat_map = self.throats()
+            self._pore_map = self.pores()
+        else:
+            Np = self.num_pores()
+            Nt = self.num_throats()
+            cluster_sizes = [sp.shape(x)[0] for x in health['disconnected_clusters']]
+            acceptable_size = min([min([50,Np/2]),max(cluster_sizes)]) # 50 or less, if it's a really small network.
+            #step through each cluster of pores. If its a small cluster, add it to the list
+            for cluster in health['disconnected_clusters']:
+                if sp.shape(cluster)[0] < acceptable_size:
+                    bad_pores = sp.append(bad_pores,sp.ravel(cluster))
+            bad_throats = sp.unique(self.find_neighbor_throats(bad_pores))
+            #Create map for pores
             if sp.shape(bad_pores)[0] > 0:
                 i = 0
-                old_transform = self._dictionary['pname_transform']
-                self._dictionary['pname_transform'] = sp.zeros((Np-sp.shape(bad_pores)[0],),dtype=int)
+                self._pore_map = sp.zeros((Np-sp.shape(bad_pores)[0],),dtype=int)
                 for pore in self.pores():
                     if pore not in bad_pores:
-                        self._dictionary['pname_transform'][i] = old_transform[pore]
+                        self._pore_map[i] = pore 
                         i += 1
-        except:
-            self._logger.info('Could not update pname_transform. Imported network may not have had it.')
+            #Create map for throats
+            if sp.shape(bad_throats)[0] > 0:
+                i = 0
+                self._throat_map = sp.zeros((Nt-sp.shape(bad_throats)[0],),dtype=int)
+                for throat in self.throats():
+                    if throat not in bad_throats:
+                        self._throat_map[i] = throat                    
+                        i += 1
+            self.trim(pores=bad_pores)
+            #Fix the pore transformer
+            try:        
+                if sp.shape(bad_pores)[0] > 0:
+                    i = 0
+                    old_transform = self._dictionary['pname_transform']
+                    self._dictionary['pname_transform'] = sp.zeros((Np-sp.shape(bad_pores)[0],),dtype=int)
+                    for pore in self.pores():
+                        if pore not in bad_pores:
+                            self._dictionary['pname_transform'][i] = old_transform[pore]
+                            i += 1
+            except:
+                self._logger.info('Could not update pname_transform. Imported network may not have had it.')
 
     def _add_geometry(self):
         try: 
             boundary_pores = sp.where(self['pore.type']!=0)[0]
             boundary_throats = sp.where(self['throat.type']!=0)[0]
+            self['throat.top'] = sp.ravel(self['throat.type']==1)
+            self['throat.bottom'] = sp.ravel(self['throat.type']==6)
+            self['throat.left'] = sp.ravel(self['throat.type']==2)
+            self['throat.right'] = sp.ravel(self['throat.type']==5)
+            self['throat.front'] = sp.ravel(self['throat.type']==3)
+            self['throat.back'] = sp.ravel(self['throat.type']==4)
+            self['pore.top'] = self.tomask(pores=sp.ravel(self.find_connected_pores(self.throats('top'))))
+            self['pore.bottom'] = self.tomask(sp.ravel(self.find_connected_pores(self.throats('bottom'))))
+            self['pore.left'] = self.tomask(sp.ravel(self.find_connected_pores(self.throats('left'))))
+            self['pore.right'] = self.tomask(sp.ravel(self.find_connected_pores(self.throats('right'))))
+            self['pore.front'] = self.tomask(sp.ravel(self.find_connected_pores(self.throats('front'))))
+            self['pore.back'] = self.tomask(sp.ravel(self.find_connected_pores(self.throats('back'))))
             add_boundaries = True
         except: 
             boundary_pores = sp.array([])
             boundary_throats = sp.array([])
             self._logger.info('No boundary pores added.')
+            add_boundaries = False
         Ps = sp.where([pore not in boundary_pores for pore in self.pores()])[0]
         Ts = sp.where([throat not in boundary_throats for throat in self.throats()])[0]
         geom = OpenPNM.Geometry.GenericGeometry(network=self,name='internal',pores=Ps,throats=Ts)
@@ -269,5 +262,7 @@ class MatFile(GenericNetwork):
         if not misc.iscoplanar(self['pore.coords'][face]):
             self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
         return A
-
         
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)  

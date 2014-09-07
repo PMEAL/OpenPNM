@@ -66,5 +66,6 @@ class Stick_and_Ball(GenericGeometry):
                        model=gm.throat_surface_area.cylinder)
         
 if __name__ == '__main__':
-    pn = OpenPNM.Network.TestNet()
-    pass
+    #Run doc tests
+    import doctest
+    doctest.testmod(verbose=True)
