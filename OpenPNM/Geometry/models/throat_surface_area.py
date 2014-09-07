@@ -15,7 +15,7 @@ def cylinder(geometry,
     """
     D = geometry[throat_diameter]
     L = geometry[throat_length]
-    value = _sp.constants.pi/(D)*L
+    value = _sp.constants.pi*D*L
     return value
 
 def cuboid(geometry,
