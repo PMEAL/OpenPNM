@@ -522,10 +522,10 @@ class Core(Base):
         for item in self.keys():
             if self[item].dtype != bool:
                 props.append(item)
-        models = list(self._models.keys())
-        constants = list(props)
-        for item in models:
-            constants.remove(item)
+        
+        all_models = list(self._models.keys())
+        constants = [item for item in props if item not in all_models]
+        models = [item for item in props if item in all_models]
 
         if element in ['pore','pores']:
             element = 'pore'
