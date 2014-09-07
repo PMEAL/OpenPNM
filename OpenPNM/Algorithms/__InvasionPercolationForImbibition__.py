@@ -24,28 +24,20 @@ import itertools
 from OpenPNM.Algorithms.__InvasionPercolation__ import InvasionPercolation
 
 class InvasionPercolationForImbibition(InvasionPercolation):
+    r"""
 
+    Invasion Percolation (Imbibition) with cluster growth timing - Class to run IP algorithm on constructed networks
+
+    Parameters
+    ----------
+    network : Descendent of OpenPNM.Network.GenericNetwork
+        A valid network for this algorithm
+    name : string
+        The name this algorithm will go by
+
+    """
     def __init__(self,**kwords):
         r"""
-
-        Invasion Percolation (Imbibition) with cluster growth timing - Class to run IP algorithm on constructed networks
-
-        Parameters
-        ----------
-        network : Descendent of OpenPNM.Network.GenericNetwork
-            A valid network for this algorithm
-        name : string
-            The name this algorithm will go by
-        loglevel : int (30)
-            Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-
-        Input Network
-        -------------
-        The algorithm expects a pore network with the following pore properties:
-            volume, diameter, numbering, coords, type
-        and throat properties:
-            diameter, numbering, connections, type
-
         """
         super(InvasionPercolationForImbibition,self).__init__(**kwords)
         self._logger.info("Create IP Imbibition Algorithm Object")

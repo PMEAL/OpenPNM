@@ -17,9 +17,16 @@ class Boundary(GenericGeometry):
     ----------
     shape: str
         Stick and Ball or Cube and Cuboid? ('spheres','cubes')
-        
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+                
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> Ps_int = pn.pores(labels=['top','bottom'],mode='not')
+    >>> Ps_boun = pn.pores(labels=['top','bottom'],mode='union')
+    >>> Ts_int = pn.throats(labels=['top','bottom'],mode='not')
+    >>> Ts_boun = pn.throats(labels=['top','bottom'],mode='union')
+    >>> geo = OpenPNM.Geometry.Cube_and_Cuboid(network=pn,pores=Ps_int,throats=Ts_int)
+    >>> boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps_boun,throats=Ts_boun)
 
     """
 
@@ -35,7 +42,7 @@ class Boundary(GenericGeometry):
         r'''
         '''
         try:
-            pn['pore.seed']
+            self['pore.seed']
             seeds = True
         except:
             seeds = False
@@ -52,7 +59,7 @@ class Boundary(GenericGeometry):
                        mode='max')
         self['pore.volume'] = 0.0
         self.add_model(propname='throat.length',model=gm.throat_length.straight)
-        self.add_model(propname='throat.volume',model=gm.pore_misc.constant,value=0.0)
+        self['throat.volume'] = 0.0
         if shape == 'spheres':
             self.add_model(propname='throat.area',model=gm.throat_area.cylinder)
             self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cylinder)
@@ -61,6 +68,7 @@ class Boundary(GenericGeometry):
             self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cuboid)
         self['pore.area'] = 1.0
         
+
 if __name__ == '__main__':
-    pn = OpenPNM.Network.TestNet()
-    pass
+    import doctest
+    doctest.testmod(verbose=True)

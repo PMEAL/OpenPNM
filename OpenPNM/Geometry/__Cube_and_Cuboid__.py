@@ -41,7 +41,7 @@ class Cube_and_Cuboid(GenericGeometry):
                        pore_prop='pore.seed',
                        mode='min')
         self.add_model(propname='pore.diameter',
-                       model=gm.pore_diameter.sphere_from_radius,
+                       model=gm.pore_diameter.sphere,
                        psd_name='weibull_min',
                        psd_shape=1.5,
                        psd_loc=14e-6,
@@ -51,7 +51,7 @@ class Cube_and_Cuboid(GenericGeometry):
         self.add_model(propname='pore.volume',
                        model=gm.pore_volume.cube)
         self.add_model(propname='throat.diameter',
-                       model=gm.throat_diameter.cylinder_from_radius,
+                       model=gm.throat_diameter.cylinder,
                        tsd_name='weibull_min',
                        tsd_shape=1.5,
                        tsd_loc=14e-6,
@@ -66,5 +66,7 @@ class Cube_and_Cuboid(GenericGeometry):
                        model=gm.throat_surface_area.cuboid)
         
 if __name__ == '__main__':
-    pn = OpenPNM.Network.TestNet()
-    pass
+    #Run doc tests
+    import doctest
+    doctest.testmod(verbose=True)
+
