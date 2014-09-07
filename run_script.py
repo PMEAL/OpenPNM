@@ -1,4 +1,5 @@
 import OpenPNM
+print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 
 #==============================================================================
 '''Build Topological Network'''

@@ -106,11 +106,11 @@ class Delaunay(GenericNetwork):
         Generate the pores with numbering scheme.
         """
         self._logger.info(sys._getframe().f_code.co_name+": Place randomly located pores in the domain")
-        "Original Random Point Generator"
+        #Original Random Point Generator
         #coords = sp.rand(self._Np,3)*[self._Lx,self._Ly,self._Lz]
-        "Introduce Anisotropy"
+        #Introduce Anisotropy
         [self._Lx,self._Ly,self._Lz]=np.around([self._Lx,self._Ly,self._Lz]*self._aniso,10)
-        "Seeding Code"
+        #Seeding Code
         coords = np.zeros([self._Np,3])
         i = 0
         while i < self._Np:            
@@ -118,8 +118,8 @@ class Delaunay(GenericNetwork):
             if self._reject(coord) == False:
                 coords[i]=coord
                 i += 1 
-        "Seeding Code"
-        "Uniform Random Generator"
+        #Seeding Code
+        #Uniform Random Generator
         #coords = np.array([np.random.uniform(0,self._Lx,self._Np),np.random.uniform(0,self._Ly,self._Np),np.random.uniform(0,self._Lz,self._Np)]).T
         
         self['pore.coords'] = coords
@@ -182,17 +182,17 @@ class Delaunay(GenericNetwork):
         Ly = self._Ly
         Lz = self._Lz
 
-        " Reflect in X = Lx and 0 "
+        #Reflect in X = Lx and 0
         Pxp = pts.copy()
         Pxp[:,0]=(2*Lx-Pxp[:,0])
         Pxm= pts.copy()
         Pxm[:,0] = Pxm[:,0]*(-1)
-        " Reflect in Y = Ly and 0 "
+        #Reflect in Y = Ly and 0
         Pyp = pts.copy()
         Pyp[:,1]=(2*Ly-Pxp[:,1])
         Pym = pts.copy()
         Pym[:,1] = Pxm[:,1]*(-1)
-        " Reflect in Z = Lz and 0 "
+        #Reflect in Z = Lz and 0
         Pzp = pts.copy()
         Pzp[:,2]=(2*Lz-Pxp[:,2])
         Pzm = pts.copy()
@@ -218,7 +218,7 @@ class Delaunay(GenericNetwork):
         self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
         self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
 
-        " New code to identify boundary pores - those that connect to pores inside and outside original set of pores "
+        #New code to identify boundary pores - those that connect to pores inside and outside original set of pores 
         boundary_pore_list = []
         for i in sp.arange(0,sp.shape(Tri.simplices)[0]):
             pores_in = Tri.simplices[i] < Np # Pores in the original domain
@@ -244,7 +244,7 @@ class Delaunay(GenericNetwork):
                 all_verts[i]="unbounded"
         self['pore.vertices']=all_verts
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
-        " Add new pores at external throat centers to create coplanar boundaries "
+        #Add new pores at external throat centers to create coplanar boundaries
         self.boundary_pores()
         self["pore.coords"]=self["pore.coords"]*self._rescale_factor
         for i in range(len(self["pore.vertices"])):
@@ -476,21 +476,24 @@ class Delaunay(GenericNetwork):
     
     def boundary_pores(self):
         r"""
-        This method runs through the boundary pores and identifies the throats that align with the boundary plane
-        As there are no connections to the dummy pores we also need to generate the pores at the centroids of the 
-        boundary throats or at the boundary coordinate associated with the plane leaving the other pore coords the same
-        This will mean that normal vectors are correct for throat props
+        This method runs through the boundary pores and identifies the throats 
+        that align with the boundary plane. As there are no connections to the 
+        dummy pores we also need to generate the pores at the centroids of the 
+        boundary throats or at the boundary coordinate associated with the 
+        plane leaving the other pore coords the same.  This will mean that 
+        normal vectors are correct for throat props.
         """
         boundary_pores = self.pores('inner_boundary')
-        " Traditionally x will be back and front, y is left and right and z is top and bottom "
-        " However this could change in future and labels might also change so best to do things from scratch "
-        " Look at the number of occurences of a coordinate for the pore's vertices, if 3 or more we have a face "
+        '''Traditionally x will be back and front, y is left and right and z is 
+        top and bottom.  However this could change in future and labels might 
+        also change so best to do things from scratch.'''
+        #Look at the number of occurences of a coordinate for the pore's vertices, if 3 or more we have a face
         boundary_throats = []
         new_boundary_pores = []
         throat_centers = []
         new_conns=[]
         pore_coords=[]
-        " Find boundary extent "
+        #Find boundary extent
         [x_min,x_max,y_min,y_max,z_min,z_max]=self.vertex_dimension(self.pores(),parm='minmax')
         min_point = np.around(np.array([x_min,y_min,z_min]),10)
         max_point = np.around(np.array([x_max,y_max,z_max]),10)
@@ -499,19 +502,19 @@ class Delaunay(GenericNetwork):
         new_throat_count = 0
         for pore in boundary_pores:
             verts = np.around(self["pore.vertices"][pore],10)
-            " Cycle through coordinates " 
+            #Cycle through coordinates
             for i in range(3):
                 throat_verts = []
                 extruded_verts = []
                 temp_coord = sp.copy(self["pore.coords"][pore])
                 freq = st.itemfreq(verts[:,i])
                 for coord in freq:
-                    " if more than 2 occurences "
+                    #if more than 2 occurences
                     if coord[1]>2:
-                        " Pick up planar value for referencing "
+                        #Pick up planar value for referencing
                         value = coord[0]
-                        " Are we at minimum or maximum extent? "
-                        " Extrude into the domain so as not to alter total dimensions "
+                        #Are we at minimum or maximum extent?
+                        #Extrude into the domain so as not to alter total dimensions
                         extrude_value = np.zeros(3)
                         if value == min_point[i]:
                             extrude_value[i] = delta[i]
@@ -520,12 +523,12 @@ class Delaunay(GenericNetwork):
                             extrude_value[i] = -delta[i]
                             temp_coord[i] = max_point[i]
                         for vert in verts:
-                            " Pick up all verts in the plane to define the throat "
+                            #Pick up all verts in the plane to define the throat
                             if vert[i] == value:
                                 throat_verts.append(vert)
                                 extruded_verts.append(vert+extrude_value)
                                 
-                " If we found a planar throat then add to the list "
+                #If we found a planar throat then add to the list
                 if len(throat_verts) > 0:
                     new_conns.append(np.array([pore,new_throat_count+N]))
                     new_throat_count += 1
@@ -535,20 +538,20 @@ class Delaunay(GenericNetwork):
                     throat_centers.append(sp.array([throat_verts[:,0].mean(),throat_verts[:,1].mean(),throat_verts[:,2].mean()]))
                     pore_coords.append(temp_coord)
             
-        " First Attempt to try and create new pores and new connections "
-        " Add new pores and connections "
+        #First Attempt to try and create new pores and new connections
+        #Add new pores and connections
         self.extend(pore_coords=pore_coords, throat_conns=new_conns)
-        " Record new number of pores "
+        #Record new number of pores
         M = self.num_pores()
         new_pores = np.arange(N,M)
-        "Identify which boundary the pore sits on "
+        #Identify which boundary the pore sits on
         front = self.pores()[self['pore.coords'][:,0]==min_point[0]]
         back = self.pores()[self['pore.coords'][:,0]==max_point[0]]
         left = self.pores()[self['pore.coords'][:,1]==min_point[1]]
         right = self.pores()[self['pore.coords'][:,1]==max_point[1]]
         bottom = self.pores()[self['pore.coords'][:,2]==min_point[2]]
         top = self.pores()[self['pore.coords'][:,2]==max_point[2]]
-        " Assign labels "       
+        #Assign labels
         self.set_info(pores=new_pores,label='boundary')        
         self.set_info(pores=right,label='right_boundary') 
         self.set_info(pores=left,label='left_boundary') 
@@ -556,19 +559,23 @@ class Delaunay(GenericNetwork):
         self.set_info(pores=back,label='back_boundary') 
         self.set_info(pores=top,label='top_boundary') 
         self.set_info(pores=bottom,label='bottom_boundary')
-        " Apply the extruded throat verts and original boundary throat verts to create new pore volume "
-        " These volumes may need some attention later "
+        #Apply the extruded throat verts and original boundary throat verts to create new pore volume
+        #These volumes may need some attention later
         self["pore.vertices"][N:M] = new_boundary_pores
 		
     def vertex_dimension(self,face1=[],face2=[],parm='volume'):
         r"""
         Return the domain extent based on the vertices
-        This function is better than using the pore coords as they may be far away from the original domain size
-        And will alter the effective properties which should be based on the original domain sizes
-        Takes one or two sets of pores and works out different geometric properties
-        if "length" is specified and two lists are given the planarity is determined and the appropriate length (x,y,z)
-        is returned.
-        It should work the same as domain length and area if vertices are not in network by using coordinates
+        
+        This function is better than using the pore coords as they may be far 
+        away from the original domain size.  And will alter the effective 
+        properties which should be based on the original domain sizes. Takes 
+        one or two sets of pores and works out different geometric properties
+        if "length" is specified and two lists are given the planarity is 
+        determined and the appropriate length (x,y,z) is returned.  It should 
+        work the same as domain length and area if vertices are not in network 
+        by using coordinates.
+        
         e.g.    vertex_extent(face1=inlet,face2=outlet,parm='volume')
                 vertex_extent(geom.pores(),parm='area_xy')
                 vertex_extent(face1=inlet,parm='area')
