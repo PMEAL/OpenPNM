@@ -18,10 +18,7 @@ _logging.basicConfig(level=_logging.ERROR,
 
 class Base(dict):
     r"""
-    .. class:: `OpenPNM.Base` -- Base class for OpenPNM
-
-
-    Base class with a few bells and whistles..
+    The abstract Base class for all OpenPNM objects
 
     Parameters
     ----------

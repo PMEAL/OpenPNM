@@ -51,7 +51,10 @@ This procedure returns a network object only, but the network retains a link to 
 
 >>> geo = pn.geometries('geo_1')
 
-There is one important limitation on the PNM save/load features: it does not retain the class type of the saved object.  This is acceptable for the Geometry, Phase and Physics objects, but most Network objects have additional methods added (such as ``asarray`` and ``fromarray``).  These methods would not be available to the loaded object.  
+
+.. warning:: 
+    
+	There is currently an important limitation on the PNM save/load features: it does not retain the class type of the saved object.  This is acceptable for the Geometry, Phase and Physics objects, but most Network objects have additional methods added (such as ``asarray`` and ``fromarray``).  These methods would not be available to the loaded object.  
 
 The IO module also includes the ability to output to VTK and Matlab MAT files.  
 

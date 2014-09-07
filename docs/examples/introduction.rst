@@ -107,7 +107,7 @@ Then, water and air properties are then defined by the code below. Note that som
 .. code-block:: python
 
 	air.add_model(propname='pore.diffusivity',model=fm.diffusivity.fuller,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
-    	air.add_model(propname='pore.viscosity',model=fm.viscosity.reynolds,uo=0.001,b=0.1)
+    air.add_model(propname='pore.viscosity',model=fm.viscosity.reynolds,uo=0.001,b=0.1)
 	air.add_model(propname='pore.molar_density',model=fm.molar_density.ideal_gas,R=8.314)
 	water.add_model(propname='pore.diffusivity',model=fm.misc.constant,value=1e-12)
 	water.add_model(propname='pore.viscosity',model=fm.misc.constant,value=0.001)
@@ -131,6 +131,7 @@ Create Pore Scale Physics Objects
 We are still not ready to perform any experiments, despite the fact that phases are defined fully built up.  The last step is to define the desired pore scale physics, which defines how the phase and solid objects interact.  A classic example of this is the Washburn equation which predicts the pressure required to push a non-wetting phase through a capillary of known size.  OpenPNM attempts to permit a high degree of extensibility by using the same object construction approach used for Geometry and Phase above.  Because the Physics object defines the interaction of a Phase with the Geometry, it is necessary to build one physics object for each Phase (and Geometry).  
 
 .. code-block:: python
+    
 	phys_water = OpenPNM.Physics.GenericPhysics(network=pn,phase=water,name='standard_water_physics',pores=Ps,throats=Ts)
 	phys_air = OpenPNM.Physics.GenericPhysics(network=pn,phase=air,name='standard_air_physics',pores=Ps,throats=Ts)
 

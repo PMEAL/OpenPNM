@@ -16,7 +16,7 @@ from OpenPNM.Utilities import misc
 
 class Core(Base):
     r'''
-    This is the core class from which OpenPNM objects derive.
+    Contains OpenPNM specificmethods for working with the data in the dictionaries
     '''
     def __init__(self, **kwargs):
         r'''

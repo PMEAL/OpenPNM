@@ -5,6 +5,8 @@ Geometry
 ===============================================================================
 The *Geometry* module manages the network pore and throat size information.  This module contains the ``GenericGeometry`` class, which like all OpenPNM objects is subclass of Python's ``dict`` class, but has numerous OpenPNM specific methods added to it.  
 
+.. inheritance-diagram:: OpenPNM.Geometry.GenericGeometry
+
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Basic Usage
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

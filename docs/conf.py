@@ -335,3 +335,6 @@ latex_preamble = r'''
 
 # If false, no module index is generated.
 latex_use_modindex = True
+
+#graphviz_dot = "C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe"
+inheritance_graph_attrs = dict(rankdir="TB")

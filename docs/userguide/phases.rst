@@ -5,6 +5,8 @@ Phases
 ===============================================================================
 The *Phase* module controls the physical properties of the phases used in simulation.  Thermophysical properties such as gas viscosity and liquid density are calculated by the *Phase* objects.  These are necessary when performing quantitative simulations of transport processes in the network.  
 
+.. inheritance-diagram:: OpenPNM.Phases.GenericPhase
+
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Basic Usage
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
