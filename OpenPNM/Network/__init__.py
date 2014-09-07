@@ -29,17 +29,22 @@ Classes
 
 """
 #Import every file in the directory
-import os as _os
-dir = _os.path.dirname(_os.path.abspath(__file__))
-for item in _os.listdir(dir):
-    if item.split('.')[-1] == 'py':
-        if item == '__init__.py':
-            pass
-        elif item[0:2] == '__':
-            try:
-                exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
-            except:
-                print('File name '+item+' does not match class name, cannot import automatically')
-        else:
-            exec('from . import ' + format(item.split('.')[0]))
+#import os as _os
+#dir = _os.path.dirname(_os.path.abspath(__file__))
+#for item in _os.listdir(dir):
+#    if item.split('.')[-1] == 'py':
+#        if item == '__init__.py':
+#            pass
+#        elif item[0:2] == '__':
+#            try:
+#                exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
+#            except:
+#                print('File name '+item+' does not match class name, cannot import automatically')
+#        else:
+#            exec('from . import ' + format(item.split('.')[0]))
 from . import models
+from .__GenericNetwork import GenericNetwork
+from .__Cubic__ import Cubic
+from .__Delaunay__ import Delaunay
+from .__MatFile__ import MatFile
+from .__TestNet__ import TestNet
