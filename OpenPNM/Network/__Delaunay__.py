@@ -1,8 +1,7 @@
 """
-module __Delaunay__: Generate random networks based on Delaunay Tessellations
-==========================================================
-
-.. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
+===============================================================================
+Delaunay: Generate random networks based on Delaunay Tessellations
+===============================================================================
 
 """
 import OpenPNM
@@ -16,7 +15,6 @@ import scipy.ndimage as spim
 from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 from scipy.spatial import Voronoi
 from scipy import stats as st
-from scipy.special import cbrt
 
 class Delaunay(GenericNetwork):
     r"""
@@ -46,14 +44,15 @@ class Delaunay(GenericNetwork):
     """
     add_boundaries = False
 
-    def __init__(self,**kwargs):
+    def __init__(self,num_pores,domain_size,**kwargs):
         '''
         Create Delauny network object
         '''
         super(Delaunay,self).__init__(**kwargs)
         self._logger.debug("Execute constructor")
+        self.generate(num_pores,domain_size)
         
-    def generate(self,**params):
+    def generate(self,num_pores,domain_size):
         r'''
         Method to trigger the generation of the network
         
@@ -66,32 +65,21 @@ class Delaunay(GenericNetwork):
 
         '''
         self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
-        self._generate_setup(**params)
-        if params['add_boundaries']:
-            self.add_boundaries = True
+        self._generate_setup(num_pores,domain_size)
         self._generate_pores()
-        #self._generate_cubic_pores() - Impose a quasi-cubic pore distribution - needs work
         self._generate_throats()
-        #self._add_labels()
         self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
 
-    def _generate_setup(self, **params):
+    def _generate_setup(self,num_pores,domain_size):
         r"""
         Perform applicable preliminary checks and calculations required for generation
         """
         self._logger.debug("generate_setup: Perform preliminary calculations")
-        if 'aniso' in params:
-            self._aniso = sp.asarray(params['aniso'])
-        else:
-            self._aniso = sp.array([1,1,1])
-        #self._rescale_factor = 1/cbrt(np.prod(self._aniso))
-        self._rescale_factor = 1/(self._aniso)
-        self._scale_factor = self._aniso*self._rescale_factor
-        if params['domain_size'] and params['num_pores']:
-            self._Lx = params['domain_size'][0]
-            self._Ly = params['domain_size'][1]
-            self._Lz = params['domain_size'][2]
-            self._Np = params['num_pores']
+        if domain_size and num_pores:
+            self._Lx = domain_size[0]
+            self._Ly = domain_size[1]
+            self._Lz = domain_size[2]
+            self._Np = num_pores
             r'''
             TODO: Fix this, btype should be received as an argument
             '''
@@ -108,8 +96,6 @@ class Delaunay(GenericNetwork):
         self._logger.info(sys._getframe().f_code.co_name+": Place randomly located pores in the domain")
         #Original Random Point Generator
         #coords = sp.rand(self._Np,3)*[self._Lx,self._Ly,self._Lz]
-        #Introduce Anisotropy
-        [self._Lx,self._Ly,self._Lz]=np.around([self._Lx,self._Ly,self._Lz]*self._aniso,10)
         #Seeding Code
         coords = np.zeros([self._Np,3])
         i = 0
@@ -125,26 +111,6 @@ class Delaunay(GenericNetwork):
         self['pore.coords'] = coords
         self._logger.debug(sys._getframe().f_code.co_name+": End of method") 
         
-    def _generate_cubic_pores(self):
-        self._logger.info(sys._getframe().f_code.co_name+": Place pores on cubic grid and jiggle")
-        Nx = 10
-        Ny = 10
-        Nz = 10
-        self._Np = Nx*Ny*Nz
-        equal_spacing = cbrt(self._Np)*3e-6
-        ind = np.arange(0,self._Np)
-        aniso_spacing = equal_spacing*self._scale_factor
-        Px = aniso_spacing[0]*(0.5+np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T)[:,0]+aniso_spacing[0]*(np.random.rand(self._Np)-0.5)/5
-        Py = aniso_spacing[1]*(0.5+np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T)[:,1]+aniso_spacing[0]*(np.random.rand(self._Np)-0.5)/5
-        Pz = aniso_spacing[2]*(0.5+np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T)[:,2]+aniso_spacing[0]*(np.random.rand(self._Np)-0.5)/5
-        coords = np.vstack((Px,Py,Pz)).T
-        self.set_pore_data(prop='coords',data=coords)
-        self.set_pore_info(label='all',locations=np.ones_like(coords[:,0]))
-        self._logger.debug(sys._getframe().f_code.co_name+": End of method")
-        self._Lx = Px.max()+aniso_spacing[0]/2
-        self._Ly = Py.max()+aniso_spacing[1]/2
-        self._Lz = Pz.max()+aniso_spacing[2]/2
-    
     def _prob_func(self,m):
         a = 35
         b = 0.2
@@ -244,11 +210,16 @@ class Delaunay(GenericNetwork):
                 all_verts[i]="unbounded"
         self['pore.vertices']=all_verts
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
+        
+    def add_boundaries(self):
+        r'''
+        This method will create boundary pores at the centre of the voronoi faces that
+        align with the outer planes of the domain.
+        The original pores in the domain are labelled internal and the boundary pores
+        are labelled external
+        '''
         #Add new pores at external throat centers to create coplanar boundaries
         self.boundary_pores()
-        self["pore.coords"]=self["pore.coords"]*self._rescale_factor
-        for i in range(len(self["pore.vertices"])):
-            self["pore.vertices"][i]=self["pore.vertices"][i]*self._rescale_factor
         external_pores = self.pores(labels='internal',mode='difference')
         external_throats = self.throats(labels='internal',mode='difference')
         self.set_info(pores=external_pores,label='external')
@@ -257,6 +228,7 @@ class Delaunay(GenericNetwork):
 
     def _add_labels(self):
         r'''
+        Deprecated if using add_boundaries()
         This finds surface pores simply by proximity to the domain boundaries.
         A better approach is necessary 
         '''

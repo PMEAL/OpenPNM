@@ -1,9 +1,7 @@
 """
-module __StickBall__: Subclass of GenericGeometry for a standard 'stick & ball'
-geometrical model
-==================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
+===============================================================================
+Stick_and_Ball -- A standard 'stick & ball' geometrical model
+===============================================================================
 
 """
 

@@ -1,8 +1,7 @@
 """
-module __TestNet__: Generate simple cubic networks
-==========================================================
-
-.. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
+===============================================================================
+TestNet: Generate simple cubic network for testing purposes
+===============================================================================
 
 """
 

@@ -1,12 +1,10 @@
 """
-module __Cubic__: Generate lattice-like networks
-==========================================================
-
-.. warning:: The classes of this module should be loaded through the 'Geometry/__init__.py' file.
+===============================================================================
+Cubic: Generate lattice-like networks
+===============================================================================
 
 """
 import OpenPNM
-
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs

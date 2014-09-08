@@ -1,6 +1,6 @@
 """
 ===============================================================================
-module __GenericNetwork__: Abstract class to construct pore networks
+GenericNetwork: Abstract class to construct pore networks
 ===============================================================================
 
 """
@@ -906,17 +906,27 @@ class GenericNetwork(Core):
     
     def vertex_dimension(self,face1=[],face2=[],parm='volume'):
         r"""
-        Return the domain extent based on the vertices
-        This function is better than using the pore coords as they may be far away from the original domain size
-        And will alter the effective properties which should be based on the original domain sizes
-        Takes one or two sets of pores and works out different geometric properties
-        if "length" is specified and two lists are given the planarity is determined and the appropriate length (x,y,z)
-        is returned.
-        It should work the same as domain length and area if vertices are not in network by using coordinates
-        e.g.    vertex_extent(face1=inlet,face2=outlet,parm='volume')
-                vertex_extent(geom.pores(),parm='area_xy')
-                vertex_extent(face1=inlet,parm='area')
-                vertex_extent(face1=inlet,face2=outlet,parm='length')
+        Return the domain extent based on the vertices.  
+        
+        Parameters
+        ----------
+        Takes one or two sets of pores and works out different geometric 
+        properties. If "length" is specified and two lists are given the
+        planarity is determined and the appropriate length (x,y,z) is returned.
+        
+        Notes
+        -----
+        This function is better than using the pore coords as they may be far 
+        away from the original domain size and will alter the effective 
+        properties which should be based on the original domain sizes.
+        
+        It should work the same as domain length and area if vertices are not 
+        in network by using coordinates:
+        
+        vertex_extent(face1=inlet,face2=outlet,parm='volume')
+        vertex_extent(geom.pores(),parm='area_xy')
+        vertex_extent(face1=inlet,parm='area')
+        vertex_extent(face1=inlet,face2=outlet,parm='length')
 
         """
         pores=np.array([],dtype=int)

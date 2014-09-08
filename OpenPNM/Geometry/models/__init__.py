@@ -1,15 +1,12 @@
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Geometry` -- Classes related to the creation of pore and throat geometry
+models -- Classes for calculating pore-scale properties
 *******************************************************************************
-
-.. module:: OpenPNM.Geometry
 
 Contents
 --------
 Contains Models for applying pore and throat geometry
 
-  
 """
 #Import every file in the directory
 import os as _os

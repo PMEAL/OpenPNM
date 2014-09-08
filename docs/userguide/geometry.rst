@@ -74,25 +74,24 @@ There can be multiple *Geometry* objects defined for different locations in a *N
 >>> Ts2 = pn.throats('all')
 >>> geom2 = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps2,throats=Ts2)
 
--------------------------------------------------------------------------------
-Accessing Geometry Data Via the Network
--------------------------------------------------------------------------------
-One of the complications that arises from allowing multiple Geometry objects is that the pore size data for the Network becomes distributed across several objects.  This makes it challenging for algorithms to operate on the entire network at once.  To circumvent this problem, the Network object has the special ability to gather Geometry data from all of it's Geometry objects and return them as a single array:
+.. note:: **Accessing Geometry Data Via the Network**
 
->>> geom1['pore.seed'] = 0.2
->>> geom2['pore.seed'] = 0.8
->>> pn['pore.seed']
-array([ 0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,  0.8,
-        0.2,  0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,
-        0.8,  0.2,  0.8,  0.8,  0.2])
+    One of the complications that arises from allowing multiple Geometry objects is that the pore size data for the Network becomes distributed across several objects.  This makes it challenging for algorithms to operate on the entire network at once.  To circumvent this problem, the Network object has the special ability to gather Geometry data from all of it's Geometry objects and return them as a single array:
 
-If any of the Geometry object do not have the requested property, then NaN values are inserted into it's pore/throat locations.  
+    >>> geom1['pore.seed'] = 0.2
+    >>> geom2['pore.seed'] = 0.8
+    >>> pn['pore.seed']
+    array([ 0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,  0.8,
+            0.2,  0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,  0.8,  0.2,  0.8,
+            0.8,  0.2,  0.8,  0.8,  0.2])
 
-This special ability is not reversible, meaning that it is not possible to *write* to all Geometry objects from Network:
+    If any of the Geometry object do not have the requested property, then NaN values are inserted into it's pore/throat locations.  
+    
+    This special ability is not reversible, meaning that it is not possible to *write* to all Geometry objects from Network:
+    
+    >>> pn['pore.seed'] = 0.5
 
->>> pn['pore.seed'] = 0.5
-
-Attempting to do so will result in the error "pore.seed is already defined in at least one associated Geometry object".
+    Attempting to do so will result in the error "pore.seed is already defined in at least one associated Geometry object".
 		
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Customizing Geometry

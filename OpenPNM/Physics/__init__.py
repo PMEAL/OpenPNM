@@ -3,8 +3,6 @@ r"""
 :mod:`OpenPNM.Physics` -- Pore Scale Physics Models
 ###############################################################################
 
-.. module:: OpenPNM.Physics
-
 Contents
 --------
 GenericPhysics: This base class is essentially an init statement that ensures

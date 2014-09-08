@@ -1,11 +1,8 @@
-"""
-module __Core__: Core data management tools for OpenPNM
-==================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Base.__init__.py' file.
-
-"""
-
+'''
+###############################################################################
+Core:  Core Data Class
+###############################################################################
+'''
 import pprint,collections
 from functools import partial
 import scipy as sp
@@ -96,8 +93,9 @@ class Core(Base):
             Controls when and if the property is regenerated. Options are:
 
             * 'static' : The property is stored as static data and is only regenerated when the object's `regenerate` is called
+            
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
-
+            
         Notes
         -----
         This method is inherited by all net/geom/phys/phase objects.  It takes
@@ -228,11 +226,9 @@ class Core(Base):
         mode : string
             Set the mode to be used for writing data to the specified indices.  Options are:
 
-            * 'merge' : (default) Adds data to specified locations while
-            maintaining pre-existing data
+            * 'merge' : (default) Adds data to specified locations while maintaining pre-existing data
 
-            * 'overwrite' : Adds data to specified locations while
-            removing all pre-existing data
+            * 'overwrite' : Adds data to specified locations while removing all pre-existing data
 
             * 'remove_data' : Removes data from specified locations.
 
@@ -316,8 +312,7 @@ class Core(Base):
 
             * '' : (default) gets data from the specified locations.
 
-            * 'interpolate': Determines a pore (or throat) property as the average of it's neighboring
-            throats (or pores)
+            * 'interpolate': Determines a pore (or throat) property as the average of it's neighboring throats (or pores)
 
         '''
 
@@ -384,15 +379,11 @@ class Core(Base):
         mode : string
             Set the mode to be used for writing labels.  Options are:
 
-            * 'merge' : (default) Adds label to specified locations while
-            maintaining pre-existing labels
-
-            * 'overwrite' : Adds label to specified locations while
-            removing all pre-existing labels
-
+            * 'merge' : (default) Adds label to specified locations while maintaining pre-existing labels
+            * 'overwrite' : Adds label to specified locations while removing all pre-existing labels
             * 'remove_info' : Removes label from the specified locations.
-
             * 'remove_label' : Removes the entire label from the dictionary of the object
+            
         '''
         if mode in ['merge','overwrite','remove_info','remove_label']:
             if pores != None:
@@ -455,7 +446,7 @@ class Core(Base):
 
         See Also
         --------
-        `get_labels`
+        labels
 
         '''
         #Clean up label argument to remove leading 'pore' or 'throat'
@@ -505,7 +496,7 @@ class Core(Base):
 
         See Also
         --------
-        `labels`
+        labels
 
         Examples
         --------
@@ -863,8 +854,7 @@ class Core(Base):
 
         Notes
         -----
-        - This uses an unweighted average, without attempting to account for
-        distances or sizes of pores and throats.
+        - This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
         - Only one of pores, throats OR data are accepted
 
         """
@@ -997,7 +987,7 @@ class Core(Base):
 
         See Also
         --------
-        `num_throats`, `count`
+        num_throats, count
 
         Examples
         --------
@@ -1059,7 +1049,7 @@ class Core(Base):
 
         See Also
         --------
-        `num_pores`, `count`
+        num_pores, count
 
         Examples
         --------
@@ -1111,7 +1101,7 @@ class Core(Base):
 
         See Also
         --------
-        `num_pores`, `num_throats`
+        num_pores, num_throats
 
         Notes
         -----
@@ -1197,14 +1187,15 @@ class Core(Base):
         props = self.props()
         props.sort()
         for item in props:
-            count = count + 1
-            prop=item
-            if len(prop)>35:
-                prop = prop[0:32]+'...'
-            required = self._count(item.split('.')[0])
-            a = sp.isnan(self[item])
-            defined = required - a.sum(axis=0,keepdims=(a.ndim-1)==0)[0]
-            print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
+            if self[item].dtype != object:
+                count = count + 1
+                prop=item
+                if len(prop)>35:
+                    prop = prop[0:32]+'...'
+                required = self._count(item.split('.')[0])
+                a = sp.isnan(self[item])
+                defined = required - a.sum(axis=0,keepdims=(a.ndim-1)==0)[0]
+                print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
         print(header)
         print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations'))
         print(header)

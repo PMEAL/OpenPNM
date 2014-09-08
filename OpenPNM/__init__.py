@@ -1,21 +1,17 @@
-
 r"""
 ##################################################################################
 :mod:`OpenPNM` --  A scientific pore network simulator for porous media transport
 ##################################################################################
-.. module:: OpenPNM
-    :platform: Linux, Windows
 
-Documentation is available in the docstrings and in the sphinx documentation.
+Documentation is available in the docstrings and in the Sphinx documentation.
 
 Contents
 --------
-The OpenPNM package imports all the functions from the top level modules.
+The OpenPNM package imports all the functions from the top level modules
 
 
 Subpackages
 -----------
-
 
 .. list-table:: OpenPNM submodule structure.
    :widths: 10 80
@@ -35,57 +31,15 @@ Subpackages
    * - :mod:`OpenPNM.Physics`
      - Module containing pore scale physics models and equations.
 
-
 Import
 ------
->>> import OpenPNM as PNM
-
-Inheritance Diagram
---------------------
-
-.. inheritance-diagram:: OpenPNM.Network.GenericNetwork
-
-Package Documentation
----------------------
-
-.. automodule:: Base
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: Utilities
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: Network
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: Geometry
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: Algorithms
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: Physics
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   
-.. automodule:: Phases
-   :members:
-   :undoc-members:
-   :show-inheritance:
+>>> import OpenPNM
 
 """
 
-#__version__ = '1.0.1'
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
 
 __requires__ = [
     'scipy'
@@ -101,10 +55,3 @@ from . import Algorithms
 from . import Postprocessing
 
 
-
-
-
-
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions

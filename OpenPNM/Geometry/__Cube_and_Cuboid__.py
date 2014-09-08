@@ -1,9 +1,7 @@
 """
-module __Toray090__: Subclass of GenericGeometry for a standard Toray TGPH090
-gas diffusion layer.s
+===============================================================================
+Cube_and_Cuboid -- A standard Cubic pore and Cuboic throat model
 =============================================================================== 
-
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 

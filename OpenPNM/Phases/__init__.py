@@ -3,8 +3,6 @@ r"""
 :mod:`OpenPNM.Phases` -- Phase Property Estimation Methods
 ###############################################################################
 
-.. module:: OpenPNM.Phases
-
 Contents
 --------
 GenericPhase: The basic class which defines how a Phase is instantiated.  It
@@ -15,8 +13,6 @@ Subclasses: OpenPNM includes a few pre-written subclasses that describe the
 most commonly used materials, like Air, Water and Mercury.  Creating a custom
 Phase subclass simply requires placing a file in the Phases directory and it 
 will be automatically loaded.  
-
-
 
 Classes
 -------

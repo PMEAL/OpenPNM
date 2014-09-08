@@ -37,12 +37,15 @@ class Voronoi(GenericGeometry):
             raise Exception('The installed version of Scipy is too old, Voronoi cannot run')
         super(Voronoi,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        self._generate()
+        if kwargs['fibre_rad']:
+            fibre_rad = kwargs['fibre_rad']
+        else:
+            fibre_rad = 3e-06
+        self._generate(fibre_rad)
     
-    def _generate(self):
+    def _generate(self,fibre_rad):
         r'''
         ''' 
-        fibre_rad = 3e-06
         self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
@@ -69,20 +72,6 @@ class Voronoi(GenericGeometry):
                        model=gm.throat_volume.extrusion)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.extrusion)
-					   
-    def setup(self, fibre_rad=3e-06):
-        self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
-        self.add_property(prop='pore_seed',model='random')
-        self.add_property(prop='throat_seed',model='neighbor_min')
-        self.add_property(prop='pore_volume',model='voronoi') # Volume must come before diameter
-        self.add_property(prop='pore_diameter',model='voronoi')
-        self.add_property(prop='pore_centroid',model='voronoi')
-        self.add_property(prop='throat_diameter',model='voronoi')
-        self.add_property(prop='throat_centroid',model='voronoi')
-        self.add_property(prop='throat_length',model='voronoi')
-        self.add_property(prop='throat_volume',model='voronoi')
-        self.add_property(prop='throat_vector',model='pore_to_pore') # Not sure how to do this for centre to centre as we might need to split into two vectors
-        self.add_property(prop='throat_surface_area',model='voronoi')
 
     def _add_throat_props(self,radius=1e-06):
         r"""

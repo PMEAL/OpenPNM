@@ -1,6 +1,7 @@
 """
-module __Boundary__: Subclass of GenericGeometry for Boundary Pores
-==================================================================
+===============================================================================
+Boundary -- Subclass of GenericGeometry for Boundary Pores
+===============================================================================
 
 """
 
@@ -57,8 +58,10 @@ class Boundary(GenericGeometry):
                        pore_prop='pore.diameter',
                        mode='max')
         self['pore.volume'] = 0.0
+        self['pore.seed'] = 0.0
         self.add_model(propname='throat.length',model=gm.throat_length.straight)
         self['throat.volume'] = 0.0
+        self['throat.seed'] = 0.0
         if shape == 'spheres':
             self.add_model(propname='throat.area',model=gm.throat_area.cylinder)
             self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cylinder)

@@ -55,6 +55,7 @@ class PNM(object):
         See Also
         --------
         IO.PNM.load
+        
         '''
         
         if filename != '':
@@ -117,7 +118,12 @@ class PNM(object):
         Parameters
         ----------
         filename : string
-            The name of the simulation to be read in.
+            The name of the simulation to be read in
+            
+        See Also
+        --------
+        IO.PNM.save
+        
         '''
         #Read in file
         filename = filename.split('.')[0]
@@ -188,33 +194,6 @@ class PNM(object):
 class VTK():
     r"""
     Class for writing a Vtp file to be read by ParaView
-
-    Parameters
-    ----------
-    network : OpenPNM Network Object
-        The Network containing the data to be written
-
-    filename : string, optional
-        Filename to write data.  If no name is given the file is named after
-        ther network
-
-    phase : list, optional
-        A list contain OpenPNM Phase object(s) containing data to be written
-        
-    Examples
-    --------
-    >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-    >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores(),throats=pn.throats(),name='geo_1')
-    >>> air = OpenPNM.Phases.Air(network=pn)
-    >>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores(),throats=pn.throats())
-
-    >>> import OpenPNM.Utilities.IO as io
-    >>> io.VTK.save(pn,'test_pn.vtp',[air])
-    
-    >>> # Delete the new file
-    >>> import os
-    >>> os.remove('test_pn.vtp')
-        
         
     """
     
@@ -245,9 +224,36 @@ class VTK():
     
     @staticmethod
     def save(network,filename='',phases=[]):
-        r"""
-
-        """
+        r'''
+        Save network and phase data to a single vtp file for visualizing in 
+        Paraview
+        
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The Network containing the data to be written
+    
+        filename : string, optional
+            Filename to write data.  If no name is given the file is named after
+            ther network
+    
+        phases : list, optional
+            A list contain OpenPNM Phase object(s) containing data to be written
+            
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+        >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores(),throats=pn.throats(),name='geo_1')
+        >>> air = OpenPNM.Phases.Air(network=pn)
+        >>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores(),throats=pn.throats())
+    
+        >>> import OpenPNM.Utilities.IO as io
+        >>> io.VTK.save(pn,'test_pn.vtp',[air])
+        
+        >>> # Delete the new file
+        >>> import os
+        >>> os.remove('test_pn.vtp')
+        '''
         
         if filename == '':
             filename = network.name+'.vtp'
@@ -369,35 +375,9 @@ class VTK():
         return array
         
 class MAT():
-    
-    r"""
-    Write Network to a Mat file for exporting to Matlab. This method will be 
-    enhanced in a future update, and it's functionality may change!
-
-    Parameters
-    ----------
-    
-    network : OpenPNM Network Object
-
-    filename : string
-        Desired file name, defaults to network name if not given
-        
-    phases : list of phase objects ([])
-        Phases that have properties we want to write to file
-
-    Examples
-    --------
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
-    >>> air = OpenPNM.Phases.TestPhase()
-    >>> import OpenPNM.Utilities.IO as io
-    >>> io.MAT.save(network=pn,filename='test_pn.mat',phases=air)
-    
-    >>> #Remove newly created file
-    >>> import os
-    >>> os.remove('test_pn.mat')
-
-    """
+    r'''
+    Class for reading and writing OpenPNM data to a Matlab 'mat' file
+    '''
     
     def __init__(self,**kwargs):
         r"""
@@ -407,8 +387,34 @@ class MAT():
         
     @staticmethod
     def save(network, filename='', phases=[]):
-        r'''
-        '''
+        r"""
+        Write Network to a Mat file for exporting to Matlab. This method will be 
+        enhanced in a future update, and it's functionality may change!
+    
+        Parameters
+        ----------
+        
+        network : OpenPNM Network Object
+    
+        filename : string
+            Desired file name, defaults to network name if not given
+            
+        phases : list of phase objects ([])
+            Phases that have properties we want to write to file
+    
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> air = OpenPNM.Phases.TestPhase()
+        >>> import OpenPNM.Utilities.IO as io
+        >>> io.MAT.save(network=pn,filename='test_pn.mat',phases=air)
+        
+        >>> #Remove newly created file
+        >>> import os
+        >>> os.remove('test_pn.mat')
+    
+        """
         if filename == '':
             filename = network.name+'.mat'
         pnMatlab = {}        
@@ -436,6 +442,13 @@ class MAT():
                     pnMatlab[new[i]] = phases[j][old[i]]
             
         _sp.io.savemat(file_name=filename,mdict=pnMatlab)
+    
+    @staticmethod
+    def load():
+        r'''
+        This method is not implemented yet.
+        '''
+        raise NotImplemented()
     
 
 if __name__ == '__main__':

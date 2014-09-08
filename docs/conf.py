@@ -18,10 +18,10 @@ import sys, os, re
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 sys.path.append(os.path.abspath('_extensions'))
-sys.path.append(os.path.abspath('../OpenPNM'))
+#sys.path.append(os.path.abspath('../OpenPNM'))
 #sys.path.append(os.path.abspath('../OpenPNM/test'))
 sys.path.append(os.path.abspath('../'))
-sys.path.append(os.path.abspath('../bin'))
+
 
 # -- General configuration -----------------------------------------------------
 
