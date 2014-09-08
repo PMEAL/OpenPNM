@@ -3,7 +3,7 @@
 ===============================================================================
 Network
 ===============================================================================
-This module is the heart of OpenPNM.  It contains the ``GenericNetwork`` class which possesses a suite of network query methods, based the graph theory concepts of adjacency and incidence matrices.  The methods in ``GenericNetwork`` are fully agnostic to the type and topology of network due the generalized way that OpenPNM stores data.  This is explained in more detail below. 
+This module is the heart of OpenPNM.  It contains the ``GenericNetwork`` class which possesses a suite of network query methods, based on the graph theory concepts of adjacency and incidence matrices.  The methods in ``GenericNetwork`` are fully agnostic to the type and topology of network due the generalized way that OpenPNM stores data.  This is explained in more detail below. 
 
 All OpenPNM objects descend from the Python ``dict`` object, and have a number of additional methods for dealing with the OpenPNM related data.  The GenericNetwork class is special in that it has a large number of *additional* methods to work with the topological data. 
 
