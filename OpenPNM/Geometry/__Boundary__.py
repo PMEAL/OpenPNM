@@ -7,7 +7,6 @@ module __Boundary__: Subclass of GenericGeometry for Boundary Pores
 import OpenPNM
 from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
-import scipy as sp
 
 class Boundary(GenericGeometry):
     r"""
