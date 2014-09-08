@@ -4,6 +4,17 @@
 Function Reference
 ===============================================================================
 
+.. _base_ref:
+
+-------------------------------------------------------------------------------
+Base
+-------------------------------------------------------------------------------
+   
+.. automodule:: OpenPNM.Base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
 .. _network_ref:
 
 -------------------------------------------------------------------------------
@@ -14,7 +25,7 @@ Network
    :members:
    :undoc-members:
    :show-inheritance:
-      
+   
 .. _geometry_ref:
 
 -------------------------------------------------------------------------------
@@ -25,7 +36,7 @@ Geometry
    :members:
    :undoc-members:
    :show-inheritance:
-
+   
 .. _phases_ref:
 
 -------------------------------------------------------------------------------
@@ -59,7 +70,7 @@ Algorithms
    :undoc-members:
    :show-inheritance:
 
-.. _visualization_ref:
+.. _utilities_ref:
    
 -------------------------------------------------------------------------------
 Utilities
@@ -69,3 +80,4 @@ Utilities
    :members:
    :undoc-members:
    :show-inheritance:
+   

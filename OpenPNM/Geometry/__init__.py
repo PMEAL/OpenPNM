@@ -3,8 +3,6 @@ r"""
 :mod:`OpenPNM.Geometry`: Classes related to the creation of pore-scale geometry
 ###############################################################################
 
-.. module:: OpenPNM.Geometry
-
 Contents
 --------
 GenericGeometry: The init statement performs the important tasks of registering
@@ -27,8 +25,6 @@ Classes
 
 .. autoclass:: Cube_and_Cuboid
    :members:
-
-
    
 """
 

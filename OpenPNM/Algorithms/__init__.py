@@ -1,13 +1,14 @@
 r"""
-*******************************************************************************
+###############################################################################
 :mod:`OpenPNM.Algorithms` -- Algorithms on Networks
-*******************************************************************************
-
-.. module:: OpenPNM.Algorithms
+###############################################################################
 
 Contents
 --------
 This submodule contains algorithms for performing simulations on pore networks
+
+Classes
+-------
 
 .. autoclass:: GenericAlgorithm
    :members:

@@ -1,9 +1,7 @@
 r"""
 *******************************************************************************
-:mod:`OpenPNM.Networks` -- Network Topology Add-on models
+Network Topology Add-on models
 *******************************************************************************
-
-.. module:: OpenPNM.Network
 
 Contents
 --------

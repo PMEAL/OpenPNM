@@ -1,6 +1,6 @@
 """
 ===============================================================================
-module __GenericGeometry__: Base class to manage pore scale geometry
+GenericGeometry -- Base class to manage pore scale geometry
 ===============================================================================
 
 """

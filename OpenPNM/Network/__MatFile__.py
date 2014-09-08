@@ -1,6 +1,6 @@
 """
 ===============================================================================
-module __Import__: Subclass to import Networks from a Matlab 'mat' file
+MatFile: Subclass to import Networks from a Matlab 'mat' file
 ===============================================================================
 
 """

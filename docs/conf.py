@@ -21,7 +21,7 @@ sys.path.append(os.path.abspath('_extensions'))
 #sys.path.append(os.path.abspath('../OpenPNM'))
 #sys.path.append(os.path.abspath('../OpenPNM/test'))
 sys.path.append(os.path.abspath('../'))
-sys.path.append(os.path.abspath('../bin'))
+
 
 # -- General configuration -----------------------------------------------------
 
