@@ -17,8 +17,8 @@ def hagen_poiseuille(physics,
                      calc_pore_len=False,
                      **kwargs):
     r"""
-    Calculates the hydraulic conductivity of throat assuming square geometry 
-    using a modified Hagen-Poiseuille model
+    Calculates the hydraulic conductivity of throat assuming cylindrical 
+    geometry using the Hagen-Poiseuille model
 
     Parameters
     ----------
