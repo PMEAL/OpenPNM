@@ -38,7 +38,7 @@ def series_resistors(physics,
     gp1 = kt*parea[pores[:,0]]/(0.5*pdia[pores[:,0]])
     gp1[~(gp1>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = kt*pdia[pores[:,1]]**2/(0.5*pdia[pores[:,1]])
+    gp2 = kt*parea[pores[:,1]]/(0.5*pdia[pores[:,1]])
     gp2[~(gp2>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     tarea = network[throat_area]
