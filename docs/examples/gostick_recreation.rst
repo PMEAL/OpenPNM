@@ -1,14 +1,14 @@
 .. _gostick:
 
 ###############################################################################
-Tutorial: Regenerating Data from `J.T. Gostick et al. / JPS 173 (2007) 277–290`_
+Example: Regenerating Data from `J.T. Gostick et al. / JPS 173 (2007) 277–290`_
 ###############################################################################
 
 .. _J.T. Gostick et al. / JPS 173 (2007) 277–290: http://www.sciencedirect.com/science/article/pii/S0378775307009056
 
-===============================================================================
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Getting Started
-===============================================================================
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 In this tutorial, we will regenerate data from J.T. Gostick's 2007 paper `[1]`_. This will both show that OpenPNM can recreate results accurately, and will also show some more specific uses of OpenPNM. While this paper deals with both SGL and Toray GDLs, we will deal only with SGL.
 
@@ -315,6 +315,21 @@ The code at the bottom of this page can be run independantly to generate the a G
 
 .. image:: http://i.imgur.com/eWIM6s2.png
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Discrepancies with Gostick's simulation
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Several things contribute to slight differences between this simulation and that produced by Gostick et al in their 2007 paper.  These include:
+
+1. lack of pore size correlation
+2. lack of late pore filling
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+References
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+`[1]`_ J. T. Gostick et al, "Pore network modeling of fibrous gas diffusion layers for polymer electrolyte membrane fuel cells" Journal of Power Sources, vol. 173, issue 1, pp. 277-290, Nov. 2007.
+
 .. code-block:: python
 
     import OpenPNM
@@ -577,3 +592,4 @@ The code at the bottom of this page can be run independantly to generate the a G
     fig.subplots_adjust(left=0.13, right=.7, top=0.95, bottom=0.05)
     
     fig.show()
+
