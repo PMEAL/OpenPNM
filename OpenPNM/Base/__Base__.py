@@ -400,8 +400,11 @@ class Base(dict):
         print(header)
         for item in a:
             doc = self.__getattribute__(item).__doc__
-            doc = doc.split('\n')[1]
-            doc = doc.lstrip()
+            try:
+                doc = doc.split('\n')[1]
+                doc = doc.lstrip()
+            except:
+                doc = '---'
             print("{:<25s}:  {}".format(item, doc))
         print(header)
 
