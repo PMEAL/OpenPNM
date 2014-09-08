@@ -740,6 +740,13 @@ class Core(Base):
         else:
             ind = self._get_indices(element='pore',labels=labels,mode=mode)
         return ind
+        
+    @property
+    def Ps(self):
+        r'''
+        A shortcut to get a list of all pores on the object
+        '''
+        return self.pores()
 
     def throats(self,labels='all',mode='union'):
         r'''
@@ -775,6 +782,13 @@ class Core(Base):
         else:
             ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
+        
+    @property
+    def Ts(self):
+        r'''
+        A shortcut to get a list of all throats on the object
+        '''
+        return self.throats()
 
     def tomask(self,pores=None,throats=None):
         r'''
