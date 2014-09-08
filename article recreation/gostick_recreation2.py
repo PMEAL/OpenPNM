@@ -57,12 +57,12 @@ used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
 #using every other pore in the bottom and boundary as an inlet
 #prevents extremely small diffusivity and permeability values in the z direction
 used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
-inv_pts = 100 #number of simulation steps to complete.
+
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl)
-OP_1.run(invading_phase = water, defending_phase = air, inlets = used_inlets,npts=inv_pts)
+OP_1.run(invading_phase = water, defending_phase = air, inlets = used_inlets,npts=100)
 
-OP_1.update_results(sat = 0.5)
-
+#Update the simulation until saturation is at 50%
+OP_1.update_results(sat=0.5)
 
 #adding multiphase conductances
 phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
@@ -90,7 +90,6 @@ Stokes_alg_multi_phase_water = OpenPNM.Algorithms.StokesFlow(name='Stokes_alg_mu
 
 Fickian_alg_multi_phase_air = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_multi_phase_air',network=sgl,phase=air)
 Fickian_alg_multi_phase_water = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_multi_phase_water',network=sgl,phase=water)
-
 
 #setting boundary conditions
 BC1_pores = sgl.pores(labels='bottom_boundary')
@@ -130,17 +129,18 @@ Fickian_alg_multi_phase_air.run(conductance = 'conduit_diffusive_conductance')
 Fickian_alg_multi_phase_water.run(conductance = 'conduit_diffusive_conductance')
 
 #calc effective properties
-effective_permeability_air_single = Stokes_alg_single_phase_air.calc_eff_permeability()  
+effective_permeability_air_single = Stokes_alg_single_phase_air.calc_eff_permeability()
 effective_diffusivity_air_single = Fickian_alg_single_phase_air.calc_eff_diffusivity()
-effective_permeability_water_single = Stokes_alg_single_phase_water.calc_eff_permeability()  
+effective_permeability_water_single = Stokes_alg_single_phase_water.calc_eff_permeability()
 effective_diffusivity_water_single = Fickian_alg_single_phase_water.calc_eff_diffusivity()
 
-effective_permeability_air_multi = Stokes_alg_multi_phase_air.calc_eff_permeability()  
+effective_permeability_air_multi = Stokes_alg_multi_phase_air.calc_eff_permeability()
 effective_diffusivity_air_multi = Fickian_alg_multi_phase_air.calc_eff_diffusivity()
-effective_permeability_water_multi = Stokes_alg_multi_phase_water.calc_eff_permeability()  
+effective_permeability_water_multi = Stokes_alg_multi_phase_water.calc_eff_permeability()
 effective_diffusivity_water_multi = Fickian_alg_multi_phase_water.calc_eff_diffusivity()
 
 relative_eff_perm_air = effective_permeability_air_multi/effective_permeability_air_single
 relative_eff_perm_water = effective_permeability_water_multi/effective_permeability_water_single
 relative_eff_diff_air = effective_diffusivity_air_multi/effective_diffusivity_air_single
 relative_eff_diff_water = effective_diffusivity_water_multi/effective_diffusivity_water_single
+
