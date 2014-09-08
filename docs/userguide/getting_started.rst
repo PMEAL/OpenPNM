@@ -17,7 +17,7 @@ Main Modules
 
 3 `Phases`_: Phase objects contain information about the thermo-physical properties of the liquids, gases, and solids required in the simulation.  For instance, a Phase object for water would possess its temperature, as well as models for calculating its viscosity as a function of temperature (and any other relevant properties).
 
-4 `Physics`_: Physics objects contain methods for calculating pore scale physics properties which combine PHase and Geometry values.  For instance, the hydraulic conductance of a throat requires knowing the throat diameter and length, as well as the fluid viscosity.  
+4 `Physics`_: Physics objects contain methods for calculating pore scale physics properties which combine Phase and Geometry values.  For instance, the hydraulic conductance of a throat requires knowing the throat diameter and length, as well as the fluid viscosity.  
 
 5 `Algorithms`_: This module is the home of the actual algorithms that use the network properties defined by the above modules.  OpenPNM ships with a good assortment of standard algorithms, but is meant to be extended by users adding custom algorithms.
 
@@ -32,7 +32,7 @@ The 5 objects listed above interact with each other to create a 'simulation'.  W
     *Object relationship diagram for an arbitrary simulation with 3 Geometries, 2 Phases, 3 Physics and 3 Algorithms.  These numbers are entirely dependent on the model.*
 
 	
-The vertical positioning of the blocks in this image shows that Networks, Phases and Algorithms span the entire set of pores (and throats) in the Network, while Geometry and Physics objects are assigned to arbitrary sections of pores (and throats).  The color scheme represents the fact that Geometries are directly connected to a Network object, and Physics' are directly connected to a Phase object.  With this picture in mind, the relationships between objects and the flow of responsibility in the simulation as outlined below will be more clear.  
+The vertical positioning of the blocks in this image shows that Networks, Phases and Algorithms span the entire set of pores (and throats) in the Network, while Geometry and Physics objects are assigned to arbitrary sections of pores (and throats).  The color scheme represents the fact that Geometries are directly connected to a Network object, and Physics objects are directly connected to a Phase object.  With this picture in mind, the relationships between objects and the flow of responsibility in the simulation as outlined below will be more clear.  
 
 ===============================================================================
 Network
@@ -155,7 +155,7 @@ OpenPNM.Physics.Standard: 	Standard_SzZPQ
 
 The ``Standard`` Physics object is a special subclass included with OpenPNM.  It uses the 'standard' pore-scale physics models.  Further details on creating custom Physics objects are provided in the :ref:`Physics Documentation<physics>`.
 
-The Physics object requires several arguments in it's instantiation.  Like all other objects, it requires a Network object with which it is to be associated.  It also requires the Fluid to which is applies.  This enables it to ask 'air' for viscosity values when calculating hydraulic conductance.  Finally, it requires the pores and/or throats where the Physics should apply.  Notice that no Geometry object is sent as an argument, yet all pore scale physics models will clearly require geometric information.  Instead of associating a Physics directly with a Geometry object, a Physics object is applied to pores and throats independently.  When geometric data is required, the Physics object asks the Network object for the values, and the Network then retrieves them from the appropriate Geometry objects.  
+The Physics object requires several arguments in its instantiation.  Like all other objects, it requires a Network object with which it is to be associated.  It also requires the Fluid to which it applies.  This enables it to ask 'air' for viscosity values when calculating hydraulic conductance.  Finally, it requires the pores and/or throats where the Physics should apply.  Notice that no Geometry object is sent as an argument, yet all pore scale physics models will clearly require geometric information.  Instead of associating a Physics directly with a Geometry object, a Physics object is applied to pores and throats independently.  When geometric data is required, the Physics object asks the Network object for the values, and the Network then retrieves them from the appropriate Geometry objects.  
 
 ===============================================================================
 Algorithms

@@ -15,7 +15,7 @@ This will install OpenPNM into your Python environment.  To use OpenPNM, just im
 >>> OpenPNM.__version__
 '1.0.0'
 
-It is also possible to download the source code directly from Github and working from that.  This is not recommend unless you are planning to do 'development' work on the framework.  The pip install approach places the source code in the Python directory and out of harms way.  
+It is also possible to download the source code directly from Github and work from that.  This is not recommended unless you are planning to do 'development' work on the framework.  The pip install approach places the source code in the Python directory and out of harms way.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Windows Instructions
@@ -27,7 +27,7 @@ It is also suggested to download `Paraview <http://www.paraview.org/>`_ for visu
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Apple Instructions
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Apple comes with Python 2.7 pre-installed.  OpenPNM is backward compatible with Python 2.7.  
+Apple comes with Python 2.7 pre-installed.  OpenPNM is backward compatible with Python 2.7.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Linux Instructions
