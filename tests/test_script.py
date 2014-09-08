@@ -1,5 +1,5 @@
 import numpy as np
-
+import scipy as sp
 import OpenPNM
 import pytest
 
@@ -86,6 +86,50 @@ def test_open_air_diffusivity():
     Diff.update_results()
     Diff_deff = Diff.calc_eff_diffusivity()/np.mean(air['pore.diffusivity'])
     assert np.round(Diff_deff,3) == 1
+    
+def test_thermal_conduction():
+    #Generate Network and clean up boundaries (delete z-face pores)
+    divs = [10,50]
+    Lc   = 0.1  # cm
+    pn = OpenPNM.Network.Cubic(name='net', shape= divs, spacing = Lc, loglevel=20)
+    pn.add_boundaries()
+    pn.trim(pores=pn.pores(['top_boundary','bottom_boundary']))
+    #Generate Geometry objects for internal and boundary pores
+    Ps = pn.pores('internal')
+    Ts = pn.throats()
+    geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts,name='geom',loglevel=20)
+    geom['pore.area']     = Lc**2
+    geom['pore.diameter'] = Lc
+    geom['throat.length'] = 1e-25
+    geom['throat.area']   = Lc**2
+    Ps = pn.pores('boundary')
+    boun = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,name='boundary',loglevel=20)
+    boun['pore.area']     = Lc**2
+    boun['pore.diameter'] =  1e-25
+    #Create Phase object and associate with a Physics object
+    Cu = OpenPNM.Phases.GenericPhase(network=pn,name='copper',loglevel=20)
+    Cu['pore.thermal_conductivity'] = 1.0  # W/m.K
+    phys = OpenPNM.Physics.GenericPhysics(network=pn,phase=Cu,pores=pn.pores(),throats=pn.throats(),loglevel=10)
+    mod = OpenPNM.Physics.models.thermal_conductance.series_resistors    
+    phys.add_model(propname='throat.thermal_conductance',model=mod)
+    phys.regenerate()  # Update the conductance values
+    #Setup Algorithm object
+    Fourier_alg = OpenPNM.Algorithms.FourierConduction(network=pn,phase=Cu,loglevel=10)
+    inlets = pn.pores('back_boundary')
+    outlets = pn.pores(['front_boundary','left_boundary','right_boundary'])
+    T_in = 30*sp.sin(sp.pi*pn['pore.coords'][inlets,1]/5)+50
+    Fourier_alg.set_boundary_conditions(bctype='Dirichlet',bcvalue=T_in,pores=inlets)
+    Fourier_alg.set_boundary_conditions(bctype='Dirichlet',bcvalue=50,pores=outlets)
+    Fourier_alg.run()
+    Fourier_alg.update_results()
+    #Calculate analytical solution over the same domain spacing
+    Cu['pore.analytical_temp'] = 30*sp.sinh(sp.pi*pn['pore.coords'][:,0]/5)/sp.sinh(sp.pi/5)*sp.sin(sp.pi*pn['pore.coords'][:,1]/5) + 50
+    b = Cu['pore.analytical_temp'][pn.pores('geom')]
+    a = Cu['pore.temperature'][pn.pores('geom')]
+    a = sp.reshape(a,(divs[0],divs[1]))
+    b = sp.reshape(b,(divs[0],divs[1]))
+    diff = a - b
+    assert sp.amax(np.absolute(diff)) < 0.015
 
 if __name__ == '__main__':
   pytest.main()
