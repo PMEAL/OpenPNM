@@ -47,6 +47,7 @@ class InvasionPercolation(GenericAlgorithm):
                 end_condition='breakthrough',
                 capillary_pressure='capillary_pressure',
                 pore_volume_name='volume',
+                throat_volume_name='volume',
                 throat_diameter_name='diameter',
                 timing='ON',
                 inlet_flow=1, #default flowrate is 1 nanoliter/sec/cluster
@@ -156,6 +157,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._timing = timing=='ON'
         self._capillary_pressure_name = capillary_pressure
         self._pore_volume_name = pore_volume_name
+        self._throat_volume_name = throat_volume_name
         self._throat_diameter_name = throat_diameter_name
 
         super(InvasionPercolation,self).run()
@@ -318,6 +320,18 @@ class InvasionPercolation(GenericAlgorithm):
         if self._timing:
             self._phase['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
             self._phase['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
+        #Calculate Saturations
+        v_total = sp.sum(self._net['pore.volume'])+sp.sum(self._net['throat.volume'])
+        sat = 0.
+        self._phase['pore.IP_inv_sat'] = 1.
+        self._phase['throat.IP_inv_sat'] = 1.    
+        for i in range(1,self._tseq+1):
+            inv_pores = sp.where(self._psequence==i)[0]
+            inv_throats = sp.where(self._tsequence==i)[0]
+            new_sat = (sum(self._net['pore.'+self._pore_volume_name][inv_pores])+sum(self._net['throat.'+self._throat_volume_name][inv_throats]))/v_total
+            sat += new_sat
+            self._phase['pore.IP_inv_sat'][inv_pores] = sat
+            self._phase['throat.IP_inv_sat'][inv_throats] = sat
 
     def _do_one_outer_iteration(self):
         r"""
@@ -602,11 +616,15 @@ class InvasionPercolation(GenericAlgorithm):
         # TODO Need to check how total condition will work, and end. All pores or all throats?
 #            self._condition = not self._Tinv.all()
 
-    def update_results(self,occupancy='occupancy',IPseq='None'):
+    def update_results(self,occupancy='occupancy',IPseq=None,IPsat=None):
         r"""
         """
-        if IPseq=='None':
-            IPseq = self._tseq
+        if IPseq==None:
+            if IPsat != None:
+                sat_pores = self._phase['pore.IP_inv_sat']<=IPsat
+                IPseq = max(self._phase['pore.IP_inv_seq'][sat_pores])
+            else:
+                IPseq = self._tseq
 
         try:
             self._phase['pore.'+occupancy]=np.ravel(np.array(((self._psequence>0)&(self._psequence<=IPseq)),dtype=np.float))

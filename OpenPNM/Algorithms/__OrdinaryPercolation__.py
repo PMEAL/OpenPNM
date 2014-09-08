@@ -104,7 +104,19 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_seq = sp.searchsorted(sp.unique(self._t_inv),self._t_inv)
         self['pore.inv_seq'] = self._p_seq
         self['throat.inv_seq'] = self._t_seq
-
+        #Calculate Saturations
+        v_total = sp.sum(self._net['pore.volume'])+sp.sum(self._net['throat.volume'])
+        sat = 0.
+        self['pore.inv_sat'] = 1.
+        self['throat.inv_sat'] = 1.    
+        for i in range(self._npts):
+            inv_pores = sp.where(self._p_seq==i)[0]
+            inv_throats = sp.where(self._t_seq==i)[0]
+            new_sat = (sum(self._net['pore.volume'][inv_pores])+sum(self._net['throat.volume'][inv_throats]))/v_total
+            sat += new_sat
+            self['pore.inv_sat'][inv_pores] = sat
+            self['throat.inv_sat'][inv_throats] = sat
+            
     def _do_one_inner_iteration(self,inv_val):
         r"""
         Determine which throats are invaded at a given applied capillary pressure
@@ -187,7 +199,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self['pore.inv_Pc']=self._p_inv
         self['throat.inv_Pc']=self._t_inv
 
-    def update_results(self, Pc=0, seq = None, occupancy='occupancy'):
+    def update_results(self, Pc=0, seq=None, sat=None, occupancy='occupancy'):
         r"""
         Updates the occupancy status of invading and defending phases
         as determined by the OP algorithm
@@ -202,10 +214,14 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._phase_inv['pore.inv_seq']=p_seq
         t_seq = self['throat.inv_seq']
         self._phase_inv['throat.inv_seq']=t_seq
+        #Apply saturation to pores and throats
+        self._phase_inv['pore.inv_sat']=self['pore.inv_sat']
+        self._phase_inv['throat.inv_sat']=self['throat.inv_sat']
+        
 
-        if(seq == None):
-            p_inv = self['pore.inv_Pc']<=Pc
-            t_inv = self['throat.inv_Pc']<=Pc
+        if(sat != None):
+            p_inv = self['pore.inv_sat']<=sat
+            t_inv = self['throat.inv_sat']<=sat
             #Apply occupancy to invading phase
             temp = sp.array(p_inv,dtype=sp.float_,ndmin=1)
             self._phase_inv['pore.'+occupancy]=temp
@@ -217,7 +233,7 @@ class OrdinaryPercolation(GenericAlgorithm):
                 self._phase_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_inv,dtype=sp.float_,ndmin=1)
                 self._phase_def['throat.'+occupancy]=temp
-        else:
+        elif(seq != None):
             p_seq = self['pore.inv_seq']<=seq
             t_seq = self['throat.inv_seq']<=seq
             #Apply occupancy to invading phase
@@ -231,7 +247,20 @@ class OrdinaryPercolation(GenericAlgorithm):
                 self._phase_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_seq,dtype=sp.float_,ndmin=1)
                 self._phase_def['throat.'+occupancy]=temp
-
+        else:
+            p_inv = self['pore.inv_Pc']<=Pc
+            t_inv = self['throat.inv_Pc']<=Pc
+            #Apply occupancy to invading phase
+            temp = sp.array(p_inv,dtype=sp.float_,ndmin=1)
+            self._phase_inv['pore.'+occupancy]=temp
+            temp = sp.array(t_inv,dtype=sp.float_,ndmin=1)
+            self._phase_inv['throat.'+occupancy]=temp
+            #Apply occupancy to defending phase
+            if self._phase_def != None:
+                temp = sp.array(~p_inv,dtype=sp.float_,ndmin=1)
+                self._phase_def['pore.'+occupancy]=temp
+                temp = sp.array(~t_inv,dtype=sp.float_,ndmin=1)
+                self._phase_def['throat.'+occupancy]=temp
 
 
 
