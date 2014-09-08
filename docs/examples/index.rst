@@ -14,3 +14,4 @@ Available Examples and Tutorials:
    drainage.rst
    boundary_conditions.rst
    io.rst
+   gostick_recreation.rst

@@ -6,30 +6,31 @@ Lc = 40.5e-6
 
 #1 setting up network
 #sgl = OpenPNM.Network.Cubic(name = 'SGL10BA', loglevel = 40,divisions = [26, 26, 10], add_boundaries = True, lattice_spacing = [Lc])
-sgl = OpenPNM.Network.Cubic([26, 26, 10], spacing=Lc, name='SGL10BA', loglevel=40)
+sgl = OpenPNM.Network.Cubic([10, 10, 10], spacing=Lc, name='SGL10BA', loglevel=40)
 sgl.add_boundaries()
 
 #2 set up geometries
 Ps = sgl.pores('boundary',mode='difference')
 Ts = sgl.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
-geo = OpenPNM.Geometry.SGL10(network=sgl,pores=Ps,throats=Ts)
+geo = OpenPNM.Geometry.SGL10(network=sgl,pores=Ps,throats=Ts,name='geo')
+
 
 Ps = sgl.pores('boundary')
 Ts = sgl.find_neighbor_throats(pores=Ps,mode='not_intersection')
-boun = OpenPNM.Geometry.Boundary(network=sgl,pores=Ps,throats=Ts)
+boun = OpenPNM.Geometry.Boundary(network=sgl,pores=Ps,throats=Ts,name='boun')
 
 #3 calculating pore and throat diameters, volumes, etc
 #sgl.regenerate_geometries()
 #4 account for pores that are too big
-ps=sgl['pore.diameter']
-value = [min(ps[x], Lc*0.99) for x in geo.pores()]
-geo['pore.diameter']=value
-#account for throats that are too big
-ts=sgl['throat.diameter']
-value = [min(ts[x], Lc*0.99) for x in geo.throats()]
-geo['throat.diameter']=value
+#ps=sgl['pore.diameter']
+#value = [min(ps[x], Lc*0.99) for x in geo.pores()]
+#geo['pore.diameter']=value
+##account for throats that are too big
+#ts=sgl['throat.diameter']
+#value = [min(ts[x], Lc*0.99) for x in geo.throats()]
+#geo['throat.diameter']=value
 #constricting sgl by .95 in both the z and y direction
-throats = geo.throats()
+throats = sgl.throats('geo')
 connected_pores = sgl.find_connected_pores(throats)
 x1 = [sgl['pore.coords'][pair[0]][0] for pair in connected_pores]
 x2 = [sgl['pore.coords'][pair[1]][0] for pair in connected_pores]
@@ -37,9 +38,12 @@ same_x = [x - y == 0 for x, y in zip(x1,x2)]
 factor = [s*.95 + (not s)*1 for s in same_x]
 throat_diameters = sgl['throat.diameter'][throats]*factor
 geo['throat.diameter']=throat_diameters
+#remove the regeneration ability of the diameter pore and throat properties
+geo.remove_model(models=['pore.diameter','throat.diameter'])
+boun.remove_model(models=['pore.diameter','throat.diameter'])
 #reset aspects relying on pore and throat sizes
-geo.regenerate(['pore.diameter','throat.diameter'],mode='exclude')
-boun.regenerate(['pore.diameter','throat.diameter'],mode='exclude')
+geo.regenerate()
+boun.regenerate()
 #set up phases
 air = OpenPNM.Phases.Air(network = sgl, name = 'air')
 water = OpenPNM.Phases.Water(network = sgl, name = 'water')
@@ -79,7 +83,7 @@ diff_water = {'00': [], '10': [], '20': [], '01': [], '11': [], '21': []}
 
 max_inv_seq = max(OP_1['throat.inv_seq'])
 
-num_seq = 40
+num_seq = 20
 for x in range(num_seq+1):
     OP_1.update_results(seq = max_inv_seq*(x/num_seq))
 
