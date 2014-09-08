@@ -325,6 +325,12 @@ Several things contribute to slight differences between this simulation and that
 2. lack of late pore filling
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Acknowledgements
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The OpenPNM team would like to thank Jackie Lunger (Mechanical Engineering, University of Toronto, 1T7) for her excellent work in developing this example.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 References
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
