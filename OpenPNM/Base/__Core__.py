@@ -1187,14 +1187,15 @@ class Core(Base):
         props = self.props()
         props.sort()
         for item in props:
-            count = count + 1
-            prop=item
-            if len(prop)>35:
-                prop = prop[0:32]+'...'
-            required = self._count(item.split('.')[0])
-            a = sp.isnan(self[item])
-            defined = required - a.sum(axis=0,keepdims=(a.ndim-1)==0)[0]
-            print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
+            if self[item].dtype != object:
+                count = count + 1
+                prop=item
+                if len(prop)>35:
+                    prop = prop[0:32]+'...'
+                required = self._count(item.split('.')[0])
+                a = sp.isnan(self[item])
+                defined = required - a.sum(axis=0,keepdims=(a.ndim-1)==0)[0]
+                print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
         print(header)
         print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations'))
         print(header)
