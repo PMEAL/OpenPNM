@@ -35,8 +35,9 @@ class SGL10(GenericGeometry):
         '''        
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
-                       num_range=[0,0.9],
+                       num_range=[0,0.8834],
                        seed=None)
+        self.remove_model('pore.seed')
         self.add_model(propname='throat.seed',
                        model=gm.throat_misc.neighbor,
                        pore_prop='pore.seed',
