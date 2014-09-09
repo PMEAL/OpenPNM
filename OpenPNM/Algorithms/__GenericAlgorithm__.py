@@ -117,17 +117,21 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         -----
         1. It is not possible to have multiple boundary conditions for a specified location in just one algorithm. 
         So when new condition is going to be applied to a specific location, any existing one
-        should be removed or overwritten..
+        should be removed or overwritten.
+        2- BCs for pores and for throats should be applied independently. 
         '''
         try: self._existing_BC
         except: self._existing_BC = []
         if component==None:
-            try:
-                component = self._phase
-            except:
-                raise Exception('For using set_boundary_conditions method, a component/phase should be specified.')
-        self._logger.debug('BC applies to the component: '+component.name)
+            if sp.size(self._phases)!=1:
+                raise Exception('In each use of set_boundary_conditions method, one component should be specified or attached to the algorithm.' )
+            else:
+                component = self._phases[0]
+        else:
+            if sp.size(component)!=1:
+                raise Exception('For using set_boundary_conditions method, only one component should be specified.')
 
+        self._logger.debug('BC applies to the component: '+component.name)
         #If mode is 'remove', also bypass checks
         if mode == 'remove':
             if pores == [] and throats == []:
@@ -193,7 +197,7 @@ class GenericAlgorithm(OpenPNM.Base.Core):
             self[element+'.'+component.name+'_'+bctype] = sp.zeros((all_length,),dtype=bool)
         #Check all BC from specified locations, prior to setting new ones
         for item in self.labels():
-            bcname = (item.split('.')[-1]).replace(self._phase.name+'_',"")
+            bcname = (item.split('.')[-1]).replace(component.name+'_',"")
             if bcname in self._existing_BC  and item.split('.')[0]==element:
                 if mode=='merge':
                     try:    
