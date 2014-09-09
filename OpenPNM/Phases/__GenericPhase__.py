@@ -35,23 +35,28 @@ class GenericPhase(Core):
     def __init__(self,network=None,components=[],name=None,**kwargs):
         super(GenericPhase,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        
+
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()
         else:
             self._net = network
         
         self.name = name  # Assign name to object
-        [self._phases.append(comp) for comp in components]  # Associate any sub-phases
-        self._net._phases.append(self)  # Append this Phase to the Network
-        
+
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = self._net['pore.all']
         self['throat.all'] = self._net['throat.all']
-        
+
         #Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
+
+        if components != []:
+            for comp in components:
+                self._phases.append(comp) # Associate any sub-phases
+                comp.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.mixture_props.temperature,mixture=self)
+                comp.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.mixture_props.pressure,mixture=self)
+        self._net._phases.append(self)  # Append this Phase to the Network
         
     def __setitem__(self,prop,value):
         for phys in self._physics:
@@ -85,6 +90,8 @@ class GenericPhase(Core):
                 self._logger.error('Phase already present')
             else:
                 self._phases.append(phase)
+                phase.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.mixture_props.temperature,mixture=self)
+                phase.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.mixture_props.pressure,mixture=self)
         elif mode == 'remove':
             if phase.name in self.phases():
                 self._phases.remove(phase)
@@ -94,7 +101,7 @@ class GenericPhase(Core):
     def regenerate(self,**kwargs):
         for item in self._phases:
             item.regenerate(**kwargs)
-        super().regenerate(**kwargs)
+        super(GenericPhase,self).regenerate(**kwargs)
     
     #Pull in doc string for the Core regenerate method
     regenerate.__doc__ = Core.regenerate.__doc__
