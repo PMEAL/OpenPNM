@@ -186,20 +186,21 @@ class GenericAlgorithm(OpenPNM.Base.Core):
                     bcvalue = sp.ones(sp.shape(loc))*bcvalue
                 elif sp.size(bcvalue) != sp.size(loc):
                     raise Exception('The pore/throat list and bcvalue list are different lengths')
-
         #Confirm that prop and label arrays exist
         if element+'.'+component.name+'_bcval_'+bctype not in self.props():
             self[element+'.'+component.name+'_bcval_'+bctype] = sp.ones((all_length,),dtype=float)*sp.nan
         if element+'.'+component.name+'_'+bctype not in self.labels():
             self[element+'.'+component.name+'_'+bctype] = sp.zeros((all_length,),dtype=bool)
-
         #Check all BC from specified locations, prior to setting new ones
         for item in self.labels():
             bcname = (item.split('.')[-1]).replace(self._phase.name+'_',"")
             if bcname in self._existing_BC  and item.split('.')[0]==element:
                 if mode=='merge':
-                    if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
-                        raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
+                    try:    
+                        self[element+'.'+component.name+'_bcval_'+bcname][loc]                    
+                        if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
+                            raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
+                    except KeyError: pass        
         #Set boundary conditions based on supplied mode
         if mode == 'merge':
             if bcvalue != []:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
