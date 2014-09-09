@@ -946,6 +946,7 @@ class Core(Base):
         self._temp['throat'] = sp.empty((Nt,))
         temp = self._temp[element]
         dtypes = []
+        dtypenames = []
         prop_found = False  #Flag to indicate if prop was found on a sub-object
         for item in sources:
             #Check if sources were given as list of objects OR names
@@ -954,22 +955,25 @@ class Core(Base):
             locations = self._get_indices(element=element,labels=item.name,mode='union')
             if prop not in item.keys():
                 values = sp.ones_like(locations)*sp.nan
-                dtypes.append('nan')
+                dtypenames.append('nan')
+                dtypes.append(sp.dtype(bool))
             else:
                 prop_found = True
                 values = item[prop]
-                dtypes.append(values.dtype.name)
+                dtypenames.append(values.dtype.name)
+                dtypes.append(values.dtype)
             temp[locations] = values  #Assign values
         #Check if requested prop was found on any sub-objects
         if prop_found == False:
             raise KeyError(prop)
         #Analyze and assign data type
-        if sp.all([t in ['bool','nan'] for t in dtypes]):  # If all entries are 'bool' (or 'nan')
+        if sp.all([t in ['bool','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
             temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
-        elif sp.all([t == dtypes[0] for t in dtypes]) :  # If all entries are same type
+        elif sp.all([t == dtypenames[0] for t in dtypenames]) :  # If all entries are same type
             temp = sp.array(temp,dtype=dtypes[0])
         else:
-            self._logger.warning('Data type of '+prop+' differs between sub-objects...converting to float')
+            temp = sp.array(temp,dtype=max(dtypes))
+            self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
         return temp
 
     def num_pores(self,labels='all',mode='union'):
