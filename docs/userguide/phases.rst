@@ -15,7 +15,7 @@ There is a ``GenericPhase`` class that is associated with a Network object durin
 >>> air = OpenPNM.Phases.GenericPhase(network=pn,name='air')
 >>> print(air)
 ------------------------------------------------------------
-OpenPNM.Phases.GenericPhase: 	GenericPhase_jypSa
+OpenPNM.Phases.GenericPhase: 	air
 ------------------------------------------------------------
 #     Properties                          Valid Values
 ------------------------------------------------------------
@@ -65,7 +65,7 @@ Now if the temperature of the pores is changed, all the other properties will al
 >>> air['pore.molar_density'][0]
 34.522938057130261
 
-Note that the ``regenerate`` method must called for the change in temperature to propagate to the other properties.  
+Note that the ``regenerate`` method must be called for the change in temperature to propagate to the other properties.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Customizing Phases

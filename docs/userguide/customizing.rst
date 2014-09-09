@@ -19,7 +19,7 @@ Let's create a model called 'surface_roughness' that calculates the surface area
 .. code-block:: python
 
     def surface_roughness(roughness_parameter,**kwargs):
-		return roughness_parameter
+    	return roughness_parameter
 
 The use of the 'kwargs' argument is essential.  Without diving into the details, 'kwargs' will collect all arguments that are sent to function but not used.  Without this, the function will break since the ``add_model`` method sends many arguments 'just-in-case'.  
 
@@ -28,7 +28,7 @@ Now, we can see this model in action by creating a script in the working directo
 .. code-block:: python
 
 	import my_models
-    a = my_models.surface_roughness(roughness_parameter=2.2)
+	a = my_models.surface_roughness(roughness_parameter=2.2)
 	print(a)
 	2.2
 
@@ -37,10 +37,10 @@ The next step is to have this model to calculate something useful.  Assume that 
 .. code-block:: python
 
 	def surface_roughness(geometry,roughness_parameter,**kwargs):
-		P_diam = geometry['pore.diameter']
-		projected_area = 4*3.14159*(P_diam/2)**2
-		rough_area = projected_area**roughness_parameter
-		return rough_area
+	    P_diam = geometry['pore.diameter']
+	    projected_area = 4*3.14159*(P_diam/2)**2
+	    rough_area = projected_area**roughness_parameter
+	    return rough_area
 		
 It was noted above that the ``add_model`` method sent in several extra arguments 'just-in-case'.  Among these arguments are the object from which the method is called.  Since 'surface_roughness' will be attached to a Geometry object, this function will receive it as 'geometry'.  We can now update our script:
 

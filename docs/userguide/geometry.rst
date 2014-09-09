@@ -33,14 +33,13 @@ OpenPNM.Geometry.GenericGeometry: 	GenericGeometry_ZpKsC
 
 There are a few important steps that occur upon instantiation, aside from those outlined in the :ref:`General Overview<general>`.  Firstly, the Geometry stores a list of the Network pores and throats to which it applies.  These are stored under 'pore.map' and 'throat.map'.  For instance:
 
->>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
->>> geom_1 = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=[3,6,9],name='geom_1')
+>>> pn2 = OpenPNM.Network.Cubic(shape=[3,3,3])
+>>> geom_1 = OpenPNM.Geometry.Stick_and_Ball(network=pn2,pores=[3,6,9],name='geom_1')
 >>> geom_1['pore.map']
 array([3, 6, 9])
+>>> pn2
 
-This allows Geometry objects to use to topological queries of the Network class, so that it can find neighbors of its own pore 1, since it knows that maps onto pore 6 of the Network.  
-
-Another important step is the pore and throat labels arrays are created in the Network corresponding to the Geometry name.  So if Geometry called 'geom_1' is associated with a Network, the 'pore.geom_1' and 'throat.geom_1' label arrays are added to Network:
+Another important step is that pore and throat label arrays are created in the Network corresponding to the Geometry name.  So if a Geometry called 'geom_1' is associated with a Network, the 'pore.geom_1' and 'throat.geom_1' label arrays are added to the Network:
 
 >>> pn.labels()
 ['pore.all', 'pore.back', 'pore.bottom', 'pore.front', 'pore.geom_1', 'pore.internal', 'pore.left', 'pore.right', 'pore.top', 'throat.all', 'throat.geom_1']
@@ -50,7 +49,8 @@ array([3, 6, 9], dtype=int64)
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Adding Models
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-A Geometry object is associated with the network, ``pn``, and applied to all the specified pores and throats in the network.  At this point, however, it is still an empty object with no pore or throat size *information*. To begin assigning size information, it is possible to simply assign values:
+
+When the Generic Geometry object ``geom`` is associated with the network, ``pn``, and applied to all the specified pores and throats in the network.  At this point, however, it is still an empty object with no pore or throat size *information*. To begin assigning size information, it is possible to simply assign values:
 
 >>> geom['pore.seed'] = sp.rand(geom.Np)
 >>> geom['throat.constant'] = 1.4

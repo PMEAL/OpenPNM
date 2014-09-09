@@ -25,7 +25,7 @@ The name of an object is stored under the attribute 'name', but it is not possib
 -------------------------------------------------------------------------------
 Object Lookup and Retrieval
 -------------------------------------------------------------------------------
-Every OpenPNM object 'registers' itself with the Network when it is instantiated, which allows the Network to track all objects.  Physics objects also register themselves with the Phase object to which it applies.  When a multicomponent Phase is composed of several 'pure' Phase objects, the pure phases register themselves with the 'mixture' Phase.  All of these associations are necessary to understand who talks to whom.  The Base class contains methods for inspecting the relationships between objects.  It is possible to ask any object to list its associated ``geometries``, ``phases``, ``physics`` and ``network``, although in many cases the response will be an empty list.  
+Every OpenPNM object 'registers' itself with the Network when it is instantiated, which allows the Network to track all objects.  Physics objects also register themselves with the Phase object to which it applies.  When a multicomponent Phase is composed of several 'pure' Phase objects, the pure phases register themselves with the 'mixture' Phase.  All of these associations are necessary to understand who talks to whom.  The Base class contains methods for inspecting the relationships between objects.  It is possible to ask any object to list its associated ``geometries``, ``phases``, ``physics`` and ``network``, although in many cases the response will be an empty list.
 
 .. code-block:: python
 	
@@ -35,6 +35,7 @@ Every OpenPNM object 'registers' itself with the Network when it is instantiated
 	air = OpenPNM.Phases.GenericPhase(network=pn,name='air',phases=[N2,O2])
 
 When asking the 'air' object for its ``phases``, it will return two Phases, indicating that 'air' is a mixture:
+
 >>> air.phases()
 ['pure_N2', 'pure_O2']
 
@@ -43,7 +44,9 @@ It is also possible to receive a handle to the actual object by sending its name
 >>> pn.phases('air')
 [<OpenPNM.Phases.__GenericPhase__.GenericPhase object at 0x6586d68>]
 
-It is also possible to remove objects from a simulation using the ``remove_object`` method.  This method accepts both an object name, or the actual object.  It removes all references to the object from all associated objects, including removing any labels that may have been generated (i.e. the Geometry object creates a label in the Network indicating where it applies).  
+It is also possible to remove objects from a simulation using the ``remove_object`` method.  This method accepts both an object name, or the actual object.  It removes all references to the object from all associated objects, including removing any labels that may have been generated (i.e. the Geometry object creates a label in the Network indicating where it applies).
+
+>>> pn.remove_object(obj_name='air')
 
 -------------------------------------------------------------------------------
 Saving and Loading Objects
@@ -55,7 +58,7 @@ Individual objects can be saved to a file using ``save``.  This creates a 'Numpy
 
 .. note:: Saving and Loading Entire Simulations
 
-    OpenPNM has the ability to save entire simulations, including all objects, their object associations, all data and all models.  The functionality is found in the Utilities.IO.Load and .Save classes.  OpenPNM saves simulations in a '.pnm' file extension, which is a varient of the '.npz' Numpy zip format.
+    OpenPNM has the ability to save entire simulations, including all objects, their object associations, all data and all models.  The functionality is found in the Utilities.IO .Load and .Save classes.  OpenPNM saves simulations in a '.pnm' file extension, which is a varient of the '.npz' Numpy zip format.
 
 -------------------------------------------------------------------------------
 Logger
@@ -168,13 +171,13 @@ The ``pores`` and ``throats`` methods both accept a 'mode' argument that allows 
 
 .. note:: **The Importance of the 'all' Label**
 
-   All objects are instantiated with a 'pore.all' and a 'throat.all' label.  These arrays are essential to the framework since they are used to define how long the 'pore' and 'throat' data arrays must be.  In other words, the ``__setitem__`` method checks to make sure that any 'pore' array is receives is the same length as 'pore.all'.  Moreover, the ``pores``, ``throats``, ``num_pores`` and ``num_throats`` methods all have the label 'all' as their default so if no label is sent 'all' pores or throats are considered.  
+   All objects are instantiated with a 'pore.all' and a 'throat.all' label.  These arrays are essential to the framework since they are used to define how long the 'pore' and 'throat' data arrays must be.  In other words, the ``__setitem__`` method checks to make sure that any 'pore' array it receives is the same length as 'pore.all'.  Moreover, the ``pores``, ``throats``, ``num_pores`` and ``num_throats`` methods all have the label 'all' as their default so if no label is sent 'all' pores or throats are considered.  
 
 
 -------------------------------------------------------------------------------
 Add, Remove and Regenerate Models
 -------------------------------------------------------------------------------
-The final major functionality that is contained is Core is the ability to add 'models' to the various objects.  Models are one of the most important aspects of OpenPNM, as they allow the user to specify a 'model' for calculating 'pore.volume', rather than just entering values into geometry_object['pore.volume'] array.  Models are also one of the more obscure and confusing parts of OpenPNM. In the remaining documentation, the use of models are demonstrated many times, so section will outline how models and the ``add_model`` method works in general.  
+The final major functionality that is contained in Core is the ability to add 'models' to the various objects.  Models are one of the most important aspects of OpenPNM, as they allow the user to specify a 'model' for calculating 'pore.volume', rather than just entering values into geometry_object['pore.volume'] array.  Models are also one of the more obscure and confusing parts of OpenPNM. In the remaining documentation, the use of models are demonstrated many times, so this section will outline how models and the ``add_model`` method works in general.  
 
 Models are functions included with OpenPNM for calculating a pore or throat property.  For instance, given a list of pore seed values, there is a model for calculating the diameter of the pores based on a specified statistical distribution.  Models are stored under each module in a folder called 'models'.  For instance, Geometry.models.pore_diameter contains several methods for calculating pore diameters.  
 
