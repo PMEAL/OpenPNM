@@ -68,7 +68,7 @@ All objects have the ability to output logger messages to the console.  Calls to
 >>> pn._logger.debug('this is a diagnostic message')
 >>> pn._logger.error('an error has occurred')
 
-It is possible to to suppress all messages below a certain threshold by setting the ``loglevel`` argument when initializing an object:
+It is possible to suppress all messages below a certain threshold by setting the ``loglevel`` argument when initializing an object:
 
 >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],loglevel=10)
 
@@ -78,7 +78,7 @@ It is also possible to set the loglevel after instantiation:
 
 This is most useful for silencing Algorithm objects that might be run multiple times.  
 
-Finally, it is possible to set the name of the logger so that its messages can be clearly identified on the command line. This too is done during instantiation:
+Finally, it is possible to set the name of the logger so that the messages can be clearly identified on the command line. This is done during instantiation too:
 
 >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],loggername='new_network',loglevel=10)
 
