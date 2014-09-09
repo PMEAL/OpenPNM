@@ -17,7 +17,7 @@ Main Modules
 
 3 `Phases`_: Phase objects contain information about the thermo-physical properties of the liquids, gases, and solids required in the simulation.  For instance, a Phase object for water would possess its temperature, as well as models for calculating its viscosity as a function of temperature (and any other relevant properties).
 
-4 `Physics`_: Physics objects contain methods for calculating pore scale physics properties which combine Phase and Geometry values.  For instance, the hydraulic conductance of a throat requires knowing the throat diameter and length, as well as the fluid viscosity.  
+4 `Physics`_: Physics objects contain methods for calculating pores physical and conductance properties which use values from the *Phase* and *Geometry* objectives. For instance, the hydraulic conductance of a throat requires knowing the throat diameter and length, as well as the fluid viscosity.  
 
 5 `Algorithms`_: This module is the home of the actual algorithms that use the network properties defined by the above modules.  OpenPNM ships with a good assortment of standard algorithms, but is meant to be extended by users adding custom algorithms.
 
