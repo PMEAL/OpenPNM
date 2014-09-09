@@ -14,33 +14,25 @@ If you have created a pore network in MATLAB and you would like to import it int
 | Variable Name  | Value      | Description                      |
 +================+============+==================================+
 | pcoords        | <Npx3>     | physical coordinates, in meters, |
-|                | double     | of pores to be imported          |
+|                | float      | of pores to be imported          |
 +----------------+------------+----------------------------------+
 | pdiameter      | <Npx1>     | pore diamters, in meters         |
-|                | double     |                                  |
+|                | float      |                                  |
 +----------------+------------+----------------------------------+
 | pvolume        | <Npx1>     | pore volumes, in cubic meters    |
-|                | double     |                                  |
+|                | float      |                                  |
 +----------------+------------+----------------------------------+
 | pnumbering     | <Npx1>     | = 0:1:Np-1                       |
-|                | int32      |                                  |
-+----------------+------------+----------------------------------+
-| ptype          | <Npx1>     | (optional) designates surfaces   |
-|                | int32      | of pores in network.             |
-|                |            | (more details below)             |
+|                | int        |                                  |
 +----------------+------------+----------------------------------+
 | tconnections   | <Ntx2>     | pore numbers of the two pores    |
-|                | int32      | that each throat connects        |
+|                | int        | that each throat connects        |
 +----------------+------------+----------------------------------+
 | tdiameter      | <Ntx1>     | throat diameters, in meters      |
-|                | double     |                                  |
+|                | float      |                                  |
 +----------------+------------+----------------------------------+
 | tnumbering     | <Ntx1>     | = 0:1:Nt-1                       |
-|                | int32      |                                  |
-+----------------+------------+----------------------------------+
-| ttype          | <Ntx1>     | (optional) designates surfaces   |
-|                | int32      | of throats in network.           |
-|                |            | (more details below)             |
+|                | int        |                                  |
 +----------------+------------+----------------------------------+
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -50,67 +42,50 @@ Once you have correctly formatted a *.mat file, it can be loaded with the follow
 
 .. code-block:: python
     
+    import OpenPNM
     fname = 'examples/yourfile' # or 'examples/yourfile.mat'
     pn = OpenPNM.Network.MatFile(name='mat_net',filename=fname)
     geom = pn.gemetries('internal')
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Additional Pore and Throat Properties
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Additional properties and labels can be added to the network as long as they are arrays of the correct length. For example, if you saved the *.mat file with the variable `pshape` that was an Npx1 float array, you could include it in your import as follows:
+
+>>> pn = OpenPNM.Network.MatFile(name='mat_net',filename=fname,xtra_pore_data='shape')
+>>> # this will fail unless you actually build a *.mat file with a variable named "pshape"
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Adding Surfaces and Boundaries to Network with ptype and ttype
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-There is no add_boundaries() command for this Network class. But, you can add `ptype` and `ttype` variables to the *.mat file in order to store "surface" and "boundary" information.
+There is no add_boundaries() command for this Network class. But, you can add `ptype` and `ttype` variables to the *.mat file in order to store "surface" and "boundary" information. In OpenPNM, "boundary" pores are zero-volume pores just outside the network domain, that typically gain boundary conditions in simulations. Conventionally, there is one "boundary" pore placed for every "surface" pore in the system, where "surface" pores are pores on the very edge of the domain.
 
-Currently, this is a rather inflexible method that assumes the users knows what they are doing. 
+Currently, this class has a built-in, but rather inflexible method that assumes the users knows what they are doing. Follow these instructions carefully:
 
+In order for the nework to import boundaries, the pore and throat data `ptype` and `ttype` must be present. 
 
-|                |            | 0-non-surface, 1-top, 2-left, 3-front   |
-|                |            | 4-back, 5-right, 6-bottom        |
++----------------+------------+----------------------------------+
+| Variable Name  | Value      | Description                      |
++================+============+==================================+
+| ptype          | <Npx1>     | (optional) designates surfaces   |
+|                | int        | of pores in network.             |
++----------------+------------+----------------------------------+
+| ttype          | <Ntx1>     | (optional) designates surfaces   |
+|                | int        | of throats in network.           |
++----------------+------------+----------------------------------+
 
-.. code-block:: python
+The `type` variables are integers between 0 and 6. All internal pores, inlcuding "surface" pores, should have the value 0. The rest should be labelled as follows: 1-top, 2-left, 3-front, 4-back, 5-right, 6-bottom.
 
-    import OpenPNM
-	pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-	pn.save('test_pn')
-	
-	#Now create and empty generic Network
-	gn = OpenPNM.Network.GenericNetwork()
-	#Use the load method to retrieve the saved data and place into the empty Network object
-	gn.load('test_pn')
-	
-In addition to loading the data into the dictionary of the generic object, the ``load`` method also changes the name of the 'loading' object.  This means that the new object name will match any label names that may have been created by the old object.  This would be essential for trying to piece together a simulation from saved objects.  Of course, if saving a simulation is the aim, then the IO module in OpenPNM.Utilities is a better option.  
+Importing a network with boundaries can be done as follows:
+
+>>> pn = OpenPNM.Network.MatFile(name='mat_net',filename=fname,xtra_pore_data='type',xtra_throat_data='type')
+
+Because the `type` variables are loaded, the importer automatically adds labels for boundaries and surfaces.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Full Simulations
+Example File
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-The IO module located under OpenPNM.Utilities contains several classes for saving more then just individual objects.  The PNM class is designed specifically for saving a simulation in it's entirety, so that it can be reloaded and used for further simulations.  
 
-.. code-block:: python
-
-    import OpenPNM
-	pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-	geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores(),throats=pn.throats(),name='geo_1')
-	air = OpenPNM.Phases.Air(network=pn)
-	phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores(),throats=pn.throats())
-	
-	import OpenPNM.Utilities.IO as io
-	io.PNM.save(pn,'test_pn')
-	
-The ``PNM.save`` creates a specialized '.pnm' file that contains all the necessary information to recreate the simulation.  It can be reloaded with:
-
-.. code-block:: python
-
-    import OpenPNM
-    import OpenPNM.Utilities.IO as io
-    pn = io.PNM.load('test_pn')
-
-This procedure returns a network object only, but the network retains a link to all the objects with which is was associated before being saved.  These links can be accessed using the ``geometries`` , ``phases`` and ``physics`` methods.  For instance, to obtain a handle to the 'geo' object:
-
->>> geo = pn.geometries('geo_1')
-
-
-.. warning:: 
-    
-	There is currently an important limitation on the PNM save/load features: it does not retain the class type of the saved object.  This is acceptable for the Geometry, Phase and Physics objects, but most Network objects have additional methods added (such as ``asarray`` and ``fromarray``).  These methods would not be available to the loaded object.  
-
-The IO module also includes the ability to output to VTK and Matlab MAT files.  
+One example *.mat file has been loaded with the OpenPNM installation. Look for /OpenPNM/Network/examples/test_pn.mat
 
 

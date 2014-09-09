@@ -23,6 +23,9 @@ Classes
 
 .. autoclass:: Delaunay
    :members:
+   
+.. autoclass:: MatFile
+   :members:
 
 """
 

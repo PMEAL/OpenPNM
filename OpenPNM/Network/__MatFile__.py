@@ -39,6 +39,44 @@ class MatFile(GenericNetwork):
     >>> fname = 'examples/test_pn' # or 'examples/test_pn.mat'
     >>> pn = OpenPNM.Network.MatFile(name='test_pn',filename=fname,xtra_pore_data='type',xtra_throat_data='type')
     
+    Notes:
+    ------
+    Matfiles should include the following variables
+    
+    +----------------+------------+----------------------------------+
+    | Variable Name  | Value      | Description                      |
+    +================+============+==================================+
+    | pcoords        | <Npx3>     | physical coordinates, in meters, |
+    |                | float      | of pores to be imported          |
+    +----------------+------------+----------------------------------+
+    | pdiameter      | <Npx1>     | pore diamters, in meters         |
+    |                | float      |                                  |
+    +----------------+------------+----------------------------------+
+    | pvolume        | <Npx1>     | pore volumes, in cubic meters    |
+    |                | float      |                                  |
+    +----------------+------------+----------------------------------+
+    | pnumbering     | <Npx1>     | = 0:1:Np-1                       |
+    |                | int        |                                  |
+    +----------------+------------+----------------------------------+
+    | ptype          | <Npx1>     | (optional) designates surfaces   |
+    |                | int        | of pores in network.             |
+    |                |            | (more details below)             |
+    +----------------+------------+----------------------------------+
+    | tconnections   | <Ntx2>     | pore numbers of the two pores    |
+    |                | int        | that each throat connects        |
+    +----------------+------------+----------------------------------+
+    | tdiameter      | <Ntx1>     | throat diameters, in meters      |
+    |                | float      |                                  |
+    +----------------+------------+----------------------------------+
+    | tnumbering     | <Ntx1>     | = 0:1:Nt-1                       |
+    |                | int        |                                  |
+    +----------------+------------+----------------------------------+
+    | ttype          | <Ntx1>     | (optional) designates surfaces   |
+    |                | int        | of throats in network.           |
+    |                |            | (more details below)             |
+    +----------------+------------+----------------------------------+
+    
+    
     '''
     def __init__(self,filename='standard_cubic_5x5x5.mat', path='', xtra_pore_data=None, xtra_throat_data=None,**kwargs):
         
