@@ -37,7 +37,6 @@ There are a few important steps that occur upon instantiation, aside from those 
 >>> geom_1 = OpenPNM.Geometry.Stick_and_Ball(network=pn2,pores=[3,6,9],name='geom_1')
 >>> geom_1['pore.map']
 array([3, 6, 9])
->>> pn2
 
 Another important step is that pore and throat label arrays are created in the Network corresponding to the Geometry name.  So if a Geometry called 'geom_1' is associated with a Network, the 'pore.geom_1' and 'throat.geom_1' label arrays are added to the Network:
 

@@ -32,7 +32,7 @@ Every OpenPNM object 'registers' itself with the Network when it is instantiated
 	pn = OpenPNM.Network.Cubic(shape=[3,3,3])
 	N2 = OpenPNM.Phases.GenericPhase(network=pn,name='pure_N2')
 	O2 = OpenPNM.Phases.GenericPhase(network=pn,name='pure_O2')
-	air = OpenPNM.Phases.GenericPhase(network=pn,name='air',phases=[N2,O2])
+	air = OpenPNM.Phases.GenericPhase(network=pn,name='air',components=[N2,O2])
 
 When asking the 'air' object for its ``phases``, it will return two Phases, indicating that 'air' is a mixture:
 
