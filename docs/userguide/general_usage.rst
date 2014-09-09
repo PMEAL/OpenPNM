@@ -155,7 +155,7 @@ One of the most common questions about a network is "how many pores and throats 
 >>> pn.num_pores()
 27
 
-It is also possible to 'count' only pores that have a certain label:
+It is also possible to 'count' only pores that have a certain label (shortcuts``Np`` and ``Nt`` don't work with this counting method):
 
 >>> pn.num_pores('top')
 9
@@ -171,7 +171,7 @@ The ``pores`` and ``throats`` methods both accept a 'mode' argument that allows 
 
 .. note:: **The Importance of the 'all' Label**
 
-   All objects are instantiated with a 'pore.all' and a 'throat.all' label.  These arrays are essential to the framework since they are used to define how long the 'pore' and 'throat' data arrays must be.  In other words, the ``__setitem__`` method checks to make sure that any 'pore' array it receives is the same length as 'pore.all'.  Moreover, the ``pores``, ``throats``, ``num_pores`` and ``num_throats`` methods all have the label 'all' as their default so if no label is sent 'all' pores or throats are considered.  
+   All objects are instantiated with a 'pore.all' and a 'throat.all' label.  These arrays are essential to the framework since they are used to define how long the 'pore' and 'throat' data arrays must be.  In other words, the ``__setitem__`` method checks to make sure that any 'pore' array it receives has the same length as 'pore.all'.  Moreover, the ``pores``, ``throats``, ``num_pores`` and ``num_throats`` methods all have the label 'all' as their default so if no label is sent 'all' pores or throats are considered.  
 
 
 -------------------------------------------------------------------------------
