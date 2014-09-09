@@ -29,8 +29,8 @@ class OhmicConduction(GenericLinearTransport):
     >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
     >>> alg.run()
     >>> alg.update_results()
-    >>> Ceff = round(alg._calc_eff_prop(), 3) #This line and the next line should fail until someone writes this function
-    >>> print(Ceff) #unless something changed with our test objects, this should print "0.025"
+    >>> Ceff = round(alg.calc_effective_conductivity(), 3) 
+    >>> print(Ceff)
     1.012
     
 
@@ -49,6 +49,9 @@ class OhmicConduction(GenericLinearTransport):
         super(OhmicConduction,self).setup(conductance=conductance,quantity=quantity)
         
         super(GenericLinearTransport,self).run()
+        
+    def calc_effective_conductivity(self):
+        return self._calc_eff_prop()
         
         
 if __name__ == '__main__':
