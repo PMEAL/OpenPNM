@@ -88,17 +88,16 @@ class GenericAlgorithm(OpenPNM.Base.Core):
 
     def set_boundary_conditions(self,component=None,bctype='',bcvalue=[],pores=[],throats=[],mode='merge'):
         r'''
-        Apply boundary conditions to specified pores.  This does not support
-        throat boundary conditions yet.
+        Apply boundary conditions to specified pores or throats
 
         Parameters
         ----------
         bctype : string
-            Specifies the type of boundary condition to apply.  Can be one of:
+            Specifies the type or the name of boundary condition to apply.  The types can be one one of the followings:
 
-            - 'Dirichlet' : Specify the quantity in each pore
-            - 'Neumann' : Specify the flow rate into each pore
-            - 'Neumann_group' : Specify the net flow rate into a group of pores
+            - 'Dirichlet' : Specify the quantity in each location
+            - 'Neumann' : Specify the flow rate into each location
+            - 'Neumann_group' : Specify the net flow rate into a group of pores/throats
         component : OpenPNM Phase object
             The Phase object to which this BC applies
         bcvalue : array_like
@@ -116,13 +115,10 @@ class GenericAlgorithm(OpenPNM.Base.Core):
 
         Notes
         -----
-        1. At the moment is it not possible to have multiple boundary conditions
-        in the same pore, so when new conditions are applied any existing ones
-        are removed from all other boundary types.
-        2. It is also not yet possible to apply boundary conditions to throats.
+        1. It is not possible to have multiple boundary conditions for a specified location in just one algorithm. 
+        So when new condition is going to be applied to a specific location, any existing one
+        should be removed or overwritten..
         '''
-
-        BC_default = ['Dirichlet','Neumann','Neumann_group']
         try: self._existing_BC
         except: self._existing_BC = []
         if component==None:
