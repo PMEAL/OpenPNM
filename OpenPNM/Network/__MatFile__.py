@@ -69,13 +69,13 @@ class MatFile(GenericNetwork):
         Pind = sp.arange(0,self._Np)
         self['pore.all'] = sp.ones_like(Pind,dtype=bool)
         self._logger.info('Writing pore data')
-        self['pore.coords']=self._dictionary['pcoords']
+        self['pore.coords']=sp.array(self._dictionary['pcoords'],float)
         
     def _add_throats(self):
         Tind = sp.arange(0,self._Nt)
         self['throat.all']=sp.ones_like(Tind,dtype=bool)
         self._logger.info('Writing throat data')
-        self['throat.conns']=self._dictionary['tconnections']
+        self['throat.conns']=sp.array(self._dictionary['tconnections'],int)
         
     def _remove_disconnected_clusters(self):
         bad_pores = sp.array([],dtype=int)
@@ -150,14 +150,27 @@ class MatFile(GenericNetwork):
         Ps = sp.where([pore not in boundary_pores for pore in self.pores()])[0]
         Ts = sp.where([throat not in boundary_throats for throat in self.throats()])[0]
         geom = OpenPNM.Geometry.GenericGeometry(network=self,name='internal',pores=Ps,throats=Ts)
-        geom['pore.volume'] = sp.ravel(sp.array(self._dictionary['pvolume'][self._pore_map[Ps]]))
-        geom['pore.diameter'] = sp.ravel(sp.array(self._dictionary['pdiameter'][self._pore_map[Ps]]))
-        geom['throat.diameter'] = self._dictionary['tdiameter'][self._throat_map[Ts]]
+        geom['pore.volume'] = sp.ravel(sp.array(self._dictionary['pvolume'][self._pore_map[Ps]],float))
+        geom['pore.diameter'] = sp.ravel(sp.array(self._dictionary['pdiameter'][self._pore_map[Ps]],float))
+        geom['throat.diameter'] = sp.ravel(sp.array(self._dictionary['tdiameter'][self._throat_map[Ts]],float))
         geom.add_model(propname='pore.area',model=OpenPNM.Geometry.models.pore_area.spherical)
         geom.add_model(propname='throat.area',model=OpenPNM.Geometry.models.throat_area.cylinder)
         
         if add_boundaries:
             boun = OpenPNM.Geometry.Boundary(network=self,pores=boundary_pores,throats=boundary_throats,name='boundary')
+            self['pore.top_boundary']=self.tomask(pores=self.pores(['top','boundary'],mode='intersection'))
+            self['pore.bottom_boundary']=self.tomask(pores=self.pores(['bottom','boundary'],mode='intersection'))
+            self['pore.left_boundary']=self.tomask(pores=self.pores(['left','boundary'],mode='intersection'))
+            self['pore.right_boundary']=self.tomask(pores=self.pores(['right','boundary'],mode='intersection'))
+            self['pore.front_boundary']=self.tomask(pores=self.pores(['front','boundary'],mode='intersection'))
+            self['pore.back_boundary']=self.tomask(pores=self.pores(['back','boundary'],mode='intersection'))
+            
+            self['throat.top_boundary']=self.tomask(throats=self.throats(['top','boundary'],mode='intersection'))
+            self['throat.bottom_boundary']=self.tomask(throats=self.throats(['bottom','boundary'],mode='intersection'))
+            self['throat.left_boundary']=self.tomask(throats=self.throats(['left','boundary'],mode='intersection'))
+            self['throat.right_boundary']=self.tomask(throats=self.throats(['right','boundary'],mode='intersection'))
+            self['throat.front_boundary']=self.tomask(throats=self.throats(['front','boundary'],mode='intersection'))
+            self['throat.back_boundary']=self.tomask(throats=self.throats(['back','boundary'],mode='intersection'))        
     
     def _add_xtra_pore_data(self):
         xpdata = self._xtra_pore_data

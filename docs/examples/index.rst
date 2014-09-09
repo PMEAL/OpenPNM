@@ -14,4 +14,5 @@ Available Examples and Tutorials:
    drainage.rst
    boundary_conditions.rst
    io.rst
+   mat_load.rst
    gostick_recreation.rst
