@@ -5,6 +5,7 @@ module __Physics__: Base class for mananging pore-scale Physics properties
 
 """
 import OpenPNM
+import OpenPNM.Physics.models
 import scipy as sp
 
 class GenericPhysics(OpenPNM.Base.Core):

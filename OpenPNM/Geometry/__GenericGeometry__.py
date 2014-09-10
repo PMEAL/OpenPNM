@@ -7,6 +7,7 @@ GenericGeometry -- Base class to manage pore scale geometry
 
 import OpenPNM
 from OpenPNM.Base import Core
+import OpenPNM.Geometry.models
 import scipy as sp
 
 class GenericGeometry(Core):
