@@ -45,7 +45,7 @@ def hagen_poiseuille(physics,
         plen1 = (0.5*pdia[Ps[:,0]])
         plen2 = (0.5*pdia[Ps[:,1]])   
     #Find g for half of pore 1
-    gp1 = 2.28*plen1*(pdia[Ps[:,0]])**2/(8*mut)
+    gp1 = _sp.pi*plen1*(pdia[Ps[:,0]])**2/(128*mut)
     gp1[~(gp1>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
     #gp2 = 2.28*(pdia[pores[:,1]]/2)**4/(pdia[pores[:,1]]*mut)
@@ -54,7 +54,7 @@ def hagen_poiseuille(physics,
     #Find g for full throat
     tdia = network[throat_diameter]
     tlen = network[throat_length]
-    gt = 2.28*(tdia/2)**4/(2*tlen*mut)
+    gt = _sp.pi*(tdia/2)**4/(128*tlen*mut)
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     value = value[throats]
     return value
