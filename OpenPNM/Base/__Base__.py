@@ -302,8 +302,8 @@ class Base(dict):
         
         #Get mro for self
         mro = [item.__name__ for item in obj.__class__.__mro__]
-        if 'GenericGeometry' in mro:  
-            net._geometries.remove(obj)
+        if 'GenericGeometry' in mro:
+            net._geometries = [item for item in net._geometries if item is not obj]
             net.pop('pore.'+obj.name,None)
             net.pop('throat.'+obj.name,None)
         elif 'GenericPhase' in mro:
@@ -311,27 +311,20 @@ class Base(dict):
                 if phase is obj: #Found correct phase
                     for physics in phase._physics:
                         physics._phases = []
-                    #list.remove() inexplicably fails here...hence this hack
-                    for i in range(len(net._phases)):
-                        if net._phases[i] is obj:
-                            net._phases.pop(i)
-                            break
+                    net._phases = [item for item in net._phases if item is not obj]
                 for component in phase._phases: #Cull from other phases too
                     if component is obj:
                         for physics in component._physics:
                             physics._phases = []
-                        for i in range(len(phase._phases)):
-                            if phase._phases[i] is obj:
-                                phase._phases.pop(i)
-                                break
+                        phase._phases = [item for item in phase._phases if item is not obj]
         elif 'GenericPhysics' in mro:
             for physics in net._physics:
                 if physics is obj:
                     for phase in physics._phases:
-                        phase._physics.remove(obj)
+                        phase._physics = [item for item in phase._physics if item is not obj]
                         phase.pop('pore.'+obj.name,None)
                         phase.pop('throat.'+obj.name,None)
-                    net._physcis.remove(obj)
+                    net._physics = [item for item in net._physics if item is not obj]
 
     def save(self,filename=''):
         r'''
