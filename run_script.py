@@ -1,8 +1,4 @@
 import OpenPNM
-import OpenPNM.Network.models
-import OpenPNM.Physics.models
-import OpenPNM.Geometry.models
-import OpenPNM.Phases.models
 
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 

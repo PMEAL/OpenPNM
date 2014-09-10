@@ -22,6 +22,7 @@ setup(
     packages=['OpenPNM',
               'OpenPNM.Base',
               'OpenPNM.Network',
+              'OpenPNM.Network.models',
               'OpenPNM.Geometry',
               'OpenPNM.Geometry.models',
               'OpenPNM.Phases',
