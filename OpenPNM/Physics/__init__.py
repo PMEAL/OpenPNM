@@ -26,3 +26,5 @@ Classes
 
 from .__GenericPhysics__ import GenericPhysics
 from .__Standard__ import Standard
+from .__TestPhysics__ import TestPhysics
+from . import models

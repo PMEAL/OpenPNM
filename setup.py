@@ -37,7 +37,7 @@ setup(
     description="A framework for conducting pore network modeling simulations of multiphase transport in porous materials.",
     author='OpenPNM Team',
     author_email='jeff.gostick@mcgill.ca',
-    download_url='https://github.com/pmeal/OpenPNM/tarball/v1.0alpha4',
+    download_url='https://github.com/pmeal/OpenPNM/',
     url='https://github.com/pmeal/OpenPNM',
 
 )
