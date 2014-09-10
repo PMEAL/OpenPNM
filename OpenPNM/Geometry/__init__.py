@@ -26,20 +26,22 @@ Classes
 .. autoclass:: Cube_and_Cuboid
    :members:
    
+.. autoclass:: Boundary
+   :members:
+   
+.. autoclass:: Voronoi
+   :members:
+   
 """
 
-#Import every file in the directory
-import os as _os
-dir = _os.path.dirname(_os.path.abspath(__file__))
-for item in _os.listdir(dir):
-    if item.split('.')[-1] == 'py':
-        if item == '__init__.py':
-            pass
-        elif item[0:2] == '__':
-            try:
-                exec('from .' + item.split('.')[0] + ' import ' + item.split('__')[1])
-            except:
-                print('File name '+item+' does not match class name, cannot import automatically')
-        else:
-            exec('from . import ' + format(item.split('.')[0]))
+from .__GenericGeometry__ import GenericGeometry
+from .__Cube_and_Cuboid__ import Cube_and_Cuboid
+from .__Stick_and_Ball__ import Stick_and_Ball
+from .__TestGeometry__ import TestGeometry
+from .__Boundary__ import Boundary
+from .__Voronoi__ import Voronoi
+from .__Toray090__ import Toray090
+from .__SGL10__ import SGL10
+from . import models
+
         
