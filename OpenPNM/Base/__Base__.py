@@ -308,21 +308,30 @@ class Base(dict):
             net.pop('throat.'+obj.name,None)
         elif 'GenericPhase' in mro:
             for phase in net._phases:
-                if phase == obj:
+                if phase is obj: #Found correct phase
                     for physics in phase._physics:
-                        physics._phase = None
-                        net._physics.remove(physics)
-                    net._phases.remove(obj)
-                    del phase
+                        physics._phases = []
+                    #list.remove() inexplicably fails here...hence this hack
+                    for i in range(len(net._phases)):
+                        if net._phases[i] is obj:
+                            net._phases.pop(i)
+                            break
+                for component in phase._phases: #Cull from other phases too
+                    if component is obj:
+                        for physics in component._physics:
+                            physics._phases = []
+                        for i in range(len(phase._phases)):
+                            if phase._phases[i] is obj:
+                                phase._phases.pop(i)
+                                break
         elif 'GenericPhysics' in mro:
             for physics in net._physics:
-                if physics == obj:
+                if physics is obj:
                     for phase in physics._phases:
                         phase._physics.remove(obj)
                         phase.pop('pore.'+obj.name,None)
                         phase.pop('throat.'+obj.name,None)
                     net._physcis.remove(obj)
-                    del phase
 
     def save(self,filename=''):
         r'''
