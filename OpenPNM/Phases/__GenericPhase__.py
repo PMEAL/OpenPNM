@@ -55,8 +55,11 @@ class GenericPhase(Core):
         if components != []:
             for comp in components:
                 self._phases.append(comp) # Associate any sub-phases
+                temp = comp._models
+                comp._models.clear()
                 comp.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.mixture_props.temperature,mixture=self)
                 comp.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.mixture_props.pressure,mixture=self)
+                comp._models.update(temp)
         self._net._phases.append(self)  # Append this Phase to the Network
         
     def __setitem__(self,prop,value):
@@ -91,8 +94,11 @@ class GenericPhase(Core):
                 self._logger.error('Phase already present')
             else:
                 self._phases.append(phase)
+                temp = phase._models
+                phase._models.clear()
                 phase.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.mixture_props.temperature,mixture=self)
                 phase.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.mixture_props.pressure,mixture=self)
+                phase._models.update(temp)
         elif mode == 'remove':
             if phase.name in self.phases():
                 self._phases.remove(phase)
