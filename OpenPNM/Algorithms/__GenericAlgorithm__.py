@@ -88,17 +88,16 @@ class GenericAlgorithm(OpenPNM.Base.Core):
 
     def set_boundary_conditions(self,component=None,bctype='',bcvalue=[],pores=[],throats=[],mode='merge'):
         r'''
-        Apply boundary conditions to specified pores.  This does not support
-        throat boundary conditions yet.
+        Apply boundary conditions to specified pores or throats
 
         Parameters
         ----------
         bctype : string
-            Specifies the type of boundary condition to apply.  Can be one of:
+            Specifies the type or the name of boundary condition to apply.  The types can be one one of the followings:
 
-            - 'Dirichlet' : Specify the quantity in each pore
-            - 'Neumann' : Specify the flow rate into each pore
-            - 'Neumann_group' : Specify the net flow rate into a group of pores
+            - 'Dirichlet' : Specify the quantity in each location
+            - 'Neumann' : Specify the flow rate into each location
+            - 'Neumann_group' : Specify the net flow rate into a group of pores/throats
         component : OpenPNM Phase object
             The Phase object to which this BC applies
         bcvalue : array_like
@@ -116,22 +115,23 @@ class GenericAlgorithm(OpenPNM.Base.Core):
 
         Notes
         -----
-        1. At the moment is it not possible to have multiple boundary conditions
-        in the same pore, so when new conditions are applied any existing ones
-        are removed from all other boundary types.
-        2. It is also not yet possible to apply boundary conditions to throats.
+        1. It is not possible to have multiple boundary conditions for a specified location in just one algorithm. 
+        So when new condition is going to be applied to a specific location, any existing one
+        should be removed or overwritten.
+        2- BCs for pores and for throats should be applied independently. 
         '''
-
-        BC_default = ['Dirichlet','Neumann','Neumann_group']
         try: self._existing_BC
         except: self._existing_BC = []
         if component==None:
-            try:
-                component = self._phase
-            except:
-                raise Exception('For using set_boundary_conditions method, a component/phase should be specified.')
-        self._logger.debug('BC applies to the component: '+component.name)
+            if sp.size(self._phases)!=1:
+                raise Exception('In each use of set_boundary_conditions method, one component should be specified or attached to the algorithm.' )
+            else:
+                component = self._phases[0]
+        else:
+            if sp.size(component)!=1:
+                raise Exception('For using set_boundary_conditions method, only one component should be specified.')
 
+        self._logger.debug('BC applies to the component: '+component.name)
         #If mode is 'remove', also bypass checks
         if mode == 'remove':
             if pores == [] and throats == []:
@@ -190,20 +190,21 @@ class GenericAlgorithm(OpenPNM.Base.Core):
                     bcvalue = sp.ones(sp.shape(loc))*bcvalue
                 elif sp.size(bcvalue) != sp.size(loc):
                     raise Exception('The pore/throat list and bcvalue list are different lengths')
-
         #Confirm that prop and label arrays exist
         if element+'.'+component.name+'_bcval_'+bctype not in self.props():
             self[element+'.'+component.name+'_bcval_'+bctype] = sp.ones((all_length,),dtype=float)*sp.nan
         if element+'.'+component.name+'_'+bctype not in self.labels():
             self[element+'.'+component.name+'_'+bctype] = sp.zeros((all_length,),dtype=bool)
-
         #Check all BC from specified locations, prior to setting new ones
         for item in self.labels():
-            bcname = (item.split('.')[-1]).replace(self._phase.name+'_',"")
+            bcname = (item.split('.')[-1]).replace(component.name+'_',"")
             if bcname in self._existing_BC  and item.split('.')[0]==element:
                 if mode=='merge':
-                    if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
-                        raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
+                    try:    
+                        self[element+'.'+component.name+'_bcval_'+bcname][loc]                    
+                        if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
+                            raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
+                    except KeyError: pass        
         #Set boundary conditions based on supplied mode
         if mode == 'merge':
             if bcvalue != []:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue

@@ -28,25 +28,30 @@ class GenericLinearTransport(GenericAlgorithm):
             self._phase = OpenPNM.Phases.GenericPhase()
         else:
             self._phase = phase  # Register phase with self
-
+            if sp.size(phase)!=1:   self._phases = phase
+            else:   self._phases.append(phase)
+            
     def setup(self,conductance,quantity):
         r'''
         This setup provides the initial data for the solver
         '''
-        self._conductance = 'throat.'+conductance.split('.')[-1]
-        self._quantity = 'pore.'+self._phase.name+'_'+quantity.split('.')[-1]
-
-        #Check health of conductance vector
-        if self._phase.check_data_health(props=self._conductance,quiet=True):
-            #If no nans, check for 0's
-            ind = sp.nonzero(self._phase[self._conductance])[0]
-            gmin = sp.amin(self._phase[self._conductance][ind])
-            ind = sp.where(self._phase[self._conductance]==0)[0]
-            self['throat.conductance'] = self._phase[self._conductance]
-            #To prevent singular matrix
-            self['throat.conductance'][ind] = gmin/1000000
+        if  sp.size(self._phase)==1:
+            self._conductance = 'throat.'+conductance.split('.')[-1]
+            self._quantity = 'pore.'+self._phase.name+'_'+quantity.split('.')[-1]
+    
+            #Check health of conductance vector
+            if self._phase.check_data_health(props=self._conductance,quiet=True):
+                #If no nans, check for 0's
+                ind = sp.nonzero(self._phase[self._conductance])[0]
+                gmin = sp.amin(self._phase[self._conductance][ind])
+                ind = sp.where(self._phase[self._conductance]==0)[0]
+                self['throat.conductance'] = self._phase[self._conductance]
+                #To prevent singular matrix
+                self['throat.conductance'][ind] = gmin/1000000
+            else:
+                raise Exception('The provided throat conductance has problems')
         else:
-            raise Exception('The provided throat conductance has problems')
+            raise Exception('The linear transport solver accepts just one phase.')
 
     def update_results(self):
         r'''
@@ -67,16 +72,16 @@ class GenericLinearTransport(GenericAlgorithm):
     def _build_coefficient_matrix(self):
         r'''
         This builds the sparse coefficient matrix for the linear solver.
-        '''
+        '''       
         # Filling coefficient matrix
         tpore1 = self._net['throat.conns'][:,0]
         tpore2 = self._net['throat.conns'][:,1]
 
-        #Identify Dirichlet pores, if any
+        #Identify Dirichlet pores
         try:
             temp = self.pores(self._phase.name+'_Dirichlet',mode='difference')
         except:
-            temp = self.pores()
+            raise Exception('The linear transport solver needs at least one Dirichlet boundary condition for the phase which is attached to '+self.name)
         loc1 = sp.in1d(tpore1,temp)
         loc2 = sp.in1d(tpore2,temp)
         modified_tpore1 = tpore1[loc1]

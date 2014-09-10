@@ -15,6 +15,8 @@ Basic Usage
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 The ``GenericNetwork`` class on its own has no topology.  If you instantiate a ``GenericNetwork`` it will have no pores or throats.  You can get a quick overview of the network properties by 'printing' it on the command line:
 
+>>> import OpenPNM
+>>> pn = OpenPNM.Network.GenericNetwork()
 >>> print(pn)
 ------------------------------------------------------------
 OpenPNM.Network.GenericNetwork: 	GenericNetwork_GnSpz
@@ -32,6 +34,7 @@ OpenPNM.Network.GenericNetwork: 	GenericNetwork_GnSpz
 
 As can be seen, a basic empty network has 0 pore coordinates and 0 throat connections, and the label 'all' exists but is applied nowhere.  It is also possible to just get the number of pores or throats on the object:
 
+>>> import OpenPNM
 >>> pn = OpenPNM.Network.GenericNetwork()
 >>> pn.num_pores()
 0
@@ -49,7 +52,8 @@ OpenPNM.Network.Cubic: 	demo
 ------------------------------------------------------------
 1     pore.coords                            27 / 27   
 2     pore.index                             27 / 27   
-3     throat.conns                           54 / 54   
+3     pore.subscript                         27 / 27   
+4     throat.conns                           54 / 54   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
@@ -64,7 +68,7 @@ OpenPNM.Network.Cubic: 	demo
 9     throat.all                          54        
 ------------------------------------------------------------
 
-The print-out of the network information shows that it has 27 pores and 54 throats, with properties of 'pore.coords', 'pore.index' and 'throat.conns'.  Because the ``Cubic`` class only generates the topology, there is not any information about pore and throat sizes.  The only requirements of a topology are that the pores have spatial locations (given by 'pore.coords') and throats know which two pores they connect ('throat.conns').  ('pore.index' is required for other purposes).  
+The print-out of the network information shows that it has 27 pores and 54 throats, with properties of 'pore.coords', 'pore.index', 'pore.subscript' and 'throat.conns'.  Because the ``Cubic`` class only generates the topology, there is not any information about pore and throat sizes.  The only requirements of a topology are that the pores have spatial locations (given by 'pore.coords') and throats know which two pores they connect ('throat.conns').  ('pore.index' is required for other purposes).
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Topology Queries
@@ -90,13 +94,14 @@ It is possible to add and remove pores and throats from the Network topology aft
 >>> pn.trim(pores=[0,2,4])
 >>> print(pn)
 ------------------------------------------------------------
-OpenPNM.Network.Cubic: 	Cubic_2xGW2
+OpenPNM.Network.Cubic: 	Cubic_c2E9N
 ------------------------------------------------------------
 #     Properties                          Valid Values
 ------------------------------------------------------------
 1     pore.coords                            24 / 24   
 2     pore.index                             24 / 24   
-3     throat.conns                           43 / 43   
+3     pore.subscript                         24 / 24   
+4     throat.conns                           43 / 43   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
@@ -114,7 +119,7 @@ OpenPNM.Network.Cubic: 	Cubic_2xGW2
 Notice that 3 pores have indeed been removed, but also a number of throats are missing as well.  This is because throat MUST connect to a pore on both ends, so the removal of a pore necessitates the removal of all throats connected to it as well.  Throats can generally be removed without concern, however, it is very possible that isolated single pores or clusters of pores could be created that are disconnect from the main body of the network.  For instance, removing all throats connected to pore 1 will obviously lead to pore 1 being isolated from the network:
 
 >>> Ts = pn.find_neighbor_throats(pores=1)
->>> pn.trim(throats=Ps)
+>>> pn.trim(throats=Ts)
 
 The 'health' of the Network can be checked with a built-in method:
 
@@ -129,7 +134,7 @@ Extending the network can also be done.  For instance, it is possible to reconne
 >>> pn.find_neighbor_pores(pores=1)
 array([0])
 
-This indicates that pore now has pore 0 as a connected neighbor.  A health check of the network would also pass cleanly.  
+This indicates that pore 1 now has pore 0 as a connected neighbor.  A health check of the network would also pass cleanly.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Creating Custom Network Topology Generators
@@ -139,7 +144,7 @@ For description of how to create customized subclasses, see :ref:`Customizing Op
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Network Topology: In Depth
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-As the name suggests, pore network modeling borrows significantly from the fields of network and graph theory.  During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as `graph-tool <http://graph-tool.skewed.de/>`_ and `NetworkX <http://networkx.github.io/>`_) should be used to store the network topology.  It was decided that storage of network property data should be simply stored as 1D Numpy ndarrays.  In this form the data storage would be very transparent, since all engineers are used to working with 1D arrays (i.e. vectors), and also very efficiently since this allows a high degree of code vectorization.  Fortuitously, around the same time as this discussion, Scipy started to include the `compressed sparse graph <http://docs.scipy.org/doc/scipy/reference/sparse.csgraph.html>`_ library, which contained numerous graph theory algorithms.  The CSGraph library requires adjacency matrices which happens to be how OpenPNM stores network connections as described below.
+As the name suggests, pore network modeling borrows significantly from the fields of network and graph theory.  During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as `graph-tool <http://graph-tool.skewed.de/>`_ and `NetworkX <http://networkx.github.io/>`_) should be used to store the network topology.  It was decided that storage of network property data should be simply stored as 1D Numpy ndarrays (see `Numpy <http://www.numpy.org/>`_).  In this form the data storage would be very transparent, since all engineers are used to working with 1D arrays (i.e. vectors), and also very efficiently since this allows a high degree of code vectorization.  Fortuitously, around the same time as this discussion, Scipy started to include the `compressed sparse graph <http://docs.scipy.org/doc/scipy/reference/sparse.csgraph.html>`_ library, which contained numerous graph theory algorithms.  The CSGraph library requires adjacency matrices which happens to be how OpenPNM stores network connections as described below.
 
 One of the main design considerations of OpenPNM was to accommodate *all* pore networks (arbitrary dimensionality, connectivity, shape and so on).  Cubic networks are commonly used in pore network modeling, with each pore connected to 6 or 26 neighbors.  This type of network *can* be represented as cubic matrices in numerical simulations, and this has the advantage that it is easily interpreted by human users.  Representing networks this way, however, clearly lacks generality.  Networks extracted from tomographic images, or generated using random pore placements connected by Delaunay tessellations require a different approach.  OpenPNM uses network representation schemes borrowed from graph theory, such as adjacency and incidence matrices, that can be used to represent *all* network topologies.
 
