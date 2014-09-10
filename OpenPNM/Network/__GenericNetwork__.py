@@ -13,7 +13,7 @@ import scipy as sp
 import scipy.sparse as sprs
 import scipy.signal as spsg
 import OpenPNM.Utilities.misc as misc
-import OpenPNM.Network.models
+#import OpenPNM.Network.models
 
 class GenericNetwork(Core):
     r"""
