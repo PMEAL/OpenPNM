@@ -21,6 +21,15 @@ class OrdinaryPercolation(GenericAlgorithm):
     ----------
     network : OpenPNM Network Object
         The network upon which the simulation will be run
+
+    invading_phase : OpenPNM Phase Object
+        The phase to be forced into the network at increasingly high pressures
+
+    defending_phase : OpenPNM Phase Object, optional
+        The phase originally residing in the network prior to invasion.  This
+        is only necessary so that the pressure at which the phase is drained
+        can be stored on the phase.
+
     name : string, optional
         The name to assign to the Algorithm Object
         
@@ -39,40 +48,63 @@ class OrdinaryPercolation(GenericAlgorithm):
     >>> print(len(phase1.pores('occupancy'))) #should return '71' filled pores if everything is working normally
     71
 
-    Notes
-    -----
-    To run this algorithm, use 'setup()' to provide the necessary simulation
-    parameters, and then use 'run()' to execute it.  Use 'update_results()' to send
-    the results of the simulation out of the algorithm object.
+    To run this algorithm, use 'setup()' to provide the necessary simulation 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self,invading_phase=None,defending_phase=None,**kwargs):
         r"""
 
         """
         super(OrdinaryPercolation,self).__init__(**kwargs)
+        self._phase_inv = invading_phase
+        self._phase_def = defending_phase
         self._logger.debug("Create Drainage Percolation Algorithm Object")
 
     def run(self,
-              invading_phase=None,
-              defending_phase=None,
-              inlets=[0],
-              npts=25,
-              inv_points=[],
-              capillary_pressure = 'capillary_pressure',
-              AL=True,
-              **params):
+            inlets,
+            npts=25,
+            inv_points=None,
+            capillary_pressure='capillary_pressure',
+            access_limited=True,
+            trapping=False,
+            **kwargs):
         r'''
+        Parameters
+        ----------
+        inlets : array_like
+            The list of pores which are the injection sources
+
+        npts : int, optional
+            The number of pressure points to apply.  The list of pressures
+            is logarithmically spaced between the lowest and highest throat
+            entry pressures in the network.
+
+        inv_points : array_like, optional
+            A list of specific pressure points to apply.
+
+        access_limited : boolean
+            Only pores and throats connected to the inlet sites can be invaded
+
+        trapping : boolean
+            Wetting phase that is cut-off from the outlets becomes immobile.
+            If outlet pores have not been provided then this argument is
+            ignored.
+
+        Notes
+        -----
+        The 'inlet' pores are initially filled with invading fluid to start the
+        simulation.  To avoid the capillary pressure curve showing a non-zero
+        starting saturation at low pressures, it is necessary to apply boundary
+        pores that have 0 volume, and set these as the inlets.
+
+
         '''
         # Parse params
-        self._phase_inv = invading_phase
-        self._phase_def = defending_phase
-        try: self._inv_sites
-        except: self._inv_sites = inlets
+        self._inv_sites = inlets
         self._npts = npts
-        self._inv_points = inv_points
-        self._AL = AL
-        self._p_cap = capillary_pressure
+        self._p_cap = capillary_pressure  # Name of throat entry pressure prop
+        self._AL = access_limited
+        self._TR = trapping
 
         #Create pore and throat conditions lists to store inv_val at which each is invaded
         self._p_inv = sp.zeros((self._net.num_pores(),),dtype=float)
@@ -81,13 +113,15 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_seq = sp.zeros_like(self._t_inv,dtype=int)
         #Determine the invasion pressures to apply
         self._t_cap = self._phase_inv['throat.'+self._p_cap]
-        if type(self._inv_points) == list:
+        if inv_points == None:
             min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
             max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
             self._logger.info('Generating list of invasion pressures')
             if min_p == 0:
                 min_p = sp.linspace(min_p,max_p,self._npts)[1]
             self._inv_points = sp.logspace(sp.log10(min_p),sp.log10(max_p),self._npts)
+        else:
+            self._inv_points = inv_points
         self._do_outer_iteration_stage()
 
     def _do_outer_iteration_stage(self):
@@ -126,7 +160,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         #Generate a tlist containing boolean values for throat state
         Tinvaded = self._t_cap<=inv_val
-        #Fill adjacency matrix with invasion state info
+        #Finding all pores that can be invaded at specified pressure
         clusters = self._net.find_clusters(Tinvaded)
         #Find all pores with at least 1 invaded throat (invaded)
         Pinvaded = sp.zeros_like(clusters,dtype=bool)
@@ -217,7 +251,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Apply saturation to pores and throats
         self._phase_inv['pore.inv_sat']=self['pore.inv_sat']
         self._phase_inv['throat.inv_sat']=self['throat.inv_sat']
-        
+
 
         if(sat != None):
             p_inv = self['pore.inv_sat']<=sat
