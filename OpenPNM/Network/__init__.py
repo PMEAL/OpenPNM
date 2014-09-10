@@ -5,12 +5,11 @@ r"""
 
 Contents
 --------
-GenericNetwork: Contains many classes for working with the topology of the
+**GenericNetwork** -- Contains many classes for working with the topology of the
 networks
 
-Subclasses: Inherit from GenericNetwork, and contain additional methods for
-actually generating topology.  Users can create thrir own topology generators
-by adding a file to the Network directory.  
+**Subclasses** -- Inherit from GenericNetwork, and contain additional methods for
+actually generating topology.
 
 Classes
 -------
@@ -34,3 +33,5 @@ from .__Cubic__ import Cubic
 from .__Delaunay__ import Delaunay
 from .__MatFile__ import MatFile
 from .__TestNet__ import TestNet
+
+

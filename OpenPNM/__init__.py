@@ -3,33 +3,31 @@ r"""
 :mod:`OpenPNM` --  A scientific pore network simulator for porous media transport
 ##################################################################################
 
-Documentation is available in the docstrings and in the Sphinx documentation.
-
-Contents
---------
-The OpenPNM package imports all the functions from the top level modules
+Documentation is available in the docstrings and in the on-line documentation.
 
 
 Subpackages
 -----------
 
-.. list-table:: OpenPNM submodule structure.
+.. list-table:: OpenPNM Submodule structure.
    :widths: 10 80
    :header-rows: 1
 
    * - Name
      - Description
-   * - :mod:`OpenPNM.Utilities`
-     - common utilities and classes used by most of the of the modules
    * - :mod:`OpenPNM.Network`
      - Storage and manipulations of network topoologies and data stored on them.
    * - :mod:`OpenPNM.Geometry`
      - Geometry for pore networks. (Random cubic, image based, Voronoi). Should also contain
        a mapper of the pore network back on the segmented image.
-   * - :mod:`OpenPNM.Algorithms`
-     - Module containing all algorithmic classes for networks.
    * - :mod:`OpenPNM.Physics`
      - Module containing pore scale physics models and equations.
+   * - :mod:`OpenPNM.Phases`
+     - Module containing thremophyics property estimation models.
+   * - :mod:`OpenPNM.Algorithms`
+     - Module containing all algorithmic classes for networks.
+   * - :mod:`OpenPNM.Utilities`
+     - common utilities and classes used by most of the of the modules
 
 Import
 ------
