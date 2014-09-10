@@ -49,7 +49,7 @@ def hagen_poiseuille(physics,
     gp1[~(gp1>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
     #gp2 = 2.28*(pdia[pores[:,1]]/2)**4/(pdia[pores[:,1]]*mut)
-    gp2 = 2.28*plen2*(pdia[Ps[:,1]])**2/(8*mut)
+    gp2 = _sp.pi*plen2*(pdia[Ps[:,1]])**2/(128*mut)
     gp2[~(gp2>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     tdia = network[throat_diameter]
