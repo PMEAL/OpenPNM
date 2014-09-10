@@ -259,14 +259,14 @@ class GenericNetwork(Core):
 
         Returns
         -------
-        Tnum : int
-            Returns throat number, or empty array if pores are not connected
+        Tnum : list of list of int
+            Returns throat number(s), or empty array if pores are not connected
             
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.find_connecting_throat(0,1)
-        array([0])
+        >>> pn.find_connecting_throat([0,1,2],[2,2,2])
+        [[], [3], []]
         
         TODO: This now works on 'vector' inputs, but is not actually vectorized
         in the Numpy sense, so could be slow with large P1,P2 inputs
@@ -274,6 +274,9 @@ class GenericNetwork(Core):
         Ts1 = self.find_neighbor_throats(P1,flatten=False)
         Ts2 = self.find_neighbor_throats(P2,flatten=False)
         Ts = []
+        if sp.shape(P1) == ():
+            P1 = [P1]
+            P2 = [P2]
         for row in range(0,len(P1)):
             if P1[row] == P2[row]:
                 throat = []
@@ -347,16 +350,16 @@ class GenericNetwork(Core):
             neighborPs = sp.concatenate((neighborPs,pores))
             #Remove references to input pores and duplicates
             if mode == 'not_intersection':
-                neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)==1)[0])
+                neighborPs = sp.array(sp.unique(sp.where(sp.bincount(neighborPs)==1)[0]),dtype=int)
             elif mode == 'union':
-                neighborPs = sp.unique(neighborPs)
+                neighborPs = sp.array(sp.unique(neighborPs),int)
             elif mode == 'intersection':
-                neighborPs = sp.unique(sp.where(sp.bincount(neighborPs)>1)[0])
+                neighborPs = sp.array(sp.unique(sp.where(sp.bincount(neighborPs)>1)[0]),dtype=int)
             if excl_self:
                 neighborPs = neighborPs[~sp.in1d(neighborPs,pores)]
         else:
             for i in range(0,sp.size(pores)):
-                neighborPs[i] = sp.array(neighborPs[i])
+                neighborPs[i] = sp.array(neighborPs[i],dtype=int)
         return sp.array(neighborPs,ndmin=1)
 
     def find_neighbor_throats(self,pores,mode='union',flatten=True):
@@ -455,7 +458,7 @@ class GenericNetwork(Core):
             num = sp.shape(neighborPs)[0]
         else:
             neighborPs = self.find_neighbor_pores(pores,flatten=False)
-            num = sp.zeros(sp.shape(neighborPs),dtype=sp.int8)
+            num = sp.zeros(sp.shape(neighborPs),dtype=int)
             for i in range(0,sp.shape(num)[0]):
                 num[i] = sp.size(neighborPs[i])
         return num
@@ -677,11 +680,15 @@ class GenericNetwork(Core):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.count()
-        {'pore': 125, 'throat': 300}
+        >>> pn.Np
+        125
+        >>> pn.Nt
+        300
         >>> pn.trim(pores=[1])
-        >>> pn.count()
-        {'pore': 124, 'throat': 296}
+        >>> pn.Np
+        124
+        >>> pn.Nt
+        296
         
         TODO: This logic works but can be shortened as done in subnet
         TODO: Enhance this to allow triming when phases and physics are present
@@ -815,7 +822,7 @@ class GenericNetwork(Core):
         Ps12 = sp.vstack((temp.row[mergedTs], temp.col[mergedTs])).T
         dupTs = []
         for i in range(0,sp.shape(Ps12)[0]):
-            dupTs.append(self.find_connecting_throat(Ps12[i,0],Ps12[i,1]))
+            dupTs.append(self.find_connecting_throat(Ps12[i,0],Ps12[i,1]).tolist)
         health['duplicate_throats'] = dupTs
         
         #Check for bidirectional throats

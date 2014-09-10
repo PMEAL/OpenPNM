@@ -41,8 +41,8 @@ class OrdinaryPercolation(GenericAlgorithm):
     >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
     >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
-    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn, name='OP')
-    >>> OP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'))
+    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn, name='OP',invading_phase=phase1, defending_phase=phase2)
+    >>> OP.run(inlets=pn.pores('top'))
     >>> med_Pc = sp.median(OP['pore.inv_Pc'])
     >>> OP.update_results(med_Pc)
     >>> print(len(phase1.pores('occupancy'))) #should return '71' filled pores if everything is working normally

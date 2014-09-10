@@ -23,6 +23,7 @@ setup(
               'OpenPNM.Base',
               'OpenPNM.Network',
               'OpenPNM.Network.models',
+              'OpenPNM.Network.examples',
               'OpenPNM.Geometry',
               'OpenPNM.Geometry.models',
               'OpenPNM.Phases',
@@ -39,5 +40,4 @@ setup(
     author_email='jeff.gostick@mcgill.ca',
     download_url='https://github.com/pmeal/OpenPNM/',
     url='https://github.com/pmeal/OpenPNM',
-
 )

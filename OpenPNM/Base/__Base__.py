@@ -115,7 +115,7 @@ class Base(dict):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo1')
+        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo1',pores=pn.Ps,throats=pn.Ts)
         >>> temp = pn._find_object(obj_name='geo1')
         >>> temp.name
         'geo1'
@@ -279,7 +279,7 @@ class Base(dict):
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo')
+        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo',pores=pn.Ps,throats=pn.Ts)
         >>> geom.name
         'geo'
         >>> pn.remove_object(obj_name='geo')

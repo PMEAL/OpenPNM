@@ -16,8 +16,8 @@ module __InvasionPercolation__: Invasion Percolation Algorithm
 import OpenPNM
 import scipy as sp
 import numpy as np
-from time import clock
 import heapq
+from OpenPNM.Utilities import misc
 
 from OpenPNM.Algorithms.__GenericAlgorithm__ import GenericAlgorithm
 
@@ -116,11 +116,11 @@ class InvasionPercolation(GenericAlgorithm):
         >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
         >>> IP = OpenPNM.Algorithms.InvasionPercolation(network=pn, name='IP')
         >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
-             IP algorithm at 0 % completion at 0 seconds
-             IP algorithm at 20 % completion at 0 seconds
-             IP algorithm at 40 % completion at 0 seconds
-             IP algorithm at 60 % completion at 0 seconds
-             IP algorithm at 100% completion at  0  seconds
+             IP algorithm at 0 % completion at 0.0 seconds
+             IP algorithm at 20 % completion at 0.0 seconds
+             IP algorithm at 40 % completion at 0.0 seconds
+             IP algorithm at 60 % completion at 0.0 seconds
+             IP algorithm at 100% completion at  0.0  seconds
         >>> IP.update_results()
         >>> max(phase1['pore.IP_inv_seq']) #unless something changed with our test objects, this should print "61"
         61
@@ -166,7 +166,7 @@ class InvasionPercolation(GenericAlgorithm):
         r"""
         Determines cluster labelling and condition for completion
         """
-        self._clock_start = clock()
+        self._clock_start = misc.tic()
         self._logger.debug( '+='*25)
         self._logger.debug( 'INITIAL SETUP (STEP 1)')
         # if empty, add Pc_entry to throat_properties
@@ -294,7 +294,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._logger.info( 'percent complete')
         self._logger.info( self._percent_complete)
         self._rough_complete = 0
-        print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds')
+        print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.round(misc.toc(quiet=True)),'seconds')
         self._logger.debug( '+='*25)
 
     def _do_outer_iteration_stage(self):
@@ -585,7 +585,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._percent_complete = np.round((np.sum(self._Pinv>0)/self._net.num_pores())*100, decimals = 1)
         if self._percent_complete > self._rough_complete + self._rough_increment:
             self._rough_complete = np.floor(self._percent_complete/self._rough_increment)*self._rough_increment
-            print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.int(np.round(clock())),'seconds')
+            print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.round(misc.toc(quiet=True)),'seconds')
 
 
         # Determine if a new breakthrough position has occured
@@ -612,7 +612,7 @@ class InvasionPercolation(GenericAlgorithm):
                 self._logger.info('at time')
                 self._logger.info(self._sim_time)
             self._condition = 0
-            print('     IP algorithm at 100% completion at ',np.int(np.round(clock())),' seconds')
+            print('     IP algorithm at 100% completion at ',np.round(misc.toc(quiet=True)),' seconds')
         # TODO Need to check how total condition will work, and end. All pores or all throats?
 #            self._condition = not self._Tinv.all()
 

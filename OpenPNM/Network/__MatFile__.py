@@ -34,12 +34,12 @@ class MatFile(GenericNetwork):
         xtra_throat_data = ['type','shape','material']
         any additional props to look for in the dictionary
 
-    Examples:
+    Examples
     ---------
     >>> fname = 'examples/test_pn' # or 'examples/test_pn.mat'
     >>> pn = OpenPNM.Network.MatFile(name='test_pn',filename=fname,xtra_pore_data='type',xtra_throat_data='type')
     
-    Notes:
+    Notes
     ------
     Matfiles should include the following variables
     
