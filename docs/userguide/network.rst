@@ -52,7 +52,8 @@ OpenPNM.Network.Cubic: 	demo
 ------------------------------------------------------------
 1     pore.coords                            27 / 27   
 2     pore.index                             27 / 27   
-3     throat.conns                           54 / 54   
+3     pore.subscript                         27 / 27   
+4     throat.conns                           54 / 54   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
@@ -67,7 +68,7 @@ OpenPNM.Network.Cubic: 	demo
 9     throat.all                          54        
 ------------------------------------------------------------
 
-The print-out of the network information shows that it has 27 pores and 54 throats, with properties of 'pore.coords', 'pore.index' and 'throat.conns'.  Because the ``Cubic`` class only generates the topology, there is not any information about pore and throat sizes.  The only requirements of a topology are that the pores have spatial locations (given by 'pore.coords') and throats know which two pores they connect ('throat.conns').  ('pore.index' is required for other purposes).  
+The print-out of the network information shows that it has 27 pores and 54 throats, with properties of 'pore.coords', 'pore.index', 'pore.subscript' and 'throat.conns'.  Because the ``Cubic`` class only generates the topology, there is not any information about pore and throat sizes.  The only requirements of a topology are that the pores have spatial locations (given by 'pore.coords') and throats know which two pores they connect ('throat.conns').  ('pore.index' is required for other purposes).
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Topology Queries
@@ -93,13 +94,14 @@ It is possible to add and remove pores and throats from the Network topology aft
 >>> pn.trim(pores=[0,2,4])
 >>> print(pn)
 ------------------------------------------------------------
-OpenPNM.Network.Cubic: 	Cubic_2xGW2
+OpenPNM.Network.Cubic: 	Cubic_c2E9N
 ------------------------------------------------------------
 #     Properties                          Valid Values
 ------------------------------------------------------------
 1     pore.coords                            24 / 24   
 2     pore.index                             24 / 24   
-3     throat.conns                           43 / 43   
+3     pore.subscript                         24 / 24   
+4     throat.conns                           43 / 43   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------

@@ -28,7 +28,7 @@ The 5 objects listed above interact with each other to create a 'simulation'.  W
     :align: center
     :alt: alternate text
     :figclass: align-left
-	
+
     *Object relationship diagram for an arbitrary simulation with 3 Geometries, 2 Phases, 3 Physics and 3 Algorithms.  These numbers are entirely dependent on the model.*
 
 	
@@ -49,7 +49,8 @@ OpenPNM.Network.Cubic: 	net1
 ------------------------------------------------------------
 1     pore.coords                            27 / 27   
 2     pore.index                             27 / 27   
-3     throat.conns                           54 / 54   
+3     pore.subscript                         27 / 27   
+4     throat.conns                           54 / 54   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
@@ -133,7 +134,7 @@ Notice that pores and throats were *not* sent to the GenericPhase constructor.  
 ===============================================================================
 Physics
 ===============================================================================
-When performing a pore network simulation, one of the main aims to combine phase properties with geometry sizes to estimate the behavior of a fluid as it moves through the pore space.  The pore-scale physics models required for this are managed by Physics objects:
+When performing a pore network simulation, one of the main aims is to combine phase properties with geometry sizes to estimate the behavior of a fluid as it moves through the pore space.  The pore-scale physics models required for this are managed by Physics objects:
 
 >>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores('all'),throats=pn.throats('all'))
 >>> print(phys)
@@ -162,7 +163,7 @@ Algorithms
 ===============================================================================
 The final step in performing a pore network simulation is to run some algorithms to model transport processes in the network.  OpenPNM comes with numerous algorithms, such as ``FickianDiffusion`` for modeling diffusion mass transport:
 
->>> alg = OpenPNM.Algorithms.FickianDiffusion(network=pn)
+>>> alg = OpenPNM.Algorithms.FickianDiffusion(network=pn, phase=air)
 >>> Ps1 = pn.pores(labels=['top'])
 >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=Ps1)
 >>> Ps2 = pn.pores(labels=['bottom'])
@@ -170,24 +171,24 @@ The final step in performing a pore network simulation is to run some algorithms
 >>> alg.run(phase=air)
 >>> print(alg)
 ------------------------------------------------------------
-OpenPNM.Algorithms.FickianDiffusion: 	FickianDiffusion_TgV9F
+OpenPNM.Algorithms.FickianDiffusion: 	FickianDiffusion_kr2XO
 ------------------------------------------------------------
 #     Properties                          Valid Values
 ------------------------------------------------------------
-1     pore.bcval_Dirichlet                   18 / 27   
-2     pore.mole_fraction                     27 / 27   
+1     pore.air_bcval_Dirichlet               18 / 27   
+2     pore.air_mole_fraction                 27 / 27   
 3     throat.conductance                     54 / 54   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
-1     pore.Dirichlet                      18        
+1     pore.air_Dirichlet                  18        
 2     pore.all                            27        
 3     throat.all                          54        
 ------------------------------------------------------------
 
-As can be seen in the above print-out, the Algorithm object contains some boundary condition related properties and labels, but more importantly, it contains 'pore.mole_fraction' which is the result of the ``FickianAlgorithm`` simulation.  Each algorithm in OpenPNM will produce a different result with a different name, and this data stays encapsulated in the Algorithm object unless otherwise desired.  For instance, if the 'pore.mole_fraction' data is required in another algorithm, then it is necessary to write it to 'air':
+As can be seen in the above print-out, the Algorithm object contains some boundary condition related properties and labels, but more importantly, it contains 'pore.air_mole_fraction' which is the result of the ``FickianAlgorithm`` simulation.  Each algorithm in OpenPNM will produce a different result with a different name, and this data stays encapsulated in the Algorithm object unless otherwise desired.  For instance, if the 'pore.air_mole_fraction' data is required in another algorithm, then it is necessary to write it to 'air':
 
->>> air['pore.mole_fraction'] = alg['pore.mole_fraction']
+>>> air['pore.air_mole_fraction'] = alg['pore.air_mole_fraction']
 
 More detailed information about Algorithm objects can be found in the :ref:`Algorithm Documentation<algorithms>`
 
