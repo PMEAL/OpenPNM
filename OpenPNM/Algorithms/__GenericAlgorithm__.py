@@ -144,22 +144,24 @@ class GenericAlgorithm(OpenPNM.Base.Core):
                             try:
                                 del self[element+'.'+component.name+'_bcval_'+bctype]
                             except: pass
-                            del self[item]
-                    self._logger.debug('Removing '+bctype+' from all locations in '+self.name)
+                            try:
+                                del self[element+'.'+component.name+'_'+bctype]
+                            except: pass
+                    self._logger.debug('Removing '+bctype+' from all locations for '+component.name+' in '+self.name)
                     self._existing_BC.remove(bctype)
             else:
                 if pores!=[]:
                     if bctype!='':
                         self['pore.'+component.name+'_bcval_'+bctype][pores] = sp.nan
                         self['pore.'+component.name+'_'+bctype][pores] = False
-                        self._logger.debug('Removing '+bctype+' from the specified pores in '+self.name)
+                        self._logger.debug('Removing '+bctype+' from the specified pores for '+component.name+' in '+self.name)
                     else:   raise Exception('Cannot remove BC from the pores unless bctype is specified')
 
                 if throats!=[]:
                     if bctype!='':
                         self['throat.'+component.name+'_bcval_'+bctype][throats] = sp.nan
                         self['throat.'+component.name+'_'+bctype][throats] = False
-                        self._logger.debug('Removing '+bctype+' from the specified throats in '+self.name)
+                        self._logger.debug('Removing '+bctype+' from the specified throats for '+component.name+' in '+self.name)
                     else:   raise Exception('Cannot remove BC from the throats unless bctype is specified')
 
             return
