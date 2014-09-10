@@ -53,6 +53,5 @@ from . import Phases
 from . import Physics
 from . import Algorithms
 from . import Postprocessing
-from .Network import models
 
 

@@ -82,8 +82,8 @@ class Cubic(GenericNetwork):
         self['pore.top']      = z >= z.max()
         
         #Add some topology models to the Network
-        mod = OpenPNM.Network.models.pore_topology.get_subscripts
-        self.add_model(propname='pore.subscript',model=mod,shape=self._shape)
+#        mod = OpenPNM.Network.models.pore_topology.get_subscripts
+#        self.add_model(propname='pore.subscript',model=mod,shape=self._shape)
         
         #If an image was sent as 'template', then trim network to image shape
         if template != None:
