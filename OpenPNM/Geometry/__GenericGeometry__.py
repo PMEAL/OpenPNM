@@ -76,12 +76,26 @@ class GenericGeometry(Core):
         throat locations on the object.  
         '''
         if pores != []:
+            #Check for existing Geometry in pores
+            temp = sp.zeros((self._net.Np,),bool)
+            for key in self._net.geometries():
+                temp += self._net['pore.'+key]
+            overlaps = sp.sum(temp*self._net.tomask(pores=pores))
+            if overlaps > 0:
+                raise Exception('The given pores overlap with an existing Geometry object')
             #Initialize locations
             self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
             self['pore.map'] = pores
             #Specify Geometry locations in Network dictionary
             self._net['pore.'+self.name][pores] = True
         if throats != []:
+            #Check for existing Geometry in pores
+            temp = sp.zeros((self._net.Nt,),bool)
+            for key in self._net.geometries():
+                temp += self._net['throat.'+key]
+            overlaps = sp.sum(temp*self._net.tomask(throats=throats))
+            if overlaps > 0:
+                raise Exception('The given throats overlap with an existing Geometry object')
             #Initialize locations
             self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
             self['throat.map'] = throats
