@@ -33,7 +33,7 @@ The ``set_boundary_conditions`` method in the GenericAlgorithm class *can be* us
 
 The ``set_boundary_conditions`` method does two things: it creates a 'label' dictionary on the Algorithm object named according to the name of the component and also the type of boundary conditions applied, and applies that label to the specified locations. It also creates a 'property' dictionary with the specified boundary values in the specified pores or throats.
 
-For transport simulations, the 'bctype' argument should be one of the 'reserved' keywords: 'Dirichlet', 'Neumann' and 'Neumann_group'. The first two should be self-explanatory, and the last one means that the total rate through 'all' the specified locations set.
+For transport simulations, the 'bctype' argument can be only one of the 'reserved' keywords: 'Dirichlet', 'Neumann' and 'Neumann_group'. The first two keywords are self-explanatory, and the last one means that the total rate through 'all' the specified locations has been set.
 
 If no component is sent, the boundary conditions will be applied to the phase which is attached to the algorithm.
 
@@ -70,7 +70,7 @@ It applies a fluid flow transport equation such as Hagen-Poiseuille equation and
 -------------------------------------------------------------------------------
 OhmicConduction
 -------------------------------------------------------------------------------
-It applies Ohm equation to simulate electron or ionic conduction and uses the electronic conductance of the desired phase to determine the voltage of that phase in each pore.  
+It applies Ohm equation to simulate electron or ion conduction and uses the electronic conductance of the desired phase to determine the voltage of that phase in each pore.  
 
 -------------------------------------------------------------------------------
 FourierConduction
@@ -80,12 +80,12 @@ It applies Fourier equation to simulate heat conduction and uses the thermal con
 -------------------------------------------------------------------------------
 OrdinaryPercolation
 -------------------------------------------------------------------------------
-in progress
+OpenPNM includes a percolation algorithm for simulating drainage capillary pressure curves, where a specified pressure is applied and the volume of non-wetting liquid injected is monitored.  The most common version of this experiment is Mercury Intrusion Porosimetry, which is commonly used to measure pore size distributions.  The drainage process can be best simulated with a so-called 'access limited ordinary percolation' algorithm (ALOP).  ALOP is available as an additional option for this ordinary percolation algorithm.   
 
 -------------------------------------------------------------------------------
 InvasionPercolation
 -------------------------------------------------------------------------------
-in progress
+Documentation in progress
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Creating Customized Algorithms
