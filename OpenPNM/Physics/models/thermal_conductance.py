@@ -17,7 +17,7 @@ def series_resistors(physics,
                      throat_length = 'throat.length',
                      **kwargs):
     r"""
-    Calculate the thermal conductance of void conduits in network ( 1/2 pore - full throat - 1/2 pore ) based on size
+    Calculate the thermal conductance of void conduits in network ( 1/2 pore - full throat - 1/2 pore ) based on size (assuming cylindrical geometry)
 
     Parameters
     ----------
