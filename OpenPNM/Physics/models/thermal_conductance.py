@@ -35,10 +35,16 @@ def series_resistors(physics,
     #Find g for half of pore 1
     pdia = network[pore_diameter]
     parea = network[pore_area]
-    gp1 = kt*parea[pores[:,0]]/(0.5*pdia[pores[:,0]])
+    pdia1 = pdia[pores[:,0]]
+    pdia2 = pdia[pores[:,1]]
+    #remove any non-positive lengths
+    pdia1[pdia1<=0] = 1e-12
+    pdia2[pdia2<=0] = 1e-12    
+    
+    gp1 = kt*parea[pores[:,0]]/(0.5*pdia1)
     gp1[~(gp1>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
-    gp2 = kt*parea[pores[:,1]]/(0.5*pdia[pores[:,1]])
+    gp2 = kt*parea[pores[:,1]]/(0.5*pdia2)
     gp2[~(gp2>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     tarea = network[throat_area]
