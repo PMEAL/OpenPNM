@@ -144,8 +144,8 @@ To run our ordinary percolation, we will:
     #prevents extremely small diffusivity and permeability values in the z direction
     used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
     
-    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl)
-    OP_1.run(invading_phase = water, defending_phase = air, inlets = used_inlets,npts=100)
+    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,invading_phase=water,defending_phase=air)
+    OP_1.run(inlets=used_inlets,npts=100)
 
 This algorithm performed a start to finish simulation, which fully flooded the network. The 'update_results()' command can be used to update the phase occupancy values throughout the network. 
 
@@ -404,8 +404,8 @@ References
     #prevents extremely small diffusivity and permeability values in the z direction
     used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
     
-    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,loglevel=30)
-    OP_1.run(invading_phase = water, defending_phase = air, inlets = used_inlets,npts=100)
+    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,loglevel=30,invading_phase=water,defending_phase=air)
+    OP_1.run(inlets = used_inlets,npts=100)
     
     sat = []
     perm_air = {'0': [], '1': [], '2': []}
