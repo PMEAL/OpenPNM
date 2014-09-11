@@ -49,7 +49,7 @@ class Voronoi(GenericGeometry):
         self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
-                       seed=None)
+                       seed=self._seed)
         self.add_model(propname='throat.seed',
                        model=gm.throat_misc.neighbor,
                        pore_prop='pore.seed',

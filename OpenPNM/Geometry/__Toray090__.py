@@ -36,7 +36,7 @@ class Toray090(GenericGeometry):
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        num_range=[0,0.95],
-                       seed=None)
+                       seed=self._seed)
         self.remove_model('pore.seed')
         self.add_model(propname='throat.seed',
                        model=gm.throat_misc.neighbor,

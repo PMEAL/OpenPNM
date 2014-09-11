@@ -33,7 +33,7 @@ class Cube_and_Cuboid(GenericGeometry):
         '''        
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
-                       seed=None)
+                       seed=self._seed)
         self.add_model(propname='throat.seed',
                        model=gm.throat_misc.neighbor,
                        pore_prop='pore.seed',

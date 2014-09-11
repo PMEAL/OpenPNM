@@ -34,7 +34,7 @@ class Stick_and_Ball(GenericGeometry):
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        regen_mode='constant',
-                       seed=None)
+                       seed=self._seed)
         self.add_model(propname='throat.seed',
                        model=gm.throat_misc.neighbor,
                        mode='min')

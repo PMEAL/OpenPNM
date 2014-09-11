@@ -36,7 +36,7 @@ class GenericGeometry(Core):
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)
     """
 
-    def __init__(self,network=None,pores=[],throats=[],name=None,**kwargs):
+    def __init__(self,network=None,pores=[],throats=[],name=None,seed=None,**kwargs):
         r"""
         Initialize
         """
@@ -58,6 +58,7 @@ class GenericGeometry(Core):
         self._net['pore.'+self.name] = False
         self._net['throat.'+self.name] = False
         self.set_locations(pores=pores,throats=throats)
+        self._seed = seed
 
     def set_locations(self,pores=[],throats=[]):
         r'''
