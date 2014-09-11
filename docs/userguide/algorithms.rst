@@ -52,13 +52,15 @@ OpenPNM comes with several of the most common and widely used algorithms.  These
 -------------------------------------------------------------------------------
 Transport Algorithms
 -------------------------------------------------------------------------------
-By using pore scale physics, OpenPNM is capable of simulating Fickian diffusion, permeability calculation, heat and electron conduction through the phases in the network.  In each of these algorithms, applying the conservation equation to each pore yields a sparse set of linear equations that can be solved with the appropriate boundary conditions to give the values of the desired quantity in each pore.
+By using pore scale physics, OpenPNM is capable of simulating Fickian diffusion, permeability calculation, heat and electron conduction through the phases in the network.  
+
+In each of these algorithms, by using pipe network (or electrical resistor network) analogy, transport conductance of each conduit (a throat plus half of each adjoining pore) will be calculated.  Then, applying the conservation equation to each pore yields a sparse set of linear equations that can be solved with the appropriate boundary conditions to give the values of the desired quantity in each pore.
 
 
 -------------------------------------------------------------------------------
 FickianDiffusion
 -------------------------------------------------------------------------------
-in progress
+It applies Fickian diffusion equation to determine mole fraction in each pore.  This binary diffusion algorithm, can be used for  unimolecular diffusion or equimolar counter diffusion.  In the case of unimolecular diffusion, however, the conversion of the mole fraction and BCs should take place outside of the algorithm.
 
 -------------------------------------------------------------------------------
 StokesFlow
