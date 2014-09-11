@@ -9,6 +9,29 @@ Models for predicting phase viscosity
 """
 import scipy as sp
 
+def poly(phase,a0,a1,a2,a3,**kwargs):
+    r"""
+    Uses a polynomial best fit correlation for the temperature dependance of 
+    viscosity adapted from [1]_ with a range from 80 to 2000 K for air. The model
+    can be used also with any gas or liquid if the correlation coefficients 
+    are generated using any best fit software (e.g. Excel)
+    
+    Parameters
+    ----------
+    a0, a1, a2, a3 : float, array_like
+            Coefficients of the viscosity polynomial model 
+            (mu = a0 + a1*T + a2*T^2 + a3*T^3)
+            where T is the temperature in Kelvin
+            
+    [1] Thermophysical Properties of Matter Vol. 11: 
+    Viscosity,  Y.S. Touloukian, S.C. Saxena, and P. Hestermans
+    IFI/Plenun, NY, 1970, ISBN 0-306067020-8 
+    
+    """
+    T = phase['pore.temperature']
+    value = a0+a1*T+a2*(T**2)+a3*(T**3)
+    return value
+
 def reynolds(phase,uo,b,**kwargs):
     r"""
     Uses exponential model by Reynolds [1]_ for the temperature dependance of 
@@ -24,7 +47,7 @@ def reynolds(phase,uo,b,**kwargs):
     
     """
     T = phase['pore.temperature']
-    value = uo*sp.exp(-1*b*T)
+    value = uo*sp.exp(b*T)
     return value
 
 def chung(phase,MW='molecular_weight',Tc='critical_temperature',Vc='critical_volume',**kwargs):

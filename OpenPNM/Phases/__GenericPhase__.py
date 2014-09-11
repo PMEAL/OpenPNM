@@ -12,7 +12,7 @@ import scipy as sp
 class GenericPhase(Core):
     r"""
     Base class to generate a generic phase object.  The user must specify models
-    and parameters for the all the properties they require. Classes for several
+    and parameters for all the properties they require. Classes for several
     common phases are included with OpenPNM and can be found under OpenPNM.Phases.
 
     Parameters
@@ -22,10 +22,10 @@ class GenericPhase(Core):
         
     components : list of OpenPNM Phase objects
         These Phase objects are ficticious or virtual phases that are the pure
-        components from which the mixture is made.  These are used to calculate
+        components from which the mixture is made.  They are used to calculate
         and store any pure component data.  If none are supplied then this 
         object will act like either a pure component, a mixture whose properties
-        are well known (like air) and need not be found from consideration of
+        are well known (like air) and need not to be found from consideration of
         the pure component properties.
         
     name : str, optional

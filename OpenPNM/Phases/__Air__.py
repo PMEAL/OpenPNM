@@ -16,6 +16,7 @@ class Air(GenericPhase):
     -----
     This explicit association is necessary so the Phase object can initialize
     data arrays of the correct size to store network data.
+    The initial properties are all at std conditions of T = 298 K and P = 1 atm.
     
     Examples
     --------
@@ -28,22 +29,19 @@ class Air(GenericPhase):
         self._generate()
         
     def _generate(self):
-        self.add_model(propname='pore.diffusivity',
-                       model=fm.diffusivity.fuller,
-                       MA=18,
-                       MB=20,
-                       vA=1,
-                       vB=1)
-        self.add_model(propname='pore.molar_density',
-                       model=fm.molar_density.ideal_gas)
-        self.add_model(propname='pore.viscosity',
-                       model=fm.viscosity.reynolds,
-                       uo=9.16656E-6,
-                       b=-2.34621E-3)
-        self['pore.molecular_weight'] = 28.97
-        self['pore.critical_temperature'] = 132.5
-        self['pore.critical_pressure'] = 37.25*101325
-
+        self['pore.molecular_weight'] = 28.96       # kg/kmole
+        self['pore.critical_pressure'] = 3.786E6    # Pascal
+        self['pore.critical_temperature'] = 132.5   # Kelvin
+        self['pore.critical_volume'] = 0.002917     # kg/m3
+        self['pore.contact_angle'] = 110.0          # Degree 
+        self['pore.density'] = 1.185                # kg/m3
+        self['pore.diffusivity'] = 5.4785E-6        # m2/s
+        self['pore.molar_density'] = 0.0409         # kmole/m3
+        self['pore.surface_tension'] = 275.5E-6     # N/m
+        self['pore.thermal_conductivity'] = 0.02624 # W/m.K      
+        self['pore.viscosity'] = 18.44E-6           # kg/m.s                      
+        
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()
     air = OpenPNM.Phases.Air(network=pn)
+    
