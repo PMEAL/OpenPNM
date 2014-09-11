@@ -50,9 +50,9 @@ Overview of Included Algorithms
 OpenPNM comes with several of the most common and widely used algorithms.  These include simulating transport phenomena in the pore space, ordinary percolation to simulate a drainage experiment, and invasion percolation to simulate fluid infiltration.
 
 -------------------------------------------------------------------------------
-Transport Algorithms
+Steady State Transport Algorithms
 -------------------------------------------------------------------------------
-By using pore scale physics, OpenPNM is capable of simulating Fickian diffusion, permeability calculation, heat and electron conduction through the phases in the network.  
+By using pore scale physics, OpenPNM is capable of steady state simulation of Fickian diffusion, permeability calculation, heat and electron conduction through the phases in the network.  
 
 In each of these algorithms, by using pipe network (or electrical resistor network) analogy, transport conductance of each conduit (a throat plus half of each adjoining pore) will be calculated.  Then, applying the conservation equation to each pore yields a sparse set of linear equations that can be solved with the appropriate boundary conditions to give the values of the desired quantity in each pore.
 
@@ -60,22 +60,22 @@ In each of these algorithms, by using pipe network (or electrical resistor netwo
 -------------------------------------------------------------------------------
 FickianDiffusion
 -------------------------------------------------------------------------------
-It applies Fickian diffusion equation and uses the diffusive conductance of a desired phase to determine the mole fraction of that phase in each pore.  This binary diffusion algorithm, can be used for  unimolecular diffusion or equimolar counter diffusion.  In the case of unimolecular diffusion, however, the conversion of the mole fraction and BCs should take place outside of the algorithm.
+It applies Fickian diffusion equation and uses the diffusive conductance of the desired phase to determine the mole fraction of that phase in each pore.  This binary diffusion algorithm, can be used for  unimolecular diffusion or equimolar counter diffusion.  In the case of unimolecular diffusion, however, the conversion of the mole fraction and BCs should take place outside of the algorithm.
 
 -------------------------------------------------------------------------------
 StokesFlow
 -------------------------------------------------------------------------------
-It applies a fluid flow transport equation such as Hagen-Poiseuille equation and uses the hydraulic conductance of a desired phase to determine the pressure of that phase in each pore.  
+It applies a fluid flow transport equation such as Hagen-Poiseuille equation and uses the hydraulic conductance of the desired phase to determine the pressure of that phase in each pore.  
 
 -------------------------------------------------------------------------------
 OhmicConduction
 -------------------------------------------------------------------------------
-in progress
+It applies Ohm equation to simulate electron or ionic conduction and uses the electronic conductance of the desired phase to determine the voltage of that phase in each pore.  
 
 -------------------------------------------------------------------------------
 FourierConduction
 -------------------------------------------------------------------------------
-in progress
+It applies Fourier equation to simulate heat conduction and uses the thermal conductance of the desired phase to determine the temperature of that phase in each pore.  
 
 -------------------------------------------------------------------------------
 OrdinaryPercolation
