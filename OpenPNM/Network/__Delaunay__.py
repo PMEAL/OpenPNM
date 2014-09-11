@@ -36,8 +36,7 @@ class Delaunay(GenericNetwork):
 
     Examples
     --------
-    >>> pn = OpenPNM.Network.Delaunay()
-    >>> pn.generate(num_pores=100,domain_size=[100,100,100],add_boundaries=0)
+    >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[0.0001,0.0001,0.0001],name='net')
     >>> pn.num_pores()
     100
 
@@ -217,9 +216,18 @@ class Delaunay(GenericNetwork):
         align with the outer planes of the domain.
         The original pores in the domain are labelled internal and the boundary pores
         are labelled external
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[0.0001,0.0001,0.0001],name='net')
+        >>> pn.add_boundaries()
+        >>> pn.num_pores("boundary")>0
+        True
+        >>> pn.num_pores("left_boundary") + pn.num_pores("right_boundary") + pn.num_pores("top_boundary") + pn.num_pores("bottom_boundary") + pn.num_pores("back_boundary") + pn.num_pores("front_boundary") == pn.num_pores("boundary")
+        True
         '''
         #Add new pores at external throat centers to create coplanar boundaries
-        self.boundary_pores()
+        self._boundary_pores()
         external_pores = self.pores(labels='internal',mode='difference')
         external_throats = self.throats(labels='internal',mode='difference')
         self.set_info(pores=external_pores,label='external')
@@ -431,6 +439,11 @@ class Delaunay(GenericNetwork):
         self._net.throat_data['conns'] =  np.concatenate((self._net.throat_data['conns'],bt_connections))
     
     def domain_size(self,dimension=''):
+        r"""
+        This is a simple way to find the domain sizes.
+        N.B 
+        Will not work with saved and loaded networks
+        """
         if dimension == 'front' or dimension == 'back':
             return self._Ly*self._Lz
         if dimension == 'left' or dimension == 'right':
@@ -446,7 +459,7 @@ class Delaunay(GenericNetwork):
         if dimension == 'depth':
             return self._Ly
     
-    def boundary_pores(self):
+    def _boundary_pores(self):
         r"""
         This method runs through the boundary pores and identifies the throats 
         that align with the boundary plane. As there are no connections to the 
@@ -547,12 +560,27 @@ class Delaunay(GenericNetwork):
         determined and the appropriate length (x,y,z) is returned.  It should 
         work the same as domain length and area if vertices are not in network 
         by using coordinates.
-        
-        e.g.    vertex_extent(face1=inlet,face2=outlet,parm='volume')
-                vertex_extent(geom.pores(),parm='area_xy')
-                vertex_extent(face1=inlet,parm='area')
-                vertex_extent(face1=inlet,face2=outlet,parm='length')
-
+ 
+        Example
+        ----------
+        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1],name='net')
+        >>> pn.add_boundaries()
+        >>> B1 = pn.pores("left_boundary")
+        >>> B2 = pn.pores("right_boundary")
+        >>> pn.vertex_dimension(B1,B2,'volume')
+        6.0
+        >>> pn.vertex_dimension(B1,B2,'area')
+        3.0
+        >>> pn.vertex_dimension(B1,B2,'length')
+        2.0
+        >>> pn.vertex_dimension(B1,B2,'area_xy')
+        6.0
+        >>> pn.vertex_dimension(B1,B2,'area_yz')
+        2.0
+        >>> pn.vertex_dimension(B1,B2,'area_xz')
+        3.0
+        >>> pn.vertex_dimension(B1,B2,'minmax')
+        [0.0, 3.0, 0.0, 2.0, 0.0, 1.0]
         """
         pores=np.array([],dtype=int)
         if len(face1)>0:
@@ -628,6 +656,15 @@ class Delaunay(GenericNetwork):
         r"""
         Returns the distance between two faces
         No coplanar checking this is done in vertex_dimension
+        
+        Example
+        --------
+        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1],name='net')
+        >>> pn.add_boundaries()
+        >>> B1 = pn.pores("left_boundary")
+        >>> B2 = pn.pores("right_boundary")
+        >>> pn.domain_length(B1,B2)
+        2.0
         """
         L = self.vertex_dimension(face_1,face_2,parm='length')
         return L
@@ -636,6 +673,14 @@ class Delaunay(GenericNetwork):
         r"""
         Returns the area of a face
         No coplanar checking this is done in vertex_dimension
+        Example
+        --------
+        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1],name='net')
+        >>> pn.add_boundaries()
+        >>> B1 = pn.pores("left_boundary")
+        >>> B2 = pn.pores("right_boundary")
+        >>> pn.domain_area(B1)
+        3.0
         """
         A = self.vertex_dimension(face,parm='area')
 		
