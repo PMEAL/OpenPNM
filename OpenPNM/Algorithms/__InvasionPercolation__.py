@@ -115,15 +115,12 @@ class InvasionPercolation(GenericAlgorithm):
         >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
         >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
         >>> IP = OpenPNM.Algorithms.InvasionPercolation(network=pn, name='IP')
-        >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
+        >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'),report=0)
              IP algorithm at 0 % completion at 0.0 seconds
-             IP algorithm at 20 % completion at 0.0 seconds
-             IP algorithm at 40 % completion at 0.0 seconds
-             IP algorithm at 60 % completion at 0.0 seconds
              IP algorithm at 100% completion at  0.0  seconds
         >>> IP.update_results()
-        >>> max(phase1['pore.IP_inv_seq']) #unless something changed with our test objects, this should print "61"
-        61
+        >>> max(phase1['pore.IP_inv_seq']) #unless something changed with our test objects, this should print "60"
+        60
 
         Suggested Improvements ::
 
@@ -410,12 +407,6 @@ class InvasionPercolation(GenericAlgorithm):
                     self._logger.info(self._sim_time)
                 # update the cluster transform
                 self._cluster_data['transform'][self._cluster_data['transform']==maxCluster] = [curCluster][0]
-                # relabel all pores and throats from larger number with smaller number
-                cluster_pores = self.toindices((self['pore.cluster_final']==maxCluster) + (self['pore.cluster_final']==curCluster))
-                cluster_throats = self.toindices((self['throat.cluster_final']==maxCluster) + (self['throat.cluster_final']==curCluster))
-                cluster_int_throats = list(zip(*self._tpoints[curCluster-1]))[1] + list(zip(*self._tpoints[maxCluster-1]))[1]
-                self._cluster_data['flow_rate'][curCluster-1] += self._cluster_data['flow_rate'][maxCluster-1]
-                self.cluster_update(curCluster,cluster_pores,cluster_throats,cluster_int_throats,tinvade)
                 # check if either was inactive (broke through already)
                 if self._cluster_data['active'][maxCluster-1] + self._cluster_data['active'][self._current_cluster-1]<2:
                     self._logger.debug('making clusters ')
@@ -428,6 +419,13 @@ class InvasionPercolation(GenericAlgorithm):
                     self.cluster_remove(curCluster)
                     self._logger.info(' ')
                     self._logger.info('CLUSTER MERGED WITH A BREAKTHROUGH CLUSTER')
+                else:
+                    # relabel all pores and throats from larger number with smaller number
+                    cluster_pores = self.toindices((self['pore.cluster_final']==maxCluster) + (self['pore.cluster_final']==curCluster))
+                    cluster_throats = self.toindices((self['throat.cluster_final']==maxCluster) + (self['throat.cluster_final']==curCluster))
+                    cluster_int_throats = list(zip(*self._tpoints[curCluster-1]))[1] + list(zip(*self._tpoints[maxCluster-1]))[1]
+                    self._cluster_data['flow_rate'][curCluster-1] += self._cluster_data['flow_rate'][maxCluster-1]
+                    self.cluster_update(curCluster,cluster_pores,cluster_throats,cluster_int_throats,tinvade)
                 self._logger.info('making cluster ')
                 self._logger.info(maxCluster)
                 self._logger.info('inactive due to merge')
