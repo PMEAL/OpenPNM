@@ -52,7 +52,7 @@ OpenPNM comes with several of the most common and widely used algorithms.  These
 -------------------------------------------------------------------------------
 Transport Algorithms
 -------------------------------------------------------------------------------
-By using pore scale physics, OpenPNM is capable of simulating Fickian diffusion, permeability calculation, heat and electron conduction through the phases in the network.  
+By using pore scale physics, OpenPNM is capable of simulating Fickian diffusion, permeability calculation, heat and electron conduction through the phases in the network.  In each of these algorithms, applying the conservation equation to each pore yields a sparse set of linear equations that can be solved with the appropriate boundary conditions to give the values of the desired quantity in each pore.
 
 
 -------------------------------------------------------------------------------
