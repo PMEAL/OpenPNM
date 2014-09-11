@@ -61,37 +61,37 @@ All algorithms in OpenPNM are independent objects. The Fickian diffusion algorit
 
 .. code-block:: python
 
-	alg = OpenPNM.Algorithms.FickianDiffusion(network=pn, loglevel=20)
+	alg = OpenPNM.Algorithms.FickianDiffusion(network=pn, loglevel=20,phase=air)
 
 -------------------------------------------------------------------------------
 Apply Dirichlet Conditions to Two Faces
 -------------------------------------------------------------------------------
 
-Now this algorithm needs to know about the boundary conditions which are to be applied.  Let's start by defining Dirichlet conditions on two opposite faces.  This is done by first finding the pore indices that correspond to the two faces.  The generation of cubic networks automatically adds pores to the network with the label of the different faces.  Let's use the 'top_face' and 'bottom_face' for this and apply Dirichlet boundary conditions to both and apply a numerical value for the boundary conditions:
+Now this algorithm needs to know about the boundary conditions which are to be applied.  Let's start by defining Dirichlet conditions on two opposite faces.  This is done by first finding the pore indices that correspond to the two faces.  The generation of cubic networks automatically adds pores to the network with the label of the different faces.  Let's use the 'top_boundary' and 'bottom_boundary' for this and apply Dirichlet boundary conditions to both and apply a numerical value for the boundary conditions:
 
 .. code-block:: python
 
-	BC1_pores = pn.pores(labels=['top_face'])
+	BC1_pores = pn.pores(labels=['top_boundary'])
 	alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
-	BC2_pores = pn.pores(labels=['bottom_face'])
+	BC2_pores = pn.pores(labels=['bottom_boundary'])
 	alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
 
-The above code adds the Dirichlet boundary conditions to both the pores at the 'top_face' and the 'bottom_face'.  The Fickian algorithm looks for this specific label when analyzing and setting up the problem.  Note that the the above code uses the *setter* method associated with the Algorithm object, not the pore network object.  This means that the pore labels will only be applied to this specific algorithm. This is designed to allow multiple algorithms to exist simultaneously without interfering with each other.
+The above code adds the Dirichlet boundary conditions to both the pores at the 'top_boundary' and the 'bottom_boundary'.  The Fickian algorithm looks for this specific label when analyzing and setting up the problem.  Note that the boundary condition labels will only be applied to this specific algorithm. This is designed to allow multiple algorithms to exist simultaneously without interfering with each other.
 
-Note again that the *setter* method of the algorithm was used to keep these boundary conditions isolated from other algorithms. Once the boundary conditions are specified, the algorithm can be run quite simply as:
+Once the boundary conditions are specified, the algorithm can be run quite simply as:
 
 .. code-block:: python
 
-	alg.run(conductance='throat.diffusive_conductance',phase=air)
+	alg.run(conductance='throat.diffusive_conductance')
 
 
-This runs the algorithm using 'throat.diffusive_conductance' as the model for conductance and air as the phase. The results are then stored on the Algorithm object.  This is done to prevent simultaneous objects from interfering with each other.  If and when the results of an Algorithm are required by the network model they must be explicitly sent *out* using:
+This runs the algorithm using 'throat.diffusive_conductance' as the conductance. The results are then stored on the Algorithm object.  This is done to prevent simultaneous objects from interfering with each other.  If and when the results of an Algorithm are required by the network model they must be explicitly sent *out* using:
 
 .. code-block:: python
 
 	alg.update_results()
 
-Each Algorithm must subclass the `update_results()` method so that it sends the correct information out the network and/or phase.  In the case of the Fickian Algorithm, the 'mole_fraction' of the active_phase is stored on the Phases object in question.  Running a different version of the Algorithm and calling `update()` will overwrite any previous values.  The results of this simulation should produce the following visualization (done in Paraview):
+Each Algorithm must subclass the `update_results()` method so that it sends the correct information out the network and/or phase.  In the case of the Fickian Algorithm, the 'mole_fraction' of the phase is stored on the Phase object in question.  Running a different version of the Algorithm and calling `update_results()` will overwrite any previous values.  The results of this simulation should produce the following visualization (done in Paraview):
 
 .. image:: BC1.png
 
@@ -105,7 +105,7 @@ The code below sets the total rate leaving a group of pores cumulatively.  Note 
 
 	BC3_pores = [50,51,52,53,54,40,41,42,43,44]
 	alg.set_boundary_conditions(bctype='Neumann_group', bcvalue=-5e-3, pores=BC3_pores)
-	alg.run(conductance='throat.diffusive_conductance',phase=air)
+	alg.run(conductance='throat.diffusive_conductance')
 	alg.update_results()
 
 This results in the image below, where a region of high concentration can be seen in the core of the domain due to the mass production:
@@ -123,7 +123,7 @@ One of the options for specifying Neumann conditions is to apply the same rate t
 	alg.set_boundary_conditions(bctype='Neumann_group', pores=BC3_pores, mode='remove') # This removes label from pores
 	alg.set_boundary_conditions(bctype='Dirichlet',pores=BC2_pores, mode='remove')
 	alg.set_boundary_conditions(bctype='Neumann',pores=BC2_pores, bcvalue=1e-10)
-	alg.run(conductance='throat.diffusive_conductance',phase=air)
+	alg.run(conductance='throat.diffusive_conductance')
 	alg.update_results()
 
 This results in image below.  Notice that the concentration on the inlet face is not uniform, and that the smaller pores have a somewhat higher concentration (darker red), which is necessary if their flux is the be the same as larger, more conductive pores.
