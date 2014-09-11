@@ -43,6 +43,8 @@ def series_resistors(physics,
     #Find g for full throat
     tarea = network[throat_area]
     tlen = network[throat_length]
+    #remove any non-positive lengths
+    tlen[tlen<=0] = 1e-12
     gt = kt*tarea/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     value = value[throats]
