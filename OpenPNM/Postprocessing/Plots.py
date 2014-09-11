@@ -78,21 +78,26 @@ def drainage_curves(inv_alg,
   inv_throats = inv_throats[sort_seq]
   
 
-  fig = _plt.figure(num=1, figsize=(12, 5), dpi=80, facecolor='w', edgecolor='k')
-  ax1 = fig.add_subplot(131)   #left 
-  ax2 = fig.add_subplot(132)   #middle
-  ax3 = fig.add_subplot(133)   #right 
+  fig = _plt.figure(num=1, figsize=(13, 10), dpi=80, facecolor='w', edgecolor='k')
+  ax1 = fig.add_subplot(231)   #left 
+  ax2 = fig.add_subplot(232)   #middle
+  ax3 = fig.add_subplot(233)   #right 
+  ax4 = fig.add_subplot(234)   #left 
+  ax5 = fig.add_subplot(235)   #middle
+  ax6 = fig.add_subplot(236)   #right 
 
 
   ax1.plot(inv_alg['throat.'+Pc][inv_throats],inv_alg['throat.'+sat][inv_throats])
   ax1.set_xlabel('Capillary Pressure (Pa)')
   ax1.set_ylabel('Saturation')
   ax1.set_ylim([0,1])
+  ax1.set_xlim([0.99*min(inv_alg['throat.'+Pc][inv_throats]),1.01*max(inv_alg['throat.'+Pc][inv_throats])])
 
   ax2.plot(inv_alg['throat.'+seq][inv_throats],inv_alg['throat.'+sat][inv_throats])
   ax2.set_xlabel('Simulation Step')
   ax2.set_ylabel('Saturation')
   ax2.set_ylim([0,1])
+  ax2.set_xlim([0,1.01*max(inv_alg['throat.'+seq][inv_throats])])
 
   if timing==None:
       ax3.plot(0,0)
@@ -102,6 +107,37 @@ def drainage_curves(inv_alg,
       ax3.set_xlabel('Time (s)')
       ax3.set_ylabel('Saturation')
       ax3.set_ylim([0,1])
+      ax3.set_xlim([0,1.01*max(inv_alg['throat.'+timing][inv_throats])])
+      
+  ax4.plot(inv_alg['throat.'+sat][inv_throats],inv_alg['throat.'+Pc][inv_throats])
+  ax4.set_ylabel('Capillary Pressure (Pa)')
+  ax4.set_xlabel('Saturation')
+  ax4.set_xlim([0,1])
+  ax4.set_ylim([0.99*min(inv_alg['throat.'+Pc][inv_throats]),1.01*max(inv_alg['throat.'+Pc][inv_throats])])
+
+  ax5.plot(inv_alg['throat.'+seq][inv_throats],inv_alg['throat.'+Pc][inv_throats])
+  ax5.set_xlabel('Simulation Step')
+  ax5.set_ylabel('Capillary Pressure (Pa)')
+  ax5.set_ylim([0.99*min(inv_alg['throat.'+Pc][inv_throats]),1.01*max(inv_alg['throat.'+Pc][inv_throats])])
+  ax5.set_xlim([0,1.01*max(inv_alg['throat.'+seq][inv_throats])])
+
+  if timing==None:
+      ax6.plot(0,0)
+      ax6.set_xlabel('No Time Data Available')
+  else:
+      ax6.plot(inv_alg['throat.'+timing][inv_throats],inv_alg['throat.'+Pc][inv_throats])
+      ax6.set_xlabel('Time (s)')
+      ax6.set_ylabel('Capillary Pressure (Pa)')
+      ax6.set_ylim([0.99*min(inv_alg['throat.'+Pc][inv_throats]),1.01*max(inv_alg['throat.'+Pc][inv_throats])])
+      ax6.set_xlim([0,1.01*max(inv_alg['throat.'+timing][inv_throats])])
+      
+  fig.subplots_adjust(left=0.08, right=0.99, top=0.95, bottom=0.1)
+  ax1.grid(True)
+  ax2.grid(True)
+  ax3.grid(True)
+  ax4.grid(True)
+  ax5.grid(True)
+  ax6.grid(True)
   fig.show()
 
 if __name__ == '__main__':

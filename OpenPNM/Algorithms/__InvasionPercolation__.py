@@ -188,9 +188,6 @@ class InvasionPercolation(GenericAlgorithm):
         if self._timing:
             # Creating arrays for tracking invaded Pores(Np long, -1 for uninvaded, simulation time for inaveded)
             self['throat.inv_time'] = -1.
-        # Creating an array for tracking the last invaded pore in each cluster.
-        # its length is equal to the maximum number of possible clusters.
-        #self.plists = np.zeros((len(self._inlets),1),dtype=int)
         # Iterator variables for sequences and cluster numbers
         clusterNumber = 1
         # Determine how many clusters there are
