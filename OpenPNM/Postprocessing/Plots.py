@@ -37,7 +37,7 @@ def distributions(net,
   ax4.set_ylabel('Frequency')
   fig.show()
 
-def saturations(inv_alg,
+def drainage_curves(inv_alg,
                 Pc='inv_Pc',
                 sat='inv_sat',
                 seq='inv_seq',
@@ -70,7 +70,7 @@ def saturations(inv_alg,
        IP algorithm at 40 % completion at 0.0 seconds
        IP algorithm at 60 % completion at 0.0 seconds
        IP algorithm at 100% completion at  0.0  seconds
-  >>> OpenPNM.Postprocessing.Plots.saturations(IP,timing='inv_time')
+  >>> OpenPNM.Postprocessing.Plots.drainage_curves(IP,timing='inv_time')
 
   """
   inv_throats = inv_alg.toindices(inv_alg['throat.'+seq]>0)
