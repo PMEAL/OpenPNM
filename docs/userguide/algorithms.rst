@@ -50,6 +50,12 @@ Overview of Included Algorithms
 OpenPNM comes with several of the most common and widely used algorithms.  These include simulating transport phenomena in the pore space, ordinary percolation to simulate a drainage experiment, and invasion percolation to simulate fluid infiltration.
 
 -------------------------------------------------------------------------------
+Transport Algorithms
+-------------------------------------------------------------------------------
+By using pore scale physics, OpenPNM is capable of simulating Fickian diffusion, permeability calculation, heat and electron conduction through the phases in the network.  
+
+
+-------------------------------------------------------------------------------
 FickianDiffusion
 -------------------------------------------------------------------------------
 in progress
