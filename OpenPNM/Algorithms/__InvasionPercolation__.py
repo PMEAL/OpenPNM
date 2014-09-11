@@ -123,7 +123,7 @@ class InvasionPercolation(GenericAlgorithm):
             inv_seq          : 0 for uninvaded, simulation step for invaded
             inv_time         : 0 for uninvaded, simulation time for invaded
             inv_sat          : 0 for uninvaded, simulation saturation for invaded
-            Pcap             : throat capillary pressures 
+            inv_Pc           : throat capillary pressures 
       
         """
 
@@ -167,12 +167,12 @@ class InvasionPercolation(GenericAlgorithm):
         tdia = self._net['throat.'+self._throat_diameter_name]
         # calculate Pc_entry from diameters
         try:
-            self['throat.Pcap'] = self._phase['throat.'+self._capillary_pressure_name]
+            self['throat.inv_Pc'] = self._phase['throat.'+self._capillary_pressure_name]
         except:
             self._logger.error('Capillary pressure not assigned to '+self._phase.name)
         if self._timing:
             # calculate Volume_coef for each throat
-            self._Tvol_coef = tdia*tdia*tdia*np.pi/12/self['throat.Pcap']
+            self._Tvol_coef = tdia*tdia*tdia*np.pi/12/self['throat.inv_Pc']
         # Creating an array for invaded Pores(Np long, 0 for uninvaded, cluster number for inaveded)
         self['pore.cluster_final'] = 0
         self['pore.cluster_original'] = 0
@@ -356,7 +356,7 @@ class InvasionPercolation(GenericAlgorithm):
         """
         self._logger.debug("    Inner Iteration")
         # Fill throat and connecting pore
-        # Pop out the largest throat (lowest Pcap) in the list, read the throat number
+        # Pop out the largest throat (lowest inv_Pc) in the list, read the throat number
         tinvade = heapq.heappop(self._tpoints[self._current_cluster-1])[1]
         emptyCluster = -1
         fullCluster =  self._current_cluster
@@ -580,7 +580,7 @@ class InvasionPercolation(GenericAlgorithm):
             # Sum all interfacial throats' volume coeffients for throat cap volume calculation
             self._cluster_data['vol_coef'][cl_num-1] = np.sum(self._Tvol_coef[int_throats])
         # Make a list of all entry pressures of the interfacial throats
-        interface_throat_pressures = self['throat.Pcap'][int_throats]#[0]
+        interface_throat_pressures = self['throat.inv_Pc'][int_throats]#[0]
         # Zip pressures and numbers together so that HeapQ can work its magic
         Interface= list(zip(interface_throat_pressures,int_throats))
         # Turn the zipped throat interfaces object into a heap
