@@ -43,7 +43,10 @@ def hagen_poiseuille(physics,
         plen2 = lengths*(1-fractions)
     else:        
         plen1 = (0.5*pdia[Ps[:,0]])
-        plen2 = (0.5*pdia[Ps[:,1]])   
+        plen2 = (0.5*pdia[Ps[:,1]]) 
+    #remove any non-positive lengths    
+    plen1[plen1<=0]=1e-12
+    plen2[plen2<=0]=1e-12
     #Find g for half of pore 1
     gp1 = _sp.pi*(pdia[Ps[:,0]])**4/(128*plen1*mut)
     gp1[~(gp1>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
