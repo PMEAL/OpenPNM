@@ -60,12 +60,12 @@ In each of these algorithms, by using pipe network (or electrical resistor netwo
 -------------------------------------------------------------------------------
 FickianDiffusion
 -------------------------------------------------------------------------------
-It applies Fickian diffusion equation to determine mole fraction in each pore.  This binary diffusion algorithm, can be used for  unimolecular diffusion or equimolar counter diffusion.  In the case of unimolecular diffusion, however, the conversion of the mole fraction and BCs should take place outside of the algorithm.
+It applies Fickian diffusion equation and uses the diffusive conductance of a desired phase to determine the mole fraction of that phase in each pore.  This binary diffusion algorithm, can be used for  unimolecular diffusion or equimolar counter diffusion.  In the case of unimolecular diffusion, however, the conversion of the mole fraction and BCs should take place outside of the algorithm.
 
 -------------------------------------------------------------------------------
 StokesFlow
 -------------------------------------------------------------------------------
-in progress
+It applies a fluid flow transport equation such as Hagen-Poiseuille equation and uses the hydraulic conductance of a desired phase to determine the pressure of that phase in each pore.  
 
 -------------------------------------------------------------------------------
 OhmicConduction
