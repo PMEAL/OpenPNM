@@ -67,6 +67,52 @@ Now if the temperature of the pores is changed, all the other properties will al
 
 Note that the ``regenerate`` method must be called for the change in temperature to propagate to the other properties.  
 
+.. note:: The Meaning of Pore vs Throat Properties in Phases
+
+    In general all Phase properties are specified in pores only.  The basis of this is that most algorithms solve for the conditions in the pores.  For instance, a FourierConduction algorithm solves for pore temperatures, so a temperature dependent viscosity should also be evaluated in the pores.  This holds for most properties.  
+	
+	Ironically, in order to solve for properties in the pores it is usually necessary to know the Phase conditions in the throats.  OpenPNM objects include the ability to interpolate throat conditions based on the conditions in the neighboring pores.  
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Mixtures
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+In many cases of practical interest the 'phase' is actually a mixture.  It is possible to create a mixture Phase by simply sending the 'pure component' phases as arguments to the initialization of the mixture:
+
+.. code-block:: python
+
+    N2 = OpenPNM.Phases.GenericPhase(network=pn,name='pure_N2')
+    O2 = OpenPNM.Phases.GenericPhase(network=pn,name='pure_O2')
+    air = OpenPNM.Phases.GenericPhase(network=pn,name='air',components=[N2,O2])
+
+The key difference between the instantiation of 'N2' and 'O2' versus 'air' is that 'air' receives the others as 'components'.  During the initialization of a Phase any Phases received as 'components' are associated with the mixture as can be seen with:
+
+>>> air.phases()
+['pure_O2','pure_N2']
+
+With this association it is now possible to extract pure component property information from each component Phase which can be used to calculate mixture properties.  There is one caveat with this approach however: the 'composition' of each component in the mixture (i.e. mole fraction of each component) is stored on the individual component Phases under the 'pore.mole_fraction' property name.  The mole fraction of each Phase can be specified as:
+
+.. code-block:: python
+
+    N2['pore.mole_fraction'] = 0.79
+	O2['pore.mole_fraction'] = 0.21
+	N2['pore.molar_mass'] = 0.028
+	O2['pore.molar_mass'] = 0.032
+
+With this information it is possible to calculate mixture properties such as the average molecular weight and so on.  There are a small number of Phase models to work with mixtures at present, found throughout the various fluid property model categories:
+
+.. code-block:: python
+	
+    mod = OpenPNM.Phases.models.molar_mass.mixture
+    air.add_model(propname='pore.molar_mass',model=mod)
+    air['pore.molar_mass'][0]
+    0.02884
+	
+The ``mixture`` molar mass method looks into the Phases of the mixture, retrieves their molar masses and mole fractions, and computes the average molar mass of the mixture.  	
+
+.. note:: Mixture Temperature and Pressure
+
+    Temperature and pressure are the two thermodynamic properties required for calculating most other phase properties.  As the mixture temperature and pressure change, it is necessary to also update the temperature and pressure of the component phases so their properties are calculated correctly.  When a component Phase is associated with a mixture, OpenPNM automatically adds a model to the component Phase that forces its temperature and pressure to match that of the mixture.  Thus, whenever the mixture temperature or pressure change, so do the component Phases.
+
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Customizing Phases
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
