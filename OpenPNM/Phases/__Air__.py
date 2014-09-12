@@ -5,7 +5,7 @@ from OpenPNM.Phases import models as fm
 
 class Air(GenericPhase):
     r"""
-    Creates Phase object with a default name 'air' and preset values for air
+    Creates Phase object with preset models and values for air
     
     Parameters
     ----------
@@ -14,14 +14,19 @@ class Air(GenericPhase):
         
     Notes
     -----
-    This explicit association is necessary so the Phase object can initialize
-    data arrays of the correct size to store network data.
     The initial properties are all at std conditions of T = 298 K and P = 1 atm.
+    
+    References
+    ----------
+    [1] E.W. Lemmon and R.T. Jacobsen, "Viscosity and Thermal Conductivity 
+    Equations for Nitrogen, Oxygen, Argon, and Air", Int. J. of Thermophysics, 
+    Vol. 25, No. 1, January 2004, pp. 21-69
     
     Examples
     --------
     >>> pn = OpenPNM.Network.TestNet()
     >>> air = OpenPNM.Phases.Air(network=pn)
+    
     """
     def __init__(self,name=None,**kwargs):
         super(Air,self).__init__(name=name,**kwargs)
@@ -40,10 +45,14 @@ class Air(GenericPhase):
                        model=fm.molar_density.standard)     # mol/m3
         self['pore.diffusivity'] = 5.4785E-6                # m2/s
         self['pore.surface_tension'] = 0                    # N/m
-        self.add_model(propname='pore.thermal_conductivity',
-                       model=fm.thermal_conductivity.air)   # W/m.K 
-        self.add_model(propname='pore.viscosity',
-                       model=fm.viscosity.air)              # kg/m.s
+        self.add_model(propname='pore.thermal_conductivity',# W/m.K
+                       model=fm.misc.polynomial,
+                       poreprop='pore.temperature',
+                       a=[0.00422791,0.0000789606,-1.56383E-08])    
+        self.add_model(propname='pore.viscosity',           # kg/m.s
+                       model=fm.misc.polynomial,
+                       poreprop='pore.temperature',
+                       a=[0.00000182082,6.51815E-08-3.48553E-11,1.11409E-14])              
                        
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

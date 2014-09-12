@@ -52,39 +52,6 @@ def water(phase,**kwargs):
     mu_sw = mu_w*(1 + A*S + B*S**2)
     value = mu_sw
     return value
-
-def air(phase,**kwargs):
-    r"""
-    Calculates viscosity of air at atmospheric pressure
-    using a polynominal correlation that fits the data given in [3]_.
-    
-    Parameters
-    ----------
-    T: strings
-        Property names where phase temperature is located.  
-            
-    Returns
-    -------
-    mu_air, the viscosity of air in [kg/m.s]
-    
-    Notes
-    -----
-    T must be in K. 
-    VALIDITY: 273 < T < 1023 K
-    ACCURACY: 0.5 %
-    
-    References
-    ----------
-    [3] E.W. Lemmon and R.T. Jacobsen, "Viscosity and Thermal Conductivity 
-    Equations for Nitrogen, Oxygen, Argon, and Air", Int. J. of Thermophysics, 
-    Vol. 25, No. 1, January 2004, pp. 21-69
-
-    """
-    T = phase['pore.temperature']
-    a0=0.00000182082; a1=6.51815E-08; a2=-3.48553E-11; a3=1.11409E-14    
-    mu_air = a0 + a1*T + a2*(T**2) + a3*(T**3)
-    value = mu_air
-    return value
     
 def reynolds(phase,uo,b,**kwargs):
     r"""

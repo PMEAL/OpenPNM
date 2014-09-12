@@ -26,7 +26,7 @@ def ideal_gas(phase,**kwargs):
     P = phase['pore.pressure']
     T = phase['pore.temperature']
     MW = phase['pore.molecular_weight']
-    Rbar = 8314.47
+    Rbar = 8.31447
     R = Rbar/MW
     rho = P/(R*T)
     value = rho

@@ -45,39 +45,6 @@ def water(phase,**kwargs):
     value = k_sw
     return value
 
-def air(phase,**kwargs):
-    r"""
-    Calculates thermal conductivity of air at atmospheric pressure
-    using a polynominal correlation that fits the data given in [3]_.
-    
-    Parameters
-    ----------
-    T: strings
-        Property names where phase temperature is located.  
-            
-    Returns
-    -------
-    k_air, the thermal conductivity of air in [W/m.K]
-    
-    Notes
-    -----
-    T must be in K. 
-    VALIDITY: 273 < T < 1023 K
-    ACCURACY: 0.2 %
-    
-    References
-    ----------
-    [3] E.W. Lemmon and R.T. Jacobsen, "Viscosity and Thermal Conductivity 
-    Equations for Nitrogen, Oxygen, Argon, and Air", Int. J. of Thermophysics, 
-    Vol. 25, No. 1, January 2004, pp. 21-69
-
-    """
-    T = phase['pore.temperature']
-    a0=0.00422791; a1=0.0000789606; a2=-1.56383E-08
-    k_air = a0 + a1*T + a2*(T**2)
-    value = k_air
-    return value
-
 def chung(phase,
           Cv,
           MW,
