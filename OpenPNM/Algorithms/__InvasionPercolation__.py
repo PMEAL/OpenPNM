@@ -603,7 +603,7 @@ class InvasionPercolation(GenericAlgorithm):
     
     def cluster_remove(self,cl_num):
         if self._timing:
-            self._cluster_data['haines_time'][cl_num-1] = 100000000000000000000000000000000
+            self._cluster_data['haines_time'][cl_num-1] = 1e32
         self._cluster_data['active'][cl_num-1] = 0
         self._tpoints[cl_num-1] = []
         

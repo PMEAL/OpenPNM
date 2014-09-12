@@ -86,6 +86,6 @@ Because the `type` variables are loaded, the importer automatically adds labels 
 Example File
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-One example *.mat file has been loaded with the OpenPNM installation. Look for /OpenPNM/Network/examples/test_pn.mat
+One example *.mat file has been loaded with the OpenPNM installation. Look for /OpenPNM/Network/test_pn.mat
 
 
