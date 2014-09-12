@@ -46,6 +46,10 @@ def test_linear_solvers():
   print( alg_2['pore.'+air.name+'_mole_fraction'][BC1_pores] )
   print( alg_3['pore.'+air.name+'_mole_fraction'][BC1_pores] )
 
+  assert round(sp.absolute(alg_1.rate(BC1_pores))[0],16) == round(sp.absolute(alg_1.rate(BC2_pores))[0],16)  
+  assert round(sp.absolute(alg_2.rate(BC2_pores))[0],16) == round(sp.absolute(sp.unique(alg_2['pore.'+air.name+'_bcval_Neumann']))[0]*len(BC1_pores),16)  
+  assert round(sp.absolute(alg_3.rate(BC2_pores))[0],16) == round(sp.absolute(sp.unique(alg_3['pore.'+air.name+'_bcval_Neumann_group']))[0],16)  
+
 def test_add_boundary():
   pn = OpenPNM.Network.Cubic(shape=[5,5,5])
   pn.add_boundaries()
@@ -189,7 +193,9 @@ def test_Darcy_alg():
     Vb = sp.prod(divs)*Lc**3
     e = Vp/Vb    
     print('Effective permeability: ',K,'- Porosity: ',e)
-
+    
+    assert round(sp.absolute(Darcy1.rate(outlets))[0],16) == round(sp.absolute(sp.unique(Darcy1['pore.'+air.name+'_bcval_Neumann_group']))[0],16)  
+    assert round(sp.absolute(Darcy2.rate(inlets))[0],16) == round(sp.absolute(Darcy2.rate(outlets))[0],16)  
 
 if __name__ == '__main__':
   pytest.main()
