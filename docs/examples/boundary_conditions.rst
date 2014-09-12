@@ -85,7 +85,7 @@ Once the boundary conditions are specified, the algorithm can be run quite simpl
 	alg.run(conductance='throat.diffusive_conductance')
 
 
-This runs the algorithm using 'throat.diffusive_conductance' as the conductance. The results are then stored on the Algorithm object.  This is done to prevent simultaneous objects from interfering with each other.  If and when the results of an Algorithm are required by the network model they must be explicitly sent *out* using:
+This runs the algorithm using 'throat.diffusive_conductance' as the conductance. Using this argument will be important if another diffusive conductance is defined for the phase.  The results are then stored on the Algorithm object.  This is done to prevent simultaneous objects from interfering with each other.  If and when the results of an Algorithm are required by the network model they must be explicitly sent *out* using:
 
 .. code-block:: python
 
