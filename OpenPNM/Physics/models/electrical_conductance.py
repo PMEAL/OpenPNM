@@ -1,6 +1,6 @@
 r"""
 ===============================================================================
-Submodule -- electronic_conductance
+Submodule -- electrical_conductance
 ===============================================================================
 
 """
@@ -17,7 +17,7 @@ def series_resistors(physics,
                      throat_length='throat.length',
                      **kwargs):
     r"""
-    Calculates the electronic conductance of throat assuming cylindrical geometry
+    Calculates the electrical conductance of throat assuming cylindrical geometry
 
     Parameters
     ----------

@@ -70,7 +70,7 @@ It applies a fluid flow transport equation such as Hagen-Poiseuille equation and
 -------------------------------------------------------------------------------
 OhmicConduction
 -------------------------------------------------------------------------------
-It applies Ohm equation to simulate electron or ion conduction and uses the electronic conductance of the desired phase to determine the voltage of that phase in each pore.  
+It applies Ohm equation to simulate electron or ion conduction and uses the electrical conductance of the desired phase to determine the voltage of that phase in each pore.  
 
 -------------------------------------------------------------------------------
 FourierConduction

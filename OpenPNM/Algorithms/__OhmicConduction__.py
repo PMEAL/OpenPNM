@@ -21,7 +21,7 @@ class OhmicConduction(GenericLinearTransport):
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phase1['pore.voltage'] = 1
     >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
-    >>> phys1['throat.electronic_conductance'] = 1
+    >>> phys1['throat.electrical_conductance'] = 1
     >>> alg = OpenPNM.Algorithms.OhmicConduction(network=pn, phase=phase1)
     >>> BC1_pores = pn.pores('top')
     >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
@@ -42,7 +42,7 @@ class OhmicConduction(GenericLinearTransport):
         super(OhmicConduction,self).__init__(**kwargs)
         self._logger.info('Create '+self.__class__.__name__+' Object')
         
-    def run(self,conductance='electronic_conductance',quantity='voltage',**params):
+    def run(self,conductance='electrical_conductance',quantity='voltage',**params):
         r'''
         '''  
         self._logger.info("Setup "+self.__class__.__name__)        
