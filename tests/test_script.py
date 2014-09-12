@@ -7,11 +7,6 @@ def test_cubic_standard_call():
   pn = OpenPNM.Network.Cubic(shape=[3,4,5])
   np.testing.assert_almost_equal(pn['pore.coords'][0], [0.5,0.5,0.5])
 
-def test_cubic_optional_call():
-  image = np.random.rand(30,40,1)>0.5
-  pn = OpenPNM.Network.Cubic(template=image)
-  np.testing.assert_almost_equal(image, pn.asarray(pn['pore.all']))
-
 def test_linear_solvers():
   pn = OpenPNM.Network.Cubic([1,40,30], spacing=0.0001)
   geom = OpenPNM.Geometry.Toray090(network=pn,pores=pn.pores(),throats=pn.throats())
