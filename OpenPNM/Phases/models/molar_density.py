@@ -6,13 +6,13 @@ Submodule -- molar_density
 """
 import scipy as sp
 
-def ideal_gas(phase,**kwargs):
+def MolarDensity(phase,**kwargs):
     r"""
-    Uses ideal gas equation to estimate molar density of a pure gas
+    calculates the molar density of a fluid from the density and 
+    molecular weight values
 
     """
-    R = sp.constants.R
-    T = phase['pore.temperature']
-    P = phase['pore.pressure']
-    value = P/(R*T)
+    rho = phase['pore.density']
+    MW = phase['pore.molecular_weight']
+    value = rho/MW
     return value

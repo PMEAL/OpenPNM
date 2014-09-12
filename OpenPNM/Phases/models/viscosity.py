@@ -9,29 +9,114 @@ Models for predicting phase viscosity
 """
 import scipy as sp
 
-def poly(phase,a0,a1,a2,a3,**kwargs):
+def WaterViscosity(phase,**kwargs):
     r"""
-    Uses a polynomial best fit correlation for the temperature dependance of 
-    viscosity adapted from [1]_ with a range from 80 to 2000 K for air. The model
-    can be used also with any gas or liquid if the correlation coefficients 
-    are generated using any best fit software (e.g. Excel)
+    Calculates viscosity of pure water or seawater at atmospheric pressure
+    using Eq. (22) given by Sharqawy et. al [1]_. Values at temperature higher 
+    than the normal boiling temperature are calculated at the saturation pressure.
+
+    Parameters
+    ----------
+    T, S: strings
+        Property names where phase temperature and salinity are located.
+    
+    Returns
+    -------
+    mu_sw, the viscosity of water/seawater in [kg/m.s]
+    
+    Notes
+    -----
+     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
+        thousand)
+    VALIDITY: 273 < T < 453 K; 0 < S < 150 g/kg;
+    ACCURACY: 1.5 %
+    
+    References
+    ----------
+    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and Water Treatment, 2010.
+
+    """
+    T = phase['pore.temperature']
+    try:
+        S = phase['pore.salinity']
+    except:
+        S = 0
+    TC = T-273.15
+    S=S/1000;
+    a1 = 1.5700386464E-01;a2 = 6.4992620050E+01;a3 = -9.1296496657E+01;a4 = 4.2844324477E-05;
+    mu_w = a4 + 1/(a1*(TC+a2)**2+a3)
+    a5 = 1.5409136040E+00;a6 = 1.9981117208E-02;a7 = -9.5203865864E-05
+    a8 = 7.9739318223E+00;a9 = -7.5614568881E-02;a10 = 4.7237011074E-04
+    A = a5 + a6*T + a7*T**2
+    B = a8 + a9*T + a10*T**2
+    mu_sw = mu_w*(1 + A*S + B*S**2)
+    value = mu_sw
+    return value
+
+def MercuryViscosity(phase,**kwargs):
+    r"""
+    Calculates viscosity of liquid mercury at atmospheric pressure
+    using a polynomial correlation that fits the data given in [2]_.
     
     Parameters
     ----------
-    a0, a1, a2, a3 : float, array_like
-            Coefficients of the viscosity polynomial model 
-            (mu = a0 + a1*T + a2*T^2 + a3*T^3)
-            where T is the temperature in Kelvin
+    T: strings
+        Property names where phase temperature is located.  
             
-    [1] Thermophysical Properties of Matter Vol. 11: 
-    Viscosity,  Y.S. Touloukian, S.C. Saxena, and P. Hestermans
-    IFI/Plenun, NY, 1970, ISBN 0-306067020-8 
+    Returns
+    -------
+    mu_Hg, the viscosity of liquid mercury in [kg/m.s]
     
+    Notes
+    -----
+    T must be in K. 
+    VALIDITY: 273 < T < 1023 K
+    ACCURACY: 0.5 %
+    
+    References
+    ----------
+    [2] Thermophysical Properties of Materials for Nuclear Engineering: IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:
+
     """
     T = phase['pore.temperature']
-    value = a0+a1*T+a2*(T**2)+a3*(T**3)
+    a0=0.00355837; a1=-0.0000100131; a2=1.23684E-08; a3=-5.16836E-12    
+    mu_Hg = a0 + a1*T + a2*(T**2) + a3*(T**3)
+    value = mu_Hg
     return value
 
+def AirViscosity(phase,**kwargs):
+    r"""
+    Calculates viscosity of air at atmospheric pressure
+    using a polynominal correlation that fits the data given in [3]_.
+    
+    Parameters
+    ----------
+    T: strings
+        Property names where phase temperature is located.  
+            
+    Returns
+    -------
+    mu_air, the viscosity of air in [kg/m.s]
+    
+    Notes
+    -----
+    T must be in K. 
+    VALIDITY: 273 < T < 1023 K
+    ACCURACY: 0.5 %
+    
+    References
+    ----------
+    [3] E.W. Lemmon and R.T. Jacobsen, "Viscosity and Thermal Conductivity 
+    Equations for Nitrogen, Oxygen, Argon, and Air", Int. J. of Thermophysics, 
+    Vol. 25, No. 1, January 2004, pp. 21-69
+
+    """
+    T = phase['pore.temperature']
+    a0=0.00000182082; a1=6.51815E-08; a2=-3.48553E-11; a3=1.11409E-14    
+    mu_air = a0 + a1*T + a2*(T**2) + a3*(T**3)
+    value = mu_air
+    return value
+    
 def reynolds(phase,uo,b,**kwargs):
     r"""
     Uses exponential model by Reynolds [1]_ for the temperature dependance of 

@@ -6,7 +6,7 @@ Submodule -- density
 """
 import scipy as sp
 
-def IdealGas(phase,P,T,MW,**kwargs):
+def IdealGas(phase,**kwargs):
     r"""
     Uses ideal gas equation of state to calculate the density of an ideal gas
  
@@ -24,11 +24,12 @@ def IdealGas(phase,P,T,MW,**kwargs):
     """
    
     P = phase['pore.pressure']
-    T = phase['pore.pemperature']
-    MW = phase['pore.molecularweight']
+    T = phase['pore.temperature']
+    MW = phase['pore.molecular_weight']
     Rbar = 8314.47
     R = Rbar/MW
-    value = P/(R*T)
+    rho = P/(R*T)
+    value = rho
     return value
 
 def RealGas(phase,P,T,Pc,Tc,MW,**kwargs):
@@ -64,7 +65,7 @@ def RealGas(phase,P,T,Pc,Tc,MW,**kwargs):
     return value
 
 
-def Water(phase,T='pore.temperature',S='pore.salinity',**kwargs):
+def WaterDensity(phase,**kwargs):
     r"""
     Calculates density of pure water or seawater at atmospheric pressure
     using Eq. (8) given by Sharqawy et. al [1]_. Values at temperature higher 
@@ -73,16 +74,16 @@ def Water(phase,T='pore.temperature',S='pore.salinity',**kwargs):
     Parameters
     ----------
     T, S: strings
-        Property names where phase temperature and salinity are located.  T 
-        must be in K, and S in g of salt per kg of phase, or ppt (parts per
-        thousand)
+        Property names where phase temperature and salinity are located.
     
     Returns
     -------
-    rho, the density in [kg/m3]
+    rho_sw, the density of water/seawater in [kg/m3]
     
     Notes
     -----
+     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
+        thousand)
     VALIDITY: 273 < T < 453 K; 0 < S < 160 g/kg;
     ACCURACY: 0.1 %
     
@@ -91,9 +92,9 @@ def Water(phase,T='pore.temperature',S='pore.salinity',**kwargs):
     [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and Water Treatment, 2010.
 
     """
-    T = phase[T]
+    T = phase['pore.temperature']
     try:
-        S = phase[S]
+        S = phase['pore.salinity']
     except:
         S = 0
     a1=9.9992293295E+02; a2=2.0341179217E-02; a3=-6.1624591598E-03; a4=2.2614664708E-05; a5=-4.6570659168E-08
@@ -101,5 +102,37 @@ def Water(phase,T='pore.temperature',S='pore.salinity',**kwargs):
     TC = T-273.15
     rho_w = a1 + a2*TC + a3*TC**2 + a4*TC**3 + a5*TC**4;
     D_rho = b1*S + b2*S*TC + b3*S*(TC**2) + b4*S*(TC**3) + b5*(S**2)*(TC**2);
-    value = rho_w + D_rho
-    return value    
+    rho_sw = rho_w + D_rho
+    value = rho_sw
+    return value
+
+def MercuryDensity(phase,**kwargs):
+    r"""
+    Calculates density of liquid mercury at atmospheric pressure
+    using a linear correlation that fits the data given in [2]_.
+    
+    Parameters
+    ----------
+    T: strings
+        Property names where phase temperature is located.  
+            
+    Returns
+    -------
+    rho_Hg, the density of liquid mercury in [kg/m3]
+    
+    Notes
+    -----
+    T must be in K. 
+    VALIDITY: 273 < T < 1023 K
+    ACCURACY: 0.2 %
+    
+    References
+    ----------
+    [2] Thermophysical Properties of Materials for Nuclear Engineering: IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:
+
+    """
+    T = phase['pore.temperature']
+    a=14280.9; b=-2.47004
+    rho_Hg = a + b*T
+    value = rho_Hg
+    return value
