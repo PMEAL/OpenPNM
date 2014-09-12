@@ -6,9 +6,9 @@ Submodule -- molar_density
 """
 import scipy as sp
 
-def MolarDensity(phase,**kwargs):
+def standard(phase,**kwargs):
     r"""
-    calculates the molar density of a fluid from the density and 
+    Calculates the molar density of a fluid from the density and 
     molecular weight values
 
     """

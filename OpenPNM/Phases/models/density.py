@@ -6,7 +6,7 @@ Submodule -- density
 """
 import scipy as sp
 
-def IdealGas(phase,**kwargs):
+def ideal_gas(phase,**kwargs):
     r"""
     Uses ideal gas equation of state to calculate the density of an ideal gas
  
@@ -32,7 +32,7 @@ def IdealGas(phase,**kwargs):
     value = rho
     return value
 
-def RealGas(phase,P,T,Pc,Tc,MW,**kwargs):
+def vanderwaals(phase,P,T,Pc,Tc,MW,**kwargs):
     r"""
     Uses Van der Waals equation of state to calculate the density of a real gas
  
@@ -43,7 +43,7 @@ def RealGas(phase,P,T,Pc,Tc,MW,**kwargs):
         T temperature of the gas in [K]
         Pc critical pressure of the gas in [Pa]
         T critical temperature of the gas in [K]
-        MW molecular weight of the gas in [kg/kmole]
+        MW molecular weight of the gas in [kg/mol]
             
     Returns
     -------
@@ -56,7 +56,7 @@ def RealGas(phase,P,T,Pc,Tc,MW,**kwargs):
     Pc = phase['pore.criticalpressure']
     Tc = phase['pore.criticaltemperature']
     MW = phase['pore.molecularweight']
-    Rbar = 8314.47
+    Rbar = 8.314
     R = Rbar/MW
     a = 27*(R**2)*(Tc**2)/(64*Pc); b = R*Tc/(8*Pc)
     a0 = 1; a1 = -1/b; a2 = (R*T+b*P)/(a*b); a3 = -P/(a*b)
@@ -65,7 +65,7 @@ def RealGas(phase,P,T,Pc,Tc,MW,**kwargs):
     return value
 
 
-def WaterDensity(phase,**kwargs):
+def water(phase,**kwargs):
     r"""
     Calculates density of pure water or seawater at atmospheric pressure
     using Eq. (8) given by Sharqawy et. al [1]_. Values at temperature higher 
@@ -104,35 +104,4 @@ def WaterDensity(phase,**kwargs):
     D_rho = b1*S + b2*S*TC + b3*S*(TC**2) + b4*S*(TC**3) + b5*(S**2)*(TC**2);
     rho_sw = rho_w + D_rho
     value = rho_sw
-    return value
-
-def MercuryDensity(phase,**kwargs):
-    r"""
-    Calculates density of liquid mercury at atmospheric pressure
-    using a linear correlation that fits the data given in [2]_.
-    
-    Parameters
-    ----------
-    T: strings
-        Property names where phase temperature is located.  
-            
-    Returns
-    -------
-    rho_Hg, the density of liquid mercury in [kg/m3]
-    
-    Notes
-    -----
-    T must be in K. 
-    VALIDITY: 273 < T < 1023 K
-    ACCURACY: 0.2 %
-    
-    References
-    ----------
-    [2] Thermophysical Properties of Materials for Nuclear Engineering: IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:
-
-    """
-    T = phase['pore.temperature']
-    a=14280.9; b=-2.47004
-    rho_Hg = a + b*T
-    value = rho_Hg
     return value

@@ -7,7 +7,7 @@ Submodule -- thermal_conductance
 """
 import scipy as sp
 
-def WaterConductivity(phase,**kwargs):
+def water(phase,**kwargs):
     r"""
     Calculates thermal conductivity of pure water or seawater at atmospheric pressure
     using the correlation given in [1]_. Values at temperature higher 
@@ -45,38 +45,7 @@ def WaterConductivity(phase,**kwargs):
     value = k_sw
     return value
 
-def MercuryConductivity(phase,**kwargs):
-    r"""
-    Calculates thermal conductivity of liquid mercury at atmospheric pressure
-    using a polynominal correlation that fits the data given in [2]_.
-    
-    Parameters
-    ----------
-    T: strings
-        Property names where phase temperature is located.  
-            
-    Returns
-    -------
-    k_Hg, the thermal conductivity of liquid mercury in [W/m.K]
-    
-    Notes
-    -----
-    T must be in K. 
-    VALIDITY: 273 < T < 1023 K
-    ACCURACY: 0.2 %
-    
-    References
-    ----------
-    [2] Thermophysical Properties of Materials for Nuclear Engineering: IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:
-
-    """
-    T = phase['pore.temperature']
-    a0=3.98691; a1=0.0170967; a2=-0.0000063862
-    k_Hg = a0 + a1*T + a2*(T**2)
-    value = k_Hg
-    return value
-
-def AirConductivity(phase,**kwargs):
+def air(phase,**kwargs):
     r"""
     Calculates thermal conductivity of air at atmospheric pressure
     using a polynominal correlation that fits the data given in [3]_.

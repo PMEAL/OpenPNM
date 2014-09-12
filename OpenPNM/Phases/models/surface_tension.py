@@ -9,7 +9,7 @@ Some text here?
 
 import scipy as sp
 
-def WaterSurfaceTension(phase,**kwargs):
+def water(phase,**kwargs):
     r"""
     Calculates surface tension of pure water or seawater at atmospheric pressure
     using Eq. (28) given by Sharqawy et. al [1]_. Values at temperature higher 
@@ -46,37 +46,6 @@ def WaterSurfaceTension(phase,**kwargs):
     TC = T-273.15
     sigma_sw = sigma_w*(1+(a1*TC+a2)*sp.log(1+a3*S));    
     value = sigma_sw
-    return value
-
-def MercurySurfaceTension(phase,**kwargs):
-    r"""
-    Calculates surface tension of liquid mercury at atmospheric pressure
-    using a linear correlation that fits the data given in [2]_.
-    
-    Parameters
-    ----------
-    T: strings
-        Property names where phase temperature is located.  
-            
-    Returns
-    -------
-    sigma_Hg, the surface tension in [N/m]
-    
-    Notes
-    -----
-    T must be in K. 
-    VALIDITY: 273 < T < 1023 K
-    ACCURACY: 0.2 %
-    
-    References
-    ----------
-    [2] Thermophysical Properties of Materials for Nuclear Engineering: IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:
-
-    """
-    T = phase['pore.temperature']
-    a=0.56254; b=-0.00028
-    sigma_Hg = a + b*T
-    value = sigma_Hg
     return value
     
 def eotvos(phase,

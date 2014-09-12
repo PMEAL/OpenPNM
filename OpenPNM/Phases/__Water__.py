@@ -29,23 +29,27 @@ class Water(GenericPhase):
         self._generate()
         
     def _generate(self):
-        self['pore.molecular_weight'] = 18.02               # kg/kmole
-        self['pore.critical_pressure'] = 2.2064E7           # Pascal
-        self['pore.critical_temperature'] = 647.1           # Kelvin
+        self['pore.molecular_weight'] = 0.01802             # kg/mol
+        self['pore.critical_pressure'] = 2.2064E7           # Pa
+        self['pore.critical_temperature'] = 647.1           # K
         self['pore.critical_volume'] = 0.003106             # kg/m3
         self['pore.contact_angle'] = 110.0                  # Degree 
         self.add_model(propname='pore.density',
-                       model=fm.density.WaterDensity)       # kg/m3
+                       model=fm.density.water)              # kg/m3
         self.add_model(propname='pore.molar_density',
-                       model=fm.molar_density.MolarDensity) # kmole/m3
+                       model=fm.molar_density.standard)     # mol/m3
         self['pore.diffusivity'] = 1e-9                     # m2/s
         self.add_model(propname='pore.surface_tension',
-                       model=fm.surface_tension.WaterSurfaceTension) # N/m
+                       model=fm.surface_tension.water)      # N/m
         self.add_model(propname='pore.thermal_conductivity',
-                       model=fm.thermal_conductivity.WaterConductivity) # W/m.K
-        self['pore.vapor_pressure'] = 3141                  # Pascal
+                       model=fm.thermal_conductivity.water) # W/m.K
+        self.add_model(propname='pore.vapor_pressure',      # Pa
+                       model=fm.vapor_pressure.antoine,
+                       A=8.07131,
+                       B=1730.63,
+                       C=233.426)
         self.add_model(propname='pore.viscosity',
-                       model=fm.viscosity.WaterViscosity)   # kg/m.s
+                       model=fm.viscosity.water)   # kg/m.s
 
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()

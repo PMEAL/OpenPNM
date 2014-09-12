@@ -9,7 +9,7 @@ Models for predicting phase viscosity
 """
 import scipy as sp
 
-def WaterViscosity(phase,**kwargs):
+def water(phase,**kwargs):
     r"""
     Calculates viscosity of pure water or seawater at atmospheric pressure
     using Eq. (22) given by Sharqawy et. al [1]_. Values at temperature higher 
@@ -53,38 +53,7 @@ def WaterViscosity(phase,**kwargs):
     value = mu_sw
     return value
 
-def MercuryViscosity(phase,**kwargs):
-    r"""
-    Calculates viscosity of liquid mercury at atmospheric pressure
-    using a polynomial correlation that fits the data given in [2]_.
-    
-    Parameters
-    ----------
-    T: strings
-        Property names where phase temperature is located.  
-            
-    Returns
-    -------
-    mu_Hg, the viscosity of liquid mercury in [kg/m.s]
-    
-    Notes
-    -----
-    T must be in K. 
-    VALIDITY: 273 < T < 1023 K
-    ACCURACY: 0.5 %
-    
-    References
-    ----------
-    [2] Thermophysical Properties of Materials for Nuclear Engineering: IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:
-
-    """
-    T = phase['pore.temperature']
-    a0=0.00355837; a1=-0.0000100131; a2=1.23684E-08; a3=-5.16836E-12    
-    mu_Hg = a0 + a1*T + a2*(T**2) + a3*(T**3)
-    value = mu_Hg
-    return value
-
-def AirViscosity(phase,**kwargs):
+def air(phase,**kwargs):
     r"""
     Calculates viscosity of air at atmospheric pressure
     using a polynominal correlation that fits the data given in [3]_.

@@ -29,21 +29,21 @@ class Air(GenericPhase):
         self._generate()
         
     def _generate(self):
-        self['pore.molecular_weight'] = 28.96               # kg/kmole
-        self['pore.critical_pressure'] = 3.786E6            # Pascal
-        self['pore.critical_temperature'] = 132.5           # Kelvin
+        self['pore.molecular_weight'] = 0.02896             # kg/mol
+        self['pore.critical_pressure'] = 3.786E6            # Pa
+        self['pore.critical_temperature'] = 132.5           # K
         self['pore.critical_volume'] = 0.002917             # kg/m3
         self['pore.contact_angle'] = 110.0                  # Degree 
         self.add_model(propname='pore.density',
-                       model=fm.density.IdealGas)           # kg/m3
+                       model=fm.density.ideal_gas)          # kg/m3
         self.add_model(propname='pore.molar_density',
-                       model=fm.molar_density.MolarDensity) # kmole/m3
+                       model=fm.molar_density.standard)     # mol/m3
         self['pore.diffusivity'] = 5.4785E-6                # m2/s
         self['pore.surface_tension'] = 0                    # N/m
         self.add_model(propname='pore.thermal_conductivity',
-                       model=fm.thermal_conductivity.AirConductivity) # W/m.K 
+                       model=fm.thermal_conductivity.air)   # W/m.K 
         self.add_model(propname='pore.viscosity',
-                       model=fm.viscosity.AirViscosity)     # kg/m.s
+                       model=fm.viscosity.air)              # kg/m.s
                        
 if __name__ =="__main__":
     pn = OpenPNM.Network.TestNet()
