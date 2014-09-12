@@ -4,11 +4,11 @@ Submodule -- density
 ===============================================================================
 
 """
-import scipy as sp
+import scipy as _sp
 
 def ideal_gas(phase,**kwargs):
     r"""
-    Uses ideal gas equation of state to calculate the density of an ideal gas
+    Uses ideal gas law to calculate the mass density of an ideal gas
  
     Parameters
     ----------
@@ -19,51 +19,16 @@ def ideal_gas(phase,**kwargs):
             
     Returns
     -------
-    rho, the density in [kg/m3]
+    rho, the density in [mol/m3]
     
     """
    
     P = phase['pore.pressure']
     T = phase['pore.temperature']
     MW = phase['pore.molecular_weight']
-    Rbar = 8.31447
-    R = Rbar/MW
-    rho = P/(R*T)
-    value = rho
+    R = 8.31447
+    value = P/(R*T)*MW
     return value
-
-def vanderwaals(phase,P,T,Pc,Tc,MW,**kwargs):
-    r"""
-    Uses Van der Waals equation of state to calculate the density of a real gas
- 
-    Parameters
-    ----------
-    P, T, Pc, Tc, MW: float, array_like
-        P pressure of the gas in [Pa]
-        T temperature of the gas in [K]
-        Pc critical pressure of the gas in [Pa]
-        T critical temperature of the gas in [K]
-        MW molecular weight of the gas in [kg/mol]
-            
-    Returns
-    -------
-    rho, the density in [kg/m3]
-    
-    """
-    
-    P = phase['pore.pressure']
-    T = phase['pore.temperature']
-    Pc = phase['pore.criticalpressure']
-    Tc = phase['pore.criticaltemperature']
-    MW = phase['pore.molecularweight']
-    Rbar = 8.314
-    R = Rbar/MW
-    a = 27*(R**2)*(Tc**2)/(64*Pc); b = R*Tc/(8*Pc)
-    a0 = 1; a1 = -1/b; a2 = (R*T+b*P)/(a*b); a3 = -P/(a*b)
-    density = sp.roots([a0, a1, a2, a3])
-    value = sp.real(density[2])
-    return value
-
 
 def water(phase,**kwargs):
     r"""

@@ -42,9 +42,8 @@ class Air(GenericPhase):
         self.add_model(propname='pore.density',
                        model=fm.density.ideal_gas)          # kg/m3
         self.add_model(propname='pore.molar_density',
-                       model=fm.molar_density.standard)     # mol/m3
+                       model=fm.molar_density.ideal_gas)    # mol/m3
         self['pore.diffusivity'] = 5.4785E-6                # m2/s
-        self['pore.surface_tension'] = 0                    # N/m
         self.add_model(propname='pore.thermal_conductivity',# W/m.K
                        model=fm.misc.polynomial,
                        poreprop='pore.temperature',
