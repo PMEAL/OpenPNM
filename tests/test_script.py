@@ -126,5 +126,59 @@ def test_thermal_conduction():
     diff = a - b
     assert sp.amax(np.absolute(diff)) < 0.015
 
+def test_Darcy_alg():
+    #Generate Network and clean up some of boundaries
+    divs = [1,50,10]
+    Lc = 0.00004
+    pn = OpenPNM.Network.Cubic(name='net',shape = divs, spacing = Lc,loglevel=20)
+    pn.add_boundaries()    
+    Ps = pn.pores(['front_boundary','back_boundary'])
+    pn.trim(pores=Ps)
+    #Generate Geometry objects for internal and boundary pores
+    Ps = pn.pores('boundary',mode='difference')
+    Ts = pn.throats()
+    geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts,name='GDL')    
+    Ps = pn.pores('boundary')
+    boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,name='boundary')
+    #Create Phase object and associate with a Physics object
+    air = OpenPNM.Phases.Air(network=pn,name='air')
+    Ps = pn.pores()
+    Ts = pn.throats()
+    phys = OpenPNM.Physics.GenericPhysics(network=pn,phase=air,pores=Ps,throats=Ts)
+    from OpenPNM.Physics import models as pm
+    phys.add_model(propname='throat.hydraulic_conductance',
+                   model=pm.hydraulic_conductance.hagen_poiseuille)
+    phys.regenerate()  # Update the conductance values
+    #Setup Algorithm objects
+    Darcy1 = OpenPNM.Algorithms.StokesFlow(network=pn,phase=air,name='Darcy1')
+    inlets = pn.pores('bottom_boundary')
+    Ps = pn.pores('top_boundary')
+    outlets = Ps[pn['pore.coords'][Ps,1]<(divs[1]*Lc/2)]
+    P_out = 0  # Pa
+    Q_in = 0.6667*(Lc**2)*divs[1]*divs[0]  # m^3/s
+    Darcy1.set_boundary_conditions(bctype='Neumann_group',bcvalue=-Q_in,pores=inlets)
+    Darcy1.set_boundary_conditions(bctype='Dirichlet',bcvalue=P_out,pores=outlets)    
+    Darcy1.run()
+    Darcy1.update_results()
+    print('pore pressure for Darcy1 algorithm:')
+    print(air['pore.pressure'])
+    Darcy2 = OpenPNM.Algorithms.StokesFlow(network=pn,phase=air,name='Darcy2')
+    inlets = pn.pores('bottom_boundary')
+    outlets = pn.pores('top_boundary')
+    P_out = 10  # Pa
+    P_in = 1000  # Pa
+    Darcy2.set_boundary_conditions(bctype='Dirichlet',bcvalue=P_in,pores=inlets)
+    Darcy2.set_boundary_conditions(bctype='Dirichlet',bcvalue=P_out,pores=outlets)    
+    Darcy2.run()
+    print('pore pressure for Darcy2 algorithm:')
+    print(Darcy2['pore.air_pressure'])
+    Q = -Darcy2.rate(inlets)
+    K = Q*air['pore.viscosity'][0]*divs[2]*Lc/(divs[0]*divs[1]*Lc**2*(P_in-P_out))
+    Vp = sp.sum(pn['pore.volume']) + sp.sum(pn['throat.volume'])
+    Vb = sp.prod(divs)*Lc**3
+    e = Vp/Vb    
+    print('Effective permeability: ',K,'- Porosity: ',e)
+
+
 if __name__ == '__main__':
   pytest.main()
