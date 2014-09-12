@@ -6,6 +6,15 @@ Submodule -- density
 """
 import scipy as _sp
 
+def standard(phase,**kwargs):
+    r'''
+    Calculates the mass density from the molecular weight and molar density
+    '''
+    MW = phase['pore.molecular_weight']
+    rho = phase['pore.molar_density']
+    value = rho*MW
+    return value
+
 def ideal_gas(phase,**kwargs):
     r"""
     Uses ideal gas law to calculate the mass density of an ideal gas

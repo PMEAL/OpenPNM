@@ -8,10 +8,11 @@ import scipy as sp
 
 def standard(phase,**kwargs):
     r'''
+    Calculates the molar density from the molecular with and mass density
     '''
     MW = phase['pore.molecular_weight']
     rho = phase['pore.density']
-    value = rho*MW
+    value = rho/MW
     return value
 
 def ideal_gas(phase,**kwargs):
