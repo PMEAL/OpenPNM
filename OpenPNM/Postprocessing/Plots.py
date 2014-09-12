@@ -1,39 +1,43 @@
 import scipy as _sp
 import matplotlib.pylab as _plt
 
-def profiles(obj,propname,bins=[10,10,10]):
+def profiles(network,values=None,bins=[10,10,10]):
     r'''
     Compute the profiles for the property of interest and plots it in all 
     three dimensions
     
     Parameters
     ----------
-    obj : OpenPNM Network or Fluid object
+    network : OpenPNM Network object
         
-    propname : string
-        The pore property to be plotted as a profile
+    values : array_like, optional
+        The pore property values to be plotted as a profile
+
     bins : int or list of ints, optional
         The number of bins to divide the domain into for averaging.
         
+    Notes
+    -----
+    Either propname or values can be sent, but not both
+        
     '''
-    if 'Network' in obj.__module__.split('.'):
-        net = obj
-    elif 'Phases' in obj.__module__.split('.'):
-        net = obj._net
-    else:
-        raise Exception('Received object must be a Network or Phase')
-    
     fig = _plt.figure()
-    ax = [fig.add_subplot(131),fig.add_subplot(132),fig.add_subplot(133)]
+    ax1 = fig.add_subplot(131)
+    ax2 = fig.add_subplot(132)
+    ax3 = fig.add_subplot(133)
+    ax = [ax1,ax2,ax3]
+    xlab = ['x coordinate','y_coordinate','z_coordinate']
     for n in [0,1,2]:
-        n_min, n_max = [_sp.amin(net['pore.coords'][:,n]), _sp.amax(net['pore.coords'][:,n])]
-        steps = _sp.linspace(n_min,n_max,bins[n])
+        n_min, n_max = [_sp.amin(network['pore.coords'][:,n]), _sp.amax(network['pore.coords'][:,n])]
+        steps = _sp.linspace(n_min,n_max,bins[n]+1,endpoint=True)
         vals = _sp.zeros_like(steps)
         for i in range(0,len(steps)-1):
-            temp = (steps[i] <= net['pore.coords'][:,n])*(net['pore.coords'][:,n] < steps[i+1])
-            vals[i] = _sp.mean(obj[propname][net.toindices(temp)])
-        ax[n].plot(steps,vals)
-        ax[n].set_xlabel('Spatial Position')
+            temp = (network['pore.coords'][:,n] > steps[i])*(network['pore.coords'][:,n] <= steps[i+1])
+            vals[i] = _sp.mean(values[temp])
+        yaxis = vals[:-1]
+        xaxis = (steps[:-1] + (steps[1]-steps[0])/2)/n_max
+        ax[n].plot(xaxis,yaxis,'bo-')
+        ax[n].set_xlabel(xlab[n])
         ax[n].set_ylabel('Slice Value')
         
 
