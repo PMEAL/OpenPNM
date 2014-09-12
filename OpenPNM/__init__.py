@@ -51,6 +51,5 @@ from . import Phases
 from . import Physics
 from . import Algorithms
 from . import Postprocessing
-from . import Materials
 
 
