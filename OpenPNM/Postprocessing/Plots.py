@@ -1,6 +1,42 @@
 import scipy as _sp
 import matplotlib.pylab as _plt
 
+def profiles(obj,propname,bins=[10,10,10]):
+    r'''
+    Compute the profiles for the property of interest and plots it in all 
+    three dimensions
+    
+    Parameters
+    ----------
+    obj : OpenPNM Network or Fluid object
+        
+    propname : string
+        The pore property to be plotted as a profile
+    bins : int or list of ints, optional
+        The number of bins to divide the domain into for averaging.
+        
+    '''
+    if 'Network' in obj.__module__.split('.'):
+        net = obj
+    elif 'Phases' in obj.__module__.split('.'):
+        net = obj._net
+    else:
+        raise Exception('Received object must be a Network or Phase')
+    
+    fig = _plt.figure()
+    ax = [fig.add_subplot(131),fig.add_subplot(132),fig.add_subplot(133)]
+    for n in [0,1,2]:
+        n_min, n_max = [_sp.amin(net['pore.coords'][:,n]), _sp.amax(net['pore.coords'][:,n])]
+        steps = _sp.linspace(n_min,n_max,bins[n])
+        vals = _sp.zeros_like(steps)
+        for i in range(0,len(steps)-1):
+            temp = (steps[i] <= net['pore.coords'][:,n])*(net['pore.coords'][:,n] < steps[i+1])
+            vals[i] = _sp.mean(obj[propname][net.toindices(temp)])
+        ax[n].plot(steps,vals)
+        ax[n].set_xlabel('Spatial Position')
+        ax[n].set_ylabel('Slice Value')
+        
+
 def distributions(net,
                  throat_diameter='throat.diameter',
                  pore_diameter='pore.diameter',
