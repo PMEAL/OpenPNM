@@ -19,9 +19,6 @@ Classes
 .. autoclass:: InvasionPercolation
    :members:
    
-.. autoclass:: InvasionPercolationForImbibition
-   :members:
-
 .. autoclass:: FickianDiffusion
    :members:
 
