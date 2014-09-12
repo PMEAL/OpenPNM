@@ -6,6 +6,17 @@ import pytest
 def test_cubic_standard_call():
   pn = OpenPNM.Network.Cubic(shape=[3,4,5])
   np.testing.assert_almost_equal(pn['pore.coords'][0], [0.5,0.5,0.5])
+  
+def test_trim_extend():
+  pn = OpenPNM.Network.Cubic(shape=[5,5,5])
+  assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25]))
+  assert [pn.Np,pn.Nt] == [125,300]
+  pn.trim(pores=[0])
+  assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25]))
+  assert [pn.Np,pn.Nt] == [124,297]
+  pn.extend(pore_coords=[0,0,0],throat_conns=[[124,0]])
+  assert [pn.Np,pn.Nt] == [125,298]
+  assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25, 124]))
 
 def test_linear_solvers():
   pn = OpenPNM.Network.Cubic([1,40,30], spacing=0.0001)
