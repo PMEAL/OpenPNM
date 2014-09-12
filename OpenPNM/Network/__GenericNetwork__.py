@@ -661,7 +661,7 @@ class GenericNetwork(Core):
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
         self._update_network()
         
-    def trim(self, pores=[], throats=[], check_health=False):
+    def trim(self, pores=[], throats=[]):
         '''
         Remove pores (or throats) from the network.
         
@@ -673,7 +673,7 @@ class GenericNetwork(Core):
 
         Notes
         -----
-        TIt can get very messy to 'trim' pores or throats from a Network that
+        It can get very messy to 'trim' pores or throats from a Network that
         has already been used to instantiate other objects.  It's not impossible
         but at the present time attempting to do this will raise an error.
         
@@ -766,10 +766,7 @@ class GenericNetwork(Core):
         
         #Reset network graphs
         self._update_network(mode='regenerate')
-        
-        #Check network health
-        if check_health:
-            self.network_health()
+
             
     def check_network_health(self):
         r'''
@@ -783,17 +780,23 @@ class GenericNetwork(Core):
         Returns
         -------
         A dictionary containing the offending pores or throat numbers under
-        each named key
+        each named key.  
+        
+        It also returns a list of which pores and throats should be trimmed 
+        from the network to restore health.  This list is a suggestion only, 
+        and is based on keeping the largest cluster and trimming the others.
         
         Notes
         -----
-        Does not yet check for duplicate pores.  This is just a 'check' method
-        and does not 'fix' the problems it finds.
+        - Does not yet check for duplicate pores
+        - Does not yet suggest which throats to remove
+        - This is just a 'check' method and does not 'fix' the problems it finds
         '''
 
         health = {}
         health['disconnected_clusters'] = []
         health['isolated_pores'] = []
+        health['trim_pores'] = []
         health['duplicate_throats'] = []
         health['bidirectional_throats'] = []
         
@@ -804,11 +807,18 @@ class GenericNetwork(Core):
             health['isolated_pores'] = sp.where(Ps==0)[0]
         
         #Check for separated clusters of pores
+        temp = []
         Cs = self.find_clusters(self.tomask(throats=self.throats('all')))
         if sp.shape(sp.unique(Cs))[0] > 1:
             self._logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):
-                health['disconnected_clusters'].append(sp.where(Cs==i)[0])
+                temp.append(sp.where(Cs==i)[0])
+            b = sp.array([len(item) for item in temp])
+            c = sp.argsort(b)[::-1]
+            for i in range(0,len(c)):
+                health['disconnected_clusters'].append(temp[c[i]])
+                if i > 0:
+                    health['trim_pores'].extend(temp[c[i]])
         
         #Check for duplicate throats
         i = self['throat.conns'][:,0]
@@ -838,7 +848,7 @@ class GenericNetwork(Core):
 #        temp = sp.where(temp==0)  # Find 0 values in distance matrix
 #        dupPs = sp.where(temp[1]>temp[0])[0]  # Find 0 values above diagonal
 #        health['duplicate_pores'] = dupPs
-        
+
         return health
         
     def check_geometry_health(self):
