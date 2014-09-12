@@ -94,9 +94,9 @@ An example is seen here:
 .. image:: http://i.imgur.com/fPZ8lZK.png
 	
 	
-+++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Setting up the Phases and Physics
-+++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Now we are ready to set up our phases (water and air) and the physics corresponding to each of these phases. OpenPNM has built in air and water phases, so we can use those. However, Gostick specifies using a water pore contact angle of 100, so we will reset this value after regenerating our fluids.
 
@@ -121,9 +121,9 @@ We are now ready to establish physical properties for our fluid objects. To do t
     phys_water = OpenPNM.Physics.Standard(network=sgl,phase=water,pores=Ps,throats=Ts,dynamic_data=True,name='standard_water_physics')
     phys_air = OpenPNM.Physics.Standard(network=sgl,phase=air,pores=Ps,throats=Ts,dynamic_data=True,name='standard_air_physics')
 	
-+++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Running Ordinary Percolation, Fickian Diffusion, and Stokes Flow
-+++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Gostick uses ordinary percolation to spread water through his GDL before calculating relative permeability and relative diffusivity.  This way, a graph showing the relationship between saturation and relative permeability and between saturation and relative diffusivity can be created.  
 
@@ -305,9 +305,9 @@ With the algorithms run, each algorithm can calulate it's own effective property
 
 Try printing some of these values out to see how they differ. Remember, that we've just both single and multiphase performed transport simulations in this material.
 
-+++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Running in a large loop to generate graphs
-+++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 

@@ -12,7 +12,7 @@ The first thing you must do is import the OpenPNM code so you have access to the
 
 .. code-block:: python
     
-    	import OpenPNM
+    import OpenPNM
    
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Initialize the Network Topology
@@ -46,11 +46,11 @@ This data may also be stored in a variable:
 Initialize and Build a Geometry Object
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-The network does not contain any information about pore and throat sizes at this point.  The next step is to create a geometry object to calculate the desired geometrical properties.  
+The network does not contain any information about pore and throat sizes at this point.  The next step is to create a Geometry object to calculate the desired geometrical properties.  
 
 .. code-block:: python
 
-	geom = OpenPNM.Geometry.GenericGeometry(network=pn,name='stick_and_ball',pores=Ps,throats=Ts)  # instantiate geometry object
+	geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)  # instantiate geometry object
 	
 -------------------------------------------------------------------------------
 Add Desired Methods to Geometry
@@ -58,7 +58,7 @@ Add Desired Methods to Geometry
 	
 This freshly instantiated object contains no methods for actual geometry calculations as yet.  A fully functional object is built by adding the desired methods.  For example, the most basic type of geometry is the so-called 'stick and ball' model, where pores are treated as spheres and throats as cylinders.  Furthermore, it is common to assign pore sizes without regard for spatial correlation, but then to assign throat sizes based on the size of the pores it connects.  This is accomplished by choosing the desired models for each property, then adding them to the geometry object.  
 
-The first step is to load the geometry model library.
+The first step is to load the Geometry model library.
 
 .. code-block:: python
 
@@ -68,15 +68,15 @@ Then, the different geometry models are added one by one to the object geom.
 
 .. code-block:: python
 
-	geom.add_model(propname='pore.seed',model=gm.pore_misc.random,regen_mode = 'static') #begin adding the desired methods to 'geom'
-	geom.add_model(propname='throat.seed',model=gm.throat_misc.neighbor,pore_prop='pore.seed',mode='min',regen_mode = 'static')
-	geom.add_model(propname='pore.volume',model=gm.pore_volume.sphere,regen_mode = 'static')
-	geom.add_model(propname='pore.area',model=gm.pore_area.spherical)
-	geom.add_model(propname='throat.length',model=gm.throat_length.straight,regen_mode = 'static')
-	geom.add_model(propname='throat.volume',model=gm.throat_volume.cylinder,regen_mode = 'static')
-	geom.add_model(propname='throat.area',model=gm.throat_area.cylinder,regen_mode='static')
+    geom.add_model(propname='pore.seed',model=gm.pore_misc.random,regen_mode = 'static') #begin adding the desired methods to 'geom'
+    geom.add_model(propname='throat.seed',model=gm.throat_misc.neighbor,pore_prop='pore.seed',mode='min',regen_mode = 'static')
+    geom.add_model(propname='pore.volume',model=gm.pore_volume.sphere,regen_mode = 'static')
+    geom.add_model(propname='pore.area',model=gm.pore_area.spherical)
+    geom.add_model(propname='throat.length',model=gm.throat_length.straight,regen_mode = 'static')
+    geom.add_model(propname='throat.volume',model=gm.throat_volume.cylinder,regen_mode = 'static')
+    geom.add_model(propname='throat.area',model=gm.throat_area.cylinder,regen_mode='static')
 	
-Each of the above commands looks into the submodule associated with the `propname` argument, extracts the model, assigns the specified parameters, and finally attaches the model to the Geometry object.  
+Each of the above commands extracts the model, assigns the specified parameters, and attaches the model to the Geometry object.  
 
 OpenPNM ships with many pre-written models available for each property, but adding custom models and even custom properties is designed to be easy.  
 
@@ -106,16 +106,16 @@ Then, water and air properties are then defined by the code below. Note that som
 
 .. code-block:: python
 
-	air.add_model(propname='pore.diffusivity',model=fm.diffusivity.fuller,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
+    air.add_model(propname='pore.diffusivity',model=fm.diffusivity.fuller,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
     air.add_model(propname='pore.viscosity',model=fm.viscosity.reynolds,uo=0.001,b=0.1)
-	air.add_model(propname='pore.molar_density',model=fm.molar_density.ideal_gas,R=8.314)
-	water.add_model(propname='pore.diffusivity',model=fm.misc.constant,value=1e-12)
-	water.add_model(propname='pore.viscosity',model=fm.misc.constant,value=0.001)
-	water.add_model(propname='pore.molar_density',model=fm.misc.constant,value=44445)
+    air.add_model(propname='pore.molar_density',model=fm.molar_density.ideal_gas,R=8.314)
+    water.add_model(propname='pore.diffusivity',model=fm.misc.constant,value=1e-12)
+    water.add_model(propname='pore.viscosity',model=fm.misc.constant,value=0.001)
+    water.add_model(propname='pore.molar_density',model=fm.misc.constant,value=44445)
 
 
 	
-The above lines retrieve the requested property estimation model from the submodule indicated by the `propname` argument, and assign that method to the corresponding property of the phases on each pore location.  Setting a constant value, as for intance a constant water contact angle, may also be done by directly adding a new dictionnary entry:
+The above lines retrieve the requested property estimation model from the submodule indicated by the `propname` argument, and assign that method to the corresponding property of the phases on each pore location.  Setting a constant value, as for instance a constant water contact angle, may also be done by directly adding a new dictionary entry:
 
 .. code-block:: python
 
@@ -128,7 +128,7 @@ The above lines retrieve the requested property estimation model from the submod
 Create Pore Scale Physics Objects
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-We are still not ready to perform any experiments, despite the fact that phases are defined fully built up.  The last step is to define the desired pore scale physics, which defines how the phase and solid objects interact.  A classic example of this is the Washburn equation which predicts the pressure required to push a non-wetting phase through a capillary of known size.  OpenPNM attempts to permit a high degree of extensibility by using the same object construction approach used for Geometry and Phase above.  Because the Physics object defines the interaction of a Phase with the Geometry, it is necessary to build one physics object for each Phase (and Geometry).  
+We are still not ready to perform any experiments, despite the fact that phases are defined fully built up.  The last step is to define the desired pore scale physics, which defines how the phase and solid objects interact.  A classic example of this is the Washburn equation which predicts the pressure required to push a non-wetting phase through a capillary of known size.  OpenPNM attempts to permit a high degree of extensibility by using the same object construction approach used for Geometry and Phase above.  Because the Physics object defines the interaction of a Phase with the Geometry, it is necessary to build one physics object for each Phase.  
 
 .. code-block:: python
     
@@ -161,8 +161,7 @@ As with phases and geometry objects, the next steps are first to load the model 
 Visualise the results
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-We can now visualise our geometry and our phase properties. 
-
+We can now visualise our network and results.
 
 
 -------------------------------------------------------------------------------
@@ -191,7 +190,7 @@ For more detailed visualisaton, the data created by OpenPNM may be exported to a
 
 .. code-block:: python
 
-	import OpenPNM.Postprocessing.Export as save
-	save.VTK(network=pn,phases=[air,water])
+	import OpenPNM.Postprocessing.IO as io
+	io.VTK.save(network=pn,phases=[air,water])
 	
 This creates a *net.vtp* file in the active directory, which can be loaded from ParaView. Visualisation of the pores can be achieved by using 3D Glyphs.
