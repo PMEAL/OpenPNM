@@ -1,5 +1,6 @@
 import OpenPNM
 import scipy as sp
+import matplotlib.pylab as plt
 from OpenPNM.Geometry import models as gm
 from OpenPNM.Physics import models as pm
 
@@ -44,7 +45,6 @@ Ts = pn.throats()
 phys = OpenPNM.Physics.GenericPhysics(network=pn,phase=Cu,pores=Ps,throats=Ts,loglevel=10)
 phys.add_model(propname='throat.thermal_conductance',
                model=pm.thermal_conductance.series_resistors)
-phys.regenerate()  # Update the conductance values
 
 #==============================================================================
 '''Run Algorithms'''
