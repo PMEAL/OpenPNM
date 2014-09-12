@@ -42,9 +42,9 @@ def test_linear_solvers():
   alg_3.set_boundary_conditions(bctype='Dirichlet', bcvalue=0, pores=BC2_pores)
   alg_3.run()
 
-  print( alg_1['pore.air_mole_fraction'][BC1_pores] )
-  print( alg_2['pore.air_mole_fraction'][BC1_pores] )
-  print( alg_3['pore.air_mole_fraction'][BC1_pores] )
+  print( alg_1['pore.'+air.name+'_mole_fraction'][BC1_pores] )
+  print( alg_2['pore.'+air.name+'_mole_fraction'][BC1_pores] )
+  print( alg_3['pore.'+air.name+'_mole_fraction'][BC1_pores] )
 
 def test_add_boundary():
   pn = OpenPNM.Network.Cubic(shape=[5,5,5])
