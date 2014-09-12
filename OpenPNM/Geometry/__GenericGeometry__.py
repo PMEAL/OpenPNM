@@ -77,7 +77,9 @@ class GenericGeometry(Core):
         can be reassociated with a Network manually by setting the pore and 
         throat locations on the object.  
         '''
-        if pores != []:
+        pores = sp.array(pores,ndmin=1)
+        throats = sp.array(throats,ndmin=1)
+        if len(pores)>0:
             #Check for existing Geometry in pores
             temp = sp.zeros((self._net.Np,),bool)
             for key in self._net.geometries():
@@ -90,7 +92,7 @@ class GenericGeometry(Core):
             self['pore.map'] = pores
             #Specify Geometry locations in Network dictionary
             self._net['pore.'+self.name][pores] = True
-        if throats != []:
+        if len(throats)>0:
             #Check for existing Geometry in pores
             temp = sp.zeros((self._net.Nt,),bool)
             for key in self._net.geometries():
