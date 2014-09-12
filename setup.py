@@ -23,7 +23,6 @@ setup(
               'OpenPNM.Base',
               'OpenPNM.Network',
               'OpenPNM.Network.models',
-              'OpenPNM.Network.examples',
               'OpenPNM.Geometry',
               'OpenPNM.Geometry.models',
               'OpenPNM.Phases',

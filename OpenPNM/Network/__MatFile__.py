@@ -36,7 +36,7 @@ class MatFile(GenericNetwork):
 
     Examples
     ---------
-    >>> fname = 'examples/test_pn' # or 'examples/test_pn.mat'
+    >>> fname = 'test_pn' # or 'test_pn.mat'
     >>> longpath = os.path.abspath(__file__) # line needed for auto-tests 
     >>> path,file = os.path.split(longpath) #unfortunately, auto-tests fail without this. Just type in the path of your own file, or leave it blank to search in your current directory.
     >>> pn = OpenPNM.Network.MatFile(name='test_pn',filename=fname,path=path,xtra_pore_data='type',xtra_throat_data='type')
