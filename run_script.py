@@ -1,195 +1,97 @@
 import OpenPNM
-import scipy as sp
+
+print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-#pn = OpenPNM.Network.MatFile(name='pnMat',loglevel=10).generate(filename='standard_cubic_5x5x5.mat')
-pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(divisions=[15, 15, 15], lattice_spacing=[0.0001],add_boundaries=True)
-#pn = OpenPNM.Network.Delaunay(name='random_1',loglevel=10).generate(num_pores=1500,domain_size=[100,100,30])
-#pn = OpenPNM.Network.Template(name='template_1',loglevel=10).generate(template=sp.ones((4,4),dtype=int),lattice_spacing=0.001)
-#pn = OpenPNM.Network.Sphere(name='sphere_1',loglevel=10).generate(radius=5,lattice_spacing=1)
-#pn = OpenPNM.Network.Cylinder(name='cylinder1',loglevel=10).generate(radius=10,length=5,lattice_spacing=1)
-#pn = OpenPNM.Network.TestNet()
+pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net',loglevel=20)
+pn.add_boundaries()
 
 #==============================================================================
 '''Build Geometry'''
 #==============================================================================
-a = pn.get_pore_indices('all')
-pn.set_pore_info(label='GDL',locations=a)
-a = pn.get_throat_indices('all')
-pn.set_throat_info(label='GDL',locations=a)
+Ps = pn.pores('boundary',mode='not')
+Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
+geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
 
-GDL_geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, name='GDL',pnums=[],tnums=[])
-GDL_geom.regenerate()
-GDL_geom.check_consistency()
-
-#==============================================================================
-'''Build Fluids'''
-#==============================================================================
-air = OpenPNM.Fluids.Air(network=pn, loglevel=10)
-air.apply_conditions(temperature=350, pressure=200000)
-air.regenerate()
-
-water = OpenPNM.Fluids.Water(network=pn,loglevel=10)
-water.add_method(prop='diffusivity',prop_name='DAB',model='constant',value=5e-12)
-water.regenerate()
+Ps = pn.pores('boundary')
+Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
+boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 
 #==============================================================================
-'''Build Physics Objects'''
+'''Build Phases'''
 #==============================================================================
-phys_water_GDL = OpenPNM.Physics.GenericPhysics(network=pn, fluid='water',geometry=GDL_geom,name='phys_water_GDL')
-phys_water_GDL.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
-phys_water_GDL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-phys_water_GDL.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
-phys_water_GDL.regenerate()
+air = OpenPNM.Phases.Air(network=pn,name='air')
+air['pore.Dac'] = 1e-7  # Add custom properties directly
+water = OpenPNM.Phases.Water(network=pn,name='water')
 
-phys_air_GDL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air,geometry=GDL_geom, name='phys_air_GDL')
-phys_air_GDL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-phys_air_GDL.add_method(prop='diffusive_conductance', model='bulk_diffusion')
-phys_air_GDL.regenerate()
-## ----------------------------------------------------------------------------------------------
-#phys_water_MPL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry='MPL',name='phys_water_MPL')
-#phys_water_MPL.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
-#phys_water_MPL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-#phys_water_MPL.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
-#phys_water_MPL.regenerate()
-#
-#phys_air_MPL = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air, geometry='MPL',name='phys_air_MPL')
-#phys_air_MPL.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-#phys_air_MPL.add_method(prop='diffusive_conductance', model='bulk_diffusion')
-#phys_air_MPL.regenerate()
-## ----------------------------------------------------------------------------------------------
-#phys_water_interface = OpenPNM.Physics.GenericPhysics(network=pn, fluid=water,geometry='interface',name='phys_water_interface')
-#phys_water_interface.add_method(prop='capillary_pressure', model='purcell', r_toroid=1e-5)
-#phys_water_interface.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-#phys_water_interface.add_method(prop='diffusive_conductance', prop_name='gdAB', model='bulk_diffusion', diffusivity='DAB')
-#phys_water_interface.regenerate()
-#
-#phys_air_interface = OpenPNM.Physics.GenericPhysics(network=pn, fluid=air, geometry='interface',name='phys_air_interface')
-#phys_air_interface.add_method(prop='hydraulic_conductance', model='hagen_poiseuille')
-#phys_air_interface.add_method(prop='diffusive_conductance', model='bulk_diffusion')
-#phys_air_interface.regenerate()
+#==============================================================================
+'''Build Physics'''
+#==============================================================================
+Ps = pn.pores()
+Ts = pn.throats()
+phys_water = OpenPNM.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts)
+phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
+#Add some additional models to phys_air
+phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion,
+                   propname='throat.gdiff_ac',
+                   pore_diffusivity='pore.Dac')
 
 #==============================================================================
 '''Begin Simulations'''
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-#Initialize algorithm object
-#OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(loglevel=10,loggername='OP',name='OP_1',network=pn)
-#a = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-#OP_1.setup(invading_fluid='water',defending_fluid='air',inlets=a,npts=20)
-#OP_1.run()
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air,loglevel=30)
+Ps = pn.pores(labels=['bottom_boundary'])
+OP_1.run(inlets=Ps)
+OP_1.update_results(Pc=7000)
 
+#------------------------------------------------------------------------------
+'''Perform Invasion Percolation'''
+#------------------------------------------------------------------------------
+inlets = pn.pores('bottom_boundary')
+outlets = pn.pores('top_boundary')
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'IP_1', loglevel = 30)
+IP_1.run(invading_phase = water, defending_phase = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
+IP_1.update_results()
 
-#b = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-#OP_1.evaluate_trapping(outlets=b)
-#OP_1.plot_drainage_curve()
+#------------------------------------------------------------------------------
+'''Perform Fickian Diffusion'''
+#------------------------------------------------------------------------------
+alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn,phase=air)
+# Assign Dirichlet boundary conditions to top and bottom surface pores
+BC1_pores = pn.pores('top_boundary')
+alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
+BC2_pores = pn.pores('bottom_boundary')
+alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
+#Add new model to air's physics that accounts for water occupancy
+phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+                   propname='throat.conduit_diffusive_conductance',
+                   throat_conductance='throat.diffusive_conductance')
+#Use newly defined diffusive_conductance in the diffusion calculation
+alg.run(conductance='throat.diffusive_conductance')
+alg.update_results()
+Deff = alg.calc_eff_diffusivity()
 
-##-----------------------------------------------------------------------------
-#'''Perform an Injection Experiment (InvasionPercolation)'''
-##-----------------------------------------------------------------------------
-##Initialize algorithm object
-#IP_1 = OpenPNM.Algorithms.InvasionPercolation(loglevel=10,name='IP_1',network=pn)
-#face = pn.get_pore_indices(labels=['right','boundary'],mode='intersection',indices=False)
-#quarter = sp.rand(pn.num_pores(),)<.1
-#inlets = pn.get_pore_indices()[face&quarter]
-#outlets = pn.get_pore_indices('left')
-#IP_1.run(invading_fluid=water,defending_fluid=air,inlets=inlets,outlets=outlets)
+# this creates a time step x num_pores, which is what the animated object needs
+inv_seq = water['pore.IP_inv_seq'].squeeze()
+history = []
+for i in sorted(set(inv_seq)):
+  history.append( (inv_seq != 0) & (inv_seq < i) )
 
-##----------------------------------------------------------------------
-#'''Perform Fickian Diffusion'''
-##----------------------------------------------------------------------
-## Updating data based on the result of Percolation Algorithms
-#OP_1.update(Pc=3000)
-#IP_1.update()
-###----------------------------------------------------------------------
-### Initializing diffusion algorithm
-#Fickian_alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=10, loggername='Fickian', name='Fickian_alg',network=pn)
-###----------------------------------------------------------------------------
-### Assign Dirichlet boundary conditions to some of the surface pores
-##BC1
-#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet', locations=BC1_pores)
-#BC1_values = 0.6
-#Fickian_alg.set_pore_data(prop='BCval', data=BC1_values, locations=BC1_pores)
-### BC2
-#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet', locations=BC2_pores)
-#BC2_values = 0.2
-#Fickian_alg.set_pore_data(prop='BCval', data=BC2_values, locations=BC2_pores)
-###----------------------------------------------------------------------------
-### Assign Neumann and Dirichlet boundary conditions to some of the surface pores
-### BC1
-#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-#BC1_values = 0.5
-#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-### BC2
-#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC2_pores)
-#BC2_values = 2e-9
-#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-###----------------------------------------------------------------------------
-### Assign Dirichlet boundary condition to some of the surface pores and 
-### Neumann boundary condition to all of the internal pores(individually) 
-###BC0
-#BC0_pores = pn.get_pore_indices()[-sp.in1d(pn.get_pore_indices(),pn.get_pore_indices(['top','bottom']))]
-#Fickian_alg.set_pore_info(label='Neumann_rate_single',locations=BC0_pores)
-#BC0_values = 7e-12
-#Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
-###BC1
-#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-#BC1_values = 0.6
-#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-### BC2
-#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
-#BC2_values = 0.2
-#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-###----------------------------------------------------------------------------
-## Assign Dirichlet boundary condition to some of the surface pores and 
-## Neumann boundary condition to some of the internal pores(to the cluster not individually)
-#BC0
-#BC0_pores = [500,501,502,503,504]
-#Fickian_alg.set_pore_info(label='Neumann_rate_group',locations=BC0_pores)
-#BC0_values = 5e-7
-#Fickian_alg.set_pore_data(prop='BCval',data=BC0_values,locations=BC0_pores)
-##BC1
-#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-#BC1_values = 0.6
-#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-## BC2
-#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
-#BC2_values = 0.2
-#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-###----------------------------------------------------------------------------
-### Assign Dirichlet boundary condition to some of the surface pores and 
-### Neumann insulated boundary condition to some of the internal pores
-###BC0
-#BC0_pores = sp.r_[500:530]
-#Fickian_alg.set_pore_info(label='Neumann_insulated',locations=BC0_pores)
-###BC1
-#BC1_pores = pn.get_pore_indices(labels=['top','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC1_pores)
-#BC1_values = 0.4
-#Fickian_alg.set_pore_data(prop='BCval',data=BC1_values,locations=BC1_pores)
-### BC2
-#BC2_pores = pn.get_pore_indices(labels=['bottom','boundary'],mode='intersection')
-#Fickian_alg.set_pore_info(label='Dirichlet',locations=BC2_pores)
-#BC2_values = 0.1
-#Fickian_alg.set_pore_data(prop='BCval',data=BC2_values,locations=BC2_pores)
-###----------------------------------------------------------------------------
-### Run simulation
-#Fickian_alg.run(active_fluid=air)
-#Fickian_alg.update()
-###-----------------------------------------------------------------------
-###Export to VTK
-OpenPNM.Visualization.VTK().write(net=pn, fluids=[air,water])
-### Capillary pressure curve and Overview histograms
-#OpenPNM.Visualization.__Plots__.Capillary_Pressure_Curve(net=pn,fluid=water)
-#OpenPNM.Visualization.__Plots__.Overview(net=pn)
+try:
+  # try to perofrm an animated 3D rendering
+  from OpenPNM.Postprocessing.Graphics import Scene, Wires
+  wires = Wires(pn['pore.coords'], pn['throat.conns'], history)
+  scene = Scene()
+  scene.add_actors([wires])
+  scene.play()
+
+except Exception as e:
+  #------------------------------------------------------------------------------
+  '''Export to VTK'''
+  #------------------------------------------------------------------------------
+  import OpenPNM.Utilities.IO as io
+  io.VTK.save(network=pn,phases=[air,water])

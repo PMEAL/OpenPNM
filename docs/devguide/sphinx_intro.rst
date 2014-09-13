@@ -1,4 +1,4 @@
-.. _getting_started:
+.. _sphinx_intro:
 
 
 ***********************************
@@ -46,42 +46,6 @@ The doctest module
    4
 
 
-
-.. _ipython-highlighting:
-
-ipython sessions
-================
-
-Michael Droettboom contributed a sphinx extension which does `pygments
-<http://pygments.org>`_ syntax highlighting on `ipython
-<http://ipython.scipy.org>`_ sessions.  Just use ipython as the
-language in the ``sourcecode`` directive::
-
-    .. sourcecode:: ipython
-
-        In [69]: lines = plot([1,2,3])
-
-        In [70]: setp(lines)
-          alpha: float
-          animated: [True | False]
-          antialiased or aa: [True | False]
-          ...snip
-
-
-and you will get the syntax highlighted output below.
-
-.. sourcecode:: ipython
-
-    In [69]: lines = plot([1,2,3])
-
-    In [70]: setp(lines)
-      alpha: float
-      animated: [True | False]
-      antialiased or aa: [True | False]
-      ...snip
-
-This support is included in this template, but will also be included
-in a future version of Pygments by default.
 
 .. _using-math:
 

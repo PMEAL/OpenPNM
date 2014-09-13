@@ -1,87 +1,93 @@
 .. _algorithms:
 
-###############################################################################
+===============================================================================
 Algorithms
-###############################################################################
-
-===============================================================================
-Percolation Algorithms
 ===============================================================================
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Invasion Percolation
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-OpenPNM employs a sophisticated drainage algorithm that allows for a wide variety of initial conditions. The algorithm follows the basic tenants of the invasion percolation scheme, which was first described here [1]_, with a few clarifications.
-
-1) Multiple, independent clusters of the invading phase can be simulated, originating from any pore, or group of pores in the network.
-2) Clusters grow simultaneously. Pore invasion times are calculated from cluster volumes and prescribed cluster growth rates.
-3) A list of pore indices must be specified as outlets. A simulation only reaches its breakthrough condition once each invading cluster has either reached one of these pores or has coalesced with a cluster that has.
-4) Isolated, or trapped, defending phase is not considered. In a future release, trapping logic will be available.
-
-*Initial Setup*
-Two parameters must be specified: inlets and outlets. inlets is a list of arrays, where the arrays should be non-overlapping sets of available pore names. Each set is assumed to be a continuous cluster of invading fluid.
-By default, the program assumes that clusters initially grow at initial rates, but the user may specify individual cluster growth rates. The clusters each begin to grow throughout the network once enough simulation time has passed to fill the original pore volumes.
-
-*Cluster Volume Calculation*
-At each pore filling step, the subsequent filling step is anticipated by searching the cluster's interface for the lowest capillary pressure barrier. It is assumed that the entire cluster will reach the pressure of this capillary barrier before the cluster can advance (quasi-static flow). To reach this pressure, not only should all invaded pores be completely filled, but each interfacial meniscus should inflate to the radius of curvature associated with the capillary pressure.  Ideally, the shape of the throat, the local fluid/fluid surface tension, and a local contact angle should all factor in to the calculation of each inflated menisci' contribution to the cluster volume. However, for this version of the algorithm, the approximation is made that meniscus volume is a linear function of cluster capillary pressure, intersecting zero volume at zero pressure and the volume of a hemisphere with the throat's diameter at the throat's barrier capillary pressure.
-
-.. [1] D Wilkinson and J F Willemsen 1983 J. Phys. A: Math. Gen. 16 3365 http://dx.doi.org/10.1088/0305-4470/16/14/028
+.. inheritance-diagram:: OpenPNM.Algorithms.GenericAlgorithm
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Access Limited Ordinary Percolation
+Basic Usage
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-OpenPNM also includes an algorithm for simulating drainage capillary pressure curves, where a specified pressure is applied and the volume of non-wetting liquid injected is monitored.  The most common version of this experiment is Mercury Intrusion Porosimetry, which is commonly used to measure pore size distributions.  The drainage process is best simulated with a so-called 'access limited ordinary percolation' algorithm (ALOP).  
+.. warning::
 
-===============================================================================
-Transport Algorithms
-===============================================================================
+    The wide variety of possible arguments and configurations for algorithms makes it difficult to define a common behavior and requirements for initialization of this class.  In general, an Algorithm is instantiated by passing in a Network object, and the rest is up to the programmer of the class.  
 
-This documentation is being rewritten, sorry for the inconvenience.
+An Algorithm object can be instantiated by sending in a Network object:
 
+>>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+>>> alg = OpenPNM.Algorithms.GenericAlgorithm(network=pn)
+
+However, before the ``run`` method for this Algorithm can be called several steps need to be taken.  Most Algorithms have different requirements for what needs to be specified.  It is recommended to consult the docstring in each Algorithm for specific instructions.
+
+-------------------------------------------------------------------------------
+Adding Boundary Conditions
+-------------------------------------------------------------------------------
+The ``set_boundary_conditions`` method in the GenericAlgorithm class *can be* used to set boundary conditions on Algorithms.  Some algorithms are *not* required to use this method.  For instance OrdinaryPercolation algorithm simply requires a list of input pores, so a more complex approach is not needed (however it is possible).  In the case of transport simulations, however, this is quite essential:
+
+>>> P1 = pn.pores('top')
+>>> alg.set_boundary_conditions(bctype='Dirichlet',bcvalue=0.6,pores=P1, component=air)
+>>> P2 = pn.pores('bottom')
+>>> alg.set_boundary_conditions(bctype='Neumann',bcvalue=1e-7,pores=P2, component=air)
+
+The ``set_boundary_conditions`` method does two things: it creates a 'label' dictionary on the Algorithm object named according to the name of the component and also the type of boundary conditions applied, and applies that label to the specified locations. It also creates a 'property' dictionary with the specified boundary values in the specified pores or throats.
+
+For transport simulations, the 'bctype' argument can be only one of the 'reserved' keywords: 'Dirichlet', 'Neumann' and 'Neumann_group'. The first two keywords are self-explanatory, and the last one means that the total rate through 'all' the specified locations has been set.
+
+If no component is sent, the boundary conditions will be applied to the phase which is attached to the algorithm.
+
+-------------------------------------------------------------------------------
+Sharing Simulation Results
+-------------------------------------------------------------------------------
+Because each Algorithm object is a ``dict`` it can internally store the results of any calculations it performs.  This prevents the objects in the simulation from becoming 'polluted' with a large number of 'property' arrays and prevent data from being overwritten.  In many situations, however, the results of one simulation are needed by another.  The GenericAlgorithm class provides a method called ``update_results`` which is not implemented.  It is the responsibility of each Algorithm object to implement this method so that the call to ``alg.update_results(args)`` will send the important data to the correct places.  For instance, the FickianDiffusion algorithm will write 'pore.mole_fraction' to the Phase object that it received as the 'phase' argument.
+
+An example of this can be found in the Function Reference for Ordinary Percolation.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Diffusion
+Overview of Included Algorithms
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+OpenPNM comes with several of the most common and widely used algorithms.  These include simulating transport phenomena in the pore space, ordinary percolation to simulate a drainage experiment, and invasion percolation to simulate fluid infiltration.
+
+-------------------------------------------------------------------------------
+Steady State Transport Algorithms
+-------------------------------------------------------------------------------
+By using pore scale physics, OpenPNM is capable of steady state simulation of Fickian diffusion, permeability calculation, heat and electron conduction through the phases in the network.  
+
+In each of these algorithms, by using pipe network (or electrical resistor network) analogy, transport conductance of each conduit (a throat plus half of each adjoining pore) will be calculated.  Then, applying the conservation equation to each pore yields a sparse set of linear equations that can be solved with the appropriate boundary conditions to give the values of the desired quantity in each pore.
+
 
 -------------------------------------------------------------------------------
 FickianDiffusion
 -------------------------------------------------------------------------------
-OpenPNM applies Fickian diffusion equation to determine flux between the pores.
-
--------------------------------------------------------------------------------
-StefanMaxwell (TODO)
--------------------------------------------------------------------------------
-This documentation is being rewritten, sorry for the inconvenience.
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Permeability
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-This documentation is being rewritten, sorry for the inconvenience.
+It applies Fickian diffusion equation and uses the diffusive conductance of the desired phase to determine the mole fraction of that phase in each pore.  This binary diffusion algorithm, can be used for  unimolecular diffusion or equimolar counter diffusion.  In the case of unimolecular diffusion, however, the conversion of the mole fraction and BCs should take place outside of the algorithm.
 
 -------------------------------------------------------------------------------
 StokesFlow
 -------------------------------------------------------------------------------
-This documentation is being rewritten, sorry for the inconvenience.
+It applies a fluid flow transport equation such as Hagen-Poiseuille equation and uses the hydraulic conductance of the desired phase to determine the pressure of that phase in each pore.  
 
 -------------------------------------------------------------------------------
-Klinkenburger Slip-flow (TODO)
+OhmicConduction
 -------------------------------------------------------------------------------
-This documentation is being rewritten, sorry for the inconvenience.
+It applies Ohm equation to simulate electron or ion conduction and uses the electrical conductance of the desired phase to determine the voltage of that phase in each pore.  
+
+-------------------------------------------------------------------------------
+FourierConduction
+-------------------------------------------------------------------------------
+It applies Fourier equation to simulate heat conduction and uses the thermal conductance of the desired phase to determine the temperature of that phase in each pore.  
+
+-------------------------------------------------------------------------------
+OrdinaryPercolation
+-------------------------------------------------------------------------------
+OpenPNM includes a percolation algorithm for simulating drainage capillary pressure curves, where a specified pressure is applied and the volume of non-wetting liquid injected is monitored.  The most common version of this experiment is Mercury Intrusion Porosimetry, which is commonly used to measure pore size distributions.  The drainage process can be best simulated with a so-called 'access limited ordinary percolation' algorithm (ALOP).  ALOP is available as an additional option for this ordinary percolation algorithm.   
+
+-------------------------------------------------------------------------------
+InvasionPercolation
+-------------------------------------------------------------------------------
+Documentation in progress
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Filtration (TODO)
+Creating Customized Algorithms
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-TODO
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Bubble Growth and Condensation (TODO)
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-TODO
-
-===============================================================================
-Writing Custom Algorithms
-===============================================================================
-TODO
-
+For description of how to create customized algorithms see :ref:`Customizing OpenPNM<customizing>`

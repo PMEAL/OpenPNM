@@ -1,88 +1,62 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
 """
-
-module __Permeability__: Hagen Poiseuille permeability
-========================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
+===============================================================================
+module __StokesFlow__: Viscous fluid flow
+===============================================================================
 
 """
-
+import OpenPNM
 import scipy as sp
-from .__LinearSolver__ import LinearSolver
+from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
 
-class StokesFlow(LinearSolver):
-    r"""   
-    
-    Hagen Poiseuille permeability - Class to run an algorithm to find permeability on constructed networks
-    
-                        It returns pressure gradient inside the network.       
+class StokesFlow(GenericLinearTransport):
+    r'''
+    A subclass of GenericLinearTransport to simulate viscous flow.  The 2
+    main roles of this subclass are to set the default property names and to
+    implement a method for calculating the hydraulic permeability of the network.
         
-    """
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+    >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
+    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
+    >>> alg = OpenPNM.Algorithms.StokesFlow(network=pn, phase=phase1)
+    >>> BC1_pores = pn.pores('top')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
+    >>> BC2_pores = pn.pores('bottom')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
+    >>> alg.run()
+    >>> alg.update_results()
+    >>> Peff = round(alg.calc_eff_permeability(), 10)
+    >>> print(Peff) #unless something changed with our test objects, this should print "1.8663e-05"
+    1.8663e-05
+    
+    '''
     
     def __init__(self,**kwargs):
-        r"""
-        Initializing the class
-        """
+        r'''
+        '''
         super(StokesFlow,self).__init__(**kwargs)
-        self._logger.info("Create Hagen Poiseuille permeability Object")
-
-            
-    def _setup(self,
-               conductance='hydraulic_conductance',
-               occupancy='occupancy',
-               **params):
-        r"""
-        This function executes the essential mathods before building matrices in Linear solution 
-        """
-        self._logger.info("Setup for Stokes Flow Algorithm")
-        self._fluid = params['active_fluid']
-        try: self._fluid = self.find_object_by_name(self._fluid) 
-        except: pass #Accept object
-        self._X_name = 'pressure'
-        self._boundary_conditions_setup()
-        # Building hydraulic conductance
-        g = self._fluid.get_throat_data(prop=conductance)
-        s = self._fluid.get_throat_data(prop=occupancy)
-        self._conductance = g*s+g*(-s)/1e3
-
-    def _do_inner_iteration_stage(self):
-
-        p = self._do_one_inner_iteration()
-        self.set_pore_data(prop='pressure',data = p)
-        self._logger.info('Solving process finished successfully!')
+        self._logger.info('Create '+self.__class__.__name__+' Object')
+        
+    def run(self,conductance='hydraulic_conductance',quantity='pressure',**params):
+        r'''
+        '''
+        self._logger.info("Setup "+self.__class__.__name__)         
+        super(StokesFlow,self).setup(conductance=conductance,quantity=quantity)
+        
+        super(GenericLinearTransport,self).run()
+                
+    def calc_eff_permeability(self):
+        r'''
+        '''
+        D_normal = self._calc_eff_prop()
+        self._eff_property = D_normal*sp.mean(self._phase['pore.viscosity'])
+        return self._eff_property
         
 
-    def update(self):
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)
+    
         
-        p = self.get_pore_data(prop='pressure')
-        self._net.set_pore_data(phase=self._fluid,prop='pressure',data=p)
-        self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
-
-
-    def effective_permeability(self,
-                               fluid,
-                               direction='',
-                               d_term='viscosity',
-                               x_term='pressure',
-                               conductance='hydraulic_conductance',
-                               occupancy='occupancy',
-                               **params):
-        r"""
-        This function calculates effective diffusivity of a cubic network between face1 and face2.  
-        face1 and face2 represent types of these two faces.
-
-        """ 
-        return self._calc_eff_prop(alg='Stokes',
-                                  fluid=fluid,
-                                  direction=direction,
-                                  d_term=d_term,
-                                  x_term=x_term,
-                                  conductance=conductance,
-                                  occupancy=occupancy)

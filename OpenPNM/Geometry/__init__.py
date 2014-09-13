@@ -1,90 +1,47 @@
 r"""
-*******************************************************************************
-:mod:`OpenPNM.Geometry` -- Classes related to the creation of pore and throat geometry
-*******************************************************************************
-
-.. module:: OpenPNM.Geometry
+###############################################################################
+:mod:`OpenPNM.Geometry`: Classes related to the creation of pore-scale geometry
+###############################################################################
 
 Contents
 --------
-Contains methods for applying pore and throat geometry
+GenericGeometry: The init statement performs the important tasks of registering
+itself with the network and creating data dictionaries of the necessary size
+
+Subclasses: These can be custom made by users to represent specfic geometries.
+It is necessary for their init's to call the init of the GenericGeometry class
+in order to be properly instantiated.  OpenPNM comes with a few basic 
+pre-written materials.  New classes added to this directory will be 
+automatically imported and available.
 
 Classes
 -------
-    
+
 .. autoclass:: GenericGeometry
    :members:
-   :undoc-members:
-   :show-inheritance:
-   
+
 .. autoclass:: Stick_and_Ball
    :members:
-   :undoc-members:
-   :show-inheritance:
 
+.. autoclass:: Cube_and_Cuboid
+   :members:
+   
 .. autoclass:: Boundary
    :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Geometry.pore_seed
-   :members:
-   :undoc-members:
-   :show-inheritance:
    
-.. automodule:: OpenPNM.Geometry.pore_diameter
+.. autoclass:: Voronoi
    :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Geometry.pore_volume
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Geometry.throat_seed
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Geometry.throat_diameter
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Geometry.throat_volume
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Geometry.throat_length
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Geometry.throat_area
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: OpenPNM.Geometry.throat_surface_area
-   :members:
-   :undoc-members:
-   :show-inheritance:
    
 """
 
 from .__GenericGeometry__ import GenericGeometry
-from .__StickBall__ import Stick_and_Ball
+from .__Cube_and_Cuboid__ import Cube_and_Cuboid
+from .__Stick_and_Ball__ import Stick_and_Ball
+from .__TestGeometry__ import TestGeometry
 from .__Boundary__ import Boundary
-from .__PlotTools__ import PlotTools
-from . import pore_diameter
-from . import pore_seed
-from . import pore_volume
-from . import throat_diameter
-from . import throat_length
-from . import throat_seed
-from . import throat_volume
-from . import throat_vector
-from . import throat_area
-from . import throat_surface_area
+from .__Voronoi__ import Voronoi
+from .__Toray090__ import Toray090
+from .__SGL10__ import SGL10
+from . import models
+
+        

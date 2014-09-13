@@ -1,130 +1,110 @@
 """
-module Physics
+===============================================================================
+module __Physics__: Base class for mananging pore-scale Physics properties
 ===============================================================================
 
 """
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if sys.path[1] != parent_dir:
-    sys.path.insert(1, parent_dir)
-
 import OpenPNM
+import OpenPNM.Physics.models
 import scipy as sp
-from functools import partial
 
-class GenericPhysics(OpenPNM.Utilities.Base):
+class GenericPhysics(OpenPNM.Base.Core):
     r"""
-    Base class to generate a generic Physics object.  The user must specify models
-    and parameters for the all the properties they require. Classes for several
-    common Physics are included with OpenPNM and can be found under OpenPNM.Physics.
+    Generic class to generate Physics objects
 
     Parameters
     ----------
-    network : OpenPNM Network object 
+    network : OpenPNM Network object
         The network to which this Physics should be attached
-        
-    fluid : OpenPNM Fluid object 
-        The Fluid object to which the Physics applies
-    
-    name : str
-        A unique string name to identify the Physics object, typically same as 
-        instance name but can be anything.
-    
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    
-    loggername : string (optional)
-        Sets a custom name for the logger, to help identify logger messages
+
+    phase : OpenPNM Phase object
+        The Phase object to which this Physics applies
+
+    pores and/or throats : array_like
+        The list of pores and throats where this physics applies. If either are
+        left blank this will apply the physics nowhere.  The locations can be
+        change after instantiation using ``set_locations()``.
+
+    name : str, optional
+        A unique string name to identify the Physics object, typically same as
+        instance name but can be anything.  If left blank, and name will be
+        generated that include the class name and a random string.
 
     """
-    def __init__(self,network,name,fluid,geometry='all',**kwargs):
+
+    def __init__(self,network=None,phase=None,pores=[],throats=[],name=None,**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
-        for item in network._physics:
-            if item.name == name:
-                raise Exception('A Physics Object with the supplied name already exists')
+
+        #Initialize locations
+        self['pore.all'] = sp.array([],dtype=bool)
+        self['throat.all'] = sp.array([],dtype=bool)
+
+        #Associate with Network
+        if network == None:
+            self._net = OpenPNM.Network.GenericNetwork()
+        else:
+            self._net = network  # Attach network to self
+            self._net._physics.append(self)  # Register self with network
         self.name = name
-        self._prop_list = []
-        self._fluid = []
-        self._geometry = []
-        #bind objects togoether
-        try: fluid = fluid.name
-        except: pass
-        self._fluid.append(fluid)  # attach fluid to this physics
-        try: fluid = network.find_object_by_name(fluid) 
-        except: pass #Accept object               
-        fluid._physics.append(self) # attach this physics to fluid
-        if type(geometry)!= sp.ndarray and geometry=='all':
-            geometry = network._geometry
-        elif type(geometry)!= sp.ndarray: 
-            geometry = sp.array(geometry,ndmin=1)
-        for geom in geometry:
-            try: geom = geom.name
-            except: pass
-            self._geometry.append(geom)  # attach geometry to this physics
-            try: geom = network.find_object_by_name(geom) 
-            except: pass #Accept object               
-            geom._physics.append(self)  # attach this physics to geometry
-        self._net = network  # attach network to this physics
-        network._physics.append(self) #attach physics to network
 
-    def regenerate(self, prop_list='',mode=None):
-        r'''
-        This updates all properties using the selected methods
+        #Associate with Phase
+        if phase == None:
+            self._phases.append(OpenPNM.Phases.GenericPhase())
+        else:
+            phase._physics.append(self)  # Register self with phase
+            self._phases.append(phase)  # Register phase with self
 
-        Parameters
-        ----------
-        prop_list : string or list of strings
-            The names of the properties that should be updated, defaults to all
-        mode : string
-            Control how the regeneration occurs.  
-            
-        Examples
-        --------
-        For examples refer to usage of Fluid or Geometry refresh methods
-        '''
-        if prop_list == '':
-            prop_list = self._prop_list
-        elif type(prop_list) == str:
-            prop_list = [prop_list]
-        if mode == 'exclude':
-            a = sp.array(self._prop_list)
-            b = sp.array(prop_list)
-            c = a[sp.where(~sp.in1d(a,b))[0]]
-            prop_list = list(c)
-        for item in prop_list:
-            self._logger.debug('Refreshing: '+item)
-            getattr(self,item)()
-            
-    def add_method(self,prop='',prop_name='',**kwargs):
+        #Initialize a label dictionary in the associated fluid
+        self._phases[0]['pore.'+self.name] = False
+        self._phases[0]['throat.'+self.name] = False
+        self.set_locations(pores=pores,throats=throats)
+
+    def set_locations(self,pores=[],throats=[]):
         r'''
-        Add specified property estimation model to the physics object.
+        This method can be used to set the pore and throats locations of an
+        *empty* object.  Once locations have been set they can not be changed.
         
         Parameters
         ----------
-        prop : string
-            The name of the pore scale physics property attribute to add.
-            This name must correspond with a file in the Physics folder.  
-            To add a new property simply add a file with the appropriate name and the necessary methods.
-           
-        prop_name : string, optional
-            This argument will be used as the method name and the dictionary key
-            where data is written by method. This option is provided for occasions
-            when multiple properties of the same type are required, such as
-            diffusive conductance of each species in a multicomponent mixture.
-        
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
+        pores and throats : array_like
+            The list of pores and/or throats where the object should be applied.
+            
+        Notes
+        -----
+        This method is intended to assist in the process of loading saved
+        objects.  Save data can be loaded onto an empty object, then the object 
+        can be reassociated with a Network manually by setting the pore and 
+        throat locations on the object.  
         '''
-        try:
-            function = getattr( getattr(OpenPNM.Physics, prop), kwargs['model'] ) # this gets the method from the file
-            if prop_name: prop = prop_name #overwrite the default prop with user supplied name  
-            preloaded_fn = partial(function, physics=self, network=self._net, propname=prop, fluid=self._fluid[0], geometry=self._geometry, **kwargs) #
-            setattr(self, prop, preloaded_fn)
-            self._logger.info("Successfully loaded {}.".format(prop))
-            self._prop_list.append(prop)
-        except AttributeError: print('could not find',kwargs['model'])
+        pores = sp.array(pores,ndmin=1)
+        throats = sp.array(throats,ndmin=1)
+        if len(pores) > 0:
+            #Check for existing Geometry in pores
+            temp = sp.zeros((self._net.Np,),bool)
+            for key in self._phases[0].physics():
+                temp += self._phases[0]['pore.'+key]
+            overlaps = sp.sum(temp*self._net.tomask(pores=pores))
+            if overlaps > 0:
+                raise Exception('The given pores overlap with an existing Physics object')
+            #Initialize locations
+            self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
+            self['pore.map'] = pores
+            #Specify Physics locations in Phase dictionary
+            self._phases[0]['pore.'+self.name][pores] = True
+        if len(throats) > 0:
+            #Check for existing Geometry in pores
+            temp = sp.zeros((self._net.Nt,),bool)
+            for key in self._phases[0].physics():
+                temp += self._phases[0]['throat.'+key]
+            overlaps = sp.sum(temp*self._net.tomask(throats=throats))
+            if overlaps > 0:
+                raise Exception('The given throats overlap with an existing Physics object')
+            #Initialize locations
+            self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
+            self['throat.map'] = throats
+            #Specify Physics locations in Phase dictionary
+            self._phases[0]['throat.'+self.name][throats] = True
 
 if __name__ == '__main__':
     print('none yet')

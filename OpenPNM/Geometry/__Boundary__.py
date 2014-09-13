@@ -1,16 +1,12 @@
 """
-module __Boundary__: Subclass of GenericGeometry for Boundary Pores
-==================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
+===============================================================================
+Boundary -- Subclass of GenericGeometry for Boundary Pores
+===============================================================================
 
 """
 
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(1, parent_dir)
 import OpenPNM
-
+from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
 
 class Boundary(GenericGeometry):
@@ -19,29 +15,62 @@ class Boundary(GenericGeometry):
 
     Parameters
     ----------
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+    shape: str
+        Stick and Ball or Cube and Cuboid? ('spheres','cubes')
+                
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> Ps_int = pn.pores(labels=['top','bottom'],mode='not')
+    >>> Ps_boun = pn.pores(labels=['top','bottom'],mode='union')
+    >>> Ts_int = pn.throats(labels=['top','bottom'],mode='not')
+    >>> Ts_boun = pn.throats(labels=['top','bottom'],mode='union')
+    >>> geo = OpenPNM.Geometry.Cube_and_Cuboid(network=pn,pores=Ps_int,throats=Ts_int)
+    >>> boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps_boun,throats=Ts_boun)
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self,shape='spheres',**kwargs):
         r"""
         Initialize
         """
         super(Boundary,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-   
-        self.add_method(prop='pore_seed',model='constant',value=1.0)
-        self.add_method(prop='throat_seed',model='constant',value=1.0)
-        self.add_method(prop='pore_diameter',model='constant',value=0)
-        self.add_method(prop='throat_diameter',model='constant',value=0)
-        self.add_method(prop='pore_volume',model='constant',value=0.0)
-        self.add_method(prop='throat_length',model='constant',value=0.0)
-        self.add_method(prop='throat_volume',model='constant',value=0.0)
-        self.add_method(prop='throat_vector',model='pore_to_pore')
-        self.add_method(prop='throat_area',model='cylinder')
-        self.add_method(prop='throat_surface_area',model='constant',value=0.0)
+        self._generate(shape)
         
+    def _generate(self,shape):
+        r'''
+        '''
+        try:
+            self['pore.seed']
+            seeds = True
+        except:
+            seeds = False
+                
+        if seeds: self.add_model(propname='pore.seed',model=gm.pore_misc.constant,value=0.9999)
+        self.add_model(propname='pore.diameter',model=gm.pore_misc.constant,value=0)
+        if seeds: self.add_model(propname='throat.seed',
+                       model=gm.throat_misc.neighbor,
+                       pore_prop='pore.seed',
+                       mode='max')
+        self.add_model(propname='throat.diameter',
+                       model=gm.throat_misc.neighbor,
+                       pore_prop='pore.diameter',
+                       mode='max')
+        self['pore.volume'] = 0.0
+        self['pore.seed'] = 0.0
+        self.add_model(propname='throat.length',model=gm.throat_length.straight)
+        self['throat.volume'] = 0.0
+        self['throat.seed'] = 0.0
+        if shape == 'spheres':
+            self.add_model(propname='throat.area',model=gm.throat_area.cylinder)
+            self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cylinder)
+        elif shape == 'cubes':
+            self.add_model(propname='throat.area',model=gm.throat_area.cuboid)
+            self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cuboid)
+        self['pore.area'] = 1.0
+        
+
 if __name__ == '__main__':
-    pn = OpenPNM.Network.TestNet()
-    test = OpenPNM.Geometry.Boundary(loglevel=10,name='test_geom',locations=[0],network=pn)
+    import doctest
+    doctest.testmod(verbose=True)

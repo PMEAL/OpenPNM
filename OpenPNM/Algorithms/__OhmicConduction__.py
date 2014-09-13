@@ -1,64 +1,60 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
 """
-
-module __OhmicConduction__:
-========================================================================
+===============================================================================
+module __OhmicConduction__: Electronic or ionic conduction
+===============================================================================
 
 """
-
+import OpenPNM
 import scipy as sp
-from .__LinearSolver__ import LinearSolver
+from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
 
-class OhmicConduction(LinearSolver):
-    r"""
+class OhmicConduction(GenericLinearTransport):
+    r'''
+    A subclass of GenericLinearTransport to simulate electron and ionic 
+    conduction.  The 2 main roles of this subclass are to set the default 
+    property names and to implement a method for calculating the effective 
+    conductivity of the network.
+    
+    
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+    >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
+    >>> phase1['pore.voltage'] = 1
+    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
+    >>> phys1['throat.electrical_conductance'] = 1
+    >>> alg = OpenPNM.Algorithms.OhmicConduction(network=pn, phase=phase1)
+    >>> BC1_pores = pn.pores('top')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
+    >>> BC2_pores = pn.pores('bottom')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
+    >>> alg.run()
+    >>> alg.update_results()
+    >>> Ceff = round(alg.calc_effective_conductivity(), 3) 
+    >>> print(Ceff)
+    1.012
+    
 
-    OhmicConduction - Class to run an algorithm for electron conduction on constructed networks
-
-                        It returns voltage gradient inside the network.
-
-    """
+    '''
 
     def __init__(self,**kwargs):
-        r"""
-        Initializing the class
-        """
+        r'''
+        '''
         super(OhmicConduction,self).__init__(**kwargs)
-        self._logger.info("Create Ohmic Conduction Algorithm Object")
-
-    def _setup(self,
-               loglevel=10,
-               electronic_conductance='electronic_conductance',
-               occupancy='occupancy',
-               voltage='voltage',
-               **params):
-        r"""
-
-        This function executes the essential mathods for building matrices for Linear solution
-        """
-        self._fluid = params['active_fluid']
-        try: self._fluid = self.find_object_by_name(self._fluid) 
-        except: pass #Accept object
-        self._X_name = voltage
-        self._boundary_conditions_setup()
-        g = self._fluid.get_throat_data(prop=electronic_conductance)
-        s = self._fluid.get_throat_data(prop=occupancy)
-        self._conductance = g*s+g*(-s)/1e3
-
-
-    def _do_inner_iteration_stage(self):
-        v = self._do_one_inner_iteration()
-        self.set_pore_data(prop=self._X_name,data= v)
-        self._logger.info('Solving process finished successfully!')
+        self._logger.info('Create '+self.__class__.__name__+' Object')
+        
+    def run(self,conductance='electrical_conductance',quantity='voltage',**params):
+        r'''
+        '''  
+        self._logger.info("Setup "+self.__class__.__name__)        
+        super(OhmicConduction,self).setup(conductance=conductance,quantity=quantity)
+        
+        super(GenericLinearTransport,self).run()
+        
+    def calc_effective_conductivity(self):
+        return self._calc_eff_prop()
+        
+        
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)
     
-    def update(self):
-        
-        v = self.get_pore_data(prop=self._X_name)
-        self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=v)
-        self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
-        

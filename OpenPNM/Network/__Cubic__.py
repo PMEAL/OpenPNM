@@ -1,205 +1,109 @@
 """
-module __Cubic__: Generate simple cubic networks
-==========================================================
-
-.. warning:: The classes of this module should be loaded through the 'Topology.__init__.py' file.
+===============================================================================
+Cubic: Generate lattice-like networks
+===============================================================================
 
 """
-
-import sys, os
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if sys.path[1] != parent_dir:
-    sys.path.insert(1, parent_dir)
 import OpenPNM
-
-import scipy as sp
 import numpy as np
-import scipy.stats as spst
-import scipy.spatial as sptl
-import itertools as itr
-from OpenPNM.Network import GenericNetwork
-
+import scipy as sp
+import scipy.sparse as sprs
+import OpenPNM.Utilities.misc as misc
+from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 
 class Cubic(GenericNetwork):
     r"""
-    This class contains the methods for creating a *Cubic* network topology.  
-    To invoke the actual generation it is necessary to run the `generate` method.
+    This class generates a cubic network of the specified size and shape. 
+    Alternatively, an arbitrary domain shape defined by a supplied template.
 
     Parameters
     ----------
     name : string
         A unique name for the network
-
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
         
-    loggername : string
-        Overwrite the name of the logger, which defaults to the class name
+    shape : tuple of ints
+        The (i,j,k) size and shape of the network.
+        
+    template : array of booleans
+        An (i,j,k) array with True where the Network should be defiend and 
+        False elsewhere.  This approach is useful for creating networks of non-
+        cuboid shape like spheres or cylinders, but still with a cubic lattice 
+        topology.
 
     Examples
     --------
-    >>> pn = OpenPNM.Network.Cubic(name='test_cubic').generate(lattice_spacing=[1],divisions=[5,5,5])
-
+    >>> pn = OpenPNM.Network.Cubic(shape=[3,4,5])
+    >>> pn.Np
+    60
+    >>> img = sp.ones([3,4,5])
+    >>> pn = OpenPNM.Network.Cubic(template=img)
+    >>> pn.Np
+    60
     """
-
-    def __init__(self, **kwargs):
+    def __init__(self, shape=None, template=None, spacing=1, **kwargs):
         super(Cubic, self).__init__(**kwargs)
-        self._logger.debug(self.__class__.__name__+": Execute constructor")
-
-    def generate(self,**params):
-        '''
-        Invokes the creation of a Cubic network
-
-        Parameters
-        ----------
-        domain_size : [float,float,float]
-            domain_size = [3.0,3.0,3.0] (default)\n
-            Bounding cube for internal pore positions\n
-        lattice_spacing : [float]
-            lattice_spacing = [1.0] (default)\n
-            Distance between pore centers\n
-        divisions : [int,int,int]
-            divisions = [3,3,3]\n
-            Number of internal pores in each dimension.\n
-            (Optional input. Replaces one of the above.)\n
-
-        '''
-        self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
-        self._generate_setup(**params)
-        self._generate_pores()
-        self._generate_throats()
-        self._add_labels()
-        if params['add_boundaries']:
-            self._add_boundaries()
-        self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
-        return self
-
-    def _generate_setup(self,   domain_size = [],
-                                divisions = [],
-                                lattice_spacing = [],
-                                btype = [0,0,0],
-                                **params):
-        r"""
-        Perform applicable preliminary checks and calculations required for generation
-        """
-        self._logger.debug("generate_setup: Perform preliminary calculations")
-        #Parse the given network size variables
-        self._btype = btype
-        if domain_size and lattice_spacing and not divisions:
-            self._Lc = np.float(lattice_spacing[0])
-            self._Lx = np.float(domain_size[0])
-            self._Ly = np.float(domain_size[1])
-            self._Lz = np.float(domain_size[2])
-            self._Nx = np.int(self._Lx/self._Lc)
-            self._Ny = np.int(self._Ly/self._Lc)
-            self._Nz = np.int(self._Lz/self._Lc)
-        elif divisions and lattice_spacing and not domain_size:
-            self._Lc = np.float(lattice_spacing[0])
-            self._Nx = np.int(divisions[0])
-            self._Ny = np.int(divisions[1])
-            self._Nz = np.int(divisions[2])
-            self._Lx = np.float(self._Nx*self._Lc)
-            self._Ly = np.float(self._Ny*self._Lc)
-            self._Lz = np.float(self._Nz*self._Lc)
-        elif domain_size and divisions and not lattice_spacing:
-            self._Lc = np.min(np.array(domain_size,dtype=np.float)/np.array(divisions,dtype=np.float))
-            self._Nx = np.int(divisions[0])
-            self._Ny = np.int(divisions[1])
-            self._Nz = np.int(divisions[2])
-            self._Lx = np.float(self._Nx*self._Lc)
-            self._Ly = np.float(self._Ny*self._Lc)
-            self._Lz = np.float(self._Nz*self._Lc)
-        elif not domain_size and not divisions and not lattice_spacing:
-            self._Lc = np.float(1)
-            self._Lx = np.float(3)
-            self._Ly = np.float(3)
-            self._Lz = np.float(3)
-            self._Nx = np.int(self._Lx/self._Lc)
-            self._Ny = np.int(self._Ly/self._Lc)
-            self._Nz = np.int(self._Lz/self._Lc)
-        else:
-            self._logger.error("Exactly two of domain_size, divisions and lattice_spacing must be given")
-            raise Exception('Exactly two of domain_size, divisions and lattice_spacing must be given')
-
-    def _generate_pores(self):
-        r"""
-        Generate the pores (coordinates, numbering and types)
-        """
-        self._logger.info(sys._getframe().f_code.co_name+": Creating specified number of pores")
-        Nx = self._Nx
-        Ny = self._Ny
-        Nz = self._Nz
-        Lc = self._Lc
-        Np = Nx*Ny*Nz
-        ind = np.arange(0,Np)
-        pore_coords = Lc/2+Lc*np.array(np.unravel_index(ind, dims=(Nx, Ny, Nz), order='F'),dtype=np.float).T
-        self.set_pore_data(prop='coords',data=pore_coords)
-        self.set_pore_info(label='all',locations=np.ones_like(ind))
-        self._logger.debug(sys._getframe().f_code.co_name+": End of pore creation")
-
-    def _generate_throats(self):
-        r"""
-        Generate the throats (connections, numbering and types)
-        """
-        self._logger.info(sys._getframe().f_code.co_name+": Creating specified number of throats")
-
-        Nx = self._Nx
-        Ny = self._Ny
-        Nz = self._Nz
-        Np = Nx*Ny*Nz
-        ind = np.arange(0,Np)
-
-        #Generate throats based on pattern of the adjacency matrix
-        tpore1_1 = ind[(ind%Nx)<(Nx-1)]
-        tpore2_1 = tpore1_1 + 1
-        tpore1_2 = ind[(ind%(Nx*Ny))<(Nx*(Ny-1))]
-        tpore2_2 = tpore1_2 + Nx
-        tpore1_3 = ind[(ind%Np)<(Nx*Ny*(Nz-1))]
-        tpore2_3 = tpore1_3 + Nx*Ny
-        tpore1 = np.hstack((tpore1_1,tpore1_2,tpore1_3))
-        tpore2 = np.hstack((tpore2_1,tpore2_2,tpore2_3))
-        connections = np.vstack((tpore1,tpore2)).T
-        connections = connections[np.lexsort((connections[:, 1], connections[:, 0]))]
-        self.set_throat_data(prop='connections',data=connections)      
-        self.set_throat_info(label='all',locations=np.ones_like(tpore1))
-        self._logger.debug(sys._getframe().f_code.co_name+": End of throat creation")
         
-    def _add_labels(self):
-        r'''
-        Documentation for this method is being updated, we are sorry for the inconvenience.
-        '''
-        self._logger.info(sys._getframe().f_code.co_name+": Applying labels")
-        coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(label='front',locations=coords[:,0]<=self._Lc)
-        self.set_pore_info(label='left',locations=coords[:,1]<=self._Lc)
-        self.set_pore_info(label='bottom',locations=coords[:,2]<=self._Lc)
-        self.set_pore_info(label='back',locations=coords[:,0]>=(self._Lc*(self._Nx-1)))
-        self.set_pore_info(label='right',locations=coords[:,1]>=(self._Lc*(self._Ny-1)))
-        self.set_pore_info(label='top',locations=coords[:,2]>=(self._Lc*(self._Nz-1)))
-        self.set_pore_info(label='internal',locations=self.get_pore_indices())
-        #Add throat labels based IF both throat's neighbors have label in common
-        for item in ['top','bottom','left','right','front','back']:
-            ps = self.get_pore_indices(item)
-            ts = self.find_neighbor_throats(ps)
-            ps = self.find_connected_pores(ts)
-            ps0 = self.get_pore_info(label=item)[ps[:,0]]
-            ps1 = self.get_pore_info(label=item)[ps[:,1]]
-            ts = ts[ps1*ps0]
-            self.set_throat_info(label=item,locations=ts)
-        self.set_throat_info(label='internal',locations=self.get_throat_indices())
-        self._logger.debug(sys._getframe().f_code.co_name+": End")
+        if shape != None:
+            arr = np.atleast_3d(np.empty(shape))
+        elif template != None:
+            arr = sp.array(template,ndmin=3,dtype=bool)
         
-    def _add_boundaries(self):
+        self._shape = sp.shape(arr)  # Store original network shape
+        self._spacing = spacing  # Store network spacing instead of calculating it
+        
+        points = np.array([i for i,v in np.ndenumerate(arr)], dtype=float)
+        points += 0.5
+        points *= spacing
+
+        I = np.arange(arr.size).reshape(arr.shape)
+        tails, heads = [], []
+        for T,H in [
+            (I[:,:,:-1], I[:,:,1:]),
+            (I[:,:-1], I[:,1:]),
+            (I[:-1], I[1:]),
+            ]:
+            tails.extend(T.flat)
+            heads.extend(H.flat)
+        pairs = np.vstack([tails, heads]).T
+        
+        self['pore.coords']  = points
+        self['throat.conns'] = pairs
+        self['pore.all']     = np.ones(len(self['pore.coords']), dtype=bool)
+        self['throat.all']   = np.ones(len(self['throat.conns']), dtype=bool)
+        self['pore.index']   = sp.arange(0,len(self['pore.coords']))
+
+        x,y,z = self['pore.coords'].T
+        self['pore.internal'] = self['pore.all']
+        self['pore.front']    = x <= x.min()
+        self['pore.back']     = x >= x.max()
+        self['pore.left']     = y <= y.min()
+        self['pore.right']    = y >= y.max()
+        self['pore.bottom']   = z <= z.min()
+        self['pore.top']      = z >= z.max()
+        
+        #Add some topology models to the Network
+#        mod = OpenPNM.Network.models.pore_topology.get_subscripts
+#        self.add_model(propname='pore.subscript',model=mod,shape=self._shape)
+        
+        #If an image was sent as 'template', then trim network to image shape
+        if template != None:
+            self.trim(~arr.flatten())
+
+    def add_boundaries(self):
         r'''
-        This method uses clone_pore to clone the surface pores (labeled 'left'
-        , 'right', etc), then shifts them to the periphery of the domain.
+        This method uses ``clone`` to clone the surface pores (labeled 'left',
+        'right', etc), then shifts them to the periphery of the domain, and
+        gives them the label 'right_face', 'left_face', etc.
         '''
+        x,y,z = self['pore.coords'].T
+        
+        Lc = sp.amax(sp.diff(x)) #this currently works but is very fragile
         
         offset = {}
         offset['front'] = offset['left'] = offset['bottom'] = [0,0,0]
-        offset['back']  = [self._Lx,0,0]
-        offset['right'] = [0,self._Ly,0]
-        offset['top']   = [0,0,self._Lz]
+        offset['back']  = [x.max()+Lc/2,0,0]
+        offset['right'] = [0,y.max()+Lc/2,0]
+        offset['top']   = [0,0,z.max()+Lc/2]
         
         scale = {}
         scale['front']  = scale['back']  = [0,1,1]
@@ -207,31 +111,136 @@ class Cubic(GenericNetwork):
         scale['bottom'] = scale['top']   = [1,1,0]
         
         for label in ['front','back','left','right','bottom','top']:
-            ps = self.get_pore_indices(labels=[label,'internal'],mode='intersection')
-            self.clone_pores(pnums=ps,apply_label=[label,'boundary']) 
+            ps = self.pores(label)
+            self.clone(pores=ps,apply_label=[label+'_boundary','boundary'])
             #Translate cloned pores
-            ind = self.get_pore_indices(labels=[label,'boundary'],mode='intersection')
-            coords = self.get_pore_data(prop='coords',locations=ind) 
+            ind = self.pores(label+'_boundary')
+            coords = self['pore.coords'][ind]
             coords = coords*scale[label] + offset[label]
-            self.set_pore_data(prop='coords', locations=ind, data=coords)
-    
-    def domain_size(self,dimension=''):
-        if dimension == 'front' or dimension == 'back':
-            return self._Ly*self._Lz
-        if dimension == 'left' or dimension == 'right':
-            return self._Lx*self._Lz
-        if dimension == 'top' or dimension == 'bottom':
-            return self._Lx*self._Ly
-        if dimension == 'volume':
-            return self._Lx*self._Ly*self._Lz
-        if dimension == 'height':
-            return self._Lz
-        if dimension == 'width':
-            return self._Lx
-        if dimension == 'depth':
-            return self._Ly
+            self['pore.coords'][ind] = coords
+
+    def asarray(self,values):
+        r'''
+        Retreive values as a rectangular array, rather than the OpenPNM list format
+        
+        Parameters
+        ----------
+        values : array_like
+            The values from the network (in a list) to insert into the array
+            
+        Notes
+        -----
+        This method can break on networks that have had boundaries added.  It
+        will usually work IF the list of values came only from 'internal' pores.
+        '''
+        if sp.shape(values)[0] > self.num_pores('internal'):
+            raise Exception('The received values are bigger than the original network')
+        Ps = sp.array(self['pore.index'][self.pores('internal')],dtype=int)
+        arr = sp.ones(self._shape)*sp.nan
+        ind = sp.unravel_index(Ps,self._shape)
+        arr[ind[0],ind[1],ind[2]] = values
+        return arr
+        
+    def fromarray(self,array,propname):
+        r'''
+        Apply data to the network based on a rectangular array filled with 
+        values.  Each array location corresponds to a pore in the network.
+        
+        Parameters
+        ----------
+        array : array_like
+            The rectangular array containing the values to be added to the
+            network. This array must be the same shape as the original network.
+            
+        propname : string
+            The name of the pore property being added.
+        '''
+        array = sp.atleast_3d(array)
+        if sp.shape(array) != self._shape:
+            raise Exception('The received array does not match the original network')
+        temp = array.flatten()
+        Ps = sp.array(self['pore.index'][self.pores('internal')],dtype=int)
+        propname = 'pore.' + propname.split('.')[-1]
+        self[propname] = sp.nan
+        self[propname][self.pores('internal')] = temp[Ps]
+        
+    def domain_length(self,face_1,face_2):
+        r'''
+        Calculate the distance between two faces of the network
+        
+        Parameters
+        ----------
+        face_1 and face_2 : array_like
+            Lists of pores belonging to opposite faces of the network
+            
+        Returns
+        -------
+        The length of the domain in the specified direction
+        
+        Notes
+        -----
+        - Does not yet check if input faces are perpendicular to each other
+        '''
+        #Ensure given points are coplanar before proceeding
+        if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
+            #Find distance between given faces
+            x = self['pore.coords'][face_1]
+            y = self['pore.coords'][face_2]
+            Ds = misc.dist(x,y)
+            L = sp.median(sp.amin(Ds,axis=0))
+        else:
+            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
+            f1 = self['pore.coords'][face_1]
+            f2 = self['pore.coords'][face_2]
+            distavg = [0,0,0]
+            distavg[0] = sp.absolute(sp.average(f1[:,0]) - sp.average(f2[:,0]))
+            distavg[1] = sp.absolute(sp.average(f1[:,1]) - sp.average(f2[:,1]))
+            distavg[2] = sp.absolute(sp.average(f1[:,2]) - sp.average(f2[:,2]))
+            L = max(distavg)
+        return L
 
         
+    def domain_area(self,face):
+        r'''
+        Calculate the area of a given network face
+        
+        Parameters
+        ----------
+        face : array_like
+            List of pores of pore defining the face of interest
+            
+        Returns
+        -------
+        The area of the specified face
+        '''
+        coords = self['pore.coords'][face]
+        rads = self['pore.diameter'][face]/2.
+        # calculate the area of the 3 principle faces of the bounding cuboid
+        dx = max(coords[:,0]+rads) - min(coords[:,0]-rads)
+        dy = max(coords[:,1]+rads) - min(coords[:,1]-rads)
+        dz = max(coords[:,2]+rads) - min(coords[:,2]-rads)
+        yz = dy*dz # x normal
+        xz = dx*dz # y normal
+        xy = dx*dy # z normal
+        # find the directions parallel to the plane
+        directions = sp.where([yz,xz,xy]!=max([yz,xz,xy]))[0] 
+        try:
+            # now, use the whole network to do the area calculation
+            coords = self['pore.coords']
+            rads = self['pore.diameter']/2.
+            d0 = (max(coords[:,directions[0]]+rads) - min(coords[:,directions[0]]-rads))
+            d1 = (max(coords[:,directions[1]]+rads) - min(coords[:,directions[1]]-rads))
+            A = d0*d1        
+        except:
+            # if that fails, use the max face area of the bounding cuboid
+            A = max([yz,xz,xy])
+        if not misc.iscoplanar(self['pore.coords'][face]):
+            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
+        return A
+    
+
 if __name__ == '__main__':
-    pn = OpenPNM.Network.Cubic(name='cubic_1',loglevel=10).generate(lattice_spacing=[1.0],domain_size=[3,3,3])
-    print(pn.name)
+    import doctest
+    doctest.testmod(verbose=True)    
+    
+    

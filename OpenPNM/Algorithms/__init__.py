@@ -1,42 +1,44 @@
 r"""
-*******************************************************************************
+###############################################################################
 :mod:`OpenPNM.Algorithms` -- Algorithms on Networks
-*******************************************************************************
-
-.. module:: OpenPNM.Algorithms
+###############################################################################
 
 Contents
 --------
 This submodule contains algorithms for performing simulations on pore networks
 
+Classes
+-------
 
-.. autoclass:: Algorithms.GenericAlgorithm
+.. autoclass:: GenericAlgorithm
    :members:
-   :undoc-members:
-   :show-inheritance:
 
-.. autoclass:: Algorithms.InvasionPercolation
+.. autoclass:: OrdinaryPercolation
    :members:
-   :undoc-members:
-   :show-inheritance:
 
-.. autoclass:: Algorithms.OrdinaryPercolation
+.. autoclass:: InvasionPercolation
    :members:
-   :undoc-members:
-   :show-inheritance:
+   
+.. autoclass:: FickianDiffusion
+   :members:
 
-.. autoclass:: Algorithms.FickianDiffusion
+.. autoclass:: StokesFlow
    :members:
-   :undoc-members:
-   :show-inheritance:
+   
+.. autoclass:: OhmicConduction
+   :members:
+   
+.. autoclass:: FourierConduction
+   :members:
 
 """
 
 from .__GenericAlgorithm__ import GenericAlgorithm
-from .__InvasionPercolation__ import InvasionPercolation
-from .__OrdinaryPercolation__ import OrdinaryPercolation
+from .__GenericLinearTransport__ import GenericLinearTransport
 from .__FickianDiffusion__ import FickianDiffusion
-from .__StokesFlow__ import StokesFlow
 from .__FourierConduction__ import FourierConduction
 from .__OhmicConduction__ import OhmicConduction
-from .__LinearSolver__ import LinearSolver
+from .__StokesFlow__ import StokesFlow
+from .__InvasionPercolation__ import InvasionPercolation
+from .__OrdinaryPercolation__ import OrdinaryPercolation
+

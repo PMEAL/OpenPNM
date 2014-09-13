@@ -7,5 +7,3 @@ Module and Method Index
 * :ref:`genindex`
 
 * :ref:`modindex`
-
-* :ref:`search`

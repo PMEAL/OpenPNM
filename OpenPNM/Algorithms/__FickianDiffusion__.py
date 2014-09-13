@@ -1,92 +1,64 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: CEF PNM Team
-# License: TBD
-# Copyright (c) 2012
-
-#from __future__ import print_function
 """
-
-module __FickianDiffusion__: Fick's Law Diffusion
-========================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
+===============================================================================
+module __FickianDiffusion__: Diffusive mass transfer
+===============================================================================
 
 """
-
 import scipy as sp
-from .__LinearSolver__ import LinearSolver
+import OpenPNM
+from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
 
-class FickianDiffusion(LinearSolver):
-    r"""
+class FickianDiffusion(GenericLinearTransport):
+    r'''
+    A subclass of GenericLinearTransport to simulate binary diffusion.  The 2
+    main roles of this subclass are to set the default property names and to
+    implement a method for calculating the effective diffusion coefficient
+    of the network.
 
-    FickianDiffusion - Class to run Fick's law mass transfer diffusion on constructed networks
-
-                        It returns conecentration gradient inside the network.
-
-    """
+    Examples
+    --------
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+    >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
+    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
+    >>> alg = OpenPNM.Algorithms.FickianDiffusion(network=pn, phase=phase1)
+    >>> BC1_pores = pn.pores('top')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
+    >>> BC2_pores = pn.pores('bottom')
+    >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
+    >>> alg.run()
+    >>> alg.update_results()
+    >>> Deff = round(alg.calc_eff_diffusivity(), 3)
+    >>> print(Deff) #unless something changed with our test objects, this should print "0.025"
+    0.025
+    
+    
+    '''
 
     def __init__(self,**kwargs):
-        r"""
-        Initializing the class
-        """
+        r'''
+        
+        '''
         super(FickianDiffusion,self).__init__(**kwargs)
-        self._logger.info('Create Fickian Diffusion Algorithm Object')
-
-
-    def _setup(self,
-               conductance='diffusive_conductance',
-               occupancy='occupancy',
-               x_term='mole_fraction',               
-               **params):
-        r"""
-        This function executes the essential methods specific to Fickian diffusion simulations
-        """
-        self._logger.info("Setup for Fickian Algorithm")        
-        self._fluid = params['active_fluid']
-        try: self._fluid = self.find_object_by_name(self._fluid) 
-        except: pass #Accept object
-        self._X_name = x_term
-        self._boundary_conditions_setup()
-        # Variable transformation for Fickian Algorithm from xA to ln(xB)
-        Dir_pores = self._net.get_pore_indices('all')[self._BCtypes==1]
-        self._BCvalues[Dir_pores] = sp.log(1-self._BCvalues[Dir_pores])
-        g = self._net.get_throat_data(phase=self._fluid,prop=conductance)
-        s = self._net.get_throat_data(phase=self._fluid,prop=occupancy)
-        self._conductance = g*s+g*(-s)/1e3
+        self._logger.info('Create '+self.__class__.__name__+' Object')
+        
+    def run(self,conductance='diffusive_conductance',quantity='mole_fraction',**params):
+        r'''
+        '''  
+        self._logger.info("Setup "+self.__class__.__name__)   
+        super(FickianDiffusion,self).setup(conductance=conductance,quantity=quantity)
+        
+        super(GenericLinearTransport,self).run()
+        
+    def calc_eff_diffusivity(self):
+        r'''
+        '''
+        D_normal = self._calc_eff_prop()
+        self._eff_property = D_normal/sp.mean(self._phase['pore.molar_density'])
+        return self._eff_property
         
 
-    def _do_inner_iteration_stage(self):
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)
 
-        X = self._do_one_inner_iteration()
-        xA = 1-sp.exp(X)        
-        self.set_pore_data(prop=self._X_name,data = xA)
-        self._logger.info('Solving process finished successfully!')
-              
-    def update(self):
-        
-        x = self.get_pore_data(prop=self._X_name)        
-        self._net.set_pore_data(phase=self._fluid,prop=self._X_name,data=x)
-        self._logger.info('Results of ('+self.name+') algorithm have been updated successfully.')
-        
-
-    def effective_diffusivity(self,
-                              fluid,
-                              direction='',                                                                               
-                              conductance='diffusive_conductance',
-                              occupancy='occupancy',
-                              x_term='mole_fraction',
-                              d_term='molar_density',
-                              **params):
-        r"""
-        This function calculates effective diffusivity of a cubic network between face1 and face2.  
-        face1 and face2 represent types of these two faces.
-
-        """ 
-        return self._calc_eff_prop(alg='Fickian',
-                                  fluid=fluid,
-                                  direction=direction,
-                                  d_term=d_term,
-                                  x_term=x_term,
-                                  conductance=conductance,
-                                  occupancy=occupancy)

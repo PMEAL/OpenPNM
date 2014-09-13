@@ -7,14 +7,14 @@
 Contents:
 
 .. toctree::
-   :maxdepth: 3
-   
-   overview.rst
-   installation.rst
-   data_storage.rst
+   :maxdepth: 4
+
+   installation.rst   
+   getting_started.rst
+   general_usage.rst
    network.rst
    geometry.rst
-   fluids.rst
+   phases.rst
    physics.rst
    algorithms.rst
-   visualization.rst
+   customizing.rst
