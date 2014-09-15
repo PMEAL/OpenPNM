@@ -735,7 +735,7 @@ class Voronoi(GenericGeometry):
             verts_2d = np.vstack((verts[:,0],verts[:,2])).T
         else:
             verts_2d = np.vstack((verts[:,0],verts[:,1])).T
-        hull = ConvexHull(verts_2d)
+        hull = ConvexHull(verts_2d, qhull_options='QJ')
         sorted_verts = verts[hull.vertices]
         v1 = sorted_verts[1]-sorted_verts[0]
         v2 = sorted_verts[-1]-sorted_verts[0]

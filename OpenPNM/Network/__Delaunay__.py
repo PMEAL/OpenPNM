@@ -15,6 +15,7 @@ import scipy.ndimage as spim
 from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 from scipy.spatial import Voronoi
 from scipy import stats as st
+from scipy.special import cbrt
 
 class Delaunay(GenericNetwork):
     r"""
@@ -685,6 +686,37 @@ class Delaunay(GenericNetwork):
         A = self.vertex_dimension(face,parm='area')
 		
         return A       
+    
+    def porosity(self):
+        r"""
+        Return the porosity of the domain - sum of the pore volumes divided by domain volume
+        """
+        try:
+            face1=self.pores("bottom_boundary")
+            face2=self.pores("top_boundary")
+        except KeyError:
+            print("Boundaries must be added first")
+            return 
+        domain_vol=self.vertex_dimension(face1,face2,parm='volume')
+        try:
+            pore_vol=sum(self["pore.volume"])
+        except KeyError:
+            print("Geometries must be assigned first")
+            pore_vol=0
+        porosity = pore_vol/domain_vol
+        return porosity
+    
+    def scale(self,scale_factor=[1,1,1],preserve_vol=True):
+        r"""
+        A method for scaling the coordinates and vertices to create anisotropic networks
+        The original domain volume can be preserved by setting preserve_vol = True
+        """
+        scale_factor = np.asarray(scale_factor)
+        if preserve_vol == True:
+            scale_factor = scale_factor/(cbrt(sp.prod(scale_factor)))
+        self["pore.coords"]=self["pore.coords"]*scale_factor
+        for i,verts in enumerate(self["pore.vertices"]):
+            self["pore.vertices"][i]=verts*scale_factor
 
 if __name__ == '__main__':
     #Run doc tests
