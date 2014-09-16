@@ -290,6 +290,7 @@ class InvasionPercolation(GenericAlgorithm):
             sat += new_sat
             self['pore.inv_sat'][inv_pores] = sat
             self['throat.inv_sat'][inv_throats] = sat
+        self.sat = sat
 
     def _do_one_outer_iteration(self):
         r"""
@@ -546,7 +547,6 @@ class InvasionPercolation(GenericAlgorithm):
                 self.cluster_remove(self._current_cluster)
             elif self._end_condition == 'total':
                 self._brkevent.append(self._NewPore)
-#        if self._end_condition == 'total':
         if np.sum(self._cluster_data['active']) == 0:
             self._logger.info( ' ')
             self._logger.info( 'SIMULATION FINISHED; no more active clusters')
@@ -555,8 +555,7 @@ class InvasionPercolation(GenericAlgorithm):
                 self._logger.info(self._sim_time)
             self._condition = 0
             print('     IP algorithm at 100% completion at ',np.round(misc.toc(quiet=True)),' seconds')
-        # TODO Need to check how total condition will work, and end. All pores or all throats?
-#            self._condition = not self['throat.cluster_final'].all()
+            
     def cluster_update(self,cl_num,pores,throats,int_throats,bad_throat=-1):
         r'''
         '''
@@ -657,6 +656,7 @@ class InvasionPercolation(GenericAlgorithm):
             inv_throats = (self['throat.inv_seq']>0)&(self['throat.inv_seq']<=IPseq)
             self._phase['throat.'+occupancy][inv_throats] = 1.
             self['throat.invaded'] = inv_throats
+            self.sat = max(self['throat.inv_sat'][inv_throats])
             
         except:
             print('Something bad happened while trying to update phase',self._phase.name)
