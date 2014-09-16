@@ -16,3 +16,4 @@ Available Examples and Tutorials:
    io.rst
    mat_load.rst
    gostick_recreation.rst
+   voronoi.rst
