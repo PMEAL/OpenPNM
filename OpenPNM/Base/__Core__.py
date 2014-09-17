@@ -47,12 +47,8 @@ class Core(Base):
         if (element != 'pore') and (element != 'throat'):
             self._logger.error('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
             return
-        #Convert value to an ndarray, allows an array with units
-        try: 
-            units = value.units
-            value = sp.array(value,ndmin=1)*units
-        except:
-            value = sp.array(value,ndmin=1)
+        #Convert value to an ndarray
+        value = sp.array(value,ndmin=1)
         #Skip checks for 'coords', 'conns'
         if (key == 'pore.coords') or (key == 'throat.conns'):
             super(Base, self).__setitem__(key,value)
@@ -979,7 +975,7 @@ class Core(Base):
             temp = sp.array(temp,dtype=max(dtypes))
             self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
         return temp
-
+    
     def num_pores(self,labels='all',mode='union'):
         r'''
         Returns the number of pores of the specified labels
