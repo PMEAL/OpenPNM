@@ -157,6 +157,56 @@ class Core(Base):
         self._models.pop(propname,None)
         if mode == 'clear':
             self.pop(propname,None)
+            
+    def reorder_models(self,new_order):
+        r'''
+        Reorders the models on the object to change the order in which they 
+        are regenerated, where item 0 is calculated first.
+        
+        Parameters
+        ----------
+        new_order : dict
+            A dictionary containing the model name(s) as the key, and the 
+            location(s) in the new order as the value
+            
+        Notes
+        -----
+        The new order is calculated by removing the supplied models from the 
+        old list, then inserting them in the locations given.  
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> air = OpenPNM.Phases.Air(network=pn)
+        >>> list(air._models.keys())
+        ['pore.density', 'pore.molar_density', 'pore.thermal_conductivity', 'pore.viscosity']
+        >>> new_order = {}
+        >>> new_order['pore.molar_density'] = 0  # Put at beginning
+        >>> new_order['pore.density'] = 100  # Put at end for sure
+        >>> air.reorder_models(new_order)
+        >>> list(air._models.keys())
+        ['pore.molar_density', 'pore.thermal_conductivity', 'pore.viscosity', 'pore.density']
+        
+        '''
+        #Check no duplicate or invalid locations
+        locs = sp.unique(new_order.values())
+        if len(locs) < len(new_order.values()):
+            raise Exception('Duplicates found in the order')
+        
+        #Generate numbered list of current models
+        order = [item for item in list(self._models.keys())]
+        #Remove supplied models from list
+        for item in new_order:
+            order.remove(item)
+        #Add models back to list in new order
+        inv_dict = {v: k for k, v in new_order.items()}
+        for item in inv_dict:
+            order.insert(item,inv_dict[item])
+        #Now rebuild _models OrderedDict in new order
+        temp = self._models.copy()
+        self._models.clear()
+        for item in order:
+            self._models[item] = temp[item]
 
     def regenerate(self, props='',mode='inclusive'):
         r'''
@@ -198,9 +248,13 @@ class Core(Base):
             for item in props:
                 temp.remove(item)
             props = temp
+        self._logger.info('Models are being recalculated in the following order: ')
+        count = 0
         for item in props:
             if item in self._models.keys():
                 self[item] = self._models[item]()
+                self._logger.info(str(count)+' : '+item)
+                count += 1
             else:
                 self._logger.warning('Requested proptery is not a dynamic model: '+item)
 
