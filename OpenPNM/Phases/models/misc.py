@@ -6,21 +6,21 @@ Submodule -- miscillaneous
 Models for applying basic phase properties
 
 """
-import scipy as sp
+import scipy as _sp
 
 def constant(phase,value,**kwargs):
     r"""
     Assigns specified constant value
     """
-    temp = sp.ones(sp.shape(phase.pores()))*value
+    temp = _sp.ones(_sp.shape(phase.pores()))*value
     return temp
 
 def random(phase,seed=None,**kwargs):
     r"""
     Assigns specified constant value
     """
-    sp.random.seed(seed)
-    value = sp.random.rand(sp.shape(phase.pores())[0])
+    _sp.random.seed(seed)
+    value = _sp.random.rand(_sp.shape(phase.pores())[0])
     return value
 
 def linear(phase,m,b,poreprop='pore.temperature',**kwargs):
@@ -63,8 +63,45 @@ def polynomial(phase,a,poreprop='pore.temperature',**kwargs):
         value += a[i]*x**i
     return value
     
+def ideal_mixture(phase,pore_prop,mole_frac='pore.mole_fraction'):
+    r'''
+    Calcualtes a given mixture property as the mole fraction weighted average
+    of the pure compononent properties
     
+    Parameters
+    ----------
+    pore_prop : string
+        The name of the property on the pure components
+    mole_frac : string, optional (default is 'pore.mole_fraction')
+        The name of the pore property where the mole fraction information
+        is stored on each pure component
+        
+    Returns
+    -------
+    The mole fraction weighted average of the given property
     
+    Notes
+    -----
+    The mole fraction weighted average is calculated as follows:
+    
+    .. math::
+    
+        P_{mixture}=\Sigma(x_{i}P_{i})
+        
+    where
+    
+        :math:`P_{mix}` is the average mixture property
+
+        :math:`x_{i}` is the mole fraction of species *i*
+
+        :math:`P_{i}` is the property of interest for pure species *i*
+        
+        
+    '''
+    value = _sp.zeros((phase.Np,))
+    for comp in phase._phases:
+        value= value + comp[pore_prop]*comp[mole_frac]
+    return value
     
     
     
