@@ -767,6 +767,64 @@ class GenericNetwork(Core):
         #Reset network graphs
         self._update_network(mode='regenerate')
 
+    def _stitch(self,network_2,label_1,label_2):
+        r'''
+        Stitches a second a network to the current network.  
+        
+        Parameters
+        ----------
+        network_2 : OpenPNM Network Object
+            The network to stitch on to the current network
+            
+        label_1 : string
+            The pore label on the current network
+            
+        label_2 : string
+            The pore label on the network to be stitched on 
+        
+        '''
+        Np  = self.Np  # Get the initial number of pores
+        P1 = self.pores(label_1)
+        P2 = network_2.pores(label_2) + Np  # Increment pores on network_2
+        P = sp.hstack((P1,P2))
+        C1 = self['pore.coords'][self.pores(label_1)]
+        C2 = network_2['pore.coords'][network_2.pores(label_2)]
+        C = sp.vstack((C1,C2))
+        T = sp.spatial.Delaunay(C)        
+        a = T.simplices
+        b = []
+        for i in range(0,4):
+            for j in range(0,4):
+                if i != j:
+                    b.append(sp.vstack((a[:,i],a[:,j])).T)
+        c = sp.vstack((b))
+        
+        #Remove thraot connections to self
+        K1 = sp.in1d(P[c][:,0],P1)*sp.in1d(P[c][:,1],P2)
+        K2 = sp.in1d(P[c][:,0],P2)*sp.in1d(P[c][:,1],P1)
+        K = sp.where(K1 + K2)[0]
+        
+        #Remove duplicate throat connections
+        i = P[c][K][:,0]
+        j = P[c][K][:,1]
+        v = sp.ones_like(i)
+        adjmat = sprs.coo.coo_matrix((v,(i,j)),shape=(2*Np,2*Np))
+        #Convert to csr and back to coo to remove duplicates
+        adjmat = adjmat.tocsr()
+        adjmat = adjmat.tocoo()
+        #Remove lower triangular to remove bidirectional
+        adjmat = sprs.triu(adjmat,k=1,format="coo")
+        #Convert adjmat into 'throat.conns'
+        conns = sp.vstack((adjmat.row, adjmat.col)).T        
+        
+        #Enter network_2's pores into the Network
+        self.extend(pore_coords=network_2['pore.coords'])
+
+        #Enter network_2's throats into the Network
+        self.extend(throat_conns=network_2['throat.conns']+Np)
+        
+        #Enter new throats into the Network
+        self.extend(throat_conns=conns)
             
     def check_network_health(self):
         r'''
