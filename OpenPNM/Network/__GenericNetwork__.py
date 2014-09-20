@@ -829,7 +829,8 @@ class GenericNetwork(Core):
         i = P[c][K][:,0]
         j = P[c][K][:,1]
         v = sp.ones_like(i)
-        adjmat = sprs.coo.coo_matrix((v,(i,j)),shape=(2*Np,2*Np))
+        N = self.Np + network_2.Np
+        adjmat = sprs.coo.coo_matrix((v,(i,j)),shape=(N,N))
         #Convert to csr and back to coo to remove duplicates
         adjmat = adjmat.tocsr()
         adjmat = adjmat.tocoo()
