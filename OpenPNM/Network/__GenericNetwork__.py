@@ -788,7 +788,7 @@ class GenericNetwork(Core):
         #Reset network graphs
         self._update_network(mode='regenerate')
 
-    def _stitch(self,network_2,pores_1,pores_2):
+    def _stitch(self,network_2,pores_1,pores_2,method='delaunay',len_max=None):
         r'''
         Stitches a second a network to the current network.  
         
@@ -802,48 +802,77 @@ class GenericNetwork(Core):
             
         label_2 : array_like
             The pores label on the doner network
+            
+        len_max : float
+            Set a length limit on length of new throats
+            
+        method : string (default = 'delaunay')
+            The method to use when making pore to pore connections.  
+            
+            Options are:
+            
+            - 'delaunay' : Use a Delaunay tessellation
+            - 'nearest' : Connects each pore on the receptor network to its nearest pore on the donor network
         
         '''
-        Np  = self.Np  # Get the initial number of pores
-        P1 = pores_1
-        P2 = pores_2 + Np  # Increment pores on network_2
-        P = sp.hstack((P1,P2))
-        C1 = self['pore.coords'][pores_1]
-        C2 = network_2['pore.coords'][pores_2]
-        C = sp.vstack((C1,C2))
-        T = sp.spatial.Delaunay(C)        
-        a = T.simplices
-        b = []
-        for i in range(0,4):
-            for j in range(0,4):
-                if i != j:
-                    b.append(sp.vstack((a[:,i],a[:,j])).T)
-        c = sp.vstack((b))
-        
-        #Remove thraot connections to self
-        K1 = sp.in1d(P[c][:,0],P1)*sp.in1d(P[c][:,1],P2)
-        K2 = sp.in1d(P[c][:,0],P2)*sp.in1d(P[c][:,1],P1)
-        K = sp.where(K1 + K2)[0]
-        
-        #Remove duplicate throat connections
-        i = P[c][K][:,0]
-        j = P[c][K][:,1]
-        v = sp.ones_like(i)
-        N = self.Np + network_2.Np
-        adjmat = sprs.coo.coo_matrix((v,(i,j)),shape=(N,N))
-        #Convert to csr and back to coo to remove duplicates
-        adjmat = adjmat.tocsr()
-        adjmat = adjmat.tocoo()
-        #Remove lower triangular to remove bidirectional
-        adjmat = sprs.triu(adjmat,k=1,format="coo")
-        #Convert adjmat into 'throat.conns'
-        conns = sp.vstack((adjmat.row, adjmat.col)).T        
+        if method == 'delaunay':
+            Np  = self.Np  # Get the initial number of pores
+            P1 = pores_1
+            P2 = pores_2 + Np  # Increment pores on network_2
+            P = sp.hstack((P1,P2))
+            C1 = self['pore.coords'][pores_1]
+            C2 = network_2['pore.coords'][pores_2]
+            C = sp.vstack((C1,C2))
+            T = sp.spatial.Delaunay(C)        
+            a = T.simplices
+            b = []
+            for i in range(0,4):  # Turn simplices into pairs of connections
+                for j in range(0,4):
+                    if i != j:
+                        b.append(sp.vstack((a[:,i],a[:,j])).T)
+            c = sp.vstack((b))  # Convert list b to numpy array
+            #Remove thraot connections to self
+            K1 = sp.in1d(P[c][:,0],P1)*sp.in1d(P[c][:,1],P2)
+            K2 = sp.in1d(P[c][:,0],P2)*sp.in1d(P[c][:,1],P1)
+            K = sp.where(K1 + K2)[0]
+            #Remove duplicate throat connections
+            i = P[c][K][:,0]
+            j = P[c][K][:,1]
+            v = sp.ones_like(i)
+            N = self.Np + network_2.Np
+            adjmat = sprs.coo.coo_matrix((v,(i,j)),shape=(N,N))
+            #Convert to csr and back to coo to remove duplicates
+            adjmat = adjmat.tocsr()
+            adjmat = adjmat.tocoo()
+            #Remove lower triangular to remove bidirectional
+            adjmat = sprs.triu(adjmat,k=1,format="coo")
+            #Convert adjmat into 'throat.conns'
+            conns = sp.vstack((adjmat.row, adjmat.col)).T        
+        if method == 'nearest':
+            Np  = self.Np  # Get the initial number of pores
+            P1 = pores_1
+            P2 = pores_2 + Np  # Increment pores on network_2
+            P = sp.hstack((P1,P2))
+            C1 = self['pore.coords'][pores_1]
+            C2 = network_2['pore.coords'][pores_2]
+            D = sp.spatial.distance.cdist(C1,C2)
+            N = sp.shape(D)[0]
+            Dmin = sp.ndarray([N,],dtype=int)
+            for row in range(0,N):
+                Dmin[row] = sp.where(D[row]==sp.amin(D[row,:]))[0]
+            conns = sp.vstack((P1,P2[Dmin])).T
         
         #Enter network_2's pores into the Network
         self.extend(pore_coords=network_2['pore.coords'],labels=network_2.labels('pores'))
 
         #Enter network_2's throats into the Network
         self.extend(throat_conns=network_2['throat.conns']+Np,labels=network_2.labels('throats'))
+        
+        #Trim throats that are longer then given len_max
+        C1 = self['pore.coords'][conns[:,0]]
+        C2 = self['pore.coords'][conns[:,1]]
+        L = sp.sum((C1 - C2)**2,axis=1)**0.5
+        conns = conns[L<=len_max]
         
         #Enter new throats into the Network
         self.extend(throat_conns=conns,labels='stitched')
