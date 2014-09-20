@@ -788,7 +788,7 @@ class GenericNetwork(Core):
         #Reset network graphs
         self._update_network(mode='regenerate')
 
-    def _stitch(self,network_2,label_1,label_2):
+    def _stitch(self,network_2,pores_1,pores_2):
         r'''
         Stitches a second a network to the current network.  
         
@@ -797,19 +797,19 @@ class GenericNetwork(Core):
         network_2 : OpenPNM Network Object
             The network to stitch on to the current network
             
-        label_1 : string
-            The pore label on the current network
+        pores_1 : array_like
+            The pores on the recipient network 
             
-        label_2 : string
-            The pore label on the network to be stitched on 
+        label_2 : array_like
+            The pores label on the doner network
         
         '''
         Np  = self.Np  # Get the initial number of pores
-        P1 = self.pores(label_1)
-        P2 = network_2.pores(label_2) + Np  # Increment pores on network_2
+        P1 = pores_1
+        P2 = pores_2 + Np  # Increment pores on network_2
         P = sp.hstack((P1,P2))
-        C1 = self['pore.coords'][self.pores(label_1)]
-        C2 = network_2['pore.coords'][network_2.pores(label_2)]
+        C1 = self['pore.coords'][pores_1]
+        C2 = network_2['pore.coords'][pores_2]
         C = sp.vstack((C1,C2))
         T = sp.spatial.Delaunay(C)        
         a = T.simplices
@@ -840,13 +840,13 @@ class GenericNetwork(Core):
         conns = sp.vstack((adjmat.row, adjmat.col)).T        
         
         #Enter network_2's pores into the Network
-        self.extend(pore_coords=network_2['pore.coords'])
+        self.extend(pore_coords=network_2['pore.coords'],labels=network_2.labels('pores'))
 
         #Enter network_2's throats into the Network
-        self.extend(throat_conns=network_2['throat.conns']+Np)
+        self.extend(throat_conns=network_2['throat.conns']+Np,labels=network_2.labels('throats'))
         
         #Enter new throats into the Network
-        self.extend(throat_conns=conns)
+        self.extend(throat_conns=conns,labels='stitched')
             
     def check_network_health(self):
         r'''
