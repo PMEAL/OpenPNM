@@ -600,7 +600,7 @@ class GenericNetwork(Core):
         # Any existing adjacency and incidence matrices will be invalid
         self._update_network()
         
-    def extend(self,pore_coords=[],throat_conns=[]):
+    def extend(self,pore_coords=[],throat_conns=[],labels=[]):
         r'''
         Add individual pores (or throats) to the network from a list of coords
         or conns.
@@ -611,6 +611,8 @@ class GenericNetwork(Core):
             The coordinates of the pores to add
         throat_conns : array_like
             The throat connections to add
+        labels : string, or list of strings, optional
+            A list of labels to apply to the new pores and throats
             
         Notes
         -----
@@ -625,8 +627,10 @@ class GenericNetwork(Core):
             raise Exception('Network has active Phases, cannot proceed')
             
         self._logger.debug(sys._getframe().f_code.co_name+': Extending network')
-        Nt = self.num_throats() + int(sp.size(throat_conns)/2)
-        Np = self.num_pores() + int(sp.size(pore_coords)/3)
+        Np_old = self.num_pores()
+        Nt_old = self.num_throats()
+        Np = Np_old + int(sp.size(pore_coords)/3)
+        Nt = Nt_old + int(sp.size(throat_conns)/2)
         #Adjust 'all' labels
         del self['pore.all'], self['throat.all']
         self['pore.all'] = sp.ones((Np,),dtype=bool)
@@ -659,6 +663,23 @@ class GenericNetwork(Core):
                     except:
                         self[item] = sp.ones((N,),dtype=float)*sp.nan
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
+        #Apply labels, if supplied
+        if labels != []:
+            if type(labels) is str:
+                labels = [labels]
+            for label in labels:
+                label = label.split('.')[-1]
+                if pore_coords != []:
+                    Ps = sp.r_[Np_old:Np]
+                    if 'pore.'+label not in self.labels():
+                        self['pore.'+label] = False
+                    self['pore.'+label][Ps] = True
+                if throat_conns != []:
+                    Ts = sp.r_[Nt_old:Nt]
+                    if 'throat.'+label not in self.labels():
+                        self['throat.'+label] = False
+                    self['throat.'+label][Ts] = True
+                
         self._update_network()
         
     def trim(self, pores=[], throats=[]):
