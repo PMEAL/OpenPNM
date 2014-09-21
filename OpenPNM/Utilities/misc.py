@@ -186,7 +186,7 @@ def amalgamate_data(objs=[]):
     if type(objs) != list:
         objs = list(objs)
     data_amalgamated = {}
-    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
+    exclusion_list = ['pore.centroid','pore.vertices','pore.vert_index','throat.vertices','throat.vert_index','throat.offset_vertices','throat.normal','throat.centroid']
     for item in objs:
         if item.__module__.split('.')[1] == 'Network': #if network object, combine geometry and network keys
             keys = []
@@ -208,9 +208,12 @@ def amalgamate_data(objs=[]):
         keys.sort()
         for key in keys:
             if key not in exclusion_list:
-                if _sp.amax(item[key]) < _sp.inf:
-                    dict_name = item.name+'.'+key
-                    data_amalgamated.update({dict_name : item[key]})
+                try:
+                    if _sp.amax(item[key]) < _sp.inf:
+                        dict_name = item.name+'.'+key
+                        data_amalgamated.update({dict_name : item[key]})
+                except TypeError:
+                    print(key)
     return data_amalgamated
 
 

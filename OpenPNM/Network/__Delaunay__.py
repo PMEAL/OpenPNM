@@ -106,8 +106,7 @@ class Delaunay(GenericNetwork):
                 i += 1 
         #Seeding Code
         #Uniform Random Generator
-        #coords = np.array([np.random.uniform(0,self._Lx,self._Np),np.random.uniform(0,self._Ly,self._Np),np.random.uniform(0,self._Lz,self._Np)]).T
-        
+        #coords = np.array([np.random.uniform(0,self._Lx,self._Np),np.random.uniform(0,self._Ly,self._Np),np.random.uniform(0,self._Lz,self._Np)]).T  
         self['pore.coords'] = coords
         self._logger.debug(sys._getframe().f_code.co_name+": End of method") 
         
@@ -184,57 +183,28 @@ class Delaunay(GenericNetwork):
         self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
         self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
 
-        #New code to identify boundary pores - those that connect to pores inside and outside original set of pores 
-        boundary_pore_list = []
-        for i in sp.arange(0,sp.shape(Tri.simplices)[0]):
-            pores_in = Tri.simplices[i] < Np # Pores in the original domain
-            if (sum(pores_in) >= 1) and (sum(pores_in) < len(pores_in)):
-                for j in range(len(Tri.simplices[i])):
-                    if pores_in[j] == True:
-                        pore_id = Tri.simplices[i][j]
-                        if pore_id not in boundary_pore_list:
-                            boundary_pore_list.append(pore_id)
-        
-        vor_bounds=sp.asarray(boundary_pore_list)
-
-        self.set_info(pores=vor_bounds,label='inner_boundary')
-        self.set_info(pores='all',label='internal')
-        self.set_info(throats='all',label='internal')
         # Do Voronoi diagram - creating voronoi polyhedra around each pore and save vertex information
-        vor = Voronoi(pts)
-        all_verts = sp.ndarray(Np,dtype=object)
-        for i,polygon in enumerate(vor.point_region[0:Np]):
-            if -1 not in vor.regions[polygon]:
-                all_verts[i]=np.around(vor.vertices[vor.regions[polygon]],10)
-            else:
-                all_verts[i]="unbounded"
-        self['pore.vertices']=all_verts
+        self._vor = Voronoi(pts)
+        all_vert_index = sp.ndarray(Np,dtype=object)
+        for i,polygon in enumerate(self._vor.point_region[0:Np]):
+            if -1 not in self._vor.regions[polygon]:
+                all_vert_index[i]=self._vor.regions[polygon]
+    
+        " Add throat vertices by looking up vor.ridge_dict "
+        throat_verts = sp.ndarray(len(self["throat.conns"]),dtype=object)
+        for i,(p1,p2) in enumerate(self["throat.conns"]):
+            try: 
+                throat_verts[i]=self._vor.ridge_dict[(p1,p2)]
+            except KeyError:
+                try:
+                    throat_verts[i]=self._vor.ridge_dict[(p2,p1)]
+                except KeyError:
+                    print("Throat Pair Not Found in Voronoi Ridge Dictionary")
+            
+        self['pore.vert_index']=all_vert_index
+        self['throat.vert_index']=throat_verts
         self._logger.debug(sys._getframe().f_code.co_name+": End of method")
         
-    def add_boundaries(self):
-        r'''
-        This method will create boundary pores at the centre of the voronoi faces that
-        align with the outer planes of the domain.
-        The original pores in the domain are labelled internal and the boundary pores
-        are labelled external
-        
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[0.0001,0.0001,0.0001],name='net')
-        >>> pn.add_boundaries()
-        >>> pn.num_pores("boundary")>0
-        True
-        >>> pn.num_pores("left_boundary") + pn.num_pores("right_boundary") + pn.num_pores("top_boundary") + pn.num_pores("bottom_boundary") + pn.num_pores("back_boundary") + pn.num_pores("front_boundary") == pn.num_pores("boundary")
-        True
-        '''
-        #Add new pores at external throat centers to create coplanar boundaries
-        self._boundary_pores()
-        external_pores = self.pores(labels='internal',mode='difference')
-        external_throats = self.throats(labels='internal',mode='difference')
-        self.set_info(pores=external_pores,label='external')
-        self.set_info(throats=external_throats,label='external')
-
-
     def _add_labels(self):
         r'''
         Deprecated if using add_boundaries()
@@ -487,14 +457,14 @@ class Delaunay(GenericNetwork):
         N = self.num_pores()
         new_throat_count = 0
         for pore in boundary_pores:
-            verts = np.around(self["pore.vertices"][pore],10)
+            verts = self["pore.vertices"][pore]
             #Cycle through coordinates
             for i in range(3):
-                throat_verts = []
-                extruded_verts = []
                 temp_coord = sp.copy(self["pore.coords"][pore])
                 freq = st.itemfreq(verts[:,i])
                 for coord in freq:
+                    throat_verts = []
+                    extruded_verts = []
                     #if more than 2 occurences
                     if coord[1]>2:
                         #Pick up planar value for referencing
@@ -514,15 +484,16 @@ class Delaunay(GenericNetwork):
                                 throat_verts.append(vert)
                                 extruded_verts.append(vert+extrude_value)
                                 
-                #If we found a planar throat then add to the list
-                if len(throat_verts) > 0:
-                    new_conns.append(np.array([pore,new_throat_count+N]))
-                    new_throat_count += 1
-                    new_boundary_pores.append(np.asarray(throat_verts+extruded_verts))
-                    throat_verts = np.asarray(throat_verts)
-                    boundary_throats.append(throat_verts)
-                    throat_centers.append(sp.array([throat_verts[:,0].mean(),throat_verts[:,1].mean(),throat_verts[:,2].mean()]))
-                    pore_coords.append(temp_coord)
+                        #If we found a planar throat then add to the list
+                        if len(throat_verts) > 0:
+                            new_conns.append(np.array([pore,new_throat_count+N]))
+                            new_throat_count += 1
+                            #new_boundary_pores.append(np.asarray(throat_verts+extruded_verts))
+                            new_boundary_pores.append(np.asarray(throat_verts))
+                            throat_verts = np.asarray(throat_verts)
+                            boundary_throats.append(throat_verts)
+                            throat_centers.append(sp.array([throat_verts[:,0].mean(),throat_verts[:,1].mean(),throat_verts[:,2].mean()]))
+                            pore_coords.append(temp_coord)
             
         #First Attempt to try and create new pores and new connections
         #Add new pores and connections
@@ -548,6 +519,103 @@ class Delaunay(GenericNetwork):
         #Apply the extruded throat verts and original boundary throat verts to create new pore volume
         #These volumes may need some attention later
         self["pore.vertices"][N:M] = new_boundary_pores
+    
+    def add_boundaries(self):
+        
+        r"""
+        This method identifies pores in the original Voronoi object that straddle a boundary imposed by the reflection
+        The pore inside the original set of pores (with index 0 - Np) is identified and the coordinates are saved
+        The vertices making up the boundary throat are retrieved from the ridge_dict values and these are used to identify
+        which boundary the throat sits at.
+        A new pore and new connection is created with coordinates lying on the boundary plane
+        N.B This method will only work properly if the original network remains unaltered i.e. not trimmed or extended
+            This preserves the connection between pore index on the network object and the Voronoi object
+            The point of using this method is so that the throat vertices created by the Voronoi object are preserved
+
+        This method will create boundary pores at the centre of the voronoi faces that
+        align with the outer planes of the domain.
+        The original pores in the domain are labelled internal and the boundary pores
+        are labelled external
+        
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[0.0001,0.0001,0.0001],name='net')
+        >>> pn.add_boundaries()
+        >>> pn.num_pores("boundary")>0
+        True
+        >>> pn.num_pores("left_boundary") + pn.num_pores("right_boundary") + pn.num_pores("top_boundary") + pn.num_pores("bottom_boundary") + pn.num_pores("back_boundary") + pn.num_pores("front_boundary") == pn.num_pores("boundary")
+        True
+        """
+
+        bound_conns=[]
+        bound_coords=[]
+        bound_vert_index=[]
+        bound_vertices=[]
+        #Find boundary extent
+        [x_min,x_max,y_min,y_max,z_min,z_max]=self.vertex_dimension(self.pores(),parm='minmax')
+        min_point = np.around(np.array([x_min,y_min,z_min]),10)
+        max_point = np.around(np.array([x_max,y_max,z_max]),10)
+        Np = self.num_pores()
+        Nt = self.num_throats()
+        new_throat_count = 0
+        # ridge_dict contains a dictionary where the key is a set of 2 neighbouring pores and the value is the vertex indices
+        # that form the throat or ridge between them
+        for p,v in self._vor.ridge_dict.items():
+            # if the vertex with index -1 is contained in list then the ridge is unbounded - ignore these 
+            if np.all(np.asarray(v) >=0):
+                #boundary throats will be those connecting one pore inside the original set and one out
+                if  (p[0] in range(Np) and p[1] not in range(Np)) or\
+                    (p[0] not in range(Np) and p[1] in range(Np)):
+                    # the dictionary key is not in numerical order so find the pore index inside
+                    if p[0] in range(Np):
+                        my_pore=p[0]
+                    else:
+                        my_pore=p[1]
+                    my_pore_coord = self["pore.coords"][my_pore]
+                    new_pore_coord = my_pore_coord.copy()
+                    #rounding necessary here to identify the plane as Voronoi can have 1e-17 and smaller errors
+                    throat_verts = np.around(self._vor.vertices[v],10)
+                    #find which plane we are aligned with (if any) and align new_pore with throat plane
+                    if len(np.unique(throat_verts[:,0])) == 1:
+                        new_pore_coord[0]=np.unique(throat_verts[:,0])
+                    elif len(np.unique(throat_verts[:,1])) == 1:
+                        new_pore_coord[1]=np.unique(throat_verts[:,1])
+                    elif len(np.unique(throat_verts[:,2])) == 1:
+                        new_pore_coord[2]=np.unique(throat_verts[:,2])
+                    else:
+                        new_pore_coord = throat_verts.mean()
+                    bound_coords.append(new_pore_coord)
+                    bound_conns.append(np.array([my_pore,new_throat_count+Np]))
+                    bound_vert_index.append(v)
+                    bound_vertices.append(throat_verts)
+                    new_throat_count += 1
+
+        #Add new pores and connections
+        self.extend(pore_coords=bound_coords, throat_conns=bound_conns)
+        #Record new number of pores
+        Mp = self.num_pores()
+        Mt = self.num_throats()
+        new_pore_ids = np.arange(Np,Mp)
+        new_throat_ids = np.arange(Nt,Mt)
+        #Identify which boundary the pore sits on
+        front = self.pores()[self['pore.coords'][:,0]==min_point[0]]
+        back = self.pores()[self['pore.coords'][:,0]==max_point[0]]
+        left = self.pores()[self['pore.coords'][:,1]==min_point[1]]
+        right = self.pores()[self['pore.coords'][:,1]==max_point[1]]
+        bottom = self.pores()[self['pore.coords'][:,2]==min_point[2]]
+        top = self.pores()[self['pore.coords'][:,2]==max_point[2]]
+        #Assign labels
+        self.set_info(pores=new_pore_ids,label='boundary')        
+        self.set_info(pores=right,label='right_boundary') 
+        self.set_info(pores=left,label='left_boundary') 
+        self.set_info(pores=front,label='front_boundary') 
+        self.set_info(pores=back,label='back_boundary') 
+        self.set_info(pores=top,label='top_boundary') 
+        self.set_info(pores=bottom,label='bottom_boundary')
+        #Save the throat verts
+        self["pore.vert_index"][new_pore_ids] = bound_vert_index
+        self["throat.vert_index"][new_throat_ids] = bound_vert_index
+        #self["pore.vertices"][new_pore_ids] = bound_vertices
 		
     def vertex_dimension(self,face1=[],face2=[],parm='volume'):
         r"""
@@ -608,33 +676,27 @@ class Delaunay(GenericNetwork):
         else:
             return 0
             
-        if "pore.vertices" in self.props():
-            vert_list = self["pore.vertices"][pores]
+        if "pore.vert_index" in self.props():
+            vert_indices=[]
+            for pore_vert_indices in self["pore.vert_index"]:
+                for vert_index in pore_vert_indices:
+                    if vert_index not in vert_indices:
+                        vert_indices.append(vert_index)
+            verts = self._vor.vertices[vert_indices]
         else:
-            vert_list = self["pore.coords"][pores]
-        vx_min = 1e32
-        vx_max = -1e32
-        vy_min = 1e32
-        vy_max = -1e32
-        vz_min = 1e32
-        vz_max = -1e32
+            verts = self["pore.coords"][pores]
+            
+        vx_min = verts[:,0].min()
+        vx_max = verts[:,0].max()
+        vy_min = verts[:,1].min()
+        vy_max = verts[:,1].max()
+        vz_min = verts[:,2].min()
+        vz_max = verts[:,2].max()
         output = 0
-        for verts in vert_list:
-            if verts[:,0].min()<vx_min:
-                vx_min=verts[:,0].min()
-            if verts[:,0].max()>vx_max:
-                vx_max=verts[:,0].max()
-            if verts[:,1].min()<vy_min:
-                vy_min=verts[:,1].min()
-            if verts[:,1].max()>vy_max:
-                vy_max=verts[:,1].max()
-            if verts[:,2].min()<vz_min:
-                vz_min=verts[:,2].min()
-            if verts[:,2].max()>vz_max:
-                vz_max=verts[:,2].max()
         width = np.around(vx_max-vx_min,10)
         depth = np.around(vy_max-vy_min,10)
         height = np.around(vz_max-vz_min,10)
+        
         if parm == 'volume':
             output =  width*depth*height
         elif parm == 'area_xy' or (parm == 'area' and planar[2]==1):
@@ -710,13 +772,29 @@ class Delaunay(GenericNetwork):
         r"""
         A method for scaling the coordinates and vertices to create anisotropic networks
         The original domain volume can be preserved by setting preserve_vol = True
+        
+        Example
+        ---------
+        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1],name='net')
+        >>> pn.add_boundaries()
+        >>> B1 = pn.pores("left_boundary")
+        >>> B2 = pn.pores("right_boundary")
+        >>> Vol = pn.vertex_dimension(B1,B2)
+        >>> pn.scale([2,1,1])
+        >>> Vol2 = pn.vertex_dimension(B1,B2)
+        >>> np.around(Vol-Vol2,5)
+        0.0
+        >>> pn.scale([2,1,1],preserve_vol=False)
+        >>> Vol3 = pn.vertex_dimension(B1,B2)
+        >>> np.around(Vol3/Vol,5)
+        2.0
+        
         """
         scale_factor = np.asarray(scale_factor)
         if preserve_vol == True:
             scale_factor = scale_factor/(cbrt(sp.prod(scale_factor)))
         self["pore.coords"]=self["pore.coords"]*scale_factor
-        for i,verts in enumerate(self["pore.vertices"]):
-            self["pore.vertices"][i]=verts*scale_factor
+        self._vor.vertices=self._vor.vertices*scale_factor
 
 if __name__ == '__main__':
     #Run doc tests

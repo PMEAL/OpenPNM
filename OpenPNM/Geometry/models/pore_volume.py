@@ -16,7 +16,7 @@ def _get_hull_volume(points):
     " remove any duplicate points - this messes up the triangulation "        
     points = _sp.asarray(misc.unique_list(points))       
     try:
-        tri = Delaunay(points)
+        tri = Delaunay(points,qhull_options='QJ Pp')
     except _sp.spatial.qhull.QhullError:
         print(points)
     " We only want points included in the convex hull to calculate the centroid "
@@ -74,30 +74,29 @@ def cube(geometry,
     value = diams**3
     return value
     
-def voronoi(geometry,
+def voronoi(network,
+            geometry,
             **kwargs):
     r"""
-    Calculate volume from the convex hull of the offset vertices making the throats
-    
-    TODO: Optimise to only calculate volume of pores in geometry rather than selecting them afterwards
-    """
-    network = geometry._net    
+    Calculate volume from the convex hull of the offset vertices making the throats surrounding the pore
+    """    
     pores = geometry['pore.map']
-    conns = network['throat.conns']
-    verts = network['throat.offset_verts']
-    Np = network.num_pores()
-    value = _sp.ndarray(Np)
-    for my_pore in range(Np):
+    Np = len(pores)
+    value = _sp.zeros(Np)
+    for i in range(Np):
         throat_vert_list = []
-        num_connections = 0
-        for idx,check_pores in enumerate(conns):
-            if (check_pores[0] == my_pore) or (check_pores[1] == my_pore):
-                num_connections +=1
-                for vertex in range(len(verts[idx])):
-                    throat_vert_list.append(verts[idx][vertex])
-        if num_connections > 1:
+        throats=network.find_neighbor_throats([pores[i]])
+        if len(throats) > 1:        
+            for throat in throats:
+                try:
+                    geom_throat = geometry['throat.map'].tolist().index(throat)
+                    geom_throat_verts = geometry["throat.offset_vertices"][geom_throat]
+                    for j in range(len(geom_throat_verts)):
+                        throat_vert_list.append(geom_throat_verts[j])
+                except ValueError:
+                    " Throat is not part of this geometry "
             throat_array=_sp.asarray(throat_vert_list)
-            value[my_pore]= _get_hull_volume(throat_array)
+            value[i]= _get_hull_volume(throat_array)
         else:
-            value[my_pore]=0.0
-    return value[pores]
+            value[i]=0.0
+    return value

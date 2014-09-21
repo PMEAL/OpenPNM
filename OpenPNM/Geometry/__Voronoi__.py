@@ -46,7 +46,17 @@ class Voronoi(GenericGeometry):
     def _generate(self,fibre_rad):
         r'''
         ''' 
-        self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
+        self.add_model(propname='pore.vertices',
+                       model=gm.pore_vertices.voronoi)
+        self.add_model(propname='throat.vertices',
+                       model=gm.throat_vertices.voronoi)
+        self.add_model(propname='throat.normal',
+                       model=gm.throat_normal.voronoi)
+        self.add_model(propname='throat.offset_vertices',
+                       model=gm.throat_offset_vertices.voronoi,
+                       offset=fibre_rad)
+        self._trim_occluded_throats()
+        #self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        seed=self._seed)
@@ -62,6 +72,10 @@ class Voronoi(GenericGeometry):
                        model=gm.pore_centroid.voronoi)
         self.add_model(propname='pore.area',
                        model=gm.pore_area.spherical)
+        self.add_model(propname='throat.area',
+                       model=gm.throat_area.voronoi)
+        self.add_model(propname='throat.perimeter',
+                       model=gm.throat_perimeter.voronoi)
         self.add_model(propname='throat.centroid',
                        model=gm.throat_centroid.voronoi)
         self.add_model(propname='throat.diameter',
@@ -81,35 +95,27 @@ class Voronoi(GenericGeometry):
         replicates erroding the facet of each throat by the fibre radius 
         """
         connections = self._net['throat.conns']
-        verts = self._net['pore.vertices']
         normals = sp.ndarray(len(connections),dtype=object)
         area = sp.ndarray(len(connections))
         perimeter = sp.ndarray(len(connections))
         offset_verts = sp.ndarray(len(connections),dtype=object)
         shared_verts = sp.ndarray(len(connections),dtype=object)
-        offset_error = sp.ndarray(len(connections),dtype=object)
-        for i,throat_pair in enumerate(connections):
-            my_shared_verts = []
-            pore_a = throat_pair[0]
-            pore_b = throat_pair[1]
-            " Identify shared verts "
-            for vert_a in verts[pore_a]:
-                for vert_b in verts[pore_b]:
-                    if (vert_a[0] == vert_b[0]) and (vert_a[1] == vert_b[1]) and (vert_a[2] == vert_b[2]):
-                        my_shared_verts.append(vert_a)
-            if len(shared_verts) >=3:
-                my_shared_verts = np.asarray(my_shared_verts)
-                shared_verts[i]=my_shared_verts
-                normals[i] = self._get_throat_normal(my_shared_verts)
-                area[i],perimeter[i],offset_verts[i],offset_error[i] = self._get_throat_geom(my_shared_verts,normals[i],radius)
-            else:
-                area[i]=0.0
+        offset_error = sp.ndarray(len(connections))
+        for i in range(len(connections)):
+            #my_shared_verts = np.asarray(list(self._net["throat.vertices"][i].values()))
+            my_shared_verts = self._net._vor.vertices[self._net["throat.vert_index"][i]]
+            shared_verts[i]=my_shared_verts
+            normals[i] = self._get_throat_normal(my_shared_verts)
+            throat_verts=self["throat.vertices"][i]
+            throat_normal=self["throat.normal"][i]
+            if np.all(normals[i]==0):
+                print(my_shared_verts)
+            #area[i],perimeter[i],offset_verts[i],offset_error[i] = self._get_throat_geom(my_shared_verts,normals[i],radius)
+            area[i],perimeter[i],offset_verts[i],offset_error[i] = self._get_throat_geom(throat_verts,throat_normal,radius)
         
-        self['throat.area'] = area[self['throat.map']]
-        self['throat.perimeter']=perimeter[self['throat.map']]
-        self._net['throat.verts']=shared_verts
-        self._net['throat.offset_verts']=offset_verts
-        self._net['throat.normals']=normals
+        #self['throat.area'] = area[self['throat.map']]
+        #self['throat.perimeter']=perimeter[self['throat.map']]
+        #self._net['throat.offset_verts']=offset_verts
         
         #self._net['throat.offset_error']=offset_error
         #offset_error = pn['throat.offset_error']
@@ -592,7 +598,7 @@ class Voronoi(GenericGeometry):
         
         return all_overlap
     
-    def print_throat(self,throats):
+    def print_throat(self,throats_in):
         r"""
         Print a given throat or list of throats accepted as [1,2,3,...,n]
         e.g geom.print_throat([34,65,99])
@@ -600,10 +606,16 @@ class Voronoi(GenericGeometry):
         the z-axis and then printed in 2D
         """
         import matplotlib.pyplot as plt
+        throats = []
+        for throat in throats_in:
+            if throat in range(self.num_throats()):
+                throats.append(throat)
+            else:
+                print("Throat: "+str(throat)+ " not part of geometry")
         if len(throats) > 0:
-            verts = self._net['throat.verts'][throats]
-            offsets = self._net['throat.offset_verts'][throats]
-            normals = self._net['throat.normals'][throats]
+            verts = self['throat.vertices'][throats]
+            offsets = self['throat.offset_vertices'][throats]
+            normals = self['throat.normal'][throats]
             for i in range(len(verts)):
                 fig = plt.figure()
                 vert_2D = self._rotate_and_chop(verts[i],normals[i],[0,0,1])
@@ -652,18 +664,25 @@ class Voronoi(GenericGeometry):
         from mpl_toolkits.mplot3d import Axes3D
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
         if len(pores) > 0:
-            throats = self._net.find_neighbor_throats(pores=pores)
+            net_pores = self["pore.map"][pores]
+            net_throats = self._net.find_neighbor_throats(pores=net_pores)
+            throats = []
+            for net_throat in net_throats:
+                try:
+                    throats.append(self['throat.map'].tolist().index(net_throat))
+                except ValueError:
+                    " Throat not in this geometry "        
             "Can't create volume from one throat"
             if len(throats)>1:
-                verts = self._net['throat.verts'][throats]
-                normals = self._net['throat.normals'][throats]
+                verts = self['throat.vertices'][throats]
+                normals = self['throat.normal'][throats]
                 " Get verts in hull order "
                 ordered_verts=[]
                 for i in range(len(verts)):
                     vert_2D = self._rotate_and_chop(verts[i],normals[i],[0,0,1])
                     hull = ConvexHull(vert_2D)
                     ordered_verts.append(verts[i][hull.vertices])
-                offsets = self._net['throat.offset_verts'][throats]
+                offsets = self['throat.offset_vertices'][throats]
                 "Get domain extents for setting axis "
                 [xmin,xmax,ymin,ymax,zmin,zmax]=self._net.vertex_dimension(pores,parm='minmax')                
                 fig = plt.figure()
@@ -729,6 +748,10 @@ class Voronoi(GenericGeometry):
         Then the vectors of 3 neighbouring points are worked out and the cross product is taken to define the normal
         """
         "verts may already be coplanar so check an take the other coords"
+        try: 
+            len(sp.unique(verts[:,0]))
+        except IndexError:
+            print(verts)            
         if len(sp.unique(verts[:,0]))==1:
             verts_2d = np.vstack((verts[:,1],verts[:,2])).T
         elif len(sp.unique(verts[:,1]))==1:
@@ -742,6 +765,23 @@ class Voronoi(GenericGeometry):
         normal = sp.cross(v1,v2)
 
         return normal
+    
+    def _trim_occluded_throats(self):
+        r"""
+        After the offsetting routine throats with no offset vertices have been fully occluded.
+        Remove these from the network and also remove pores that are isolated
+        """
+        occluded_throats = []
+        throats = self.throats()
+        for throat in throats:
+            if  len(self["throat.offset_vertices"][throat]) == 0:
+                occluded_throats.append(throat)
+        #occluded_throats = np.asarray(occluded_throats)
+        if len(occluded_throats) > 0:
+            self._net.trim(throats=self["throat.map"][occluded_throats])
+        "Also get rid of isolated pores"
+        self._net.trim(self._net.isolated_pores())
+        
         
 if __name__ == '__main__':
     pn = OpenPNM.Network.Delaunay(name='test_net')
