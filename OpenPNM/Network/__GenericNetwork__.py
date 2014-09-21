@@ -665,9 +665,11 @@ class GenericNetwork(Core):
                     self[item][sp.arange(0,sp.shape(temp)[0])] = temp
         #Apply labels, if supplied
         if labels != []:
+            #Convert labels to list if necessary
             if type(labels) is str:
                 labels = [labels]
             for label in labels:
+                #Remove pore or throat from label, if present
                 label = label.split('.')[-1]
                 if pore_coords != []:
                     Ps = sp.r_[Np_old:Np]
@@ -788,7 +790,7 @@ class GenericNetwork(Core):
         #Reset network graphs
         self._update_network(mode='regenerate')
 
-    def _stitch(self,network_2,pores_1,pores_2,method='delaunay',len_max=None):
+    def _stitch(self,network_2,pores_1,pores_2,method='delaunay',len_max=sp.inf):
         r'''
         Stitches a second a network to the current network.  
         
@@ -815,8 +817,11 @@ class GenericNetwork(Core):
             - 'nearest' : Connects each pore on the receptor network to its nearest pore on the donor network
         
         '''
+        # Get the initial number of pores and throats
+        N_init = {}
+        N_init['pore']  = self.Np
+        N_init['throat'] = self.Nt
         if method == 'delaunay':
-            Np  = self.Np  # Get the initial number of pores
             P1 = pores_1
             P2 = pores_2 + Np  # Increment pores on network_2
             P = sp.hstack((P1,P2))
@@ -849,9 +854,8 @@ class GenericNetwork(Core):
             #Convert adjmat into 'throat.conns'
             conns = sp.vstack((adjmat.row, adjmat.col)).T        
         if method == 'nearest':
-            Np  = self.Np  # Get the initial number of pores
             P1 = pores_1
-            P2 = pores_2 + Np  # Increment pores on network_2
+            P2 = pores_2 + N_init['pore']  # Increment pores on network_2
             P = sp.hstack((P1,P2))
             C1 = self['pore.coords'][pores_1]
             C2 = network_2['pore.coords'][pores_2]
@@ -863,10 +867,10 @@ class GenericNetwork(Core):
             conns = sp.vstack((P1,P2[Dmin])).T
         
         #Enter network_2's pores into the Network
-        self.extend(pore_coords=network_2['pore.coords'],labels=network_2.labels('pores'))
+        self.extend(pore_coords=network_2['pore.coords'])
 
         #Enter network_2's throats into the Network
-        self.extend(throat_conns=network_2['throat.conns']+Np,labels=network_2.labels('throats'))
+        self.extend(throat_conns=network_2['throat.conns']+N_init['pore'])
         
         #Trim throats that are longer then given len_max
         C1 = self['pore.coords'][conns[:,0]]
@@ -874,7 +878,17 @@ class GenericNetwork(Core):
         L = sp.sum((C1 - C2)**2,axis=1)**0.5
         conns = conns[L<=len_max]
         
-        #Enter new throats into the Network
+        #Add donor labels to recipient network
+        for label in network_2.labels():
+            element = label.split('.')[0]
+            locations = sp.where(self._get_indices(element)>=N_init[element])[0]
+            try:
+                self[label]
+            except:
+                self[label] = False
+            self[label][locations] = network_2[label]
+            
+        #Lastly, add the new stitch throats to the Network
         self.extend(throat_conns=conns,labels='stitched')
             
     def check_network_health(self):

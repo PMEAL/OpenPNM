@@ -725,7 +725,7 @@ class Core(Base):
             throats = sp.array(throats,ndmin=1)
             return throats[temp]
 
-    def _get_indices(self,element,labels,mode='union'):
+    def _get_indices(self,element,labels=['all'],mode='union'):
         r'''
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
