@@ -63,7 +63,7 @@ def polynomial(phase,a,poreprop='pore.temperature',**kwargs):
         value += a[i]*x**i
     return value
     
-def ideal_mixture(phase,pore_prop,mole_frac='pore.mole_fraction'):
+def ideal_mixture(phase,pore_prop,mole_frac='pore.mole_fraction',**kwargs):
     r'''
     Calcualtes a given mixture property as the mole fraction weighted average
     of the pure compononent properties
