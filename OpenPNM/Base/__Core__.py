@@ -593,7 +593,7 @@ class Core(Base):
     def _get_labels(self,element='',locations=[],mode='union'):
         r'''
         This is the actual label getter method, but it should not be called directly.
-        Wrapper methods have been created, use get_labels().
+        Wrapper methods have been created, use labels().
         '''
         labels = []
         for item in self.keys():
@@ -670,7 +670,7 @@ class Core(Base):
             if element == '':
                 temp = []
                 temp = self._get_labels(element='pore')
-                temp = temp + self._get_labels(element='throat')
+                temp.extend(self._get_labels(element='throat'))
             elif element in ['pore','pores']:
                 temp = self._get_labels(element='pore',locations=[], mode=mode)
             elif element in ['throat','throats']:
