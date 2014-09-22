@@ -926,17 +926,18 @@ class Core(Base):
         - Only one of pores, throats OR data are accepted
 
         """
-        if self.__module__.split('.')[1] == 'Network':
+        mro = [module.__name__ for module in self.__class__.__mro__]
+        if 'GenericNetwork' in mro:
             net = self
             Ts = net.throats()
             Ps = net.pores()
             label = 'all'
-        elif self.__module__.split('.')[1] in ['Phases','Algorithms']:
+        elif ('GenericPhase' or 'GenericAlgorithm') in mro:
             net = self._net
             Ts = net.throats()
             Ps = net.pores()
             label = 'all'
-        elif self.__module__.split('.')[1] in ['Geometry','Physics']:
+        elif ('GenericGeometry' or 'GenericPhysics') in mro:
             net = self._net
             Ts = net.throats(self.name)
             Ps = net.pores(self.name)
