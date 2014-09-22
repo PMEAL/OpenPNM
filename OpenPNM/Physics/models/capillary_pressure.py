@@ -31,17 +31,17 @@ def washburn(physics,
     .. math::
         P_c = -\frac{2\sigma(cos(\theta))}{r}
 
-    This is the most basic approach to calculating entry pressure and is suitable for highly non-wetting invading phases in most materials.
+    This is the most basic approach to calculating entry pressure and is 
+    suitable for highly non-wetting invading phases in most materials.
 
     """
-    throats = phase.throats(physics.name)
     sigma = phase[pore_surface_tension]
     sigma = phase.interpolate_data(data=sigma)
     theta = phase[pore_contact_angle]
     theta = phase.interpolate_data(data=theta)
     r = network[throat_diameter]/2
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
-    value = value[throats]
+    value = value[phase.throats(physics.name)]
     return value
 
 def purcell(physics,
@@ -60,15 +60,22 @@ def purcell(physics,
     network : OpenPNM Network Object
         The network on which to apply the calculation
     sigma : float, array_like
-        Surface tension of the invading/defending phase pair.  Units must be consistent with the throat size values, but SI is encouraged.
+        Surface tension of the invading/defending phase pair.  Units must be 
+        consistent with the throat size values, but SI is encouraged.
     theta : float, array_like
-        Contact angle formed by a droplet of the invading phase and solid surface, measured through the defending phase phase.  Angle must be given in degrees.
+        Contact angle formed by a droplet of the invading phase and solid 
+        surface, measured through the defending phase phase.  Angle must be given in degrees.
     r_toroid : float or array_like
         The radius of the solid
 
     Notes
     -----
-    This approach accounts for the converging-diverging nature of many throat types.  Advancing the meniscus beyond the apex of the toroid requires an increase in capillary pressure beyond that for a cylindical tube of the same radius. The details of this equation are described by Mason and Morrow [1]_, and explored by Gostick [2]_ in the context of a pore network model.
+    This approach accounts for the converging-diverging nature of many throat 
+    types.  Advancing the meniscus beyond the apex of the toroid requires an 
+    increase in capillary pressure beyond that for a cylindical tube of the 
+    same radius. The details of this equation are described by Mason and 
+    Morrow [1]_, and explored by Gostick [2]_ in the context of a pore network 
+    model.
 
     References
     ----------
@@ -78,7 +85,7 @@ def purcell(physics,
 
     TODO: Triple check the accuracy of this equation
     """
-    throats = phase.throats(physics.name)
+
     sigma = phase[pore_surface_tension]
     sigma = phase.interpolate_data(data=sigma)
     theta = phase[pore_contact_angle]
@@ -87,6 +94,10 @@ def purcell(physics,
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r)*(_sp.cos(_sp.radians(theta - alpha))/(1 + R/r*(1-_sp.cos(_sp.radians(alpha)))))
-    value = value[throats]
+    
+    
+    
+    
+    value = value[phase.throats(physics.name)]
     return value
 

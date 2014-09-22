@@ -31,35 +31,38 @@ def bulk_diffusion(physics,
 
     Notes
     -----
-    This function requires that all the necessary phase properties already be 
-    calculated.
-
+    (1) This function requires that all the necessary phase properties already 
+    be calculated.
+    
+    (2) This function calculates the specified property for the *entire* 
+    network then extracts the values for the appropriate throats at the end.
+    
     """    
-    throats = phase.throats(physics.name)
+    #Get Nt-by-2 list of pores connected to each throat
+    Ps = network['throat.conns']
+    #Get properties in every pore in the network
+    parea = network[pore_area]
+    pdia = network[pore_diameter]
     #Interpolate pore phase property values to throats
     cp = phase[pore_molar_density]
     ct = phase.interpolate_data(data=cp)
     DABp = phase[pore_diffusivity]
     DABt = phase.interpolate_data(data=DABp)
-    #Get Nt-by-2 list of pores connected to each throat
-    Ps = network.find_connected_pores(throats=throats)
-    parea = network[pore_area]
-    pdia = network[pore_diameter]
-    pcoords = network['pore.coords']
     if calc_pore_len:
         #Find half-lengths of each pore
+        pcoords = network['pore.coords']
         #   Find the pore-to-pore distance, minus the throat length
-        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network[throat_length][throats]
+        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network[throat_length]
         #   Calculate the fraction of that distance from the first pore    
         fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
         plen1 = lengths*fractions
         plen2 = lengths*(1-fractions)
     else:        
         plen1 = (0.5*pdia[Ps[:,0]])
-        plen2 = (0.5*pdia[Ps[:,1]])  
+        plen2 = (0.5*pdia[Ps[:,1]])
     #remove any non-positive lengths
     plen1[plen1<=0]=1e-12
-    plen2[plen2<=0]=1e-12    
+    plen2[plen2<=0]=1e-12
     #Find g for half of pore 1
     gp1 = ct*DABt*parea[Ps[:,0]]/plen1
     gp1[~(gp1>0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
@@ -73,7 +76,7 @@ def bulk_diffusion(physics,
     tlen[tlen<=0] = 1e-12
     gt = ct*DABt*tarea/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[throats]
+    value = value[phase.throats(physics.name)]
     return value
 
 
