@@ -979,13 +979,18 @@ class GenericNetwork(Core):
         Perform a check to find pores with overlapping or undefined Geometries
         '''
         geoms = self.geometries()
-        temp = sp.zeros((self.Np,))
+        Ptemp = sp.zeros((self.Np,))
+        Ttemp = sp.zeros((self.Nt,))
         for item in geoms:
-            ind = self['pore.'+item]
-            temp[ind] = temp[ind] + 1
+            Pind = self['pore.'+item]
+            Tind = self['throat.'+item]
+            Ptemp[Pind] = Ptemp[Pind] + 1
+            Ttemp[Tind] = Ttemp[Tind] + 1
         health = {}
-        health['overlapping_pores'] = sp.where(temp>1)[0].tolist()
-        health['undefined_pores'] = sp.where(temp==0)[0].tolist()
+        health['overlapping_pores'] = sp.where(Ptemp>1)[0].tolist()
+        health['undefined_pores'] = sp.where(Ptemp==0)[0].tolist()
+        health['overlapping_throats'] = sp.where(Ttemp>1)[0].tolist()
+        health['undefined_throats'] = sp.where(Ttemp==0)[0].tolist()
         return health
         
     def _update_network(self,mode='clear'):
