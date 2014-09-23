@@ -188,7 +188,8 @@ def amalgamate_data(objs=[]):
     data_amalgamated = {}
     exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
     for item in objs:
-        if item.__module__.split('.')[1] == 'Network': #if network object, combine geometry and network keys
+        mro = [module.__name__ for module in item.__class__.__mro__]
+        if 'GenericNetwork' in mro: #if Network object, combine Geometry and Network keys
             keys = []
             for key in item.keys():
                 keys.append(key)
@@ -197,7 +198,7 @@ def amalgamate_data(objs=[]):
                     if key not in keys:
                         keys.append(key)
         else:
-            if item.__module__.split('.')[1] == 'Phases':
+            if 'GenericPhase' in mro:
                 keys = []
                 for key in item.keys():
                     keys.append(key)
