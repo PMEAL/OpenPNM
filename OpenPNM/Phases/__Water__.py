@@ -45,9 +45,9 @@ class Water(GenericPhase):
                        model=fm.thermal_conductivity.water) # W/m.K
         self.add_model(propname='pore.vapor_pressure',      # Pa
                        model=fm.vapor_pressure.antoine,
-                       A=8.07131,
+                       A=10.1965,
                        B=1730.63,
-                       C=233.426)
+                       C=-39.720)
         self.add_model(propname='pore.viscosity',
                        model=fm.viscosity.water)   # kg/m.s
 

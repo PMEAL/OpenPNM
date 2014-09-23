@@ -16,9 +16,9 @@ def antoine(phase,A,B,C,**kwargs):
     Parameters
     ----------
     A, B, C :  float, array_like
-            Antoine vapor pressure constants for pure compounds.  Note that
-            these constants are traditionally reported such that they give
-            vapor pressure in mmHg. This function converts pressure to Pascals.
+            Antoine vapor pressure coefficients for pure compounds. Note that
+            these coefficients should be converted such that the Temperature
+            is in [K] and the vapor pressure is in [Pa].
 
     [1] Antoine, C. (1888), Vapor Pressure: a new relationship between pressure 
         and temperature, Comptes Rendus des Séances de l'Académie des Sciences 
@@ -26,7 +26,7 @@ def antoine(phase,A,B,C,**kwargs):
     
     """
     T = phase['pore.temperature']
-    value = (10**(A-B/(C+T-273.15)))*133.3
+    value = (10**(A-B/(C+T)))
     return value
 
 def water(phase,**kwargs):
