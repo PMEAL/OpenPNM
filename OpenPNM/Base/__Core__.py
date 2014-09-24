@@ -32,15 +32,15 @@ class Core(Base):
         This is a subclass of the default __setitem__ behavior.  The main aim
         is to limit what type and shape of data can be written to protect
         the integrity of the network.
-        
-        
+
+
         Example
         -------
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn['pore.example_property'] = 100
         >>> pn['pore.example_property'][0]
         100
-        
+
         '''
         #Enforce correct dict naming
         element = key.split('.')[0]
@@ -93,9 +93,9 @@ class Core(Base):
             Controls when and if the property is regenerated. Options are:
 
             * 'static' : The property is stored as static data and is only regenerated when the object's `regenerate` is called
-            
+
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
-            
+
         Notes
         -----
         This method is inherited by all net/geom/phys/phase objects.  It takes
@@ -133,7 +133,7 @@ class Core(Base):
         else:
             network = self
         #Build partial function from given kwargs
-        fn = partial(model,network=network,phase=phase,geometry=geometry,physics=physics,**kwargs)
+        fn = partial(model,propname=propname,network=network,phase=phase,geometry=geometry,physics=physics,**kwargs)
         if regen_mode == 'static':
             self[propname] = fn()  # Generate data and store it locally
             self._models[propname] = fn  # Store model in a private attribute
@@ -148,32 +148,32 @@ class Core(Base):
         ----------
         propname : string
             The property name for which the model should be removed
-            
+
         mode : string, optional
             To delete the model AND the associated property data, this mode
-            should be set to 'clear'. 
+            should be set to 'clear'.
 
         '''
         self._models.pop(propname,None)
         if mode == 'clear':
             self.pop(propname,None)
-            
+
     def reorder_models(self,new_order):
         r'''
-        Reorders the models on the object to change the order in which they 
+        Reorders the models on the object to change the order in which they
         are regenerated, where item 0 is calculated first.
-        
+
         Parameters
         ----------
         new_order : dict
-            A dictionary containing the model name(s) as the key, and the 
+            A dictionary containing the model name(s) as the key, and the
             location(s) in the new order as the value
-            
+
         Notes
         -----
-        The new order is calculated by removing the supplied models from the 
-        old list, then inserting them in the locations given.  
-        
+        The new order is calculated by removing the supplied models from the
+        old list, then inserting them in the locations given.
+
         Examples
         --------
         >>> pn = OpenPNM.Network.TestNet()
@@ -186,13 +186,13 @@ class Core(Base):
         >>> air.reorder_models(new_order)
         >>> list(air._models.keys())
         ['pore.molar_density', 'pore.thermal_conductivity', 'pore.viscosity', 'pore.density']
-        
+
         '''
         #Check no duplicate or invalid locations
         locs = sp.unique(new_order.values())
         if len(locs) < len(new_order.values()):
             raise Exception('Duplicates found in the order')
-        
+
         #Generate numbered list of current models
         order = [item for item in list(self._models.keys())]
         #Remove supplied models from list
@@ -237,7 +237,7 @@ class Core(Base):
         >>> geom.regenerate()  # Regenerate all models
         >>> geom['pore.area'][0]  # Look at same seed value again
         4
-        
+
         '''
         if props == '':
             props = self._models.keys()
@@ -437,7 +437,7 @@ class Core(Base):
             * 'overwrite' : Adds label to specified locations while removing all pre-existing labels
             * 'remove_info' : Removes label from the specified locations.
             * 'remove_label' : Removes the entire label from the dictionary of the object
-            
+
         '''
         if mode in ['merge','overwrite','remove_info','remove_label']:
             if pores != None:
@@ -559,7 +559,7 @@ class Core(Base):
         ['pore.coords']
         >>> pn.props('throat')
         ['throat.conns']
-        >>> #pn.props() # this lists both, but in random order, which breaks 
+        >>> #pn.props() # this lists both, but in random order, which breaks
         >>> #           # our automatic document testing so it's commented here
         '''
 
@@ -567,7 +567,7 @@ class Core(Base):
         for item in self.keys():
             if self[item].dtype != bool:
                 props.append(item)
-        
+
         all_models = list(self._models.keys())
         constants = [item for item in props if item not in all_models]
         models = [item for item in props if item in all_models]
@@ -794,7 +794,7 @@ class Core(Base):
         else:
             ind = self._get_indices(element='pore',labels=labels,mode=mode)
         return ind
-        
+
     @property
     def Ps(self):
         r'''
@@ -836,7 +836,7 @@ class Core(Base):
         else:
             ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
-        
+
     @property
     def Ts(self):
         r'''
@@ -1030,7 +1030,7 @@ class Core(Base):
             temp = sp.array(temp,dtype=max(dtypes))
             self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
         return temp
-    
+
     def num_pores(self,labels='all',mode='union'):
         r'''
         Returns the number of pores of the specified labels
