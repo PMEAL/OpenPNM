@@ -16,6 +16,7 @@ def bulk_diffusion(physics,
                    pore_diameter='pore.diameter',
                    throat_area='throat.area',
                    throat_length='throat.length',
+                   throat_diameter='throat.diameter',
                    calc_pore_len=False,
                    **kwargs):
     r"""
@@ -43,6 +44,10 @@ def bulk_diffusion(physics,
     #Get properties in every pore in the network
     parea = network[pore_area]
     pdia = network[pore_diameter]
+    #Get the properties of every throat
+    tdia = network[throat_diameter]
+    tarea = network[throat_area]
+    tlen = network[throat_length]
     #Interpolate pore phase property values to throats
     cp = phase[pore_molar_density]
     ct = phase.interpolate_data(data=cp)
@@ -51,12 +56,16 @@ def bulk_diffusion(physics,
     if calc_pore_len:
         #Find half-lengths of each pore
         pcoords = network['pore.coords']
-        #   Find the pore-to-pore distance, minus the throat length
+        #   Find the pore-to-pore distance
         lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network[throat_length]
-        #   Calculate the fraction of that distance from the first pore    
+        #   Calculate the fraction of that distance from each element
+        sum_dia = pdia[Ps[:,0]]+pdia[Ps[:,1]]+tdia
+        #update tlen to be the minimum of the original throat length, and the diameter ratio derived length
+        tlen = _sp.minimum(lengths*tdia/sum_dia,tlen)
+        sum_plen = sum_dia - tlen
         fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
-        plen1 = lengths*fractions
-        plen2 = lengths*(1-fractions)
+        plen1 = sum_plen*fractions
+        plen2 = sum_plen*(1-fractions)
     else:        
         plen1 = (0.5*pdia[Ps[:,0]])
         plen2 = (0.5*pdia[Ps[:,1]])
@@ -70,8 +79,6 @@ def bulk_diffusion(physics,
     gp2 = ct*DABt*parea[Ps[:,1]]/plen2
     gp2[~(gp2>0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
-    tarea = network[throat_area]
-    tlen = network[throat_length]
     #remove any non-positive lengths
     tlen[tlen<=0] = 1e-12
     gt = ct*DABt*tarea/tlen

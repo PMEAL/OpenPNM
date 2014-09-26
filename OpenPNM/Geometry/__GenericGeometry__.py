@@ -59,6 +59,12 @@ class GenericGeometry(Core):
         self._net['throat.'+self.name] = False
         self.set_locations(pores=pores,throats=throats)
         self._seed = seed
+        
+        #create transforms for network indices
+        self.pore_transform = sp.zeros((network.Np,),int)
+        self.pore_transform[pores] = sp.arange(len(pores))
+        self.throat_transform = sp.zeros((network.Nt,),int)
+        self.throat_transform[throats] = sp.arange(len(throats))
 
     def set_locations(self,pores=[],throats=[]):
         r'''
