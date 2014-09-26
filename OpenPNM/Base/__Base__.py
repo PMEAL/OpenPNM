@@ -81,12 +81,12 @@ class Base(dict):
         ----------
         level : int
             Level above which messages should be logged.
-            
+
         Examples
         --------
         >>> baseobject = OpenPNM.Base.Base()
-        >>> baseobject.set_loglevel(30)    
-        
+        >>> baseobject.set_loglevel(30)
+
         """
         self._logger.setLevel(level)
         self._logger.debug("Changed log level")
@@ -124,8 +124,8 @@ class Base(dict):
         'geo1'
 
         '''
-        
-        if 'Network' in self.__module__.split('.'):
+        mro = [item.__name__ for item in self.__class__.__mro__]
+        if 'GenericNetwork' in mro:
             net = self
         else:
             net = self._net
@@ -293,13 +293,14 @@ class Base(dict):
         reachable from the command line.
 
         '''
-        if 'Network' in self.__module__.split('.'):
+        mro = [item.__name__ for item in self.__class__.__mro__]
+        if 'GenericNetwork' in mro:
             net = self
         else:
             net = self._net
         if obj_name != '':
             obj = self._find_object(obj_name=obj_name)
-        
+
         #Get mro for self
         mro = [item.__name__ for item in obj.__class__.__mro__]
         if 'GenericGeometry' in mro:
@@ -333,19 +334,19 @@ class Base(dict):
         ----------
         filename : string
             The filename to contain the saved object data in Numpy zip format (npz)
-        
+
         Examples
         --------
         >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
         >>> pn.save('test_pn')
 
         >>> gn = OpenPNM.Network.GenericNetwork()
-        >>> gn.load('test_pn')  
-        
+        >>> gn.load('test_pn')
+
         >>> # Remove newly created file
         >>> import os
         >>> os.remove('test_pn.npz')
-        
+
         '''
         if filename == '':
             filename = self.name
@@ -371,8 +372,8 @@ class Base(dict):
         >>> pn.save('test_pn')
 
         >>> gn = OpenPNM.Network.GenericNetwork()
-        >>> gn.load('test_pn')  
-        
+        >>> gn.load('test_pn')
+
         >>> # Remove newly created file
         >>> import os
         >>> os.remove('test_pn.npz')
