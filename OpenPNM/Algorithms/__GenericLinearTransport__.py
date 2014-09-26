@@ -53,18 +53,29 @@ class GenericLinearTransport(GenericAlgorithm):
         else:
             raise Exception('The linear transport solver accepts just one phase.')
 
-    def update_results(self):
+    def update_results(self,pores=None,throats=None,**kwargs):
         r'''
         Send results of simulation out the the appropriate locations.
 
         This is a basic version of the update that simply sends out the main
         result (quantity). More elaborate updates should be subclassed.
         '''
+        if pores == None:
+            pores = self.Ps
+        if throats == None:
+            throats = self.Ts
+
         phase_quantity = self._quantity.replace(self._phase.name+'_',"")
-        self._phase[phase_quantity] = self[self._quantity]
+        if phase_quantity not in self._phase.props():
+            self._phase[phase_quantity] = sp.nan
+        self._phase[phase_quantity][pores] = self[self._quantity][pores]
+
         dx = sp.squeeze(sp.diff(self[self._quantity][self._net.find_connected_pores(self.throats())],n=1,axis=1))
         g = self['throat.conductance']
-        self._phase['throat.rate'] = sp.absolute(g*dx)
+        rate = sp.absolute(g*dx)
+        if 'throat.rate' not in self._phase.props():
+            self._phase['throat.rate'] = sp.nan
+        self._phase['throat.rate'][throats] = rate[throats]
         self._logger.debug('Results of '+self.name+' algorithm have been added to '+self._phase.name)
 
 
