@@ -13,3 +13,4 @@ r"""
 from . import IO
 from . import transformations
 from . import misc
+from . import vertexops

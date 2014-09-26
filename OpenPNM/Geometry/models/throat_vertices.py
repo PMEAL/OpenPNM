@@ -15,5 +15,5 @@ def voronoi(network,
     throats = geometry["throat.map"]    
     value = _sp.ndarray(len(throats),dtype=object)
     for i in range(len(throats)):
-        value[i]=network._vor.vertices[network["throat.vert_index"][throats[i]]]
+        value[i]=_sp.asarray(list(network["throat.vert_index"][throats[i]].values()))
     return value

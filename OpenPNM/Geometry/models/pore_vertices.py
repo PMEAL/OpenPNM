@@ -15,5 +15,5 @@ def voronoi(network,
     pores = geometry["pore.map"]    
     value = _sp.ndarray(len(pores),dtype=object)
     for i in range(len(pores)):
-        value[i]=network._vor.vertices[network["pore.vert_index"][pores[i]]]
+        value[i]=_sp.asarray(list(network["pore.vert_index"][pores[i]].values()))
     return value

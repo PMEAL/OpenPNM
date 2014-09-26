@@ -9,7 +9,7 @@ import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.linalg as sprslin
 from .__GenericAlgorithm__ import GenericAlgorithm
-
+import OpenPNM.Utilities.vertexops as vo
 
 class GenericLinearTransport(GenericAlgorithm):
     r"""
@@ -262,9 +262,9 @@ class GenericLinearTransport(GenericAlgorithm):
                 self._logger.warning('The outlet pores have too many neighbors. Internal pores appear to be selected.')
 
         #Fetch area and length of domain
-        if "pore.vertices" in self._net.props():
-            A = self._net.vertex_dimension(face1=inlets, parm='area')
-            L = self._net.vertex_dimension(face1=inlets,face2=outlets,parm='length')
+        if "pore.vert_index" in self._net.props():
+            A = vo.vertex_dimension(network = self._net,face1=inlets, parm='area')
+            L = vo.vertex_dimension(network = self._net,face1=inlets,face2=outlets,parm='length')
         else:
             A = self._net.domain_area(face=inlets)
             L = self._net.domain_length(face_1=inlets,face_2=outlets)

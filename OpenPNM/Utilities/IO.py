@@ -111,7 +111,7 @@ class PNM(object):
         return model
     
     @staticmethod
-    def load(filename):
+    def load(filename,models=True):
         r'''
         Load a saved simulation
         
@@ -142,8 +142,9 @@ class PNM(object):
 #                    net = OpenPNM.Network.GenericNetwork(name=obj.split('.')[1])
                 net = OpenPNM.Network.GenericNetwork(name=obj.split('.')[1])
                 net.update(sim['data'][obj])
-                for model in sim['mods'][obj].keys():
-                    PNM._load_model(net,sim['mods'][obj][model])
+                if models:
+                    for model in sim['mods'][obj].keys():
+                        PNM._load_model(net,sim['mods'][obj][model])
         
         for obj in sim['data'].keys():  # Geometry objects
             if obj.split('.')[0] == 'Geometry':
@@ -151,15 +152,17 @@ class PNM(object):
                 Ts = net.throats(obj.split('.')[1])
                 geom = OpenPNM.Geometry.GenericGeometry(network=net,pores=Ps,throats=Ts,name=obj.split('.')[1])
                 geom.update(sim['data'][obj])
-                for model in sim['mods'][obj].keys():
-                    PNM._load_model(geom,sim['mods'][obj][model])
+                if models:
+                    for model in sim['mods'][obj].keys():
+                        PNM._load_model(geom,sim['mods'][obj][model])
         
         for obj in sim['data'].keys():  # Do Pure phases or independent mixtures first
             if (obj.split('.')[0] == 'Phases') and (sim['tree'][obj]['Phases'] == []):
                 phase = OpenPNM.Phases.GenericPhase(network=net,name=obj.split('.')[1])
                 phase.update(sim['data'][obj])
-                for model in sim['mods'][obj].keys():
-                    PNM._load_model(phase,sim['mods'][obj][model])
+                if models:
+                    for model in sim['mods'][obj].keys():
+                        PNM._load_model(phase,sim['mods'][obj][model])
         
         for obj in sim['data'].keys():  # Then do proper mixtures which have subphases
             if (obj.split('.')[0] == 'Phases') and (sim['tree'][obj]['Phases'] != []):
@@ -167,8 +170,9 @@ class PNM(object):
                 #Instantiate mixture phase with list of components
                 phase = OpenPNM.Phases.GenericPhase(network=net,name=obj.split('.')[1],components=comps)
                 phase.update(sim['data'][obj])
-                for model in sim['mods'][obj].keys():
-                    PNM._load_model(phase,sim['mods'][obj][model])
+                if models:
+                    for model in sim['mods'][obj].keys():
+                        PNM._load_model(phase,sim['mods'][obj][model])
         
         for obj in sim['data'].keys():  # Physics objects associated with mixures
             if obj.split('.')[0] == 'Physics':
@@ -177,8 +181,9 @@ class PNM(object):
                 Ts = phase.throats(obj.split('.')[1])
                 phys = OpenPNM.Physics.GenericPhysics(network=net,phase=phase,pores=Ps,throats=Ts,name=obj.split('.')[1])
                 phys.update(sim['data'][obj])
-                for model in sim['mods'][obj].keys():
-                    PNM._load_model(phys,sim['mods'][obj][model])
+                if models:
+                    for model in sim['mods'][obj].keys():
+                        PNM._load_model(phys,sim['mods'][obj][model])
         
         return net
     

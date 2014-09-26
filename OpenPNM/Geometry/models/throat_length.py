@@ -59,3 +59,36 @@ def voronoi(network,
     for i in range(len(connections)):
         value[i] = _sp.linalg.norm(v1[i])+_sp.linalg.norm(v2[i])
     return value
+
+def c2c(network,
+             geometry,
+             **kwargs):
+    r"""
+    Calculate throat length 
+    """
+    #Initialize throat_property['length']
+    throats = network.throats(geometry.name)
+    pore1 = network['throat.conns'][:,0]
+    pore2 = network['throat.conns'][:,1]
+    C1 = network['pore.coords'][pore1]
+    C2 = network['pore.coords'][pore2]
+    E = _sp.sqrt(_sp.sum((C1-C2)**2,axis=1))  #Euclidean distance between pores
+    value = E
+    value = value[throats]
+    if _sp.any(value<0):
+        geometry._logger.warning('Negative throat lengths are calculated. Arbitrary positive length assigned (1e9 meters)')
+        Ts = _sp.where(value<0)[0]
+        value[Ts] = 1e-9
+    return value
+    
+def constant(network,
+             geometry,
+             const,
+             **kwargs):
+    r"""
+    Calculate throat length 
+    """
+    #Initialize throat_property['length']
+    throats = network.throats(geometry.name)
+    value = _sp.ones(len(throats))*const
+    return value

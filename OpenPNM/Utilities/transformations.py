@@ -1879,4 +1879,39 @@ def is_same_transform(matrix0, matrix1):
     matrix1 /= matrix1[3, 3]
     return numpy.allclose(matrix0, matrix1)
 
-
+def rotate_and_chop(verts,normal,axis=[0,0,1]):
+    r"""
+    Method to rotate a set of vertices (or coords) to align with an axis
+    points must be coplanar and normal must be given
+    Chops axis coord to give vertices back in 2D
+    Used to prepare verts for printing or calculating convex hull in order to arrange
+    them in hull order for calculations and printing
+    """
+    xaxis=[1,0,0]
+    yaxis=[0,1,0]
+    zaxis=[0,0,1]
+    angle = angle_between_vectors(normal,axis)
+    if (angle==0.0)or(angle==numpy.pi):
+        "We are already aligned"
+        facet = verts
+    else:
+        M = rotation_matrix(angle_between_vectors(normal,axis),vector_product(normal,axis))
+        try:
+            facet = numpy.dot(verts,M[:3,:3].T)
+        except ValueError:
+            print(verts)
+            print(M[:3,:3].T)
+    x = facet[:,0]
+    y = facet[:,1]
+    z = facet[:,2]
+    " Work out span of points and set axes scales to cover this and be equal in both dimensions "
+    if axis == xaxis:
+        output = numpy.column_stack((y,z))
+    elif axis == yaxis:
+        output = numpy.column_stack((x,z))
+    elif axis == zaxis:
+        output = numpy.column_stack((x,y))
+    else:
+        output = facet
+    
+    return output

@@ -5,6 +5,7 @@ throat_offset_vertices -- Offeset throat vertices using a fibre radius parameter
 
 """
 import scipy as sp
+import OpenPNM.Utilities.vertexops as vo
 
 def voronoi(network,
             geometry,
@@ -21,6 +22,10 @@ def voronoi(network,
     for i in range(Nt):            
         throat_verts=geometry["throat.vertices"][i]
         throat_normal=geometry["throat.normal"][i]
-        area[i],perimeter[i],offset_verts[i],offset_error[i] = geometry._get_throat_geom(throat_verts,throat_normal,offset)    
+        area[i],perimeter[i],offset_verts[i],offset_error[i] = vo.get_throat_geom(throat_verts,throat_normal,offset)
+    
+    for i in range(Nt):
+        if offset_error[i] > 0 and len(offset_verts[i]) > 0:
+            offset_verts[i]=[]
     
     return offset_verts

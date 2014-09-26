@@ -5,6 +5,8 @@ Submodule -- throat_area
 
 """
 import scipy as _sp
+import OpenPNM.Utilities.transformations as tr
+import OpenPNM.Utilities.vertexops as vo
 
 def cylinder(geometry,
              throat_diameter='throat.diameter',
@@ -36,7 +38,10 @@ def voronoi(geometry,
     normals = geometry['throat.normal']
     area = _sp.ndarray(Nt)
     for i in range(Nt):
-        verts_2D = geometry._rotate_and_chop(verts[i],normals[i],[0,0,1])
-        area[i] = geometry._PolyArea2D(verts_2D)
+        if len(verts[i]) > 2:
+            verts_2D = tr.rotate_and_chop(verts[i],normals[i],[0,0,1])
+            area[i] = vo.PolyArea2D(verts_2D)
+        else:
+            area[i] = 0.0
     
     return area

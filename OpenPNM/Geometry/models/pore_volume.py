@@ -91,12 +91,16 @@ def voronoi(network,
                 try:
                     geom_throat = geometry['throat.map'].tolist().index(throat)
                     geom_throat_verts = geometry["throat.offset_vertices"][geom_throat]
+                    
                     for j in range(len(geom_throat_verts)):
                         throat_vert_list.append(geom_throat_verts[j])
                 except ValueError:
                     " Throat is not part of this geometry "
             throat_array=_sp.asarray(throat_vert_list)
-            value[i]= _get_hull_volume(throat_array)
+            if len(throat_array)>4:
+                value[i]= _get_hull_volume(throat_array)
+            else:
+                value[i]=0
         else:
             value[i]=0.0
     return value
