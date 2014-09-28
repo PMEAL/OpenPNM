@@ -214,7 +214,18 @@ def amalgamate_data(objs=[]):
                     data_amalgamated.update({dict_name : item[key]})
     return data_amalgamated
 
-
+def clone_object(obj):
+    r'''
+    '''
+    cls = obj.__class__.__mro__[0]
+    new_obj = cls()
+    new_obj.update(obj)
+    new_obj._phases = obj._phases
+    new_obj._physics = obj._physics
+    new_obj._geometries = obj._geometries
+    new_obj._net = obj._net
+    new_obj._models= obj._models
+    return new_obj
 
 
 
