@@ -79,7 +79,7 @@ class PNM(object):
         for obj in all_objs:
             module = obj.__module__.split('.')[1]
             sim['data'][module+'.'+obj.name] = obj.copy()
-            sim['tree'][module+'.'+obj.name] = {'SelfType'   : obj.__class__.__name__,
+            sim['tree'][module+'.'+obj.name] = {'Class'      : obj.__class__.__mro__[0],
                                                 'Geometries' : obj.geometries(),
                                                 'Phases'     : obj.phases(),
                                                 'Physics'    : obj.physics()}
@@ -100,7 +100,6 @@ class PNM(object):
         a = obj._models[item].keywords
         #Store path to model, name of model and argument key:value pairs in a dict
         model = {}
-        model['propname'] = item
         model['path'] = f.__module__
         model['name'] = f.__name__
         model['args'] = {}
@@ -189,7 +188,7 @@ class PNM(object):
         #Import model using stored path and name
         mod = eval(model['path']+'.'+model['name'])
         #Apply model to object using info in dict
-        obj.add_model(model=mod,propname=model['propname'],**model['args'])
+        obj.add_model(model=mod,**model['args'])
 
 class VTK():
     r"""
