@@ -173,14 +173,16 @@ class GenericAlgorithm(OpenPNM.Base.Core):
             raise Exception('pores/throats must be specified')
         elif pores!=[] and throats!=[]:
             raise Exception('BC for pores and throats must be specified independently')
-        elif  pores!=[]:
+        elif  throats == []:
             element ='pore'
             loc = sp.array(pores,ndmin=1)
             all_length = self.num_pores()
-        if throats!=[]:
+        elif pores == []:
             element ='throat'
             loc = sp.array(throats,ndmin=1)
             all_length = self.num_throats()
+        else:
+            raise Exception('Problem with the pore and/or throat list')
         #Validate bcvalue
         if bcvalue != []:
             #Check bcvalues are compatible with bctypes
