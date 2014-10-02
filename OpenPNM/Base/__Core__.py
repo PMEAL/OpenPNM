@@ -932,12 +932,12 @@ class Core(Base):
             Ts = net.throats()
             Ps = net.pores()
             label = 'all'
-        elif ('GenericPhase' or 'GenericAlgorithm') in mro:
+        elif ('GenericPhase' in mro) or ('GenericAlgorithm' in mro):
             net = self._net
             Ts = net.throats()
             Ps = net.pores()
             label = 'all'
-        elif ('GenericGeometry' or 'GenericPhysics') in mro:
+        elif ('GenericGeometry' in mro) or ('GenericPhysics' in mro):
             net = self._net
             Ts = net.throats(self.name)
             Ps = net.pores(self.name)
@@ -1208,12 +1208,12 @@ class Core(Base):
             net = self._net
         else:
             net = self
-        
+
         if element in ['pore','pores']:
             element = 'pore'
         elif element in ['throat','throats']:
             element = 'throat'
-        
+
         A = self
         B = target
         locations = sp.array(locations)
@@ -1237,7 +1237,7 @@ class Core(Base):
         if sum(sp.isnan(net_C)) > 0:
             raise Exception('Some supplied locations do not exist on target object')
         return sp.int_(net_C)
-        
+
     def map_pores(self,pores,target):
         r'''
         Accepts a list of pores from the caller object and maps them onto the
@@ -1249,7 +1249,7 @@ class Core(Base):
             The list of pores on the caller object
 
         target : OpenPNM object, optional
-            The object for which a list of pores is desired.  
+            The object for which a list of pores is desired.
 
         Returns
         -------
@@ -1262,7 +1262,7 @@ class Core(Base):
         '''
         Ps = self._map(element='pores',locations=pores,target=target)
         return Ps
-        
+
     def map_throats(self,throats,target):
         r'''
         Accepts a list of throats from the caller object and maps them onto the
@@ -1274,7 +1274,7 @@ class Core(Base):
             The list of throats on the caller object
 
         target : OpenPNM object, optional
-            The object for which a list of pores is desired.  
+            The object for which a list of pores is desired.
 
         Returns
         -------
