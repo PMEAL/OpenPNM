@@ -45,7 +45,8 @@ def distributions(net,
                  throat_diameter='throat.diameter',
                  pore_diameter='pore.diameter',
                  throat_length='throat.length',
-                 exclude_boundaries=True):
+                 exclude_boundaries=True,
+                 geom_list=None):
     r"""
     Plot a montage of key network size distribution histograms
 
@@ -55,16 +56,28 @@ def distributions(net,
     The network for which the graphs are desired
 
     """
-    pores = _sp.array([],dtype=int)
-    throats = _sp.array([],dtype=int)
-    if (exclude_boundaries == True) and (not net.geometries) == False:
-        for geom_name in net.geometries():
-            if net.geometries(geom_name)[0].__class__.__name__ != 'Boundary':
-                pores = _sp.hstack((pores,net.geometries(geom_name)[0]["pore.map"]))
-                throats= _sp.hstack((throats,net.geometries(geom_name)[0]["throat.map"]))
+    #pores = _sp.array([],dtype=int)
+    #throats = _sp.array([],dtype=int)
+    #if (exclude_boundaries == True) and (not net.geometries) == False:
+    #    for geom_name in net.geometries():
+    #        if net.geometries(geom_name)[0].__class__.__name__ != 'Boundary':
+    #            pores = _sp.hstack((pores,net.geometries(geom_name)[0]["pore.map"]))
+    #            throats= _sp.hstack((throats,net.geometries(geom_name)[0]["throat.map"]))
+    #else:
+    #   pores = net.pores()
+    #   throats = net.throats()
+    if geom_list != None:
+        include_pores = [False]*net.num_pores()
+        include_throats = [False]*net.num_throats()
+        for geom in geom_list:
+            include_pores = include_pores | net["pore."+geom]
+            include_throats = include_throats | net["throat."+geom]
     else:
-        pores = net.pores()
-        throats = net.throats()
+        include_pores = net["pore.all"]
+        include_throats = net["throat.all"]
+    pores = net.pores()[include_pores]
+    throats = net.throats()[include_throats]
+    
     fig = _plt.figure()
     ax1 = fig.add_subplot(221)
     ax1.hist(net[pore_diameter][pores],25,facecolor='green')

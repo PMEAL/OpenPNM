@@ -13,7 +13,7 @@ def voronoi(geometry,
     """
     verts = geometry['throat.vertices']    
     offset_verts = geometry['throat.offset_vertices']
-    value = _sp.ndarray(len(verts),dtype=object)
+    value = _sp.ndarray([len(verts),3])
     for i in range(len(verts)):
         if len(offset_verts[i]) > 2:
             value[i] = _sp.array([offset_verts[i][:,0].mean(),offset_verts[i][:,1].mean(),offset_verts[i][:,2].mean()])

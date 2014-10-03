@@ -19,7 +19,8 @@ def voronoi(network,
     perimeter = sp.ndarray(Nt)
     offset_verts = sp.ndarray(Nt,dtype=object)
     offset_error = sp.ndarray(Nt)
-    for i in range(Nt):            
+    for i in range(Nt):
+        offset_rand = (sp.random.rand(1)-0.5)*offset            
         throat_verts=geometry["throat.vertices"][i]
         throat_normal=geometry["throat.normal"][i]
         area[i],perimeter[i],offset_verts[i],offset_error[i] = vo.get_throat_geom(throat_verts,throat_normal,offset)

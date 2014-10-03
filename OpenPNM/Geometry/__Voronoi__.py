@@ -74,14 +74,20 @@ class Voronoi(GenericGeometry):
                        model=gm.throat_perimeter.voronoi)
         self.add_model(propname='throat.centroid',
                        model=gm.throat_centroid.voronoi)
+        self.add_model(propname='pore.centroid2',
+                       model=gm.pore_centroid.voronoi2)
+        self.add_model(propname='pore.diameter2',
+                       model=gm.pore_diameter.insphere)
         self.add_model(propname='throat.diameter',
                        model=gm.throat_diameter.voronoi)                  
         self.add_model(propname='throat.length',
-                       model=gm.throat_length.voronoi)
+                       model=gm.throat_length.c2c)
         self.add_model(propname='throat.volume',
                        model=gm.throat_volume.extrusion)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.extrusion)
+        "Shift the pore coords to the centroids"
+        #vo.pore2centroid(self._net)
     
     def print_throat(self,throats_in):
         r"""
@@ -150,6 +156,11 @@ class Voronoi(GenericGeometry):
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
         if len(pores) > 0:
             net_pores = self["pore.map"][pores]
+            centroids = self["pore.centroid"][pores]
+            centroids2 = self["pore.centroid2"][pores]
+            #for i,pore in enumerate(pores):
+            #    centroids[i]=self["pore.centroid"][pore]
+            coords = self._net["pore.coords"][net_pores]
             net_throats = self._net.find_neighbor_throats(pores=net_pores)
             throats = []
             for net_throat in net_throats:
@@ -186,6 +197,9 @@ class Voronoi(GenericGeometry):
                 ax.set_xlim(xmin,xmax)
                 ax.set_ylim(ymin,ymax)
                 ax.set_zlim(zmin,zmax)
+                ax.scatter(coords[:,0],coords[:,1],coords[:,2])
+                ax.scatter(centroids[:,0],centroids[:,1],centroids[:,2],c='r')
+                ax.scatter(centroids2[:,0],centroids2[:,1],centroids2[:,2],c='g')
                 plt.show()
             else:
                 self.print_throat(throats)

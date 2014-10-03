@@ -615,4 +615,14 @@ def porosity(network):
         print("Geometries must be assigned first")
         pore_vol=0
     porosity = pore_vol/domain_vol
-    return porosity    
+    return porosity
+
+def pore2centroid(network):
+    r"""
+    Move the pore coordinate to the centroid of the pore vertices
+    """
+    for geom_name in network.geometries():
+        geometry = network.geometries(geom_name)[0]
+        if "pore.centroid" in geometry.props():
+            for geom_pore,net_pore in enumerate(geometry["pore.map"]):
+                network["pore.coords"][net_pore]=geometry["pore.centroid"][geom_pore]

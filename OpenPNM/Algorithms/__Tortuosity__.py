@@ -86,8 +86,8 @@ class Tortuosity(GenericAlgorithm):
         Cz = sp.square(Pz.T - Pz)
         Ds = sp.sqrt(Cx + Cy + Cz)
         
-        temp = path/Ds
-        #temp = path
+        #temp = path/Ds
+        temp = path
         
         temp[sp.isnan(temp)] = 0
         temp[sp.isinf(temp)] = 0

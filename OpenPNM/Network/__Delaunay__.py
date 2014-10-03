@@ -102,7 +102,7 @@ class Delaunay(GenericNetwork):
         i = 0
         while i < self._Np:            
             coord = np.array([np.random.uniform(0,self._Lx,1),np.random.uniform(0,self._Ly,1),np.random.uniform(0,self._Lz,1)]).T  
-            if self._reject(coord) == False:
+            if self._reject(coord/np.array([self._Lx,self._Ly,self._Lz])) == False:
                 coords[i]=coord
                 i += 1 
         #Seeding Code
