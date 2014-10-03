@@ -150,6 +150,8 @@ class GenericLinearTransport(GenericAlgorithm):
         S_temp = sp.zeros(A_dim)
         for i in sp.r_[0:len(row)]:
             S_temp[row[i]] = S_temp[row[i]] - temp_data[i]
+        if hasattr(self,'_k'):
+            S_temp = S_temp + self._k
         data = sp.append(data,S_temp[non_Dir_diag])
         row = sp.append(row,non_Dir_diag)
         col = sp.append(col,non_Dir_diag)
