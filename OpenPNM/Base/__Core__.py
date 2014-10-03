@@ -32,15 +32,15 @@ class Core(Base):
         This is a subclass of the default __setitem__ behavior.  The main aim
         is to limit what type and shape of data can be written to protect
         the integrity of the network.
-        
-        
+
+
         Example
         -------
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn['pore.example_property'] = 100
         >>> pn['pore.example_property'][0]
         100
-        
+
         '''
         #Enforce correct dict naming
         element = key.split('.')[0]
@@ -93,9 +93,9 @@ class Core(Base):
             Controls when and if the property is regenerated. Options are:
 
             * 'static' : The property is stored as static data and is only regenerated when the object's `regenerate` is called
-            
+
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
-            
+
         Notes
         -----
         This method is inherited by all net/geom/phys/phase objects.  It takes
@@ -133,7 +133,7 @@ class Core(Base):
         else:
             network = self
         #Build partial function from given kwargs
-        fn = partial(model,network=network,phase=phase,geometry=geometry,physics=physics,**kwargs)
+        fn = partial(model,propname=propname,network=network,phase=phase,geometry=geometry,physics=physics,**kwargs)
         if regen_mode == 'static':
             self[propname] = fn()  # Generate data and store it locally
             self._models[propname] = fn  # Store model in a private attribute
@@ -148,15 +148,65 @@ class Core(Base):
         ----------
         propname : string
             The property name for which the model should be removed
-            
+
         mode : string, optional
             To delete the model AND the associated property data, this mode
-            should be set to 'clear'. 
+            should be set to 'clear'.
 
         '''
         self._models.pop(propname,None)
         if mode == 'clear':
             self.pop(propname,None)
+
+    def reorder_models(self,new_order):
+        r'''
+        Reorders the models on the object to change the order in which they
+        are regenerated, where item 0 is calculated first.
+
+        Parameters
+        ----------
+        new_order : dict
+            A dictionary containing the model name(s) as the key, and the
+            location(s) in the new order as the value
+
+        Notes
+        -----
+        The new order is calculated by removing the supplied models from the
+        old list, then inserting them in the locations given.
+
+        Examples
+        --------
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> air = OpenPNM.Phases.Air(network=pn)
+        >>> list(air._models.keys())
+        ['pore.density', 'pore.molar_density', 'pore.thermal_conductivity', 'pore.viscosity']
+        >>> new_order = {}
+        >>> new_order['pore.molar_density'] = 0  # Put at beginning
+        >>> new_order['pore.density'] = 100  # Put at end for sure
+        >>> air.reorder_models(new_order)
+        >>> list(air._models.keys())
+        ['pore.molar_density', 'pore.thermal_conductivity', 'pore.viscosity', 'pore.density']
+
+        '''
+        #Check no duplicate or invalid locations
+        locs = sp.unique(new_order.values())
+        if len(locs) < len(new_order.values()):
+            raise Exception('Duplicates found in the order')
+
+        #Generate numbered list of current models
+        order = [item for item in list(self._models.keys())]
+        #Remove supplied models from list
+        for item in new_order:
+            order.remove(item)
+        #Add models back to list in new order
+        inv_dict = {v: k for k, v in new_order.items()}
+        for item in inv_dict:
+            order.insert(item,inv_dict[item])
+        #Now rebuild _models OrderedDict in new order
+        temp = self._models.copy()
+        self._models.clear()
+        for item in order:
+            self._models[item] = temp[item]
 
     def regenerate(self, props='',mode='inclusive'):
         r'''
@@ -187,7 +237,7 @@ class Core(Base):
         >>> geom.regenerate()  # Regenerate all models
         >>> geom['pore.area'][0]  # Look at same seed value again
         4
-        
+
         '''
         if props == '':
             props = self._models.keys()
@@ -198,9 +248,13 @@ class Core(Base):
             for item in props:
                 temp.remove(item)
             props = temp
+        self._logger.info('Models are being recalculated in the following order: ')
+        count = 0
         for item in props:
             if item in self._models.keys():
                 self[item] = self._models[item]()
+                self._logger.info(str(count)+' : '+item)
+                count += 1
             else:
                 self._logger.warning('Requested proptery is not a dynamic model: '+item)
 
@@ -383,7 +437,7 @@ class Core(Base):
             * 'overwrite' : Adds label to specified locations while removing all pre-existing labels
             * 'remove_info' : Removes label from the specified locations.
             * 'remove_label' : Removes the entire label from the dictionary of the object
-            
+
         '''
         if mode in ['merge','overwrite','remove_info','remove_label']:
             if pores != None:
@@ -505,7 +559,7 @@ class Core(Base):
         ['pore.coords']
         >>> pn.props('throat')
         ['throat.conns']
-        >>> #pn.props() # this lists both, but in random order, which breaks 
+        >>> #pn.props() # this lists both, but in random order, which breaks
         >>> #           # our automatic document testing so it's commented here
         '''
 
@@ -513,7 +567,7 @@ class Core(Base):
         for item in self.keys():
             if self[item].dtype != bool:
                 props.append(item)
-        
+
         all_models = list(self._models.keys())
         constants = [item for item in props if item not in all_models]
         models = [item for item in props if item in all_models]
@@ -539,7 +593,7 @@ class Core(Base):
     def _get_labels(self,element='',locations=[],mode='union'):
         r'''
         This is the actual label getter method, but it should not be called directly.
-        Wrapper methods have been created, use get_labels().
+        Wrapper methods have been created, use labels().
         '''
         labels = []
         for item in self.keys():
@@ -616,7 +670,7 @@ class Core(Base):
             if element == '':
                 temp = []
                 temp = self._get_labels(element='pore')
-                temp = temp + self._get_labels(element='throat')
+                temp.extend(self._get_labels(element='throat'))
             elif element in ['pore','pores']:
                 temp = self._get_labels(element='pore',locations=[], mode=mode)
             elif element in ['throat','throats']:
@@ -671,7 +725,7 @@ class Core(Base):
             throats = sp.array(throats,ndmin=1)
             return throats[temp]
 
-    def _get_indices(self,element,labels,mode='union'):
+    def _get_indices(self,element,labels=['all'],mode='union'):
         r'''
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
@@ -740,7 +794,7 @@ class Core(Base):
         else:
             ind = self._get_indices(element='pore',labels=labels,mode=mode)
         return ind
-        
+
     @property
     def Ps(self):
         r'''
@@ -782,7 +836,7 @@ class Core(Base):
         else:
             ind = self._get_indices(element='throat',labels=labels,mode=mode)
         return ind
-        
+
     @property
     def Ts(self):
         r'''
@@ -872,17 +926,18 @@ class Core(Base):
         - Only one of pores, throats OR data are accepted
 
         """
-        if self.__module__.split('.')[1] == 'Network':
+        mro = [module.__name__ for module in self.__class__.__mro__]
+        if 'GenericNetwork' in mro:
             net = self
             Ts = net.throats()
             Ps = net.pores()
             label = 'all'
-        elif self.__module__.split('.')[1] in ['Phases','Algorithms']:
+        elif ('GenericPhase' in mro) or ('GenericAlgorithm' in mro):
             net = self._net
             Ts = net.throats()
             Ps = net.pores()
             label = 'all'
-        elif self.__module__.split('.')[1] in ['Geometry','Physics']:
+        elif ('GenericGeometry' in mro) or ('GenericPhysics' in mro):
             net = self._net
             Ts = net.throats(self.name)
             Ps = net.pores(self.name)
@@ -1145,6 +1200,93 @@ class Core(Base):
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
         return temp
+    def _map(self,element,locations,target):
+        r'''
+        '''
+        mro = [item.__name__ for item in self.__class__.__mro__]
+        if 'GenericNetwork' not in mro:
+            net = self._net
+        else:
+            net = self
+
+        if element in ['pore','pores']:
+            element = 'pore'
+        elif element in ['throat','throats']:
+            element = 'throat'
+
+        A = self
+        B = target
+        locations = sp.array(locations)
+
+        #Map A to Network numbering
+        net_A = sp.ones((net._count(element),))*sp.nan
+        net_A[A[element+'.map']] = A._get_indices(element)
+
+        #Map B to Network numbering
+        net_B = sp.ones((net._count(element),))*sp.nan
+        net_B[B[element+'.map']] = B._get_indices(element)
+
+        #Convert locations to Network numbering
+        try:
+            locs = A[element+'.map'][locations]
+        except:
+            raise Exception('Some supplied locations do not exist on source object')
+
+        #Map netPs_A onto netPs_B
+        net_C = net_B[locs]
+        if sum(sp.isnan(net_C)) > 0:
+            raise Exception('Some supplied locations do not exist on target object')
+        return sp.int_(net_C)
+
+    def map_pores(self,pores,target):
+        r'''
+        Accepts a list of pores from the caller object and maps them onto the
+        given target object
+
+        Parameters
+        ----------
+        pores : array_like
+            The list of pores on the caller object
+
+        target : OpenPNM object, optional
+            The object for which a list of pores is desired.
+
+        Returns
+        -------
+        pores : array_like
+            A list of pores mapped onto the target object
+
+        Examples
+        --------
+        n/a
+        '''
+        Ps = self._map(element='pores',locations=pores,target=target)
+        return Ps
+
+    def map_throats(self,throats,target):
+        r'''
+        Accepts a list of throats from the caller object and maps them onto the
+        given target object
+
+        Parameters
+        ----------
+        throats : array_like
+            The list of throats on the caller object
+
+        target : OpenPNM object, optional
+            The object for which a list of pores is desired.
+
+        Returns
+        -------
+        throats : array_like
+            A list of throats mapped onto the target object
+
+        Examples
+        --------
+        n/a
+        '''
+        Ts = self._map(element='throat',locations=throats,target=target)
+        return Ts
 
     def check_data_health(self,props=[],element='',quiet=False):
         r'''

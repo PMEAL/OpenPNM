@@ -22,32 +22,20 @@ class Base(dict):
 
     Parameters
     ----------
-
+    name : string
+        The name for the object.  This must be unique so no two objects in the 
+        simulation have the same name.  If no name is provided, and random
+        string is appended to the objects module name.  
+        
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+        
     loggername : string
         Name of the logger. The default is the name of the class.
 
-    Attributes
-    ----------
-
-    self._logger : _logging.logger
-       This class defines a logger for the class and all classes inheriting from it.
-       it supports all settings of the standard logger. It still needs some fine
-       tuning.
-
-       ======== =====   =============================================================
-       Level    Value   When it is used
-       ======== =====   =============================================================
-       DEBUG    10      Detailed information, at diagnostic stage
-       INFO     20      Confirmation that things are working as expected.
-       WARNING  30      An indication that something unexpected happened.
-       ERROR    40      Due to a more serious problem, program might still execute.
-       CRITICAL 50      A serious error, might compromise program execution
-       ======== =====   =============================================================
-
     """
     _name = None
+    _loglevel = 30
     def __init__(self,**kwargs):
         super(Base,self).__init__()
         if 'loggername' in kwargs.keys():
@@ -56,10 +44,6 @@ class Base(dict):
             self._logger = _logging.getLogger(self.__class__.__name__)
         if 'loglevel' in kwargs.keys():
             loglevel = kwargs['loglevel']
-            self.set_loglevel(loglevel)
-        else:
-            loglevel = 30
-            self.set_loglevel(loglevel)
 
         #Initialize phase, physics, and geometry tracking lists
         self._phases = []
@@ -72,6 +56,33 @@ class Base(dict):
         self.__class__.__module__,
         self.__class__.__name__,
         hex(id(self)))
+        
+    def _set_loglevel(self,level=50):
+        if type(level) is str:
+            desc = {}
+            desc['DEBUG']    = 10
+            desc['INFO']     = 20
+            desc['WARNING']  = 30
+            desc['ERROR']    = 40
+            desc['CRITICAL'] = 50
+            level = string.ascii_uppercase(level)
+            level = desc[level]
+        self._loglevel = level
+        self._logger.setLevel(level)
+        self._logger.debug("Changed log level")
+        
+    def _get_loglevel(self):
+        level = self._loglevel
+        desc = {}
+        desc[10] = 'DEBUG: Detailed information for for diagnostics and development'
+        desc[20] = 'INFO: Confirmation that things are working as expected'
+        desc[30] = 'WARNING: An indication that something unexpected happened'
+        desc[40] = 'ERROR: Due to a more serious problem, program might still execute'
+        desc[50] = 'CRITICAL: A serious error that might compromise program execution'
+        print(desc[level])
+        return level
+        
+    loglevel = property(fget=_get_loglevel,fset=_set_loglevel)
 
     def set_loglevel(self,level=50):
         r"""
@@ -80,16 +91,15 @@ class Base(dict):
         Parameters
         ----------
         level : int
-            Level above which messages should be logged.
-            
+            Level above which messages should be logged
+
         Examples
         --------
         >>> baseobject = OpenPNM.Base.Base()
-        >>> baseobject.set_loglevel(30)    
-        
+        >>> baseobject.set_loglevel(30)
+
         """
-        self._logger.setLevel(level)
-        self._logger.debug("Changed log level")
+        self.loglevel = level
 
     def _find_object(self,obj_name='',obj_type=''):
         r'''
@@ -124,8 +134,8 @@ class Base(dict):
         'geo1'
 
         '''
-        
-        if 'Network' in self.__module__.split('.'):
+        mro = [item.__name__ for item in self.__class__.__mro__]
+        if 'GenericNetwork' in mro:
             net = self
         else:
             net = self._net
@@ -293,13 +303,14 @@ class Base(dict):
         reachable from the command line.
 
         '''
-        if 'Network' in self.__module__.split('.'):
+        mro = [item.__name__ for item in self.__class__.__mro__]
+        if 'GenericNetwork' in mro:
             net = self
         else:
             net = self._net
         if obj_name != '':
             obj = self._find_object(obj_name=obj_name)
-        
+
         #Get mro for self
         mro = [item.__name__ for item in obj.__class__.__mro__]
         if 'GenericGeometry' in mro:
@@ -333,19 +344,19 @@ class Base(dict):
         ----------
         filename : string
             The filename to contain the saved object data in Numpy zip format (npz)
-        
+
         Examples
         --------
         >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
         >>> pn.save('test_pn')
 
         >>> gn = OpenPNM.Network.GenericNetwork()
-        >>> gn.load('test_pn')  
-        
+        >>> gn.load('test_pn')
+
         >>> # Remove newly created file
         >>> import os
         >>> os.remove('test_pn.npz')
-        
+
         '''
         if filename == '':
             filename = self.name
@@ -371,8 +382,8 @@ class Base(dict):
         >>> pn.save('test_pn')
 
         >>> gn = OpenPNM.Network.GenericNetwork()
-        >>> gn.load('test_pn')  
-        
+        >>> gn.load('test_pn')
+
         >>> # Remove newly created file
         >>> import os
         >>> os.remove('test_pn.npz')

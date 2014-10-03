@@ -55,11 +55,11 @@ class GenericPhase(Core):
         if components != []:
             for comp in components:
                 self._phases.append(comp) # Associate any sub-phases
-                temp = comp._models
-                comp._models.clear()
+                #Add models for components to inherit mixture T and P
                 comp.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.mixture_props.temperature,mixture=self)
                 comp.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.mixture_props.pressure,mixture=self)
-                comp._models.update(temp)
+                #Move T and P models to beginning of regeneration order
+                comp.reorder_models({'pore.temperature':0,'pore.pressure':1})
         self._net._phases.append(self)  # Append this Phase to the Network
         
     def __setitem__(self,prop,value):
@@ -131,13 +131,18 @@ class GenericPhase(Core):
         Perform a check to find pores which have overlapping or undefined Physics
         '''
         phys = self.physics()
-        temp = sp.zeros((self.Np,))
+        Ptemp = sp.zeros((self.Np,))
+        Ttemp = sp.zeros((self.Nt,))
         for item in phys:
-                ind = self['pore.'+item]
-                temp[ind] = temp[ind] + 1
+                Pind = self['pore.'+item]
+                Tind = self['throat.'+item]
+                Ptemp[Pind] = Ptemp[Pind] + 1
+                Ttemp[Tind] = Ttemp[Tind] + 1
         health = {}
-        health['overlapping_pores'] = sp.where(temp>1)[0].tolist()
-        health['undefined_pores'] = sp.where(temp==0)[0].tolist()
+        health['overlapping_pores'] = sp.where(Ptemp>1)[0].tolist()
+        health['undefined_pores'] = sp.where(Ptemp==0)[0].tolist()
+        health['overlapping_throats'] = sp.where(Ttemp>1)[0].tolist()
+        health['undefined_throats'] = sp.where(Ttemp==0)[0].tolist()
         return health
 
 

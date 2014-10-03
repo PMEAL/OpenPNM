@@ -25,18 +25,27 @@ def hagen_poiseuille(physics,
     network : OpenPNM Network Object
 
     phase : OpenPNM Phase Object
-    """
-    throats = phase.throats(physics.name)
+    
+    Notes
+    -----
+    (1) This function requires that all the necessary phase properties already 
+    be calculated.
+    
+    (2) This function calculates the specified property for the *entire* 
+    network then extracts the values for the appropriate throats at the end.
+    
+    """    
+    #Get Nt-by-2 list of pores connected to each throat
+    Ps = network['throat.conns']
+    #Get properties in every pore in the network
     mup = phase[pore_viscosity]
     mut = phase.interpolate_data(mup)
-    #Get Nt-by-2 list of pores connected to each throat
-    Ps = network.find_connected_pores(throats=network.throats(),flatten=0)
     pdia = network[pore_diameter]
-    pcoords = network['pore.coords']
     if calc_pore_len:
         #Find half-lengths of each pore
+        pcoords = network['pore.coords']
         #   Find the pore-to-pore distance, minus the throat length
-        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network[throat_length][throats]
+        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network[throat_length]
         #   Calculate the fraction of that distance from the first pore    
         fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
         plen1 = lengths*fractions
@@ -61,7 +70,7 @@ def hagen_poiseuille(physics,
     tlen[tlen<=0] = 1e-12
     gt = _sp.pi*(tdia)**4/(128*tlen*mut)
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[throats]
+    value = value[phase.throats(physics.name)]
     return value
 
 

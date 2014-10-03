@@ -59,7 +59,7 @@ class GenericGeometry(Core):
         self._net['throat.'+self.name] = False
         self.set_locations(pores=pores,throats=throats)
         self._seed = seed
-
+        
     def set_locations(self,pores=[],throats=[]):
         r'''
         This method can be used to set the pore and throats locations of an

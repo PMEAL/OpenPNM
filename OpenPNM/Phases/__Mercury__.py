@@ -40,7 +40,11 @@ class Mercury(GenericPhase):
         self['pore.critical_temperature'] = 1733                       # K
         self['pore.critical_volume'] = 0.000189                        # kg/m3
         self['pore.contact_angle'] = 140                               # Degree 
-        self['pore.vapor_pressure'] = 0.3423                           # Pa
+        self.add_model(propname='pore.vapor_pressure',                 # Pa
+                       model=fm.vapor_pressure.antoine,
+                       A=9.85767,
+                       B=3007.129,
+                       C=-10.001)
         self.add_model(propname='pore.density',                        # kg/m3
                        model=fm.misc.linear,
                        poreprop='pore.temperature',
