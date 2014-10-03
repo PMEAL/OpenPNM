@@ -15,7 +15,7 @@ from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
 class MatFile(GenericNetwork):
     r'''
     MatFile - constructs a pore network from a perfectly formatted .mat file (MATLAB)
-    Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork() 
+    Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork()
     object. The extra data of 'type' will trigger internal and boundary pores.
 
     Parameters
@@ -37,14 +37,14 @@ class MatFile(GenericNetwork):
     Examples
     ---------
     >>> fname = 'test_pn' # or 'test_pn.mat'
-    >>> longpath = os.path.abspath(__file__) # line needed for auto-tests 
+    >>> longpath = os.path.abspath(__file__) # line needed for auto-tests
     >>> path,file = os.path.split(longpath) #unfortunately, auto-tests fail without this. Just type in the path of your own file, or leave it blank to search in your current directory.
     >>> pn = OpenPNM.Network.MatFile(name='test_pn',filename=fname,path=path,xtra_pore_data='type',xtra_throat_data='type')
-    
+
     Notes
     ------
     Matfiles should include the following variables
-    
+
     +----------------+------------+----------------------------------+
     | Variable Name  | Value      | Description                      |
     +================+============+==================================+
@@ -77,15 +77,16 @@ class MatFile(GenericNetwork):
     |                | int        | of throats in network.           |
     |                |            | (more details below)             |
     +----------------+------------+----------------------------------+
-    
-    
+
+
     '''
-    def __init__(self,filename='standard_cubic_5x5x5.mat', path='', xtra_pore_data=None, xtra_throat_data=None,**kwargs):
-        
+    def __init__(self,filename='', path='', xtra_pore_data=None, xtra_throat_data=None,**kwargs):
+
         r"""
         """
         super(MatFile,self).__init__(**kwargs)
-
+        if filename == '':
+            return
         if path == '':
             path = os.path.abspath('.')
         self._path = path
@@ -93,10 +94,10 @@ class MatFile(GenericNetwork):
         self._xtra_pore_data=xtra_pore_data
         self._xtra_throat_data=xtra_throat_data
         self._dictionary=spio.loadmat(filepath)
-        
+
         self._Np=sp.size(self._dictionary['pnumbering'])
         self._Nt=sp.size(self._dictionary['tnumbering'])
-        
+
         #Run through generation steps
         self._add_pores()
         self._add_throats()
@@ -104,24 +105,24 @@ class MatFile(GenericNetwork):
         self._add_xtra_pore_data()
         self._add_xtra_throat_data()
         self._add_geometry()
-        
+
     def _add_pores(self):
         Pind = sp.arange(0,self._Np)
         self['pore.all'] = sp.ones_like(Pind,dtype=bool)
         self._logger.info('Writing pore data')
         self['pore.coords']=sp.array(self._dictionary['pcoords'],float)
-        
+
     def _add_throats(self):
         Tind = sp.arange(0,self._Nt)
         self['throat.all']=sp.ones_like(Tind,dtype=bool)
         self._logger.info('Writing throat data')
         self['throat.conns']=sp.array(self._dictionary['tconnections'],int)
-        
+
     def _remove_disconnected_clusters(self):
         bad_pores = sp.array([],dtype=int)
         self._pore_map = self.pores()
         self._throat_map = self.throats()
-        health = self.check_network_health()  
+        health = self.check_network_health()
         if health['disconnected_clusters'] == []:
             self._throat_map = self.throats()
             self._pore_map = self.pores()
@@ -141,7 +142,7 @@ class MatFile(GenericNetwork):
                 self._pore_map = sp.zeros((Np-sp.shape(bad_pores)[0],),dtype=int)
                 for pore in self.pores():
                     if pore not in bad_pores:
-                        self._pore_map[i] = pore 
+                        self._pore_map[i] = pore
                         i += 1
             #Create map for throats
             if sp.shape(bad_throats)[0] > 0:
@@ -149,11 +150,11 @@ class MatFile(GenericNetwork):
                 self._throat_map = sp.zeros((Nt-sp.shape(bad_throats)[0],),dtype=int)
                 for throat in self.throats():
                     if throat not in bad_throats:
-                        self._throat_map[i] = throat                    
+                        self._throat_map[i] = throat
                         i += 1
             self.trim(pores=bad_pores)
             #Fix the pore transformer
-            try:        
+            try:
                 if sp.shape(bad_pores)[0] > 0:
                     i = 0
                     old_transform = self._dictionary['pname_transform']
@@ -166,7 +167,7 @@ class MatFile(GenericNetwork):
                 self._logger.info('Could not update pname_transform. Imported network may not have had it.')
 
     def _add_geometry(self):
-        try: 
+        try:
             boundary_pores = sp.where(self['pore.type']!=0)[0]
             boundary_throats = sp.where(self['throat.type']!=0)[0]
             self['throat.top'] = sp.ravel(self['throat.type']==1)
@@ -182,7 +183,7 @@ class MatFile(GenericNetwork):
             self['pore.front'] = self.tomask(sp.ravel(self.find_connected_pores(self.throats('front'))))
             self['pore.back'] = self.tomask(sp.ravel(self.find_connected_pores(self.throats('back'))))
             add_boundaries = True
-        except: 
+        except:
             boundary_pores = sp.array([])
             boundary_throats = sp.array([])
             self._logger.info('No boundary pores added.')
@@ -195,7 +196,7 @@ class MatFile(GenericNetwork):
         geom['throat.diameter'] = sp.ravel(sp.array(self._dictionary['tdiameter'][self._throat_map[Ts]],float))
         geom.add_model(propname='pore.area',model=OpenPNM.Geometry.models.pore_area.spherical)
         geom.add_model(propname='throat.area',model=OpenPNM.Geometry.models.throat_area.cylinder)
-        
+
         if add_boundaries:
             boun = OpenPNM.Geometry.Boundary(network=self,pores=boundary_pores,throats=boundary_throats,name='boundary')
             self['pore.top_boundary']=self.tomask(pores=self.pores(['top','boundary'],mode='intersection'))
@@ -204,14 +205,14 @@ class MatFile(GenericNetwork):
             self['pore.right_boundary']=self.tomask(pores=self.pores(['right','boundary'],mode='intersection'))
             self['pore.front_boundary']=self.tomask(pores=self.pores(['front','boundary'],mode='intersection'))
             self['pore.back_boundary']=self.tomask(pores=self.pores(['back','boundary'],mode='intersection'))
-            
+
             self['throat.top_boundary']=self.tomask(throats=self.throats(['top','boundary'],mode='intersection'))
             self['throat.bottom_boundary']=self.tomask(throats=self.throats(['bottom','boundary'],mode='intersection'))
             self['throat.left_boundary']=self.tomask(throats=self.throats(['left','boundary'],mode='intersection'))
             self['throat.right_boundary']=self.tomask(throats=self.throats(['right','boundary'],mode='intersection'))
             self['throat.front_boundary']=self.tomask(throats=self.throats(['front','boundary'],mode='intersection'))
-            self['throat.back_boundary']=self.tomask(throats=self.throats(['back','boundary'],mode='intersection'))        
-    
+            self['throat.back_boundary']=self.tomask(throats=self.throats(['back','boundary'],mode='intersection'))
+
     def _add_xtra_pore_data(self):
         xpdata = self._xtra_pore_data
         if xpdata is not None:
@@ -245,16 +246,16 @@ class MatFile(GenericNetwork):
     def domain_length(self,face_1,face_2):
         r'''
         Calculate the distance between two faces of the network
-        
+
         Parameters
         ----------
         face_1 and face_2 : array_like
             Lists of pores belonging to opposite faces of the network
-            
+
         Returns
         -------
         The length of the domain in the specified direction
-        
+
         Notes
         -----
         - Does not yet check if input faces are perpendicular to each other
@@ -277,16 +278,16 @@ class MatFile(GenericNetwork):
             L = max(distavg)
         return L
 
-        
+
     def domain_area(self,face):
         r'''
         Calculate the area of a given network face
-        
+
         Parameters
         ----------
         face : array_like
             List of pores of pore defining the face of interest
-            
+
         Returns
         -------
         The area of the specified face
@@ -301,21 +302,21 @@ class MatFile(GenericNetwork):
         xz = dx*dz # y normal
         xy = dx*dy # z normal
         # find the directions parallel to the plane
-        directions = sp.where([yz,xz,xy]!=max([yz,xz,xy]))[0] 
+        directions = sp.where([yz,xz,xy]!=max([yz,xz,xy]))[0]
         try:
             # now, use the whole network to do the area calculation
             coords = self['pore.coords']
             rads = self['pore.diameter']/2.
             d0 = (max(coords[:,directions[0]]+rads) - min(coords[:,directions[0]]-rads))
             d1 = (max(coords[:,directions[1]]+rads) - min(coords[:,directions[1]]-rads))
-            A = d0*d1        
+            A = d0*d1
         except:
             # if that fails, use the max face area of the bounding cuboid
             A = max([yz,xz,xy])
         if not misc.iscoplanar(self['pore.coords'][face]):
             self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
         return A
-        
+
 if __name__ == '__main__':
     import doctest
-    doctest.testmod(verbose=True)  
+    doctest.testmod(verbose=True)
