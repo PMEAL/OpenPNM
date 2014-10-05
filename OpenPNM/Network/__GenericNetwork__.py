@@ -39,8 +39,8 @@ class GenericNetwork(Core):
         self.update({'throat.conns' :  sp.array(conns)})
         self.update({'pore.all' : sp.ones((Np,),dtype=bool)})
         self.update({'throat.all' : sp.ones((Nt,),dtype=bool)})
-        self.update({'pore.map' : sp.r_[0:Np]})
-        self.update({'throat.map' : sp.r_[0:Nt]})
+#        self.update({'pore.map' : sp.r_[0:Np]})
+#        self.update({'throat.map' : sp.r_[0:Nt]})
 
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}

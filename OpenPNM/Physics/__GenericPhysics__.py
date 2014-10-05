@@ -39,6 +39,8 @@ class GenericPhysics(OpenPNM.Base.Core):
         #Initialize locations
         self['pore.all'] = sp.array([],dtype=bool)
         self['throat.all'] = sp.array([],dtype=bool)
+        self['pore.map'] = sp.array([],dtype=bool)
+        self['throat.map'] = sp.array([],dtype=bool)
 
         #Associate with Network
         if network == None:
@@ -64,18 +66,18 @@ class GenericPhysics(OpenPNM.Base.Core):
         r'''
         This method can be used to set the pore and throats locations of an
         *empty* object.  Once locations have been set they can not be changed.
-        
+
         Parameters
         ----------
         pores and throats : array_like
             The list of pores and/or throats where the object should be applied.
-            
+
         Notes
         -----
         This method is intended to assist in the process of loading saved
-        objects.  Save data can be loaded onto an empty object, then the object 
-        can be reassociated with a Network manually by setting the pore and 
-        throat locations on the object.  
+        objects.  Save data can be loaded onto an empty object, then the object
+        can be reassociated with a Network manually by setting the pore and
+        throat locations on the object.
         '''
         pores = sp.array(pores,ndmin=1)
         throats = sp.array(throats,ndmin=1)
