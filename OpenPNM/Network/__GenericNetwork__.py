@@ -698,9 +698,9 @@ class GenericNetwork(Core):
 
         Notes
         -----
-        It can get very messy to 'trim' pores or throats from a Network that
-        has already been used to instantiate other objects.  It's not impossible
-        but at the present time attempting to do this will raise an error.
+        Trimming only adjusts Phase, Geometry, and Physics objects. Trimming a
+        Network that has already been used to run simulations will break those
+        simulation objects.
 
         Examples
         --------
@@ -716,12 +716,8 @@ class GenericNetwork(Core):
         296
 
         TODO: This logic works but can be shortened as done in subnet
-        TODO: Enhance this to allow triming when phases and physics are present
 
         '''
-
-        if (self._phases != []):
-            raise Exception('Network has active Phases, cannot proceed')
 
         if pores != []:
             pores = sp.array(pores,ndmin=1)
@@ -754,39 +750,66 @@ class GenericNetwork(Core):
 
 
         #Write 'all' label specifically
-        dict.__setitem__(self,'throat.all',sp.ones_like(Tnew1,dtype=bool))
-        dict.__setitem__(self,'pore.all',sp.ones_like(Pnew,dtype=bool))
+        self.update({'throat.all' : sp.ones_like(Tnew1,dtype=bool)})
+        self.update({'pore.all' : sp.ones_like(Pnew,dtype=bool)})
         # Write connections specifically
-        dict.__setitem__(self,'throat.conns', sp.vstack((Tnew1,Tnew2)).T)
+        self.update({'throat.conns' : sp.vstack((Tnew1,Tnew2)).T})
         # Overwrite remaining data and info
         items = self.keys()
         for key in items:
             if key.split('.')[1] not in ['conns','all']:
-                temp = self[key]
-                del self[key]
+                temp = self.pop(key)
                 if key.split('.')[0] == 'throat':
                     self[key] = temp[Tkeep]
                 if key.split('.')[0] == 'pore':
                     self[key] = temp[Pkeep]
 
-        #Trim associated Geometry objects
-        for geom in self._geometries:
-            Pgeom = sp.in1d(geom['pore.map'],sp.where(Pkeep)[0])
-            Tgeom = sp.in1d(geom['throat.map'],sp.where(Tkeep)[0])
-            dict.__setitem__(geom,'pore.all',Pgeom[Pgeom])
-            dict.__setitem__(geom,'throat.all',Tgeom[Tgeom])
-            dict.__setitem__(geom,'pore.map',self.pores(geom.name))
-            dict.__setitem__(geom,'throat.map',self.throats(geom.name))
+        for item in self._geometries:
+            Pitem = sp.in1d(item['pore.map'],sp.where(Pkeep)[0])
+            Titem = sp.in1d(item['throat.map'],sp.where(Tkeep)[0])
+            item.update({'pore.all' : Pitem[Pitem]})
+            item.update({'throat.all' : Titem[Titem]})
+            item.update({'pore.map' : self.pores(item.name)})
+            item.update({'throat.map' : self.throats(item.name)})
             # Overwrite remaining data and info
-            items = geom.keys()
-            for key in items:
+            for key in item.keys():
                 if key.split('.')[1] not in ['all','map']:
-                    temp = geom[key]
-                    del geom[key]
+                    temp = item.pop(key)
                     if key.split('.')[0] == 'throat':
-                        geom[key] = temp[Tgeom]
+                        item[key] = temp[Titem]
                     if key.split('.')[0] == 'pore':
-                        geom[key] = temp[Pgeom]
+                        item[key] = temp[Pitem]
+        for item in self._phases:
+            Pitem = sp.in1d(item['pore.map'],sp.where(Pkeep)[0])
+            Titem = sp.in1d(item['throat.map'],sp.where(Tkeep)[0])
+            item.update({'pore.all' : Pitem[Pitem]})
+            item.update({'throat.all' : Titem[Titem]})
+            item.update({'pore.map' : item.pores()})
+            item.update({'throat.map' : item.throats()})
+            # Overwrite remaining data and info
+            for key in item.keys():
+                if key.split('.')[1] not in ['all','map']:
+                    temp = item.pop(key)
+                    if key.split('.')[0] == 'throat':
+                        item[key] = temp[Titem]
+                    if key.split('.')[0] == 'pore':
+                        item[key] = temp[Pitem]
+        for item in self._physics:
+            phase = item._phases[0]
+            Pitem = sp.in1d(item['pore.map'],sp.where(Pkeep)[0])
+            Titem = sp.in1d(item['throat.map'],sp.where(Tkeep)[0])
+            item.update({'pore.all' : Pitem[Pitem]})
+            item.update({'throat.all' : Titem[Titem]})
+            item.update({'pore.map' : phase.pores(item.name)})
+            item.update({'throat.map' : phase.throats(item.name)})
+            # Overwrite remaining data and info
+            for key in item.keys():
+                if key.split('.')[1] not in ['all','map']:
+                    temp = item.pop(key)
+                    if key.split('.')[0] == 'throat':
+                        item[key] = temp[Titem]
+                    if key.split('.')[0] == 'pore':
+                        item[key] = temp[Pitem]
 
         #Reset network graphs
         self._update_network(mode='regenerate')
