@@ -39,8 +39,6 @@ class GenericNetwork(Core):
         self.update({'throat.conns' :  sp.array(conns)})
         self.update({'pore.all' : sp.ones((Np,),dtype=bool)})
         self.update({'throat.all' : sp.ones((Nt,),dtype=bool)})
-#        self.update({'pore.map' : sp.r_[0:Np]})
-#        self.update({'throat.map' : sp.r_[0:Nt]})
 
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
@@ -57,8 +55,13 @@ class GenericNetwork(Core):
 
     def __getitem__(self,key):
         if key not in self.keys():
-            self._logger.debug(key+' not on Network, constructing data from Geometries')
-            return self._interleave_data(key,self.geometries())
+            if key.split('.')[-1] == 'map':
+                self._logger.debug(key+' not on Network, generating list')
+                element = key.split('.')[0]
+                return self._get_indices(element=element)
+            else:
+                self._logger.debug(key+' not on Network, constructing data from Geometries')
+                return self._interleave_data(key,self.geometries())
         else:
             return super(GenericNetwork,self).__getitem__(key)
 
