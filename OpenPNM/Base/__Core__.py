@@ -730,6 +730,8 @@ class Core(Base):
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         '''
+        if element[-1] == 's':
+            element = element[:-1]
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
@@ -1200,19 +1202,19 @@ class Core(Base):
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
         return temp
-    def _map(self,element,locations,target):
+    def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
+        if element[-1] == 's':
+            element = element[:-1]
         mro = [item.__name__ for item in self.__class__.__mro__]
         if 'GenericNetwork' not in mro:
             net = self._net
         else:
             net = self
-
-        if element in ['pore','pores']:
-            element = 'pore'
-        elif element in ['throat','throats']:
-            element = 'throat'
+        if element+'.map' not in net.keys():
+            self._logger.info('Adding '+element+'.map to the Network')
+            net.update({element+'.map' : net._get_indices(element=element)})
 
         A = self
         B = target
@@ -1227,18 +1229,28 @@ class Core(Base):
         net_B[B[element+'.map']] = B._get_indices(element)
 
         #Convert locations to Network numbering
-        try:
-            locs = A[element+'.map'][locations]
-        except:
-            raise Exception('Some supplied locations do not exist on source object')
+        if (sp.amax(locations)>A._count(element)) or return_mapping:
+            if return_mapping:
+                locations = locations[locations<A._count(element)]
+            else:
+                raise Exception('Some supplied locations do not exist on source object')
+        locs = A[element+'.map'][locations]
+
 
         #Map netPs_A onto netPs_B
-        net_C = net_B[locs]
-        if sum(sp.isnan(net_C)) > 0:
-            raise Exception('Some supplied locations do not exist on target object')
-        return sp.int_(net_C)
+        if (sum(sp.isnan(net_B[locs])) > 0) or return_mapping:
+            if return_mapping:
+                ind = sp.where(sp.isnan(net_B[locs])==False)[0]
+                net_C = {}
+                net_C['source'] = locations[ind]
+                net_C['target'] = sp.int_(net_B[locs[ind]])
+            else:
+                raise Exception('Some supplied locations do not exist on target object')
+        else:
+            net_C = sp.int_(net_B[locs])
+        return net_C
 
-    def map_pores(self,pores,target):
+    def map_pores(self,pores,target,return_mapping=False):
         r'''
         Accepts a list of pores from the caller object and maps them onto the
         given target object
@@ -1251,6 +1263,11 @@ class Core(Base):
         target : OpenPNM object, optional
             The object for which a list of pores is desired.
 
+        return_mapping : boolean (default is False)
+            If True, a dictionary containing 'source' locations, and 'target'
+            locations is returned.  Any 'source' locations not found in the
+            'target' object are removed from the list.
+
         Returns
         -------
         pores : array_like
@@ -1260,10 +1277,10 @@ class Core(Base):
         --------
         n/a
         '''
-        Ps = self._map(element='pores',locations=pores,target=target)
+        Ps = self._map(element='pores',locations=pores,target=target,return_mapping=return_mapping)
         return Ps
 
-    def map_throats(self,throats,target):
+    def map_throats(self,throats,target,return_mapping=False):
         r'''
         Accepts a list of throats from the caller object and maps them onto the
         given target object
@@ -1285,7 +1302,7 @@ class Core(Base):
         --------
         n/a
         '''
-        Ts = self._map(element='throat',locations=throats,target=target)
+        Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
 
     def check_data_health(self,props=[],element='',quiet=False):
