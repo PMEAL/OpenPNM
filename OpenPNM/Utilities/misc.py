@@ -254,6 +254,24 @@ def _amalgamate_data(objs=[]):
 
 def clone_object(obj):
     r'''
+    Clone an OpenPNM Object
+
+    Parameters
+    ----------
+    obj : OpenPNM Object
+        The object to be cloned can be any OpenPNM Object
+
+    Returns
+    -------
+    A clone of the specified object is returned, but it retains all its links
+    to the objects associated with the original object.  The cloned object is
+    not associated with the Network.
+
+    Notes
+    -----
+    This method is intended to create a disposable object, for instance, to
+    receive simulation data without overwriting existing data.
+
     '''
     cls = obj.__class__.__mro__[0]
     new_obj = cls()
