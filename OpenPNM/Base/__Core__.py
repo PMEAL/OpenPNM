@@ -1205,15 +1205,13 @@ class Core(Base):
     def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
-        if element[-1] == 's':
-            element = element[:-1]
-        mro = [item.__name__ for item in self.__class__.__mro__]
-        if 'GenericNetwork' not in mro:
-            net = self._net
-        else:
+        if self._net == []:
             net = self
+        else:
+            net = self._net
+
         if element+'.map' not in net.keys():
-            self._logger.info('Adding '+element+'.map to the Network')
+            self._logger.warning('Adding '+element+'.map to the Network')
             net.update({element+'.map' : net._get_indices(element=element)})
 
         A = self
@@ -1235,7 +1233,6 @@ class Core(Base):
             else:
                 raise Exception('Some supplied locations do not exist on source object')
         locs = A[element+'.map'][locations]
-
 
         #Map netPs_A onto netPs_B
         if (sum(sp.isnan(net_B[locs])) > 0) or return_mapping:
@@ -1277,7 +1274,7 @@ class Core(Base):
         --------
         n/a
         '''
-        Ps = self._map(element='pores',locations=pores,target=target,return_mapping=return_mapping)
+        Ps = self._map(element='pore',locations=pores,target=target,return_mapping=return_mapping)
         return Ps
 
     def map_throats(self,throats,target,return_mapping=False):
