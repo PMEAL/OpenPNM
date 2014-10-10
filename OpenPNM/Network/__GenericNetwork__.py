@@ -753,14 +753,13 @@ class GenericNetwork(Core):
         # Write connections specifically
         self.update({'throat.conns' : sp.vstack((Tnew1,Tnew2)).T})
         # Overwrite remaining data and info
-        items = self.keys()
-        for key in items:
-            if key.split('.')[1] not in ['conns','all']:
-                temp = self.pop(key)
-                if key.split('.')[0] == 'throat':
-                    self[key] = temp[Tkeep]
-                if key.split('.')[0] == 'pore':
-                    self[key] = temp[Pkeep]
+        for item in self.keys():
+            if item.split('.')[1] not in ['conns','all']:
+                temp = self.pop(item)
+                if item.split('.')[0] == 'throat':
+                    self[item] = temp[Tkeep]
+                if item.split('.')[0] == 'pore':
+                    self[item] = temp[Pkeep]
 
         for item in self._geometries:
             Pitem = sp.in1d(item['pore.map'],sp.where(Pkeep)[0])
