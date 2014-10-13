@@ -724,7 +724,7 @@ class GenericNetwork(Core):
             Pkeep = ~Pdrop
             Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
             Ts = self.find_neighbor_throats(pores)
-            Tdrop[Ts] = 1
+            Tdrop[Ts] = True
             Tkeep = ~Tdrop
         elif throats != []:
             throats = sp.array(throats,ndmin=1)
@@ -737,68 +737,46 @@ class GenericNetwork(Core):
             self._logger.warning('No pores or throats recieved')
             return
 
-        #Remap throat connections
+        #Make new map indexes
         Pnew = sp.arange(0,sum(Pkeep),dtype=int)
-        Pmap = sp.ones((self.num_pores(),),dtype=int)*-1
+        Pmap = sp.ones((self.Np,),dtype=int)*-1
         Pmap[Pkeep] = Pnew
+        Tmap = sp.ones((self.Nt,),dtype=int)*-1
+        Tnew = sp.arange(0,sum(Tkeep),dtype=int)
+        Tmap[Tkeep] = Tnew
+
+        #Remap throat connections
         tpore1 = self['throat.conns'][:,0]
         tpore2 = self['throat.conns'][:,1]
         Tnew1 = Pmap[tpore1[Tkeep]]
         Tnew2 = Pmap[tpore2[Tkeep]]
 
-
         #Write 'all' label specifically
         self.update({'throat.all' : sp.ones_like(Tnew1,dtype=bool)})
         self.update({'pore.all' : sp.ones_like(Pnew,dtype=bool)})
-        # Write connections specifically
+        # Write throat connections specifically
         self.update({'throat.conns' : sp.vstack((Tnew1,Tnew2)).T})
+        # Write pore and throat maps
+        if 'pore.map' in self.keys():
+            self.update({'pore.map' : Pmap[self['pore.map']]})
+        if 'throat.map' in self.keys():
+            self.update({'throat.map' : Tmap[self['throat.map']]})
         # Overwrite remaining data and info
         for item in self.keys():
-            if item.split('.')[1] not in ['conns','all']:
+            if item.split('.')[1] not in ['conns','all','map']:
                 temp = self.pop(item)
                 if item.split('.')[0] == 'throat':
                     self[item] = temp[Tkeep]
                 if item.split('.')[0] == 'pore':
                     self[item] = temp[Pkeep]
-
-        for item in self._geometries:
+        # Trim all associated objects
+        for item in self._geometries+self._phases+self._physics:
             Pitem = sp.in1d(item['pore.map'],sp.where(Pkeep)[0])
             Titem = sp.in1d(item['throat.map'],sp.where(Tkeep)[0])
             item.update({'pore.all' : Pitem[Pitem]})
             item.update({'throat.all' : Titem[Titem]})
-            item.update({'pore.map' : self.pores(item.name)})
-            item.update({'throat.map' : self.throats(item.name)})
-            # Overwrite remaining data and info
-            for key in item.keys():
-                if key.split('.')[1] not in ['all','map']:
-                    temp = item.pop(key)
-                    if key.split('.')[0] == 'throat':
-                        item[key] = temp[Titem]
-                    if key.split('.')[0] == 'pore':
-                        item[key] = temp[Pitem]
-        for item in self._phases:
-            Pitem = sp.in1d(item['pore.map'],sp.where(Pkeep)[0])
-            Titem = sp.in1d(item['throat.map'],sp.where(Tkeep)[0])
-            item.update({'pore.all' : Pitem[Pitem]})
-            item.update({'throat.all' : Titem[Titem]})
-            item.update({'pore.map' : item.pores()})
-            item.update({'throat.map' : item.throats()})
-            # Overwrite remaining data and info
-            for key in item.keys():
-                if key.split('.')[1] not in ['all','map']:
-                    temp = item.pop(key)
-                    if key.split('.')[0] == 'throat':
-                        item[key] = temp[Titem]
-                    if key.split('.')[0] == 'pore':
-                        item[key] = temp[Pitem]
-        for item in self._physics:
-            phase = item._phases[0]
-            Pitem = sp.in1d(item['pore.map'],sp.where(Pkeep)[0])
-            Titem = sp.in1d(item['throat.map'],sp.where(Tkeep)[0])
-            item.update({'pore.all' : Pitem[Pitem]})
-            item.update({'throat.all' : Titem[Titem]})
-            item.update({'pore.map' : phase.pores(item.name)})
-            item.update({'throat.map' : phase.throats(item.name)})
+            item.update({'pore.map' : Pmap[item['pore.map'][Pitem]]})
+            item.update({'throat.map' : Tmap[item['throat.map'][Titem]]})
             # Overwrite remaining data and info
             for key in item.keys():
                 if key.split('.')[1] not in ['all','map']:
