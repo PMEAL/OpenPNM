@@ -283,10 +283,81 @@ def clone_object(obj):
     new_obj._models= obj._models
     return new_obj
 
+def clone_simulation(network,name=None):
+    r'''
+    Clone an entire Network simulation, including all associated objects.  The
+    cloned simulation is numerical identical to, but entirely distinct from the
+    original simulation.
 
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The Network object associated with the simulation to be cloned
+    name : string, optional
+        A new name can be given to the cloned Network if desired, otherwise it
+        will inherit the name of the original Network object.
+    '''
+    #Clone Network
+    cls = network.__class__.__mro__[0]
+    if name is None:
+        name = network.name
+    new_net = cls(name=name)
+    new_net._net = network
+    new_net.update(network)
+    # Clone associated Geometry
+    for item in network._geometries:
+        cls = item.__class__.__mro__[0]
+        geom = cls(network=new_net,name=item.name)
+        geom.update(item)
+    # Clone associated Phases
+    for item in network._phases:
+        cls = item.__class__.__mro__[0]
+        phase = cls(network=new_net,name=item.name)
+        phase.update(item)
+    # Repeat Phases to find component phases
+    for item in network._phases:
+        new_item = new_net.phases(item.name)[0]
+        new_item._phases = item._phases
+    # Clone associated Physics
+    for item in network._physics:
+        cls = item.__class__.__mro__[0]
+        phase = item._phases[0]
+        phys = cls(network=new_net,phase=phase,name=item.name)
+        phys.update(item)
+    return new_net
 
+def subset(network,pores,name=None):
+    r'''
+    Create a new sub-network from a given Network, from a list of pores.
 
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network simulation from which a subnet is to be created
+    pores : array_like
+        A list of pores from which to create the new network
+    name : string, optional
+        The name to apply to the new network object
 
+    Returns
+    -------
+    OpenPNM Object
+        Returns a new network object
+
+    Notes
+    -----
+    This creates a 'pore.map' and 'throat.map' property that lists the
+    correspondence to the subset pores and throats, to the main network.
+
+    Examples
+    --------
+    na
+    '''
+    import OpenPNM.Utilities.misc as misc
+    new_net = misc.clone_simulation(network=network,name=name)
+    Ps = ~network.tomask(pores)
+    new_net.trim(Ps)
+    return new_net
 
 
 
