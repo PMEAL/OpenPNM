@@ -299,10 +299,7 @@ def clone_simulation(network,name=None):
     '''
     #Clone Network
     cls = network.__class__.__mro__[0]
-    if name is None:
-        name = network.name
     new_net = cls(name=name)
-    new_net._net = network
     new_net.update(network)
     # Clone associated Geometry
     for item in network._geometries:
@@ -355,8 +352,15 @@ def subset(network,pores,name=None):
     '''
     import OpenPNM.Utilities.misc as misc
     new_net = misc.clone_simulation(network=network,name=name)
+    new_net.update({'pore.temp_map' : network.Ps})
+    new_net.update({'throat.temp_map' : network.Ts})
     Ps = ~network.tomask(pores)
     new_net.trim(Ps)
+    new_net.update({'pore.map' : new_net['pore.temp_map']})
+    new_net.pop('pore.temp_map')
+    new_net.update({'throat.map' : new_net['throat.temp_map']})
+    new_net.pop('throat.temp_map')
+    new_net._net = network
     return new_net
 
 
