@@ -202,11 +202,14 @@ def test_mapping():
     pn = OpenPNM.Network.Cubic(shape=[3,3,3],spacing=0.0001,name='net',loglevel=20)
     # Assign 3 different geometries to each layer in the z-direction
     Pa = sp.arange(0,9)
-    geom1 = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Pa,throats=pn.Ts)
-    Pb = sp.arange(9,18)
-    geom2 = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Pb)
+    Ta = pn.find_neighbor_throats(Pa)
+    geom1 = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Pa,throats=Ta)
     Pc = sp.arange(18,27)
-    geom3 = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Pc)
+    Tc = pn.find_neighbor_throats(Pc)
+    geom3 = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Pc,throats=Tc)
+    Pb = sp.arange(9,18)
+    Tb = pn.find_neighbor_throats(pores=Pb,mode='intersection')
+    geom2 = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Pb,throats=Tb)
     # Create an index in the Network
     pn['pore.num1'] = pn.Ps
     # Create the same index across each geom
@@ -223,15 +226,27 @@ def test_mapping():
     a = pn.pop('pore.map',None)
     sp.all(pn['pore.map'] == pn.Ps)
     # Check mapping between each Geometry object and in both directions
+    # Check geom1
     a = geom1.map_pores(geom1.Ps,pn)
     b = pn.map_pores(a,geom1)
-    assert(sp.all(b == ([0, 1, 2, 3, 4, 5, 6, 7])))
+    assert(sp.all(b == geom1.Ps))
+    a = geom1.map_throats(geom1.Ts,pn)
+    b = pn.map_throats(a,geom1)
+    assert(sp.all(b == geom1.Ts))
+    # Check geom2
     a = geom2.map_pores(geom2.Ps,pn)
     b = pn.map_pores(a,geom2)
-    assert(sp.all(b == ([0, 1, 2, 3, 4, 5, 6, 7])))
+    assert(sp.all(b == geom2.Ps))
+    a = geom2.map_throats(geom2.Ts,pn)
+    b = pn.map_throats(a,geom2)
+    assert(sp.all(b == geom2.Ts))
+    # Check geom3
     a = geom3.map_pores(geom3.Ps,pn)
     b = pn.map_pores(a,geom3)
-    assert(sp.all(b == ([0, 1, 2, 3, 4, 5, 6, 7])))
+    assert(sp.all(b == geom3.Ps))
+    a = geom3.map_throats(geom3.Ts,pn)
+    b = pn.map_throats(a,geom3)
+    assert(sp.all(b == geom3.Ts))
 
 if __name__ == '__main__':
   pytest.main()
