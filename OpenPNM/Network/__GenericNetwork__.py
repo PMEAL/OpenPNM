@@ -54,7 +54,11 @@ class GenericNetwork(Core):
         super(GenericNetwork,self).__setitem__(prop,value)
 
     def __getitem__(self,key):
-        if key not in self.keys():
+        if key.split('.')[-1] == 'map':
+            element = key.split('.')[0]
+            self._logger.debug('Generating '+element+'.map from indices')
+            return self._get_indices(element=element)
+        elif key not in self.keys():
             self._logger.debug(key+' not on Network, constructing data from Geometries')
             return self._interleave_data(key,self.geometries())
         else:
@@ -756,14 +760,9 @@ class GenericNetwork(Core):
         self.update({'pore.all' : sp.ones_like(Pnew,dtype=bool)})
         # Write throat connections specifically
         self.update({'throat.conns' : sp.vstack((Tnew1,Tnew2)).T})
-        # Write pore and throat maps
-        if 'pore.map' in self.keys():
-            self.update({'pore.map' : Pmap[self['pore.map']]})
-        if 'throat.map' in self.keys():
-            self.update({'throat.map' : Tmap[self['throat.map']]})
         # Overwrite remaining data and info
         for item in self.keys():
-            if item.split('.')[1] not in ['conns','all','map']:
+            if item.split('.')[1] not in ['conns','all']:
                 temp = self.pop(item)
                 if item.split('.')[0] == 'throat':
                     self[item] = temp[Tkeep]
@@ -771,12 +770,14 @@ class GenericNetwork(Core):
                     self[item] = temp[Pkeep]
         # Trim all associated objects
         for item in self._geometries+self._phases+self._physics:
+            # First resize 'map'
             Pitem = sp.in1d(item['pore.map'],sp.where(Pkeep)[0])
             Titem = sp.in1d(item['throat.map'],sp.where(Tkeep)[0])
-            item.update({'pore.all' : Pitem[Pitem]})
-            item.update({'throat.all' : Titem[Titem]})
             item.update({'pore.map' : Pmap[item['pore.map'][Pitem]]})
             item.update({'throat.map' : Tmap[item['throat.map'][Titem]]})
+            # Then resize 'all'
+            item.update({'pore.all' : Pitem[Pitem]})
+            item.update({'throat.all' : Titem[Titem]})
             # Overwrite remaining data and info
             for key in item.keys():
                 if key.split('.')[1] not in ['all','map']:

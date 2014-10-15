@@ -1210,10 +1210,6 @@ class Core(Base):
         else:
             net = self._net
 
-        if element+'.map' not in net.keys():
-            self._logger.warning('Adding '+element+'.map to the Network')
-            net.update({element+'.map' : net._get_indices(element=element)})
-
         A = self
         B = target
         locations = sp.array(locations)
