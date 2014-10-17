@@ -6,6 +6,7 @@ Submodule -- hydraulic_conductance
 """
 
 import scipy as _sp
+import OpenPNM.Utilities.misc as misc
 
 def hagen_poiseuille(physics,
                      phase,
@@ -14,7 +15,7 @@ def hagen_poiseuille(physics,
                      pore_viscosity='pore.viscosity',
                      throat_length='throat.length',
                      throat_diameter='throat.diameter',
-                     calc_pore_len=False,
+                     calc_pore_len=True,
                      **kwargs):
     r"""
     Calculates the hydraulic conductivity of throat assuming cylindrical 
@@ -42,14 +43,9 @@ def hagen_poiseuille(physics,
     mut = phase.interpolate_data(mup)
     pdia = network[pore_diameter]
     if calc_pore_len:
-        #Find half-lengths of each pore
-        pcoords = network['pore.coords']
-        #   Find the pore-to-pore distance, minus the throat length
-        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network[throat_length]
-        #   Calculate the fraction of that distance from the first pore    
-        fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
-        plen1 = lengths*fractions
-        plen2 = lengths*(1-fractions)
+        lengths = misc.conduit_lengths(network,mode='centroid')
+        plen1 = lengths[:,0]
+        plen2 = lengths[:,2]
     else:        
         plen1 = (0.5*pdia[Ps[:,0]])
         plen2 = (0.5*pdia[Ps[:,1]]) 

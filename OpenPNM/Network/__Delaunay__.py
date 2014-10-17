@@ -45,7 +45,6 @@ class Delaunay(GenericNetwork):
     """
 
     def __init__(self,num_pores=None,domain_size=None,**kwargs):
-    def __init__(self,num_pores=None,domain_size=None,**kwargs):
         '''
         Create Delauny network object
         '''

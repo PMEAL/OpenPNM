@@ -35,6 +35,7 @@ def _get_hull_volume(points):
         vab = points[ib] - points[ia]
         vac = points[ic] - points[ia]
         vbc = points[ic] - points[ib] # used later for area
+        #face_COM = (vab+vac)/3
         " As vectors are co-planar the cross-product will produce the normal vector of the face "
         face_normal = _sp.cross(vab,vac)
         face_unit_normal = face_normal/_sp.linalg.norm(face_normal)
@@ -98,9 +99,10 @@ def voronoi(network,
                     " Throat is not part of this geometry "
             throat_array=_sp.asarray(throat_vert_list)
             if len(throat_array)>4:
-                value[i]= _get_hull_volume(throat_array)
+                value[i] = _get_hull_volume(throat_array)
             else:
                 value[i]=0
         else:
             value[i]=0.0
+
     return value

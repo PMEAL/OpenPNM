@@ -1000,6 +1000,7 @@ class Core(Base):
         self._temp['pore'] = sp.empty((Np,))
         self._temp['throat'] = sp.empty((Nt,))
         temp = self._temp[element]
+        temp.fill(sp.nan)
         dtypes = []
         dtypenames = []
         prop_found = False  #Flag to indicate if prop was found on a sub-object
@@ -1013,12 +1014,25 @@ class Core(Base):
                 dtypenames.append('nan')
                 dtypes.append(sp.dtype(bool))
             else:
-                prop_found = True
                 values = item[prop]
+                try:
+                    ndim = sp.shape(values)[1]
+                    if prop_found == False:
+                        if element == 'pore':
+                            temp = sp.empty([Np,ndim])
+                            temp.fill(sp.nan)
+                        elif element == 'throat':
+                            temp = sp.empty([Nt,ndim])
+                            temp.fill(sp.nan)
+                except IndexError:
+                    "Shape is one dimensional - carry on"
+                prop_found = True
                 dtypenames.append(values.dtype.name)
                 dtypes.append(values.dtype)
             temp[locations] = values  #Assign values
         #Check if requested prop was found on any sub-objects
+        if sum(sp.isnan(temp)).any()>0:
+            dtypenames.append('nan')
         if prop_found == False:
             raise KeyError(prop)
         #Analyze and assign data type
@@ -1026,6 +1040,11 @@ class Core(Base):
             temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
         elif sp.all([t == dtypenames[0] for t in dtypenames]) :  # If all entries are same type
             temp = sp.array(temp,dtype=dtypes[0])
+        elif 'nan' in dtypenames:
+            #just return the elements where we have the value - this will probably break many things!!!
+            temp = temp[~sp.isnan(temp)]
+            temp = sp.array(temp,dtype=max(dtypes))
+            self._logger.info('Property '+prop+' is not present on all sub-objects...trimming results')
         else:
             temp = sp.array(temp,dtype=max(dtypes))
             self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
@@ -1230,13 +1249,28 @@ class Core(Base):
         try:
             locs = A[element+'.map'][locations]
         except:
-            raise Exception('Some supplied locations do not exist on source object')
+            " Try one by one "
+            locs=[]
+            try:
+                locations = locations.tolist()
+            except:
+                "Already a list"
+            for loc in locations.copy():
+                try:
+                    locs.append(A[element+'.map'][loc])
+                except:
+                    "Remove the location not in the source"
+                    locations.remove(loc)
+            #raise Exception('Some supplied locations do not exist on source object')
 
         #Map netPs_A onto netPs_B
-        net_C = net_B[locs]
-        if sum(sp.isnan(net_C)) > 0:
-            raise Exception('Some supplied locations do not exist on target object')
-        return sp.int_(net_C)
+        net_source = net_A[locations]
+        net_target = net_B[locs]
+        if sum(sp.isnan(net_target)) > 0:
+            net_source = net_source[~sp.isnan(net_target)]
+            net_target = net_target[~sp.isnan(net_target)] 
+            #raise Exception('Some supplied locations do not exist on target object')
+        return sp.vstack((sp.int_(net_source),sp.int_(net_target))).T
 
     def map_pores(self,pores,target):
         r'''

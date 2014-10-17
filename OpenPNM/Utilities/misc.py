@@ -268,7 +268,32 @@ def clone_object(obj):
     new_obj._models= obj._models
     return new_obj
 
-
+def conduit_lengths(network,throats=None,mode='pore'):
+    r"""
+    Return the respective lengths of the conduit components defined by the throat conns P1 T P2
+    mode = 'pore' - uses pore coordinates 
+    mode = 'centroid' uses pore and throat centroids
+    """
+    if throats == None:
+        throats = network.throats()
+    Ps = network['throat.conns']
+    pdia = network['pore.diameter']
+    if mode == 'pore':
+        #Find half-lengths of each pore
+        pcoords = network['pore.coords']
+        #   Find the pore-to-pore distance, minus the throat length
+        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network['throat.length']
+        #   Calculate the fraction of that distance from the first pore    
+        fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
+        plen1 = lengths*fractions
+        plen2 = lengths*(1-fractions)
+    elif mode ==  'centroid':
+        pcentroids = network['pore.centroid']
+        tcentroids = network['throat.centroid']
+        plen1 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,0]]-tcentroids),1))-network['throat.length']/2
+        plen2 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,1]]-tcentroids),1))-network['throat.length']/2
+    
+    return _sp.vstack((plen1,network['throat.length'],plen2)).T[throats]
 
 
 

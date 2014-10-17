@@ -63,8 +63,8 @@ class Voronoi(GenericGeometry):
                        model=gm.pore_volume.voronoi)
         self.add_model(propname='pore.diameter',
                        model=gm.pore_diameter.voronoi)
-        self.add_model(propname='pore.centroid',
-                       model=gm.pore_centroid.voronoi)
+        #self.add_model(propname='pore.centroid',
+        #               model=gm.pore_centroid.voronoi)
         self.add_model(propname='pore.area',
                        model=gm.pore_area.spherical)
         self.add_model(propname='throat.area',
@@ -72,16 +72,27 @@ class Voronoi(GenericGeometry):
         #self._net.trim_occluded_throats()
         self.add_model(propname='throat.perimeter',
                        model=gm.throat_perimeter.voronoi)
+        self.add_model(propname='throat.shape_factor',
+                       model=gm.throat_shape_factor.compactness)
+        #self.add_model(propname='throat.centroid',
+        #               model=gm.throat_centroid.voronoi)
         self.add_model(propname='throat.centroid',
-                       model=gm.throat_centroid.voronoi)
-        self.add_model(propname='pore.centroid2',
-                       model=gm.pore_centroid.voronoi2)
-        self.add_model(propname='pore.diameter2',
+                       model=gm.throat_centroid.centre_of_mass)
+        self.add_model(propname='pore.centroid',
+                       model=gm.pore_centroid.centre_of_mass)
+        self.add_model(propname='pore.diameter',
+                       model=gm.pore_diameter.voronoi)
+        self.add_model(propname='pore.indiameter',
                        model=gm.pore_diameter.insphere)
         self.add_model(propname='throat.diameter',
-                       model=gm.throat_diameter.voronoi)                  
+                       model=gm.throat_diameter.voronoi)
+        self.add_model(propname='throat.indiameter',
+                       model=gm.throat_diameter.incircle) 
+        self.add_model(propname='throat.c2c',
+                       model=gm.throat_length.voronoi)
         self.add_model(propname='throat.length',
-                       model=gm.throat_length.c2c)
+                       model=gm.throat_length.constant,
+                       const=fibre_rad*2)
         self.add_model(propname='throat.volume',
                        model=gm.throat_volume.extrusion)
         self.add_model(propname='throat.surface_area',
@@ -107,6 +118,7 @@ class Voronoi(GenericGeometry):
             verts = self['throat.vertices'][throats]
             offsets = self['throat.offset_vertices'][throats]
             normals = self['throat.normal'][throats]
+            coms = self['throat.centroid'][throats]
             for i in range(len(verts)):
                 fig = plt.figure()
                 vert_2D = tr.rotate_and_chop(verts[i],normals[i],[0,0,1])
@@ -114,12 +126,13 @@ class Voronoi(GenericGeometry):
                 for simplex in hull.simplices:
                     plt.plot(vert_2D[simplex,0], vert_2D[simplex,1], 'k-',linewidth=2)
                 plt.scatter(vert_2D[:,0], vert_2D[:,1])
-                
+                #centroid = vo.PolyWeightedCentroid2D(vert_2D[hull.vertices])
                 offset_2D = tr.rotate_and_chop(offsets[i],normals[i],[0,0,1])
                 offset_hull = ConvexHull(offset_2D)
                 for simplex in offset_hull.simplices:
                     plt.plot(offset_2D[simplex,0], offset_2D[simplex,1], 'g-',linewidth=2)
                 plt.scatter(offset_2D[:,0], offset_2D[:,1])
+                #centroid2 = vo.PolyWeightedCentroid2D(offset_2D[offset_hull.vertices])
                 " Make sure the plot looks nice by finding the greatest range of points and setting the plot to look square"
                 xmax = vert_2D[:,0].max()
                 xmin = vert_2D[:,0].min()
@@ -137,6 +150,9 @@ class Voronoi(GenericGeometry):
                 upper_bound_y = ymin + my_range*1.5  
                 plt.axis((lower_bound_x,upper_bound_x,lower_bound_y,upper_bound_y))
                 plt.grid(b=True, which='major', color='b', linestyle='-')
+                centroid = tr.rotate_and_chop(coms[i],normals[i],[0,0,1])
+                plt.scatter(centroid[0][0],centroid[0][1])
+                #plt.scatter(centroid2[0],centroid2[1],c='r')
                 fig.show()
         else:
             print("Please provide throat indices")
@@ -157,10 +173,10 @@ class Voronoi(GenericGeometry):
         if len(pores) > 0:
             net_pores = self["pore.map"][pores]
             centroids = self["pore.centroid"][pores]
-            centroids2 = self["pore.centroid2"][pores]
+            #centroids2 = self["pore.com"][pores]
             #for i,pore in enumerate(pores):
             #    centroids[i]=self["pore.centroid"][pore]
-            coords = self._net["pore.coords"][net_pores]
+            #coords = self._net["pore.coords"][net_pores]
             net_throats = self._net.find_neighbor_throats(pores=net_pores)
             throats = []
             for net_throat in net_throats:
@@ -186,20 +202,20 @@ class Voronoi(GenericGeometry):
                     [xmin,xmax,ymin,ymax,zmin,zmax]=axis_bounds                
                 fig = plt.figure()
                 ax = fig.gca(projection='3d')
-                outer_items = Poly3DCollection(ordered_verts,linewidths=1, alpha=0.2)
-                outer_face_colours=[(0.5, 0, 0.5, 0.05)]
+                outer_items = Poly3DCollection(ordered_verts,linewidths=1, alpha=0.2, zsort='min')
+                outer_face_colours=[(1, 0, 0, 0.01)]
                 outer_items.set_facecolor(outer_face_colours)
                 ax.add_collection(outer_items)
-                inner_items = Poly3DCollection(offsets,linewidths=1, alpha=0.2)
-                inner_face_colours=[(0.7, 0, 0.3, 0.0)]
+                inner_items = Poly3DCollection(offsets,linewidths=1, alpha=0.2, zsort='min')
+                inner_face_colours=[(0, 0, 1, 0.01)]
                 inner_items.set_facecolor(inner_face_colours)
                 ax.add_collection(inner_items)
                 ax.set_xlim(xmin,xmax)
                 ax.set_ylim(ymin,ymax)
                 ax.set_zlim(zmin,zmax)
-                ax.scatter(coords[:,0],coords[:,1],coords[:,2])
-                ax.scatter(centroids[:,0],centroids[:,1],centroids[:,2],c='r')
-                ax.scatter(centroids2[:,0],centroids2[:,1],centroids2[:,2],c='g')
+                #ax.scatter(coords[:,0],coords[:,1],coords[:,2])
+                ax.scatter(centroids[:,0],centroids[:,1],centroids[:,2],c='y')
+                #ax.scatter(centroids2[:,0],centroids2[:,1],centroids2[:,2],c='g')
                 plt.show()
             else:
                 self.print_throat(throats)

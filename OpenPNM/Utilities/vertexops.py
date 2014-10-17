@@ -27,6 +27,7 @@ def get_throat_geom(verts,normal,fibre_rad):
     z_axis = [0,0,1]
     throat_area = 0.0
     throat_perimeter = 0.0
+    throat_COM = np.zeros([1,3])
     output_offset = []
     Error = 0
     " For boundaries some facets will already be aligned with the axis - if this is the case a rotation is unnecessary and could also cause problems "
@@ -156,6 +157,8 @@ def get_throat_geom(verts,normal,fibre_rad):
         else:
             throat_area = PolyArea2D(offset_verts_2D)
             throat_perimeter = PolyPerimeter2D(offset_verts_2D)
+            throat_COM_2D = PolyWeightedCentroid2D(offset_verts_2D)
+            throat_COM = np.hstack((throat_COM_2D,z[0]))
         " Make 3D again in rotated plane "
         offset_verts_3D = np.column_stack((offset_verts_2D,z[0:len(offset_verts_2D)]))
         " Get matrix to un-rotate the co-ordinates back to the original orientation if we rotated in the first place"
@@ -163,10 +166,11 @@ def get_throat_geom(verts,normal,fibre_rad):
             M1 = tr.inverse_matrix(M)
             " Unrotate the offset coordinates "
             output_offset = np.dot(offset_verts_3D,M1[:3,:3].T)
+            throat_COM = np.dot(throat_COM,M1[:3,:3].T)
         else:
             output_offset = offset_verts_3D
 
-    return throat_area, throat_perimeter, output_offset, Error
+    return throat_area, throat_perimeter, output_offset, throat_COM, Error
 
 def outer_offset(verts,fibre_rad):
     r"""
@@ -297,6 +301,30 @@ def PolyPerimeter2D(pts):
     lines = np.hstack([pts,np.roll(pts,-1,axis=0)])
     perimeter = sum(np.sqrt((x2-x1)**2+(y2-y1)**2) for x1,y1,x2,y2 in lines)
     return perimeter
+
+def PolyWeightedCentroid2D(pts):
+    r"""
+    returns the perimeter of a 2D polygon given the set of points defining the convex hull in correct order
+    """
+    lines = np.hstack([pts,np.roll(pts,-1,axis=0)])
+    twice_area = 0.0
+    cx = 0.0
+    cy = 0.0
+    #perimeter_weighting = np.zeros(len(pts))
+    #average_point = np.zeros([len(pts),2])
+    for x1,y1,x2,y2 in lines:
+        f = x1*y2 - x2*y1
+        cx += (x1+x2)*f
+        cy += (y1+y2)*f
+        twice_area += f
+    A = 0.5*(twice_area)
+    #A2 = PolyArea2D(pts)
+    Cx = cx/(6*A)
+    Cy = cy/(6*A)
+    #cx = sum(average_point[:,0]*perimeter_weighting)/sum(perimeter_weighting)
+    #cy = sum(average_point[:,1]*perimeter_weighting)/sum(perimeter_weighting)
+    
+    return [Cx,Cy]
     
 def symmetric_difference(list_a,list_b):
     r"""
@@ -626,3 +654,49 @@ def pore2centroid(network):
         if "pore.centroid" in geometry.props():
             for geom_pore,net_pore in enumerate(geometry["pore.map"]):
                 network["pore.coords"][net_pore]=geometry["pore.centroid"][geom_pore]
+
+def tortuosity(network=None,geometry=None,pores=None):
+    r"""
+    Calculate the tortuosity from the angle between throat vectors and principle axes
+    """
+    "Find throats where both pores are in geometry"
+    net_throats = []
+    if geometry == None:
+        geom_name = network.geometries()[0]
+        geometry = network.geometries(geom_name)[0]
+    if pores == None:
+        pores=geometry.pores()
+    for i in range(network.num_throats()):
+        if ((network["throat.conns"][i][0] in geometry["pore.map"]) and 
+            (network["throat.conns"][i][1] in geometry["pore.map"]) and 
+            (network["throat.conns"][i][0] in pores) and 
+            (network["throat.conns"][i][1] in pores) ):
+            net_throats.append(i)
+    "Get two list of connected pores"
+    net_pores_a=network["throat.conns"][net_throats][:,0]
+    net_pores_b=network["throat.conns"][net_throats][:,1]
+    "Map the indices from the network to the geometry"
+    geom_throats = network.map_throats(net_throats,geometry)[:,1]
+    geom_pores_a = network.map_pores(net_pores_a,geometry)[:,1]
+    geom_pores_b = network.map_pores(net_pores_b,geometry)[:,1]
+    "Work out the vectors from pore to throat centroids"
+    va = geometry["throat.centroid"][geom_throats] - geometry["pore.centroid"][geom_pores_a]
+    vb = geometry["throat.centroid"][geom_throats] - geometry["pore.centroid"][geom_pores_b]
+    x = [1,0,0]
+    y = [0,1,0]
+    z = [0,0,1]
+    f = 180/np.pi
+    theta_x_a = tr.angle_between_vectors(va,x,directed=False,axis=1)
+    theta_x_b = tr.angle_between_vectors(vb,x,directed=False,axis=1)
+    theta_x = (np.mean(theta_x_a[~np.isnan(theta_x_a)])+np.mean(theta_x_b[~np.isnan(theta_x_b)]))/2
+    theta_y_a = tr.angle_between_vectors(va,y,directed=False,axis=1)
+    theta_y_b = tr.angle_between_vectors(vb,y,directed=False,axis=1)
+    theta_y = (np.mean(theta_y_a[~np.isnan(theta_y_a)])+np.mean(theta_y_b[~np.isnan(theta_y_b)]))/2
+    theta_z_a = tr.angle_between_vectors(va,z,directed=False,axis=1)
+    theta_z_b = tr.angle_between_vectors(vb,z,directed=False,axis=1)
+    theta_z = (np.mean(theta_z_a[~np.isnan(theta_z_a)])+np.mean(theta_z_b[~np.isnan(theta_z_b)]))/2
+    tot_angle = (theta_x+theta_y+theta_z)*f
+    if tot_angle>180:
+        print("something is wrong: " +str(tot_angle))
+    
+    return 1/np.cos(np.array([theta_x,theta_y,theta_z]))

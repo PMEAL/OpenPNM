@@ -1821,8 +1821,9 @@ def angle_between_vectors(v0, v1, directed=True, axis=0):
     try:
         dot /= vector_norm(v0, axis=axis) * vector_norm(v1, axis=axis)
     except RuntimeWarning:
+        "Do nothing"
         #print(v0,v1)
-        dot =0
+        #dot =0
     try:
         angle= numpy.arccos(dot if directed else numpy.fabs(dot))
 
@@ -1901,9 +1902,14 @@ def rotate_and_chop(verts,normal,axis=[0,0,1]):
         except ValueError:
             print(verts)
             print(M[:3,:3].T)
-    x = facet[:,0]
-    y = facet[:,1]
-    z = facet[:,2]
+    try:
+        x = facet[:,0]
+        y = facet[:,1]
+        z = facet[:,2]
+    except IndexError:
+        x = facet[0]
+        y = facet[1]
+        z = facet[2]
     " Work out span of points and set axes scales to cover this and be equal in both dimensions "
     if axis == xaxis:
         output = numpy.column_stack((y,z))
