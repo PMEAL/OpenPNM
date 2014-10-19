@@ -46,8 +46,6 @@ class GenericGeometry(Core):
         #Initialize locations
         self['pore.all'] = sp.array([],ndmin=1,dtype=bool)
         self['throat.all'] = sp.array([],ndmin=1,dtype=bool)
-        self['pore.map'] = sp.array([],ndmin=1,dtype=bool)
-        self['throat.map'] = sp.array([],ndmin=1,dtype=bool)
 
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()
@@ -91,7 +89,6 @@ class GenericGeometry(Core):
                 raise Exception('The given pores overlap with an existing Geometry object')
             #Initialize locations
             self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
-            self['pore.map'] = pores
             #Specify Geometry locations in Network dictionary
             self._net['pore.'+self.name][pores] = True
         if len(throats)>0:
@@ -104,7 +101,6 @@ class GenericGeometry(Core):
                 raise Exception('The given throats overlap with an existing Geometry object')
             #Initialize locations
             self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-            self['throat.map'] = throats
             #Specify Geometry locations in Network dictionary
             self._net['throat.'+self.name][throats] = True
 

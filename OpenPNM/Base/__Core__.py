@@ -54,7 +54,7 @@ class Core(Base):
             super(Base, self).__setitem__(key,value)
             return
         #Skip checks for protected props, and prevent changes if defined
-        if key.split('.')[1] in ['all','map']:
+        if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
                     self._logger.debug(key+' is being defined.')
@@ -1202,48 +1202,44 @@ class Core(Base):
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
         return temp
+
+    def _get_parent_indices(self,element,locations):
+        r'''
+        '''
+        mro = [item.__name__ for item in self.__class__.__mro__]
+        if 'GenericNetwork' in mro:
+            return sp.array(locations)
+        elif 'GenericPhase' in mro:
+            return sp.array(locations)
+        elif 'GenericPhysics' in mro:
+            parent = self._phases[0]
+        elif 'GenericGeometry' in mro:
+            parent = self._net
+        mapped = sp.where(parent[element+'.'+self.name])[0]
+        return mapped[locations]
+
     def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
-        if self._net == []:
-            net = self
-        else:
-            net = self._net
-
-        A = self
-        B = target
         locations = sp.array(locations)
+        if sp.shape(locations)[0] == 0:
+            return sp.array([],ndmin=0)
+        elif sp.amax(locations) >= self._count(element):
+            raise Exception('Some supplied locations do not exist on source object')
 
-        #Map A to Network numbering
-        net_A = sp.ones((net._count(element),))*sp.nan
-        net_A[A[element+'.map']] = A._get_indices(element)
+        # Convert locations to Network indices
+        source_locs = self._get_parent_indices(element=element,locations=locations)
+        # Obtain a list of all locations in target in Network indices
+        target_locs = target._get_parent_indices(element=element,locations=target._get_indices(element))
+        # Find locations in target that are in locs
+        mapped = sp.where(sp.in1d(target_locs,source_locs))[0]
 
-        #Map B to Network numbering
-        net_B = sp.ones((net._count(element),))*sp.nan
-        net_B[B[element+'.map']] = B._get_indices(element)
+        if len(mapped) < len(source_locs):
+            raise Exception('Some supplied locations do not exist on target object')
 
-        #Convert locations to Network numbering
-        if (sp.amax(locations)>A._count(element)) or return_mapping:
-            if return_mapping:
-                locations = locations[locations<A._count(element)]
-            else:
-                raise Exception('Some supplied locations do not exist on source object')
-        locs = A[element+'.map'][locations]
+        return mapped
 
-        #Map netPs_A onto netPs_B
-        if (sum(sp.isnan(net_B[locs])) > 0) or return_mapping:
-            if return_mapping:
-                ind = sp.where(sp.isnan(net_B[locs])==False)[0]
-                net_C = {}
-                net_C['source'] = locations[ind]
-                net_C['target'] = sp.int_(net_B[locs[ind]])
-            else:
-                raise Exception('Some supplied locations do not exist on target object')
-        else:
-            net_C = sp.int_(net_B[locs])
-        return net_C
-
-    def map_pores(self,pores,target,return_mapping=False):
+    def map_pores(self,target,pores=None,return_mapping=False):
         r'''
         Accepts a list of pores from the caller object and maps them onto the
         given target object
@@ -1270,10 +1266,12 @@ class Core(Base):
         --------
         n/a
         '''
+        if pores is None:
+            pores = self.Ps
         Ps = self._map(element='pore',locations=pores,target=target,return_mapping=return_mapping)
         return Ps
 
-    def map_throats(self,throats,target,return_mapping=False):
+    def map_throats(self,target,throats=[],return_mapping=False):
         r'''
         Accepts a list of throats from the caller object and maps them onto the
         given target object
@@ -1295,6 +1293,8 @@ class Core(Base):
         --------
         n/a
         '''
+        if throats is None:
+            throats = self.Ts
         Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
 

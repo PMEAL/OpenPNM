@@ -217,35 +217,32 @@ def test_mapping():
     geom2['pore.num2'] = Pb
     geom3['pore.num2'] = Pc
     # Confirm two indexes match
-    sp.all(pn['pore.num1'] == pn['pore.num2'])
+    assert(sp.all(pn['pore.num1'] == pn['pore.num2']))
     # Trim column from center of Network
     pn.trim(pores=[4,13,22])
     # Confirm index still match
-    sp.all(pn['pore.num1'] == pn['pore.num2'])
-    # Check that mapping works
-    a = pn.pop('pore.map',None)
-    sp.all(pn['pore.map'] == pn.Ps)
+    assert(sp.all(pn['pore.num1'] == pn['pore.num2']))
     # Check mapping between each Geometry object and in both directions
     # Check geom1
-    a = geom1.map_pores(geom1.Ps,pn)
-    b = pn.map_pores(a,geom1)
+    a = geom1.map_pores(pores=geom1.Ps,target=pn)
+    b = pn.map_pores(pores=a,target=geom1)
     assert(sp.all(b == geom1.Ps))
-    a = geom1.map_throats(geom1.Ts,pn)
-    b = pn.map_throats(a,geom1)
+    a = geom1.map_throats(throats=geom1.Ts,target=pn)
+    b = pn.map_throats(throats=a,target=geom1)
     assert(sp.all(b == geom1.Ts))
     # Check geom2
-    a = geom2.map_pores(geom2.Ps,pn)
-    b = pn.map_pores(a,geom2)
+    a = geom2.map_pores(pores=geom2.Ps,target=pn)
+    b = pn.map_pores(pores=a,target=geom2)
     assert(sp.all(b == geom2.Ps))
-    a = geom2.map_throats(geom2.Ts,pn)
-    b = pn.map_throats(a,geom2)
+    a = geom2.map_throats(throats=geom2.Ts,target=pn)
+    b = pn.map_throats(throats=a,target=geom2)
     assert(sp.all(b == geom2.Ts))
     # Check geom3
-    a = geom3.map_pores(geom3.Ps,pn)
-    b = pn.map_pores(a,geom3)
+    a = geom3.map_pores(pores=geom3.Ps,target=pn)
+    b = pn.map_pores(pores=a,target=geom3)
     assert(sp.all(b == geom3.Ps))
-    a = geom3.map_throats(geom3.Ts,pn)
-    b = pn.map_throats(a,geom3)
+    a = geom3.map_throats(throats=geom3.Ts,target=pn)
+    b = pn.map_throats(throats=a,target=geom3)
     assert(sp.all(b == geom3.Ts))
 
 if __name__ == '__main__':

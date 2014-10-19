@@ -304,23 +304,31 @@ def clone_simulation(network,name=None):
     # Clone associated Geometry
     for item in network._geometries:
         cls = item.__class__.__mro__[0]
-        geom = cls(network=new_net,name=item.name)
+        Ps = item.map_pores(pores=item.Ps,target=network)
+        Ts = item.map_throats(throats=item.Ts,target=network)
+        geom = cls(network=new_net,name=item.name,pores=Ps,throats=Ts)
         geom.update(item)
+        geom._models = item._models
     # Clone associated Phases
     for item in network._phases:
         cls = item.__class__.__mro__[0]
         phase = cls(network=new_net,name=item.name)
         phase.update(item)
+        phase._models = item._models
     # Repeat Phases to find component phases
     for item in network._phases:
         new_item = new_net.phases(item.name)[0]
         new_item._phases = item._phases
+        phase._models = item._models
     # Clone associated Physics
     for item in network._physics:
         cls = item.__class__.__mro__[0]
         phase = item._phases[0]
-        phys = cls(network=new_net,phase=phase,name=item.name)
+        Ps = item.map_pores(pores=item.Ps,target=network)
+        Ts = item.map_throats(throats=item.Ts,target=network)
+        phys = cls(network=new_net,phase=phase,name=item.name,pores=Ps,throats=Ts)
         phys.update(item)
+        phys._models = item._models
     return new_net
 
 def subset(network,pores,name=None):
@@ -351,16 +359,26 @@ def subset(network,pores,name=None):
     na
     '''
     import OpenPNM.Utilities.misc as misc
+    if name == network.name:
+        raise Exception('Subset cannot have same name as parent network')
+    # Clone network
     new_net = misc.clone_simulation(network=network,name=name)
-    new_net.update({'pore.temp_map' : network.Ps})
-    new_net.update({'throat.temp_map' : network.Ts})
+    # Add temporary indices to new_net
+    new_net['pore.temp_ind'] = network.Ps
+    new_net['throat.temp_ind'] = network.Ts
+    # Trim cloned network to specific subset
     Ps = ~network.tomask(pores)
     new_net.trim(Ps)
-    new_net.update({'pore.map' : new_net['pore.temp_map']})
-    new_net.pop('pore.temp_map')
-    new_net.update({'throat.map' : new_net['throat.temp_map']})
-    new_net.pop('throat.temp_map')
+    # Associate cloned network with parent
     new_net._net = network
+    # Create labels in parent network
+    Ps = new_net['pore.temp_ind']
+    network['pore.'+new_net.name] = False
+    network['pore.'+new_net.name][Ps] = True
+    Ts = new_net['throat.temp_ind']
+    network['throat.'+new_net.name] = False
+    network['throat.'+new_net.name][Ts] = True
+
     return new_net
 
 

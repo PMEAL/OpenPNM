@@ -39,8 +39,6 @@ class GenericPhysics(OpenPNM.Base.Core):
         #Initialize locations
         self['pore.all'] = sp.array([],dtype=bool)
         self['throat.all'] = sp.array([],dtype=bool)
-        self['pore.map'] = sp.array([],dtype=bool)
-        self['throat.map'] = sp.array([],dtype=bool)
 
         #Associate with Network
         if network == None:
@@ -60,6 +58,8 @@ class GenericPhysics(OpenPNM.Base.Core):
         #Initialize a label dictionary in the associated fluid
         self._phases[0]['pore.'+self.name] = False
         self._phases[0]['throat.'+self.name] = False
+        self._net['pore.'+self.name] = False
+        self._net['throat.'+self.name] = False
         self.set_locations(pores=pores,throats=throats)
 
     def set_locations(self,pores=[],throats=[]):
@@ -91,9 +91,9 @@ class GenericPhysics(OpenPNM.Base.Core):
                 raise Exception('The given pores overlap with an existing Physics object')
             #Initialize locations
             self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
-            self['pore.map'] = pores
             #Specify Physics locations in Phase dictionary
             self._phases[0]['pore.'+self.name][pores] = True
+            self._net['pore.'+self.name][pores] = True
         if len(throats) > 0:
             #Check for existing Geometry in pores
             temp = sp.zeros((self._net.Nt,),bool)
@@ -104,9 +104,9 @@ class GenericPhysics(OpenPNM.Base.Core):
                 raise Exception('The given throats overlap with an existing Physics object')
             #Initialize locations
             self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-            self['throat.map'] = throats
             #Specify Physics locations in Phase dictionary
             self._phases[0]['throat.'+self.name][throats] = True
+            self._net['throat.'+self.name][throats] = True
 
 if __name__ == '__main__':
     print('none yet')

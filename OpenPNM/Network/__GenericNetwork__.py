@@ -54,11 +54,7 @@ class GenericNetwork(Core):
         super(GenericNetwork,self).__setitem__(prop,value)
 
     def __getitem__(self,key):
-        if key.split('.')[-1] == 'map':
-            element = key.split('.')[0]
-            self._logger.debug('Generating '+element+'.map from indices')
-            return self._get_indices(element=element)
-        elif key not in self.keys():
+        if key not in self.keys():
             self._logger.debug(key+' not on Network, constructing data from Geometries')
             return self._interleave_data(key,self.geometries())
         else:
@@ -741,23 +737,34 @@ class GenericNetwork(Core):
             self._logger.warning('No pores or throats recieved')
             return
 
-        #Make new map indexes
-        Pnew = sp.arange(0,sum(Pkeep),dtype=int)
-        Pmap = sp.ones((self.Np,),dtype=int)*-1
-        Pmap[Pkeep] = Pnew
-        Tmap = sp.ones((self.Nt,),dtype=int)*-1
-        Tnew = sp.arange(0,sum(Tkeep),dtype=int)
-        Tmap[Tkeep] = Tnew
+        # Trim all associated objects
+        for item in self._geometries+self._physics+self._phases:
+            Pnet = self['pore.'+item.name]*Pkeep
+            Tnet = self['throat.'+item.name]*Tkeep
+            Ps = self._map('pore',sp.where(Pnet)[0],item)
+            Ts = self._map('throat',sp.where(Tnet)[0],item)
+            # Then resize 'all
+            item.update({'pore.all' : sp.ones((sp.sum(Pnet),),dtype=bool)})
+            item.update({'throat.all' : sp.ones((sp.sum(Tnet),),dtype=bool)})
+            # Overwrite remaining data and info
+            for key in item.keys():
+                if key.split('.')[1] not in ['all']:
+                    temp = item.pop(key)
+                    if key.split('.')[0] == 'throat':
+                        item[key] = temp[Ts]
+                    if key.split('.')[0] == 'pore':
+                        item[key] = temp[Ps]
 
         #Remap throat connections
+        Pmap = sp.ones((self.Np,),dtype=int)*-1
+        Pmap[Pkeep] = sp.arange(0,sp.sum(Pkeep))
         tpore1 = self['throat.conns'][:,0]
         tpore2 = self['throat.conns'][:,1]
         Tnew1 = Pmap[tpore1[Tkeep]]
         Tnew2 = Pmap[tpore2[Tkeep]]
-
         #Write 'all' label specifically
-        self.update({'throat.all' : sp.ones_like(Tnew1,dtype=bool)})
-        self.update({'pore.all' : sp.ones_like(Pnew,dtype=bool)})
+        self.update({'throat.all' : sp.ones((sp.sum(Tkeep),),dtype=bool)})
+        self.update({'pore.all' : sp.ones((sp.sum(Pkeep),),dtype=bool)})
         # Write throat connections specifically
         self.update({'throat.conns' : sp.vstack((Tnew1,Tnew2)).T})
         # Overwrite remaining data and info
@@ -768,24 +775,6 @@ class GenericNetwork(Core):
                     self[item] = temp[Tkeep]
                 if item.split('.')[0] == 'pore':
                     self[item] = temp[Pkeep]
-        # Trim all associated objects
-        for item in self._geometries+self._phases+self._physics:
-            # First resize 'map'
-            Pitem = sp.in1d(item['pore.map'],sp.where(Pkeep)[0])
-            Titem = sp.in1d(item['throat.map'],sp.where(Tkeep)[0])
-            item.update({'pore.map' : Pmap[item['pore.map'][Pitem]]})
-            item.update({'throat.map' : Tmap[item['throat.map'][Titem]]})
-            # Then resize 'all'
-            item.update({'pore.all' : Pitem[Pitem]})
-            item.update({'throat.all' : Titem[Titem]})
-            # Overwrite remaining data and info
-            for key in item.keys():
-                if key.split('.')[1] not in ['all','map']:
-                    temp = item.pop(key)
-                    if key.split('.')[0] == 'throat':
-                        item[key] = temp[Titem]
-                    if key.split('.')[0] == 'pore':
-                        item[key] = temp[Pitem]
 
         #Reset network graphs
         self._update_network(mode='regenerate')

@@ -47,12 +47,14 @@ class GenericPhase(Core):
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = self._net['pore.all']
         self['throat.all'] = self._net['throat.all']
-        self['pore.map'] = self._net.Ps
-        self['throat.map'] = self._net.Ts
 
         #Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
+
+        # Register Ohase object in Network dictionary
+        self._net['pore.'+self.name] = True
+        self._net['throat.'+self.name] = True
 
         if components != []:
             for comp in components:
@@ -72,11 +74,7 @@ class GenericPhase(Core):
         super(GenericPhase,self).__setitem__(prop,value)
 
     def __getitem__(self,key):
-        if key.split('.')[-1] == 'map':
-            element = key.split('.')[0]
-            self._logger.debug('Generating '+element+'.map from indices')
-            return self._get_indices(element=element)
-        elif key not in self.keys():
+        if key not in self.keys():
             self._logger.debug(key+' not on Phase, constructing data from Physics')
             return self._interleave_data(key,sources=self._physics)
         else:
