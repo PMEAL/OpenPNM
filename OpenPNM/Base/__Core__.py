@@ -1203,9 +1203,11 @@ class Core(Base):
             temp['throat'] = self.num_throats()
         return temp
 
-    def _get_parent_indices(self,element,locations):
+    def _get_parent_indices(self,element,locations=None):
         r'''
         '''
+        if locations is None:
+            locations = self._get_indices(element=element)
         mro = [item.__name__ for item in self.__class__.__mro__]
         if 'GenericNetwork' in mro:
             return sp.array(locations)
@@ -1221,21 +1223,42 @@ class Core(Base):
     def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
+        mro = [item.__name__ for item in self.__class__.__mro__]
+        if 'GenericNetwork' in mro:
+            net = self
+        else:
+            net = self._net
         locations = sp.array(locations)
+
+        # If empty locations are sent, then return empty array
         if sp.shape(locations)[0] == 0:
-            return sp.array([],ndmin=0)
-        elif sp.amax(locations) >= self._count(element):
-            raise Exception('Some supplied locations do not exist on source object')
+            mapping = sp.array([],ndmin=0)
+            if return_mapping == True:
+                temp = {}
+                temp['target'] = mapping
+                temp['source'] = mapping
+            return mapping
+
+        # Ensure that the given locations are found on the source object
+        if sp.amax(locations) >= self._count(element):
+            if return_mapping == True:
+                valid_sources = locations<self._count(element)
+                locations = locations[valid_sources]
+            else:
+                raise Exception('Some supplied locations do not exist on source object')
 
         # Convert locations to Network indices
         source_locs = self._get_parent_indices(element=element,locations=locations)
         # Obtain a list of all locations in target in Network indices
-        target_locs = target._get_parent_indices(element=element,locations=target._get_indices(element))
+        target_locs = target._get_parent_indices(element=element)
         # Find locations in target that are in locs
         mapped = sp.where(sp.in1d(target_locs,source_locs))[0]
 
         if len(mapped) < len(source_locs):
-            raise Exception('Some supplied locations do not exist on target object')
+            if return_mapping == True:
+                mapped = 0
+            else:
+                raise Exception('Some supplied locations do not exist on target object')
 
         return mapped
 
