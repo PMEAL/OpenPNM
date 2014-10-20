@@ -846,7 +846,24 @@ class Core(Base):
         '''
         return self.throats()
 
-    def tomask(self,pores=None,throats=None):
+    def _tomask(self,locations,element):
+        r'''
+        This is a generalized version of tomask that accepts a string of
+        'pore' or 'throat' for programmatic access.
+        '''
+        if element in ['pore','pores']:
+            Np = sp.shape(self['pore.all'])[0]
+            pores = sp.array(locations,ndmin=1)
+            mask = sp.zeros((Np,),dtype=bool)
+            mask[pores] = True
+        if element in ['throat','throats']:
+            Nt = sp.shape(self['throat.all'])[0]
+            throats = sp.array(locations,ndmin=1)
+            mask = sp.zeros((Nt,),dtype=bool)
+            mask[throats] = True
+        return mask
+
+    def tomask(self,pores=None,throats=None,locations=None,element=None):
         r'''
         Convert a list of pore or throat indices into a boolean mask of the
         correct length
@@ -864,15 +881,9 @@ class Core(Base):
 
         '''
         if pores != None:
-            Np = sp.shape(self['pore.all'])[0]
-            pores = sp.array(pores,ndmin=1)
-            mask = sp.zeros((Np,),dtype=bool)
-            mask[pores] = True
+            mask = self._tomask(element='pore',locations=pores)
         if throats != None:
-            Nt = sp.shape(self['throat.all'])[0]
-            throats = sp.array(throats,ndmin=1)
-            mask = sp.zeros((Nt,),dtype=bool)
-            mask[throats] = True
+            mask = self._tomask(element='throat',locations=throats)
         return mask
 
     def toindices(self,mask):
@@ -1228,27 +1239,12 @@ class Core(Base):
             net = self
         else:
             net = self._net
-        locations = sp.array(locations)
 
-        # If empty locations are sent, then return empty array
-        if sp.shape(locations)[0] == 0:
-            mapping = sp.array([],ndmin=0)
-            if return_mapping == True:
-                temp = {}
-                temp['target'] = mapping
-                temp['source'] = mapping
-            return mapping
-
-        # Ensure that the given locations are found on the source object
-        if sp.amax(locations) >= self._count(element):
-            if return_mapping == True:
-                valid_sources = locations<self._count(element)
-                locations = locations[valid_sources]
-            else:
-                raise Exception('Some supplied locations do not exist on source object')
+        locations = sp.array(locations)  # Convert input locations
 
         # Convert locations to Network indices
-        source_locs = self._get_parent_indices(element=element,locations=locations)
+        temp = self._get_parent_indices(element=element)
+        source_mask = net.tomask(temp)
         # Obtain a list of all locations in target in Network indices
         target_locs = target._get_parent_indices(element=element)
         # Find locations in target that are in locs
