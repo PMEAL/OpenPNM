@@ -863,7 +863,7 @@ class Core(Base):
             mask[throats] = True
         return mask
 
-    def tomask(self,pores=None,throats=None,locations=None,element=None):
+    def tomask(self,pores=None,throats=None):
         r'''
         Convert a list of pore or throat indices into a boolean mask of the
         correct length
@@ -1214,49 +1214,42 @@ class Core(Base):
             temp['throat'] = self.num_throats()
         return temp
 
-    def _get_parent_indices(self,element,locations=None):
-        r'''
-        '''
-        if locations is None:
-            locations = self._get_indices(element=element)
-        mro = [item.__name__ for item in self.__class__.__mro__]
-        if 'GenericNetwork' in mro:
-            return sp.array(locations)
-        elif 'GenericPhase' in mro:
-            return sp.array(locations)
-        elif 'GenericPhysics' in mro:
-            parent = self._phases[0]
-        elif 'GenericGeometry' in mro:
-            parent = self._net
-        mapped = sp.where(parent[element+'.'+self.name])[0]
-        return mapped[locations]
-
     def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
         mro = [item.__name__ for item in self.__class__.__mro__]
-        if 'GenericNetwork' in mro:
-            net = self
+        if 'GenericNetwork' in mro: net = self
+        else: net = self._net
+        locations = sp.array(locations,ndmin=1)
+        mapping = {}
+
+        # Retrieve Network size masks
+        maskS = net[element+'.'+self.name]
+        maskT = net[element+'.'+target.name]
+
+        # Convert source locations to Network indices
+        temp = sp.zeros_like(net._get_indices(element=element))-1
+        temp[maskS] = self._get_indices(element=element)
+        locsS = sp.where(sp.in1d(temp,locations))[0]
+        mapping['source'] = locations
+
+        # Find locations in target
+        temp = sp.zeros_like(net._get_indices(element=element))-1
+        temp[maskT] = target._get_indices(element=element)
+        locsT = temp[locsS]
+        mapping['target'] = locsT
+
+        if return_mapping == False:
+            if sp.any(locsS < 0):
+                raise Exception('Some locations were not found on the source object')
+            if sp.any(locsT < 0):
+                raise Exception('Some locations were not found on the target object')
+            return mapping['target']
         else:
-            net = self._net
-
-        locations = sp.array(locations)  # Convert input locations
-
-        # Convert locations to Network indices
-        temp = self._get_parent_indices(element=element)
-        source_mask = net.tomask(temp)
-        # Obtain a list of all locations in target in Network indices
-        target_locs = target._get_parent_indices(element=element)
-        # Find locations in target that are in locs
-        mapped = sp.where(sp.in1d(target_locs,source_locs))[0]
-
-        if len(mapped) < len(source_locs):
-            if return_mapping == True:
-                mapped = 0
-            else:
-                raise Exception('Some supplied locations do not exist on target object')
-
-        return mapped
+            keep = (locsS>=0)*(locsT>=0)
+            mapping['source'] = mapping['source'][keep]
+            mapping['target'] = mapping['target'][keep]
+            return mapping
 
     def map_pores(self,target,pores=None,return_mapping=False):
         r'''
