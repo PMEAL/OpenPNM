@@ -1240,9 +1240,9 @@ class Core(Base):
         mapping['target'] = locsT
 
         if return_mapping == False:
-            if sp.any(locsS < 0):
+            if sp.any(locsS < 0) or (sp.shape(locsS)[0] == 0):
                 raise Exception('Some locations were not found on the source object')
-            if sp.any(locsT < 0):
+            if sp.any(locsT < 0) or (sp.shape(locsT)[0] == 0):
                 raise Exception('Some locations were not found on the target object')
             return mapping['target']
         else:

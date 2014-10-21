@@ -744,8 +744,10 @@ class GenericNetwork(Core):
         for item in self._geometries+self._physics+self._phases:
             Pnet = self['pore.'+item.name]*Pkeep
             Tnet = self['throat.'+item.name]*Tkeep
-            Ps = self._map('pore',sp.where(Pnet)[0],item)
-            Ts = self._map('throat',sp.where(Tnet)[0],item)
+            temp = self.map_pores(pores=sp.where(Pnet)[0],target=item,return_mapping=True)
+            Ps = temp['target']
+            temp = self.map_throats(throats=sp.where(Tnet)[0],target=item,return_mapping=True)
+            Ts = temp['target']
             # Then resize 'all
             item.update({'pore.all' : sp.ones((sp.sum(Pnet),),dtype=bool)})
             item.update({'throat.all' : sp.ones((sp.sum(Tnet),),dtype=bool)})
@@ -772,7 +774,7 @@ class GenericNetwork(Core):
         self.update({'throat.conns' : sp.vstack((Tnew1,Tnew2)).T})
         # Overwrite remaining data and info
         for item in self.keys():
-            if item.split('.')[1] not in ['conns','all']:
+            if item.split('.')[-1] not in ['conns','all']:
                 temp = self.pop(item)
                 if item.split('.')[0] == 'throat':
                     self[item] = temp[Tkeep]
@@ -780,12 +782,12 @@ class GenericNetwork(Core):
                     self[item] = temp[Pkeep]
 
         #Reset network graphs
-        self._update_network(mode='regenerate')
+#        self._update_network(mode='regenerate')
 
         #Check Network health
-        health = self.check_network_health()
-        if health['trim_pores'] != []:
-            self._logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
+#        health = self.check_network_health()
+#        if health['trim_pores'] != []:
+#            self._logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
 
     def _stitch(self,network_2,pores_1,pores_2,method='delaunay',len_max=sp.inf):
         r'''
