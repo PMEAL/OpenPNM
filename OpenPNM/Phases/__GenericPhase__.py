@@ -74,6 +74,9 @@ class GenericPhase(Core):
         super(GenericPhase,self).__setitem__(prop,value)
 
     def __getitem__(self,key):
+        if key.split('.')[-1] == self.name:
+            element = key.split('.')[0]
+            return self[element+'.all']
         if key not in self.keys():
             self._logger.debug(key+' not on Phase, constructing data from Physics')
             return self._interleave_data(key,sources=self._physics)

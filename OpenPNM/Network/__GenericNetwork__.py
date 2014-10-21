@@ -31,6 +31,7 @@ class GenericNetwork(Core):
         """
         super(GenericNetwork,self).__init__(**kwargs)
         self._logger.info("Construct Network")
+        self.name = name
 
         #Initialize properties to an empty network
         Np = sp.shape(coords)[0]
@@ -44,7 +45,6 @@ class GenericNetwork(Core):
         self._incidence_matrix = {}
         self._adjacency_matrix = {}
         self._logger.debug("Construction of Network container")
-        self.name = name
 
     def __setitem__(self,prop,value):
         for geom in self._geometries:
@@ -54,6 +54,9 @@ class GenericNetwork(Core):
         super(GenericNetwork,self).__setitem__(prop,value)
 
     def __getitem__(self,key):
+        if key.split('.')[-1] == self.name:
+            element = key.split('.')[0]
+            return self[element+'.all']
         if key not in self.keys():
             self._logger.debug(key+' not on Network, constructing data from Geometries')
             return self._interleave_data(key,self.geometries())

@@ -60,6 +60,13 @@ class GenericGeometry(Core):
         self.set_locations(pores=pores,throats=throats)
         self._seed = seed
 
+    def __getitem__(self,key):
+        if key.split('.')[-1] == self.name:
+            element = key.split('.')[0]
+            return self[element+'.all']
+        else:
+            return super(GenericGeometry,self).__getitem__(key)
+
     def set_locations(self,pores=[],throats=[]):
         r'''
         This method can be used to set the pore and throats locations of an

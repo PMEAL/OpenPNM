@@ -62,6 +62,13 @@ class GenericPhysics(OpenPNM.Base.Core):
         self._net['throat.'+self.name] = False
         self.set_locations(pores=pores,throats=throats)
 
+    def __getitem__(self,key):
+        if key.split('.')[-1] == self.name:
+            element = key.split('.')[0]
+            return self[element+'.all']
+        else:
+            return super(GenericPhysics,self).__getitem__(key)
+
     def set_locations(self,pores=[],throats=[]):
         r'''
         This method can be used to set the pore and throats locations of an
