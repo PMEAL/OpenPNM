@@ -93,9 +93,9 @@ class Cubic(GenericNetwork):
 
     def add_boundaries(self):
         r'''
-        This method uses ``clone`` to clone the surface pores (labeled 'left',
-        'right', etc), then shifts them to the periphery of the domain, and
-        gives them the label 'right_face', 'left_face', etc.
+        This method uses ``clone_pores`` to clone the surface pores (labeled
+        'left','right', etc), then shifts them to the periphery of the domain,
+        and gives them the label 'right_face', 'left_face', etc.
         '''
         x,y,z = self['pore.coords'].T
 
@@ -114,7 +114,7 @@ class Cubic(GenericNetwork):
 
         for label in ['front','back','left','right','bottom','top']:
             ps = self.pores(label)
-            self.clone(pores=ps,apply_label=[label+'_boundary','boundary'])
+            self.clone_pores(pores=ps,apply_label=[label+'_boundary','boundary'])
             #Translate cloned pores
             ind = self.pores(label+'_boundary')
             coords = self['pore.coords'][ind]

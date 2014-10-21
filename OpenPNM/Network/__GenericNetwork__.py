@@ -546,7 +546,7 @@ class GenericNetwork(Core):
     #--------------------------------------------------------------------------
     '''Network Manipulation Methods'''
     #--------------------------------------------------------------------------
-    def clone(self,pores,apply_label=['clone'],mode='parents'):
+    def clone_pores(self,pores,apply_label=['clone'],mode='parents'):
         r'''
         Clones the specified pores and adds them to the network
 
