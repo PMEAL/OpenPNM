@@ -716,26 +716,20 @@ class GenericNetwork(Core):
         >>> pn.Nt
         296
 
-        TODO: This logic works but can be shortened as done in subnet
-
         '''
 
         if pores != []:
             pores = sp.array(pores,ndmin=1)
-            Pdrop = sp.zeros((self.num_pores(),),dtype=bool)
-            Pdrop[pores] = True
-            Pkeep = ~Pdrop
-            Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
+            Pkeep = sp.ones((self.num_pores(),),dtype=bool)
+            Pkeep[pores] = False
+            Tkeep = sp.ones((self.num_throats(),),dtype=bool)
             Ts = self.find_neighbor_throats(pores)
-            Tdrop[Ts] = True
-            Tkeep = ~Tdrop
+            Tkeep[Ts] = False
         elif throats != []:
             throats = sp.array(throats,ndmin=1)
-            Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
-            Tdrop[throats] = 1
-            Tkeep = ~Tdrop
-            Pkeep = self.pores(labels='all')
-            Pkeep = self.tomask(pores=Pkeep)
+            Tkeep = sp.ones((self.num_throats(),),dtype=bool)
+            Tkeep[throats] = False
+            Pkeep = self['pore.all'].copy()
         else:
             self._logger.warning('No pores or throats recieved')
             return
@@ -782,12 +776,12 @@ class GenericNetwork(Core):
                     self[item] = temp[Pkeep]
 
         #Reset network graphs
-#        self._update_network(mode='regenerate')
+        self._update_network(mode='regenerate')
 
         #Check Network health
-#        health = self.check_network_health()
-#        if health['trim_pores'] != []:
-#            self._logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
+        health = self.check_network_health()
+        if health['trim_pores'] != []:
+            self._logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
 
     def _stitch(self,network_2,pores_1,pores_2,method='delaunay',len_max=sp.inf):
         r'''
