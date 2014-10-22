@@ -1239,17 +1239,18 @@ class Core(Base):
         locsT = temp[locsS]
         mapping['target'] = locsT
 
-        if return_mapping == False:
-            if sp.any(locsS < 0) or (sp.shape(locsS)[0] == 0):
-                raise Exception('Some locations were not found on the source object')
-            if sp.any(locsT < 0) or (sp.shape(locsT)[0] == 0):
-                raise Exception('Some locations were not found on the target object')
-            return mapping['target']
-        else:
-            keep = (locsS>=0)*(locsT>=0)
-            mapping['source'] = mapping['source'][keep]
-            mapping['target'] = mapping['target'][keep]
+        keep = (locsS>=0)*(locsT>=0)
+        mapping['source'] = mapping['source'][keep]
+        mapping['target'] = mapping['target'][keep]
+
+        if return_mapping == True:
             return mapping
+        else:
+            if sp.sum(locsS>=0) < sp.shape(locations)[0]:
+                raise Exception('Some locations not found on Source object')
+            if sp.sum(locsT>=0) < sp.shape(locations)[0]:
+                raise Exception('Some locations not found on Target object')
+            return mapping['target']
 
     def map_pores(self,target,pores=None,return_mapping=False):
         r'''
