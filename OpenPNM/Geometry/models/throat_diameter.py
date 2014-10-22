@@ -55,7 +55,7 @@ def incircle(geometry,
             "Work out central point to use as initial guess"
             C = np.mean(pts,axis=0)
             "Compute convex hull to find points lying on the hull in order"
-            hull = ConvexHull(pts)
+            hull = ConvexHull(pts, qhull_options='QJ Pp')
             "For each simplex making up the hull collect the end points"
             A = pts[hull.vertices]
             B = pts[np.roll(hull.vertices,-1)]

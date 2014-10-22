@@ -5,6 +5,7 @@ pore_centroid --
 
 """
 import scipy as _sp
+import numpy as np
 import OpenPNM.Utilities.misc as misc
 from scipy.spatial import Delaunay
 
@@ -62,8 +63,11 @@ def _get_hull_com(points):
         vhc = points[ic]-hull_centroid
         pCOM = ((vha+vhb+vhc)/4)*pyramid_volume
         pyramid_COMs.append(pCOM)
-        
-    hull_COM = hull_centroid + _sp.mean(_sp.asarray(pyramid_COMs),axis=0)/hull_volume
+    
+    if hull_volume>0:    
+        hull_COM = hull_centroid + _sp.mean(_sp.asarray(pyramid_COMs),axis=0)/hull_volume
+    else:
+        hull_COM = hull_centroid
     
     return hull_COM
 
@@ -124,5 +128,11 @@ def centre_of_mass(network,
         elif len(throats) == 1 and 'throat.centroid' in geometry.props():
                 geom_throat = geometry['throat.map'].tolist().index(throats)
                 value[i]=geometry['throat.centroid'][geom_throat]
+    "Find any pores with centroids at origin and use the mean of the pore vertices instead"
+    "Not doing this messes up hydraulic conductances using centre to centre"
+    ps = np.where(~value.any(axis=1))[0]
+    if len(ps) >0:
+        for pore in ps:
+            value[pore]=np.mean(geometry["pore.vertices"][pore],axis=0)
 
     return value
