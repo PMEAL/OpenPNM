@@ -29,5 +29,11 @@ def voronoi(network,
     for i in range(Nt):
         if offset_error[i] > 0 and len(offset_verts[i]) > 0:
             offset_verts[i]=[]
+    "Properties that depend on the offset vertices are the area, perimeter and the centroid or COM"
+    "To speed things up we could save them all now rather than processing them individually"
+    if kwargs["set_dependent"]==True:
+        geometry["throat.area"]=area
+        geometry["throat.perimeter"]=perimeter
+        geometry["throat.centroid"]=throat_COM
     
     return offset_verts

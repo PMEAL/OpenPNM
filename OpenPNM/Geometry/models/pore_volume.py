@@ -5,6 +5,7 @@ pore_volume --
 
 """
 import scipy as _sp
+import numpy as np
 from scipy.spatial import Delaunay
 import OpenPNM.Utilities.misc as misc
 
@@ -22,6 +23,7 @@ def _get_hull_volume(points):
     " We only want points included in the convex hull to calculate the centroid "
     hull_centroid = _sp.array([points[:,0].mean(),points[:,1].mean(),points[:,2].mean()])
     hull_volume = 0.0
+    pyramid_COMs = []
     for ia, ib, ic in tri.convex_hull:
         " Points making each triangular face "
         " Collection of co-ordinates of each point in this face "
@@ -52,8 +54,20 @@ def _get_hull_volume(points):
         pyramid_volume = _sp.absolute(_sp.dot(face_centroid_vector,face_unit_normal)*face_area/3)
         " Each pyramid is summed together to calculate the total volume "
         hull_volume += pyramid_volume
+        " The Centre of Mass will not be the same as the geometrical centroid " 
+        " A weighted adjustment can be calculated from the pyramid centroid and volume "
+        vha = points[ia]-hull_centroid
+        vhb = points[ib]-hull_centroid
+        vhc = points[ic]-hull_centroid
+        pCOM = ((vha+vhb+vhc)/4)*pyramid_volume
+        pyramid_COMs.append(pCOM)
     
-    return hull_volume
+    if hull_volume>0:    
+        hull_COM = hull_centroid + _sp.mean(_sp.asarray(pyramid_COMs),axis=0)/hull_volume
+    else:
+        hull_COM = hull_centroid
+    
+    return hull_volume, hull_COM
 
 def sphere(geometry,
            pore_diameter='pore.diameter',
@@ -80,10 +94,12 @@ def voronoi(network,
             **kwargs):
     r"""
     Calculate volume from the convex hull of the offset vertices making the throats surrounding the pore
+    Also calculate the centre of mass for the volume
     """    
     pores = geometry['pore.map']
     Np = len(pores)
-    value = _sp.zeros(Np)
+    volume = _sp.zeros(Np)
+    com = _sp.zeros([Np,3])
     for i in range(Np):
         throat_vert_list = []
         throats=network.find_neighbor_throats([pores[i]])
@@ -99,10 +115,19 @@ def voronoi(network,
                     " Throat is not part of this geometry "
             throat_array=_sp.asarray(throat_vert_list)
             if len(throat_array)>4:
-                value[i] = _get_hull_volume(throat_array)
+                volume[i],com[i] = _get_hull_volume(throat_array)
             else:
-                value[i]=0
-        else:
-            value[i]=0.0
-
-    return value
+                volume[i]=0
+        elif len(throats) == 1 and 'throat.centroid' in geometry.props():
+                geom_throat = geometry['throat.map'].tolist().index(throats)
+                com[i]=geometry['throat.centroid'][geom_throat]
+                volume[i]=0
+    "Find any pores with centroids at origin and use the mean of the pore vertices instead"
+    "Not doing this messes up hydraulic conductances using centre to centre"
+    ps = np.where(~com.any(axis=1))[0]
+    if len(ps) >0:
+        for pore in ps:
+            com[pore]=np.mean(geometry["pore.vertices"][pore],axis=0)
+    geometry["pore.centroid"]=com
+    
+    return volume
