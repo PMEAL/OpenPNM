@@ -218,6 +218,20 @@ def test_mapping():
     geom3['pore.num2'] = Pc
     # Confirm two indexes match
     assert(sp.all(pn['pore.num1'] == pn['pore.num2']))
+    # Send junk pores to ensure error is raised
+    with pytest.raises(Exception):
+        pn.map_pores(pores=[0,pn.Np-1],target=geom1)
+        pn.map_pores(pores=[0,pn.Np+1],target=geom1)
+        pn.map_pores(pores=[pn.Np-1],target=geom1)
+        pn.map_pores(pores=[pn.Np+1],target=geom1)
+        geom1.map_pores(pores=[0,geom1.Np+1],target=pn)
+        geom1.map_pores(pores=[0,pn.Np+1],target=pn)
+        geom1.map_pores(pores=[geom1.Np+1],target=pn)
+        geom1.map_pores(pores=[pn.Np+1],target=pn)
+        geom2.map_pores(pores=[0],target=geom1)
+        geom2.map_pores(pores=[geom2.Np+1],target=geom1)
+        geom2.map_pores(pores=[0,geom2.Np-1],target=geom1)
+        geom2.map_pores(pores=[0,geom2.Np+1],target=geom1)
     # Trim column from center of Network
     pn.trim(pores=[4,13,22])
     # Confirm index still match
