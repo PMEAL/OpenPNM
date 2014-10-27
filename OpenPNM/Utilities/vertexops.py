@@ -718,6 +718,7 @@ def print_throat(geom,throats_in):
     if len(throats) > 0:
         verts = geom['throat.vertices'][throats]
         offsets = geom['throat.offset_vertices'][throats]
+        image_offsets = geom['throat.image_analysis'][throats]
         normals = geom['throat.normal'][throats]
         coms = geom['throat.centroid'][throats]
         for i in range(len(verts)):
@@ -733,6 +734,12 @@ def print_throat(geom,throats_in):
             for simplex in offset_hull.simplices:
                 plt.plot(offset_2D[simplex,0], offset_2D[simplex,1], 'g-',linewidth=2)
             plt.scatter(offset_2D[:,0], offset_2D[:,1])
+            #centroid2 = vo.PolyWeightedCentroid2D(offset_2D[offset_hull.vertices])
+            image_2D = tr.rotate_and_chop(image_offsets[i],normals[i],[0,0,1])
+            image_hull = ConvexHull(image_2D)
+            for simplex in image_hull.simplices:
+                plt.plot(image_2D[simplex,0], image_2D[simplex,1], 'r-',linewidth=2)
+            plt.scatter(image_2D[:,0], image_2D[:,1])
             #centroid2 = vo.PolyWeightedCentroid2D(offset_2D[offset_hull.vertices])
             " Make sure the plot looks nice by finding the greatest range of points and setting the plot to look square"
             xmax = vert_2D[:,0].max()

@@ -6,6 +6,7 @@ throat_offset_vertices -- Offeset throat vertices using a fibre radius parameter
 """
 import scipy as sp
 import OpenPNM.Utilities.vertexops as vo
+import OpenPNM.Utilities.transformations as tr
 
 def voronoi(network,
             geometry,
@@ -37,3 +38,274 @@ def voronoi(network,
         geometry["throat.centroid"]=throat_COM
     
     return offset_verts
+
+def image_analysis(network,
+                   geometry,
+                   offset,
+                   **kwargs):
+    r"""
+    Use the Voronoi vertices and perform image analysis to obtain throat properties
+    """
+
+    import math
+    import numpy as np
+    from skimage.morphology import convex_hull_image
+    from skimage.morphology import binary_erosion
+    from skimage.measure import regionprops
+    from scipy import ndimage
+    from skimage.morphology import disk
+    
+    Nt = geometry.num_throats()
+    area = sp.zeros(Nt)
+    perimeter = sp.zeros(Nt)
+    incentre = sp.zeros([Nt,3])
+    inradius = sp.zeros(Nt)
+    equiv_diameter = sp.zeros(Nt)
+    eroded_verts = sp.ndarray(Nt,dtype=object)
+
+    res=200
+    vertices = geometry["throat.vertices"]
+    normals = geometry["throat.normal"]
+    z_axis = [0,0,1]
+    
+    for i in range(Nt):
+        " For boundaries some facets will already be aligned with the axis - if this is the case a rotation is unnecessary and could also cause problems "
+        angle = tr.angle_between_vectors(normals[i],z_axis)
+        if (angle==0.0)or(angle==np.pi):
+            "We are already aligned"
+            rotate_facet = False
+            facet = vertices[i]
+        else:
+            rotate_facet = True
+            M = tr.rotation_matrix(tr.angle_between_vectors(normals[i],z_axis),tr.vector_product(normals[i],z_axis))
+            facet = np.dot(vertices[i],M[:3,:3].T)
+        x = facet[:,0]
+        y = facet[:,1]
+        z = facet[:,2]
+        "Get points in 2d for image analysis"
+        pts = np.column_stack((x,y))
+        "translate points so min sits at the origin"
+        translation = [pts[:,0].min(),pts[:,1].min()]
+        pts -= translation
+        order = math.ceil(-np.log10(np.max(pts)))
+        "Normalise and scale the points so that largest span equals the resolution to save on memory and create clear image"
+        max_factor = np.max([pts[:,0].max(),pts[:,1].max()])
+        f = res/max_factor
+        "Scale the offset and define a circular structuring element with radius"
+        r = f*offset
+        "Only proceed if r is less than half the span of the image"
+        if r <= res/2:
+            selem=disk(r)
+            pts *= f
+            minp1 = pts[:,0].min()
+            minp2 = pts[:,1].min()
+            maxp1 = pts[:,0].max()
+            maxp2 = pts[:,1].max()
+            img = np.zeros([math.ceil(maxp1-minp1)+1,math.ceil(maxp2-minp2)+1])
+            int_pts = np.around(pts,0).astype(int)
+            for pt in int_pts:
+                img[pt[0]][pt[1]]=1
+            "Pad with zeros all the way around the edges"
+            img_pad = np.zeros([np.shape(img)[0]+2,np.shape(img)[1]+2])
+            img_pad[1:np.shape(img)[0]+1,1:np.shape(img)[1]+1]=img
+    
+            "All points should lie on this plane but could be some rounding errors so use the order parameter"
+            z_plane = sp.unique(np.around(z,order+2))
+            if len(z_plane) > 1:
+                print("rotation for image analysis failed")
+            "Fill in the convex hull polygon"
+            convhullimg = convex_hull_image(img_pad)
+            "Perform a fast binary erosion of the convex hull"
+            try:
+                eroded = binary_erosion(convhullimg,selem)
+                "Do some image analysis to extract the key properties"
+                regions = regionprops(eroded[1:np.shape(img)[0]+1,1:np.shape(img)[1]+1])
+                if len(regions) > 0:
+                    for props in regions:
+                        y0,x0 = props.centroid
+                        equiv_diameter[i] = props.equivalent_diameter
+                        area[i] = props.area
+                        perimeter[i] = props.perimeter
+                        coords = props.coords
+                    "Distance transform the eroded facet to find the incentre and inradius"
+                    dt = ndimage.distance_transform_edt(eroded)  
+                    iny0,inx0 = np.asarray(np.unravel_index(dt.argmax(), dt.shape)).astype(float)
+                    incentre2d=[inx0,iny0]
+                    "Undo the translation, scaling and truncation on the incentre"
+                    incentre2d /= f
+                    incentre2d += (translation)
+                    incentre3d = np.concatenate((incentre2d,z_plane))
+                    "The offset vertices will be those in the coords that are closest to the originals"
+                    offset_verts = []
+                    for pt in int_pts:
+                        vert = np.argmin(np.sum(np.square(coords-pt),axis=1))
+                        if vert not in offset_verts:
+                            offset_verts.append(vert)
+                    offset_coords = coords[offset_verts].astype(float)
+                    "Undo the translation, scaling and truncation on the offset_verts"
+                    offset_coords /= f
+                    offset_coords_3d = np.vstack((offset_coords[:,0]+translation[0],offset_coords[:,1]+translation[1],np.ones(len(offset_verts))*z_plane)).T
+                    
+                    " Get matrix to un-rotate the co-ordinates back to the original orientation if we rotated in the first place"
+                    if (rotate_facet):
+                        MI = tr.inverse_matrix(M)
+                        " Unrotate the offset coordinates "
+                        incentre[i] = np.dot(incentre3d,MI[:3,:3].T)
+                        eroded_verts[i] = np.dot(offset_coords_3d,MI[:3,:3].T)
+                        
+                    else:
+                        incentre[i] = incentre3d
+                        eroded_verts[i] = offset_coords_3d
+                    
+                    inradius[i] = dt.max()
+                    "Undo scaling on other parameters"
+                    area[i] /= f*f
+                    perimeter[i] /= f
+                    equiv_diameter[i] /= f
+                    inradius[i] /= f
+            except MemoryError:
+                print("Memory Error on throat: "+str(i))
+                print("Shape of image: "+str(np.shape(convhullimg))+" radius of selem: "+str(r))
+    
+    geometry["throat.area_im"] = area
+    geometry["throat.perimeter_im"] = perimeter
+    geometry["throat.diameter_im"] = equiv_diameter
+    geometry["throat.indiameter_im"] = inradius*2
+    geometry["throat.incentre_im"] = incentre
+    
+    return eroded_verts
+    
+def distance_transform(network,
+               geometry,
+               offset,
+               **kwargs):
+    r"""
+    Use the Voronoi vertices and perform image analysis to obtain throat properties
+    """
+
+    import math
+    import numpy as np
+    from skimage.morphology import convex_hull_image
+    from skimage.measure import regionprops
+    from scipy import ndimage
+    
+    Nt = geometry.num_throats()
+    area = sp.zeros(Nt)
+    perimeter = sp.zeros(Nt)
+    incentre = sp.zeros([Nt,3])
+    inradius = sp.zeros(Nt)
+    equiv_diameter = sp.zeros(Nt)
+    eroded_verts = sp.ndarray(Nt,dtype=object)
+
+    res=200
+    vertices = geometry["throat.vertices"]
+    normals = geometry["throat.normal"]
+    z_axis = [0,0,1]
+    
+    for i in range(Nt):
+        " For boundaries some facets will already be aligned with the axis - if this is the case a rotation is unnecessary and could also cause problems "
+        angle = tr.angle_between_vectors(normals[i],z_axis)
+        if (angle==0.0)or(angle==np.pi):
+            "We are already aligned"
+            rotate_facet = False
+            facet = vertices[i]
+        else:
+            rotate_facet = True
+            M = tr.rotation_matrix(tr.angle_between_vectors(normals[i],z_axis),tr.vector_product(normals[i],z_axis))
+            facet = np.dot(vertices[i],M[:3,:3].T)
+        x = facet[:,0]
+        y = facet[:,1]
+        z = facet[:,2]
+        "Get points in 2d for image analysis"
+        pts = np.column_stack((x,y))
+        "translate points so min sits at the origin"
+        translation = [pts[:,0].min(),pts[:,1].min()]
+        pts -= translation
+        order = math.ceil(-np.log10(np.max(pts)))
+        "Normalise and scale the points so that largest span equals the resolution to save on memory and create clear image"
+        max_factor = np.max([pts[:,0].max(),pts[:,1].max()])
+        f = res/max_factor
+        "Scale the offset and define a circular structuring element with radius"
+        r = f*offset
+        "Only proceed if r is less than half the span of the image"
+        if r <= res/2:
+            pts *= f
+            minp1 = pts[:,0].min()
+            minp2 = pts[:,1].min()
+            maxp1 = pts[:,0].max()
+            maxp2 = pts[:,1].max()
+            img = np.zeros([math.ceil(maxp1-minp1)+1,math.ceil(maxp2-minp2)+1])
+            int_pts = np.around(pts,0).astype(int)
+            for pt in int_pts:
+                img[pt[0]][pt[1]]=1
+            "Pad with zeros all the way around the edges"
+            img_pad = np.zeros([np.shape(img)[0]+2,np.shape(img)[1]+2])
+            img_pad[1:np.shape(img)[0]+1,1:np.shape(img)[1]+1]=img
+    
+            "All points should lie on this plane but could be some rounding errors so use the order parameter"
+            z_plane = sp.unique(np.around(z,order+2))
+            if len(z_plane) > 1:
+                print("rotation for image analysis failed")
+            "Fill in the convex hull polygon"
+            convhullimg = convex_hull_image(img_pad)
+            "Perform a Distance Transform and black out points less than r to create binary erosion"
+            "This is faster than performing an erosion and dt can also be used later to find incircle"
+            dt = ndimage.distance_transform_edt(convhullimg)
+            eroded = dt.copy()
+            eroded[eroded<=r]=0
+            eroded[eroded>r]=1
+            "If we are left with no non-zero points then the throat is fully occluded"
+            if np.sum(eroded)>0:
+                "Do some image analysis to extract the key properties"
+                regions = regionprops(eroded[1:np.shape(img)[0]+1,1:np.shape(img)[1]+1].astype(int))
+                if len(regions) > 0:
+                    for props in regions:
+                        y0,x0 = props.centroid
+                        equiv_diameter[i] = props.equivalent_diameter
+                        area[i] = props.area
+                        perimeter[i] = props.perimeter
+                        coords = props.coords
+                    "Distance transform the eroded facet to find the incentre and inradius"
+                    dt[dt>r] -= r  
+                    iny0,inx0 = np.asarray(np.unravel_index(dt.argmax(), dt.shape)).astype(float)
+                    incentre2d=[inx0,iny0]
+                    "Undo the translation, scaling and truncation on the incentre"
+                    incentre2d /= f
+                    incentre2d += (translation)
+                    incentre3d = np.concatenate((incentre2d,z_plane))
+                    "The offset vertices will be those in the coords that are closest to the originals"
+                    offset_verts = []
+                    for pt in int_pts:
+                        vert = np.argmin(np.sum(np.square(coords-pt),axis=1))
+                        if vert not in offset_verts:
+                            offset_verts.append(vert)
+                    offset_coords = coords[offset_verts].astype(float)
+                    "Undo the translation, scaling and truncation on the offset_verts"
+                    offset_coords /= f
+                    offset_coords_3d = np.vstack((offset_coords[:,0]+translation[0],offset_coords[:,1]+translation[1],np.ones(len(offset_verts))*z_plane)).T
+                    
+                    " Get matrix to un-rotate the co-ordinates back to the original orientation if we rotated in the first place"
+                    if (rotate_facet):
+                        MI = tr.inverse_matrix(M)
+                        " Unrotate the offset coordinates "
+                        incentre[i] = np.dot(incentre3d,MI[:3,:3].T)
+                        eroded_verts[i] = np.dot(offset_coords_3d,MI[:3,:3].T)
+                        
+                    else:
+                        incentre[i] = incentre3d
+                        eroded_verts[i] = offset_coords_3d
+                    
+                    inradius[i] = dt.max()
+                    "Undo scaling on other parameters"
+                    area[i] /= f*f
+                    perimeter[i] /= f
+                    equiv_diameter[i] /= f
+                    inradius[i] /= f
+    
+    geometry["throat.area_im"] = area
+    geometry["throat.perimeter_im"] = perimeter
+    geometry["throat.diameter_im"] = equiv_diameter
+    geometry["throat.indiameter_im"] = inradius*2
+    geometry["throat.incentre_im"] = incentre
+    
+    return eroded_verts

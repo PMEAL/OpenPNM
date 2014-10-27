@@ -64,6 +64,12 @@ class Voronoi(GenericGeometry):
                        set_dependent = True)
         timer.append(time.time())
         elements.append('throat.offset_vertices')
+        self.add_model(propname='throat.image_analysis',
+                       model=gm.throat_offset_vertices.distance_transform,
+                       offset=fibre_rad,
+                       set_dependent = True)
+        timer.append(time.time())
+        elements.append('throat.image_analysis')
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        seed=self._seed)
@@ -97,18 +103,20 @@ class Voronoi(GenericGeometry):
                            model=gm.throat_centroid.centre_of_mass)
             self.add_model(propname='pore.centroid',
                            model=gm.pore_centroid.centre_of_mass)
-        self.add_model(propname='pore.indiameter',
-                       model=gm.pore_diameter.insphere)
-        timer.append(time.time())
-        elements.append('pore.indiameter')
+            self.add_model(propname='pore.indiameter',
+                           model=gm.pore_diameter.insphere)
+            timer.append(time.time())
+            elements.append('pore.indiameter')
+            self.add_model(propname='throat.indiameter',
+                           model=gm.throat_diameter.incircle) 
+            timer.append(time.time())
+            elements.append('throat.indiameter')
+            
         self.add_model(propname='throat.diameter',
                        model=gm.throat_diameter.voronoi)
         timer.append(time.time())
         elements.append('throat.diameter')
-        self.add_model(propname='throat.indiameter',
-                       model=gm.throat_diameter.incircle) 
-        timer.append(time.time())
-        elements.append('throat.indiameter')
+        
         self.add_model(propname='throat.c2c',
                        model=gm.throat_length.voronoi)
         timer.append(time.time())

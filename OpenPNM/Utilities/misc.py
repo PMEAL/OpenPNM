@@ -186,7 +186,7 @@ def amalgamate_data(objs=[]):
     if type(objs) != list:
         objs = list(objs)
     data_amalgamated = {}
-    exclusion_list = ['pore.centroid','pore.vertices','pore.vert_index','throat.vertices','throat.vert_index','throat.offset_vertices','throat.normal','throat.centroid']
+    exclusion_list = ['pore.centroid','pore.vertices','pore.vert_index','throat.vertices','throat.vert_index','throat.offset_vertices','throat.normal','throat.centroid','throat.image_analysis']
     for item in objs:
         mro = [module.__name__ for module in item.__class__.__mro__]
         if 'GenericNetwork' in mro: #if Network object, combine Geometry and Network keys
