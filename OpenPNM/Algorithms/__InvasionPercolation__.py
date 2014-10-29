@@ -169,7 +169,14 @@ class InvasionPercolation(GenericAlgorithm):
         try:
             self['throat.inv_Pc'] = self._phase['throat.'+self._capillary_pressure_name]
         except:
-            self._logger.error('Capillary pressure not assigned to '+self._phase.name)
+            self._logger.error('Capillary pressure not assigned to invading phase '+self._phase.name
+                +', check for capillary pressure in defending phase '+self._phase_def.name +' instead')
+            try:
+                self['throat.inv_Pc'] = self._phase_def['throat.'+self._capillary_pressure_name]
+                self._phase['throat.'+self._capillary_pressure_name] = self._phase_def['throat.'+self._capillary_pressure_name]
+            except:
+                self._logger.error('Capillary pressure neither assigned to defending phase '+self._phase_def.name
+                    +' nor to invading phase '+self._phase.name)
         if self._timing:
             # calculate Volume_coef for each throat
             self._Tvol_coef = tdia*tdia*tdia*np.pi/12/self['throat.inv_Pc']

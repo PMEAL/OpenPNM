@@ -112,7 +112,16 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_inv = sp.zeros((self._net.num_throats(),),dtype=float)
         self._t_seq = sp.zeros_like(self._t_inv,dtype=int)
         #Determine the invasion pressures to apply
-        self._t_cap = self._phase_inv['throat.'+self._p_cap]
+        try:
+            self._t_cap = self._phase_inv['throat.'+self._p_cap]
+        except:
+            self._logger.error('Capillary pressure not assigned to invading phase '+self._phase_inv.name
+                +', check for capillary pressure in defending phase '+self._phase_def.name +' instead')
+            try:
+                self._t_cap = self._phase_def['throat.'+self._p_cap]
+            except:
+                self._logger.error('Capillary pressure neither assigned to defending phase '+self._phase_def.name
+                    +' nor to invading phase '+self._phase_inv.name)
         if inv_points == None:
             min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
             max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
