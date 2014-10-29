@@ -183,42 +183,6 @@ def amalgamate_data(objs=[]):
     Returns a dictionary containing ALL pore data from all netowrk and/or
     phase objects received as arguments
     """
-    if type(objs) != list:
-        objs = list(objs)
-    data_amalgamated = {}
-    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
-    for item in objs:
-        mro = [module.__name__ for module in item.__class__.__mro__]
-        if 'GenericNetwork' in mro: #if Network object, combine Geometry and Network keys
-            keys = []
-            for key in item.keys():
-                keys.append(key)
-            for geom in item._geometries:
-                for key in geom.keys():
-                    if key not in keys:
-                        keys.append(key)
-        else:
-            if 'GenericPhase' in mro:
-                keys = []
-                for key in item.keys():
-                    keys.append(key)
-                for physics in item._physics:
-                    for key in physics.keys():
-                        if key not in keys:
-                            keys.append(key)
-        keys.sort()
-        for key in keys:
-            if key not in exclusion_list:
-                if _sp.amax(item[key]) < _sp.inf:
-                    dict_name = item.name+'.'+key
-                    data_amalgamated.update({dict_name : item[key]})
-    return data_amalgamated
-
-def _amalgamate_data(objs=[]):
-    r"""
-    Returns a dictionary containing ALL pore data from all netowrk and/or
-    phase objects received as arguments
-    """
     if type(objs) is not list:
         objs = list(objs)
     data_amalgamated = {}
@@ -249,6 +213,8 @@ def _amalgamate_data(objs=[]):
                     element = key.split('.')[0]
                     propname = key.split('.')[1]
                     dict_name = element+'.'+item.name+'_'+propname
+                    if key in ['pore.coords', 'throat.conns', 'pore.all','throat.all']:
+                        dict_name = key
                     data_amalgamated.update({dict_name : item[key]})
     return data_amalgamated
 
