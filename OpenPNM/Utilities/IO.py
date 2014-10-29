@@ -2,6 +2,7 @@ import OpenPNM
 from OpenPNM.Utilities import misc
 import scipy as _sp
 import numpy as _np
+import os as _os
 import pickle as _pickle
 from xml.etree import ElementTree as _ET
 
@@ -59,7 +60,7 @@ class PNM(object):
         '''
 
         if filename != '':
-            filename = filename
+            filename = filename.split('.')[0]
         else:
             filename = network.name
 
@@ -74,7 +75,10 @@ class PNM(object):
 
         #Enter each object's data, object tree and models into dictionary
         for obj in all_objs:
-            del obj._logger
+            try:
+                del obj._logger
+            except:
+                print('No logger found, ignoring request to delete it')
             sim[obj.name] = {}
             sim[obj.name]['data'] = obj.copy()
             sim[obj.name]['associations'] = {'Geometries' : obj.geometries(),
@@ -87,6 +91,14 @@ class PNM(object):
                 sim[obj.name]['models'][prop] = PNM._save_model(obj,prop)
         #Save nested dictionary pickle
         _pickle.dump(sim,open(filename+'.pnm','wb'))
+#        #Save nested dictionary as a Numpy zip file
+#        _sp.savez_compressed(filename,**sim)
+#        #Rename the zip extension to pnm for kicks
+#        try:
+#            _os.remove(filename+'.pnm')
+#        except:
+#            pass
+#        _os.rename(filename+'.npz',filename+'.pnm')
 
     @staticmethod
     def _save_model(obj,item):
