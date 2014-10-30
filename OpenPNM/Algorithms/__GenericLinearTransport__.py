@@ -184,7 +184,7 @@ class GenericLinearTransport(GenericAlgorithm):
         except: pass
         return(B)
 
-    def rate(self,pores='',mode='group'):
+    def rate(self,pores='',mode='group',conductance=None,X_val=None):
         r'''
         Send a list of pores and receive the net rate
         of material moving into them.
@@ -200,6 +200,8 @@ class GenericLinearTransport(GenericAlgorithm):
             - 'single': It calculates the rate for each pore individually.
 
         '''
+        if conductance == None: conductance = self['throat.conductance']
+        if X_val == None: X_val = self[self._quantity]
         pores = sp.array(pores,ndmin=1)
         R = []
         if mode=='group':   iteration = 1
@@ -215,9 +217,9 @@ class GenericLinearTransport(GenericAlgorithm):
             #Changes to pores1 and pores2 to make them as the internal and external pores
             pores1[-sp.in1d(p1,P)] = p2[-sp.in1d(p1,P)]
             pores2[-sp.in1d(p1,P)] = p1[-sp.in1d(p1,P)]
-            X1 = self[self._quantity][pores1]
-            X2 = self[self._quantity][pores2]
-            g = self['throat.conductance'][throats]
+            X1 = X_val[pores1]
+            X2 = X_val[pores2]
+            g = conductance[throats]
             R.append(sp.sum(sp.multiply(g,(X2-X1))))
         return(sp.array(R,ndmin=1))
 
