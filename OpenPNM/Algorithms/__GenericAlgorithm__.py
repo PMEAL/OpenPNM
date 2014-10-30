@@ -87,7 +87,7 @@ class GenericAlgorithm(Core):
     def return_results(self,**kwargs):
         self._logger.debug(sys._getframe().f_code.co_name)
 
-    def set_boundary_conditions(self,component=None,bctype='',bcvalue=[],pores=[],throats=[],mode='merge'):
+    def set_boundary_conditions(self,component=None,bctype='',bcvalue=None,pores=[],throats=[],mode='merge'):
         r'''
         Apply boundary conditions to specified pores or throats
 
@@ -116,10 +116,10 @@ class GenericAlgorithm(Core):
 
         Notes
         -----
-        1. It is not possible to have multiple boundary conditions for a specified location in just one algorithm.
+        1. It is not possible to have multiple boundary conditions for a specified location in just one algorithm. 
         So when new condition is going to be applied to a specific location, any existing one
         should be removed or overwritten.
-        2- BCs for pores and for throats should be applied independently.
+        2- BCs for pores and for throats should be applied independently. 
         '''
         try: self._existing_BC
         except: self._existing_BC = []
@@ -185,7 +185,7 @@ class GenericAlgorithm(Core):
         else:
             raise Exception('Problem with the pore and/or throat list')
         #Validate bcvalue
-        if bcvalue != []:
+        if bcvalue != None:
             #Check bcvalues are compatible with bctypes
             if bctype == 'Neumann_group':  #Only scalars are acceptable
                 if sp.size(bcvalue) != 1:
@@ -205,19 +205,19 @@ class GenericAlgorithm(Core):
             bcname = (item.split('.')[-1]).replace(component.name+'_',"")
             if bcname in self._existing_BC  and item.split('.')[0]==element:
                 if mode=='merge':
-                    try:
-                        self[element+'.'+component.name+'_bcval_'+bcname][loc]
+                    try:    
+                        self[element+'.'+component.name+'_bcval_'+bcname][loc]                    
                         if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
                             raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
-                    except KeyError: pass
+                    except KeyError: pass        
         #Set boundary conditions based on supplied mode
         if mode == 'merge':
-            if bcvalue != []:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
+            if bcvalue != None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
             self[element+'.'+component.name+'_'+bctype][loc] = True
             if bctype not in self._existing_BC: self._existing_BC.append(bctype)
         elif mode == 'overwrite':
             self[element+'.'+component.name+'_bcval_'+bctype] = sp.ones((all_length,),dtype=float)*sp.nan
-            if bcvalue != []:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
+            if bcvalue != None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
             self[element+'.'+component.name+'_'+bctype] = sp.zeros((all_length,),dtype=bool)
             self[element+'.'+component.name+'_'+bctype][loc] = True
             if bctype not in self._existing_BC: self._existing_BC.append(bctype)
