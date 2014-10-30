@@ -58,10 +58,11 @@ class GenericPhase(Core):
 
         if components != []:
             for comp in components:
-                self._phases.append(comp) # Associate any sub-phases
+                self._phases.append(comp) # Associate any sub-phases with self
+                comp._phases.append(self)  # Associate self with sub-phases
                 #Add models for components to inherit mixture T and P
-                comp.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.mixture_props.temperature,mixture=self)
-                comp.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.mixture_props.pressure,mixture=self)
+                comp.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.mixture_props.temperature)
+                comp.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.mixture_props.pressure)
                 #Move T and P models to beginning of regeneration order
                 comp.reorder_models({'pore.temperature':0,'pore.pressure':1})
         self._net._phases.append(self)  # Append this Phase to the Network
@@ -114,7 +115,7 @@ class GenericPhase(Core):
 
     def regenerate(self,**kwargs):
         for item in self._phases:
-            item.regenerate(**kwargs)
+            super(GenericPhase,item).regenerate(**kwargs)
         super(GenericPhase,self).regenerate(**kwargs)
 
     #Pull in doc string for the Core regenerate method
