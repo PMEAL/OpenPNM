@@ -85,6 +85,11 @@ class PNM(object):
                                              'Physics'    : obj.physics()}
             sim[obj.name]['info'] = {'mro'   : [item.__name__ for item in obj.__class__.__mro__],
                                      'class' : obj.__class__}
+            # Capture all of the objects attributes, other than OpenPNM reserved ones
+            # Note: This could break if people store funky stuff in attributes
+            excl_list = ['_physics','_geometries','_phases','_net','_name','_logger','_models']
+            a = {key : obj.__dict__[key] for key in obj.__dict__.keys() if key not in excl_list}
+            sim[obj.name]['attrs'] = a
             sim[obj.name]['models'] = {}
             for prop in list(obj._models.keys()):
                 sim[obj.name]['models'][prop] = PNM._save_model(obj,prop)
@@ -140,6 +145,8 @@ class PNM(object):
                 obj = sim[name]
                 net = obj['info']['class'](name=name)
                 net.update(obj['data'])
+                for item in obj['attrs'].keys():
+                    setattr(net,item,obj['attrs'][item])
                 for item in obj['models'].keys():
                     PNM._load_model(net,obj['models'][item])
                 break
@@ -151,6 +158,8 @@ class PNM(object):
                 Ts = net.throats(name)
                 geom = obj['info']['class'](network=net,pores=Ps,throats=Ts,name=name)
                 geom.update(obj['data'])
+                for item in obj['attrs'].keys():
+                    setattr(geom,item,obj['attrs'][item])
                 for item in obj['models'].keys():
                     PNM._load_model(geom,obj['models'][item])
 
@@ -159,6 +168,8 @@ class PNM(object):
                 obj = sim[name]
                 phase = obj['info']['class'](network=net,name=name)
                 phase.update(obj['data'])
+                for item in obj['attrs'].keys():
+                    setattr(phase,item,obj['attrs'][item])
                 for item in obj['models'].keys():
                     PNM._load_model(phase,obj['models'][item])
 
@@ -170,6 +181,8 @@ class PNM(object):
                 Ts = net.throats(name)
                 phys = obj['info']['class'](network=net,phase=phase,name=name,pores=Ps,throats=Ts)
                 phys.update(obj['data'])
+                for item in obj['attrs'].keys():
+                    setattr(phys,item,obj['attrs'][item])
                 for item in obj['models'].keys():
                     PNM._load_model(phys,obj['models'][item])
 
