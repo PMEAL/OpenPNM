@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __FourierConduction__: Conductive heat transfer
@@ -6,7 +7,6 @@ module __FourierConduction__: Conductive heat transfer
 A subclass of GenericLinearTransport to simulate heat conduction
 
 """
-import OpenPNM
 import scipy as sp
 from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
 
@@ -15,7 +15,7 @@ class FourierConduction(GenericLinearTransport):
     A subclass of GenericLinearTransport to simulate heat conduction.  The 2
     main roles of this subclass are to set the default property names and to
     implement a method for calculating the effective conductivity of the network.
-        
+
     Examples
     --------
     >>> pn = OpenPNM.Network.TestNet()
@@ -32,26 +32,25 @@ class FourierConduction(GenericLinearTransport):
     >>> Ceff = round(alg._calc_eff_prop(), 3) #This line and the next line should fail until someone writes this function
     >>> print(Ceff) #unless something changed with our test objects, this should print "0.025"
     0.822
-    
-    
+
+
     """
-    
+
     def __init__(self,**kwargs):
         r'''
         '''
         super(FourierConduction,self).__init__(**kwargs)
         self._logger.info('Create '+self.__class__.__name__+' Object')
-        
+
     def run(self,conductance='thermal_conductance',quantity='temperature',**params):
         r'''
-        '''  
-        self._logger.info('Setup '+self.__class__.__name__)         
+        '''
+        self._logger.info('Setup '+self.__class__.__name__)
         super(FourierConduction,self).setup(conductance=conductance,quantity=quantity)
-        
+
         super(GenericLinearTransport,self).run()
-        
+
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)
-    

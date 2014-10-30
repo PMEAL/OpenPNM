@@ -1,27 +1,16 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Jonathan Ellis
-# License: TBD
-# Copyright (c) 2014
-
-#from __future__ import print_function
-
 """
+===============================================================================
 module __InvasionPercolationForImbibition__: Invasion Percolation Algorithm for Imbibition
-========================================================================
-
-.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
-
+===============================================================================
 """
-import OpenPNM
 import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 from time import clock
 import heapq
 import itertools
-
-from OpenPNM.Algorithms.__InvasionPercolation__ import InvasionPercolation
+from OpenPNM.Algorithms import InvasionPercolation
 
 class InvasionPercolationForImbibition(InvasionPercolation):
     r"""
@@ -128,7 +117,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         >>> IP.update_results()
         >>> print(len(phase1.pores('occupancy')))
         29
-        
+
         Suggested Improvements ::
 
             a) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
@@ -155,7 +144,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
                                                        timing=timing,
                                                        report=report,
                                                        inlet_flow=inlet_flow)
-        
+
     def _setup_for_IP(self,**params):
         r"""
         Determines cluster labelling and condition for completion
@@ -697,7 +686,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             if self._timing:
                 self._phase['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
                 self._phase['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
-                
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)

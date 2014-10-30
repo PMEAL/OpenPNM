@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __FickianDiffusion__: Diffusive mass transfer
@@ -5,7 +6,6 @@ module __FickianDiffusion__: Diffusive mass transfer
 
 """
 import scipy as sp
-import OpenPNM
 from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
 
 class FickianDiffusion(GenericLinearTransport):
@@ -31,32 +31,32 @@ class FickianDiffusion(GenericLinearTransport):
     >>> Deff = round(alg.calc_eff_diffusivity(), 3)
     >>> print(Deff) #unless something changed with our test objects, this should print "0.025"
     0.025
-    
-    
+
+
     '''
 
     def __init__(self,**kwargs):
         r'''
-        
+
         '''
         super(FickianDiffusion,self).__init__(**kwargs)
         self._logger.info('Create '+self.__class__.__name__+' Object')
-        
+
     def run(self,conductance='diffusive_conductance',quantity='mole_fraction',**params):
         r'''
-        '''  
-        self._logger.info("Setup "+self.__class__.__name__)   
+        '''
+        self._logger.info("Setup "+self.__class__.__name__)
         super(FickianDiffusion,self).setup(conductance=conductance,quantity=quantity)
-        
+
         super(GenericLinearTransport,self).run()
-        
+
     def calc_eff_diffusivity(self):
         r'''
         '''
         D_normal = self._calc_eff_prop()
         self._eff_property = D_normal/sp.mean(self._phase['pore.molar_density'])
         return self._eff_property
-        
+
 
 if __name__ == '__main__':
     import doctest

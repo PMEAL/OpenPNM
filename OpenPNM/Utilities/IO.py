@@ -1,4 +1,3 @@
-import OpenPNM
 from OpenPNM.Utilities import misc
 import scipy as _sp
 import numpy as _np

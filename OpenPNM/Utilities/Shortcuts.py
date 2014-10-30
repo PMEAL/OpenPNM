@@ -1,5 +1,5 @@
 import string, random
-import OpenPNM
+import OpenPNM.Phases
 
 def solve_linear(pn, ics):
     # circumvent bug with naming by creating random names

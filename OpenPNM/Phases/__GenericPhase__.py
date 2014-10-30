@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __GenericPhase__: Base class for building Phase objects
 ===============================================================================
 
 """
-import OpenPNM
 from OpenPNM.Base import Core
 import OpenPNM.Phases.models
 import scipy as sp

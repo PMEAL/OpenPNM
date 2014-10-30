@@ -1,13 +1,13 @@
+# -*- coding: utf-8 -*-
 """
-module __Voronoi__: Subclass of GenericGeometry for a standard Geometry created from a Voronoi Diagram
-Used with Delaunay Network but could work for others (not tested)
-=============================================================================== 
+===============================================================================
+Voronoi --Subclass of GenericGeometry for a standard Geometry created from a
+Voronoi Diagram Used with Delaunay Network but could work for others (not tested)
+===============================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 
-import OpenPNM
 import scipy as sp
 import numpy as np
 import OpenPNM.Utilities.transformations as tr
@@ -16,7 +16,7 @@ from math import atan2
 import OpenPNM.Utilities.misc as misc
 from scipy import stats as st
 from OpenPNM.Geometry import models as gm
-from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
+from OpenPNM.Geometry import GenericGeometry
 
 class Voronoi(GenericGeometry):
     r"""
@@ -42,10 +42,10 @@ class Voronoi(GenericGeometry):
         else:
             fibre_rad = 3e-06
         self._generate(fibre_rad)
-    
+
     def _generate(self,fibre_rad):
         r'''
-        ''' 
+        '''
         self._add_throat_props(radius=fibre_rad) # This sets the key throat data for calculating pore and throat properties later
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
@@ -65,7 +65,7 @@ class Voronoi(GenericGeometry):
         self.add_model(propname='throat.centroid',
                        model=gm.throat_centroid.voronoi)
         self.add_model(propname='throat.diameter',
-                       model=gm.throat_diameter.voronoi)                  
+                       model=gm.throat_diameter.voronoi)
         self.add_model(propname='throat.length',
                        model=gm.throat_length.voronoi)
         self.add_model(propname='throat.volume',
@@ -75,10 +75,10 @@ class Voronoi(GenericGeometry):
 
     def _add_throat_props(self,radius=1e-06):
         r"""
-        Main Loop         
-        This method does all the throat properties for the voronoi cages in the entire network 
+        Main Loop
+        This method does all the throat properties for the voronoi cages in the entire network
         including calling the offseting routine which offsets the vertices surrounding each pore by an amount that
-        replicates erroding the facet of each throat by the fibre radius 
+        replicates erroding the facet of each throat by the fibre radius
         """
         connections = self._net['throat.conns']
         verts = self._net['pore.vertices']
@@ -104,13 +104,13 @@ class Voronoi(GenericGeometry):
                 area[i],perimeter[i],offset_verts[i],offset_error[i] = self._get_throat_geom(my_shared_verts,normals[i],radius)
             else:
                 area[i]=0.0
-        
+
         self['throat.area'] = area[self['throat.map']]
         self['throat.perimeter']=perimeter[self['throat.map']]
         self._net['throat.verts']=shared_verts
         self._net['throat.offset_verts']=offset_verts
         self._net['throat.normals']=normals
-        
+
         #self._net['throat.offset_error']=offset_error
         #offset_error = pn['throat.offset_error']
         #for i in range(len(offset_error)):
@@ -131,7 +131,7 @@ class Voronoi(GenericGeometry):
             self._net.trim(throats=excluded_throats)
         "Also get rid of isolated pores"
         self._net.trim(self._net.isolated_pores())
-    
+
     def _get_throat_geom(self,verts,normal,fibre_rad):
         r"""
         For one set of vertices defining a throat return the key properties
@@ -142,7 +142,7 @@ class Voronoi(GenericGeometry):
             Compute the convex hull of the 2D points giving a set of simplices which define neighbouring vertices in a clockwise fashion
             For each triplet calculate the offset position given the fibre radius
             Check for overlapping vertices and ones that lie outside the original hull - recalculate position to offset from or ignore if all overlapping
-            Calculate Area and Perimeter if successfully generated offset vertices to replicate eroded throat            
+            Calculate Area and Perimeter if successfully generated offset vertices to replicate eroded throat
             Translate back into 3D
         Any Errors encountered result in the throat area being zero and no vertices being passed back
         These Errors are not coding mistakes but failures to obtain an eroded facet with non-zero area:
@@ -151,7 +151,7 @@ class Voronoi(GenericGeometry):
         Error 3: All the offset vertices overlap with at least one other vertex - Throat fully occluded
         Error 4: Not enough offset vertices to continue - Throat fully occluded
         Error 5: An offset vertex is outside the original set of points - Throat fully occluded
-        """        
+        """
         z_axis = [0,0,1]
         throat_area = 0.0
         throat_perimeter = 0.0
@@ -206,7 +206,7 @@ class Voronoi(GenericGeometry):
                 " If one or two sets of overlaps exist and at least one vertex is not overlapped then we need to do a bit more work "
                 " Do some linalg to find a new point to offset from saving un-overlapped verts and newly created verts in a temporary list "
                 count = 0
-                temp_verts = verts_2D                
+                temp_verts = verts_2D
                 while True:
                     temp_vert_list=[]
                     for i in range(np.shape(line_points)[0]):
@@ -215,14 +215,14 @@ class Voronoi(GenericGeometry):
                         else:
                             my_lines=[]
                             for j in range(np.shape(line_points)[0]):
-                        
+
                                 if overlap_array[i][j] ==1 and overlap_array[j][i]==1:
                                     list_a = line_points[i][j]
                                     list_b = line_points[j][i]
                                     my_lines = self._symmetric_difference(list_a,list_b)
- 
+
                             my_lines=np.asarray(my_lines)
- 
+
                             if len(my_lines)==2:
                                 try:
                                     quad_points=temp_verts[my_lines]
@@ -232,9 +232,9 @@ class Voronoi(GenericGeometry):
                                     print("IndexError: "+str(my_lines))
                                 except TypeError:
                                     print("TypeError: "+str(my_lines))
-                                
+
                                 #new_vert_list.append(my_new_point)
-                        
+
                     temp_verts=np.asarray(misc.unique_list(temp_vert_list))
                     #new_vert_list=np.asarray(self._unique_list(new_vert_list))
                     #if len(verts_2D) >=3:
@@ -259,9 +259,9 @@ class Voronoi(GenericGeometry):
                     if count >= 10:
                         break
 
-        if len(offset) >= 3 and Error == 0:    
+        if len(offset) >= 3 and Error == 0:
             " Now also check whether any of the offset points lie outside the original convex hull "
-            original_area = np.around(self._PolyArea2D(verts_2D),10)           
+            original_area = np.around(self._PolyArea2D(verts_2D),10)
             all_points = np.concatenate((verts_2D,offset),axis=0)
             try:
                 total_hull = ConvexHull(all_points,qhull_options='Pp') #ignores very small angles
@@ -295,20 +295,20 @@ class Voronoi(GenericGeometry):
                 output_offset = offset_verts_3D
 
         return throat_area, throat_perimeter, output_offset, Error
-    
+
     def _outer_offset(self,verts,fibre_rad):
         r"""
         Routine to loop through all verts and calculate offset position based on neighbours either side. Verts must be in hull order
-        """    
+        """
         offset = []
         for i,vert in enumerate(verts):
             " Collect three adjacent points and compute the offset of the first "
             triplet = (vert, np.roll(verts,-1,axis=0)[i],np.roll(verts,1,axis=0)[i])
             offset.append(self._offset_vertex(triplet,fibre_rad))
         offset = np.asarray(offset)
-        
-        return offset    
-    
+
+        return offset
+
     def _offset_vertex(self,points,rad = 0.01):
         " We are passed in a set of 3 points forming vertices of two adjoining simplexes of the convex hull of a voronoi facet "
         " We need to offset the vertices normal to the fibre direction (or adjoining vectors) by the fibre radius "
@@ -328,7 +328,7 @@ class Voronoi(GenericGeometry):
         q1 = atan2(vector1[1],vector1[0])
         q2 = atan2(vector2[1],vector2[0])
         alpha = 0.5*tr.angle_between_vectors(vector1,vector2)
-    
+
         " We always want to offset from the first vertex we get to - going anti-clockwise from the x-axis "
         " Check if both vectors point up or both point down - if so the first one we get to will have smaller q value "
         if q1*q2 >=0.0:
@@ -351,7 +351,7 @@ class Voronoi(GenericGeometry):
                     theta = q1
                 else:
                     theta = q2
-    
+
         if alpha == 0: # this may cause problems in terms of which way to offset!!!
             #x = rad*np.cos(theta)
             #y = rad*np.sin(theta)
@@ -362,8 +362,8 @@ class Voronoi(GenericGeometry):
             y = rad*np.sin(alpha+theta)/np.sin(alpha)
 
         "Add the midpoint back in"
-        output = [x+p0[0],y+p0[1]]    
-    
+        output = [x+p0[0],y+p0[1]]
+
         return output
 
     def _dist2(self,p1, p2):
@@ -407,7 +407,7 @@ class Voronoi(GenericGeometry):
             tolerance = x_span*percentage
         else:
             tolerance = y_span*percentage
-        #fuse vertices lying within 5% of the largest span    
+        #fuse vertices lying within 5% of the largest span
         return self._fuse(verts,tolerance)
 
     def _PolyArea2D(self,pts):
@@ -425,7 +425,7 @@ class Voronoi(GenericGeometry):
         lines = np.hstack([pts,np.roll(pts,-1,axis=0)])
         perimeter = sum(np.sqrt((x2-x1)**2+(y2-y1)**2) for x1,y1,x2,y2 in lines)
         return perimeter
-        
+
     def _symmetric_difference(self,list_a,list_b):
         r"""
         Return the combination of two lists without common elements (necessary as sets cannot contain mutable objects)
@@ -450,7 +450,7 @@ class Voronoi(GenericGeometry):
             if match==False:
                 sym_diff.append(element_b)
         return sym_diff
-        
+
     def _new_point(self,pairs):
         r"""
         Passed 2 pairs of points defining lines either side of overlapped offset vertices
@@ -475,7 +475,7 @@ class Voronoi(GenericGeometry):
                 x=0
                 y=0
         return x,y
-    
+
     def _line_equation(self,points):
         r"""
         Return the gradient and y intercept of a straight line given 2 points
@@ -491,12 +491,12 @@ class Voronoi(GenericGeometry):
             c=y_coords[1] - m*x_coords[1]
 
         return m,c
-        
+
     def _set_overlap(self,verts,offset):
         r"""
         Given a set of vertices and a set of offset vertices, evaluate whether any of the offset vertices overlap
         This is then used to recalculate points from which to offset
-        """    
+        """
         dim = len(verts)
         overlap_array = np.zeros(shape=(dim,dim))
         sweep_radius = np.zeros(len(verts))
@@ -514,9 +514,9 @@ class Voronoi(GenericGeometry):
                     for k in range(dim):
                         if overlap_array[j][k]==1 and k!=i:
                             overlap_array[i][k]=1
-                            
+
         line_points=self._line_points(overlap_array)
-    
+
         return overlap_array,sweep_radius,line_points
 
     def _line_points(self,array):
@@ -525,21 +525,21 @@ class Voronoi(GenericGeometry):
         If an overlap occurs in the span between offset j and offset i then a 1 will result in [i][j]
         As the vertices are in hull order and our aim is to create a new point from which to offset using connected fibres we want to
         identify the correct points to use to define our lines
-        
-          e__________ d  
-           |        | c  
-           |       /     
-           |     /       
-           |   /         
-           |_/           
-           a b           
+
+          e__________ d
+           |        | c
+           |       /
+           |     /
+           |   /
+           |_/
+           a b
         if we have 5 points in a hull a,b,c,d,e where a overlaps with b and c overlaps with d (and visa versa) the array will look like
         [0,1,0,0,0]
         [1,0,0,0,0]
         [0,0,0,1,0]
         [0,0,1,0,0]
         [0,0,0,0,0]
-        
+
         This means that c and d are within a fibre's width of each other and the line between them does not represent the fibre
         Instead we want to extend the outer lines (bc and de) to see where they would meet and offset from this point.
         Roll up and down to find the first unoverlapped index from which to start each line from then go back one to get the two
@@ -552,7 +552,7 @@ class Voronoi(GenericGeometry):
             for j in range(dim):
                 if array[i][j]==1 and array[j][i]==1:
                     " Roll forwards to find the first unoverlapped index"
-                    k=1                    
+                    k=1
                     while k < dim:
                         if np.roll(array[i],-k,axis=0)[j]==0:
                             break
@@ -572,13 +572,13 @@ class Voronoi(GenericGeometry):
                     backward_line = [np.roll(index,k,axis=0)[j],np.roll(index,(k-1),axis=0)[j]]
                     backward_line.sort()
                     line_points[i][j]=(forward_line,backward_line)
-    
-        return line_points  
-        
+
+        return line_points
+
     def _all_overlap(self,array):
-        r""" 
+        r"""
         Find out whether all offset vertices (columns) are overlapped by at least one other
-        If so then throat is fully occluded 
+        If so then throat is fully occluded
         """
         dim=np.shape(array)[0]
         overlap=[False]*dim
@@ -589,14 +589,14 @@ class Voronoi(GenericGeometry):
                     overlap[i]=True
         if sum(overlap)==dim:
             all_overlap = True
-        
+
         return all_overlap
-    
+
     def print_throat(self,throats):
         r"""
         Print a given throat or list of throats accepted as [1,2,3,...,n]
         e.g geom.print_throat([34,65,99])
-        Original vertices plus offset vertices are rotated to align with 
+        Original vertices plus offset vertices are rotated to align with
         the z-axis and then printed in 2D
         """
         import matplotlib.pyplot as plt
@@ -611,7 +611,7 @@ class Voronoi(GenericGeometry):
                 for simplex in hull.simplices:
                     plt.plot(vert_2D[simplex,0], vert_2D[simplex,1], 'k-',linewidth=2)
                 plt.scatter(vert_2D[:,0], vert_2D[:,1])
-                
+
                 offset_2D = self._rotate_and_chop(offsets[i],normals[i],[0,0,1])
                 offset_hull = ConvexHull(offset_2D)
                 for simplex in offset_hull.simplices:
@@ -631,7 +631,7 @@ class Voronoi(GenericGeometry):
                 lower_bound_x = xmin - my_range*0.5
                 upper_bound_x = xmin + my_range*1.5
                 lower_bound_y = ymin - my_range*0.5
-                upper_bound_y = ymin + my_range*1.5  
+                upper_bound_y = ymin + my_range*1.5
                 plt.axis((lower_bound_x,upper_bound_x,lower_bound_y,upper_bound_y))
                 plt.grid(b=True, which='major', color='b', linestyle='-')
                 fig.show()
@@ -642,7 +642,7 @@ class Voronoi(GenericGeometry):
         r"""
         Print all throats around a given pore or list of pores accepted as [1,2,3,...,n]
         e.g geom.print_pore([34,65,99])
-        Original vertices plus offset vertices used to create faces and 
+        Original vertices plus offset vertices used to create faces and
         then printed in 3D
         To print all pores (n)
         pore_range = np.arange(0,n-1,1)
@@ -665,7 +665,7 @@ class Voronoi(GenericGeometry):
                     ordered_verts.append(verts[i][hull.vertices])
                 offsets = self._net['throat.offset_verts'][throats]
                 "Get domain extents for setting axis "
-                [xmin,xmax,ymin,ymax,zmin,zmax]=self._net.vertex_dimension(pores,parm='minmax')                
+                [xmin,xmax,ymin,ymax,zmin,zmax]=self._net.vertex_dimension(pores,parm='minmax')
                 fig = plt.figure()
                 ax = fig.gca(projection='3d')
                 outer_items = Poly3DCollection(ordered_verts,linewidths=1, alpha=0.2)
@@ -684,7 +684,7 @@ class Voronoi(GenericGeometry):
                 self.print_throat(throats)
         else:
             print("Please provide pore indices")
-    
+
     def _rotate_and_chop(self,verts,normal,axis=[0,0,1]):
         r"""
         Method to rotate a set of vertices (or coords) to align with an axis
@@ -715,13 +715,13 @@ class Voronoi(GenericGeometry):
             output = np.column_stack((x,y))
         else:
             output = facet
-        
+
         return output
-        
+
     def _get_throat_normal(self,verts):
         r"""
         With a Delaunay Tesselation the throat normal is usually the vector connecting neighbouring pores as the throat is defined
-        by the plane which is equidistant from the 2 pores. However, if scaling of pore coordinates and vertices is introduced 
+        by the plane which is equidistant from the 2 pores. However, if scaling of pore coordinates and vertices is introduced
         this will alter the normals so they must be recalculated.
         The routine is passed a list of shared vertices which define the throat.
         The normal is calculated by performing a convex hull algorithm to return the vertices in hull order. A coordinate must be lost to
@@ -742,8 +742,9 @@ class Voronoi(GenericGeometry):
         normal = sp.cross(v1,v2)
 
         return normal
-        
+
 if __name__ == '__main__':
+    import OpenPNM
     pn = OpenPNM.Network.Delaunay(name='test_net')
     pn.generate(num_pores=100, domain_size=[0.0001,0.0001,0.0001],add_boundaries=True)
     test = OpenPNM.Geometry.Voronoi(loglevel=10,name='test_geom',locations=[0],network=pn)

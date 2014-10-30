@@ -1,18 +1,16 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 GenericNetwork: Abstract class to construct pore networks
 ===============================================================================
 
 """
-
 import sys
-import OpenPNM
-from OpenPNM.Base import Core
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
-import scipy.signal as spsg
 import OpenPNM.Utilities.misc as misc
+from OpenPNM.Base import Core
 
 class GenericNetwork(Core):
     r"""

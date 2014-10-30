@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __GenericAlgorithm__: Base class to build custom algorithms
@@ -7,11 +8,11 @@ This generic class contains the recommended methods for subclassed algorithms.
 It inherits from Core, so is Python Dict with the OpenPNM data control methods.
 
 """
-import OpenPNM
 import sys
 import scipy as sp
+from OpenPNM.Base import Core
 
-class GenericAlgorithm(OpenPNM.Base.Core):
+class GenericAlgorithm(Core):
     r"""
     GenericAlgorithm - Base class to execute algorithms
 
@@ -115,10 +116,10 @@ class GenericAlgorithm(OpenPNM.Base.Core):
 
         Notes
         -----
-        1. It is not possible to have multiple boundary conditions for a specified location in just one algorithm. 
+        1. It is not possible to have multiple boundary conditions for a specified location in just one algorithm.
         So when new condition is going to be applied to a specific location, any existing one
         should be removed or overwritten.
-        2- BCs for pores and for throats should be applied independently. 
+        2- BCs for pores and for throats should be applied independently.
         '''
         try: self._existing_BC
         except: self._existing_BC = []
@@ -204,11 +205,11 @@ class GenericAlgorithm(OpenPNM.Base.Core):
             bcname = (item.split('.')[-1]).replace(component.name+'_',"")
             if bcname in self._existing_BC  and item.split('.')[0]==element:
                 if mode=='merge':
-                    try:    
-                        self[element+'.'+component.name+'_bcval_'+bcname][loc]                    
+                    try:
+                        self[element+'.'+component.name+'_bcval_'+bcname][loc]
                         if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
                             raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
-                    except KeyError: pass        
+                    except KeyError: pass
         #Set boundary conditions based on supplied mode
         if mode == 'merge':
             if bcvalue != []:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
@@ -222,6 +223,7 @@ class GenericAlgorithm(OpenPNM.Base.Core):
             if bctype not in self._existing_BC: self._existing_BC.append(bctype)
 
 if __name__ == '__main__':
+    import OpenPNM
     pn = OpenPNM.Network.TestNet()
     test = OpenPNM.Algorithms.GenericAlgorithm(network=pn,loglevel=10)
     test.run()

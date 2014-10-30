@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 GenericGeometry -- Base class to manage pore scale geometry
@@ -5,10 +6,9 @@ GenericGeometry -- Base class to manage pore scale geometry
 
 """
 
-import OpenPNM
+import scipy as sp
 from OpenPNM.Base import Core
 import OpenPNM.Geometry.models
-import scipy as sp
 
 class GenericGeometry(Core):
     r"""

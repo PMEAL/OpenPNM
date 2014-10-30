@@ -1,18 +1,17 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 Delaunay: Generate random networks based on Delaunay Tessellations
 ===============================================================================
 
 """
-import OpenPNM
-
 import sys
 import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
+from OpenPNM.Network import GenericNetwork
 from scipy.spatial import Voronoi
 from scipy import stats as st
 

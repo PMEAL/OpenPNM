@@ -1,15 +1,14 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __GenericLinearTransport__: Class for solving linear transport processes
 ===============================================================================
 
 """
-import OpenPNM
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.linalg as sprslin
-from .__GenericAlgorithm__ import GenericAlgorithm
-
+from OpenPNM.Algorithms import GenericAlgorithm
 
 class GenericLinearTransport(GenericAlgorithm):
     r"""
@@ -30,7 +29,7 @@ class GenericLinearTransport(GenericAlgorithm):
             self._phase = phase  # Register phase with self
             if sp.size(phase)!=1:   self._phases = phase
             else:   self._phases.append(phase)
-            
+
     def setup(self,conductance,quantity):
         r'''
         This setup provides the initial data for the solver
@@ -38,7 +37,7 @@ class GenericLinearTransport(GenericAlgorithm):
         if  sp.size(self._phase)==1:
             self._conductance = 'throat.'+conductance.split('.')[-1]
             self._quantity = 'pore.'+self._phase.name+'_'+quantity.split('.')[-1]
-    
+
             #Check health of conductance vector
             if self._phase.check_data_health(props=self._conductance,quiet=True):
                 #If no nans, check for 0's
@@ -83,7 +82,7 @@ class GenericLinearTransport(GenericAlgorithm):
     def _build_coefficient_matrix(self):
         r'''
         This builds the sparse coefficient matrix for the linear solver.
-        '''       
+        '''
         # Filling coefficient matrix
         tpore1 = self._net['throat.conns'][:,0]
         tpore2 = self._net['throat.conns'][:,1]
