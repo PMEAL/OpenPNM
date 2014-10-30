@@ -84,7 +84,7 @@ class GenericAlgorithm(Core):
         """
         self._logger.debug(sys._getframe().f_code.co_name)
 
-    def update_results(self,**kwargs):
+    def return_results(self,**kwargs):
         self._logger.debug(sys._getframe().f_code.co_name)
 
     def set_boundary_conditions(self,component=None,bctype='',bcvalue=[],pores=[],throats=[],mode='merge'):

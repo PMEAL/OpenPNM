@@ -28,7 +28,7 @@ class OhmicConduction(GenericLinearTransport):
     >>> BC2_pores = pn.pores('bottom')
     >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
     >>> alg.run()
-    >>> alg.update_results()
+    >>> alg.return_results()
     >>> Ceff = round(alg.calc_effective_conductivity(), 3)
     >>> print(Ceff)
     1.012

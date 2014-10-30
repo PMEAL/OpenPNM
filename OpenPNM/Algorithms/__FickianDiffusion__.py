@@ -27,7 +27,7 @@ class FickianDiffusion(GenericLinearTransport):
     >>> BC2_pores = pn.pores('bottom')
     >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
     >>> alg.run()
-    >>> alg.update_results()
+    >>> alg.return_results()
     >>> Deff = round(alg.calc_eff_diffusivity(), 3)
     >>> print(Deff) #unless something changed with our test objects, this should print "0.025"
     0.025

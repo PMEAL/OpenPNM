@@ -114,7 +114,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
              IP algorithm at 20 % completion at 0 seconds
              IP algorithm at 40 % completion at 0 seconds
              IP algorithm at 100% completion at  0  seconds
-        >>> IP.update_results()
+        >>> IP.return_results()
         >>> print(len(phase1.pores('occupancy')))
         29
 
@@ -660,7 +660,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         # TODO Need to check how total condition will work, and end. All pores or all throats?
 #            self._condition = not self._Tinv.all()
 
-    def update_results(self,occupancy='occupancy',IPseq='None'):
+    def return_results(self,occupancy='occupancy',IPseq='None'):
         r"""
         """
         if IPseq=='None':

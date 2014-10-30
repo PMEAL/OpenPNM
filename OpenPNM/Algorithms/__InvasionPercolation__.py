@@ -35,7 +35,7 @@ class InvasionPercolation(GenericAlgorithm):
     >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'),report=0)
          IP algorithm at 0 % completion at 0.0 seconds
          IP algorithm at 100% completion at  0.0  seconds
-    >>> IP.update_results()
+    >>> IP.return_results()
     >>> max(phase1['pore.IP_inv_seq']) #unless something changed with our test objects, this should print "60"
     60
 
@@ -604,7 +604,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._tpoints[cl_num-1] = []
 
 
-    def update_results(self,occupancy='occupancy',IPseq=None,IPsat=None):
+    def return_results(self,occupancy='occupancy',IPseq=None,IPsat=None):
         r"""
 
         Returns

@@ -11,7 +11,7 @@ def solve_linear(pn, ics):
     alg['pore.BCval']=ics
     alg['pore.Dirichlet']=ics!=0
     alg.run(active_phase=pseudo)
-    alg.update_results()
+    alg.return_results()
 
     out = pseudo['pore.voltage']
     return out

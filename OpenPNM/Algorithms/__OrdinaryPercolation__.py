@@ -43,7 +43,7 @@ class OrdinaryPercolation(GenericAlgorithm):
     >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn, name='OP',invading_phase=phase1, defending_phase=phase2)
     >>> OP.run(inlets=pn.pores('top'))
     >>> med_Pc = sp.median(OP['pore.inv_Pc'])
-    >>> OP.update_results(med_Pc)
+    >>> OP.return_results(med_Pc)
     >>> print(len(phase1.pores('occupancy'))) #should return '71' filled pores if everything is working normally
     71
 
@@ -241,7 +241,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self['pore.inv_Pc']=self._p_inv
         self['throat.inv_Pc']=self._t_inv
 
-    def update_results(self, Pc=0, seq=None, sat=None, occupancy='occupancy'):
+    def return_results(self, Pc=0, seq=None, sat=None, occupancy='occupancy'):
         r"""
         Updates the occupancy status of invading and defending phases
         as determined by the OP algorithm

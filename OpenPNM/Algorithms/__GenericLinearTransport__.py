@@ -52,7 +52,7 @@ class GenericLinearTransport(GenericAlgorithm):
         else:
             raise Exception('The linear transport solver accepts just one phase.')
 
-    def update_results(self,pores=None,throats=None,**kwargs):
+    def return_results(self,pores=None,throats=None,**kwargs):
         r'''
         Send results of simulation out the the appropriate locations.
 

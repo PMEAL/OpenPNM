@@ -26,7 +26,7 @@ class StokesFlow(GenericLinearTransport):
     >>> BC2_pores = pn.pores('bottom')
     >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
     >>> alg.run()
-    >>> alg.update_results()
+    >>> alg.return_results()
     >>> Peff = round(alg.calc_eff_permeability(), 10)
     >>> print(Peff) #unless something changed with our test objects, this should print "1.8663e-05"
     1.8663e-05

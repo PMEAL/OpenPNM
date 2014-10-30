@@ -128,12 +128,12 @@ To run our simulation, we will:
     OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air)
     OP_1.run(inlets=used_inlets,npts=100)
 
-This algorithm performed a start to finish simulation, which fully flooded the network. The 'update_results()' command can be used to update the phase occupancy values throughout the network. 
+This algorithm performed a start to finish simulation, which fully flooded the network. The 'return_results()' command can be used to update the phase occupancy values throughout the network. 
 
 .. code-block:: python
 
 	#Update the simulation until saturation is at 50%
-	OP_1.update_results(sat=0.5)
+	OP_1.return_results(sat=0.5)
 
 OpenPNM makes it very easy to inspect the ouput of the algorithm through the "Postprocessing" methods.  
 
