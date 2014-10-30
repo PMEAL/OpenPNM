@@ -108,8 +108,7 @@ class PNM(object):
         a = obj._models[item].keywords
         #Store path to model, name of model and argument key:value pairs in a dict
         model = {}
-        model['path'] = f.__module__
-        model['name'] = f.__name__
+        model['func'] = f
         model['args'] = {}
         for item in a:
             #remove default arguments used in all add_model calls
@@ -180,10 +179,8 @@ class PNM(object):
     def _load_model(obj,model):
         r'''
         '''
-        #Import model using stored path and name
-        mod = eval(model['path']+'.'+model['name'])
         #Apply model to object using info in dict
-        obj.add_model(model=mod,**model['args'])
+        obj.add_model(model=model['func'],**model['args'])
 
 class VTK():
     r"""
