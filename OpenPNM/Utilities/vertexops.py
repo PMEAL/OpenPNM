@@ -144,7 +144,7 @@ def get_throat_geom(verts,normal,fibre_rad):
             total_area =999
             Error = 5
         #total_area=0
-        offset_hull = ConvexHull(offset)
+        offset_hull = ConvexHull(offset,qhull_options='QJ Pp')
         offset_verts_2D = offset[offset_hull.vertices]
         if (total_area>original_area): # Throat is fully occluded
             " Don't do anything "
@@ -718,29 +718,24 @@ def print_throat(geom,throats_in):
     if len(throats) > 0:
         verts = geom['throat.vertices'][throats]
         offsets = geom['throat.offset_vertices'][throats]
-        image_offsets = geom['throat.image_analysis'][throats]
+        #image_offsets = geom['throat.image_analysis'][throats]
         normals = geom['throat.normal'][throats]
         coms = geom['throat.centroid'][throats]
-        for i in range(len(verts)):
+        incentre = geom['throat.incentre'][throats]
+        inradius = 0.5*geom['throat.indiameter'][throats]
+        for i in range(len(throats)):
             fig = plt.figure()
             vert_2D = tr.rotate_and_chop(verts[i],normals[i],[0,0,1])
-            hull = ConvexHull(vert_2D)
+            hull = ConvexHull(vert_2D,qhull_options='QJ Pp')
             for simplex in hull.simplices:
                 plt.plot(vert_2D[simplex,0], vert_2D[simplex,1], 'k-',linewidth=2)
             plt.scatter(vert_2D[:,0], vert_2D[:,1])
             #centroid = vo.PolyWeightedCentroid2D(vert_2D[hull.vertices])
             offset_2D = tr.rotate_and_chop(offsets[i],normals[i],[0,0,1])
-            offset_hull = ConvexHull(offset_2D)
+            offset_hull = ConvexHull(offset_2D,qhull_options='QJ Pp')
             for simplex in offset_hull.simplices:
                 plt.plot(offset_2D[simplex,0], offset_2D[simplex,1], 'g-',linewidth=2)
             plt.scatter(offset_2D[:,0], offset_2D[:,1])
-            #centroid2 = vo.PolyWeightedCentroid2D(offset_2D[offset_hull.vertices])
-            image_2D = tr.rotate_and_chop(image_offsets[i],normals[i],[0,0,1])
-            image_hull = ConvexHull(image_2D)
-            for simplex in image_hull.simplices:
-                plt.plot(image_2D[simplex,0], image_2D[simplex,1], 'r-',linewidth=2)
-            plt.scatter(image_2D[:,0], image_2D[:,1])
-            #centroid2 = vo.PolyWeightedCentroid2D(offset_2D[offset_hull.vertices])
             " Make sure the plot looks nice by finding the greatest range of points and setting the plot to look square"
             xmax = vert_2D[:,0].max()
             xmin = vert_2D[:,0].min()
@@ -759,8 +754,14 @@ def print_throat(geom,throats_in):
             plt.axis((lower_bound_x,upper_bound_x,lower_bound_y,upper_bound_y))
             plt.grid(b=True, which='major', color='b', linestyle='-')
             centroid = tr.rotate_and_chop(coms[i],normals[i],[0,0,1])
+            incent = tr.rotate_and_chop(incentre[i],normals[i],[0,0,1])
             plt.scatter(centroid[0][0],centroid[0][1])
             #plt.scatter(centroid2[0],centroid2[1],c='r')
+            "Plot incircle"
+            t = np.linspace(0,2*np.pi,200)
+            u = inradius[i]*np.cos(t)+incent[0][0]
+            v = inradius[i]*np.sin(t)+incent[0][1]
+            plt.plot(u,v,'r-')
             fig.show()
     else:
         print("Please provide throat indices")
@@ -800,9 +801,14 @@ def print_pore(geom,pores,axis_bounds=[]):
             ordered_verts=[]
             for i in range(len(verts)):
                 vert_2D = tr.rotate_and_chop(verts[i],normals[i],[0,0,1])
-                hull = ConvexHull(vert_2D)
+                hull = ConvexHull(vert_2D,qhull_options='QJ Pp')
                 ordered_verts.append(verts[i][hull.vertices])
             offsets = geom['throat.offset_vertices'][throats]
+            ordered_offs=[]
+            for i in range(len(offsets)):
+                offs_2D = tr.rotate_and_chop(offsets[i],normals[i],[0,0,1])
+                offs_hull = ConvexHull(offs_2D,qhull_options='QJ Pp')
+                ordered_offs.append(offsets[i][offs_hull.vertices])
             "Get domain extents for setting axis "
             if axis_bounds == []:
                 [xmin,xmax,ymin,ymax,zmin,zmax]= vertex_dimension(geom._net,pores,parm='minmax')
@@ -814,7 +820,7 @@ def print_pore(geom,pores,axis_bounds=[]):
             outer_face_colours=[(1, 0, 0, 0.01)]
             outer_items.set_facecolor(outer_face_colours)
             ax.add_collection(outer_items)
-            inner_items = Poly3DCollection(offsets,linewidths=1, alpha=0.2, zsort='min')
+            inner_items = Poly3DCollection(ordered_offs,linewidths=1, alpha=0.2, zsort='min')
             inner_face_colours=[(0, 0, 1, 0.01)]
             inner_items.set_facecolor(inner_face_colours)
             ax.add_collection(inner_items)

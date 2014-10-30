@@ -59,17 +59,14 @@ class Voronoi(GenericGeometry):
         timer.append(time.time())
         elements.append('throat.normal')
         self.add_model(propname='throat.offset_vertices',
-                       model=gm.throat_offset_vertices.voronoi,
-                       offset=fibre_rad,
-                       set_dependent = True)
-        timer.append(time.time())
-        elements.append('throat.offset_vertices')
-        self.add_model(propname='throat.image_analysis',
                        model=gm.throat_offset_vertices.distance_transform,
                        offset=fibre_rad,
                        set_dependent = True)
         timer.append(time.time())
-        elements.append('throat.image_analysis')
+        elements.append('throat.offset_vertices')
+        
+        self._net.trim_occluded_throats()
+        
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        seed=self._seed)
@@ -96,7 +93,6 @@ class Voronoi(GenericGeometry):
         if 1 == 2:
             self.add_model(propname='throat.area',
                            model=gm.throat_area.voronoi)
-            #self._net.trim_occluded_throats()
             self.add_model(propname='throat.perimeter',
                            model=gm.throat_perimeter.voronoi)
             self.add_model(propname='throat.centroid',
@@ -117,10 +113,10 @@ class Voronoi(GenericGeometry):
         timer.append(time.time())
         elements.append('throat.diameter')
         
-        self.add_model(propname='throat.c2c',
-                       model=gm.throat_length.voronoi)
-        timer.append(time.time())
-        elements.append('throat.c2c')
+        #self.add_model(propname='throat.c2c',
+        #               model=gm.throat_length.voronoi)
+        #timer.append(time.time())
+        #elements.append('throat.c2c')
         self.add_model(propname='throat.length',
                        model=gm.throat_length.constant,
                        const=fibre_rad*2)

@@ -15,7 +15,7 @@ def _get_hull_volume(points):
     connected to the volume centroid
     """
     " remove any duplicate points - this messes up the triangulation "        
-    points = _sp.asarray(misc.unique_list(points))       
+    points = _sp.asarray(misc.unique_list(np.around(points,10)))       
     try:
         tri = Delaunay(points,qhull_options='QJ Pp')
     except _sp.spatial.qhull.QhullError:
@@ -40,7 +40,10 @@ def _get_hull_volume(points):
         #face_COM = (vab+vac)/3
         " As vectors are co-planar the cross-product will produce the normal vector of the face "
         face_normal = _sp.cross(vab,vac)
-        face_unit_normal = face_normal/_sp.linalg.norm(face_normal)
+        try:
+            face_unit_normal = face_normal/_sp.linalg.norm(face_normal)
+        except RuntimeWarning:
+            print("Pore Volume Error:" +str(vab)+" "+str(vac))
         " As triangles are orientated randomly in 3D we could either transform co-ordinates to align with a plane and perform 2D operations "
         " to work out the area or we could work out the lengths of each side and use Heron's formula which is easier"
         " Using Delaunay traingulation will always produce triangular faces but if dealing with other polygons co-ordinate transfer may be necessary "
@@ -108,9 +111,9 @@ def voronoi(network,
                 try:
                     geom_throat = geometry['throat.map'].tolist().index(throat)
                     geom_throat_verts = geometry["throat.offset_vertices"][geom_throat]
-                    
-                    for j in range(len(geom_throat_verts)):
-                        throat_vert_list.append(geom_throat_verts[j])
+                    if geom_throat_verts != None:
+                        for j in range(len(geom_throat_verts)):
+                            throat_vert_list.append(geom_throat_verts[j])
                 except ValueError:
                     " Throat is not part of this geometry "
             throat_array=_sp.asarray(throat_vert_list)

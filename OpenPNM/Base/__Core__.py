@@ -997,10 +997,12 @@ class Core(Base):
         Np = sp.shape(self['pore.all'])[0]
         Nt = sp.shape(self['throat.all'])[0]
         self._temp = {}
-        self._temp['pore'] = sp.empty((Np,))
-        self._temp['throat'] = sp.empty((Nt,))
+        self._temp['pore'] = sp.ndarray(Np,dtype=object)
+        self._temp['throat'] = sp.ndarray(Nt,dtype=object)
         temp = self._temp[element]
-        temp.fill(sp.nan)
+        #temp.fill(sp.nan)
+        cnames=[]
+        shapes=[]
         dtypes = []
         dtypenames = []
         prop_found = False  #Flag to indicate if prop was found on a sub-object
@@ -1015,39 +1017,61 @@ class Core(Base):
                 dtypes.append(sp.dtype(bool))
             else:
                 values = item[prop]
-                try:
-                    ndim = sp.shape(values)[1]
-                    if prop_found == False:
-                        if element == 'pore':
-                            temp = sp.empty([Np,ndim])
-                            temp.fill(sp.nan)
-                        elif element == 'throat':
-                            temp = sp.empty([Nt,ndim])
-                            temp.fill(sp.nan)
-                except IndexError:
-                    "Shape is one dimensional - carry on"
                 prop_found = True
                 dtypenames.append(values.dtype.name)
                 dtypes.append(values.dtype)
-            temp[locations] = values  #Assign values
+            #try: #this will not work for ndarray
+            #    temp[locations] = values
+            #except ValueError:
+            for i,loc in enumerate(locations):
+                temp[loc]=values[i]
+            #temp[locations] = values  #Assign values
+        #Do Formatting
+        make_object = False
+        for i in range(len(temp)):
+            cnames.append(temp[i].__class__.__name__)
+            shapes.append(sp.shape(temp[i]))
+            if cnames[i] not in ['int','float','bool','int32','int64','float32','float64']:
+                make_object = True
+                try:
+                    dtypes.append(temp[i].dtype.name)
+                except AttributeError:
+                    dtypes.append('NoneType')
+        #if all the data was in an acceptable format to return straight away
+        if make_object == False:
+            if len(sp.unique(cnames))==1:
+                temp_cname = cnames[0]
+            else:
+                #convert a mixture to float
+                temp_cname='float'
+        else:
+            #keep as object
+            temp_cname = 'object'
+        temp=temp.astype(temp_cname)
+        #If we have all the data in ndarray of same type and shape we can re-cast into the proper shape
+        if (len(sp.unique(cnames)) == 1)&(cnames[0]=='ndarray')&(len(sp.unique(shapes)) == 1):
+            temp_2_shape = list(shapes[0])
+            temp_2_shape.insert(0,len(temp))
+            if len(sp.unique(dtypes))==1:
+                temp2 = sp.ndarray(temp_2_shape,dtype=temp[0].dtype.name)
+            else:
+                temp2 = sp.ndarray(temp_2_shape,dtype='float')
+            for i in range(len(temp)):
+                temp2[i]=temp[i]
+            temp = temp2.copy()
         #Check if requested prop was found on any sub-objects
-        if sum(sp.isnan(temp)).any()>0:
-            dtypenames.append('nan')
+        #if sum(sp.isnan(temp)).any()>0:
+        #    dtypenames.append('nan')
         if prop_found == False:
             raise KeyError(prop)
         #Analyze and assign data type
-        if sp.all([t in ['bool','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
-            temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
-        elif sp.all([t == dtypenames[0] for t in dtypenames]) :  # If all entries are same type
-            temp = sp.array(temp,dtype=dtypes[0])
-        elif 'nan' in dtypenames:
-            #just return the elements where we have the value - this will probably break many things!!!
-            temp = temp[~sp.isnan(temp)]
-            temp = sp.array(temp,dtype=max(dtypes))
-            self._logger.info('Property '+prop+' is not present on all sub-objects...trimming results')
-        else:
-            temp = sp.array(temp,dtype=max(dtypes))
-            self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
+        #if sp.all([t in ['bool','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+        #    temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
+        #elif sp.all([t == dtypenames[0] for t in dtypenames]) :  # If all entries are same type
+        #    temp = sp.array(temp,dtype=dtypes[0])
+        #else:
+        #    temp = sp.array(temp,dtype=max(dtypes))
+        #    self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
         return temp
 
     def num_pores(self,labels='all',mode='union'):
