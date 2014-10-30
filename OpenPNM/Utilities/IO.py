@@ -74,10 +74,10 @@ class PNM(object):
 
         #Enter each object's data, object tree and models into dictionary
         for obj in all_objs:
-            try:
-                del obj._logger
-            except:
-                print('No logger found, ignoring request to delete it')
+#            try:
+#                del obj._logger
+#            except:
+#                print('No logger found, ignoring request to delete it')
             sim[obj.name] = {}
             sim[obj.name]['data'] = obj.copy()
             sim[obj.name]['associations'] = {'Geometries' : obj.geometries(),
