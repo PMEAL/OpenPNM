@@ -190,6 +190,7 @@ class GenericAlgorithm(Core):
             if bctype == 'Neumann_group':  #Only scalars are acceptable
                 if sp.size(bcvalue) != 1:
                     raise Exception('When specifying Neumann_group, bcval should be a scalar')
+                else:   bcvalue = sp.float64(bcvalue)
             else: #Only scalars or Np/Nt-long are acceptable
                 if sp.size(bcvalue) == 1:
                     bcvalue = sp.ones(sp.shape(loc))*bcvalue
