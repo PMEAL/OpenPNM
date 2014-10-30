@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 r"""
 ===============================================================================
 pore_seeds -- Methods for generating fields of values for use as seeds in
