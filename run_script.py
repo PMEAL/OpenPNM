@@ -62,15 +62,19 @@ IP_1.return_results()
 #------------------------------------------------------------------------------
 alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn,phase=air)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.pores('top_boundary')
+BC1_pores = pn.pores('right_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
-BC2_pores = pn.pores('bottom_boundary')
+BC2_pores = pn.pores('left_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
 #Add new model to air's physics that accounts for water occupancy
 phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    propname='throat.conduit_diffusive_conductance',
-                   throat_conductance='throat.diffusive_conductance')
-#Use newly defined diffusive_conductance in the diffusion calculation
+                   throat_conductance='throat.diffusive_conductance',
+                   throat_occupancy='throat.occupancy',
+                   pore_occupancy='pore.occupancy',
+                   mode='strict',
+                   factor=0)
+#Use desired diffusive_conductance in the diffusion calculation (conductance for the dry network or water-filled network)
 alg.run(conductance='throat.diffusive_conductance')
 alg.return_results()
 Deff = alg.calc_eff_diffusivity()

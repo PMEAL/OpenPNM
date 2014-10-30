@@ -40,13 +40,7 @@ class GenericLinearTransport(GenericAlgorithm):
 
             #Check health of conductance vector
             if self._phase.check_data_health(props=self._conductance,quiet=True):
-                #If no nans, check for 0's
-                ind = sp.nonzero(self._phase[self._conductance])[0]
-                gmin = sp.amin(self._phase[self._conductance][ind])
-                ind = sp.where(self._phase[self._conductance]==0)[0]
                 self['throat.conductance'] = self._phase[self._conductance]
-                #To prevent singular matrix
-                self['throat.conductance'][ind] = gmin/1000000
             else:
                 raise Exception('The provided throat conductance has problems')
         else:
@@ -158,6 +152,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self._Coeff_dimension = A_dim
         a = sprs.coo.coo_matrix((data,(row,col)),(A_dim,A_dim))
         A = a.tocsr()
+        A.eliminate_zeros()
         return(A)
 
 
