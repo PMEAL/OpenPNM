@@ -173,6 +173,11 @@ class PNM(object):
                 for item in obj['models'].keys():
                     PNM._load_model(phase,obj['models'][item])
 
+        for name in sim.keys():  # Link the phase objects to each other
+            if 'GenericPhase' in sim[name]['info']['mro']:
+                phase = net.phases(name)[0]
+                phase._phases = net.phases(sim[name]['associations']['Phases'])
+
         for name in sim.keys():  # Physics objects
             if 'GenericPhysics' in sim[name]['info']['mro']:
                 obj = sim[name]
