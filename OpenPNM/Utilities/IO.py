@@ -193,7 +193,7 @@ class PNM(object):
         r'''
         '''
         #Apply model to object using info in dict
-        obj.add_model(model=model['func'],**model['args'])
+        obj.add_model(model=model['func'],regen_mode='deferred',**model['args'])
 
 class VTK():
     r"""

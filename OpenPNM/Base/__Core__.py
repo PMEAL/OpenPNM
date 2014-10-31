@@ -96,6 +96,8 @@ class Core(Base):
 
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
 
+            * 'deferred' : The model is stored on the object but not run until regenerate is called.
+
         Notes
         -----
         This method is inherited by all net/geom/phys/phase objects.  It takes
@@ -139,6 +141,8 @@ class Core(Base):
             self._models[propname] = fn  # Store model in a private attribute
         if regen_mode == 'constant':
              self[propname] = fn()  # Generate data and store it locally
+        if regen_mode == 'deferred':
+            self._models[propname] = fn  # Store model in a private attribute
 
     def remove_model(self,propname,mode='model'):
         r'''
