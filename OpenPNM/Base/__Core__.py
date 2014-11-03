@@ -989,11 +989,7 @@ class Core(Base):
         fine, but missing ints are converted to float when nans are inserted.
         '''
         element = prop.split('.')[0]
-        #Utilize a pre-existing dummy 'temp' variable on the object to save time
-        #Don't do this anymore - temp arrays can change in length
-        #try:
-        #    temp = self._temp[element]
-        #except:
+
         Np = sp.shape(self['pore.all'])[0]
         Nt = sp.shape(self['throat.all'])[0]
         self._temp = {}
@@ -1020,18 +1016,14 @@ class Core(Base):
                 prop_found = True
                 dtypenames.append(values.dtype.name)
                 dtypes.append(values.dtype)
-            #try: #this will not work for ndarray
-            #    temp[locations] = values
-            #except ValueError:
             for i,loc in enumerate(locations):
                 temp[loc]=values[i]
-            #temp[locations] = values  #Assign values
         #Do Formatting
         make_object = False
         for i in range(len(temp)):
             cnames.append(temp[i].__class__.__name__)
             shapes.append(sp.shape(temp[i]))
-            if cnames[i] not in ['int','float','bool','int32','int64','float32','float64']:
+            if cnames[i] not in ['int','float','bool','int32','int64','float32','float64','NoneType']:
                 make_object = True
                 try:
                     dtypes.append(temp[i].dtype.name)
@@ -1059,19 +1051,10 @@ class Core(Base):
             for i in range(len(temp)):
                 temp2[i]=temp[i]
             temp = temp2.copy()
-        #Check if requested prop was found on any sub-objects
-        #if sum(sp.isnan(temp)).any()>0:
-        #    dtypenames.append('nan')
+
         if prop_found == False:
             raise KeyError(prop)
-        #Analyze and assign data type
-        #if sp.all([t in ['bool','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
-        #    temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
-        #elif sp.all([t == dtypenames[0] for t in dtypenames]) :  # If all entries are same type
-        #    temp = sp.array(temp,dtype=dtypes[0])
-        #else:
-        #    temp = sp.array(temp,dtype=max(dtypes))
-        #    self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
+        
         return temp
 
     def num_pores(self,labels='all',mode='union'):
