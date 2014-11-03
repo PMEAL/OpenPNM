@@ -1,13 +1,13 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 Cube_and_Cuboid -- A standard Cubic pore and Cuboic throat model
-=============================================================================== 
+===============================================================================
 
 """
 
-import OpenPNM
 from OpenPNM.Geometry import models as gm
-from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
+from OpenPNM.Geometry import GenericGeometry
 
 class Cube_and_Cuboid(GenericGeometry):
     r"""
@@ -27,10 +27,10 @@ class Cube_and_Cuboid(GenericGeometry):
         super(Cube_and_Cuboid,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
         self._generate()
-                       
+
     def _generate(self):
         r'''
-        '''        
+        '''
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        seed=self._seed)
@@ -53,7 +53,7 @@ class Cube_and_Cuboid(GenericGeometry):
                        tsd_name='weibull_min',
                        tsd_shape=1.5,
                        tsd_loc=14e-6,
-                       tsd_scale=2e-6)                  
+                       tsd_scale=2e-6)
         self.add_model(propname='throat.length',
                        model=gm.throat_length.straight)
         self.add_model(propname='throat.volume',
@@ -62,7 +62,7 @@ class Cube_and_Cuboid(GenericGeometry):
                        model=gm.throat_area.cuboid)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cuboid)
-        
+
 if __name__ == '__main__':
     #Run doc tests
     import doctest

@@ -158,7 +158,7 @@ The approach used to subclass GenericGeometry above would also work for Networks
 -------------------------------------------------------------------------------
 Creating Customized Algorithms
 -------------------------------------------------------------------------------
-Algorithms can also be customized as described above.  The GenericAlgorithm has a few additional methods that are meant to be implemented by subclasses, such as ``update_results``.  The intention of this method is to send the pertinent results of a calculation 'out' of the Algorithm object and to the correct object in the simulation.  This step is handy, but is not actually necessary.  One can of course manually transfer data from an Algorithm to a Phase, for instance with:
+Algorithms can also be customized as described above.  The GenericAlgorithm has a few additional methods that are meant to be implemented by subclasses, such as ``return_results``.  The intention of this method is to send the pertinent results of a calculation 'out' of the Algorithm object and to the correct object in the simulation.  This step is handy, but is not actually necessary.  One can of course manually transfer data from an Algorithm to a Phase, for instance with:
 
 >>> air['pore.temperature'] = thermal_simulation['pore.T']
 

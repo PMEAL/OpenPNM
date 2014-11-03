@@ -1,16 +1,16 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 MatFile: Subclass to import Networks from a Matlab 'mat' file
 ===============================================================================
 
 """
-
-import OpenPNM
-import OpenPNM.Utilities.misc as misc
 import scipy as sp
 import scipy.io as spio
 import os
-from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
+from OpenPNM.Network import GenericNetwork
+import OpenPNM.Geometry
+import OpenPNM.Utilities.misc as misc
 
 class MatFile(GenericNetwork):
     r'''

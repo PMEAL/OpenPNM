@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 Stick_and_Ball -- A standard 'stick & ball' geometrical model
@@ -5,19 +6,18 @@ Stick_and_Ball -- A standard 'stick & ball' geometrical model
 
 """
 
-import OpenPNM
 from OpenPNM.Geometry import models as gm
-from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
+from OpenPNM.Geometry import GenericGeometry
 
 class Stick_and_Ball(GenericGeometry):
     r"""
-    Stick and Ball subclass of GenericGeometry.  This subclass is meant as a 
-    basic default geometry to get started quickly.  
+    Stick and Ball subclass of GenericGeometry.  This subclass is meant as a
+    basic default geometry to get started quickly.
 
     Parameters
     ----------
     name : string
-        The name of the object, which is also used as the label where this 
+        The name of the object, which is also used as the label where this
         geometry is defined.
 
     """
@@ -29,8 +29,8 @@ class Stick_and_Ball(GenericGeometry):
         super(Stick_and_Ball,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
         self._generate()
-        
-    def _generate(self):   
+
+    def _generate(self):
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        regen_mode='constant',
@@ -53,7 +53,7 @@ class Stick_and_Ball(GenericGeometry):
                        tsd_name='weibull_min',
                        tsd_shape=2.5,
                        tsd_loc=0,
-                       tsd_scale=0.5)                  
+                       tsd_scale=0.5)
         self.add_model(propname='throat.length',
                        model=gm.throat_length.straight)
         self.add_model(propname='throat.volume',
@@ -62,7 +62,7 @@ class Stick_and_Ball(GenericGeometry):
                        model=gm.throat_area.cylinder)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
-        
+
 if __name__ == '__main__':
     #Run doc tests
     import doctest

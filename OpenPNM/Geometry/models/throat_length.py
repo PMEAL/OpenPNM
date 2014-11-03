@@ -40,21 +40,21 @@ def voronoi(network,
     to go back to geometry index of the connected pores.
     This will probably break down when a throat connects two different geometries 
     """
-    throats = geometry['throat.map']
+    throats = geometry.map_throats(network,geometry.throats())
     connections = network['throat.conns'][throats]
     net_pore1 = connections[:,0]
     net_pore2 = connections[:,1]
-    geom_pore1 = []
-    geom_pore2 = []
-    for net_pore in net_pore1:
-        geom_pore1.append(geometry['pore.map'].tolist().index(net_pore))
-    for net_pore in net_pore2:
-        geom_pore2.append(geometry['pore.map'].tolist().index(net_pore))
+    #geom_pore1 = []
+    #geom_pore2 = []
+    #for net_pore in net_pore1:
+    #    geom_pore1.append(geometry['pore.map'].tolist().index(net_pore))
+    #for net_pore in net_pore2:
+    #    geom_pore2.append(geometry['pore.map'].tolist().index(net_pore))
     
-    pore_centroids = geometry['pore.centroid']
-    throat_centroids = geometry['throat.centroid']
-    v1 = throat_centroids-pore_centroids[geom_pore1]
-    v2 = throat_centroids-pore_centroids[geom_pore2]
+    pore_centroids = network['pore.centroid']
+    throat_centroids = network['throat.centroid'][throats]
+    v1 = throat_centroids-pore_centroids[net_pore1]
+    v2 = throat_centroids-pore_centroids[net_pore2]
     value = _sp.ndarray(len(connections))
     for i in range(len(connections)):
         value[i] = _sp.linalg.norm(v1[i])+_sp.linalg.norm(v2[i])

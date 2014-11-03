@@ -1,18 +1,16 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 GenericNetwork: Abstract class to construct pore networks
 ===============================================================================
 
 """
-
 import sys
-import OpenPNM
-from OpenPNM.Base import Core
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
-import scipy.signal as spsg
 import OpenPNM.Utilities.misc as misc
+from OpenPNM.Base import Core
 
 class GenericNetwork(Core):
     r"""
@@ -31,6 +29,7 @@ class GenericNetwork(Core):
         """
         super(GenericNetwork,self).__init__(**kwargs)
         self._logger.info("Construct Network")
+        self.name = name
 
         #Initialize properties to an empty network
         Np = sp.shape(coords)[0]
@@ -44,7 +43,6 @@ class GenericNetwork(Core):
         self._incidence_matrix = {}
         self._adjacency_matrix = {}
         self._logger.debug("Construction of Network container")
-        self.name = name
 
     def __setitem__(self,prop,value):
         for geom in self._geometries:
@@ -54,6 +52,9 @@ class GenericNetwork(Core):
         super(GenericNetwork,self).__setitem__(prop,value)
 
     def __getitem__(self,key):
+        if key.split('.')[-1] == self.name:
+            element = key.split('.')[0]
+            return self[element+'.all']
         if key not in self.keys():
             self._logger.debug(key+' not on Network, constructing data from Geometries')
             return self._interleave_data(key,self.geometries())
@@ -543,7 +544,7 @@ class GenericNetwork(Core):
     #--------------------------------------------------------------------------
     '''Network Manipulation Methods'''
     #--------------------------------------------------------------------------
-    def clone(self,pores,apply_label=['clone'],mode='parents'):
+    def clone_pores(self,pores,apply_label=['clone'],mode='parents'):
         r'''
         Clones the specified pores and adds them to the network
 
@@ -696,9 +697,9 @@ class GenericNetwork(Core):
 
         Notes
         -----
-        It can get very messy to 'trim' pores or throats from a Network that
-        has already been used to instantiate other objects.  It's not impossible
-        but at the present time attempting to do this will raise an error.
+        Trimming only adjusts Phase, Geometry, and Physics objects. Trimming a
+        Network that has already been used to run simulations will break those
+        simulation objects.
 
         Examples
         --------
@@ -713,78 +714,64 @@ class GenericNetwork(Core):
         >>> pn.Nt
         296
 
-        TODO: This logic works but can be shortened as done in subnet
-        TODO: Enhance this to allow triming when phases and physics are present
-
         '''
-
-        if (self._phases != []):
-            raise Exception('Network has active Phases, cannot proceed')
 
         if pores != []:
             pores = sp.array(pores,ndmin=1)
-            Pdrop = sp.zeros((self.num_pores(),),dtype=bool)
-            Pdrop[pores] = True
-            Pkeep = ~Pdrop
-            Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
+            Pkeep = sp.ones((self.num_pores(),),dtype=bool)
+            Pkeep[pores] = False
+            Tkeep = sp.ones((self.num_throats(),),dtype=bool)
             Ts = self.find_neighbor_throats(pores)
-            Tdrop[Ts] = 1
-            Tkeep = ~Tdrop
+            Tkeep[Ts] = False
         elif throats != []:
             throats = sp.array(throats,ndmin=1)
-            Tdrop = sp.zeros((self.num_throats(),),dtype=bool)
-            Tdrop[throats] = 1
-            Tkeep = ~Tdrop
-            Pkeep = self.pores(labels='all')
-            Pkeep = self.tomask(pores=Pkeep)
+            Tkeep = sp.ones((self.num_throats(),),dtype=bool)
+            Tkeep[throats] = False
+            Pkeep = self['pore.all'].copy()
         else:
             self._logger.warning('No pores or throats recieved')
             return
 
+        # Trim all associated objects
+        for item in self._geometries+self._physics+self._phases:
+            Pnet = self['pore.'+item.name]*Pkeep
+            Tnet = self['throat.'+item.name]*Tkeep
+            temp = self.map_pores(pores=sp.where(Pnet)[0],target=item,return_mapping=True)
+            Ps = temp['target']
+            temp = self.map_throats(throats=sp.where(Tnet)[0],target=item,return_mapping=True)
+            Ts = temp['target']
+            # Then resize 'all
+            item.update({'pore.all' : sp.ones((sp.sum(Pnet),),dtype=bool)})
+            item.update({'throat.all' : sp.ones((sp.sum(Tnet),),dtype=bool)})
+            # Overwrite remaining data and info
+            for key in item.keys():
+                if key.split('.')[1] not in ['all']:
+                    temp = item.pop(key)
+                    if key.split('.')[0] == 'throat':
+                        item[key] = temp[Ts]
+                    if key.split('.')[0] == 'pore':
+                        item[key] = temp[Ps]
+
         #Remap throat connections
-        Pnew = sp.arange(0,sum(Pkeep),dtype=int)
-        Pmap = sp.ones((self.num_pores(),),dtype=int)*-1
-        Pmap[Pkeep] = Pnew
+        Pmap = sp.ones((self.Np,),dtype=int)*-1
+        Pmap[Pkeep] = sp.arange(0,sp.sum(Pkeep))
         tpore1 = self['throat.conns'][:,0]
         tpore2 = self['throat.conns'][:,1]
         Tnew1 = Pmap[tpore1[Tkeep]]
         Tnew2 = Pmap[tpore2[Tkeep]]
-
-
         #Write 'all' label specifically
-        dict.__setitem__(self,'throat.all',sp.ones_like(Tnew1,dtype=bool))
-        dict.__setitem__(self,'pore.all',sp.ones_like(Pnew,dtype=bool))
-        # Write connections specifically
-        dict.__setitem__(self,'throat.conns', sp.vstack((Tnew1,Tnew2)).T)
+        self.update({'throat.all' : sp.ones((sp.sum(Tkeep),),dtype=bool)})
+        self.update({'pore.all' : sp.ones((sp.sum(Pkeep),),dtype=bool)})
+        # Write throat connections specifically
+        self.update({'throat.conns' : sp.vstack((Tnew1,Tnew2)).T})
         # Overwrite remaining data and info
-        items = self.keys()
-        for key in items:
-            if key.split('.')[1] not in ['conns','all']:
-                temp = self[key]
-                del self[key]
-                if key.split('.')[0] == 'throat':
-                    self[key] = temp[Tkeep]
-                if key.split('.')[0] == 'pore':
-                    self[key] = temp[Pkeep]
-
-        #Trim associated Geometry objects
-        for geom in self._geometries:
-            Pgeom = sp.in1d(geom['pore.map'],sp.where(Pkeep)[0])
-            Tgeom = sp.in1d(geom['throat.map'],sp.where(Tkeep)[0])
-            dict.__setitem__(geom,'pore.all',Pgeom[Pgeom])
-            dict.__setitem__(geom,'throat.all',Tgeom[Tgeom])
-            dict.__setitem__(geom,'pore.map',self.pores(geom.name))
-            dict.__setitem__(geom,'throat.map',self.throats(geom.name))
-            # Overwrite remaining data and info
-            items = geom.keys()
-            for key in items:
-                if key.split('.')[1] not in ['all','map']:
-                    temp = geom[key]
-                    del geom[key]
-                    if key.split('.')[0] == 'throat':
-                        geom[key] = temp[Tgeom]
-                    if key.split('.')[0] == 'pore':
-                        geom[key] = temp[Pgeom]
+        for item in self.keys():
+            if item.split('.')[-1] not in ['conns','all']:
+                temp = self.pop(item)
+                if item.split('.')[0] == 'throat':
+                    self[item] = temp[Tkeep]
+                if item.split('.')[0] == 'pore':
+                    self[item] = temp[Pkeep]
 
         #Reset network graphs
         self._update_network(mode='regenerate')

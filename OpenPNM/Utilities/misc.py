@@ -183,10 +183,10 @@ def amalgamate_data(objs=[]):
     Returns a dictionary containing ALL pore data from all netowrk and/or
     phase objects received as arguments
     """
-    if type(objs) != list:
+    if type(objs) is not list:
         objs = list(objs)
     data_amalgamated = {}
-    exclusion_list = ['pore.centroid','pore.vertices','pore.vert_index','throat.vertices','throat.vert_index','throat.offset_vertices','throat.normal','throat.centroid','throat.image_analysis']
+    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_vertices','throat.vertices','throat.normal','throat.perimeter']
     for item in objs:
         mro = [module.__name__ for module in item.__class__.__mro__]
         if 'GenericNetwork' in mro: #if Network object, combine Geometry and Network keys
@@ -211,62 +211,15 @@ def amalgamate_data(objs=[]):
             if key not in exclusion_list:
                 try:
                     if _sp.amax(item[key]) < _sp.inf:
-                        dict_name = item.name+'.'+key
+                        element = key.split('.')[0]
+                        propname = key.split('.')[1]
+                        dict_name = element+'.'+item.name+'_'+propname
+                        if key in ['pore.coords', 'throat.conns', 'pore.all','throat.all']:
+                            dict_name = key
                         data_amalgamated.update({dict_name : item[key]})
                 except TypeError:
                     print(key)
     return data_amalgamated
-
-def _amalgamate_data(objs=[]):
-    r"""
-    Returns a dictionary containing ALL pore data from all netowrk and/or
-    phase objects received as arguments
-    """
-    if type(objs) is not list:
-        objs = list(objs)
-    data_amalgamated = {}
-    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
-    for item in objs:
-        mro = [module.__name__ for module in item.__class__.__mro__]
-        if 'GenericNetwork' in mro: #if Network object, combine Geometry and Network keys
-            keys = []
-            for key in item.keys():
-                keys.append(key)
-            for geom in item._geometries:
-                for key in geom.keys():
-                    if key not in keys:
-                        keys.append(key)
-        else:
-            if 'GenericPhase' in mro:
-                keys = []
-                for key in item.keys():
-                    keys.append(key)
-                for physics in item._physics:
-                    for key in physics.keys():
-                        if key not in keys:
-                            keys.append(key)
-        keys.sort()
-        for key in keys:
-            if key not in exclusion_list:
-                if _sp.amax(item[key]) < _sp.inf:
-                    element = key.split('.')[0]
-                    propname = key.split('.')[1]
-                    dict_name = element+'.'+item.name+'_'+propname
-                    data_amalgamated.update({dict_name : item[key]})
-    return data_amalgamated
-
-def clone_object(obj):
-    r'''
-    '''
-    cls = obj.__class__.__mro__[0]
-    new_obj = cls()
-    new_obj.update(obj)
-    new_obj._phases = obj._phases
-    new_obj._physics = obj._physics
-    new_obj._geometries = obj._geometries
-    new_obj._net = obj._net
-    new_obj._models= obj._models
-    return new_obj
 
 def conduit_lengths(network,throats=None,mode='pore'):
     r"""
@@ -283,8 +236,11 @@ def conduit_lengths(network,throats=None,mode='pore'):
         pcoords = network['pore.coords']
         #   Find the pore-to-pore distance, minus the throat length
         lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network['throat.length']
-        #   Calculate the fraction of that distance from the first pore    
-        fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
+        #   Calculate the fraction of that distance from the first pore
+        try:
+            fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
+        except:
+            fractions = 0.5
         plen1 = lengths*fractions
         plen2 = lengths*(1-fractions)
     elif mode ==  'centroid':
@@ -295,19 +251,131 @@ def conduit_lengths(network,throats=None,mode='pore'):
     
     return _sp.vstack((plen1,network['throat.length'],plen2)).T[throats]
 
+def clone_object(obj):
+    r'''
+    Clone an OpenPNM Object
 
+    Parameters
+    ----------
+    obj : OpenPNM Object
+        The object to be cloned can be any OpenPNM Object
 
+    Returns
+    -------
+    A clone of the specified object is returned, but it retains all its links
+    to the objects associated with the original object.  The cloned object is
+    not associated with the Network.
 
+    Notes
+    -----
+    This method is intended to create a disposable object, for instance, to
+    receive simulation data without overwriting existing data.
 
+    '''
+    cls = obj.__class__.__mro__[0]
+    new_obj = cls()
+    new_obj.update(obj)
+    new_obj._phases = obj._phases
+    new_obj._physics = obj._physics
+    new_obj._geometries = obj._geometries
+    new_obj._net = obj._net
+    new_obj._models= obj._models
+    return new_obj
 
+def clone_simulation(network,name=None):
+    r'''
+    Clone an entire Network simulation, including all associated objects.  The
+    cloned simulation is numerical identical to, but entirely distinct from the
+    original simulation.
 
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The Network object associated with the simulation to be cloned
+    name : string, optional
+        A new name can be given to the cloned Network if desired, otherwise it
+        will inherit the name of the original Network object.
+    '''
+    #Clone Network
+    cls = network.__class__.__mro__[0]
+    new_net = cls(name=name)
+    new_net.update(network)
+    # Clone associated Geometry
+    for item in network._geometries:
+        cls = item.__class__.__mro__[0]
+        Ps = item.map_pores(pores=item.Ps,target=network)
+        Ts = item.map_throats(throats=item.Ts,target=network)
+        geom = cls(network=new_net,name=item.name,pores=Ps,throats=Ts)
+        geom.update(item)
+        geom._models = item._models
+    # Clone associated Phases
+    for item in network._phases:
+        cls = item.__class__.__mro__[0]
+        phase = cls(network=new_net,name=item.name)
+        phase.update(item)
+        phase._models = item._models
+    # Repeat Phases to find component phases
+    for item in network._phases:
+        new_item = new_net.phases(item.name)[0]
+        new_item._phases = item._phases
+        phase._models = item._models
+    # Clone associated Physics
+    for item in network._physics:
+        cls = item.__class__.__mro__[0]
+        phase = item._phases[0]
+        Ps = item.map_pores(pores=item.Ps,target=network)
+        Ts = item.map_throats(throats=item.Ts,target=network)
+        phys = cls(network=new_net,phase=phase,name=item.name,pores=Ps,throats=Ts)
+        phys.update(item)
+        phys._models = item._models
+    return new_net
 
+def subset(network,pores,name=None):
+    r'''
+    Create a new sub-network from a given Network, from a list of pores.
 
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network simulation from which a subnet is to be created
+    pores : array_like
+        A list of pores from which to create the new network
+    name : string, optional
+        The name to apply to the new network object
 
+    Returns
+    -------
+    OpenPNM Object
+        Returns a new network object
 
+    Notes
+    -----
+    This creates a 'pore.map' and 'throat.map' property that lists the
+    correspondence to the subset pores and throats, to the main network.
 
+    Examples
+    --------
+    na
+    '''
+    import OpenPNM.Utilities.misc as misc
+    if name == network.name:
+        raise Exception('Subset cannot have same name as parent network')
+    # Clone network
+    new_net = misc.clone_simulation(network=network,name=name)
+    # Add temporary indices to new_net
+    new_net['pore.temp_ind'] = network.Ps
+    new_net['throat.temp_ind'] = network.Ts
+    # Trim cloned network to specific subset
+    Ps = ~network.tomask(pores)
+    new_net.trim(Ps)
+    # Associate cloned network with parent
+    new_net._net = network
+    # Create labels in parent network
+    Ps = new_net['pore.temp_ind']
+    network['pore.'+new_net.name] = False
+    network['pore.'+new_net.name][Ps] = True
+    Ts = new_net['throat.temp_ind']
+    network['throat.'+new_net.name] = False
+    network['throat.'+new_net.name][Ts] = True
 
-
-
-
-
+    return new_net

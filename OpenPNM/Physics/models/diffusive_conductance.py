@@ -45,7 +45,6 @@ def bulk_diffusion(physics,
     parea = network[pore_area]
     pdia = network[pore_diameter]
     #Get the properties of every throat
-    tdia = network[throat_diameter]
     tarea = network[throat_area]
     tlen = network[throat_length]
     #Interpolate pore phase property values to throats
@@ -57,15 +56,14 @@ def bulk_diffusion(physics,
         #Find half-lengths of each pore
         pcoords = network['pore.coords']
         #   Find the pore-to-pore distance
-        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network[throat_length]
-        #   Calculate the fraction of that distance from each element
-        sum_dia = pdia[Ps[:,0]]+pdia[Ps[:,1]]+tdia
+        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))
         #update tlen to be the minimum of the original throat length, and the diameter ratio derived length
-        tlen = _sp.minimum(lengths*tdia/sum_dia,tlen)
-        sum_plen = sum_dia - tlen
-        fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
-        plen1 = sum_plen*fractions
-        plen2 = sum_plen*(1-fractions)
+        tlen = _sp.minimum(lengths-2e-12,tlen)
+        #   Calculate the fraction of the remaining distance for each pore
+        len_rem = lengths - tlen
+        sum_dia = pdia[Ps[:,0]]+pdia[Ps[:,1]]
+        plen1 = len_rem*pdia[Ps[:,0]]/sum_dia
+        plen2 = len_rem*pdia[Ps[:,1]]/sum_dia
     else:        
         plen1 = (0.5*pdia[Ps[:,0]])
         plen2 = (0.5*pdia[Ps[:,1]])

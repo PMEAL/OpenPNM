@@ -54,7 +54,7 @@ class Core(Base):
             super(Base, self).__setitem__(key,value)
             return
         #Skip checks for protected props, and prevent changes if defined
-        if key.split('.')[1] in ['all','map']:
+        if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
                     self._logger.debug(key+' is being defined.')
@@ -95,6 +95,8 @@ class Core(Base):
             * 'static' : The property is stored as static data and is only regenerated when the object's `regenerate` is called
 
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
+
+            * 'deferred' : The model is stored on the object but not run until regenerate is called.
 
         Notes
         -----
@@ -139,6 +141,8 @@ class Core(Base):
             self._models[propname] = fn  # Store model in a private attribute
         if regen_mode == 'constant':
              self[propname] = fn()  # Generate data and store it locally
+        if regen_mode == 'deferred':
+            self._models[propname] = fn  # Store model in a private attribute
 
     def remove_model(self,propname,mode='model'):
         r'''
@@ -730,6 +734,8 @@ class Core(Base):
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         '''
+        if element[-1] == 's':
+            element = element[:-1]
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
         if type(labels) == str: labels = [labels] #convert string to list, if necessary
@@ -844,6 +850,23 @@ class Core(Base):
         '''
         return self.throats()
 
+    def _tomask(self,locations,element):
+        r'''
+        This is a generalized version of tomask that accepts a string of
+        'pore' or 'throat' for programmatic access.
+        '''
+        if element in ['pore','pores']:
+            Np = sp.shape(self['pore.all'])[0]
+            pores = sp.array(locations,ndmin=1)
+            mask = sp.zeros((Np,),dtype=bool)
+            mask[pores] = True
+        if element in ['throat','throats']:
+            Nt = sp.shape(self['throat.all'])[0]
+            throats = sp.array(locations,ndmin=1)
+            mask = sp.zeros((Nt,),dtype=bool)
+            mask[throats] = True
+        return mask
+
     def tomask(self,pores=None,throats=None):
         r'''
         Convert a list of pore or throat indices into a boolean mask of the
@@ -862,15 +885,9 @@ class Core(Base):
 
         '''
         if pores != None:
-            Np = sp.shape(self['pore.all'])[0]
-            pores = sp.array(pores,ndmin=1)
-            mask = sp.zeros((Np,),dtype=bool)
-            mask[pores] = True
+            mask = self._tomask(element='pore',locations=pores)
         if throats != None:
-            Nt = sp.shape(self['throat.all'])[0]
-            throats = sp.array(throats,ndmin=1)
-            mask = sp.zeros((Nt,),dtype=bool)
-            mask[throats] = True
+            mask = self._tomask(element='throat',locations=throats)
         return mask
 
     def toindices(self,mask):
@@ -1226,60 +1243,46 @@ class Core(Base):
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
         return temp
-    def _map(self,element,locations,target):
+
+    def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
         mro = [item.__name__ for item in self.__class__.__mro__]
-        if 'GenericNetwork' not in mro:
-            net = self._net
+        if 'GenericNetwork' in mro: net = self
+        else: net = self._net
+        locations = sp.array(locations,ndmin=1)
+        mapping = {}
+
+        # Retrieve Network size masks
+        maskS = net[element+'.'+self.name]
+        maskT = net[element+'.'+target.name]
+
+        # Convert source locations to Network indices
+        temp = sp.zeros_like(net._get_indices(element=element))-1
+        temp[maskS] = self._get_indices(element=element)
+        locsS = sp.where(sp.in1d(temp,locations))[0]
+        mapping['source'] = locations
+
+        # Find locations in target
+        temp = sp.zeros_like(net._get_indices(element=element))-1
+        temp[maskT] = target._get_indices(element=element)
+        locsT = temp[locsS]
+        mapping['target'] = locsT
+
+        keep = (locsS>=0)*(locsT>=0)
+        mapping['source'] = mapping['source'][keep]
+        mapping['target'] = mapping['target'][keep]
+
+        if return_mapping == True:
+            return mapping
         else:
-            net = self
+            if sp.sum(locsS>=0) < sp.shape(locations)[0]:
+                raise Exception('Some locations not found on Source object')
+            if sp.sum(locsT>=0) < sp.shape(locations)[0]:
+                raise Exception('Some locations not found on Target object')
+            return mapping['target']
 
-        if element in ['pore','pores']:
-            element = 'pore'
-        elif element in ['throat','throats']:
-            element = 'throat'
-
-        A = self
-        B = target
-        locations = sp.array(locations)
-
-        #Map A to Network numbering
-        net_A = sp.ones((net._count(element),))*sp.nan
-        net_A[A[element+'.map']] = A._get_indices(element)
-
-        #Map B to Network numbering
-        net_B = sp.ones((net._count(element),))*sp.nan
-        net_B[B[element+'.map']] = B._get_indices(element)
-
-        #Convert locations to Network numbering
-        try:
-            locs = A[element+'.map'][locations]
-        except:
-            " Try one by one "
-            locs=[]
-            try:
-                locations = locations.tolist()
-            except:
-                "Already a list"
-            for loc in locations.copy():
-                try:
-                    locs.append(A[element+'.map'][loc])
-                except:
-                    "Remove the location not in the source"
-                    locations.remove(loc)
-            #raise Exception('Some supplied locations do not exist on source object')
-
-        #Map netPs_A onto netPs_B
-        net_source = net_A[locations]
-        net_target = net_B[locs]
-        if sum(sp.isnan(net_target)) > 0:
-            net_source = net_source[~sp.isnan(net_target)]
-            net_target = net_target[~sp.isnan(net_target)] 
-            #raise Exception('Some supplied locations do not exist on target object')
-        return sp.vstack((sp.int_(net_source),sp.int_(net_target))).T
-
-    def map_pores(self,pores,target):
+    def map_pores(self,target,pores=None,return_mapping=False):
         r'''
         Accepts a list of pores from the caller object and maps them onto the
         given target object
@@ -1292,6 +1295,11 @@ class Core(Base):
         target : OpenPNM object, optional
             The object for which a list of pores is desired.
 
+        return_mapping : boolean (default is False)
+            If True, a dictionary containing 'source' locations, and 'target'
+            locations is returned.  Any 'source' locations not found in the
+            'target' object are removed from the list.
+
         Returns
         -------
         pores : array_like
@@ -1301,10 +1309,12 @@ class Core(Base):
         --------
         n/a
         '''
-        Ps = self._map(element='pores',locations=pores,target=target)
+        if pores is None:
+            pores = self.Ps
+        Ps = self._map(element='pore',locations=pores,target=target,return_mapping=return_mapping)
         return Ps
 
-    def map_throats(self,throats,target):
+    def map_throats(self,target,throats=[],return_mapping=False):
         r'''
         Accepts a list of throats from the caller object and maps them onto the
         given target object
@@ -1326,7 +1336,9 @@ class Core(Base):
         --------
         n/a
         '''
-        Ts = self._map(element='throat',locations=throats,target=target)
+        if throats is None:
+            throats = self.Ts
+        Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
 
     def check_data_health(self,props=[],element='',quiet=False):
@@ -1395,7 +1407,7 @@ class Core(Base):
                     prop = prop[0:32]+'...'
                 required = self._count(item.split('.')[0])
                 a = sp.isnan(self[item])
-                defined = required - a.sum(axis=0,keepdims=(a.ndim-1)==0)[0]
+                defined = sp.shape(self[item])[0] - a.sum(axis=0,keepdims=(a.ndim-1)==0)[0]
                 print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
         print(header)
         print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations'))

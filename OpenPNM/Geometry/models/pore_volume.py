@@ -99,31 +99,27 @@ def voronoi(network,
     Calculate volume from the convex hull of the offset vertices making the throats surrounding the pore
     Also calculate the centre of mass for the volume
     """    
-    pores = geometry['pore.map']
+    pores = geometry.map_pores(network,geometry.pores())
     Np = len(pores)
     volume = _sp.zeros(Np)
     com = _sp.zeros([Np,3])
     for i in range(Np):
         throat_vert_list = []
-        throats=network.find_neighbor_throats([pores[i]])
-        if len(throats) > 1:        
-            for throat in throats:
-                try:
-                    geom_throat = geometry['throat.map'].tolist().index(throat)
-                    geom_throat_verts = geometry["throat.offset_vertices"][geom_throat]
-                    if geom_throat_verts != None:
-                        for j in range(len(geom_throat_verts)):
-                            throat_vert_list.append(geom_throat_verts[j])
-                except ValueError:
-                    " Throat is not part of this geometry "
+        net_throats=network.find_neighbor_throats([pores[i]])
+        geom_throats = network.map_throats(target=geometry,throats=net_throats,return_mapping=True)['target']
+        if len(geom_throats) > 1:        
+            for throat in geom_throats:
+                geom_throat_verts = geometry["throat.offset_vertices"][throat]
+                if geom_throat_verts != None:
+                    for j in range(len(geom_throat_verts)):
+                        throat_vert_list.append(geom_throat_verts[j])
             throat_array=_sp.asarray(throat_vert_list)
             if len(throat_array)>4:
                 volume[i],com[i] = _get_hull_volume(throat_array)
             else:
                 volume[i]=0
-        elif len(throats) == 1 and 'throat.centroid' in geometry.props():
-                geom_throat = geometry['throat.map'].tolist().index(throats)
-                com[i]=geometry['throat.centroid'][geom_throat]
+        elif len(geom_throats) == 1 and 'throat.centroid' in geometry.props():
+                com[i]=geometry['throat.centroid'][geom_throats]
                 volume[i]=0
     "Find any pores with centroids at origin and use the mean of the pore vertices instead"
     "Not doing this messes up hydraulic conductances using centre to centre"

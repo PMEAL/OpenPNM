@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 GenericGeometry -- Base class to manage pore scale geometry
@@ -5,10 +6,9 @@ GenericGeometry -- Base class to manage pore scale geometry
 
 """
 
-import OpenPNM
+import scipy as sp
 from OpenPNM.Base import Core
 import OpenPNM.Geometry.models
-import scipy as sp
 
 class GenericGeometry(Core):
     r"""
@@ -59,23 +59,30 @@ class GenericGeometry(Core):
         self._net['throat.'+self.name] = False
         self.set_locations(pores=pores,throats=throats)
         self._seed = seed
-        
+
+    def __getitem__(self,key):
+        if key.split('.')[-1] == self.name:
+            element = key.split('.')[0]
+            return self[element+'.all']
+        else:
+            return super(GenericGeometry,self).__getitem__(key)
+
     def set_locations(self,pores=[],throats=[]):
         r'''
         This method can be used to set the pore and throats locations of an
         *empty* object.  Once locations have been set they can not be changed.
-        
+
         Parameters
         ----------
         pores and throats : array_like
             The list of pores and/or throats where the object should be applied.
-            
+
         Notes
         -----
         This method is intended to assist in the process of loading saved
-        objects.  Save data can be loaded onto an empty object, then the object 
-        can be reassociated with a Network manually by setting the pore and 
-        throat locations on the object.  
+        objects.  Save data can be loaded onto an empty object, then the object
+        can be reassociated with a Network manually by setting the pore and
+        throat locations on the object.
         '''
         pores = sp.array(pores,ndmin=1)
         throats = sp.array(throats,ndmin=1)
@@ -89,7 +96,6 @@ class GenericGeometry(Core):
                 raise Exception('The given pores overlap with an existing Geometry object')
             #Initialize locations
             self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
-            self['pore.map'] = pores
             #Specify Geometry locations in Network dictionary
             self._net['pore.'+self.name][pores] = True
         if len(throats)>0:
@@ -102,7 +108,6 @@ class GenericGeometry(Core):
                 raise Exception('The given throats overlap with an existing Geometry object')
             #Initialize locations
             self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-            self['throat.map'] = throats
             #Specify Geometry locations in Network dictionary
             self._net['throat.'+self.name][throats] = True
 

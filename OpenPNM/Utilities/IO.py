@@ -1,8 +1,8 @@
-import OpenPNM
 from OpenPNM.Utilities import misc
 import scipy as _sp
 import numpy as _np
 import os as _os
+import pickle as _pickle
 from xml.etree import ElementTree as _ET
 
 
@@ -59,15 +59,12 @@ class PNM(object):
         '''
 
         if filename != '':
-            filename = filename
+            filename = filename.split('.')[0]
         else:
             filename = network.name
 
         #Setup nested dictionary to store simulation
         sim = {}
-        sim['data'] = {}
-        sim['tree'] = {}
-        sim['mods'] = {}
 
         #Collect all objects into a single list
         all_objs = [network]
@@ -77,19 +74,35 @@ class PNM(object):
 
         #Enter each object's data, object tree and models into dictionary
         for obj in all_objs:
-            module = obj.__module__.split('.')[1]
-            sim['data'][module+'.'+obj.name] = obj.copy()
-            sim['tree'][module+'.'+obj.name] = {'Class'      : obj.__class__.__mro__[0],
-                                                'Geometries' : obj.geometries(),
-                                                'Phases'     : obj.phases(),
-                                                'Physics'    : obj.physics()}
-            sim['mods'][module+'.'+obj.name] = {}
+#            try:
+#                del obj._logger
+#            except:
+#                print('No logger found, ignoring request to delete it')
+            sim[obj.name] = {}
+            sim[obj.name]['data'] = obj.copy()
+            sim[obj.name]['associations'] = {'Geometries' : obj.geometries(),
+                                             'Phases'     : obj.phases(),
+                                             'Physics'    : obj.physics()}
+            sim[obj.name]['info'] = {'mro'   : [item.__name__ for item in obj.__class__.__mro__],
+                                     'class' : obj.__class__}
+            # Capture all of the objects attributes, other than OpenPNM reserved ones
+            # Note: This could break if people store funky stuff in attributes
+            excl_list = ['_physics','_geometries','_phases','_net','_name','_logger','_models']
+            a = {key : obj.__dict__[key] for key in obj.__dict__.keys() if key not in excl_list}
+            sim[obj.name]['attrs'] = a
+            sim[obj.name]['models'] = {}
             for prop in list(obj._models.keys()):
-                sim['mods'][module+'.'+obj.name][prop] = PNM._save_model(obj,prop)
-        #Save nested dictionary as a Numpy zip file
-        _sp.savez_compressed(filename,**sim)
-        #Rename the zip extension to pnm for kicks
-        _os.rename(filename+'.npz',filename+'.pnm')
+                sim[obj.name]['models'][prop] = PNM._save_model(obj,prop)
+        #Save nested dictionary pickle
+        _pickle.dump(sim,open(filename+'.pnm','wb'))
+#        #Save nested dictionary as a Numpy zip file
+#        _sp.savez_compressed(filename,**sim)
+#        #Rename the zip extension to pnm for kicks
+#        try:
+#            _os.remove(filename+'.pnm')
+#        except:
+#            pass
+#        _os.rename(filename+'.npz',filename+'.pnm')
 
     @staticmethod
     def _save_model(obj,item):
@@ -100,17 +113,16 @@ class PNM(object):
         a = obj._models[item].keywords
         #Store path to model, name of model and argument key:value pairs in a dict
         model = {}
-        model['path'] = f.__module__
-        model['name'] = f.__name__
+        model['func'] = f
         model['args'] = {}
         for item in a:
             #remove default arguments used in all add_model calls
-            if item not in ['physics','network','phase','geometry']:
+            if item not in ['physics','network','phase','geometry','mixture']:
                 model['args'][item] = a[item]
         return model
 
     @staticmethod
-    def load(filename,models=True):
+    def load(filename):
         r'''
         Load a saved simulation
 
@@ -126,63 +138,58 @@ class PNM(object):
         '''
         #Read in file
         filename = filename.split('.')[0]
-        temp = _sp.load(filename+'.pnm')
-        sim = {}
-        sim['data'] = temp['data'].item()
-        sim['tree'] = temp['tree'].item()
-        sim['mods'] = temp['mods'].item()
-        temp.close()
+        sim = _pickle.load(open(filename+'.pnm','rb'))
 
-        for obj in sim['data'].keys():  # Network object
-            if obj.split('.')[0] == 'Network':
-#                if sim['tree'][obj]['SelfType'] == 'Cubic':
-#                    net = OpenPNM.Network.Cubic(name=obj.split('.')[1])
-#                else:
-#                    net = OpenPNM.Network.GenericNetwork(name=obj.split('.')[1])
-                net = OpenPNM.Network.GenericNetwork(name=obj.split('.')[1])
-                net.update(sim['data'][obj])
-                if models:
-                    for model in sim['mods'][obj].keys():
-                        PNM._load_model(net,sim['mods'][obj][model])
+        for name in sim.keys():  # Network object
+            if 'GenericNetwork' in sim[name]['info']['mro']:
+                obj = sim[name]
+                net = obj['info']['class'](name=name)
+                net.update(obj['data'])
+                for item in obj['attrs'].keys():
+                    setattr(net,item,obj['attrs'][item])
+                for item in obj['models'].keys():
+                    PNM._load_model(net,obj['models'][item])
+                break
 
-        for obj in sim['data'].keys():  # Geometry objects
-            if obj.split('.')[0] == 'Geometry':
-                Ps = net.pores(obj.split('.')[1])
-                Ts = net.throats(obj.split('.')[1])
-                geom = OpenPNM.Geometry.GenericGeometry(network=net,pores=Ps,throats=Ts,name=obj.split('.')[1])
-                geom.update(sim['data'][obj])
-                if models:
-                    for model in sim['mods'][obj].keys():
-                        PNM._load_model(geom,sim['mods'][obj][model])
+        for name in sim.keys():  # Geometry objects
+            if 'GenericGeometry' in sim[name]['info']['mro']:
+                obj = sim[name]
+                Ps = net.pores(name)
+                Ts = net.throats(name)
+                geom = obj['info']['class'](network=net,pores=Ps,throats=Ts,name=name)
+                geom.update(obj['data'])
+                for item in obj['attrs'].keys():
+                    setattr(geom,item,obj['attrs'][item])
+                for item in obj['models'].keys():
+                    PNM._load_model(geom,obj['models'][item])
 
-        for obj in sim['data'].keys():  # Do Pure phases or independent mixtures first
-            if (obj.split('.')[0] == 'Phases') and (sim['tree'][obj]['Phases'] == []):
-                phase = OpenPNM.Phases.GenericPhase(network=net,name=obj.split('.')[1])
-                phase.update(sim['data'][obj])
-                if models:
-                    for model in sim['mods'][obj].keys():
-                        PNM._load_model(phase,sim['mods'][obj][model])
+        for name in sim.keys():  # Do Pure phases or independent mixtures first
+            if 'GenericPhase' in sim[name]['info']['mro']:
+                obj = sim[name]
+                phase = obj['info']['class'](network=net,name=name)
+                phase.update(obj['data'])
+                for item in obj['attrs'].keys():
+                    setattr(phase,item,obj['attrs'][item])
+                for item in obj['models'].keys():
+                    PNM._load_model(phase,obj['models'][item])
 
-        for obj in sim['data'].keys():  # Then do proper mixtures which have subphases
-            if (obj.split('.')[0] == 'Phases') and (sim['tree'][obj]['Phases'] != []):
-                comps = net.phases(sim['tree'][obj]['Phases'])
-                #Instantiate mixture phase with list of components
-                phase = OpenPNM.Phases.GenericPhase(network=net,name=obj.split('.')[1],components=comps)
-                phase.update(sim['data'][obj])
-                if models:
-                    for model in sim['mods'][obj].keys():
-                        PNM._load_model(phase,sim['mods'][obj][model])
+        for name in sim.keys():  # Link the phase objects to each other
+            if 'GenericPhase' in sim[name]['info']['mro']:
+                phase = net.phases(name)[0]
+                phase._phases = net.phases(sim[name]['associations']['Phases'])
 
-        for obj in sim['data'].keys():  # Physics objects associated with mixures
-            if obj.split('.')[0] == 'Physics':
-                phase = net.phases(sim['tree'][obj]['Phases'])[0]  # This will always be only 1 phase
-                Ps = phase.pores(obj.split('.')[1])
-                Ts = phase.throats(obj.split('.')[1])
-                phys = OpenPNM.Physics.GenericPhysics(network=net,phase=phase,pores=Ps,throats=Ts,name=obj.split('.')[1])
-                phys.update(sim['data'][obj])
-                if models:
-                    for model in sim['mods'][obj].keys():
-                        PNM._load_model(phys,sim['mods'][obj][model])
+        for name in sim.keys():  # Physics objects
+            if 'GenericPhysics' in sim[name]['info']['mro']:
+                obj = sim[name]
+                phase = net.phases(obj['associations']['Phases'])[0]  # This will always be only 1 phase
+                Ps = net.pores(name)
+                Ts = net.throats(name)
+                phys = obj['info']['class'](network=net,phase=phase,name=name,pores=Ps,throats=Ts)
+                phys.update(obj['data'])
+                for item in obj['attrs'].keys():
+                    setattr(phys,item,obj['attrs'][item])
+                for item in obj['models'].keys():
+                    PNM._load_model(phys,obj['models'][item])
 
         return net
 
@@ -190,10 +197,8 @@ class PNM(object):
     def _load_model(obj,model):
         r'''
         '''
-        #Import model using stored path and name
-        mod = eval(model['path']+'.'+model['name'])
         #Apply model to object using info in dict
-        obj.add_model(model=mod,**model['args'])
+        obj.add_model(model=model['func'],regen_mode='deferred',**model['args'])
 
 class VTK():
     r"""

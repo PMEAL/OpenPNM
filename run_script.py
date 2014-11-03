@@ -46,7 +46,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffu
 OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air,loglevel=30)
 Ps = pn.pores(labels=['bottom_boundary'])
 OP_1.run(inlets=Ps)
-OP_1.update_results(Pc=7000)
+OP_1.return_results(Pc=7000)
 
 #------------------------------------------------------------------------------
 '''Perform Invasion Percolation'''
@@ -55,24 +55,28 @@ inlets = pn.pores('bottom_boundary')
 outlets = pn.pores('top_boundary')
 IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'IP_1', loglevel = 30)
 IP_1.run(invading_phase = water, defending_phase = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
-IP_1.update_results()
+IP_1.return_results()
 
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
 alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn,phase=air)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.pores('top_boundary')
+BC1_pores = pn.pores('right_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
-BC2_pores = pn.pores('bottom_boundary')
+BC2_pores = pn.pores('left_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
 #Add new model to air's physics that accounts for water occupancy
 phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    propname='throat.conduit_diffusive_conductance',
-                   throat_conductance='throat.diffusive_conductance')
-#Use newly defined diffusive_conductance in the diffusion calculation
+                   throat_conductance='throat.diffusive_conductance',
+                   throat_occupancy='throat.occupancy',
+                   pore_occupancy='pore.occupancy',
+                   mode='strict',
+                   factor=0)
+#Use desired diffusive_conductance in the diffusion calculation (conductance for the dry network or water-filled network)
 alg.run(conductance='throat.diffusive_conductance')
-alg.update_results()
+alg.return_results()
 Deff = alg.calc_eff_diffusivity()
 
 # this creates a time step x num_pores, which is what the animated object needs

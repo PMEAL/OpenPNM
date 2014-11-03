@@ -23,13 +23,13 @@ class Base(dict):
     Parameters
     ----------
     name : string
-        The name for the object.  This must be unique so no two objects in the 
+        The name for the object.  This must be unique so no two objects in the
         simulation have the same name.  If no name is provided, and random
-        string is appended to the objects module name.  
-        
+        string is appended to the objects module name.
+
     loglevel : int
         Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-        
+
     loggername : string
         Name of the logger. The default is the name of the class.
 
@@ -43,7 +43,7 @@ class Base(dict):
         else:
             self._logger = _logging.getLogger(self.__class__.__name__)
         if 'loglevel' in kwargs.keys():
-            loglevel = kwargs['loglevel']
+            self._loglevel = kwargs['loglevel']
 
         #Initialize phase, physics, and geometry tracking lists
         self._phases = []
@@ -56,7 +56,7 @@ class Base(dict):
         self.__class__.__module__,
         self.__class__.__name__,
         hex(id(self)))
-        
+
     def _set_loglevel(self,level=50):
         if type(level) is str:
             desc = {}
@@ -70,7 +70,7 @@ class Base(dict):
         self._loglevel = level
         self._logger.setLevel(level)
         self._logger.debug("Changed log level")
-        
+
     def _get_loglevel(self):
         level = self._loglevel
         desc = {}
@@ -81,7 +81,7 @@ class Base(dict):
         desc[50] = 'CRITICAL: A serious error that might compromise program execution'
         print(desc[level])
         return level
-        
+
     loglevel = property(fget=_get_loglevel,fset=_set_loglevel)
 
     def set_loglevel(self,level=50):

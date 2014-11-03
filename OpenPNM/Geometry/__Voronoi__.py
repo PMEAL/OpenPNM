@@ -1,17 +1,17 @@
+# -*- coding: utf-8 -*-
 """
-module __Voronoi__: Subclass of GenericGeometry for a standard Geometry created from a Voronoi Diagram
-Used with Delaunay Network but could work for others (not tested)
-=============================================================================== 
+===============================================================================
+Voronoi --Subclass of GenericGeometry for a standard Geometry created from a
+Voronoi Diagram Used with Delaunay Network but could work for others (not tested)
+===============================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 
-import OpenPNM
 import scipy as sp
 import numpy as np
 from OpenPNM.Geometry import models as gm
-from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
+from OpenPNM.Geometry import GenericGeometry
 import time
 
 class Voronoi(GenericGeometry):
@@ -25,7 +25,7 @@ class Voronoi(GenericGeometry):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, fibre_rad = 3e-06,**kwargs):
         r"""
         Initialize
         """
@@ -33,15 +33,15 @@ class Voronoi(GenericGeometry):
             raise Exception('The installed version of Scipy is too old, Voronoi cannot run')
         super(Voronoi,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
-        if kwargs['fibre_rad']:
-            fibre_rad = kwargs['fibre_rad']
-        else:
-            fibre_rad = 3e-06
+        #if kwargs['fibre_rad']:
+        #    fibre_rad = kwargs['fibre_rad']
+        #else:
+        #    fibre_rad = 3e-06
         self._generate(fibre_rad)
-    
+
     def _generate(self,fibre_rad):
         r'''
-        ''' 
+        '''
         timer = []
         elements = []
         timer.append(time.time())
@@ -139,6 +139,7 @@ class Voronoi(GenericGeometry):
         #vo.pore2centroid(self._net)
     
 if __name__ == '__main__':
+    import OpenPNM
     pn = OpenPNM.Network.Delaunay(name='test_net')
     pn.generate(num_pores=100, domain_size=[0.0001,0.0001,0.0001],add_boundaries=True)
     test = OpenPNM.Geometry.Voronoi(loglevel=10,name='test_geom',locations=[0],network=pn)

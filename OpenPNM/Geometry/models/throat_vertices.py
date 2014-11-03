@@ -12,7 +12,7 @@ def voronoi(network,
     r"""
     Update the pore vertices from the voronoi vertices
     """    
-    throats = geometry["throat.map"]    
+    throats = geometry.map_throats(network,geometry.throats())   
     value = _sp.ndarray(len(throats),dtype=object)
     for i in range(len(throats)):
         value[i]=_sp.asarray(list(network["throat.vert_index"][throats[i]].values()))

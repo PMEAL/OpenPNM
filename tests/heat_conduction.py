@@ -58,7 +58,7 @@ Fourier_alg.set_boundary_conditions(bctype='Dirichlet',bcvalue=T_in,pores=inlets
 Fourier_alg.set_boundary_conditions(bctype='Dirichlet',bcvalue=T_out,pores=outlets)
 Fourier_alg.run()
 
-Fourier_alg.update_results()
+Fourier_alg.return_results()
 
 Cu['pore.analytical_temp'] = 30*sp.sinh(sp.pi*pn['pore.coords'][:,0]/5)/sp.sinh(sp.pi/5)*sp.sin(sp.pi*pn['pore.coords'][:,1]/5) + 50
 a = Cu['pore.temperature'][pn.pores('geom')]

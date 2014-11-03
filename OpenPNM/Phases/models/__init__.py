@@ -14,7 +14,6 @@ from . import density
 from . import diffusivity
 from . import electrical_conductivity
 from . import misc
-from . import mixture_props
 from . import molar_density
 from . import molar_mass
 from . import surface_tension

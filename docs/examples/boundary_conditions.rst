@@ -89,9 +89,9 @@ This runs the algorithm using 'throat.diffusive_conductance' as the conductance.
 
 .. code-block:: python
 
-	alg.update_results()
+	alg.return_results()
 
-Each Algorithm must subclass the `update_results()` method so that it sends the correct information out the network and/or phase.  In the case of the Fickian Algorithm, the 'mole_fraction' of the phase is stored on the Phase object in question.  Running a different version of the Algorithm and calling `update_results()` will overwrite any previous values.  The results of this simulation should produce the following visualization (done in Paraview):
+Each Algorithm must subclass the `return_results()` method so that it sends the correct information out the network and/or phase.  In the case of the Fickian Algorithm, the 'mole_fraction' of the phase is stored on the Phase object in question.  Running a different version of the Algorithm and calling `return_results()` will overwrite any previous values.  The results of this simulation should produce the following visualization (done in Paraview):
 
 .. image:: BC1.png
 
@@ -106,7 +106,7 @@ The code below sets the total rate leaving a group of pores cumulatively.  Note 
 	BC3_pores = [50,51,52,53,54,40,41,42,43,44]
 	alg.set_boundary_conditions(bctype='Neumann_group', bcvalue=-5e-3, pores=BC3_pores)
 	alg.run(conductance='throat.diffusive_conductance')
-	alg.update_results()
+	alg.return_results()
 
 This results in the image below, where a region of high concentration can be seen in the core of the domain due to the mass production:
 
@@ -124,7 +124,7 @@ One of the options for specifying Neumann conditions is to apply the same rate t
 	alg.set_boundary_conditions(bctype='Dirichlet',pores=BC2_pores, mode='remove')
 	alg.set_boundary_conditions(bctype='Neumann',pores=BC2_pores, bcvalue=1e-10)
 	alg.run(conductance='throat.diffusive_conductance')
-	alg.update_results()
+	alg.return_results()
 
 This results in image below.  Notice that the concentration on the inlet face is not uniform, and that the smaller pores have a somewhat higher concentration (darker red), which is necessary if their flux is the be the same as larger, more conductive pores.
 

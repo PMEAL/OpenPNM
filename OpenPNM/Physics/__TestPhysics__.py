@@ -1,13 +1,13 @@
+# -*- coding: utf-8 -*-
 """
+===============================================================================
 module Physics
 ===============================================================================
 
 """
 
-import OpenPNM
-import scipy as sp
 from OpenPNM.Physics import models as pm
-from OpenPNM.Physics.__GenericPhysics__ import GenericPhysics
+from OpenPNM.Physics import GenericPhysics
 
 class TestPhysics(GenericPhysics):
     r"""
@@ -17,12 +17,12 @@ class TestPhysics(GenericPhysics):
 
     Parameters
     ----------
-    network : OpenPNM Network object 
+    network : OpenPNM Network object
         The network to which this Physics should be attached
-        
-    phase : OpenPNM Phase object 
+
+    phase : OpenPNM Phase object
         The Phase object to which this Physics applies
-        
+
     pores and throats : array_like
         The pores and throats where this Physics object applies
 
@@ -32,7 +32,7 @@ class TestPhysics(GenericPhysics):
         super(TestPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
         self._generate()
-        
+
     def _generate(self):
         for phase in self._phases:
             temp = [item.split('.')[1] for item in phase.props()]
@@ -44,7 +44,7 @@ class TestPhysics(GenericPhysics):
                 self['throat.capillary_pressure'] = 1/self._net['throat.diameter']
             if 'thermal_conductivity' in temp:
                 self['throat.thermal_conductance'] = phase['throat.thermal_conductivity']*self._net['throat.diameter']/self._net['throat.length']
-        
+
 if __name__ == '__main__':
     print('none yet')
 
