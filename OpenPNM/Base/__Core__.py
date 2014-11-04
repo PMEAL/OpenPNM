@@ -764,6 +764,7 @@ class Core(Base):
             ind = (none == 0)
         #Extract indices from boolean mask
         ind = sp.where(ind==True)[0]
+        ind = ind.astype(dtype=int)
         return ind
 
     def pores(self,labels='all',mode='union'):
