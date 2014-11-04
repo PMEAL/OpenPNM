@@ -1,15 +1,13 @@
+# -*- coding: utf-8 -*-
 """
-module __SGL10__: Subclass of GenericGeometry for an SGL10 gas diffusion 
-layer
+===============================================================================
+SGL10 -- A geometry model for SGL10 type Gas Diffusion Layers
 ===============================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
-
 """
 
-import OpenPNM
 from OpenPNM.Geometry import models as gm
-from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
+from OpenPNM.Geometry import GenericGeometry
 
 class SGL10(GenericGeometry):
     r"""
@@ -29,10 +27,10 @@ class SGL10(GenericGeometry):
         super(SGL10,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
         self._generate()
-                       
+
     def _generate(self):
         r'''
-        '''        
+        '''
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        num_range=[0,0.8834],
@@ -59,7 +57,7 @@ class SGL10(GenericGeometry):
                        tsd_shape=3.07,
                        tsd_loc=1.97e-6,
                        tsd_scale=1.6e-5,
-                       tsd_offset=18e-6)               
+                       tsd_offset=18e-6)
         self.add_model(propname='throat.length',
                        model=gm.throat_length.straight)
         self.add_model(propname='throat.volume',
@@ -68,8 +66,8 @@ class SGL10(GenericGeometry):
                        model=gm.throat_area.cylinder)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
-                       
-        
+
+
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
     pass

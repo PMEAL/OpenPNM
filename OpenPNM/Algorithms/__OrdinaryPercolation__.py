@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __OrdinaryPercolation__: Ordinary Percolation Algorithm
@@ -7,10 +8,8 @@ module __OrdinaryPercolation__: Ordinary Percolation Algorithm
 
 import scipy as sp
 import numpy as np
-import scipy.sparse as sprs
 import matplotlib.pyplot as plt
-import OpenPNM
-from OpenPNM.Algorithms.__GenericAlgorithm__ import GenericAlgorithm
+from OpenPNM.Algorithms import GenericAlgorithm
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""
@@ -32,7 +31,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     name : string, optional
         The name to assign to the Algorithm Object
-        
+
     Examples
     --------
     >>> pn = OpenPNM.Network.TestNet()
@@ -44,11 +43,11 @@ class OrdinaryPercolation(GenericAlgorithm):
     >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn, name='OP',invading_phase=phase1, defending_phase=phase2)
     >>> OP.run(inlets=pn.pores('top'))
     >>> med_Pc = sp.median(OP['pore.inv_Pc'])
-    >>> OP.update_results(med_Pc)
+    >>> OP.return_results(med_Pc)
     >>> print(len(phase1.pores('occupancy'))) #should return '71' filled pores if everything is working normally
     71
 
-    To run this algorithm, use 'setup()' to provide the necessary simulation 
+    To run this algorithm, use 'setup()' to provide the necessary simulation
     """
 
     def __init__(self,invading_phase=None,defending_phase=None,**kwargs):
@@ -151,7 +150,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         v_total = sp.sum(self._net['pore.volume'])+sp.sum(self._net['throat.volume'])
         sat = 0.
         self['pore.inv_sat'] = 1.
-        self['throat.inv_sat'] = 1.    
+        self['throat.inv_sat'] = 1.
         for i in range(self._npts):
             inv_pores = sp.where(self._p_seq==i)[0]
             inv_throats = sp.where(self._t_seq==i)[0]
@@ -159,7 +158,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             sat += new_sat
             self['pore.inv_sat'][inv_pores] = sat
             self['throat.inv_sat'][inv_throats] = sat
-            
+
     def _do_one_inner_iteration(self,inv_val):
         r"""
         Determine which throats are invaded at a given applied capillary pressure
@@ -242,7 +241,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self['pore.inv_Pc']=self._p_inv
         self['throat.inv_Pc']=self._t_inv
 
-    def update_results(self, Pc=0, seq=None, sat=None, occupancy='occupancy'):
+    def return_results(self, Pc=0, seq=None, sat=None, occupancy='occupancy'):
         r"""
         Updates the occupancy status of invading and defending phases
         as determined by the OP algorithm

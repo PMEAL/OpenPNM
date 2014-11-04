@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __GenericPhase__: Base class for building Phase objects
 ===============================================================================
 
 """
-import OpenPNM
 from OpenPNM.Base import Core
 import OpenPNM.Phases.models
 import scipy as sp
@@ -58,12 +58,7 @@ class GenericPhase(Core):
 
         if components != []:
             for comp in components:
-                self._phases.append(comp) # Associate any sub-phases
-                #Add models for components to inherit mixture T and P
-                comp.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.mixture_props.temperature,mixture=self)
-                comp.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.mixture_props.pressure,mixture=self)
-                #Move T and P models to beginning of regeneration order
-                comp.reorder_models({'pore.temperature':0,'pore.pressure':1})
+                self.set_component(phase=comp)
         self._net._phases.append(self)  # Append this Phase to the Network
 
     def __setitem__(self,prop,value):
@@ -94,27 +89,29 @@ class GenericPhase(Core):
             This is the ficticious phase object defining a pure component.
 
         mode : string
-            Indicates whether to 'add' or 'remove' the supplied object
+            Indicates whether to 'add' or 'remove' the supplied Phase object
         '''
         if mode == 'add':
             if phase.name in self.phases():
                 self._logger.error('Phase already present')
             else:
-                self._phases.append(phase)
-                temp = phase._models
-                phase._models.clear()
-                phase.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.mixture_props.temperature,mixture=self)
-                phase.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.mixture_props.pressure,mixture=self)
-                phase._models.update(temp)
+                self._phases.append(phase) # Associate any sub-phases with self
+                phase._phases.append(self)  # Associate self with sub-phases
+                #Add models for components to inherit mixture T and P
+                phase.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.misc.mixture_value)
+                phase.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.misc.mixture_value)
+                #Move T and P models to beginning of regeneration order
+                phase.reorder_models({'pore.temperature':0,'pore.pressure':1})
         elif mode == 'remove':
             if phase.name in self.phases():
                 self._phases.remove(phase)
+                phase._phases = []
             else:
                 self._logger.error('Phase not found')
 
     def regenerate(self,**kwargs):
         for item in self._phases:
-            item.regenerate(**kwargs)
+            super(GenericPhase,item).regenerate(**kwargs)
         super(GenericPhase,self).regenerate(**kwargs)
 
     #Pull in doc string for the Core regenerate method

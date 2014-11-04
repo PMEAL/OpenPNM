@@ -116,7 +116,7 @@ x_values = []
 y_values = []
 
 for x in range(50):
-    IP_1.update_results(IPseq = max_inv_seq*(x/50.0))
+    IP_1.return_results(IPseq = max_inv_seq*(x/50.0))
 
     phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                propname='throat.conduit_diffusive_conductance',
@@ -233,7 +233,7 @@ for x in range(20):
     max_inv_seq = max(IP_1.get_pore_data(prop = 'IP_inv_seq'))
 
     for x in range(50):
-        IP_1.update_results(IPseq = max_inv_seq*(x/50.0))
+        IP_1.return_results(IPseq = max_inv_seq*(x/50.0))
 
         phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
                    propname='throat.conduit_diffusive_conductance',

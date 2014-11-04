@@ -1,15 +1,14 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __GenericLinearTransport__: Class for solving linear transport processes
 ===============================================================================
 
 """
-import OpenPNM
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.linalg as sprslin
-from .__GenericAlgorithm__ import GenericAlgorithm
-
+from OpenPNM.Algorithms import GenericAlgorithm
 
 class GenericLinearTransport(GenericAlgorithm):
     r"""
@@ -30,7 +29,7 @@ class GenericLinearTransport(GenericAlgorithm):
             self._phase = phase  # Register phase with self
             if sp.size(phase)!=1:   self._phases = phase
             else:   self._phases.append(phase)
-            
+
     def setup(self,conductance,quantity):
         r'''
         This setup provides the initial data for the solver
@@ -38,22 +37,16 @@ class GenericLinearTransport(GenericAlgorithm):
         if  sp.size(self._phase)==1:
             self._conductance = 'throat.'+conductance.split('.')[-1]
             self._quantity = 'pore.'+self._phase.name+'_'+quantity.split('.')[-1]
-    
+
             #Check health of conductance vector
             if self._phase.check_data_health(props=self._conductance,quiet=True):
-                #If no nans, check for 0's
-                ind = sp.nonzero(self._phase[self._conductance])[0]
-                gmin = sp.amin(self._phase[self._conductance][ind])
-                ind = sp.where(self._phase[self._conductance]==0)[0]
                 self['throat.conductance'] = self._phase[self._conductance]
-                #To prevent singular matrix
-                self['throat.conductance'][ind] = gmin/1000000
             else:
                 raise Exception('The provided throat conductance has problems')
         else:
             raise Exception('The linear transport solver accepts just one phase.')
 
-    def update_results(self,pores=None,throats=None,**kwargs):
+    def return_results(self,pores=None,throats=None,**kwargs):
         r'''
         Send results of simulation out the the appropriate locations.
 
@@ -83,7 +76,7 @@ class GenericLinearTransport(GenericAlgorithm):
     def _build_coefficient_matrix(self):
         r'''
         This builds the sparse coefficient matrix for the linear solver.
-        '''       
+        '''
         # Filling coefficient matrix
         tpore1 = self._net['throat.conns'][:,0]
         tpore2 = self._net['throat.conns'][:,1]
@@ -159,6 +152,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self._Coeff_dimension = A_dim
         a = sprs.coo.coo_matrix((data,(row,col)),(A_dim,A_dim))
         A = a.tocsr()
+        A.eliminate_zeros()
         return(A)
 
 
@@ -185,7 +179,7 @@ class GenericLinearTransport(GenericAlgorithm):
         except: pass
         return(B)
 
-    def rate(self,pores='',mode='group'):
+    def rate(self,pores='',mode='group',conductance=None,X_val=None):
         r'''
         Send a list of pores and receive the net rate
         of material moving into them.
@@ -201,6 +195,8 @@ class GenericLinearTransport(GenericAlgorithm):
             - 'single': It calculates the rate for each pore individually.
 
         '''
+        if conductance == None: conductance = self['throat.conductance']
+        if X_val == None: X_val = self[self._quantity]
         pores = sp.array(pores,ndmin=1)
         R = []
         if mode=='group':   iteration = 1
@@ -216,9 +212,9 @@ class GenericLinearTransport(GenericAlgorithm):
             #Changes to pores1 and pores2 to make them as the internal and external pores
             pores1[-sp.in1d(p1,P)] = p2[-sp.in1d(p1,P)]
             pores2[-sp.in1d(p1,P)] = p1[-sp.in1d(p1,P)]
-            X1 = self[self._quantity][pores1]
-            X2 = self[self._quantity][pores2]
-            g = self['throat.conductance'][throats]
+            X1 = X_val[pores1]
+            X2 = X_val[pores2]
+            g = conductance[throats]
             R.append(sp.sum(sp.multiply(g,(X2-X1))))
         return(sp.array(R,ndmin=1))
 

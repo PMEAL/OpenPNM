@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __GenericAlgorithm__: Base class to build custom algorithms
@@ -7,11 +8,11 @@ This generic class contains the recommended methods for subclassed algorithms.
 It inherits from Core, so is Python Dict with the OpenPNM data control methods.
 
 """
-import OpenPNM
 import sys
 import scipy as sp
+from OpenPNM.Base import Core
 
-class GenericAlgorithm(OpenPNM.Base.Core):
+class GenericAlgorithm(Core):
     r"""
     GenericAlgorithm - Base class to execute algorithms
 
@@ -83,10 +84,10 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         """
         self._logger.debug(sys._getframe().f_code.co_name)
 
-    def update_results(self,**kwargs):
+    def return_results(self,**kwargs):
         self._logger.debug(sys._getframe().f_code.co_name)
 
-    def set_boundary_conditions(self,component=None,bctype='',bcvalue=[],pores=[],throats=[],mode='merge'):
+    def set_boundary_conditions(self,component=None,bctype='',bcvalue=None,pores=[],throats=[],mode='merge'):
         r'''
         Apply boundary conditions to specified pores or throats
 
@@ -184,11 +185,12 @@ class GenericAlgorithm(OpenPNM.Base.Core):
         else:
             raise Exception('Problem with the pore and/or throat list')
         #Validate bcvalue
-        if bcvalue != []:
+        if bcvalue != None:
             #Check bcvalues are compatible with bctypes
             if bctype == 'Neumann_group':  #Only scalars are acceptable
                 if sp.size(bcvalue) != 1:
                     raise Exception('When specifying Neumann_group, bcval should be a scalar')
+                else:   bcvalue = sp.float64(bcvalue)
             else: #Only scalars or Np/Nt-long are acceptable
                 if sp.size(bcvalue) == 1:
                     bcvalue = sp.ones(sp.shape(loc))*bcvalue
@@ -211,17 +213,18 @@ class GenericAlgorithm(OpenPNM.Base.Core):
                     except KeyError: pass        
         #Set boundary conditions based on supplied mode
         if mode == 'merge':
-            if bcvalue != []:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
+            if bcvalue != None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
             self[element+'.'+component.name+'_'+bctype][loc] = True
             if bctype not in self._existing_BC: self._existing_BC.append(bctype)
         elif mode == 'overwrite':
             self[element+'.'+component.name+'_bcval_'+bctype] = sp.ones((all_length,),dtype=float)*sp.nan
-            if bcvalue != []:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
+            if bcvalue != None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
             self[element+'.'+component.name+'_'+bctype] = sp.zeros((all_length,),dtype=bool)
             self[element+'.'+component.name+'_'+bctype][loc] = True
             if bctype not in self._existing_BC: self._existing_BC.append(bctype)
 
 if __name__ == '__main__':
+    import OpenPNM
     pn = OpenPNM.Network.TestNet()
     test = OpenPNM.Algorithms.GenericAlgorithm(network=pn,loglevel=10)
     test.run()

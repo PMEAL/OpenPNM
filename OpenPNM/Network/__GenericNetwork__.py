@@ -1,18 +1,16 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 GenericNetwork: Abstract class to construct pore networks
 ===============================================================================
 
 """
-
 import sys
-import OpenPNM
-from OpenPNM.Base import Core
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
-import scipy.signal as spsg
 import OpenPNM.Utilities.misc as misc
+from OpenPNM.Base import Core
 
 class GenericNetwork(Core):
     r"""
@@ -345,7 +343,7 @@ class GenericNetwork(Core):
             self._adjacency_matrix['lil'] = temp
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
         if [sp.asarray(x) for x in neighborPs if x] == []:
-            return []
+            return sp.array([],ndmin=1)
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborPs = [sp.asarray(x) for x in neighborPs if x]
@@ -408,7 +406,7 @@ class GenericNetwork(Core):
             self._incidence_matrix['lil'] = temp
             neighborTs = self._incidence_matrix['lil'].rows[[pores]]
         if [sp.asarray(x) for x in neighborTs if x] == []:
-            return []
+            return sp.array([],ndmin=1)
         if flatten:
             #All the empty lists must be removed to maintain data type after hstack (numpy bug?)
             neighborTs = [sp.asarray(x) for x in neighborTs if x]

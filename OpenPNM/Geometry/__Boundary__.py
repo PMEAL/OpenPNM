@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 Boundary -- Subclass of GenericGeometry for Boundary Pores
@@ -5,9 +6,8 @@ Boundary -- Subclass of GenericGeometry for Boundary Pores
 
 """
 
-import OpenPNM
 from OpenPNM.Geometry import models as gm
-from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
+from OpenPNM.Geometry import GenericGeometry
 
 class Boundary(GenericGeometry):
     r"""
@@ -17,7 +17,7 @@ class Boundary(GenericGeometry):
     ----------
     shape: str
         Stick and Ball or Cube and Cuboid? ('spheres','cubes')
-                
+
     Examples
     --------
     >>> pn = OpenPNM.Network.TestNet()
@@ -37,7 +37,7 @@ class Boundary(GenericGeometry):
         super(Boundary,self).__init__(**kwargs)
         self._logger.debug("Method: Constructor")
         self._generate(shape)
-        
+
     def _generate(self,shape):
         r'''
         '''
@@ -46,7 +46,7 @@ class Boundary(GenericGeometry):
             seeds = True
         except:
             seeds = False
-                
+
         if seeds: self.add_model(propname='pore.seed',model=gm.pore_misc.constant,value=0.9999)
         self.add_model(propname='pore.diameter',model=gm.pore_misc.constant,value=0)
         if seeds: self.add_model(propname='throat.seed',
@@ -69,7 +69,7 @@ class Boundary(GenericGeometry):
             self.add_model(propname='throat.area',model=gm.throat_area.cuboid)
             self.add_model(propname='throat.surface_area',model=gm.throat_surface_area.cuboid)
         self['pore.area'] = 1.0
-        
+
 
 if __name__ == '__main__':
     import doctest

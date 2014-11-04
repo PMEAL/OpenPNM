@@ -5,8 +5,6 @@ TestNet: Generate simple cubic network for testing purposes
 
 """
 
-import OpenPNM
-
 import scipy as sp
 from OpenPNM.Network import GenericNetwork
 
@@ -86,7 +84,7 @@ class TestNet(GenericNetwork):
         connections = connections[sp.lexsort((connections[:, 1], connections[:, 0]))]
         self['throat.all'] = sp.ones_like(sp.arange(0,sp.shape(tpore1)[0]),dtype=bool)
         self['throat.conns'] = connections
-        
+
     def _add_labels(self):
         coords = self['pore.coords']
         self['pore.front'] = self.tomask(coords[:,0]<=self._Lc)
@@ -104,5 +102,6 @@ class TestNet(GenericNetwork):
             ts = ts[ps1*ps0]
             self['throat.'+item] = self.tomask(throats=ts)
 if __name__ == '__main__':
+    import OpenPNM
     pn = OpenPNM.Network.TestNet()
     print(pn.name)

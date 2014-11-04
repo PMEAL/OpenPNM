@@ -93,7 +93,7 @@ def test_open_air_diffusivity():
     Diff.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
     Diff.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
     Diff.run()
-    Diff.update_results()
+    Diff.return_results()
     Diff_deff = Diff.calc_eff_diffusivity()/np.mean(air['pore.diffusivity'])
     assert np.round(Diff_deff,3) == 1
 
@@ -131,7 +131,7 @@ def test_thermal_conduction():
     Fourier_alg.set_boundary_conditions(bctype='Dirichlet',bcvalue=T_in,pores=inlets)
     Fourier_alg.set_boundary_conditions(bctype='Dirichlet',bcvalue=50,pores=outlets)
     Fourier_alg.run()
-    Fourier_alg.update_results()
+    Fourier_alg.return_results()
     #Calculate analytical solution over the same domain spacing
     Cu['pore.analytical_temp'] = 30*sp.sinh(sp.pi*pn['pore.coords'][:,0]/5)/sp.sinh(sp.pi/5)*sp.sin(sp.pi*pn['pore.coords'][:,1]/5) + 50
     b = Cu['pore.analytical_temp'][pn.pores('geom')]
@@ -174,7 +174,7 @@ def test_Darcy_alg():
     Darcy1.set_boundary_conditions(bctype='Neumann_group',bcvalue=-Q_in,pores=inlets)
     Darcy1.set_boundary_conditions(bctype='Dirichlet',bcvalue=P_out,pores=outlets)
     Darcy1.run()
-    Darcy1.update_results()
+    Darcy1.return_results()
     print('pore pressure for Darcy1 algorithm:')
     print(air['pore.pressure'])
     Darcy2 = OpenPNM.Algorithms.StokesFlow(network=pn,phase=air,name='Darcy2')

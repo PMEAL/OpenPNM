@@ -1,15 +1,14 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 Cubic: Generate lattice-like networks
 ===============================================================================
 
 """
-import OpenPNM
 import numpy as np
 import scipy as sp
-import scipy.sparse as sprs
 import OpenPNM.Utilities.misc as misc
-from OpenPNM.Network.__GenericNetwork__ import GenericNetwork
+from OpenPNM.Network import GenericNetwork
 
 class Cubic(GenericNetwork):
     r"""

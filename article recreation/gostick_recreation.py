@@ -77,7 +77,7 @@ max_inv_seq = max(OP_1['throat.inv_seq'])
 
 num_seq = 20
 for x in range(num_seq+1):
-    OP_1.update_results(sat = x/num_seq)
+    OP_1.return_results(sat = x/num_seq)
 
     #printing out so we know how far along we are
     print('seq = '+str(round(max_inv_seq*(x/num_seq)))+' Seq out of '+str(round(max_inv_seq))+' total sequences')

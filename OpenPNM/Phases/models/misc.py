@@ -105,7 +105,21 @@ def ideal_mixture(phase,propname,pore_prop=None,composition='pore.mole_fraction'
         value= value + comp[pore_prop]*comp[composition]
     return value
 
+def mixture_value(phase,propname,**kwargs):
+    r'''
+    Adopts the specified property value from the parent mixture phase
 
+    Parameters
+    ----------
+    propname :
+        The propname to which this model is assigned (i.e. 'pore.temperature')
+        is automatically passed and used as the property name to fetch from
+        the mixture object
+
+    '''
+    mixture = phase._phases[0]
+    vals = mixture[propname]
+    return vals
 
 
 

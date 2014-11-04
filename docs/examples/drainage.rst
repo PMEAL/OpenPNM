@@ -85,10 +85,10 @@ The first line in the above block finds all the pores in the network that are la
 Sharing Algorithm Results Throughout the Simulation
 -------------------------------------------------------------------------------
 
-The results of the above simulation (and all simulations) are stored locally on the algorithm object.  If these results are to be used in other parts of the simulations, then they must be explicitly sent 'out'.  Keeping the results *silo-ed* in this way prevents unintentional overwriting of results by subsequent algorithms.  This allows for multiple simulations of the same type to be run with different conditions and such.  Sending the results of any simulation 'out' is done by with the `update_results()` command:
+The results of the above simulation (and all simulations) are stored locally on the algorithm object.  If these results are to be used in other parts of the simulations, then they must be explicitly sent 'out'.  Keeping the results *silo-ed* in this way prevents unintentional overwriting of results by subsequent algorithms.  This allows for multiple simulations of the same type to be run with different conditions and such.  Sending the results of any simulation 'out' is done by with the `return_results()` command:
 
 .. code-block:: python
 
-	OP_1.update_results(Pc=8000)
+	OP_1.return_results(Pc=8000)
 
 The above command outputs data called 'occupancy' to the invading phase object. This data describes which pores and throats are filled by invading and defending phase at the specified applied capillary pressure *Pc*.  This information can be used by subsequent algorithms.  For instance it is often of interest to determine the gas phase diffusivity through a partially water filled network.  The Fickian diffusion algorithm then would use this information and set gas diffusion through water filled pores to zero and a relative effective diffusivity value could be found.

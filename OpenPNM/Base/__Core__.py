@@ -96,6 +96,8 @@ class Core(Base):
 
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
 
+            * 'deferred' : The model is stored on the object but not run until regenerate is called.
+
         Notes
         -----
         This method is inherited by all net/geom/phys/phase objects.  It takes
@@ -139,6 +141,8 @@ class Core(Base):
             self._models[propname] = fn  # Store model in a private attribute
         if regen_mode == 'constant':
              self[propname] = fn()  # Generate data and store it locally
+        if regen_mode == 'deferred':
+            self._models[propname] = fn  # Store model in a private attribute
 
     def remove_model(self,propname,mode='model'):
         r'''
@@ -605,6 +609,7 @@ class Core(Base):
             return misc.PrintableList(labels)
         else:
             labels = sp.array(labels)
+            locations = self._get_indices(element=element)[locations]
             arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
             col = 0
             for item in labels:
@@ -666,7 +671,7 @@ class Core(Base):
         >>> pn.labels(pores=[0,1,5,6],mode='intersection')
         ['pore.all', 'pore.bottom']
         '''
-        if (pores == []) and (throats == []):
+        if (pores is []) and (throats is []):
             if element == '':
                 temp = []
                 temp = self._get_labels(element='pore')
@@ -678,12 +683,12 @@ class Core(Base):
             else:
                 self._logger.error('Unrecognized element')
                 return
-        elif pores != []:
+        elif pores is not []:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             temp = self._get_labels(element='pore',locations=pores, mode=mode)
-        elif throats != []:
+        elif throats is not []:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
@@ -708,17 +713,17 @@ class Core(Base):
         >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
         array([0, 1])
         '''
-        if pores != []:
+        if pores is not []:
             label = 'pore.'+label.split('.')[-1]
-            all_labels = self.labels('pore')
+            all_labels = self.labels(element='pore')
             mask = self.labels(pores=pores,mode='mask')
             ind = all_labels.index(label)
             temp = mask[:,ind]
             pores = sp.array(pores,ndmin=1)
             return pores[temp]
-        elif throats != []:
+        elif throats is not []:
             label = 'throat.'+label.split('.')[-1]
-            all_labels = self.labels('throat')
+            all_labels = self.labels(element='throat')
             mask = self.labels(throats=throats,mode='mask')
             ind = all_labels.index(label)
             temp = mask[:,ind]
@@ -759,6 +764,7 @@ class Core(Base):
             ind = (none == 0)
         #Extract indices from boolean mask
         ind = sp.where(ind==True)[0]
+        ind = ind.astype(dtype=int)
         return ind
 
     def pores(self,labels='all',mode='union'):
