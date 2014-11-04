@@ -609,6 +609,7 @@ class Core(Base):
             return misc.PrintableList(labels)
         else:
             labels = sp.array(labels)
+            locations = self._get_indices(element=element)[locations]
             arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
             col = 0
             for item in labels:
@@ -670,7 +671,7 @@ class Core(Base):
         >>> pn.labels(pores=[0,1,5,6],mode='intersection')
         ['pore.all', 'pore.bottom']
         '''
-        if (pores == []) and (throats == []):
+        if (pores is []) and (throats is []):
             if element == '':
                 temp = []
                 temp = self._get_labels(element='pore')
@@ -714,7 +715,7 @@ class Core(Base):
         '''
         if pores is not []:
             label = 'pore.'+label.split('.')[-1]
-            all_labels = self.labels('pore')
+            all_labels = self.labels(element='pore')
             mask = self.labels(pores=pores,mode='mask')
             ind = all_labels.index(label)
             temp = mask[:,ind]
@@ -722,7 +723,7 @@ class Core(Base):
             return pores[temp]
         elif throats is not []:
             label = 'throat.'+label.split('.')[-1]
-            all_labels = self.labels('throat')
+            all_labels = self.labels(element='throat')
             mask = self.labels(throats=throats,mode='mask')
             ind = all_labels.index(label)
             temp = mask[:,ind]
