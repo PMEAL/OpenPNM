@@ -6,6 +6,7 @@ Submodule -- diffusive_conductance
 """
 
 import scipy as _sp
+import OpenPNM.Utilities.misc as misc
 
 def bulk_diffusion(physics,
                    phase,
@@ -17,7 +18,7 @@ def bulk_diffusion(physics,
                    throat_area='throat.area',
                    throat_length='throat.length',
                    throat_diameter='throat.diameter',
-                   calc_pore_len=False,
+                   calc_pore_len=True,
                    **kwargs):
     r"""
     Calculate the diffusive conductance of conduits in network, where a 
@@ -53,17 +54,9 @@ def bulk_diffusion(physics,
     DABp = phase[pore_diffusivity]
     DABt = phase.interpolate_data(data=DABp)
     if calc_pore_len:
-        #Find half-lengths of each pore
-        pcoords = network['pore.coords']
-        #   Find the pore-to-pore distance
-        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))
-        #update tlen to be the minimum of the original throat length, and the diameter ratio derived length
-        tlen = _sp.minimum(lengths-2e-12,tlen)
-        #   Calculate the fraction of the remaining distance for each pore
-        len_rem = lengths - tlen
-        sum_dia = pdia[Ps[:,0]]+pdia[Ps[:,1]]
-        plen1 = len_rem*pdia[Ps[:,0]]/sum_dia
-        plen2 = len_rem*pdia[Ps[:,1]]/sum_dia
+        lengths = misc.conduit_lengths(network,mode='centroid')
+        plen1 = lengths[:,0]
+        plen2 = lengths[:,2]
     else:        
         plen1 = (0.5*pdia[Ps[:,0]])
         plen2 = (0.5*pdia[Ps[:,1]])
@@ -72,9 +65,11 @@ def bulk_diffusion(physics,
     plen2[plen2<=0]=1e-12
     #Find g for half of pore 1
     gp1 = ct*DABt*parea[Ps[:,0]]/plen1
+    gp1[_sp.isnan(gp1)] = _sp.inf
     gp1[~(gp1>0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     #Find g for half of pore 2
     gp2 = ct*DABt*parea[Ps[:,1]]/plen2
+    gp2[_sp.isnan(gp2)] = _sp.inf
     gp2[~(gp2>0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     #remove any non-positive lengths

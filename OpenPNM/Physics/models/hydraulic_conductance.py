@@ -43,7 +43,7 @@ def hagen_poiseuille(physics,
     mut = phase.interpolate_data(mup)
     pdia = network[pore_diameter]
     if calc_pore_len:
-        lengths = misc.conduit_lengths(network,mode='pore')
+        lengths = misc.conduit_lengths(network,mode='centroid')
         plen1 = lengths[:,0]
         plen2 = lengths[:,2]
     else:        
@@ -54,10 +54,13 @@ def hagen_poiseuille(physics,
     plen2[plen2<=0]=1e-12
     #Find g for half of pore 1
     gp1 = _sp.pi*(pdia[Ps[:,0]])**4/(128*plen1*mut)
+    gp1[_sp.isnan(gp1)] = _sp.inf
     gp1[~(gp1>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
+    
     #Find g for half of pore 2
     #gp2 = 2.28*(pdia[pores[:,1]]/2)**4/(pdia[pores[:,1]]*mut)
     gp2 = _sp.pi*(pdia[Ps[:,1]])**4/(128*plen2*mut)
+    gp2[_sp.isnan(gp2)] = _sp.inf
     gp2[~(gp2>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     tdia = network[throat_diameter]

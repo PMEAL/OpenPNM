@@ -64,7 +64,8 @@ def _get_hull_volume(points):
         vhc = points[ic]-hull_centroid
         pCOM = ((vha+vhb+vhc)/4)*pyramid_volume
         pyramid_COMs.append(pCOM)
-    
+    if _sp.isnan(hull_volume):
+        hull_volume = 0.0
     if hull_volume>0:    
         hull_COM = hull_centroid + _sp.mean(_sp.asarray(pyramid_COMs),axis=0)/hull_volume
     else:
