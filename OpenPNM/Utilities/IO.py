@@ -156,7 +156,7 @@ class PNM(object):
                 obj = sim[name]
                 Ps = net.pores(name)
                 Ts = net.throats(name)
-                geom = obj['info']['class'](network=net,pores=Ps,throats=Ts,name=name)
+                geom = obj['info']['class'](network=net,pores=Ps,throats=Ts,name=name,load_gen='load')
                 geom.update(obj['data'])
                 for item in obj['attrs'].keys():
                     setattr(geom,item,obj['attrs'][item])
