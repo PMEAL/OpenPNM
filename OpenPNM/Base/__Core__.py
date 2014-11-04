@@ -682,12 +682,12 @@ class Core(Base):
             else:
                 self._logger.error('Unrecognized element')
                 return
-        elif pores != []:
+        elif pores is not []:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             temp = self._get_labels(element='pore',locations=pores, mode=mode)
-        elif throats != []:
+        elif throats is not []:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
@@ -712,7 +712,7 @@ class Core(Base):
         >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
         array([0, 1])
         '''
-        if pores != []:
+        if pores is not []:
             label = 'pore.'+label.split('.')[-1]
             all_labels = self.labels('pore')
             mask = self.labels(pores=pores,mode='mask')
@@ -720,7 +720,7 @@ class Core(Base):
             temp = mask[:,ind]
             pores = sp.array(pores,ndmin=1)
             return pores[temp]
-        elif throats != []:
+        elif throats is not []:
             label = 'throat.'+label.split('.')[-1]
             all_labels = self.labels('throat')
             mask = self.labels(throats=throats,mode='mask')
