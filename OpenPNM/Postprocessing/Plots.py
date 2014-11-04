@@ -39,8 +39,8 @@ def profiles(network,values=None,bins=[10,10,10]):
         ax[n].plot(xaxis,yaxis,'bo-')
         ax[n].set_xlabel(xlab[n])
         ax[n].set_ylabel('Slice Value')
-        
-
+    fig.show()
+    
 def distributions(net,
                  throat_diameter='throat.diameter',
                  pore_diameter='pore.diameter',
@@ -56,8 +56,8 @@ def distributions(net,
   """
   fig = _plt.figure()
   ax1 = fig.add_subplot(221)
-  ax1.hist(net[pore_diameter],25,facecolor='green')
-  ax1.set_xlabel('Pore Diameter [m]')
+  ax1.hist(1E6*net[pore_diameter],25,facecolor='green')
+  ax1.set_xlabel('Pore Diameter [micro-m]')
   ax1.set_ylabel('Frequency')
 
   ax2 = fig.add_subplot(222)
@@ -67,13 +67,13 @@ def distributions(net,
   ax2.set_ylabel('Frequency')
 
   ax3 = fig.add_subplot(223)
-  ax3.hist(net[throat_diameter],25,facecolor='blue')
-  ax3.set_xlabel('Throat Diameter [m]')
+  ax3.hist(1E6*net[throat_diameter],25,facecolor='blue')
+  ax3.set_xlabel('Throat Diameter [micro-m]')
   ax3.set_ylabel('Frequency')
 
   ax4 = fig.add_subplot(224)
-  ax4.hist(net[throat_length],25,facecolor='red')
-  ax4.set_xlabel('Throat Length [m]')
+  ax4.hist(1E6*net[throat_length],25,facecolor='red')
+  ax4.set_xlabel('Throat Length [micro-m]')
   ax4.set_ylabel('Frequency')
   fig.show()
 
