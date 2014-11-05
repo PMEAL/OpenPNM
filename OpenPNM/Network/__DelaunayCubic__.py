@@ -46,6 +46,8 @@ class DelaunayCubic(Delaunay):
             self._arr = np.atleast_3d(np.empty(shape))
         elif template != None:
             self._arr = sp.array(template,ndmin=3,dtype=bool)
+        else:
+            self._arr = np.atleast_3d(np.empty([3,3,3]))
         
         self._shape = sp.shape(self._arr)  # Store original network shape
         self._spacing = sp.asarray(spacing)  # Store network spacing instead of calculating it
