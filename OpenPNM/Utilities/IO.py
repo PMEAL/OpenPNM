@@ -143,8 +143,7 @@ class PNM(object):
         for name in sim.keys():  # Network object
             if 'GenericNetwork' in sim[name]['info']['mro']:
                 obj = sim[name]
-                net = obj['info']['class'](name=name)
-                net.update(obj['data'])
+                net = obj['info']['class']._load(name=name,data=obj['data'])
                 for item in obj['attrs'].keys():
                     setattr(net,item,obj['attrs'][item])
                 for item in obj['models'].keys():

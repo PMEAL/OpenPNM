@@ -3,18 +3,10 @@
 Base:  Abstract Class
 ###############################################################################
 '''
-import string, random
+import string, random, collections
 import OpenPNM
 import scipy as sp
 import scipy.constants
-import logging as _logging
-
-
-# set up logging to file - see previous section for more details
-_logging.basicConfig(level=_logging.ERROR,
-                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                    datefmt='%m-%d %H:%M',
-                    )
 
 class Base(dict):
     r"""
@@ -36,20 +28,45 @@ class Base(dict):
     """
     _name = None
     _loglevel = 30
+
+    def __new__(typ, *args, **kwargs):
+        obj = dict.__new__(typ, *args, **kwargs)
+        #Initialize phase, physics, and geometry tracking lists
+        obj._phases = []
+        obj._geometries = []
+        obj._physics = []
+        #Initialize ordered dict for storing property models
+        obj._models = collections.OrderedDict()
+        return obj
+
+    @classmethod
+    def _load(cls,name,data):
+        r'''
+        '''
+        inst = cls.__new__(cls)
+        inst.update(data)
+        inst.name = name
+        return inst
+
+    @classmethod
+    def _add_logger(cls,**kwargs):
+        import logging as _logging
+        # set up logging to file - see previous section for more details
+        _logging.basicConfig(level=_logging.ERROR,
+                             format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                             datefmt='%m-%d %H:%M',
+                             )
+
+        if 'loggername' in kwargs.keys():
+            cls._logger = _logging.getLogger(kwargs['loggername'])
+        else:
+            cls._logger = _logging.getLogger(cls.__class__.__name__)
+        if 'loglevel' in kwargs.keys():
+            cls._loglevel = kwargs['loglevel']
+
     def __init__(self,**kwargs):
         super(Base,self).__init__()
-        if 'loggername' in kwargs.keys():
-            self._logger = _logging.getLogger(kwargs['loggername'])
-        else:
-            self._logger = _logging.getLogger(self.__class__.__name__)
-        if 'loglevel' in kwargs.keys():
-            self._loglevel = kwargs['loglevel']
-
-        #Initialize phase, physics, and geometry tracking lists
-        self._phases = []
-        self._geometries = []
-        self._physics = []
-        self._net = []
+        self._add_logger(**kwargs)
 
     def __repr__(self):
         return '<%s.%s object at %s>' % (

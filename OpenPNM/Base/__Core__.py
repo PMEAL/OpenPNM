@@ -3,10 +3,9 @@
 Core:  Core Data Class
 ###############################################################################
 '''
-import pprint,collections
+import pprint
 from functools import partial
 import scipy as sp
-import OpenPNM
 from OpenPNM.Base import Base
 from OpenPNM.Utilities import misc
 
@@ -21,9 +20,6 @@ class Core(Base):
         '''
         super(Core,self).__init__(**kwargs)
         self._logger.info("Construct Core subclass from Base")
-
-        #Initialize ordered dict for storing property models
-        self._models = collections.OrderedDict()
 
         self._logger.debug("Construction of Core class complete")
 
