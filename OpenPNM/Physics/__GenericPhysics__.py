@@ -32,7 +32,7 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     """
 
-    def __init__(self,network=None,phase=None,pores=[],throats=[],name=None,**kwargs):
+    def __init__(self,network=None,phase=None,pores=[],throats=[],**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         self._logger.debug("Construct class")
 
@@ -46,7 +46,6 @@ class GenericPhysics(OpenPNM.Base.Core):
         else:
             self._net = network  # Attach network to self
             self._net._physics.append(self)  # Register self with network
-        self.name = name
 
         #Associate with Phase
         if phase == None:

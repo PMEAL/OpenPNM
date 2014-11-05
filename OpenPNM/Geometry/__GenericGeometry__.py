@@ -36,7 +36,7 @@ class GenericGeometry(Core):
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)
     """
 
-    def __init__(self,network=None,pores=[],throats=[],name=None,seed=None,**kwargs):
+    def __init__(self,network=None,pores=[],throats=[],seed=None,**kwargs):
         r"""
         Initialize
         """
@@ -52,7 +52,6 @@ class GenericGeometry(Core):
         else:
             self._net = network  # Attach network to self
             self._net._geometries.append(self)  # Register self with network.geometries
-        self.name = name
 
         #Initialize a label dictionary in the associated network
         self._net['pore.'+self.name] = False

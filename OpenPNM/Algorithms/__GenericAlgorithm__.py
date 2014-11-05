@@ -32,7 +32,7 @@ class GenericAlgorithm(Core):
 
     """
 
-    def __init__(self,network=None,name=None,**kwords):
+    def __init__(self,network=None,**kwords):
         r"""
         Initialize
         """
@@ -43,7 +43,6 @@ class GenericAlgorithm(Core):
             self._net = OpenPNM.Network.GenericNetwork()
         else:
             self._net = network
-        self.name = name
 
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = self._net['pore.all']

@@ -33,7 +33,7 @@ class GenericPhase(Core):
         instance name but can be anything.
 
     """
-    def __init__(self,network=None,components=[],name=None,**kwargs):
+    def __init__(self,network=None,components=[],**kwargs):
         super(GenericPhase,self).__init__(**kwargs)
         self._logger.debug("Construct class")
 
@@ -41,8 +41,6 @@ class GenericPhase(Core):
             self._net = OpenPNM.Network.GenericNetwork()
         else:
             self._net = network
-
-        self.name = name  # Assign name to object
 
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = self._net['pore.all']

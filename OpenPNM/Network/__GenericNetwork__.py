@@ -23,13 +23,12 @@ class GenericNetwork(Core):
 
     """
 
-    def __init__(self,name=None,coords=[],conns=[],**kwargs):
+    def __init__(self,coords=[],conns=[],**kwargs):
         r"""
         Initialize Network
         """
         super(GenericNetwork,self).__init__(**kwargs)
         self._logger.info("Construct Network")
-        self.name = name
 
         #Initialize properties to an empty network
         Np = sp.shape(coords)[0]

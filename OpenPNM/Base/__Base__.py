@@ -28,6 +28,7 @@ class Base(dict):
     """
     _name = None
     _loglevel = 30
+    _sim = {}
 
     def __new__(typ, *args, **kwargs):
         obj = dict.__new__(typ, *args, **kwargs)
@@ -38,6 +39,25 @@ class Base(dict):
         #Initialize ordered dict for storing property models
         obj._models = collections.OrderedDict()
         return obj
+        
+    def __init__(self,simulation={},name=None,**kwargs):
+        super(Base,self).__init__()
+        self._add_logger(**kwargs)
+        self._sim = simulation
+        self.name = name
+        self._sim.update({self.name: self})
+    
+    def _set_sim(self,simulation):
+        if self.name in simulation.keys():
+            raise Exception('An object with that name is already present in simulation')
+        self._sim = simulation
+        simulation.update({self.name: self})
+
+    def _get_sim(self):
+        return self._sim
+
+    simulation = property(_get_sim,_set_sim)
+    
 
     @classmethod
     def _load(cls,name,data):
@@ -63,10 +83,6 @@ class Base(dict):
             cls._logger = _logging.getLogger(cls.__class__.__name__)
         if 'loglevel' in kwargs.keys():
             cls._loglevel = kwargs['loglevel']
-
-    def __init__(self,**kwargs):
-        super(Base,self).__init__()
-        self._add_logger(**kwargs)
 
     def __repr__(self):
         return '<%s.%s object at %s>' % (
@@ -445,7 +461,7 @@ class Base(dict):
         if name == None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
-        if self._find_object(obj_name=name) != []:
+        if self._sim.get(name) is not None:
             self._logger.error('An object with this name already exists')
             return
         self._name = name
