@@ -330,13 +330,18 @@ class OrdinaryPercolation(GenericAlgorithm):
               Snwp_t[i] = sum(Tvol[self._t_inv[throats]<=Pc])/Tvol_tot
           plt.plot(PcPoints,Snwp_p,'r.-')
           plt.plot(PcPoints,Snwp_t,'b.-')
+          r'''
+          TODO: Add legend to distinguish the pore and throat curves
+          '''
           plt.xlim(xmin=0)
           plt.show()
 
 
     def plot_primary_drainage_curve(self,
-                            pore_volume='volume',
-                            throat_volume='volume',pore_label='all',throat_label='all'):
+                                    pore_volume='volume',
+                                    throat_volume='volume',
+                                    pore_label='all',
+                                    throat_label='all'):
           r"""
           Plot the primary drainage curve as the capillary pressure on ordinate 
           and total saturation of the wetting phase on the abscissa. 
