@@ -599,17 +599,22 @@ class Core(Base):
         This is the actual label getter method, but it should not be called directly.
         Wrapper methods have been created, use labels().
         '''
+        # Collect list of all pore OR throat labels
         labels = []
         for item in self.keys():
             if item.split('.')[0] == element:
-                if self[item].dtype == bool:
+                if self[item].dtype in ['bool']:
                     labels.append(item)
         labels.sort()
         if locations == []:
             return misc.PrintableList(labels)
         else:
             labels = sp.array(labels)
-            locations = self._get_indices(element=element)[locations]
+            locations = sp.array(locations,ndmin=1)
+            if locations.dtype in ['bool']:
+                locations = self._get_indices(element=element)[locations]
+            else:
+                locations = sp.array(locations,dtype=int)
             arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
             col = 0
             for item in labels:
@@ -671,7 +676,7 @@ class Core(Base):
         >>> pn.labels(pores=[0,1,5,6],mode='intersection')
         ['pore.all', 'pore.bottom']
         '''
-        if (pores is []) and (throats is []):
+        if (pores == []) and (throats == []):
             if element == '':
                 temp = []
                 temp = self._get_labels(element='pore')
