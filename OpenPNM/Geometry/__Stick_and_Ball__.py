@@ -27,7 +27,6 @@ class Stick_and_Ball(GenericGeometry):
         Initialize
         """
         super(Stick_and_Ball,self).__init__(**kwargs)
-        self._logger.debug("Method: Constructor")
         self._generate()
 
     def _generate(self):

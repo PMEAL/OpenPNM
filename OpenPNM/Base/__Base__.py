@@ -4,7 +4,6 @@ Base:  Abstract Class
 ###############################################################################
 '''
 import string, random, collections
-import OpenPNM
 import scipy as sp
 import scipy.constants
 
@@ -32,6 +31,8 @@ class Base(dict):
 
     def __new__(typ, *args, **kwargs):
         obj = dict.__new__(typ, *args, **kwargs)
+        obj.update({'pore.all': sp.array([],ndmin=1)})
+        obj.update({'throat.all': sp.array([],ndmin=1)})
         #Initialize phase, physics, and geometry tracking lists
         obj._phases = []
         obj._geometries = []
@@ -39,14 +40,21 @@ class Base(dict):
         #Initialize ordered dict for storing property models
         obj._models = collections.OrderedDict()
         return obj
-        
+
+    @classmethod
+    def _make_empty(cls):
+        r'''
+        '''
+        inst = cls.__new__(cls)
+        inst.name = 'empty instance'
+        return inst
+
     def __init__(self,simulation={},name=None,**kwargs):
         super(Base,self).__init__()
-        self._add_logger(**kwargs)
         self._sim = simulation
         self.name = name
         self._sim.update({self.name: self})
-    
+
     def _set_sim(self,simulation):
         if self.name in simulation.keys():
             raise Exception('An object with that name is already present in simulation')
@@ -57,32 +65,6 @@ class Base(dict):
         return self._sim
 
     simulation = property(_get_sim,_set_sim)
-    
-
-    @classmethod
-    def _load(cls,name,data):
-        r'''
-        '''
-        inst = cls.__new__(cls)
-        inst.update(data)
-        inst.name = name
-        return inst
-
-    @classmethod
-    def _add_logger(cls,**kwargs):
-        import logging as _logging
-        # set up logging to file - see previous section for more details
-        _logging.basicConfig(level=_logging.ERROR,
-                             format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                             datefmt='%m-%d %H:%M',
-                             )
-
-        if 'loggername' in kwargs.keys():
-            cls._logger = _logging.getLogger(kwargs['loggername'])
-        else:
-            cls._logger = _logging.getLogger(cls.__class__.__name__)
-        if 'loglevel' in kwargs.keys():
-            cls._loglevel = kwargs['loglevel']
 
     def __repr__(self):
         return '<%s.%s object at %s>' % (
@@ -101,8 +83,8 @@ class Base(dict):
             level = string.ascii_uppercase(level)
             level = desc[level]
         self._loglevel = level
-        self._logger.setLevel(level)
-        self._logger.debug("Changed log level")
+#        self._logger.setLevel(level)
+#        self._logger.debug("Changed log level")
 
     def _get_loglevel(self):
         level = self._loglevel
@@ -456,13 +438,13 @@ class Base(dict):
 
     def _set_name(self,name):
         if self._name != None:
-            self._logger.error('Renaming objects can have catastrophic consequences')
+#            self._logger.error('Renaming objects can have catastrophic consequences')
             return
         if name == None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
         if self._sim.get(name) is not None:
-            self._logger.error('An object with this name already exists')
+#            self._logger.error('An object with this name already exists')
             return
         self._name = name
 

@@ -30,7 +30,6 @@ class Standard(GenericPhysics):
 
     def __init__(self,**kwargs):
         super(Standard,self).__init__(**kwargs)
-        self._logger.debug("Construct class")
         self._generate()
 
     def _generate(self):

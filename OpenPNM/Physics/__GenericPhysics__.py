@@ -34,7 +34,6 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     def __init__(self,network=None,phase=None,pores=[],throats=[],**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
-        self._logger.debug("Construct class")
 
         #Initialize locations
         self['pore.all'] = sp.array([],dtype=bool)

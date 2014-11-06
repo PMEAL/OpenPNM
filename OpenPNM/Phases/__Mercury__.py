@@ -30,7 +30,6 @@ class Mercury(GenericPhase):
     """
     def __init__(self,name=None,**kwargs):
         super(Mercury,self).__init__(name=name,**kwargs)
-        self._logger.debug("Construct class")
         self._generate()
 
     def _generate(self):

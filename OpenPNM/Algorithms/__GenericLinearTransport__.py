@@ -69,7 +69,7 @@ class GenericLinearTransport(GenericAlgorithm):
         if 'throat.rate' not in self._phase.props():
             self._phase['throat.rate'] = sp.nan
         self._phase['throat.rate'][throats] = rate[throats]
-        self._logger.debug('Results of '+self.name+' algorithm have been added to '+self._phase.name)
+#        self._logger.debug('Results of '+self.name+' algorithm have been added to '+self._phase.name)
 
 
 
@@ -222,16 +222,16 @@ class GenericLinearTransport(GenericAlgorithm):
         r'''
         This method collects the A and B matrices, solves AX = B and returns the result to the corresponding algorithm.
         '''
-        self._logger.info("Creating Coefficient matrix for the algorithm")
+#        self._logger.info("Creating Coefficient matrix for the algorithm")
         A = self._build_coefficient_matrix()
-        self._logger.info("Creating RHS matrix for the algorithm")
+#        self._logger.info("Creating RHS matrix for the algorithm")
         B = self._build_RHS_matrix()
-        self._logger.info("Solving AX = B for the sparse matrices")
+#        self._logger.info("Solving AX = B for the sparse matrices")
         X = sprslin.spsolve(A,B)
         self._Neumann_super_X = X[-sp.in1d(sp.r_[0:len(X)],sp.r_[0:self.num_pores()])]
         #Removing the additional super pore variables from the results
         self[self._quantity] = X[sp.r_[0:self.num_pores()]]
-        self._logger.info('Writing the results to '+'[\''+self._quantity+'\'] in the '+self.name+' algorithm.')
+#        self._logger.info('Writing the results to '+'[\''+self._quantity+'\'] in the '+self.name+' algorithm.')
 
     def _calc_eff_prop(self,check_health=False):
         r'''
@@ -265,10 +265,12 @@ class GenericLinearTransport(GenericAlgorithm):
             #Ensure pores are on a face of domain (only 1 non-self neighbor each)
             PnI = self._net.find_neighbor_pores(pores=inlets,mode='not_intersection',excl_self=True)
             if sp.shape(PnI) != sp.shape(inlets):
-                self._logger.warning('The inlet pores have too many neighbors. Internal pores appear to be selected.')
+#                self._logger.warning('The inlet pores have too many neighbors. Internal pores appear to be selected.')
+                pass
             PnO = self._net.find_neighbor_pores(pores=outlets,mode='not_intersection',excl_self=True)
             if sp.shape(PnO) != sp.shape(outlets):
-                self._logger.warning('The outlet pores have too many neighbors. Internal pores appear to be selected.')
+#                self._logger.warning('The outlet pores have too many neighbors. Internal pores appear to be selected.')
+                pass
 
         #Fetch area and length of domain
         if "pore.vertices" in self._net.props():

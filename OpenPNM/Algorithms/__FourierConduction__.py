@@ -40,12 +40,12 @@ class FourierConduction(GenericLinearTransport):
         r'''
         '''
         super(FourierConduction,self).__init__(**kwargs)
-        self._logger.info('Create '+self.__class__.__name__+' Object')
+#        self._logger.info('Create '+self.__class__.__name__+' Object')
 
     def run(self,conductance='thermal_conductance',quantity='temperature',**params):
         r'''
         '''
-        self._logger.info('Setup '+self.__class__.__name__)
+#        self._logger.info('Setup '+self.__class__.__name__)
         super(FourierConduction,self).setup(conductance=conductance,quantity=quantity)
 
         super(GenericLinearTransport,self).run()

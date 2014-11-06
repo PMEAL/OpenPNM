@@ -37,7 +37,6 @@ class GenericAlgorithm(Core):
         Initialize
         """
         super(GenericAlgorithm,self).__init__(**kwords)
-        self._logger.debug("Construct class")
 
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()
@@ -52,14 +51,14 @@ class GenericAlgorithm(Core):
         r"""
         Main run command for the algorithm
         """
-        self._logger.debug(sys._getframe().f_code.co_name)
+#        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_outer_iteration_stage()
 
     def _do_outer_iteration_stage(self):
         r"""
         Executes the outer iteration stage
         """
-        self._logger.debug(sys._getframe().f_code.co_name)
+#        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_one_outer_iteration()
 
     def _do_one_outer_iteration(self):
@@ -67,24 +66,26 @@ class GenericAlgorithm(Core):
         One iteration of an outer iteration loop for an algorithm
         (e.g. time or parametric study)
         """
-        self._logger.debug(sys._getframe().f_code.co_name)
+#        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_inner_iteration_stage()
 
     def _do_inner_iteration_stage(self):
         r"""
         Executes the inner iteration stage
         """
-        self._logger.debug(sys._getframe().f_code.co_name)
+#        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_one_inner_iteration()
 
     def _do_one_inner_iteration(self):
         r"""
         Executes one inner iteration
         """
-        self._logger.debug(sys._getframe().f_code.co_name)
+#        self._logger.debug(sys._getframe().f_code.co_name)
+        pass
 
     def return_results(self,**kwargs):
-        self._logger.debug(sys._getframe().f_code.co_name)
+#        self._logger.debug(sys._getframe().f_code.co_name)
+        pass
 
     def set_boundary_conditions(self,component=None,bctype='',bcvalue=None,pores=[],throats=[],mode='merge'):
         r'''
@@ -115,10 +116,10 @@ class GenericAlgorithm(Core):
 
         Notes
         -----
-        1. It is not possible to have multiple boundary conditions for a specified location in just one algorithm. 
+        1. It is not possible to have multiple boundary conditions for a specified location in just one algorithm.
         So when new condition is going to be applied to a specific location, any existing one
         should be removed or overwritten.
-        2- BCs for pores and for throats should be applied independently. 
+        2- BCs for pores and for throats should be applied independently.
         '''
         try: self._existing_BC
         except: self._existing_BC = []
@@ -131,7 +132,7 @@ class GenericAlgorithm(Core):
             if sp.size(component)!=1:
                 raise Exception('For using set_boundary_conditions method, only one component should be specified.')
 
-        self._logger.debug('BC applies to the component: '+component.name)
+#        self._logger.debug('BC applies to the component: '+component.name)
         #If mode is 'remove', also bypass checks
         if mode == 'remove':
             if pores == [] and throats == []:
@@ -146,22 +147,23 @@ class GenericAlgorithm(Core):
                             except: pass
                             try:
                                 del self[element+'.'+component.name+'_'+bctype]
-                            except: pass
-                    self._logger.debug('Removing '+bctype+' from all locations for '+component.name+' in '+self.name)
+                            except:
+                                pass
+#                    self._logger.debug('Removing '+bctype+' from all locations for '+component.name+' in '+self.name)
                     self._existing_BC.remove(bctype)
             else:
                 if pores!=[]:
                     if bctype!='':
                         self['pore.'+component.name+'_bcval_'+bctype][pores] = sp.nan
                         self['pore.'+component.name+'_'+bctype][pores] = False
-                        self._logger.debug('Removing '+bctype+' from the specified pores for '+component.name+' in '+self.name)
+#                        self._logger.debug('Removing '+bctype+' from the specified pores for '+component.name+' in '+self.name)
                     else:   raise Exception('Cannot remove BC from the pores unless bctype is specified')
 
                 if throats!=[]:
                     if bctype!='':
                         self['throat.'+component.name+'_bcval_'+bctype][throats] = sp.nan
                         self['throat.'+component.name+'_'+bctype][throats] = False
-                        self._logger.debug('Removing '+bctype+' from the specified throats for '+component.name+' in '+self.name)
+#                        self._logger.debug('Removing '+bctype+' from the specified throats for '+component.name+' in '+self.name)
                     else:   raise Exception('Cannot remove BC from the throats unless bctype is specified')
 
             return
@@ -205,11 +207,11 @@ class GenericAlgorithm(Core):
             bcname = (item.split('.')[-1]).replace(component.name+'_',"")
             if bcname in self._existing_BC  and item.split('.')[0]==element:
                 if mode=='merge':
-                    try:    
-                        self[element+'.'+component.name+'_bcval_'+bcname][loc]                    
+                    try:
+                        self[element+'.'+component.name+'_bcval_'+bcname][loc]
                         if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
                             raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
-                    except KeyError: pass        
+                    except KeyError: pass
         #Set boundary conditions based on supplied mode
         if mode == 'merge':
             if bcvalue != None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue

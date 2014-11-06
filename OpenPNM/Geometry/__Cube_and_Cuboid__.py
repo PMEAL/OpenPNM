@@ -25,7 +25,6 @@ class Cube_and_Cuboid(GenericGeometry):
         Initialize
         """
         super(Cube_and_Cuboid,self).__init__(**kwargs)
-        self._logger.debug("Method: Constructor")
         self._generate()
 
     def _generate(self):

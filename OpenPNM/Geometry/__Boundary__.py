@@ -35,7 +35,6 @@ class Boundary(GenericGeometry):
         Initialize
         """
         super(Boundary,self).__init__(**kwargs)
-        self._logger.debug("Method: Constructor")
         self._generate(shape)
 
     def _generate(self,shape):

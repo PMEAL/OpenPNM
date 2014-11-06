@@ -41,7 +41,6 @@ class GenericGeometry(Core):
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
-        self._logger.debug("Class Constructor")
 
         #Initialize locations
         self['pore.all'] = sp.array([],ndmin=1,dtype=bool)

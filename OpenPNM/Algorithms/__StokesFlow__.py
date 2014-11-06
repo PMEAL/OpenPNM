@@ -37,12 +37,12 @@ class StokesFlow(GenericLinearTransport):
         r'''
         '''
         super(StokesFlow,self).__init__(**kwargs)
-        self._logger.info('Create '+self.__class__.__name__+' Object')
+#        self._logger.info('Create '+self.__class__.__name__+' Object')
 
     def run(self,conductance='hydraulic_conductance',quantity='pressure',**params):
         r'''
         '''
-        self._logger.info("Setup "+self.__class__.__name__)
+#        self._logger.info("Setup "+self.__class__.__name__)
         super(StokesFlow,self).setup(conductance=conductance,quantity=quantity)
 
         super(GenericLinearTransport,self).run()

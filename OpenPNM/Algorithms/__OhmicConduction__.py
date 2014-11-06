@@ -40,12 +40,12 @@ class OhmicConduction(GenericLinearTransport):
         r'''
         '''
         super(OhmicConduction,self).__init__(**kwargs)
-        self._logger.info('Create '+self.__class__.__name__+' Object')
+#        self._logger.info('Create '+self.__class__.__name__+' Object')
 
     def run(self,conductance='electrical_conductance',quantity='voltage',**params):
         r'''
         '''
-        self._logger.info("Setup "+self.__class__.__name__)
+#        self._logger.info("Setup "+self.__class__.__name__)
         super(OhmicConduction,self).setup(conductance=conductance,quantity=quantity)
 
         super(GenericLinearTransport,self).run()

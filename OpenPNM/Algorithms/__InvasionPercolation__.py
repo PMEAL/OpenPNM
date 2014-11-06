@@ -50,7 +50,7 @@ class InvasionPercolation(GenericAlgorithm):
         r'''
         '''
         super(InvasionPercolation,self).__init__(**kwords)
-        self._logger.info("Create IP Algorithm Object")
+#        self._logger.info("Create IP Algorithm Object")
 
     def run(self,invading_phase,
                defending_phase,
@@ -117,7 +117,7 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
 
-        self._logger.info("\t end condition: "+end_condition)
+#        self._logger.info("\t end condition: "+end_condition)
         self._inlets = inlets
         self._outlets = outlets
         if end_condition=='total':
@@ -151,22 +151,23 @@ class InvasionPercolation(GenericAlgorithm):
         Determines cluster labelling and condition for completion
         """
         self._clock_start = misc.tic()
-        self._logger.debug( '+='*25)
-        self._logger.debug( 'INITIAL SETUP (STEP 1)')
+#        self._logger.debug( '+='*25)
+#        self._logger.debug( 'INITIAL SETUP (STEP 1)')
         # if empty, add Pc_entry to throat_properties
         tdia = self._net['throat.'+self._throat_diameter_name]
         # calculate Pc_entry from diameters
         try:
             self['throat.inv_Pc'] = self._phase['throat.'+self._capillary_pressure_name]
         except:
-            self._logger.error('Capillary pressure not assigned to invading phase '+self._phase.name
-                +', check for capillary pressure in defending phase '+self._phase_def.name +' instead')
+#            self._logger.error('Capillary pressure not assigned to invading phase '+self._phase.name
+#                +', check for capillary pressure in defending phase '+self._phase_def.name +' instead')
             try:
                 self['throat.inv_Pc'] = self._phase_def['throat.'+self._capillary_pressure_name]
                 self._phase['throat.'+self._capillary_pressure_name] = self._phase_def['throat.'+self._capillary_pressure_name]
             except:
-                self._logger.error('Capillary pressure neither assigned to defending phase '+self._phase_def.name
-                    +' nor to invading phase '+self._phase.name)
+#                self._logger.error('Capillary pressure neither assigned to defending phase '+self._phase_def.name
+#                    +' nor to invading phase '+self._phase.name)
+                pass
         if self._timing:
             # calculate Volume_coef for each throat
             self._Tvol_coef = tdia*tdia*tdia*np.pi/12/self['throat.inv_Pc']
@@ -228,12 +229,13 @@ class InvasionPercolation(GenericAlgorithm):
             self.cluster_update(clusterNumber,pores,[],interface_throat_numbers)
             clusterNumber += 1
         if self._timing:
-            self._logger.debug( 'pore volumes')
-            self._logger.debug(self._cluster_data['pore_volume'])
-            self._logger.debug( 'cap volumes')
-            self._logger.debug( self._cluster_data['cap_volume'])
-        self._logger.debug( 'haines_throats')
-        self._logger.debug( self._cluster_data['haines_throat'])
+#            self._logger.debug( 'pore volumes')
+#            self._logger.debug(self._cluster_data['pore_volume'])
+#            self._logger.debug( 'cap volumes')
+#            self._logger.debug( self._cluster_data['cap_volume'])
+            pass
+#        self._logger.debug( 'haines_throats')
+#        self._logger.debug( self._cluster_data['haines_throat'])
         self._tseq += 1
         self._pseq += 1
         self._current_cluster = 0
@@ -249,21 +251,21 @@ class InvasionPercolation(GenericAlgorithm):
         inlet_position = np.average(self._net.get_data(prop='coords',pores='all')[inlets],0)
         dist_sqrd = (self._outlet_position-inlet_position)*(self._outlet_position-inlet_position)
         self._initial_distance = np.sqrt(dist_sqrd[0]+dist_sqrd[1]+dist_sqrd[2])
-        self._logger.debug( 'initial distance')
-        self._logger.debug( self._initial_distance)
+#        self._logger.debug( 'initial distance')
+#        self._logger.debug( self._initial_distance)
         self._current_distance = self._initial_distance
         self._percent_complete = np.round((self._initial_distance-self._current_distance)/self._initial_distance*100, decimals = 1)
-        self._logger.info( 'percent complete')
-        self._logger.info( self._percent_complete)
+#        self._logger.info( 'percent complete')
+#        self._logger.info( self._percent_complete)
         self._rough_complete = 0
         print('     IP algorithm at',np.int(self._rough_complete),'% completion at',np.round(misc.toc(quiet=True)),'seconds')
-        self._logger.debug( '+='*25)
+#        self._logger.debug( '+='*25)
 
     def _do_outer_iteration_stage(self):
         r"""
         Executes the outer iteration stage
         """
-        self._logger.info("Outer Iteration Stage ")
+#        self._logger.info("Outer Iteration Stage ")
         self._pseq = 1
         self._tseq = 1
         self._NewPore = -1
@@ -295,7 +297,8 @@ class InvasionPercolation(GenericAlgorithm):
         (e.g. time or parametric study)
         """
         if (sp.mod(self._counter,500)==False):
-            self._logger.info("Outer Iteration (counter = "+str(self._counter)+")")
+#            self._logger.info("Outer Iteration (counter = "+str(self._counter)+")")
+            pass
         self._do_inner_iteration_stage()
         self._condition_update()
         self._counter += 1
@@ -304,21 +307,21 @@ class InvasionPercolation(GenericAlgorithm):
         r"""
         Executes the inner iteration stage
         """
-        self._logger.debug("  Inner Iteration Stage: ")
+#        self._logger.debug("  Inner Iteration Stage: ")
 
         self._plast = len(np.nonzero(self['pore.cluster_final'])[0])
         if self._timing:
             # determine the cluster with the earliest Haines time
             self._current_cluster = 1 + self._cluster_data['haines_time'].tolist().index(min(self._cluster_data['haines_time']))
             # update simulation clock
-            self._logger.debug( 'sim time = ')
-            self._logger.debug(self._sim_time)
-            self._logger.debug(' haines time:')
-            self._logger.debug( self._cluster_data['haines_time'])
+#            self._logger.debug( 'sim time = ')
+#            self._logger.debug(self._sim_time)
+#            self._logger.debug(' haines time:')
+#            self._logger.debug( self._cluster_data['haines_time'])
             # The code really messes up when the [0] isn't in the next line. sim_time seems to just point to a place on the haines time array
             self._sim_time = min(self._cluster_data['haines_time'])
-            self._logger.debug( 'sim time after update= ')
-            self._logger.debug(self._sim_time)
+#            self._logger.debug( 'sim time after update= ')
+#            self._logger.debug(self._sim_time)
         else:
             # Cycle to the next active cluster
             condition = 0
@@ -334,7 +337,8 @@ class InvasionPercolation(GenericAlgorithm):
                 if cnum == original_cluster:
                     loop_count = loop_count+1
                 if loop_count > 1:
-                    self._logger.error('No clusters active. Stuck in infinite loop.')
+#                    self._logger.error('No clusters active. Stuck in infinite loop.')
+                    pass
                 cnum = cnum + 1
 
         # run through the Haines Jump steps
@@ -349,7 +353,7 @@ class InvasionPercolation(GenericAlgorithm):
         r"""
         Executes one inner iteration
         """
-        self._logger.debug("    Inner Iteration")
+#        self._logger.debug("    Inner Iteration")
         # Fill throat and connecting pore
         # Pop out the largest throat (lowest inv_Pc) in the list, read the throat number
         tinvade = heapq.heappop(self._tpoints[self._current_cluster-1])[1]
@@ -357,18 +361,19 @@ class InvasionPercolation(GenericAlgorithm):
         fullCluster =  self._current_cluster
         if self._tpoints[self._current_cluster-1] == []:
             emptyCluster = self._current_cluster
-        self._logger.debug( ' ')
-        self._logger.debug( '--------------------------------------------------')
-        self._logger.debug( 'STEP')
-        self._logger.debug(self._tseq)
-        self._logger.debug( 'trying to access cluster: ')
-        self._logger.debug(self._current_cluster)
-        self._logger.debug( 'when these clusters are active active: ')
-        self._logger.debug(sp.nonzero(self._cluster_data['active'])[0])
-        self._logger.debug( 'Haines at throat,time: ')
-        self._logger.debug(tinvade)
+#        self._logger.debug( ' ')
+#        self._logger.debug( '--------------------------------------------------')
+#        self._logger.debug( 'STEP')
+#        self._logger.debug(self._tseq)
+#        self._logger.debug( 'trying to access cluster: ')
+#        self._logger.debug(self._current_cluster)
+#        self._logger.debug( 'when these clusters are active active: ')
+#        self._logger.debug(sp.nonzero(self._cluster_data['active'])[0])
+#        self._logger.debug( 'Haines at throat,time: ')
+#        self._logger.debug(tinvade)
         if self._timing:
-            self._logger.debug(self._sim_time)
+#            self._logger.debug(self._sim_time)
+            pass
 
         # Mark throat as invaded
         self['throat.inv_seq'][tinvade] = self._tseq
@@ -386,8 +391,8 @@ class InvasionPercolation(GenericAlgorithm):
             # Label invaded throat with smaller cluster number
             #find cluster 1
             clusters = self._cluster_data['transform'][self['pore.cluster_final'][Pores]-1]
-            self._logger.debug('clusters = ')
-            self._logger.debug(clusters)
+#            self._logger.debug('clusters = ')
+#            self._logger.debug(clusters)
             self._current_cluster = min(clusters)
             self['throat.cluster_final'][tinvade] = self._current_cluster
             # if pores are from 2 different clusters:
@@ -399,27 +404,28 @@ class InvasionPercolation(GenericAlgorithm):
                     fullCluster = curCluster
                 if emptyCluster == curCluster:
                     fullCluster = maxCluster
-                self._logger.info(' ')
-                self._logger.info('CLUSTERS COMBINING:')
-                self._logger.info(curCluster)
-                self._logger.info(maxCluster)
+#                self._logger.info(' ')
+#                self._logger.info('CLUSTERS COMBINING:')
+#                self._logger.info(curCluster)
+#                self._logger.info(maxCluster)
                 if self._timing:
-                    self._logger.info('at time')
-                    self._logger.info(self._sim_time)
+#                    self._logger.info('at time')
+#                    self._logger.info(self._sim_time)
+                    pass
                 # update the cluster transform
                 self._cluster_data['transform'][self._cluster_data['transform']==maxCluster] = [curCluster][0]
                 # check if either was inactive (broke through already)
                 if self._cluster_data['active'][maxCluster-1] + self._cluster_data['active'][self._current_cluster-1]<2:
-                    self._logger.debug('making clusters ')
-                    self._logger.debug(self._current_cluster)
-                    self._logger.debug('and')
-                    self._logger.debug(maxCluster)
-                    self._logger.debug('inactive due to one being inactive already')
-                    self._logger.debug(self._cluster_data['active'][curCluster-1])
-                    self._logger.debug(self._cluster_data['active'][maxCluster-1])
+#                    self._logger.debug('making clusters ')
+#                    self._logger.debug(self._current_cluster)
+#                    self._logger.debug('and')
+#                    self._logger.debug(maxCluster)
+#                    self._logger.debug('inactive due to one being inactive already')
+#                    self._logger.debug(self._cluster_data['active'][curCluster-1])
+#                    self._logger.debug(self._cluster_data['active'][maxCluster-1])
                     self.cluster_remove(curCluster)
-                    self._logger.info(' ')
-                    self._logger.info('CLUSTER MERGED WITH A BREAKTHROUGH CLUSTER')
+#                    self._logger.info(' ')
+#                    self._logger.info('CLUSTER MERGED WITH A BREAKTHROUGH CLUSTER')
                 else:
                     # relabel all pores and throats from larger number with smaller number
                     cluster_pores = self.toindices((self['pore.cluster_final']==maxCluster) + (self['pore.cluster_final']==curCluster))
@@ -430,9 +436,9 @@ class InvasionPercolation(GenericAlgorithm):
                         cluster_int_throats = list(zip(*self._tpoints[fullCluster-1]))[1]
                     self._cluster_data['flow_rate'][curCluster-1] += self._cluster_data['flow_rate'][maxCluster-1]
                     self.cluster_update(curCluster,cluster_pores,cluster_throats,cluster_int_throats,tinvade)
-                self._logger.info('making cluster ')
-                self._logger.info(maxCluster)
-                self._logger.info('inactive due to merge')
+#                self._logger.info('making cluster ')
+#                self._logger.info(maxCluster)
+#                self._logger.info('inactive due to merge')
                 # update the old cluster's activity and time
                 self.cluster_remove(maxCluster)
 
@@ -442,13 +448,13 @@ class InvasionPercolation(GenericAlgorithm):
             self['throat.cluster_final'][tinvade] = self._current_cluster
             # find univaded pore, NewPore
             self._NewPore = Pores[self['pore.cluster_final'][Pores]==0][0]
-            self._logger.debug( ' ')
-            self._logger.debug( 'INVADING PORE: ')
-            self._logger.debug(self._NewPore)
-            self._logger.debug('the other pore is one of: ')
-            self._logger.debug(Pores)
-            self._logger.debug( 'position: ')
-            self._logger.debug(self._net.get_data(prop='coords',pores='all')[self._NewPore])
+#            self._logger.debug( ' ')
+#            self._logger.debug( 'INVADING PORE: ')
+#            self._logger.debug(self._NewPore)
+#            self._logger.debug('the other pore is one of: ')
+#            self._logger.debug(Pores)
+#            self._logger.debug( 'position: ')
+#            self._logger.debug(self._net.get_data(prop='coords',pores='all')[self._NewPore])
             # label that pore as invaded
             self['pore.cluster_final'][self._NewPore] = self._current_cluster
             self['pore.cluster_original'][self._NewPore] = self._current_cluster
@@ -464,10 +470,10 @@ class InvasionPercolation(GenericAlgorithm):
             for j in neighbors:
                 # If a throat is not labelled as invaded by the cluster, it must be an interfacial throat
                 if (j not in self._tlists[self._current_cluster-1]):
-                    self._logger.debug( 'new throat:')
-                    self._logger.debug(j)
-                    self._logger.debug('connecting pores:')
-                    self._logger.debug(self._net.find_connected_pores(j))
+#                    self._logger.debug( 'new throat:')
+#                    self._logger.debug(j)
+#                    self._logger.debug('connecting pores:')
+#                    self._logger.debug(self._net.find_connected_pores(j))
                     # Add this throat data (pressure, number) to this cluster's "heap" of throat data.
                     heapq.heappush(self._tpoints[self._current_cluster-1],(self._phase.get_data(prop=self._capillary_pressure_name,throats='all')[j],j))
                     # Add new throat number to throat list for this cluster
@@ -480,9 +486,9 @@ class InvasionPercolation(GenericAlgorithm):
             while self['throat.cluster_final'][self._tpoints[self._current_cluster-1][0][1]] > 0:
                 tremove = heapq.heappop(self._tpoints[self._current_cluster-1])[1]
                 if self._tpoints[self._current_cluster-1] == []:
-                    self._logger.debug( 'making cluster ')
-                    self._logger.debug(self._current_cluster)
-                    self._logger.debug('inactive due to tpoints = [] ')
+#                    self._logger.debug( 'making cluster ')
+#                    self._logger.debug(self._current_cluster)
+#                    self._logger.debug('inactive due to tpoints = [] ')
                     self.cluster_remove(self._current_cluster)
                     print('still happening!')
                     break
@@ -494,20 +500,20 @@ class InvasionPercolation(GenericAlgorithm):
                     self._cluster_data['haines_pressure'][self._current_cluster-1] = self._tpoints[self._current_cluster-1][0][0]
                     self._cluster_data['cap_volume'][self._current_cluster-1] = self._cluster_data['haines_pressure'][self._current_cluster-1]*self._cluster_data['vol_coef'][self._current_cluster-1]
                     # Calculate the new Haines jump time
-                    self._logger.debug( 'haines time before last stage:')
-                    self._logger.debug( self._cluster_data['haines_time'])
+#                    self._logger.debug( 'haines time before last stage:')
+#                    self._logger.debug( self._cluster_data['haines_time'])
         if self._tpoints[self._current_cluster-1] == []:
-            self._logger.debug('making cluster ')
-            self._logger.debug(self._current_cluster)
-            self._logger.debug('inactive due to self._tpoints being empty for that cluster')
+#            self._logger.debug('making cluster ')
+#            self._logger.debug(self._current_cluster)
+#            self._logger.debug('inactive due to self._tpoints being empty for that cluster')
             self.cluster_remove(self._current_cluster)
         if self._timing:
             if self._cluster_data['active'][self._current_cluster-1] == 1:
                 self._cluster_data['haines_time'][self._current_cluster-1] = (self._cluster_data['pore_volume'][self._current_cluster-1]+self._cluster_data['throat_volume'][self._current_cluster-1]+self._cluster_data['cap_volume'][self._current_cluster-1])/self._cluster_data['flow_rate'][self._current_cluster-1]
             if self._cluster_data['haines_time'][self._current_cluster-1] < self._sim_time:
                 self._cluster_data['haines_time'][self._current_cluster-1] = self._sim_time
-            self._logger.debug('haines time at the end of the throat stuff')
-            self._logger.debug(self._cluster_data['haines_time'])
+#            self._logger.debug('haines time at the end of the throat stuff')
+#            self._logger.debug(self._cluster_data['haines_time'])
 
     def _condition_update(self):
          # Calculate the distance between the new pore and outlet pores
@@ -517,12 +523,12 @@ class InvasionPercolation(GenericAlgorithm):
             if dist_sqrd[0].shape==(3,):     # need to do this for MatFile networks because newpore_position is a nested array, not a vector (?)
                 dist_sqrd = dist_sqrd[0]
             newpore_distance = np.sqrt(dist_sqrd[0]+dist_sqrd[1]+dist_sqrd[2])
-            self._logger.debug( 'newpore distance')
-            self._logger.debug( newpore_distance)
+#            self._logger.debug( 'newpore distance')
+#            self._logger.debug( newpore_distance)
             if newpore_distance < self._current_distance:
                 self._percent_complete = np.round((self._initial_distance-newpore_distance)/self._initial_distance*100, decimals = 1)
-                self._logger.info( 'percent complete')
-                self._logger.info( self._percent_complete)
+#                self._logger.info( 'percent complete')
+#                self._logger.info( self._percent_complete)
                 self._current_distance = newpore_distance
         elif self._end_condition == 'total':
             self._percent_complete = np.round((np.sum(self['pore.cluster_final']>0)/self._net.num_pores())*100, decimals = 1)
@@ -532,24 +538,26 @@ class InvasionPercolation(GenericAlgorithm):
 
         # Determine if a new breakthrough position has occured
         if self._NewPore in self._outlets:
-            self._logger.info( ' ')
-            self._logger.info( 'BREAKTHROUGH AT PORE: ')
-            self._logger.info(self._NewPore)
-            self._logger.info('in cluster ')
-            self._logger.info(self._current_cluster)
+#            self._logger.info( ' ')
+#            self._logger.info( 'BREAKTHROUGH AT PORE: ')
+#            self._logger.info(self._NewPore)
+#            self._logger.info('in cluster ')
+#            self._logger.info(self._current_cluster)
             if self._timing:
-                self._logger.info('at time')
-                self._logger.info(self._sim_time)
+#                self._logger.info('at time')
+#                self._logger.info(self._sim_time)
+                pass
             if self._end_condition == 'breakthrough':
                 self.cluster_remove(self._current_cluster)
             elif self._end_condition == 'total':
                 self._brkevent.append(self._NewPore)
         if np.sum(self._cluster_data['active']) == 0:
-            self._logger.info( ' ')
-            self._logger.info( 'SIMULATION FINISHED; no more active clusters')
+#            self._logger.info( ' ')
+#            self._logger.info( 'SIMULATION FINISHED; no more active clusters')
             if self._timing:
-                self._logger.info('at time')
-                self._logger.info(self._sim_time)
+#                self._logger.info('at time')
+#                self._logger.info(self._sim_time)
+                pass
             self._condition = 0
             print('     IP algorithm at 100% completion at ',np.round(misc.toc(quiet=True)),' seconds')
 
