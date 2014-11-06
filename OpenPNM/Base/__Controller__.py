@@ -77,12 +77,9 @@ class Controller(dict):
             filename = self.network()[0].name
         else:
             filename = filename.split('.')[0]
-        for item in self.keys():
-            self[item]._loading = True
+
         #Save nested dictionary pickle
         _pickle.dump(self,open(filename+'.pnm','wb'))
-        for item in self.keys():
-            self[item]._loading = False
 
     def load(self,filename):
         r'''
@@ -92,7 +89,6 @@ class Controller(dict):
         self.update(sim)
         for item in self.keys():
             self[item]._sim = self
-            self[item]._loading = False
 
 
 if __name__ == '__main__':

@@ -31,7 +31,6 @@ class Base(dict):
         obj._geometries = []
         obj._physics = []
         obj._net = None
-        obj._loading = True
         #Initialize ordered dict for storing property models
         obj._models = collections.OrderedDict()
         return obj

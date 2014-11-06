@@ -69,7 +69,7 @@ class Core(Base):
             print('Updating vector: '+key)
             super(Base, self).__setitem__(key,value)
         else:
-            if self._loading is True:  # _loading is an attribute set by Controller.load
+            if self._count(element) == 0:
                 self.update({key:value})
             else:
                 print('Cannot write vector with an array of the wrong length: '+key)
