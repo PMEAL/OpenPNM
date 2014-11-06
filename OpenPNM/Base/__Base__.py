@@ -18,25 +18,20 @@ class Base(dict):
         simulation have the same name.  If no name is provided, and random
         string is appended to the objects module name.
 
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-
-    loggername : string
-        Name of the logger. The default is the name of the class.
-
     """
-    _name = None
-    _loglevel = 30
-    _sim = {}
 
     def __new__(typ, *args, **kwargs):
         obj = dict.__new__(typ, *args, **kwargs)
-        obj.update({'pore.all': sp.array([],ndmin=1)})
-        obj.update({'throat.all': sp.array([],ndmin=1)})
+        obj.update({'pore.all': sp.array([],ndmin=1,dtype=bool)})
+        obj.update({'throat.all': sp.array([],ndmin=1,dtype=bool)})
         #Initialize phase, physics, and geometry tracking lists
+        obj._name = None
+        obj._sim = {}
         obj._phases = []
         obj._geometries = []
         obj._physics = []
+        obj._net = None
+        obj._loading = True
         #Initialize ordered dict for storing property models
         obj._models = collections.OrderedDict()
         return obj
@@ -46,6 +41,7 @@ class Base(dict):
         self._sim = simulation
         self.name = name
         self._sim.update({self.name: self})
+        self._loading = False
 
     def _set_sim(self,simulation):
         if self.name in simulation.keys():

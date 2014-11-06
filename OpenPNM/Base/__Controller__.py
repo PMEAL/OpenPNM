@@ -4,12 +4,12 @@ Controller:  Overall simulation controller class
 ###############################################################################
 '''
 import pickle as _pickle
+from collections import OrderedDict as od
 
 class Controller(dict):
     r"""
 
     """
-
     def __init__(self):
         pass
 
@@ -49,13 +49,14 @@ class Controller(dict):
         r'''
         '''
         name = obj.name
-        # Remove label arrays from all other objects
         for item in self.keys():
+            # Remove label arrays from all other objects
             self[item].pop('pore.'+name,None)
             self[item].pop('throat.'+name,None)
-            self[item]._geometries = [x for x in self[item]._geometries if x is not obj]
-            self[item]._phases = [x for x in self[item]._phases if x is not obj]
-            self[item]._physics = [x for x in self[item]._physics if x is not obj]
+            # Remove associations on other objects
+            self[item]._geometries[:] = [x for x in self[item]._geometries if x is not obj]
+            self[item]._phases[:] = [x for x in self[item]._phases if x is not obj]
+            self[item]._physics[:] = [x for x in self[item]._physics if x is not obj]
         # Set object's simulation to an empty dict
         self[name]._sim = {}
         # Remove object from simulation dict
@@ -69,22 +70,29 @@ class Controller(dict):
         # Add object to simulation dict
         self.update({obj.name: obj})
 
-    def save(self,obj,filename=''):
+    def save(self,filename=''):
         r'''
         '''
         if filename == '':
-            filename = obj.name
+            filename = self.network()[0].name
         else:
             filename = filename.split('.')[0]
+        for item in self.keys():
+            self[item]._loading = True
         #Save nested dictionary pickle
-        _pickle.dump(obj,open(filename+'.pnm','wb'))
+        _pickle.dump(self,open(filename+'.pnm','wb'))
+        for item in self.keys():
+            self[item]._loading = False
 
     def load(self,filename):
         r'''
         '''
-        filename = filename.split('.')[0] + '.pnm'
-        obj = _pickle.load(open(filename,'rb'))
-        return obj
+        filename = filename.split('.')[0]
+        sim = _pickle.load(open(filename+'.pnm','rb'))
+        self.update(sim)
+        for item in self.keys():
+            self[item]._loading = False
+
 
 if __name__ == '__main__':
     sim = Controller()

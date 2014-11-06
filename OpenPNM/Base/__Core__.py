@@ -39,7 +39,7 @@ class Core(Base):
         #Enforce correct dict naming
         element = key.split('.')[0]
         if (element != 'pore') and (element != 'throat'):
-#            self._logger.error('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
+            print('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
             return
         #Convert value to an ndarray
         value = sp.array(value,ndmin=1)
@@ -51,26 +51,28 @@ class Core(Base):
         if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
-#                    self._logger.debug(key+' is being defined.')
+                    print(key+' is being defined.')
                     super(Base, self).__setitem__(key,value)
                 else:
-#                    self._logger.error(key+' is already defined.')
+                    print(key+' is already defined.')
                     pass
             else:
-#                self._logger.debug(key+' is being defined.')
+                print(key+' is being defined.')
                 super(Base, self).__setitem__(key,value)
             return
         #Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
-#            self._logger.debug('Broadcasting scalar value into vector: '+key)
+            print('Broadcasting scalar value into vector: '+key)
             value = sp.ones((self._count(element),),dtype=value.dtype)*value
             super(Base, self).__setitem__(key,value)
         elif sp.shape(value)[0] == self._count(element):
-#            self._logger.debug('Updating vector: '+key)
+            print('Updating vector: '+key)
             super(Base, self).__setitem__(key,value)
         else:
-            pass
-#            self._logger.error('Cannot write vector with an array of the wrong length: '+key)
+            if self._loading is True:  # _loading is an attribute set by Controller.load
+                self.update({key:value})
+            else:
+                print('Cannot write vector with an array of the wrong length: '+key)
 
     def add_model(self,propname,model,regen_mode='static',**kwargs):
         r'''
@@ -1025,15 +1027,7 @@ class Core(Base):
         fine, but missing ints are converted to float when nans are inserted.
         '''
         element = prop.split('.')[0]
-        #Utilize a pre-existing dummy 'temp' variable on the object to save time
-        #Don't do this anymore - temp arrays can change in length
-        #try:
-        #    temp = self._temp[element]
-        #except:
-        self._temp = {}
-        self._temp['pore'] = sp.empty((self.Np,))
-        self._temp['throat'] = sp.empty((self.Nt,))
-        temp = self._temp[element]
+        temp = sp.ndarray((self._count(element)))
         dtypes = []
         dtypenames = []
         prop_found = False  #Flag to indicate if prop was found on a sub-object
@@ -1112,7 +1106,7 @@ class Core(Base):
 
         '''
         if labels == 'all':
-            Np = sp.shape(self['pore.all'])[0]
+            Np = sp.shape(self.get('pore.all'))[0]
         else:
             #convert string to list, if necessary
             if type(labels) == str:
@@ -1174,7 +1168,7 @@ class Core(Base):
 
         '''
         if labels == 'all':
-            Nt = sp.shape(self['throat.all'])[0]
+            Nt = sp.shape(self.get('throat.all'))[0]
         else:
             #convert string to list, if necessary
             if type(labels) == str: labels = [labels]
@@ -1383,7 +1377,7 @@ class Core(Base):
     def __str__(self):
         header = '-'*60
         print(header)
-        print(self.__module__.replace('__','')+': \t'+self.name)
+        print(self.__module__.replace('__','')+': \t',self.name)
         print(header)
         print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values'))
         print(header)
