@@ -91,6 +91,7 @@ class Controller(dict):
         sim = _pickle.load(open(filename+'.pnm','rb'))
         self.update(sim)
         for item in self.keys():
+            self[item]._sim = self
             self[item]._loading = False
 
 
