@@ -768,7 +768,7 @@ def print_throat(geom,throats_in):
     else:
         print("Please provide throat indices")
 
-def print_pore(geom,pores,axis_bounds=[]):
+def print_pore(geom,pores,fig=None,axis_bounds=None):
     r"""
     Print all throats around a given pore or list of pores accepted as [1,2,3,...,n]
     e.g geom.print_pore([34,65,99])
@@ -781,6 +781,7 @@ def print_pore(geom,pores,axis_bounds=[]):
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+    return_fig=False
     if len(pores) > 0:
         net_pores = geom.map_pores(geom._net,pores)
         centroids = geom["pore.centroid"][pores]
@@ -812,11 +813,14 @@ def print_pore(geom,pores,axis_bounds=[]):
                 offs_hull = ConvexHull(offs_2D,qhull_options='QJ Pp')
                 ordered_offs.append(offsets[i][offs_hull.vertices])
             "Get domain extents for setting axis "
-            if axis_bounds == []:
+            if axis_bounds == None:
                 [xmin,xmax,ymin,ymax,zmin,zmax]= vertex_dimension(geom._net,pores,parm='minmax')
             else: 
-                [xmin,xmax,ymin,ymax,zmin,zmax]=axis_bounds                
-            fig = plt.figure()
+                [xmin,xmax,ymin,ymax,zmin,zmax]=axis_bounds
+            if fig == None:                
+                fig = plt.figure()
+            else:
+                return_fig==True
             ax = fig.gca(projection='3d')
             outer_items = Poly3DCollection(ordered_verts,linewidths=1, alpha=0.2, zsort='min')
             outer_face_colours=[(1, 0, 0, 0.01)]
@@ -837,3 +841,5 @@ def print_pore(geom,pores,axis_bounds=[]):
             print_throat(throats)
     else:
         print("Please provide pore indices")
+    if return_fig == True:
+        return fig
