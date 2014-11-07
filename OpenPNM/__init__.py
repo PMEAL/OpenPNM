@@ -35,9 +35,8 @@ Import
 
 """
 
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
+__version__ = '1.1-beta'
+
 
 __requires__ = [
     'scipy'
