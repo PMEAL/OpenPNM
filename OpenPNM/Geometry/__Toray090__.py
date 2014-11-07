@@ -7,9 +7,8 @@ gas diffusion layer.s
 
 """
 
-import OpenPNM
 from OpenPNM.Geometry import models as gm
-from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
+from OpenPNM.Geometry import GenericGeometry
 
 class Toray090(GenericGeometry):
     r"""
@@ -69,5 +68,6 @@ class Toray090(GenericGeometry):
                        model=gm.throat_surface_area.cylinder)
 
 if __name__ == '__main__':
+    import OpenPNM
     pn = OpenPNM.Network.TestNet()
     pass

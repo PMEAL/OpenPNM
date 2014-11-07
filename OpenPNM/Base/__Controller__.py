@@ -4,7 +4,6 @@ Controller:  Overall simulation controller class
 ###############################################################################
 '''
 import pickle as _pickle
-from collections import OrderedDict as od
 
 class Controller(dict):
     r"""
@@ -77,6 +76,9 @@ class Controller(dict):
             filename = self.network()[0].name
         else:
             filename = filename.split('.')[0]
+
+        for item in self.keys():
+            self[item]._sim = {}
 
         #Save nested dictionary pickle
         _pickle.dump(self,open(filename+'.pnm','wb'))
