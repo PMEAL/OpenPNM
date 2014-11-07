@@ -95,6 +95,30 @@ class Controller(dict):
         obj = pickle.loads(a)
         return obj
 
+    def save_object(self,obj,filename=''):
+        r'''
+        '''
+        if filename == '':
+            filename = obj.name
+        else:
+            filename = filename.split('.')[0]
+
+        obj._sim = {}
+        obj._net = []
+        obj._geometries = []
+        obj._physics = []
+        obj._phases = []
+
+        #Save nested dictionary pickle
+        _pickle.dump(obj,open(filename+'.pno','wb'))
+
+    def load_object(self,filename):
+        r'''
+        '''
+        filename = filename.split('.')[0]
+        obj = _pickle.load(open(filename+'.pno','rb'))
+        obj._sim = self
+
     def save(self,filename=''):
         r'''
         '''

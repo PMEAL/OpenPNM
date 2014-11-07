@@ -42,6 +42,12 @@ class Base(dict):
         self._sim.update({self.name: self})
         self._loading = False
 
+    def __repr__(self):
+        return '<%s.%s object at %s>' % (
+        self.__class__.__module__,
+        self.__class__.__name__,
+        hex(id(self)))
+
     def _set_sim(self,simulation):
         if self.name in simulation.keys():
             raise Exception('An object with that name is already present in simulation')
@@ -53,11 +59,20 @@ class Base(dict):
 
     simulation = property(_get_sim,_set_sim)
 
-    def __repr__(self):
-        return '<%s.%s object at %s>' % (
-        self.__class__.__module__,
-        self.__class__.__name__,
-        hex(id(self)))
+    def _set_name(self,name):
+        if self._name != None:
+            raise Exception('Renaming objects can have catastrophic consequences')
+        elif self._sim.get(name) is not None:
+            raise Exception('An object named '+name+' already exists')
+        elif name == None:
+            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+            name = self.__module__.split('.')[-1].strip('__') + '_' + name
+        self._name = name
+
+    def _get_name(self):
+        return self._name
+
+    name = property(_get_name,_set_name)
 
     def _find_object(self,obj_name='',obj_type=''):
         r'''
@@ -234,84 +249,6 @@ class Base(dict):
         else:
             net = self._net
         return net
-
-    def save(self,filename=''):
-        r'''
-
-        Parameters
-        ----------
-        filename : string
-            The filename to contain the saved object data in Numpy zip format (npz)
-
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-        >>> pn.save('test_pn')
-
-        >>> gn = OpenPNM.Network.GenericNetwork()
-        >>> gn.load('test_pn')
-
-        >>> # Remove newly created file
-        >>> import os
-        >>> os.remove('test_pn.npz')
-
-        '''
-        if filename == '':
-            filename = self.name
-        obj_dict = {}
-        obj_dict['data'] = self.copy()
-        obj_dict['info'] = {}
-        obj_dict['info']['name'] = self.name
-        obj_dict['info']['module'] = self.__module__
-        sp.savez_compressed(filename,**obj_dict)
-
-    def load(self,filename):
-        r'''
-        Loads a previously saved object's data onto new, empty Generic object
-
-        Parameters
-        ----------
-        filename : string
-            The file containing the saved object data in Numpy zip format (npz)
-
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-        >>> pn.save('test_pn')
-
-        >>> gn = OpenPNM.Network.GenericNetwork()
-        >>> gn.load('test_pn')
-
-        >>> # Remove newly created file
-        >>> import os
-        >>> os.remove('test_pn.npz')
-
-        '''
-        if (self.Np == 0) and (self.Nt == 0):
-            filename = filename.split('.')[0] + '.npz'
-            temp = sp.load(filename)
-            data_dict = temp['data'].item()
-            info_dict = temp['info'].item()
-            self.update(data_dict)
-            self._name = info_dict['name']
-            temp.close()
-        else:
-            raise Exception('Cannot load saved data onto an active object')
-
-    def _set_name(self,name):
-        if self._name != None:
-            raise Exception('Renaming objects can have catastrophic consequences')
-        elif self._sim.get(name) is not None:
-            raise Exception('An object named '+name+' already exists')
-        elif name == None:
-            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
-            name = self.__module__.split('.')[-1].strip('__') + '_' + name
-        self._name = name
-
-    def _get_name(self):
-        return self._name
-
-    name = property(_get_name,_set_name)
 
 if __name__ == '__main__':
     import doctest
