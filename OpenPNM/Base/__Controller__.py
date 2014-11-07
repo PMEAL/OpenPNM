@@ -92,6 +92,16 @@ class Controller(dict):
         for item in self.keys():
             self[item]._sim = self
 
+    def export_to(self,filename,fileformat='VTK'):
+        r'''
+        '''
+        pass
+
+    def import_from(self,filename):
+        r'''
+        '''
+        pass
+
 
 if __name__ == '__main__':
     sim = Controller()
