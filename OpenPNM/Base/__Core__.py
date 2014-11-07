@@ -3,10 +3,9 @@
 Core:  Core Data Class
 ###############################################################################
 '''
-import pprint,collections
+import pprint
 from functools import partial
 import scipy as sp
-import OpenPNM
 from OpenPNM.Base import Base
 from OpenPNM.Utilities import misc
 
@@ -21,9 +20,6 @@ class Core(Base):
         '''
         super(Core,self).__init__(**kwargs)
         self._logger.info("Construct Core subclass from Base")
-
-        #Initialize ordered dict for storing property models
-        self._models = collections.OrderedDict()
 
         self._logger.debug("Construction of Core class complete")
 
@@ -599,16 +595,22 @@ class Core(Base):
         This is the actual label getter method, but it should not be called directly.
         Wrapper methods have been created, use labels().
         '''
+        # Collect list of all pore OR throat labels
         labels = []
         for item in self.keys():
             if item.split('.')[0] == element:
-                if self[item].dtype == bool:
+                if self[item].dtype in ['bool']:
                     labels.append(item)
         labels.sort()
         if locations == []:
             return misc.PrintableList(labels)
         else:
             labels = sp.array(labels)
+            locations = sp.array(locations,ndmin=1)
+            if locations.dtype in ['bool']:
+                locations = self._get_indices(element=element)[locations]
+            else:
+                locations = sp.array(locations,dtype=int)
             arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
             col = 0
             for item in labels:
@@ -682,12 +684,12 @@ class Core(Base):
             else:
                 self._logger.error('Unrecognized element')
                 return
-        elif pores != []:
+        elif pores is not []:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             temp = self._get_labels(element='pore',locations=pores, mode=mode)
-        elif throats != []:
+        elif throats is not []:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
@@ -712,17 +714,17 @@ class Core(Base):
         >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
         array([0, 1])
         '''
-        if pores != []:
+        if pores is not []:
             label = 'pore.'+label.split('.')[-1]
-            all_labels = self.labels('pore')
+            all_labels = self.labels(element='pore')
             mask = self.labels(pores=pores,mode='mask')
             ind = all_labels.index(label)
             temp = mask[:,ind]
             pores = sp.array(pores,ndmin=1)
             return pores[temp]
-        elif throats != []:
+        elif throats is not []:
             label = 'throat.'+label.split('.')[-1]
-            all_labels = self.labels('throat')
+            all_labels = self.labels(element='throat')
             mask = self.labels(throats=throats,mode='mask')
             ind = all_labels.index(label)
             temp = mask[:,ind]
@@ -763,6 +765,7 @@ class Core(Base):
             ind = (none == 0)
         #Extract indices from boolean mask
         ind = sp.where(ind==True)[0]
+        ind = ind.astype(dtype=int)
         return ind
 
     def pores(self,labels='all',mode='union'):

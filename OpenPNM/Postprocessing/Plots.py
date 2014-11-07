@@ -1,7 +1,10 @@
 import scipy as _sp
 import matplotlib.pylab as _plt
 
-def profiles(network,values=None,bins=[10,10,10]):
+def profiles(network,
+             fig=None,
+             values=None,
+             bins=[10,10,10]):
     r'''
     Compute the profiles for the property of interest and plots it in all 
     three dimensions
@@ -21,7 +24,8 @@ def profiles(network,values=None,bins=[10,10,10]):
     Either propname or values can be sent, but not both
         
     '''
-    fig = _plt.figure()
+    if fig is None:
+        fig = _plt.figure()
     ax1 = fig.add_subplot(131)
     ax2 = fig.add_subplot(132)
     ax3 = fig.add_subplot(133)
@@ -39,11 +43,12 @@ def profiles(network,values=None,bins=[10,10,10]):
         ax[n].plot(xaxis,yaxis,'bo-')
         ax[n].set_xlabel(xlab[n])
         ax[n].set_ylabel('Slice Value')
-        
-
+    fig.show()
+    
 def distributions(net,
-                 throat_diameter='throat.diameter',
-                 pore_diameter='pore.diameter',
+                  fig = None,
+                  throat_diameter='throat.diameter',
+                  pore_diameter='pore.diameter',
                  throat_length='throat.length',
                  exclude_boundaries=True,
                  geom_list=None):
@@ -56,16 +61,9 @@ def distributions(net,
     The network for which the graphs are desired
 
     """
-    #pores = _sp.array([],dtype=int)
-    #throats = _sp.array([],dtype=int)
-    #if (exclude_boundaries == True) and (not net.geometries) == False:
-    #    for geom_name in net.geometries():
-    #        if net.geometries(geom_name)[0].__class__.__name__ != 'Boundary':
-    #            pores = _sp.hstack((pores,net.geometries(geom_name)[0]["pore.map"]))
-    #            throats= _sp.hstack((throats,net.geometries(geom_name)[0]["throat.map"]))
-    #else:
-    #   pores = net.pores()
-    #   throats = net.throats()
+    if fig is None:
+        fig = _plt.figure()
+
     if geom_list != None:
         include_pores = [False]*net.num_pores()
         include_throats = [False]*net.num_throats()
@@ -78,10 +76,10 @@ def distributions(net,
     pores = net.pores()[include_pores]
     throats = net.throats()[include_throats]
     
-    fig = _plt.figure()
+      
     ax1 = fig.add_subplot(221)
     ax1.hist(net[pore_diameter][pores],25,facecolor='green')
-    ax1.set_xlabel('Pore Diameter [m]')
+    ax1.set_xlabel('Pore Diameter')
     ax1.set_ylabel('Frequency')
 
     ax2 = fig.add_subplot(222)
@@ -92,20 +90,21 @@ def distributions(net,
 
     ax3 = fig.add_subplot(223)
     ax3.hist(net[throat_diameter][throats],25,facecolor='blue')
-    ax3.set_xlabel('Throat Diameter [m]')
+    ax3.set_xlabel('Throat Diameter')
     ax3.set_ylabel('Frequency')
 
     ax4 = fig.add_subplot(224)
     ax4.hist(net[throat_length][throats],25,facecolor='red')
-    ax4.set_xlabel('Throat Length [m]')
+    ax4.set_xlabel('Throat Length')
     ax4.set_ylabel('Frequency')
     fig.show()
 
 def drainage_curves(inv_alg,
-                Pc='inv_Pc',
-                sat='inv_sat',
-                seq='inv_seq',
-                timing=None):
+                    fig=None,
+                    Pc='inv_Pc',
+                    sat='inv_sat',
+                    seq='inv_seq',
+                    timing=None):
     r"""
     Plot a montage of key saturation plots
 
@@ -139,7 +138,8 @@ def drainage_curves(inv_alg,
     sort_seq = _sp.argsort(inv_alg['throat.'+seq][inv_throats])
     inv_throats = inv_throats[sort_seq]
     
-    fig = _plt.figure(figsize=(13, 10), dpi=80, facecolor='w', edgecolor='k')
+    if fig is None:
+        fig = _plt.figure(num=1, figsize=(13, 10), dpi=80, facecolor='w', edgecolor='k')
     ax1 = fig.add_subplot(231)   #left 
     ax2 = fig.add_subplot(232)   #middle
     ax3 = fig.add_subplot(233)   #right 

@@ -330,9 +330,51 @@ class OrdinaryPercolation(GenericAlgorithm):
               Snwp_t[i] = sum(Tvol[self._t_inv[throats]<=Pc])/Tvol_tot
           plt.plot(PcPoints,Snwp_p,'r.-')
           plt.plot(PcPoints,Snwp_t,'b.-')
+          r'''
+          TODO: Add legend to distinguish the pore and throat curves
+          '''
           plt.xlim(xmin=0)
           plt.show()
 
+
+    def plot_primary_drainage_curve(self,
+                                    pore_volume='volume',
+                                    throat_volume='volume',
+                                    pore_label='all',
+                                    throat_label='all'):
+          r"""
+          Plot the primary drainage curve as the capillary pressure on ordinate 
+          and total saturation of the wetting phase on the abscissa. 
+          This is the preffered style in the petroleum engineering
+          """
+          try:
+            PcPoints = sp.unique(self.get_data(prop='inv_Pc',pores='all'))
+          except:
+            raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
+          pores=self._net.pores(labels=pore_label)
+          throats = self._net.throats(labels=throat_label)
+          Snwp_t = sp.zeros_like(PcPoints)
+          Snwp_p = sp.zeros_like(PcPoints)
+          Snwp_all = sp.zeros_like(PcPoints)
+          Swp_all = sp.zeros_like(PcPoints)
+          Pvol = self._net['pore.'+pore_volume]
+          Tvol = self._net['throat.'+throat_volume]
+          Pvol_tot = sum(Pvol)
+          Tvol_tot = sum(Tvol)
+          for i in range(0,sp.size(PcPoints)):
+              Pc = PcPoints[i]
+              Snwp_p[i] = sum(Pvol[self._p_inv[pores]<=Pc])/Pvol_tot
+              Snwp_t[i] = sum(Tvol[self._t_inv[throats]<=Pc])/Tvol_tot
+              Snwp_all[i] = (sum(Tvol[self._t_inv[throats]<=Pc])+sum(Pvol[self._p_inv[pores]<=Pc]))/(Tvol_tot+Pvol_tot)
+              Swp_all[i] = 1 - Snwp_all[i]
+          plt.plot(Swp_all,PcPoints,'k.-')
+          plt.xlim(xmin=0)
+          plt.xlabel('Saturation of wetting phase')
+          plt.ylabel('Capillary Pressure [Pa]')
+          plt.title('Primay Drainage Curve')
+          plt.grid(True)
+          plt.show()
+          
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)

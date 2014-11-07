@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-module __Tortuosity__: Network Tortuosity Algorithm
 ========================================================================
+Tortuosity: Network Tortuosity Algorithm
+========================================================================
+This algorithm uses Djkstra's algorithm to get the shortest path between
+two points folliwng the network, and the the direct distance between the same
+points.  The ratio of these is returned as the 'tortuosity'
 
-.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
-
+TODO: It currently uses the 'throat.length' to weight the network connections
+but this should probably use diffusive conductance.  
 """
 
 import scipy as sp

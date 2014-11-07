@@ -43,5 +43,6 @@ from .__FourierConduction__ import FourierConduction
 from .__OhmicConduction__ import OhmicConduction
 from .__StokesFlow__ import StokesFlow
 from .__InvasionPercolation__ import InvasionPercolation
+from .__InvasionPercolationBasic__ import InvasionPercolationBasic
 from .__OrdinaryPercolation__ import OrdinaryPercolation
 from . __Tortuosity__ import Tortuosity
