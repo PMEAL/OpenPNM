@@ -69,6 +69,32 @@ class Controller(dict):
         # Add object to simulation dict
         self.update({obj.name: obj})
 
+    def clone_object(self,obj):
+        r'''
+        Clone an OpenPNM Object
+
+        Parameters
+        ----------
+        obj : OpenPNM Object
+            The object to be cloned can be any OpenPNM Object
+
+        Returns
+        -------
+        A clone of the specified object is returned, but it retains all its links
+        to the objects associated with the original object.  The cloned object is
+        not associated with the Network.
+
+        Notes
+        -----
+        This method is intended to create a disposable object, for instance, to
+        receive simulation data without overwriting existing data.
+
+        '''
+        import pickle
+        a = pickle.dumps(obj)
+        obj = pickle.loads(a)
+        return obj
+
     def save(self,filename=''):
         r'''
         '''
