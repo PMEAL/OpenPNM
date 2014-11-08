@@ -37,7 +37,7 @@ class GenericPhase(Core):
     """
     def __init__(self,network=None,components=[],**kwargs):
         super(GenericPhase,self).__init__(**kwargs)
-        logger.name = logger.name + '|' + self.name
+        logger.name = self.name
 
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()

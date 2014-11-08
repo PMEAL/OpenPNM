@@ -43,7 +43,7 @@ class GenericGeometry(Core):
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
-        logger.name = logger.name + '|' + self.name
+        logger.name = self.name
 
         #Initialize locations
         self['pore.all'] = sp.array([],ndmin=1,dtype=bool)

@@ -1,5 +1,4 @@
 import OpenPNM
-
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 
 sim = OpenPNM.Base.Controller()

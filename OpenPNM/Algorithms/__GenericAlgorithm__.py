@@ -38,7 +38,7 @@ class GenericAlgorithm(Core):
         Initialize
         """
         super(GenericAlgorithm,self).__init__(**kwords)
-        logger.name = logger.name + '|' + self.name
+        logger.name = self.name
 
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()

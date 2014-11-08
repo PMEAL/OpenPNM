@@ -29,7 +29,7 @@ class GenericNetwork(Core):
         Initialize Network
         """
         super(GenericNetwork,self).__init__(**kwargs)
-        logger.name = logger.name + '|' + self.name
+        logger.name = self.name
 
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}

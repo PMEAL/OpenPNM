@@ -23,8 +23,7 @@ r"""
 import logging as logging
 # set up logging to file - see previous section for more details
 logging.basicConfig(level=logging.WARNING,
-                    format='%(asctime)s %(levelname)-6s %(name)-22s %(message)s',
-                    datefmt='20%y-%m-%d %H:%M',
+                    format='%(asctime)s | %(levelname)-8s | %(name)s.%(module)s.%(funcName)s | %(message)s',
                     )
 
 from .__Controller__ import Controller
