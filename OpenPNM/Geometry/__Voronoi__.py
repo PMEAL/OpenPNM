@@ -24,8 +24,7 @@ class Voronoi(GenericGeometry):
 
     Parameters
     ----------
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+
 
     """
 

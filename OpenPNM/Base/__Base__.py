@@ -41,6 +41,7 @@ class Base(dict):
         super(Base,self).__init__()
         logger.name = 'Base'
         logger.setLevel(loglevel)
+        logger.debug('Initializing Base class')
 
         self._sim = simulation
         self.name = name

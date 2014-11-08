@@ -37,7 +37,7 @@ class GenericPhase(Core):
     """
     def __init__(self,network=None,components=[],**kwargs):
         super(GenericPhase,self).__init__(**kwargs)
-        logger.name = logger.name + ' -> ' + self.name
+        logger.name = logger.name + '|' + self.name
 
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()
@@ -64,7 +64,7 @@ class GenericPhase(Core):
     def __setitem__(self,prop,value):
         for phys in self._physics:
             if prop in phys.keys():
-#                self._logger.error(prop+' is already defined in at least one associated Physics object')
+                logger.error(prop+' is already defined in at least one associated Physics object')
                 return
         super(GenericPhase,self).__setitem__(prop,value)
 
@@ -73,7 +73,7 @@ class GenericPhase(Core):
             element = key.split('.')[0]
             return self[element+'.all']
         if key not in self.keys():
-#            self._logger.debug(key+' not on Phase, constructing data from Physics')
+            logger.debug(key+' not on Phase, constructing data from Physics')
             return self._interleave_data(key,sources=self._physics)
         else:
             return super(GenericPhase,self).__getitem__(key)
@@ -93,7 +93,7 @@ class GenericPhase(Core):
         '''
         if mode == 'add':
             if phase.name in self.phases():
-#                self._logger.error('Phase already present')
+                logger.error('Phase already present')
                 pass
             else:
                 self._phases.append(phase) # Associate any sub-phases with self
@@ -108,7 +108,7 @@ class GenericPhase(Core):
                 self._phases.remove(phase)
                 phase._phases = []
             else:
-#                self._logger.error('Phase not found')
+                logger.error('Phase not found')
                 pass
 
     def regenerate(self,**kwargs):

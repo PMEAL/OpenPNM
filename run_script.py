@@ -6,7 +6,7 @@ sim = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net',simulation=sim,loglevel=20)
+pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net',simulation=sim,loglevel=10)
 pn.add_boundaries()
 
 #==============================================================================

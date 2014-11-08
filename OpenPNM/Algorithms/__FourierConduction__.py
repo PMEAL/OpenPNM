@@ -8,7 +8,9 @@ A subclass of GenericLinearTransport to simulate heat conduction
 
 """
 import scipy as sp
-from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
+from OpenPNM.Algorithms import GenericLinearTransport
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class FourierConduction(GenericLinearTransport):
     r"""
@@ -40,12 +42,12 @@ class FourierConduction(GenericLinearTransport):
         r'''
         '''
         super(FourierConduction,self).__init__(**kwargs)
-#        self._logger.info('Create '+self.__class__.__name__+' Object')
+        logger.info('Create '+self.__class__.__name__+' Object')
 
     def run(self,conductance='thermal_conductance',quantity='temperature',**params):
         r'''
         '''
-#        self._logger.info('Setup '+self.__class__.__name__)
+        logger.info('Setup '+self.__class__.__name__)
         super(FourierConduction,self).setup(conductance=conductance,quantity=quantity)
 
         super(GenericLinearTransport,self).run()

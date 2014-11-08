@@ -12,6 +12,8 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from OpenPNM.Network import GenericNetwork
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 from scipy.spatial import Voronoi
 from scipy import stats as st
 
@@ -64,17 +66,17 @@ class Delaunay(GenericNetwork):
             Number of pores to place randomly within domain
 
         '''
-#        self._logger.info(sys._getframe().f_code.co_name+": Start of network topology generation")
+        logger.info("Start of network topology generation")
         self._generate_setup(num_pores,domain_size)
         self._generate_pores()
         self._generate_throats()
-#        self._logger.debug(sys._getframe().f_code.co_name+": Network generation complete")
+        logger.debug("Network generation complete")
 
     def _generate_setup(self,num_pores,domain_size):
         r"""
         Perform applicable preliminary checks and calculations required for generation
         """
-#        self._logger.debug("generate_setup: Perform preliminary calculations")
+        logger.debug("generate_setup: Perform preliminary calculations")
         if domain_size and num_pores:
             self._Lx = domain_size[0]
             self._Ly = domain_size[1]
@@ -85,7 +87,7 @@ class Delaunay(GenericNetwork):
             '''
             self._btype = [0,0,0]
         else:
-#            self._logger.error("domain_size and num_pores must be specified")
+            logger.error("domain_size and num_pores must be specified")
             raise Exception('domain_size and num_pores must be specified')
 
 
@@ -93,7 +95,7 @@ class Delaunay(GenericNetwork):
         r"""
         Generate the pores with numbering scheme.
         """
-#        self._logger.info(sys._getframe().f_code.co_name+": Place randomly located pores in the domain")
+        logger.info("Place randomly located pores in the domain")
         #Original Random Point Generator
         #coords = sp.rand(self._Np,3)*[self._Lx,self._Ly,self._Lz]
         #Seeding Code
@@ -109,7 +111,7 @@ class Delaunay(GenericNetwork):
         #coords = np.array([np.random.uniform(0,self._Lx,self._Np),np.random.uniform(0,self._Ly,self._Np),np.random.uniform(0,self._Lz,self._Np)]).T
 
         self['pore.coords'] = coords
-#        self._logger.debug(sys._getframe().f_code.co_name+": End of method")
+        logger.debug("End of method")
 
     def _prob_func(self,m):
         a = 35
@@ -139,7 +141,7 @@ class Delaunay(GenericNetwork):
         r"""
         Generate the throats connections
         """
-#        self._logger.info(sys._getframe().f_code.co_name+": Define connections between pores")
+        logger.info("Define connections between pores")
         Np = self._Np
         pts = self['pore.coords']
         #Generate 6 dummy domains to pad onto each face of real domain
@@ -166,9 +168,9 @@ class Delaunay(GenericNetwork):
         #Add dummy domains to real domain
         pts = np.vstack((pts,Pxp,Pxm,Pyp,Pym,Pzp,Pzm)) #Order important for boundary logic
         #Perform tessellation
-#        self._logger.debug(sys._getframe().f_code.co_name+": Beginning tessellation")
+        logger.debug("Beginning tessellation")
         Tri = sptl.Delaunay(pts)
-#        self._logger.debug(sys._getframe().f_code.co_name+": Converting tessellation to adjacency matrix")
+        logger.debug("Converting tessellation to adjacency matrix")
         adjmat = sprs.lil_matrix((Np,Np),dtype=int)
         for i in sp.arange(0,sp.shape(Tri.simplices)[0]):
             #Keep only simplices that are fully in real domain
@@ -179,7 +181,7 @@ class Delaunay(GenericNetwork):
         #Remove duplicate (lower triangle) and self connections (diagonal)
         #and convert to coo
         adjmat = sprs.triu(adjmat,k=1,format="coo")
-#        self._logger.debug(sys._getframe().f_code.co_name+": Conversion to adjacency matrix complete")
+        logger.debug("Conversion to adjacency matrix complete")
         self['throat.conns']=sp.vstack((adjmat.row, adjmat.col)).T
         self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
         self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
@@ -209,7 +211,6 @@ class Delaunay(GenericNetwork):
             else:
                 all_verts[i]="unbounded"
         self['pore.vertices']=all_verts
-#        self._logger.debug(sys._getframe().f_code.co_name+": End of method")
 
     def add_boundaries(self):
         r'''
@@ -256,7 +257,7 @@ class Delaunay(GenericNetwork):
         r"""
         This is an alternative means of adding boundaries
         """
-#        self._logger.info("add_boundaries: start of method")
+        logger.info("add_boundaries: start of method")
 
         import scipy.spatial as sptl
         import scipy.sparse as sprs
@@ -323,10 +324,10 @@ class Delaunay(GenericNetwork):
         nums = np.r_[0:np.shape(conns)[0]]
         self.set_throat_data(prop='numbering',data=nums)
         self.set_throat_info(label='numbering',locations=np.ones((nums[-1]+1,),dtype=bool))
-#        self._logger.debug("add_boundaries: end of method")
+        logger.debug("add_boundaries: end of method")
 
     def _add_boundaries_old(self):
-#        self._logger.info("add_boundaries_old: Start of method")
+        logger.info("add_boundaries_old: Start of method")
 
         self.add_opposing_boundaries(btype=[2,5])
         self.add_opposing_boundaries(btype=[3,4])
@@ -336,7 +337,7 @@ class Delaunay(GenericNetwork):
         r"""
         btype indicates which two boundaries are being added by type
         """
-#        self._logger.info("add_opposing_boundaries: start of method")
+        logger.info("add_opposing_boundaries: start of method")
 
         if btype==[2,5]:
             D=0

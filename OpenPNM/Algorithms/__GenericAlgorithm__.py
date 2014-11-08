@@ -38,7 +38,7 @@ class GenericAlgorithm(Core):
         Initialize
         """
         super(GenericAlgorithm,self).__init__(**kwords)
-        logger.name = logger.name + ' -> ' + self.name
+        logger.name = logger.name + '|' + self.name
 
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()
@@ -53,14 +53,12 @@ class GenericAlgorithm(Core):
         r"""
         Main run command for the algorithm
         """
-#        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_outer_iteration_stage()
 
     def _do_outer_iteration_stage(self):
         r"""
         Executes the outer iteration stage
         """
-#        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_one_outer_iteration()
 
     def _do_one_outer_iteration(self):
@@ -68,25 +66,21 @@ class GenericAlgorithm(Core):
         One iteration of an outer iteration loop for an algorithm
         (e.g. time or parametric study)
         """
-#        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_inner_iteration_stage()
 
     def _do_inner_iteration_stage(self):
         r"""
         Executes the inner iteration stage
         """
-#        self._logger.debug(sys._getframe().f_code.co_name)
         self._do_one_inner_iteration()
 
     def _do_one_inner_iteration(self):
         r"""
         Executes one inner iteration
         """
-#        self._logger.debug(sys._getframe().f_code.co_name)
         pass
 
     def return_results(self,**kwargs):
-#        self._logger.debug(sys._getframe().f_code.co_name)
         pass
 
     def set_boundary_conditions(self,component=None,bctype='',bcvalue=None,pores=[],throats=[],mode='merge'):
@@ -134,7 +128,7 @@ class GenericAlgorithm(Core):
             if sp.size(component)!=1:
                 raise Exception('For using set_boundary_conditions method, only one component should be specified.')
 
-#        self._logger.debug('BC applies to the component: '+component.name)
+        logger.debug('BC applies to the component: '+component.name)
         #If mode is 'remove', also bypass checks
         if mode == 'remove':
             if pores == [] and throats == []:
@@ -151,21 +145,21 @@ class GenericAlgorithm(Core):
                                 del self[element+'.'+component.name+'_'+bctype]
                             except:
                                 pass
-#                    self._logger.debug('Removing '+bctype+' from all locations for '+component.name+' in '+self.name)
+                    logger.debug('Removing '+bctype+' from all locations for '+component.name+' in '+self.name)
                     self._existing_BC.remove(bctype)
             else:
                 if pores!=[]:
                     if bctype!='':
                         self['pore.'+component.name+'_bcval_'+bctype][pores] = sp.nan
                         self['pore.'+component.name+'_'+bctype][pores] = False
-#                        self._logger.debug('Removing '+bctype+' from the specified pores for '+component.name+' in '+self.name)
+                        logger.debug('Removing '+bctype+' from the specified pores for '+component.name+' in '+self.name)
                     else:   raise Exception('Cannot remove BC from the pores unless bctype is specified')
 
                 if throats!=[]:
                     if bctype!='':
                         self['throat.'+component.name+'_bcval_'+bctype][throats] = sp.nan
                         self['throat.'+component.name+'_'+bctype][throats] = False
-#                        self._logger.debug('Removing '+bctype+' from the specified throats for '+component.name+' in '+self.name)
+                        logger.debug('Removing '+bctype+' from the specified throats for '+component.name+' in '+self.name)
                     else:   raise Exception('Cannot remove BC from the throats unless bctype is specified')
 
             return

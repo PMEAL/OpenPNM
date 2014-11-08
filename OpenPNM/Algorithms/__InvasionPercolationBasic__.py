@@ -9,6 +9,8 @@ InvasionPercolationBasic: Simple IP
 import scipy as sp
 import bisect
 from OpenPNM.Algorithms import GenericAlgorithm
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class InvasionPercolationBasic(GenericAlgorithm):
     r"""

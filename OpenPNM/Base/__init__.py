@@ -23,7 +23,7 @@ r"""
 import logging as logging
 # set up logging to file - see previous section for more details
 logging.basicConfig(level=logging.WARNING,
-                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    format='%(asctime)s %(levelname)-6s %(name)-22s %(message)s',
                     datefmt='20%y-%m-%d %H:%M',
                     )
 

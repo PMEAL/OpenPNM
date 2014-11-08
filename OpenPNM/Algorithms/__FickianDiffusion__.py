@@ -6,7 +6,9 @@ module __FickianDiffusion__: Diffusive mass transfer
 
 """
 import scipy as sp
-from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
+from OpenPNM.Algorithms import GenericLinearTransport
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class FickianDiffusion(GenericLinearTransport):
     r'''
@@ -40,12 +42,12 @@ class FickianDiffusion(GenericLinearTransport):
 
         '''
         super(FickianDiffusion,self).__init__(**kwargs)
-#        self._logger.info('Create '+self.__class__.__name__+' Object')
+        logger.info('Create '+self.__class__.__name__+' Object')
 
     def run(self,conductance='diffusive_conductance',quantity='mole_fraction',**params):
         r'''
         '''
-#        self._logger.info("Setup "+self.__class__.__name__)
+        logger.info("Setup "+self.__class__.__name__)
         super(FickianDiffusion,self).setup(conductance=conductance,quantity=quantity)
 
         super(GenericLinearTransport,self).run()

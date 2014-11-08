@@ -9,6 +9,8 @@ import numpy as np
 import scipy as sp
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Network import GenericNetwork
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class Cubic(GenericNetwork):
     r"""
@@ -190,7 +192,7 @@ class Cubic(GenericNetwork):
             Ds = misc.dist(x,y)
             L = sp.median(sp.amin(Ds,axis=0))
         else:
-#            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
+            logger.warning('The supplied pores are not coplanar. Length will be approximate.')
             f1 = self['pore.coords'][face_1]
             f2 = self['pore.coords'][face_2]
             distavg = [0,0,0]
@@ -236,7 +238,7 @@ class Cubic(GenericNetwork):
             # if that fails, use the max face area of the bounding cuboid
             A = max([yz,xz,xy])
         if not misc.iscoplanar(self['pore.coords'][face]):
-#            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
+            logger.warning('The supplied pores are not coplanar. Area will be approximate')
             pass
         return A
 
