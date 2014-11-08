@@ -6,6 +6,8 @@ module __GenericPhase__: Base class for building Phase objects
 
 """
 from OpenPNM.Base import Core
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 import OpenPNM.Phases.models
 import scipy as sp
 
@@ -35,6 +37,7 @@ class GenericPhase(Core):
     """
     def __init__(self,network=None,components=[],**kwargs):
         super(GenericPhase,self).__init__(**kwargs)
+        logger.name = logger.name + ' -> ' + self.name
 
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()

@@ -8,9 +8,10 @@ This generic class contains the recommended methods for subclassed algorithms.
 It inherits from Core, so is Python Dict with the OpenPNM data control methods.
 
 """
-import sys
 import scipy as sp
 from OpenPNM.Base import Core
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class GenericAlgorithm(Core):
     r"""
@@ -37,6 +38,7 @@ class GenericAlgorithm(Core):
         Initialize
         """
         super(GenericAlgorithm,self).__init__(**kwords)
+        logger.name = logger.name + ' -> ' + self.name
 
         if network == None:
             self._net = OpenPNM.Network.GenericNetwork()

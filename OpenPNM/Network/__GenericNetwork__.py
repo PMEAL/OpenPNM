@@ -5,12 +5,13 @@ GenericNetwork: Abstract class to construct pore networks
 ===============================================================================
 
 """
-import sys
 import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Base import Core
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class GenericNetwork(Core):
     r"""
@@ -28,6 +29,7 @@ class GenericNetwork(Core):
         Initialize Network
         """
         super(GenericNetwork,self).__init__(**kwargs)
+        logger.name = logger.name + ' -> ' + self.name
 
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}

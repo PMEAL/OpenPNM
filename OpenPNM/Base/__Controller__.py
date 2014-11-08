@@ -4,6 +4,7 @@ Controller:  Overall simulation controller class
 ###############################################################################
 '''
 import pickle as _pickle
+import OpenPNM.Base
 
 class Controller(dict):
     r"""
@@ -43,6 +44,11 @@ class Controller(dict):
             if obj_type in mro:
                 temp.append(self[obj])
         return temp
+
+    @staticmethod
+    def get_logger(name='blah'):
+        logger = OpenPNM.Base._logger.getLogger(name=name)
+        return logger
 
     def drop(self,obj):
         r'''

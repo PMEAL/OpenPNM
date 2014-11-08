@@ -8,6 +8,8 @@ GenericGeometry -- Base class to manage pore scale geometry
 
 import scipy as sp
 from OpenPNM.Base import Core
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 import OpenPNM.Geometry.models
 
 class GenericGeometry(Core):
@@ -41,6 +43,7 @@ class GenericGeometry(Core):
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
+        logger.name = logger.name + ' -> ' + self.name
 
         #Initialize locations
         self['pore.all'] = sp.array([],ndmin=1,dtype=bool)
