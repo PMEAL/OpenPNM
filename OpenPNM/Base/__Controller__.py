@@ -79,6 +79,13 @@ class Controller(dict):
 
     def expand(self):
         r'''
+        Inspects the associations of the object(s) presently attached to the
+        simulation and expands itself to include include all objects, as well
+        as setting the simulation attribute of each object.
+
+        Notes
+        -----
+        This does not include algorithm objects...yet
         '''
         obj = list(self.items())[0][1]
         mro = [item.__name__ for item in obj.__class__.__mro__]
@@ -95,7 +102,8 @@ class Controller(dict):
 
     def clone_object(self,obj):
         r'''
-        Clone an OpenPNM Object
+        Clone an OpenPNM Object, without associating the new object with the
+        parent simulation.
 
         Parameters
         ----------
@@ -121,6 +129,17 @@ class Controller(dict):
 
     def save_object(self,obj,filename=''):
         r'''
+        Save a single OpenPNM object to a 'pno' file.
+
+        Parameters
+        ----------
+        obj : OpenPNM object
+            The object to save.  All the associations are removed, so upon
+            reloading the object needs to be reconnected manually to a
+            simulation
+        filename : string (optional)
+            The file name to use when saving.  If no name is given the object
+            name is used.
         '''
         if filename == '':
             filename = obj.name
@@ -138,6 +157,12 @@ class Controller(dict):
 
     def load_object(self,filename):
         r'''
+        Load a single object saved as a 'pno' file.
+
+        Parameters
+        ----------
+        filename : string
+            The file name to load.  The file extension must be 'pno'.
         '''
         filename = filename.split('.')[0]
         obj = _pickle.load(open(filename+'.pno','rb'))
@@ -145,6 +170,13 @@ class Controller(dict):
 
     def save(self,filename=''):
         r'''
+        Save the entire state of a simulation to a 'pnm' file.
+
+        Parameters
+        ----------
+        filename : string, optional
+            The file name to save as. If none is given the name of the Network
+            object is used.
         '''
         if filename == '':
             filename = self.network()[0].name
@@ -159,6 +191,12 @@ class Controller(dict):
 
     def load(self,filename):
         r'''
+        Load an entire simulation from a 'pnm' file.
+
+        Parameters
+        ----------
+        filename : string
+            The file name of the simulation to load.
         '''
         filename = filename.split('.')[0]
         sim = _pickle.load(open(filename+'.pnm','rb'))
@@ -166,13 +204,28 @@ class Controller(dict):
         for item in self.keys():
             self[item]._sim = self
 
-    def export_to(self,filename,fileformat='VTK'):
+    def export(self,filename='',obj=None,fileformat='VTK'):
         r'''
-        '''
-        pass
+        Export data to the specified file format.
 
-    def import_from(self,filename):
-        r'''
+        Parameters
+        ----------
+        filename : string, optional
+            The file name to save as.  If no name is given then the name of
+            suppiled object is used.  If no object is given, the name of the
+            Network is used.
+        obj : OpenPNM object, optional
+            The object to save.  If no object is given, then the entire
+            simulation is saved.
+        fileformat : string
+            The type of file to create.  Options are:
+
+            1. VTK: Suitable for visualizing in VTK capable software such as Paraview
+            2. MAT: Suitable for loading data into Matlab
+
+        Notes
+        -----
+        Not implimented yet
         '''
         pass
 
