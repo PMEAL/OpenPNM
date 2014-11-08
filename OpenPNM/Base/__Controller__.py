@@ -10,8 +10,14 @@ class Controller(dict):
     r"""
 
     """
-    def __init__(self):
-        pass
+    def __init__(self,obj=None):
+        r'''
+        '''
+        if obj is not None:
+            # Update object's simulation attribute
+            obj.simulation = self
+            # Add object to simulation dict
+            self.update({obj.name: obj})
 
     def __str__(self):
         header = ('-'*60)
@@ -45,13 +51,17 @@ class Controller(dict):
                 temp.append(self[obj])
         return temp
 
-    @staticmethod
-    def get_logger(name='blah'):
-        logger = OpenPNM.Base._logger.getLogger(name=name)
-        return logger
-
     def drop(self,obj):
         r'''
+        Remove an object from the simulation
+
+        Parameters
+        ----------
+        obj : OpenPNM Object
+            The object to be removed from the simulation.  This method removes
+            all traces of the object from everywhere in the simulation,
+            including all the object tracking lists and label dictionaries of
+            every object.
         '''
         name = obj.name
         for item in self.keys():
@@ -67,13 +77,21 @@ class Controller(dict):
         # Remove object from simulation dict
         del self[name]
 
-    def add(self,obj):
+    def expand(self):
         r'''
         '''
-        # Update object's simulation attribute
-        obj.simulation = self
-        # Add object to simulation dict
-        self.update({obj.name: obj})
+        obj = list(self.items())[0][1]
+        mro = [item.__name__ for item in obj.__class__.__mro__]
+        if 'GenericNetwork' not in mro:
+            net = obj._net
+        else:
+            net = obj
+        for item in net._geometries:
+            item.simulation = self
+        for item in net._phases:
+            item.simulation = self
+        for item in net._physics:
+            item.simulation = self
 
     def clone_object(self,obj):
         r'''

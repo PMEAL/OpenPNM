@@ -79,11 +79,6 @@ class Base(dict):
 
     name = property(_get_name,_set_name)
 
-#    @staticmethod
-#    def get_logger(name='blah'):
-#        logger = OpenPNM.Base._logger.getLogger(name=name)
-#        return logger
-
     def _find_object(self,obj_name='',obj_type=''):
         r'''
         Find objects associated with a given network model by name or type
