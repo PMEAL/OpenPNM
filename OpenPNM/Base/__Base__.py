@@ -6,8 +6,9 @@ Base:  Abstract Class
 import string, random, collections
 import scipy as sp
 import scipy.constants
-from OpenPNM.Base import logging
+from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
+sim = Controller()
 
 class Base(dict):
     r"""
@@ -37,15 +38,14 @@ class Base(dict):
         obj._models = collections.OrderedDict()
         return obj
 
-    def __init__(self,simulation={},name=None,loglevel=30,**kwargs):
+    def __init__(self,name=None,loglevel=30,**kwargs):
         super(Base,self).__init__()
         logger.name = 'Base'
         logger.setLevel(loglevel)
         logger.debug('Initializing Base class')
 
-        self._sim = simulation
         self.name = name
-        self._sim.update({self.name: self})
+        self.simulation = sim
 
     def __repr__(self):
         return '<%s.%s object at %s>' % (

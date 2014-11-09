@@ -4,20 +4,25 @@ Controller:  Overall simulation controller class
 ###############################################################################
 '''
 import pickle as _pickle
-import OpenPNM.Base
 
 class Controller(dict):
     r"""
 
     """
-    def __init__(self,obj=None):
+    # The following __instance class variable and subclassed __new__ method
+    # make the Controller class a 'Singleton'.  This way, the _sim attribute
+    # of every OpenPNM object is the same, AND if you create a sim on the
+    # command line (sim = OpenPNM.Base.Controller()) it will be the same sim!
+    __instance = None
+    def __new__(cls, *args,**kwargs):
+        if Controller.__instance is None:
+            Controller.__instance = dict.__new__(cls)
+        return Controller.__instance
+
+    def __init__(self):
         r'''
         '''
-        if obj is not None:
-            # Update object's simulation attribute
-            obj.simulation = self
-            # Add object to simulation dict
-            self.update({obj.name: obj})
+        pass
 
     def __str__(self):
         header = ('-'*60)
@@ -77,29 +82,6 @@ class Controller(dict):
         # Remove object from simulation dict
         del self[name]
 
-    def expand(self):
-        r'''
-        Inspects the associations of the object(s) presently attached to the
-        simulation and expands itself to include include all objects, as well
-        as setting the simulation attribute of each object.
-
-        Notes
-        -----
-        This does not include algorithm objects...yet
-        '''
-        obj = list(self.items())[0][1]
-        mro = [item.__name__ for item in obj.__class__.__mro__]
-        if 'GenericNetwork' not in mro:
-            net = obj._net
-        else:
-            net = obj
-        for item in net._geometries:
-            item.simulation = self
-        for item in net._phases:
-            item.simulation = self
-        for item in net._physics:
-            item.simulation = self
-
     def clone_object(self,obj):
         r'''
         Clone an OpenPNM Object, without associating the new object with the
@@ -136,7 +118,7 @@ class Controller(dict):
         obj : OpenPNM object
             The object to save.  All the associations are removed, so upon
             reloading the object needs to be reconnected manually to a
-            simulation
+            simulation.
         filename : string (optional)
             The file name to use when saving.  If no name is given the object
             name is used.
@@ -228,7 +210,6 @@ class Controller(dict):
         Not implimented yet
         '''
         pass
-
 
 if __name__ == '__main__':
     sim = Controller()

@@ -5,7 +5,7 @@ sim = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net',simulation=sim,loglevel=10)
+pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net',loglevel=10)
 pn.add_boundaries()
 
 #==============================================================================
@@ -13,26 +13,26 @@ pn.add_boundaries()
 #==============================================================================
 Ps = pn.pores('boundary',mode='not')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
-geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts,simulation=sim)
+geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
 
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
-boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts,simulation=sim)
+boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 
 #==============================================================================
 '''Build Phases'''
 #==============================================================================
-air = OpenPNM.Phases.Air(network=pn,name='air',simulation=sim)
+air = OpenPNM.Phases.Air(network=pn,name='air')
 air['pore.Dac'] = 1e-7  # Add custom properties directly
-water = OpenPNM.Phases.Water(network=pn,name='water',simulation=sim)
+water = OpenPNM.Phases.Water(network=pn,name='water')
 
 #==============================================================================
 '''Build Physics'''
 #==============================================================================
 Ps = pn.pores()
 Ts = pn.throats()
-phys_water = OpenPNM.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts,simulation=sim)
-phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts,simulation=sim)
+phys_water = OpenPNM.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts)
+phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
 #Add some additional models to phys_air
 phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion,
                    propname='throat.gdiff_ac',
@@ -43,7 +43,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffu
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air,simulation=sim)
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air)
 Ps = pn.pores(labels=['bottom_boundary'])
 OP_1.run(inlets=Ps)
 OP_1.return_results(Pc=7000)
@@ -53,14 +53,14 @@ OP_1.return_results(Pc=7000)
 #------------------------------------------------------------------------------
 inlets = pn.pores('bottom_boundary')
 outlets = pn.pores('top_boundary')
-IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn,name='IP_1',simulation=sim)
-IP_1.run(invading_phase=water,defending_phase=air,inlets = inlets,outlets=outlets,end_condition='breakthrough')
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn,name='IP_1')
+IP_1.run(invading_phase=water,defending_phase=air,inlets=inlets,outlets=outlets,end_condition='breakthrough')
 IP_1.return_results()
 
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
-alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air,simulation=sim)
+alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.pores('right_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
