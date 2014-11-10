@@ -50,6 +50,10 @@ def test_linear_solvers():
   assert round(sp.absolute(alg_2.rate(BC2_pores))[0],16) == round(sp.absolute(sp.unique(alg_2['pore.'+air.name+'_bcval_Neumann']))[0]*len(BC1_pores),16)
   assert round(sp.absolute(alg_3.rate(BC2_pores))[0],16) == round(sp.absolute(sp.unique(alg_3['pore.'+air.name+'_bcval_Neumann_group']))[0],16)
 
+  assert round(sp.absolute(sp.sum(alg_1.rate(BC1_pores,mode='single'))),16) == round(sp.absolute(alg_1.rate(BC1_pores))[0],16)
+  assert round(sp.absolute(sp.sum(alg_2.rate(BC2_pores,mode='single'))),16) == round(sp.absolute(alg_2.rate(BC2_pores))[0],16)
+  assert round(sp.absolute(sp.sum(alg_3.rate(BC2_pores,mode='single'))),16) == round(sp.absolute(alg_3.rate(BC2_pores))[0],16)
+
 def test_add_boundary():
   pn = OpenPNM.Network.Cubic(shape=[5,5,5])
   pn.add_boundaries()

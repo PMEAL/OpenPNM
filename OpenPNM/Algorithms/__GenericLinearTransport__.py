@@ -179,7 +179,7 @@ class GenericLinearTransport(GenericAlgorithm):
         except: pass
         return(B)
 
-    def rate(self,pores='',mode='group',conductance=None,X_val=None):
+    def rate(self,pores=None,network=None,conductance=None,X_value=None,mode='group'):
         r'''
         Send a list of pores and receive the net rate
         of material moving into them.
@@ -188,32 +188,49 @@ class GenericLinearTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pores where the net rate will be calculated
+        network : OpenPNM Network Object
+            The network object to which this algorithm will apply. 
+            If no network is sent, the rate will apply to the network which is attached to the algorithm.        
+        conductance : array_like
+            The conductance which this algorithm will use to calculate the rate. 
+            If no conductance is sent, the rate will use the 'throat.conductance' which is attached to the algorithm.         
+        X_value : array_like
+            The values of the quantity (temperature, mole_fraction, voltage, ...), which this algorithm will use to calculate the rate. 
+            If no X_value is sent, the rate will look at the '_quantity', which is attached to the algorithm.        
         mode : string, optional
             Controls how to return the rate.  Options are:
-
             - 'group'(default): It returns the cumulative rate moving into them
             - 'single': It calculates the rate for each pore individually.
 
         '''
+        if network == None: network = self._net
         if conductance == None: conductance = self['throat.conductance']
-        if X_val == None: X_val = self[self._quantity]
+        if X_value == None: X_value = self[self._quantity]
         pores = sp.array(pores,ndmin=1)
         R = []
-        if mode=='group':   iteration = 1
-        elif mode=='single':    iteration = sp.shape(pores)[0]
-        for i in sp.r_[0:iteration]:
-            if mode=='group':   P = pores
-            elif mode=='single':    P = pores[i]
-            throats = self._net.find_neighbor_throats(P,flatten=True,mode='not_intersection')
-            p1 = self._net.find_connected_pores(throats)[:,0]
-            p2 = self._net.find_connected_pores(throats)[:,1]
+        if mode=='group':   
+            t = network.find_neighbor_throats(pores,flatten=True,mode='not_intersection')
+            throat_group_num = 1
+        elif mode=='single':
+            t = network.find_neighbor_throats(pores,flatten=False,mode='not_intersection')
+            throat_group_num = sp.size(t)
+        
+        for i in sp.r_[0:throat_group_num]:
+            if mode=='group':   
+                throats = t
+                P = pores
+            elif mode=='single':
+                throats = t[i]
+                P = pores[i]
+            p1 = network.find_connected_pores(throats)[:,0]
+            p2 = network.find_connected_pores(throats)[:,1]
             pores1 = sp.copy(p1)
             pores2 = sp.copy(p2)
-            #Changes to pores1 and pores2 to make them as the internal and external pores
+            #Changes to pores1 and pores2 to make them as the inner and outer pores
             pores1[-sp.in1d(p1,P)] = p2[-sp.in1d(p1,P)]
             pores2[-sp.in1d(p1,P)] = p1[-sp.in1d(p1,P)]
-            X1 = X_val[pores1]
-            X2 = X_val[pores2]
+            X1 = X_value[pores1]
+            X2 = X_value[pores2]
             g = conductance[throats]
             R.append(sp.sum(sp.multiply(g,(X2-X1))))
         return(sp.array(R,ndmin=1))
