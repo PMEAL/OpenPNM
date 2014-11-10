@@ -181,10 +181,10 @@ class Controller(dict):
             The file name of the simulation to load.
         '''
         filename = filename.split('.')[0]
-        sim = _pickle.load(open(filename+'.pnm','rb'))
-        self.update(sim)
-        for item in self.keys():
-            self[item]._sim = self
+        if self != {}:
+            print('Warning: Loading data onto non-empty controller object, existing data will be lost')
+            self.clear()
+        self = _pickle.load(open(filename+'.pnm','rb'))
 
     def export(self,filename='',obj=None,fileformat='VTK'):
         r'''
