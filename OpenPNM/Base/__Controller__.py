@@ -186,9 +186,9 @@ class Controller(dict):
             self.clear()
         self = _pickle.load(open(filename+'.pnm','rb'))
 
-    def export(self,filename='',obj=None,fileformat='VTK'):
+    def export(self,filename='',fileformat='VTK'):
         r'''
-        Export data to the specified file format.
+        Export simulation data to the specified file format.
 
         Parameters
         ----------
@@ -196,20 +196,24 @@ class Controller(dict):
             The file name to save as.  If no name is given then the name of
             suppiled object is used.  If no object is given, the name of the
             Network is used.
-        obj : OpenPNM object, optional
-            The object to save.  If no object is given, then the entire
-            simulation is saved.
+        obj : OpenPNM object(s), optional
+            The object or objects to save.  If no object is given, then the
+            entire simulation is saved.
         fileformat : string
             The type of file to create.  Options are:
 
             1. VTK: Suitable for visualizing in VTK capable software such as Paraview
-            2. MAT: Suitable for loading data into Matlab
+            2. MAT: Suitable for loading data into Matlab for post-processing
 
-        Notes
-        -----
-        Not implimented yet
         '''
-        pass
+        if fileformat == 'VTK':
+            net = self.network()[0]
+            if filename == '':
+                filename = net.name
+            filename = filename.split('.')[0]
+            phases = self.phases()
+            import OpenPNM.Utilities.IO as io
+            io.VTK.save(filename=filename,network=net,phases=phases)
 
 if __name__ == '__main__':
     sim = Controller()
