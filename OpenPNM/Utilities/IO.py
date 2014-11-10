@@ -72,8 +72,8 @@ class VTK():
         '''
 
         if filename == '':
-            filename = network.name+'.vtp'
-
+            filename = network.name
+        filename = filename.split('.')[0]+'.vtp'
 
         root = _ET.fromstring(VTK._TEMPLATE)
         objs = []
@@ -232,7 +232,9 @@ class MAT():
 
         """
         if filename == '':
-            filename = network.name+'.mat'
+            filename = network.name
+        filename = filename.split('.')[0]+'.mat'
+
         pnMatlab = {}
         new = []
         old = []

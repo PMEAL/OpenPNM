@@ -206,14 +206,17 @@ class Controller(dict):
             2. MAT: Suitable for loading data into Matlab for post-processing
 
         '''
+        import OpenPNM.Utilities.IO as io
         if fileformat == 'VTK':
             net = self.network()[0]
-            if filename == '':
-                filename = net.name
-            filename = filename.split('.')[0]
-            phases = self.phases()
-            import OpenPNM.Utilities.IO as io
+            phases = net._phases
             io.VTK.save(filename=filename,network=net,phases=phases)
+            return
+        if fileformat == 'MAT':
+            net = self.network()[0]
+            phases = net._phases
+            io.MAT.save(filename=filename,network=net,phases=phases)
+            return
 
 if __name__ == '__main__':
     sim = Controller()
