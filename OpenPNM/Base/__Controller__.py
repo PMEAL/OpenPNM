@@ -183,6 +183,8 @@ class Controller(dict):
         filename = filename.split('.')[0]
         if self != {}:
             print('Warning: Loading data onto non-empty controller object, existing data will be lost')
+            for item in self.keys():
+                self[item]._sim = {}
             self.clear()
         self = _pickle.load(open(filename+'.pnm','rb'))
 
