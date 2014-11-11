@@ -57,20 +57,18 @@ class Controller(dict):
         return temp
 
     def clear(self):
-        temp = self.copy()
-        sim = self.new()
-        for item in temp.keys():
-            temp[item].simulation = sim
+        for item in self.keys():
+            self[item]._sim = {}
         self.__dict__ = {}
         super(Controller,self).clear()
 
-    def new(self):
-        import OpenPNM.Base as Base
-        temp = Base.Controller.__instance__
-        Base.Controller.__instance__ = None
-        sim = Base.Controller()
-        Base.Controller.__instance__ = temp
-        return sim
+#    def new(self):
+#        import OpenPNM.Base as Base
+#        temp = Base.Controller.__instance__
+#        Base.Controller.__instance__ = None
+#        sim = Base.Controller()
+#        Base.Controller.__instance__ = temp
+#        return sim
 
     def purge_object(self,obj):
         r'''
