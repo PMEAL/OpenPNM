@@ -61,6 +61,7 @@ class Controller(dict):
         sim = self.new()
         for item in temp.keys():
             temp[item].simulation = sim
+        self.__dict__ = {}
         super(Controller,self).clear()
 
     def new(self):
