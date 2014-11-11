@@ -13,11 +13,11 @@ class Controller(dict):
     # make the Controller class a 'Singleton'.  This way, the _sim attribute
     # of every OpenPNM object is the same, AND if you create a sim on the
     # command line (sim = OpenPNM.Base.Controller()) it will be the same sim!
-    __instance = None
+    __instance__ = None
     def __new__(cls, *args,**kwargs):
-        if Controller.__instance is None:
-            Controller.__instance = dict.__new__(cls)
-        return Controller.__instance
+        if Controller.__instance__ is None:
+            Controller.__instance__ = dict.__new__(cls)
+        return Controller.__instance__
 
     def __init__(self):
         r'''
@@ -56,7 +56,22 @@ class Controller(dict):
                 temp.append(self[obj])
         return temp
 
-    def drop(self,obj):
+    def clear(self):
+        temp = self.copy()
+        sim = self.new()
+        for item in temp.keys():
+            temp[item].simulation = sim
+        super(Controller,self).clear()
+
+    def new(self):
+        import OpenPNM.Base as Base
+        temp = Base.Controller.__instance__
+        Base.Controller.__instance__ = None
+        sim = Base.Controller()
+        Base.Controller.__instance__ = temp
+        return sim
+
+    def purge_object(self,obj):
         r'''
         Remove an object from the simulation
 

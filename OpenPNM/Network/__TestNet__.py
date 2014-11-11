@@ -20,8 +20,8 @@ class TestNet(GenericNetwork):
 
     """
 
-    def __init__(self, name=None, **kwargs):
-        super(TestNet, self).__init__(name, **kwargs)
+    def __init__(self,**kwargs):
+        super(TestNet, self).__init__(**kwargs)
         self.generate()
 
     def generate(self):
