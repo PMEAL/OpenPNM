@@ -231,6 +231,15 @@ def conduit_lengths(network,throats=None,mode='pore'):
         throats = network.throats()
     Ps = network['throat.conns']
     pdia = network['pore.diameter']
+    
+    if mode ==  'centroid':
+        try:
+            pcentroids = network['pore.centroid']
+            tcentroids = network['throat.centroid']
+            plen1 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,0]]-tcentroids),1))-network['throat.length']/2
+            plen2 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,1]]-tcentroids),1))-network['throat.length']/2
+        except KeyError:
+            mode = 'pore'
     if mode == 'pore':
         #Find half-lengths of each pore
         pcoords = network['pore.coords']
@@ -243,11 +252,6 @@ def conduit_lengths(network,throats=None,mode='pore'):
             fractions = 0.5
         plen1 = lengths*fractions
         plen2 = lengths*(1-fractions)
-    elif mode ==  'centroid':
-        pcentroids = network['pore.centroid']
-        tcentroids = network['throat.centroid']
-        plen1 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,0]]-tcentroids),1))-network['throat.length']/2
-        plen2 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,1]]-tcentroids),1))-network['throat.length']/2
     
     return _sp.vstack((plen1,network['throat.length'],plen2)).T[throats]
 

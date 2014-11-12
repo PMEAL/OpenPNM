@@ -28,7 +28,7 @@ class GenericNetwork(Core):
         Initialize Network
         """
         super(GenericNetwork,self).__init__(**kwargs)
-        self._logger.info("Construct Network")
+        #self._logger.info("Construct Network")
         self.name = name
 
         #Initialize properties to an empty network
@@ -42,12 +42,12 @@ class GenericNetwork(Core):
         #Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
         self._adjacency_matrix = {}
-        self._logger.debug("Construction of Network container")
+        #self._logger.debug("Construction of Network container")
 
     def __setitem__(self,prop,value):
         for geom in self._geometries:
             if prop in geom.keys():
-                self._logger.error(prop+' is already defined in at least one associated Geometry object')
+                #self._logger.error(prop+' is already defined in at least one associated Geometry object')
                 return
         super(GenericNetwork,self).__setitem__(prop,value)
 
@@ -56,7 +56,7 @@ class GenericNetwork(Core):
             element = key.split('.')[0]
             return self[element+'.all']
         if key not in self.keys():
-            self._logger.debug(key+' not on Network, constructing data from Geometries')
+            #self._logger.debug(key+' not on Network, constructing data from Geometries')
             return self._interleave_data(key,self.geometries())
         else:
             return super(GenericNetwork,self).__getitem__(key)
@@ -103,7 +103,7 @@ class GenericNetwork(Core):
         >>> temp = pn.create_adjacency_matrix(data=vals,sprsfmt='csr')
 
         """
-        self._logger.debug('create_adjacency_matrix: Start of method')
+        #self._logger.debug('create_adjacency_matrix: Start of method')
         Np   = self.num_pores()
         Nt   = self.num_throats()
 
@@ -140,7 +140,7 @@ class GenericNetwork(Core):
             temp = temp.tocsr()
         if sprsfmt == 'lil':
             temp = temp.tolil()
-        self._logger.debug('create_adjacency_matrix: End of method')
+        #self._logger.debug('create_adjacency_matrix: End of method')
         return temp
 
     def create_incidence_matrix(self,data=None,sprsfmt='coo',dropzeros=True):
@@ -179,7 +179,7 @@ class GenericNetwork(Core):
         >>> vals = sp.rand(pn.num_throats(),) < 0.5
         >>> temp = pn.create_incidence_matrix(data=vals,sprsfmt='csr')
         """
-        self._logger.debug('create_incidence_matrix: Start of method')
+        #self._logger.debug('create_incidence_matrix: Start of method')
 
         Nt = self.num_throats()
         Np = self.num_pores()
@@ -211,7 +211,7 @@ class GenericNetwork(Core):
             temp = temp.tocsr()
         if sprsfmt == 'lil':
             temp = temp.tolil()
-        self._logger.debug('create_incidence_matrix: End of method')
+        #self._logger.debug('create_incidence_matrix: End of method')
         return temp
 
     def find_connected_pores(self,throats=[],flatten=False):
@@ -495,13 +495,13 @@ class GenericNetwork(Core):
         '''
         Tind = sp.array([],ndmin=1)
         if sp.shape(labels)[0] != 2:
-            self._logger.error('Exactly two labels must be given')
+            ""#self._logger.error('Exactly two labels must be given')
         else:
             P1 = self.pores(labels=labels[0])
             P2 = self.pores(labels=labels[1])
             #Check if labels overlap
             if sp.sum(sp.in1d(P1,P2)) > 0:
-                self._logger.error('Some labels overlap, iterface cannot be found')
+                ""#self._logger.error('Some labels overlap, iterface cannot be found')
             else:
                 T1 = self.find_neighbor_throats(P1)
                 T2 = self.find_neighbor_throats(P2)
@@ -566,7 +566,7 @@ class GenericNetwork(Core):
         if (self._phases != []):
             raise Exception('Network has active Phases, cannot proceed')
 
-        self._logger.debug(sys._getframe().f_code.co_name+': Cloning pores')
+        #self._logger.debug(sys._getframe().f_code.co_name+': Cloning pores')
         apply_label = list(apply_label)
         #Clone pores
         Np = self.num_pores()
@@ -627,7 +627,7 @@ class GenericNetwork(Core):
         if (self._phases != []):
             raise Exception('Network has active Phases, cannot proceed')
 
-        self._logger.debug(sys._getframe().f_code.co_name+': Extending network')
+        #self._logger.debug(sys._getframe().f_code.co_name+': Extending network')
         Np_old = self.num_pores()
         Nt_old = self.num_throats()
         Np = Np_old + int(sp.size(pore_coords)/3)
@@ -722,14 +722,15 @@ class GenericNetwork(Core):
             Pkeep[pores] = False
             Tkeep = sp.ones((self.num_throats(),),dtype=bool)
             Ts = self.find_neighbor_throats(pores)
-            Tkeep[Ts] = False
+            if len(Ts)>0:
+                Tkeep[Ts] = False
         elif throats != []:
             throats = sp.array(throats,ndmin=1)
             Tkeep = sp.ones((self.num_throats(),),dtype=bool)
             Tkeep[throats] = False
             Pkeep = self['pore.all'].copy()
         else:
-            self._logger.warning('No pores or throats recieved')
+            #self._logger.warning('No pores or throats recieved')
             return
 
         # Trim all associated objects
@@ -779,7 +780,7 @@ class GenericNetwork(Core):
         #Check Network health
         health = self.check_network_health()
         if health['trim_pores'] != []:
-            self._logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
+            ""#self._logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
 
     def _stitch(self,network_2,pores_1,pores_2,method='delaunay',len_max=sp.inf):
         r'''
@@ -917,14 +918,14 @@ class GenericNetwork(Core):
         #Check for individual isolated pores
         Ps = self.num_neighbors(self.pores())
         if sp.sum(Ps==0) > 0:
-            self._logger.warning(str(sp.sum(Ps==0))+' pores have no neighbors')
+            ##self._logger.warning(str(sp.sum(Ps==0))+' pores have no neighbors')
             health['isolated_pores'] = sp.where(Ps==0)[0]
 
         #Check for separated clusters of pores
         temp = []
         Cs = self.find_clusters(self.tomask(throats=self.throats('all')))
         if sp.shape(sp.unique(Cs))[0] > 1:
-            self._logger.warning('Isolated clusters exist in the network')
+            #self._logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):
                 temp.append(sp.where(Cs==i)[0])
             b = sp.array([len(item) for item in temp])
@@ -1004,7 +1005,7 @@ class GenericNetwork(Core):
         matrices will generate them as needed, so this pushes the 'generation'
         time to 'on demand'.
         '''
-        self._logger.debug('Resetting adjacency and incidence matrices')
+        #self._logger.debug('Resetting adjacency and incidence matrices')
         self._adjacency_matrix['coo'] = {}
         self._adjacency_matrix['csr'] = {}
         self._adjacency_matrix['lil'] = {}
@@ -1069,7 +1070,7 @@ class GenericNetwork(Core):
             Ds = misc.dist(x,y)
             L = sp.median(sp.amin(Ds,axis=0))
         else:
-            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
+            #self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
             f1 = self['pore.coords'][face_1]
             f2 = self['pore.coords'][face_2]
             distavg = [0,0,0]
@@ -1115,7 +1116,7 @@ class GenericNetwork(Core):
             # if that fails, use the max face area of the bounding cuboid
             A = max([yz,xz,xy])
         if not misc.iscoplanar(self['pore.coords'][face]):
-            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
+            ""#self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
         return A
 
 if __name__ == '__main__':
