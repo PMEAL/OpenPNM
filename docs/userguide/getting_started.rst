@@ -81,16 +81,14 @@ You'll notice that the Network object has no *pore-scale* geometric information 
 ------------------------------------------------------------
 1     pore.area                              27 / 27   
 2     pore.diameter                          27 / 27   
-3     pore.map                               27 / 27   
-4     pore.seed                              27 / 27   
-5     pore.volume                            27 / 27   
-6     throat.area                            54 / 54   
-7     throat.diameter                        54 / 54   
-8     throat.length                          54 / 54   
-9     throat.map                             54 / 54   
-10    throat.seed                            54 / 54   
-11    throat.surface_area                    54 / 54   
-12    throat.volume                          54 / 54   
+3     pore.seed                              27 / 27   
+4     pore.volume                            27 / 27   
+5     throat.area                            54 / 54   
+6     throat.diameter                        54 / 54   
+7     throat.length                          54 / 54   
+8    throat.seed                            54 / 54   
+9    throat.surface_area                    54 / 54   
+10    throat.volume                          54 / 54   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
@@ -143,10 +141,8 @@ OpenPNM.Physics.Standard: 	Standard_SzZPQ
 ------------------------------------------------------------
 #     Properties                          Valid Values
 ------------------------------------------------------------
-1     pore.map                               27 / 27   
-2     throat.diffusive_conductance           54 / 54   
-3     throat.hydraulic_conductance           54 / 54   
-4     throat.map                             54 / 54   
+1     throat.diffusive_conductance           54 / 54   
+2     throat.hydraulic_conductance           54 / 54   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------

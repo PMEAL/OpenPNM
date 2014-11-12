@@ -21,9 +21,9 @@ Physics objects have the most requirements for initialization.  A Physics object
 	air = OpenPNM.Phases.Air(network=pn)
 	phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts,name='phys_1')
 
-Several important events occur upon instantiation of a Physics object.  Firstly, 'pore.map' and 'throat.map' properties are created in the Physics dictionary.  These contains the pore and throat numbers in the main Network where the Physics is defined.  Secondly, label arrays are created in the Phase object, called 'pore.phys_1' and 'throat.phys_1'.  These labels indicate where in the full Network the Physics object applies.  Between the 'map' arrays and 'label' arrays it is simple to translate the pore and throat numbers between Physics to the main Network.
+Several important events occur upon instantiation of a Physics object.  Mainly, label arrays are created in the Phase object, called 'pore.phys_1' and 'throat.phys_1'.  These labels indicate where in the full Network the Physics object applies.
 
-It is possible to set the pore and throat locations of a Physics object after instantiation.  The ``set_locations`` method accepts a list of pores and/or throats and then updates the 'map' and label arrays accordingly.  This only works on an object that has NOT previously been assigned to any pores and/or throats.  Once the assignment is made it cannot be undone.  This functionality is useful for associating a saved Physics objects with a simulation.  
+It is possible to set the pore and throat locations of a Physics object after instantiation.  The ``set_locations`` method accepts a list of pores and/or throats and then updates the label arrays accordingly.  This only works on an object that has NOT previously been assigned to any pores and/or throats.  Once the assignment is made it cannot be undone.  This functionality is useful for associating a saved Physics objects with a simulation.  
 
 
 .. note:: **Accessing Physics Data Via the Phase**

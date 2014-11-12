@@ -73,9 +73,7 @@ OpenPNM.Geometry.GenericGeometry: 	GenericGeometry_4rhgW
 #     Properties                          Valid Values
 ------------------------------------------------------------
 1     pore.diameter                          27 / 27   
-2     pore.map                               27 / 27   
-3     pore.surface_area                      27 / 27   
-4     throat.map                             54 / 54   
+2     pore.surface_area                      27 / 27    
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
