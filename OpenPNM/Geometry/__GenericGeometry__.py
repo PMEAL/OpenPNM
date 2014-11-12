@@ -8,6 +8,8 @@ GenericGeometry -- Base class to manage pore scale geometry
 
 import scipy as sp
 from OpenPNM.Base import Core
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 import OpenPNM.Geometry.models
 
 class GenericGeometry(Core):
@@ -36,12 +38,12 @@ class GenericGeometry(Core):
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)
     """
 
-    def __init__(self,network=None,pores=[],throats=[],name=None,seed=None,**kwargs):
+    def __init__(self,network=None,pores=[],throats=[],seed=None,**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
-        self._logger.debug("Class Constructor")
+        logger.name = self.name
 
         #Initialize locations
         self['pore.all'] = sp.array([],ndmin=1,dtype=bool)
@@ -52,7 +54,6 @@ class GenericGeometry(Core):
         else:
             self._net = network  # Attach network to self
             self._net._geometries.append(self)  # Register self with network.geometries
-        self.name = name
 
         #Initialize a label dictionary in the associated network
         self._net['pore.'+self.name] = False

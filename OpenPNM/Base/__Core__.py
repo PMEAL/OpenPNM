@@ -7,8 +7,9 @@ import pprint
 from functools import partial
 import scipy as sp
 from OpenPNM.Base import Base
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 from OpenPNM.Utilities import misc
-
 
 class Core(Base):
     r'''
@@ -19,9 +20,8 @@ class Core(Base):
         Initialize
         '''
         super(Core,self).__init__(**kwargs)
-        self._logger.info("Construct Core subclass from Base")
-
-        self._logger.debug("Construction of Core class complete")
+        logger.name = 'Core'
+        logger.debug('Initializing Core class')
 
     def __setitem__(self,key,value):
         r'''
@@ -41,7 +41,7 @@ class Core(Base):
         #Enforce correct dict naming
         element = key.split('.')[0]
         if (element != 'pore') and (element != 'throat'):
-            self._logger.error('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
+            print('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
             return
         #Convert value to an ndarray
         value = sp.array(value,ndmin=1)
@@ -53,24 +53,29 @@ class Core(Base):
         if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
-                    self._logger.debug(key+' is being defined.')
+                    logger.info(key+' is being defined.')
                     super(Base, self).__setitem__(key,value)
                 else:
-                    self._logger.error(key+' is already defined.')
+                    logger.warning(key+' is already defined.')
+                    pass
             else:
-                self._logger.debug(key+' is being defined.')
+                logger.debug(key+' is being defined.')
                 super(Base, self).__setitem__(key,value)
             return
         #Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
-            self._logger.debug('Broadcasting scalar value into vector: '+key)
+            logger.debug('Broadcasting scalar value into vector: '+key)
             value = sp.ones((self._count(element),),dtype=value.dtype)*value
             super(Base, self).__setitem__(key,value)
         elif sp.shape(value)[0] == self._count(element):
-            self._logger.debug('Updating vector: '+key)
+            logger.debug('Updating vector: '+key)
             super(Base, self).__setitem__(key,value)
         else:
-            self._logger.error('Cannot write vector with an array of the wrong length: '+key)
+            if self._count(element) == 0:
+                self.update({key:value})
+            else:
+                logger.warning('Cannot write vector with an array of the wrong length: '+key)
+                pass
 
     def add_model(self,propname,model,regen_mode='static',**kwargs):
         r'''
@@ -246,17 +251,19 @@ class Core(Base):
         if mode == 'exclude':
             temp = list(self._models.keys())
             for item in props:
+                pass
                 temp.remove(item)
             props = temp
-        self._logger.info('Models are being recalculated in the following order: ')
+        logger.info('Models are being recalculated in the following order: ')
         count = 0
         for item in props:
             if item in self._models.keys():
                 self[item] = self._models[item]()
-                self._logger.info(str(count)+' : '+item)
+                logger.info(str(count)+' : '+item)
                 count += 1
             else:
-                self._logger.warning('Requested proptery is not a dynamic model: '+item)
+                pass
+                logger.warning('Requested proptery is not a dynamic model: '+item)
 
 
     #--------------------------------------------------------------------------
@@ -304,7 +311,7 @@ class Core(Base):
                 element='throat'
                 locations = throats
             elif throats==None and pores==None:
-                self._logger.error('No pores or throats have been received!')
+                logger.error('No pores or throats have been received!')
                 raise Exception()
             if prop.split('.')[0] == element:
                 prop = prop.split('.')[1]
@@ -313,17 +320,19 @@ class Core(Base):
                     try:
                         self[element+'.'+prop]
                         self[element+'.'+prop][locations] = sp.nan
-                        self._logger.debug('For the '+element+' property '+prop+', the specified data have been deleted in '+self.name)
-                    except: self._logger.error(element+' property '+prop+' in '+self.name+' has not been defined. Therefore, no data can be removed!')
+                        logger.debug('For the '+element+' property '+prop+', the specified data have been deleted in '+self.name)
+                    except:
+                        pass
+                        logger.error(element+' property '+prop+' in '+self.name+' has not been defined. Therefore, no data can be removed!')
                 else:
-                    self._logger.error('For the '+element+' property '+prop+' in '+self.name+': The (remove_data) mode, will remove data from the specified locations. No data should be sent!')
+                    logger.error('For the '+element+' property '+prop+' in '+self.name+': The (remove_data) mode, will remove data from the specified locations. No data should be sent!')
                     raise Exception()
             elif mode=='remove_prop':
                 if data=='':
                     del self[element+'.'+prop]
-                    self._logger.debug(element+' property '+prop+' has been deleted from the dictionary in '+self.name)
+                    logger.debug(element+' property '+prop+' has been deleted from the dictionary in '+self.name)
                 else:
-                    self._logger.error('For the property '+prop+' in '+self.name+': The (remove_prop) mode, will remove the property from the dictionary. No data should be sent!')
+                    logger.error('For the property '+prop+' in '+self.name+': The (remove_prop) mode, will remove the property from the dictionary. No data should be sent!')
                     raise Exception()
             else:
                 if data.ndim > 1: data = data.squeeze()
@@ -338,12 +347,14 @@ class Core(Base):
                             self[element+'.'+prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
                     except: self[element+'.'+prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
                     self[element+'.'+prop][locations] = data
-                    self._logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
+                    logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
 
                 else:
-                    self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', data can be scalar or should have the same size as the locations!')
+                    logger.error('For adding '+element+' property '+prop+' to '+self.name+', data can be scalar or should have the same size as the locations!')
                     raise Exception()
-        else:  self._logger.error('For adding '+element+' property '+prop+' to '+self.name+', the mode '+mode+' cannot be applied!')
+        else:
+            pass
+            logger.error('For adding '+element+' property '+prop+' to '+self.name+', the mode '+mode+' cannot be applied!')
 
 
     def get_data(self,pores=None,throats=None,prop='',mode=''):
@@ -382,7 +393,7 @@ class Core(Base):
                 element='throat'
                 locations = throats
             elif throats==None and pores==None:
-                self._logger.error('No pores or throats have been received!')
+                logger.error('No pores or throats have been received!')
                 raise Exception('No pores/throats have been sent!')
             if prop.split('.')[0] in ['pore','throat']:
                 if prop.split('.')[0]==element:
@@ -395,26 +406,31 @@ class Core(Base):
                     try:
                         self['throat.'+prop]
                     except:
-                        self._logger.error('For getting pore property using interpolate mode in '+self.name+' : throat property '+prop+' has not been found!')
+                        logger.error('For getting pore property using interpolate mode in '+self.name+' : throat property '+prop+' has not been found!')
                         raise Exception('throat data for the property not found!')
                     return self.interpolate_data(self['throat.'+prop])[locations]
                 elif element=='throat':
                     try:
                         self['pore.'+prop]
                     except:
-                        self._logger.error('For getting throat property using interpolate mode in '+self.name+' : pore property '+prop+' has not been found!')
+                        logger.error('For getting throat property using interpolate mode in '+self.name+' : pore property '+prop+' has not been found!')
                         raise Exception('pore data for the property not found!')
                     return self.interpolate_data(self['pore.'+prop])[locations]
             else:
-                try:    self[element+'.'+prop]
+                try:
+                    self[element+'.'+prop]
                 except:
-                    self._logger.error(element+' property '+prop+' does not exist for '+self.name)
+                    logger.error(element+' property '+prop+' does not exist for '+self.name)
                     raise Exception('No data found for the property!')
-                try:    return self[element+'.'+prop][locations]
-                except: self._logger.error('In '+self.name+', data for '+element+' property '+prop+' in these locations cannot be returned.')
+                try:
+                    return self[element+'.'+prop][locations]
+                except:
+                    pass
+                    logger.error('In '+self.name+', data for '+element+' property '+prop+' in these locations cannot be returned.')
 
-        else: self._logger.error('For getting property: '+prop+' in '+self.name+', the mode '+mode+' cannot be applied!')
-
+        else:
+            logger.error('For getting property: '+prop+' in '+self.name+', the mode '+mode+' cannot be applied!')
+            pass
 
 
     def set_info(self,pores=None,throats=None,label='',mode='merge'):
@@ -451,7 +467,7 @@ class Core(Base):
                 element='throat'
                 locations = throats
             elif throats==None and pores==None:
-                self._logger.error('No pores or throats have been received!')
+                logger.error('No pores or throats have been received!')
                 raise Exception()
             locations = sp.array(locations,ndmin=1)
             if label:
@@ -462,7 +478,7 @@ class Core(Base):
                         old_label = self[element+'.'+label]
                         if sp.shape(old_label)[0]<sp.shape(locations)[0]:
                             self[element+'.'+label] = sp.ones_like(locations,dtype=bool)
-                            self._logger.info('label=all for '+element+'has been updated to a bigger size!')
+                            logger.info('label=all for '+element+'has been updated to a bigger size!')
                             for info_labels in getattr(self,'labels')():
                                 if info_labels.split('.')[0] == element:
                                     info_labels = info_labels.split('.')[1]
@@ -471,7 +487,8 @@ class Core(Base):
                                     temp[old_label] = self[element+'.'+info_labels]
                                     self[element+'.'+info_labels] = temp
                         elif sp.shape(old_label)[0]>sp.shape(locations)[0]:
-                            self._logger.error('To apply a new numbering label (label=all) to '+element+'s, size of the locations cannot be less than total number of '+element+'s!!')
+                            logger.error('To apply a new numbering label (label=all) to '+element+'s, size of the locations cannot be less than total number of '+element+'s!!')
+                            pass
                     except: self[element+'.'+label] = sp.ones_like(locations,dtype=bool)
                 else:
                     try: self[element+'.'+label]
@@ -482,9 +499,13 @@ class Core(Base):
                     elif mode=='remove_info':  self[element+'.'+label][locations] = False
                     elif mode=='merge':  self[element+'.'+label][locations] = True
                     elif mode=='remove_label':  del self[element+'.'+label]
-            else: self._logger.error('No label has been defined for these locations.')
+            else:
+                logger.error('No label has been defined for these locations.')
+                pass
 
-        else: self._logger.error('For setting '+element+' '+label+' to '+self.name+', the mode '+mode+' cannot be applied!')
+        else:
+            logger.error('For setting '+element+' '+label+' to '+self.name+', the mode '+mode+' cannot be applied!')
+            pass
 
 
     def get_info(self,pores=None,throats=None,label=''):
@@ -516,7 +537,7 @@ class Core(Base):
             locations = throats
 
         elif throats==None and pores==None:
-            self._logger.error('No pores or throats have been received!')
+            logger.error('No pores or throats have been received!')
             raise Exception()
         if label.split('.')[0] == element:
             label = label.split('.')[1]
@@ -682,7 +703,7 @@ class Core(Base):
             elif element in ['throat','throats']:
                 temp = self._get_labels(element='throat',locations=[], mode=mode)
             else:
-                self._logger.error('Unrecognized element')
+                logger.error('Unrecognized element')
                 return
         elif pores is not []:
             if pores == 'all':
@@ -981,7 +1002,7 @@ class Core(Base):
             Ps12 = net.find_connected_pores(throats=Ts,flatten=False)
             values = sp.mean(data[Ps12],axis=1)
         else:
-            self._logger.error('Received data was an ambiguous length')
+            logger.error('Received data was an ambiguous length')
             raise Exception()
         return values
 
@@ -1009,17 +1030,7 @@ class Core(Base):
         fine, but missing ints are converted to float when nans are inserted.
         '''
         element = prop.split('.')[0]
-        #Utilize a pre-existing dummy 'temp' variable on the object to save time
-        #Don't do this anymore - temp arrays can change in length
-        #try:
-        #    temp = self._temp[element]
-        #except:
-        Np = sp.shape(self['pore.all'])[0]
-        Nt = sp.shape(self['throat.all'])[0]
-        self._temp = {}
-        self._temp['pore'] = sp.empty((Np,))
-        self._temp['throat'] = sp.empty((Nt,))
-        temp = self._temp[element]
+        temp = sp.ndarray((self._count(element)))
         dtypes = []
         dtypenames = []
         prop_found = False  #Flag to indicate if prop was found on a sub-object
@@ -1048,7 +1059,7 @@ class Core(Base):
             temp = sp.array(temp,dtype=dtypes[0])
         else:
             temp = sp.array(temp,dtype=max(dtypes))
-            self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
+            logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
         return temp
 
     def num_pores(self,labels='all',mode='union'):
@@ -1098,7 +1109,7 @@ class Core(Base):
 
         '''
         if labels == 'all':
-            Np = sp.shape(self['pore.all'])[0]
+            Np = sp.shape(self.get('pore.all'))[0]
         else:
             #convert string to list, if necessary
             if type(labels) == str:
@@ -1160,7 +1171,7 @@ class Core(Base):
 
         '''
         if labels == 'all':
-            Nt = sp.shape(self['throat.all'])[0]
+            Nt = sp.shape(self.get('throat.all'))[0]
         else:
             #convert string to list, if necessary
             if type(labels) == str: labels = [labels]
@@ -1369,7 +1380,7 @@ class Core(Base):
     def __str__(self):
         header = '-'*60
         print(header)
-        print(self.__module__.replace('__','')+': \t'+self.name)
+        print(self.__module__.replace('__','')+': \t',self.name)
         print(header)
         print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values'))
         print(header)

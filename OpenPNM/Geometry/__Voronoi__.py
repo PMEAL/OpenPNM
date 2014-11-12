@@ -24,8 +24,7 @@ class Voronoi(GenericGeometry):
 
     Parameters
     ----------
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
+
 
     """
 
@@ -36,7 +35,6 @@ class Voronoi(GenericGeometry):
         if int(sp.__version__.split('.')[1]) < 13:
             raise Exception('The installed version of Scipy is too old, Voronoi cannot run')
         super(Voronoi,self).__init__(**kwargs)
-        self._logger.debug("Method: Constructor")
         if kwargs['fibre_rad']:
             fibre_rad = kwargs['fibre_rad']
         else:

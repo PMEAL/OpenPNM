@@ -6,198 +6,6 @@ import pickle as _pickle
 from xml.etree import ElementTree as _ET
 
 
-class PNM(object):
-
-    def __init__(self,**kwargs):
-        super().__init__(**kwargs)
-
-    @staticmethod
-    def save(network,filename=''):
-        r'''
-        Save the current simulation in it's entirity.
-
-        Parameters
-        ----------
-        net : OpenPNM Network Object
-            The network object of the simulation to be saved.  This will
-            automatically save all Geometry, Phases and Physics objects
-            associated with the Network, but will not save any Algorithms.
-
-        filename : string, optional
-            The file name to yse for saving.  Defaults to the Network's name.
-
-        Notes
-        -----
-        This stores the simulation in a nested dictionary with the data dict
-        of the object stored under ['data'][object.name], the object linking
-        under ['tree'][object.name] and the information to reproduce the models
-        under ['mods'][object.name].  The ``load`` method knows how to unpack
-        this dictionary.
-
-        Examples
-        --------
-        >>> # Saving
-        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-        >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores(),throats=pn.throats(),name='geo_1')
-        >>> air = OpenPNM.Phases.Air(network=pn)
-        >>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores(),throats=pn.throats())
-        >>> import OpenPNM.Utilities.IO as io
-        >>> io.PNM.save(pn,'test_pn')
-
-        >>> # Loading
-        >>> import OpenPNM.Utilities.IO as io
-        >>> #pn = io.PNM.load('test_pn')
-
-        >>> # Delete the new file
-        >>> import os
-        >>> os.remove('test_pn.pnm')
-
-        See Also
-        --------
-        IO.PNM.load
-
-        '''
-
-        if filename != '':
-            filename = filename.split('.')[0]
-        else:
-            filename = network.name
-
-        #Setup nested dictionary to store simulation
-        sim = {}
-
-        #Collect all objects into a single list
-        all_objs = [network]
-        all_objs.extend(network._geometries)
-        all_objs.extend(network._phases)
-        all_objs.extend(network._physics)
-
-        #Enter each object's data, object tree and models into dictionary
-        for obj in all_objs:
-#            try:
-#                del obj._logger
-#            except:
-#                print('No logger found, ignoring request to delete it')
-            sim[obj.name] = {}
-            sim[obj.name]['data'] = obj.copy()
-            sim[obj.name]['associations'] = {'Geometries' : obj.geometries(),
-                                             'Phases'     : obj.phases(),
-                                             'Physics'    : obj.physics()}
-            sim[obj.name]['info'] = {'mro'   : [item.__name__ for item in obj.__class__.__mro__],
-                                     'class' : obj.__class__}
-            # Capture all of the objects attributes, other than OpenPNM reserved ones
-            # Note: This could break if people store funky stuff in attributes
-            excl_list = ['_physics','_geometries','_phases','_net','_name','_logger','_models']
-            a = {key : obj.__dict__[key] for key in obj.__dict__.keys() if key not in excl_list}
-            sim[obj.name]['attrs'] = a
-            sim[obj.name]['models'] = {}
-            for prop in list(obj._models.keys()):
-                sim[obj.name]['models'][prop] = PNM._save_model(obj,prop)
-        #Save nested dictionary pickle
-        _pickle.dump(sim,open(filename+'.pnm','wb'))
-#        #Save nested dictionary as a Numpy zip file
-#        _sp.savez_compressed(filename,**sim)
-#        #Rename the zip extension to pnm for kicks
-#        try:
-#            _os.remove(filename+'.pnm')
-#        except:
-#            pass
-#        _os.rename(filename+'.npz',filename+'.pnm')
-
-    @staticmethod
-    def _save_model(obj,item):
-        r'''
-        '''
-        #Retrieve info from model
-        f = obj._models[item].func
-        a = obj._models[item].keywords
-        #Store path to model, name of model and argument key:value pairs in a dict
-        model = {}
-        model['func'] = f
-        model['args'] = {}
-        for item in a:
-            #remove default arguments used in all add_model calls
-            if item not in ['physics','network','phase','geometry','mixture']:
-                model['args'][item] = a[item]
-        return model
-
-    @staticmethod
-    def load(filename):
-        r'''
-        Load a saved simulation
-
-        Parameters
-        ----------
-        filename : string
-            The name of the simulation to be read in
-
-        See Also
-        --------
-        IO.PNM.save
-
-        '''
-        #Read in file
-        filename = filename.split('.')[0]
-        sim = _pickle.load(open(filename+'.pnm','rb'))
-
-        for name in sim.keys():  # Network object
-            if 'GenericNetwork' in sim[name]['info']['mro']:
-                obj = sim[name]
-                net = obj['info']['class']._load(name=name,data=obj['data'])
-                for item in obj['attrs'].keys():
-                    setattr(net,item,obj['attrs'][item])
-                for item in obj['models'].keys():
-                    PNM._load_model(net,obj['models'][item])
-                break
-
-        for name in sim.keys():  # Geometry objects
-            if 'GenericGeometry' in sim[name]['info']['mro']:
-                obj = sim[name]
-                Ps = net.pores(name)
-                Ts = net.throats(name)
-                geom = obj['info']['class'](network=net,pores=Ps,throats=Ts,name=name)
-                geom.update(obj['data'])
-                for item in obj['attrs'].keys():
-                    setattr(geom,item,obj['attrs'][item])
-                for item in obj['models'].keys():
-                    PNM._load_model(geom,obj['models'][item])
-
-        for name in sim.keys():  # Do Pure phases or independent mixtures first
-            if 'GenericPhase' in sim[name]['info']['mro']:
-                obj = sim[name]
-                phase = obj['info']['class'](network=net,name=name)
-                phase.update(obj['data'])
-                for item in obj['attrs'].keys():
-                    setattr(phase,item,obj['attrs'][item])
-                for item in obj['models'].keys():
-                    PNM._load_model(phase,obj['models'][item])
-
-        for name in sim.keys():  # Link the phase objects to each other
-            if 'GenericPhase' in sim[name]['info']['mro']:
-                phase = net.phases(name)[0]
-                phase._phases = net.phases(sim[name]['associations']['Phases'])
-
-        for name in sim.keys():  # Physics objects
-            if 'GenericPhysics' in sim[name]['info']['mro']:
-                obj = sim[name]
-                phase = net.phases(obj['associations']['Phases'])[0]  # This will always be only 1 phase
-                Ps = net.pores(name)
-                Ts = net.throats(name)
-                phys = obj['info']['class'](network=net,phase=phase,name=name,pores=Ps,throats=Ts)
-                phys.update(obj['data'])
-                for item in obj['attrs'].keys():
-                    setattr(phys,item,obj['attrs'][item])
-                for item in obj['models'].keys():
-                    PNM._load_model(phys,obj['models'][item])
-
-        return net
-
-    @staticmethod
-    def _load_model(obj,model):
-        r'''
-        '''
-        #Apply model to object using info in dict
-        obj.add_model(model=model['func'],regen_mode='deferred',**model['args'])
 
 class VTK():
     r"""
@@ -264,8 +72,8 @@ class VTK():
         '''
 
         if filename == '':
-            filename = network.name+'.vtp'
-
+            filename = network.name
+        filename = filename.split('.')[0]+'.vtp'
 
         root = _ET.fromstring(VTK._TEMPLATE)
         objs = []
@@ -424,7 +232,9 @@ class MAT():
 
         """
         if filename == '':
-            filename = network.name+'.mat'
+            filename = network.name
+        filename = filename.split('.')[0]+'.mat'
+
         pnMatlab = {}
         new = []
         old = []
