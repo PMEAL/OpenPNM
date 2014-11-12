@@ -9,8 +9,8 @@ class Controller(dict):
     r"""
 
     """
-    # The following __instance class variable and subclassed __new__ method
-    # make the Controller class a 'Singleton'.  This way, the _sim attribute
+    # The following __instance__ class variable and subclassed __new__ method
+    # makes the Controller class a 'Singleton'.  This way, the _sim attribute
     # of every OpenPNM object is the same, AND if you create a sim on the
     # command line (sim = OpenPNM.Base.Controller()) it will be the same sim!
     __instance__ = None
@@ -34,18 +34,33 @@ class Controller(dict):
         return ''
 
     def network(self):
+        r'''
+        Returns a list of all Network objects in the simulation.
+        '''
         return self._get_objects(obj_type='GenericNetwork')
 
     def geometries(self):
+        r'''
+        Returns a list of all Geometry objects in the simulation.
+        '''
         return self._get_objects(obj_type='GenericGeometry')
 
     def phases(self):
+        r'''
+        Returns a list of all Phase objects in the simulation.
+        '''
         return self._get_objects(obj_type='GenericPhase')
 
     def physics(self):
+        r'''
+        Returns a list of all Physics objects in the simulation.
+        '''
         return self._get_objects(obj_type='GenericPhysics')
 
     def algorithms(self):
+        r'''
+        Returns a list of all Algorithm objects in the simulation.
+        '''
         return self._get_objects(obj_type='GenericAlgorithm')
 
     def _get_objects(self,obj_type):
@@ -57,18 +72,47 @@ class Controller(dict):
         return temp
 
     def clear(self):
+        r'''
+        This is an overloaded version of the standard dict's ``clear`` method.
+        This completely clears the Controller object's dict as expected, but 
+        also removes links to the Controller object in all simulation objects.
+        
+        Notes
+        -----
+        When removing links in all simulation objects to the Controller it 
+        replaces their ``simulation`` attribute with a standard ``dict``.  This 
+        ``dict`` can be reassociated with a Controller object using ``update``,
+        which has been overloaded to do so.
+        '''
+        temp = {}
         for item in self.keys():
-            self[item]._sim = {}
+            self[item].simulation = temp
         self.__dict__ = {}
         super(Controller,self).clear()
-
-#    def new(self):
-#        import OpenPNM.Base as Base
-#        temp = Base.Controller.__instance__
-#        Base.Controller.__instance__ = None
-#        sim = Base.Controller()
-#        Base.Controller.__instance__ = temp
-#        return sim
+        
+    def update(self,dict_):
+        r'''
+        This is an overloaded version of the standard dict's ``update`` method.
+        It accepts a dictionary argument, which is injects into the Controller
+        object, but is also associates the Controller object with all simulation
+        objects that were in the received dict.
+        
+        Parameters
+        ----------
+        dict_ : dictionary
+            A Python dictionary contain {key : value} pairs in the form of 
+            {obj.name : obj}.  
+            
+        Notes
+        -----
+        When the ``clear`` method of a Controller object is called, it sets the 
+        ``simulation`` attribute of all simulation objects to a standard
+        ``dict``.  The overloading of this method allows such a ``dict`` to be
+        reassociated with a Controller object.
+        '''
+        super(Controller,self).update(dict_)
+        for item in self.keys():
+            self[item]._sim = self
 
     def purge_object(self,obj):
         r'''
@@ -81,6 +125,11 @@ class Controller(dict):
             all traces of the object from everywhere in the simulation,
             including all the object tracking lists and label dictionaries of
             every object.
+            
+        Notes
+        -----
+        To only remove an object from the Contoller object, without purging all
+        traces from the simulation, use the dictionary's native ``pop`` method.
         '''
         name = obj.name
         for item in self.keys():
@@ -162,7 +211,7 @@ class Controller(dict):
         '''
         filename = filename.split('.')[0]
         obj = _pickle.load(open(filename+'.pno','rb'))
-        obj._sim = self
+        obj.simulation = self
 
     def save(self,filename=''):
         r'''
@@ -179,26 +228,27 @@ class Controller(dict):
         else:
             filename = filename.split('.')[0]
 
-        for item in self.keys():
-            self[item]._sim = {}
-
         #Save nested dictionary pickle
         _pickle.dump(self,open(filename+'.pnm','wb'))
 
     def load(self,filename):
         r'''
-        Load an entire simulation from a 'pnm' file.
+        Load an entire simulation from a 'pnm' file.  
 
         Parameters
         ----------
         filename : string
             The file name of the simulation to load.
+            
+        Notes
+        -----
+        This calls the ``clear`` method of the Controller object, so it will
+        over write the calling objects information AND remove any references 
+        to the calling object from existing simulation objects.
         '''
         filename = filename.split('.')[0]
         if self != {}:
             print('Warning: Loading data onto non-empty controller object, existing data will be lost')
-            for item in self.keys():
-                self[item]._sim = {}
             self.clear()
         self = _pickle.load(open(filename+'.pnm','rb'))
 
@@ -212,9 +262,6 @@ class Controller(dict):
             The file name to save as.  If no name is given then the name of
             suppiled object is used.  If no object is given, the name of the
             Network is used.
-        obj : OpenPNM object(s), optional
-            The object or objects to save.  If no object is given, then the
-            entire simulation is saved.
         fileformat : string
             The type of file to create.  Options are:
 
