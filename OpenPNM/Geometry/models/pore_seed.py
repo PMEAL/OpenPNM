@@ -75,7 +75,7 @@ def perlin_noise(geometry,freq=1,octaves=4,mode='classic',**kwargs):
     x_sigma = _sp.sqrt(1/(temp.size-1)*_sp.sum((temp - x_mean)**2))
     fn1 = spst.norm(loc=x_mean,scale=x_sigma)
     values = fn1.cdf(temp)
-    values = values[geometry['pore.map']]
+    values = values[geometry.map_pores(target=net,pores=geometry.Ps)]
     return values.flatten()
 
 def distance_from_inclusion(geometry,p,**kwargs):
@@ -129,7 +129,7 @@ def distance_from_inclusion(geometry,p,**kwargs):
     img = _spim.distance_transform_bf(b)
     #Convert back to pore-list
     values = img.flatten()
-    values = values[geometry['pore.map']]
+    values = values[geometry.map_pores(target=net,pores=geometry.Ps)]
     return values
 
 def spatially_correlated(geometry,network,weights=None,strel=None,**kwargs):
@@ -206,7 +206,7 @@ def spatially_correlated(geometry,network,weights=None,strel=None,**kwargs):
     x_sigma = _sp.sqrt(1/(temp.size-1)*_sp.sum((temp - x_mean)**2))
     fn1 = spst.norm(loc=x_mean,scale=x_sigma)
     values = fn1.cdf(temp)
-    values = values[geometry['pore.map']]
+    values = values[geometry.map_pores(target=network,pores=geometry.Ps)]
     return values
 
 

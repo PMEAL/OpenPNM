@@ -297,7 +297,7 @@ def clone_simulation(network,name=None):
         phys._models = item._models
     return new_net
 
-def subset(network,pores,name=None):
+def _subset(network,pores,name=None):
     r'''
     Create a new sub-network from a given Network, from a list of pores.
 
@@ -314,11 +314,10 @@ def subset(network,pores,name=None):
     -------
     OpenPNM Object
         Returns a new network object
-
+        
     Notes
     -----
-    This creates a 'pore.map' and 'throat.map' property that lists the
-    correspondence to the subset pores and throats, to the main network.
+    This is a work in progress
 
     Examples
     --------

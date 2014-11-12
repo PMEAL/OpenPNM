@@ -60,7 +60,7 @@ The 'Voronoi' geometry object has two visualisation methods which are unique to 
 .. code-block:: python
 
 	#print all pores in the Voronoi geometry
-	geo.print_pore(geo['pore.map'])
+	geo.print_pore(geo.map_pores(target=pn,pores=geo.Ps))
 	throats = pn.find_neighbor_throats(pores=[0])
 	#print all throats connected to the first pore in the network
 	geo.print_throat(throats)
