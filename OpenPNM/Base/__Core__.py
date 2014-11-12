@@ -1270,7 +1270,7 @@ class Core(Base):
                 raise Exception('Some locations not found on Target object')
             return mapping['target']
 
-    def map_pores(self,target,pores=None,return_mapping=False):
+    def map_pores(self,target=None,pores=None,return_mapping=False):
         r'''
         Accepts a list of pores from the caller object and maps them onto the
         given target object
@@ -1299,10 +1299,12 @@ class Core(Base):
         '''
         if pores is None:
             pores = self.Ps
+        if target is None:
+            target = self._net
         Ps = self._map(element='pore',locations=pores,target=target,return_mapping=return_mapping)
         return Ps
 
-    def map_throats(self,target,throats=[],return_mapping=False):
+    def map_throats(self,target=None,throats=None,return_mapping=False):
         r'''
         Accepts a list of throats from the caller object and maps them onto the
         given target object
@@ -1326,6 +1328,8 @@ class Core(Base):
         '''
         if throats is None:
             throats = self.Ts
+        if target is None:
+            target = self._net
         Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
 
