@@ -652,35 +652,14 @@ def pore2centroid(network):
     for geom_name in network.geometries():
         geometry = network.geometries(geom_name)[0]
         if "pore.centroid" in geometry.props():
-            for geom_pore,net_pore in enumerate(geometry["pore.map"]):
-                network["pore.coords"][net_pore]=geometry["pore.centroid"][geom_pore]
+            net_pores,geom_pores = geometry.map_pores(network,geometry.pores(),True).values()
+            for i in range(len(geom_pores)):
+                network["pore.coords"][net_pores[i]]=geometry["pore.centroid"][geom_pores[i]]
 
 def tortuosity(network=None):
     r"""
     Calculate the tortuosity from the angle between throat vectors and principle axes
     """
-    "Find throats where both pores are in geometry"
-    #net_throats = []
-    #if geometry == None:
-    #    geom_name = network.geometries()[0]
-    #    geometry = network.geometries(geom_name)[0]
-    #if pores == None:
-    #    pores=network.pores()
-    #for i in range(network.num_throats()):
-    #    if ((network["throat.conns"][i][0] in geometry["pore.map"]) and 
-    #        (network["throat.conns"][i][1] in geometry["pore.map"]) and 
-    #        (network["throat.conns"][i][0] in pores) and 
-    #        (network["throat.conns"][i][1] in pores) ):
-    #        net_throats.append(i)
-    #net_throats = network.map_throats(geometry,)
-    #"Get two list of connected pores"
-    #net_pores_a=network["throat.conns"][net_throats][:,0]
-    #net_pores_b=network["throat.conns"][net_throats][:,1]
-    #"Map the indices from the network to the geometry"
-    #geom_throats = network.map_throats(net_throats,geometry)[:,1]
-    #geom_pores_a = network.map_pores(net_pores_a,geometry)[:,1]
-    #geom_pores_b = network.map_pores(net_pores_b,geometry)[:,1]
-    #"Work out the vectors from pore to throat centroids"
     conns = network["throat.conns"]
     va = network["throat.centroid"] - network["pore.centroid"][conns[:,0]]
     vb = network["throat.centroid"] - network["pore.centroid"][conns[:,1]]
