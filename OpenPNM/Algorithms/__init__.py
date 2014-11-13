@@ -31,6 +31,9 @@ Classes
 .. autoclass:: FourierConduction
    :members:
 
+.. autoclass:: Tortuosity
+   :members:
+
 """
 
 from .__GenericAlgorithm__ import GenericAlgorithm
@@ -42,4 +45,4 @@ from .__StokesFlow__ import StokesFlow
 from .__InvasionPercolation__ import InvasionPercolation
 from .__InvasionPercolationBasic__ import InvasionPercolationBasic
 from .__OrdinaryPercolation__ import OrdinaryPercolation
-
+from . __Tortuosity__ import Tortuosity

@@ -99,3 +99,4 @@ except Exception as e:
   #------------------------------------------------------------------------------
   import OpenPNM.Utilities.IO as io
   io.VTK.save(network=pn,phases=[air,water])
+  io.PNM.save(pn)

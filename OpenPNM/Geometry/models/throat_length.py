@@ -40,22 +40,48 @@ def voronoi(network,
     to go back to geometry index of the connected pores.
     This will probably break down when a throat connects two different geometries 
     """
-    throats = geometry['throat.map']
+    throats = geometry.map_throats(network,geometry.throats())
     connections = network['throat.conns'][throats]
     net_pore1 = connections[:,0]
-    net_pore2 = connections[:,1]
-    geom_pore1 = []
-    geom_pore2 = []
-    for net_pore in net_pore1:
-        geom_pore1.append(geometry['pore.map'].tolist().index(net_pore))
-    for net_pore in net_pore2:
-        geom_pore2.append(geometry['pore.map'].tolist().index(net_pore))
-    
-    pore_centroids = geometry['pore.centroid']
-    throat_centroids = geometry['throat.centroid']
-    v1 = throat_centroids-pore_centroids[geom_pore1]
-    v2 = throat_centroids-pore_centroids[geom_pore2]
+    net_pore2 = connections[:,1]    
+    pore_centroids = network['pore.centroid']
+    throat_centroids = network['throat.centroid'][throats]
+    v1 = throat_centroids-pore_centroids[net_pore1]
+    v2 = throat_centroids-pore_centroids[net_pore2]
     value = _sp.ndarray(len(connections))
     for i in range(len(connections)):
         value[i] = _sp.linalg.norm(v1[i])+_sp.linalg.norm(v2[i])
+    return value
+
+def c2c(network,
+             geometry,
+             **kwargs):
+    r"""
+    Calculate throat length 
+    """
+    #Initialize throat_property['length']
+    throats = network.throats(geometry.name)
+    pore1 = network['throat.conns'][:,0]
+    pore2 = network['throat.conns'][:,1]
+    C1 = network['pore.coords'][pore1]
+    C2 = network['pore.coords'][pore2]
+    E = _sp.sqrt(_sp.sum((C1-C2)**2,axis=1))  #Euclidean distance between pores
+    value = E
+    value = value[throats]
+    if _sp.any(value<0):
+        geometry._logger.warning('Negative throat lengths are calculated. Arbitrary positive length assigned (1e9 meters)')
+        Ts = _sp.where(value<0)[0]
+        value[Ts] = 1e-9
+    return value
+    
+def constant(network,
+             geometry,
+             const,
+             **kwargs):
+    r"""
+    Calculate throat length 
+    """
+    #Initialize throat_property['length']
+    throats = network.throats(geometry.name)
+    value = _sp.ones(len(throats))*const
     return value

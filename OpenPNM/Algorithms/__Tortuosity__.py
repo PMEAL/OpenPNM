@@ -72,9 +72,9 @@ class Tortuosity(GenericAlgorithm):
                 temp = self._net['throat.length']*(self._phase['throat.occupancy']==1)
                 graph = self._net.create_adjacency_matrix(data=temp,sprsfmt='csr',prop='temp')
 
-        self._net.tic()
+        #self._net.tic()
         path = spgr.shortest_path(csgraph = graph, method='D', directed = False)
-        self._net.toc()
+        #self._net.toc()
 
         Px = sp.array(self._net['pore.coords'][:,0],ndmin=2)
         Py = sp.array(self._net['pore.coords'][:,1],ndmin=2)
@@ -86,6 +86,7 @@ class Tortuosity(GenericAlgorithm):
         Ds = sp.sqrt(Cx + Cy + Cz)
 
         temp = path/Ds
+        #temp = path
 
         temp[sp.isnan(temp)] = 0
         temp[sp.isinf(temp)] = 0

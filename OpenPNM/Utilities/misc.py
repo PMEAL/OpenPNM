@@ -186,7 +186,7 @@ def amalgamate_data(objs=[]):
     if type(objs) is not list:
         objs = list(objs)
     data_amalgamated = {}
-    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_verts','throat.verts','throat.normals','throat.perimeter']
+    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_vertices','throat.vertices','throat.normal','throat.perimeter']
     for item in objs:
         mro = [module.__name__ for module in item.__class__.__mro__]
         if 'GenericNetwork' in mro: #if Network object, combine Geometry and Network keys
@@ -209,14 +209,51 @@ def amalgamate_data(objs=[]):
         keys.sort()
         for key in keys:
             if key not in exclusion_list:
-                if _sp.amax(item[key]) < _sp.inf:
-                    element = key.split('.')[0]
-                    propname = key.split('.')[1]
-                    dict_name = element+'.'+item.name+'_'+propname
-                    if key in ['pore.coords', 'throat.conns', 'pore.all','throat.all']:
-                        dict_name = key
-                    data_amalgamated.update({dict_name : item[key]})
+                try:
+                    if _sp.amax(item[key]) < _sp.inf:
+                        element = key.split('.')[0]
+                        propname = key.split('.')[1]
+                        dict_name = element+'.'+item.name+'_'+propname
+                        if key in ['pore.coords', 'throat.conns', 'pore.all','throat.all']:
+                            dict_name = key
+                        data_amalgamated.update({dict_name : item[key]})
+                except TypeError:
+                    print(key)
     return data_amalgamated
+
+def conduit_lengths(network,throats=None,mode='pore'):
+    r"""
+    Return the respective lengths of the conduit components defined by the throat conns P1 T P2
+    mode = 'pore' - uses pore coordinates 
+    mode = 'centroid' uses pore and throat centroids
+    """
+    if throats == None:
+        throats = network.throats()
+    Ps = network['throat.conns']
+    pdia = network['pore.diameter']
+    
+    if mode ==  'centroid':
+        try:
+            pcentroids = network['pore.centroid']
+            tcentroids = network['throat.centroid']
+            plen1 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,0]]-tcentroids),1))-network['throat.length']/2
+            plen2 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,1]]-tcentroids),1))-network['throat.length']/2
+        except KeyError:
+            mode = 'pore'
+    if mode == 'pore':
+        #Find half-lengths of each pore
+        pcoords = network['pore.coords']
+        #   Find the pore-to-pore distance, minus the throat length
+        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network['throat.length']
+        #   Calculate the fraction of that distance from the first pore
+        try:
+            fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
+        except:
+            fractions = 0.5
+        plen1 = lengths*fractions
+        plen2 = lengths*(1-fractions)
+    
+    return _sp.vstack((plen1,network['throat.length'],plen2)).T[throats]
 
 def clone_object(obj):
     r'''
@@ -345,17 +382,3 @@ def _subset(network,pores,name=None):
     network['throat.'+new_net.name][Ts] = True
 
     return new_net
-
-
-
-
-
-
-
-
-
-
-
-
-
-
