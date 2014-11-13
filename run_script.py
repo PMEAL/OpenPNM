@@ -1,11 +1,11 @@
 import OpenPNM
-
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 
+sim = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net',loglevel=20)
+pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net',loglevel=10)
 pn.add_boundaries()
 
 #==============================================================================
@@ -43,7 +43,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffu
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air,loglevel=30)
+OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air)
 Ps = pn.pores(labels=['bottom_boundary'])
 OP_1.run(inlets=Ps)
 OP_1.return_results(Pc=7000)
@@ -53,14 +53,14 @@ OP_1.return_results(Pc=7000)
 #------------------------------------------------------------------------------
 inlets = pn.pores('bottom_boundary')
 outlets = pn.pores('top_boundary')
-IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'IP_1', loglevel = 30)
-IP_1.run(invading_phase = water, defending_phase = air, inlets = inlets, outlets = outlets, end_condition = 'breakthrough')
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn,name='IP_1')
+IP_1.run(invading_phase=water,defending_phase=air,inlets=inlets,outlets=outlets,end_condition='breakthrough')
 IP_1.return_results()
 
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
-alg = OpenPNM.Algorithms.FickianDiffusion(loglevel=20, network=pn,phase=air)
+alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.pores('right_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
@@ -99,4 +99,4 @@ except Exception as e:
   #------------------------------------------------------------------------------
   import OpenPNM.Utilities.IO as io
   io.VTK.save(network=pn,phases=[air,water])
-io.PNM.save(pn)
+  io.PNM.save(pn)

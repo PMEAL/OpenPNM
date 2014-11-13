@@ -25,7 +25,6 @@ class SGL10(GenericGeometry):
         Initialize
         """
         super(SGL10,self).__init__(**kwargs)
-        self._logger.debug("Method: Constructor")
         self._generate()
 
     def _generate(self):

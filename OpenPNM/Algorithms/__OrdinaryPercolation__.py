@@ -10,6 +10,8 @@ import scipy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 from OpenPNM.Algorithms import GenericAlgorithm
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""
@@ -57,7 +59,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._phase_inv = invading_phase
         self._phase_def = defending_phase
-        self._logger.debug("Create Drainage Percolation Algorithm Object")
+        logger.debug("Create Drainage Percolation Algorithm Object")
 
     def run(self,
             inlets,
@@ -114,17 +116,18 @@ class OrdinaryPercolation(GenericAlgorithm):
         try:
             self._t_cap = self._phase_inv['throat.'+self._p_cap]
         except:
-            self._logger.error('Capillary pressure not assigned to invading phase '+self._phase_inv.name
+            logger.error('Capillary pressure not assigned to invading phase '+self._phase_inv.name
                 +', check for capillary pressure in defending phase '+self._phase_def.name +' instead')
             try:
                 self._t_cap = self._phase_def['throat.'+self._p_cap]
             except:
-                self._logger.error('Capillary pressure neither assigned to defending phase '+self._phase_def.name
+                pass
+                logger.error('Capillary pressure neither assigned to defending phase '+self._phase_def.name
                     +' nor to invading phase '+self._phase_inv.name)
         if inv_points == None:
             min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
             max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
-            self._logger.info('Generating list of invasion pressures')
+            logger.info('Generating list of invasion pressures')
             if min_p == 0:
                 min_p = sp.linspace(min_p,max_p,self._npts)[1]
             self._inv_points = sp.logspace(sp.log10(min_p),sp.log10(max_p),self._npts)
@@ -136,7 +139,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         #Generate curve from points
         for inv_val in self._inv_points:
             #Apply one applied pressure and determine invaded pores
-            self._logger.info('Applying capillary pressure: '+str(inv_val))
+            logger.info('Applying capillary pressure: '+str(inv_val))
             self._do_one_inner_iteration(inv_val)
         #Store results using networks' get/set method
         self['pore.inv_Pc'] = self._p_inv
@@ -215,7 +218,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         try:
             inv_points = sp.unique(self._p_inv)  # Get points used in OP
         except:
-            self._logger.error('Orindary percolation has not been run!')
+            logger.error('Orindary percolation has not been run!')
             raise Exception('Aborting algorithm')
         tind = self._net.throats()
         conns = self._net.find_connected_pores(tind)
@@ -343,8 +346,8 @@ class OrdinaryPercolation(GenericAlgorithm):
                                     pore_label='all',
                                     throat_label='all'):
           r"""
-          Plot the primary drainage curve as the capillary pressure on ordinate 
-          and total saturation of the wetting phase on the abscissa. 
+          Plot the primary drainage curve as the capillary pressure on ordinate
+          and total saturation of the wetting phase on the abscissa.
           This is the preffered style in the petroleum engineering
           """
           try:
@@ -374,7 +377,7 @@ class OrdinaryPercolation(GenericAlgorithm):
           plt.title('Primay Drainage Curve')
           plt.grid(True)
           plt.show()
-          
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)

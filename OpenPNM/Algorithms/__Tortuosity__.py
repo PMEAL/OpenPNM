@@ -8,13 +8,15 @@ two points folliwng the network, and the the direct distance between the same
 points.  The ratio of these is returned as the 'tortuosity'
 
 TODO: It currently uses the 'throat.length' to weight the network connections
-but this should probably use diffusive conductance.  
+but this should probably use diffusive conductance.
 """
 
 import scipy as sp
 import scipy.sparse.csgraph as spgr
 from OpenPNM.Algorithms import GenericAlgorithm
 import OpenPNM.Network
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class Tortuosity(GenericAlgorithm):
     r"""
@@ -39,7 +41,7 @@ class Tortuosity(GenericAlgorithm):
 
         """
         super(Tortuosity,self).__init__(**kwargs)
-        self._logger.debug("Create Tortuosity Object")
+        logger.debug("Create Tortuosity Object")
 
     def estimate_time(self):
         r'''
@@ -61,7 +63,7 @@ class Tortuosity(GenericAlgorithm):
     def run(self,phase=None):
         r'''
         '''
-        self._logger.warning('This algorithm can take some time...')
+        logger.warning('This algorithm can take some time...')
         graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],sprsfmt='csr')
 
         if phase != None:

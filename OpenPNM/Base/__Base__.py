@@ -4,9 +4,11 @@ Base:  Abstract Class
 ###############################################################################
 '''
 import string, random, collections
-import OpenPNM
 import scipy as sp
 import scipy.constants
+from OpenPNM.Base import logging, Controller
+logger = logging.getLogger()
+sim = Controller()
 
 class Base(dict):
     r"""
@@ -19,54 +21,31 @@ class Base(dict):
         simulation have the same name.  If no name is provided, and random
         string is appended to the objects module name.
 
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-
-    loggername : string
-        Name of the logger. The default is the name of the class.
-
     """
-    _name = None
-    _loglevel = 30
 
     def __new__(typ, *args, **kwargs):
         obj = dict.__new__(typ, *args, **kwargs)
+        obj.update({'pore.all': sp.array([],ndmin=1,dtype=bool)})
+        obj.update({'throat.all': sp.array([],ndmin=1,dtype=bool)})
         #Initialize phase, physics, and geometry tracking lists
+        obj._name = None
+        obj._sim = {}
         obj._phases = []
         obj._geometries = []
         obj._physics = []
+        obj._net = None
         #Initialize ordered dict for storing property models
         obj._models = collections.OrderedDict()
         return obj
 
-    @classmethod
-    def _load(cls,name,data):
-        r'''
-        '''
-        inst = cls.__new__(cls)
-        inst.update(data)
-        inst.name = name
-        return inst
-
-    @classmethod
-    def _add_logger(cls,**kwargs):
-        import logging as _logging
-        # set up logging to file - see previous section for more details
-        _logging.basicConfig(level=_logging.ERROR,
-                             format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                             datefmt='%m-%d %H:%M',
-                             )
-
-        if 'loggername' in kwargs.keys():
-            cls._logger = _logging.getLogger(kwargs['loggername'])
-        else:
-            cls._logger = _logging.getLogger(cls.__class__.__name__)
-        if 'loglevel' in kwargs.keys():
-            cls._loglevel = kwargs['loglevel']
-
-    def __init__(self,**kwargs):
+    def __init__(self,name=None,loglevel=30,**kwargs):
         super(Base,self).__init__()
-        self._add_logger(**kwargs)
+        logger.name = 'Base'
+        logger.setLevel(loglevel)
+        logger.debug('Initializing Base class')
+
+        self.name = name
+        self.simulation = sim
 
     def __repr__(self):
         return '<%s.%s object at %s>' % (
@@ -74,49 +53,31 @@ class Base(dict):
         self.__class__.__name__,
         hex(id(self)))
 
-    def _set_loglevel(self,level=50):
-        if type(level) is str:
-            desc = {}
-            desc['DEBUG']    = 10
-            desc['INFO']     = 20
-            desc['WARNING']  = 30
-            desc['ERROR']    = 40
-            desc['CRITICAL'] = 50
-            level = string.ascii_uppercase(level)
-            level = desc[level]
-        self._loglevel = level
-        self._logger.setLevel(level)
-        self._logger.debug("Changed log level")
+    def _set_sim(self,simulation):
+        if self.name in simulation.keys():
+            raise Exception('An object with that name is already present in simulation')
+        self._sim = simulation
+        simulation.update({self.name: self})
 
-    def _get_loglevel(self):
-        level = self._loglevel
-        desc = {}
-        desc[10] = 'DEBUG: Detailed information for for diagnostics and development'
-        desc[20] = 'INFO: Confirmation that things are working as expected'
-        desc[30] = 'WARNING: An indication that something unexpected happened'
-        desc[40] = 'ERROR: Due to a more serious problem, program might still execute'
-        desc[50] = 'CRITICAL: A serious error that might compromise program execution'
-        print(desc[level])
-        return level
+    def _get_sim(self):
+        return self._sim
 
-    loglevel = property(fget=_get_loglevel,fset=_set_loglevel)
+    simulation = property(_get_sim,_set_sim)
 
-    def set_loglevel(self,level=50):
-        r"""
-        Sets the effective log level for this class
+    def _set_name(self,name):
+        if self._name != None:
+            raise Exception('Renaming objects can have catastrophic consequences')
+        elif self._sim.get(name) is not None:
+            raise Exception('An object named '+name+' already exists')
+        elif name == None:
+            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+            name = self.__module__.split('.')[-1].strip('__') + '_' + name
+        self._name = name
 
-        Parameters
-        ----------
-        level : int
-            Level above which messages should be logged
+    def _get_name(self):
+        return self._name
 
-        Examples
-        --------
-        >>> baseobject = OpenPNM.Base.Base()
-        >>> baseobject.set_loglevel(30)
-
-        """
-        self.loglevel = level
+    name = property(_get_name,_set_name)
 
     def _find_object(self,obj_name='',obj_type=''):
         r'''
@@ -293,167 +254,6 @@ class Base(dict):
         else:
             net = self._net
         return net
-
-    def remove_object(self,obj=None,obj_name=''):
-        r'''
-        Remove specific objects from a model
-
-        Parameters
-        ----------
-        name : string
-            The name of the object to delete
-
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo',pores=pn.Ps,throats=pn.Ts)
-        >>> geom.name
-        'geo'
-        >>> pn.remove_object(obj_name='geo')
-        >>> pn._find_object(obj_name='geo')
-        []
-
-        Notes
-        -----
-        This disassociates the object from the simulation, but does not delete
-        it from memory necessarily.  For instance, the object may still be
-        reachable from the command line.
-
-        '''
-        mro = [item.__name__ for item in self.__class__.__mro__]
-        if 'GenericNetwork' in mro:
-            net = self
-        else:
-            net = self._net
-        if obj_name != '':
-            obj = self._find_object(obj_name=obj_name)
-
-        #Get mro for self
-        mro = [item.__name__ for item in obj.__class__.__mro__]
-        if 'GenericGeometry' in mro:
-            net._geometries = [item for item in net._geometries if item is not obj]
-            net.pop('pore.'+obj.name,None)
-            net.pop('throat.'+obj.name,None)
-        elif 'GenericPhase' in mro:
-            for phase in net._phases:
-                if phase is obj: #Found correct phase
-                    for physics in phase._physics:
-                        physics._phases = []
-                    net._phases = [item for item in net._phases if item is not obj]
-                for component in phase._phases: #Cull from other phases too
-                    if component is obj:
-                        for physics in component._physics:
-                            physics._phases = []
-                        phase._phases = [item for item in phase._phases if item is not obj]
-        elif 'GenericPhysics' in mro:
-            for physics in net._physics:
-                if physics is obj:
-                    for phase in physics._phases:
-                        phase._physics = [item for item in phase._physics if item is not obj]
-                        phase.pop('pore.'+obj.name,None)
-                        phase.pop('throat.'+obj.name,None)
-                    net._physics = [item for item in net._physics if item is not obj]
-
-    def save(self,filename=''):
-        r'''
-
-        Parameters
-        ----------
-        filename : string
-            The filename to contain the saved object data in Numpy zip format (npz)
-
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-        >>> pn.save('test_pn')
-
-        >>> gn = OpenPNM.Network.GenericNetwork()
-        >>> gn.load('test_pn')
-
-        >>> # Remove newly created file
-        >>> import os
-        >>> os.remove('test_pn.npz')
-
-        '''
-        if filename == '':
-            filename = self.name
-        obj_dict = {}
-        obj_dict['data'] = self.copy()
-        obj_dict['info'] = {}
-        obj_dict['info']['name'] = self.name
-        obj_dict['info']['module'] = self.__module__
-        sp.savez_compressed(filename,**obj_dict)
-
-    def load(self,filename):
-        r'''
-        Loads a previously saved object's data onto new, empty Generic object
-
-        Parameters
-        ----------
-        filename : string
-            The file containing the saved object data in Numpy zip format (npz)
-
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-        >>> pn.save('test_pn')
-
-        >>> gn = OpenPNM.Network.GenericNetwork()
-        >>> gn.load('test_pn')
-
-        >>> # Remove newly created file
-        >>> import os
-        >>> os.remove('test_pn.npz')
-
-        '''
-        if (self.Np == 0) and (self.Nt == 0):
-            filename = filename.split('.')[0] + '.npz'
-            temp = sp.load(filename)
-            data_dict = temp['data'].item()
-            info_dict = temp['info'].item()
-            self.update(data_dict)
-            self._name = info_dict['name']
-            temp.close()
-        else:
-            raise Exception('Cannot load saved data onto an active object')
-
-    def OpenPNM_methods(self):
-        r'''
-        List the OpenPNM methods on the object
-        '''
-        header = '-'*80
-        a = []
-        [a.append(item) for item in self.__dir__() if (item[0] != '_') and (item not in dict.__dir__({}))]
-        a = sorted(a)
-        print(header)
-        print("{:<25s}:  Docstring Blurb".format('Method Name'))
-        print(header)
-        for item in a:
-            doc = self.__getattribute__(item).__doc__
-            try:
-                doc = doc.split('\n')[1]
-                doc = doc.lstrip()
-            except:
-                doc = '---'
-            print("{:<25s}:  {}".format(item, doc))
-        print(header)
-
-    def _set_name(self,name):
-        if self._name != None:
-            self._logger.error('Renaming objects can have catastrophic consequences')
-            return
-        if name == None:
-            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
-            name = self.__module__.split('.')[-1].strip('__') + '_' + name
-        if self._find_object(obj_name=name) != []:
-            self._logger.error('An object with this name already exists')
-            return
-        self._name = name
-
-    def _get_name(self):
-        return self._name
-
-    name = property(_get_name,_set_name)
 
 if __name__ == '__main__':
     import doctest

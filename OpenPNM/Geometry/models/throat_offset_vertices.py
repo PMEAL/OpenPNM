@@ -99,7 +99,7 @@ def distance_transform(network,
             minp2 = pts[:,1].min()
             maxp1 = pts[:,0].max()
             maxp2 = pts[:,1].max()
-            img = np.zeros([math.ceil(maxp1-minp1)+1,math.ceil(maxp2-minp2)+1])
+            img = np.zeros([np.int(math.ceil(maxp1-minp1)+1),np.int(math.ceil(maxp2-minp2)+1)])
             int_pts = np.around(pts,0).astype(int)
             for pt in int_pts:
                 img[pt[0]][pt[1]]=1

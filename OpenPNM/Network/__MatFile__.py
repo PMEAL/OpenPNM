@@ -11,6 +11,8 @@ import os
 from OpenPNM.Network import GenericNetwork
 import OpenPNM.Geometry
 import OpenPNM.Utilities.misc as misc
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class MatFile(GenericNetwork):
     r'''
@@ -109,13 +111,13 @@ class MatFile(GenericNetwork):
     def _add_pores(self):
         Pind = sp.arange(0,self._Np)
         self['pore.all'] = sp.ones_like(Pind,dtype=bool)
-        self._logger.info('Writing pore data')
+        logger.info('Writing pore data')
         self['pore.coords']=sp.array(self._dictionary['pcoords'],float)
 
     def _add_throats(self):
         Tind = sp.arange(0,self._Nt)
         self['throat.all']=sp.ones_like(Tind,dtype=bool)
-        self._logger.info('Writing throat data')
+        logger.info('Writing throat data')
         self['throat.conns']=sp.array(self._dictionary['tconnections'],int)
 
     def _remove_disconnected_clusters(self):
@@ -152,7 +154,6 @@ class MatFile(GenericNetwork):
                     if throat not in bad_throats:
                         self._throat_map[i] = throat
                         i += 1
-            self.trim(pores=bad_pores)
             #Fix the pore transformer
             try:
                 if sp.shape(bad_pores)[0] > 0:
@@ -164,8 +165,10 @@ class MatFile(GenericNetwork):
                             self._dictionary['pname_transform'][i] = old_transform[pore]
                             i += 1
             except:
-                self._logger.info('Could not update pname_transform. Imported network may not have had it.')
-
+                logger.info('Could not update pname_transform. Imported network may not have had it.')
+                pass
+            self.trim(pores=bad_pores)
+            
     def _add_geometry(self):
         try:
             boundary_pores = sp.where(self['pore.type']!=0)[0]
@@ -186,7 +189,7 @@ class MatFile(GenericNetwork):
         except:
             boundary_pores = sp.array([])
             boundary_throats = sp.array([])
-            self._logger.info('No boundary pores added.')
+            logger.info('No boundary pores added.')
             add_boundaries = False
         Ps = sp.where([pore not in boundary_pores for pore in self.pores()])[0]
         Ts = sp.where([throat not in boundary_throats for throat in self.throats()])[0]
@@ -221,12 +224,14 @@ class MatFile(GenericNetwork):
                     try:
                         self['pore.'+pdata]=self._dictionary['p'+pdata][self._pore_map]
                     except:
-                        self._logger.warning('Could not add pore data: '+pdata+' to network')
+                        logger.warning('Could not add pore data: '+pdata+' to network')
+                        pass
             else:
                 try:
                     self['pore.'+xpdata]=self._dictionary['p'+xpdata][self._pore_map]
                 except:
-                    self._logger.warning('Could not add pore data: '+xpdata+' to network')
+                    logger.warning('Could not add pore data: '+xpdata+' to network')
+                    pass
 
     def _add_xtra_throat_data(self):
         xtdata = self._xtra_throat_data
@@ -236,12 +241,14 @@ class MatFile(GenericNetwork):
                     try:
                         self['throat.'+tdata]=self._dictionary['t'+tdata][self._throat_map]
                     except:
-                        self._logger.warning('Could not add throat data: '+tdata+' to network')
+                        logger.warning('Could not add throat data: '+tdata+' to network')
+                        pass
             else:
                 try:
                     self['throat.'+xtdata]=self._dictionary['t'+xtdata][self._throat_map]
                 except:
-                    self._logger.warning('Could not add throat data: '+xtdata+' to network')
+                    logger.warning('Could not add throat data: '+xtdata+' to network')
+                    pass
 
     def domain_length(self,face_1,face_2):
         r'''
@@ -268,7 +275,7 @@ class MatFile(GenericNetwork):
             Ds = misc.dist(x,y)
             L = sp.median(sp.amin(Ds,axis=0))
         else:
-            self._logger.warning('The supplied pores are not coplanar. Length will be approximate.')
+            logger.warning('The supplied pores are not coplanar. Length will be approximate.')
             f1 = self['pore.coords'][face_1]
             f2 = self['pore.coords'][face_2]
             distavg = [0,0,0]
@@ -314,7 +321,8 @@ class MatFile(GenericNetwork):
             # if that fails, use the max face area of the bounding cuboid
             A = max([yz,xz,xy])
         if not misc.iscoplanar(self['pore.coords'][face]):
-            self._logger.warning('The supplied pores are not coplanar. Area will be approximate')
+            logger.warning('The supplied pores are not coplanar. Area will be approximate')
+            pass
         return A
 
 if __name__ == '__main__':

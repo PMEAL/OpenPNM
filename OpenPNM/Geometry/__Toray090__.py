@@ -1,15 +1,14 @@
 """
 module __Toray090__: Subclass of GenericGeometry for a standard Toray TGPH090
 gas diffusion layer.s
-=============================================================================== 
+===============================================================================
 
 .. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
 
 """
 
-import OpenPNM
 from OpenPNM.Geometry import models as gm
-from OpenPNM.Geometry.__GenericGeometry__ import GenericGeometry
+from OpenPNM.Geometry import GenericGeometry
 
 class Toray090(GenericGeometry):
     r"""
@@ -27,12 +26,11 @@ class Toray090(GenericGeometry):
         Initialize
         """
         super(Toray090,self).__init__(**kwargs)
-        self._logger.debug("Method: Constructor")
         self._generate()
-                       
+
     def _generate(self):
         r'''
-        '''        
+        '''
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        num_range=[0,0.95],
@@ -59,7 +57,7 @@ class Toray090(GenericGeometry):
                        tsd_shape=2.77,
                        tsd_loc=6.9e-7,
                        tsd_scale=9.8e-6,
-                       tsd_offset=10e-6)             
+                       tsd_offset=10e-6)
         self.add_model(propname='throat.length',
                        model=gm.throat_length.straight)
         self.add_model(propname='throat.volume',
@@ -68,7 +66,8 @@ class Toray090(GenericGeometry):
                        model=gm.throat_area.cylinder)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
-        
+
 if __name__ == '__main__':
+    import OpenPNM
     pn = OpenPNM.Network.TestNet()
     pass

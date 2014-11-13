@@ -5,6 +5,8 @@ module __Physics__: Base class for mananging pore-scale Physics properties
 ===============================================================================
 
 """
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 import OpenPNM.Physics.models
 import scipy as sp
 
@@ -32,13 +34,13 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     """
 
-    def __init__(self,network=None,phase=None,pores=[],throats=[],name=None,**kwargs):
+    def __init__(self,network=None,phase=None,pores=[],throats=[],**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
-        self._logger.debug("Construct class")
+        logger.name = self.name
 
         #Initialize locations
-        self['pore.all'] = sp.array([],dtype=bool)
-        self['throat.all'] = sp.array([],dtype=bool)
+        self['pore.all'] = sp.array([],ndmin=1,dtype=bool)
+        self['throat.all'] = sp.array([],ndmin=1,dtype=bool)
 
         #Associate with Network
         if network == None:
@@ -46,7 +48,6 @@ class GenericPhysics(OpenPNM.Base.Core):
         else:
             self._net = network  # Attach network to self
             self._net._physics.append(self)  # Register self with network
-        self.name = name
 
         #Associate with Phase
         if phase == None:

@@ -22,8 +22,6 @@ OpenPNM.Geometry.GenericGeometry: 	GenericGeometry_ZpKsC
 ------------------------------------------------------------
 #     Properties                          Valid Values
 ------------------------------------------------------------
-1     pore.map                               27 / 27   
-2     throat.map                             54 / 54   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
@@ -31,14 +29,7 @@ OpenPNM.Geometry.GenericGeometry: 	GenericGeometry_ZpKsC
 2     throat.all                          54        
 ------------------------------------------------------------
 
-There are a few important steps that occur upon instantiation, aside from those outlined in the :ref:`General Overview<general>`.  Firstly, the Geometry stores a list of the Network pores and throats to which it applies.  These are stored under 'pore.map' and 'throat.map'.  For instance:
-
->>> pn2 = OpenPNM.Network.Cubic(shape=[3,3,3])
->>> geom_1 = OpenPNM.Geometry.Stick_and_Ball(network=pn2,pores=[3,6,9],name='geom_1')
->>> geom_1['pore.map']
-array([3, 6, 9])
-
-Another important step is that pore and throat label arrays are created in the Network corresponding to the Geometry name.  So if a Geometry called 'geom_1' is associated with a Network, the 'pore.geom_1' and 'throat.geom_1' label arrays are added to the Network:
+There are a few important steps that occur upon instantiation, aside from those outlined in the :ref:`General Overview<general>`. Firstly, pore and throat label arrays are created in the Network corresponding to the Geometry name.  So if a Geometry called 'geom_1' is associated with a Network, the 'pore.geom_1' and 'throat.geom_1' label arrays are added to the Network:
 
 >>> pn.labels()
 ['pore.all', 'pore.back', 'pore.bottom', 'pore.front', 'pore.geom_1', 'pore.internal', 'pore.left', 'pore.right', 'pore.top', 'throat.all', 'throat.geom_1']

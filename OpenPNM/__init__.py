@@ -37,10 +37,7 @@ Import
 
 __version__ = '1.1-beta'
 
-
-__requires__ = [
-    'scipy'
-]
+__requires__ = ['scipy']
 
 from . import Base
 from . import Utilities

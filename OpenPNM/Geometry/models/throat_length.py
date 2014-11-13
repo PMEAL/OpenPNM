@@ -25,7 +25,7 @@ def straight(network,
     value = E-(D1+D2)/2.
     value = value[throats]
     if _sp.any(value<0):
-        geometry._logger.warning('Negative throat lengths are calculated. Arbitrary positive length assigned (1e9 meters)')
+        print('Negative throat lengths are calculated. Arbitrary positive length assigned (1e-9 meters)')
         Ts = _sp.where(value<0)[0]
         value[Ts] = 1e-9
     return value

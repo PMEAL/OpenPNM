@@ -26,7 +26,6 @@ class TestGeometry(GenericGeometry):
         Initialize
         """
         super(TestGeometry,self).__init__(**kwargs)
-        self._logger.debug("Method: Constructor")
         self._generate()
 
     def _generate(self):
