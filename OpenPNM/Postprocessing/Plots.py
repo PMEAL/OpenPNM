@@ -44,7 +44,56 @@ def profiles(network,
         ax[n].set_xlabel(xlab[n])
         ax[n].set_ylabel('Slice Value')
     fig.show()
+
+def porosity_profile(network,
+                      fig=None, axis=2):
+             
+    r'''
+    Compute the porosity profile in all three dimensions
     
+    Parameters
+    ----------
+    network : OpenPNM Network object
+    axis : integer type 0 for x-axis, 1 for y-axis, 2 for z-axis
+        
+    Notes
+    -----
+    the area of the porous medium at any position is calculated from the 
+    maximum pore coordinates in each direction
+     
+    '''
+    if fig is None:
+        fig = _plt.figure()
+    L_x = _sp.amax(network['pore.coords'][:,0])
+    L_y = _sp.amax(network['pore.coords'][:,1])
+    L_z = _sp.amax(network['pore.coords'][:,2])
+    if axis is 0:
+        xlab = 'x-direction'
+        area = L_y*L_z
+    elif axis is 1:
+        xlab = 'y-direction'
+        area = L_x*L_z
+    else: 
+        axis = 2
+        xlab = 'z-direction'
+        area = L_x*L_y
+    n_max = _sp.amax(network['pore.coords'][:,axis])
+    steps = _sp.linspace(0,n_max,100,endpoint=True)
+    vals = _sp.zeros_like(steps)
+    rp = ((21/88.0)*network['pore.volume'])**(1/3.0)
+    upper = network['pore.coords'][:,axis] + rp
+    lower = network['pore.coords'][:,axis] - rp
+    for i in range(0,len(steps)):
+        temp = (upper > steps[i])*(lower < steps[i])
+        vals[i] = (sum((22/7.0)*(rp[temp]**2 - (network['pore.coords'][:,axis][temp]-steps[i])**2)) \
+        + _sp.sum(network['throat.area'][temp]))/area
+    yaxis = vals
+    xaxis = steps/n_max
+    _plt.plot(xaxis,yaxis,'bo-')
+    _plt.xlabel(xlab)
+    _plt.ylabel('Porosity')
+    fig.show() 
+
 def distributions(net,
                   fig = None,
                   throat_diameter='throat.diameter',
