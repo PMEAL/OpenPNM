@@ -48,7 +48,7 @@ def purcell(physics,
             phase,
             network,
             r_toroid,
-            pore_surface_tension='pore.surfac_tension',
+            pore_surface_tension='pore.surface_tension',
             pore_contact_angle='pore.contact_angle',
             throat_diameter='throat.diameter',
             **kwargs):
