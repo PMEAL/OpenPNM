@@ -74,13 +74,13 @@ class Controller(dict):
     def clear(self):
         r'''
         This is an overloaded version of the standard dict's ``clear`` method.
-        This completely clears the Controller object's dict as expected, but 
+        This completely clears the Controller object's dict as expected, but
         also removes links to the Controller object in all simulation objects.
-        
+
         Notes
         -----
-        When removing links in all simulation objects to the Controller it 
-        replaces their ``simulation`` attribute with a standard ``dict``.  This 
+        When removing links in all simulation objects to the Controller it
+        replaces their ``simulation`` attribute with a standard ``dict``.  This
         ``dict`` can be reassociated with a Controller object using ``update``,
         which has been overloaded to do so.
         '''
@@ -89,23 +89,23 @@ class Controller(dict):
             self[item].simulation = temp
         self.__dict__ = {}
         super(Controller,self).clear()
-        
+
     def update(self,dict_):
         r'''
         This is an overloaded version of the standard dict's ``update`` method.
         It accepts a dictionary argument, which is injects into the Controller
         object, but is also associates the Controller object with all simulation
         objects that were in the received dict.
-        
+
         Parameters
         ----------
         dict_ : dictionary
-            A Python dictionary contain {key : value} pairs in the form of 
-            {obj.name : obj}.  
-            
+            A Python dictionary contain {key : value} pairs in the form of
+            {obj.name : obj}.
+
         Notes
         -----
-        When the ``clear`` method of a Controller object is called, it sets the 
+        When the ``clear`` method of a Controller object is called, it sets the
         ``simulation`` attribute of all simulation objects to a standard
         ``dict``.  The overloading of this method allows such a ``dict`` to be
         reassociated with a Controller object.
@@ -125,7 +125,7 @@ class Controller(dict):
             all traces of the object from everywhere in the simulation,
             including all the object tracking lists and label dictionaries of
             every object.
-            
+
         Notes
         -----
         To only remove an object from the Contoller object, without purging all
@@ -167,10 +167,10 @@ class Controller(dict):
         receive simulation data without overwriting existing data.
 
         '''
-        import pickle
-        a = pickle.dumps(obj)
-        obj = pickle.loads(a)
-        return obj
+        a = _pickle.dumps(obj)
+        obj_new = _pickle.loads(a)
+        super(Controller,self).update(obj)
+        return obj_new
 
     def save_object(self,obj,filename=''):
         r'''
@@ -233,17 +233,17 @@ class Controller(dict):
 
     def load(self,filename):
         r'''
-        Load an entire simulation from a 'pnm' file.  
+        Load an entire simulation from a 'pnm' file.
 
         Parameters
         ----------
         filename : string
             The file name of the simulation to load.
-            
+
         Notes
         -----
         This calls the ``clear`` method of the Controller object, so it will
-        over write the calling objects information AND remove any references 
+        over write the calling objects information AND remove any references
         to the calling object from existing simulation objects.
         '''
         filename = filename.split('.')[0]
