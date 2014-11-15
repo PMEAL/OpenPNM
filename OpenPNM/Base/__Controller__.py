@@ -24,7 +24,7 @@ class Controller(dict):
     def __init__(self):
         r'''
         '''
-        self.version = 'OpenPNM version' + OpenPNM.__version__
+        self.comments = 'Using OpenPNM ' + OpenPNM.__version__
 
     def __str__(self):
         header = ('-'*60)
@@ -305,7 +305,7 @@ class Controller(dict):
             io.MAT.save(filename=filename,network=net,phases=phases)
             return
 
-    def script(self,filename,mode='read'):
+    def _script(self,filename,mode='read'):
         r'''
         Save or reload the script files used for the simulations
 
