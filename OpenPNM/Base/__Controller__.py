@@ -33,6 +33,28 @@ class Controller(dict):
             print("{a:<25s} {b:<25s}".format(a=self[item].__class__.__name__, b=item))
         return ''
 
+    def show_tree(self):
+        r'''
+        Prints a heirarchical list of object associations
+        '''
+        header = ('-'*60)
+        net = self.network()[0]
+        print(header)
+        print('Network: '+net.name)
+        for geom in self.geometries():
+            print('+ '+'Geometry: '+geom.name)
+        for phase in self.phases():
+            if len(phase.phases())==0:
+                print('+ '+'Pure Phase: '+phase.name)
+            if len(phase.phases())>1:
+                print('+ '+'Mixture Phase: '+phase.name)
+                comps = phase.phases()
+                for compname in comps:
+                    print('+++ '+'Component Phase: '+self[compname].name)
+            for phys in self.physics():
+                if phase in phys._phases:
+                    print('++ '+'Physics: '+phys.name)
+
     def network(self):
         r'''
         Returns a list of all Network objects in the simulation.
