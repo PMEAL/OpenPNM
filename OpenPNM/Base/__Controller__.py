@@ -4,6 +4,8 @@ Controller:  Overall simulation controller class
 ###############################################################################
 '''
 import pickle as _pickle
+import time
+import OpenPNM
 
 class Controller(dict):
     r"""
@@ -22,7 +24,7 @@ class Controller(dict):
     def __init__(self):
         r'''
         '''
-        pass
+        self.version = 'OpenPNM version' + OpenPNM.__version__
 
     def __str__(self):
         header = ('-'*60)
@@ -302,6 +304,42 @@ class Controller(dict):
             phases = net._phases
             io.MAT.save(filename=filename,network=net,phases=phases)
             return
+
+    def script(self,filename,mode='read'):
+        r'''
+        Save or reload the script files used for the simulations
+
+        Parameters
+        ----------
+        filename : string
+            The name of the file to read or write
+        mode : string
+            Whether to 'archive' the given script file on the object or to
+            'retrieve' it from the object and create a new file with it.  The
+            default is 'archive'.
+        '''
+        filename = filename.split('.')[0]+'.py'
+        if mode == 'archive':
+            with open(filename, "rb") as read_file:
+                contents = read_file.read()
+            self._script = contents
+        if mode == 'retrieve':
+            with open(filename, "wb") as write_file:
+                write_file.write(self._script)
+
+    def _set_comments(self,string):
+        if hasattr(self,'_comments') is False:
+            self._comments = {}
+        self._comments[time.strftime("%c")] = string
+
+    def _get_comments(self):
+        if hasattr(self,'_comments') is False:
+            print('No comments found')
+        else:
+            for key in self._comments.keys():
+                print(key, ': ', self._comments[key])
+
+    comments = property(fget=_get_comments,fset=_set_comments)
 
 if __name__ == '__main__':
     sim = Controller()
