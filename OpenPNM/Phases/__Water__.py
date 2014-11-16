@@ -19,6 +19,7 @@ class Water(GenericPhase):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> water = OpenPNM.Phases.Water(network=pn)
     '''

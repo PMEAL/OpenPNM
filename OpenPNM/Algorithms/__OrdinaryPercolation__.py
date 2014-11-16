@@ -36,13 +36,14 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
     >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
-    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn, name='OP',invading_phase=phase1, defending_phase=phase2)
+    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=phase1, defending_phase=phase2)
     >>> OP.run(inlets=pn.pores('top'))
     >>> med_Pc = sp.median(OP['pore.inv_Pc'])
     >>> OP.return_results(med_Pc)

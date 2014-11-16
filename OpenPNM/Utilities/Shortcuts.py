@@ -7,7 +7,7 @@ def solve_linear(pn, ics):
     pseudo = OpenPNM.Phases.GenericPhase(network=pn, name=name, loglevel=0)
     pseudo['throat.electrical_conductance']=1
 
-    alg = OpenPNM.Algorithms.OhmicConduction(network=pn, name='alg', loglevel=0)
+    alg = OpenPNM.Algorithms.OhmicConduction(network=pn)
     alg['pore.BCval']=ics
     alg['pore.Dirichlet']=ics!=0
     alg.run(active_phase=pseudo)

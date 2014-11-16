@@ -9,6 +9,8 @@ import scipy.constants
 from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
 sim = Controller()
+# Clear the controller object when OpenPNM is imported
+sim.clear()
 
 class Base(dict):
     r"""
@@ -99,17 +101,6 @@ class Base(dict):
         Returns
         -------
         OpenPNM object or list of objects
-
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo1',pores=pn.Ps,throats=pn.Ts)
-        >>> temp = pn._find_object(obj_name='geo1')
-        >>> temp.name
-        'geo1'
-        >>> temp = pn._find_object(obj_type='Geometry')
-        >>> temp[0].name
-        'geo1'
 
         '''
         mro = [item.__name__ for item in self.__class__.__mro__]

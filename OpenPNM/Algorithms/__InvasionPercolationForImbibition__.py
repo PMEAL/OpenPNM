@@ -103,14 +103,16 @@ class InvasionPercolationForImbibition(InvasionPercolation):
 
         Examples
         --------
-        >>> pn = OpenPNM.Network.TestNet(name='pn')
-        >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,name='geo',pores=pn.pores(),throats=pn.throats())
-        >>> phase1 = OpenPNM.Phases.TestPhase(network=pn,name='phase1')
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
         >>> phase1['pore.contact_angle'] = 20
-        >>> phase2 = OpenPNM.Phases.TestPhase(network=pn,name='phase2')
+        >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
         >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
         >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
-        >>> IP = OpenPNM.Algorithms.InvasionPercolationForImbibition(network=pn, name='IP')
+        >>> from OpenPNM.Algorithms.__InvasionPercolationForImbibition__ import InvasionPercolationForImbibition
+        >>> IP = InvasionPercolationForImbibition(network=pn)
         >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
              IP algorithm at 0 % completion at 0 seconds
              IP algorithm at 20 % completion at 0 seconds
@@ -297,8 +299,8 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         logger.debug( 'haines_pore')
         logger.debug( self._cluster_data['haines_pore'])
 #        if self._timing:
-            logger.debug( 'max throat cap volumes')
-            logger.debug( self._Tvol_coef*self._phase.throat_conditions["Pc_entry"])
+#            logger.debug( 'max throat cap volumes')
+#            logger.debug( self._Tvol_coef*self._phase.throat_conditions["Pc_entry"])
 #        self._tseq += 1
 #        self._pseq += 1
         self._current_cluster = 0

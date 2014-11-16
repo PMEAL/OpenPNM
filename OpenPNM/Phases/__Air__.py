@@ -23,6 +23,7 @@ class Air(GenericPhase):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> air = OpenPNM.Phases.Air(network=pn)
 

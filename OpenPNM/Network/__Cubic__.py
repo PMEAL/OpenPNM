@@ -33,6 +33,7 @@ class Cubic(GenericNetwork):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.Cubic(shape=[3,4,5])
     >>> pn.Np
     60
