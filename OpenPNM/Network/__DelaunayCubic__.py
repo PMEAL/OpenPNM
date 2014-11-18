@@ -9,7 +9,8 @@ import scipy as sp
 import sys
 import numpy as np
 from OpenPNM.Network.__Delaunay__ import Delaunay
-
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class DelaunayCubic(Delaunay):
     r"""
@@ -121,7 +122,7 @@ class DelaunayCubic(Delaunay):
         points *= self._spacing
         
         self['pore.coords']  = points
-        self._logger.debug(sys._getframe().f_code.co_name+": End of method") 
+        logger.debug(sys._getframe().f_code.co_name+": End of method") 
            
 
 
