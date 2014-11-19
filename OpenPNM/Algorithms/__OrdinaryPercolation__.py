@@ -234,11 +234,15 @@ class OrdinaryPercolation(GenericAlgorithm):
             #Identify clusters connected to outlet sites
             out_clusters = sp.unique(clusters[outlets])
             trapped_pores = ~sp.in1d(clusters, out_clusters)
-            self._p_trap[(self._p_trap == 0)[trapped_pores]] = inv_val
-            trapped_throats = self._net.find_neighbor_throats(trapped_pores)
-            self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
-            trapped_throats = sp.where(Cstate==2)[0]
-            self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
+            trapped_pores[Pinvaded]=False
+            if sum(trapped_pores) > 0:
+                self._p_trap[(self._p_trap == 0)*trapped_pores] = inv_val
+                trapped_throats = self._net.find_neighbor_throats(trapped_pores)
+                trapped_throat_array=np.asarray([False]*len(Cstate))
+                trapped_throat_array[trapped_throats]=True
+                self._t_trap[(self._t_trap == 0)*trapped_throat_array] = inv_val
+                #trapped_throats = sp.where(Cstate==2)[0]
+                self._t_trap[(self._t_trap == 0)*(Cstate==2)] = inv_val
         self._p_inv[self._p_trap > 0] = sp.inf
         self._t_inv[self._t_trap > 0] = sp.inf
         self['pore.inv_Pc']=self._p_inv

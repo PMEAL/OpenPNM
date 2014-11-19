@@ -94,10 +94,6 @@ def purcell(physics,
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r)*(_sp.cos(_sp.radians(theta - alpha))/(1 + R/r*(1-_sp.cos(_sp.radians(alpha)))))
-    
-    
-    
-    
     value = value[phase.throats(physics.name)]
     return value
 
