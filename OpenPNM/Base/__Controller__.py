@@ -341,6 +341,44 @@ class Controller(dict):
 
     comments = property(fget=_get_comments,fset=_set_comments)
 
+    def subset(self,pores):
+        r'''
+        Create a new network from a subset of the main network.  This is useful
+        for running simulations on smaller domains of interest to save CPU
+        time.
+
+        Parameters
+        ----------
+        pores : array_like
+            The list of pores that comprise the subset.  All throats between
+            these pores are conserved, but throats to other pores are lost.
+
+        Returns
+        -------
+        simulation : An OpenPNM Controller Object
+
+        Notes
+        -----
+        This still doesn't have a slick way to map the subnet pores onto the
+        parent network.  The ``map_pores`` and ``map_throats`` methods won't
+        work without some tinkering.
+        '''
+        sim_full = _pickle.dumps(self)
+        net = self.network()[0]
+        self.clear()
+        pores = net.tomask(pores)
+        net.trim(pores=~pores)
+        name = net.name
+        net._name = None
+        net._name = 'subset_of_'+name
+
+        # Now deal with reconstituting the original simulation
+        self = _pickle.loads(sim_full)
+        net_full = self.network()[0]
+        self.update(net_full.simulation)
+        return net
+
+
 if __name__ == '__main__':
     sim = Controller()
 
