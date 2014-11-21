@@ -6,23 +6,23 @@ def profiles(network,
              values=None,
              bins=[10,10,10]):
     r'''
-    Compute the profiles for the property of interest and plots it in all 
+    Compute the profiles for the property of interest and plots it in all
     three dimensions
-    
+
     Parameters
     ----------
     network : OpenPNM Network object
-        
+
     values : array_like, optional
         The pore property values to be plotted as a profile
 
     bins : int or list of ints, optional
         The number of bins to divide the domain into for averaging.
-        
+
     Notes
     -----
     Either propname or values can be sent, but not both
-        
+
     '''
     if fig is None:
         fig = _plt.figure()
@@ -47,20 +47,20 @@ def profiles(network,
 
 def porosity_profile(network,
                       fig=None, axis=2):
-             
+
     r'''
     Compute the porosity profile in all three dimensions
-    
+
     Parameters
     ----------
     network : OpenPNM Network object
     axis : integer type 0 for x-axis, 1 for y-axis, 2 for z-axis
-        
+
     Notes
     -----
-    the area of the porous medium at any position is calculated from the 
+    the area of the porous medium at any position is calculated from the
     maximum pore coordinates in each direction
-     
+
     '''
     if fig is None:
         fig = _plt.figure()
@@ -73,7 +73,7 @@ def porosity_profile(network,
     elif axis is 1:
         xlab = 'y-direction'
         area = L_x*L_z
-    else: 
+    else:
         axis = 2
         xlab = 'z-direction'
         area = L_x*L_y
@@ -92,7 +92,7 @@ def porosity_profile(network,
     _plt.plot(xaxis,yaxis,'bo-')
     _plt.xlabel(xlab)
     _plt.ylabel('Porosity')
-    fig.show() 
+    fig.show()
 
 def distributions(net,
                   fig = None,
@@ -124,8 +124,8 @@ def distributions(net,
         include_throats = net["throat.all"]
     pores = net.pores()[include_pores]
     throats = net.throats()[include_throats]
-    
-      
+
+
     ax1 = fig.add_subplot(221)
     ax1.hist(net[pore_diameter][pores],25,facecolor='green')
     ax1.set_xlabel('Pore Diameter')
@@ -174,7 +174,7 @@ def drainage_curves(inv_alg,
     >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
     >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
-    >>> IP = OpenPNM.Algorithms.InvasionPercolation(network=pn, name='IP')
+    >>> IP = OpenPNM.Algorithms.InvasionPercolation(network=pn)
     >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
     IP algorithm at 0 % completion at 0.0 seconds
     IP algorithm at 20 % completion at 0.0 seconds
@@ -186,16 +186,16 @@ def drainage_curves(inv_alg,
     inv_throats = inv_alg.toindices(inv_alg['throat.'+seq]>0)
     sort_seq = _sp.argsort(inv_alg['throat.'+seq][inv_throats])
     inv_throats = inv_throats[sort_seq]
-    
+
     if fig is None:
         fig = _plt.figure(num=1, figsize=(13, 10), dpi=80, facecolor='w', edgecolor='k')
-    ax1 = fig.add_subplot(231)   #left 
+    ax1 = fig.add_subplot(231)   #left
     ax2 = fig.add_subplot(232)   #middle
-    ax3 = fig.add_subplot(233)   #right 
-    ax4 = fig.add_subplot(234)   #left 
+    ax3 = fig.add_subplot(233)   #right
+    ax4 = fig.add_subplot(234)   #left
     ax5 = fig.add_subplot(235)   #middle
-    ax6 = fig.add_subplot(236)   #right 
-    
+    ax6 = fig.add_subplot(236)   #right
+
     ax1.plot(inv_alg['throat.'+Pc][inv_throats],inv_alg['throat.'+sat][inv_throats])
     ax1.set_xlabel('Capillary Pressure (Pa)')
     ax1.set_ylabel('Saturation')
@@ -217,7 +217,7 @@ def drainage_curves(inv_alg,
         ax3.set_ylabel('Saturation')
         ax3.set_ylim([0,1])
         ax3.set_xlim([0,1.01*max(inv_alg['throat.'+timing][inv_throats])])
-    
+
     ax4.plot(inv_alg['throat.'+sat][inv_throats],inv_alg['throat.'+Pc][inv_throats])
     ax4.set_ylabel('Capillary Pressure (Pa)')
     ax4.set_xlabel('Saturation')
@@ -239,7 +239,7 @@ def drainage_curves(inv_alg,
         ax6.set_ylabel('Capillary Pressure (Pa)')
         ax6.set_ylim([0.99*min(inv_alg['throat.'+Pc][inv_throats]),1.01*max(inv_alg['throat.'+Pc][inv_throats])])
         ax6.set_xlim([0,1.01*max(inv_alg['throat.'+timing][inv_throats])])
-    
+
     fig.subplots_adjust(left=0.08, right=0.99, top=0.95, bottom=0.1)
     ax1.grid(True)
     ax2.grid(True)
@@ -252,4 +252,3 @@ def drainage_curves(inv_alg,
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)
-    

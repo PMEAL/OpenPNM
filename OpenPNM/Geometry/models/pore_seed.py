@@ -42,8 +42,7 @@ def perlin_noise(geometry,freq=1,octaves=4,mode='classic',**kwargs):
     >>> import OpenPNM
     >>> pn = OpenPNM.Network.Cubic(shape=[50,50,50])
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
-    >>> geom.add_model(propname='pore.seed',
-                       model=OpenPNM.Geometry.models.pore_seed.perlin_noise)
+    >>> geom.add_model(propname='pore.seed',model=OpenPNM.Geometry.models.pore_seed.perlin_noise)
     >>> im = pn.asarray(geom['pore.seed'])
 
     Visualizing the end result can be done with:
@@ -103,11 +102,10 @@ def distance_from_inclusion(geometry,p,**kwargs):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.Cubic(shape=[50,50,50])
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
-    >>> geom.add_model(propname='pore.seed',
-                       model=OpenPNM.Geometry.models.pore_seed.distance_from_inclusion,
-                       p = 0.001)
+    >>> geom.add_model(propname='pore.seed',model=OpenPNM.Geometry.models.pore_seed.distance_from_inclusion,p = 0.001)
     >>> im = pn.asarray(geom['pore.seed'])
 
     Visualizing the end result can be done with:
@@ -176,9 +174,7 @@ def spatially_correlated(geometry,network,weights=None,strel=None,**kwargs):
     >>> import OpenPNM
     >>> pn = OpenPNM.Network.Cubic(shape=[50,50,50])
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
-    >>> geom.add_model(propname='pore.seed',
-                       model=OpenPNM.Geometry.models.pore_seed.spatially_correlated,
-                       weights=[2,2,2])
+    >>> geom.add_model(propname='pore.seed',model=OpenPNM.Geometry.models.pore_seed.spatially_correlated,weights=[2,2,2])
     >>> im = pn.asarray(geom['pore.seed'])
 
     Visualizing the end result can be done with:

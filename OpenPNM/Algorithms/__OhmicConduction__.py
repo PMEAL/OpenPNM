@@ -17,7 +17,9 @@ class OhmicConduction(GenericLinearTransport):
     property names and to implement a method for calculating the effective
     conductivity of the network.
 
-
+    Examples
+    --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)

@@ -36,13 +36,14 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
     >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
-    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn, name='OP',invading_phase=phase1, defending_phase=phase2)
+    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=phase1, defending_phase=phase2)
     >>> OP.run(inlets=pn.pores('top'))
     >>> med_Pc = sp.median(OP['pore.inv_Pc'])
     >>> OP.return_results(med_Pc)
@@ -234,11 +235,15 @@ class OrdinaryPercolation(GenericAlgorithm):
             #Identify clusters connected to outlet sites
             out_clusters = sp.unique(clusters[outlets])
             trapped_pores = ~sp.in1d(clusters, out_clusters)
-            self._p_trap[(self._p_trap == 0)[trapped_pores]] = inv_val
-            trapped_throats = self._net.find_neighbor_throats(trapped_pores)
-            self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
-            trapped_throats = sp.where(Cstate==2)[0]
-            self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
+            trapped_pores[Pinvaded]=False
+            if sum(trapped_pores) > 0:
+                self._p_trap[(self._p_trap == 0)*trapped_pores] = inv_val
+                trapped_throats = self._net.find_neighbor_throats(trapped_pores)
+                trapped_throat_array=np.asarray([False]*len(Cstate))
+                trapped_throat_array[trapped_throats]=True
+                self._t_trap[(self._t_trap == 0)*trapped_throat_array] = inv_val
+                #trapped_throats = sp.where(Cstate==2)[0]
+                self._t_trap[(self._t_trap == 0)*(Cstate==2)] = inv_val
         self._p_inv[self._p_trap > 0] = sp.inf
         self._t_inv[self._t_trap > 0] = sp.inf
         self['pore.inv_Pc']=self._p_inv

@@ -58,8 +58,9 @@ class VTK():
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-        >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores(),throats=pn.throats(),name='geo_1')
+        >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores(),throats=pn.throats())
         >>> air = OpenPNM.Phases.Air(network=pn)
         >>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores(),throats=pn.throats())
 
@@ -220,6 +221,7 @@ class MAT():
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
         >>> air = OpenPNM.Phases.TestPhase()
