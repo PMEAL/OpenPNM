@@ -37,7 +37,7 @@ class GenericNetwork(Core):
 
     def __setitem__(self,prop,value):
         for geom in self._geometries:
-            if prop in geom.keys():
+            if (prop in geom.keys()) and ('all' not in prop.split('.')):
                 logger.error(prop+' is already defined in at least one associated Geometry object')
                 return
         super(GenericNetwork,self).__setitem__(prop,value)
