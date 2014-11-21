@@ -363,20 +363,15 @@ class Controller(dict):
         parent network.  The ``map_pores`` and ``map_throats`` methods won't
         work without some tinkering.
         '''
-        sim_full = _pickle.dumps(self)
+        import copy
         net = self.network()[0]
-        self.clear()
-        pores = net.tomask(pores)
-        net.trim(pores=~pores)
+        new_net = copy.deepcopy(net)
+        pores = new_net.tomask(pores)
+        new_net.trim(pores=~pores)
         name = net.name
-        net._name = None
-        net._name = 'subset_of_'+name
-
-        # Now deal with reconstituting the original simulation
-        self = _pickle.loads(sim_full)
-        net_full = self.network()[0]
-        self.update(net_full.simulation)
-        return net
+        new_net._name = None
+        new_net._name = 'subset_of_'+name
+        return new_net
 
 
 if __name__ == '__main__':
