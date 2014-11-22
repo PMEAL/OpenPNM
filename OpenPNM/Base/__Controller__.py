@@ -4,6 +4,7 @@ Controller:  Overall simulation controller class
 ###############################################################################
 '''
 import pickle as _pickle
+import copy as _copy
 import time
 import OpenPNM
 
@@ -363,14 +364,22 @@ class Controller(dict):
         parent network.  The ``map_pores`` and ``map_throats`` methods won't
         work without some tinkering.
         '''
-        import copy
-        net = self.network()[0]
-        new_net = copy.deepcopy(net)
+        net = self.network()[0]  # Get Network handle
+        self.clear()  # Clear Controller object
+        temp = net.simulation  # Save Simulation dict
+        # Create a copy of Network
+        new_net = _copy.deepcopy(net)  # Note: This appends the current Controller to the new Network
+        self.clear()  # Clear Controller object associated with the new Network
+        # Trim new Network
         pores = new_net.tomask(pores)
         new_net.trim(pores=~pores)
+        # Rename new Network
         name = net.name
         new_net._name = None
         new_net._name = 'subset_of_'+name
+        # Update Controller with original Network dict
+        self.update(temp)
+
         return new_net
 
 
