@@ -39,7 +39,7 @@ class GenericPhase(Core):
         super(GenericPhase,self).__init__(**kwargs)
         logger.name = self.name
 
-        if network == None:
+        if network is None:
             self._net = OpenPNM.Network.GenericNetwork()
         else:
             self._net = network

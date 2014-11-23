@@ -26,7 +26,7 @@ class GenericLinearTransport(GenericAlgorithm):
         Initializing the class
         '''
         super(GenericLinearTransport,self).__init__(**kwargs)
-        if phase == None:
+        if phase is None:
             self._phase = OpenPNM.Phases.GenericPhase()
         else:
             self._phase = phase  # Register phase with self
@@ -56,9 +56,9 @@ class GenericLinearTransport(GenericAlgorithm):
         This is a basic version of the update that simply sends out the main
         result (quantity). More elaborate updates should be subclassed.
         '''
-        if pores == None:
+        if pores is None:
             pores = self.Ps
-        if throats == None:
+        if throats is None:
             throats = self.Ts
 
         phase_quantity = self._quantity.replace(self._phase.name+'_',"")
@@ -192,34 +192,34 @@ class GenericLinearTransport(GenericAlgorithm):
         pores : array_like
             The pores where the net rate will be calculated
         network : OpenPNM Network Object
-            The network object to which this algorithm will apply. 
-            If no network is sent, the rate will apply to the network which is attached to the algorithm.        
+            The network object to which this algorithm will apply.
+            If no network is sent, the rate will apply to the network which is attached to the algorithm.
         conductance : array_like
-            The conductance which this algorithm will use to calculate the rate. 
-            If no conductance is sent, the rate will use the 'throat.conductance' which is attached to the algorithm.         
+            The conductance which this algorithm will use to calculate the rate.
+            If no conductance is sent, the rate will use the 'throat.conductance' which is attached to the algorithm.
         X_value : array_like
-            The values of the quantity (temperature, mole_fraction, voltage, ...), which this algorithm will use to calculate the rate. 
-            If no X_value is sent, the rate will look at the '_quantity', which is attached to the algorithm.        
+            The values of the quantity (temperature, mole_fraction, voltage, ...), which this algorithm will use to calculate the rate.
+            If no X_value is sent, the rate will look at the '_quantity', which is attached to the algorithm.
         mode : string, optional
             Controls how to return the rate.  Options are:
             - 'group'(default): It returns the cumulative rate moving into them
             - 'single': It calculates the rate for each pore individually.
 
         '''
-        if network == None: network = self._net
-        if conductance == None: conductance = self['throat.conductance']
-        if X_value == None: X_value = self[self._quantity]
+        if network is None: network = self._net
+        if conductance is None: conductance = self['throat.conductance']
+        if X_value is None: X_value = self[self._quantity]
         pores = sp.array(pores,ndmin=1)
         R = []
-        if mode=='group':   
+        if mode=='group':
             t = network.find_neighbor_throats(pores,flatten=True,mode='not_intersection')
             throat_group_num = 1
         elif mode=='single':
             t = network.find_neighbor_throats(pores,flatten=False,mode='not_intersection')
             throat_group_num = sp.size(t)
-        
+
         for i in sp.r_[0:throat_group_num]:
-            if mode=='group':   
+            if mode=='group':
                 throats = t
                 P = pores
             elif mode=='single':

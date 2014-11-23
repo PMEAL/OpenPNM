@@ -51,7 +51,7 @@ class Delaunay(GenericNetwork):
         Create Delauny network object
         '''
         super(Delaunay,self).__init__(**kwargs)
-        if (num_pores and domain_size) == None:
+        if (num_pores and domain_size) is None:
             num_pores = 1
             domain_size = [1.0,1.0,1.0]
         else:
@@ -80,7 +80,7 @@ class Delaunay(GenericNetwork):
         Perform applicable preliminary checks and calculations required for generation
         """
         logger.debug("generate_setup: Perform preliminary calculations")
-        if domain_size != None and num_pores != None:
+        if domain_size is not None and num_pores is not None:
             self._Lx = domain_size[0]
             self._Ly = domain_size[1]
             self._Lz = domain_size[2]

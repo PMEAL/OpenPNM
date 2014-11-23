@@ -98,7 +98,7 @@ def ideal_mixture(phase,propname,pore_prop=None,composition='pore.mole_fraction'
 
 
     '''
-    if pore_prop == None:
+    if pore_prop is None:
         pore_prop = propname
     value = _sp.zeros((phase.Np,))
     for comp in phase._phases:
