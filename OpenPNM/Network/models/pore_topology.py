@@ -11,12 +11,12 @@ def get_subscripts(network,
                    **kwargs):
     r'''
     Return the 3D subscripts (i,j,k) into the cubic network
-    
+
     Parameters
     ----------
     shape : list
         The (i,j,k) shape of the network in number of pores in each direction
-    
+
     '''
     if network.num_pores('internal') != _sp.prod(shape):
         print('Supplied shape does not match Network size, cannot proceed')
@@ -30,21 +30,21 @@ def get_subscripts(network,
         vals = _sp.ones((network.Np,3))*_sp.nan
         vals[network.pores('internal')] = ind
         return vals
-        
+
 def apply_spacing(network,
                 spacing,
                 subscripts='pore.subscript',
                 **kwargs):
     r'''
-    Calculates the pore coordinates based on supplied spacing and pore 
-    subscript values.  The returned coordinates are offset by half of the 
-    lattice spacing so that pores are centered in each lattice cell.  
-    
+    Calculates the pore coordinates based on supplied spacing and pore
+    subscript values.  The returned coordinates are offset by half of the
+    lattice spacing so that pores are centered in each lattice cell.
+
     Parameters
     ----------
     spacing : float
-        The lattice constant, or spacing between pores.  
-    
+        The lattice constant, or spacing between pores.
+
     Notes
     -----
     - This model is intended for Cubic networks
@@ -52,42 +52,41 @@ def apply_spacing(network,
     '''
     coords = (network[subscripts] + 0.5)*spacing
     return coords
-    
+
 def reduce_coordination(network,
                         z,
                         mode='random',
                         **kwargs):
     r'''
     Reduce the coordination number to the specified z value
-    
+
     Parameters
     ----------
     z : int
         The coordination number or number of throats connected a pore
-        
+
     mode : string, optional
         Controls the logic used to trim connections.  Options are:
-        
+
         - 'random': (default) Throats will be randomly removed to achieve a coordination of z
         - 'max': All pores will be adjusted to have a maximum coordination of z (not implemented yet)
-    
+
     Returns
     -------
     A label array indicating which throats should be trimmed to achieve desired
     coordination.
-    
+
     Notes
     -----
-    Pores with only 1 throat will be ignored in all calculations since these 
+    Pores with only 1 throat will be ignored in all calculations since these
     are generally boundary pores.
-    
+
     '''
-    #Find protected throats
     T_trim = ~network['throat.all']
-    P_temp = network.num_neighbors(network.pores())
-    T_keep = network.find_neighbor_throats(pores=P_temp==1)
+    T_nums = network.num_neighbors(network.pores())
+    #Find protected throats
+    T_keep = network.find_neighbor_throats(pores=(T_nums==1))
     if mode == 'random':
-        T_nums = network.num_neighbors(network.pores())
         z_ave = _sp.average(T_nums[T_nums>1])
         f_trim = (z_ave - z)/z_ave
         T_trim = _sp.rand(network.Nt)<f_trim

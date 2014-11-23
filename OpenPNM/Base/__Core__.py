@@ -888,6 +888,8 @@ class Core(Base):
         This is a generalized version of tomask that accepts a string of
         'pore' or 'throat' for programmatic access.
         '''
+        if sp.shape(locations)[0] == 0:
+            return sp.zeros_like(self._get_indices(element=element),dtype=bool)
         if element in ['pore','pores']:
             Np = sp.shape(self['pore.all'])[0]
             pores = sp.array(locations,ndmin=1)
