@@ -1283,8 +1283,10 @@ class Core(Base):
     def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
-        mro = [item.__name__ for item in self.__class__.__mro__]
-        if 'GenericNetwork' in mro: net = self
+#        mro = [item.__name__ for item in self.__class__.__mro__]
+#        if 'GenericNetwork' in mro: net = self
+        if self._net == None:
+            net = self
         else: net = self._net
         locations = sp.array(locations,ndmin=1)
         mapping = {}

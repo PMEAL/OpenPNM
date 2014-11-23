@@ -342,7 +342,7 @@ class Controller(dict):
 
     comments = property(fget=_get_comments,fset=_set_comments)
 
-    def subset(self,pores):
+    def subset(self,pores,name=None):
         r'''
         Create a new network from a subset of the main network.  This is useful
         for running simulations on smaller domains of interest to save CPU
@@ -369,17 +369,23 @@ class Controller(dict):
         temp = net.simulation  # Save Simulation dict
         # Create a copy of Network
         new_net = _copy.deepcopy(net)  # Note: This appends the current Controller to the new Network
-        self.clear()  # Clear Controller object associated with the new Network
-        # Trim new Network
-        pores = new_net.tomask(pores)
-        new_net.trim(pores=~pores)
-        # Rename new Network
-        name = net.name
-        new_net._name = None
-        new_net._name = 'subset_of_'+name
         # Update Controller with original Network dict
-        self.update(temp)
-
+        self.clear()  # Clear Controller associated with the new Network
+        self.update(temp)  # Update Controller with saved old Network
+        # Trim new Network
+        throats = new_net.find_neighbor_throats(pores=pores,mode='intersection')
+        Ps = new_net.tomask(pores)
+        new_net.trim(pores=~Ps)
+        # Rename new Network
+        new_net._name = None
+        if name is None:
+            old_name = net.name
+            name = 'subset_of_'+old_name
+        new_net.name = name
+        # Add new_net to net's labels
+        net['pore.'+new_net.name] = net.tomask(pores=pores)
+        net['throat.'+new_net.name] = net.tomask(throats=throats)
+        new_net._net = net
         return new_net
 
 
