@@ -383,6 +383,50 @@ class Controller(dict):
         new_net._net = net
         return new_net
 
+    def clone_simulation(self):
+        r'''
+        This clones the current simulation objects and returns a dictionary
+        containing handles to the clones.  This method does NOT return a new
+        OpenPNM Controller object.
+
+        See Also
+        --------
+        ``subnet`` and ``clone_object``
+
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> sim = OpenPNM.Base.Controller()
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.__class__  # Check class of Network object
+        <class 'OpenPNM.Network.__TestNet__.TestNet'>
+        >>> new_sim = sim.clone_simulation()
+        >>> new_pn = new_sim[pn.name]  # Retreive Network from new_sim by name
+        >>> new_pn.__class__
+        <class 'OpenPNM.Network.__TestNet__.TestNet'>
+        >>> new_pn is pn
+        False
+
+        The use the new simulation over the older one, you must clear the
+        Controller object and then update it with the new simulation data:
+        >>> sim.clear()
+        >>> sim.update(new_sim)
+
+        Notes
+        -----
+        The objects in the returned dictionary can be used for simulations as
+        usual, but as they are not associated with a Controller, there is
+        limited administrative control over them (i.e. saving and such).
+        '''
+        net = self.network()[0]
+        temp = net.copy()  # Copy Network's dict
+        new_net = self.subset(pores=net.Ps,name=net.name)
+        net.clear()  # Clear Network's dict of item added during subset()
+        net.update(temp)  # Re-add odd dict to Network
+        new_net._net = None  # Clear reference to parent network
+        sim = new_net.simulation
+        return sim
+
 
 if __name__ == '__main__':
     sim = Controller()
