@@ -304,12 +304,12 @@ class Core(Base):
         if mode in ['merge','overwrite','remove_data','remove_prop']:
             #Checking for the indices
             data= sp.array(data,ndmin=1)
-            if pores != None:
+            if pores is not None:
                 if pores == 'all':  pores = self.pores()
                 else:   pores = sp.array(pores,ndmin=1)
                 element='pore'
                 locations = pores
-            elif throats != None:
+            elif throats is not None:
                 if throats == 'all':    throats = self.throats()
                 else:   throats = sp.array(throats,ndmin=1)
                 element='throat'
@@ -386,12 +386,12 @@ class Core(Base):
         '''
 
         if mode in ['','interpolate']:
-            if pores != None:
+            if pores is not None:
                 if pores == 'all':  pores = self.pores()
                 else:   pores = sp.array(pores,ndmin=1)
                 element='pore'
                 locations = pores
-            elif throats != None:
+            elif throats is not None:
                 if throats == 'all':    throats = self.throats()
                 else:   throats = sp.array(throats,ndmin=1)
                 element='throat'
@@ -460,12 +460,12 @@ class Core(Base):
 
         '''
         if mode in ['merge','overwrite','remove_info','remove_label']:
-            if pores != None:
+            if pores is not None:
                 if pores == 'all':  pores = self.pores()
                 else:   pores = sp.array(pores,ndmin=1)
                 element='pore'
                 locations = pores
-            elif throats != None:
+            elif throats is not None:
                 if throats == 'all':    throats = self.throats()
                 else:   throats = sp.array(throats,ndmin=1)
                 element='throat'
@@ -529,12 +529,12 @@ class Core(Base):
 
         '''
         #Clean up label argument to remove leading 'pore' or 'throat'
-        if pores != None:
+        if pores is not None:
             if pores == 'all':  pores = self.pores()
             else:   pores = sp.array(pores,ndmin=1)
             element='pore'
             locations = pores
-        elif throats != None:
+        elif throats is not None:
             if throats == 'all':    throats = self.throats()
             else:   throats = sp.array(throats,ndmin=1)
             element='throat'
@@ -917,9 +917,9 @@ class Core(Base):
             pores or throats received.
 
         '''
-        if pores != None:
+        if pores is not None:
             mask = self._tomask(element='pore',locations=pores)
-        if throats != None:
+        if throats is not None:
             mask = self._tomask(element='throat',locations=throats)
         return mask
 
@@ -1274,7 +1274,7 @@ class Core(Base):
             temp = self.num_pores()
         elif element in ['throat','throats']:
             temp = self.num_throats()
-        elif element == None:
+        elif element is None:
             temp = {}
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()

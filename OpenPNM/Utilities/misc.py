@@ -227,7 +227,7 @@ def conduit_lengths(network,throats=None,mode='pore'):
     mode = 'pore' - uses pore coordinates
     mode = 'centroid' uses pore and throat centroids
     """
-    if throats == None:
+    if throats is None:
         throats = network.throats()
     Ps = network['throat.conns']
     pdia = network['pore.diameter']
@@ -254,3 +254,4 @@ def conduit_lengths(network,throats=None,mode='pore'):
         plen2 = lengths*(1-fractions)
 
     return _sp.vstack((plen1,network['throat.length'],plen2)).T[throats]
+

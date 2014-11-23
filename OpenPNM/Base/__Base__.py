@@ -67,11 +67,11 @@ class Base(dict):
     simulation = property(_get_sim,_set_sim)
 
     def _set_name(self,name):
-        if self._name != None:
+        if self._name is not None:
             raise Exception('Renaming objects can have catastrophic consequences')
         elif self._sim.get(name) is not None:
             raise Exception('An object named '+name+' already exists')
-        elif name == None:
+        elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
         self._name = name

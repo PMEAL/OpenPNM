@@ -44,9 +44,9 @@ class DelaunayCubic(Delaunay):
         '''
         Create Delauny network object
         '''
-        if shape != None:
+        if shape is not None:
             self._arr = np.atleast_3d(np.empty(shape))
-        elif template != None:
+        elif template is not None:
             self._arr = sp.array(template,ndmin=3,dtype=bool)
         else:
             self._arr = np.atleast_3d(np.empty([3,3,3]))
@@ -123,7 +123,7 @@ class DelaunayCubic(Delaunay):
         points *= self._spacing
 
         self['pore.coords']  = points
-        logger.debug(sys._getframe().f_code.co_name+": End of method") 
+        logger.debug(sys._getframe().f_code.co_name+": End of method")
 
 
 

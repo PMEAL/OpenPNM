@@ -100,7 +100,7 @@ class GenericNetwork(Core):
         Nt   = self.num_throats()
 
         #Check if provided data is valid
-        if data == None:
+        if data is None:
             data = sp.ones((self.num_throats(),))
         elif sp.shape(data)[0] != Nt:
             raise Exception('Received dataset of incorrect length')
@@ -178,7 +178,7 @@ class GenericNetwork(Core):
         Np = self.num_pores()
 
         #Check if provided data is valid
-        if data == None:
+        if data is None:
             data = sp.ones((self.num_throats(),))
         elif sp.shape(data)[0] != Nt:
             raise Exception('Received dataset of incorrect length')

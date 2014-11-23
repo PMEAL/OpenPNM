@@ -792,11 +792,11 @@ def print_pore(geom,pores,fig=None,axis_bounds=None):
                 offs_hull = ConvexHull(offs_2D,qhull_options='QJ Pp')
                 ordered_offs.append(offsets[i][offs_hull.vertices])
             "Get domain extents for setting axis "
-            if axis_bounds == None:
+            if axis_bounds is None:
                 [xmin,xmax,ymin,ymax,zmin,zmax]= vertex_dimension(geom._net,pores,parm='minmax')
             else:
                 [xmin,xmax,ymin,ymax,zmin,zmax]=axis_bounds
-            if fig == None:
+            if fig is None:
                 fig = plt.figure()
             else:
                 return_fig==True

@@ -113,7 +113,7 @@ def distributions(net,
     if fig is None:
         fig = _plt.figure()
 
-    if geom_list != None:
+    if geom_list is not None:
         include_pores = [False]*net.num_pores()
         include_throats = [False]*net.num_throats()
         for geom in geom_list:

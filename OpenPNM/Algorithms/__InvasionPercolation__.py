@@ -646,7 +646,7 @@ class InvasionPercolation(GenericAlgorithm):
             self._phase['throat.IP_inv_time']=self['throat.inv_time']
 
         if IPseq==None:
-            if IPsat != None:
+            if IPsat is not None:
                 sat_pores = self['pore.inv_sat']<=IPsat
                 if sum(sat_pores) == 0:
                     IPseq = 0

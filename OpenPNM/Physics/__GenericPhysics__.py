@@ -39,14 +39,14 @@ class GenericPhysics(OpenPNM.Base.Core):
         logger.name = self.name
 
         #Associate with Network
-        if network == None:
+        if network is None:
             self._net = OpenPNM.Network.GenericNetwork()
         else:
             self._net = network  # Attach network to self
             self._net._physics.append(self)  # Register self with network
 
         #Associate with Phase
-        if phase == None:
+        if phase is None:
             self._phases.append(OpenPNM.Phases.GenericPhase())
         else:
             phase._physics.append(self)  # Register self with phase
