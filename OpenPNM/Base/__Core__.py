@@ -1285,7 +1285,7 @@ class Core(Base):
         '''
 #        mro = [item.__name__ for item in self.__class__.__mro__]
 #        if 'GenericNetwork' in mro: net = self
-        if self._net == None:
+        if self._net is None:
             net = self
         else: net = self._net
         locations = sp.array(locations,ndmin=1)

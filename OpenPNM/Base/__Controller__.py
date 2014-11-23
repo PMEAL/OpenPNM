@@ -358,11 +358,6 @@ class Controller(dict):
         -------
         simulation : An OpenPNM Controller Object
 
-        Notes
-        -----
-        This still doesn't have a slick way to map the subnet pores onto the
-        parent network.  The ``map_pores`` and ``map_throats`` methods won't
-        work without some tinkering.
         '''
         net = self.network()[0]  # Get Network handle
         self.clear()  # Clear Controller object
@@ -377,7 +372,7 @@ class Controller(dict):
         Ps = new_net.tomask(pores)
         new_net.trim(pores=~Ps)
         # Rename new Network
-        new_net._name = None
+        new_net._name = None  # Set name to None to circumvent setter checks
         if name is None:
             old_name = net.name
             name = 'subset_of_'+old_name
