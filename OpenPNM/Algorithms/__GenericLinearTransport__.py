@@ -9,6 +9,7 @@ import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.linalg as sprslin
 from OpenPNM.Algorithms import GenericAlgorithm
+from OpenPNM.Phases import GenericPhase
 import OpenPNM.Utilities.vertexops as vo
 from OpenPNM.Base import logging
 logger = logging.getLogger()
@@ -27,7 +28,7 @@ class GenericLinearTransport(GenericAlgorithm):
         '''
         super(GenericLinearTransport,self).__init__(**kwargs)
         if phase is None:
-            self._phase = OpenPNM.Phases.GenericPhase()
+            self._phase = GenericPhase()
         else:
             self._phase = phase  # Register phase with self
             if sp.size(phase)!=1:   self._phases = phase

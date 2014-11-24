@@ -11,6 +11,7 @@ It inherits from Core, so is Python Dict with the OpenPNM data control methods.
 import scipy as sp
 from OpenPNM.Base import Core
 from OpenPNM.Base import logging
+from OpenPNM.Network import GenericNetwork
 logger = logging.getLogger()
 
 class GenericAlgorithm(Core):
@@ -41,7 +42,7 @@ class GenericAlgorithm(Core):
         logger.name = self.name
 
         if network is None:
-            self._net = OpenPNM.Network.GenericNetwork()
+            self._net = GenericNetwork()
         else:
             self._net = network
 
