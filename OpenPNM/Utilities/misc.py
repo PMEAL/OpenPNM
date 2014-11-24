@@ -218,7 +218,8 @@ def amalgamate_data(objs=[]):
                             dict_name = key
                         data_amalgamated.update({dict_name : item[key]})
                 except TypeError:
-                    print(key)
+                    #print(key)
+                    pass
     return data_amalgamated
 
 def conduit_lengths(network,throats=None,mode='pore'):
