@@ -48,11 +48,15 @@ class OhmicConduction(GenericLinearTransport):
 
     def setup(self,conductance='electrical_conductance',quantity='voltage',super_pore_conductance=None,**params):
         r'''
+        This setup provides the initial requirements for the solver setup.
         '''
         logger.info("Setup "+self.__class__.__name__)
         super(OhmicConduction,self).setup(conductance=conductance,quantity=quantity,super_pore_conductance=super_pore_conductance)
 
     def calc_effective_conductivity(self):
+        r'''
+        This calculates the effective electrical conductivity in this linear transport algorithm.
+        '''
         return self._calc_eff_prop()
 
 

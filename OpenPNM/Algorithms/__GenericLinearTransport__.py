@@ -35,7 +35,7 @@ class GenericLinearTransport(GenericAlgorithm):
 
     def setup(self,conductance,quantity,super_pore_conductance):
         r'''
-        This setup provides the initial data for the solver
+        This setup provides the initial data for the solver.
         '''
         if super_pore_conductance is None:  self.super_pore_conductance = []
         else:   self.super_pore_conductance =  super_pore_conductance 
@@ -60,6 +60,8 @@ class GenericLinearTransport(GenericAlgorithm):
 
     def run(self,**kwargs):
         r'''
+        This calls the setup method in the algorithm and then the solve method. 
+        conductance, quantity, super_pore_conductance are some of the arguments which can be sent as kwargs.
         '''
         logger.info("Setup "+self.__class__.__name__)
         self.setup(**kwargs)

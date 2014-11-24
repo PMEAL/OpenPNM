@@ -44,12 +44,14 @@ class StokesFlow(GenericLinearTransport):
 
     def setup(self,conductance='hydraulic_conductance',quantity='pressure',super_pore_conductance=None,**params):
         r'''
+        This setup provides the initial requirements for the solver setup.
         '''
         logger.info("Setup "+self.__class__.__name__)
         super(StokesFlow,self).setup(conductance=conductance,quantity=quantity,super_pore_conductance=super_pore_conductance)
         
     def calc_eff_permeability(self):
         r'''
+        This calculates the effective permeability in this linear transport algorithm.
         '''
         D_normal = self._calc_eff_prop()
         self._eff_property = D_normal*sp.mean(self._phase['pore.viscosity'])
