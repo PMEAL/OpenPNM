@@ -52,13 +52,21 @@ class OrdinaryPercolation(GenericAlgorithm):
     To run this algorithm, use 'setup()' to provide the necessary simulation
     """
 
-    def __init__(self,invading_phase=None,defending_phase=None,**kwargs):
+    def __init__(self,invading_phase=None,defending_phase=None,residual_pores=None,residual_throats=None,**kwargs):
         r"""
 
         """
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._phase_inv = invading_phase
         self._phase_def = defending_phase
+        if residual_pores != None:
+            self._residual_pores = residual_pores
+        else:
+            self._residual_pores=[]
+        if residual_throats != None:
+            self._residual_throats = residual_throats
+        else:
+            self._residual_throats=[]
         logger.debug("Create Drainage Percolation Algorithm Object")
 
     def run(self,
@@ -171,6 +179,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         #Generate a tlist containing boolean values for throat state
         Tinvaded = self._t_cap<=inv_val
+        if self._residual_throats != []:
+            Tinvaded[self._residual_throats]=True
         #Finding all pores that can be invaded at specified pressure
         clusters = self._net.find_clusters(Tinvaded)
         #Find all pores with at least 1 invaded throat (invaded)
@@ -180,6 +190,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         temp = P12[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
         Pinvaded[temp] = True
+        if self._residual_pores != []:
+            Pinvaded[self._residual_pores]=True
         if self._AL:
             #Add injection sites to Pinvaded
             Pinvaded[self._inv_sites] = True
@@ -241,7 +253,6 @@ class OrdinaryPercolation(GenericAlgorithm):
                 trapped_throat_array=np.asarray([False]*len(Cstate))
                 trapped_throat_array[trapped_throats]=True
                 self._t_trap[(self._t_trap == 0)*trapped_throat_array] = inv_val
-                #trapped_throats = sp.where(Cstate==2)[0]
                 self._t_trap[(self._t_trap == 0)*(Cstate==2)] = inv_val
         self._p_inv[self._p_trap > 0] = sp.inf
         self._t_inv[self._t_trap > 0] = sp.inf
@@ -335,12 +346,16 @@ class OrdinaryPercolation(GenericAlgorithm):
               Pc = PcPoints[i]
               Snwp_p[i] = sum(Pvol[self._p_inv[pores]<=Pc])/Pvol_tot
               Snwp_t[i] = sum(Tvol[self._t_inv[throats]<=Pc])/Tvol_tot
+          if sp.unique(self._phase_inv["pore.contact_angle"]) < 90:
+              Snwp_p = 1 - Snwp_p
+              Snwp_t = 1 - Snwp_t
+              PcPoints *= -1
           plt.plot(PcPoints,Snwp_p,'r.-')
           plt.plot(PcPoints,Snwp_t,'b.-')
           r'''
           TODO: Add legend to distinguish the pore and throat curves
           '''
-          plt.xlim(xmin=0)
+          #plt.xlim(xmin=0)
           plt.show()
 
 
