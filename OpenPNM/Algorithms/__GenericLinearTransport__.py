@@ -33,10 +33,13 @@ class GenericLinearTransport(GenericAlgorithm):
             if sp.size(phase)!=1:   self._phases = phase
             else:   self._phases.append(phase)
 
-    def setup(self,conductance,quantity):
+    def setup(self,conductance,quantity,super_pore_conductance):
         r'''
         This setup provides the initial data for the solver
         '''
+        if super_pore_conductance is None:  self.super_pore_conductance = []
+        else:   self.super_pore_conductance =  super_pore_conductance 
+        
         if  sp.size(self._phase)==1:
             self._conductance = 'throat.'+conductance.split('.')[-1]
             self._quantity = 'pore.'+self._phase.name+'_'+quantity.split('.')[-1]
@@ -48,6 +51,20 @@ class GenericLinearTransport(GenericAlgorithm):
                 raise Exception('The provided throat conductance has problems')
         else:
             raise Exception('The linear transport solver accepts just one phase.')
+
+        logger.info("Creating Coefficient matrix for the algorithm")
+        self.A  = self._build_coefficient_matrix()
+        logger.info("Creating RHS matrix for the algorithm")
+        self.b = self._build_RHS_matrix()
+
+
+    def run(self,**kwargs):
+        r'''
+        '''
+        logger.info("Setup "+self.__class__.__name__)
+        self.setup(**kwargs)
+        self.solve()
+
 
     def return_results(self,pores=None,throats=None,**kwargs):
         r'''
@@ -113,20 +130,24 @@ class GenericLinearTransport(GenericAlgorithm):
         #Check for Neuman_group BCs and add superpores if necessary
         try:
             self.pores(self._phase.name+'_Neumann_group')
-            group_values = self.get_data(prop=self._phase.name+'_bcval_Neumann_group',pores=self.pores(self._phase.name+'_Neumann_group'))
-            self._group_Neumann_vals = sp.unique(group_values)
-            A_dim = A_dim + len(self._group_Neumann_vals)
-            extera_neu = self._group_Neumann_vals
-            self._g_super = 1e-60
-            for item in sp.r_[0:len(extera_neu)]:
-                neu_tpore2 = self.pores(self._phase.name+'_Neumann_group')
-                neu_tpore2 = neu_tpore2[group_values==extera_neu[item]]
+            self._extra_Neumann_size = len(getattr(self,'_pore_'+self._phase.name+'_Neumann_group_location'))
+            self._group_Neumann_vals = sp.zeros(self._extra_Neumann_size)
+            
+            for N in sp.r_[0:self._extra_Neumann_size]:
+                neu_tpore2 = getattr(self,'_pore_'+self._phase.name+'_Neumann_group_location')[N]
+                self._group_Neumann_vals[N] = sp.unique(self['pore.'+self._phase.name+'_bcval_Neumann_group'][neu_tpore2])
+                neighbor_throats = self._net.find_neighbor_throats(pores=neu_tpore2)
+                try:   g_super = self.super_pore_conductance[N]
+                except: 
+                    g_super = 1e-3*min(data_main[neighbor_throats])
+                    self.super_pore_conductance.append(g_super)
                 row = sp.append(row,neu_tpore2)
-                col = sp.append(col,len(neu_tpore2)*[A_dim-item-1])
-                data = sp.append(data,len(neu_tpore2)*[self._g_super])
-                row = sp.append(row,len(neu_tpore2)*[A_dim-item-1])
+                col = sp.append(col,len(neu_tpore2)*[A_dim+N])
+                data = sp.append(data,len(neu_tpore2)*[g_super])
+                row = sp.append(row,len(neu_tpore2)*[A_dim+N])
                 col = sp.append(col,neu_tpore2)
-                data = sp.append(data,len(neu_tpore2)*[self._g_super])
+                data = sp.append(data,len(neu_tpore2)*[g_super])
+            A_dim = A_dim + self._extra_Neumann_size
         except:
             pass
 
@@ -155,7 +176,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self._Coeff_dimension = A_dim
         a = sprs.coo.coo_matrix((data,(row,col)),(A_dim,A_dim))
         A = a.tocsr()
-        A.eliminate_zeros()
+        A.eliminate_zeros()        
         return(A)
 
 
@@ -164,23 +185,24 @@ class GenericLinearTransport(GenericAlgorithm):
         This builds the right-hand-side matrix for the linear solver.
         '''
         A_dim = self._Coeff_dimension
-        B = sp.zeros([A_dim,1])
+        b = sp.zeros([A_dim,1])
         try:
             Dir_pores = self.pores(self._phase.name+'_Dirichlet')
             Dir_pores_vals = self['pore.'+self._phase.name+'_bcval_Dirichlet'][Dir_pores]
-            B[Dir_pores] = sp.reshape(Dir_pores_vals,[len(Dir_pores),1])
+            b[Dir_pores] = sp.reshape(Dir_pores_vals,[len(Dir_pores),1])
         except: pass
         try:
             individual_Neu_pores = self.pores(self._phase.name+'_Neumann')
             individual_Neu_pores_vals = self['pore.'+self._phase.name+'_bcval_Neumann'][individual_Neu_pores]
-            B[individual_Neu_pores] = sp.reshape(individual_Neu_pores_vals,[len(individual_Neu_pores),1])
+            b[individual_Neu_pores] = sp.reshape(individual_Neu_pores_vals,[len(individual_Neu_pores),1])
         except: pass
         try:
             self.pores(self._phase.name+'_Neumann_group')
             pnum = self._net.num_pores()
-            B[sp.r_[pnum:(pnum+len(self._group_Neumann_vals))]] = sp.reshape(self._group_Neumann_vals[sp.r_[0:len(self._group_Neumann_vals)]],[len(self._group_Neumann_vals),1])
+            b[sp.r_[pnum:(pnum+len(self._group_Neumann_vals))]] = sp.reshape(self._group_Neumann_vals[sp.r_[0:len(self._group_Neumann_vals)]],[len(self._group_Neumann_vals),1])
         except: pass
-        return(B)
+       
+        return(b)
 
     def rate(self,pores=None,network=None,conductance=None,X_value=None,mode='group'):
         r'''
@@ -192,14 +214,14 @@ class GenericLinearTransport(GenericAlgorithm):
         pores : array_like
             The pores where the net rate will be calculated
         network : OpenPNM Network Object
-            The network object to which this algorithm will apply.
-            If no network is sent, the rate will apply to the network which is attached to the algorithm.
+            The network object to which this algorithm will apply. 
+            If no network is sent, the rate will apply to the network which is attached to the algorithm.        
         conductance : array_like
-            The conductance which this algorithm will use to calculate the rate.
-            If no conductance is sent, the rate will use the 'throat.conductance' which is attached to the algorithm.
+            The conductance which this algorithm will use to calculate the rate. 
+            If no conductance is sent, the rate will use the 'throat.conductance' which is attached to the algorithm.         
         X_value : array_like
-            The values of the quantity (temperature, mole_fraction, voltage, ...), which this algorithm will use to calculate the rate.
-            If no X_value is sent, the rate will look at the '_quantity', which is attached to the algorithm.
+            The values of the quantity (temperature, mole_fraction, voltage, ...), which this algorithm will use to calculate the rate. 
+            If no X_value is sent, the rate will look at the '_quantity', which is attached to the algorithm.        
         mode : string, optional
             Controls how to return the rate.  Options are:
             - 'group'(default): It returns the cumulative rate moving into them
@@ -211,15 +233,15 @@ class GenericLinearTransport(GenericAlgorithm):
         if X_value is None: X_value = self[self._quantity]
         pores = sp.array(pores,ndmin=1)
         R = []
-        if mode=='group':
+        if mode=='group':   
             t = network.find_neighbor_throats(pores,flatten=True,mode='not_intersection')
             throat_group_num = 1
         elif mode=='single':
             t = network.find_neighbor_throats(pores,flatten=False,mode='not_intersection')
             throat_group_num = sp.size(t)
-
+        
         for i in sp.r_[0:throat_group_num]:
-            if mode=='group':
+            if mode=='group':   
                 throats = t
                 P = pores
             elif mode=='single':
@@ -238,16 +260,13 @@ class GenericLinearTransport(GenericAlgorithm):
             R.append(sp.sum(sp.multiply(g,(X2-X1))))
         return(sp.array(R,ndmin=1))
 
-    def _do_one_inner_iteration(self):
+    def solve(self):
         r'''
-        This method collects the A and B matrices, solves AX = B and returns the result to the corresponding algorithm.
+        This method collects the A and b matrices, solves AX = b and returns the result to the corresponding algorithm.
         '''
-        logger.info("Creating Coefficient matrix for the algorithm")
-        A = self._build_coefficient_matrix()
-        logger.info("Creating RHS matrix for the algorithm")
-        B = self._build_RHS_matrix()
-        logger.info("Solving AX = B for the sparse matrices")
-        X = sprslin.spsolve(A,B)
+        logger.info("Solving AX = b for the sparse matrices")
+        X = sprslin.spsolve(self.A,self.b)
+        self.X = X
         self._Neumann_super_X = X[-sp.in1d(sp.r_[0:len(X)],sp.r_[0:self.num_pores()])]
         #Removing the additional super pore variables from the results
         self[self._quantity] = X[sp.r_[0:self.num_pores()]]

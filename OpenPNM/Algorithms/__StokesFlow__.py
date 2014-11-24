@@ -42,14 +42,12 @@ class StokesFlow(GenericLinearTransport):
         super(StokesFlow,self).__init__(**kwargs)
         logger.info('Create '+self.__class__.__name__+' Object')
 
-    def run(self,conductance='hydraulic_conductance',quantity='pressure',**params):
+    def setup(self,conductance='hydraulic_conductance',quantity='pressure',super_pore_conductance=None,**params):
         r'''
         '''
         logger.info("Setup "+self.__class__.__name__)
-        super(StokesFlow,self).setup(conductance=conductance,quantity=quantity)
-
-        super(GenericLinearTransport,self).run()
-
+        super(StokesFlow,self).setup(conductance=conductance,quantity=quantity,super_pore_conductance=super_pore_conductance)
+        
     def calc_eff_permeability(self):
         r'''
         '''

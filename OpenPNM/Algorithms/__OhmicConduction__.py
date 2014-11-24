@@ -46,13 +46,11 @@ class OhmicConduction(GenericLinearTransport):
         super(OhmicConduction,self).__init__(**kwargs)
         logger.info('Create '+self.__class__.__name__+' Object')
 
-    def run(self,conductance='electrical_conductance',quantity='voltage',**params):
+    def setup(self,conductance='electrical_conductance',quantity='voltage',super_pore_conductance=None,**params):
         r'''
         '''
         logger.info("Setup "+self.__class__.__name__)
-        super(OhmicConduction,self).setup(conductance=conductance,quantity=quantity)
-
-        super(GenericLinearTransport,self).run()
+        super(OhmicConduction,self).setup(conductance=conductance,quantity=quantity,super_pore_conductance=super_pore_conductance)
 
     def calc_effective_conductivity(self):
         return self._calc_eff_prop()
