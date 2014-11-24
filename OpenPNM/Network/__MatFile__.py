@@ -38,10 +38,11 @@ class MatFile(GenericNetwork):
 
     Examples
     ---------
+    >>> import OpenPNM
     >>> fname = 'test_pn' # or 'test_pn.mat'
     >>> longpath = os.path.abspath(__file__) # line needed for auto-tests
     >>> path,file = os.path.split(longpath) #unfortunately, auto-tests fail without this. Just type in the path of your own file, or leave it blank to search in your current directory.
-    >>> pn = OpenPNM.Network.MatFile(name='test_pn',filename=fname,path=path,xtra_pore_data='type',xtra_throat_data='type')
+    >>> pn = OpenPNM.Network.MatFile(filename=fname,path=path,xtra_pore_data='type',xtra_throat_data='type')
 
     Notes
     ------
@@ -168,7 +169,7 @@ class MatFile(GenericNetwork):
                 logger.info('Could not update pname_transform. Imported network may not have had it.')
                 pass
             self.trim(pores=bad_pores)
-            
+
     def _add_geometry(self):
         try:
             boundary_pores = sp.where(self['pore.type']!=0)[0]

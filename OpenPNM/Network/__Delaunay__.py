@@ -39,7 +39,8 @@ class Delaunay(GenericNetwork):
 
     Examples
     --------
-    >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[0.0001,0.0001,0.0001],name='net')
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[0.0001,0.0001,0.0001])
     >>> pn.num_pores()
     100
 
@@ -50,7 +51,7 @@ class Delaunay(GenericNetwork):
         Create Delauny network object
         '''
         super(Delaunay,self).__init__(**kwargs)
-        if (num_pores and domain_size) == None:
+        if (num_pores and domain_size) is None:
             num_pores = 1
             domain_size = [1.0,1.0,1.0]
         else:
@@ -79,7 +80,7 @@ class Delaunay(GenericNetwork):
         Perform applicable preliminary checks and calculations required for generation
         """
         logger.debug("generate_setup: Perform preliminary calculations")
-        if domain_size != None and num_pores != None:
+        if domain_size is not None and num_pores is not None:
             self._Lx = domain_size[0]
             self._Ly = domain_size[1]
             self._Lz = domain_size[2]
@@ -110,7 +111,7 @@ class Delaunay(GenericNetwork):
                 i += 1
         #Seeding Code
         #Uniform Random Generator
-        #coords = np.array([np.random.uniform(0,self._Lx,self._Np),np.random.uniform(0,self._Ly,self._Np),np.random.uniform(0,self._Lz,self._Np)]).T  
+        #coords = np.array([np.random.uniform(0,self._Lx,self._Np),np.random.uniform(0,self._Ly,self._Np),np.random.uniform(0,self._Lz,self._Np)]).T
 
         self['pore.coords'] = coords
         logger.debug("End of method")
@@ -149,7 +150,7 @@ class Delaunay(GenericNetwork):
         Np = len(pts)
         #Generate 6 dummy domains to pad onto each face of real domain
         #This prevents surface pores from making long range connections to each other
-        
+
         x,y,z = self["pore.coords"].T
         if x.max() > self._Lx:
             Lx = x.max()*1.05
@@ -206,22 +207,22 @@ class Delaunay(GenericNetwork):
         for i,polygon in enumerate(self._vor.point_region[0:Np]):
             if -1 not in self._vor.regions[polygon]:
                 all_vert_index[i]=dict(zip(self._vor.regions[polygon],self._vor.vertices[self._vor.regions[polygon]]))
-    
+
         " Add throat vertices by looking up vor.ridge_dict "
         throat_verts = sp.ndarray(len(self["throat.conns"]),dtype=object)
         for i,(p1,p2) in enumerate(self["throat.conns"]):
-            try: 
+            try:
                 throat_verts[i]=dict(zip(self._vor.ridge_dict[(p1,p2)],self._vor.vertices[self._vor.ridge_dict[(p1,p2)]]))
             except KeyError:
                 try:
                     throat_verts[i]=dict(zip(self._vor.ridge_dict[(p2,p1)],self._vor.vertices[self._vor.ridge_dict[(p2,p1)]]))
                 except KeyError:
                     print("Throat Pair Not Found in Voronoi Ridge Dictionary")
-            
+
         self['pore.vert_index']=all_vert_index
         self['throat.vert_index']=throat_verts
         logger.debug(sys._getframe().f_code.co_name+": End of method")
-        
+
     def _add_labels(self):
         r'''
         Deprecated if using add_boundaries()
@@ -448,7 +449,7 @@ class Delaunay(GenericNetwork):
             return self._Ly
 
     def add_boundaries(self):
-        
+
         r"""
         This method identifies pores in the original Voronoi object that straddle a boundary imposed by the reflection
         The pore inside the original set of pores (with index 0 - Np) is identified and the coordinates are saved
@@ -463,10 +464,11 @@ class Delaunay(GenericNetwork):
         align with the outer planes of the domain.
         The original pores in the domain are labelled internal and the boundary pores
         are labelled external
-        
+
         Examples
         --------
-        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[0.0001,0.0001,0.0001],name='net')
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[0.0001,0.0001,0.0001])
         >>> pn.add_boundaries()
         >>> pn.num_pores("boundary")>0
         True
@@ -488,7 +490,7 @@ class Delaunay(GenericNetwork):
         # ridge_dict contains a dictionary where the key is a set of 2 neighbouring pores and the value is the vertex indices
         # that form the throat or ridge between them
         for p,v in self._vor.ridge_dict.items():
-            # if the vertex with index -1 is contained in list then the ridge is unbounded - ignore these 
+            # if the vertex with index -1 is contained in list then the ridge is unbounded - ignore these
             if np.all(np.asarray(v) >=0):
                 #boundary throats will be those connecting one pore inside the original set and one out
                 if  (p[0] in range(Np) and p[1] not in range(Np)) or\
@@ -532,7 +534,7 @@ class Delaunay(GenericNetwork):
         bottom = self.pores()[self['pore.coords'][:,2]==min_point[2]]
         top = self.pores()[self['pore.coords'][:,2]==max_point[2]]
         #Assign labels
-        self.set_info(pores=new_pore_ids,label='boundary')        
+        self.set_info(pores=new_pore_ids,label='boundary')
         self.set_info(pores=right,label='right_boundary')
         self.set_info(pores=left,label='left_boundary')
         self.set_info(pores=front,label='front_boundary')
@@ -551,7 +553,8 @@ class Delaunay(GenericNetwork):
 
         Example
         --------
-        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1],name='net')
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1])
         >>> pn.add_boundaries()
         >>> B1 = pn.pores("left_boundary")
         >>> B2 = pn.pores("right_boundary")
@@ -567,7 +570,8 @@ class Delaunay(GenericNetwork):
         No coplanar checking this is done in vertex_dimension
         Example
         --------
-        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1],name='net')
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1])
         >>> pn.add_boundaries()
         >>> B1 = pn.pores("left_boundary")
         >>> B2 = pn.pores("right_boundary")
@@ -577,7 +581,7 @@ class Delaunay(GenericNetwork):
         A = self.vertex_dimension(face,parm='area')
 
         return A
-    
+
     def trim_occluded_throats(self):
         r"""
         After the offsetting routine throats with zero area have been fully occluded.

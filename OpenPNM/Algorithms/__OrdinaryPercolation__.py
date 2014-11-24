@@ -36,13 +36,14 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
     >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
-    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn, name='OP',invading_phase=phase1, defending_phase=phase2)
+    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=phase1, defending_phase=phase2)
     >>> OP.run(inlets=pn.pores('top'))
     >>> med_Pc = sp.median(OP['pore.inv_Pc'])
     >>> OP.return_results(med_Pc)
@@ -132,7 +133,7 @@ class OrdinaryPercolation(GenericAlgorithm):
                 pass
                 logger.error('Capillary pressure neither assigned to defending phase '+self._phase_def.name
                     +' nor to invading phase '+self._phase_inv.name)
-        if inv_points == None:
+        if inv_points is None:
             min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
             max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
             logger.info('Generating list of invasion pressures')
@@ -279,7 +280,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._phase_inv['throat.inv_sat']=self['throat.inv_sat']
 
 
-        if(sat != None):
+        if(sat is not None):
             p_inv = self['pore.inv_sat']<=sat
             t_inv = self['throat.inv_sat']<=sat
             #Apply occupancy to invading phase
@@ -288,12 +289,12 @@ class OrdinaryPercolation(GenericAlgorithm):
             temp = sp.array(t_inv,dtype=sp.float_,ndmin=1)
             self._phase_inv['throat.'+occupancy]=temp
             #Apply occupancy to defending phase
-            if self._phase_def != None:
+            if self._phase_def is not None:
                 temp = sp.array(~p_inv,dtype=sp.float_,ndmin=1)
                 self._phase_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_inv,dtype=sp.float_,ndmin=1)
                 self._phase_def['throat.'+occupancy]=temp
-        elif(seq != None):
+        elif(seq is not None):
             p_seq = self['pore.inv_seq']<=seq
             t_seq = self['throat.inv_seq']<=seq
             #Apply occupancy to invading phase
@@ -302,7 +303,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             temp = sp.array(t_seq,dtype=sp.float_,ndmin=1)
             self._phase_inv['throat.'+occupancy]=temp
             #Apply occupancy to defending phase
-            if self._phase_def != None:
+            if self._phase_def is not None:
                 temp = sp.array(~p_seq,dtype=sp.float_,ndmin=1)
                 self._phase_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_seq,dtype=sp.float_,ndmin=1)
@@ -316,7 +317,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             temp = sp.array(t_inv,dtype=sp.float_,ndmin=1)
             self._phase_inv['throat.'+occupancy]=temp
             #Apply occupancy to defending phase
-            if self._phase_def != None:
+            if self._phase_def is not None:
                 temp = sp.array(~p_inv,dtype=sp.float_,ndmin=1)
                 self._phase_def['pore.'+occupancy]=temp
                 temp = sp.array(~t_inv,dtype=sp.float_,ndmin=1)

@@ -32,6 +32,7 @@ class Core(Base):
 
         Example
         -------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn['pore.example_property'] = 100
         >>> pn['pore.example_property'][0]
@@ -108,6 +109,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn)
         >>> import OpenPNM.Geometry.models as gm
@@ -181,6 +183,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> air = OpenPNM.Phases.Air(network=pn)
         >>> list(air._models.keys())
@@ -230,6 +233,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
         >>> geom['pore.diameter'] = 1
@@ -300,12 +304,12 @@ class Core(Base):
         if mode in ['merge','overwrite','remove_data','remove_prop']:
             #Checking for the indices
             data= sp.array(data,ndmin=1)
-            if pores != None:
+            if pores is not None:
                 if pores == 'all':  pores = self.pores()
                 else:   pores = sp.array(pores,ndmin=1)
                 element='pore'
                 locations = pores
-            elif throats != None:
+            elif throats is not None:
                 if throats == 'all':    throats = self.throats()
                 else:   throats = sp.array(throats,ndmin=1)
                 element='throat'
@@ -382,12 +386,12 @@ class Core(Base):
         '''
 
         if mode in ['','interpolate']:
-            if pores != None:
+            if pores is not None:
                 if pores == 'all':  pores = self.pores()
                 else:   pores = sp.array(pores,ndmin=1)
                 element='pore'
                 locations = pores
-            elif throats != None:
+            elif throats is not None:
                 if throats == 'all':    throats = self.throats()
                 else:   throats = sp.array(throats,ndmin=1)
                 element='throat'
@@ -456,12 +460,12 @@ class Core(Base):
 
         '''
         if mode in ['merge','overwrite','remove_info','remove_label']:
-            if pores != None:
+            if pores is not None:
                 if pores == 'all':  pores = self.pores()
                 else:   pores = sp.array(pores,ndmin=1)
                 element='pore'
                 locations = pores
-            elif throats != None:
+            elif throats is not None:
                 if throats == 'all':    throats = self.throats()
                 else:   throats = sp.array(throats,ndmin=1)
                 element='throat'
@@ -525,12 +529,12 @@ class Core(Base):
 
         '''
         #Clean up label argument to remove leading 'pore' or 'throat'
-        if pores != None:
+        if pores is not None:
             if pores == 'all':  pores = self.pores()
             else:   pores = sp.array(pores,ndmin=1)
             element='pore'
             locations = pores
-        elif throats != None:
+        elif throats is not None:
             if throats == 'all':    throats = self.throats()
             else:   throats = sp.array(throats,ndmin=1)
             element='throat'
@@ -575,6 +579,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.props('pore')
         ['pore.coords']
@@ -687,6 +692,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.labels(pores=[0,1,5,6])
         ['pore.all', 'pore.bottom', 'pore.front', 'pore.left']
@@ -731,6 +737,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
         array([0, 1])
@@ -811,12 +818,13 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pind = pn.pores(labels=['top','front'],mode='union')
         >>> pind[[0,1,2,-3,-2,-1]]
-        array([  0,   5,  10, 122, 123, 124], dtype=int64)
+        array([  0,   5,  10, 122, 123, 124])
         >>> pn.pores(labels=['top','front'],mode='intersection')
-        array([100, 105, 110, 115, 120], dtype=int64)
+        array([100, 105, 110, 115, 120])
         '''
         if labels == 'all':
             Np = sp.shape(self['pore.all'])[0]
@@ -854,6 +862,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> Tind = pn.throats()
         >>> Tind[0:5]
@@ -908,9 +917,9 @@ class Core(Base):
             pores or throats received.
 
         '''
-        if pores != None:
+        if pores is not None:
             mask = self._tomask(element='pore',locations=pores)
-        if throats != None:
+        if throats is not None:
             mask = self._tomask(element='throat',locations=throats)
         return mask
 
@@ -1131,6 +1140,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.num_pores()
         125
@@ -1193,6 +1203,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.num_throats()
         300
@@ -1252,6 +1263,7 @@ class Core(Base):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn._count('pore')
         125
@@ -1262,7 +1274,7 @@ class Core(Base):
             temp = self.num_pores()
         elif element in ['throat','throats']:
             temp = self.num_throats()
-        elif element == None:
+        elif element is None:
             temp = {}
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
@@ -1331,7 +1343,18 @@ class Core(Base):
 
         Examples
         --------
-        n/a
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> Ps = pn.pores(labels=['top','left'],mode='intersection')
+        >>> Ps
+        array([100, 101, 102, 103, 104])
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps)
+        >>> geom.Ps
+        array([0, 1, 2, 3, 4])
+        >>> geom.map_pores(target=pn,pores=geom.Ps)
+        array([100, 101, 102, 103, 104])
+        >>> pn.map_pores(target=geom,pores=Ps)
+        array([0, 1, 2, 3, 4])
         '''
         if pores is None:
             pores = self.Ps
@@ -1360,7 +1383,18 @@ class Core(Base):
 
         Examples
         --------
-        n/a
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> Ts = pn.throats(labels=['top','left'],mode='intersection')
+        >>> Ts
+        array([260, 262, 264, 266])
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,throats=Ts)
+        >>> geom.Ts
+        array([0, 1, 2, 3])
+        >>> geom.map_throats(target=pn,throats=geom.Ts)
+        array([260, 262, 264, 266])
+        >>> pn.map_throats(target=geom,throats=Ts)
+        array([0, 1, 2, 3])
         '''
         if throats is None:
             throats = self.Ts
@@ -1390,6 +1424,15 @@ class Core(Base):
         Returns a True if all check pass, and False if any checks fail.  This
         is ideal for programatically checking data integrity prior to running
         an algorithm.
+
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> health = pn.check_data_health()
+        {'pore.coords': 'Healthy', 'throat.conns': 'Healthy'}
+        >>> health
+        True
 
         '''
         health = {}

@@ -225,14 +225,14 @@ def amalgamate_data(objs=[]):
 def conduit_lengths(network,throats=None,mode='pore'):
     r"""
     Return the respective lengths of the conduit components defined by the throat conns P1 T P2
-    mode = 'pore' - uses pore coordinates 
+    mode = 'pore' - uses pore coordinates
     mode = 'centroid' uses pore and throat centroids
     """
-    if throats == None:
+    if throats is None:
         throats = network.throats()
     Ps = network['throat.conns']
     pdia = network['pore.diameter']
-    
+
     if mode ==  'centroid':
         try:
             pcentroids = network['pore.centroid']
@@ -253,7 +253,7 @@ def conduit_lengths(network,throats=None,mode='pore'):
             fractions = 0.5
         plen1 = lengths*fractions
         plen2 = lengths*(1-fractions)
-    
+
     return _sp.vstack((plen1,network['throat.length'],plen2)).T[throats]
 
 def clone_object(obj):
@@ -352,7 +352,7 @@ def _subset(network,pores,name=None):
     -------
     OpenPNM Object
         Returns a new network object
-        
+
     Notes
     -----
     This is a work in progress

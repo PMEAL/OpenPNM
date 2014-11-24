@@ -66,7 +66,7 @@ class Tortuosity(GenericAlgorithm):
         logger.warning('This algorithm can take some time...')
         graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],sprsfmt='csr')
 
-        if phase != None:
+        if phase is not None:
             self._phase = phase
             if 'throat.occupancy' in self._phase.props():
                 temp = self._net['throat.length']*(self._phase['throat.occupancy']==1)
