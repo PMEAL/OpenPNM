@@ -60,11 +60,11 @@ class OrdinaryPercolation(GenericAlgorithm):
         super(OrdinaryPercolation,self).__init__(**kwargs)
         self._phase_inv = invading_phase
         self._phase_def = defending_phase
-        if residual_pores != None:
+        if residual_pores is not None:
             self._residual_pores = residual_pores
         else:
             self._residual_pores=[]
-        if residual_throats != None:
+        if residual_throats is not None:
             self._residual_throats = residual_throats
         else:
             self._residual_throats=[]
@@ -180,7 +180,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         #Generate a tlist containing boolean values for throat state
         Tinvaded = self._t_cap<=inv_val
-        if self._residual_throats != []:
+        if self._residual_throats is not []:
             Tinvaded[self._residual_throats]=True
         #Finding all pores that can be invaded at specified pressure
         clusters = self._net.find_clusters(Tinvaded)
@@ -191,7 +191,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         temp = P12[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
         Pinvaded[temp] = True
-        if self._residual_pores != []:
+        if self._residual_pores is not []:
             Pinvaded[self._residual_pores]=True
         if self._AL:
             #Add injection sites to Pinvaded
