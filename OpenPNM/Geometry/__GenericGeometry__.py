@@ -9,6 +9,7 @@ GenericGeometry -- Base class to manage pore scale geometry
 import scipy as sp
 from OpenPNM.Base import Core
 from OpenPNM.Base import logging
+from OpenPNM.Network import GenericNetwork
 logger = logging.getLogger()
 import OpenPNM.Geometry.models
 
@@ -46,7 +47,7 @@ class GenericGeometry(Core):
         logger.name = self.name
 
         if network is None:
-            self._net = OpenPNM.Network.GenericNetwork()
+            self._net = GenericNetwork()
         else:
             self._net = network  # Attach network to self
             self._net._geometries.append(self)  # Register self with network.geometries
