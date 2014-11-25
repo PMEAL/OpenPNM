@@ -8,6 +8,7 @@ module __GenericPhase__: Base class for building Phase objects
 from OpenPNM.Base import Core
 from OpenPNM.Base import logging
 logger = logging.getLogger()
+from OpenPNM.Network import GenericNetwork
 import OpenPNM.Phases.models
 import scipy as sp
 
@@ -40,7 +41,7 @@ class GenericPhase(Core):
         logger.name = self.name
 
         if network is None:
-            self._net = OpenPNM.Network.GenericNetwork()
+            self._net = GenericNetwork()
         else:
             self._net = network
 

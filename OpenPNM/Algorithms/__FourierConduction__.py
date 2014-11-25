@@ -45,14 +45,18 @@ class FourierConduction(GenericLinearTransport):
         super(FourierConduction,self).__init__(**kwargs)
         logger.info('Create '+self.__class__.__name__+' Object')
 
-    def run(self,conductance='thermal_conductance',quantity='temperature',**params):
+    def setup(self,conductance='thermal_conductance',quantity='temperature',super_pore_conductance=None,**params):
         r'''
+        This setup provides the initial requirements for the solver setup.
         '''
-        logger.info('Setup '+self.__class__.__name__)
-        super(FourierConduction,self).setup(conductance=conductance,quantity=quantity)
+        logger.info("Setup "+self.__class__.__name__)
+        super(FourierConduction,self).setup(conductance=conductance,quantity=quantity,super_pore_conductance=super_pore_conductance)
 
-        super(GenericLinearTransport,self).run()
-
+    def calc_effective_conductivity(self):
+        r'''
+        This calculates the effective thermal conductivity in this linear transport algorithm.
+        '''
+        return self._calc_eff_prop()
 
 if __name__ == '__main__':
     import doctest

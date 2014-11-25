@@ -7,6 +7,8 @@ module __Physics__: Base class for mananging pore-scale Physics properties
 """
 from OpenPNM.Base import logging
 logger = logging.getLogger()
+from OpenPNM.Network import GenericNetwork
+from OpenPNM.Phases import GenericPhase
 import OpenPNM.Physics.models
 import scipy as sp
 
@@ -40,14 +42,14 @@ class GenericPhysics(OpenPNM.Base.Core):
 
         #Associate with Network
         if network is None:
-            self._net = OpenPNM.Network.GenericNetwork()
+            self._net = GenericNetwork()
         else:
             self._net = network  # Attach network to self
             self._net._physics.append(self)  # Register self with network
 
         #Associate with Phase
         if phase is None:
-            self._phases.append(OpenPNM.Phases.GenericPhase())
+            self._phases.append(GenericPhase())
         else:
             phase._physics.append(self)  # Register self with phase
             self._phases.append(phase)  # Register phase with self
