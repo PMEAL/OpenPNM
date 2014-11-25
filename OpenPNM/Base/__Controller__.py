@@ -38,7 +38,7 @@ class Controller(dict):
 
     def show_tree(self):
         r'''
-        Prints a heirarchical list of object associations
+        Prints a heirarchical list of simulation object associations
         '''
         header = ('-'*60)
         net = self.network()[0]
@@ -155,6 +155,20 @@ class Controller(dict):
         -----
         To only remove an object from the Contoller object, without purging all
         traces from the simulation, use the dictionary's native ``pop`` method.
+
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> sim = OpenPNM.Base.Controller()
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
+        >>> 'pore.'+geom.name in pn.keys()  # Label entries are added to the Network where geom is defined
+        True
+        >>> sim.purge_object(geom)
+        >>> geom.name in sim.keys()  # geom is removed from Controller object
+        False
+        >>> 'pore.'+geom.name in pn.keys()  # geom's labels are removed from the Network too
+        False
         '''
         name = obj.name
         for item in self.keys():
@@ -190,6 +204,19 @@ class Controller(dict):
         -----
         This method is intended to create a disposable object, for instance, to
         receive simulation data without overwriting existing data.
+
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> sim = OpenPNM.Base.Controller()
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn2 = sim.clone_object(pn)
+        >>> pn is pn2  # A clone of pn is created
+        False
+        >>> pn2.keys() == pn.keys()
+        True
+        >>> pn2.simulation is sim # pn2 is not associated with existing Controller
+        False
 
         '''
         obj_new = _copy.deepcopy(obj)
@@ -249,6 +276,21 @@ class Controller(dict):
         filename : string, optional
             The file name to save as. If none is given the name of the Network
             object is used.
+
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> sim = OpenPNM.Base.Controller()
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> sim.save('test.pnm')
+        >>> pn.name in sim.keys()
+        True
+        >>> sim.clear()
+        >>> sim.keys()
+        dict_keys([])
+        >>> sim.load('test.pnm')
+        >>> pn.name in sim.keys()
+        True
         '''
         if filename == '':
             filename = self.network()[0].name
@@ -360,6 +402,19 @@ class Controller(dict):
         -------
         simulation : An OpenPNM Controller Object
 
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> sim = OpenPNM.Base.Controller()
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> [pn.Np, pn.Nt]
+        [125, 300]
+        >>> pn2 = sim.subset(pores=pn.pores(['top']))
+        >>> [pn2.Np, pn2.Nt]  # Subnet contains fewer pores and throats
+        [25, 40]
+        >>> pn2.map_pores(target=pn,pores=pn2.Ps)  # Mapping between subnet and parent is easy
+        array([100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
+               113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124])
         '''
         net = self.network()[0]  # Get Network handle
         self.clear()  # Clear Controller object
@@ -395,6 +450,12 @@ class Controller(dict):
         --------
         ``subnet`` and ``clone_object``
 
+        Notes
+        -----
+        The objects in the returned dictionary can be used for simulations as
+        usual, but as they are not associated with a Controller, there is
+        limited administrative control over them (i.e. saving and such).
+
         Examples
         --------
         >>> import OpenPNM
@@ -413,12 +474,6 @@ class Controller(dict):
         Controller object and then update it with the new simulation data:
         >>> sim.clear()
         >>> sim.update(new_sim)
-
-        Notes
-        -----
-        The objects in the returned dictionary can be used for simulations as
-        usual, but as they are not associated with a Controller, there is
-        limited administrative control over them (i.e. saving and such).
         '''
         net = self.network()[0]
         temp = net.copy()  # Copy Network's dict
