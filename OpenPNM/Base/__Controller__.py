@@ -192,9 +192,11 @@ class Controller(dict):
         receive simulation data without overwriting existing data.
 
         '''
-        a = _pickle.dumps(obj)
-        obj_new = _pickle.loads(a)
-        super(Controller,self).update(obj)
+        obj_new = _copy.deepcopy(obj)
+        obj_new.__dict__ = obj.__dict__
+        obj_new.simulation = {}
+        del self[obj.name]
+        self[obj.name] = obj
         return obj_new
 
     def save_object(self,obj,filename=''):
