@@ -94,11 +94,13 @@ class Core(Base):
         regen_mode : string
             Controls when and if the property is regenerated. Options are:
 
-            * 'static' : The property is stored as static data and is only regenerated when the object's `regenerate` is called
+            * 'static' : The property is stored as static data and is only regenerated when the object's ``regenerate`` is called
 
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
 
-            * 'deferred' : The model is stored on the object but not run until regenerate is called.
+            * 'deferred' : The model is stored on the object but not run until ``regenerate`` is called
+            
+            * 'on_demand' : The model is stored on the object but not run, AND will only run if specifically requested in ``regenerate``
 
         Notes
         -----
@@ -138,13 +140,13 @@ class Core(Base):
         else:
             network = self
         #Build partial function from given kwargs
-        fn = partial(model,propname=propname,network=network,phase=phase,geometry=geometry,physics=physics,**kwargs)
+        fn = partial(model,propname=propname,network=network,phase=phase,geometry=geometry,physics=physics,regen_mode=regen_mode,**kwargs)
         if regen_mode == 'static':
             self[propname] = fn()  # Generate data and store it locally
             self._models[propname] = fn  # Store model in a private attribute
         if regen_mode == 'constant':
              self[propname] = fn()  # Generate data and store it locally
-        if regen_mode == 'deferred':
+        if regen_mode in ['deferred','on_demand']:
             self._models[propname] = fn  # Store model in a private attribute
 
     def remove_model(self,propname,mode='model'):
@@ -238,24 +240,26 @@ class Core(Base):
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
         >>> geom['pore.diameter'] = 1
         >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
-        >>> f = gm.pore_area.cubic # Get random seed generator model
+        >>> f = gm.pore_area.cubic 
         >>> geom.add_model(propname='pore.area',model=f)  # Add model to Geometry object
-        >>> round(geom['pore.area'][0],3)  # Look at seed value in pore 0
+        >>> geom['pore.area'][0]  # Look at area value in pore 0
         1
         >>> geom['pore.diameter'] = 2
         >>> geom.regenerate()  # Regenerate all models
-        >>> geom['pore.area'][0]  # Look at same seed value again
+        >>> geom['pore.area'][0]  # Look at pore area calculated with new diameter
         4
 
         '''
-        if props == '':
-            props = self._models.keys()
+        if props == '':  # If empty, assume all models are to be regenerated
+            props = list(self._models.keys())
+            for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only 
+                if self._models[item].keywords.get('regen_mode') == 'on_demand':
+                    props.remove(item)
         elif type(props) == str:
             props = [props]
         if mode == 'exclude':
             temp = list(self._models.keys())
             for item in props:
-                pass
                 temp.remove(item)
             props = temp
         logger.info('Models are being recalculated in the following order: ')
@@ -266,7 +270,6 @@ class Core(Base):
                 logger.info(str(count)+' : '+item)
                 count += 1
             else:
-                pass
                 logger.warning('Requested proptery is not a dynamic model: '+item)
 
 
