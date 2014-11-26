@@ -251,10 +251,10 @@ class Core(Base):
 
         '''
         if props == '':  # If empty, assume all models are to be regenerated
-            props = self._models.keys()
+            props = list(self._models.keys())
             for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only 
                 if self._models[item].keywords.get('regen_mode') == 'on_demand':
-                    props.removed(item)
+                    props.remove(item)
         elif type(props) == str:
             props = [props]
         if mode == 'exclude':
