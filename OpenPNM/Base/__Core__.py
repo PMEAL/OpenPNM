@@ -1043,6 +1043,7 @@ class Core(Base):
         dtypes = []
         dtypenames = []
         prop_found = False  #Flag to indicate if prop was found on a sub-object
+        nan_locs = sp.zeros(len(temp)).astype('bool')
         for item in sources:
             #Check if sources were given as list of objects OR names
             try: item.name
@@ -1052,6 +1053,7 @@ class Core(Base):
                 values = sp.ones_like(locations)*sp.nan
                 dtypenames.append('nan')
                 dtypes.append(sp.dtype(bool))
+                nan_locs[locations]=True
             else:
                 values = item[prop]
                 prop_found = True
@@ -1064,7 +1066,7 @@ class Core(Base):
         for i in range(len(temp)):
             cnames.append(temp[i].__class__.__name__)
             shapes.append(sp.shape(temp[i]))
-            if cnames[i] not in ['int','float','bool','int32','int64','float32','float64','NoneType']:
+            if temp[i].__class__.__name__ not in ['int','float','bool_','int32','int64','float32','float64','NoneType']:
                 make_object = True
                 try:
                     dtypes.append(temp[i].dtype.name)
@@ -1074,6 +1076,8 @@ class Core(Base):
         if make_object == False:
             if len(sp.unique(cnames))==1:
                 temp_cname = cnames[0]
+            elif len(sp.unique(dtypes))==1:
+                temp_cname = dtypes[0]
             else:
                 #convert a mixture to float
                 temp_cname='float'
@@ -1081,6 +1085,13 @@ class Core(Base):
             #keep as object
             temp_cname = 'object'
         temp=temp.astype(temp_cname)
+        if sum(nan_locs) > 0:
+            if temp_cname=='bool':
+                temp[nan_locs]=False
+            #elif 'float' in temp_cname:
+            #    temp[nan_locs]=0.0
+            #elif 'int' in temp_cname:
+            #    temp[nan_locs]=0
         #If we have all the data in ndarray of same type and shape we can re-cast into the proper shape
         if (len(sp.unique(cnames)) == 1)&(cnames[0]=='ndarray')&(len(sp.unique(shapes)) == 1):
             temp_2_shape = list(shapes[0])
