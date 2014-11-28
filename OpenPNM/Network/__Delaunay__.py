@@ -102,12 +102,16 @@ class Delaunay(GenericNetwork):
         #coords = sp.rand(self._Np,3)*[self._Lx,self._Ly,self._Lz]
         #Seeding Code
         coords = np.zeros([self._Np,3])
-        i = 0
-        while i < self._Np:
-            coord = np.array([np.random.uniform(0,self._Lx,1),np.random.uniform(0,self._Ly,1),np.random.uniform(0,self._Lz,1)]).T
-            if self._reject(coord/np.array([self._Lx,self._Ly,self._Lz])) == False:
-                coords[i]=coord
-                i += 1
+        #reject points close to boundaries - if False there will be slightly more
+        rejection = [False,False,True]
+        for j in range(3):
+            i = 0
+            while i < self._Np:
+                coord = np.random.uniform(0,1,1)
+                if self._reject(coord) == rejection[j]:
+                    coords[i][j]=coord
+                    i += 1
+        coords*=np.array([self._Lx,self._Ly,self._Lz])
         #Seeding Code
         #Uniform Random Generator
         #coords = np.array([np.random.uniform(0,self._Lx,self._Np),np.random.uniform(0,self._Ly,self._Np),np.random.uniform(0,self._Lz,self._Np)]).T  
@@ -124,15 +128,10 @@ class Delaunay(GenericNetwork):
 
     def _reject(self,point):
 
-        x = point[0,0]
-        y = point[0,1]
-        #z = point[0,2]
-        Px = self._prob_func(x)
-        Py = self._prob_func(y)
-        #Pz = prob_func(z)
+        P = self._prob_func(point)
         nrand = np.random.uniform(0,1,1)
-
-        if Px < nrand and Py < nrand:
+        #place more points at the sides of the domain and fewer at the top and bottom
+        if P < nrand:
             rejection = True
         else:
             rejection = False
