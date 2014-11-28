@@ -1,6 +1,6 @@
 r"""
 ===============================================================================
-pore_volume -- 
+pore_volume --
 ===============================================================================
 
 """
@@ -14,8 +14,8 @@ def _get_hull_volume(points):
     Calculate the volume of a set of points by dividing the bounding surface into triangles and working out the volume of all the pyramid elements
     connected to the volume centroid
     """
-    " remove any duplicate points - this messes up the triangulation "        
-    points = _sp.asarray(misc.unique_list(np.around(points,10)))       
+    " remove any duplicate points - this messes up the triangulation "
+    points = _sp.asarray(misc.unique_list(np.around(points,10)))
     try:
         tri = Delaunay(points,qhull_options='QJ Pp')
     except _sp.spatial.qhull.QhullError:
@@ -57,7 +57,7 @@ def _get_hull_volume(points):
         pyramid_volume = _sp.absolute(_sp.dot(face_centroid_vector,face_unit_normal)*face_area/3)
         " Each pyramid is summed together to calculate the total volume "
         hull_volume += pyramid_volume
-        " The Centre of Mass will not be the same as the geometrical centroid " 
+        " The Centre of Mass will not be the same as the geometrical centroid "
         " A weighted adjustment can be calculated from the pyramid centroid and volume "
         vha = points[ia]-hull_centroid
         vhb = points[ib]-hull_centroid
@@ -66,11 +66,11 @@ def _get_hull_volume(points):
         pyramid_COMs.append(pCOM)
     if _sp.isnan(hull_volume):
         hull_volume = 0.0
-    if hull_volume>0:    
+    if hull_volume>0:
         hull_COM = hull_centroid + _sp.mean(_sp.asarray(pyramid_COMs),axis=0)/hull_volume
     else:
         hull_COM = hull_centroid
-    
+
     return hull_volume, hull_COM
 
 def sphere(geometry,
@@ -82,7 +82,7 @@ def sphere(geometry,
     diams = geometry[pore_diameter]
     value=_sp.pi/6*diams**3
     return value
-    
+
 def cube(geometry,
          pore_diameter='pore.diameter',
          **kwargs):
@@ -92,14 +92,14 @@ def cube(geometry,
     diams = geometry[pore_diameter]
     value = diams**3
     return value
-    
+
 def voronoi(network,
             geometry,
             **kwargs):
     r"""
     Calculate volume from the convex hull of the offset vertices making the throats surrounding the pore
     Also calculate the centre of mass for the volume
-    """    
+    """
     pores = geometry.map_pores(network,geometry.pores())
     Np = len(pores)
     volume = _sp.zeros(Np)
@@ -108,10 +108,10 @@ def voronoi(network,
         throat_vert_list = []
         net_throats=network.find_neighbor_throats([pores[i]])
         geom_throats = network.map_throats(target=geometry,throats=net_throats,return_mapping=True)['target']
-        if len(geom_throats) > 1:        
+        if len(geom_throats) > 1:
             for throat in geom_throats:
                 geom_throat_verts = geometry["throat.offset_vertices"][throat]
-                if geom_throat_verts != None:
+                if geom_throat_verts is not None:
                     for j in range(len(geom_throat_verts)):
                         throat_vert_list.append(geom_throat_verts[j])
             throat_array=_sp.asarray(throat_vert_list)
@@ -129,5 +129,5 @@ def voronoi(network,
         for pore in ps:
             com[pore]=np.mean(geometry["pore.vertices"][pore],axis=0)
     geometry["pore.centroid"]=com
-    
+
     return volume

@@ -33,6 +33,7 @@ class Cubic(GenericNetwork):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.Cubic(shape=[3,4,5])
     >>> pn.Np
     60
@@ -44,9 +45,9 @@ class Cubic(GenericNetwork):
     def __init__(self, shape=None, template=None, spacing=1, **kwargs):
         super(Cubic, self).__init__(**kwargs)
 
-        if shape != None:
+        if shape is not None:
             arr = np.atleast_3d(np.empty(shape))
-        elif template != None:
+        elif template is not None:
             arr = sp.array(template,ndmin=3,dtype=bool)
         else:
             arr = np.atleast_3d(np.empty([1,1,1]))
@@ -89,7 +90,7 @@ class Cubic(GenericNetwork):
 #        self.add_model(propname='pore.subscript',model=mod,shape=self._shape)
 
         #If an image was sent as 'template', then trim network to image shape
-        if template != None:
+        if template is not None:
             self.trim(~arr.flatten())
 
     def add_boundaries(self):

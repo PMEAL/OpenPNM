@@ -38,19 +38,15 @@ class GenericPhysics(OpenPNM.Base.Core):
         super(GenericPhysics,self).__init__(**kwargs)
         logger.name = self.name
 
-        #Initialize locations
-        self['pore.all'] = sp.array([],ndmin=1,dtype=bool)
-        self['throat.all'] = sp.array([],ndmin=1,dtype=bool)
-
         #Associate with Network
-        if network == None:
+        if network is None:
             self._net = OpenPNM.Network.GenericNetwork()
         else:
             self._net = network  # Attach network to self
             self._net._physics.append(self)  # Register self with network
 
         #Associate with Phase
-        if phase == None:
+        if phase is None:
             self._phases.append(OpenPNM.Phases.GenericPhase())
         else:
             phase._physics.append(self)  # Register self with phase

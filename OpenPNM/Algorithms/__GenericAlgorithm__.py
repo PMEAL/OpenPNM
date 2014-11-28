@@ -40,7 +40,7 @@ class GenericAlgorithm(Core):
         super(GenericAlgorithm,self).__init__(**kwords)
         logger.name = self.name
 
-        if network == None:
+        if network is None:
             self._net = OpenPNM.Network.GenericNetwork()
         else:
             self._net = network
@@ -182,7 +182,7 @@ class GenericAlgorithm(Core):
         else:
             raise Exception('Problem with the pore and/or throat list')
         #Validate bcvalue
-        if bcvalue != None:
+        if bcvalue is not None:
             #Check bcvalues are compatible with bctypes
             if bctype == 'Neumann_group':  #Only scalars are acceptable
                 if sp.size(bcvalue) != 1:
@@ -210,12 +210,12 @@ class GenericAlgorithm(Core):
                     except KeyError: pass
         #Set boundary conditions based on supplied mode
         if mode == 'merge':
-            if bcvalue != None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
+            if bcvalue is not None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
             self[element+'.'+component.name+'_'+bctype][loc] = True
             if bctype not in self._existing_BC: self._existing_BC.append(bctype)
         elif mode == 'overwrite':
             self[element+'.'+component.name+'_bcval_'+bctype] = sp.ones((all_length,),dtype=float)*sp.nan
-            if bcvalue != None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
+            if bcvalue is not None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
             self[element+'.'+component.name+'_'+bctype] = sp.zeros((all_length,),dtype=bool)
             self[element+'.'+component.name+'_'+bctype][loc] = True
             if bctype not in self._existing_BC: self._existing_BC.append(bctype)

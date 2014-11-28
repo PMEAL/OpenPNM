@@ -37,7 +37,7 @@ class GenericNetwork(Core):
 
     def __setitem__(self,prop,value):
         for geom in self._geometries:
-            if prop in geom.keys():
+            if (prop in geom.keys()) and ('all' not in prop.split('.')):
                 logger.error(prop+' is already defined in at least one associated Geometry object')
                 return
         super(GenericNetwork,self).__setitem__(prop,value)
@@ -89,6 +89,7 @@ class GenericNetwork(Core):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> vals = sp.rand(pn.num_throats(),) < 0.5
         >>> temp = pn.create_adjacency_matrix(data=vals,sprsfmt='csr')
@@ -99,7 +100,7 @@ class GenericNetwork(Core):
         Nt   = self.num_throats()
 
         #Check if provided data is valid
-        if data == None:
+        if data is None:
             data = sp.ones((self.num_throats(),))
         elif sp.shape(data)[0] != Nt:
             raise Exception('Received dataset of incorrect length')
@@ -166,6 +167,7 @@ class GenericNetwork(Core):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> vals = sp.rand(pn.num_throats(),) < 0.5
         >>> temp = pn.create_incidence_matrix(data=vals,sprsfmt='csr')
@@ -176,7 +178,7 @@ class GenericNetwork(Core):
         Np = self.num_pores()
 
         #Check if provided data is valid
-        if data == None:
+        if data is None:
             data = sp.ones((self.num_throats(),))
         elif sp.shape(data)[0] != Nt:
             raise Exception('Received dataset of incorrect length')
@@ -226,6 +228,7 @@ class GenericNetwork(Core):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_connected_pores(throats=[0,1])
         array([[0, 1],
@@ -256,6 +259,7 @@ class GenericNetwork(Core):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_connecting_throat([0,1,2],[2,2,2])
         [[], [3], []]
@@ -312,6 +316,7 @@ class GenericNetwork(Core):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_neighbor_pores(pores=[0,2])
         array([ 1,  3,  5,  7, 25, 27])
@@ -383,6 +388,7 @@ class GenericNetwork(Core):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_neighbor_throats(pores=[0,1])
         array([0, 1, 2, 3, 4, 5])
@@ -435,6 +441,7 @@ class GenericNetwork(Core):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.num_neighbors(pores=[0,1],flatten=False)
         array([3, 4])
@@ -476,6 +483,7 @@ class GenericNetwork(Core):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn['pore.domain1'] = False
         >>> pn['pore.domain2'] = False
@@ -696,6 +704,7 @@ class GenericNetwork(Core):
 
         Examples
         --------
+        >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.Np
         125

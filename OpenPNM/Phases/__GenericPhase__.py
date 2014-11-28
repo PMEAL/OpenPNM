@@ -39,7 +39,7 @@ class GenericPhase(Core):
         super(GenericPhase,self).__init__(**kwargs)
         logger.name = self.name
 
-        if network == None:
+        if network is None:
             self._net = OpenPNM.Network.GenericNetwork()
         else:
             self._net = network
@@ -63,9 +63,9 @@ class GenericPhase(Core):
 
     def __setitem__(self,prop,value):
         for phys in self._physics:
-            if prop in phys.keys():
-                logger.error(prop+' is already defined in at least one associated Physics object')
-                return
+            if (prop in phys.keys()) and ('all' not in prop.split('.')):
+                    logger.error(prop+' is already defined in at least one associated Physics object')
+                    return
         super(GenericPhase,self).__setitem__(prop,value)
 
     def __getitem__(self,key):

@@ -24,6 +24,7 @@ class Mercury(GenericPhase):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> hg = OpenPNM.Phases.Mercury(network=pn)
 

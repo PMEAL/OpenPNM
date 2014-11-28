@@ -19,6 +19,7 @@ class FickianDiffusion(GenericLinearTransport):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)

@@ -14,7 +14,7 @@ def get_throat_geom(verts,normal,fibre_rad):
         Compute the convex hull of the 2D points giving a set of simplices which define neighbouring vertices in a clockwise fashion
         For each triplet calculate the offset position given the fibre radius
         Check for overlapping vertices and ones that lie outside the original hull - recalculate position to offset from or ignore if all overlapping
-        Calculate Area and Perimeter if successfully generated offset vertices to replicate eroded throat            
+        Calculate Area and Perimeter if successfully generated offset vertices to replicate eroded throat
         Translate back into 3D
     Any Errors encountered result in the throat area being zero and no vertices being passed back
     These Errors are not coding mistakes but failures to obtain an eroded facet with non-zero area:
@@ -23,7 +23,7 @@ def get_throat_geom(verts,normal,fibre_rad):
     Error 3: All the offset vertices overlap with at least one other vertex - Throat fully occluded
     Error 4: Not enough offset vertices to continue - Throat fully occluded
     Error 5: An offset vertex is outside the original set of points - Throat fully occluded
-    """        
+    """
     z_axis = [0,0,1]
     throat_area = 0.0
     throat_perimeter = 0.0
@@ -79,7 +79,7 @@ def get_throat_geom(verts,normal,fibre_rad):
             " If one or two sets of overlaps exist and at least one vertex is not overlapped then we need to do a bit more work "
             " Do some linalg to find a new point to offset from saving un-overlapped verts and newly created verts in a temporary list "
             count = 0
-            temp_verts = verts_2D                
+            temp_verts = verts_2D
             while True:
                 temp_vert_list=[]
                 for i in range(np.shape(line_points)[0]):
@@ -88,14 +88,14 @@ def get_throat_geom(verts,normal,fibre_rad):
                     else:
                         my_lines=[]
                         for j in range(np.shape(line_points)[0]):
-                    
+
                             if overlap_array[i][j] ==1 and overlap_array[j][i]==1:
                                 list_a = line_points[i][j]
                                 list_b = line_points[j][i]
                                 my_lines = symmetric_difference(list_a,list_b)
- 
+
                         my_lines=np.asarray(my_lines)
- 
+
                         if len(my_lines)==2:
                             try:
                                 quad_points=temp_verts[my_lines]
@@ -105,9 +105,9 @@ def get_throat_geom(verts,normal,fibre_rad):
                                 print("IndexError: "+str(my_lines))
                             except TypeError:
                                 print("TypeError: "+str(my_lines))
-                            
+
                             #new_vert_list.append(my_new_point)
-                    
+
                 temp_verts=np.asarray(misc.unique_list(temp_vert_list))
                 #new_vert_list=np.asarray(self._unique_list(new_vert_list))
                 #if len(verts_2D) >=3:
@@ -132,9 +132,9 @@ def get_throat_geom(verts,normal,fibre_rad):
                 if count >= 10:
                     break
 
-    if len(offset) >= 3 and Error == 0:    
+    if len(offset) >= 3 and Error == 0:
         " Now also check whether any of the offset points lie outside the original convex hull "
-        original_area = np.around(PolyArea2D(verts_2D),10)           
+        original_area = np.around(PolyArea2D(verts_2D),10)
         all_points = np.concatenate((verts_2D,offset),axis=0)
         try:
             total_hull = ConvexHull(all_points,qhull_options='QJ Pp') #ignores very small angles
@@ -175,15 +175,15 @@ def get_throat_geom(verts,normal,fibre_rad):
 def outer_offset(verts,fibre_rad):
     r"""
     Routine to loop through all verts and calculate offset position based on neighbours either side. Verts must be in hull order
-    """    
+    """
     offset = []
     for i,vert in enumerate(verts):
         " Collect three adjacent points and compute the offset of the first "
         triplet = (vert, np.roll(verts,-1,axis=0)[i],np.roll(verts,1,axis=0)[i])
         offset.append(offset_vertex(triplet,fibre_rad))
     offset = np.asarray(offset)
-    
-    return offset    
+
+    return offset
 
 def offset_vertex(points,rad = 0.01):
     " We are passed in a set of 3 points forming vertices of two adjoining simplexes of the convex hull of a voronoi facet "
@@ -238,7 +238,7 @@ def offset_vertex(points,rad = 0.01):
         y = rad*np.sin(alpha+theta)/np.sin(alpha)
 
     "Add the midpoint back in"
-    output = [x+p0[0],y+p0[1]]    
+    output = [x+p0[0],y+p0[1]]
 
     return output
 
@@ -283,7 +283,7 @@ def fuse_verts(verts,percentage=0.05):
         tolerance = x_span*percentage
     else:
         tolerance = y_span*percentage
-    #fuse vertices lying within 5% of the largest span    
+    #fuse vertices lying within 5% of the largest span
     return fuse(verts,tolerance)
 
 def PolyArea2D(pts):
@@ -323,9 +323,9 @@ def PolyWeightedCentroid2D(pts):
     Cy = cy/(6*A)
     #cx = sum(average_point[:,0]*perimeter_weighting)/sum(perimeter_weighting)
     #cy = sum(average_point[:,1]*perimeter_weighting)/sum(perimeter_weighting)
-    
+
     return [Cx,Cy]
-    
+
 def symmetric_difference(list_a,list_b):
     r"""
     Return the combination of two lists without common elements (necessary as sets cannot contain mutable objects)
@@ -350,7 +350,7 @@ def symmetric_difference(list_a,list_b):
         if match==False:
             sym_diff.append(element_b)
     return sym_diff
-    
+
 def new_point(pairs):
     r"""
     Passed 2 pairs of points defining lines either side of overlapped offset vertices
@@ -391,12 +391,12 @@ def line_equation(points):
         c=y_coords[1] - m*x_coords[1]
 
     return m,c
-    
+
 def set_overlap(verts,offset):
     r"""
     Given a set of vertices and a set of offset vertices, evaluate whether any of the offset vertices overlap
     This is then used to recalculate points from which to offset
-    """    
+    """
     dim = len(verts)
     overlap_array = np.zeros(shape=(dim,dim))
     sweep_radius = np.zeros(len(verts))
@@ -414,7 +414,7 @@ def set_overlap(verts,offset):
                 for k in range(dim):
                     if overlap_array[j][k]==1 and k!=i:
                         overlap_array[i][k]=1
-                        
+
     line_points_out=line_points(overlap_array)
 
     return overlap_array,sweep_radius,line_points_out
@@ -425,21 +425,21 @@ def line_points(array):
     If an overlap occurs in the span between offset j and offset i then a 1 will result in [i][j]
     As the vertices are in hull order and our aim is to create a new point from which to offset using connected fibres we want to
     identify the correct points to use to define our lines
-    
-      e__________ d  
-       |        | c  
-       |       /     
-       |     /       
-       |   /         
-       |_/           
-       a b           
+
+      e__________ d
+       |        | c
+       |       /
+       |     /
+       |   /
+       |_/
+       a b
     if we have 5 points in a hull a,b,c,d,e where a overlaps with b and c overlaps with d (and visa versa) the array will look like
     [0,1,0,0,0]
     [1,0,0,0,0]
     [0,0,0,1,0]
     [0,0,1,0,0]
     [0,0,0,0,0]
-    
+
     This means that c and d are within a fibre's width of each other and the line between them does not represent the fibre
     Instead we want to extend the outer lines (bc and de) to see where they would meet and offset from this point.
     Roll up and down to find the first unoverlapped index from which to start each line from then go back one to get the two
@@ -452,7 +452,7 @@ def line_points(array):
         for j in range(dim):
             if array[i][j]==1 and array[j][i]==1:
                 " Roll forwards to find the first unoverlapped index"
-                k=1                    
+                k=1
                 while k < dim:
                     if np.roll(array[i],-k,axis=0)[j]==0:
                         break
@@ -473,12 +473,12 @@ def line_points(array):
                 backward_line.sort()
                 line_points[i][j]=(forward_line,backward_line)
 
-    return line_points  
-    
+    return line_points
+
 def all_overlap(array):
-    r""" 
+    r"""
     Find out whether all offset vertices (columns) are overlapped by at least one other
-    If so then throat is fully occluded 
+    If so then throat is fully occluded
     """
     dim=np.shape(array)[0]
     overlap=[False]*dim
@@ -489,20 +489,20 @@ def all_overlap(array):
                 overlap[i]=True
     if sum(overlap)==dim:
         all_overlap = True
-    
+
     return all_overlap
 
 def scale(network,scale_factor=[1,1,1],preserve_vol=True):
     r"""
     A method for scaling the coordinates and vertices to create anisotropic networks
     The original domain volume can be preserved by setting preserve_vol = True
-    
+
     Example
     ---------
     >>> import OpenPNM
     >>> import OpenPNM.Utilities.vertexops as vo
     >>> import numpy as np
-    >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1],name='net')
+    >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1])
     >>> pn.add_boundaries()
     >>> B1 = pn.pores("left_boundary")
     >>> B2 = pn.pores("right_boundary")
@@ -515,7 +515,7 @@ def scale(network,scale_factor=[1,1,1],preserve_vol=True):
     >>> Vol3 = pn.vertex_dimension(B1,B2)
     >>> np.around(Vol3/Vol,5)
     2.0
-    
+
     """
     from scipy.special import cbrt
     import scipy as sp
@@ -531,25 +531,25 @@ def scale(network,scale_factor=[1,1,1],preserve_vol=True):
     for throat in network.throats():
         for i,vert in network["throat.vert_index"][throat].items():
             network["throat.vert_index"][throat][i] = network["throat.vert_index"][throat][i]*scale_factor
-            
+
 def vertex_dimension(network,face1=[],face2=[],parm='volume'):
     r"""
     Return the domain extent based on the vertices
-    
-    This function is better than using the pore coords as they may be far 
-    away from the original domain size.  And will alter the effective 
-    properties which should be based on the original domain sizes. Takes 
+
+    This function is better than using the pore coords as they may be far
+    away from the original domain size.  And will alter the effective
+    properties which should be based on the original domain sizes. Takes
     one or two sets of pores and works out different geometric properties
-    if "length" is specified and two lists are given the planarity is 
-    determined and the appropriate length (x,y,z) is returned.  It should 
-    work the same as domain length and area if vertices are not in network 
+    if "length" is specified and two lists are given the planarity is
+    determined and the appropriate length (x,y,z) is returned.  It should
+    work the same as domain length and area if vertices are not in network
     by using coordinates.
- 
+
     Example
     ----------
     >>> import OpenPNM
     >>> import OpenPNM.Utilities.vertexops as vo
-    >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1],name='net')
+    >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1])
     >>> pn.add_boundaries()
     >>> B1 = pn.pores("left_boundary")
     >>> B2 = pn.pores("right_boundary")
@@ -573,7 +573,7 @@ def vertex_dimension(network,face1=[],face2=[],parm='volume'):
         pores=np.hstack((pores,face1))
     if len(face2)>0:
         pores=np.hstack((pores,face2))
-    
+
     face1_coords = network["pore.coords"][face1]
     face2_coords = network["pore.coords"][face2]
     face1_planar = np.zeros(3)
@@ -592,7 +592,7 @@ def vertex_dimension(network,face1=[],face2=[],parm='volume'):
         planar = face2_planar
     else:
         return 0
-        
+
     if "pore.vert_index" in network.props():
         verts = []
         for pore in pores:
@@ -601,7 +601,7 @@ def vertex_dimension(network,face1=[],face2=[],parm='volume'):
         verts = np.asarray(verts)
     else:
         verts = network["pore.coords"][pores]
-        
+
     vx_min = verts[:,0].min()
     vx_max = verts[:,0].max()
     vy_min = verts[:,1].min()
@@ -612,7 +612,7 @@ def vertex_dimension(network,face1=[],face2=[],parm='volume'):
     width = np.around(vx_max-vx_min,10)
     depth = np.around(vy_max-vy_min,10)
     height = np.around(vz_max-vz_min,10)
-    
+
     if parm == 'volume':
         output =  width*depth*height
     elif parm == 'area_xy' or (parm == 'area' and planar[2]==1):
@@ -629,13 +629,13 @@ def vertex_dimension(network,face1=[],face2=[],parm='volume'):
         output = height
     elif parm == 'minmax':
         output = [vx_min,vx_max,vy_min,vy_max,vz_min,vz_max]
-    
+
     return output
 
 def porosity(network):
     r"""
     Return the porosity of the domain - sum of the pore volumes divided by domain volume
-    """ 
+    """
     domain_vol=vertex_dimension(network,network.pores(),parm='volume')
     try:
         pore_vol=sum(network["pore.volume"])
@@ -679,14 +679,14 @@ def tortuosity(network=None):
     tot_angle = (theta_x+theta_y+theta_z)*f
     if tot_angle>180:
         print("something is wrong: " +str(tot_angle))
-    
+
     return 1/np.cos(np.array([theta_x,theta_y,theta_z]))
 
 def print_throat(geom,throats_in):
     r"""
     Print a given throat or list of throats accepted as [1,2,3,...,n]
     e.g geom.print_throat([34,65,99])
-    Original vertices plus offset vertices are rotated to align with 
+    Original vertices plus offset vertices are rotated to align with
     the z-axis and then printed in 2D
     """
     import matplotlib.pyplot as plt
@@ -731,7 +731,7 @@ def print_throat(geom,throats_in):
             lower_bound_x = xmin - my_range*0.5
             upper_bound_x = xmin + my_range*1.5
             lower_bound_y = ymin - my_range*0.5
-            upper_bound_y = ymin + my_range*1.5  
+            upper_bound_y = ymin + my_range*1.5
             plt.axis((lower_bound_x,upper_bound_x,lower_bound_y,upper_bound_y))
             plt.grid(b=True, which='major', color='b', linestyle='-')
             centroid = tr.rotate_and_chop(coms[i],normals[i],[0,0,1])
@@ -751,7 +751,7 @@ def print_pore(geom,pores,fig=None,axis_bounds=None):
     r"""
     Print all throats around a given pore or list of pores accepted as [1,2,3,...,n]
     e.g geom.print_pore([34,65,99])
-    Original vertices plus offset vertices used to create faces and 
+    Original vertices plus offset vertices used to create faces and
     then printed in 3D
     To print all pores (n)
     pore_range = np.arange(0,n-1,1)
@@ -774,7 +774,7 @@ def print_pore(geom,pores,fig=None,axis_bounds=None):
         #        throats.append(geom['throat.map'].tolist().index(net_throat))
         #    except ValueError:
         #        " Throat not in this geometry "
-        throats = geom._net.map_throats(geom,net_throats,return_mapping=True)["target"]        
+        throats = geom._net.map_throats(geom,net_throats,return_mapping=True)["target"]
         "Can't create volume from one throat"
         if len(throats)>=1:
             verts = geom['throat.vertices'][throats]
@@ -792,11 +792,11 @@ def print_pore(geom,pores,fig=None,axis_bounds=None):
                 offs_hull = ConvexHull(offs_2D,qhull_options='QJ Pp')
                 ordered_offs.append(offsets[i][offs_hull.vertices])
             "Get domain extents for setting axis "
-            if axis_bounds == None:
+            if axis_bounds is None:
                 [xmin,xmax,ymin,ymax,zmin,zmax]= vertex_dimension(geom._net,pores,parm='minmax')
-            else: 
+            else:
                 [xmin,xmax,ymin,ymax,zmin,zmax]=axis_bounds
-            if fig == None:                
+            if fig is None:
                 fig = plt.figure()
             else:
                 return_fig==True

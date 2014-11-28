@@ -9,6 +9,8 @@ import scipy.constants
 from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
 sim = Controller()
+# Clear the controller object when OpenPNM is imported
+sim.clear()
 
 class Base(dict):
     r"""
@@ -65,11 +67,11 @@ class Base(dict):
     simulation = property(_get_sim,_set_sim)
 
     def _set_name(self,name):
-        if self._name != None:
+        if self._name is not None:
             raise Exception('Renaming objects can have catastrophic consequences')
         elif self._sim.get(name) is not None:
             raise Exception('An object named '+name+' already exists')
-        elif name == None:
+        elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
         self._name = name
@@ -99,17 +101,6 @@ class Base(dict):
         Returns
         -------
         OpenPNM object or list of objects
-
-        Examples
-        --------
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='geo1',pores=pn.Ps,throats=pn.Ts)
-        >>> temp = pn._find_object(obj_name='geo1')
-        >>> temp.name
-        'geo1'
-        >>> temp = pn._find_object(obj_type='Geometry')
-        >>> temp[0].name
-        'geo1'
 
         '''
         mro = [item.__name__ for item in self.__class__.__mro__]

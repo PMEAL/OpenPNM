@@ -45,11 +45,7 @@ class GenericGeometry(Core):
         super(GenericGeometry,self).__init__(**kwargs)
         logger.name = self.name
 
-        #Initialize locations
-        self['pore.all'] = sp.array([],ndmin=1,dtype=bool)
-        self['throat.all'] = sp.array([],ndmin=1,dtype=bool)
-
-        if network == None:
+        if network is None:
             self._net = OpenPNM.Network.GenericNetwork()
         else:
             self._net = network  # Attach network to self

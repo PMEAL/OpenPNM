@@ -20,6 +20,7 @@ class Boundary(GenericGeometry):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> Ps_int = pn.pores(labels=['top','bottom'],mode='not')
     >>> Ps_boun = pn.pores(labels=['top','bottom'],mode='union')
