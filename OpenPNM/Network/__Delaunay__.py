@@ -554,13 +554,14 @@ class Delaunay(GenericNetwork):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1])
+        >>> import OpenPNM.Utilities.vertexops as vo
         >>> pn.add_boundaries()
         >>> B1 = pn.pores("left_boundary")
         >>> B2 = pn.pores("right_boundary")
         >>> pn.domain_length(B1,B2)
         2.0
         """
-        L = self.vertex_dimension(face_1,face_2,parm='length')
+        L = vo.vertex_dimension(self,face_1,face_2,parm='length')
         return L
 
     def domain_area(self,face):
@@ -577,7 +578,7 @@ class Delaunay(GenericNetwork):
         >>> pn.domain_area(B1)
         3.0
         """
-        A = self.vertex_dimension(face,parm='area')
+        A = vo.vertex_dimension(self,face,parm='area')
 
         return A
 

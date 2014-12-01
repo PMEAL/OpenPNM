@@ -197,7 +197,7 @@ class Core(Base):
 
         '''
         #Check no duplicate or invalid locations
-        locs = sp.unique(new_order.values())[0]
+        locs = sp.unique(new_order.values())
         if len(locs) < len(new_order.values()):
             raise Exception('Duplicates found in the order')
 
@@ -1037,9 +1037,37 @@ class Core(Base):
         This makes an effort to maintain the data 'type' when possible; however
         when data is missing this can be tricky.  Float and boolean data is
         fine, but missing ints are converted to float when nans are inserted.
+        
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> Ps = pn.pores('top',mode='not')
+        >>> Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
+        >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=Ps,throats=Ts)
+        >>> Ps = pn.pores('top')
+        >>> Ts = Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
+        >>> boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
+        >>> geom['pore.test_int'] = sp.random.randint(0,100,geom.Np)
+        >>> print(pn['pore.test_int'].dtype)
+        float64
+        >>> boun['pore.test_int'] = sp.ones(boun.Np).astype(int)
+        >>> print(pn['pore.test_int'].dtype)
+        int32
+        >>> boun['pore.test_int'] = sp.rand(boun.Np)<0.5
+        >>> print(pn['pore.test_int'].dtype)
+        bool
+        >>> geom['pore.test_bool'] = sp.rand(geom.Np)<0.5
+        >>> print(pn['pore.test_bool'].dtype)
+        bool
+        >>> boun['pore.test_bool'] = sp.ones(boun.Np).astype(int)
+        >>> print(pn['pore.test_bool'].dtype)
+        bool
+        >>> boun['pore.test_bool'] = sp.rand(boun.Np)<0.5
+        >>> print(pn['pore.test_bool'].dtype)
+        bool
         '''
         element = prop.split('.')[0]
-
         Np = sp.shape(self['pore.all'])[0]
         Nt = sp.shape(self['throat.all'])[0]
         self._temp = {}
@@ -1075,32 +1103,36 @@ class Core(Base):
         for i in range(len(temp)):
             cnames.append(temp[i].__class__.__name__)
             shapes.append(sp.shape(temp[i]))
-            if temp[i].__class__.__name__ not in ['int','float','bool_','int32','int64','float32','float64','NoneType']:
+            if temp[i].__class__.__name__ not in ['int','int32','int64','float','float32','float64','bool','bool_','NoneType']:
                 make_object = True
                 try:
                     dtypes.append(temp[i].dtype.name)
                 except AttributeError:
                     dtypes.append('NoneType')
-        #if all the data was in an acceptable format to return straight away
+        cnames = sp.asarray(cnames)
+        #if all the data was in an acceptable format to return straight away - check data mixtures
         if make_object == False:
+            #All same data type
             if len(sp.unique(cnames))==1:
                 temp_cname = cnames[0]
             elif len(sp.unique(dtypes))==1:
                 temp_cname = dtypes[0]
+            #If any data is bool - preserve this and convert rest to False
+            elif len(sp.unique(cnames))>1 and sp.logical_or('bool' in cnames,'bool_' in cnames):
+                temp_cname = 'bool'
+                nan_locs[~sp.logical_or(cnames=='bool',cnames=='bool_')]=True
+                logger.warning(prop+' has been converted to bool, some data may be lost')
+            #If mixture with no bool convert to float
             else:
-                #convert a mixture to float
                 temp_cname='float'
+                logger.warning(prop+' has been converted to float.')
         else:
             #keep as object
             temp_cname = 'object'
         temp=temp.astype(temp_cname)
         if sum(nan_locs) > 0:
-            if temp_cname=='bool':
+            if sp.logical_or(temp_cname=='bool',temp_cname=='bool_'):
                 temp[nan_locs]=False
-            #elif 'float' in temp_cname:
-            #    temp[nan_locs]=0.0
-            #elif 'int' in temp_cname:
-            #    temp[nan_locs]=0
         #If we have all the data in ndarray of same type and shape we can re-cast into the proper shape
         if (len(sp.unique(cnames)) == 1)&(cnames[0]=='ndarray')&(len(sp.unique(shapes)) == 1):
             temp_2_shape = list(shapes[0])
