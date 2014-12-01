@@ -11,6 +11,7 @@ It inherits from Core, so is Python Dict with the OpenPNM data control methods.
 import scipy as sp
 from OpenPNM.Base import Core
 from OpenPNM.Base import logging
+from OpenPNM.Network import GenericNetwork
 logger = logging.getLogger()
 
 class GenericAlgorithm(Core):
@@ -41,7 +42,7 @@ class GenericAlgorithm(Core):
         logger.name = self.name
 
         if network is None:
-            self._net = OpenPNM.Network.GenericNetwork()
+            self._net = GenericNetwork()
         else:
             self._net = network
 
@@ -119,7 +120,7 @@ class GenericAlgorithm(Core):
         '''
         try: self._existing_BC
         except: self._existing_BC = []
-        if component==None:
+        if component is None:
             if sp.size(self._phases)!=1:
                 raise Exception('In each use of set_boundary_conditions method, one component should be specified or attached to the algorithm.' )
             else:
@@ -187,7 +188,11 @@ class GenericAlgorithm(Core):
             if bctype == 'Neumann_group':  #Only scalars are acceptable
                 if sp.size(bcvalue) != 1:
                     raise Exception('When specifying Neumann_group, bcval should be a scalar')
-                else:   bcvalue = sp.float64(bcvalue)
+                else:   
+                    bcvalue = sp.float64(bcvalue)
+                    if 'Neumann_group' not in self._existing_BC: 
+                        setattr(self,'_'+element+'_'+component.name+'_Neumann_group_location',[])
+                    getattr(self,'_'+element+'_'+component.name+'_Neumann_group_location').append(loc)
             else: #Only scalars or Np/Nt-long are acceptable
                 if sp.size(bcvalue) == 1:
                     bcvalue = sp.ones(sp.shape(loc))*bcvalue
