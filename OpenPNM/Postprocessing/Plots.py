@@ -176,11 +176,11 @@ def drainage_curves(inv_alg,
     >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
     >>> IP = OpenPNM.Algorithms.InvasionPercolation(network=pn)
     >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
-    IP algorithm at 0 % completion at 0.0 seconds
-    IP algorithm at 20 % completion at 0.0 seconds
-    IP algorithm at 40 % completion at 0.0 seconds
-    IP algorithm at 60 % completion at 0.0 seconds
-    IP algorithm at 100% completion at  0.0  seconds
+         IP algorithm at 0 % completion at 0.0 seconds
+         IP algorithm at 20 % completion at 0.0 seconds
+         IP algorithm at 40 % completion at 0.0 seconds
+         IP algorithm at 60 % completion at 0.0 seconds
+         IP algorithm at 100% completion at  0.0  seconds
     >>> OpenPNM.Postprocessing.Plots.drainage_curves(IP,timing='inv_time')
     """
     inv_throats = inv_alg.toindices(inv_alg['throat.'+seq]>0)

@@ -506,13 +506,13 @@ def scale(network,scale_factor=[1,1,1],preserve_vol=True):
     >>> pn.add_boundaries()
     >>> B1 = pn.pores("left_boundary")
     >>> B2 = pn.pores("right_boundary")
-    >>> Vol = pn.vertex_dimension(B1,B2)
+    >>> Vol = vo.vertex_dimension(pn,B1,B2)
     >>> vo.scale(network=pn,scale_factor=[2,1,1])
-    >>> Vol2 = pn.vertex_dimension(B1,B2)
+    >>> Vol2 = vo.vertex_dimension(pn,B1,B2)
     >>> np.around(Vol-Vol2,5)
     0.0
     >>> vo.scale(network=pn,scale_factor=[2,1,1],preserve_vol=False)
-    >>> Vol3 = pn.vertex_dimension(B1,B2)
+    >>> Vol3 = vo.vertex_dimension(pn,B1,B2)
     >>> np.around(Vol3/Vol,5)
     2.0
 
