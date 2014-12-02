@@ -186,7 +186,7 @@ def amalgamate_data(objs=[]):
     if type(objs) is not list:
         objs = list(objs)
     data_amalgamated = {}
-    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_vertices','throat.vertices','throat.normal','throat.perimeter']
+    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_vertices','throat.vertices','throat.normal','throat.perimeter','pore.vert_index','throat.vert_index']
     for item in objs:
         mro = [module.__name__ for module in item.__class__.__mro__]
         if 'GenericNetwork' in mro: #if Network object, combine Geometry and Network keys
@@ -218,7 +218,7 @@ def amalgamate_data(objs=[]):
                             dict_name = key
                         data_amalgamated.update({dict_name : item[key]})
                 except TypeError:
-                    print(key)
+                    pass
     return data_amalgamated
 
 def conduit_lengths(network,throats=None,mode='pore'):
