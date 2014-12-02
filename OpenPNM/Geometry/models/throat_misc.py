@@ -1,6 +1,6 @@
 r"""
 ===============================================================================
-Submodule -- pore_misc
+throat_misc --  Miscillaneous and generic functions to apply to throats
 ===============================================================================
 
 """
@@ -11,7 +11,7 @@ def random(geometry,
            num_range=[0,1],
            **kwargs):
     r"""
-    Assign random number to pore bodies
+    Assign random number to throats
     note: should this be called 'poisson'?  
     """
     range_size = num_range[1]-num_range[0]
@@ -19,6 +19,8 @@ def random(geometry,
     _sp.random.seed(seed)
     value = _sp.random.rand(geometry.num_throats(),)
     value = value*range_size + range_min
+    return value
+    
 
 def neighbor(geometry,
              network,

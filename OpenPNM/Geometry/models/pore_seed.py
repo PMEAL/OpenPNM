@@ -190,6 +190,9 @@ def spatially_correlated(geometry,network,weights=None,strel=None,**kwargs):
     z = network._shape[2]
     im = _sp.rand(x,y,z)
     if strel is None:  # Then generate a strel
+        if sum(weights) == 0:
+            # If weights of 0 are sent, then skip everything and return rands.
+            return im.flatten()
         w = _sp.array(weights)
         strel = _sp.zeros(w*2+1)
         strel[:,w[1],w[2]] = 1
