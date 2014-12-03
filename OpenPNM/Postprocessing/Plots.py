@@ -64,9 +64,9 @@ def porosity_profile(network,
     '''
     if fig is None:
         fig = _plt.figure()
-    L_x = _sp.amax(network['pore.coords'][:,0])
-    L_y = _sp.amax(network['pore.coords'][:,1])
-    L_z = _sp.amax(network['pore.coords'][:,2])
+    L_x = _sp.amax(network['pore.coords'][:,0]) + _sp.mean(((21/88.0)*network['pore.volume'])**(1/3.0))
+    L_y = _sp.amax(network['pore.coords'][:,1]) + _sp.mean(((21/88.0)*network['pore.volume'])**(1/3.0))
+    L_z = _sp.amax(network['pore.coords'][:,2]) + _sp.mean(((21/88.0)*network['pore.volume'])**(1/3.0))
     if axis is 0:
         xlab = 'x-direction'
         area = L_y*L_z
@@ -80,20 +80,30 @@ def porosity_profile(network,
     n_max = _sp.amax(network['pore.coords'][:,axis])
     steps = _sp.linspace(0,n_max,100,endpoint=True)
     vals = _sp.zeros_like(steps)
+    p_area = _sp.zeros_like(steps)
+    t_area = _sp.zeros_like(steps)
+
     rp = ((21/88.0)*network['pore.volume'])**(1/3.0)
-    upper = network['pore.coords'][:,axis] + rp
-    lower = network['pore.coords'][:,axis] - rp
+    p_upper = network['pore.coords'][:,axis] + rp
+    p_lower = network['pore.coords'][:,axis] - rp
+    TC1 = network['throat.conns'][:,0]
+    TC2 = network['throat.conns'][:,1]
+    t_upper = network['pore.coords'][:,axis][TC1]
+    t_lower = network['pore.coords'][:,axis][TC2]
+
     for i in range(0,len(steps)):
-        temp = (upper > steps[i])*(lower < steps[i])
-        vals[i] = (sum((22/7.0)*(rp[temp]**2 - (network['pore.coords'][:,axis][temp]-steps[i])**2)) \
-        + _sp.sum(network['throat.area'][temp]))/area
+        p_temp = (p_upper > steps[i])*(p_lower < steps[i])
+        t_temp = (t_upper > steps[i])*(t_lower < steps[i])
+        p_area[i] = sum((22/7.0)*(rp[p_temp]**2 - (network['pore.coords'][:,axis][p_temp]-steps[i])**2))
+        t_area[i] = sum(network['throat.area'][t_temp])
+        vals[i] = (p_area[i]+t_area[i])/area
     yaxis = vals
     xaxis = steps/n_max
     _plt.plot(xaxis,yaxis,'bo-')
     _plt.xlabel(xlab)
     _plt.ylabel('Porosity')
     fig.show()
-
+    
 def distributions(net,
                   fig = None,
                   throat_diameter='throat.diameter',
