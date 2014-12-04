@@ -107,7 +107,7 @@ class InvasionPercolation(GenericAlgorithm):
             inv_seq          : 0 for uninvaded, simulation step for invaded
             inv_time         : 0 for uninvaded, simulation time for invaded
             inv_sat          : 0 for uninvaded, simulation saturation for invaded
-            inv_pres     : 0 for uninvaded, simulation pressure for invaded
+            inv_pres         : 0 for uninvaded, simulation pressure for invaded
 
         and throat data ::
 
@@ -118,7 +118,7 @@ class InvasionPercolation(GenericAlgorithm):
             inv_time         : 0 for uninvaded, simulation time for invaded
             inv_sat          : 0 for uninvaded, simulation saturation for invaded
             inv_Pc           : throat capillary pressures
-            inv_pres     : 0 for uninvaded, simulation pressure for invaded
+            inv_pres         : 0 for uninvaded, simulation pressure for invaded
 
         """
 
@@ -689,10 +689,10 @@ class InvasionPercolation(GenericAlgorithm):
         except:
             print('Something bad happened while trying to update phase',self._phase.name)
         try:
-            self._phase_def['pore.'+occupancy]=~inv_pores
-            self['pore.defended'] = ~inv_pores
-            self._phase_def['throat.'+occupancy]=~inv_throats
-            self['throat.defended'] = ~inv_throats
+            self._phase_def['pore.'+occupancy]=sp.array(~inv_pores,dtype='float')
+            self['pore.defended']=sp.array(~inv_pores, dtype='float')
+            self._phase_def['throat.'+occupancy]=sp.array(~inv_throats, dtype='float')
+            self['throat.defended']=sp.array(~inv_throats, dtype='float')
         except:
             print('A partner phase has not been set so inverse occupancy cannot be set')
 
