@@ -107,6 +107,7 @@ class InvasionPercolation(GenericAlgorithm):
             inv_seq          : 0 for uninvaded, simulation step for invaded
             inv_time         : 0 for uninvaded, simulation time for invaded
             inv_sat          : 0 for uninvaded, simulation saturation for invaded
+            inv_pres         : 0 for uninvaded, simulation pressure for invaded
 
         and throat data ::
 
@@ -117,6 +118,7 @@ class InvasionPercolation(GenericAlgorithm):
             inv_time         : 0 for uninvaded, simulation time for invaded
             inv_sat          : 0 for uninvaded, simulation saturation for invaded
             inv_Pc           : throat capillary pressures
+            inv_pres         : 0 for uninvaded, simulation pressure for invaded
 
         """
 
@@ -181,11 +183,15 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.cluster_final'] = 0
         # Creating arrays for tracking invaded Pores(Np long, 0 for uninvaded, sequence for inaveded)
         self['pore.inv_seq'] =0
+        # Creating arrays for tracking invaded Pores(Np long, 0 for uninvaded, pressure for inaveded)
+        self['pore.inv_pres'] =0
         if self._timing:
             # Creating arrays for tracking invaded Pores(Np long, -1 for uninvaded, simulation time for inaveded)
             self['pore.inv_time'] = -1.
         # Creating arrays for tracking invaded throats(Nt long, 0 for uninvaded, sequence for inaveded)
         self['throat.inv_seq'] = 0
+        # Creating arrays for tracking invaded throats(Nt long, 0 for uninvaded, pressure for inaveded)
+        self['throat.inv_pres'] = 0
         if self._timing:
             # Creating arrays for tracking invaded Pores(Np long, -1 for uninvaded, simulation time for inaveded)
             self['throat.inv_time'] = -1.
@@ -225,6 +231,7 @@ class InvasionPercolation(GenericAlgorithm):
             self['pore.cluster_original'][pores] = clusterNumber
             # Label all inlet pores as invaded
             self['pore.inv_seq'][pores] = self._tseq
+            self['pore.inv_pres'][pores] = 0
             if self._timing:
                 self['pore.inv_time'][pores] = self._sim_time
             # Find all throats that border invaded pores
@@ -271,6 +278,8 @@ class InvasionPercolation(GenericAlgorithm):
         logger.info("Outer Iteration Stage ")
         self._pseq = 1
         self._tseq = 1
+        self._ppres = 0
+        self._tpres = 0
         self._NewPore = -1
         # Time keeper
         self._sim_time = 0
@@ -380,6 +389,7 @@ class InvasionPercolation(GenericAlgorithm):
 
         # Mark throat as invaded
         self['throat.inv_seq'][tinvade] = self._tseq
+        self['throat.inv_pres'][tinvade] = max(max(self['throat.inv_pres']),self['throat.inv_Pc'][tinvade])
         if self._timing:
             self['throat.inv_time'][tinvade] = self._sim_time
             # update self._cluster_data.['pore_volume']
@@ -464,6 +474,7 @@ class InvasionPercolation(GenericAlgorithm):
             if self._timing:
                 self['pore.inv_time'][self._NewPore] = self._sim_time
             self['pore.inv_seq'][self._NewPore] = self._tseq
+            self['pore.inv_pres'][self._NewPore] = max(self['throat.inv_pres'])
             if self._timing:
                 # update self._cluster_data.['pore_volume']
                 self._cluster_data['pore_volume'][self._current_cluster-1] += self._pore_volumes[self._NewPore]
@@ -615,7 +626,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._tpoints[cl_num-1] = []
 
 
-    def return_results(self,occupancy='occupancy',IPseq=None,IPsat=None):
+    def return_results(self,occupancy='occupancy',IPseq=None,IPsat=None,IPpres=None):
         r"""
 
         Returns
@@ -648,12 +659,21 @@ class InvasionPercolation(GenericAlgorithm):
         if IPseq==None:
             if IPsat is not None:
                 sat_pores = self['pore.inv_sat']<=IPsat
+                sat_throats = self['throat.inv_sat']<=IPsat
                 if sum(sat_pores) == 0:
                     IPseq = 0
                 else:
-                    IPseq = max(self['pore.inv_seq'][sat_pores])
+                    IPseq = max([max(self['throat.inv_seq'][sat_throats]),max(self['pore.inv_seq'][sat_pores])])
             else:
-                IPseq = self._tseq
+                if IPpres != None:
+                    sat_pores = self['pore.inv_pres']<=IPpres
+                    sat_throats = self['throat.inv_pres']<=IPpres
+                    if sum(sat_pores) == 0:
+                        IPseq = 0
+                    else:
+                        IPseq = max([max(self['throat.inv_seq'][sat_throats]),max(self['pore.inv_seq'][sat_pores])])
+                else:
+                    IPseq = self._tseq
 
         try:
             self._phase['pore.'+occupancy] = 0.
@@ -669,10 +689,10 @@ class InvasionPercolation(GenericAlgorithm):
         except:
             print('Something bad happened while trying to update phase',self._phase.name)
         try:
-            self._phase_def['pore.'+occupancy]=~inv_pores
-            self['pore.defended'] = ~inv_pores
-            self._phase_def['throat.'+occupancy]=~inv_throats
-            self['throat.defended'] = ~inv_throats
+            self._phase_def['pore.'+occupancy]=sp.array(~inv_pores,dtype='float')
+            self['pore.defended']=sp.array(~inv_pores, dtype='float')
+            self._phase_def['throat.'+occupancy]=sp.array(~inv_throats, dtype='float')
+            self['throat.defended']=sp.array(~inv_throats, dtype='float')
         except:
             print('A partner phase has not been set so inverse occupancy cannot be set')
 
