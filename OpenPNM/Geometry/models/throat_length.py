@@ -9,9 +9,17 @@ import scipy as _sp
 def straight(network,
              geometry,
              pore_diameter='pore.diameter',
+             L_negative = 1e-9,
              **kwargs):
     r"""
-    Calculate throat length 
+    Calculate throat length
+    
+    Parameters
+    ----------
+    L_negative : float
+        The default throat length to use when negative lengths are found.  The
+        default is 1 nm.  To accept negative throat lengths, set this value to 
+        ``None``.
     """
     #Initialize throat_property['length']
     throats = network.throats(geometry.name)
@@ -24,10 +32,10 @@ def straight(network,
     D2 = network[pore_diameter][pore2]
     value = E-(D1+D2)/2.
     value = value[throats]
-    if _sp.any(value<0):
-        print('Negative throat lengths are calculated. Arbitrary positive length assigned (1e-9 meters)')
+    if _sp.any(value<0) and (L_negative is not None):
+        print('Negative throat lengths are calculated. Arbitrary positive length assigned: '+str(L_negative))
         Ts = _sp.where(value<0)[0]
-        value[Ts] = 1e-9
+        value[Ts] = L_negative
     return value
         
 def voronoi(network,
