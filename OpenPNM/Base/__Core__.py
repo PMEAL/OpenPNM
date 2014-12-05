@@ -199,7 +199,7 @@ class Core(Base):
 
         '''
         #Check no duplicate or invalid locations
-        locs = sp.unique(new_order.values())
+        locs = sp.unique(new_order.values())[0]
         if len(locs) < len(new_order.values()):
             raise Exception('Duplicates found in the order')
 
