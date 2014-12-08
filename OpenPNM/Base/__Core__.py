@@ -199,7 +199,7 @@ class Core(Base):
 
         '''
         #Check no duplicate or invalid locations
-        locs = sp.unique(new_order.values())
+        locs = sp.unique(new_order.values())[0]
         if len(locs) < len(new_order.values()):
             raise Exception('Duplicates found in the order')
 
@@ -1331,9 +1331,16 @@ class Core(Base):
     def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
-        mro = [item.__name__ for item in self.__class__.__mro__]
-        if 'GenericNetwork' in mro: net = self
-        else: net = self._net
+        if self._net is None:  # self is a parent Network
+            net = self
+        else:
+            try:
+                if self._net._net is None:  # self is a subset Network
+                    net = self._net
+                else:
+                    net = self._net._net  # self is associated with a subset
+            except:
+                net = self._net  # self is associated with a parent Network
         locations = sp.array(locations,ndmin=1)
         mapping = {}
 

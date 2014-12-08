@@ -31,26 +31,30 @@ def get_subscripts(network,
         vals[network.pores('internal')] = ind
         return vals
 
-def apply_spacing(network,
-                spacing,
-                subscripts='pore.subscript',
-                **kwargs):
+def adjust_spacing(network,
+                   new_spacing,
+                   **kwargs):
     r'''
-    Calculates the pore coordinates based on supplied spacing and pore
-    subscript values.  The returned coordinates are offset by half of the
-    lattice spacing so that pores are centered in each lattice cell.
+    Adjust the the pore-to-pore lattice spacing on a cubic network
 
     Parameters
     ----------
-    spacing : float
-        The lattice constant, or spacing between pores.
+    new_spacing : float
+        The new lattice spacing to apply
 
     Notes
     -----
-    - This model is intended for Cubic networks
-    - At present this only applied a constant spacing to all directions
+    At present this method only applies a uniform spacing in all directions.
+    This is a limiation of OpenPNM Cubic Networks in general, and not of the
+    method.
     '''
-    coords = (network[subscripts] + 0.5)*spacing
+    coords = network['pore.coords']
+    try:
+        spacing = network._spacing
+        coords = coords/spacing*new_spacing
+        network._spacing = new_spacing
+    except:
+        pass
     return coords
 
 def reduce_coordination(network,
