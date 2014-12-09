@@ -53,8 +53,8 @@ OP_1.return_results(Pc=7000)
 #------------------------------------------------------------------------------
 inlets = pn.pores('bottom_boundary')
 outlets = pn.pores('top_boundary')
-IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn,name='IP_1')
-IP_1.run(invading_phase=water,defending_phase=air,inlets=inlets,outlets=outlets,end_condition='breakthrough')
+IP_1 = OpenPNM.Algorithms.InvasionPercolationBasic(network=pn,name='IP_1')
+IP_1.run(phase=water,inlets=inlets)
 IP_1.return_results()
 
 #------------------------------------------------------------------------------
