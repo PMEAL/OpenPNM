@@ -178,7 +178,8 @@ def distributions(net,
                   pore_diameter='pore.diameter',
                  throat_length='throat.length',
                  exclude_boundaries=True,
-                 geom_list=None):
+                 geom_list=None,
+                 scale=1):
     r"""
     Plot a montage of key network size distribution histograms
 
@@ -190,7 +191,12 @@ def distributions(net,
     """
     if fig is None:
         fig = _plt.figure()
-
+    if scale == 1:
+        unit ='(m)'
+    if scale == 1e3:
+        unit ='(mm)'
+    if scale == 1e6:
+        unit ='(um)'
     if geom_list is not None:
         include_pores = [False]*net.num_pores()
         include_throats = [False]*net.num_throats()
@@ -205,8 +211,8 @@ def distributions(net,
 
 
     ax1 = fig.add_subplot(221)
-    ax1.hist(net[pore_diameter][pores],25,facecolor='green')
-    ax1.set_xlabel('Pore Diameter')
+    ax1.hist(scale*net[pore_diameter][pores],25,facecolor='green')
+    ax1.set_xlabel('Pore Diameter, ' + unit)
     ax1.set_ylabel('Frequency')
 
     ax2 = fig.add_subplot(222)
@@ -216,16 +222,47 @@ def distributions(net,
     ax2.set_ylabel('Frequency')
 
     ax3 = fig.add_subplot(223)
-    ax3.hist(net[throat_diameter][throats],25,facecolor='blue')
-    ax3.set_xlabel('Throat Diameter')
+    ax3.hist(scale*net[throat_diameter][throats],25,facecolor='blue')
+    ax3.set_xlabel('Throat Diameter, ' + unit)
     ax3.set_ylabel('Frequency')
 
     ax4 = fig.add_subplot(224)
-    ax4.hist(net[throat_length][throats],25,facecolor='red')
-    ax4.set_xlabel('Throat Length')
+    ax4.hist(scale*net[throat_length][throats],25,facecolor='red')
+    ax4.set_xlabel('Throat Length, ' + unit)
     ax4.set_ylabel('Frequency')
     fig.show()
 
+def pore_size_distribution(network, fig=None,):
+
+    r'''
+    Plot the pore and throat size distribution which is the accumulated 
+    volume vs. the diameter in a semilog plot
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+    
+    '''
+    if fig is None:
+        fig = _plt.figure()
+    dp = network['pore.diameter']
+    Vp = network['pore.volume']
+    dt = network['throat.diameter']
+    Vt = network['throat.volume']
+    dmax = max(max(dp),max(dt))
+    steps = _sp.linspace(0,dmax,100,endpoint=True)
+    vals = _sp.zeros_like(steps)
+    for i in range(0,len(steps)-1):
+        temp1 = dp > steps[i]
+        temp2 = dt > steps[i]
+        vals[i] = sum(Vp[temp1]) + sum(Vt[temp2])
+    yaxis = vals
+    xaxis = steps
+    _plt.semilogx(xaxis,yaxis,'b.-')
+    _plt.xlabel('Pore & Throat Diameter (m)')
+    _plt.ylabel('Cumulative Volume (m^3)')
+    fig.show()
+    
 def drainage_curves(inv_alg,
                     fig=None,
                     Pc='inv_Pc',
