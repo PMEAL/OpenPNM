@@ -99,7 +99,7 @@ class Core(Base):
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
 
             * 'deferred' : The model is stored on the object but not run until ``regenerate`` is called
-            
+
             * 'on_demand' : The model is stored on the object but not run, AND will only run if specifically requested in ``regenerate``
 
         Notes
@@ -240,7 +240,7 @@ class Core(Base):
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
         >>> geom['pore.diameter'] = 1
         >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
-        >>> f = gm.pore_area.cubic 
+        >>> f = gm.pore_area.cubic
         >>> geom.add_model(propname='pore.area',model=f)  # Add model to Geometry object
         >>> geom['pore.area'][0]  # Look at area value in pore 0
         1
@@ -252,7 +252,7 @@ class Core(Base):
         '''
         if props == '':  # If empty, assume all models are to be regenerated
             props = list(self._models.keys())
-            for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only 
+            for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only
                 if self._models[item].keywords.get('regen_mode') == 'on_demand':
                     props.remove(item)
         elif type(props) == str:
@@ -767,11 +767,25 @@ class Core(Base):
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         '''
-        if element[-1] == 's':
-            element = element[:-1]
+        element.rstrip('s')  # Correct plural form of element keyword
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
-        if type(labels) == str: labels = [labels] #convert string to list, if necessary
+        if type(labels) == str:  # Convert string to list, if necessary
+            labels = [labels]
+        for label in labels:  # Parse the labels list for wildcards "*"
+            if label.startswith('*'):
+                labels.remove(label)
+                temp = [item for item in self.labels() if item.split('.')[-1].endswith(label.strip('*'))]
+                if temp == []:
+                    temp = [label.strip('*')]
+                labels.extend(temp)
+            if label.endswith('*'):
+                labels.remove(label)
+                temp = [item for item in self.labels() if item.split('.')[-1].startswith(label.strip('*'))]
+                if temp == []:
+                    temp = [label.strip('*')]
+                labels.extend(temp)
+        # Begin computing label array
         if mode == 'union':
             union = sp.zeros_like(self[element+'.all'],dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
@@ -806,8 +820,9 @@ class Core(Base):
         Parameters
         ----------
         labels : list of strings, optional
-            The pore label(s) whose locations are requested.
-            If omitted, all pore inidices are returned.
+            The pore label(s) whose locations are requested.  If omitted, all
+            pore inidices are returned. This argument also accepts '*' for
+            wildcard searches.
         mode : string, optional
             Specifies how the query should be performed.  The options are:
 
@@ -850,8 +865,9 @@ class Core(Base):
         Parameters
         ----------
         labels : list of strings, optional
-            The throat label(s) whose locations are requested.
-            If omitted, 'all' throat inidices are returned.
+            The throat label(s) whose locations are requested.  If omitted,
+            'all' throat inidices are returned.  This argument also accepts
+            '*' for wildcard searches.
         mode : string, optional
             Specifies how the query should be performed.  The options are:
 
@@ -1042,7 +1058,7 @@ class Core(Base):
         This makes an effort to maintain the data 'type' when possible; however
         when data is missing this can be tricky.  Float and boolean data is
         fine, but missing ints are converted to float when nans are inserted.
-        
+
         Examples
         --------
         >>> import OpenPNM
