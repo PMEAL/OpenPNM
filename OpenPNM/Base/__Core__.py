@@ -11,6 +11,7 @@ from OpenPNM.Base import logging
 logger = logging.getLogger()
 from OpenPNM.Utilities import misc
 
+
 class Core(Base):
     r'''
     Contains OpenPNM specificmethods for working with the data in the dictionaries
@@ -1019,7 +1020,7 @@ class Core(Base):
             logger.error('Received data was an ambiguous length')
             raise Exception()
         return values
-
+    #@profile
     def _interleave_data_old(self,prop,sources):
         r'''
         Retrieves requested property from associated objects, to produce a full
@@ -1071,7 +1072,7 @@ class Core(Base):
             temp = sp.array(temp,dtype=max(dtypes))
 #            self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
         return temp
-
+    #@profile
     def _interleave_data(self,prop,sources):
         r'''
         Retrieves requested property from associated objects, to produce a full
@@ -1118,7 +1119,8 @@ class Core(Base):
         bool
         '''
         element = prop.split('.')[0]
-        temp = sp.ndarray((self._count(element)),dtype='object')
+        #temp = sp.ndarray((self._count(element)),dtype='object')
+        temp = sp.ndarray((self._count(element)))
         nan_locs = sp.ndarray((self._count(element)),dtype='bool')
         nan_locs.fill(False)
         bool_locs = sp.ndarray((self._count(element)),dtype='bool')
@@ -1152,7 +1154,9 @@ class Core(Base):
                     if temp_dim != values_dim:
                         logger.warning(prop+' data has different dimensions, consider revising data in object '+str(item.name))
                 except:
-                    temp = sp.ndarray([self._count(element),values_dim],dtype='object')
+                    temp = sp.ndarray([self._count(element),values_dim])
+            if values.dtype == 'object' and temp.dtype != 'object':
+                temp = temp.astype('object')
             temp[locations] = values  #Assign values
         #Check if requested prop was found on any sub-objects
         if prop_found == False:

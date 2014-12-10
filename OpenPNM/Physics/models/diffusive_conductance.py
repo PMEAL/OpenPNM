@@ -18,6 +18,7 @@ def bulk_diffusion(physics,
                    throat_area='throat.area',
                    throat_length='throat.length',
                    throat_diameter='throat.diameter',
+                   shape_factor='throat.shape_factor',
                    calc_pore_len=True,
                    **kwargs):
     r"""
@@ -46,7 +47,9 @@ def bulk_diffusion(physics,
     parea = network[pore_area]
     pdia = network[pore_diameter]
     #Get the properties of every throat
-    tarea = network[throat_area]
+    #tarea = network[throat_area]
+    tdia = network[throat_diameter]
+    tarea = _sp.pi*(tdia/2)**2
     tlen = network[throat_length]
     #Interpolate pore phase property values to throats
     cp = phase[pore_molar_density]
@@ -61,8 +64,8 @@ def bulk_diffusion(physics,
         plen1 = (0.5*pdia[Ps[:,0]])
         plen2 = (0.5*pdia[Ps[:,1]])
     #remove any non-positive lengths
-    plen1[plen1<=0]=1e-12
-    plen2[plen2<=0]=1e-12
+    plen1[plen1<=0]=0
+    plen2[plen2<=0]=0
     #Find g for half of pore 1
     gp1 = ct*DABt*parea[Ps[:,0]]/plen1
     gp1[_sp.isnan(gp1)] = _sp.inf
@@ -73,8 +76,14 @@ def bulk_diffusion(physics,
     gp2[~(gp2>0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     #Find g for full throat
     #remove any non-positive lengths
-    tlen[tlen<=0] = 1e-12
-    gt = ct*DABt*tarea/tlen
+    tlen[tlen<=0] = 0
+    #get shape factor
+    try:
+        sf = network[shape_factor]
+    except:
+        sf = _sp.ones(network.num_throats())
+        sf.fill(_sp.pi*8)
+    gt = (_sp.pi*8/sf)*ct*DABt*tarea/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     value = value[phase.throats(physics.name)]
     return value

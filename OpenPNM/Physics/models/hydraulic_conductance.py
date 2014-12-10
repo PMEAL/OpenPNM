@@ -15,6 +15,7 @@ def hagen_poiseuille(physics,
                      pore_viscosity='pore.viscosity',
                      throat_length='throat.length',
                      throat_diameter='throat.diameter',
+                     shape_factor='throat.shape_factor',
                      calc_pore_len=True,
                      **kwargs):
     r"""
@@ -50,8 +51,8 @@ def hagen_poiseuille(physics,
         plen1 = (0.5*pdia[Ps[:,0]])
         plen2 = (0.5*pdia[Ps[:,1]]) 
     #remove any non-positive lengths    
-    plen1[plen1<=0]=1e-12
-    plen2[plen2<=0]=1e-12
+    plen1[plen1<=0]=0
+    plen2[plen2<=0]=0
     #Find g for half of pore 1
     gp1 = _sp.pi*(pdia[Ps[:,0]])**4/(128*plen1*mut)
     gp1[_sp.isnan(gp1)] = _sp.inf
@@ -66,8 +67,14 @@ def hagen_poiseuille(physics,
     tdia = network[throat_diameter]
     tlen = network[throat_length]
     #remove any non-positive lengths
-    tlen[tlen<=0] = 1e-12
-    gt = _sp.pi*(tdia)**4/(128*tlen*mut)
+    tlen[tlen<=0] = 0
+    #get shape factor
+    try:
+        sf = network[shape_factor]
+    except:
+        sf = _sp.ones(network.num_throats())
+        sf.fill(_sp.pi*8)
+    gt = (_sp.pi*8/sf)*_sp.pi*(tdia)**4/(128*tlen*mut)
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     value = value[phase.throats(physics.name)]
     return value
