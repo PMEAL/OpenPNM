@@ -726,7 +726,7 @@ class Core(Base):
             temp = self._get_labels(element='throat',locations=throats,mode=mode)
         return temp
 
-    def filter_by_label(self,pores=[],throats=[],label=''):
+    def filter_by_label(self,pores=[],throats=[],labels='',mode='union'):
         r'''
         Returns which of the supplied pores (or throats) has the specified label
 
@@ -735,8 +735,23 @@ class Core(Base):
         pores, or throats : array_like
             List of pores or throats to be filtered
 
-        label : string
-            The label to apply as a filter
+        labels : list of strings
+            The labels to apply as a filter
+
+        mode : string
+            Controls how the filter is applied.  Options include:
+
+            * 'union' : (default) All locations with ANY of the given labels are kept.
+
+            * 'intersection' : Only locations with ALL the given labels are kept.
+
+            * 'not_intersection' : Only locations with exactly one of the given labels are kept.
+
+            * 'not' : Only locations with none of the given labels are kept.
+
+        See Also
+        --------
+        ``pores``, ``throats``
 
         Examples
         --------
@@ -745,22 +760,21 @@ class Core(Base):
         >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
         array([0, 1])
         '''
-        if pores is not []:
-            label = 'pore.'+label.split('.')[-1]
-            all_labels = self.labels(element='pore')
-            mask = self.labels(pores=pores,mode='mask')
-            ind = all_labels.index(label)
-            temp = mask[:,ind]
-            pores = sp.array(pores,ndmin=1)
-            return pores[temp]
-        elif throats is not []:
-            label = 'throat.'+label.split('.')[-1]
-            all_labels = self.labels(element='throat')
-            mask = self.labels(throats=throats,mode='mask')
-            ind = all_labels.index(label)
-            temp = mask[:,ind]
-            throats = sp.array(throats,ndmin=1)
-            return throats[temp]
+        if type(labels) == str:  # Convert input to list
+            labels = [labels]
+        # Convert inputs to locations and element
+        if pores != []:
+            element = 'pore'
+            locations = sp.array(pores)
+        if throats != []:
+            element = 'throat'
+            locations = sp.array(throats)
+        # Do it
+        labels = [element+'.'+item.split('.')[-1] for item in labels]
+        all_locs = self._get_indices(element=element,labels=labels,mode=mode)
+        mask = self._tomask(locations=all_locs,element=element)
+        ind = mask[locations]
+        return locations[ind]
 
     def _get_indices(self,element,labels=['all'],mode='union'):
         r'''
