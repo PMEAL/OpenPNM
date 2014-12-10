@@ -492,7 +492,7 @@ def all_overlap(array):
 
     return all_overlap
 
-def scale(network,scale_factor=[1,1,1],preserve_vol=True):
+def scale(network,scale_factor=[1,1,1],preserve_vol=True,linear_scaling=[False,False,False]):
     r"""
     A method for scaling the coordinates and vertices to create anisotropic networks
     The original domain volume can be preserved by setting preserve_vol = True
@@ -519,18 +519,62 @@ def scale(network,scale_factor=[1,1,1],preserve_vol=True):
     """
     from scipy.special import cbrt
     import scipy as sp
+    minmax=np.around(vertex_dimension(network=network,face1=network.pores(),parm='minmax'),10)
     scale_factor = np.asarray(scale_factor)
     if preserve_vol == True:
         scale_factor = scale_factor/(cbrt(sp.prod(scale_factor)))
-    network["pore.coords"]=network["pore.coords"]*scale_factor
+    
+    lin_scale = _linear_scale_factor(network["pore.coords"],minmax,scale_factor,linear_scaling)
+    
+    network["pore.coords"]=network["pore.coords"]*lin_scale
     #Cycle through all vertices of all pores updating vertex values
     for pore in network.pores():
         for i,vert in network["pore.vert_index"][pore].items():
-            network["pore.vert_index"][pore][i] = network["pore.vert_index"][pore][i]*scale_factor
+            #x_vert = np.around(network["pore.vert_index"][pore][i][0]/(xmax-xmin),10)
+            #x_vert_array=np.ones(3)
+            #x_vert_array.fill(x_vert)
+            #vert_scale = (scale_factor - 1)*x_vert_array + 1
+            vert_scale = _linear_scale_factor(vert,minmax,scale_factor,linear_scaling)
+            network["pore.vert_index"][pore][i] = vert*vert_scale
     #Cycle through all vertices of all throats updating vertex values
     for throat in network.throats():
         for i,vert in network["throat.vert_index"][throat].items():
-            network["throat.vert_index"][throat][i] = network["throat.vert_index"][throat][i]*scale_factor
+            #x_vert = np.around(network["throat.vert_index"][throat][i][0]/(xmax-xmin),10)
+            #x_vert_array=np.ones(3)
+            #x_vert_array.fill(x_vert)
+            #vert_scale = (scale_factor - 1)*x_vert_array + 1
+            #network["throat.vert_index"][throat][i] = network["throat.vert_index"][throat][i]*vert_scale
+            vert_scale = _linear_scale_factor(vert,minmax,scale_factor,linear_scaling)
+            network["throat.vert_index"][throat][i] = vert*vert_scale
+
+def _linear_scale_factor(points=None,minmax=[0,1,0,1,0,1],scale_factor=[1,1,1],linear_scaling=[False,False,False]):
+    " Work out the linear scale factor of a point or set of points based on the domain extent, an absolute scale factor "
+    " and linear_scaling booleans for each coordinate. If all False the absolute scaling is applied equally across the domain "
+    " if one linear_scaling boolean is True then a linear function is applied to scaling the co-ordinates along that axis "
+    " if more than one boolean is true then a combined linear function is applied "
+    [xmin,xmax,ymin,ymax,zmin,zmax]=minmax
+    max_array = np.array([(xmax-xmin),(ymax-ymin),(zmax-zmin)])
+    #xpos = np.around(points[:,0]/(xmax-xmin),10)
+    #ypos = np.around(points[:,1]/(ymax-ymin),10)
+    #zpos = np.around(points[:,2]/(zmax-zmin),10)
+    #pos_array=np.vstack((xpos,ypos,zpos)).T
+    pos_array = points/max_array
+    shape = np.shape(points)
+    if len(shape) == 1:
+        combined_pos = np.ones([1])
+        for i in range(3):
+            if linear_scaling[i]==True:
+                combined_pos*=pos_array[i]
+        lin_scale = (scale_factor - 1)*combined_pos + 1
+    else:
+        combined_pos = np.ones([shape[0]])
+        for i in range(3):
+            if linear_scaling[i]==True:
+                combined_pos*=pos_array[:,i]
+        pos_array=np.vstack((combined_pos,combined_pos,combined_pos)).T
+        lin_scale = (scale_factor - 1)*pos_array + 1
+    
+    return lin_scale
 
 def vertex_dimension(network,face1=[],face2=[],parm='volume'):
     r"""
@@ -737,6 +781,83 @@ def print_throat(geom,throats_in):
             centroid = tr.rotate_and_chop(coms[i],normals[i],[0,0,1])
             incent = tr.rotate_and_chop(incentre[i],normals[i],[0,0,1])
             plt.scatter(centroid[0][0],centroid[0][1])
+            #plt.scatter(centroid2[0],centroid2[1],c='r')
+            "Plot incircle"
+            t = np.linspace(0,2*np.pi,200)
+            u = inradius[i]*np.cos(t)+incent[0][0]
+            v = inradius[i]*np.sin(t)+incent[0][1]
+            plt.plot(u,v,'r-')
+            fig.show()
+    else:
+        print("Please provide throat indices")
+
+def patch_throat(geom,throats_in):
+    r"""
+    Print a given throat or list of throats accepted as [1,2,3,...,n]
+    e.g geom.print_throat([34,65,99])
+    Original vertices plus offset vertices are rotated to align with
+    the z-axis and then printed in 2D
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib import patches
+    from matplotlib.bezier import make_path_regular, concatenate_paths 
+    from matplotlib.path import Path 
+    from matplotlib.patches import PathPatch 
+    throats = []
+    for throat in throats_in:
+        if throat in range(geom.num_throats()):
+            throats.append(throat)
+        else:
+            print("Throat: "+str(throat)+ " not part of geometry")
+    if len(throats) > 0:
+        verts = geom['throat.vertices'][throats]
+        offsets = geom['throat.offset_vertices'][throats]
+        #image_offsets = geom['throat.image_analysis'][throats]
+        normals = geom['throat.normal'][throats]
+        coms = geom['throat.centroid'][throats]
+        incentre = geom['throat.incentre'][throats]
+        inradius = 0.5*geom['throat.indiameter'][throats]
+        for i in range(len(throats)):
+            fig = plt.figure()
+            ax=fig.add_subplot(111) 
+            vert_2D = tr.rotate_and_chop(verts[i],normals[i],[0,0,1])
+            hull = ConvexHull(vert_2D,qhull_options='QJ Pp')
+            #for simplex in hull.simplices:
+            #    plt.plot(vert_2D[simplex,0], vert_2D[simplex,1], 'k-',linewidth=2)
+            vert_2D = vert_2D[hull.vertices]
+            poly_patch = patches.Polygon(vert_2D,facecolor='blue') 
+            plt.scatter(vert_2D[:,0], vert_2D[:,1])
+            #centroid = vo.PolyWeightedCentroid2D(vert_2D[hull.vertices])
+            offset_2D = tr.rotate_and_chop(offsets[i],normals[i],[0,0,1])
+            offset_hull = ConvexHull(offset_2D,qhull_options='QJ Pp')
+            #for simplex in offset_hull.simplices:
+            #    plt.plot(offset_2D[simplex,0], offset_2D[simplex,1], 'g-',linewidth=2)
+            offset_2D = offset_2D[offset_hull.vertices]
+            plt.scatter(offset_2D[:,0], offset_2D[:,1])
+            hole_patch = patches.Polygon(offset_2D,facecolor='white')
+            
+            ax.add_patch(poly_patch) 
+            ax.add_patch(hole_patch)
+            " Make sure the plot looks nice by finding the greatest range of points and setting the plot to look square"
+            xmax = vert_2D[:,0].max()
+            xmin = vert_2D[:,0].min()
+            ymax = vert_2D[:,1].max()
+            ymin = vert_2D[:,1].min()
+            x_range = xmax - xmin
+            y_range = ymax - ymin
+            if (x_range > y_range):
+                my_range = x_range
+            else:
+                my_range = y_range
+            lower_bound_x = xmin - my_range*0.5
+            upper_bound_x = xmin + my_range*1.5
+            lower_bound_y = ymin - my_range*0.5
+            upper_bound_y = ymin + my_range*1.5
+            plt.axis((lower_bound_x,upper_bound_x,lower_bound_y,upper_bound_y))
+            plt.grid(b=True, which='major', color='b', linestyle='-')
+            centroid = tr.rotate_and_chop(coms[i],normals[i],[0,0,1])
+            incent = tr.rotate_and_chop(incentre[i],normals[i],[0,0,1])
+            plt.scatter(centroid[0][0],centroid[0][1],c='g')
             #plt.scatter(centroid2[0],centroid2[1],c='r')
             "Plot incircle"
             t = np.linspace(0,2*np.pi,200)

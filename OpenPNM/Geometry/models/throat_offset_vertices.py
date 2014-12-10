@@ -110,7 +110,10 @@ def distance_transform(network,
             "All points should lie on this plane but could be some rounding errors so use the order parameter"
             z_plane = sp.unique(np.around(z,order+2))
             if len(z_plane) > 1:
-                print("rotation for image analysis failed")
+                #print("rotation for image analysis failed")
+                temp_arr = np.ones(1)
+                temp_arr.fill(np.mean(z_plane))
+                z_plane=temp_arr
             "Fill in the convex hull polygon"
             convhullimg = convex_hull_image(img_pad)
             "Perform a Distance Transform and black out points less than r to create binary erosion"
@@ -130,7 +133,7 @@ def distance_transform(network,
                         area[i] = props.area
                         perimeter[i] = props.perimeter
                         coords = props.coords
-                    "Undo the translation, scaling and truncation on the centroif"
+                    "Undo the translation, scaling and truncation on the centroid"
                     centroid2d = [x0,y0]/f
                     centroid2d += (translation)
                     centroid3d = np.concatenate((centroid2d,z_plane))

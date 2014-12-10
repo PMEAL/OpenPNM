@@ -1020,29 +1020,183 @@ class Core(Base):
             raise Exception()
         return values
 
-    def _interleave_data(self,prop,sources):
+    def _interleave_data_old(self,prop,sources):
         r'''
         Retrieves requested property from associated objects, to produce a full
         Np or Nt length array.
-
         Parameters
         ----------
         prop : string
             The property name to be retrieved
-
         sources : list
             List of object names OR objects from which data is retrieved
-
         Returns
         -------
         A full length (Np or Nt) array of requested property values.
-
         Notes
         -----
         This makes an effort to maintain the data 'type' when possible; however
         when data is missing this can be tricky.  Float and boolean data is
         fine, but missing ints are converted to float when nans are inserted.
-        
+        '''
+        element = prop.split('.')[0]
+        temp = sp.ndarray((self._count(element)))
+        dtypes = []
+        dtypenames = []
+        prop_found = False  #Flag to indicate if prop was found on a sub-object
+        for item in sources:
+            #Check if sources were given as list of objects OR names
+            try: item.name
+            except: item = self._find_object(obj_name=item)
+            locations = self._get_indices(element=element,labels=item.name,mode='union')
+            if prop not in item.keys():
+                values = sp.ones_like(locations)*sp.nan
+                dtypenames.append('nan')
+                dtypes.append(sp.dtype(bool))
+            else:
+                prop_found = True
+                values = item[prop]
+                dtypenames.append(values.dtype.name)
+                dtypes.append(values.dtype)
+            temp[locations] = values  #Assign values
+        #Check if requested prop was found on any sub-objects
+        if prop_found == False:
+            raise KeyError(prop)
+        #Analyze and assign data type
+        if sp.all([t in ['bool','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+            temp = sp.array(temp,dtype='bool')*~sp.isnan(temp)
+        elif sp.all([t == dtypenames[0] for t in dtypenames]) :  # If all entries are same type
+            temp = sp.array(temp,dtype=dtypes[0])
+        else:
+            temp = sp.array(temp,dtype=max(dtypes))
+#            self._logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
+        return temp
+
+    def _interleave_data(self,prop,sources):
+        r'''
+        Retrieves requested property from associated objects, to produce a full
+        Np or Nt length array.
+        Parameters
+        ----------
+        prop : string
+            The property name to be retrieved
+        sources : list
+            List of object names OR objects from which data is retrieved
+        Returns
+        -------
+        A full length (Np or Nt) array of requested property values.
+        Notes
+        -----
+        This makes an effort to maintain the data 'type' when possible; however
+        when data is missing this can be tricky.  Float and boolean data is
+        fine, but missing ints are converted to float when nans are inserted.
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> Ps = pn.pores('top',mode='not')
+        >>> Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
+        >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=Ps,throats=Ts)
+        >>> Ps = pn.pores('top')
+        >>> Ts = Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
+        >>> boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
+        >>> geom['pore.test_int'] = sp.random.randint(0,100,geom.Np)
+        >>> print(pn['pore.test_int'].dtype)
+        float64
+        >>> boun['pore.test_int'] = sp.ones(boun.Np).astype(int)
+        >>> print(pn['pore.test_int'].dtype)
+        int32
+        >>> boun['pore.test_int'] = sp.rand(boun.Np)<0.5
+        >>> print(pn['pore.test_int'].dtype)
+        bool
+        >>> geom['pore.test_bool'] = sp.rand(geom.Np)<0.5
+        >>> print(pn['pore.test_bool'].dtype)
+        bool
+        >>> boun['pore.test_bool'] = sp.ones(boun.Np).astype(int)
+        >>> print(pn['pore.test_bool'].dtype)
+        bool
+        >>> boun['pore.test_bool'] = sp.rand(boun.Np)<0.5
+        >>> print(pn['pore.test_bool'].dtype)
+        bool
+        '''
+        element = prop.split('.')[0]
+        temp = sp.ndarray((self._count(element)),dtype='object')
+        nan_locs = sp.ndarray((self._count(element)),dtype='bool')
+        nan_locs.fill(False)
+        bool_locs = sp.ndarray((self._count(element)),dtype='bool')
+        bool_locs.fill(False)
+        dtypes = []
+        dtypenames = []
+        prop_found = False  #Flag to indicate if prop was found on a sub-object
+        values_dim=0
+        for item in sources:
+            #Check if sources were given as list of objects OR names
+            try: item.name
+            except: item = self._find_object(obj_name=item)
+            locations = self._get_indices(element=element,labels=item.name,mode='union')
+            if prop not in item.keys():
+                values = sp.ones_like(locations)*sp.nan
+                dtypenames.append('nan')
+                dtypes.append(sp.dtype(bool))
+                nan_locs[locations]=True
+            else:
+                prop_found = True
+                values = item[prop]
+                dtypenames.append(values.dtype.name)
+                dtypes.append(values.dtype)
+                if values.dtype == 'bool':
+                    bool_locs[locations]=True
+                try: values_dim = sp.shape(values)[1]
+                except: pass
+            if values_dim > 0:
+                try:
+                    temp_dim = sp.shape(temp)[1]
+                    if temp_dim != values_dim:
+                        logger.warning(prop+' data has different dimensions, consider revising data in object '+str(item.name))
+                except:
+                    temp = sp.ndarray([self._count(element),values_dim],dtype='object')
+            temp[locations] = values  #Assign values
+        #Check if requested prop was found on any sub-objects
+        if prop_found == False:
+            raise KeyError(prop)
+        #Analyze and assign data type
+        if sp.all([t in ['bool','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+            temp = sp.array(temp,dtype='bool')
+            if sp.sum(nan_locs)>0:
+                temp[nan_locs]=False
+        elif sp.all([t == dtypenames[0] for t in dtypenames]) :  # If all entries are same type
+            temp = sp.array(temp,dtype=dtypes[0])
+        elif sp.all([t in ['int','nan','float','int32','int64','float32','float64','bool'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+            if 'bool' in dtypenames:
+                temp = sp.array(temp,dtype='bool')
+                temp[~bool_locs]=False
+                logger.info(prop+' has been converted to bool, some data may be lost')
+            else:
+                temp = sp.array(temp,dtype='float')
+                logger.info(prop+' has been converted to float.')
+        elif sp.all([t in ['object','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+            pass
+        else:
+            temp = sp.array(temp,dtype=max(dtypes))
+            logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
+        return temp
+
+    def _interleave_data_slow(self,prop,sources):
+        r'''
+        Retrieves requested property from associated objects, to produce a full
+        Np or Nt length array.
+        Parameters
+        ----------
+        prop : string
+            The property name to be retrieved
+        sources : list
+            List of object names OR objects from which data is retrieved
+        Returns
+        -------
+        A full length (Np or Nt) array of requested property values.
+        Notes
+        -----
+        This makes an effort to maintain the data 'type' when possible; however
+        when data is missing this can be tricky.  Float and boolean data is
+        fine, but missing ints are converted to float when nans are inserted.
         Examples
         --------
         >>> import OpenPNM
@@ -1110,10 +1264,10 @@ class Core(Base):
             shapes.append(sp.shape(temp[i]))
             if temp[i].__class__.__name__ not in ['int','int32','int64','float','float32','float64','bool','bool_','NoneType']:
                 make_object = True
-                try:
-                    dtypes.append(temp[i].dtype.name)
-                except AttributeError:
-                    dtypes.append('NoneType')
+                #try:
+                #    dtypes.append(temp[i].dtype.name)
+                #except AttributeError:
+                #    dtypes.append('NoneType')
         cnames = sp.asarray(cnames)
         #if all the data was in an acceptable format to return straight away - check data mixtures
         if make_object == False:
@@ -1135,7 +1289,7 @@ class Core(Base):
             #keep as object
             temp_cname = 'object'
         temp=temp.astype(temp_cname)
-        if sum(nan_locs) > 0:
+        if sp.sum(nan_locs) > 0:
             if sp.logical_or(temp_cname=='bool',temp_cname=='bool_'):
                 temp[nan_locs]=False
         #If we have all the data in ndarray of same type and shape we can re-cast into the proper shape

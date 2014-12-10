@@ -109,7 +109,7 @@ class Delaunay(GenericNetwork):
             i = 0
             while i < self._Np:
                 coord = np.random.uniform(0,1,1)
-                if self._reject(coord) == rejection[j]:
+                if self._reject(coord,j) == rejection[j]:
                     coords[i][j]=coord
                     i += 1
         coords*=np.array([self._Lx,self._Ly,self._Lz])
@@ -126,10 +126,35 @@ class Delaunay(GenericNetwork):
         p = ((m**a) + ((1-m)**a) + (2*b))/(1 + (2*b))
         #p = ((m**a) + b)/(1 + b)
         return p
+    
+    def _prob_func2(self,m):
+        a = 2.8
+        b = 3.0
+        p = 0.5 + (-0.5*(a*(m-0.5))**2)+(0.25*(b*(m-0.5))**4)
 
-    def _reject(self,point):
+        return p
+        
+    def _prob_func3(self,m):
+        ps = [0.0,0.2,0.3,0.5,0.7,0.8,1.0] #points over which to apply the different piecwise linear functions
+        gs = [-1.5,0,0.5,-0.5,0,1.5] #gradients 
+        condlist=[(m >=ps[0])*(m <ps[1]), (m >=ps[1])*(m <ps[2]), (m >=ps[2])*(m <ps[3]), (m>=ps[3])*(m<ps[4]), (m>=ps[4])*(m<ps[5]), (m>=ps[5])*(m<=ps[6])]
+        h=1.0 #starting probability
+        choicelist=[]
+        for i in range(len(condlist)):
+            if i != 0:
+                h+=gs[i-1]*(ps[i]-ps[i-1]) #new start point
+            choicelist.append(h+(gs[i]*(m-ps[i]))) #function
+    
+        p = np.select(condlist, choicelist)
+    
+        return p
+        
+    def _reject(self,point,coord):
 
-        P = self._prob_func(point)
+        if coord < 2:
+            P = self._prob_func3(point)
+        else:
+            P = self._prob_func3(point)
         nrand = np.random.uniform(0,1,1)
         #place more points at the sides of the domain and fewer at the top and bottom
         if P < nrand:

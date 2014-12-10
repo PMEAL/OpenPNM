@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 Lc = 40.5e-6
 
 #1 setting up network
-sgl = OpenPNM.Network.Cubic([26, 26, 10], spacing=Lc, name='SGL10BA')
+sgl = OpenPNM.Network.Cubic([10, 10, 10], spacing=Lc, name='SGL10BA')
 sgl.add_boundaries()
 
 #2 set up geometries
@@ -111,17 +111,17 @@ for x in range(num_seq+1):
 
         #run Stokes Flow and find Permeability
         #single phase
-        Stokes_alg_single_phase_air = OpenPNM.Algorithms.StokesFlow(name='Stokes_alg_single_phase_air',network=sgl,phase=air)
-        Stokes_alg_single_phase_water = OpenPNM.Algorithms.StokesFlow(name='Stokes_alg_single_phase_water',network=sgl,phase=water)
+        Stokes_alg_single_phase_air = OpenPNM.Algorithms.StokesFlow(name='Stokes_alg_single_phase_air'+str(bound_increment)+str(x),network=sgl,phase=air)
+        Stokes_alg_single_phase_water = OpenPNM.Algorithms.StokesFlow(name='Stokes_alg_single_phase_water'+str(bound_increment)+str(x),network=sgl,phase=water)
         
-        Fickian_alg_single_phase_air = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_single_phase_air',network=sgl,phase=air)
-        Fickian_alg_single_phase_water = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_single_phase_water',network=sgl,phase=water)
+        Fickian_alg_single_phase_air = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_single_phase_air'+str(bound_increment)+str(x),network=sgl,phase=air)
+        Fickian_alg_single_phase_water = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_single_phase_water'+str(bound_increment)+str(x),network=sgl,phase=water)
         
-        Stokes_alg_multi_phase_air = OpenPNM.Algorithms.StokesFlow(name='Stokes_alg_multi_phase_air',network=sgl,phase=air)
-        Stokes_alg_multi_phase_water = OpenPNM.Algorithms.StokesFlow(name='Stokes_alg_multi_phase_water',network=sgl,phase=water)
+        Stokes_alg_multi_phase_air = OpenPNM.Algorithms.StokesFlow(name='Stokes_alg_multi_phase_air'+str(bound_increment)+str(x),network=sgl,phase=air)
+        Stokes_alg_multi_phase_water = OpenPNM.Algorithms.StokesFlow(name='Stokes_alg_multi_phase_water'+str(bound_increment)+str(x),network=sgl,phase=water)
         
-        Fickian_alg_multi_phase_air = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_multi_phase_air',network=sgl,phase=air)
-        Fickian_alg_multi_phase_water = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_multi_phase_water',network=sgl,phase=water)
+        Fickian_alg_multi_phase_air = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_multi_phase_air'+str(bound_increment)+str(x),network=sgl,phase=air)
+        Fickian_alg_multi_phase_water = OpenPNM.Algorithms.FickianDiffusion(name='Fickian_alg_multi_phase_water'+str(bound_increment)+str(x),network=sgl,phase=water)
         
         BC1_pores = sgl.pores(labels=bounds[bound_increment][0]+'_boundary')
         BC2_pores = sgl.pores(labels=bounds[bound_increment][1]+'_boundary')
