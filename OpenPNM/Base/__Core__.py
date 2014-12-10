@@ -109,6 +109,10 @@ class Core(Base):
         called _models.  This dict is an 'OrderedDict', so that the models can
         be run in the same order they are added.
 
+        See Also
+        --------
+        ``reorder_models`` , ``inspect_model`` , ``amend_model`` , ``remove_model``
+
         Examples
         --------
         >>> import OpenPNM
@@ -149,6 +153,49 @@ class Core(Base):
         if regen_mode in ['deferred','on_demand']:
             self._models[propname] = fn  # Store model in a private attribute
 
+    def amend_model(self,propname,**kwargs):
+        r'''
+        Change the parameters associated with a model
+
+        Parameters
+        ----------
+        propname : string
+            The name of the property model to be updated
+
+        kwargs : key|value pairs
+            The arguments sent to the model should be the same variable names
+            already associated with the model
+
+        See Also
+        --------
+        ``add_models`` , ``inspect_model`` , ``remove_model`` , ``reorder_models``
+        '''
+        f = self._models[propname]
+        # Check to ensure that all kwargs are actually in model
+        if all([key in f.keywords.keys() for key in kwargs]):
+            f.keywords.update(kwargs)
+        else:
+            logger.error('Supplied keyword arguments do not exist in model')
+
+    def inspect_model(self,propname):
+        r'''
+
+        See Also
+        --------
+        ``add_models`` , ``amend_model`` , ``remove_model`` , ``reorder_models``
+        '''
+        f = self._models[propname]
+        header = '-'*60
+        print(header)
+        print(f.func.__module__+'.'+f.func.__name__)
+        print(header)
+        print("{a:<20s} {b}".format(a='Variable Name',b='Value'))
+        print(header)
+        for item in f.keywords.keys():
+            if item not in ['network','geometry','phase','physics','propname']:
+                print("{a:<20s} {b}".format(a=item, b=f.keywords[item]))
+        print(header)
+
     def remove_model(self,propname,mode='model'):
         r'''
         Remove pore scale property models from current object.
@@ -161,6 +208,10 @@ class Core(Base):
         mode : string, optional
             To delete the model AND the associated property data, this mode
             should be set to 'clear'.
+
+        See Also
+        --------
+        ``add_models`` , ``inspect_model`` , ``amend_model`` , ``reorder_models``
 
         '''
         self._models.pop(propname,None)
@@ -182,6 +233,10 @@ class Core(Base):
         -----
         The new order is calculated by removing the supplied models from the
         old list, then inserting them in the locations given.
+
+        See Also
+        --------
+        ``add_models``,``inspect_model``,``amend_model``,``remove_model``
 
         Examples
         --------
@@ -578,7 +633,7 @@ class Core(Base):
 
         See Also
         --------
-        labels
+        ``labels``
 
         Examples
         --------
