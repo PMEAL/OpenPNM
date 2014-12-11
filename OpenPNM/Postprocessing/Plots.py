@@ -178,8 +178,7 @@ def distributions(net,
                   pore_diameter='pore.diameter',
                  throat_length='throat.length',
                  exclude_boundaries=True,
-                 geom_list=None,
-                 scale=1):
+                 geom_list=None):
     r"""
     Plot a montage of key network size distribution histograms
 
@@ -191,12 +190,10 @@ def distributions(net,
     """
     if fig is None:
         fig = _plt.figure()
-    if scale == 1:
-        unit ='(m)'
-    if scale == 1e3:
-        unit ='(mm)'
-    if scale == 1e6:
-        unit ='(um)'
+        
+    fig.subplots_adjust(hspace = 0.4)
+    fig.subplots_adjust(wspace = 0.4)
+    
     if geom_list is not None:
         include_pores = [False]*net.num_pores()
         include_throats = [False]*net.num_throats()
@@ -211,9 +208,10 @@ def distributions(net,
 
 
     ax1 = fig.add_subplot(221)
-    ax1.hist(scale*net[pore_diameter][pores],25,facecolor='green')
-    ax1.set_xlabel('Pore Diameter, ' + unit)
+    ax1.hist(net[pore_diameter][pores],25,facecolor='green')
+    ax1.set_xlabel('Pore Diameter')
     ax1.set_ylabel('Frequency')
+    ax1.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 
     ax2 = fig.add_subplot(222)
     x = net.num_neighbors(pores,flatten=False)
@@ -222,14 +220,16 @@ def distributions(net,
     ax2.set_ylabel('Frequency')
 
     ax3 = fig.add_subplot(223)
-    ax3.hist(scale*net[throat_diameter][throats],25,facecolor='blue')
-    ax3.set_xlabel('Throat Diameter, ' + unit)
+    ax3.hist(net[throat_diameter][throats],25,facecolor='blue')
+    ax3.set_xlabel('Throat Diameter')
     ax3.set_ylabel('Frequency')
+    ax3.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 
     ax4 = fig.add_subplot(224)
-    ax4.hist(scale*net[throat_length][throats],25,facecolor='red')
-    ax4.set_xlabel('Throat Length, ' + unit)
+    ax4.hist(net[throat_length][throats],25,facecolor='red')
+    ax4.set_xlabel('Throat Length')
     ax4.set_ylabel('Frequency')
+    ax4.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
     fig.show()
 
 def pore_size_distribution(network, fig=None,):
