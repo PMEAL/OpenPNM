@@ -61,7 +61,7 @@ def voronoi(network,
         value[i] = _sp.linalg.norm(v1[i])+_sp.linalg.norm(v2[i])
     return value
 
-def c2c(network,
+def p2p(network,
              geometry,
              **kwargs):
     r"""

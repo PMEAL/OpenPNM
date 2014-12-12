@@ -35,8 +35,8 @@ class Voronoi(GenericGeometry):
 
     def _generate(self,fibre_rad):
         r'''
+        Set all the required models
         '''
-
         self.add_model(propname='pore.vertices',
                        model=gm.pore_vertices.voronoi)
         self.add_model(propname='throat.vertices',
@@ -47,9 +47,6 @@ class Voronoi(GenericGeometry):
                        model=gm.throat_offset_vertices.distance_transform,
                        offset=fibre_rad,
                        set_dependent = True)
-        "Remove throats that are fully occluded and pores with no connections"
-        self._net.trim_occluded_throats()
-        
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        seed=self._seed)
@@ -72,22 +69,9 @@ class Voronoi(GenericGeometry):
                        model=gm.throat_volume.extrusion)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.extrusion)
-                       
-        "Old Methods Replaced by Distance Transform"
-        #self.add_model(propname='throat.area',
-        #               model=gm.throat_area.voronoi)
-        #self.add_model(propname='throat.perimeter',
-        #               model=gm.throat_perimeter.voronoi)
-        #self.add_model(propname='throat.centroid',
-        #               model=gm.throat_centroid.centre_of_mass)
-        #self.add_model(propname='pore.centroid',
-        #               model=gm.pore_centroid.centre_of_mass)
-        #self.add_model(propname='pore.indiameter',
-        #               model=gm.pore_diameter.insphere)
-        #self.add_model(propname='throat.indiameter',
-        #               model=gm.throat_diameter.incircle) 
-        "Shift the pore coords to the centroids"
-        #vo.pore2centroid(self._net)
+        self.add_model(propname='throat.c2c',
+                       model=gm.throat_length.voronoi)
+
     
 if __name__ == '__main__':
     import OpenPNM

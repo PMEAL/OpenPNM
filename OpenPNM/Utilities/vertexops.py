@@ -750,6 +750,7 @@ def print_throat(geom,throats_in):
         inradius = 0.5*geom['throat.indiameter'][throats]
         for i in range(len(throats)):
             fig = plt.figure()
+            ax=fig.add_subplot(111)
             vert_2D = tr.rotate_and_chop(verts[i],normals[i],[0,0,1])
             hull = ConvexHull(vert_2D,qhull_options='QJ Pp')
             for simplex in hull.simplices:
@@ -778,6 +779,7 @@ def print_throat(geom,throats_in):
             upper_bound_y = ymin + my_range*1.5
             plt.axis((lower_bound_x,upper_bound_x,lower_bound_y,upper_bound_y))
             plt.grid(b=True, which='major', color='b', linestyle='-')
+            plt.axis('off')
             centroid = tr.rotate_and_chop(coms[i],normals[i],[0,0,1])
             incent = tr.rotate_and_chop(incentre[i],normals[i],[0,0,1])
             plt.scatter(centroid[0][0],centroid[0][1])
@@ -787,6 +789,7 @@ def print_throat(geom,throats_in):
             u = inradius[i]*np.cos(t)+incent[0][0]
             v = inradius[i]*np.sin(t)+incent[0][1]
             plt.plot(u,v,'r-')
+            #ax.ticklabel_format(style='sci', scilimits=(0,0))
             fig.show()
     else:
         print("Please provide throat indices")
@@ -858,6 +861,7 @@ def patch_throat(geom,throats_in):
             centroid = tr.rotate_and_chop(coms[i],normals[i],[0,0,1])
             incent = tr.rotate_and_chop(incentre[i],normals[i],[0,0,1])
             plt.scatter(centroid[0][0],centroid[0][1],c='g')
+            ax.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
             #plt.scatter(centroid2[0],centroid2[1],c='r')
             "Plot incircle"
             t = np.linspace(0,2*np.pi,200)
@@ -935,6 +939,7 @@ def print_pore(geom,pores,fig=None,axis_bounds=None):
             ax.set_zlim(zmin,zmax)
             #ax.scatter(coords[:,0],coords[:,1],coords[:,2])
             ax.scatter(centroids[:,0],centroids[:,1],centroids[:,2],c='y')
+            ax.ticklabel_format(style='sci', scilimits=(0,0))
             #ax.scatter(centroids2[:,0],centroids2[:,1],centroids2[:,2],c='g')
             plt.show()
         else:
