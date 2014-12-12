@@ -812,8 +812,11 @@ class Core(Base):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
+        >>> pn.filter_by_label(pores=[0,1,5,6],labels='left')
         array([0, 1])
+        >>> Ps = pn.pores(['top','bottom','front'],mode='union')
+        >>> pn.filter_by_label(pores=Ps,labels=['top','front'],mode='intersection')
+        array([ 6, 13, 20, 27, 34, 41])
         '''
         if type(labels) == str:  # Convert input to list
             labels = [labels]
