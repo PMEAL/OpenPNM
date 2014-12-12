@@ -42,7 +42,7 @@ class Cubic(GenericNetwork):
     >>> pn.Np
     60
     """
-    def __init__(self, shape=None, template=None, spacing=1, **kwargs):
+    def __init__(self, shape=None, template=None, spacing=1, connectivity=6, **kwargs):
         super(Cubic, self).__init__(**kwargs)
 
         if shape is not None:
@@ -60,12 +60,43 @@ class Cubic(GenericNetwork):
         points *= spacing
 
         I = np.arange(arr.size).reshape(arr.shape)
-        tails, heads = [], []
-        for T,H in [
+
+        face_joints = [
             (I[:,:,:-1], I[:,:,1:]),
             (I[:,:-1], I[:,1:]),
             (I[:-1], I[1:]),
-            ]:
+            ]
+
+        edge_joints = [
+            (I[:-1,:-1,:-1], I[1:,1:,1:]),
+            (I[:-1,:-1,1:], I[1:,1:,:-1]),
+            (I[:-1,1:,:-1], I[1:,:-1,1:]),
+            (I[1:,:-1,:-1], I[:-1,1:,1:]),
+            ]
+
+        corner_joints = [
+            (I[:,:-1,:-1], I[:,1:,1:]),
+            (I[:,:-1,1:], I[:,1:,:-1]),
+            (I[:-1,:,:-1], I[1:,:,1:]),
+            (I[1:,:,:-1], I[:-1,:,1:]),
+            (I[1:,1:,:], I[:-1,:-1,:]),
+            (I[1:,:-1,:], I[:-1,1:,:]),
+            ]
+        
+        if connectivity == 6:
+            joints = face_joints
+        elif connectivity == 8:
+            joints = edge_joints
+        elif connectivity == 18:
+            joints = face_joints + edge_joints
+        elif connectivity == 26:
+            joints = face_joints + corner_joints + edge_joints
+        else:
+            raise Exception('Invalid connectivity receieved. Must be 6, 8, 18 or 26')
+
+        I = np.arange(arr.size).reshape(arr.shape)
+        tails, heads = [], []
+        for T,H in joints:
             tails.extend(T.flat)
             heads.extend(H.flat)
         pairs = np.vstack([tails, heads]).T
