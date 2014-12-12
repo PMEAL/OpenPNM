@@ -87,12 +87,18 @@ class Cubic(GenericNetwork):
             joints = face_joints
         elif connectivity == 8:
             joints = edge_joints
-        elif connectivity == 18:
+        elif connectivity == 12:
+            joints = corner_joints
+        elif connectivity == 14:
             joints = face_joints + edge_joints
+        elif connectivity == 18:
+            joints = face_joints + corner_joints
+        elif connectivity == 20:
+            joints = edge_joints + corner_joints
         elif connectivity == 26:
             joints = face_joints + corner_joints + edge_joints
         else:
-            raise Exception('Invalid connectivity receieved. Must be 6, 8, 18 or 26')
+            raise Exception('Invalid connectivity receieved. Must be 6, 8, 12, 14, 18, 20 or 26')
 
         I = np.arange(arr.size).reshape(arr.shape)
         tails, heads = [], []
