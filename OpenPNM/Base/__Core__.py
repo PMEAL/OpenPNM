@@ -1109,27 +1109,20 @@ class Core(Base):
         r'''
         Retrieves requested property from associated objects, to produce a full
         Np or Nt length array.
-
         Parameters
         ----------
         prop : string
             The property name to be retrieved
-
         sources : list
             List of object names OR objects from which data is retrieved
-
         Returns
         -------
         A full length (Np or Nt) array of requested property values.
-
         Notes
         -----
         This makes an effort to maintain the data 'type' when possible; however
         when data is missing this can be tricky.  Float and boolean data is
         fine, but missing ints are converted to float when nans are inserted.
-
-        Examples
-        --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> Ps = pn.pores('top',mode='not')
@@ -1158,19 +1151,15 @@ class Core(Base):
         bool
         '''
         element = prop.split('.')[0]
-        Np = sp.shape(self['pore.all'])[0]
-        Nt = sp.shape(self['throat.all'])[0]
-        self._temp = {}
-        self._temp['pore'] = sp.ndarray(Np,dtype=object)
-        self._temp['throat'] = sp.ndarray(Nt,dtype=object)
-        temp = self._temp[element]
-        #temp.fill(sp.nan)
-        cnames=[]
-        shapes=[]
+        temp = sp.ndarray((self._count(element)))
+        nan_locs = sp.ndarray((self._count(element)),dtype='bool')
+        nan_locs.fill(False)
+        bool_locs = sp.ndarray((self._count(element)),dtype='bool')
+        bool_locs.fill(False)
         dtypes = []
         dtypenames = []
         prop_found = False  #Flag to indicate if prop was found on a sub-object
-        nan_locs = sp.zeros(len(temp)).astype('bool')
+        values_dim=0
         for item in sources:
             #Check if sources were given as list of objects OR names
             try: item.name
@@ -1182,62 +1171,47 @@ class Core(Base):
                 dtypes.append(sp.dtype(bool))
                 nan_locs[locations]=True
             else:
-                values = item[prop]
                 prop_found = True
+                values = item[prop]
                 dtypenames.append(values.dtype.name)
                 dtypes.append(values.dtype)
-            for i,loc in enumerate(locations):
-                temp[loc]=values[i]
-        #Do Formatting
-        make_object = False
-        for i in range(len(temp)):
-            cnames.append(temp[i].__class__.__name__)
-            shapes.append(sp.shape(temp[i]))
-            if temp[i].__class__.__name__ not in ['int','int32','int64','float','float32','float64','bool','bool_','NoneType']:
-                make_object = True
+                if values.dtype == 'bool':
+                    bool_locs[locations]=True
+                try: values_dim = sp.shape(values)[1]
+                except: pass
+            if values_dim > 0:
                 try:
-                    dtypes.append(temp[i].dtype.name)
-                except AttributeError:
-                    dtypes.append('NoneType')
-        cnames = sp.asarray(cnames)
-        #if all the data was in an acceptable format to return straight away - check data mixtures
-        if make_object == False:
-            #All same data type
-            if len(sp.unique(cnames))==1:
-                temp_cname = cnames[0]
-            elif len(sp.unique(dtypes))==1:
-                temp_cname = dtypes[0]
-            #If any data is bool - preserve this and convert rest to False
-            elif len(sp.unique(cnames))>1 and sp.logical_or('bool' in cnames,'bool_' in cnames):
-                temp_cname = 'bool'
-                nan_locs[~sp.logical_or(cnames=='bool',cnames=='bool_')]=True
-                logger.warning(prop+' has been converted to bool, some data may be lost')
-            #If mixture with no bool convert to float
-            else:
-                temp_cname='float'
-                logger.warning(prop+' has been converted to float.')
-        else:
-            #keep as object
-            temp_cname = 'object'
-        temp=temp.astype(temp_cname)
-        if sum(nan_locs) > 0:
-            if sp.logical_or(temp_cname=='bool',temp_cname=='bool_'):
-                temp[nan_locs]=False
-        #If we have all the data in ndarray of same type and shape we can re-cast into the proper shape
-        if (len(sp.unique(cnames)) == 1)&(cnames[0]=='ndarray')&(len(sp.unique(shapes)) == 1):
-            temp_2_shape = list(shapes[0])
-            temp_2_shape.insert(0,len(temp))
-            if len(sp.unique(dtypes))==1:
-                temp2 = sp.ndarray(temp_2_shape,dtype=temp[0].dtype.name)
-            else:
-                temp2 = sp.ndarray(temp_2_shape,dtype='float')
-            for i in range(len(temp)):
-                temp2[i]=temp[i]
-            temp = temp2.copy()
-
+                    temp_dim = sp.shape(temp)[1]
+                    if temp_dim != values_dim:
+                        logger.warning(prop+' data has different dimensions, consider revising data in object '+str(item.name))
+                except:
+                    temp = sp.ndarray([self._count(element),values_dim])
+            if values.dtype == 'object' and temp.dtype != 'object':
+                temp = temp.astype('object')
+            temp[locations] = values  #Assign values
+        #Check if requested prop was found on any sub-objects
         if prop_found == False:
             raise KeyError(prop)
-
+        #Analyze and assign data type
+        if sp.all([t in ['bool','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+            temp = sp.array(temp,dtype='bool')
+            if sp.sum(nan_locs)>0:
+                temp[nan_locs]=False
+        elif sp.all([t == dtypenames[0] for t in dtypenames]) :  # If all entries are same type
+            temp = sp.array(temp,dtype=dtypes[0])
+        elif sp.all([t in ['int','nan','float','int32','int64','float32','float64','bool'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+            if 'bool' in dtypenames:
+                temp = sp.array(temp,dtype='bool')
+                temp[~bool_locs]=False
+                logger.info(prop+' has been converted to bool, some data may be lost')
+            else:
+                temp = sp.array(temp,dtype='float')
+                logger.info(prop+' has been converted to float.')
+        elif sp.all([t in ['object','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+            pass
+        else:
+            temp = sp.array(temp,dtype=max(dtypes))
+            logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
         return temp
 
     def num_pores(self,labels='all',mode='union'):
