@@ -100,7 +100,7 @@ class Core(Base):
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
 
             * 'deferred' : The model is stored on the object but not run until ``regenerate`` is called
-            
+
             * 'on_demand' : The model is stored on the object but not run, AND will only run if specifically requested in ``regenerate``
 
         Notes
@@ -109,6 +109,10 @@ class Core(Base):
         the received model and stores it on the object under private dictionary
         called _models.  This dict is an 'OrderedDict', so that the models can
         be run in the same order they are added.
+
+        See Also
+        --------
+        ``reorder_models`` , ``inspect_model`` , ``amend_model`` , ``remove_model``
 
         Examples
         --------
@@ -150,6 +154,49 @@ class Core(Base):
         if regen_mode in ['deferred','on_demand']:
             self._models[propname] = fn  # Store model in a private attribute
 
+    def amend_model(self,propname,**kwargs):
+        r'''
+        Change the parameters associated with a model
+
+        Parameters
+        ----------
+        propname : string
+            The name of the property model to be updated
+
+        kwargs : key|value pairs
+            The arguments sent to the model should be the same variable names
+            already associated with the model
+
+        See Also
+        --------
+        ``add_models`` , ``inspect_model`` , ``remove_model`` , ``reorder_models``
+        '''
+        f = self._models[propname]
+        # Check to ensure that all kwargs are actually in model
+        if all([key in f.keywords.keys() for key in kwargs]):
+            f.keywords.update(kwargs)
+        else:
+            logger.error('Supplied keyword arguments do not exist in model')
+
+    def inspect_model(self,propname):
+        r'''
+
+        See Also
+        --------
+        ``add_models`` , ``amend_model`` , ``remove_model`` , ``reorder_models``
+        '''
+        f = self._models[propname]
+        header = '-'*60
+        print(header)
+        print(f.func.__module__+'.'+f.func.__name__)
+        print(header)
+        print("{a:<20s} {b}".format(a='Variable Name',b='Value'))
+        print(header)
+        for item in f.keywords.keys():
+            if item not in ['network','geometry','phase','physics','propname']:
+                print("{a:<20s} {b}".format(a=item, b=f.keywords[item]))
+        print(header)
+
     def remove_model(self,propname,mode='model'):
         r'''
         Remove pore scale property models from current object.
@@ -162,6 +209,10 @@ class Core(Base):
         mode : string, optional
             To delete the model AND the associated property data, this mode
             should be set to 'clear'.
+
+        See Also
+        --------
+        ``add_models`` , ``inspect_model`` , ``amend_model`` , ``reorder_models``
 
         '''
         self._models.pop(propname,None)
@@ -184,6 +235,10 @@ class Core(Base):
         The new order is calculated by removing the supplied models from the
         old list, then inserting them in the locations given.
 
+        See Also
+        --------
+        ``add_models``,``inspect_model``,``amend_model``,``remove_model``
+
         Examples
         --------
         >>> import OpenPNM
@@ -200,7 +255,7 @@ class Core(Base):
 
         '''
         #Check no duplicate or invalid locations
-        locs = sp.unique(new_order.values())
+        locs = sp.unique(new_order.values())[0]
         if len(locs) < len(new_order.values()):
             raise Exception('Duplicates found in the order')
 
@@ -241,7 +296,7 @@ class Core(Base):
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
         >>> geom['pore.diameter'] = 1
         >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
-        >>> f = gm.pore_area.cubic 
+        >>> f = gm.pore_area.cubic
         >>> geom.add_model(propname='pore.area',model=f)  # Add model to Geometry object
         >>> geom['pore.area'][0]  # Look at area value in pore 0
         1
@@ -253,7 +308,7 @@ class Core(Base):
         '''
         if props == '':  # If empty, assume all models are to be regenerated
             props = list(self._models.keys())
-            for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only 
+            for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only
                 if self._models[item].keywords.get('regen_mode') == 'on_demand':
                     props.remove(item)
         elif type(props) == str:
@@ -579,7 +634,7 @@ class Core(Base):
 
         See Also
         --------
-        labels
+        ``labels``
 
         Examples
         --------
@@ -727,7 +782,7 @@ class Core(Base):
             temp = self._get_labels(element='throat',locations=throats,mode=mode)
         return temp
 
-    def filter_by_label(self,pores=[],throats=[],label=''):
+    def filter_by_label(self,pores=[],throats=[],labels='',mode='union'):
         r'''
         Returns which of the supplied pores (or throats) has the specified label
 
@@ -736,8 +791,23 @@ class Core(Base):
         pores, or throats : array_like
             List of pores or throats to be filtered
 
-        label : string
-            The label to apply as a filter
+        labels : list of strings
+            The labels to apply as a filter
+
+        mode : string
+            Controls how the filter is applied.  Options include:
+
+            * 'union' : (default) All locations with ANY of the given labels are kept.
+
+            * 'intersection' : Only locations with ALL the given labels are kept.
+
+            * 'not_intersection' : Only locations with exactly one of the given labels are kept.
+
+            * 'not' : Only locations with none of the given labels are kept.
+
+        See Also
+        --------
+        ``pores``, ``throats``
 
         Examples
         --------
@@ -746,33 +816,46 @@ class Core(Base):
         >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
         array([0, 1])
         '''
-        if pores is not []:
-            label = 'pore.'+label.split('.')[-1]
-            all_labels = self.labels(element='pore')
-            mask = self.labels(pores=pores,mode='mask')
-            ind = all_labels.index(label)
-            temp = mask[:,ind]
-            pores = sp.array(pores,ndmin=1)
-            return pores[temp]
-        elif throats is not []:
-            label = 'throat.'+label.split('.')[-1]
-            all_labels = self.labels(element='throat')
-            mask = self.labels(throats=throats,mode='mask')
-            ind = all_labels.index(label)
-            temp = mask[:,ind]
-            throats = sp.array(throats,ndmin=1)
-            return throats[temp]
+        if type(labels) == str:  # Convert input to list
+            labels = [labels]
+        # Convert inputs to locations and element
+        if pores != []:
+            element = 'pore'
+            locations = sp.array(pores)
+        if throats != []:
+            element = 'throat'
+            locations = sp.array(throats)
+        # Do it
+        labels = [element+'.'+item.split('.')[-1] for item in labels]
+        all_locs = self._get_indices(element=element,labels=labels,mode=mode)
+        mask = self._tomask(locations=all_locs,element=element)
+        ind = mask[locations]
+        return locations[ind]
 
     def _get_indices(self,element,labels=['all'],mode='union'):
         r'''
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         '''
-        if element[-1] == 's':
-            element = element[:-1]
+        element.rstrip('s')  # Correct plural form of element keyword
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
-        if type(labels) == str: labels = [labels] #convert string to list, if necessary
+        if type(labels) == str:  # Convert string to list, if necessary
+            labels = [labels]
+        for label in labels:  # Parse the labels list for wildcards "*"
+            if label.startswith('*'):
+                labels.remove(label)
+                temp = [item for item in self.labels() if item.split('.')[-1].endswith(label.strip('*'))]
+                if temp == []:
+                    temp = [label.strip('*')]
+                labels.extend(temp)
+            if label.endswith('*'):
+                labels.remove(label)
+                temp = [item for item in self.labels() if item.split('.')[-1].startswith(label.strip('*'))]
+                if temp == []:
+                    temp = [label.strip('*')]
+                labels.extend(temp)
+        # Begin computing label array
         if mode == 'union':
             union = sp.zeros_like(self[element+'.all'],dtype=bool)
             for item in labels: #iterate over labels list and collect all indices
@@ -807,8 +890,9 @@ class Core(Base):
         Parameters
         ----------
         labels : list of strings, optional
-            The pore label(s) whose locations are requested.
-            If omitted, all pore inidices are returned.
+            The pore label(s) whose locations are requested.  If omitted, all
+            pore inidices are returned. This argument also accepts '*' for
+            wildcard searches.
         mode : string, optional
             Specifies how the query should be performed.  The options are:
 
@@ -851,8 +935,9 @@ class Core(Base):
         Parameters
         ----------
         labels : list of strings, optional
-            The throat label(s) whose locations are requested.
-            If omitted, 'all' throat inidices are returned.
+            The throat label(s) whose locations are requested.  If omitted,
+            'all' throat inidices are returned.  This argument also accepts
+            '*' for wildcard searches.
         mode : string, optional
             Specifies how the query should be performed.  The options are:
 
@@ -1068,7 +1153,6 @@ class Core(Base):
         bool
         '''
         element = prop.split('.')[0]
-        #temp = sp.ndarray((self._count(element)),dtype='object')
         temp = sp.ndarray((self._count(element)))
         nan_locs = sp.ndarray((self._count(element)),dtype='bool')
         nan_locs.fill(False)
@@ -1308,9 +1392,16 @@ class Core(Base):
     def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
-        mro = [item.__name__ for item in self.__class__.__mro__]
-        if 'GenericNetwork' in mro: net = self
-        else: net = self._net
+        if self._net is None:  # self is a parent Network
+            net = self
+        else:
+            try:
+                if self._net._net is None:  # self is a subset Network
+                    net = self._net
+                else:
+                    net = self._net._net  # self is associated with a subset
+            except:
+                net = self._net  # self is associated with a parent Network
         locations = sp.array(locations,ndmin=1)
         mapping = {}
 

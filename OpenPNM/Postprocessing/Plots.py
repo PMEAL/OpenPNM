@@ -49,7 +49,7 @@ def porosity_profile(network,
                       fig=None, axis=2):
 
     r'''
-    Compute the porosity profile in all three dimensions
+    Compute and plot the porosity profile in all three dimensions
 
     Parameters
     ----------
@@ -64,9 +64,9 @@ def porosity_profile(network,
     '''
     if fig is None:
         fig = _plt.figure()
-    L_x = _sp.amax(network['pore.coords'][:,0])
-    L_y = _sp.amax(network['pore.coords'][:,1])
-    L_z = _sp.amax(network['pore.coords'][:,2])
+    L_x = _sp.amax(network['pore.coords'][:,0]) + _sp.mean(((21/88.0)*network['pore.volume'])**(1/3.0))
+    L_y = _sp.amax(network['pore.coords'][:,1]) + _sp.mean(((21/88.0)*network['pore.volume'])**(1/3.0))
+    L_z = _sp.amax(network['pore.coords'][:,2]) + _sp.mean(((21/88.0)*network['pore.volume'])**(1/3.0))
     if axis is 0:
         xlab = 'x-direction'
         area = L_y*L_z
@@ -77,16 +77,26 @@ def porosity_profile(network,
         axis = 2
         xlab = 'z-direction'
         area = L_x*L_y
-    n_max = _sp.amax(network['pore.coords'][:,axis])
+    n_max = _sp.amax(network['pore.coords'][:,axis]) + _sp.mean(((21/88.0)*network['pore.volume'])**(1/3.0))
     steps = _sp.linspace(0,n_max,100,endpoint=True)
     vals = _sp.zeros_like(steps)
+    p_area = _sp.zeros_like(steps)
+    t_area = _sp.zeros_like(steps)
+
     rp = ((21/88.0)*network['pore.volume'])**(1/3.0)
-    upper = network['pore.coords'][:,axis] + rp
-    lower = network['pore.coords'][:,axis] - rp
+    p_upper = network['pore.coords'][:,axis] + rp
+    p_lower = network['pore.coords'][:,axis] - rp
+    TC1 = network['throat.conns'][:,0]
+    TC2 = network['throat.conns'][:,1]
+    t_upper = network['pore.coords'][:,axis][TC1]
+    t_lower = network['pore.coords'][:,axis][TC2]
+
     for i in range(0,len(steps)):
-        temp = (upper > steps[i])*(lower < steps[i])
-        vals[i] = (sum((22/7.0)*(rp[temp]**2 - (network['pore.coords'][:,axis][temp]-steps[i])**2)) \
-        + _sp.sum(network['throat.area'][temp]))/area
+        p_temp = (p_upper > steps[i])*(p_lower < steps[i])
+        t_temp = (t_upper > steps[i])*(t_lower < steps[i])
+        p_area[i] = sum((22/7.0)*(rp[p_temp]**2 - (network['pore.coords'][:,axis][p_temp]-steps[i])**2))
+        t_area[i] = sum(network['throat.area'][t_temp])
+        vals[i] = (p_area[i]+t_area[i])/area
     yaxis = vals
     xaxis = steps/n_max
     _plt.plot(xaxis,yaxis,'bo-')
@@ -94,6 +104,74 @@ def porosity_profile(network,
     _plt.ylabel('Porosity')
     fig.show()
 
+def saturation_profile(network, phase, fig=None, axis=2):
+
+    r'''
+    Compute and plot the saturation profile in all three dimensions
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+    phase : the invading or defending phase to plot its saturation distribution
+    axis : integer type 0 for x-axis, 1 for y-axis, 2 for z-axis
+
+    '''
+    if fig is None:
+        fig = _plt.figure()
+    if phase is None:
+        raise Exception('The phase for saturation profile plot is not given' )
+    if axis is 0:
+        xlab = 'x-direction'
+    elif axis is 1:
+        xlab = 'y-direction'
+    else:
+        axis = 2
+        xlab = 'z-direction'
+    n_max = _sp.amax(network['pore.coords'][:,axis]) + _sp.mean(((21/88.0)*network['pore.volume'])**(1/3.0))
+    steps = _sp.linspace(0,n_max,100,endpoint=True)
+    p_area = _sp.zeros_like(steps)
+    op_area = _sp.zeros_like(steps)
+    t_area = _sp.zeros_like(steps)
+    ot_area = _sp.zeros_like(steps)
+    vals = _sp.zeros_like(steps)
+    PO = phase['pore.occupancy']
+    TO = phase['throat.occupancy']
+    rp = ((21/88.0)*network['pore.volume'])**(1/3.0)
+    p_upper = network['pore.coords'][:,axis] + rp
+    p_lower = network['pore.coords'][:,axis] - rp
+
+    TC1 = network['throat.conns'][:,0]
+    TC2 = network['throat.conns'][:,1]
+    t_upper = network['pore.coords'][:,axis][TC1]
+    t_lower = network['pore.coords'][:,axis][TC2]
+
+    for i in range(0,len(steps)):
+        op_temp = (p_upper > steps[i])*(p_lower < steps[i])*PO
+        ot_temp = (t_upper > steps[i])*(t_lower < steps[i])*TO
+        op_temp = _sp.array(op_temp, dtype='bool')
+        ot_temp = _sp.array(op_temp, dtype='bool')
+        p_temp = (p_upper > steps[i])*(p_lower < steps[i])
+        t_temp = (t_upper > steps[i])*(t_lower < steps[i])
+        op_area[i] = sum((22/7.0)*(rp[op_temp]**2 - (network['pore.coords'][:,axis][op_temp]-steps[i])**2))
+        ot_area[i] = sum(network['throat.area'][ot_temp])
+        p_area[i] = sum((22/7.0)*(rp[p_temp]**2 - (network['pore.coords'][:,axis][p_temp]-steps[i])**2))
+        t_area[i] = sum(network['throat.area'][t_temp])
+        vals[i] = (op_area[i]+ot_area[i])/(p_area[i]+t_area[i])
+        if vals[i]>1:
+            vals[i]=1.
+        if _sp.isnan(vals[i]):
+            vals[i]=1.
+
+    if vals[-1]==1.:
+        vals = vals[::-1]
+    
+    yaxis = vals
+    xaxis = steps/n_max
+    _plt.plot(xaxis,yaxis,'bo-')
+    _plt.xlabel(xlab)
+    _plt.ylabel('Saturation')
+    fig.show()
+    
 def distributions(net,
                   fig = None,
                   throat_diameter='throat.diameter',
@@ -112,7 +190,10 @@ def distributions(net,
     """
     if fig is None:
         fig = _plt.figure()
-
+        
+    fig.subplots_adjust(hspace = 0.4)
+    fig.subplots_adjust(wspace = 0.4)
+    
     if geom_list is not None:
         include_pores = [False]*net.num_pores()
         include_throats = [False]*net.num_throats()
@@ -130,6 +211,7 @@ def distributions(net,
     ax1.hist(net[pore_diameter][pores],25,facecolor='green')
     ax1.set_xlabel('Pore Diameter')
     ax1.set_ylabel('Frequency')
+    ax1.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 
     ax2 = fig.add_subplot(222)
     x = net.num_neighbors(pores,flatten=False)
@@ -141,13 +223,46 @@ def distributions(net,
     ax3.hist(net[throat_diameter][throats],25,facecolor='blue')
     ax3.set_xlabel('Throat Diameter')
     ax3.set_ylabel('Frequency')
+    ax3.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 
     ax4 = fig.add_subplot(224)
     ax4.hist(net[throat_length][throats],25,facecolor='red')
     ax4.set_xlabel('Throat Length')
     ax4.set_ylabel('Frequency')
+    ax4.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
     fig.show()
 
+def pore_size_distribution(network, fig=None,):
+
+    r'''
+    Plot the pore and throat size distribution which is the accumulated 
+    volume vs. the diameter in a semilog plot
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+    
+    '''
+    if fig is None:
+        fig = _plt.figure()
+    dp = network['pore.diameter']
+    Vp = network['pore.volume']
+    dt = network['throat.diameter']
+    Vt = network['throat.volume']
+    dmax = max(max(dp),max(dt))
+    steps = _sp.linspace(0,dmax,100,endpoint=True)
+    vals = _sp.zeros_like(steps)
+    for i in range(0,len(steps)-1):
+        temp1 = dp > steps[i]
+        temp2 = dt > steps[i]
+        vals[i] = sum(Vp[temp1]) + sum(Vt[temp2])
+    yaxis = vals
+    xaxis = steps
+    _plt.semilogx(xaxis,yaxis,'b.-')
+    _plt.xlabel('Pore & Throat Diameter (m)')
+    _plt.ylabel('Cumulative Volume (m^3)')
+    fig.show()
+    
 def drainage_curves(inv_alg,
                     fig=None,
                     Pc='inv_Pc',

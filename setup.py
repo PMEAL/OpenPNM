@@ -4,6 +4,11 @@ import os
 import sys
 sys.path.append(os.getcwd())
 
+import scipy as sp
+
+if sp.__version__ < '0.14.0':
+	raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
+
 try:
     from setuptools import setup
 except ImportError:
@@ -30,4 +35,5 @@ setup(
     author_email='jeff.gostick@mcgill.ca',
     download_url='https://github.com/pmeal/OpenPNM/',
     url='https://github.com/pmeal/OpenPNM',
+	install_requires = ['scipy>=0.14.0'],
 )
