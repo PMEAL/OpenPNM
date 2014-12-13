@@ -24,6 +24,20 @@ class Cubic(GenericNetwork):
 
     shape : tuple of ints
         The (i,j,k) size and shape of the network.
+        
+    connectivity : int
+        The number of connections to neighboring pores.  Connections are made 
+        symmetrically to any combination of face, edge or corners neighbors.  
+        
+        Options are:
+        
+        - 6: Faces only
+        - 8: Edges only
+        - 12: Corners Only
+        - 14: Faces and Edges
+        - 18: Faces and Corners
+        - 20: Edges and Corners
+        - 26: Faces, Edges and Corners
 
     template : array of booleans
         An (i,j,k) array with True where the Network should be defiend and
@@ -37,10 +51,38 @@ class Cubic(GenericNetwork):
     >>> pn = OpenPNM.Network.Cubic(shape=[3,4,5])
     >>> pn.Np
     60
-    >>> img = sp.ones([3,4,5])
+      
+    It is also possible to create Networks with cubic connectivity but 
+    non-Cubic shape by provding an array with True values where the network 
+    should exist to the ``template`` argument.  The example below produces a sphere:
+    
+    >>> img = sp.ones([11,11,11])
+    >>> img[5,5,5] = 0
+    >>> from scipy.ndimage import distance_transform_bf as dt
+    >>> img = dt(img) < 5  # Create a sphere of True
     >>> pn = OpenPNM.Network.Cubic(template=img)
     >>> pn.Np
-    60
+    515
+    >>> temp = pn.asarray(pn['pore.all'])
+    >>> import matplotlib.pyplot as plt
+    >>> plt.imshow(temp[:,:,4])
+    
+    If random distributions of coordination number is desired, one option is
+    to create a Cubic network with many connections and the trim some:
+    
+    >>> pn = OpenPNM.Network.Cubic(shape=[5,5,5],connectivity=26)
+    >>> pn.Nt
+    1036
+    >>> import matplotlib.pyplot as plt
+    >>> plt.subplot(1,2,1)
+    >>> plt.hist(pn.num_neighbors(pn.Ps))
+    >>> mod = OpenPNM.Network.models.pore_topology.reduce_coordination
+    >>> pn.add_model(propname='throat.to_drop',model=mod,z=10,mode='random')
+    >>> pn.trim(throats=pn['throat.to_drop'])
+    >>> pn.Nt
+    667
+    >>> plt.subplot(1,2,2)
+    >>> plt.hist(pn.num_neighbors(pn.Ps))
     """
     def __init__(self, shape=None, template=None, spacing=1, connectivity=6, **kwargs):
         super(Cubic, self).__init__(**kwargs)
@@ -121,10 +163,6 @@ class Cubic(GenericNetwork):
         self['pore.right']    = y >= y.max()
         self['pore.bottom']   = z <= z.min()
         self['pore.top']      = z >= z.max()
-
-        #Add some topology models to the Network
-#        mod = OpenPNM.Network.models.pore_topology.get_subscripts
-#        self.add_model(propname='pore.subscript',model=mod,shape=self._shape)
 
         #If an image was sent as 'template', then trim network to image shape
         if template is not None:
