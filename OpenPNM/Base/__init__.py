@@ -27,5 +27,7 @@ logging.basicConfig(level=logging.WARNING,
                     )
 
 from .__Controller__ import Controller
+from .__GenericModel__ import GenericModel
+from .__ModelsDict__ import ModelsDict
 from .__Base__ import Base
 from .__Core__ import Core

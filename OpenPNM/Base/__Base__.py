@@ -6,7 +6,7 @@ Base:  Abstract Class
 import string, random, collections
 import scipy as sp
 import scipy.constants
-from OpenPNM.Base import logging, Controller
+from OpenPNM.Base import logging, Controller, ModelsDict
 logger = logging.getLogger()
 sim = Controller()
 # Clear the controller object when OpenPNM is imported
@@ -38,6 +38,7 @@ class Base(dict):
         obj._net = None
         #Initialize ordered dict for storing property models
         obj._models = collections.OrderedDict()
+        obj.models = ModelsDict()
         return obj
 
     def __init__(self,name=None,loglevel=30,**kwargs):
