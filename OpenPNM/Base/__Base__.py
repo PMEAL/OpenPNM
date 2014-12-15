@@ -38,11 +38,11 @@ class Base(dict):
         obj._net = None
         #Initialize ordered dict for storing property models
         obj._models = collections.OrderedDict()
-        obj.models = ModelsDict()
         return obj
 
     def __init__(self,name=None,loglevel=30,**kwargs):
         super(Base,self).__init__()
+        self.models = ModelsDict(parent=self)
         logger.name = 'Base'
         logger.setLevel(loglevel)
         logger.debug('Initializing Base class')
