@@ -106,8 +106,8 @@ class GenericLinearTransport(GenericAlgorithm):
             source_name =  'pore.'+source_name.split('.')[-1]
             prop = source_name.split('.')[-1]            
             try: self._phase[source_name]
-            except: raise Exception('The attached phase in the algorithm '+self.name+', does not have the source property '+source_name+' in its physics!')        
-                
+            except KeyError: Exception('The attached phase in the algorithm '+self.name+', does not have the source property '+source_name+' in its physics!')        
+            except ValueError:  pass     
         if mode=='remove':
             s_mode = ['linear','nonlinear']
             if source_name is None:
