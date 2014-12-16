@@ -115,7 +115,7 @@ class GenericLinearTransport(GenericAlgorithm):
                     if pores is 'all':
                         for item in self.labels():
                             if 'pore.source_' in item:
-                                prop = (item.split('.')[-1]).replace('pore.source_',"")
+                                prop = (item.split('.')[-1]).replace('source_',"")
                                 del self['pore.source_'+prop]
                                 for s in s_mode:
                                     try:    del self['pore.source_'+s+'_s1_'+prop]
@@ -125,7 +125,7 @@ class GenericLinearTransport(GenericAlgorithm):
                     else:
                         for item in self.labels():
                             if 'pore.source_' in item:
-                                prop = (item.split('.')[-1]).replace('pore.source_',"")
+                                prop = (item.split('.')[-1]).replace('source_',"")
                                 self['pore.source_'+prop][pores] = False
                                 for s in s_mode:
                                     try:    self['pore.source_'+s+'_s1_'+prop][pores] = sp.nan
