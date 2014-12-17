@@ -36,17 +36,14 @@ class Base(dict):
         obj._geometries = []
         obj._physics = []
         obj._net = None
-        #Initialize ordered dict for storing property models
-        obj._models = collections.OrderedDict()
         return obj
 
     def __init__(self,name=None,loglevel=30,**kwargs):
         super(Base,self).__init__()
-        self.models = ModelsDict(parent=self)
+        self.models = ModelsDict(master=self)
         logger.name = 'Base'
         logger.setLevel(loglevel)
         logger.debug('Initializing Base class')
-
         self.name = name
         self.simulation = sim
 

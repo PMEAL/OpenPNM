@@ -121,7 +121,7 @@ class Core(Base):
         >>> import OpenPNM.Geometry.models as gm
         >>> f = gm.pore_misc.random  # Get model from Geometry library
         >>> geom.add_model(propname='pore.seed',model=f)
-        >>> list(geom._models.keys())  # Look in private dict to verify model was added
+        >>> print(geom.models)  # Look in models dict to verify model was added
         ['pore.seed']
 
         '''
@@ -146,71 +146,13 @@ class Core(Base):
         #Build partial function from given kwargs
         f = {'model':model,'network':network,'phase':phase,'geometry':geometry,'physics':physics,'regen_mode':regen_mode}
         f.update(**kwargs)
-        fn = partial(model,propname=propname,network=network,phase=phase,geometry=geometry,physics=physics,regen_mode=regen_mode,**kwargs)
         if regen_mode == 'static':
-            self[propname] = fn()  # Generate data and store it locally
-            self._models[propname] = fn  # Store model in a private attribute
-            self.models[propname] = f
+            self.models[propname] = f  # Generate data and store it
+            self[propname] = self.models[propname].regenerate() # Generate data and store it locally
         if regen_mode == 'constant':
-             self[propname] = fn()  # Generate data and store it locally
+             self[propname] = f['model'](**f)  # Generate data but don't store it
         if regen_mode in ['deferred','on_demand']:
-            self._models[propname] = fn  # Store model in a private attribute
-            self.models[propname] = f
-
-    def regenerate(self, props='',mode='inclusive'):
-        r'''
-        This updates properties using any models on the object that were
-        assigned using ``add_model``
-
-        Parameters
-        ----------
-        props : string or list of strings
-            The names of the properties that should be updated, defaults to 'all'
-        mode : string
-            This controls which props are regenerated and how.  Options are:
-
-            * 'inclusive': (default) This regenerates all given properties
-            * 'exclude': This generates all given properties EXCEPT the given ones
-
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
-        >>> geom['pore.diameter'] = 1
-        >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
-        >>> f = gm.pore_area.cubic
-        >>> geom.add_model(propname='pore.area',model=f)  # Add model to Geometry object
-        >>> geom['pore.area'][0]  # Look at area value in pore 0
-        1
-        >>> geom['pore.diameter'] = 2
-        >>> geom.regenerate()  # Regenerate all models
-        >>> geom['pore.area'][0]  # Look at pore area calculated with new diameter
-        4
-
-        '''
-        if props == '':  # If empty, assume all models are to be regenerated
-            props = list(self._models.keys())
-            for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only
-                if self._models[item].keywords.get('regen_mode') == 'on_demand':
-                    props.remove(item)
-        elif type(props) == str:
-            props = [props]
-        if mode == 'exclude':
-            temp = list(self._models.keys())
-            for item in props:
-                temp.remove(item)
-            props = temp
-        logger.info('Models are being recalculated in the following order: ')
-        count = 0
-        for item in props:
-            if item in self._models.keys():
-                self[item] = self._models[item]()
-                logger.info(str(count)+' : '+item)
-                count += 1
-            else:
-                logger.warning('Requested proptery is not a dynamic model: '+item)
-
+            self.models[propname] = f  # Store model, but don't run it
 
     #--------------------------------------------------------------------------
     '''Data Query Methods'''
@@ -260,7 +202,7 @@ class Core(Base):
             if self[item].dtype != bool:
                 props.append(item)
 
-        all_models = list(self._models.keys())
+        all_models = list(self.models.keys())
         constants = [item for item in props if item not in all_models]
         models = [item for item in props if item in all_models]
 

@@ -446,10 +446,6 @@ class Controller(dict):
         containing handles to the clones.  This method does NOT return a new
         OpenPNM Controller object.
 
-        See Also
-        --------
-        ``subnet`` and ``clone_object``
-
         Notes
         -----
         The objects in the returned dictionary can be used for simulations as
