@@ -35,8 +35,8 @@ phys_water = OpenPNM.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts
 phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
 #Add some additional models to phys_air
 phys_air.models.add(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion,
-                   propname='throat.gdiff_ac',
-                   pore_diffusivity='pore.Dac')
+                    propname='throat.gdiff_ac',
+                    pore_diffusivity='pore.Dac')
 
 #==============================================================================
 '''Begin Simulations'''
