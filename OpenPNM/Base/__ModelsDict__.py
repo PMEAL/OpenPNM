@@ -49,6 +49,9 @@ class ModelsDict(OrderedDict):
             r'''
             '''
             return self['model'](**self)
+            
+    def keys(self):
+        return list(super(ModelsDict,self).keys())
     
     def __setitem__(self,propname,model):
         temp =self.GenericModel(propname=propname,model=None)
@@ -111,6 +114,8 @@ class ModelsDict(OrderedDict):
             for item in props:
                 temp.remove(item)
             props = temp
+        if self[item]['regen_mode'] == 'constant':
+            props.remove(item)
         logger.info('Models are being recalculated in the following order: ')
         count = 0
         for item in props:
@@ -189,12 +194,13 @@ class ModelsDict(OrderedDict):
         #Build partial function from given kwargs
         f = {'model':model,'network':network,'phase':phase,'geometry':geometry,'physics':physics,'regen_mode':regen_mode}
         f.update(**kwargs)
-        if regen_mode == 'static':
-            self[propname] = f
-        if regen_mode == 'constant':
-             self._master[propname] = f()  # Generate data and store it locally
+        # Add model to ModelsDict
+        self[propname] = f
+        # Now generate data as necessary
+        if regen_mode in ['static','constant']:
+            self._master[propname] = self[propname].regenerate()
         if regen_mode in ['deferred','on_demand']:
-            self[propname] = f  # Store model
+            pass
 
     def reorder(self,new_order):
         r'''
@@ -232,7 +238,8 @@ class ModelsDict(OrderedDict):
             self.move_to_end(item)
 
 if __name__ == '__main__':
-    a = ModelsDict()
+    pn = OpenPNM.Network.TestNet()
+    a = ModelsDict(master=pn)
 
 
 

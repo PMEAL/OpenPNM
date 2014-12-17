@@ -146,13 +146,13 @@ class Core(Base):
         #Build partial function from given kwargs
         f = {'model':model,'network':network,'phase':phase,'geometry':geometry,'physics':physics,'regen_mode':regen_mode}
         f.update(**kwargs)
-        if regen_mode == 'static':
-            self.models[propname] = f  # Generate data and store it
-            self[propname] = self.models[propname].regenerate() # Generate data and store it locally
-        if regen_mode == 'constant':
-             self[propname] = f['model'](**f)  # Generate data but don't store it
+        # Store model on object's ModelsDict
+        self.models[propname] = f
+        # Generate data as necessary
+        if regen_mode in ['static','constant']:
+            self[propname] = self.models[propname].regenerate() 
         if regen_mode in ['deferred','on_demand']:
-            self.models[propname] = f  # Store model, but don't run it
+            pass
 
     #--------------------------------------------------------------------------
     '''Data Query Methods'''
