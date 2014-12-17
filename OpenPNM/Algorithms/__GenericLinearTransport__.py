@@ -273,7 +273,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self._maxiter_for_all = sp.amax(self['pore.source_maxiter'][-sp.isnan(self['pore.source_maxiter'])])
         if self._guess is None:   self._guess = sp.zeros(self._coeff_dimension)        
         t = 1 
-        step = 1
+        step = 0
         # The main Picard loop
         while t>self._tol_for_all and step<=self._maxiter_for_all:            
             X,t,A,b = self._do_inner_iteration_stage(guess=self._guess,**kwargs)
