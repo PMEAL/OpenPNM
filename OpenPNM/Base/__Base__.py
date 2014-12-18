@@ -20,8 +20,8 @@ class Base(dict):
     ----------
     name : string
         The name for the object.  This must be unique so no two objects in the
-        simulation have the same name.  If no name is provided, and random
-        string is appended to the objects module name.
+        simulation have the same name.  If no name is provided a random string 
+        is appended to the object's class name.
 
     """
 
