@@ -21,9 +21,14 @@ class ModelsDict(OrderedDict):
         
     class GenericModel(dict):
         r"""
-        Accepts a model from the OpenPNM model library, as well as all required and
-        optional argumnents, then wraps it in a custom dictionary with various 
-        methods for working with the models.
+        Accepts a model from the OpenPNM model library, as well as all required 
+        and optional argumnents, then wraps it in a custom dictionary with 
+        various methods for working with the models.
+        
+        Notes
+        -----
+        This class in ONLY used inside the ModelsDict class, so it is a
+        nested class.  This may change in the future if we need it elsewhere.
     
         """
         def __init__(self,**kwargs):
@@ -54,7 +59,7 @@ class ModelsDict(OrderedDict):
         return list(super(ModelsDict,self).keys())
     
     def __setitem__(self,propname,model):
-        temp =self.GenericModel(propname=propname,model=None)
+        temp = self.GenericModel(propname=propname,model=None)
         temp.update(**model)
         super(ModelsDict,self).__setitem__(propname,temp)
         
@@ -70,7 +75,7 @@ class ModelsDict(OrderedDict):
         print(header)
         return ' '
             
-    def regenerate(self, props='',mode='inclusive'):
+    def regenerate(self, props='', mode='inclusive'):
         r'''
         This updates properties using any models on the object that were
         assigned using ``add_model``
@@ -114,8 +119,9 @@ class ModelsDict(OrderedDict):
             for item in props:
                 temp.remove(item)
             props = temp
-        if self[item]['regen_mode'] == 'constant':
-            props.remove(item)
+        for item in self.keys():
+            if self[item]['regen_mode'] == 'constant':
+                props.remove(item)
         logger.info('Models are being recalculated in the following order: ')
         count = 0
         for item in props:
