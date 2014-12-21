@@ -180,23 +180,23 @@ class ModelsDict(OrderedDict):
 
         '''
         #Determine object type, and assign associated objects
-        self_type = [item.__name__ for item in self.__class__.__mro__]
+        self_type = [item.__name__ for item in self._master.__class__.__mro__]
         network = None
         phase = None
         geometry = None
         physics = None
         if 'GenericGeometry' in self_type:
-            network = self._net
-            geometry = self
+            network = self._master._net
+            geometry = self._master
         elif 'GenericPhase' in self_type:
-            network = self._net
-            phase = self
+            network = self._master._net
+            phase = self._master
         elif 'GenericPhysics' in self_type:
-            network = self._net
-            phase = self._phases[0]
-            physics = self
+            network = self._master._net
+            phase = self._master._phases[0]
+            physics = self._master
         else:
-            network = self
+            network = self._master
         #Build partial function from given kwargs
         f = {'model':model,'network':network,'phase':phase,'geometry':geometry,'physics':physics,'regen_mode':regen_mode}
         f.update(**kwargs)
