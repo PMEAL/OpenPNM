@@ -448,7 +448,8 @@ class Controller(dict):
 
         See Also
         --------
-        ``subnet`` and ``clone_object``
+        subset
+        clone_object
 
         Notes
         -----

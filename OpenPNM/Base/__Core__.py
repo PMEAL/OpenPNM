@@ -111,7 +111,10 @@ class Core(Base):
 
         See Also
         --------
-        ``reorder_models`` , ``inspect_model`` , ``amend_model`` , ``remove_model``
+        reorder_models
+        inspect_model
+        amend_model
+        remove_model
 
         Examples
         --------
@@ -168,7 +171,10 @@ class Core(Base):
 
         See Also
         --------
-        ``add_models`` , ``inspect_model`` , ``remove_model`` , ``reorder_models``
+        add_models
+        inspect_model
+        remove_model
+        reorder_models
         '''
         f = self._models[propname]
         # Check to ensure that all kwargs are actually in model
@@ -182,7 +188,10 @@ class Core(Base):
 
         See Also
         --------
-        ``add_models`` , ``amend_model`` , ``remove_model`` , ``reorder_models``
+        add_models
+        amend_model
+        remove_model
+        reorder_models
         '''
         f = self._models[propname]
         header = '-'*60
@@ -211,7 +220,10 @@ class Core(Base):
 
         See Also
         --------
-        ``add_models`` , ``inspect_model`` , ``amend_model`` , ``reorder_models``
+        add_models
+        inspect_model
+        amend_model
+        reorder_models
 
         '''
         self._models.pop(propname,None)
@@ -236,7 +248,10 @@ class Core(Base):
 
         See Also
         --------
-        ``add_models``,``inspect_model``,``amend_model``,``remove_model``
+        add_models
+        inspect_model
+        amend_model
+        remove_model
 
         Examples
         --------
@@ -633,7 +648,7 @@ class Core(Base):
 
         See Also
         --------
-        ``labels``
+        labels
 
         Examples
         --------
@@ -806,7 +821,8 @@ class Core(Base):
 
         See Also
         --------
-        ``pores``, ``throats``
+        pores
+        throats
 
         Examples
         --------
@@ -1246,7 +1262,8 @@ class Core(Base):
 
         See Also
         --------
-        num_throats, count
+        num_throats
+        count
 
         Examples
         --------
@@ -1309,7 +1326,8 @@ class Core(Base):
 
         See Also
         --------
-        num_pores, count
+        num_pores
+        count
 
         Examples
         --------
@@ -1362,7 +1380,8 @@ class Core(Base):
 
         See Also
         --------
-        num_pores, num_throats
+        num_pores
+        num_throats
 
         Notes
         -----
