@@ -31,12 +31,6 @@ class Delaunay(GenericNetwork):
     name : string
         A unique name for the network
 
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-
-    loggername : string
-        Overwrite the name of the logger, which defaults to the class name
-
     Examples
     --------
     >>> import OpenPNM

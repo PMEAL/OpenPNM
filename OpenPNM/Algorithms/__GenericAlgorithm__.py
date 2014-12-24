@@ -231,5 +231,5 @@ class GenericAlgorithm(Core):
 if __name__ == '__main__':
     import OpenPNM
     pn = OpenPNM.Network.TestNet()
-    test = OpenPNM.Algorithms.GenericAlgorithm(network=pn,loglevel=10)
+    test = OpenPNM.Algorithms.GenericAlgorithm(network=pn)
     test.run()

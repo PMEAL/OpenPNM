@@ -38,7 +38,7 @@ phys_air2.add_model(model=OpenPNM.Physics.models.generic_source_term.power_law,
                    A2=1.7,
                    A3=1.5e-14)
 #-----------------------------------------------------------------------------------------------                   
-alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air,loglevel=30)
+alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
 BC1_pores = pn.pores('right_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
 BC2_pores = pn.pores('left_boundary')
