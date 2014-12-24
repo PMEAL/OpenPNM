@@ -42,10 +42,6 @@ class Base(dict):
 
     def __init__(self,name=None,loglevel=30,**kwargs):
         super(Base,self).__init__()
-        logger.name = 'Base'
-        logger.setLevel(loglevel)
-        logger.debug('Initializing Base class')
-
         self.name = name
         self.simulation = sim
 
