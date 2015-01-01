@@ -77,7 +77,10 @@ class Core(Base):
             else:
                 logger.warning('Cannot write vector with an array of the wrong length: '+key)
                 pass
-
+            
+    #--------------------------------------------------------------------------
+    '''Model Manipulation Methods'''
+    #--------------------------------------------------------------------------
     def add_model(self,propname,model,regen_mode='static',**kwargs):
         r'''
         Add specified property estimation model to the object.
@@ -106,12 +109,8 @@ class Core(Base):
         -----
         This method is inherited by all net/geom/phys/phase objects.  It takes
         the received model and stores it on the object under private dictionary
-        called _models.  This dict is an 'OrderedDict', so that the models can
-        be run in the same order they are added.
-
-        See Also
-        --------
-        ``reorder_models`` , ``inspect_model`` , ``amend_model`` , ``remove_model``
+        called _models.  This dict is an 'OrderedDict', so that the models are
+        run in the same order they are added.
 
         Examples
         --------
@@ -125,34 +124,41 @@ class Core(Base):
         ['pore.seed']
 
         '''
-        #Determine object type, and assign associated objects
-        self_type = [item.__name__ for item in self.__class__.__mro__]
-        network = None
-        phase = None
-        geometry = None
-        physics = None
-        if 'GenericGeometry' in self_type:
-            network = self._net
-            geometry = self
-        elif 'GenericPhase' in self_type:
-            network = self._net
-            phase = self
-        elif 'GenericPhysics' in self_type:
-            network = self._net
-            phase = self._phases[0]
-            physics = self
-        else:
-            network = self
-        #Build partial function from given kwargs
-        f = {'model':model,'network':network,'phase':phase,'geometry':geometry,'physics':physics,'regen_mode':regen_mode}
-        f.update(**kwargs)
-        # Store model on object's ModelsDict
-        self.models[propname] = f
-        # Generate data as necessary
-        if regen_mode in ['static','constant']:
-            self[propname] = self.models[propname].regenerate() 
-        if regen_mode in ['deferred','on_demand']:
-            pass
+        self.models.add(propname=propname,model=model,regen_mode=regen_mode,**kwargs)
+        
+    def regenerate(self,props='',mode='inclusive'):
+        r'''
+        This updates properties using any models on the object that were
+        assigned using ``add_model``
+
+        Parameters
+        ----------
+        props : string or list of strings
+            The names of the properties that should be updated, defaults to 'all'
+        mode : string
+            This controls which props are regenerated and how.  Options are:
+
+            * 'inclusive': (default) This regenerates all given properties
+            * 'exclude': This generates all given properties EXCEPT the given ones
+
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> geom['pore.diameter'] = 1
+        >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
+        >>> f = gm.pore_area.cubic
+        >>> geom.add_model(propname='pore.area',model=f)  # Add model to Geometry object
+        >>> geom['pore.area'][0]  # Look at area value in pore 0
+        1
+        >>> geom['pore.diameter'] = 2
+        >>> geom.models.regenerate()  # Regenerate all models
+        >>> geom['pore.area'][0]  # Look at pore area calculated with new diameter
+        4
+
+        '''
+        self.models.regenerate(props=props,mode=mode)
 
     #--------------------------------------------------------------------------
     '''Data Query Methods'''
