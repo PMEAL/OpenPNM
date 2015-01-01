@@ -8,6 +8,66 @@ from collections import OrderedDict
 from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
 
+class GenericModel(dict):
+    r"""
+    Accepts a model from the OpenPNM model library, as well as all required 
+    and optional argumnents, then wraps it in a custom dictionary with 
+    various methods for working with the models.
+    
+    Notes
+    -----
+    This class in ONLY used inside the ModelsDict class, so it is a
+    nested class.  This may change in the future if we need it elsewhere.
+
+    """
+    def __init__(self,**kwargs):
+        self.update(**kwargs)
+
+    def __call__(self):
+        return self['model'](**self)
+        
+    def __str__(self):
+        header = '-'*60
+        print(header)
+        print(self['model'].__module__+'.'+self['model'].__name__)
+        print(header)
+        print("{a:<20s} {b}".format(a='Argument Name',b='Value'))
+        print(header)
+        for item in self.keys():
+            if item not in ['model','network','geometry','phase','physics','propname']:
+                print("{a:<20s} {b}".format(a=item, b=self[item]))
+        print(header)
+        return ' '
+        
+    def regenerate(self):
+        r'''
+        '''
+        master = self._find_master()
+        #Determine object type, and assign associated objects
+        self_type = [item.__name__ for item in master.__class__.__mro__]
+        if 'GenericGeometry' in self_type:
+            self['network'] = master._net
+            self['geometry'] = master
+        elif 'GenericPhase' in self_type:
+            self['network'] = master._net
+            self['phase'] = master
+        elif 'GenericPhysics' in self_type:
+            self['network'] = master._net
+            self['phase'] = master._phases[0]
+            self['physics'] = master
+        else:
+            self['network'] = master
+        return self['model'](**self)
+        
+    def _find_master(self):
+        sim = Controller()
+        for item in sim.keys():
+            if sim[item].models is not None:
+                for model in sim[item].models.keys():
+                    if sim[item].models[model] is self:
+                        return sim[item]
+        return None
+
 class ModelsDict(OrderedDict):
     r"""
     Accepts a model from the OpenPNM model library, as well as all required and
@@ -17,72 +77,12 @@ class ModelsDict(OrderedDict):
     """
     def __init__(self,**kwargs):
         super(ModelsDict,self).__init__(**kwargs)
-        
-    class GenericModel(dict):
-        r"""
-        Accepts a model from the OpenPNM model library, as well as all required 
-        and optional argumnents, then wraps it in a custom dictionary with 
-        various methods for working with the models.
-        
-        Notes
-        -----
-        This class in ONLY used inside the ModelsDict class, so it is a
-        nested class.  This may change in the future if we need it elsewhere.
-    
-        """
-        def __init__(self,**kwargs):
-            self.update(**kwargs)
-    
-        def __call__(self):
-            return self['model'](**self)
-            
-        def __str__(self):
-            header = '-'*60
-            print(header)
-            print(self['model'].__module__+'.'+self['model'].__name__)
-            print(header)
-            print("{a:<20s} {b}".format(a='Argument Name',b='Value'))
-            print(header)
-            for item in self.keys():
-                if item not in ['model','network','geometry','phase','physics','propname']:
-                    print("{a:<20s} {b}".format(a=item, b=self[item]))
-            print(header)
-            return ' '
-            
-        def regenerate(self):
-            r'''
-            '''
-            master = self._find_master()
-            #Determine object type, and assign associated objects
-            self_type = [item.__name__ for item in master.__class__.__mro__]
-            if 'GenericGeometry' in self_type:
-                self['network'] = master._net
-                self['geometry'] = master
-            elif 'GenericPhase' in self_type:
-                self['network'] = master._net
-                self['phase'] = master
-            elif 'GenericPhysics' in self_type:
-                self['network'] = master._net
-                self['phase'] = master._phases[0]
-                self['physics'] = master
-            else:
-                self['network'] = master
-            return self['model'](**self)
-            
-        def _find_master(self):
-            sim = Controller()
-            for item in sim.keys():
-                if sim[item].models is not None:
-                    for model in sim[item].models.keys():
-                        if sim[item].models[model] is self:
-                            return sim[item]
-            return None
             
     def keys(self):
         return list(super(ModelsDict,self).keys())
     
     def __setitem__(self,propname,model):
-        temp = self.GenericModel(propname=propname,model=None)
+        temp = GenericModel(propname=propname,model=None)
         temp.update(**model)
         super(ModelsDict,self).__setitem__(propname,temp)
         
