@@ -15,9 +15,8 @@ class ModelsDict(OrderedDict):
     methods for working with the models.
 
     """
-    def __init__(self,master,**kwargs):
+    def __init__(self,**kwargs):
         super(ModelsDict,self).__init__(**kwargs)
-        self._master = master
         
     class GenericModel(dict):
         r"""
@@ -53,7 +52,31 @@ class ModelsDict(OrderedDict):
         def regenerate(self):
             r'''
             '''
+            master = self._find_master()
+            #Determine object type, and assign associated objects
+            self_type = [item.__name__ for item in master.__class__.__mro__]
+            if 'GenericGeometry' in self_type:
+                self['network'] = master._net
+                self['geometry'] = master
+            elif 'GenericPhase' in self_type:
+                self['network'] = master._net
+                self['phase'] = master
+            elif 'GenericPhysics' in self_type:
+                self['network'] = master._net
+                self['phase'] = master._phases[0]
+                self['physics'] = master
+            else:
+                self['network'] = master
             return self['model'](**self)
+            
+        def _find_master(self):
+            sim = Controller()
+            for item in sim.keys():
+                if sim[item].models is not None:
+                    for model in sim[item].models.keys():
+                        if sim[item].models[model] is self:
+                            return sim[item]
+            return None
             
     def keys(self):
         return list(super(ModelsDict,self).keys())
@@ -107,6 +130,7 @@ class ModelsDict(OrderedDict):
         4
 
         '''
+        master = self._find_master()
         if props == '':  # If empty, assume all models are to be regenerated
             props = list(self.keys())
             for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only
@@ -126,7 +150,7 @@ class ModelsDict(OrderedDict):
         count = 0
         for item in props:
             if item in list(self.keys()):
-                self._master[item] = self[item].regenerate()
+                master[item] = self[item].regenerate()
                 logger.info(str(count)+' : '+item)
                 count += 1
             else:
@@ -179,32 +203,17 @@ class ModelsDict(OrderedDict):
         ['pore.seed']
 
         '''
-        #Determine object type, and assign associated objects
-        self_type = [item.__name__ for item in self._master.__class__.__mro__]
-        network = None
-        phase = None
-        geometry = None
-        physics = None
-        if 'GenericGeometry' in self_type:
-            network = self._master._net
-            geometry = self._master
-        elif 'GenericPhase' in self_type:
-            network = self._master._net
-            phase = self._master
-        elif 'GenericPhysics' in self_type:
-            network = self._master._net
-            phase = self._master._phases[0]
-            physics = self._master
-        else:
-            network = self._master
-        #Build partial function from given kwargs
-        f = {'model':model,'network':network,'phase':phase,'geometry':geometry,'physics':physics,'regen_mode':regen_mode}
+        master = self._find_master()
+        if master == None:
+            regen_mode = 'deferred'
+        #Build dictionary containing given kwargs plus other required info
+        f = {'model':model,'regen_mode':regen_mode}
         f.update(**kwargs)
         # Add model to ModelsDict
         self[propname] = f
         # Now generate data as necessary
         if regen_mode in ['static','constant']:
-            self._master[propname] = self[propname].regenerate()
+            master[propname] = self[propname].regenerate()
         if regen_mode in ['deferred','on_demand']:
             pass
 
@@ -242,6 +251,13 @@ class ModelsDict(OrderedDict):
         #Now rebuild models OrderedDict in new order
         for item in order:
             self.move_to_end(item)
+        
+    def _find_master(self):
+        sim = Controller()
+        for item in sim.keys():
+            if sim[item].models is self:
+                return sim[item]
+        return None
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()

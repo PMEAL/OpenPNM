@@ -40,7 +40,7 @@ class Base(dict):
 
     def __init__(self,name=None,loglevel=30,**kwargs):
         super(Base,self).__init__()
-        self.models = ModelsDict(master=self)
+        self.models = None
         logger.name = 'Base'
         logger.setLevel(loglevel)
         logger.debug('Initializing Base class')
