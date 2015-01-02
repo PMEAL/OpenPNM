@@ -45,19 +45,21 @@ class GenericModel(dict):
         master = self._find_master()
         #Determine object type, and assign associated objects
         self_type = [item.__name__ for item in master.__class__.__mro__]
+        kwargs = {}
         if 'GenericGeometry' in self_type:
-            self['network'] = master._net
-            self['geometry'] = master
+            kwargs['network'] = master._net
+            kwargs['geometry'] = master
         elif 'GenericPhase' in self_type:
-            self['network'] = master._net
-            self['phase'] = master
+            kwargs['network'] = master._net
+            kwargs['phase'] = master
         elif 'GenericPhysics' in self_type:
-            self['network'] = master._net
-            self['phase'] = master._phases[0]
-            self['physics'] = master
+            kwargs['network'] = master._net
+            kwargs['phase'] = master._phases[0]
+            kwargs['physics'] = master
         else:
-            self['network'] = master
-        return self['model'](**self)
+            kwargs['network'] = master
+        kwargs.update(self)
+        return self['model'](**kwargs)
         
     def _find_master(self):
         sim = Controller()
@@ -75,11 +77,6 @@ class ModelsDict(OrderedDict):
     methods for working with the models.
 
     """
-    def __init__(self,**kwargs):
-        super(ModelsDict,self).__init__(**kwargs)
-            
-    def keys(self):
-        return list(super(ModelsDict,self).keys())
     
     def __setitem__(self,propname,model):
         temp = GenericModel(propname=propname,model=None)
@@ -97,6 +94,9 @@ class ModelsDict(OrderedDict):
             count += 1
         print(header)
         return ' '
+        
+    def keys(self):
+        return list(super(ModelsDict,self).keys())
             
     def regenerate(self, props='', mode='inclusive'):
         r'''
@@ -187,10 +187,6 @@ class ModelsDict(OrderedDict):
         called _models.  This dict is an 'OrderedDict', so that the models can
         be run in the same order they are added.
 
-        See Also
-        --------
-        ``reorder_models`` , ``inspect_model`` , ``amend_model`` , ``remove_model``
-
         Examples
         --------
         >>> import OpenPNM
@@ -205,6 +201,7 @@ class ModelsDict(OrderedDict):
         '''
         master = self._find_master()
         if master == None:
+            logger.warning('ModelsDict has no master, changing regen_mode to deferred')
             regen_mode = 'deferred'
         #Build dictionary containing given kwargs plus other required info
         f = {'model':model,'regen_mode':regen_mode}
@@ -261,7 +258,7 @@ class ModelsDict(OrderedDict):
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
-    a = ModelsDict(master=pn)
+    a = ModelsDict()
 
 
 
