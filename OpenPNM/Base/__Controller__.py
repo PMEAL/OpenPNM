@@ -446,6 +446,11 @@ class Controller(dict):
         containing handles to the clones.  This method does NOT return a new
         OpenPNM Controller object.
 
+        See Also
+        --------
+        subset
+        clone_object
+
         Notes
         -----
         The objects in the returned dictionary can be used for simulations as
@@ -466,8 +471,9 @@ class Controller(dict):
         >>> new_pn is pn
         False
 
-        The use the new simulation over the older one, you must clear the
+        To use the new simulation over the older one, you must clear the
         Controller object and then update it with the new simulation data:
+        
         >>> sim.clear()
         >>> sim.update(new_sim)
         '''

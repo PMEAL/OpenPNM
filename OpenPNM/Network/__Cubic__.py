@@ -32,10 +32,10 @@ class Cubic(GenericNetwork):
         Options are:
         
         - 6: Faces only
-        - 8: Edges only
-        - 12: Corners Only
-        - 14: Faces and Edges
-        - 18: Faces and Corners
+        - 8: Corners only
+        - 12: Edges Only
+        - 14: Faces and Corners
+        - 18: Faces and Edges
         - 20: Edges and Corners
         - 26: Faces, Edges and Corners
 
@@ -109,14 +109,14 @@ class Cubic(GenericNetwork):
             (I[:-1], I[1:]),
             ]
 
-        edge_joints = [
+        corner_joints = [
             (I[:-1,:-1,:-1], I[1:,1:,1:]),
             (I[:-1,:-1,1:], I[1:,1:,:-1]),
             (I[:-1,1:,:-1], I[1:,:-1,1:]),
             (I[1:,:-1,:-1], I[:-1,1:,1:]),
             ]
 
-        corner_joints = [
+        edge_joints = [
             (I[:,:-1,:-1], I[:,1:,1:]),
             (I[:,:-1,1:], I[:,1:,:-1]),
             (I[:-1,:,:-1], I[1:,:,1:]),
@@ -128,13 +128,13 @@ class Cubic(GenericNetwork):
         if connectivity == 6:
             joints = face_joints
         elif connectivity == 8:
-            joints = edge_joints
+            joints = corner_joints
         elif connectivity == 12:
             joints = corner_joints
         elif connectivity == 14:
-            joints = face_joints + edge_joints
-        elif connectivity == 18:
             joints = face_joints + corner_joints
+        elif connectivity == 18:
+            joints = face_joints + edge_joints
         elif connectivity == 20:
             joints = edge_joints + corner_joints
         elif connectivity == 26:

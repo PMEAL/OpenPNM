@@ -189,7 +189,7 @@ class Core(Base):
 
         See Also
         --------
-        ``labels``
+        labels
 
         Examples
         --------
@@ -362,7 +362,8 @@ class Core(Base):
 
         See Also
         --------
-        ``pores``, ``throats``
+        pores
+        throats
 
         Examples
         --------
@@ -802,7 +803,8 @@ class Core(Base):
 
         See Also
         --------
-        num_throats, count
+        num_throats
+        count
 
         Examples
         --------
@@ -865,7 +867,8 @@ class Core(Base):
 
         See Also
         --------
-        num_pores, count
+        num_pores
+        count
 
         Examples
         --------
@@ -918,7 +921,8 @@ class Core(Base):
 
         See Also
         --------
-        num_pores, num_throats
+        num_pores
+        num_throats
 
         Notes
         -----

@@ -223,7 +223,21 @@ class GenericLinearTransport(GenericAlgorithm):
                   iterative_solver = None,
                   **kwargs):
         r"""
-        Executes the right algorithm for the solution: regular solution of a linear system or iterative solution over the nonlinear source terms.
+        Executes the right algorithm for the solution: regular solution of a 
+        linear system or iterative solution over the nonlinear source terms.
+        
+        Parameters
+        ----------
+        A : sparse matrix
+            2D Coefficient matrix
+        b : dense matrix
+            1D RHS vector
+        iterative_sovler : string
+            Name of solver to use.  If not solve is specified, sp.solve is used
+            which is a direct solver (SuperLU on default Scipy installation)
+        kwargs : list of keyword arguments
+            These arguments and values are sent to the sparse solver, so read
+            the specific documentation for the solver chosen
         """
         self._iterative_solver = iterative_solver
         
@@ -273,7 +287,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self._maxiter_for_all = sp.amax(self['pore.source_maxiter'][-sp.isnan(self['pore.source_maxiter'])])
         if self._guess is None:   self._guess = sp.zeros(self._coeff_dimension)        
         t = 1 
-        step = 1
+        step = 0
         # The main Picard loop
         while t>self._tol_for_all and step<=self._maxiter_for_all:            
             X,t,A,b = self._do_inner_iteration_stage(guess=self._guess,**kwargs)
