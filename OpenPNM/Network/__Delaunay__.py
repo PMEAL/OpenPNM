@@ -13,7 +13,7 @@ import scipy.spatial as sptl
 import scipy.ndimage as spim
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 from scipy.spatial import Voronoi
 from scipy import stats as st
 from scipy.special import cbrt

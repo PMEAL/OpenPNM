@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from OpenPNM.Algorithms import GenericAlgorithm
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""

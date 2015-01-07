@@ -10,7 +10,7 @@ import sys
 import numpy as np
 from OpenPNM.Network.__Delaunay__ import Delaunay
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class DelaunayCubic(Delaunay):
     r"""

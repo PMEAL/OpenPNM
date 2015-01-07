@@ -12,7 +12,7 @@ import scipy as sp
 from OpenPNM.Base import Core
 from OpenPNM.Base import logging
 from OpenPNM.Network import GenericNetwork
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class GenericAlgorithm(Core):
     r"""

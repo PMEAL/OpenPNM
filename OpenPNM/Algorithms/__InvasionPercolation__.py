@@ -11,7 +11,7 @@ import heapq
 from OpenPNM.Utilities import misc
 from OpenPNM.Algorithms import GenericAlgorithm
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class InvasionPercolation(GenericAlgorithm):

@@ -16,7 +16,7 @@ import scipy.sparse.csgraph as spgr
 from OpenPNM.Algorithms import GenericAlgorithm
 import OpenPNM.Network
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class Tortuosity(GenericAlgorithm):
     r"""
