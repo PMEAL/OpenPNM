@@ -10,7 +10,7 @@ import scipy as sp
 from OpenPNM.Base import Core
 from OpenPNM.Base import logging
 from OpenPNM.Network import GenericNetwork
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 import OpenPNM.Geometry.models
 
 class GenericGeometry(Core):
@@ -29,12 +29,6 @@ class GenericGeometry(Core):
     name : string
         A unique name to apply to the object.  This name will also be used as a
         label to identify where this this geometry applies.
-
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-
-    loggername : string (optional)
-        Sets a custom name for the logger, to help identify logger messages
 
     Examples
     --------

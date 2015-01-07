@@ -13,11 +13,6 @@ class SGL10(GenericGeometry):
     r"""
     SGL10 subclass of GenericGeometry.
 
-    Parameters
-    ----------
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-
     """
 
     def __init__(self, **kwargs):

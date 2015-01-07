@@ -40,12 +40,8 @@ class Base(dict):
         obj._models = collections.OrderedDict()
         return obj
 
-    def __init__(self,name=None,loglevel=30,**kwargs):
+    def __init__(self,name=None,**kwargs):
         super(Base,self).__init__()
-        logger.name = 'Base'
-        logger.setLevel(loglevel)
-        logger.debug('Initializing Base class')
-
         self.name = name
         self.simulation = sim
 

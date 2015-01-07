@@ -8,7 +8,7 @@ TestNet: Generate simple cubic network for testing purposes
 import scipy as sp
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class TestNet(GenericNetwork):
     r"""

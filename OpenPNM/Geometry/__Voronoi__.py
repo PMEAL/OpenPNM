@@ -93,6 +93,6 @@ if __name__ == '__main__':
     import OpenPNM
     pn = OpenPNM.Network.Delaunay(name='test_net')
     pn.generate(num_pores=100, domain_size=[0.0001,0.0001,0.0001],add_boundaries=True)
-    test = OpenPNM.Geometry.Voronoi(loglevel=10,name='test_geom',locations=[0],network=pn)
+    test = OpenPNM.Geometry.Voronoi(name='test_geom',locations=[0],network=pn)
     test.set_locations(pores=pn.pores('internal'),throats='all') # Don't really know what this does but is needed
     pn.regenerate_geometries()

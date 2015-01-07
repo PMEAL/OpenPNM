@@ -404,7 +404,7 @@ References
     #prevents extremely small diffusivity and permeability values in the z direction
     used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
     
-    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,loglevel=30,invading_phase=water,defending_phase=air)
+    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,invading_phase=water,defending_phase=air)
     OP_1.run(inlets = used_inlets,npts=100)
     
     sat = []

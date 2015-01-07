@@ -10,7 +10,7 @@ import sys
 import numpy as np
 from OpenPNM.Network.__Delaunay__ import Delaunay
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class DelaunayCubic(Delaunay):
     r"""
@@ -24,12 +24,6 @@ class DelaunayCubic(Delaunay):
     ----------
     name : string
         A unique name for the network
-
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-
-    loggername : string
-        Overwrite the name of the logger, which defaults to the class name
 
     Examples
     --------

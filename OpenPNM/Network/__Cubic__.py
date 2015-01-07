@@ -10,7 +10,7 @@ import scipy as sp
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class Cubic(GenericNetwork):
     r"""

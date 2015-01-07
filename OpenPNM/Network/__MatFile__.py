@@ -12,7 +12,7 @@ from OpenPNM.Network import GenericNetwork
 import OpenPNM.Geometry
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class MatFile(GenericNetwork):
     r'''

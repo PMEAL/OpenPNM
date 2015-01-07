@@ -7,6 +7,8 @@ import pickle as _pickle
 import copy as _copy
 import time
 import OpenPNM
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class Controller(dict):
     r"""
@@ -35,6 +37,15 @@ class Controller(dict):
         for item in self.keys():
             print("{a:<25s} {b:<25s}".format(a=self[item].__class__.__name__, b=item))
         return ''
+        
+    def _setloglevel(self,level):
+        logger.setLevel(level)
+        print('Log level has been changed to -->',logger.level)
+    
+    def _getloglevel(self):
+        print('Log level is currently set to -->',logger.level)
+        
+    loglevel = property(fget=_getloglevel,fset=_setloglevel)
 
     def show_tree(self):
         r'''

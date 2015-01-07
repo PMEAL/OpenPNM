@@ -8,7 +8,7 @@ module __OhmicConduction__: Electronic or ionic conduction
 import scipy as sp
 from OpenPNM.Algorithms import GenericLinearTransport
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class OhmicConduction(GenericLinearTransport):
     r'''
