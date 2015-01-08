@@ -3,6 +3,7 @@
 ModelsDict:  Abstract Class for Containing Models
 ###############################################################################
 '''
+import inspect
 import scipy as sp
 from collections import OrderedDict
 from OpenPNM.Base import logging, Controller
@@ -206,8 +207,14 @@ class ModelsDict(OrderedDict):
         if master == None:
             logger.warning('ModelsDict has no master, changing regen_mode to deferred')
             regen_mode = 'deferred'
-        #Build dictionary containing given kwargs plus other required info
+        #Build dictionary containing default model values, plus other required info
         f = {'model':model,'regen_mode':regen_mode}
+        # Scan default argument names and values of model
+        if model.__defaults__ != None:
+            vals = list(inspect.getargspec(model).defaults)
+            keys = inspect.getargspec(model).args[-len(vals):]
+            f.update(zip(keys,vals))
+        # Update dictionary with supplied arguments
         f.update(**kwargs)
         # Add model to ModelsDict
         self[propname] = f
