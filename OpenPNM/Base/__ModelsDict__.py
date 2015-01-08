@@ -159,7 +159,7 @@ class ModelsDict(OrderedDict):
             else:
                 logger.warning('Requested proptery is not a dynamic model: '+item)
             
-    def add(self,propname,model,regen_mode='static',**kwargs):
+    def add(self,propname,model,regen_mode='normal',**kwargs):
         r'''
         Add specified property estimation model to the object.
 
@@ -175,7 +175,7 @@ class ModelsDict(OrderedDict):
         regen_mode : string
             Controls when and if the property is regenerated. Options are:
 
-            * 'static' : The property is stored as static data and is only regenerated when the object's ``regenerate`` is called
+            * 'normal' : The property is stored as static data and is only regenerated when the object's ``regenerate`` is called
 
             * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
 
@@ -212,7 +212,7 @@ class ModelsDict(OrderedDict):
         # Add model to ModelsDict
         self[propname] = f
         # Now generate data as necessary
-        if regen_mode in ['static','constant']:
+        if regen_mode in ['normal','constant']:
             master[propname] = self[propname].regenerate()
         if regen_mode in ['deferred','on_demand']:
             pass

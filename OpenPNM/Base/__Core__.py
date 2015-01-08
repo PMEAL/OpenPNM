@@ -7,6 +7,7 @@ import pprint
 from functools import partial
 import scipy as sp
 from OpenPNM.Base import Base
+from OpenPNM.Base import ModelsDict
 from OpenPNM.Base import logging
 logger = logging.getLogger()
 from OpenPNM.Utilities import misc
@@ -81,85 +82,17 @@ class Core(Base):
     #--------------------------------------------------------------------------
     '''Model Manipulation Methods'''
     #--------------------------------------------------------------------------
-    def add_model(self,propname,model,regen_mode='static',**kwargs):
-        r'''
-        Add specified property estimation model to the object.
-
-        Parameters
-        ----------
-        propname : string
-            The name of the property to use as dictionary key, such as
-            'pore.diameter' or 'throat.length'
-
-        model : function
-            The property estimation function to use
-
-        regen_mode : string
-            Controls when and if the property is regenerated. Options are:
-
-            * 'static' : The property is stored as static data and is only regenerated when the object's ``regenerate`` is called
-
-            * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
-
-            * 'deferred' : The model is stored on the object but not run until ``regenerate`` is called
-
-            * 'on_demand' : The model is stored on the object but not run, AND will only run if specifically requested in ``regenerate``
-
-        Notes
-        -----
-        This method is inherited by all net/geom/phys/phase objects.  It takes
-        the received model and stores it on the object under private dictionary
-        called _models.  This dict is an 'OrderedDict', so that the models are
-        run in the same order they are added.
-
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn)
-        >>> import OpenPNM.Geometry.models as gm
-        >>> f = gm.pore_misc.random  # Get model from Geometry library
-        >>> geom.add_model(propname='pore.seed',model=f)
-        >>> print(geom.models)  # Look in models dict to verify model was added
-        ['pore.seed']
-
-        '''
+    #Note: These methods have been moved to the ModelsDict class but are left
+    #here for backward compatibility
+    def add_model(self,propname,model,regen_mode='normal',**kwargs):
         self.models.add(propname=propname,model=model,regen_mode=regen_mode,**kwargs)
         
+    add_model.__doc__ = ModelsDict.add.__doc__
+        
     def regenerate(self,props='',mode='inclusive'):
-        r'''
-        This updates properties using any models on the object that were
-        assigned using ``add_model``
-
-        Parameters
-        ----------
-        props : string or list of strings
-            The names of the properties that should be updated, defaults to 'all'
-        mode : string
-            This controls which props are regenerated and how.  Options are:
-
-            * 'inclusive': (default) This regenerates all given properties
-            * 'exclude': This generates all given properties EXCEPT the given ones
-
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
-        >>> geom['pore.diameter'] = 1
-        >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
-        >>> f = gm.pore_area.cubic
-        >>> geom.add_model(propname='pore.area',model=f)  # Add model to Geometry object
-        >>> geom['pore.area'][0]  # Look at area value in pore 0
-        1
-        >>> geom['pore.diameter'] = 2
-        >>> geom.models.regenerate()  # Regenerate all models
-        >>> geom['pore.area'][0]  # Look at pore area calculated with new diameter
-        4
-
-        '''
         self.models.regenerate(props=props,mode=mode)
 
+    regenerate.__doc__ = ModelsDict.regenerate.__doc__
     #--------------------------------------------------------------------------
     '''Data Query Methods'''
     #--------------------------------------------------------------------------
