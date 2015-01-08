@@ -51,6 +51,7 @@ class GenericModel(dict):
         
     def regenerate(self):
         r'''
+        Regenerate the model
         '''
         master = self._find_master()
         #Determine object type, and assign associated objects
@@ -208,8 +209,19 @@ class ModelsDict(OrderedDict):
         >>> import OpenPNM.Geometry.models as gm
         >>> f = gm.pore_misc.random  # Get model from Geometry library
         >>> geom.add_model(propname='pore.seed',model=f)
-        >>> print(geom.models)  # Look in private dict to verify model was added
+        >>> geom.models.keys()  # Look in dict to verify model was added
         ['pore.seed']
+        >>> print(geom.models['pore.seed'])  # Look at arguments for model
+        ------------------------------------------------------------
+        OpenPNM.Geometry.models.pore_misc.random
+        ------------------------------------------------------------
+        Argument Name        Value / (Default)
+        ------------------------------------------------------------
+        regen_mode           normal / (---)
+        seed                 None / (None)
+        num_range            [0, 1] / ([0, 1])
+        ------------------------------------------------------------
+        
 
         '''
         master = self._find_master()
@@ -250,9 +262,10 @@ class ModelsDict(OrderedDict):
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
-        >>> print(list(geom.models))
+        >>> geom.models.keys()
         ['pore.seed', 'throat.seed', 'throat.length']
         >>> geom.models.reorder({'pore.seed':1,'throat.length':0})
+        >>> geom.models.keys()
         ['throat.length', 'pore.seed', 'throat.seed']
 
         '''
