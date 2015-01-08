@@ -63,12 +63,15 @@ class GenericModel(dict):
         
     def _find_master(self):
         sim = Controller()
+        master = []
         for item in sim.keys():
             if sim[item].models is not None:
                 for model in sim[item].models.keys():
                     if sim[item].models[model] is self:
-                        return sim[item]
-        return None
+                        master.append(sim[item])
+        if len(master) > 1:
+            raise Exception('More than one master found! This model dictionary has been associated with multiple objects. To use the same dictionary multiple times use the copy method.')
+        return master[0]
 
 class ModelsDict(OrderedDict):
     r"""
@@ -251,10 +254,13 @@ class ModelsDict(OrderedDict):
         
     def _find_master(self):
         sim = Controller()
+        master = []
         for item in sim.keys():
             if sim[item].models is self:
-                return sim[item]
-        return None
+                master.append(sim[item])
+        if len(master) > 1:
+            raise Exception('More than one master found! This model dictionary has been associated with multiple objects. To use the same dictionary multiple times use the copy method.')
+        return master[0]
 
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
