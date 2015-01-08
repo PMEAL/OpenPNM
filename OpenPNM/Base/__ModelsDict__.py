@@ -32,11 +32,20 @@ class GenericModel(dict):
         print(header)
         print(self['model'].__module__+'.'+self['model'].__name__)
         print(header)
-        print("{a:<20s} {b}".format(a='Argument Name',b='Value'))
+        print("{a:<20s} {b}".format(a='Argument Name',b='Value / (Default)'))
         print(header)
+        # Scan default argument names and values of model
+        defs = {}
+        if self['model'].__defaults__ != None:
+            vals = list(inspect.getargspec(self['model']).defaults)
+            keys = inspect.getargspec(self['model']).args[-len(vals):]
+            # Put defaults into the dict
+            defs.update(zip(keys,vals))
         for item in self.keys():
             if item not in ['model','network','geometry','phase','physics','propname']:
-                print("{a:<20s} {b}".format(a=item, b=self[item]))
+                if item not in defs.keys():
+                    defs[item] = '---'
+                print("{a:<20s} {b} / ({c})".format(a=item, b=self[item], c=defs[item]))
         print(header)
         return ' '
         
@@ -213,8 +222,9 @@ class ModelsDict(OrderedDict):
         if model.__defaults__ != None:
             vals = list(inspect.getargspec(model).defaults)
             keys = inspect.getargspec(model).args[-len(vals):]
+            # Put defaults into the dict
             f.update(zip(keys,vals))
-        # Update dictionary with supplied arguments
+        # Update dictionary with supplied arguments, overwriting defaults
         f.update(**kwargs)
         # Add model to ModelsDict
         self[propname] = f
