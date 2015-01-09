@@ -14,11 +14,6 @@ class GenericModel(dict):
     Accepts a model from the OpenPNM model library, as well as all required 
     and optional argumnents, then wraps it in a custom dictionary with 
     various methods for working with the models.
-    
-    Notes
-    -----
-    This class in ONLY used inside the ModelsDict class, so it is a
-    nested class.  This may change in the future if we need it elsewhere.
 
     """
     def __init__(self,**kwargs):
@@ -86,9 +81,44 @@ class GenericModel(dict):
 
 class ModelsDict(OrderedDict):
     r"""
-    Accepts a model from the OpenPNM model library, as well as all required and
-    optional argumnents, then wraps it in a custom dictionary with various 
-    methods for working with the models.
+    This custom dictionary stores the models that are associated with each 
+    OpenPNM object.  This is an ordered dict with a few additional methods.
+    This ModelsDict class can be created as a standalone object, then 
+    associated with an OpenPNM object, and ModelsDicts from one object can 
+    be copied and attached to another.  
+    
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> Ps = pn.pores(labels='top',mode='not')
+    >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=Ps,throats=pn.Ts)
+    >>> print(geom.models)  # Show models included on TestGeometry
+    ------------------------------------------------------------
+    #     Property Name                  Regeneration Mode   
+    ------------------------------------------------------------
+    0     pore.seed                      normal              
+    1     throat.seed                    normal              
+    2     throat.length                  normal              
+    ------------------------------------------------------------
+    
+    It is possible to use the ModelsDict from one object with another object:
+    
+    >>> Ps = pn.pores('top')
+    >>> boun = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps)
+    >>> boun.models  # The boun object has no models in its Models dict
+    ModelsDict()
+    >>> mod = geom.models.copy()  # Create a copy of geom's models
+    >>> boun.models = mod  # Use the same set of models on boun as geom
+    >>> print(boun.models)
+    ------------------------------------------------------------
+    #     Property Name                  Regeneration Mode   
+    ------------------------------------------------------------
+    0     pore.seed                      normal              
+    1     throat.seed                    normal              
+    2     throat.length                  normal              
+    ------------------------------------------------------------
+    
 
     """
     
