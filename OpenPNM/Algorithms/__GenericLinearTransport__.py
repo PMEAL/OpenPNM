@@ -185,7 +185,7 @@ class GenericLinearTransport(GenericAlgorithm):
             if source_name is not None:   
                 matching_physics = [phys for phys in self._phase._physics if source_name in phys.props()]
                 for phys in matching_physics:
-                    phys.add_model(model=phys.models[source_name]['model'],propname=source_name,x=x0)
+                    phys.models[source_name]['x'] = x0
                     loc = pores[sp.in1d(pores,phys.map_pores())]                    
                     if mode=='merge':
                         try:                            
