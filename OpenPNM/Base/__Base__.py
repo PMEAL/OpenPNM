@@ -89,9 +89,9 @@ class Base(dict):
         obj_type : string
             The type of object beign sought.  Options are:
 
-            1. 'Network'
-            2. 'Geometry'
-            3. 'Phases'
+            1. 'Network' or 'Networks'
+            2. 'Geometry' or 'Geometries'
+            3. 'Phase' or 'Phases'
             4. 'Physics'
 
         Returns
@@ -99,40 +99,20 @@ class Base(dict):
         OpenPNM object or list of objects
 
         '''
-        mro = [item.__name__ for item in self.__class__.__mro__]
-        if 'GenericNetwork' in mro:
-            net = self
-        else:
-            net = self._net
-
         if obj_name != '':
-            objs = []
-            if self.name == obj_name:
-                return self
-            if net.name == obj_name:
-                return net
-            for geom in net._geometries:
-                if geom.name == obj_name:
-                    return geom
-            for phase in net._phases:
-                if phase.name == obj_name:
-                    return phase
-            for phys in net._physics:
-                if phys.name == obj_name:
-                    return phys
-            return objs # Return empty list if none found
+            obj = []
+            if obj_name in sim.keys():
+                obj.append(sim[obj_name])
+            return obj[0]
         elif obj_type != '':
-            obj_type = 'Generic'+obj_type
-            objs = []
-            for geom in net._geometries:
-                if obj_type in [item.__name__ for item in geom.__class__.__mro__]:
-                    objs.append(geom)
-            for phys in net._physics:
-                if obj_type  in [item.__name__ for item in phys.__class__.__mro__]:
-                    objs.append(phys)
-            for phase in net._phases:
-                if obj_type  in [item.__name__ for item in phase.__class__.__mro__]:
-                    objs.append(phase)
+            if obj_type in ['Geometry','Geometries','geometry','geometries']:
+                objs = sim.geometries()
+            elif obj_type in ['Phase','Phases','phase','phases']:
+                objs = sim.phases()
+            elif obj_type in ['Physics','physics']:
+                objs = sim.physics()
+            elif obj_type in ['Network','Networks','network','networks']:
+                objs = sim.network()
             return objs
 
     def physics(self,phys_name=[]):
