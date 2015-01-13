@@ -3,24 +3,49 @@
 Core:  Core Data Class
 ###############################################################################
 '''
-import pprint
+import pprint, collections, string, random
 from functools import partial
 import scipy as sp
-from OpenPNM.Base import Base
 from OpenPNM.Base import logging
 logger = logging.getLogger()
 from OpenPNM.Utilities import misc
+from OpenPNM.Base import Controller
+sim = Controller()
 
-class Core(Base):
+class Core(dict):
     r'''
     Contains OpenPNM specificmethods for working with the data in the dictionaries
     '''
-    def __init__(self, **kwargs):
+
+    def __new__(typ, *args, **kwargs):
+        obj = dict.__new__(typ, *args, **kwargs)
+        obj.update({'pore.all': sp.array([],ndmin=1,dtype=bool)})
+        obj.update({'throat.all': sp.array([],ndmin=1,dtype=bool)})
+        #Initialize phase, physics, and geometry tracking lists
+        obj._name = None
+        obj._sim = {}
+        obj._phases = []
+        obj._geometries = []
+        obj._physics = []
+        obj._net = None
+        #Initialize ordered dict for storing property models
+        obj._models = collections.OrderedDict()
+        return obj    
+    
+    def __init__(self, name=None, **kwargs):
         r'''
         Initialize
         '''
         super(Core,self).__init__(**kwargs)
         logger.debug('Initializing Core class')
+        self.name = name
+        self.simulation = sim
+        
+    def __repr__(self):
+        return '<%s.%s object at %s>' % (
+        self.__class__.__module__,
+        self.__class__.__name__,
+        hex(id(self)))
 
     def __setitem__(self,key,value):
         r'''
@@ -47,35 +72,61 @@ class Core(Base):
         value = sp.array(value,ndmin=1)
         #Skip checks for 'coords', 'conns'
         if (key == 'pore.coords') or (key == 'throat.conns'):
-            super(Base, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key,value)
             return
         #Skip checks for protected props, and prevent changes if defined
         if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
                     logger.info(key+' is being defined.')
-                    super(Base, self).__setitem__(key,value)
+                    super(Core, self).__setitem__(key,value)
                 else:
                     logger.warning(key+' is already defined.')
                     pass
             else:
                 logger.debug(key+' is being defined.')
-                super(Base, self).__setitem__(key,value)
+                super(Core, self).__setitem__(key,value)
             return
         #Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
             logger.debug('Broadcasting scalar value into vector: '+key)
             value = sp.ones((self._count(element),),dtype=value.dtype)*value
-            super(Base, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key,value)
         elif sp.shape(value)[0] == self._count(element):
             logger.debug('Updating vector: '+key)
-            super(Base, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key,value)
         else:
             if self._count(element) == 0:
                 self.update({key:value})
             else:
                 logger.warning('Cannot write vector with an array of the wrong length: '+key)
                 pass
+            
+    def _set_sim(self,simulation):
+        if self.name in simulation.keys():
+            raise Exception('An object with that name is already present in simulation')
+        self._sim = simulation
+        simulation.update({self.name: self})
+
+    def _get_sim(self):
+        return self._sim
+
+    simulation = property(_get_sim,_set_sim)
+
+    def _set_name(self,name):
+        if self._name is not None:
+            raise Exception('Renaming objects can have catastrophic consequences')
+        elif self._sim.get(name) is not None:
+            raise Exception('An object named '+name+' already exists')
+        elif name is None:
+            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+            name = self.__module__.split('.')[-1].strip('__') + '_' + name
+        self._name = name
+
+    def _get_name(self):
+        return self._name
+
+    name = property(_get_name,_set_name)
 
     def add_model(self,propname,model,regen_mode='static',**kwargs):
         r'''
@@ -340,6 +391,155 @@ class Core(Base):
                 count += 1
             else:
                 logger.warning('Requested proptery is not a dynamic model: '+item)
+
+    #--------------------------------------------------------------------------
+    'Object lookup methods'
+    #--------------------------------------------------------------------------
+
+    def _find_object(self,obj_name='',obj_type=''):
+        r'''
+        Find objects associated with a given network model by name or type
+
+        Parameters
+        ----------
+        obj_name : string
+           Name of sought object
+
+        obj_type : string
+            The type of object beign sought.  Options are:
+
+            1. 'Network' or 'Networks'
+            2. 'Geometry' or 'Geometries'
+            3. 'Phase' or 'Phases'
+            4. 'Physics'
+
+        Returns
+        -------
+        OpenPNM object or list of objects
+
+        '''
+        if obj_name != '':
+            obj = []
+            if obj_name in sim.keys():
+                obj.append(sim[obj_name])
+            return obj[0]
+        elif obj_type != '':
+            if obj_type in ['Geometry','Geometries','geometry','geometries']:
+                objs = sim.geometries()
+            elif obj_type in ['Phase','Phases','phase','phases']:
+                objs = sim.phases()
+            elif obj_type in ['Physics','physics']:
+                objs = sim.physics()
+            elif obj_type in ['Network','Networks','network','networks']:
+                objs = sim.network()
+            return objs
+
+    def physics(self,phys_name=[]):
+        r'''
+        Retrieves Physics associated with the object
+
+        Parameters
+        ----------
+        name : string or list of strings, optional
+            The name(s) of the Physics object to retrieve
+        Returns
+        -------
+            If name is NOT provided, then a list of Physics names is returned.
+            If a name or list of names IS provided, then the Physics object(s)
+            with those name(s) is returned.
+        '''
+        # If arg given as string, convert to list
+        if type(phys_name) == str:
+            phys_name = [phys_name]
+        if phys_name == []:  # If default argument received
+            phys = [item.name for item in self._physics]
+        else:  # If list of names received
+            phys = []
+            for item in self._physics:
+                if item.name in phys_name:
+                    phys.append(item)
+        return phys
+
+    def phases(self,phase_name=[]):
+        r'''
+        Retrieves Phases associated with the object
+
+        Parameters
+        ----------
+        name : string or list of strings, optional
+            The name(s) of the Phase object(s) to retrieve.
+        Returns
+        -------
+            If name is NOT provided, then a list of phase names is returned. If
+            a name are provided, then a list containing the requested objects
+            is returned.
+        '''
+        # If arg given as string, convert to list
+        if type(phase_name) == str:
+            phase_name = [phase_name]
+        if phase_name == []:  # If default argument received
+            phase = [item.name for item in self._phases]
+        else:  # If list of names received
+            phase = []
+            for item in self._phases:
+                if item.name in phase_name:
+                    phase.append(item)
+        return phase
+
+    def geometries(self,geom_name=[]):
+        r'''
+        Retrieves Geometry object(s) associated with the object
+
+        Parameters
+        ----------
+        name : string or list of strings, optional
+            The name(s) of the Geometry object to retrieve.
+        Returns
+        -------
+            If name is NOT provided, then a list of Geometry names is returned.
+            If a name IS provided, then the Geometry object of that name is
+            returned.
+        '''
+        # If arg given as string, convert to list
+        if type(geom_name) == str:
+            geom_name = [geom_name]
+        if geom_name == []:  # If default argument received
+            geom = [item.name for item in self._geometries]
+        else:  # If list of names received
+            geom = []
+            for item in self._geometries:
+                if item.name in geom_name:
+                    geom.append(item)
+        return geom
+
+    def network(self,name=''):
+        r'''
+        Retrieves the network associated with the object.  If the object is
+        a network, then it returns the parent network from which the present
+        object derives, or returns an empty list if it has no parents.
+
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Geometry object to retrieve.
+
+        Returns
+        -------
+            If name is NOT provided, then the name of the parent is returned.
+            If a name IS provided, then the parent netowrk object is returned.
+
+        Notes
+        -----
+        This doesn't quite work yet...we have to decide how to treat sub-nets first
+        '''
+        if name == '':
+            try:
+                net = self._net.name
+            except:
+                net = []
+        else:
+            net = self._net
+        return net
 
 
     #--------------------------------------------------------------------------
