@@ -10,7 +10,7 @@ import scipy as sp
 import bisect
 from OpenPNM.Algorithms import GenericAlgorithm
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class InvasionPercolationBasic(GenericAlgorithm):
     r"""

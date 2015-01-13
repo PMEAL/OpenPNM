@@ -31,7 +31,7 @@ phys_air.add_model(model=OpenPNM.Physics.models.generic_source_term.linear,
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
-alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air,loglevel=30)
+alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.pores('right_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)

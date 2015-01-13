@@ -13,7 +13,7 @@ import scipy.spatial as sptl
 import scipy.ndimage as spim
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 from scipy.spatial import Voronoi
 from scipy import stats as st
 from scipy.special import cbrt
@@ -30,12 +30,6 @@ class Delaunay(GenericNetwork):
     ----------
     name : string
         A unique name for the network
-
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-
-    loggername : string
-        Overwrite the name of the logger, which defaults to the class name
 
     Examples
     --------

@@ -12,7 +12,7 @@ import heapq
 import itertools
 from OpenPNM.Algorithms import InvasionPercolation
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class InvasionPercolationForImbibition(InvasionPercolation):
     r"""

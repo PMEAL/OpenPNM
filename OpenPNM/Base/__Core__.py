@@ -21,7 +21,6 @@ class Core(Base):
         Initialize
         '''
         super(Core,self).__init__(**kwargs)
-        logger.name = 'Core'
         logger.debug('Initializing Core class')
 
     def __setitem__(self,key,value):

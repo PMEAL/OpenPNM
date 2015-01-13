@@ -6,7 +6,7 @@ module __Physics__: Base class for mananging pore-scale Physics properties
 
 """
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Phases import GenericPhase
 import OpenPNM.Physics.models

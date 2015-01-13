@@ -16,20 +16,60 @@ def linear(physics,
     r"""
     For the following source term:
         .. math::
-            r = S_{1}   x  +  S_{2} 
+            r = A_{1}   x  +  A_{2} 
     It returns the slope and intercept for the corresponding pores                 
 
     Parameters
     ----------
-    
+    A1, A2 : float
+        These are the kinetic constants to be applied.  With A2 set to zero
+        this equation takes on the familiar for of r=kx, where k is A1.  
+        
     Notes
     -----
+    It is possible to change the values of these constants at a later point.
+    The values are stored in the Physics object's models dictionary under the
+    chosen ``propname``.  The individual constants can be acesses as:
+    phys.models[propname][A1].    
+    
+    Because this source term is linear in concentration (x) is it not necessary
+    to iterate during the solver step.  Thus, when using the 
+    ``set_source_term`` method it is recommended to set the ``maxiter`` 
+    argument to 0.  This will save 1 unncessary solution of the system, since
+    the solution would coverge after the first pass anyway.  
     
     """  
     S1 = A1*_sp.ones(phase.Np)
     S2 = A2*_sp.ones(phase.Np)
     r = _sp.vstack((S1,S2)).T
     return r[physics.map_pores()]
+    
+def arrhenius(physics,
+              phase,
+              A,
+              E,
+              R=8.314,
+              temperature='pore.temperature'):
+    r'''
+    The Arrhenius equation for find kinetic constants as a function of 
+    temperature, given by:
+        .. math::
+            r =  A e^{-( E / R T)}
+            
+    Parameters
+    ----------
+    A : float
+        Prefactor coefficient
+    E : float
+        Activation energy
+    R : float
+        Ideal gas constant, assumed to be in SI unless otherwise stated
+    T : array_like
+        An ndarray of temperature values, taken from the associated Phase 
+        object's ``pore.temperature`` property unless otherwise stated.  
+    '''
+    T = phase['pore.temperature']
+    pass
 
 def power_law(physics,
             phase,
@@ -48,9 +88,15 @@ def power_law(physics,
     
     Parameters
     ----------
-    
+    A1 -> A3 : float
+        The numerical values of the source term model's constant coefficients
+        
     Notes
     -----
+    It is possible to change the values of these constants at a later point.
+    The values are stored in the Physics object's models dictionary under the
+    chosen ``propname``.  The individual constants can be acesses as:
+    phys.models[propname][A1].
     
     """
     if x is None:   
@@ -93,9 +139,15 @@ def exponential(physics,
     
     Parameters
     ----------
+    A1 -> A6 : float
+        The numerical values of the source term model's constant coefficients
     
     Notes
     -----
+    It is possible to change the values of these constants at a later point.
+    The values are stored in the Physics object's models dictionary under the
+    chosen ``propname``.  The individual constants can be acesses as:
+    phys.models[propname][A1].
     
     """       
     
@@ -143,9 +195,15 @@ def natural_exponential(physics,
     
     Parameters
     ----------
+    A1 -> A5 : float
+        The numerical values of the source term model's constant coefficients
     
     Notes
     -----
+    It is possible to change the values of these constants at a later point.
+    The values are stored in the Physics object's models dictionary under the
+    chosen ``propname``.  The individual constants can be acesses as:
+    phys.models[propname][A1].
     
     """       
     
@@ -193,9 +251,15 @@ def logarithm(physics,
     
     Parameters
     ----------
+    A1 -> A6 : float
+        The numerical values of the source term model's constant coefficients
     
     Notes
     -----
+    It is possible to change the values of these constants at a later point.
+    The values are stored in the Physics object's models dictionary under the
+    chosen ``propname``.  The individual constants can be acesses as:
+    phys.models[propname][A1].
     
     """       
     
@@ -242,9 +306,15 @@ def natural_logarithm(physics,
     
     Parameters
     ----------
+    A1 -> A5 : float
+        The numerical values of the source term model's constant coefficients
     
     Notes
     -----
+    It is possible to change the values of these constants at a later point.
+    The values are stored in the Physics object's models dictionary under the
+    chosen ``propname``.  The individual constants can be acesses as:
+    phys.models[propname][A1].
     
     """       
     

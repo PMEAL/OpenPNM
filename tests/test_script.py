@@ -101,7 +101,7 @@ def test_open_air_diffusivity():
     BC2_pores = pn.pores(labels=['bottom_boundary'])
     print('length =',round(pn.domain_length(BC1_pores,BC2_pores)))
     print('area = ',round(pn.domain_area(BC1_pores),2),round(pn.domain_area(BC2_pores),2))
-    Diff = OpenPNM.Algorithms.FickianDiffusion(loglevel=30, network=pn,phase=air)
+    Diff = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
     # Assign Dirichlet boundary conditions to top and bottom surface pores
     Diff.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
     Diff.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)

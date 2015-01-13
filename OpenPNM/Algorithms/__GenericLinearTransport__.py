@@ -12,7 +12,7 @@ from OpenPNM.Algorithms import GenericAlgorithm
 from OpenPNM.Phases import GenericPhase
 import OpenPNM.Utilities.vertexops as vo
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class GenericLinearTransport(GenericAlgorithm):
     r"""

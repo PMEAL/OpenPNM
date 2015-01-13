@@ -11,7 +11,7 @@ import scipy.sparse as sprs
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Base import Core
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class GenericNetwork(Core):
     r"""
