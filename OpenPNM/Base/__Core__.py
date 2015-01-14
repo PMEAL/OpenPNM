@@ -84,14 +84,17 @@ class Core(Base):
     #Note: These methods have been moved to the ModelsDict class but are left
     #here for backward compatibility
     def add_model(self,propname,model,regen_mode='normal',**kwargs):
+        logger.warning('This method deprecated, use obj.models.add()')
         self.models.add(propname=propname,model=model,regen_mode=regen_mode,**kwargs)
         
     add_model.__doc__ = ModelsDict.add.__doc__
         
     def regenerate(self,props='',mode='inclusive'):
+        logger.warning('This method is deprecated, use obj.models.regenerate()')
         self.models.regenerate(props=props,mode=mode)
 
     regenerate.__doc__ = ModelsDict.regenerate.__doc__
+    
     #--------------------------------------------------------------------------
     '''Data Query Methods'''
     #--------------------------------------------------------------------------
