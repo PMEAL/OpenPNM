@@ -8,12 +8,12 @@ r"""
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: OpenPNM.Base.Base
+.. autoclass:: OpenPNM.Base.Core
    :members:
    :undoc-members:
    :show-inheritance:
-
-.. autoclass:: OpenPNM.Base.Core
+   
+.. autoclass:: OpenPNM.Base.Tools
    :members:
    :undoc-members:
    :show-inheritance:
@@ -27,4 +27,5 @@ logging.basicConfig(level=logging.WARNING,
                     )
 
 from .__Controller__ import Controller
+from . import __Tools__ as Tools
 from .__Core__ import Core

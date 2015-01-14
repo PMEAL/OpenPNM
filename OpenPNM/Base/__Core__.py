@@ -6,9 +6,10 @@ Core:  Core Data Class
 import pprint, collections, string, random
 from functools import partial
 import scipy as sp
-from OpenPNM.Base import logging
+import scipy.constants
+from OpenPNM.Base import logging, Tools
+import OpenPNM.Utilities.misc as misc
 logger = logging.getLogger()
-from OpenPNM.Utilities import misc
 from OpenPNM.Base import Controller
 sim = Controller()
 
@@ -885,7 +886,7 @@ class Core(dict):
         elif mode == 'constants':
             if element == '': temp = constants
             else: temp = [item for item in constants if item.split('.')[0]==element]
-        return misc.PrintableList(temp)
+        return Tools.PrintableList(temp)
 
 
     def _get_labels(self,element='',locations=[],mode='union'):
@@ -901,7 +902,7 @@ class Core(dict):
                     labels.append(item)
         labels.sort()
         if locations == []:
-            return misc.PrintableList(labels)
+            return Tools.PrintableList(labels)
         else:
             labels = sp.array(labels)
             locations = sp.array(locations,ndmin=1)
