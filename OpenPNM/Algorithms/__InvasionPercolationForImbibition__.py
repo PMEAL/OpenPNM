@@ -167,7 +167,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         theta = self._phase['pore.contact_angle'][0]
         if theta > 90:
             print('WARNING!!!: The invading phase has a contact angle greater than 90deg, so it must be drainage. Use Invasion_Percolation for drainage.' )
-        pdia = self._net['pore.'+self._pore_diameter_name] # tdia = self._net.get_throat_data(prop=self._throat_diameter_name)
+        pdia = self._net['pore.'+self._pore_diameter_name] 
         if self._Psecond:
             pdia = pdia[self._phase['pore.occupancy']<=0]
         # entry pressure for the pore
@@ -261,7 +261,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             ''' Pc_entry as -ve (when calculated above)'''
             ''' interface_pore_pressure, heap values, ['haines_pressure'], and ppoints stored as -ve '''
             ''' Pvol_coeff, ['vol_coeff'], ['cap_volume'] are stored as +ve (ie multiply ['haines_pressure'] by -1 when calculating ie ['cap_volume'], etc.)'''
-            interface_pore_pressures = Pc_entry[interface_pore_numbers] # self._phase.get_pore_data(prop=self._capillary_pressure_name)[interface_pore_numbers]#[0]
+            interface_pore_pressures = Pc_entry[interface_pore_numbers] 
             # Zip pressures and numbers together so that HeapQ can work its magic
             logger.debug('interface pores(s) found:')
             logger.debug(interface_pore_numbers)

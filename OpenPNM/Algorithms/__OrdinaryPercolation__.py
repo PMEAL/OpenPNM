@@ -331,7 +331,7 @@ class OrdinaryPercolation(GenericAlgorithm):
           Plot drainage capillary pressure curve
           """
           try:
-            PcPoints = sp.unique(self.get_data(prop='inv_Pc',pores='all'))
+            PcPoints = sp.unique(self['pore.inv_Pc'])
           except:
             raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
           pores=self._net.pores(labels=pore_label)
@@ -370,7 +370,7 @@ class OrdinaryPercolation(GenericAlgorithm):
           This is the preffered style in the petroleum engineering
           """
           try:
-            PcPoints = sp.unique(self.get_data(prop='inv_Pc',pores='all'))
+            PcPoints = sp.unique(self['pore.inv_Pc'])
           except:
             raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
           pores=self._net.pores(labels=pore_label)
