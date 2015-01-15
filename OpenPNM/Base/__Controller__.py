@@ -113,42 +113,11 @@ class Controller(dict):
         This completely clears the Controller object's dict as expected, but
         also removes links to the Controller object in all simulation objects.
 
-        Notes
-        -----
-        When removing links in all simulation objects to the Controller it
-        replaces their ``simulation`` attribute with a standard ``dict``.  This
-        ``dict`` can be reassociated with a Controller object using ``update``,
-        which has been overloaded to do so.
         '''
-        temp = self.copy()
         for item in self.keys():
-            self[item]._sim = temp
+            self[item]._sim = {}
         self.__dict__ = {}
         super(Controller,self).clear()
-
-    def update(self,dict_):
-        r'''
-        This is an overloaded version of the standard dict's ``update`` method.
-        It accepts a dictionary argument, which is injected into the Controller
-        object, but is also associates the Controller object with all simulation
-        objects that were in the received dict.
-
-        Parameters
-        ----------
-        dict_ : dictionary
-            A Python dictionary contain {key : value} pairs in the form of
-            {obj.name : obj}.
-
-        Notes
-        -----
-        When the ``clear`` method of a Controller object is called, it sets the
-        ``simulation`` attribute of all simulation objects to a standard
-        ``dict``.  The overloading of this method allows such a ``dict`` to be
-        reassociated with a Controller object.
-        '''
-        super(Controller,self).update(dict_)
-        for item in self.keys():
-            self[item]._sim = self
 
     def purge_object(self,obj):
         r'''

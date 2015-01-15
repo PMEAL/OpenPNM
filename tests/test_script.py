@@ -17,12 +17,8 @@ def test_controller():
     ctrl.save('test_net')
     ctrl.clear()
     assert ctrl.keys() == {}.keys()  # Empty dict
-    assert pn.simulation.__class__ is dict  # No longer a controller object
+    assert pn.simulation == {}  # Controller is now an empty dict
     assert geom.simulation is pn.simulation  # Share a common dict
-    ctrl.update(pn.simulation)  # Regenerate the controller from the dict
-    assert pn.name in ctrl.keys()  # Network  in Controller dict
-    assert pn.simulation is ctrl  # Controller object is now back on Network
-    ctrl.clear()
     ctrl.load('test_net')
     assert pn.name in ctrl.keys()  # Ensure loaded objects match originals
     assert geom.name in ctrl.keys()
