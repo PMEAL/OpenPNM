@@ -63,9 +63,6 @@ class Cubic(GenericNetwork):
     >>> pn = OpenPNM.Network.Cubic(template=img)
     >>> pn.Np
     485
-    >>> temp = pn.asarray(pn['pore.all'])
-    >>> import matplotlib.pyplot as plt
-    >>> plt.imshow(temp[:,:,4])
     
     If random distributions of coordination number is desired, one option is
     to create a Cubic network with many connections and the trim some:
@@ -73,16 +70,11 @@ class Cubic(GenericNetwork):
     >>> pn = OpenPNM.Network.Cubic(shape=[5,5,5],connectivity=26)
     >>> pn.Nt
     1036
-    >>> import matplotlib.pyplot as plt
-    >>> plt.subplot(1,2,1)
-    >>> plt.hist(pn.num_neighbors(pn.Ps))
     >>> mod = OpenPNM.Network.models.pore_topology.reduce_coordination
     >>> pn.add_model(propname='throat.to_drop',model=mod,z=10,mode='random')
     >>> pn.trim(throats=pn['throat.to_drop'])
     >>> pn.Nt
     667
-    >>> plt.subplot(1,2,2)
-    >>> plt.hist(pn.num_neighbors(pn.Ps))
     """
     def __init__(self, shape=None, template=None, spacing=1, connectivity=6, **kwargs):
         super(Cubic, self).__init__(**kwargs)

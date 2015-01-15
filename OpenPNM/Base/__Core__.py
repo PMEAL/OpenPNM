@@ -3,13 +3,11 @@
 Core:  Core Data Class
 ###############################################################################
 '''
-import pprint, collections, string, random
-from functools import partial
+import pprint, string, random
 import scipy as sp
 import scipy.constants
 from OpenPNM.Base import logging, Tools
 from OpenPNM.Base import ModelsDict
-import OpenPNM.Utilities.misc as misc
 logger = logging.getLogger()
 from OpenPNM.Base import Controller
 sim = Controller()
@@ -397,15 +395,15 @@ class Core(dict):
             if mode == 'union':
                 temp = labels[sp.sum(arr,axis=0)>0]
                 temp.tolist()
-                return misc.PrintableList(temp)
+                return Tools.PrintableList(temp)
             if mode == 'intersection':
                 temp = labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
                 temp.tolist()
-                return misc.PrintableList(temp)
+                return Tools.PrintableList(temp)
             if mode in ['difference', 'not']:
                 temp = labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
                 temp.tolist()
-                return misc.PrintableList(temp)
+                return Tools.PrintableList(temp)
             if mode == 'mask':
                 return arr
             if mode == 'none':
@@ -1243,12 +1241,17 @@ class Core(dict):
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> health = pn.check_data_health()
-        {'pore.coords': 'Healthy', 'throat.conns': 'Healthy'}
+        ------------------------------------------------------------
+        key                       value                    
+        ------------------------------------------------------------
+        throat.conns              Healthy                  
+        pore.coords               Healthy                  
+        ------------------------------------------------------------
         >>> health
         True
 
         '''
-        health = {}
+        health = Tools.PrintableDict()
         if props == []:
             props = self.props(element)
         else:
@@ -1265,7 +1268,7 @@ class Core(dict):
                 health[item] = 'Does not exist'
         #Print health dictionary to console
         if quiet == False:
-            pprint.pprint(health)
+            print(health)
         #Return single flag indicating overall health
         flag = True
         for item in health:

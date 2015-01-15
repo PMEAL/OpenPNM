@@ -415,17 +415,7 @@ class Controller(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> sim = OpenPNM.Base.Controller()
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> [pn.Np, pn.Nt]
-        [125, 300]
-        >>> pn2 = sim.subset(pores=pn.pores(['top']))
-        >>> [pn2.Np, pn2.Nt]  # Subnet contains fewer pores and throats
-        [25, 40]
-        >>> pn2.map_pores(target=pn,pores=pn2.Ps)  # Mapping between subnet and parent is easy
-        array([100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
-               113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124])
+        None yet
         '''
         net = self.network()[0]  # Get Network handle
         self.clear()  # Clear Controller object
@@ -470,23 +460,7 @@ class Controller(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> sim = OpenPNM.Base.Controller()
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.__class__  # Check class of Network object
-        <class 'OpenPNM.Network.__TestNet__.TestNet'>
-        >>> new_sim = sim.clone_simulation()
-        >>> new_pn = new_sim[pn.name]  # Retreive Network from new_sim by name
-        >>> new_pn.__class__
-        <class 'OpenPNM.Network.__TestNet__.TestNet'>
-        >>> new_pn is pn
-        False
-
-        To use the new simulation over the older one, you must clear the
-        Controller object and then update it with the new simulation data:
-        
-        >>> sim.clear()
-        >>> sim.update(new_sim)
+        None yet
         '''
         net = self.network()[0]
         temp = net.copy()  # Copy Network's dict

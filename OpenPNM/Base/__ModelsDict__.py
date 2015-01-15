@@ -251,7 +251,6 @@ class ModelsDict(OrderedDict):
         seed                 None / (None)
         num_range            [0, 1] / ([0, 1])
         ------------------------------------------------------------
-        
 
         '''
         master = self._find_master()

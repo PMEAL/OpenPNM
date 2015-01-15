@@ -8,7 +8,7 @@ import scipy as _sp
 class PrintableList(list):
     def __str__(self):
         count = 0
-        header = '-'*79
+        header = '-'*60
         print('\n')
         print(header)
         self.sort()
@@ -19,11 +19,12 @@ class PrintableList(list):
 
 class PrintableDict(dict):
     def __str__(self):
-        import pprint
-        header = '-'*79
-        print('\n')
+        header = '-'*60
         print(header)
-        pprint.pprint(self)
+        print("{a:<25s} {b:<25s}".format(a='key', b='value'))
+        print(header)
+        for item in self.keys():
+            print("{a:<25s} {b:<25s}".format(a=item, b=self[item]))
         print(header)
         return ''
         
