@@ -397,7 +397,7 @@ class Controller(dict):
 
     comments = property(fget=_get_comments,fset=_set_comments)
 
-    def subset(self,pores,name=None):
+    def _subset(self,pores,name=None):
         r'''
         Create a new network from a subset of the main network.  This is useful
         for running simulations on smaller domains of interest to save CPU
@@ -451,7 +451,7 @@ class Controller(dict):
         new_net._net = net
         return new_net
 
-    def clone_simulation(self):
+    def _clone_simulation(self):
         r'''
         This clones the current simulation objects and returns a dictionary
         containing handles to the clones.  This method does NOT return a new
