@@ -509,7 +509,7 @@ class Core(dict):
         array([0, 1])
         >>> Ps = pn.pores(['top','bottom','front'],mode='union')
         >>> pn.filter_by_label(pores=Ps,labels=['top','front'],mode='intersection')
-        array([ 6, 13, 20, 27, 34, 41])
+        array([100, 105, 110, 115, 120])
         '''
         if type(labels) == str:  # Convert input to list
             labels = [labels]

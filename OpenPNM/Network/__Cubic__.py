@@ -62,7 +62,7 @@ class Cubic(GenericNetwork):
     >>> img = dt(img) < 5  # Create a sphere of True
     >>> pn = OpenPNM.Network.Cubic(template=img)
     >>> pn.Np
-    515
+    485
     >>> temp = pn.asarray(pn['pore.all'])
     >>> import matplotlib.pyplot as plt
     >>> plt.imshow(temp[:,:,4])
