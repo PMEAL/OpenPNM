@@ -1,4 +1,7 @@
 import warnings
+import OpenPNM
+sim = OpenPNM.Base.Controller()
+sim.loglevel = 50
 
 def fxn():
     warnings.warn("future", FutureWarning)

@@ -120,9 +120,9 @@ class Controller(dict):
         ``dict`` can be reassociated with a Controller object using ``update``,
         which has been overloaded to do so.
         '''
-        temp = {}
+        temp = self.copy()
         for item in self.keys():
-            self[item].simulation = temp
+            self[item]._sim = temp
         self.__dict__ = {}
         super(Controller,self).clear()
 
