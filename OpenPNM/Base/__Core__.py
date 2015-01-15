@@ -127,7 +127,14 @@ class Core(dict):
         return self._name
 
     name = property(_get_name,_set_name)
-            
+    
+    def clear(self):
+        pall = self['pore.all']
+        tall = self['throat.all']
+        super(Core,self).clear()
+        self.update({'throat.all':tall})
+        self.update({'pore.all':pall})
+        
     #--------------------------------------------------------------------------
     '''Model Manipulation Methods'''
     #--------------------------------------------------------------------------
