@@ -38,39 +38,12 @@ def linear(physics,
     argument to 0.  This will save 1 unncessary solution of the system, since
     the solution would coverge after the first pass anyway.  
     
-    """  
-    S1 = A1*_sp.ones(phase.Np)
-    S2 = A2*_sp.ones(phase.Np)
+    """
+    S1 = A1*_sp.ones(physics.Np)
+    S2 = A2*_sp.ones(physics.Np)
     r = _sp.vstack((S1,S2)).T
-    return r[physics.map_pores()]
+    return r
     
-def arrhenius(physics,
-              phase,
-              A,
-              E,
-              R=8.314,
-              temperature='pore.temperature'):
-    r'''
-    The Arrhenius equation for find kinetic constants as a function of 
-    temperature, given by:
-        .. math::
-            r =  A e^{-( E / R T)}
-            
-    Parameters
-    ----------
-    A : float
-        Prefactor coefficient
-    E : float
-        Activation energy
-    R : float
-        Ideal gas constant, assumed to be in SI unless otherwise stated
-    T : array_like
-        An ndarray of temperature values, taken from the associated Phase 
-        object's ``pore.temperature`` property unless otherwise stated.  
-    '''
-    T = phase['pore.temperature']
-    pass
-
 def power_law(physics,
             phase,
             A1,
