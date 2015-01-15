@@ -186,6 +186,7 @@ class GenericLinearTransport(GenericAlgorithm):
                 matching_physics = [phys for phys in self._phase._physics if source_name in phys.props()]
                 for phys in matching_physics:
                     phys.models[source_name]['x'] = x0
+                    phys.regenerate(source_name)
                     loc = pores[sp.in1d(pores,phys.map_pores())]                    
                     if mode=='merge':
                         try:                            

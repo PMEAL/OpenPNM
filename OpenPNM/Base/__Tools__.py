@@ -27,7 +27,7 @@ class PrintableDict(dict):
         print(header)
         return ''
         
-class Attributeiew(object):
+class AttributVeiew(object):
     def __init__(self, d):
         temp = {}
         for item in d:
