@@ -129,7 +129,7 @@ class Controller(dict):
     def update(self,dict_):
         r'''
         This is an overloaded version of the standard dict's ``update`` method.
-        It accepts a dictionary argument, which is injects into the Controller
+        It accepts a dictionary argument, which is injected into the Controller
         object, but is also associates the Controller object with all simulation
         objects that were in the received dict.
 
