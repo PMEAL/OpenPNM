@@ -32,10 +32,41 @@ class Controller(dict):
     def __str__(self):
         header = ('-'*60)
         print(header)
+        print('Networks')
+        print(header)
         print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
         print(header)
-        for item in self.keys():
-            print("{a:<25s} {b:<25s}".format(a=self[item].__class__.__name__, b=item))
+        for item in self.network():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
+        print('Geometries')
+        print(header)
+        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        print(header)
+        for item in self.geometries():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
+        print('Phases')
+        print(header)
+        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        print(header)
+        for item in self.phases():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
+        print('Physics')
+        print(header)
+        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        print(header)
+        for item in self.physics():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
+        print('Algorithms')
+        print(header)
+        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        print(header)
+        for item in self.algorithms():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
         return ''
         
     def _setloglevel(self,level):
