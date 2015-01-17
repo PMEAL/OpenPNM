@@ -36,7 +36,7 @@ class Core(dict):
         r'''
         Initialize
         '''
-        super(Core,self).__init__(**kwargs)
+        super(Core,self).__init__()
         logger.debug('Initializing Core class')
         self.name = name
         self.simulation = sim
@@ -129,6 +129,9 @@ class Core(dict):
     name = property(_get_name,_set_name)
     
     def clear(self):
+        r'''
+        A subclassed version of the standard dict's clear method
+        '''
         pall = self['pore.all']
         tall = self['throat.all']
         super(Core,self).clear()
