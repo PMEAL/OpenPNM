@@ -9,8 +9,8 @@ import scipy as _sp
 
 def linear(physics,
            phase,
-           A1,
-           A2,
+           A1=0,
+           A2=0,
            x=None,
            **kwargs):
     r"""
@@ -21,7 +21,7 @@ def linear(physics,
 
     Parameters
     ----------
-    A1, A2 : float
+    A1, A2 : float or array
         These are the kinetic constants to be applied.  With A2 set to zero
         this equation takes on the familiar for of r=kx, where k is A1.  
         
@@ -39,16 +39,35 @@ def linear(physics,
     the solution would coverge after the first pass anyway.  
     
     """
-    S1 = A1*_sp.ones(physics.Np)
-    S2 = A2*_sp.ones(physics.Np)
+    length_A1 = _sp.size(A1)
+    length_A2 = _sp.size(A2)
+
+    if length_A1==physics.Np:
+        S1 = A1
+    elif length_A1==1:
+        S1 = A1*_sp.ones(physics.Np)        
+    elif length_A1>=phase.Np:
+        S1 = A1[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A1!') 
+
+    if length_A2==physics.Np:
+        S2 = A2
+    elif length_A2==1:
+        S2 = A2*_sp.ones(physics.Np)        
+    elif length_A2>=phase.Np:
+        S2 = A2[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A2!') 
+    
     r = _sp.vstack((S1,S2)).T
     return r
-    
+
 def power_law(physics,
             phase,
-            A1,
-            A2,
-            A3,
+            A1=0,
+            A2=0,
+            A3=0,
             x=None,        
             **kwargs):
     r"""
@@ -61,7 +80,7 @@ def power_law(physics,
     
     Parameters
     ----------
-    A1 -> A3 : float
+    A1 -> A3 : float or array
         The numerical values of the source term model's constant coefficients
         
     Notes
@@ -73,33 +92,62 @@ def power_law(physics,
     
     """
     if x is None:   
-        X = _sp.zeros(phase.Np)
-        length = _sp.size(X)
+        X = _sp.zeros(physics.Np)
+        length_X = _sp.size(x)
     else:
-        length = _sp.size(x)
-        if length==phase.Np or length>phase.Np:    X = x
-        elif length<phase.Np:
-            if _sp.size(x)==physics.Np:
-                X = _sp.zeros(phase.Np)
-                X[physics.map_pores()] = x
-            else:   raise Exception('Wrong size for the guess!')     
+        length_X = _sp.size(x)
+        if length_X==physics.Np:
+            X = x
+        elif length_X==1:
+            X = x*_sp.ones(physics.Np) 
+        elif length_X>=phase.Np:
+            X = x[physics.map_pores()] 
+        else:   raise Exception('Wrong size for the guess value!')     
 
-    if _sp.size(A1) != length:    A1 = A1*_sp.ones_like(X)   
-    if _sp.size(A2) != length:    A2 = A2*_sp.ones_like(X)   
-    if _sp.size(A3) != length:    A3 = A3*_sp.ones_like(X)   
-    S1 = A1*A2*X**(A2-1)
-    S2 = A1*X**A2*(1-A2)+A3
+    length_A1 = _sp.size(A1)
+    length_A2 = _sp.size(A2)
+    length_A3 = _sp.size(A3)
+
+    if length_A1==physics.Np:
+        a1 = A1
+    elif length_A1==1:
+        a1 = A1*_sp.ones(physics.Np)        
+    elif length_A1>=phase.Np:
+        a1 = A1[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A1!') 
+
+    if length_A2==physics.Np:
+        a2 = A2
+    elif length_A2==1:
+        a2 = A2*_sp.ones(physics.Np)        
+    elif length_A2>=phase.Np:
+        a2 = A2[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A2!') 
+
+    if length_A3==physics.Np:
+        a3 = A3
+    elif length_A3==1:
+        a3 = A3*_sp.ones(physics.Np)        
+    elif length_A3>=phase.Np:
+        a3 = A3[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A3!') 
+ 
+    S1 = a1*a2*X**(a2-1)
+    S2 = a1*X**a2*(1-a2)+a3
     r = _sp.vstack((S1,S2)).T    
-    return r[physics.map_pores()]
+    return r
 
 def exponential(physics,
                 phase,
-                A1,
-                A2,
-                A3,
-                A4,
-                A5,
-                A6,
+                A1=0,
+                A2=0,
+                A3=0,
+                A4=0,
+                A5=0,
+                A6=0,
                 x=None,        
                 **kwargs):
     r"""
@@ -112,7 +160,7 @@ def exponential(physics,
     
     Parameters
     ----------
-    A1 -> A6 : float
+    A1 -> A6 : float or array
         The numerical values of the source term model's constant coefficients
     
     Notes
@@ -122,40 +170,96 @@ def exponential(physics,
     chosen ``propname``.  The individual constants can be acesses as:
     phys.models[propname][A1].
     
-    """       
+    """        
     
     if x is None:   
-        X = _sp.zeros(phase.Np)
-        length = _sp.size(X)
+        X = _sp.zeros(physics.Np)
+        length_X = _sp.size(x)
     else:
-        length = _sp.size(x)
-        if length==phase.Np or length>phase.Np:    X = x
-        elif length<phase.Np:
-            if _sp.size(x)==physics.Np:
-                X = _sp.zeros(phase.Np)
-                X[physics.map_pores()] = x
-            else:   raise Exception('Wrong size for the guess!')     
+        length_X = _sp.size(x)
+        if length_X==physics.Np:
+            X = x
+        elif length_X==1:
+            X = x*_sp.ones(physics.Np)  
+        elif length_X>=phase.Np:
+            X = x[physics.map_pores()] 
+        else:   raise Exception('Wrong size for the guess value!')     
 
-    if _sp.size(A1) != length:    A1 = A1*_sp.ones_like(X)   
-    if _sp.size(A2) != length:    A2 = A2*_sp.ones_like(X)   
-    if _sp.size(A3) != length:    A3 = A3*_sp.ones_like(X)   
-    if _sp.size(A4) != length:    A4 = A4*_sp.ones_like(X)   
-    if _sp.size(A5) != length:    A5 = A5*_sp.ones_like(X)   
-    if _sp.size(A6) != length:    A6 = A6*_sp.ones_like(X)   
+    length_A1 = _sp.size(A1)
+    length_A2 = _sp.size(A2)
+    length_A3 = _sp.size(A3)
+    length_A4 = _sp.size(A4)
+    length_A5 = _sp.size(A5)
+    length_A6 = _sp.size(A6)
 
-    S1 = A1*A3*A4*_sp.log(A2)*A2**(A3*X**A4+A5)*X**(A4-1)
-    S2 = A1*A2**(A3*X**A4+A5)*(1-A3*A4*_sp.log(A2)*X**A4)+A6
+    if length_A1==physics.Np:
+        a1 = A1
+    elif length_A1==1:
+        a1 = A1*_sp.ones(physics.Np)        
+    elif length_A1>=phase.Np:
+        a1 = A1[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A1!') 
+
+    if length_A2==physics.Np:
+        a2 = A2
+    elif length_A2==1:
+        a2 = A2*_sp.ones(physics.Np)        
+    elif length_A2>=phase.Np:
+        a2 = A2[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A2!') 
+
+    if length_A3==physics.Np:
+        a3 = A3
+    elif length_A3==1:
+        a3 = A3*_sp.ones(physics.Np)        
+    elif length_A3>=phase.Np:
+        a3 = A3[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A3!')  
+
+    if length_A4==physics.Np:
+        a4 = A4
+    elif length_A4==1:
+        a4 = A4*_sp.ones(physics.Np)        
+    elif length_A4>=phase.Np:
+        a4 = A4[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A4!') 
+        
+        
+    if length_A5==physics.Np:
+        a5 = A5
+    elif length_A5==1:
+        a5 = A5*_sp.ones(physics.Np)        
+    elif length_A5>=phase.Np:
+        a5 = A5[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A5!')         
+
+    if length_A6==physics.Np:
+        a6 = A6
+    elif length_A6==1:
+        a6 = A6*_sp.ones(physics.Np)        
+    elif length_A6>=phase.Np:
+        a6 = A6[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A6!') 
+
+    S1 = a1*a3*a4*_sp.log(a2)*a2**(a3*X**a4+a5)*X**(a4-1)
+    S2 = a1*a2**(a3*X**a4+a5)*(1-a3*a4*_sp.log(a2)*X**a4)+a6
     r = _sp.vstack((S1,S2)).T    
-    return r[physics.map_pores()]
+    return r
 
 
 def natural_exponential(physics,
                         phase,
-                        A1,
-                        A2,
-                        A3,
-                        A4,
-                        A5,
+                        A1=0,
+                        A2=0,
+                        A3=0,
+                        A4=0,
+                        A5=0,
                         x=None,        
                         **kwargs):
     r"""
@@ -168,7 +272,7 @@ def natural_exponential(physics,
     
     Parameters
     ----------
-    A1 -> A5 : float
+    A1 -> A5 : float or array
         The numerical values of the source term model's constant coefficients
     
     Notes
@@ -178,40 +282,88 @@ def natural_exponential(physics,
     chosen ``propname``.  The individual constants can be acesses as:
     phys.models[propname][A1].
     
-    """       
+    """        
     
     if x is None:   
-        X = _sp.zeros(phase.Np)
-        length = _sp.size(X)
+        X = _sp.zeros(physics.Np)
+        length_X = _sp.size(x)
     else:
-        length = _sp.size(x)
-        if length==phase.Np or length>phase.Np:    X = x
-        elif length<phase.Np:
-            if _sp.size(x)==physics.Np:
-                X = _sp.zeros(phase.Np)
-                X[physics.map_pores()] = x
-            else:   raise Exception('Wrong size for the guess!')     
+        length_X = _sp.size(x)
+        if length_X==physics.Np:
+            X = x
+        elif length_X==1:
+            X = x*_sp.ones(physics.Np)  
+        elif length_X>=phase.Np:
+            X = x[physics.map_pores()] 
+        else:   raise Exception('Wrong size for the guess value!')     
 
-    if _sp.size(A1) != length:    A1 = A1*_sp.ones_like(X)   
-    if _sp.size(A2) != length:    A2 = A2*_sp.ones_like(X)   
-    if _sp.size(A3) != length:    A3 = A3*_sp.ones_like(X)   
-    if _sp.size(A4) != length:    A4 = A4*_sp.ones_like(X)   
-    if _sp.size(A5) != length:    A5 = A5*_sp.ones_like(X)   
+    length_A1 = _sp.size(A1)
+    length_A2 = _sp.size(A2)
+    length_A3 = _sp.size(A3)
+    length_A4 = _sp.size(A4)
+    length_A5 = _sp.size(A5)
 
-    S1 = A1*A2*A3*X**(A3-1)*_sp.exp(A2*X**A3+A4)
-    S2 = A1*_sp.exp(A2*X**A3+A4)*(1-A2*A3*X**A3)+A5
+    if length_A1==physics.Np:
+        a1 = A1
+    elif length_A1==1:
+        a1 = A1*_sp.ones(physics.Np)        
+    elif length_A1>=phase.Np:
+        a1 = A1[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A1!') 
+
+    if length_A2==physics.Np:
+        a2 = A2
+    elif length_A2==1:
+        a2 = A2*_sp.ones(physics.Np)        
+    elif length_A2>=phase.Np:
+        a2 = A2[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A2!') 
+
+    if length_A3==physics.Np:
+        a3 = A3
+    elif length_A3==1:
+        a3 = A3*_sp.ones(physics.Np)        
+    elif length_A3>=phase.Np:
+        a3 = A3[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A3!')  
+
+    if length_A4==physics.Np:
+        a4 = A4
+    elif length_A4==1:
+        a4 = A4*_sp.ones(physics.Np)        
+    elif length_A4>=phase.Np:
+        a4 = A4[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A4!') 
+        
+        
+    if length_A5==physics.Np:
+        a5 = A5
+    elif length_A5==1:
+        a5 = A5*_sp.ones(physics.Np)        
+    elif length_A5>=phase.Np:
+        a5 = A5[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A5!')         
+
+
+    S1 = a1*a2*a3*X**(a3-1)*_sp.exp(a2*X**a3+a4)
+    S2 = a1*_sp.exp(a2*X**a3+a4)*(1-a2*a3*X**a3)+a5
     r = _sp.vstack((S1,S2)).T    
-    return r[physics.map_pores()]
+    return r
     
     
 def logarithm(physics,
               phase,
-              A1,
-              A2,
-              A3,
-              A4,
-              A5,
-              A6,
+              A1=0,
+              A2=0,
+              A3=0,
+              A4=0,
+              A5=0,
+              A6=0,
               x=None,        
               **kwargs):
     r"""
@@ -224,7 +376,7 @@ def logarithm(physics,
     
     Parameters
     ----------
-    A1 -> A6 : float
+    A1 -> A6 : float or array
         The numerical values of the source term model's constant coefficients
     
     Notes
@@ -234,39 +386,95 @@ def logarithm(physics,
     chosen ``propname``.  The individual constants can be acesses as:
     phys.models[propname][A1].
     
-    """       
+    """     
     
     if x is None:   
-        X = _sp.zeros(phase.Np)
-        length = _sp.size(X)
+        X = _sp.zeros(physics.Np)
+        length_X = _sp.size(x)
     else:
-        length = _sp.size(x)
-        if length==phase.Np or length>phase.Np:    X = x
-        elif length<phase.Np:
-            if _sp.size(x)==physics.Np:
-                X = _sp.zeros(phase.Np)
-                X[physics.map_pores()] = x
-            else:   raise Exception('Wrong size for the guess!')     
+        length_X = _sp.size(x)
+        if length_X==physics.Np:
+            X = x
+        elif length_X==1:
+            X = x*_sp.ones(physics.Np)  
+        elif length_X>=phase.Np:
+            X = x[physics.map_pores()] 
+        else:   raise Exception('Wrong size for the guess value!')     
 
-    if _sp.size(A1) != length:    A1 = A1*_sp.ones_like(X)   
-    if _sp.size(A2) != length:    A2 = A2*_sp.ones_like(X)   
-    if _sp.size(A3) != length:    A3 = A3*_sp.ones_like(X)   
-    if _sp.size(A4) != length:    A4 = A4*_sp.ones_like(X)   
-    if _sp.size(A5) != length:    A5 = A5*_sp.ones_like(X)   
-    if _sp.size(A6) != length:    A6 = A6*_sp.ones_like(X)   
+    length_A1 = _sp.size(A1)
+    length_A2 = _sp.size(A2)
+    length_A3 = _sp.size(A3)
+    length_A4 = _sp.size(A4)
+    length_A5 = _sp.size(A5)
+    length_A6 = _sp.size(A6)
 
-    S1 = A1*A3*A4*X**(A4-1)/(_sp.log(A2)*(A3*X**A4+A5))
-    S2 = A1*_sp.log(A3*X**A4+A5)/_sp.log(A2)+A6-A1*A3*A4*X**A4/(_sp.log(A2)*(A3*X**A4+A5))
+    if length_A1==physics.Np:
+        a1 = A1
+    elif length_A1==1:
+        a1 = A1*_sp.ones(physics.Np)        
+    elif length_A1>=phase.Np:
+        a1 = A1[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A1!') 
+
+    if length_A2==physics.Np:
+        a2 = A2
+    elif length_A2==1:
+        a2 = A2*_sp.ones(physics.Np)        
+    elif length_A2>=phase.Np:
+        a2 = A2[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A2!') 
+
+    if length_A3==physics.Np:
+        a3 = A3
+    elif length_A3==1:
+        a3 = A3*_sp.ones(physics.Np)        
+    elif length_A3>=phase.Np:
+        a3 = A3[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A3!')  
+
+    if length_A4==physics.Np:
+        a4 = A4
+    elif length_A4==1:
+        a4 = A4*_sp.ones(physics.Np)        
+    elif length_A4>=phase.Np:
+        a4 = A4[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A4!') 
+        
+        
+    if length_A5==physics.Np:
+        a5 = A5
+    elif length_A5==1:
+        a5 = A5*_sp.ones(physics.Np)        
+    elif length_A5>=phase.Np:
+        a5 = A5[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A5!')         
+
+    if length_A6==physics.Np:
+        a6 = A6
+    elif length_A6==1:
+        a6 = A6*_sp.ones(physics.Np)        
+    elif length_A6>=phase.Np:
+        a6 = A6[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A6!') 
+
+    S1 = a1*a3*a4*X**(a4-1)/(_sp.log(a2)*(a3*X**a4+a5))
+    S2 = a1*_sp.log(a3*X**a4+a5)/_sp.log(a2)+a6-a1*a3*a4*X**a4/(_sp.log(a2)*(a3*X**a4+a5))
     r = _sp.vstack((S1,S2)).T    
-    return r[physics.map_pores()]
+    return r
     
 def natural_logarithm(physics,
                       phase,
-                      A1,
-                      A2,
-                      A3,
-                      A4,
-                      A5,
+                      A1=0,
+                      A2=0,
+                      A3=0,
+                      A4=0,
+                      A5=0,
                       x=None,        
                       **kwargs):
     r"""
@@ -279,7 +487,7 @@ def natural_logarithm(physics,
     
     Parameters
     ----------
-    A1 -> A5 : float
+    A1 -> A5 : float or array
         The numerical values of the source term model's constant coefficients
     
     Notes
@@ -289,27 +497,75 @@ def natural_logarithm(physics,
     chosen ``propname``.  The individual constants can be acesses as:
     phys.models[propname][A1].
     
-    """       
+    """         
     
     if x is None:   
-        X = _sp.zeros(phase.Np)
-        length = _sp.size(X)
+        X = _sp.zeros(physics.Np)
+        length_X = _sp.size(x)
     else:
-        length = _sp.size(x)
-        if length==phase.Np or length>phase.Np:    X = x
-        elif length<phase.Np:
-            if _sp.size(x)==physics.Np:
-                X = _sp.zeros(phase.Np)
-                X[physics.map_pores()] = x
-            else:   raise Exception('Wrong size for the guess!')     
+        length_X = _sp.size(x)
+        if length_X==physics.Np:
+            X = x
+        elif length_X==1:
+            X = x*_sp.ones(physics.Np)  
+        elif length_X>=phase.Np:
+            X = x[physics.map_pores()] 
+        else:   raise Exception('Wrong size for the guess value!')     
 
-    if _sp.size(A1) != length:    A1 = A1*_sp.ones_like(X)   
-    if _sp.size(A2) != length:    A2 = A2*_sp.ones_like(X)   
-    if _sp.size(A3) != length:    A3 = A3*_sp.ones_like(X)   
-    if _sp.size(A4) != length:    A4 = A4*_sp.ones_like(X)   
-    if _sp.size(A5) != length:    A5 = A5*_sp.ones_like(X)   
+    length_A1 = _sp.size(A1)
+    length_A2 = _sp.size(A2)
+    length_A3 = _sp.size(A3)
+    length_A4 = _sp.size(A4)
+    length_A5 = _sp.size(A5)
 
-    S1 = A1*A2*A3*X**(A3-1)/(A2*X**A3+A4)
-    S2 = A1*_sp.log(A2*X**A3+A4)+A5-A1*A2*A3*X**A3/(A2*X**A3+A4)
+    if length_A1==physics.Np:
+        a1 = A1
+    elif length_A1==1:
+        a1 = A1*_sp.ones(physics.Np)        
+    elif length_A1>=phase.Np:
+        a1 = A1[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A1!') 
+
+    if length_A2==physics.Np:
+        a2 = A2
+    elif length_A2==1:
+        a2 = A2*_sp.ones(physics.Np)        
+    elif length_A2>=phase.Np:
+        a2 = A2[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A2!') 
+
+    if length_A3==physics.Np:
+        a3 = A3
+    elif length_A3==1:
+        a3 = A3*_sp.ones(physics.Np)        
+    elif length_A3>=phase.Np:
+        a3 = A3[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A3!')  
+
+    if length_A4==physics.Np:
+        a4 = A4
+    elif length_A4==1:
+        a4 = A4*_sp.ones(physics.Np)        
+    elif length_A4>=phase.Np:
+        a4 = A4[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A4!') 
+        
+        
+    if length_A5==physics.Np:
+        a5 = A5
+    elif length_A5==1:
+        a5 = A5*_sp.ones(physics.Np)        
+    elif length_A5>=phase.Np:
+        a5 = A5[physics.map_pores()]   
+    else:
+        raise Exception('Wrong size for the parameter A5!')         
+
+
+    S1 = a1*a2*a3*X**(a3-1)/(a2*X**a3+a4)
+    S2 = a1*_sp.log(a2*X**a3+a4)+a5-a1*a2*a3*X**a3/(a2*X**a3+a4)
     r = _sp.vstack((S1,S2)).T    
-    return r[physics.map_pores()]
+    return r

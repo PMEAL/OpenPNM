@@ -266,14 +266,18 @@ class GenericLinearTransport(GenericAlgorithm):
         if  self._iterative_solver is None:     
             X = sprslin.spsolve(A,b)
         else:
+            params = kwargs.copy()
+            solver_params = ['x0','tol','maxiter','xtype','M','callback']
+            [params.pop(item,None) for item in kwargs.keys() if item not in solver_params]
             tol = kwargs.get('tol')
-            if tol is None: kwargs['tol'] = 1e-20    
+            if tol is None: tol = 1e-20 
+            params['tol'] = tol
             if self._iterative_solver=='cg':
-                result = sprslin.cg(A,b,**kwargs)
+                result = sprslin.cg(A,b,**params)
             elif  self._iterative_solver=='gmres':
-                result = sprslin.gmres(A,b,**kwargs)
+                result = sprslin.gmres(A,b,**params)
             elif  self._iterative_solver=='bicgstab':
-                result = sprslin.bicgstab(A,b,**kwargs)  
+                result = sprslin.bicgstab(A,b,**params)  
             X = result[0]
             self._iterative_solver_info = result[1]
         return X        
