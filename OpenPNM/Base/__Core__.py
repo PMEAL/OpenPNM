@@ -10,7 +10,7 @@ from OpenPNM.Base import logging, Tools
 from OpenPNM.Base import ModelsDict
 logger = logging.getLogger()
 from OpenPNM.Base import Controller
-sim = Controller()
+ctrl = Controller()
 
 class Core(dict):
     r'''
@@ -23,7 +23,7 @@ class Core(dict):
         obj.update({'throat.all': sp.array([],ndmin=1,dtype=bool)})
         #Initialize phase, physics, and geometry tracking lists
         obj._name = None
-        obj._sim = {}
+        obj._ctrl = {}
         obj._phases = []
         obj._geometries = []
         obj._physics = []
@@ -39,7 +39,7 @@ class Core(dict):
         super(Core,self).__init__()
         logger.debug('Initializing Core class')
         self.name = name
-        self.simulation = sim
+        self.controller = ctrl
         
     def __repr__(self):
         return '<%s.%s object at %s>' % (
@@ -102,19 +102,19 @@ class Core(dict):
                 logger.warning('Cannot write vector with an array of the wrong length: '+key)
                 pass
             
-    def _set_sim(self,simulation):
-        if self.name in simulation.keys():
+    def _set_ctrl(self,controller):
+        if self.name in controller.keys():
             raise Exception('An object with that name is already present in simulation')
-        self._sim = simulation
-        simulation.update({self.name: self})
+        self._ctrl = controller
+        controller.update({self.name: self})
 
-    def _get_sim(self):
-        return self._sim
+    def _get_ctrl(self):
+        return self._ctrl
 
-    simulation = property(_get_sim,_set_sim)
+    controller = property(_get_ctrl,_set_ctrl)
 
     def _set_name(self,name):
-        if self._sim.get(name) is not None:
+        if self._ctrl.get(name) is not None:
             raise Exception('An object named '+name+' already exists')
         elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
@@ -194,18 +194,18 @@ class Core(dict):
         '''
         if obj_name != '':
             obj = []
-            if obj_name in sim.keys():
-                obj.append(sim[obj_name])
+            if obj_name in ctrl.keys():
+                obj.append(ctrl[obj_name])
             return obj[0]
         elif obj_type != '':
             if obj_type in ['Geometry','Geometries','geometry','geometries']:
-                objs = sim.geometries()
+                objs = ctrl.geometries()
             elif obj_type in ['Phase','Phases','phase','phases']:
-                objs = sim.phases()
+                objs = ctrl.phases()
             elif obj_type in ['Physics','physics']:
-                objs = sim.physics()
+                objs = ctrl.physics()
             elif obj_type in ['Network','Networks','network','networks']:
-                objs = sim.network()
+                objs = ctrl.network()
             return objs
 
     def physics(self,phys_name=[]):

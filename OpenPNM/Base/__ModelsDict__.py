@@ -68,13 +68,13 @@ class GenericModel(dict):
         return self['model'](**kwargs)
         
     def _find_master(self):
-        sim = Controller()
+        ctrl = Controller()
         master = []
-        for item in sim.keys():
-            if sim[item].models is not None:
-                for model in sim[item].models.keys():
-                    if sim[item].models[model] is self:
-                        master.append(sim[item])
+        for item in ctrl.keys():
+            if ctrl[item].models is not None:
+                for model in ctrl[item].models.keys():
+                    if ctrl[item].models[model] is self:
+                        master.append(ctrl[item])
         if len(master) > 1:
             raise Exception('More than one master found! This model dictionary has been associated with multiple objects. To use the same dictionary multiple times use the copy method.')
         return master[0]
@@ -312,11 +312,11 @@ class ModelsDict(OrderedDict):
             self.move_to_end(item)
         
     def _find_master(self):
-        sim = Controller()
+        ctrl = Controller()
         master = []
-        for item in sim.keys():
-            if sim[item].models is self:
-                master.append(sim[item])
+        for item in ctrl.keys():
+            if ctrl[item].models is self:
+                master.append(ctrl[item])
         if len(master) > 1:
             raise Exception('More than one master found! This model dictionary has been associated with multiple objects. To use the same dictionary multiple times use the copy method.')
         return master[0]
