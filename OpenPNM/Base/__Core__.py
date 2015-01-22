@@ -78,7 +78,7 @@ class Core(dict):
         if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
-                    logger.info(key+' is being defined.')
+                    logger.debug(key+' is being defined.')
                     super(Core, self).__setitem__(key,value)
                 else:
                     logger.warning(key+' is already defined.')
@@ -120,7 +120,7 @@ class Core(dict):
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
         elif self._name is not None:
-            logger.warning('Changing object names is tricky business')
+            logger.info('Changing the name of '+self.name+' to '+name)
             objs = []
             if self._net is not None:
                 objs.append(self._net)
