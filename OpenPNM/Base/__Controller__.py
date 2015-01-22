@@ -173,7 +173,7 @@ class Controller(dict):
                     self[item.name] = item
                     item._sim = self
 
-    def purge_object(self,obj):
+    def purge_object(self,obj,mode='single'):
         r'''
         Remove an object from the simulation
 
@@ -184,6 +184,11 @@ class Controller(dict):
             all traces of the object from everywhere in the simulation,
             including all the object tracking lists and label dictionaries of
             every object.
+        mode : string
+            Dicates the type of purge to be performed.  Options are:
+            
+            - 'single': Only purges the specified object
+            - 'complete': Purges the specified object AND all of its associated objects
 
         Notes
         -----
@@ -204,19 +209,28 @@ class Controller(dict):
         >>> 'pore.'+geom.name in pn.keys()  # geom's labels are removed from the Network too
         False
         '''
-        name = obj.name
-        for item in self.keys():
-            # Remove label arrays from all other objects
-            self[item].pop('pore.'+name,None)
-            self[item].pop('throat.'+name,None)
-            # Remove associations on other objects
-            self[item]._geometries[:] = [x for x in self[item]._geometries if x is not obj]
-            self[item]._phases[:] = [x for x in self[item]._phases if x is not obj]
-            self[item]._physics[:] = [x for x in self[item]._physics if x is not obj]
-        # Set object's simulation to an empty dict
-        self[name]._sim = {}
-        # Remove object from simulation dict
-        del self[name]
+        if mode == 'complete':
+            if obj._net is None:
+                net = obj
+            else:
+                net = obj._net
+            for item in net.geometries() + net.phases() + net.physics():
+                blank = self.pop(item,None)
+            del self[net.name]
+        elif mode == 'single':
+            name = obj.name
+            for item in self.keys():
+                # Remove label arrays from all other objects
+                self[item].pop('pore.'+name,None)
+                self[item].pop('throat.'+name,None)
+                # Remove associations on other objects
+                self[item]._geometries[:] = [x for x in self[item]._geometries if x is not obj]
+                self[item]._phases[:] = [x for x in self[item]._phases if x is not obj]
+                self[item]._physics[:] = [x for x in self[item]._physics if x is not obj]
+            # Set object's simulation to an empty dict
+            self[name]._sim = {}
+            # Remove object from simulation dict
+            del self[name]
 
     def ghost_object(self,obj):
         r'''
