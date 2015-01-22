@@ -114,13 +114,24 @@ class Core(dict):
     simulation = property(_get_sim,_set_sim)
 
     def _set_name(self,name):
-        if self._name is not None:
-            raise Exception('Renaming objects can have catastrophic consequences')
-        elif self._sim.get(name) is not None:
+        if self._sim.get(name) is not None:
             raise Exception('An object named '+name+' already exists')
         elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
+        elif self._name is not None:
+            logger.warning('Changing object names is tricky business')
+            objs = []
+            if self._net is not None:
+                objs.append(self._net)
+            objs.extend(self._geometries)
+            objs.extend(self._phases)
+            objs.extend(self._physics)
+            for item in objs:
+                if 'pore.'+self.name in item.keys():
+                    item['pore.'+name] = item.pop('pore.'+self.name)
+                if 'throat.'+self.name in item.keys():
+                    item['throat.'+name] = item.pop('throat.'+self.name)
         self._name = name
 
     def _get_name(self):
