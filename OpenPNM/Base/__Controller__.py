@@ -82,23 +82,22 @@ class Controller(dict):
         r'''
         Prints a heirarchical list of simulation object associations
         '''
-        header = ('-'*60)
-        net = self.network()[0]
-        print(header)
-        print('Network: '+net.name)
-        for geom in self.geometries():
-            print('+ '+'Geometry: '+geom.name)
-        for phase in self.phases():
-            if len(phase.phases())==0:
-                print('+ '+'Pure Phase: '+phase.name)
-            if len(phase.phases())>1:
-                print('+ '+'Mixture Phase: '+phase.name)
-                comps = phase.phases()
-                for compname in comps:
-                    print('+++ '+'Component Phase: '+self[compname].name)
-            for phys in self.physics():
-                if phase in phys._phases:
-                    print('++ '+'Physics: '+phys.name)
+        for net in self.network():
+            header = ('-'*60)
+            print(header)
+            print('Network: '+net.name)
+            for geom in net.geometries():
+                print('+ '+'Geometry: '+geom)
+            for phase in net.phases():
+                if len(net.phases(phase)[0].phases())==0:
+                    print('+ '+'Pure Phase: '+phase)
+                if len(net.phases(phase)[0].phases())>1:
+                    print('+ '+'Mixture Phase: '+phase)
+                    comps = net.phases(phase).phases()
+                    for compname in comps:
+                        print('+++ '+'Component Phase: '+compname)
+                for phys in net.phases(phase)[0].physics():
+                    print('++ '+'Physics: '+phys)
 
     def network(self):
         r'''
@@ -149,6 +148,30 @@ class Controller(dict):
             self[item]._sim = {}
         self.__dict__ = {}
         super(Controller,self).clear()
+        
+    def update(self,arg):
+        r'''
+        This is a subclassed version of the standard dict's ``update`` method.  It
+        can accept a dictionary as usual, but also an OpenPNM Network object, 
+        from which all the associated objects are extracted and added to the 
+        controller.
+        
+        Notes
+        -----
+        The Network (and other Core objects) do not store Algorithms, so this
+        update will not add any Algorithm objects to the Controller.
+        '''
+        if arg.__class__ == dict:
+            super(Controller,self).update(arg)
+        else:
+            mro = [item.__name__ for item in arg.__class__.__mro__]
+            if 'GenericNetwork' in mro:
+                net = arg
+                self[net.name] = net
+                net._sim = self
+                for item in net._geometries + net._physics + net._phases:
+                    self[item.name] = item
+                    item._sim = self
 
     def purge_object(self,obj):
         r'''
@@ -239,7 +262,9 @@ class Controller(dict):
 
     def save_object(self,obj,filename=''):
         r'''
-        Save a single OpenPNM object to a 'pno' file.
+        Save a single OpenPNM object to a 'pno' file.  The main purpose of this
+        is to save a copy of the object's data dictionary to a file.  This is
+        useful for saving Algorithm objects that contain simulation results.
 
         Parameters
         ----------
@@ -267,7 +292,10 @@ class Controller(dict):
 
     def load_object(self,filename):
         r'''
-        Load a single object saved as a 'pno' file.
+        Load a single object saved as a 'pno' file.  This object will be a 
+        standalone entity so many methods that expect information about 
+        associations will fail, but the numerical data in the dictionary can 
+        be accessed.
 
         Parameters
         ----------
