@@ -218,10 +218,12 @@ class Controller(dict):
         # Remove object from simulation dict
         del self[name]
 
-    def clone_object(self,obj):
+    def ghost_object(self,obj):
         r'''
-        Clone an OpenPNM Object, without associating the new object with the
-        parent simulation.
+        Create a ghost OpenPNM Object containing all the data, methods and 
+        associations of the original object, but without registering the ghost
+        anywhere.   This ghost is intended as a disposable object, for 
+        instance, to receive simulation data without overwriting existing data.
 
         Parameters
         ----------
@@ -234,17 +236,12 @@ class Controller(dict):
         to the objects associated with the original object.  The cloned object is
         not associated with the Network.
 
-        Notes
-        -----
-        This method is intended to create a disposable object, for instance, to
-        receive simulation data without overwriting existing data.
-
         Examples
         --------
         >>> import OpenPNM
         >>> sim = OpenPNM.Base.Controller()
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn2 = sim.clone_object(pn)
+        >>> pn2 = sim.ghost_object(pn)
         >>> pn is pn2  # A clone of pn is created
         False
         >>> pn2.keys() == pn.keys()
