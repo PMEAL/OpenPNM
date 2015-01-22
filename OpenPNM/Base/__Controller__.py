@@ -5,7 +5,7 @@ Controller:  Overall simulation controller class
 '''
 import pickle as _pickle
 import copy as _copy
-import time
+import time, random, string
 import OpenPNM
 from OpenPNM.Base import logging
 logger = logging.getLogger()
@@ -422,59 +422,19 @@ class Controller(dict):
 
     comments = property(fget=_get_comments,fset=_set_comments)
 
-    def _subset(self,pores,name=None):
+    def clone_simulation(self,network):
         r'''
-        Create a new network from a subset of the main network.  This is useful
-        for running simulations on smaller domains of interest to save CPU
-        time.
-
-        Parameters
-        ----------
-        pores : array_like
-            The list of pores that comprise the subset.  All throats between
-            these pores are conserved, but throats to other pores are lost.
-
+        Accepts a Network object and creates a complete clone including all 
+        associated objects.  The clone simultion is registered with the
+        Controller object
+        
         Returns
         -------
-        simulation : An OpenPNM Controller Object
-
-        Examples
-        --------
-        None yet
-        '''
-        net = self.network()[0]  # Get Network handle
-        self.clear()  # Clear Controller object
-        temp = net.simulation  # Save Simulation dict
-        # Create a copy of Network
-        new_net = _copy.deepcopy(net)  # Note: This appends the current Controller to the new Network
-        # Update Controller with original Network dict
-        self.clear()  # Clear Controller associated with the new Network
-        self.update(temp)  # Update Controller with saved old Network
-        # Trim new Network
-        throats = new_net.find_neighbor_throats(pores=pores,mode='intersection')
-        Ps = new_net.tomask(pores)
-        new_net.trim(pores=~Ps)
-        # Rename new Network
-        new_net._name = None  # Set name to None to circumvent setter checks
-        if name is None:
-            old_name = net.name
-            name = 'subset_of_'+old_name
-        new_net.name = name
-        # Add new_net to net's labels
-        net['pore.'+new_net.name] = net.tomask(pores=pores)
-        net['throat.'+new_net.name] = net.tomask(throats=throats)
-        new_net._net = net
-        return new_net
-
-    def _clone_simulation(self):
-        r'''
-        This clones the current simulation objects and returns a dictionary
-        containing handles to the clones.  This method does NOT return a new
-        OpenPNM Controller object.
+        A handle to the new network object, which will include handles to 
+        clones of all associated objects.  
 
         See Also
         --------
-        subset
         clone_object
 
         Notes
@@ -487,15 +447,20 @@ class Controller(dict):
         --------
         None yet
         '''
-        net = self.network()[0]
-        temp = net.copy()  # Copy Network's dict
-        new_net = self.subset(pores=net.Ps,name=net.name)
-        net.clear()  # Clear Network's dict of item added during subset()
-        net.update(temp)  # Re-add odd dict to Network
-        new_net._net = None  # Clear reference to parent network
-        sim = new_net.simulation
-        return sim
-
+        
+        bak = {}
+        bak.update(self)
+        self.clear()
+        net = _copy.deepcopy(network)
+        self.update(net)
+        for item in self.keys():
+            rand_str = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+            new_name = item + '_' + rand_str
+            temp = self.pop(item)
+            temp.name = new_name
+            self[new_name] = temp
+        self.update(bak)
+        return net
 
 if __name__ == '__main__':
     sim = Controller()
