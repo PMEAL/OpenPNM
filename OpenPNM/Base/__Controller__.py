@@ -32,40 +32,22 @@ class Controller(dict):
     def __str__(self):
         header = ('-'*60)
         print(header)
-        print('Networks')
+        print("{c:<10s} {a:<25s} {b:<25s}".format(a='Class', b='Name', c='Type'))
         print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
-        print(header)
-        for item in self.network():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
-        print(header)
-        print('Geometries')
-        print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        for item in self.networks():
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Network'))
         print(header)
         for item in self.geometries():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
-        print(header)
-        print('Phases')
-        print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Geometry'))
         print(header)
         for item in self.phases():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
-        print(header)
-        print('Physics')
-        print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Phase'))
         print(header)
         for item in self.physics():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
-        print(header)
-        print('Algorithms')
-        print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Physics'))
         print(header)
         for item in self.algorithms():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Algorithm'))
         print(header)
         return ''
         
@@ -82,7 +64,7 @@ class Controller(dict):
         r'''
         Prints a heirarchical list of object associations
         '''
-        for net in self.network():
+        for net in self.networks():
             header = ('-'*60)
             print(header)
             print('Network: '+net.name)
@@ -340,7 +322,7 @@ class Controller(dict):
         True
         '''
         if filename == '':
-            filename = self.network()[0].name
+            filename = self.networks()[0].name
         else:
             filename = filename.split('.')[0]
 
@@ -387,12 +369,12 @@ class Controller(dict):
         '''
         import OpenPNM.Utilities.IO as io
         if fileformat == 'VTK':
-            net = self.network()[0]
+            net = self.networks()[0]
             phases = net._phases
             io.VTK.save(filename=filename,network=net,phases=phases)
             return
         if fileformat == 'MAT':
-            net = self.network()[0]
+            net = self.networks()[0]
             phases = net._phases
             io.MAT.save(filename=filename,network=net,phases=phases)
             return
