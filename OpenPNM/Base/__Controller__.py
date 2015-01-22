@@ -453,12 +453,12 @@ class Controller(dict):
         self.clear()
         net = _copy.deepcopy(network)
         self.update(net)
-        for item in self.keys():
-            rand_str = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
-            new_name = item + '_' + rand_str
+        rand_str = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+        for item in list(self.keys()):
             temp = self.pop(item)
+            new_name = temp.name + '_' + rand_str
             temp.name = new_name
-            self[new_name] = temp
+            self[temp.name] = temp
         self.update(bak)
         return net
 
