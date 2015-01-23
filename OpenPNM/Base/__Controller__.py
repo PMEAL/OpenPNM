@@ -200,7 +200,7 @@ class Controller(dict):
             del self[net.name]
         elif mode == 'single':
             name = obj.name
-            for item in self.keys():
+            for item in list(self.keys()):
                 # Remove label arrays from all other objects
                 self[item].pop('pore.'+name,None)
                 self[item].pop('throat.'+name,None)

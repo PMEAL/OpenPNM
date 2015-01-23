@@ -747,12 +747,14 @@ class GenericNetwork(Core):
             item.update({'pore.all' : sp.ones((sp.sum(Pnet),),dtype=bool)})
             item.update({'throat.all' : sp.ones((sp.sum(Tnet),),dtype=bool)})
             # Overwrite remaining data and info
-            for key in item.keys():
+            for key in list(item.keys()):
                 if key.split('.')[1] not in ['all']:
                     temp = item.pop(key)
                     if key.split('.')[0] == 'throat':
+                        logger.debug('Trimming {a} from {b}'.format(a=key,b=item.name))
                         item[key] = temp[Ts]
                     if key.split('.')[0] == 'pore':
+                        logger.debug('Trimming {a} from {b}'.format(a=key,b=item.name))
                         item[key] = temp[Ps]
 
         #Remap throat connections
@@ -768,12 +770,14 @@ class GenericNetwork(Core):
         # Write throat connections specifically
         self.update({'throat.conns' : sp.vstack((Tnew1,Tnew2)).T})
         # Overwrite remaining data and info
-        for item in self.keys():
+        for item in list(self.keys()):
             if item.split('.')[-1] not in ['conns','all']:
                 temp = self.pop(item)
                 if item.split('.')[0] == 'throat':
+                    logger.debug('Trimming {a} from {b}'.format(a=item,b=self.name))
                     self[item] = temp[Tkeep]
                 if item.split('.')[0] == 'pore':
+                    logger.debug('Trimming {a} from {b}'.format(a=item,b=self.name))
                     self[item] = temp[Pkeep]
 
         #Reset network graphs
