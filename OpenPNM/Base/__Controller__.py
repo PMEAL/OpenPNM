@@ -415,7 +415,7 @@ class Controller(dict):
 
     comments = property(fget=_get_comments,fset=_set_comments)
 
-    def clone_simulation(self,network):
+    def clone_simulation(self,network,name=None):
         r'''
         Accepts a Network object and creates a complete clone including all 
         associated objects.  All objects in the cloned simulation are 
@@ -445,11 +445,14 @@ class Controller(dict):
         bak.update(self)
         self.clear()
         net = _copy.deepcopy(network)
+        net['pore.'+network.name] = network.Ps
+        net['throat.'+network.name] = network.Ts
         self.update(net)
-        rand_str = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+        if name == None:
+            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
         for item in list(self.keys()):
             temp = self.pop(item)
-            new_name = temp.name + '_' + rand_str
+            new_name = temp.name + '|' + name
             temp.name = new_name
             self[temp.name] = temp
         self.update(bak)
