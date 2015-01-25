@@ -1142,16 +1142,16 @@ class Core(dict):
             elif self is target._parent:  # self is parent Network
                 maskS = self[element+'.all']
                 maskT = ~self[element+'.all']
-                maskT = target[element+'.'+self.name]
+                maskT[target[element+'.'+self.name]] = True
             else:
-                print('This situation has not been considered yet')
+                print('2: This situation has not been considered yet')
                 return
         elif (self._net != None) and (target._net != None):  # Neither are Networks
             if self._net is target._net:  # self and target are siblings
                 maskS = self._net[element+'.'+self.name]
                 maskT = self._net[element+'.'+target.name]
             else:
-                print('This situation has not been considered yet')
+                print('3: This situation has not been considered yet')
                 return
 
         # Convert source locations to Network indices
@@ -1245,6 +1245,11 @@ class Core(dict):
         target : OpenPNM object, optional
             The object for which a list of pores is desired.  If no object is
             supplied then the object's associated Network is used.
+            
+        return_mapping : boolean (default is False)
+            If True, a dictionary containing 'source' locations, and 'target'
+            locations is returned.  Any 'source' locations not found in the
+            'target' object are removed from the list.
 
         Returns
         -------
