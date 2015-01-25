@@ -1280,6 +1280,47 @@ class Core(dict):
                 target = self._net
         Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
+        
+    def _isa(self,keyword,obj=None):
+        r'''
+        '''
+        if obj is None:
+            query = False
+            mro = [item.__name__ for item in self.__class__.__mro__]
+            if keyword in ['net','Network','GenericNetwork']:
+                if 'GenericNetwork' in mro:
+                    query = True
+            if keyword in ['geom','Geometry','GenericGeometry']:
+                if 'GenericGeometry' in mro:
+                    query = True
+            if keyword in ['phase','Phase','GenericPhase']:
+                if 'GenericPhase' in mro:
+                    query = True
+            if keyword in ['phys','Physics','GenericPhysics']:
+                if 'GenericPhysics' in mro:
+                    query = True
+            if keyword in ['alg','Algorithm','GenericAlgorithm']:
+                if 'GenericAlgorithm' in mro:
+                    query = True
+            if keyword in ['clone']:
+                if self._net is None:
+                    if self._parent is not None:
+                        query = True
+                else:
+                    if self._net._parent is not None:
+                        query = True
+            return query
+        else:
+            query = False
+            if keyword in ['sibling']:
+                if (self._isa('net')) and (obj._net is self):
+                    query = True
+                elif (obj._isa('net')) and (self._net is obj):
+                    query = True
+                elif self._net is obj._net:
+                    query = True
+            return query
+            
 
     def check_data_health(self,props=[],element='',quiet=False):
         r'''
