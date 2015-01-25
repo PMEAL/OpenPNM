@@ -440,7 +440,9 @@ class Controller(dict):
         --------
         None yet
         '''
-        
+        if network._parent != None:
+            logger.error('Cannot clone a network that is already a clone')
+            return
         bak = {}
         bak.update(self)
         self.clear()
@@ -452,9 +454,12 @@ class Controller(dict):
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
         for item in list(self.keys()):
             temp = self.pop(item)
-            new_name = temp.name + '|' + name
+            temp._parent = net
+            new_name = temp.name + '_' + name
             temp.name = new_name
             self[temp.name] = temp
+        # Overwrite new Network's parent with cloned Network
+        net._parent = network
         self.update(bak)
         return net
 

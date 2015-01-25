@@ -28,6 +28,7 @@ class Core(dict):
         obj._geometries = []
         obj._physics = []
         obj._net = None
+        obj._parent = None
         #Initialize ordered dict for storing property models
         obj.models = ModelsDict()
         return obj    
@@ -1108,18 +1109,23 @@ class Core(dict):
     def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
-        if self._net is None:  # self is a parent Network
-            net = self
-        else:
-            try:
-                if self._net._net is None:  # self is a subset Network
-                    net = self._net
-                else:
-                    net = self._net._net  # self is associated with a subset
-            except:
-                net = self._net  # self is associated with a parent Network
+        # Ensure parent has been assigned, which may happen to uncloned simulations
+        if self._parent == None:  
+            self._parent = self._net
+        if target._parent == None:
+            target._parent == target._net
+
+        # Initialized things            
         locations = sp.array(locations,ndmin=1)
         mapping = {}
+        
+        # Now determine how source and target are related
+        if self._parent is target._parent:  # Siblings which are not Networks
+            net = self._net
+        elif (self._net is None) and (target._parent is self):  # Siblings, self is a Network
+            net = self
+        elif target is self._net: # Siblings, and self is not a Network
+            net = self._net
 
         # Retrieve Network size masks
         maskS = net[element+'.'+self.name]
