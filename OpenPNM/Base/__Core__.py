@@ -1109,44 +1109,69 @@ class Core(dict):
     def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
-        # Ensure parent has been assigned, which may happen to uncloned simulations
+        # Ensure parent has been assigned, which may be missing from uncloned simulations
         if self._parent == None:  
             self._parent = self._net
         if target._parent == None:
-            target._parent == target._net
+            target._parent = target._net
 
         # Initialized things            
         locations = sp.array(locations,ndmin=1)
         mapping = {}
         
+        # (The following is a kludgy mess, but works for now)
         # Now determine how source and target are related
-        if self._parent is target._parent:  # Siblings which are not Networks
-            net = self._net
-        elif (self._net is None) and (target._parent is self):  # Siblings, self is a Network
-            net = self
-        elif target is self._net: # Siblings, and self is not a Network
-            net = self._net
-
-        # Retrieve Network size masks
-        maskS = net[element+'.'+self.name]
-        maskT = net[element+'.'+target.name]
+        if self is target:  # The trivial case where source is also target
+            if self._net is None:  # self is a Network
+                maskS = self[element+'.all']
+                maskT = self[element+'.all']
+            else:  # self is not a Network
+                maskS = self._net[element+'.'+self.name]
+                maskT = self._net[element+'.'+self.name]
+        elif (self._net is None) or (target._net is None):  # At least one object is a Network
+            if target._net is self: # target is a sibling of self
+                maskS = self[element+'.'+self.name]
+                maskT = self[element+'.'+target.name]
+            elif self._net is target:  # self is a sibling of target
+                maskS = target[element+'.'+self.name]
+                maskT = target[element+'.'+target.name]
+            elif target is self._parent:  # Target is parent Network
+                maskS = ~target[element+'.all']
+                maskS[self[element+'.'+target.name]] = True
+                maskT = target[element+'.all']
+            elif self is target._parent:  # self is parent Network
+                maskS = self[element+'.all']
+                maskT = ~self[element+'.all']
+                maskT = target[element+'.'+self.name]
+            else:
+                print('This situation has not been considered yet')
+                return
+        elif (self._net != None) and (target._net != None):  # Neither are Networks
+            if self._net is target._net:  # self and target are siblings
+                maskS = self._net[element+'.'+self.name]
+                maskT = self._net[element+'.'+target.name]
+            else:
+                print('This situation has not been considered yet')
+                return
 
         # Convert source locations to Network indices
-        temp = sp.zeros_like(net._get_indices(element=element))-1
+        temp = sp.zeros(sp.shape(maskS),dtype=int)-1
         temp[maskS] = self._get_indices(element=element)
         locsS = sp.where(sp.in1d(temp,locations))[0]
         mapping['source'] = locations
 
         # Find locations in target
-        temp = sp.zeros_like(net._get_indices(element=element))-1
+        temp = sp.zeros(sp.shape(maskT),dtype=int)-1
         temp[maskT] = target._get_indices(element=element)
         locsT = temp[locsS]
         mapping['target'] = locsT
-
+        
+        # Find overlapping locations in source and target to define mapping
         keep = (locsS>=0)*(locsT>=0)
         mapping['source'] = mapping['source'][keep]
         mapping['target'] = mapping['target'][keep]
-
+        
+        # Return results as an arrary or one-to-one mapping if requested
         if return_mapping == True:
             return mapping
         else:
@@ -1164,10 +1189,12 @@ class Core(dict):
         Parameters
         ----------
         pores : array_like
-            The list of pores on the caller object
+            The list of pores on the caller object.  If no pores are supplied
+            then all the pores of the calling object are used.
 
         target : OpenPNM object, optional
-            The object for which a list of pores is desired.
+            The object for which a list of pores is desired.  If no object is
+            supplied then the object's associated Network is used.
 
         return_mapping : boolean (default is False)
             If True, a dictionary containing 'source' locations, and 'target'
@@ -1197,7 +1224,10 @@ class Core(dict):
         if pores is None:
             pores = self.Ps
         if target is None:
-            target = self._net
+            if self._net is None:
+                target = self
+            else:
+                target = self._net
         Ps = self._map(element='pore',locations=pores,target=target,return_mapping=return_mapping)
         return Ps
 
@@ -1209,10 +1239,12 @@ class Core(dict):
         Parameters
         ----------
         throats : array_like
-            The list of throats on the caller object
+            The list of throats on the caller object.  If no throats are 
+            supplied then all the throats of the calling object are used.
 
         target : OpenPNM object, optional
-            The object for which a list of pores is desired.
+            The object for which a list of pores is desired.  If no object is
+            supplied then the object's associated Network is used.
 
         Returns
         -------
@@ -1237,7 +1269,10 @@ class Core(dict):
         if throats is None:
             throats = self.Ts
         if target is None:
-            target = self._net
+            if self._net is None:
+                target = self
+            else:
+                target = self._net
         Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
 
