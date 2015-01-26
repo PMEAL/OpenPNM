@@ -134,17 +134,22 @@ class Controller(dict):
     def update(self,arg):
         r'''
         This is a subclassed version of the standard dict's ``update`` method.  
-        It can accept a dictionary as usual, but also an OpenPNM Network 
-        object, from which all the associated objects are extracted and added 
-        to the Controller.
+        It can accept a dictionary of OpenPNM Core objects in which case it 
+        adds the objects to the Controller.  It can also accept an OpenPNM 
+        Network object in which case it extracts all associated objects and 
+        adds them to the Controller.  In both cases it adds the Controller to
+        all object's ``controller`` attribute.
         
         Notes
         -----
         The Network (and other Core objects) do not store Algorithms, so this
-        update will not add any Algorithm objects to the Controller.  This may 
+        update will not add any Algorithm objects to the Controller.  This may
+        change.  
         '''
         if arg.__class__ == dict:
-            super(Controller,self).update(arg)
+            for item in arg.keys():
+                self[item] = arg[item]
+                arg[item]._ctrl = self
         else:
             mro = [item.__name__ for item in arg.__class__.__mro__]
             if 'GenericNetwork' in mro:
