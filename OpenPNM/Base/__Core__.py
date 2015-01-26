@@ -290,17 +290,15 @@ class Core(dict):
     def network(self,name=''):
         r'''
         Retrieves the network associated with the object.  If the object is
-        a network, then it returns the parent network from which the present
-        object derives, or returns an empty list if it has no parents.
+        a network, then it returns a handle to itself.
 
         Parameters
         ----------
         name : string, optional
-            The name of the Geometry object to retrieve.
+            The name of the Network object to retrieve.
 
         Returns
         -------
-            If name is NOT provided, then the name of the parent is returned.
             If a name IS provided, then the parent netowrk object is returned.
 
         Notes
@@ -308,12 +306,12 @@ class Core(dict):
         This doesn't quite work yet...we have to decide how to treat sub-nets first
         '''
         if name == '':
-            try:
-                net = self._net.name
-            except:
-                net = []
+            if self._net is None:
+                net = [self]
+            else:
+                net = [self._net]
         else:
-            net = self._net
+            net = self._find_object(obj_name=name)
         return net
 
     #--------------------------------------------------------------------------

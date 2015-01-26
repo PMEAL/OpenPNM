@@ -51,7 +51,13 @@ class GenericNetwork(Core):
             return self._interleave_data(key,self.geometries())
         else:
             return super(GenericNetwork,self).__getitem__(key)
-
+            
+    def _set_net(self,network):
+        pass
+    def _get_net(self):
+        return self
+    _net = property(fset=_set_net,fget=_get_net)
+    
     #--------------------------------------------------------------------------
     '''Graph Theory and Network Query Methods'''
     #--------------------------------------------------------------------------
