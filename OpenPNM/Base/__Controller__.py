@@ -71,7 +71,6 @@ class Controller(dict):
         
     def _setloglevel(self,level):
         logger.setLevel(level)
-        print('Log level has been changed to -->',logger.level)
     
     def _getloglevel(self):
         print('Log level is currently set to -->',logger.level)
