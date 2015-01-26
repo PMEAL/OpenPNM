@@ -100,8 +100,8 @@ class GenericPhase(Core):
                 self._phases.append(phase) # Associate any sub-phases with self
                 phase._phases.append(self)  # Associate self with sub-phases
                 #Add models for components to inherit mixture T and P
-                phase.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.misc.mixture_value)
-                phase.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.misc.mixture_value)
+                phase.models.add(propname='pore.temperature',model=OpenPNM.Phases.models.misc.mixture_value)
+                phase.models.add(propname='pore.pressure',model=OpenPNM.Phases.models.misc.mixture_value)
                 #Move T and P models to beginning of regeneration order
                 phase.models.reorder({'pore.temperature':0,'pore.pressure':1})
         elif mode == 'remove':
