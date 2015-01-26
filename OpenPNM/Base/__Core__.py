@@ -1168,7 +1168,10 @@ class Core(Base):
             except: item = self._find_object(obj_name=item)
             locations = self._get_indices(element=element,labels=item.name,mode='union')
             if prop not in item.keys():
-                values = sp.ones_like(locations)*sp.nan
+                if values_dim > 0:
+                    values = sp.ones([len(locations),values_dim])*sp.nan
+                else:
+                    values = sp.ones_like(locations)*sp.nan
                 dtypenames.append('nan')
                 dtypes.append(sp.dtype(bool))
                 nan_locs[locations]=True
