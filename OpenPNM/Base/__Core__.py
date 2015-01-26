@@ -1104,54 +1104,31 @@ class Core(dict):
             temp['throat'] = self.num_throats()
         return temp
 
-    def _map(self,element,locations,target,return_mapping=False):
+    def _map(self,element,locations,target,return_mapping):
         r'''
         '''
-        # Ensure parent has been assigned, which may be missing from uncloned simulations
-        if self._parent == None:  
-            self._parent = self._net
-        if target._parent == None:
-            target._parent = target._net
-
-        # Initialized things            
+        # Initialize things
         locations = sp.array(locations,ndmin=1)
         mapping = {}
         
-        # (The following is a kludgy mess, but works for now)
-        # Now determine how source and target are related
-        if self is target:  # The trivial case where source is also target
-            if self._net is None:  # self is a Network
-                maskS = self[element+'.all']
-                maskT = self[element+'.all']
-            else:  # self is not a Network
+        # Analyze input object's relationship
+        if self._parent == target._parent:
+            maskS = self._net[element+'.'+self.name]
+            maskT = target._net[element+'.'+target.name]
+        else:
+            if self._parent is None:  # Self is parent object
                 maskS = self._net[element+'.'+self.name]
-                maskT = self._net[element+'.'+self.name]
-        elif (self._net is None) or (target._net is None):  # At least one object is a Network
-            if target._net is self: # target is a sibling of self
-                maskS = self[element+'.'+self.name]
-                maskT = self[element+'.'+target.name]
-            elif self._net is target:  # self is a sibling of target
-                maskS = target[element+'.'+self.name]
-                maskT = target[element+'.'+target.name]
-            elif target is self._parent:  # Target is parent Network
-                maskS = ~target[element+'.all']
-                maskS[self[element+'.'+target.name]] = True
-                maskT = target[element+'.all']
-            elif self is target._parent:  # self is parent Network
-                maskS = self[element+'.all']
-                maskT = ~self[element+'.all']
-                maskT[target[element+'.'+self.name]] = True
-            else:
-                print('2: This situation has not been considered yet')
-                return
-        elif (self._net != None) and (target._net != None):  # Neither are Networks
-            if self._net is target._net:  # self and target are siblings
-                maskS = self._net[element+'.'+self.name]
-                maskT = self._net[element+'.'+target.name]
-            else:
-                print('3: This situation has not been considered yet')
-                return
-
+                maskT = ~self._net[element+'.all']
+                tempT = target._net[element+'.'+target.name]
+                inds = target._net[element+'.'+self._net.name][tempT]
+                maskT[inds]  = True
+            if target._parent is None:  # Target is parent object
+                maskT = target._net[element+'.'+target.name]
+                maskS = ~target._net[element+'.all']
+                tempS = self._net[element+'.'+self.name]
+                inds = self._net[element+'.'+target._net.name][tempS]
+                maskS[inds]  = True
+        
         # Convert source locations to Network indices
         temp = sp.zeros(sp.shape(maskS),dtype=int)-1
         temp[maskS] = self._get_indices(element=element)
