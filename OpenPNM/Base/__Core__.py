@@ -1279,28 +1279,30 @@ class Core(dict):
         Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
         
-    def _isa(self,keyword,obj=None):
+    def _isa(self,keyword=None,obj=None):
         r'''
         '''
+        if keyword is None:
+            mro = [item.__name__ for item in self.__class__.__mro__]
         if obj is None:
             query = False
             mro = [item.__name__ for item in self.__class__.__mro__]
             if keyword in ['net','Network','GenericNetwork']:
                 if 'GenericNetwork' in mro:
                     query = True
-            if keyword in ['geom','Geometry','GenericGeometry']:
+            elif keyword in ['geom','Geometry','GenericGeometry']:
                 if 'GenericGeometry' in mro:
                     query = True
-            if keyword in ['phase','Phase','GenericPhase']:
+            elif keyword in ['phase','Phase','GenericPhase']:
                 if 'GenericPhase' in mro:
                     query = True
-            if keyword in ['phys','Physics','GenericPhysics']:
+            elif keyword in ['phys','Physics','GenericPhysics']:
                 if 'GenericPhysics' in mro:
                     query = True
-            if keyword in ['alg','Algorithm','GenericAlgorithm']:
+            elif keyword in ['alg','Algorithm','GenericAlgorithm']:
                 if 'GenericAlgorithm' in mro:
                     query = True
-            if keyword in ['clone']:
+            elif keyword in ['clone']:
                 if self._net is None:
                     if self._parent is not None:
                         query = True
