@@ -723,6 +723,9 @@ class GenericNetwork(Core):
         296
 
         '''
+        for net in self.controller.networks():
+            if net._parent is self:
+                raise Exception('This Network has been cloned, cannot trim')
 
         if pores != []:
             pores = sp.array(pores,ndmin=1)
