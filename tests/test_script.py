@@ -4,30 +4,33 @@ import OpenPNM
 import pytest
 
 def test_controller():
+    # The following tests check if the Controller's ghost, save, load and clear methods work
     ctrl = OpenPNM.Base.Controller()
+    ctrl.clear()  # Clear controller to make sure it has not lingering objects
+    ctrl.loglevel = 50
     pn = OpenPNM.Network.TestNet()
     geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
     loc1 = geom.__repr__()
     loc2 = ctrl[geom.name].__repr__()
-    assert loc1 == loc2
-    geom2 = ctrl.clone_object(geom)
+    assert loc1 == loc2  # Ensure both locations hold same object
+    geom2 = ctrl.ghost_object(geom)  # Create a ghost object
     loc3 = geom2.__repr__()
-    assert geom.__repr__() == loc1
-    assert loc3 != loc1
-    ctrl.save('test_net')
-    ctrl.clear()
+    assert geom.__repr__() == loc1  # Ensure geom is still same object
+    assert loc3 != loc1  # Ensure identities are not getting swapped
+    ctrl.save('test_net')  # Save current state
+    ctrl.clear()  # Clear Controller
     assert ctrl.keys() == {}.keys()  # Empty dict
-    assert pn.simulation == {}  # Controller is now an empty dict
-    assert geom.simulation is pn.simulation  # Share a common dict
-    ctrl.load('test_net')
+    assert pn.controller == {}  # Controller is now an empty dict
+    assert geom.controller == pn.controller  # Both have empty dict's
+    ctrl.load('test_net')  # Load saved state
     assert pn.name in ctrl.keys()  # Ensure loaded objects match originals
     assert geom.name in ctrl.keys()
-    pn2 = ctrl.network()[0]  # Retrieve loaded Network from the Controller dict
+    pn2 = ctrl[pn.name]  # Retrieve loaded Network from the Controller dict
     assert pn is not pn2  # They have the same properties, but are different objects
-    geom2 = ctrl.geometries()[0]  # Retrieve Geometry from Controller
+    geom2 = ctrl[geom.name]  # Retrieve Geometry from Controller
     assert 'pore.'+geom2.name in pn2.keys()  # Confirm Geometry label is in Network
     ctrl.purge_object(geom2)  # Purge Geometry from simulation
-    assert geom2.name not in ctrl.keys()  # Geometry is purges from Controller
+    assert geom2.name not in ctrl.keys()  # Geometry is purged from Controller
     assert 'pore.'+geom2.name not in pn2.keys()  # Geometry label is removed from Simulation objects too
     
 def test_cubic_standard_call():
