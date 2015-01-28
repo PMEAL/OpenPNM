@@ -103,106 +103,107 @@ class GenericLinearTransport(GenericAlgorithm):
             raise Exception('The mode ('+mode+') cannot be applied to the set_source_term!')
         # Checking for existance of source_name
         if source_name is not None:
-            source_name =  'pore.'+source_name.split('.')[-1]
-            prop = source_name.split('.')[-1]            
-            try: self._phase[source_name]
-            except KeyError: Exception('The attached phase in the algorithm '+self.name+', does not have the source property '+source_name+' in its physics!')        
-            except ValueError:  pass     
-        if mode=='remove':
-            s_mode = ['linear','nonlinear']
-            if source_name is None:
-                if pores is not None:             
-                    if pores is 'all':
-                        for item in self.labels():
-                            if 'pore.source_' in item:
-                                prop = (item.split('.')[-1]).replace('source_',"")
-                                del self['pore.source_'+prop]
-                                for s in s_mode:
-                                    try:    del self['pore.source_'+s+'_s1_'+prop]
-                                    except: pass
-                                    try:    del self['pore.source_'+s+'_s2_'+prop]
-                                    except: pass                        
+            s_group= sp.array(source_name,ndmin=1)
+            for source_name in s_group:
+                source_name =  'pore.'+source_name.split('.')[-1]
+                prop = source_name.split('.')[-1]            
+                try: self._phase[source_name]
+                except KeyError: Exception('The attached phase in the algorithm '+self.name+', does not have the source property '+source_name+' in its physics!')        
+                except ValueError:  pass     
+                if mode=='remove':
+                    s_mode = ['linear','nonlinear']
+                    if source_name is None:
+                        if pores is not None:             
+                            if pores is 'all':
+                                for item in self.labels():
+                                    if 'pore.source_' in item:
+                                        prop = (item.split('.')[-1]).replace('source_',"")
+                                        del self['pore.source_'+prop]
+                                        for s in s_mode:
+                                            try:    del self['pore.source_'+s+'_s1_'+prop]
+                                            except: pass
+                                            try:    del self['pore.source_'+s+'_s2_'+prop]
+                                            except: pass                        
+                            else:
+                                for item in self.labels():
+                                    if 'pore.source_' in item:
+                                        prop = (item.split('.')[-1]).replace('source_',"")
+                                        self['pore.source_'+prop][pores] = False
+                                        for s in s_mode:
+                                            try:    self['pore.source_'+s+'_s1_'+prop][pores] = sp.nan
+                                            except: pass
+                                            try:    self['pore.source_'+s+'_s2_'+prop][pores] = sp.nan
+                                            except: pass 
+                        else:  raise Exception('No pores/source_name are sent to the set_term_method!') 
+                    else:                
+                        if pores is None:
+                            try:    del self['pore.source_'+prop]
+                            except: pass
+                            for s in s_mode:
+                                try:    del self['pore.source_'+s+'_s1_'+prop]
+                                except: pass
+                                try:    del self['pore.source_'+s+'_s2_'+prop]
+                                except: pass
+                        else:
+                            try:    self['pore.source_'+prop][pores] = False                    
+                            except: pass
+                            for s in s_mode:
+                                try:    self['pore.source_'+s+'_s1_'+prop][pores] = sp.nan
+                                except: pass
+                                try:    self['pore.source_'+s+'_s2_'+prop][pores] = sp.nan
+                                except: pass   
+                else:            
+                    # Handle tol, x0 and maxiter for the Picard algorithm
+                    if 'pore.source_tol' not in self.props():
+                        self['pore.source_tol'] = sp.ones((self.Np,),dtype=float)*sp.nan
+                    if 'pore.source_maxiter' not in self.props():
+                        self['pore.source_maxiter'] = sp.ones((self.Np,),dtype=float)*sp.nan  
+         
+                    self._guess = x0
+                    # Check value of maxiter
+                    if maxiter is None:
+                        maxiter = int(100)
+                        source_mode = 'nonlinear'
                     else:
-                        for item in self.labels():
-                            if 'pore.source_' in item:
-                                prop = (item.split('.')[-1]).replace('source_',"")
-                                self['pore.source_'+prop][pores] = False
-                                for s in s_mode:
-                                    try:    self['pore.source_'+s+'_s1_'+prop][pores] = sp.nan
-                                    except: pass
-                                    try:    self['pore.source_'+s+'_s2_'+prop][pores] = sp.nan
-                                    except: pass 
-                else:  raise Exception('No pores/source_name are sent to the set_term_method!') 
-            else:                
-                if pores is None:
-                    try:    del self['pore.source_'+prop]
-                    except: pass
-                    for s in s_mode:
-                        try:    del self['pore.source_'+s+'_s1_'+prop]
-                        except: pass
-                        try:    del self['pore.source_'+s+'_s2_'+prop]
-                        except: pass
-                else:
-                    try:    self['pore.source_'+prop][pores] = False                    
-                    except: pass
-                    for s in s_mode:
-                        try:    self['pore.source_'+s+'_s1_'+prop][pores] = sp.nan
-                        except: pass
-                        try:    self['pore.source_'+s+'_s2_'+prop][pores] = sp.nan
-                        except: pass   
-        else:            
-            # Handle tol, x0 and maxiter for the Picard algorithm
-            if 'pore.source_tol' not in self.props():
-                self['pore.source_tol'] = sp.ones((self.Np,),dtype=float)*sp.nan
-            if 'pore.source_maxiter' not in self.props():
-                self['pore.source_maxiter'] = sp.ones((self.Np,),dtype=float)*sp.nan  
- 
-            self._guess = x0
-            # Check value of maxiter
-            if maxiter is None:
-                maxiter = int(100)
-                source_mode = 'nonlinear'
-            else:
-                try:
-                    maxiter = int(maxiter)
-                except:
-                    raise Exception("input for maxiter is not an integer!")                
-                if maxiter>0:       source_mode = 'nonlinear'
-                elif maxiter==0:    source_mode = 'linear'            
-            # Check value of tol
-            if tol is None: tol = 1e-5
-            else:
-                try:
-                    tol = float(tol)
-                except:
-                    raise Exception("input for tol is not a float!")   
-                    
-            if 'pore.source_'+prop not in self.labels() or mode=='overwrite':            
-                self['pore.source_'+prop]= sp.zeros((self.Np,),dtype=bool)
-                self['pore.source_'+source_mode+'_s1_'+prop] = sp.ones((self.Np,),dtype=float)*sp.nan
-                self['pore.source_'+source_mode+'_s2_'+prop] = sp.ones((self.Np,),dtype=float)*sp.nan           
-            # Setting the source term for all the modes except 'remove'
-            if source_name is not None:   
-                matching_physics = [phys for phys in self._phase._physics if source_name in phys.props()]
-                for phys in matching_physics:
-                    phys.models[source_name]['x'] = x0
-                    phys.regenerate(source_name)
-                    loc = pores[sp.in1d(pores,phys.map_pores())]                    
-                    if mode=='merge':
-                        try:                            
-                            if sp.sum(sp.in1d(loc,self.pores('source_*')))>0:
-                                raise Exception('Because of the existing source term, the method cannot apply new source terms with the merge mode to the specified pores.')
-                        except KeyError: pass                    
-                    self['pore.source_'+prop][loc]= True                   
-                   
-                    # for modes in ['update','merge','overwrite']                    
-                    self['pore.source_'+source_mode+'_s1_'+prop][loc] = phys[source_name][:,0][sp.in1d(phys.map_pores(),pores)]
-                    self['pore.source_'+source_mode+'_s2_'+prop][loc] = phys[source_name][:,1][sp.in1d(phys.map_pores(),pores)]
-                    if not source_mode=='linear':
-                        self['pore.source_maxiter'][loc] = maxiter
-                        self['pore.source_tol'][loc] = tol
-            else: raise Exception('No source_name has been sent!')
-   
+                        try:
+                            maxiter = int(maxiter)
+                        except:
+                            raise Exception("input for maxiter is not an integer!")                
+                        if maxiter>0:       source_mode = 'nonlinear'
+                        elif maxiter==0:    source_mode = 'linear'            
+                    # Check value of tol
+                    if tol is None: tol = 1e-5
+                    else:
+                        try:
+                            tol = float(tol)
+                        except:
+                            raise Exception("input for tol is not a float!")   
+                            
+                    if 'pore.source_'+prop not in self.labels() or mode=='overwrite':            
+                        self['pore.source_'+prop]= sp.zeros((self.Np,),dtype=bool)
+                        self['pore.source_'+source_mode+'_s1_'+prop] = sp.ones((self.Np,),dtype=float)*sp.nan
+                        self['pore.source_'+source_mode+'_s2_'+prop] = sp.ones((self.Np,),dtype=float)*sp.nan           
+                    # Setting the source term for all the modes except 'remove'
+                    matching_physics = [phys for phys in self._phase._physics if source_name in phys.props()]
+                    for phys in matching_physics:
+                        phys.models[source_name]['x'] = x0
+                        phys.regenerate(source_name)
+                        loc = pores[sp.in1d(pores,phys.map_pores())]                    
+                        if mode=='merge':
+                            try:                            
+                                if sp.sum(sp.in1d(loc,self.pores(source_name)))>0:
+                                    raise Exception('Because of the existing source term, the method cannot apply new source terms with the merge mode to the specified pores.')
+                            except KeyError: pass                    
+                        self['pore.source_'+prop][loc]= True                   
+                       
+                        # for modes in ['update','merge','overwrite']   
+                        self['pore.source_'+source_mode+'_s1_'+prop][loc] = phys[source_name][:,0][sp.in1d(phys.map_pores(),pores)]
+                        self['pore.source_'+source_mode+'_s2_'+prop][loc] = phys[source_name][:,1][sp.in1d(phys.map_pores(),pores)]
+                        if not source_mode=='linear':
+                            self['pore.source_maxiter'][loc] = maxiter                                
+                            self['pore.source_tol'][loc] = tol                                
+        else:   Exception('No source_name has been sent for set_source_term method in the algorithm '+self.name)
+            
     def run(self,**kwargs):
         r'''
         This calls the setup method in the algorithm and then runs the outer iteration stage. 
@@ -247,7 +248,6 @@ class GenericLinearTransport(GenericAlgorithm):
             X = self._do_one_outer_iteration(**kwargs)
         else:
             X = self._do_one_inner_iteration(A,b,**kwargs)
-        
         self.X = X
         self._Neumann_super_X = self.X[-sp.in1d(sp.arange(0,self._coeff_dimension),self.pores())]
         #Removing the additional super pore variables from the results
@@ -297,7 +297,7 @@ class GenericLinearTransport(GenericAlgorithm):
         while t>self._tol_for_all and step<=self._maxiter_for_all:            
             X,t,A,b = self._do_inner_iteration_stage(guess=self._guess,**kwargs)
             logger.info("tol for Picard source_algorithm in step "+str(step)+" : "+str(t))
-            self._guess = X
+            self._guess = X            
             step += 1
         # Check for divergence
         self._steps = step
@@ -320,13 +320,13 @@ class GenericLinearTransport(GenericAlgorithm):
             if 'pore.source_' in label:
                 source_name = label.replace('pore.source_',"")
                 if  'pore.source_nonlinear_s1_'+source_name in self.props():
-                    tol =  sp.unique(self['pore.source_tol'][self.pores('source_'+source_name)])
-                    maxiter = sp.unique(self['pore.source_maxiter'][self.pores('source_'+source_name)])
+                    tol =  min(sp.unique(self['pore.source_tol'][self.pores('source_'+source_name)]))
+                    maxiter = max(sp.unique(self['pore.source_maxiter'][self.pores('source_'+source_name)]))
                     self.set_source_term(source_name=source_name,pores=self.pores(label),x0=guess,tol=tol,maxiter=maxiter,mode='update')                    
                     prop1 = 'pore.source_nonlinear_s1_'+source_name
-                    s1[-sp.isnan(self[prop1])] = self[prop1][-sp.isnan(self[prop1])]
+                    s1[-sp.isnan(self[prop1])] = s1[-sp.isnan(self[prop1])]+self[prop1][-sp.isnan(self[prop1])]
                     prop2 = 'pore.source_nonlinear_s2_'+source_name                
-                    s2[-sp.isnan(self[prop2])] = self[prop2][-sp.isnan(self[prop2])]
+                    s2[-sp.isnan(self[prop2])] = s2[-sp.isnan(self[prop2])]+self[prop2][-sp.isnan(self[prop2])]
 
         self.s1 = s1
         self.s2 = s2        
@@ -344,7 +344,6 @@ class GenericLinearTransport(GenericAlgorithm):
         X = self._do_one_inner_iteration(A=A,b=b,**kwargs)
         # Calculates absolute error
         t = sp.amax(sp.absolute(guess-X))
-        
         return X,t,A,b
 
     def return_results(self,pores=None,throats=None,**kwargs):
