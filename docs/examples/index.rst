@@ -17,4 +17,5 @@ Available Examples and Tutorials:
    mat_load.rst
    gostick_recreation.rst
    voronoi.rst
+   percolation.rst
    paraview.rst

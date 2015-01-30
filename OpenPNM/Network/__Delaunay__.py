@@ -13,7 +13,7 @@ import scipy.spatial as sptl
 import scipy.ndimage as spim
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 from scipy.spatial import Voronoi
 from scipy import stats as st
 from scipy.special import cbrt
@@ -30,12 +30,6 @@ class Delaunay(GenericNetwork):
     ----------
     name : string
         A unique name for the network
-
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-
-    loggername : string
-        Overwrite the name of the logger, which defaults to the class name
 
     Examples
     --------
@@ -253,16 +247,16 @@ class Delaunay(GenericNetwork):
         This finds surface pores simply by proximity to the domain boundaries.
         A better approach is necessary
         '''
-        coords = self.get_pore_data(prop='coords')
-        self.set_pore_info(label='front',locations=(coords[:,0]<(0.1*self._Lx)))
-        self.set_pore_info(label='back',locations=(coords[:,0]>(0.9*self._Lx)))
-        self.set_pore_info(label='left',locations=(coords[:,1]<(0.1*self._Ly)))
-        self.set_pore_info(label='right',locations=(coords[:,1]>(0.9*self._Ly)))
-        self.set_pore_info(label='bottom',locations=(coords[:,2]<(0.1*self._Lz)))
-        self.set_pore_info(label='top',locations=(coords[:,2]>(0.9*self._Lz)))
+        coords = self['pore.coords']
+        self['pore.front'] = coords[:,0]<(0.1*self._Lx)
+        self['pore.back'] = coords[:,0]>(0.9*self._Lx)
+        self['pore.left'] = coords[:,1]<(0.1*self._Ly)
+        self['pore.right'] = coords[:,1]>(0.9*self._Ly)
+        self['pore.bottom'] = coords[:,2]<(0.1*self._Lz)
+        self['pore.top'] = coords[:,2]>(0.9*self._Lz)
         bnds = self.pores(labels=['front','back','left','right','bottom','top'])
-        self.set_pore_info(label='boundary',locations=bnds)
-
+        self['pore.boundary'] = False
+        self['pore.boundary'] = bnds
 
     def _add_boundaries(self):
         r"""
@@ -284,7 +278,7 @@ class Delaunay(GenericNetwork):
         poffset[[2,5],0] = [-Lx, Lx]
         poffset[[3,4],1] = [-Ly, Ly]
         poffset[[1,6],2] = [-Lz, Lz]
-        pcoords = pcoords0 = self.get_pore_data(prop='coords')
+        pcoords = pcoords0 = self['pore.coords']
         for i in np.r_[1:7]:
             pcoords = np.concatenate((pcoords,pcoords0 + poffset[i,:]),axis=0)
 
@@ -308,7 +302,7 @@ class Delaunay(GenericNetwork):
             #Add periodic throats to the netowrk (if any)
             tpore2 = pnum[adjmat.rows[i]][ptype[adjmat.rows[i]]<0]
             tpore1 = np.ones_like(tpore2,dtype=int)*i
-            conns = self.get_throat_data(prop='conns')
+            conns = self['throat.conns']
             conns = np.concatenate((conns,np.vstack((tpore1,tpore2)).T),axis=0)
             #Add boundary pores and throats to the network
             newporetyps = np.unique(ptype[adjmat.rows[i]][ptype[adjmat.rows[i]]>0])
@@ -316,9 +310,9 @@ class Delaunay(GenericNetwork):
             tpore2 = newporenums
             tpore1 = np.ones_like(tpore2,dtype=int)*i
             conns = np.concatenate((conns,np.vstack((tpore1,tpore2)).T),axis=0)
-            self.set_throat_data(prop='conns',data=conns)
+            self['throat.conns'] = conns
             bcoords = np.zeros((7,3),dtype=float)
-            coords = self.get_pore_data(prop='coords')
+            coords = self['pore.coords']
             bcoords[1,:] = [coords[i,0], coords[i,1], 0-Lz*boffset]
             bcoords[2,:] = [0-Lx*boffset, coords[i,1], coords[i,2]]
             bcoords[3,:] = [coords[i,0], -Ly*boffset, coords[i,2]]
@@ -327,14 +321,14 @@ class Delaunay(GenericNetwork):
             bcoords[6,:] = [coords[i,0], coords[i,1], Lz+Lz*boffset]
             newporecoords = bcoords[newporetyps,:]
             coords = np.concatenate((coords,newporecoords),axis=0)
-            self.set_pore_data(prop='coords',data=coords)
+            self['pore.coords'] = coords
         #Reset number of pores and throats (easier than tracking it)
         nums = np.r_[0:np.shape(coords)[0]]
-        self.set_pore_data(prop='numbering',data=nums)
-        self.set_pore_info(label='numbering',locations=np.ones((nums[-1]+1,),dtype=bool))
+        self['pore.numbering'] = nums
+        self['pore.numbering'] = np.ones((nums[-1]+1,),dtype=bool)
         nums = np.r_[0:np.shape(conns)[0]]
-        self.set_throat_data(prop='numbering',data=nums)
-        self.set_throat_info(label='numbering',locations=np.ones((nums[-1]+1,),dtype=bool))
+        self['throat.numbering'] = nums
+        self['throat.numbering'] = np.ones((nums[-1]+1,),dtype=bool)
         logger.debug("add_boundaries: end of method")
 
     def _add_boundaries_old(self):
@@ -496,8 +490,6 @@ class Delaunay(GenericNetwork):
         >>> pn.add_boundaries()
         >>> pn.num_pores("boundary")>0
         True
-        >>> pn.num_pores("left_boundary") + pn.num_pores("right_boundary") + pn.num_pores("top_boundary") + pn.num_pores("bottom_boundary") + pn.num_pores("back_boundary") + pn.num_pores("front_boundary") == pn.num_pores("boundary")
-        True
         """
 
         bound_conns=[]
@@ -558,13 +550,20 @@ class Delaunay(GenericNetwork):
         bottom = self.pores()[self['pore.coords'][:,2]==min_point[2]]
         top = self.pores()[self['pore.coords'][:,2]==max_point[2]]
         #Assign labels
-        self.set_info(pores=new_pore_ids,label='boundary')
-        self.set_info(pores=right,label='right_boundary')
-        self.set_info(pores=left,label='left_boundary')
-        self.set_info(pores=front,label='front_boundary')
-        self.set_info(pores=back,label='back_boundary')
-        self.set_info(pores=top,label='top_boundary')
-        self.set_info(pores=bottom,label='bottom_boundary')
+        self['pore.boundary'] = False
+        self['pore.boundary'][new_pore_ids] = True
+        self['pore.right_boundary'] = False
+        self['pore.left_boundary'] = False
+        self['pore.front_boundary'] = False
+        self['pore.back_boundary'] = False
+        self['pore.top_boundary'] = False
+        self['pore.bottom_boundary'] = False
+        self['pore.right_boundary'][right] = True
+        self['pore.left_boundary'][left] = True
+        self['pore.front_boundary'][front] = True
+        self['pore.back_boundary'][back] = True
+        self['pore.top_boundary'][top] = True
+        self['pore.bottom_boundary'][bottom] = True
         #Save the throat verts
         self["pore.vert_index"][new_pore_ids] = bound_vert_index
         self["throat.vert_index"][new_throat_ids] = throat_vert_index
@@ -579,7 +578,6 @@ class Delaunay(GenericNetwork):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1])
-        >>> import OpenPNM.Utilities.vertexops as vo
         >>> pn.add_boundaries()
         >>> B1 = pn.pores("left_boundary")
         >>> B2 = pn.pores("right_boundary")

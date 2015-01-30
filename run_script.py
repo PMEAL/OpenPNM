@@ -1,6 +1,6 @@
 import OpenPNM
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
-
+from OpenPNM.Geometry import models as gm
 sim = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
@@ -14,7 +14,7 @@ pn.add_boundaries()
 Ps = pn.pores('boundary',mode='not')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
 geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
-
+geom.models.add(propname='throat.length',model=gm.throat_length.straight)
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
 boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
@@ -34,9 +34,9 @@ Ts = pn.throats()
 phys_water = OpenPNM.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts)
 phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
 #Add some additional models to phys_air
-phys_air.add_model(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion,
-                   propname='throat.gdiff_ac',
-                   pore_diffusivity='pore.Dac')
+phys_air.models.add(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion,
+                    propname='throat.gdiff_ac',
+                    pore_diffusivity='pore.Dac')
 
 #==============================================================================
 '''Begin Simulations'''
@@ -67,13 +67,13 @@ alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
 BC2_pores = pn.pores('left_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
 #Add new model to air's physics that accounts for water occupancy
-phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
-                   propname='throat.conduit_diffusive_conductance',
-                   throat_conductance='throat.diffusive_conductance',
-                   throat_occupancy='throat.occupancy',
-                   pore_occupancy='pore.occupancy',
-                   mode='strict',
-                   factor=0)
+phys_air.models.add(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+                    propname='throat.conduit_diffusive_conductance',
+                    throat_conductance='throat.diffusive_conductance',
+                    throat_occupancy='throat.occupancy',
+                    pore_occupancy='pore.occupancy',
+                    mode='strict',
+                    factor=0)
 #Use desired diffusive_conductance in the diffusion calculation (conductance for the dry network or water-filled network)
 alg.run(conductance='throat.diffusive_conductance')
 alg.return_results()

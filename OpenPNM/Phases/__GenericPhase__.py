@@ -7,7 +7,7 @@ module __GenericPhase__: Base class for building Phase objects
 """
 from OpenPNM.Base import Core
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 from OpenPNM.Network import GenericNetwork
 import OpenPNM.Phases.models
 import scipy as sp
@@ -100,10 +100,10 @@ class GenericPhase(Core):
                 self._phases.append(phase) # Associate any sub-phases with self
                 phase._phases.append(self)  # Associate self with sub-phases
                 #Add models for components to inherit mixture T and P
-                phase.add_model(propname='pore.temperature',model=OpenPNM.Phases.models.misc.mixture_value)
-                phase.add_model(propname='pore.pressure',model=OpenPNM.Phases.models.misc.mixture_value)
+                phase.models.add(propname='pore.temperature',model=OpenPNM.Phases.models.misc.mixture_value)
+                phase.models.add(propname='pore.pressure',model=OpenPNM.Phases.models.misc.mixture_value)
                 #Move T and P models to beginning of regeneration order
-                phase.reorder_models({'pore.temperature':0,'pore.pressure':1})
+                phase.models.reorder({'pore.temperature':0,'pore.pressure':1})
         elif mode == 'remove':
             if phase.name in self.phases():
                 self._phases.remove(phase)
@@ -111,14 +111,6 @@ class GenericPhase(Core):
             else:
                 logger.error('Phase not found')
                 pass
-
-    def regenerate(self,**kwargs):
-        for item in self._phases:
-            super(GenericPhase,item).regenerate(**kwargs)
-        super(GenericPhase,self).regenerate(**kwargs)
-
-    #Pull in doc string for the Core regenerate method
-    regenerate.__doc__ = Core.regenerate.__doc__
 
     def check_mixture_health(self):
         r'''

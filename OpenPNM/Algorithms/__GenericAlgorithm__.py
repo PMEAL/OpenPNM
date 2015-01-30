@@ -12,7 +12,7 @@ import scipy as sp
 from OpenPNM.Base import Core
 from OpenPNM.Base import logging
 from OpenPNM.Network import GenericNetwork
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class GenericAlgorithm(Core):
     r"""
@@ -84,7 +84,7 @@ class GenericAlgorithm(Core):
     def return_results(self,**kwargs):
         pass
 
-    def set_boundary_conditions(self,component=None,bctype='',bcvalue=None,pores=[],throats=[],mode='merge'):
+    def set_boundary_conditions(self,component=None,bctype='',bcvalue=None,pores=None,throats=None,mode='merge'):
         r'''
         Apply boundary conditions to specified pores or throats
 
@@ -128,11 +128,14 @@ class GenericAlgorithm(Core):
         else:
             if sp.size(component)!=1:
                 raise Exception('For using set_boundary_conditions method, only one component should be specified.')
+        
+        if mode not in ['merge','overwrite','remove']:
+            raise Exception('The mode ('+mode+') cannot be applied to the set_boundary_conditions!')
 
         logger.debug('BC applies to the component: '+component.name)
         #If mode is 'remove', also bypass checks
         if mode == 'remove':
-            if pores == [] and throats == []:
+            if pores is None and throats is None:
                 if bctype=='':
                     raise Exception('No bctype/pore/throat is specified')
                 else:
@@ -149,14 +152,14 @@ class GenericAlgorithm(Core):
                     logger.debug('Removing '+bctype+' from all locations for '+component.name+' in '+self.name)
                     self._existing_BC.remove(bctype)
             else:
-                if pores!=[]:
+                if pores is not None:
                     if bctype!='':
                         self['pore.'+component.name+'_bcval_'+bctype][pores] = sp.nan
                         self['pore.'+component.name+'_'+bctype][pores] = False
                         logger.debug('Removing '+bctype+' from the specified pores for '+component.name+' in '+self.name)
                     else:   raise Exception('Cannot remove BC from the pores unless bctype is specified')
 
-                if throats!=[]:
+                if throats is not None:
                     if bctype!='':
                         self['throat.'+component.name+'_bcval_'+bctype][throats] = sp.nan
                         self['throat.'+component.name+'_'+bctype][throats] = False
@@ -168,15 +171,15 @@ class GenericAlgorithm(Core):
         if bctype == '':
             raise Exception('bctype must be specified')
         #Validate pores/throats
-        if pores == [] and throats == []:
+        if pores is None and throats is None:
             raise Exception('pores/throats must be specified')
-        elif pores!=[] and throats!=[]:
+        elif pores is not None and throats is not None:
             raise Exception('BC for pores and throats must be specified independently')
-        elif  throats == []:
+        elif  throats is None:
             element ='pore'
             loc = sp.array(pores,ndmin=1)
             all_length = self.num_pores()
-        elif pores == []:
+        elif pores is None:
             element ='throat'
             loc = sp.array(throats,ndmin=1)
             all_length = self.num_throats()
@@ -228,5 +231,5 @@ class GenericAlgorithm(Core):
 if __name__ == '__main__':
     import OpenPNM
     pn = OpenPNM.Network.TestNet()
-    test = OpenPNM.Algorithms.GenericAlgorithm(network=pn,loglevel=10)
+    test = OpenPNM.Algorithms.GenericAlgorithm(network=pn)
     test.run()

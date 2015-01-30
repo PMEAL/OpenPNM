@@ -24,7 +24,7 @@ Ts = pn.throats()
 geo = OpenPNM.Geometry.Toray090(name='wu_geometry',network=pn,pores=Ps,throats=Ts)
 
 #code to run if boundaries was set to True
-#pn.generate(divisions = [n,n,2*n], add_boundaries= True, lattice_spacing = [Lc], loglevel = 30)
+#pn.generate(divisions = [n,n,2*n], add_boundaries= True, lattice_spacing = [Lc])
 #geo = OpenPNM.Geometry.GenericGeometry(name = 'wu_geometry', network = pn)
 #geo.set_locations(pores = pn.pores('internal'), throats = 'all')
 #boun = pn.add_geometry(subclass='Boundary',name='boun')
@@ -107,7 +107,7 @@ phys_air.regenerate()
 inlets = pn.get_pore_indices(labels = ['bottom']) #can put in brackets so the whole bottom of the lattice is considered 1 inlet
 outlets = pn.get_pore_indices(labels = ['top'])
 
-IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1',loglevel=30)
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1')
 IP_1.setup(invading_phase = water, defending_phase = air, inlets = inlets, outlets = outlets, end_condition = 'total')
 IP_1.run()
 
@@ -226,7 +226,7 @@ for x in range(20):
     inlets = pn.get_pore_indices(labels = ['bottom']) #can put in brackets so the whole bottom of the lattice is considered 1 inlet
     outlets = pn.get_pore_indices(labels = ['top'])
 
-    IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1',loglevel=30)
+    IP_1 = OpenPNM.Algorithms.InvasionPercolation(network = pn, name = 'OP_1')
     IP_1.setup(invading_phase = water, defending_phase = air, inlets = inlets, outlets = outlets, end_condition = 'total')
     IP_1.run()
 

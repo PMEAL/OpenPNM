@@ -17,23 +17,11 @@ from OpenPNM.Algorithms import GenericAlgorithm
 import OpenPNM.Network
 from OpenPNM.Base import logging
 import OpenPNM.Utilities.misc as misc
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class Tortuosity(GenericAlgorithm):
     r"""
     Determines the tortuosity of the network using a shortest path search algorithm.
-
-    Parameters
-    ----------
-
-    loglevel : integer, optional
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    loggername : string, optional
-        Set the name of the logger to be output on the console. Defaults to class name.
-
-    Note
-    ----
-    n/a
 
     """
 

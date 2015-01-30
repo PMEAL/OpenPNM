@@ -8,7 +8,7 @@ module __OhmicConduction__: Electronic or ionic conduction
 import scipy as sp
 from OpenPNM.Algorithms import GenericLinearTransport
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class OhmicConduction(GenericLinearTransport):
     r'''
@@ -23,7 +23,6 @@ class OhmicConduction(GenericLinearTransport):
     >>> pn = OpenPNM.Network.TestNet()
     >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
-    >>> phase1['pore.voltage'] = 1
     >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
     >>> phys1['throat.electrical_conductance'] = 1
     >>> alg = OpenPNM.Algorithms.OhmicConduction(network=pn, phase=phase1)

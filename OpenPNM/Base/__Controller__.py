@@ -7,6 +7,8 @@ import pickle as _pickle
 import copy as _copy
 import time
 import OpenPNM
+from OpenPNM.Base import logging
+logger = logging.getLogger()
 
 class Controller(dict):
     r"""
@@ -30,11 +32,50 @@ class Controller(dict):
     def __str__(self):
         header = ('-'*60)
         print(header)
+        print('Networks')
+        print(header)
         print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
         print(header)
-        for item in self.keys():
-            print("{a:<25s} {b:<25s}".format(a=self[item].__class__.__name__, b=item))
+        for item in self.network():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
+        print('Geometries')
+        print(header)
+        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        print(header)
+        for item in self.geometries():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
+        print('Phases')
+        print(header)
+        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        print(header)
+        for item in self.phases():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
+        print('Physics')
+        print(header)
+        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        print(header)
+        for item in self.physics():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
+        print('Algorithms')
+        print(header)
+        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        print(header)
+        for item in self.algorithms():
+            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+        print(header)
         return ''
+        
+    def _setloglevel(self,level):
+        logger.setLevel(level)
+    
+    def _getloglevel(self):
+        print('Log level is currently set to -->',logger.level)
+        
+    loglevel = property(fget=_getloglevel,fset=_setloglevel)
 
     def show_tree(self):
         r'''
@@ -102,42 +143,11 @@ class Controller(dict):
         This completely clears the Controller object's dict as expected, but
         also removes links to the Controller object in all simulation objects.
 
-        Notes
-        -----
-        When removing links in all simulation objects to the Controller it
-        replaces their ``simulation`` attribute with a standard ``dict``.  This
-        ``dict`` can be reassociated with a Controller object using ``update``,
-        which has been overloaded to do so.
         '''
-        temp = {}
         for item in self.keys():
-            self[item].simulation = temp
+            self[item]._sim = {}
         self.__dict__ = {}
         super(Controller,self).clear()
-
-    def update(self,dict_):
-        r'''
-        This is an overloaded version of the standard dict's ``update`` method.
-        It accepts a dictionary argument, which is injects into the Controller
-        object, but is also associates the Controller object with all simulation
-        objects that were in the received dict.
-
-        Parameters
-        ----------
-        dict_ : dictionary
-            A Python dictionary contain {key : value} pairs in the form of
-            {obj.name : obj}.
-
-        Notes
-        -----
-        When the ``clear`` method of a Controller object is called, it sets the
-        ``simulation`` attribute of all simulation objects to a standard
-        ``dict``.  The overloading of this method allows such a ``dict`` to be
-        reassociated with a Controller object.
-        '''
-        super(Controller,self).update(dict_)
-        for item in self.keys():
-            self[item]._sim = self
 
     def purge_object(self,obj):
         r'''
@@ -386,7 +396,7 @@ class Controller(dict):
 
     comments = property(fget=_get_comments,fset=_set_comments)
 
-    def subset(self,pores,name=None):
+    def _subset(self,pores,name=None):
         r'''
         Create a new network from a subset of the main network.  This is useful
         for running simulations on smaller domains of interest to save CPU
@@ -404,17 +414,7 @@ class Controller(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> sim = OpenPNM.Base.Controller()
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> [pn.Np, pn.Nt]
-        [125, 300]
-        >>> pn2 = sim.subset(pores=pn.pores(['top']))
-        >>> [pn2.Np, pn2.Nt]  # Subnet contains fewer pores and throats
-        [25, 40]
-        >>> pn2.map_pores(target=pn,pores=pn2.Ps)  # Mapping between subnet and parent is easy
-        array([100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
-               113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124])
+        None yet
         '''
         net = self.network()[0]  # Get Network handle
         self.clear()  # Clear Controller object
@@ -440,7 +440,7 @@ class Controller(dict):
         new_net._net = net
         return new_net
 
-    def clone_simulation(self):
+    def _clone_simulation(self):
         r'''
         This clones the current simulation objects and returns a dictionary
         containing handles to the clones.  This method does NOT return a new
@@ -448,7 +448,8 @@ class Controller(dict):
 
         See Also
         --------
-        ``subnet`` and ``clone_object``
+        subset
+        clone_object
 
         Notes
         -----
@@ -458,22 +459,7 @@ class Controller(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> sim = OpenPNM.Base.Controller()
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.__class__  # Check class of Network object
-        <class 'OpenPNM.Network.__TestNet__.TestNet'>
-        >>> new_sim = sim.clone_simulation()
-        >>> new_pn = new_sim[pn.name]  # Retreive Network from new_sim by name
-        >>> new_pn.__class__
-        <class 'OpenPNM.Network.__TestNet__.TestNet'>
-        >>> new_pn is pn
-        False
-
-        The use the new simulation over the older one, you must clear the
-        Controller object and then update it with the new simulation data:
-        >>> sim.clear()
-        >>> sim.update(new_sim)
+        None yet
         '''
         net = self.network()[0]
         temp = net.copy()  # Copy Network's dict

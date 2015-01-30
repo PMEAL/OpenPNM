@@ -8,12 +8,12 @@ r"""
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: OpenPNM.Base.Base
+.. autoclass:: OpenPNM.Base.Core
    :members:
    :undoc-members:
    :show-inheritance:
-
-.. autoclass:: OpenPNM.Base.Core
+   
+.. autoclass:: OpenPNM.Base.Tools
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,9 +23,10 @@ r"""
 import logging as logging
 # set up logging to file - see previous section for more details
 logging.basicConfig(level=logging.WARNING,
-                    format='%(asctime)s | %(levelname)-8s | %(name)s.%(module)s.%(funcName)s | %(message)s',
+                    format='%(asctime)s | %(levelname)-8s | %(name)s.%(funcName)s | %(message)s',
                     )
 
 from .__Controller__ import Controller
-from .__Base__ import Base
+from .__ModelsDict__ import ModelsDict
+from . import __Tools__ as Tools
 from .__Core__ import Core

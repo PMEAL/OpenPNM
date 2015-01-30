@@ -36,13 +36,13 @@ class Standard(GenericPhysics):
         for phase in self._phases:
             temp = [item.split('.')[1] for item in phase.props()]
             if 'viscosity' in temp:
-                self.add_model(propname='throat.hydraulic_conductance',
+                self.models.add(propname='throat.hydraulic_conductance',
                                model=pm.hydraulic_conductance.hagen_poiseuille)
             if 'diffusivity' in temp:
-                self.add_model(propname='throat.diffusive_conductance',
+                self.models.add(propname='throat.diffusive_conductance',
                                model=pm.diffusive_conductance.bulk_diffusion)
             if 'surface_tension' in temp:
-                self.add_model(propname='throat.capillary_pressure',
+                self.models.add(propname='throat.capillary_pressure',
                                model=pm.capillary_pressure.washburn)
 
 if __name__ == '__main__':

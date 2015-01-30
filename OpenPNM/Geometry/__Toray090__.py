@@ -14,11 +14,6 @@ class Toray090(GenericGeometry):
     r"""
     Toray090 subclass of GenericGeometry
 
-    Parameters
-    ----------
-    loglevel : int
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-
     """
 
     def __init__(self, **kwargs):
@@ -34,8 +29,8 @@ class Toray090(GenericGeometry):
         self.add_model(propname='pore.seed',
                        model=gm.pore_misc.random,
                        num_range=[0,0.95],
-                       seed=self._seed)
-        self.remove_model('pore.seed')
+                       seed=self._seed,
+                       regen_mode='constant')
         self.add_model(propname='throat.seed',
                        model=gm.throat_misc.neighbor,
                        pore_prop='pore.seed',

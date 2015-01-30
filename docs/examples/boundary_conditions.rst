@@ -61,7 +61,7 @@ All algorithms in OpenPNM are independent objects. The Fickian diffusion algorit
 
 .. code-block:: python
 
-	alg = OpenPNM.Algorithms.FickianDiffusion(network=pn, loglevel=20,phase=air)
+	alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
 
 -------------------------------------------------------------------------------
 Apply Dirichlet Conditions to Two Faces

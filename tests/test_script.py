@@ -3,6 +3,33 @@ import scipy as sp
 import OpenPNM
 import pytest
 
+def test_controller():
+    ctrl = OpenPNM.Base.Controller()
+    pn = OpenPNM.Network.TestNet()
+    geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
+    loc1 = geom.__repr__()
+    loc2 = ctrl[geom.name].__repr__()
+    assert loc1 == loc2
+    geom2 = ctrl.clone_object(geom)
+    loc3 = geom2.__repr__()
+    assert geom.__repr__() == loc1
+    assert loc3 != loc1
+    ctrl.save('test_net')
+    ctrl.clear()
+    assert ctrl.keys() == {}.keys()  # Empty dict
+    assert pn.simulation == {}  # Controller is now an empty dict
+    assert geom.simulation is pn.simulation  # Share a common dict
+    ctrl.load('test_net')
+    assert pn.name in ctrl.keys()  # Ensure loaded objects match originals
+    assert geom.name in ctrl.keys()
+    pn2 = ctrl.network()[0]  # Retrieve loaded Network from the Controller dict
+    assert pn is not pn2  # They have the same properties, but are different objects
+    geom2 = ctrl.geometries()[0]  # Retrieve Geometry from Controller
+    assert 'pore.'+geom2.name in pn2.keys()  # Confirm Geometry label is in Network
+    ctrl.purge_object(geom2)  # Purge Geometry from simulation
+    assert geom2.name not in ctrl.keys()  # Geometry is purges from Controller
+    assert 'pore.'+geom2.name not in pn2.keys()  # Geometry label is removed from Simulation objects too
+    
 def test_cubic_standard_call():
   pn = OpenPNM.Network.Cubic(shape=[3,4,5])
   np.testing.assert_almost_equal(pn['pore.coords'][0], [0.5,0.5,0.5])
@@ -101,7 +128,7 @@ def test_open_air_diffusivity():
     BC2_pores = pn.pores(labels=['bottom_boundary'])
     print('length =',round(pn.domain_length(BC1_pores,BC2_pores)))
     print('area = ',round(pn.domain_area(BC1_pores),2),round(pn.domain_area(BC2_pores),2))
-    Diff = OpenPNM.Algorithms.FickianDiffusion(loglevel=30, network=pn,phase=air)
+    Diff = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
     # Assign Dirichlet boundary conditions to top and bottom surface pores
     Diff.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
     Diff.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)

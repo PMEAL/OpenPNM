@@ -3,26 +3,49 @@
 Core:  Core Data Class
 ###############################################################################
 '''
-import pprint
-from functools import partial
+import pprint, string, random
 import scipy as sp
-from OpenPNM.Base import Base
-from OpenPNM.Base import logging
+import scipy.constants
+from OpenPNM.Base import logging, Tools
+from OpenPNM.Base import ModelsDict
 logger = logging.getLogger()
-from OpenPNM.Utilities import misc
+from OpenPNM.Base import Controller
+sim = Controller()
 
-
-class Core(Base):
+class Core(dict):
     r'''
     Contains OpenPNM specificmethods for working with the data in the dictionaries
     '''
-    def __init__(self, **kwargs):
+
+    def __new__(typ, *args, **kwargs):
+        obj = dict.__new__(typ, *args, **kwargs)
+        obj.update({'pore.all': sp.array([],ndmin=1,dtype=bool)})
+        obj.update({'throat.all': sp.array([],ndmin=1,dtype=bool)})
+        #Initialize phase, physics, and geometry tracking lists
+        obj._name = None
+        obj._sim = {}
+        obj._phases = []
+        obj._geometries = []
+        obj._physics = []
+        obj._net = None
+        #Initialize ordered dict for storing property models
+        obj.models = ModelsDict()
+        return obj    
+    
+    def __init__(self, name=None, **kwargs):
         r'''
         Initialize
         '''
-        super(Core,self).__init__(**kwargs)
-        logger.name = 'Core'
+        super(Core,self).__init__()
         logger.debug('Initializing Core class')
+        self.name = name
+        self.simulation = sim
+        
+    def __repr__(self):
+        return '<%s.%s object at %s>' % (
+        self.__class__.__module__,
+        self.__class__.__name__,
+        hex(id(self)))
 
     def __setitem__(self,key,value):
         r'''
@@ -49,565 +72,241 @@ class Core(Base):
         value = sp.array(value,ndmin=1)
         #Skip checks for 'coords', 'conns'
         if (key == 'pore.coords') or (key == 'throat.conns'):
-            super(Base, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key,value)
             return
         #Skip checks for protected props, and prevent changes if defined
         if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
                     logger.info(key+' is being defined.')
-                    super(Base, self).__setitem__(key,value)
+                    super(Core, self).__setitem__(key,value)
                 else:
                     logger.warning(key+' is already defined.')
                     pass
             else:
                 logger.debug(key+' is being defined.')
-                super(Base, self).__setitem__(key,value)
+                super(Core, self).__setitem__(key,value)
             return
         #Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
             logger.debug('Broadcasting scalar value into vector: '+key)
             value = sp.ones((self._count(element),),dtype=value.dtype)*value
-            super(Base, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key,value)
         elif sp.shape(value)[0] == self._count(element):
             logger.debug('Updating vector: '+key)
-            super(Base, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key,value)
         else:
             if self._count(element) == 0:
                 self.update({key:value})
             else:
                 logger.warning('Cannot write vector with an array of the wrong length: '+key)
                 pass
+            
+    def _set_sim(self,simulation):
+        if self.name in simulation.keys():
+            raise Exception('An object with that name is already present in simulation')
+        self._sim = simulation
+        simulation.update({self.name: self})
 
-    def add_model(self,propname,model,regen_mode='static',**kwargs):
+    def _get_sim(self):
+        return self._sim
+
+    simulation = property(_get_sim,_set_sim)
+
+    def _set_name(self,name):
+        if self._name is not None:
+            raise Exception('Renaming objects can have catastrophic consequences')
+        elif self._sim.get(name) is not None:
+            raise Exception('An object named '+name+' already exists')
+        elif name is None:
+            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+            name = self.__module__.split('.')[-1].strip('__') + '_' + name
+        self._name = name
+
+    def _get_name(self):
+        return self._name
+
+    name = property(_get_name,_set_name)
+    
+    def clear(self):
         r'''
-        Add specified property estimation model to the object.
+        A subclassed version of the standard dict's clear method
+        '''
+        pall = self['pore.all']
+        tall = self['throat.all']
+        super(Core,self).clear()
+        self.update({'throat.all':tall})
+        self.update({'pore.all':pall})
+        
+    #--------------------------------------------------------------------------
+    '''Model Manipulation Methods'''
+    #--------------------------------------------------------------------------
+    #Note: These methods have been moved to the ModelsDict class but are left
+    #here for backward compatibility
+    def add_model(self,propname,model,regen_mode='normal',**kwargs):
+        logger.warning('This method deprecated, use obj.models.add()')
+        self.models.add(propname=propname,model=model,regen_mode=regen_mode,**kwargs)
+        
+    add_model.__doc__ = ModelsDict.add.__doc__
+        
+    def regenerate(self,props='',mode='inclusive'):
+        logger.warning('This method is deprecated, use obj.models.regenerate()')
+        self.models.regenerate(props=props,mode=mode)
+
+    regenerate.__doc__ = ModelsDict.regenerate.__doc__
+    
+    #--------------------------------------------------------------------------
+    'Object lookup methods'
+    #--------------------------------------------------------------------------
+
+    def _find_object(self,obj_name='',obj_type=''):
+        r'''
+        Find objects associated with a given network model by name or type
 
         Parameters
         ----------
-        propname : string
-            The name of the property to use as dictionary key, such as
-            'pore.diameter' or 'throat.length'
+        obj_name : string
+           Name of sought object
 
-        model : function
-            The property estimation function to use
+        obj_type : string
+            The type of object beign sought.  Options are:
 
-        regen_mode : string
-            Controls when and if the property is regenerated. Options are:
+            1. 'Network' or 'Networks'
+            2. 'Geometry' or 'Geometries'
+            3. 'Phase' or 'Phases'
+            4. 'Physics'
 
-            * 'static' : The property is stored as static data and is only regenerated when the object's ``regenerate`` is called
+        Returns
+        -------
+        OpenPNM object or list of objects
 
-            * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
+        '''
+        if obj_name != '':
+            obj = []
+            if obj_name in sim.keys():
+                obj.append(sim[obj_name])
+            return obj[0]
+        elif obj_type != '':
+            if obj_type in ['Geometry','Geometries','geometry','geometries']:
+                objs = sim.geometries()
+            elif obj_type in ['Phase','Phases','phase','phases']:
+                objs = sim.phases()
+            elif obj_type in ['Physics','physics']:
+                objs = sim.physics()
+            elif obj_type in ['Network','Networks','network','networks']:
+                objs = sim.network()
+            return objs
 
-            * 'deferred' : The model is stored on the object but not run until ``regenerate`` is called
+    def physics(self,phys_name=[]):
+        r'''
+        Retrieves Physics associated with the object
 
-            * 'on_demand' : The model is stored on the object but not run, AND will only run if specifically requested in ``regenerate``
+        Parameters
+        ----------
+        name : string or list of strings, optional
+            The name(s) of the Physics object to retrieve
+        Returns
+        -------
+            If name is NOT provided, then a list of Physics names is returned.
+            If a name or list of names IS provided, then the Physics object(s)
+            with those name(s) is returned.
+        '''
+        # If arg given as string, convert to list
+        if type(phys_name) == str:
+            phys_name = [phys_name]
+        if phys_name == []:  # If default argument received
+            phys = [item.name for item in self._physics]
+        else:  # If list of names received
+            phys = []
+            for item in self._physics:
+                if item.name in phys_name:
+                    phys.append(item)
+        return phys
+
+    def phases(self,phase_name=[]):
+        r'''
+        Retrieves Phases associated with the object
+
+        Parameters
+        ----------
+        name : string or list of strings, optional
+            The name(s) of the Phase object(s) to retrieve.
+        Returns
+        -------
+            If name is NOT provided, then a list of phase names is returned. If
+            a name are provided, then a list containing the requested objects
+            is returned.
+        '''
+        # If arg given as string, convert to list
+        if type(phase_name) == str:
+            phase_name = [phase_name]
+        if phase_name == []:  # If default argument received
+            phase = [item.name for item in self._phases]
+        else:  # If list of names received
+            phase = []
+            for item in self._phases:
+                if item.name in phase_name:
+                    phase.append(item)
+        return phase
+
+    def geometries(self,geom_name=[]):
+        r'''
+        Retrieves Geometry object(s) associated with the object
+
+        Parameters
+        ----------
+        name : string or list of strings, optional
+            The name(s) of the Geometry object to retrieve.
+        Returns
+        -------
+            If name is NOT provided, then a list of Geometry names is returned.
+            If a name IS provided, then the Geometry object of that name is
+            returned.
+        '''
+        # If arg given as string, convert to list
+        if type(geom_name) == str:
+            geom_name = [geom_name]
+        if geom_name == []:  # If default argument received
+            geom = [item.name for item in self._geometries]
+        else:  # If list of names received
+            geom = []
+            for item in self._geometries:
+                if item.name in geom_name:
+                    geom.append(item)
+        return geom
+
+    def network(self,name=''):
+        r'''
+        Retrieves the network associated with the object.  If the object is
+        a network, then it returns the parent network from which the present
+        object derives, or returns an empty list if it has no parents.
+
+        Parameters
+        ----------
+        name : string, optional
+            The name of the Geometry object to retrieve.
+
+        Returns
+        -------
+            If name is NOT provided, then the name of the parent is returned.
+            If a name IS provided, then the parent netowrk object is returned.
 
         Notes
         -----
-        This method is inherited by all net/geom/phys/phase objects.  It takes
-        the received model and stores it on the object under private dictionary
-        called _models.  This dict is an 'OrderedDict', so that the models can
-        be run in the same order they are added.
-
-        See Also
-        --------
-        ``reorder_models`` , ``inspect_model`` , ``amend_model`` , ``remove_model``
-
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn)
-        >>> import OpenPNM.Geometry.models as gm
-        >>> f = gm.pore_misc.random  # Get model from Geometry library
-        >>> geom.add_model(propname='pore.seed',model=f)
-        >>> list(geom._models.keys())  # Look in private dict to verify model was added
-        ['pore.seed']
-
+        This doesn't quite work yet...we have to decide how to treat sub-nets first
         '''
-        #Determine object type, and assign associated objects
-        self_type = [item.__name__ for item in self.__class__.__mro__]
-        network = None
-        phase = None
-        geometry = None
-        physics = None
-        if 'GenericGeometry' in self_type:
-            network = self._net
-            geometry = self
-        elif 'GenericPhase' in self_type:
-            network = self._net
-            phase = self
-        elif 'GenericPhysics' in self_type:
-            network = self._net
-            phase = self._phases[0]
-            physics = self
+        if name == '':
+            try:
+                net = self._net.name
+            except:
+                net = []
         else:
-            network = self
-        #Build partial function from given kwargs
-        fn = partial(model,propname=propname,network=network,phase=phase,geometry=geometry,physics=physics,regen_mode=regen_mode,**kwargs)
-        if regen_mode == 'static':
-            self[propname] = fn()  # Generate data and store it locally
-            self._models[propname] = fn  # Store model in a private attribute
-        if regen_mode == 'constant':
-             self[propname] = fn()  # Generate data and store it locally
-        if regen_mode in ['deferred','on_demand']:
-            self._models[propname] = fn  # Store model in a private attribute
-
-    def amend_model(self,propname,**kwargs):
-        r'''
-        Change the parameters associated with a model
-
-        Parameters
-        ----------
-        propname : string
-            The name of the property model to be updated
-
-        kwargs : key|value pairs
-            The arguments sent to the model should be the same variable names
-            already associated with the model
-
-        See Also
-        --------
-        ``add_models`` , ``inspect_model`` , ``remove_model`` , ``reorder_models``
-        '''
-        f = self._models[propname]
-        # Check to ensure that all kwargs are actually in model
-        if all([key in f.keywords.keys() for key in kwargs]):
-            f.keywords.update(kwargs)
-        else:
-            logger.error('Supplied keyword arguments do not exist in model')
-
-    def inspect_model(self,propname):
-        r'''
-
-        See Also
-        --------
-        ``add_models`` , ``amend_model`` , ``remove_model`` , ``reorder_models``
-        '''
-        f = self._models[propname]
-        header = '-'*60
-        print(header)
-        print(f.func.__module__+'.'+f.func.__name__)
-        print(header)
-        print("{a:<20s} {b}".format(a='Variable Name',b='Value'))
-        print(header)
-        for item in f.keywords.keys():
-            if item not in ['network','geometry','phase','physics','propname']:
-                print("{a:<20s} {b}".format(a=item, b=f.keywords[item]))
-        print(header)
-
-    def remove_model(self,propname,mode='model'):
-        r'''
-        Remove pore scale property models from current object.
-
-        Parameters
-        ----------
-        propname : string
-            The property name for which the model should be removed
-
-        mode : string, optional
-            To delete the model AND the associated property data, this mode
-            should be set to 'clear'.
-
-        See Also
-        --------
-        ``add_models`` , ``inspect_model`` , ``amend_model`` , ``reorder_models``
-
-        '''
-        self._models.pop(propname,None)
-        if mode == 'clear':
-            self.pop(propname,None)
-
-    def reorder_models(self,new_order):
-        r'''
-        Reorders the models on the object to change the order in which they
-        are regenerated, where item 0 is calculated first.
-
-        Parameters
-        ----------
-        new_order : dict
-            A dictionary containing the model name(s) as the key, and the
-            location(s) in the new order as the value
-
-        Notes
-        -----
-        The new order is calculated by removing the supplied models from the
-        old list, then inserting them in the locations given.
-
-        See Also
-        --------
-        ``add_models``,``inspect_model``,``amend_model``,``remove_model``
-
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> air = OpenPNM.Phases.Air(network=pn)
-        >>> list(air._models.keys())
-        ['pore.density', 'pore.molar_density', 'pore.thermal_conductivity', 'pore.viscosity']
-        >>> new_order = {}
-        >>> new_order['pore.molar_density'] = 0  # Put at beginning
-        >>> new_order['pore.density'] = 100  # Put at end for sure
-        >>> air.reorder_models(new_order)
-        >>> list(air._models.keys())
-        ['pore.molar_density', 'pore.thermal_conductivity', 'pore.viscosity', 'pore.density']
-
-        '''
-        #Check no duplicate or invalid locations
-        locs = sp.unique(new_order.values())[0]
-        if len(locs) < len(new_order.values()):
-            raise Exception('Duplicates found in the order')
-
-        #Generate numbered list of current models
-        order = [item for item in list(self._models.keys())]
-        #Remove supplied models from list
-        for item in new_order:
-            order.remove(item)
-        #Add models back to list in new order
-        inv_dict = {v: k for k, v in new_order.items()}
-        for item in inv_dict:
-            order.insert(item,inv_dict[item])
-        #Now rebuild _models OrderedDict in new order
-        temp = self._models.copy()
-        self._models.clear()
-        for item in order:
-            self._models[item] = temp[item]
-
-    def regenerate(self, props='',mode='inclusive'):
-        r'''
-        This updates properties using any models on the object that were
-        assigned using ``add_model``
-
-        Parameters
-        ----------
-        props : string or list of strings
-            The names of the properties that should be updated, defaults to 'all'
-        mode : string
-            This controls which props are regenerated and how.  Options are:
-
-            * 'inclusive': (default) This regenerates all given properties
-            * 'exclude': This generates all given properties EXCEPT the given ones
-
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
-        >>> geom['pore.diameter'] = 1
-        >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
-        >>> f = gm.pore_area.cubic
-        >>> geom.add_model(propname='pore.area',model=f)  # Add model to Geometry object
-        >>> geom['pore.area'][0]  # Look at area value in pore 0
-        1
-        >>> geom['pore.diameter'] = 2
-        >>> geom.regenerate()  # Regenerate all models
-        >>> geom['pore.area'][0]  # Look at pore area calculated with new diameter
-        4
-
-        '''
-        if props == '':  # If empty, assume all models are to be regenerated
-            props = list(self._models.keys())
-            for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only
-                if self._models[item].keywords.get('regen_mode') == 'on_demand':
-                    props.remove(item)
-        elif type(props) == str:
-            props = [props]
-        if mode == 'exclude':
-            temp = list(self._models.keys())
-            for item in props:
-                temp.remove(item)
-            props = temp
-        logger.info('Models are being recalculated in the following order: ')
-        count = 0
-        for item in props:
-            if item in self._models.keys():
-                self[item] = self._models[item]()
-                logger.info(str(count)+' : '+item)
-                count += 1
-            else:
-                logger.warning('Requested proptery is not a dynamic model: '+item)
-
+            net = self._net
+        return net
 
     #--------------------------------------------------------------------------
-    '''Setter and Getter Methods'''
+    '''Data Query Methods'''
     #--------------------------------------------------------------------------
-    def set_data(self,pores=None,throats=None,prop='',data='',mode='merge'):
-        r'''
-        Write data according to input arguments.
-
-        Parameters
-        ----------
-        prop : string
-            Name of property to retrieve.
-        pores : array_like, or string 'all'
-            List of pore indices to which data will be written.
-        throats : array_like, or string 'all'
-            List of throat indices to which data will be written.
-
-        data: array_like
-
-        mode : string
-            Set the mode to be used for writing data to the specified indices.  Options are:
-
-            * 'merge' : (default) Adds data to specified locations while maintaining pre-existing data
-
-            * 'overwrite' : Adds data to specified locations while removing all pre-existing data
-
-            * 'remove_data' : Removes data from specified locations.
-
-            * 'remove_prop' : Removes property key from the dictionary of the object
-
-        '''
-
-        if mode in ['merge','overwrite','remove_data','remove_prop']:
-            #Checking for the indices
-            data= sp.array(data,ndmin=1)
-            if pores is not None:
-                if pores == 'all':  pores = self.pores()
-                else:   pores = sp.array(pores,ndmin=1)
-                element='pore'
-                locations = pores
-            elif throats is not None:
-                if throats == 'all':    throats = self.throats()
-                else:   throats = sp.array(throats,ndmin=1)
-                element='throat'
-                locations = throats
-            elif throats==None and pores==None:
-                logger.error('No pores or throats have been received!')
-                raise Exception()
-            if prop.split('.')[0] == element:
-                prop = prop.split('.')[1]
-            if mode=='remove_data':
-                if data=='':
-                    try:
-                        self[element+'.'+prop]
-                        self[element+'.'+prop][locations] = sp.nan
-                        logger.debug('For the '+element+' property '+prop+', the specified data have been deleted in '+self.name)
-                    except:
-                        pass
-                        logger.error(element+' property '+prop+' in '+self.name+' has not been defined. Therefore, no data can be removed!')
-                else:
-                    logger.error('For the '+element+' property '+prop+' in '+self.name+': The (remove_data) mode, will remove data from the specified locations. No data should be sent!')
-                    raise Exception()
-            elif mode=='remove_prop':
-                if data=='':
-                    del self[element+'.'+prop]
-                    logger.debug(element+' property '+prop+' has been deleted from the dictionary in '+self.name)
-                else:
-                    logger.error('For the property '+prop+' in '+self.name+': The (remove_prop) mode, will remove the property from the dictionary. No data should be sent!')
-                    raise Exception()
-            else:
-                if data.ndim > 1: data = data.squeeze()
-                try:
-                    self[element+'.'+prop]
-                    temp_word = 'updated for '
-                except: temp_word = 'added to '
-                if sp.shape(data)[0]==1 or sp.shape(locations)[0]==sp.shape(data)[0]:
-                    try:
-                        self[element+'.'+prop]
-                        if mode=='overwrite':
-                            self[element+'.'+prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
-                    except: self[element+'.'+prop] = sp.zeros((getattr(self,'num_'+element+'s')(),))*sp.nan
-                    self[element+'.'+prop][locations] = data
-                    logger.debug(element+' property '+prop+' has been '+temp_word+self.name)
-
-                else:
-                    logger.error('For adding '+element+' property '+prop+' to '+self.name+', data can be scalar or should have the same size as the locations!')
-                    raise Exception()
-        else:
-            pass
-            logger.error('For adding '+element+' property '+prop+' to '+self.name+', the mode '+mode+' cannot be applied!')
-
-
-    def get_data(self,pores=None,throats=None,prop='',mode=''):
-        r'''
-        Retrieves data from the object to which it is associated according to
-        input arguments.
-
-        Parameters
-        ----------
-        prop : string
-            Name of property to retrieve
-        pores : array_like, or string 'all'
-            List of pore indices from which to retrieve data.  If set to 'all',
-            then ALL values are returned
-        throats : array_like, or string 'all'
-            List of throat indies from which to retrieve data.  If set to 'all'
-            , then ALL values are returned.
-        mode : string
-            Set the mode to be used for getting data from the specified indices.  Options are:
-
-            * '' : (default) gets data from the specified locations.
-
-            * 'interpolate': Determines a pore (or throat) property as the average of it's neighboring throats (or pores)
-
-        '''
-
-        if mode in ['','interpolate']:
-            if pores is not None:
-                if pores == 'all':  pores = self.pores()
-                else:   pores = sp.array(pores,ndmin=1)
-                element='pore'
-                locations = pores
-            elif throats is not None:
-                if throats == 'all':    throats = self.throats()
-                else:   throats = sp.array(throats,ndmin=1)
-                element='throat'
-                locations = throats
-            elif throats==None and pores==None:
-                logger.error('No pores or throats have been received!')
-                raise Exception('No pores/throats have been sent!')
-            if prop.split('.')[0] in ['pore','throat']:
-                if prop.split('.')[0]==element:
-                    prop = prop.split('.')[1]
-                else:
-                    raise Exception('Wrong property has been sent for the locations! Pore property can only be returned for pore indices. The same applies to the throats.')
-
-            if mode=='interpolate':
-                if element == 'pore':
-                    try:
-                        self['throat.'+prop]
-                    except:
-                        logger.error('For getting pore property using interpolate mode in '+self.name+' : throat property '+prop+' has not been found!')
-                        raise Exception('throat data for the property not found!')
-                    return self.interpolate_data(self['throat.'+prop])[locations]
-                elif element=='throat':
-                    try:
-                        self['pore.'+prop]
-                    except:
-                        logger.error('For getting throat property using interpolate mode in '+self.name+' : pore property '+prop+' has not been found!')
-                        raise Exception('pore data for the property not found!')
-                    return self.interpolate_data(self['pore.'+prop])[locations]
-            else:
-                try:
-                    self[element+'.'+prop]
-                except:
-                    logger.error(element+' property '+prop+' does not exist for '+self.name)
-                    raise Exception('No data found for the property!')
-                try:
-                    return self[element+'.'+prop][locations]
-                except:
-                    pass
-                    logger.error('In '+self.name+', data for '+element+' property '+prop+' in these locations cannot be returned.')
-
-        else:
-            logger.error('For getting property: '+prop+' in '+self.name+', the mode '+mode+' cannot be applied!')
-            pass
-
-
-    def set_info(self,pores=None,throats=None,label='',mode='merge'):
-        r'''
-        Apply a label to a selection of pores or throats
-
-        Parameters
-        ----------
-        label : string
-            The name of the pore labels you wish to apply (e.g. 'top')
-        pores or throats : array_like
-            An array containing the pore (or throat) indices where the labels
-            should be applied.  Can be either a boolean mask of Np length with
-            True at labels locations (default), a list of indices where labels
-            should be applied.
-        mode : string
-            Set the mode to be used for writing labels.  Options are:
-
-            * 'merge' : (default) Adds label to specified locations while maintaining pre-existing labels
-            * 'overwrite' : Adds label to specified locations while removing all pre-existing labels
-            * 'remove_info' : Removes label from the specified locations.
-            * 'remove_label' : Removes the entire label from the dictionary of the object
-
-        '''
-        if mode in ['merge','overwrite','remove_info','remove_label']:
-            if pores is not None:
-                if pores == 'all':  pores = self.pores()
-                else:   pores = sp.array(pores,ndmin=1)
-                element='pore'
-                locations = pores
-            elif throats is not None:
-                if throats == 'all':    throats = self.throats()
-                else:   throats = sp.array(throats,ndmin=1)
-                element='throat'
-                locations = throats
-            elif throats==None and pores==None:
-                logger.error('No pores or throats have been received!')
-                raise Exception()
-            locations = sp.array(locations,ndmin=1)
-            if label:
-                if label.split('.')[0] == element:
-                    label = label.split('.')[1]
-                if label=='all':
-                    try:
-                        old_label = self[element+'.'+label]
-                        if sp.shape(old_label)[0]<sp.shape(locations)[0]:
-                            self[element+'.'+label] = sp.ones_like(locations,dtype=bool)
-                            logger.info('label=all for '+element+'has been updated to a bigger size!')
-                            for info_labels in getattr(self,'labels')():
-                                if info_labels.split('.')[0] == element:
-                                    info_labels = info_labels.split('.')[1]
-                                if info_labels!=label:
-                                    temp = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
-                                    temp[old_label] = self[element+'.'+info_labels]
-                                    self[element+'.'+info_labels] = temp
-                        elif sp.shape(old_label)[0]>sp.shape(locations)[0]:
-                            logger.error('To apply a new numbering label (label=all) to '+element+'s, size of the locations cannot be less than total number of '+element+'s!!')
-                            pass
-                    except: self[element+'.'+label] = sp.ones_like(locations,dtype=bool)
-                else:
-                    try: self[element+'.'+label]
-                    except: self[element+'.'+label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
-                    if mode=='overwrite':
-                        self[element+'.'+label] = sp.zeros((getattr(self,'num_'+element+'s')(),),dtype=bool)
-                        self[element+'.'+label][locations] = True
-                    elif mode=='remove_info':  self[element+'.'+label][locations] = False
-                    elif mode=='merge':  self[element+'.'+label][locations] = True
-                    elif mode=='remove_label':  del self[element+'.'+label]
-            else:
-                logger.error('No label has been defined for these locations.')
-                pass
-
-        else:
-            logger.error('For setting '+element+' '+label+' to '+self.name+', the mode '+mode+' cannot be applied!')
-            pass
-
-
-    def get_info(self,pores=None,throats=None,label=''):
-        r'''
-        Retrieves the locations where the specified label is applied
-
-        Parameters
-        ----------
-        label : string
-            Label of interest
-        pores (or throats) : array_like
-            List of pores or throats
-
-        See Also
-        --------
-        labels
-
-        '''
-        #Clean up label argument to remove leading 'pore' or 'throat'
-        if pores is not None:
-            if pores == 'all':  pores = self.pores()
-            else:   pores = sp.array(pores,ndmin=1)
-            element='pore'
-            locations = pores
-        elif throats is not None:
-            if throats == 'all':    throats = self.throats()
-            else:   throats = sp.array(throats,ndmin=1)
-            element='throat'
-            locations = throats
-
-        elif throats==None and pores==None:
-            logger.error('No pores or throats have been received!')
-            raise Exception()
-        if label.split('.')[0] == element:
-            label = label.split('.')[1]
-
-        temp = self[element+'.'+label]
-        return temp[locations]
-
     def props(self,element='',mode='all'):
         r'''
         Returns a list containing the names of all defined pore or throat
@@ -634,7 +333,7 @@ class Core(Base):
 
         See Also
         --------
-        ``labels``
+        labels
 
         Examples
         --------
@@ -653,7 +352,7 @@ class Core(Base):
             if self[item].dtype != bool:
                 props.append(item)
 
-        all_models = list(self._models.keys())
+        all_models = list(self.models.keys())
         constants = [item for item in props if item not in all_models]
         models = [item for item in props if item in all_models]
 
@@ -672,7 +371,7 @@ class Core(Base):
         elif mode == 'constants':
             if element == '': temp = constants
             else: temp = [item for item in constants if item.split('.')[0]==element]
-        return misc.PrintableList(temp)
+        return Tools.PrintableList(temp)
 
 
     def _get_labels(self,element='',locations=[],mode='union'):
@@ -688,7 +387,7 @@ class Core(Base):
                     labels.append(item)
         labels.sort()
         if locations == []:
-            return misc.PrintableList(labels)
+            return Tools.PrintableList(labels)
         else:
             labels = sp.array(labels)
             locations = sp.array(locations,ndmin=1)
@@ -706,15 +405,15 @@ class Core(Base):
             if mode == 'union':
                 temp = labels[sp.sum(arr,axis=0)>0]
                 temp.tolist()
-                return misc.PrintableList(temp)
+                return Tools.PrintableList(temp)
             if mode == 'intersection':
                 temp = labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
                 temp.tolist()
-                return misc.PrintableList(temp)
+                return Tools.PrintableList(temp)
             if mode in ['difference', 'not']:
                 temp = labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
                 temp.tolist()
-                return misc.PrintableList(temp)
+                return Tools.PrintableList(temp)
             if mode == 'mask':
                 return arr
             if mode == 'none':
@@ -807,14 +506,18 @@ class Core(Base):
 
         See Also
         --------
-        ``pores``, ``throats``
+        pores
+        throats
 
         Examples
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.filter_by_label(pores=[0,1,5,6],label='left')
+        >>> pn.filter_by_label(pores=[0,1,5,6],labels='left')
         array([0, 1])
+        >>> Ps = pn.pores(['top','bottom','front'],mode='union')
+        >>> pn.filter_by_label(pores=Ps,labels=['top','front'],mode='intersection')
+        array([100, 105, 110, 115, 120])
         '''
         if type(labels) == str:  # Convert input to list
             labels = [labels]
@@ -1248,7 +951,8 @@ class Core(Base):
 
         See Also
         --------
-        num_throats, count
+        num_throats
+        count
 
         Examples
         --------
@@ -1311,7 +1015,8 @@ class Core(Base):
 
         See Also
         --------
-        num_pores, count
+        num_pores
+        count
 
         Examples
         --------
@@ -1364,7 +1069,8 @@ class Core(Base):
 
         See Also
         --------
-        num_pores, num_throats
+        num_pores
+        num_throats
 
         Notes
         -----
@@ -1549,12 +1255,17 @@ class Core(Base):
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> health = pn.check_data_health()
-        {'pore.coords': 'Healthy', 'throat.conns': 'Healthy'}
+        ------------------------------------------------------------
+        key                       value                    
+        ------------------------------------------------------------
+        throat.conns              Healthy                  
+        pore.coords               Healthy                  
+        ------------------------------------------------------------
         >>> health
         True
 
         '''
-        health = {}
+        health = Tools.PrintableDict()
         if props == []:
             props = self.props(element)
         else:
@@ -1571,7 +1282,7 @@ class Core(Base):
                 health[item] = 'Does not exist'
         #Print health dictionary to console
         if quiet == False:
-            pprint.pprint(health)
+            print(health)
         #Return single flag indicating overall health
         flag = True
         for item in health:

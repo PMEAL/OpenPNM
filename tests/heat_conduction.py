@@ -9,7 +9,7 @@ from OpenPNM.Physics import models as pm
 #==============================================================================
 divs = [10,50]
 Lc   = 0.1  # cm
-pn = OpenPNM.Network.Cubic(name='net', shape= divs, spacing = Lc, loglevel=20)
+pn = OpenPNM.Network.Cubic(name='net', shape= divs, spacing = Lc)
 pn.add_boundaries()
 #Trim z-direction boundaries
 Ps = pn.pores(['top_boundary','bottom_boundary'])
@@ -20,21 +20,21 @@ pn.trim(pores=Ps)
 #==============================================================================
 Ps = pn.pores('internal')
 Ts = pn.throats()
-geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts,name='geom',loglevel=20)
+geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts,name='geom')
 geom['pore.area']     = Lc**2
 geom['pore.diameter'] = Lc
 geom['throat.length'] = 1e-25
 geom['throat.area']   = Lc**2
 
 Ps = pn.pores('boundary')
-boun = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,name='boundary',loglevel=20)
+boun = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,name='boundary')
 boun['pore.area']     = Lc**2
 boun['pore.diameter'] =  1e-25
 
 #==============================================================================
 '''Build Material'''
 #==============================================================================
-Cu = OpenPNM.Phases.GenericPhase(network=pn,name='copper',loglevel=20)
+Cu = OpenPNM.Phases.GenericPhase(network=pn,name='copper')
 Cu['pore.thermal_conductivity'] = 1.0  # W/m.K
 
 #==============================================================================
@@ -42,14 +42,14 @@ Cu['pore.thermal_conductivity'] = 1.0  # W/m.K
 #==============================================================================
 Ps = pn.pores()
 Ts = pn.throats()
-phys = OpenPNM.Physics.GenericPhysics(network=pn,phase=Cu,pores=Ps,throats=Ts,loglevel=10)
+phys = OpenPNM.Physics.GenericPhysics(network=pn,phase=Cu,pores=Ps,throats=Ts)
 phys.add_model(propname='throat.thermal_conductance',
                model=pm.thermal_conductance.series_resistors)
 
 #==============================================================================
 '''Run Algorithms'''
 #==============================================================================
-Fourier_alg = OpenPNM.Algorithms.FourierConduction(network=pn,phase=Cu,loglevel=10)
+Fourier_alg = OpenPNM.Algorithms.FourierConduction(network=pn,phase=Cu)
 inlets = pn.pores('back_boundary')
 outlets = pn.pores(['front_boundary','left_boundary','right_boundary'])
 T_out = 50  # Kelvin

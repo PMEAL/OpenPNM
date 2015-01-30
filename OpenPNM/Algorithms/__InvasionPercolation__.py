@@ -11,7 +11,7 @@ import heapq
 from OpenPNM.Utilities import misc
 from OpenPNM.Algorithms import GenericAlgorithm
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class InvasionPercolation(GenericAlgorithm):
@@ -250,7 +250,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._pseq += 1
         self._current_cluster = 0
         # Calculate the distance between the inlet and outlet pores
-        self._outlet_position = np.average(self._net.get_data(prop='coords',pores='all')[self._outlets],0)
+        self._outlet_position = np.average(self._net['pore.coords'][self._outlets],0)
         if any([sp.shape(i) > () for i in self._inlets]):
             inlets = []
             for i in self._inlets:
@@ -258,7 +258,7 @@ class InvasionPercolation(GenericAlgorithm):
             inlets = sp.array(inlets,int)
         else:
             inlets = self._inlets
-        inlet_position = np.average(self._net.get_data(prop='coords',pores='all')[inlets],0)
+        inlet_position = np.average(self._net['pore.coords'][inlets],0)
         dist_sqrd = (self._outlet_position-inlet_position)*(self._outlet_position-inlet_position)
         self._initial_distance = np.sqrt(dist_sqrd[0]+dist_sqrd[1]+dist_sqrd[2])
         logger.debug( 'initial distance')
@@ -467,7 +467,7 @@ class InvasionPercolation(GenericAlgorithm):
             logger.debug('the other pore is one of: ')
             logger.debug(Pores)
             logger.debug( 'position: ')
-            logger.debug(self._net.get_data(prop='coords',pores='all')[self._NewPore])
+            logger.debug(self._net['pore.coords'][self._NewPore])
             # label that pore as invaded
             self['pore.cluster_final'][self._NewPore] = self._current_cluster
             self['pore.cluster_original'][self._NewPore] = self._current_cluster
@@ -489,7 +489,7 @@ class InvasionPercolation(GenericAlgorithm):
                     logger.debug('connecting pores:')
                     logger.debug(self._net.find_connected_pores(j))
                     # Add this throat data (pressure, number) to this cluster's "heap" of throat data.
-                    heapq.heappush(self._tpoints[self._current_cluster-1],(self._phase.get_data(prop=self._capillary_pressure_name,throats='all')[j],j))
+                    heapq.heappush(self._tpoints[self._current_cluster-1],(self._phase['throat.'+self._capillary_pressure_name][j],j))
                     # Add new throat number to throat list for this cluster
                     self._tlists[self._current_cluster-1].append(j)
                     if self._timing:
@@ -532,7 +532,7 @@ class InvasionPercolation(GenericAlgorithm):
     def _condition_update(self):
          # Calculate the distance between the new pore and outlet pores
         if self._end_condition == 'breakthrough':
-            newpore_position = self._net.get_data(prop='coords',pores='all')[self._NewPore]
+            newpore_position = self._net['pore.coords'][self._NewPore]
             dist_sqrd = (self._outlet_position-newpore_position)*(self._outlet_position-newpore_position)
             if dist_sqrd[0].shape==(3,):     # need to do this for MatFile networks because newpore_position is a nested array, not a vector (?)
                 dist_sqrd = dist_sqrd[0]

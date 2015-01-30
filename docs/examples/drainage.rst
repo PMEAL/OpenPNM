@@ -66,7 +66,7 @@ At this point, the system is fully defined and ready to perform some simulations
 
 .. code-block:: python
 
-	OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,loglevel=20)
+	OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn)
 
 Before performing simulations with this algorithm it is necessary to specify the desired experimental parameters in the ``run()`` command:
 

@@ -9,7 +9,105 @@ import numpy as np
 from scipy.spatial import Delaunay
 from scipy.spatial import ConvexHull
 import OpenPNM.Utilities.misc as misc
+from multiprocessing import Pool
+from scipy import ndimage
 
+def _get_voxel_volume(chunk_data):
+    r"""
+    Calculate the volume by divinding space into voxels, working out nearest neighours to get hulls
+    Then performing distance transform on fibre voxels calculated from bresenham line function
+    """
+    network,cpores,vox_len,fibre_rad,verts = chunk_data
+    voxel = vox_len**3
+    volume = _sp.zeros(len(cpores))
+    #cpoints = network["pore.coords"][cpores]
+    all_points = network["pore.coords"]
+    cthroats = network.find_neighbor_throats(pores=cpores)
+    #geom_throats = network.map_throats(geometry,cthroats,return_mapping=True)["target"]
+    
+    cverts = verts[cthroats]
+    "Find the extent of the vetrices"
+    [vxmin,vxmax,vymin,vymax,vzmin,vzmax]=[1e20,0,1e20,0,1e20,0]
+    for vert in cverts:
+        if np.min(vert[:,0])< vxmin:
+            vxmin = np.min(vert[:,0])
+        if np.max(vert[:,0])> vxmax:
+            vxmax = np.max(vert[:,0])
+        if np.min(vert[:,1])< vymin:
+            vymin = np.min(vert[:,1])
+        if np.max(vert[:,1])> vymax:
+            vymax = np.max(vert[:,1])
+        if np.min(vert[:,2])< vzmin:
+            vzmin = np.min(vert[:,2])
+        if np.max(vert[:,2])> vzmax:
+            vzmax = np.max(vert[:,2])
+    "Translate vertices so that minimum occurs at the origin"
+    for index in range(len(cverts)):
+        cverts[index] -= np.array([vxmin,vymin,vzmin])
+    "Also translate points by same amount"
+    temp_points = all_points - np.array([vxmin,vymin,vzmin])
+    "Find new size of image array"
+    cdomain=np.array([(vxmax-vxmin),(vymax-vymin),(vzmax-vzmin)])             
+    lx = np.int(np.ceil(cdomain[0]/vox_len)+1)
+    ly = np.int(np.ceil(cdomain[1]/vox_len)+1)
+    lz = np.int(np.ceil(cdomain[2]/vox_len)+1)
+    "Define voxel image of pore space"
+    pore_space=np.ndarray([lx,ly,lz],dtype=np.int8)
+    pore_space.fill(1)
+    "Get image of the fibres"
+    line_points = bresenham(cverts,vox_len)
+    line_ints = (np.around(line_points/vox_len,0)).astype(int)
+    for x,y,z in line_ints:
+        pore_space[x][y][z]=0
+    #from scipy.ndimage import _nd_image
+    #ft = np.zeros((pore_space.ndim,) + pore_space.shape,dtype=np.int32)
+    #_nd_image.euclidean_feature_transform(pore_space, None, ft)
+    #del pore_space
+    #pore_space = ft - np.indices([lx,ly,lz], dtype=ft.dtype)
+    #del ft
+    #np.multiply(pore_space, pore_space, pore_space)
+    #pore_space = np.add.reduce(pore_space, axis=0)
+    pore_space = ndimage.distance_transform_edt(pore_space)
+    fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
+    fibre_space[pore_space>fibre_rad]=0
+    fibre_space[pore_space<=fibre_rad]=1
+    del pore_space
+    "Hull method 1"
+    hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
+    hull_space.fill(-1)
+    for i in range(lx):
+        for j in range(ly):
+            for k in range(lz):
+                coord = np.array([i,j,k]).astype(float)*vox_len
+                diff = temp_points - coord
+                dist = np.sqrt(diff[:,0]**2 + diff[:,1]**2 + diff[:,2]**2)
+                closest = np.argmin(dist)
+                hull_space[i][j][k]=closest
+    #"Hull method 2"
+    #grid = np.indices((lx,ly,lz)).astype(float)*vox_len
+    #hull_space = np.ones([lx,ly,lz],dtype=np.int16)
+    #hull_space.fill(-1)
+    #closest_dist = np.ones(hull_space.shape)
+    #closest_dist.fill(999)
+    #for index,point in enumerate(temp_points):
+    #    dist2 = (grid[0]-point[0])**2 + (grid[1]-point[1])**2 + (grid[2]-point[2])**2
+    #    hull_space[dist2 < closest_dist]=index
+    #    closest_dist[dist2 < closest_dist]=dist2[dist2 < closest_dist]
+    #del grid
+    #del closest_dist
+    #el dist2
+            
+    for index,pore in enumerate(cpores):
+        in_pore = (fibre_space == 0)&(hull_space==pore)
+        volume[index] = np.sum(in_pore)*voxel
+    #if export_mat:
+    #    matlab_dict = {"fibres":fibre_space}
+    #    savemat(mat_file+str(ci)+str(cj)+str(ck),matlab_dict,format='5',long_field_names=True)
+    del fibre_space
+    del hull_space
+    
+    return volume
+    
 def bresenham(faces,dx):
     line_points=[]
     for face in faces:
@@ -156,6 +254,7 @@ def voronoi_vox(network,
                 geometry,
                 fibre_rad,
                 export_mat='False',
+                mat_file='mat_file',
                 **kwargs):
     r"""
     Compute the pore volumes by creating a voxel image of the domain with Bresenham lines creating fibres
@@ -163,15 +262,14 @@ def voronoi_vox(network,
     Maximum domain size for one chunk is 700**3
     N.B may be inefficient as whole network is calculated and then specific geometry returned
     """
-    from scipy import ndimage
+    
     import OpenPNM.Utilities.vertexops as vo
-    from scipy.io import savemat
+    #from scipy.io import savemat
     
     Np = network.num_pores()
     geom_pores = geometry.map_pores(network,geometry.pores())
     volume = _sp.zeros(Np)
-    vox_len=5e-7
-    voxel = vox_len**3
+    vox_len=1e-6
 
     B1 = network.pores("left_boundary")
     B2 = network.pores("right_boundary")
@@ -187,12 +285,11 @@ def voronoi_vox(network,
     verts = _sp.ndarray(network.num_throats(),dtype=object)
     for i in range(len(verts)):
         verts[i]=_sp.asarray(list(network["throat.vert_index"][i].values()))
-    
     "Number of voxels in each direction"    
     lx = np.int((domain[0]/vox_len))
     ly = np.int((domain[1]/vox_len))
     lz = np.int((domain[2]/vox_len))
-    chunk_len = 700
+    chunk_len = 100
     "If domain to big need to split into chunks to manage memory"    
     if (lx > chunk_len) or (ly > chunk_len) or (lz > chunk_len):
         cx = np.ceil(lx/chunk_len).astype(int)
@@ -200,6 +297,7 @@ def voronoi_vox(network,
         cz = np.ceil(lz/chunk_len).astype(int)
     else:
         cx = cy = cz = 1
+    pore_chunks=[]
     for ci in range(cx):
         for cj in range(cy):
             for ck in range(cz):
@@ -215,67 +313,14 @@ def voronoi_vox(network,
                 cpores = network.pores()[(points[:,0]>=cxmin)*(points[:,0]<=cxmax)
                                         *(points[:,1]>=cymin)*(points[:,1]<=cymax)
                                         *(points[:,2]>=czmin)*(points[:,2]<=czmax)]
-                cpoints = points[cpores]
-                cthroats = network.find_neighbor_throats(pores=cpores)
-                #geom_throats = network.map_throats(geometry,cthroats,return_mapping=True)["target"]
-                cverts = verts[cthroats]
-                "Find the extent of the vetrices"
-                [vxmin,vxmax,vymin,vymax,vzmin,vzmax]=[1e20,0,1e20,0,1e20,0]
-                for vert in cverts:
-                    if np.min(vert[:,0])< vxmin:
-                        vxmin = np.min(vert[:,0])
-                    if np.max(vert[:,0])> vxmax:
-                        vxmax = np.max(vert[:,0])
-                    if np.min(vert[:,1])< vymin:
-                        vymin = np.min(vert[:,1])
-                    if np.max(vert[:,1])> vymax:
-                        vymax = np.max(vert[:,1])
-                    if np.min(vert[:,2])< vzmin:
-                        vzmin = np.min(vert[:,2])
-                    if np.max(vert[:,2])> vzmax:
-                        vzmax = np.max(vert[:,2])
-                "Translate vertices so that minimum occurs at the origin"
-                for index in range(len(cverts)):
-                    cverts[index] -= np.array([vxmin,vymin,vzmin])
-                "Also translate points by same amount"
-                temp_points = cpoints - np.array([vxmin,vymin,vzmin])
-                "Find new size of image array"
-                cdomain=np.array([(vxmax-vxmin),(vymax-vymin),(vzmax-vzmin)])             
-                lx = np.int(np.ceil(cdomain[0]/vox_len)+1)
-                ly = np.int(np.ceil(cdomain[1]/vox_len)+1)
-                lz = np.int(np.ceil(cdomain[2]/vox_len)+1)
-                "Define voxel image of pore space"
-                pore_space=np.ndarray([lx,ly,lz],dtype=np.uint16)
-                pore_space.fill(1)
-                "Get image of the fibres"
-                line_points = bresenham(cverts,vox_len)
-                line_ints = (np.around(line_points/vox_len,0)).astype(int)
-                for x,y,z in line_ints:
-                    pore_space[x][y][z]=0
-                pore_space = ndimage.distance_transform_edt(pore_space)
-                fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
-                fibre_space[pore_space>fibre_rad]=0
-                fibre_space[pore_space<=fibre_rad]=1
-                del pore_space
-                "Hull method 2"
-                hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
-                hull_space.fill(-1)
-                for i in range(lx):
-                    for j in range(ly):
-                        for k in range(lz):
-                            coord = np.array([i,j,k]).astype(float)*vox_len
-                            diff = temp_points - coord
-                            dist = np.sqrt(diff[:,0]**2 + diff[:,1]**2 + diff[:,2]**2)
-                            closest = np.argmin(dist)
-                            hull_space[i][j][k]=closest
-                            
-                for pore in range(len(cpores)):
-                    in_pore = (fibre_space == 0)&(hull_space==pore)
-                    volume[cpores[pore]] = np.sum(in_pore)*voxel
-                if export_mat:
-                    matlab_dict = {"fibres":fibre_space}
-                    savemat("fibrespace"+str(ci)+str(cj)+str(ck),matlab_dict,format='5',long_field_names=True)
-                del fibre_space
-                del hull_space
-                
-    return volume[geom_pores] 
+                pore_chunks.append([network,cpores,vox_len,fibre_rad,verts])
+        
+    p = Pool(6)
+    chunk_vols = p.map(_get_voxel_volume, pore_chunks)
+    for chunk_id in range(len(pore_chunks)):
+        #chunk_vols = _get_voxel_volume(pore_chunks[chunk_id])
+        volume[pore_chunks[chunk_id][1]]=chunk_vols[chunk_id]
+    return volume[geom_pores]
+
+#if __name__ == '__main__':
+#    freeze_support()

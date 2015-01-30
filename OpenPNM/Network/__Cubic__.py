@@ -10,7 +10,7 @@ import scipy as sp
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Base import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 class Cubic(GenericNetwork):
     r"""
@@ -24,6 +24,20 @@ class Cubic(GenericNetwork):
 
     shape : tuple of ints
         The (i,j,k) size and shape of the network.
+        
+    connectivity : int
+        The number of connections to neighboring pores.  Connections are made 
+        symmetrically to any combination of face, edge or corners neighbors.  
+        
+        Options are:
+        
+        - 6: Faces only
+        - 8: Corners only
+        - 12: Edges Only
+        - 14: Faces and Corners
+        - 18: Faces and Edges
+        - 20: Edges and Corners
+        - 26: Faces, Edges and Corners
 
     template : array of booleans
         An (i,j,k) array with True where the Network should be defiend and
@@ -37,12 +51,32 @@ class Cubic(GenericNetwork):
     >>> pn = OpenPNM.Network.Cubic(shape=[3,4,5])
     >>> pn.Np
     60
-    >>> img = sp.ones([3,4,5])
+      
+    It is also possible to create Networks with cubic connectivity but 
+    non-Cubic shape by provding an array with True values where the network 
+    should exist to the ``template`` argument.  The example below produces a sphere:
+    
+    >>> img = sp.ones([11,11,11])
+    >>> img[5,5,5] = 0
+    >>> from scipy.ndimage import distance_transform_bf as dt
+    >>> img = dt(img) < 5  # Create a sphere of True
     >>> pn = OpenPNM.Network.Cubic(template=img)
     >>> pn.Np
-    60
+    485
+    
+    If random distributions of coordination number is desired, one option is
+    to create a Cubic network with many connections and the trim some:
+    
+    >>> pn = OpenPNM.Network.Cubic(shape=[5,5,5],connectivity=26)
+    >>> pn.Nt
+    1036
+    >>> mod = OpenPNM.Network.models.pore_topology.reduce_coordination
+    >>> pn.add_model(propname='throat.to_drop',model=mod,z=10,mode='random')
+    >>> pn.trim(throats=pn['throat.to_drop'])
+    >>> pn.Nt
+    667
     """
-    def __init__(self, shape=None, template=None, spacing=1, **kwargs):
+    def __init__(self, shape=None, template=None, spacing=1, connectivity=6, **kwargs):
         super(Cubic, self).__init__(**kwargs)
 
         if shape is not None:
@@ -60,12 +94,49 @@ class Cubic(GenericNetwork):
         points *= spacing
 
         I = np.arange(arr.size).reshape(arr.shape)
-        tails, heads = [], []
-        for T,H in [
+
+        face_joints = [
             (I[:,:,:-1], I[:,:,1:]),
             (I[:,:-1], I[:,1:]),
             (I[:-1], I[1:]),
-            ]:
+            ]
+
+        corner_joints = [
+            (I[:-1,:-1,:-1], I[1:,1:,1:]),
+            (I[:-1,:-1,1:], I[1:,1:,:-1]),
+            (I[:-1,1:,:-1], I[1:,:-1,1:]),
+            (I[1:,:-1,:-1], I[:-1,1:,1:]),
+            ]
+
+        edge_joints = [
+            (I[:,:-1,:-1], I[:,1:,1:]),
+            (I[:,:-1,1:], I[:,1:,:-1]),
+            (I[:-1,:,:-1], I[1:,:,1:]),
+            (I[1:,:,:-1], I[:-1,:,1:]),
+            (I[1:,1:,:], I[:-1,:-1,:]),
+            (I[1:,:-1,:], I[:-1,1:,:]),
+            ]
+        
+        if connectivity == 6:
+            joints = face_joints
+        elif connectivity == 8:
+            joints = corner_joints
+        elif connectivity == 12:
+            joints = corner_joints
+        elif connectivity == 14:
+            joints = face_joints + corner_joints
+        elif connectivity == 18:
+            joints = face_joints + edge_joints
+        elif connectivity == 20:
+            joints = edge_joints + corner_joints
+        elif connectivity == 26:
+            joints = face_joints + corner_joints + edge_joints
+        else:
+            raise Exception('Invalid connectivity receieved. Must be 6, 8, 12, 14, 18, 20 or 26')
+
+        I = np.arange(arr.size).reshape(arr.shape)
+        tails, heads = [], []
+        for T,H in joints:
             tails.extend(T.flat)
             heads.extend(H.flat)
         pairs = np.vstack([tails, heads]).T
@@ -84,10 +155,6 @@ class Cubic(GenericNetwork):
         self['pore.right']    = y >= y.max()
         self['pore.bottom']   = z <= z.min()
         self['pore.top']      = z >= z.max()
-
-        #Add some topology models to the Network
-#        mod = OpenPNM.Network.models.pore_topology.get_subscripts
-#        self.add_model(propname='pore.subscript',model=mod,shape=self._shape)
 
         #If an image was sent as 'template', then trim network to image shape
         if template is not None:
