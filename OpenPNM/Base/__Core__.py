@@ -196,8 +196,8 @@ class Core(dict):
         if obj_name != '':
             obj = []
             if obj_name in ctrl.keys():
-                obj.append(ctrl[obj_name])
-            return obj[0]
+                obj = ctrl[obj_name]
+            return obj
         elif obj_type != '':
             if obj_type in ['Geometry','Geometries','geometry','geometries']:
                 objs = ctrl.geometries()
@@ -311,7 +311,11 @@ class Core(dict):
             else:
                 net = [self._net]
         else:
-            net = self._find_object(obj_name=name)
+            net = []
+            temp = self._find_object(obj_name=name)
+            if hasattr(temp,'_isa'):
+                if temp._isa('Network'):
+                    net = temp
         return net
 
     #--------------------------------------------------------------------------
