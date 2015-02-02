@@ -21,7 +21,8 @@ def _get_voxel_volume(chunk_data):
     voxel = vox_len**3
     volume = _sp.zeros(len(cpores))
     #cpoints = network["pore.coords"][cpores]
-    all_points = network["pore.coords"]
+    nbps = network.pores('boundary',mode='not')#get list of non-boundary pores, these have zero volume
+    all_points = network["pore.coords"][nbps]
     cthroats = network.find_neighbor_throats(pores=cpores)
     #geom_throats = network.map_throats(geometry,cthroats,return_mapping=True)["target"]
     
@@ -69,8 +70,8 @@ def _get_voxel_volume(chunk_data):
     #pore_space = np.add.reduce(pore_space, axis=0)
     pore_space = ndimage.distance_transform_edt(pore_space)
     fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
-    fibre_space[pore_space>fibre_rad]=0
     fibre_space[pore_space<=fibre_rad]=1
+    fibre_space[pore_space>fibre_rad]=0
     del pore_space
     "Hull method 1"
     hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
@@ -82,7 +83,7 @@ def _get_voxel_volume(chunk_data):
                 diff = temp_points - coord
                 dist = np.sqrt(diff[:,0]**2 + diff[:,1]**2 + diff[:,2]**2)
                 closest = np.argmin(dist)
-                hull_space[i][j][k]=closest
+                hull_space[i][j][k]=nbps[closest]
     #"Hull method 2"
     #grid = np.indices((lx,ly,lz)).astype(float)*vox_len
     #hull_space = np.ones([lx,ly,lz],dtype=np.int16)
