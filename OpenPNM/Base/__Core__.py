@@ -206,7 +206,7 @@ class Core(dict):
             elif obj_type in ['Physics','physics']:
                 objs = ctrl.physics()
             elif obj_type in ['Network','Networks','network','networks']:
-                objs = ctrl.network()
+                objs = ctrl.networks()
             return objs
 
     def physics(self,phys_name=[]):
