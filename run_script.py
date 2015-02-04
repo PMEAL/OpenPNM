@@ -1,7 +1,7 @@
 import OpenPNM
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 
-sim = OpenPNM.Base.Controller()
+ctrl = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================

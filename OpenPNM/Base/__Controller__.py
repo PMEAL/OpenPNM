@@ -1,11 +1,11 @@
 '''
 ###############################################################################
-Controller:  Overall simulation controller class
+Controller:  Overall controller class
 ###############################################################################
 '''
 import pickle as _pickle
 import copy as _copy
-import time
+import time, random, string
 import OpenPNM
 from OpenPNM.Base import logging
 logger = logging.getLogger()
@@ -15,9 +15,9 @@ class Controller(dict):
 
     """
     # The following __instance__ class variable and subclassed __new__ method
-    # makes the Controller class a 'Singleton'.  This way, the _sim attribute
-    # of every OpenPNM object is the same, AND if you create a sim on the
-    # command line (sim = OpenPNM.Base.Controller()) it will be the same sim!
+    # makes the Controller class a 'Singleton'.  This way, the _ctrl attribute
+    # of every OpenPNM object is the same, AND if you create a ctrl on the
+    # command line (ctrl = OpenPNM.Base.Controller()) it will be the same ctrl!
     __instance__ = None
     def __new__(cls, *args,**kwargs):
         if Controller.__instance__ is None:
@@ -32,40 +32,22 @@ class Controller(dict):
     def __str__(self):
         header = ('-'*60)
         print(header)
-        print('Networks')
+        print("{c:<10s} {a:<25s} {b:<25s}".format(a='Class', b='Name', c='Type'))
         print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
-        print(header)
-        for item in self.network():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
-        print(header)
-        print('Geometries')
-        print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+        for item in self.networks():
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Network'))
         print(header)
         for item in self.geometries():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
-        print(header)
-        print('Phases')
-        print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Geometry'))
         print(header)
         for item in self.phases():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
-        print(header)
-        print('Physics')
-        print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Phase'))
         print(header)
         for item in self.physics():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
-        print(header)
-        print('Algorithms')
-        print(header)
-        print("{a:<25s} {b:<25s}".format(a='Class', b='Object Name'))
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Physics'))
         print(header)
         for item in self.algorithms():
-            print("{a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name))
+            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Algorithm'))
         print(header)
         return ''
         
@@ -79,53 +61,52 @@ class Controller(dict):
 
     def show_tree(self):
         r'''
-        Prints a heirarchical list of simulation object associations
+        Prints a heirarchical list of object associations
         '''
-        header = ('-'*60)
-        net = self.network()[0]
-        print(header)
-        print('Network: '+net.name)
-        for geom in self.geometries():
-            print('+ '+'Geometry: '+geom.name)
-        for phase in self.phases():
-            if len(phase.phases())==0:
-                print('+ '+'Pure Phase: '+phase.name)
-            if len(phase.phases())>1:
-                print('+ '+'Mixture Phase: '+phase.name)
-                comps = phase.phases()
-                for compname in comps:
-                    print('+++ '+'Component Phase: '+self[compname].name)
-            for phys in self.physics():
-                if phase in phys._phases:
-                    print('++ '+'Physics: '+phys.name)
+        for net in self.networks():
+            header = ('-'*60)
+            print(header)
+            print('Network: '+net.name)
+            for geom in net.geometries():
+                print('+ '+'Geometry: '+geom)
+            for phase in net.phases():
+                if len(net.phases(phase)[0].phases())==0:
+                    print('+ '+'Pure Phase: '+phase)
+                if len(net.phases(phase)[0].phases())>1:
+                    print('+ '+'Mixture Phase: '+phase)
+                    comps = net.phases(phase).phases()
+                    for compname in comps:
+                        print('+++ '+'Component Phase: '+compname)
+                for phys in net.phases(phase)[0].physics():
+                    print('++ '+'Physics: '+phys)
 
-    def network(self):
+    def networks(self):
         r'''
-        Returns a list of all Network objects in the simulation.
+        Returns a list of all Network objects
         '''
         return self._get_objects(obj_type='GenericNetwork')
 
     def geometries(self):
         r'''
-        Returns a list of all Geometry objects in the simulation.
+        Returns a list of all Geometry objects
         '''
         return self._get_objects(obj_type='GenericGeometry')
 
     def phases(self):
         r'''
-        Returns a list of all Phase objects in the simulation.
+        Returns a list of all Phase objects
         '''
         return self._get_objects(obj_type='GenericPhase')
 
     def physics(self):
         r'''
-        Returns a list of all Physics objects in the simulation.
+        Returns a list of all Physics objects
         '''
         return self._get_objects(obj_type='GenericPhysics')
 
     def algorithms(self):
         r'''
-        Returns a list of all Algorithm objects in the simulation.
+        Returns a list of all Algorithm objects
         '''
         return self._get_objects(obj_type='GenericAlgorithm')
 
@@ -141,63 +122,107 @@ class Controller(dict):
         r'''
         This is an overloaded version of the standard dict's ``clear`` method.
         This completely clears the Controller object's dict as expected, but
-        also removes links to the Controller object in all simulation objects.
+        also removes links to the Controller object in all objects.
 
         '''
         for item in self.keys():
-            self[item]._sim = {}
+            self[item]._ctrl = {}
         self.__dict__ = {}
         super(Controller,self).clear()
-
-    def purge_object(self,obj):
+        
+    def update(self,arg):
         r'''
-        Remove an object from the simulation
+        This is a subclassed version of the standard dict's ``update`` method.  
+        It can accept a dictionary of OpenPNM Core objects in which case it 
+        adds the objects to the Controller.  It can also accept an OpenPNM 
+        Network object in which case it extracts all associated objects and 
+        adds them to the Controller.  In both cases it adds the Controller to
+        all object's ``controller`` attribute.
+        
+        Notes
+        -----
+        The Network (and other Core objects) do not store Algorithms, so this
+        update will not add any Algorithm objects to the Controller.  This may
+        change.  
+        '''
+        if arg.__class__ == dict:
+            for item in arg.keys():
+                self[item] = arg[item]
+                arg[item]._ctrl = self
+        else:
+            mro = [item.__name__ for item in arg.__class__.__mro__]
+            if 'GenericNetwork' in mro:
+                net = arg
+                self[net.name] = net
+                net._ctrl = self
+                for item in net._geometries + net._physics + net._phases:
+                    self[item.name] = item
+                    item._ctrl = self
+
+    def purge_object(self,obj,mode='single'):
+        r'''
+        Remove an object, including all traces of it in its associated objects
 
         Parameters
         ----------
         obj : OpenPNM Object
-            The object to be removed from the simulation.  This method removes
-            all traces of the object from everywhere in the simulation,
-            including all the object tracking lists and label dictionaries of
-            every object.
+            The object to be removed.  This method removes all traces of the 
+            object from everywhere, including all the object tracking lists and 
+            label dictionaries of every object.
+        mode : string
+            Dicates the type of purge to be performed.  Options are:
+            
+            - 'single': Only purges the specified object
+            - 'complete': Purges the specified object AND all of its associated objects
 
         Notes
         -----
-        To only remove an object from the Contoller object, without purging all
-        traces from the simulation, use the dictionary's native ``pop`` method.
+        To only remove an object from the Contoller object use the dictionary's
+        native ``pop`` method.
 
         Examples
         --------
         >>> import OpenPNM
-        >>> sim = OpenPNM.Base.Controller()
+        >>> ctrl = OpenPNM.Base.Controller()
         >>> pn = OpenPNM.Network.TestNet()
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
         >>> 'pore.'+geom.name in pn.keys()  # Label entries are added to the Network where geom is defined
         True
-        >>> sim.purge_object(geom)
-        >>> geom.name in sim.keys()  # geom is removed from Controller object
+        >>> ctrl.purge_object(geom)
+        >>> geom.name in ctrl.keys()  # geom is removed from Controller object
         False
         >>> 'pore.'+geom.name in pn.keys()  # geom's labels are removed from the Network too
         False
         '''
-        name = obj.name
-        for item in self.keys():
-            # Remove label arrays from all other objects
-            self[item].pop('pore.'+name,None)
-            self[item].pop('throat.'+name,None)
-            # Remove associations on other objects
-            self[item]._geometries[:] = [x for x in self[item]._geometries if x is not obj]
-            self[item]._phases[:] = [x for x in self[item]._phases if x is not obj]
-            self[item]._physics[:] = [x for x in self[item]._physics if x is not obj]
-        # Set object's simulation to an empty dict
-        self[name]._sim = {}
-        # Remove object from simulation dict
-        del self[name]
+        if mode == 'complete':
+            if obj._net is None:
+                net = obj
+            else:
+                net = obj._net
+            for item in net.geometries() + net.phases() + net.physics():
+                blank = self.pop(item,None)
+            del self[net.name]
+        elif mode == 'single':
+            name = obj.name
+            for item in list(self.keys()):
+                # Remove label arrays from all other objects
+                self[item].pop('pore.'+name,None)
+                self[item].pop('throat.'+name,None)
+                # Remove associations on other objects
+                self[item]._geometries[:] = [x for x in self[item]._geometries if x is not obj]
+                self[item]._phases[:] = [x for x in self[item]._phases if x is not obj]
+                self[item]._physics[:] = [x for x in self[item]._physics if x is not obj]
+            # Set object's controller attribute to an empty dict
+            self[name]._ctrl = {}
+            # Remove object from Controller dict
+            del self[name]
 
-    def clone_object(self,obj):
+    def ghost_object(self,obj):
         r'''
-        Clone an OpenPNM Object, without associating the new object with the
-        parent simulation.
+        Create a ghost OpenPNM Object containing all the data, methods and 
+        associations of the original object, but without registering the ghost
+        anywhere.   This ghost is intended as a disposable object, for 
+        instance, to receive data without overwriting existing data.
 
         Parameters
         ----------
@@ -210,42 +235,37 @@ class Controller(dict):
         to the objects associated with the original object.  The cloned object is
         not associated with the Network.
 
-        Notes
-        -----
-        This method is intended to create a disposable object, for instance, to
-        receive simulation data without overwriting existing data.
-
         Examples
         --------
         >>> import OpenPNM
-        >>> sim = OpenPNM.Base.Controller()
+        >>> ctrl = OpenPNM.Base.Controller()
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn2 = sim.clone_object(pn)
+        >>> pn2 = ctrl.ghost_object(pn)
         >>> pn is pn2  # A clone of pn is created
         False
         >>> pn2.keys() == pn.keys()
         True
-        >>> pn2.simulation is sim # pn2 is not associated with existing Controller
+        >>> pn2.controller is ctrl # pn2 is not associated with existing Controller
         False
 
         '''
         obj_new = _copy.deepcopy(obj)
         obj_new.__dict__ = obj.__dict__
-        obj_new.simulation = {}
+        obj_new.controller = {}
         del self[obj.name]
         self[obj.name] = obj
         return obj_new
 
     def save_object(self,obj,filename=''):
         r'''
-        Save a single OpenPNM object to a 'pno' file.
+        Save a single OpenPNM object to a 'pno' file.  The main purpose of this
+        is to save a copy of the object's data dictionary to a file.  This is
+        useful for saving Algorithm objects that contain numerical results.
 
         Parameters
         ----------
         obj : OpenPNM object
-            The object to save.  All the associations are removed, so upon
-            reloading the object needs to be reconnected manually to a
-            simulation.
+            The object to save.  
         filename : string (optional)
             The file name to use when saving.  If no name is given the object
             name is used.
@@ -255,7 +275,7 @@ class Controller(dict):
         else:
             filename = filename.split('.')[0]
 
-        obj._sim = {}
+        obj._ctrl = {}
         obj._net = []
         obj._geometries = []
         obj._physics = []
@@ -266,7 +286,10 @@ class Controller(dict):
 
     def load_object(self,filename):
         r'''
-        Load a single object saved as a 'pno' file.
+        Load a single object saved as a 'pno' file.  This object will be a 
+        standalone entity so many methods that expect information about 
+        associations will fail, but the numerical data in the dictionary can 
+        be accessed.
 
         Parameters
         ----------
@@ -275,11 +298,11 @@ class Controller(dict):
         '''
         filename = filename.split('.')[0]
         obj = _pickle.load(open(filename+'.pno','rb'))
-        obj.simulation = self
+        obj.controller = self
 
     def save(self,filename=''):
         r'''
-        Save the entire state of a simulation to a 'pnm' file.
+        Save the entire state of the Controller to a 'pnm' file.
 
         Parameters
         ----------
@@ -290,20 +313,20 @@ class Controller(dict):
         Examples
         --------
         >>> import OpenPNM
-        >>> sim = OpenPNM.Base.Controller()
+        >>> ctrl = OpenPNM.Base.Controller()
         >>> pn = OpenPNM.Network.TestNet()
-        >>> sim.save('test.pnm')
-        >>> pn.name in sim.keys()
+        >>> ctrl.save('test.pnm')
+        >>> pn.name in ctrl.keys()
         True
-        >>> sim.clear()
-        >>> sim.keys()
+        >>> ctrl.clear()
+        >>> ctrl.keys()
         dict_keys([])
-        >>> sim.load('test.pnm')
-        >>> pn.name in sim.keys()
+        >>> ctrl.load('test.pnm')
+        >>> pn.name in ctrl.keys()
         True
         '''
         if filename == '':
-            filename = self.network()[0].name
+            filename = self.networks()[0].name
         else:
             filename = filename.split('.')[0]
 
@@ -312,18 +335,18 @@ class Controller(dict):
 
     def load(self,filename):
         r'''
-        Load an entire simulation from a 'pnm' file.
+        Load an entire Controller from a 'pnm' file.
 
         Parameters
         ----------
         filename : string
-            The file name of the simulation to load.
+            The file name of the Controller to load.
 
         Notes
         -----
         This calls the ``clear`` method of the Controller object, so it will
         over write the calling objects information AND remove any references
-        to the calling object from existing simulation objects.
+        to the calling object from existing objects.
         '''
         filename = filename.split('.')[0]
         if self != {}:
@@ -333,7 +356,7 @@ class Controller(dict):
 
     def export(self,filename='',fileformat='VTK'):
         r'''
-        Export simulation data to the specified file format.
+        Export data to the specified file format.
 
         Parameters
         ----------
@@ -350,19 +373,19 @@ class Controller(dict):
         '''
         import OpenPNM.Utilities.IO as io
         if fileformat == 'VTK':
-            net = self.network()[0]
+            net = self.networks()[0]
             phases = net._phases
             io.VTK.save(filename=filename,network=net,phases=phases)
             return
         if fileformat == 'MAT':
-            net = self.network()[0]
+            net = self.networks()[0]
             phases = net._phases
             io.MAT.save(filename=filename,network=net,phases=phases)
             return
 
     def _script(self,filename,mode='read'):
         r'''
-        Save or reload the script files used for the simulations
+        Save or reload the script files used for the modeling
 
         Parameters
         ----------
@@ -396,83 +419,55 @@ class Controller(dict):
 
     comments = property(fget=_get_comments,fset=_set_comments)
 
-    def _subset(self,pores,name=None):
+    def clone_simulation(self,network,name=None):
         r'''
-        Create a new network from a subset of the main network.  This is useful
-        for running simulations on smaller domains of interest to save CPU
-        time.
-
-        Parameters
-        ----------
-        pores : array_like
-            The list of pores that comprise the subset.  All throats between
-            these pores are conserved, but throats to other pores are lost.
-
+        Accepts a Network object and creates a complete clone including all 
+        associated objects.  All objects in the cloned simulation are 
+        registered with the Controller object and are fully functional.
+        
         Returns
         -------
-        simulation : An OpenPNM Controller Object
-
-        Examples
-        --------
-        None yet
-        '''
-        net = self.network()[0]  # Get Network handle
-        self.clear()  # Clear Controller object
-        temp = net.simulation  # Save Simulation dict
-        # Create a copy of Network
-        new_net = _copy.deepcopy(net)  # Note: This appends the current Controller to the new Network
-        # Update Controller with original Network dict
-        self.clear()  # Clear Controller associated with the new Network
-        self.update(temp)  # Update Controller with saved old Network
-        # Trim new Network
-        throats = new_net.find_neighbor_throats(pores=pores,mode='intersection')
-        Ps = new_net.tomask(pores)
-        new_net.trim(pores=~Ps)
-        # Rename new Network
-        new_net._name = None  # Set name to None to circumvent setter checks
-        if name is None:
-            old_name = net.name
-            name = 'subset_of_'+old_name
-        new_net.name = name
-        # Add new_net to net's labels
-        net['pore.'+new_net.name] = net.tomask(pores=pores)
-        net['throat.'+new_net.name] = net.tomask(throats=throats)
-        new_net._net = net
-        return new_net
-
-    def _clone_simulation(self):
-        r'''
-        This clones the current simulation objects and returns a dictionary
-        containing handles to the clones.  This method does NOT return a new
-        OpenPNM Controller object.
+        A handle to the new Network object, which will include handles to 
+        clones of all associated objects.  
 
         See Also
         --------
-        subset
-        clone_object
+        ghost_object
 
         Notes
         -----
-        The objects in the returned dictionary can be used for simulations as
-        usual, but as they are not associated with a Controller, there is
-        limited administrative control over them (i.e. saving and such).
+        One useful application of this method is to create a cloned simulation
+        that can be trimmed to a smaller size.  This small simulation will 
+        result in much faster Algorithms calculations.
 
         Examples
         --------
         None yet
         '''
-        net = self.network()[0]
-        temp = net.copy()  # Copy Network's dict
-        new_net = self.subset(pores=net.Ps,name=net.name)
-        net.clear()  # Clear Network's dict of item added during subset()
-        net.update(temp)  # Re-add odd dict to Network
-        new_net._net = None  # Clear reference to parent network
-        sim = new_net.simulation
-        return sim
-
+        if network._parent != None:
+            logger.error('Cannot clone a network that is already a clone')
+            return
+        bak = {}
+        bak.update(self)
+        self.clear()
+        net = _copy.deepcopy(network)
+        self.update(net)
+        if name == None:
+            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+        for item in list(self.keys()):
+            temp = self.pop(item)
+            temp._parent = network
+            new_name = temp.name + '_' + name
+            temp.name = new_name
+            self[temp.name] = temp
+        # Add parent Network numbering to clone
+        net['pore.'+network.name] = network.Ps
+        net['throat.'+network.name] = network.Ts
+        self.update(bak)
+        return net
 
 if __name__ == '__main__':
-    sim = Controller()
+    ctrl = Controller()
 
 
 

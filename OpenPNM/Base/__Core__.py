@@ -10,7 +10,7 @@ from OpenPNM.Base import logging, Tools
 from OpenPNM.Base import ModelsDict
 logger = logging.getLogger()
 from OpenPNM.Base import Controller
-sim = Controller()
+ctrl = Controller()
 
 class Core(dict):
     r'''
@@ -23,11 +23,12 @@ class Core(dict):
         obj.update({'throat.all': sp.array([],ndmin=1,dtype=bool)})
         #Initialize phase, physics, and geometry tracking lists
         obj._name = None
-        obj._sim = {}
+        obj._ctrl = {}
         obj._phases = []
         obj._geometries = []
         obj._physics = []
         obj._net = None
+        obj._parent = None
         #Initialize ordered dict for storing property models
         obj.models = ModelsDict()
         return obj    
@@ -39,7 +40,7 @@ class Core(dict):
         super(Core,self).__init__()
         logger.debug('Initializing Core class')
         self.name = name
-        self.simulation = sim
+        self.controller = ctrl
         
     def __repr__(self):
         return '<%s.%s object at %s>' % (
@@ -78,7 +79,7 @@ class Core(dict):
         if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
-                    logger.info(key+' is being defined.')
+                    logger.debug(key+' is being defined.')
                     super(Core, self).__setitem__(key,value)
                 else:
                     logger.warning(key+' is already defined.')
@@ -102,25 +103,36 @@ class Core(dict):
                 logger.warning('Cannot write vector with an array of the wrong length: '+key)
                 pass
             
-    def _set_sim(self,simulation):
-        if self.name in simulation.keys():
+    def _set_ctrl(self,controller):
+        if self.name in controller.keys():
             raise Exception('An object with that name is already present in simulation')
-        self._sim = simulation
-        simulation.update({self.name: self})
+        self._ctrl = controller
+        controller.update({self.name: self})
 
-    def _get_sim(self):
-        return self._sim
+    def _get_ctrl(self):
+        return self._ctrl
 
-    simulation = property(_get_sim,_set_sim)
+    controller = property(_get_ctrl,_set_ctrl)
 
     def _set_name(self,name):
-        if self._name is not None:
-            raise Exception('Renaming objects can have catastrophic consequences')
-        elif self._sim.get(name) is not None:
+        if self._ctrl.get(name) is not None:
             raise Exception('An object named '+name+' already exists')
         elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
+        elif self._name is not None:
+            logger.info('Changing the name of '+self.name+' to '+name)
+            objs = []
+            if self._net is not None:
+                objs.append(self._net)
+            objs.extend(self._geometries)
+            objs.extend(self._phases)
+            objs.extend(self._physics)
+            for item in objs:
+                if 'pore.'+self.name in item.keys():
+                    item['pore.'+name] = item.pop('pore.'+self.name)
+                if 'throat.'+self.name in item.keys():
+                    item['throat.'+name] = item.pop('throat.'+self.name)
         self._name = name
 
     def _get_name(self):
@@ -183,18 +195,18 @@ class Core(dict):
         '''
         if obj_name != '':
             obj = []
-            if obj_name in sim.keys():
-                obj.append(sim[obj_name])
-            return obj[0]
+            if obj_name in ctrl.keys():
+                obj = ctrl[obj_name]
+            return obj
         elif obj_type != '':
             if obj_type in ['Geometry','Geometries','geometry','geometries']:
-                objs = sim.geometries()
+                objs = ctrl.geometries()
             elif obj_type in ['Phase','Phases','phase','phases']:
-                objs = sim.phases()
+                objs = ctrl.phases()
             elif obj_type in ['Physics','physics']:
-                objs = sim.physics()
+                objs = ctrl.physics()
             elif obj_type in ['Network','Networks','network','networks']:
-                objs = sim.network()
+                objs = ctrl.network()
             return objs
 
     def physics(self,phys_name=[]):
@@ -278,17 +290,15 @@ class Core(dict):
     def network(self,name=''):
         r'''
         Retrieves the network associated with the object.  If the object is
-        a network, then it returns the parent network from which the present
-        object derives, or returns an empty list if it has no parents.
+        a network, then it returns a handle to itself.
 
         Parameters
         ----------
         name : string, optional
-            The name of the Geometry object to retrieve.
+            The name of the Network object to retrieve.
 
         Returns
         -------
-            If name is NOT provided, then the name of the parent is returned.
             If a name IS provided, then the parent netowrk object is returned.
 
         Notes
@@ -296,12 +306,16 @@ class Core(dict):
         This doesn't quite work yet...we have to decide how to treat sub-nets first
         '''
         if name == '':
-            try:
-                net = self._net.name
-            except:
-                net = []
+            if self._net is None:
+                net = [self]
+            else:
+                net = [self._net]
         else:
-            net = self._net
+            net = []
+            temp = self._find_object(obj_name=name)
+            if hasattr(temp,'_isa'):
+                if temp._isa('Network'):
+                    net = temp
         return net
 
     #--------------------------------------------------------------------------
@@ -1094,42 +1108,49 @@ class Core(dict):
             temp['throat'] = self.num_throats()
         return temp
 
-    def _map(self,element,locations,target,return_mapping=False):
+    def _map(self,element,locations,target,return_mapping):
         r'''
         '''
-        if self._net is None:  # self is a parent Network
-            net = self
-        else:
-            try:
-                if self._net._net is None:  # self is a subset Network
-                    net = self._net
-                else:
-                    net = self._net._net  # self is associated with a subset
-            except:
-                net = self._net  # self is associated with a parent Network
+        # Initialize things
         locations = sp.array(locations,ndmin=1)
         mapping = {}
-
-        # Retrieve Network size masks
-        maskS = net[element+'.'+self.name]
-        maskT = net[element+'.'+target.name]
-
+        
+        # Analyze input object's relationship
+        if self._parent == target._parent:
+            maskS = self._net[element+'.'+self.name]
+            maskT = target._net[element+'.'+target.name]
+        else:
+            if self._parent is None:  # Self is parent object
+                maskS = self._net[element+'.'+self.name]
+                maskT = ~self._net[element+'.all']
+                tempT = target._net[element+'.'+target.name]
+                inds = target._net[element+'.'+self._net.name][tempT]
+                maskT[inds]  = True
+            if target._parent is None:  # Target is parent object
+                maskT = target._net[element+'.'+target.name]
+                maskS = ~target._net[element+'.all']
+                tempS = self._net[element+'.'+self.name]
+                inds = self._net[element+'.'+target._net.name][tempS]
+                maskS[inds]  = True
+        
         # Convert source locations to Network indices
-        temp = sp.zeros_like(net._get_indices(element=element))-1
+        temp = sp.zeros(sp.shape(maskS),dtype=int)-1
         temp[maskS] = self._get_indices(element=element)
         locsS = sp.where(sp.in1d(temp,locations))[0]
         mapping['source'] = locations
 
         # Find locations in target
-        temp = sp.zeros_like(net._get_indices(element=element))-1
+        temp = sp.zeros(sp.shape(maskT),dtype=int)-1
         temp[maskT] = target._get_indices(element=element)
         locsT = temp[locsS]
         mapping['target'] = locsT
-
+        
+        # Find overlapping locations in source and target to define mapping
         keep = (locsS>=0)*(locsT>=0)
         mapping['source'] = mapping['source'][keep]
         mapping['target'] = mapping['target'][keep]
-
+        
+        # Return results as an arrary or one-to-one mapping if requested
         if return_mapping == True:
             return mapping
         else:
@@ -1147,10 +1168,12 @@ class Core(dict):
         Parameters
         ----------
         pores : array_like
-            The list of pores on the caller object
+            The list of pores on the caller object.  If no pores are supplied
+            then all the pores of the calling object are used.
 
         target : OpenPNM object, optional
-            The object for which a list of pores is desired.
+            The object for which a list of pores is desired.  If no object is
+            supplied then the object's associated Network is used.
 
         return_mapping : boolean (default is False)
             If True, a dictionary containing 'source' locations, and 'target'
@@ -1180,7 +1203,10 @@ class Core(dict):
         if pores is None:
             pores = self.Ps
         if target is None:
-            target = self._net
+            if self._net is None:
+                target = self
+            else:
+                target = self._net
         Ps = self._map(element='pore',locations=pores,target=target,return_mapping=return_mapping)
         return Ps
 
@@ -1192,10 +1218,17 @@ class Core(dict):
         Parameters
         ----------
         throats : array_like
-            The list of throats on the caller object
+            The list of throats on the caller object.  If no throats are 
+            supplied then all the throats of the calling object are used.
 
         target : OpenPNM object, optional
-            The object for which a list of pores is desired.
+            The object for which a list of pores is desired.  If no object is
+            supplied then the object's associated Network is used.
+            
+        return_mapping : boolean (default is False)
+            If True, a dictionary containing 'source' locations, and 'target'
+            locations is returned.  Any 'source' locations not found in the
+            'target' object are removed from the list.
 
         Returns
         -------
@@ -1220,9 +1253,55 @@ class Core(dict):
         if throats is None:
             throats = self.Ts
         if target is None:
-            target = self._net
+            if self._net is None:
+                target = self
+            else:
+                target = self._net
         Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
+        
+    def _isa(self,keyword=None,obj=None):
+        r'''
+        '''
+        if keyword is None:
+            mro = [item.__name__ for item in self.__class__.__mro__]
+        if obj is None:
+            query = False
+            mro = [item.__name__ for item in self.__class__.__mro__]
+            if keyword in ['net','Network','GenericNetwork']:
+                if 'GenericNetwork' in mro:
+                    query = True
+            elif keyword in ['geom','Geometry','GenericGeometry']:
+                if 'GenericGeometry' in mro:
+                    query = True
+            elif keyword in ['phase','Phase','GenericPhase']:
+                if 'GenericPhase' in mro:
+                    query = True
+            elif keyword in ['phys','Physics','GenericPhysics']:
+                if 'GenericPhysics' in mro:
+                    query = True
+            elif keyword in ['alg','Algorithm','GenericAlgorithm']:
+                if 'GenericAlgorithm' in mro:
+                    query = True
+            elif keyword in ['clone']:
+                if self._net is None:
+                    if self._parent is not None:
+                        query = True
+                else:
+                    if self._net._parent is not None:
+                        query = True
+            return query
+        else:
+            query = False
+            if keyword in ['sibling']:
+                if (self._isa('net')) and (obj._net is self):
+                    query = True
+                elif (obj._isa('net')) and (self._net is obj):
+                    query = True
+                elif self._net is obj._net:
+                    query = True
+            return query
+            
 
     def check_data_health(self,props=[],element='',quiet=False):
         r'''
