@@ -4,6 +4,7 @@ Tools:  Useful classes for use throughout the project
 ###############################################################################
 '''
 import scipy as _sp
+from collections import OrderedDict as _odict
 
 class PrintableList(list):
     def __str__(self):
@@ -17,7 +18,7 @@ class PrintableList(list):
             print(count,'\t: ',item)
         return header
 
-class PrintableDict(dict):
+class PrintableDict(_odict):
     def __str__(self):
         header = '-'*60
         print(header)

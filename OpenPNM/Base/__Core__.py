@@ -385,7 +385,9 @@ class Core(dict):
         elif mode == 'constants':
             if element == '': temp = constants
             else: temp = [item for item in constants if item.split('.')[0]==element]
-        return Tools.PrintableList(temp)
+        a = Tools.PrintableList(temp)
+        # a.sort()
+        return a
 
 
     def _get_labels(self,element='',locations=[],mode='union'):
@@ -827,27 +829,33 @@ class Core(dict):
         r'''
         Retrieves requested property from associated objects, to produce a full
         Np or Nt length array.
+        
         Parameters
         ----------
         prop : string
             The property name to be retrieved
         sources : list
             List of object names OR objects from which data is retrieved
+            
         Returns
         -------
         A full length (Np or Nt) array of requested property values.
+        
         Notes
         -----
         This makes an effort to maintain the data 'type' when possible; however
         when data is missing this can be tricky.  Float and boolean data is
         fine, but missing ints are converted to float when nans are inserted.
+        
+        Examples
+        --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> Ps = pn.pores('top',mode='not')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
         >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=Ps,throats=Ts)
         >>> Ps = pn.pores('top')
-        >>> Ts = Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
+        >>> Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
         >>> boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
         >>> geom['pore.test_int'] = sp.random.randint(0,100,geom.Np)
         >>> print(pn['pore.test_int'].dtype)
@@ -1333,8 +1341,8 @@ class Core(dict):
         ------------------------------------------------------------
         key                       value                    
         ------------------------------------------------------------
-        throat.conns              Healthy                  
-        pore.coords               Healthy                  
+        throat.conns              Healthy          
+        pore.coords               Healthy                                          
         ------------------------------------------------------------
         >>> health
         True

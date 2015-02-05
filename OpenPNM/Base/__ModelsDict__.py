@@ -36,7 +36,9 @@ class GenericModel(dict):
             keys = inspect.getargspec(self['model']).args[-len(vals):]
             # Put defaults into the dict
             defs.update(zip(keys,vals))
-        for item in self.keys():
+        keys = list(self.keys())
+        keys.sort()
+        for item in keys:
             if item not in ['model','network','geometry','phase','physics','propname']:
                 if item not in defs.keys():
                     defs[item] = '---'
@@ -98,8 +100,8 @@ class ModelsDict(OrderedDict):
     #     Property Name                  Regeneration Mode   
     ------------------------------------------------------------
     0     pore.seed                      normal              
-    1     throat.seed                    normal              
-    2     throat.length                  normal              
+    1     throat.length                  normal              
+    2     throat.seed                    normal              
     ------------------------------------------------------------
     
     It is possible to use the ModelsDict from one object with another object:
@@ -115,8 +117,8 @@ class ModelsDict(OrderedDict):
     #     Property Name                  Regeneration Mode   
     ------------------------------------------------------------
     0     pore.seed                      normal              
-    1     throat.seed                    normal              
-    2     throat.length                  normal              
+    1     throat.length                  normal              
+    2     throat.seed                    normal              
     ------------------------------------------------------------
     
 
@@ -247,9 +249,9 @@ class ModelsDict(OrderedDict):
         ------------------------------------------------------------
         Argument Name        Value / (Default)
         ------------------------------------------------------------
-        regen_mode           normal / (---)
-        seed                 None / (None)
         num_range            [0, 1] / ([0, 1])
+        regen_mode           normal / (---)
+        seed                 1 / (None)
         ------------------------------------------------------------
 
         '''
