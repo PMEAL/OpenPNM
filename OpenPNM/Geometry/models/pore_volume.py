@@ -72,31 +72,46 @@ def _get_voxel_volume(chunk_data):
     fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
     fibre_space[pore_space<=fibre_rad]=1
     fibre_space[pore_space>fibre_rad]=0
-    del pore_space
-    "Hull method 1"
-    hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
-    hull_space.fill(-1)
-    for i in range(lx):
-        for j in range(ly):
-            for k in range(lz):
-                coord = np.array([i,j,k]).astype(float)*vox_len
-                diff = temp_points - coord
-                dist = np.sqrt(diff[:,0]**2 + diff[:,1]**2 + diff[:,2]**2)
-                closest = np.argmin(dist)
-                hull_space[i][j][k]=nbps[closest]
-    #"Hull method 2"
-    #grid = np.indices((lx,ly,lz)).astype(float)*vox_len
-    #hull_space = np.ones([lx,ly,lz],dtype=np.int16)
-    #hull_space.fill(-1)
-    #closest_dist = np.ones(hull_space.shape)
-    #closest_dist.fill(999)
-    #for index,point in enumerate(temp_points):
-    #    dist2 = (grid[0]-point[0])**2 + (grid[1]-point[1])**2 + (grid[2]-point[2])**2
-    #    hull_space[dist2 < closest_dist]=index
-    #    closest_dist[dist2 < closest_dist]=dist2[dist2 < closest_dist]
-    #del grid
-    #del closest_dist
-    #el dist2
+    hull_method = 1
+    if hull_method == 1:
+        "Hull method 1 - Brute Force"
+        hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
+        hull_space.fill(-1)
+        for i in range(lx):
+            for j in range(ly):
+                for k in range(lz):
+                    coord = np.array([i,j,k]).astype(float)*vox_len
+                    diff = temp_points - coord
+                    dist = np.sqrt(diff[:,0]**2 + diff[:,1]**2 + diff[:,2]**2)
+                    closest = np.argmin(dist)
+                    hull_space[i][j][k]=nbps[closest]
+    
+    elif hull_method == 2:            
+        "Hull method 2"
+        grid = np.indices((lx,ly,lz)).astype(float)*vox_len
+        hull_space = np.ones([lx,ly,lz],dtype=np.int16)
+        hull_space.fill(-1)
+        closest_dist = np.ones(hull_space.shape)
+        closest_dist.fill(999)
+        for index,point in enumerate(temp_points):
+            dist2 = (grid[0]-point[0])**2 + (grid[1]-point[1])**2 + (grid[2]-point[2])**2
+            hull_space[dist2 < closest_dist]=index
+            closest_dist[dist2 < closest_dist]=dist2[dist2 < closest_dist]
+        del grid
+        del closest_dist
+        del dist2
+    else:            
+        "Hull method 3"
+        "Watershedding the distance inverse distance transform"
+        from skimage.morphology import watershed
+        markers = np.zeros(np.shape(pore_space),dtype=np.int16)
+        for i,point in enumerate(np.around(temp_points/vox_len).astype(int)):
+            try:
+                markers[point[0]][point[1]][point[2]]=i+1
+            except:
+                pass
+        hull_space = watershed(-pore_space, markers, mask=fibre_space)
+        hull_space -= 1
             
     for index,pore in enumerate(cpores):
         in_pore = (fibre_space == 0)&(hull_space==pore)
@@ -106,7 +121,7 @@ def _get_voxel_volume(chunk_data):
     #    savemat(mat_file+str(ci)+str(cj)+str(ck),matlab_dict,format='5',long_field_names=True)
     del fibre_space
     del hull_space
-    
+    del pore_space
     return volume
     
 def bresenham(faces,dx):
@@ -316,10 +331,10 @@ def voronoi_vox(network,
                                         *(points[:,2]>=czmin)*(points[:,2]<=czmax)]
                 pore_chunks.append([network,cpores,vox_len,fibre_rad,verts])
         
-    p = Pool(6)
-    chunk_vols = p.map(_get_voxel_volume, pore_chunks)
+    #p = Pool(6)
+    #chunk_vols = p.map(_get_voxel_volume, pore_chunks)
     for chunk_id in range(len(pore_chunks)):
-        #chunk_vols = _get_voxel_volume(pore_chunks[chunk_id])
+        chunk_vols = _get_voxel_volume(pore_chunks[chunk_id])
         volume[pore_chunks[chunk_id][1]]=chunk_vols[chunk_id]
     return volume[geom_pores]
 
