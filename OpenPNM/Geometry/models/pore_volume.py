@@ -70,9 +70,10 @@ def _get_voxel_volume(chunk_data):
     #pore_space = np.add.reduce(pore_space, axis=0)
     pore_space = ndimage.distance_transform_edt(pore_space)
     fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
-    fibre_space[pore_space<=fibre_rad]=1
-    fibre_space[pore_space>fibre_rad]=0
-    hull_method = 1
+    fibre_space[pore_space<=fibre_rad]=0
+    fibre_space[pore_space>fibre_rad]=1
+    pore_space = ndimage.distance_transform_edt(fibre_space)
+    hull_method = 4
     if hull_method == 1:
         "Hull method 1 - Brute Force"
         hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
@@ -100,21 +101,36 @@ def _get_voxel_volume(chunk_data):
         del grid
         del closest_dist
         del dist2
-    else:            
+    elif hull_method == 3:            
         "Hull method 3"
         "Watershedding the distance inverse distance transform"
         from skimage.morphology import watershed
-        markers = np.zeros(np.shape(pore_space),dtype=np.int16)
+        markers = np.zeros(np.shape(pore_space),dtype=int)
+        #markers.fill(False)
         for i,point in enumerate(np.around(temp_points/vox_len).astype(int)):
             try:
                 markers[point[0]][point[1]][point[2]]=i+1
             except:
                 pass
+        #markers = ndimage.label(local_maxi)[0]
         hull_space = watershed(-pore_space, markers, mask=fibre_space)
         hull_space -= 1
+    else:
+        "Hull method 4"
+        "Random Walker Segmentation"
+        from skimage.segmentation import random_walker
+        markers = np.zeros(np.shape(pore_space),dtype=int)
+        #markers.fill(False)
+        for i,point in enumerate(np.around(temp_points/vox_len).astype(int)):
+            try:
+                markers[point[0]][point[1]][point[2]]=i
+            except:
+                pass
+        markers[fibre_space==0] = -1
+        hull_space = random_walker(fibre_space, markers)
             
     for index,pore in enumerate(cpores):
-        in_pore = (fibre_space == 0)&(hull_space==pore)
+        in_pore = (fibre_space == 1)&(hull_space==pore)
         volume[index] = np.sum(in_pore)*voxel
     #if export_mat:
     #    matlab_dict = {"fibres":fibre_space}
@@ -305,7 +321,7 @@ def voronoi_vox(network,
     lx = np.int((domain[0]/vox_len))
     ly = np.int((domain[1]/vox_len))
     lz = np.int((domain[2]/vox_len))
-    chunk_len = 100
+    chunk_len = 50
     "If domain to big need to split into chunks to manage memory"    
     if (lx > chunk_len) or (ly > chunk_len) or (lz > chunk_len):
         cx = np.ceil(lx/chunk_len).astype(int)
@@ -335,7 +351,7 @@ def voronoi_vox(network,
     #chunk_vols = p.map(_get_voxel_volume, pore_chunks)
     for chunk_id in range(len(pore_chunks)):
         chunk_vols = _get_voxel_volume(pore_chunks[chunk_id])
-        volume[pore_chunks[chunk_id][1]]=chunk_vols[chunk_id]
+        volume[pore_chunks[chunk_id][1]]=chunk_vols
     return volume[geom_pores]
 
 #if __name__ == '__main__':
