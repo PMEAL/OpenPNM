@@ -22,7 +22,13 @@ def _get_voxel_volume(chunk_data):
     volume = _sp.zeros(len(cpores))
     #cpoints = network["pore.coords"][cpores]
     nbps = network.pores('boundary',mode='not')#get list of non-boundary pores, these have zero volume
-    all_points = network["pore.coords"][nbps]
+    neighbors = network.find_neighbor_pores(pores=cpores)
+    my_pores=[]
+    for pore in nbps:
+        if pore in cpores or pore in neighbors:
+            my_pores.append(pore)
+    my_pores = np.asarray(my_pores)
+    all_points = network["pore.coords"][my_pores]
     cthroats = network.find_neighbor_throats(pores=cpores)
     #geom_throats = network.map_throats(geometry,cthroats,return_mapping=True)["target"]
     
@@ -72,8 +78,8 @@ def _get_voxel_volume(chunk_data):
     fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
     fibre_space[pore_space<=fibre_rad]=0
     fibre_space[pore_space>fibre_rad]=1
-    pore_space = ndimage.distance_transform_edt(fibre_space)
-    hull_method = 4
+    #pore_space = ndimage.distance_transform_edt(fibre_space)
+    hull_method = 5
     if hull_method == 1:
         "Hull method 1 - Brute Force"
         hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
@@ -85,7 +91,7 @@ def _get_voxel_volume(chunk_data):
                     diff = temp_points - coord
                     dist = np.sqrt(diff[:,0]**2 + diff[:,1]**2 + diff[:,2]**2)
                     closest = np.argmin(dist)
-                    hull_space[i][j][k]=nbps[closest]
+                    hull_space[i][j][k]=my_pores[closest]
     
     elif hull_method == 2:            
         "Hull method 2"
@@ -109,13 +115,14 @@ def _get_voxel_volume(chunk_data):
         #markers.fill(False)
         for i,point in enumerate(np.around(temp_points/vox_len).astype(int)):
             try:
-                markers[point[0]][point[1]][point[2]]=i+1
+                markers[point[0]][point[1]][point[2]]=my_pores[i]+1
             except:
                 pass
         #markers = ndimage.label(local_maxi)[0]
-        hull_space = watershed(-pore_space, markers, mask=fibre_space)
+        pore_space = ndimage.distance_transform_edt(markers==0)
+        hull_space = watershed(pore_space, markers, mask=fibre_space)
         hull_space -= 1
-    else:
+    elif hull_method == 4:
         "Hull method 4"
         "Random Walker Segmentation"
         from skimage.segmentation import random_walker
@@ -128,6 +135,21 @@ def _get_voxel_volume(chunk_data):
                 pass
         markers[fibre_space==0] = -1
         hull_space = random_walker(fibre_space, markers)
+    
+    else:
+        "Hull Method 5 - Skilearn Neighbors"
+        hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
+        from sklearn.neighbors import NearestNeighbors
+        temp_points /= vox_len
+        nbrs = NearestNeighbors(n_neighbors=1, algorithm='kd_tree').fit(temp_points)
+        qs = []
+        for i in range(lx):
+            for j in range(ly):
+                for k in range(lz):
+                    qs.append([i,j,k])
+        distances, indices = nbrs.kneighbors(qs)
+        for n, [i,j,k] in enumerate(qs):
+            hull_space[i][j][k]=my_pores[indices[n]]
             
     for index,pore in enumerate(cpores):
         in_pore = (fibre_space == 1)&(hull_space==pore)
@@ -321,7 +343,7 @@ def voronoi_vox(network,
     lx = np.int((domain[0]/vox_len))
     ly = np.int((domain[1]/vox_len))
     lz = np.int((domain[2]/vox_len))
-    chunk_len = 50
+    chunk_len = 100
     "If domain to big need to split into chunks to manage memory"    
     if (lx > chunk_len) or (ly > chunk_len) or (lz > chunk_len):
         cx = np.ceil(lx/chunk_len).astype(int)
@@ -347,11 +369,12 @@ def voronoi_vox(network,
                                         *(points[:,2]>=czmin)*(points[:,2]<=czmax)]
                 pore_chunks.append([network,cpores,vox_len,fibre_rad,verts])
         
-    #p = Pool(6)
+    #p = Pool(4)
     #chunk_vols = p.map(_get_voxel_volume, pore_chunks)
     for chunk_id in range(len(pore_chunks)):
-        chunk_vols = _get_voxel_volume(pore_chunks[chunk_id])
+        chunk_vols = _get_voxel_volume(pore_chunks[chunk_id]) #Command to run when not in parallel
         volume[pore_chunks[chunk_id][1]]=chunk_vols
+        #volume[pore_chunks[chunk_id][1]]=chunk_vols[chunk_id]
     return volume[geom_pores]
 
 #if __name__ == '__main__':
