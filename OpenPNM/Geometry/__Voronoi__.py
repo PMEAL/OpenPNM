@@ -37,41 +37,41 @@ class Voronoi(GenericGeometry):
         r'''
         '''
 
-        self.add_model(propname='pore.vertices',
-                       model=gm.pore_vertices.voronoi)
-        self.add_model(propname='throat.vertices',
-                       model=gm.throat_vertices.voronoi)
-        self.add_model(propname='throat.normal',
-                       model=gm.throat_normal.voronoi)
-        self.add_model(propname='throat.offset_vertices',
-                       model=gm.throat_offset_vertices.distance_transform,
-                       offset=fibre_rad,
-                       set_dependent = True)
+        self.models.add(propname='pore.vertices',
+                        model=gm.pore_vertices.voronoi)
+        self.models.add(propname='throat.vertices',
+                        model=gm.throat_vertices.voronoi)
+        self.models.add(propname='throat.normal',
+                        model=gm.throat_normal.voronoi)
+        self.models.add(propname='throat.offset_vertices',
+                        model=gm.throat_offset_vertices.distance_transform,
+                        offset=fibre_rad,
+                        set_dependent = True)
         "Remove throats that are fully occluded and pores with no connections"
         self._net.trim_occluded_throats()
         
-        self.add_model(propname='pore.seed',
-                       model=gm.pore_misc.random,
-                       seed=self._seed)
-        self.add_model(propname='throat.seed',
-                       model=gm.throat_misc.neighbor,
-                       pore_prop='pore.seed',
-                       mode='min')
-        self.add_model(propname='pore.volume',
-                       model=gm.pore_volume.voronoi)
-        self.add_model(propname='pore.diameter',
-                       model=gm.pore_diameter.voronoi)
-        self.add_model(propname='pore.area',
-                       model=gm.pore_area.spherical)          
-        self.add_model(propname='throat.diameter',
-                       model=gm.throat_diameter.voronoi)
-        self.add_model(propname='throat.length',
-                       model=gm.throat_length.constant,
-                       const=fibre_rad*2)
-        self.add_model(propname='throat.volume',
-                       model=gm.throat_volume.extrusion)
-        self.add_model(propname='throat.surface_area',
-                       model=gm.throat_surface_area.extrusion)
+        self.models.add(propname='pore.seed',
+                        model=gm.pore_misc.random,
+                        seed=self._seed)
+        self.models.add(propname='throat.seed',
+                        model=gm.throat_misc.neighbor,
+                        pore_prop='pore.seed',
+                        mode='min')
+        self.models.add(propname='pore.volume',
+                        model=gm.pore_volume.voronoi)
+        self.models.add(propname='pore.diameter',
+                        model=gm.pore_diameter.voronoi)
+        self.models.add(propname='pore.area',
+                        model=gm.pore_area.spherical)          
+        self.models.add(propname='throat.diameter',
+                        model=gm.throat_diameter.voronoi)
+        self.models.add(propname='throat.length',
+                        model=gm.throat_length.constant,
+                        const=fibre_rad*2)
+        self.models.add(propname='throat.volume',
+                        model=gm.throat_volume.extrusion)
+        self.models.add(propname='throat.surface_area',
+                        model=gm.throat_surface_area.extrusion)
                        
         "Old Methods Replaced by Distance Transform"
         #self.add_model(propname='throat.area',
