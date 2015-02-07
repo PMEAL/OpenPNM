@@ -329,7 +329,7 @@ def test_geometries():
     pn = OpenPNM.Network.TestNet()
     geom = OpenPNM.Geometry.Toray090(network=pn,pores=pn.Ps,throats=pn.Ts)
     ctrl.clear()
-    pn = OpenPNM.Network.TestNet()
+    pn = OpenPNM.Network.Delaunay(num_pores=20,domain_size=[1,1,1])
     geom = OpenPNM.Geometry.Voronoi(network=pn,pores=pn.Ps,throats=pn.Ts)
     ctrl.clear()
     
