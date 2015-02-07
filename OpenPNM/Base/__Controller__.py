@@ -241,17 +241,35 @@ class Controller(dict):
         >>> ctrl = OpenPNM.Base.Controller()
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn2 = ctrl.ghost_object(pn)
-        >>> pn is pn2  # A clone of pn is created
+        >>> pn is pn2  # A copy of pn is created
         False
-        >>> pn2.keys() == pn.keys()
+        >>> pn2.keys() == pn.keys()  # They have otherwise identical data
         True
         >>> pn2.controller is ctrl # pn2 is not associated with existing Controller
         False
+        
+        It can also be used to create ghosts of other object types:
+        
+        >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
+        >>> geo2 = ctrl.ghost_object(geom)
+        >>> geom is geo2
+        False
+        >>> geom.name == geo2.name  # Ghost has same name as ancestor
+        True
+        >>> geo2 is ctrl[geo2.name]  # But they are not the same object
+        False
+        >>> geo2.controller  # The ghost is not registered with the Controller
+        {}
+        >>> # The following comparisons look at some 'behind the scenes' information
+        >>> geo2._net == geom._net  # The ghost and ancestor are assoicated with the same Network
+        True
+        >>> geo2 in pn._geometries  # But the Network remains aware of the ancestor only
+        False
 
         '''
-        obj_new = _copy.deepcopy(obj)
+        obj_new = _copy.copy(obj)
         obj_new.__dict__ = obj.__dict__
-        obj_new.controller = {}
+        obj_new._ctrl = {}
         del self[obj.name]
         self[obj.name] = obj
         return obj_new

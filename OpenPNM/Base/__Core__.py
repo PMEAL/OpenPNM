@@ -47,6 +47,12 @@ class Core(dict):
         self.__class__.__module__,
         self.__class__.__name__,
         hex(id(self)))
+        
+    def __eq__(self,other):
+        if hex(id(self)) == hex(id(other)):
+            return True
+        else:
+            return False
 
     def __setitem__(self,key,value):
         r'''
