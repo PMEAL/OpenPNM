@@ -303,6 +303,29 @@ def test_mapping():
     a = geom3.map_throats(throats=geom3.Ts,target=pn)
     b = pn.map_throats(throats=a,target=geom3)
     assert(sp.all(b == geom3.Ts))
+    
+def test_geometries():
+    ctrl = OpenPNM.Base.Controller()
+    pn = OpenPNM.Network.TestNet()
+    geom = OpenPNM.Geometry.Boundary(network=pn,pores=pn.Ps,throats=pn.Ts)
+    ctrl.clear()
+    pn = OpenPNM.Network.TestNet()
+    geom = OpenPNM.Geometry.Cube_and_Cuboid(network=pn,pores=pn.Ps,throats=pn.Ts)
+    ctrl.clear()
+    pn = OpenPNM.Network.TestNet()
+    geom = OpenPNM.Geometry.SGL10(network=pn,pores=pn.Ps,throats=pn.Ts)
+    ctrl.clear()
+    pn = OpenPNM.Network.TestNet()
+    geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.Ps,throats=pn.Ts)
+    ctrl.clear()
+    pn = OpenPNM.Network.TestNet()
+    geom = OpenPNM.Geometry.Toray090(network=pn,pores=pn.Ps,throats=pn.Ts)
+    ctrl.clear()
+    pn = OpenPNM.Network.TestNet()
+    geom = OpenPNM.Geometry.Voronoi(network=pn,pores=pn.Ps,throats=pn.Ts)
+    ctrl.clear()
+    
+    
 
 if __name__ == '__main__':
   pytest.main()
