@@ -276,6 +276,20 @@ class ModelsDict(OrderedDict):
             master[propname] = self[propname].regenerate()
         if regen_mode in ['deferred','on_demand']:
             pass
+        
+    def remove(self,propname):
+        r'''
+        Removes selected model from the dictionary, as well as removing its
+        associated data from the master Core object.
+        
+        Parameters
+        ----------
+        propname : string
+            The name of the model to remove
+        '''
+        master = self._find_master()
+        temp = master.pop(propname,None)
+        del self[propname]
 
     def reorder(self,new_order):
         r'''
