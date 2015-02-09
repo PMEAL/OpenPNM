@@ -389,7 +389,8 @@ class GenericLinearTransport(GenericAlgorithm):
             try:
                 temp = self.pores(self._phase.name+'_Dirichlet',mode='difference')
             except:
-                raise Exception('The linear transport solver needs at least one Dirichlet boundary condition for the phase which is attached to '+self.name)
+                temp = self.pores()
+                logger.warning('No direct Dirichlet boundary condition has been applied to the phase '+self._phase.name+' in the algorithm '+self.name)
             loc1 = sp.in1d(tpore1,temp)
             loc2 = sp.in1d(tpore2,temp)
             modified_tpore1 = tpore1[loc1]
