@@ -34,7 +34,7 @@ def _get_vertex_range(verts):
             vzmax = np.max(vert[:,2])
     return [vxmin,vxmax,vymin,vymax,vzmin,vzmax]
     
-def _get_fibre_image(network,cpores,vox_len,fibre_rad,verts,export_mat=False,mat_file='OpenPNMFibres'):
+def _get_fibre_image(network,cpores,vox_len,fibre_rad,export_mat=False,mat_file='OpenPNMFibres'):
     r"""
     Produce image by filling in voxels along throat edges using Bresenham line
     Then performing distance transform on fibre voxels to erode the pore space
@@ -42,7 +42,12 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,verts,export_mat=False,mat
 
     cthroats = network.find_neighbor_throats(pores=cpores)
     #geom_throats = network.map_throats(geometry,cthroats,return_mapping=True)["target"]
-    
+    "Below method copied from geometry model throat.vertices"
+    "Needed now as network may not have all throats assigned to geometry"
+    "i.e network['throat.vertices'] could return garbage"
+    verts = _sp.ndarray(network.num_throats(),dtype=object)
+    for i in range(len(verts)):
+        verts[i]=_sp.asarray(list(network["throat.vert_index"][i].values()))
     cverts = verts[cthroats]
     [vxmin,vxmax,vymin,vymax,vzmin,vzmax] = _get_vertex_range(cverts)
     "Translate vertices so that minimum occurs at the origin"
@@ -101,7 +106,7 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,verts,export_mat=False,mat
     #print("Size of Fibre Space: "+str(np.size(fibre_space)))
     return fibre_space
 
-def _get_voxel_volume(network,chunk,vox_len,fibre_rad,verts,fibre_image):
+def _get_voxel_volume(network,chunk,vox_len,fibre_rad,fibre_image):
     r"""
     Calculate the volume by divinding space into voxels, working out nearest neighours to get hulls
     returns number of voxels in pore both fibre and open space portions
@@ -312,8 +317,7 @@ def voronoi(network,
 def voronoi_vox(network,
                 geometry,
                 fibre_rad,
-                export_mat='False',
-                mat_file='mat_file',
+                vox_len = 1e-6,
                 **kwargs):
     r"""
     Compute the pore volumes by creating a voxel image of the domain with Bresenham lines creating fibres
@@ -327,19 +331,13 @@ def voronoi_vox(network,
     volume = _sp.zeros(Np)
     pore_vox = _sp.zeros(Np,dtype=int)
     fibre_vox = _sp.zeros(Np,dtype=int)
-    vox_len=1e-6
     voxel = vox_len**3
    
     fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len,0).astype(int) #voxel length
 
-    "Below method copied from geometry model throat.vertices"
-    "Needed now as network may not have all throats assigned to geometry"
-    "i.e network['throat.vertices'] could return garbage"
-    verts = _sp.ndarray(network.num_throats(),dtype=object)
-    for i in range(len(verts)):
-        verts[i]=_sp.asarray(list(network["throat.vert_index"][i].values()))
     "Get the fibre image"
-    fibre_image = _get_fibre_image(network,geom_pores,vox_len,fibre_rad,verts)
+    fibre_image = _get_fibre_image(network,geom_pores,vox_len,fibre_rad)
+    geometry._fibre_image = fibre_image
     fibre_shape = np.asarray(np.shape(fibre_image))
     fibre_split = np.around(fibre_shape/100)
     indx = np.arange(0,fibre_shape[0])
@@ -352,7 +350,7 @@ def voronoi_vox(network,
             for ck in np.array_split(indz,fibre_split[2]):
                 
                 logger.info("Processing Chunk: "+str(cnum))
-                chunk_pvols,chunk_fvols,chunk_pores = _get_voxel_volume(network,[ci,cj,ck],vox_len,fibre_rad,verts,fibre_image) 
+                chunk_pvols,chunk_fvols,chunk_pores = _get_voxel_volume(network,[ci,cj,ck],vox_len,fibre_rad,fibre_image) 
                 volume[chunk_pores] += chunk_pvols*voxel # this volume may not be the entire pore volume as some pores span multiple chunks, hence the addition
                 pore_vox[chunk_pores] +=chunk_pvols               
                 fibre_vox[chunk_pores] +=chunk_fvols
