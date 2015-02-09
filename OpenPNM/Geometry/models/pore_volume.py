@@ -13,6 +13,8 @@ from multiprocessing import Pool
 from scipy import ndimage
 from scipy.io import savemat
 import gc
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 def _get_vertex_range(verts):
     "Find the extent of the vetrices"
@@ -48,7 +50,7 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,verts,export_mat=False,mat
         cverts[index] -= np.array([vxmin,vymin,vzmin])
     "Find new size of image array"
     cdomain=np.around(np.array([(vxmax-vxmin),(vymax-vymin),(vzmax-vzmin)]),6)
-    print("Fibre Domain Range: "+str(np.around(cdomain,5)))            
+    logger.info("Creating fibre domain range: "+str(np.around(cdomain,5)))            
     lx = np.int(np.around(cdomain[0]/vox_len)+1)
     ly = np.int(np.around(cdomain[1]/vox_len)+1)
     lz = np.int(np.around(cdomain[2]/vox_len)+1)
@@ -95,8 +97,8 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,verts,export_mat=False,mat
         matlab_dict = {"fibres":fibre_space}
         savemat(mat_file+str(lx)+str(ly)+str(lz),matlab_dict,format='5',long_field_names=True)
     porosity = np.around(np.sum(fibre_space)/np.size(fibre_space),3)
-    print("Porosity from fibre image: "+str(porosity) )
-    print("Size of Fibre Space: "+str(np.size(fibre_space)))
+    #print("Porosity from fibre image: "+str(porosity) )
+    #print("Size of Fibre Space: "+str(np.size(fibre_space)))
     return fibre_space
 
 def _get_voxel_volume(network,chunk,vox_len,fibre_rad,verts,fibre_image):
@@ -135,10 +137,10 @@ def _get_voxel_volume(network,chunk,vox_len,fibre_rad,verts,fibre_image):
     fibre_space = fibre_image[ci[0]:ci[0]+lx,cj[0]:cj[0]+ly,ck[0]:ck[0]+lz]
     
     "Assign each voxel in he chunk the index of its nearest neighbor - Skilearn Neighbors"
-    hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
+    hull_space=np.zeros([lx,ly,lz],dtype=int)
     from sklearn.neighbors import NearestNeighbors
     my_points /= vox_len
-    my_points -= np.array([ci[0],cj[0],ck[0]])
+    my_points -= np.array([ci[0],cj[0],ck[0]]).astype(float)
     "Zero the indices to fit with the chunk indices"
     ci -= ci[0]
     cj -= cj[0]
@@ -158,7 +160,7 @@ def _get_voxel_volume(network,chunk,vox_len,fibre_rad,verts,fibre_image):
     for index,pore in enumerate(my_pores):
         pore_volume[index] = np.sum((fibre_space == 1)&(hull_space==pore))
         fibre_volume[index] = np.sum((fibre_space == 0)&(hull_space==pore))
-    print("Size of Chunk Space: "+str(np.size(hull_space)))
+    logger.info("Size of Chunk Space: "+str(np.size(hull_space)))
     del fibre_space
     del hull_space
     gc.collect()
@@ -323,8 +325,8 @@ def voronoi_vox(network,
     Np = network.num_pores()
     geom_pores = geometry.map_pores(network,geometry.pores())
     volume = _sp.zeros(Np)
-    pore_vox = _sp.zeros(Np,dtype=np.uint16)
-    fibre_vox = _sp.zeros(Np,dtype=np.uint16)
+    pore_vox = _sp.zeros(Np,dtype=int)
+    fibre_vox = _sp.zeros(Np,dtype=int)
     vox_len=1e-6
     voxel = vox_len**3
    
@@ -349,7 +351,7 @@ def voronoi_vox(network,
         for cj in np.array_split(indy,fibre_split[1]):
             for ck in np.array_split(indz,fibre_split[2]):
                 
-                print("Processing Chunk: "+str(cnum))
+                logger.info("Processing Chunk: "+str(cnum))
                 chunk_pvols,chunk_fvols,chunk_pores = _get_voxel_volume(network,[ci,cj,ck],vox_len,fibre_rad,verts,fibre_image) 
                 volume[chunk_pores] += chunk_pvols*voxel # this volume may not be the entire pore volume as some pores span multiple chunks, hence the addition
                 pore_vox[chunk_pores] +=chunk_pvols               

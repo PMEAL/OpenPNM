@@ -610,9 +610,8 @@ class Delaunay(GenericNetwork):
         After the offsetting routine throats with zero area have been fully occluded.
         Remove these from the network and also remove pores that are isolated
         """
-        occluded_ts = list(self.throats()[self["throat.area"]==0])
-        #occluded_throats = np.asarray(occluded_throats)
-        if len(occluded_ts) > 0:
+        occluded_ts = self["throat.area"]==0
+        if np.sum(occluded_ts) > 0:
             self.trim(throats=occluded_ts)
         "Also get rid of isolated pores"
         isolated_ps = self.pores()[np.asarray(self.isolated_pores())]

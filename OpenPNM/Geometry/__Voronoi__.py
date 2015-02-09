@@ -69,7 +69,7 @@ class Voronoi(GenericGeometry):
                         model=gm.throat_volume.extrusion)
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.extrusion)
-        self.add_model(propname='throat.c2c',
+        self.models.add(propname='throat.c2c',
                        model=gm.throat_length.voronoi)
 
     
