@@ -3,98 +3,25 @@
 ===============================================================================
 General Overview
 ===============================================================================
-Before diving into the detailed workings of each OpenPNM module, it is worthwhile to give a general overview of the common features shared by each object. As mentioned, the OpenPNM objects descend from the Python ``dict`` object, and have additional methods added.  This section will outline the inheritance structure and document the various methods that are common to all OpenPNM objects.
+Before diving into the detailed workings of each Core object, it is worthwhile to give an overview of the general behavior of these objects.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Base Class
+The Core Class
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-The Base class descends directly from ``dict``.  It contains very high level functionality, specifically: the logger and its associated machinery, methods for looking-up names and retrieving associated objects,  the saving and loading of individual objects, and controlling the object naming conventions.  
+The Core objects in an OpenPNM simulation descend from the Python ``dict`` class, and have additional methods added.  All of the main OpenPNM objects are children of Core, and hence are often referred to collectively as 'Core' objects.  This section will outline features common to the Core objects.  
 
 -------------------------------------------------------------------------------
-Naming
+Data Storage
 -------------------------------------------------------------------------------
-All OpenPNM objects are given a name upon instantiation.  The name can be specified in the initialization statement:
+Each OpenPNM Core object is a ``dictionary`` which is the Python equivalent to a structured variable or struct in other languages.  This allows data to be stored on the object and accessed by name, with a syntax like ``network[‘pore.diameter’]``.  All pore and throat data are stored as 1D vectors or lists, of either Np or Nt length representing the number of pores and throats in the Network (or object), respectively.  This means that each pore (or throat) has a number, and all properties for that pore (or throat) are stored in the array corresponding to that number.  Thus, the diameter for pore 15 is stored in the ‘pore.diameter’ array in element 15, and the length of throat 32 is stored in the ‘throat.length’ array at element 32.  All data is converted to a Numpy array when stored in the dictionary.  Numpy is the *de facto* standard numerical data type in Python.  Not only does this list-based approach allow for any topology to be stored in an equivalent manner, but it is optimal for vectorised coding, thus enabling high performance numerical operations with the Numpy and Scipy libraries which support vectorised, element-wise operations on multicore processors.   
 
->>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],name='test_net_1')
->>> pn.name
-'test_net_1'
+Several rules have been implemented to control the integrity of the data, as described in the note below.  Firstly, all list names must begin with either ‘pore’ or ‘throat’ which obviously serves to identify the type of information stored there.  Secondly, for the sake of consistency only data arrays of length Np or Nt are allowed in the dictionary.  This rule forces the user to be cognizant of the list-based numbering scheme used to identify pores and throats.  Any scalar values written to the dictionaries are broadcast into full length vectors, effectively applying the scalar value to all locations.  Attempts to write only partial data to a subset of pores or throats will result in the assignment of ‘NaN’ values (Not-a-Number) to other locations.  Finally, any data that is Boolean will be treated as a ``label`` while all other numerical data is treated as a ``property``.  The difference between these is outlined below.  
 
+Data is stored in a compartmentalized fashion, with topological information on the Network object, and geometrical information the Geometry objects.  Though very helpful, this practice leads to a possible point of confusion: since there can be and usually are multiple Geometry objects the number of pores (and throats) stored on each Geometry object differs from the total number of pores (and throats) in the full Network.  Moreover, on each individual Core object the pores are stored using their own internal numbering, so pore 100 on the Network may be pore 1 on a Geometry object.  There are methods for mapping between objects (``map_pores`` and ``map_throats``) to help track these numbering mismatches.  
 
-The name of an object is stored under the attribute 'name', but it is not possible to *write* to this attribute after instantiation.  OpenPNM prevents renaming objects since many of the interactions between objects are based on object names.  For the same reason it is also not possible to have two objects with the same name associated with a Network.  If a name is not provided, then a name will be automatically generated by appending 5 random characters to the class name (e.g. 'Cubic_riTSw').  The Base class takes care of all these requirements.  
+.. note:: **__setitem**
 
--------------------------------------------------------------------------------
-Object Lookup and Retrieval
--------------------------------------------------------------------------------
-Every OpenPNM object 'registers' itself with the Network when it is instantiated, which allows the Network to track all objects.  Physics objects also register themselves with the Phase object to which it applies.  When a multicomponent Phase is composed of several 'pure' Phase objects, the pure phases register themselves with the 'mixture' Phase.  All of these associations are necessary to understand who talks to whom.  The Base class contains methods for inspecting the relationships between objects.  It is possible to ask any object to list its associated ``geometries``, ``phases``, ``physics`` and ``network``, although in many cases the response will be an empty list.
-
-.. code-block:: python
-	
-	pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-	N2 = OpenPNM.Phases.GenericPhase(network=pn,name='pure_N2')
-	O2 = OpenPNM.Phases.GenericPhase(network=pn,name='pure_O2')
-	air = OpenPNM.Phases.GenericPhase(network=pn,name='air',components=[N2,O2])
-
-When asking the 'air' object for its ``phases``, it will return two Phases, indicating that 'air' is a mixture:
-
->>> air.phases()
-['pure_N2', 'pure_O2']
-
-It is also possible to receive a handle to the actual object by sending its name as an argument:
-
->>> pn.phases('air')
-[<OpenPNM.Phases.__GenericPhase__.GenericPhase object at 0x6586d68>]
-
-It is also possible to remove objects from a simulation using the ``remove_object`` method.  This method accepts both an object name, or the actual object.  It removes all references to the object from all associated objects, including removing any labels that may have been generated (i.e. the Geometry object creates a label in the Network indicating where it applies).
-
->>> pn.remove_object(obj_name='air')
-
--------------------------------------------------------------------------------
-Saving and Loading Objects
--------------------------------------------------------------------------------
-Individual objects can be saved to a file using ``save``.  This creates a 'Numpy zip file' with the specified file name in the working directory.  This process saves all of the data from the current object, but *none* of its object associations.  The purpose of this is to save Algorithm objects which can take a significant amount of time to run.  It is also useful for loading in specific Network objects with known properties (for diagnostics), or Networks that were time consuming to generate (like Voronoi).  The ``load`` method is available on instantiated objects, so to load data it is necessary to create an empty object to receive the saved data:
-
->>> pn = OpenPNM.Network.GenericNetwork()
->>> pn.load('filename')
-
-.. note:: Saving and Loading Entire Simulations
-
-    OpenPNM has the ability to save entire simulations, including all objects, their object associations, all data and all models.  The functionality is found in the Utilities.IO .Load and .Save classes.  OpenPNM saves simulations in a '.pnm' file extension, which is a varient of the '.npz' Numpy zip format.
-
--------------------------------------------------------------------------------
-Logger
--------------------------------------------------------------------------------
-All objects have the ability to output logger messages to the console.  Calls to the logger can be found throughout the code for providing warnings and notifications of events.  Logger messages are categorized as either 'debug' (10), 'info' (20), 'warning' (30), 'error' (40), and 'critical' (50), as follows:
-
->>> pn._logger.debug('this is a diagnostic message')
->>> pn._logger.error('an error has occurred')
-
-It is possible to suppress all messages below a certain threshold by setting the ``loglevel`` argument when initializing an object:
-
->>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],loglevel=10)
-
-It is also possible to set the loglevel after instantiation:
-
->>> pn.set_loglevel(40)
-
-This is most useful for silencing Algorithm objects that might be run multiple times.  
-
-Finally, it is possible to set the name of the logger so that the messages can be clearly identified on the command line. This is done during instantiation too:
-
->>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],loggername='new_network',loglevel=10)
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Core Class
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-The Core class is a child of the Base class, and its methods are all related to the management of data.  All of the main OpenPNM objects are children of Core. It would be equivalent to combine Base and Core into a single class since all inheritance is a direct path from Base, through Core, to the main objects.  The separation is helpful for categorizing what each class does. 
-
--------------------------------------------------------------------------------
-__setitem__
--------------------------------------------------------------------------------
-``__setitem_`` is the private method on ``dict`` that is called when the dictionary syntax is used to write values, so ``pn['pore.test'] = 0`` is equivalent to ``pn.__setitem__('pore.test',0)``.  OpenPNM subclasses the ``__setitem__`` method to intercept data and ensure it meets certain criteria before being written to the objects.  The two main rules are that (1) all dictionary keys must start with either 'pore' or 'throat', and (2) all data must be of the correct length, either Np or Nt long, where Nt is the number of throats and Np is the number of pores on the object.
-
-.. note:: **Setters and Getters**
-
-    The Core class contains four methods called ``get_data``, ``set_data``, ``get_info`` and ``set_info``.  These methods are an alternative way to read and write property and label values, which might be more familiar to those accustomed to coding in C++.  
+    ``__setitem_`` is the private method on ``dict`` that is called when the dictionary syntax is used to write values, so ``pn['pore.test'] = 0`` is equivalent to ``pn.__setitem__('pore.test',0)``.  OpenPNM subclasses the ``__setitem__`` method to intercept data and ensure it meets certain criteria before being written to the objects.  The two main rules are that (1) all dictionary keys must start with either 'pore' or 'throat', and (2) all data must be of the correct length, either Np or Nt long, where Nt is the number of throats and Np is the number of pores on the object.
 
 -------------------------------------------------------------------------------
 Properties and Labels
@@ -169,17 +96,31 @@ array([ 2,  5,  8, 11, 14, 17, 20, 23, 26], dtype=int64)
 
 The ``pores`` and ``throats`` methods both accept a 'mode' argument that allows for set-theory logic to be applied to the query, such as returning 'unions' and 'intersections' of locations. For complete details see the docstring for these methods.  
 
+Often, one wants a list of all pore or throat indices on an object, so there are shortcut methods for this: ``Ps`` and ``Ts``.
+
 .. note:: **The Importance of the 'all' Label**
 
    All objects are instantiated with a 'pore.all' and a 'throat.all' label.  These arrays are essential to the framework since they are used to define how long the 'pore' and 'throat' data arrays must be.  In other words, the ``__setitem__`` method checks to make sure that any 'pore' array it receives has the same length as 'pore.all'.  Moreover, the ``pores``, ``throats``, ``num_pores`` and ``num_throats`` methods all have the label 'all' as their default so if no label is sent 'all' pores or throats are considered.  
 
-
 -------------------------------------------------------------------------------
-Add, Remove and Regenerate Models
+Naming
 -------------------------------------------------------------------------------
-The final major functionality that is contained in Core is the ability to add 'models' to the various objects.  Models are one of the most important aspects of OpenPNM, as they allow the user to specify a 'model' for calculating 'pore.volume', rather than just entering values into geometry_object['pore.volume'] array.  Models are also one of the more obscure and confusing parts of OpenPNM. In the remaining documentation, the use of models are demonstrated many times, so this section will outline how models and the ``add_model`` method works in general.  
+All OpenPNM objects are given a name upon instantiation.  The name can be specified in the initialization statement:
 
-Models are functions included with OpenPNM for calculating a pore or throat property.  For instance, given a list of pore seed values, there is a model for calculating the diameter of the pores based on a specified statistical distribution.  Models are stored under each module in a folder called 'models'.  For instance, Geometry.models.pore_diameter contains several methods for calculating pore diameters.  
+>>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],name='test_net_1')
+>>> pn.name
+'test_net_1'
+
+The name of an object is stored under the attribute 'name'. If a name is not provided, then a name will be automatically generated by appending 5 random characters to the class name (e.g. 'Cubic_riTSw').  It is also not possible to have two objects with the same name associated with a Network.  Names can be changed by simply assigning a new string to the ``name``.  
+   
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Models Dictionary
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Models are one of the most important aspects of OpenPNM, as they allow the user to specify a 'model' for calculating 'pore.volume', rather than just entering numerical values into a geometry_object['pore.volume'] array.  It is mainly through customized models that users can tailor OpenPNM to a specific situation, though OpenPNM includes a variety of pre-written models.  These are stored under each Module in a folder called 'models'.  For instance, Geometry.models.pore_diameter contains several methods for calculating pore diameters.  
+
+Each Core object has a ``models`` attribute where all information about pore-scale models are stored.  Upon instantiation of each ``Core`` object, a ``ModelsDict`` object is stored in its ``models`` attribute.  The ``ModelsDict`` class is a subclass of the Python ``dict`` class, which has several features added for dealing specifically with models.  A detailed description of the Models Dictionary class can be found :ref:`here<models>`.
+
+Adding a model to an object 
 
 The ``add_model`` method accepts 3 main types of argument.  
 
@@ -192,14 +133,12 @@ These 3 requirements are well demonstrated by the random pore seed model:
 .. code-block:: python
 
 	geom = OpenPNM.Geometry.GenericGeometry()  # Creates an empty Geometry object
-	mod = OpenPNM.Geometry.models.pore_misc.random
-	geom.add_model(propname='pore.seed',model=mod,seed=0)
+	mod = OpenPNM.Geometry.models.pore_misc.random  # Get a handle to the desired model
+	geom.add_model(propname='pore.seed',model=mod,seed=0)  # Assign model to the object
 	
 The *propname* and *model* arguments are required by the ``add_model`` method, but the *seed* argument is passed on the model, and it specifies the initialization value for the random number generator.  
 
 The ``add_model`` method actually runs the model and places the data in the dictionary given by *propname*. It also saves the model in a special dictionary attached tyo the object (object.models) also under the same *propname*.  When the data is requested from the object it returns the 'static' copy located in the object's dictionary.  In order to recalculate the data the model stored in the private dictionary must be rerun.  This is accomplished with the ``regenerate`` method.  This method takes an optional list of *propnames* that should be regenerated.  It should also be pointed out that models are regenerated in the order that they were added to the object so some care must be taken to ensure that changes in property values cascade through the object correctly.  
-
-It is also possible to remove a model that is not longer needed using ``remove_model``.  This method requires only the *propname* of the model that is to be removed.  After removal of the model, the data (say 'pore.seed') will remain constant upon ``regeneration``.  The actual data can be removed by the usual dictionary methods (pop), or an optional *mode* = 'clean' argument can be sent to the ``remove_model`` method which will delete the model and the data dictionary.  
 
 
 

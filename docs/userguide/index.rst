@@ -17,4 +17,5 @@ Contents:
    phases.rst
    physics.rst
    algorithms.rst
+   models.rst
    customizing.rst
