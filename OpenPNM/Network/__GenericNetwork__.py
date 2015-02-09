@@ -727,7 +727,7 @@ class GenericNetwork(Core):
             if net._parent is self:
                 raise Exception('This Network has been cloned, cannot trim')
 
-        if pores is not []:
+        if pores != []:
             pores = sp.array(pores,ndmin=1)
             Pkeep = sp.ones((self.num_pores(),),dtype=bool)
             Pkeep[pores] = False
@@ -735,7 +735,7 @@ class GenericNetwork(Core):
             Ts = self.find_neighbor_throats(pores)
             if len(Ts)>0:
                 Tkeep[Ts] = False
-        elif throats is not []:
+        elif throats != []:
             throats = sp.array(throats,ndmin=1)
             Tkeep = sp.ones((self.num_throats(),),dtype=bool)
             Tkeep[throats] = False
