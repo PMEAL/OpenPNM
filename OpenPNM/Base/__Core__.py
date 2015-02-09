@@ -121,13 +121,18 @@ class Core(dict):
     controller = property(_get_ctrl,_set_ctrl)
 
     def _set_name(self,name):
-        if self._ctrl.get(name) is not None:
+        if name in self.controller.keys():
             raise Exception('An object named '+name+' already exists')
         elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
             name = self.__module__.split('.')[-1].strip('__') + '_' + name
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
+            # Check if name collides with any arrays in the simulation
+            for item in self._simulation():
+                keys = [key.split('.')[-1] for key in item.keys()]
+                if name in keys:
+                    raise Exception('That name is already in use as an array name')
             objs = []
             if self._net is not None:
                 objs.append(self._net)
@@ -145,6 +150,14 @@ class Core(dict):
         return self._name
 
     name = property(_get_name,_set_name)
+    
+    def _simulation(self):
+        temp = []
+        temp += [self._net]
+        temp += self._net._phases
+        temp += self._net._geometries
+        temp += self._net._physics
+        return temp
     
     def clear(self):
         r'''
