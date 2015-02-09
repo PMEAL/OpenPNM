@@ -98,6 +98,5 @@ except Exception as e:
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-import OpenPNM.Utilities.IO as io
-io.VTK.save(network=pn,phases=[air,water])
+ctrl.export()
 

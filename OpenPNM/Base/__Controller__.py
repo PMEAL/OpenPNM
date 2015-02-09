@@ -372,12 +372,17 @@ class Controller(dict):
             self.clear()
         self = _pickle.load(open(filename+'.pnm','rb'))
 
-    def export(self,filename='',fileformat='VTK'):
+    def export(self,network=None,filename='',fileformat='VTK'):
         r'''
         Export data to the specified file format.
 
         Parameters
         ----------
+        network : OpenPNM Network Object
+            This Network and all of its phases will be written to the specified 
+            file.  If no Netowrk is given it will check to ensure that only one
+            Network exists on the Controller and use that.  If there is more 
+            than one Network an error is thrown.
         filename : string, optional
             The file name to save as.  If no name is given then the name of
             suppiled object is used.  If no object is given, the name of the
@@ -389,16 +394,19 @@ class Controller(dict):
             2. MAT: Suitable for loading data into Matlab for post-processing
 
         '''
+        if network is None:
+            if len(self.networks()) == 1:
+                network = self.networks()[0]
+            else:
+                raise Exception('Multiple Networks found, please specify which to Export')
         import OpenPNM.Utilities.IO as io
         if fileformat == 'VTK':
-            net = self.networks()[0]
-            phases = net._phases
-            io.VTK.save(filename=filename,network=net,phases=phases)
+            phases = network._phases
+            io.VTK.save(filename=filename,network=network,phases=phases)
             return
         if fileformat == 'MAT':
-            net = self.networks()[0]
-            phases = net._phases
-            io.MAT.save(filename=filename,network=net,phases=phases)
+            phases = network._phases
+            io.MAT.save(filename=filename,network=network,phases=phases)
             return
 
     def _script(self,filename,mode='read'):
