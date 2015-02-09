@@ -51,7 +51,13 @@ class GenericNetwork(Core):
             return self._interleave_data(key,self.geometries())
         else:
             return super(GenericNetwork,self).__getitem__(key)
-
+            
+    def _set_net(self,network):
+        pass
+    def _get_net(self):
+        return self
+    _net = property(fset=_set_net,fget=_get_net)
+    
     #--------------------------------------------------------------------------
     '''Graph Theory and Network Query Methods'''
     #--------------------------------------------------------------------------
@@ -717,8 +723,11 @@ class GenericNetwork(Core):
         296
 
         '''
+        for net in self.controller.networks():
+            if net._parent is self:
+                raise Exception('This Network has been cloned, cannot trim')
 
-        if pores != []:
+        if pores is not []:
             pores = sp.array(pores,ndmin=1)
             Pkeep = sp.ones((self.num_pores(),),dtype=bool)
             Pkeep[pores] = False
@@ -726,7 +735,7 @@ class GenericNetwork(Core):
             Ts = self.find_neighbor_throats(pores)
             if len(Ts)>0:
                 Tkeep[Ts] = False
-        elif throats != []:
+        elif throats is not []:
             throats = sp.array(throats,ndmin=1)
             Tkeep = sp.ones((self.num_throats(),),dtype=bool)
             Tkeep[throats] = False

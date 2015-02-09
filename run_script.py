@@ -1,7 +1,7 @@
 import OpenPNM
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 from OpenPNM.Geometry import models as gm
-sim = OpenPNM.Base.Controller()
+ctrl = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================

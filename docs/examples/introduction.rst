@@ -163,34 +163,14 @@ Visualise the results
 
 We can now visualise our network and results.
 
-
--------------------------------------------------------------------------------
-Use the Python vtk module
--------------------------------------------------------------------------------
-
-For a quick look, it could be done thanks to the Python vtk module. The following lines below allow you to create the 3D cubic network with spheres 	 representing the pores. The throats are coloured by the value of throats capillary pressure.
-
-
-
-.. code-block:: python
-
-	from OpenPNM.Postprocessing.Graphics import Scene, Wires, Spheres
-	Cp = water.get_data(prop='capillary_pressure',pores='all',mode='interpolate')
-	wires = Wires(pn['pore.coords'], pn['throat.conns'],Cp)
-	sphere = Spheres(centers=pn['pore.coords'] ,radii=geom['pore.diameter']*1)  
-	scene = Scene()    
-	scene.add_actors([wires,sphere])
-	scene.play()
-
-
 -------------------------------------------------------------------------------
 Use Paraview
 -------------------------------------------------------------------------------
-For more detailed visualisaton, the data created by OpenPNM may be exported to a vtk ASCII file to be loaded through Paraview.
+The data created by OpenPNM may be exported to a vtk ASCII file to be loaded through Paraview.
 
 .. code-block:: python
 
-	import OpenPNM.Postprocessing.IO as io
+	import OpenPNM.Utilities.IO as io
 	io.VTK.save(network=pn,phases=[air,water])
 	
 This creates a *net.vtp* file in the active directory, which can be loaded from ParaView. Visualisation of the pores can be achieved by using 3D Glyphs.

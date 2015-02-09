@@ -36,7 +36,9 @@ class GenericModel(dict):
             keys = inspect.getargspec(self['model']).args[-len(vals):]
             # Put defaults into the dict
             defs.update(zip(keys,vals))
-        for item in self.keys():
+        keys = list(self.keys())
+        keys.sort()
+        for item in keys:
             if item not in ['model','network','geometry','phase','physics','propname']:
                 if item not in defs.keys():
                     defs[item] = '---'
@@ -68,13 +70,13 @@ class GenericModel(dict):
         return self['model'](**kwargs)
         
     def _find_master(self):
-        sim = Controller()
+        ctrl = Controller()
         master = []
-        for item in sim.keys():
-            if sim[item].models is not None:
-                for model in sim[item].models.keys():
-                    if sim[item].models[model] is self:
-                        master.append(sim[item])
+        for item in ctrl.keys():
+            if ctrl[item].models is not None:
+                for model in ctrl[item].models.keys():
+                    if ctrl[item].models[model] is self:
+                        master.append(ctrl[item])
         if len(master) > 1:
             raise Exception('More than one master found! This model dictionary has been associated with multiple objects. To use the same dictionary multiple times use the copy method.')
         return master[0]
@@ -98,8 +100,8 @@ class ModelsDict(OrderedDict):
     #     Property Name                  Regeneration Mode   
     ------------------------------------------------------------
     0     pore.seed                      normal              
-    1     throat.seed                    normal              
-    2     throat.length                  normal              
+    1     throat.length                  normal              
+    2     throat.seed                    normal              
     ------------------------------------------------------------
     
     It is possible to use the ModelsDict from one object with another object:
@@ -115,8 +117,8 @@ class ModelsDict(OrderedDict):
     #     Property Name                  Regeneration Mode   
     ------------------------------------------------------------
     0     pore.seed                      normal              
-    1     throat.seed                    normal              
-    2     throat.length                  normal              
+    1     throat.length                  normal              
+    2     throat.seed                    normal              
     ------------------------------------------------------------
     
 
@@ -247,9 +249,9 @@ class ModelsDict(OrderedDict):
         ------------------------------------------------------------
         Argument Name        Value / (Default)
         ------------------------------------------------------------
-        regen_mode           normal / (---)
-        seed                 None / (None)
         num_range            [0, 1] / ([0, 1])
+        regen_mode           normal / (---)
+        seed                 1 / (None)
         ------------------------------------------------------------
 
         '''
@@ -274,6 +276,20 @@ class ModelsDict(OrderedDict):
             master[propname] = self[propname].regenerate()
         if regen_mode in ['deferred','on_demand']:
             pass
+        
+    def remove(self,propname):
+        r'''
+        Removes selected model from the dictionary, as well as removing its
+        associated data from the master Core object.
+        
+        Parameters
+        ----------
+        propname : string
+            The name of the model to remove
+        '''
+        master = self._find_master()
+        temp = master.pop(propname,None)
+        del self[propname]
 
     def reorder(self,new_order):
         r'''
@@ -312,11 +328,11 @@ class ModelsDict(OrderedDict):
             self.move_to_end(item)
         
     def _find_master(self):
-        sim = Controller()
+        ctrl = Controller()
         master = []
-        for item in sim.keys():
-            if sim[item].models is self:
-                master.append(sim[item])
+        for item in ctrl.keys():
+            if ctrl[item].models is self:
+                master.append(ctrl[item])
         if len(master) > 1:
             raise Exception('More than one master found! This model dictionary has been associated with multiple objects. To use the same dictionary multiple times use the copy method.')
         return master[0]

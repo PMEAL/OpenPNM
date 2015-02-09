@@ -68,13 +68,12 @@ class Cubic(GenericNetwork):
     to create a Cubic network with many connections and the trim some:
     
     >>> pn = OpenPNM.Network.Cubic(shape=[5,5,5],connectivity=26)
-    >>> pn.Nt
-    1036
+    >>> Nt_original = pn.Nt
     >>> mod = OpenPNM.Network.models.pore_topology.reduce_coordination
     >>> pn.add_model(propname='throat.to_drop',model=mod,z=10,mode='random')
     >>> pn.trim(throats=pn['throat.to_drop'])
-    >>> pn.Nt
-    667
+    >>> pn.Nt < Nt_original
+    True
     """
     def __init__(self, shape=None, template=None, spacing=1, connectivity=6, **kwargs):
         super(Cubic, self).__init__(**kwargs)
