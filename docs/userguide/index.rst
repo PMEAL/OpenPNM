@@ -11,7 +11,7 @@ Contents:
 
    installation.rst   
    getting_started.rst
-   general_usage.rst
+   general_overview.rst
    network.rst
    geometry.rst
    phases.rst

@@ -1,4 +1,4 @@
-.. _general:
+.. _overview:
 
 ===============================================================================
 General Overview
@@ -120,15 +120,12 @@ Models are one of the most important aspects of OpenPNM, as they allow the user 
 
 Each Core object has a ``models`` attribute where all information about pore-scale models are stored.  Upon instantiation of each ``Core`` object, a ``ModelsDict`` object is stored in its ``models`` attribute.  The ``ModelsDict`` class is a subclass of the Python ``dict`` class, which has several features added for dealing specifically with models.  A detailed description of the Models Dictionary class can be found :ref:`here<models>`.
 
-Adding a model to an object 
+Adding a model to an object is done as follows:
 
-The ``add_model`` method accepts 3 main types of argument.  
+(1) A handle to the desired model is retrieved.
+(2) The models is attached to the target object using ``add_model``.
 
-(1) It needs to know which pore or throat property does this model calculate.  This is the *propname* argument, and would be 'pore.seed' or 'pore.diameter' for the example above.
-(2) It needs the actual function that should be used.  In Python it is possible to pass a function as an argument as easily as passing an integer.  The  *model* argument should be a handle to the function of choice such as Geometry.models.pore_size.sphere.
-(3) It can optionally accept an arbitrary number of arguments that will be passed directly to the 'model'.  
-
-These 3 requirements are well demonstrated by the random pore seed model:
+This process is demonstrated by added a random pore seed model to a Geometry object:
 
 .. code-block:: python
 
@@ -138,7 +135,7 @@ These 3 requirements are well demonstrated by the random pore seed model:
 	
 The *propname* and *model* arguments are required by the ``add_model`` method, but the *seed* argument is passed on the model, and it specifies the initialization value for the random number generator.  
 
-The ``add_model`` method actually runs the model and places the data in the dictionary given by *propname*. It also saves the model in a special dictionary attached tyo the object (object.models) also under the same *propname*.  When the data is requested from the object it returns the 'static' copy located in the object's dictionary.  In order to recalculate the data the model stored in the private dictionary must be rerun.  This is accomplished with the ``regenerate`` method.  This method takes an optional list of *propnames* that should be regenerated.  It should also be pointed out that models are regenerated in the order that they were added to the object so some care must be taken to ensure that changes in property values cascade through the object correctly.  
+The ``add_model`` method runs the model and places the data in the dictionary given by *propname*. It also saves the model in a special dictionary attached to the object (object.models) also under the same *propname*.  When the data is requested from the object it returns the 'static' copy located in the object's dictionary.  In order to recalculate the data the model stored in the private dictionary must be rerun.  This is accomplished with the ``regenerate`` method.  This method takes an optional list of *propnames* that should be regenerated.  It should also be pointed out that models are regenerated in the order that they were added to the object so some care must be taken to ensure that changes in property values cascade through the object correctly.  The ``ModelsDict`` class has functions for updating the model order.
 
 
 
