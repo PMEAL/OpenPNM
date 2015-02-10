@@ -14,6 +14,7 @@ from scipy import ndimage
 from scipy.io import savemat
 import gc
 from OpenPNM.Base import logging
+from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
 def _get_vertex_range(verts):
@@ -34,7 +35,7 @@ def _get_vertex_range(verts):
             vzmax = np.max(vert[:,2])
     return [vxmin,vxmax,vymin,vymax,vzmin,vzmax]
     
-def _get_fibre_image(network,cpores,vox_len,fibre_rad,export_mat=False,mat_file='OpenPNMFibres'):
+def _get_fibre_image(network,cpores,vox_len,fibre_rad,add_boundary=True):
     r"""
     Produce image by filling in voxels along throat edges using Bresenham line
     Then performing distance transform on fibre voxels to erode the pore space
@@ -76,6 +77,7 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,export_mat=False,mat_file=
     else:
         cx = cy = cz = 1
     fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
+    boundary_space = np.zeros(shape=[lx,ly,lz],dtype=np.uint8)
     for ci in range(cx):
         for cj in range(cy):
             for ck in range(cz):
@@ -96,15 +98,23 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,export_mat=False,mat_file=
                 dt = ndimage.distance_transform_edt(pore_space[cxmin:cxmax,cymin:cymax,czmin:czmax])
                 fibre_space[cxmin:cxmax,cymin:cymax,czmin:czmax][dt<=fibre_rad]=0
                 fibre_space[cxmin:cxmax,cymin:cymax,czmin:czmax][dt>fibre_rad]=1
+                items = itemfreq(dt)[:,0]
+                if add_boundary:
+                    b = 1
+                    for i,d in enumerate(items):
+                        if d > fibre_rad:
+                            boundary_space[cxmin:cxmax,cymin:cymax,czmin:czmax][dt==d]=b
+                            b += 1
                 del dt
     del pore_space
-    if export_mat:
-        matlab_dict = {"fibres":fibre_space}
-        savemat(mat_file+str(lx)+str(ly)+str(lz),matlab_dict,format='5',long_field_names=True)
+    
     porosity = np.around(np.sum(fibre_space)/np.size(fibre_space),3)
     #print("Porosity from fibre image: "+str(porosity) )
     #print("Size of Fibre Space: "+str(np.size(fibre_space)))
-    return fibre_space
+    if add_boundary:
+        return fibre_space, boundary_space
+    else:
+        return fibre_space
 
 def _get_voxel_volume(network,chunk,vox_len,fibre_rad,fibre_image):
     r"""
@@ -336,8 +346,9 @@ def voronoi_vox(network,
     fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len,0).astype(int) #voxel length
 
     "Get the fibre image"
-    fibre_image = _get_fibre_image(network,geom_pores,vox_len,fibre_rad)
-    geometry._fibre_image = fibre_image
+    fibre_image,boundary_image = _get_fibre_image(network,geom_pores,vox_len,fibre_rad,add_boundary=True)
+    geometry._fibre_image = fibre_image #save as private variables
+    geometry._fibre_image_boundary = boundary_image
     fibre_shape = np.asarray(np.shape(fibre_image))
     fibre_split = np.around(fibre_shape/100)
     indx = np.arange(0,fibre_shape[0])

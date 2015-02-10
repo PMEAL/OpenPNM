@@ -9,11 +9,16 @@ Voronoi Diagram Used with Delaunay Network but could work for others (not tested
 """
 
 import scipy as sp
+import numpy as np
 from OpenPNM.Geometry import models as gm
+import OpenPNM.Utilities.vertexops as vo
 from OpenPNM.Geometry import GenericGeometry
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 import matplotlib.pyplot as plt
+from scipy.io import savemat
+from scipy import ndimage
+from scipy.stats import itemfreq
 
 class Voronoi(GenericGeometry):
     r"""
@@ -58,7 +63,9 @@ class Voronoi(GenericGeometry):
                         pore_prop='pore.seed',
                         mode='min')
         self.models.add(propname='pore.volume',
-                        model=gm.pore_volume.voronoi)
+                        model=gm.pore_volume.voronoi_vox,fibre_rad=fibre_rad)
+        self.models.add(propname='pore.centroid',
+                        model=gm.pore_centroid.voronoi)
         self.models.add(propname='pore.diameter',
                         model=gm.pore_diameter.voronoi)
         self.models.add(propname='pore.area',
@@ -75,14 +82,25 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='throat.c2c',
                        model=gm.throat_length.voronoi)
 
-    def make_fibre_image(self,fibre_rad=3.5e-6,vox_len=1e-6):
+    def make_fibre_image(self,fibre_rad=3.5e-6,vox_len=1e-6,add_boundary=False):
         r'''
         If the voronoi voxel method was implemented to calculate pore volumes an image of the fibre space
         has already been calculated and stored on the geometry. If not generate it
         '''
-        import OpenPNM.Geometry.models as gm
+        
+        if (self._fibre_image is None) or (add_boundary and self.fibre_image_boundary is None):
+            self._fibre_image = gm.pore_volume._get_fibre_image(self._net,self.pores(),vox_len,fibre_rad,add_boundary)
+    
+    def export_fibre_image(self,mat_file='OpenPNMFibres'):
+        r'''
+        If the voronoi voxel method was implemented to calculate pore volumes an image of the fibre space
+        has already been calculated and stored on the geometry. If not generate it
+        '''
         if self._fibre_image is None:
-            self._fibre_image = gm.pore_volume._get_fibre_image(self._net,self.pores(),vox_len,fibre_rad)
+            logger.warning("Fibre image must be generated first")
+            return
+        matlab_dict = {"fibres":self._fibre_image}
+        savemat(mat_file,matlab_dict,format='5',long_field_names=True)
         
     def get_fibre_slice(self,plane=None,index=None):
         r'''
@@ -224,6 +242,82 @@ class Voronoi(GenericGeometry):
         print("Fibre voxels before compression: "+str(sp.sum(slice_image==0)))
         print("Fibre voxels after compression: "+str(sp.sum(compressed_image==0)))
         
+    def compress_geometry(self,factor=None):
+        r'''
+        Adjust the vertices and recalculate geometry. Save fibre voxels before and after then put them 
+        back into the image to preserve fibre volume. Shape will not be conserved. Also make adjustments 
+        to the pore and throat properties given an approximate volume change from adding the missing fibre
+        voxels back in
+        '''
+        if factor is None:
+            logger.warning("Please supply a compression factor in the form [1,1,CR], with CR < 1")
+            return
+        if sp.any(sp.asarray(factor)>1):
+            logger.warning("The supplied compression factor is greater than 1, the method is not tested for stretching")
+            return
+        fvu = self["pore.fibre_voxels"] # uncompressed number of fibre voxels in each pore
+        vo.scale(network=self._net,scale_factor=factor,preserve_vol=False)
+        self.models.regenerate()
+        fvc = self["pore.fibre_voxels"] # compressed number of fibre voxels in each pore
+        vox_diff = fvu-fvc # Number of fibre voxels to put back into each pore
+        n = sp.sum(vox_diff) # Total number of voxels to put back into image
+        vol_diff = (fvu-fvc)*1e-18 # amount to adjust pore volumes by
+        self["pore.volume"] -= vol_diff
+        "Now need to adjust the pore diameters"
+        from scipy.special import cbrt
+        rdiff = cbrt(3*np.abs(vol_diff)/(4*sp.pi))
+        r1 = self["pore.diameter"]/2
+        self["pore.diameter"] -= 2*rdiff*sp.sign(vol_diff)
+        "Now as a crude approximation adjust all the throat areas and diameters"
+        "by the same ratio as the increase in a spherical pore surface area"
+        spd = 2*rdiff/r1 + (rdiff/r1)**2 # surface-area percentage difference
+        tconns = self._net["throat.conns"][self.map_throats(self._net,self.throats())]
+        "Need to work out the average volume change for the two pores connected by each throat"
+        "Boundary pores will be connected to a throat outside this geometry if there are multiple geoms so get mapping"
+        mapping = self._net.map_pores(self,self._net.pores(),return_mapping=True)
+        source = list(mapping['source'])
+        target = list(mapping['target'])
+        ta_diff_avg = np.zeros(len(tconns))
+        for i in np.arange(len(tconns)):
+            np1,np2 = tconns[i]
+            if np1 in source and np2 in source:
+                gp1 = target[source.index(np1)]
+                gp2 = target[source.index(np2)]
+                ta_diff_avg[i] = (spd[gp1]*sp.sign(vol_diff[gp1])+spd[gp2]*sp.sign(vol_diff[gp2]))/2
+            elif np1 in source:
+                gp1 = target[source.index(np1)]
+                ta_diff_avg[i] = spd[gp1]*sp.sign(vol_diff[gp1])
+            elif np2 in mapping['source']:
+                gp2 = target[source.index(np2)]
+                ta_diff_avg[i] = spd[gp2]*sp.sign(vol_diff[gp2])
+                
+        self["throat.area"] *= 1+ta_diff_avg
+        self["throat.area"][self["throat.area"]<0]=0
+        self["throat.diameter"] = 2*sp.sqrt(self["throat.area"]/sp.pi)
+        "Now the recreated fibre image will have the wrong number of fibre volumes so add them back in at semi-random"
+        dt = ndimage.distance_transform_edt(self._fibre_image) #distance transform image to identify boundary layer
+        "Cycle through to find distance corresponding roughly to where new fibre layer should be"
+        for l in itemfreq(dt)[1:,0]:
+            sel = (dt>0)*(dt<=l)
+            b = sp.sum(sel) #boundary layer
+            if b < n:
+                self._fibre_image[dt<l]=0 # expand fibre space to fill whole boundary layer
+                n -= b # adjust n to be remainder
+            else:
+                if n > 0:
+                    m = 0
+                    for i in sp.nditer(sel,op_flags=['readwrite']): #only keep n True values in the selection
+                        if i == True and m >= n:
+                            i[...] = False
+                            m +=1
+                        elif i == True:
+                            m +=1
+                    self._fibre_image[sel]=0 # expand fibre space to fill first n boundary layer voxels
+                    break
+                else:
+                    break
+        if sp.sum(self._fibre_image==0) != sp.sum(fvu):
+            print("Something went wrong with compression")
 if __name__ == '__main__':
     import OpenPNM
     pn = OpenPNM.Network.Delaunay(name='test_net')

@@ -682,11 +682,11 @@ def porosity(network):
     """
     domain_vol=vertex_dimension(network,network.pores(),parm='volume')
     try:
-        pore_vol=sum(network["pore.volume"])
+        pore_vol=np.sum(network["pore.volume"])
     except KeyError:
         print("Geometries must be assigned first")
         pore_vol=0
-    porosity = pore_vol/domain_vol
+    porosity = np.around(pore_vol/domain_vol,3)
     return porosity
 
 def pore2centroid(network):
