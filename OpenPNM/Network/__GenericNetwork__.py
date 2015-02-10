@@ -9,7 +9,7 @@ import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import OpenPNM.Utilities.misc as misc
-from OpenPNM.Base import Core
+from OpenPNM.Base import Core, Tools
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 

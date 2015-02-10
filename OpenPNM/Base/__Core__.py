@@ -1322,7 +1322,6 @@ class Core(dict):
                     query = True
             return query
             
-
     def check_data_health(self,props=[],element='',quiet=False):
         r'''
         Check the health of pore and throat data arrays.
@@ -1359,7 +1358,7 @@ class Core(dict):
         >>> health
         True
         '''
-        health = Tools.PrintableDict()
+        health = Tools.HealthDict()
         if props == []:
             props = self.props(element)
         else:
@@ -1377,12 +1376,7 @@ class Core(dict):
         #Print health dictionary to console
         if quiet == False:
             print(health)
-        #Return single flag indicating overall health
-        flag = True
-        for item in health:
-            if health[item] != 'Healthy':
-                flag = False
-        return flag
+        return health
 
     def __str__(self):
         header = '-'*60

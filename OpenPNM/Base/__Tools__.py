@@ -19,6 +19,10 @@ class PrintableList(list):
         return header
 
 class PrintableDict(_odict):
+    def __repr__(self):
+        text = dict(self).__str__()
+        return text
+
     def __str__(self):
         header = '-'*60
         print(header)
@@ -44,3 +48,24 @@ class ClonedCore(dict):
     def __init__(self,obj):
         self.update(obj)
         self.name = obj.name
+
+class HealthDict(PrintableDict):
+    def __bool__(self):
+        health = True
+        for item in self.keys():
+            if self[item] is not 'Healthy':
+                health = False
+        return health
+        
+    def __eq__(self,other):
+        health = self.__bool__()
+        if health == other:
+            return True
+        else:
+            return False
+        
+        
+        
+        
+        
+        
