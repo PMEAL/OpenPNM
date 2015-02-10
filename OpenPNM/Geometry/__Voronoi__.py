@@ -295,13 +295,13 @@ class Voronoi(GenericGeometry):
         self["throat.area"][self["throat.area"]<0]=0
         self["throat.diameter"] = 2*sp.sqrt(self["throat.area"]/sp.pi)
         "Now the recreated fibre image will have the wrong number of fibre volumes so add them back in at semi-random"
-        dt = ndimage.distance_transform_edt(self._fibre_image) #distance transform image to identify boundary layer
+        b_img = self._fibre_image_boundary #distance transform image to identify boundary layer
         "Cycle through to find distance corresponding roughly to where new fibre layer should be"
-        for l in itemfreq(dt)[1:,0]:
-            sel = (dt>0)*(dt<=l)
-            b = sp.sum(sel) #boundary layer
+        for l in itemfreq(b_img)[1:,0]:
+            sel = (b_img == l)
+            b = sp.sum(sel) #number of voxels in current boundary layer
             if b < n:
-                self._fibre_image[dt<l]=0 # expand fibre space to fill whole boundary layer
+                self._fibre_image[sel]=0 # expand fibre space to fill whole boundary layer
                 n -= b # adjust n to be remainder
             else:
                 if n > 0:
