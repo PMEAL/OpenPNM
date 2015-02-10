@@ -129,16 +129,11 @@ class Core(dict):
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
-            for item in self._simulation():
+            objs = self._simulation()
+            for item in objs:
                 keys = [key.split('.')[-1] for key in item.keys()]
                 if name in keys:
                     raise Exception('That name is already in use as an array name')
-            objs = []
-            if self._net is not None:
-                objs.append(self._net)
-            objs.extend(self._geometries)
-            objs.extend(self._phases)
-            objs.extend(self._physics)
             for item in objs:
                 if 'pore.'+self.name in item.keys():
                     item['pore.'+name] = item.pop('pore.'+self.name)
@@ -175,13 +170,11 @@ class Core(dict):
     #Note: These methods have been moved to the ModelsDict class but are left
     #here for backward compatibility
     def add_model(self,propname,model,regen_mode='normal',**kwargs):
-        logger.warning('This method deprecated, use obj.models.add()')
         self.models.add(propname=propname,model=model,regen_mode=regen_mode,**kwargs)
         
     add_model.__doc__ = ModelsDict.add.__doc__
         
     def regenerate(self,props='',mode='inclusive'):
-        logger.warning('This method is deprecated, use obj.models.regenerate()')
         self.models.regenerate(props=props,mode=mode)
 
     regenerate.__doc__ = ModelsDict.regenerate.__doc__
@@ -1365,7 +1358,6 @@ class Core(dict):
         ------------------------------------------------------------
         >>> health
         True
-
         '''
         health = Tools.PrintableDict()
         if props == []:
@@ -1429,5 +1421,5 @@ class Core(dict):
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod(verbose=True)
+    doctest.testmod(verbose=False)
 
