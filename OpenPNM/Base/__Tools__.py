@@ -29,7 +29,7 @@ class PrintableDict(_odict):
         print("{a:<25s} {b:<25s}".format(a='key', b='value'))
         print(header)
         for item in self.keys():
-            print("{a:<25s} {b:<25s}".format(a=item, b=self[item]))
+            print("{a:<25s} {b}".format(a=item, b=self[item]))
         print(header)
         return ''
         
@@ -50,19 +50,30 @@ class ClonedCore(dict):
         self.name = obj.name
 
 class HealthDict(PrintableDict):
+    def __repr__(self):
+        if self.health:
+            text = True
+        else:
+            text = False
+        return text.__str__()
+        
     def __bool__(self):
         health = True
         for item in self.keys():
-            if self[item] is not 'Healthy':
+            if self[item] != []:
                 health = False
         return health
         
     def __eq__(self,other):
-        health = self.__bool__()
-        if health == other:
+        if self.health == other:
             return True
         else:
             return False
+    
+    def _get_health(self):
+        return self.__bool__()
+    
+    health = property(fget=_get_health)
         
         
         
