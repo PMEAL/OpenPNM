@@ -42,19 +42,36 @@ def test_controller():
     assert 'pore.'+geom2.name not in pn2.keys()  # Geometry label is removed from Simulation objects too
     
 def test_cubic_standard_call():
-  pn = OpenPNM.Network.Cubic(shape=[3,4,5])
-  np.testing.assert_almost_equal(pn['pore.coords'][0], [0.5,0.5,0.5])
+    pn = OpenPNM.Network.Cubic(shape=[3,4,5])
+    np.testing.assert_almost_equal(pn['pore.coords'][0], [0.5,0.5,0.5])
 
 def test_trim_extend():
-  pn = OpenPNM.Network.Cubic(shape=[5,5,5])
-  assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25]))
-  assert [pn.Np,pn.Nt] == [125,300]
-  pn.trim(pores=[0])
-  assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25]))
-  assert [pn.Np,pn.Nt] == [124,297]
-  pn.extend(pore_coords=[0,0,0],throat_conns=[[124,0]])
-  assert [pn.Np,pn.Nt] == [125,298]
-  assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25, 124]))
+    pn = OpenPNM.Network.Cubic(shape=[5,5,5])
+    assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25]))
+    assert [pn.Np,pn.Nt] == [125,300]
+    pn.trim(pores=[0])
+    assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25]))
+    assert [pn.Np,pn.Nt] == [124,297]
+    pn.extend(pore_coords=[0,0,0],throat_conns=[[124,0]])
+    assert [pn.Np,pn.Nt] == [125,298]
+    assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25, 124]))
+  
+def test_stitch():
+    ctrl = OpenPNM.Base.Controller()
+    [Nx,Ny,Nz]=[10,10,10]
+    pn = OpenPNM.Network.Cubic(shape=[Nx,Ny,Nz])
+    pn2 = OpenPNM.Network.Cubic(shape=[Nx,Ny,Nz])
+    pn2['pore.coords'][:,2] += Nz
+    pn.stitch(donor=pn2,pores_1=pn.pores('top'),pores_2=pn2.pores('bottom'),len_max=1,method='delaunay')
+    assert pn.Np == 2*pn2.Np  # Ensure number of pores doubled
+    assert pn.Nt == 2*pn2.Nt + Nx*Ny  # Ensure correct number of new stitch throats
+    assert pn2 not in ctrl.values()  # Donor Network is removed from Controller
+    # Reuse the donor Network in another stitch
+    pn2['pore.coords'][:,2] -= 2*Nz
+    pn.stitch(donor=pn2,pores_1=pn.pores('bottom'),pores_2=pn2.pores('top'),len_max=1,method='nearest')
+    assert pn.Np == 3*pn2.Np  # Ensure number of pores increased again
+    assert pn.Nt == 3*pn2.Nt + 2*Nx*Ny  # Ensure correct number of new stitch throats
+    ctrl.clear()
 
 def test_linear_solvers():
   pn = OpenPNM.Network.Cubic([1,40,30], spacing=0.0001)
