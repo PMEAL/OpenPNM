@@ -50,28 +50,18 @@ class ClonedCore(dict):
         self.name = obj.name
 
 class HealthDict(PrintableDict):
-    def __repr__(self):
-        if self.health:
-            text = True
-        else:
-            text = False
-        return text.__str__()
-        
-    def __bool__(self):
+    r'''
+    This class adds a 'health' check to a standard dictionary.  This check 
+    looks into the dict values, and considers empty lists as healthy and all 
+    else as unhealthy.  If one or more entries is 'unhealthy' the health method
+    returns False.
+    '''            
+    def _get_health(self):
         health = True
         for item in self.keys():
             if self[item] != []:
                 health = False
         return health
-        
-    def __eq__(self,other):
-        if self.health == other:
-            return True
-        else:
-            return False
-    
-    def _get_health(self):
-        return self.__bool__()
     
     health = property(fget=_get_health)
         
