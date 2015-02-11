@@ -1322,8 +1322,7 @@ class Core(dict):
                     query = True
             return query
             
-
-    def check_data_health(self,props=[],element='',quiet=False):
+    def check_data_health(self,props=[],element=''):
         r'''
         Check the health of pore and throat data arrays.
 
@@ -1335,38 +1334,36 @@ class Core(dict):
         props : list of pore (or throat) properties, optional
             If given, will limit the health checks to only the specfied
             properties.  Also useful for checking existance.
-        quiet : bool, optional
-            By default this method will output a summary of the health check.
-            This can be disabled by setting quiet to False.
 
         Returns
         -------
-        Returns a True if all check pass, and False if any checks fail.  This
-        is ideal for programatically checking data integrity prior to running
-        an algorithm.
+        Returns a HealthDict object which a basic dictionary with an added 
+        ``health`` attribute that is True is all entries in the dict are
+        deemed healthy (empty lists), or False otherwise.
 
         Examples
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> health = pn.check_data_health()
+        >>> print(health)
         ------------------------------------------------------------
         key                       value                    
         ------------------------------------------------------------
-        throat.conns              Healthy          
-        pore.coords               Healthy                                          
+        throat.conns              []
+        pore.coords               []
         ------------------------------------------------------------
-        >>> health
+        >>> a.health
         True
         '''
-        health = Tools.PrintableDict()
+        health = Tools.HealthDict()
         if props == []:
             props = self.props(element)
         else:
             if type(props) == str:
                 props = [props]
         for item in props:
-            health[item] = 'Healthy'
+            health[item] = []
             try:
                 if sp.sum(sp.isnan(self[item])) > 0:
                     health[item] = 'Has NaNs'
@@ -1374,15 +1371,7 @@ class Core(dict):
                     health[item] = 'Wrong Length'
             except:
                 health[item] = 'Does not exist'
-        #Print health dictionary to console
-        if quiet == False:
-            print(health)
-        #Return single flag indicating overall health
-        flag = True
-        for item in health:
-            if health[item] != 'Healthy':
-                flag = False
-        return flag
+        return health
 
     def __str__(self):
         header = '-'*60

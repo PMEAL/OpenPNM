@@ -47,7 +47,7 @@ class GenericLinearTransport(GenericAlgorithm):
             self._conductance = 'throat.'+conductance.split('.')[-1]
             self._quantity = 'pore.'+self._phase.name+'_'+quantity.split('.')[-1]
             #Check health of conductance vector
-            if self._phase.check_data_health(props=self._conductance,quiet=True):
+            if self._phase.check_data_health(props=self._conductance).health:
                 self['throat.conductance'] = self._phase[self._conductance]
             else:
                 raise Exception('The provided throat conductance has problems')
