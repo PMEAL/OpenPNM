@@ -86,7 +86,7 @@ def distance_transform(network,
         "translate points so min sits at the origin"
         translation = [pts[:,0].min(),pts[:,1].min()]
         pts -= translation
-        order = math.ceil(-np.log10(np.max(pts)))
+        order = np.int(math.ceil(-np.log10(np.max(pts))))
         "Normalise and scale the points so that largest span equals the resolution to save on memory and create clear image"
         max_factor = np.max([pts[:,0].max(),pts[:,1].max()])
         f = res/max_factor

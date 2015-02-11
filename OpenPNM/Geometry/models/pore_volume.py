@@ -60,34 +60,49 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,add_boundary=True):
     lx = np.int(np.around(cdomain[0]/vox_len)+1)
     ly = np.int(np.around(cdomain[1]/vox_len)+1)
     lz = np.int(np.around(cdomain[2]/vox_len)+1)
+    "Try to create all the arrays we will need at total domain size"
+    try:
+        pore_space=np.ones([lx,ly,lz],dtype=np.uint8)
+        fibre_space = np.zeros(shape=[lx,ly,lz],dtype=np.uint8)
+        boundary_space = np.zeros(shape=[lx,ly,lz],dtype=np.uint8)
+        dt = np.zeros([lx,ly,lz],dtype=float) # this is the big one
+        #only need one chunk
+        cx = cy = cz = 1
+        chunk_len = np.max(np.shape(pore_space))
+    except MemoryError:
+        logger.info("Domain too large to fit into memory so chunking domain to process image, this may take some time")
+        #do chunking
+        chunk_len = 100
+        if (lx > chunk_len): cx = np.ceil(lx/chunk_len).astype(int)
+        else: cx = 1
+        if (ly > chunk_len): cy = np.ceil(ly/chunk_len).astype(int)
+        else: cy = 1
+        if (lz > chunk_len): cz = np.ceil(lz/chunk_len).astype(int)
+        else: cz = 1
+
     "Define voxel image of pore space"
-    pore_space=np.ndarray([lx,ly,lz],dtype=np.uint8)
-    pore_space.fill(1)
+    #pore_space=np.ndarray([lx,ly,lz],dtype=np.uint8)
+    #pore_space.fill(1)
     "Get image of the fibres"
     line_points = bresenham(cverts,vox_len)
     line_ints = (np.around((line_points/vox_len),0)).astype(int)
     for x,y,z in line_ints:
         pore_space[x][y][z]=0
     #print("about to dt")
-    chunk_len = 100
-    if (lx > chunk_len) or (ly > chunk_len) or (lz > chunk_len):
-        cx = np.ceil(lx/chunk_len).astype(int)
-        cy = np.ceil(ly/chunk_len).astype(int)
-        cz = np.ceil(lz/chunk_len).astype(int)
-    else:
-        cx = cy = cz = 1
-    fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
-    boundary_space = np.zeros(shape=[lx,ly,lz],dtype=np.uint8)
+    
+    
+    #fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
+    #boundary_space = np.zeros(shape=[lx,ly,lz],dtype=np.uint8)
     for ci in range(cx):
         for cj in range(cy):
             for ck in range(cz):
                 "Work out chunk range"
                 cxmin = ci*chunk_len
-                cxmax = (ci+1)*chunk_len + 2*fibre_rad.astype(int)
+                cxmax = (ci+1)*chunk_len + 5*fibre_rad.astype(int)
                 cymin = cj*chunk_len
-                cymax = (cj+1)*chunk_len + 2*fibre_rad.astype(int)
+                cymax = (cj+1)*chunk_len + 5*fibre_rad.astype(int)
                 czmin = ck*chunk_len
-                czmax = (ck+1)*chunk_len + 2*fibre_rad.astype(int)
+                czmax = (ck+1)*chunk_len + 5*fibre_rad.astype(int)
                 "Don't overshoot"
                 if cxmax > lx:
                     cxmax = lx
@@ -350,7 +365,7 @@ def voronoi_vox(network,
     geometry._fibre_image = fibre_image #save as private variables
     geometry._fibre_image_boundary = boundary_image
     fibre_shape = np.asarray(np.shape(fibre_image))
-    fibre_split = np.around(fibre_shape/100)
+    fibre_split = np.ceil(fibre_shape/400)
     indx = np.arange(0,fibre_shape[0])
     indy = np.arange(0,fibre_shape[1])
     indz = np.arange(0,fibre_shape[2])

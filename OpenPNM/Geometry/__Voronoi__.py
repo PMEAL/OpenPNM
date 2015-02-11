@@ -64,6 +64,10 @@ class Voronoi(GenericGeometry):
                         mode='min')
         self.models.add(propname='pore.volume',
                         model=gm.pore_volume.voronoi_vox,fibre_rad=fibre_rad)
+        #trim pores with zero volume
+        tp = self.pores()[self['pore.volume']<=0.0]
+        self._net.trim(pores=self.map_pores(self._net,tp))
+        
         self.models.add(propname='pore.centroid',
                         model=gm.pore_centroid.voronoi)
         self.models.add(propname='pore.diameter',
@@ -256,17 +260,19 @@ class Voronoi(GenericGeometry):
             logger.warning("The supplied compression factor is greater than 1, the method is not tested for stretching")
             return
         fvu = self["pore.fibre_voxels"] # uncompressed number of fibre voxels in each pore
+        r1 = self["pore.diameter"]/2
         vo.scale(network=self._net,scale_factor=factor,preserve_vol=False)
         self.models.regenerate()
         fvc = self["pore.fibre_voxels"] # compressed number of fibre voxels in each pore
         vox_diff = fvu-fvc # Number of fibre voxels to put back into each pore
+        
         n = sp.sum(vox_diff) # Total number of voxels to put back into image
         vol_diff = (fvu-fvc)*1e-18 # amount to adjust pore volumes by
         self["pore.volume"] -= vol_diff
         "Now need to adjust the pore diameters"
         from scipy.special import cbrt
         rdiff = cbrt(3*np.abs(vol_diff)/(4*sp.pi))
-        r1 = self["pore.diameter"]/2
+        
         self["pore.diameter"] -= 2*rdiff*sp.sign(vol_diff)
         "Now as a crude approximation adjust all the throat areas and diameters"
         "by the same ratio as the increase in a spherical pore surface area"
@@ -318,6 +324,13 @@ class Voronoi(GenericGeometry):
                     break
         if sp.sum(self._fibre_image==0) != sp.sum(fvu):
             print("Something went wrong with compression")
+        
+        tt = self.throats()[self['throat.area']<=0.0] # trim throats
+        tp = self.pores()[self['pore.volume']<=0.0] # trim pores
+        self._net.trim(throats=self.map_throats(self._net,tt))
+        self._net.trim(pores=self.map_pores(self._net,tp))
+        self._net.trim_occluded_throats() # this removes pores with zero throats
+        
 if __name__ == '__main__':
     import OpenPNM
     pn = OpenPNM.Network.Delaunay(name='test_net')
