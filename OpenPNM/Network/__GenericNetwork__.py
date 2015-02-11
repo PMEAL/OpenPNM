@@ -819,6 +819,26 @@ class GenericNetwork(Core):
 
             - 'delaunay' : Use a Delaunay tessellation
             - 'nearest' : Connects each pore on the receptor network to its nearest pore on the donor network
+            
+        Notes
+        -----
+        Before stitching it is necessary to translate the pore coordinates of 
+        one of the Networks so that it is positioned correctly relative to the
+        other.  
+        
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn2 = OpenPNM.Network.TestNet()
+        >>> [pn.Np, pn.Nt]
+        [125, 300]
+        >>> [pn2.Np, pn2.Nt]
+        [125, 300]
+        >>> pn2['pore.coords'][:,2] += 5.0  # Translate pn2 up 5 units in the Z-direction
+        >>> pn.stitch(donor=pn2,pores_1=pn.pores('top'),pores_2=pn2.pores('bottom'),len_max=1.0)
+        >>> [pn.Np, pn.Nt]
+        [250, 625]
 
         '''
         # Ensure Networks have no associated objects yet
