@@ -1337,9 +1337,9 @@ class Core(dict):
 
         Returns
         -------
-        Returns a True if all check pass, and False if any checks fail.  This
-        is ideal for programatically checking data integrity prior to running
-        an algorithm.
+        Returns a HealthDict object which a basic dictionary with an added 
+        ``health`` attribute that is True is all entries in the dict are
+        deemed healthy (empty lists), or False otherwise.
 
         Examples
         --------
@@ -1353,7 +1353,7 @@ class Core(dict):
         throat.conns              []
         pore.coords               []
         ------------------------------------------------------------
-        >>> health
+        >>> a.health
         True
         '''
         health = Tools.HealthDict()
