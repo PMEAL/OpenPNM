@@ -957,7 +957,7 @@ class GenericNetwork(Core):
         - This is just a 'check' method and does not 'fix' the problems it finds
         '''
 
-        health = {}
+        health = Tools.HealthDict()
         health['disconnected_clusters'] = []
         health['isolated_pores'] = []
         health['trim_pores'] = []
@@ -1027,7 +1027,7 @@ class GenericNetwork(Core):
             Tind = self['throat.'+item]
             Ptemp[Pind] = Ptemp[Pind] + 1
             Ttemp[Tind] = Ttemp[Tind] + 1
-        health = {}
+        health = Tools.HealthDict()
         health['overlapping_pores'] = sp.where(Ptemp>1)[0].tolist()
         health['undefined_pores'] = sp.where(Ptemp==0)[0].tolist()
         health['overlapping_throats'] = sp.where(Ttemp>1)[0].tolist()
