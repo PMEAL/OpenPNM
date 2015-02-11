@@ -796,7 +796,7 @@ class GenericNetwork(Core):
             logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
             pass
 
-    def stitch(self,donor,pores_1,pores_2,method='delaunay',len_max=sp.inf):
+    def stitch(self,donor,pores_1,pores_2,method='delaunay',len_max=sp.inf,label_suffix=''):
         r'''
         Stitches a second a network to the current network.
 
@@ -810,6 +810,12 @@ class GenericNetwork(Core):
 
         pores_2 : array_like
             The pores on the donor Network
+            
+        label_suffix : string or None
+            Some text to append to each label in the donor Network before
+            inserting them into the recipient.  The default is to append no 
+            text, but a common option would be to append the donor Network's 
+            name. To insert none of the donor labels, use None.
 
         len_max : float
             Set a length limit on length of new throats
@@ -906,14 +912,17 @@ class GenericNetwork(Core):
         conns = conns[L<=len_max]
 
         #Add donor labels to recipient network
-        for label in donor.labels():
-            element = label.split('.')[0]
-            locations = sp.where(self._get_indices(element)>=N_init[element])[0]
-            try:
-                self[label]
-            except:
-                self[label] = False
-            self[label][locations] = donor[label]
+        if label_suffix != None:
+            if label_suffix != '':
+                label_suffix = '_'+label_suffix
+            for label in donor.labels():
+                element = label.split('.')[0]
+                locations = sp.where(self._get_indices(element)>=N_init[element])[0]
+                try:
+                    self[label+label_suffix]
+                except:
+                    self[label+label_suffix] = False
+                self[label+label_suffix][locations] = donor[label]
 
         #Add the new stitch throats to the Network
         self.extend(throat_conns=conns,labels='stitched')
