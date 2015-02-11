@@ -58,11 +58,15 @@ class GenericGeometry(Core):
         self._seed = seed
 
     def __getitem__(self,key):
+        element = key.split('.')[0]
+        # Convert self.name into 'all'
         if key.split('.')[-1] == self.name:
-            element = key.split('.')[0]
-            return self[element+'.all']
-        else:
+            key = element + '.all'
+
+        if key in self.keys():  # Look for data on self...
             return super(GenericGeometry,self).__getitem__(key)
+        else:  # ...Then check Network
+            return self._net[key][self._net[element+'.'+self.name]]
 
     def set_locations(self,pores=[],throats=[]):
         r'''
