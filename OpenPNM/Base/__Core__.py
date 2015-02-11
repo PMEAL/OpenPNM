@@ -904,7 +904,7 @@ class Core(dict):
             except: item = self._find_object(obj_name=item)
             locations = self._get_indices(element=element,labels=item.name,mode='union')
             if prop not in item.keys():
-                values = sp.ones_like(locations)*sp.nan
+                values = sp.ones_like(temp[locations])*sp.nan
                 dtypenames.append('nan')
                 dtypes.append(sp.dtype(bool))
                 nan_locs[locations]=True
