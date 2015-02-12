@@ -49,6 +49,12 @@ class Voronoi(GenericGeometry):
                         model=gm.pore_vertices.voronoi)
         self.models.add(propname='throat.vertices',
                         model=gm.throat_vertices.voronoi)
+        self.models.add(propname='pore.volume',
+                        model=gm.pore_volume.watershed_vox,fibre_rad=fibre_rad)
+        #trim pores with zero volume
+        tp = self.pores()[self['pore.volume']<=0.0]
+        self._net.trim(pores=self.map_pores(self._net,tp))
+        
         self.models.add(propname='throat.normal',
                         model=gm.throat_normal.voronoi)
         self.models.add(propname='throat.offset_vertices',
@@ -61,13 +67,7 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='throat.seed',
                         model=gm.throat_misc.neighbor,
                         pore_prop='pore.seed',
-                        mode='min')
-        self.models.add(propname='pore.volume',
-                        model=gm.pore_volume.voronoi_vox,fibre_rad=fibre_rad)
-        #trim pores with zero volume
-        tp = self.pores()[self['pore.volume']<=0.0]
-        self._net.trim(pores=self.map_pores(self._net,tp))
-        
+                        mode='min')        
         self.models.add(propname='pore.centroid',
                         model=gm.pore_centroid.voronoi)
         self.models.add(propname='pore.diameter',

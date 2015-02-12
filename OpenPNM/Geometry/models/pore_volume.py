@@ -17,11 +17,12 @@ from OpenPNM.Base import logging
 from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
-def _voxel_centroid(image,vox_len):
+def _voxel_centroid(image,pores=None,vox_len=1e-6):
     r'''
     Calculate Pore Centroid from indices of the voronoi voxel image generated in _get_voxel_volume
     '''
-    pores = np.unique(image)
+    if pores is None:
+        pores = np.unique(image)
     centroids = np.zeros([len(pores),3])
     for i,pore in enumerate(pores):
         px,py,pz = np.where(image==pore)
@@ -136,10 +137,7 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,add_boundary=True):
                             b += 1
                 del dt
     del pore_space
-    
-    porosity = np.around(np.sum(fibre_space)/np.size(fibre_space),3)
-    #print("Porosity from fibre image: "+str(porosity) )
-    #print("Size of Fibre Space: "+str(np.size(fibre_space)))
+
     if add_boundary:
         return fibre_space, boundary_space
     else:
@@ -411,4 +409,64 @@ def voronoi_vox(network,
     dom_vol = vo.vertex_dimension(network,network.pores())
     volume *= dom_vol/vox_vol
     
-    return volume[geom_pores]           
+    return volume[geom_pores]
+
+def watershed_vox(network,
+              geometry,
+              fibre_rad,
+              vox_len = 1e-6,
+              **kwargs):
+    r'''
+    Calculate the pore volume using the fibre space and a distance transform of the base pores
+    then use watershed segmentation
+    '''
+    import OpenPNM.Utilities.vertexops as vo
+    from skimage.morphology import watershed
+    Np = network.num_pores()
+    geom_pores = geometry.map_pores(network,geometry.pores())
+    volume = _sp.zeros(Np)
+    pore_vox = _sp.zeros(Np,dtype=int)
+    fibre_vox = _sp.zeros(Np,dtype=int)
+    voxel = vox_len**3
+   
+    fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len,0).astype(int) #voxel length
+
+    "Get the fibre image"
+    fibre_image = _get_fibre_image(network,geom_pores,vox_len,fibre_rad,add_boundary=False)
+    geometry._fibre_image = fibre_image #save as private variables
+    
+    "fill an array the size of the domain with zeros at pore locations"
+    "also populate a markers array to label the watershed image with"
+    "Use pore index + 1 as the zero index is used to initiate the image"
+    pore_space = np.ones_like(fibre_image)
+    markers = np.zeros_like(fibre_image)
+    nbps = network.pores('boundary', mode='not')
+    for pore in nbps:
+        ic = np.around(network["pore.coords"][pore]/vox_len).astype(int)
+        pore_space[ic[0]][ic[1]][ic[2]]=0
+        markers[ic[0]][ic[1]][ic[2]]=pore+1
+    
+    "Perform distance transform"
+    dt = ndimage.distance_transform_edt(pore_space)
+    
+    "Generate Watershed"
+    labels = watershed(dt, markers)
+    labels -= 1
+    
+    
+    for pore in nbps:
+        pore_vox[pore] = np.sum((labels==pore)*(fibre_image==1))
+        fibre_vox[pore] = np.sum((labels==pore)*(fibre_image==0))
+    volume = pore_vox*voxel
+    geometry["pore.fibre_voxels"]=fibre_vox[geom_pores]
+    geometry["pore.pore_voxels"]=pore_vox[geom_pores]
+    geometry["pore.centroid"]=_voxel_centroid(labels,network.pores(),vox_len)[geom_pores]
+    
+    "Due to the number of voxel volume being slightly greater than the domain vertex extent"
+    "The pore volumes are slightly too big by a few percent"
+    "Fudge this back"
+    vox_vol = np.size(fibre_image)*voxel
+    dom_vol = vo.vertex_dimension(network,network.pores())
+    volume *= dom_vol/vox_vol
+    
+    return volume[geom_pores]
