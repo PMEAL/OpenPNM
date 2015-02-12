@@ -65,6 +65,14 @@ class GenericGeometry(Core):
 
         if key in self.keys():  # Look for data on self...
             return super(GenericGeometry,self).__getitem__(key)
+        if key == 'throat.conns':  # Handle specifically
+            [P1,P2] = sp.float_(self._net['throat.conns'][self._net[element+'.'+self.name]].T)
+            ind = sp.in1d(P1,self._net.pores(self.name))
+            P1[~ind] = sp.nan
+            ind = sp.in1d(P2,self._net.pores(self.name))
+            P2[~ind] = sp.nan
+            return sp.array([P1,P2]).T
+            
         else:  # ...Then check Network
             return self._net[key][self._net[element+'.'+self.name]]
 
