@@ -17,6 +17,20 @@ from OpenPNM.Base import logging
 from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
+def _voxel_centroid(image,vox_len):
+    r'''
+    Calculate Pore Centroid from indices of the voronoi voxel image generated in _get_voxel_volume
+    '''
+    pores = np.unique(image)
+    centroids = np.zeros([len(pores),3])
+    for i,pore in enumerate(pores):
+        px,py,pz = np.where(image==pore)
+        cx = np.mean(px)
+        cy = np.mean(py)
+        cz = np.mean(pz)
+        centroids[i] = np.array([cx,cy,cz])*vox_len
+    return centroids
+
 def _get_vertex_range(verts):
     "Find the extent of the vetrices"
     [vxmin,vxmax,vymin,vymax,vzmin,vzmax]=[1e20,0,1e20,0,1e20,0]
@@ -131,7 +145,7 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,add_boundary=True):
     else:
         return fibre_space
 
-def _get_voxel_volume(network,chunk,vox_len,fibre_rad,fibre_image):
+def _get_voxel_volume(network,geometry,chunk,vox_len,fibre_rad,fibre_image):
     r"""
     Calculate the volume by divinding space into voxels, working out nearest neighours to get hulls
     returns number of voxels in pore both fibre and open space portions
@@ -139,6 +153,7 @@ def _get_voxel_volume(network,chunk,vox_len,fibre_rad,fibre_image):
     points=network["pore.coords"]
     "Unpack the pores and range of the chunk"
     [ci,cj,ck]=chunk
+    start = [ci[0],cj[0],ck[0]]
     lx = len(ci)
     ly = len(cj)
     lz = len(ck)
@@ -167,7 +182,7 @@ def _get_voxel_volume(network,chunk,vox_len,fibre_rad,fibre_image):
     fibre_space = fibre_image[ci[0]:ci[0]+lx,cj[0]:cj[0]+ly,ck[0]:ck[0]+lz]
     
     "Assign each voxel in he chunk the index of its nearest neighbor - Skilearn Neighbors"
-    hull_space=np.zeros([lx,ly,lz],dtype=int)
+    hull_space=np.zeros([lx,ly,lz],dtype=np.uint16)
     from sklearn.neighbors import NearestNeighbors
     my_points /= vox_len
     my_points -= np.array([ci[0],cj[0],ck[0]]).astype(float)
@@ -191,6 +206,8 @@ def _get_voxel_volume(network,chunk,vox_len,fibre_rad,fibre_image):
         pore_volume[index] = np.sum((fibre_space == 1)&(hull_space==pore))
         fibre_volume[index] = np.sum((fibre_space == 0)&(hull_space==pore))
     logger.info("Size of Chunk Space: "+str(np.size(hull_space)))
+    "Save hull space into Voronoi image"
+    geometry._voronoi_image[start[0]:start[0]+lx,start[1]:start[1]+ly,start[2]:start[2]+lz] = hull_space
     del fibre_space
     del hull_space
     gc.collect()
@@ -365,18 +382,20 @@ def voronoi_vox(network,
     geometry._fibre_image = fibre_image #save as private variables
     geometry._fibre_image_boundary = boundary_image
     fibre_shape = np.asarray(np.shape(fibre_image))
-    fibre_split = np.ceil(fibre_shape/400)
+    fibre_split = np.ceil(fibre_shape/200)
     indx = np.arange(0,fibre_shape[0])
     indy = np.arange(0,fibre_shape[1])
     indz = np.arange(0,fibre_shape[2])
+    num_chunks = np.prod(fibre_split)
+    geometry._voronoi_image = np.ndarray(np.shape(fibre_image),dtype=np.uint16)
     "Split domain to manage memory"
     cnum=1
     for ci in np.array_split(indx,fibre_split[0]):
         for cj in np.array_split(indy,fibre_split[1]):
             for ck in np.array_split(indz,fibre_split[2]):
                 
-                logger.info("Processing Chunk: "+str(cnum))
-                chunk_pvols,chunk_fvols,chunk_pores = _get_voxel_volume(network,[ci,cj,ck],vox_len,fibre_rad,fibre_image) 
+                logger.info("Processing Chunk: "+str(cnum)+" of "+str(num_chunks))
+                chunk_pvols,chunk_fvols,chunk_pores = _get_voxel_volume(network,geometry,[ci,cj,ck],vox_len,fibre_rad,fibre_image) 
                 volume[chunk_pores] += chunk_pvols*voxel # this volume may not be the entire pore volume as some pores span multiple chunks, hence the addition
                 pore_vox[chunk_pores] +=chunk_pvols               
                 fibre_vox[chunk_pores] +=chunk_fvols
@@ -384,7 +403,7 @@ def voronoi_vox(network,
                 
     geometry["pore.fibre_voxels"]=fibre_vox[geom_pores]
     geometry["pore.pore_voxels"]=pore_vox[geom_pores]
-    
+    geometry["pore.centroid"]=_voxel_centroid(geometry._voronoi_image,vox_len)
     "Due to the number of voxel volume being slightly greater than the domain vertex extent"
     "The pore volumes are slightly too big by a few percent"
     "Fudge this back"
@@ -392,4 +411,4 @@ def voronoi_vox(network,
     dom_vol = vo.vertex_dimension(network,network.pores())
     volume *= dom_vol/vox_vol
     
-    return volume[geom_pores]
+    return volume[geom_pores]           

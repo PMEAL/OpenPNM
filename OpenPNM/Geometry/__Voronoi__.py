@@ -300,36 +300,38 @@ class Voronoi(GenericGeometry):
         self["throat.area"] *= 1+ta_diff_avg
         self["throat.area"][self["throat.area"]<0]=0
         self["throat.diameter"] = 2*sp.sqrt(self["throat.area"]/sp.pi)
-        "Now the recreated fibre image will have the wrong number of fibre volumes so add them back in at semi-random"
-        b_img = self._fibre_image_boundary #distance transform image to identify boundary layer
-        "Cycle through to find distance corresponding roughly to where new fibre layer should be"
-        for l in itemfreq(b_img)[1:,0]:
-            sel = (b_img == l)
-            b = sp.sum(sel) #number of voxels in current boundary layer
-            if b < n:
-                self._fibre_image[sel]=0 # expand fibre space to fill whole boundary layer
-                n -= b # adjust n to be remainder
-            else:
-                if n > 0:
-                    m = 0
-                    for i in sp.nditer(sel,op_flags=['readwrite']): #only keep n True values in the selection
-                        if i == True and m >= n:
-                            i[...] = False
-                            m +=1
-                        elif i == True:
-                            m +=1
-                    self._fibre_image[sel]=0 # expand fibre space to fill first n boundary layer voxels
-                    break
-                else:
-                    break
-        if sp.sum(self._fibre_image==0) != sp.sum(fvu):
-            print("Something went wrong with compression")
-        
         tt = self.throats()[self['throat.area']<=0.0] # trim throats
         tp = self.pores()[self['pore.volume']<=0.0] # trim pores
         self._net.trim(throats=self.map_throats(self._net,tt))
         self._net.trim(pores=self.map_pores(self._net,tp))
         self._net.trim_occluded_throats() # this removes pores with zero throats
+        
+        #"Now the recreated fibre image will have the wrong number of fibre volumes so add them back in at semi-random"
+        #b_img = self._fibre_image_boundary #distance transform image to identify boundary layer
+        #"Cycle through to find distance corresponding roughly to where new fibre layer should be"
+        #for l in itemfreq(b_img)[1:,0]:
+        #    sel = (b_img == l)
+        #    b = sp.sum(sel) #number of voxels in current boundary layer
+        #    if b < n:
+        #        self._fibre_image[sel]=0 # expand fibre space to fill whole boundary layer
+        #        n -= b # adjust n to be remainder
+        #    else:
+        #        if n > 0:
+        #            m = 0
+        #            for i in sp.nditer(sel,op_flags=['readwrite']): #only keep n True values in the selection
+        #                if i == True and m >= n:
+        #                    i[...] = False
+        #                    m +=1
+        #                elif i == True:
+        #                    m +=1
+        #            self._fibre_image[sel]=0 # expand fibre space to fill first n boundary layer voxels
+        #            break
+        #        else:
+        #            break
+        #if sp.sum(self._fibre_image==0) != sp.sum(fvu):
+        #    print("Something went wrong with compression")
+        
+        
         
 if __name__ == '__main__':
     import OpenPNM

@@ -492,7 +492,7 @@ def all_overlap(array):
 
     return all_overlap
 
-def scale(network,scale_factor=[1,1,1],preserve_vol=True,linear_scaling=[False,False,False]):
+def scale(network,scale_factor=[1,1,1],preserve_vol=False,linear_scaling=[False,False,False]):
     r"""
     A method for scaling the coordinates and vertices to create anisotropic networks
     The original domain volume can be preserved by setting preserve_vol = True
@@ -535,6 +535,8 @@ def scale(network,scale_factor=[1,1,1],preserve_vol=True,linear_scaling=[False,F
             #x_vert_array.fill(x_vert)
             #vert_scale = (scale_factor - 1)*x_vert_array + 1
             vert_scale = _linear_scale_factor(vert,minmax,scale_factor,linear_scaling)
+            if np.abs(np.sum(vert_scale - lin_scale[pore])) > 0 :
+                print("Linear Scaling ERORR!!!")
             network["pore.vert_index"][pore][i] = vert*vert_scale
     #Cycle through all vertices of all throats updating vertex values
     for throat in network.throats():
