@@ -69,8 +69,11 @@ class GenericGeometry(Core):
             [P1,P2] = self._net['throat.conns'][self._net[element+'.'+self.name]].T
             Pmap = sp.zeros((self._net.Np,),dtype=int)-1
             Pmap[self._net.pores(self.name)] = self.Ps
-            conns = sp.array([Pmap[P1],Pmap[P2]],dtype=object).T
-            conns[sp.where(conns==-1)] = sp.nan
+            conns = sp.array([Pmap[P1],Pmap[P2]]).T
+            # Replace -1's with nans
+            if sp.any(conns==-1):
+                conns = sp.array(conns,dtype=object)
+                conns[sp.where(conns==-1)] = sp.nan
             return conns
         else:  # ...Then check Network
             return self._net[key][self._net[element+'.'+self.name]]
