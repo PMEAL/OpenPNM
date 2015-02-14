@@ -26,10 +26,14 @@ def _voxel_centroid(image,pores=None,vox_len=1e-6):
     centroids = np.zeros([len(pores),3])
     for i,pore in enumerate(pores):
         px,py,pz = np.where(image==pore)
-        cx = np.mean(px)
-        cy = np.mean(py)
-        cz = np.mean(pz)
-        centroids[i] = np.array([cx,cy,cz])*vox_len
+        try:
+            if len(px)>0: # if one is empty then all will be - no pore volume for this pore
+                cx = np.mean(px)
+                cy = np.mean(py)
+                cz = np.mean(pz)
+            centroids[i] = np.array([cx,cy,cz])*vox_len
+        except:
+            logger.warn("Some pore centroid data may be invalid, look for zeros")
     return centroids
 
 def _get_vertex_range(verts):
@@ -108,10 +112,13 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,add_boundary=True):
     
     #fibre_space = np.ndarray(shape=[lx,ly,lz],dtype=np.uint8)
     #boundary_space = np.zeros(shape=[lx,ly,lz],dtype=np.uint8)
+    num_chunks = np.int(cx*cy*cz)
+    cnum = 1
     for ci in range(cx):
         for cj in range(cy):
             for ck in range(cz):
                 "Work out chunk range"
+                logger.info("Processing Fibre Chunk: "+str(cnum)+" of "+str(num_chunks))
                 cxmin = ci*chunk_len
                 cxmax = (ci+1)*chunk_len + 5*fibre_rad.astype(int)
                 cymin = cj*chunk_len
@@ -136,6 +143,7 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,add_boundary=True):
                             boundary_space[cxmin:cxmax,cymin:cymax,czmin:czmax][dt==d]=b
                             b += 1
                 del dt
+                cnum +=1
     del pore_space
 
     if add_boundary:
@@ -452,7 +460,7 @@ def watershed_vox(network,
     "Generate Watershed"
     labels = watershed(dt, markers)
     labels -= 1
-    
+    geometry._voronoi_image = labels
     
     for pore in nbps:
         pore_vox[pore] = np.sum((labels==pore)*(fibre_image==1))
@@ -468,5 +476,5 @@ def watershed_vox(network,
     vox_vol = np.size(fibre_image)*voxel
     dom_vol = vo.vertex_dimension(network,network.pores())
     volume *= dom_vol/vox_vol
-    
+
     return volume[geom_pores]
