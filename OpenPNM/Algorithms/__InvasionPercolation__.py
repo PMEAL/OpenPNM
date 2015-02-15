@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 class InvasionPercolation(GenericAlgorithm):
     r"""
-    A classic/basic invasion percolation algorithm optimized for speed
+    A classic/basic invasion percolation algorithm optimized for speed.
 
     Parameters
     ----------
     network : OpenPNM Network object
-        The Network upon which the invasion should occur
+        The Network upon which the invasion should occur.
     
     Notes
     ----
@@ -49,7 +49,7 @@ class InvasionPercolation(GenericAlgorithm):
             
         throat_prop : string
             The name of the throat property containing the capillary entry
-            pressure.  The default is 'throat.capillary_pressure'
+            pressure.  The default is 'throat.capillary_pressure'.
         
         '''
         import heapq as hq
@@ -77,7 +77,7 @@ class InvasionPercolation(GenericAlgorithm):
             t_next = t_sorted[t]  # Extract actual throat number
             t_inv[t_next] = tcount  # Note invasion sequence
             t_seq[tcount] = t_next
-            while (len(queue)>0) and (queue[0] == t):  # Ensure throat is not duplicated
+            while (len(queue)>0) and (queue[0] == t):  # If throat is duplicated
                 t = hq.heappop(queue)  # Note: Preventing duplicate entries below might save some time here
             Ps = net['throat.conns'][t_next]  # Find pores connected to newly invaded throat
             Ps = Ps[p_inv[Ps]<0]  # Remove already invaded pores from Ps
@@ -101,6 +101,14 @@ class InvasionPercolation(GenericAlgorithm):
         pores and throats : array_like
             The list of pores and throats whose values should be returned to
             the Phase object.  Default is all of them.
+            
+        Returns
+        -------
+        invasion_sequence : array_like
+            The sequence in which each pore and throat is invaded  This depends 
+            on the inlet locations.  All inlets are invaded at step 0.  It is 
+            possible to recontruct an animation of the invasion process, in
+            Paraview for instance, using this sequence information.  
         
         '''
         pores = sp.array(pores)
@@ -108,8 +116,6 @@ class InvasionPercolation(GenericAlgorithm):
             pores = self.Ps
         self._phase['throat.invasion_sequence'] = self['throat.invasion_sequence']
         self._phase['pore.invasion_sequence'] = self['pore.invasion_sequence']
-
-
 
 if __name__ == '__main__':
     print('no tests yet')

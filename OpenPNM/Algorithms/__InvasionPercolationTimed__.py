@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ===============================================================================
-InvasionPercolationTimed -- Invasion Percolation with Timied Injection Rates
+InvasionPercolationTimed -- Invasion Percolation with Timed Injection Rates
 ===============================================================================
 
 """
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class InvasionPercolationTimed(GenericAlgorithm):
     r"""
-    Invasion percolation with cluster growth timing - Class to run IP algorithm on constructed networks
+    Invasion percolation with cluster growth timing
 
     Parameters
     ----------
@@ -34,7 +34,7 @@ class InvasionPercolationTimed(GenericAlgorithm):
     >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
     >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
-    >>> IP = OpenPNM.Algorithms.InvasionPercolation(network=pn)
+    >>> IP = OpenPNM.Algorithms.InvasionPercolationTimed(network=pn)
     >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'),report=0)
          IP algorithm at 0 % completion at 0.0 seconds
          IP algorithm at 100% completion at  0.0  seconds
