@@ -8,7 +8,7 @@ GenericNetwork: Abstract class to construct pore networks
 import scipy as sp
 import scipy.sparse as sprs
 import OpenPNM.Utilities.misc as misc
-from OpenPNM.Base import Core, Controller, logging
+from OpenPNM.Base import Core, Controller, Tools, logging
 logger = logging.getLogger(__name__)
 ctrl = Controller()
 
