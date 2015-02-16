@@ -1136,10 +1136,10 @@ class Core(dict):
         mapping = {}
         
         # Analyze input object's relationship
-        if self._parent == target._parent:
+        if self._net == target._net:  # Objects are siblings...easy
             maskS = self._net[element+'.'+self.name]
             maskT = target._net[element+'.'+target.name]
-        else:
+        else:  # One or more of the objects is a clone
             if self._parent is None:  # Self is parent object
                 maskS = self._net[element+'.'+self.name]
                 maskT = ~self._net[element+'.all']
@@ -1152,7 +1152,7 @@ class Core(dict):
                 tempS = self._net[element+'.'+self.name]
                 inds = self._net[element+'.'+target._net.name][tempS]
                 maskS[inds]  = True
-        
+
         # Convert source locations to Network indices
         temp = sp.zeros(sp.shape(maskS),dtype=int)-1
         temp[maskS] = self._get_indices(element=element)
@@ -1174,9 +1174,9 @@ class Core(dict):
         if return_mapping == True:
             return mapping
         else:
-            if sp.sum(locsS>=0) < sp.shape(locations)[0]:
+            if sp.sum(locsS>=0) < sp.shape(sp.unique(locations))[0]:
                 raise Exception('Some locations not found on Source object')
-            if sp.sum(locsT>=0) < sp.shape(locations)[0]:
+            if sp.sum(locsT>=0) < sp.shape(sp.unique(locations))[0]:
                 raise Exception('Some locations not found on Target object')
             return mapping['target']
 
