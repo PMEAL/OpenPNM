@@ -50,7 +50,7 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='throat.vertices',
                         model=gm.throat_vertices.voronoi)
         self.models.add(propname='pore.volume',
-                        model=gm.pore_volume.watershed_vox,fibre_rad=fibre_rad)
+                        model=gm.pore_volume.in_hull_volume,fibre_rad=fibre_rad)
         #trim pores with zero volume
         tp = self.pores()[self['pore.volume']<=0.0]
         self._net.trim(pores=self.map_pores(self._net,tp))

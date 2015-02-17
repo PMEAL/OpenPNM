@@ -17,6 +17,48 @@ from OpenPNM.Base import logging
 from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
+def inhull(geometry,xyz,pore,tol=1e-12):
+    r"""
+    Tests whether points lie within a convex hull or not. Method computes a tesselation of the hull works out the normals
+    of the facets. Then tests whether dot(x.normals) < dot(a.normals) where a is the the first vertex of the facets
+    """
+    #Work out range to span over for pore hull
+    xmin = np.ceil(xyz[:,0].min()).astype(int)-1
+    xmax = np.ceil(xyz[:,0].max()).astype(int)+1
+    ymin = np.ceil(xyz[:,1].min()).astype(int)-1
+    ymax = np.ceil(xyz[:,1].max()).astype(int)+1
+    zmin = np.ceil(xyz[:,2].min()).astype(int)-1
+    zmax = np.ceil(xyz[:,2].max()).astype(int)+1
+
+    #Calculate the tesselation of the points
+    hull = ConvexHull(xyz)
+    # Assume 3d for now
+    #Calculate normals from the vector cross product of the vectors defined by joining points in the simplices
+    vab = xyz[hull.simplices[:,0]]-xyz[hull.simplices[:,1]]
+    vac = xyz[hull.simplices[:,0]]-xyz[hull.simplices[:,2]]
+    nrmls = np.cross(vab,vac)
+    #Scale normal vectors to unit length
+    nrmlen = np.sum(nrmls**2,axis=-1)**(1./2)
+    nrmls = nrmls*np.tile((1/nrmlen),(3,1)).T
+    #Center of Mass
+    center = np.mean(xyz,axis=0)
+    #Any point from each simplex
+    a = xyz[hull.simplices[:,0]]
+    #Make sure all normals point inwards
+    dp = np.sum((np.tile(center,(len(a),1))-a)*nrmls,axis=-1)
+    k = dp<0
+    nrmls[k]=-nrmls[k]
+    #Now we want to test whether dot(x,N) >= dot(a,N)
+    aN = np.sum(nrmls*a,axis=-1)
+    
+    for i in np.arange(xmin,xmax):
+        for j in np.arange(ymin,ymax):
+            for k in np.arange(zmin,zmax):
+                test_point = np.array([i,j,k])
+                xN = np.sum(nrmls*np.tile(test_point,(len(a),1)),axis=-1)
+                if np.all(xN-aN>=0-tol):
+                    geometry._hull_image[i][j][k]=pore
+
 def _voxel_centroid(image,pores=None,vox_len=1e-6):
     r'''
     Calculate Pore Centroid from indices of the voronoi voxel image generated in _get_voxel_volume
@@ -477,4 +519,41 @@ def watershed_vox(network,
     dom_vol = vo.vertex_dimension(network,network.pores())
     volume *= dom_vol/vox_vol
 
+    return volume[geom_pores]
+
+def in_hull_volume(network,
+              geometry,
+              fibre_rad,
+              vox_len = 1e-6,
+              **kwargs):
+    r'''
+    Work out the voxels inside the convex hull of the voronoi vertices of each pore
+    '''
+    Np = network.num_pores()
+    geom_pores = geometry.map_pores(network,geometry.pores())
+    volume = _sp.zeros(Np)
+    pore_vox = _sp.zeros(Np,dtype=int)
+    fibre_vox = _sp.zeros(Np,dtype=int)
+    voxel = vox_len**3
+    nbps = network.pores('boundary',mode='not')
+    fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len,0).astype(int) #voxel length
+
+    "Get the fibre image"
+    fibre_image = _get_fibre_image(network,geom_pores,vox_len,fibre_rad,add_boundary=False)
+    geometry._fibre_image = fibre_image #save as private variables
+    hull_image = np.ones_like(fibre_image,dtype=np.uint16)
+    geometry._hull_image = hull_image
+    for pore in nbps:
+        logger.info("Processing Pore: "+str(pore)+" of "+str(len(nbps)))
+        vert = np.asarray([i for i in network["pore.vert_index"][pore].values()])/vox_len
+        inhull(geometry,vert,pore)
+    for pore in nbps:
+        pore_vox[pore] = np.sum((geometry._hull_image==pore)*(geometry._fibre_image==1))
+        fibre_vox[pore] = np.sum((geometry._hull_image==pore)*(geometry._fibre_image==0))
+    
+    volume = pore_vox*voxel
+    geometry["pore.fibre_voxels"]=fibre_vox[geom_pores]
+    geometry["pore.pore_voxels"]=pore_vox[geom_pores]
+    geometry["pore.centroid"]=_voxel_centroid(geometry._hull_image,nbps,vox_len)[geom_pores]
+    
     return volume[geom_pores]
