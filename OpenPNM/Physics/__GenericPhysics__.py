@@ -62,11 +62,15 @@ class GenericPhysics(OpenPNM.Base.Core):
         self.set_locations(pores=pores,throats=throats)
 
     def __getitem__(self,key):
+        element = key.split('.')[0]
+        # Convert self.name into 'all'
         if key.split('.')[-1] == self.name:
-            element = key.split('.')[0]
-            return self[element+'.all']
-        else:
+            key = element + '.all'
+
+        if key in self.keys():  # Look for data on self...
             return super(GenericPhysics,self).__getitem__(key)
+        else:  # ...Then check Network
+            return self._phases[0][key][self._phases[0][element+'.'+self.name]]
 
     def set_locations(self,pores=[],throats=[]):
         r'''
