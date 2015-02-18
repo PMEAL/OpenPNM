@@ -188,7 +188,8 @@ class GenericLinearTransport(GenericAlgorithm):
                     for phys in matching_physics:
                         phys.models[source_name]['x'] = x0
                         phys.regenerate(source_name)
-                        loc = pores[sp.in1d(pores,phys.map_pores())]                    
+                        map_pores = phys.map_pores()
+                        loc = pores[sp.in1d(pores,map_pores)]  
                         if mode=='merge':
                             try:                            
                                 if sp.sum(sp.in1d(loc,self.pores(source_name)))>0:
@@ -196,9 +197,10 @@ class GenericLinearTransport(GenericAlgorithm):
                             except KeyError: pass                    
                         self['pore.source_'+prop][loc]= True                   
                        
-                        # for modes in ['update','merge','overwrite']   
-                        self['pore.source_'+source_mode+'_s1_'+prop][loc] = phys[source_name][:,0][sp.in1d(phys.map_pores(),pores)]
-                        self['pore.source_'+source_mode+'_s2_'+prop][loc] = phys[source_name][:,1][sp.in1d(phys.map_pores(),pores)]
+                        # for modes in ['update','merge','overwrite']  
+                        map_pores_loc = sp.in1d(map_pores,pores)
+                        self['pore.source_'+source_mode+'_s1_'+prop][loc] = phys[source_name][:,0][map_pores_loc]
+                        self['pore.source_'+source_mode+'_s2_'+prop][loc] = phys[source_name][:,1][map_pores_loc]
                         if not source_mode=='linear':
                             self['pore.source_maxiter'][loc] = maxiter                                
                             self['pore.source_tol'][loc] = tol                                
