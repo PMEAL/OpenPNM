@@ -59,6 +59,62 @@ def inhull(geometry,xyz,pore,tol=1e-12):
                 if np.all(xN-aN>=0-tol):
                     geometry._hull_image[i][j][k]=pore
 
+def inhull2(geometry,xyz,pore,tol=1e-12):
+    r"""
+    Tests whether points lie within a convex hull or not. Method computes a tesselation of the hull works out the normals
+    of the facets. Then tests whether dot(x.normals) < dot(a.normals) where a is the the first vertex of the facets
+    """
+    xyz = np.around(xyz,10)
+    #Work out range to span over for pore hull
+    xmin = xyz[:,0].min()
+    xr = (np.ceil(xyz[:,0].max())-np.floor(xmin)).astype(int)+1
+    ymin = xyz[:,1].min()
+    yr = (np.ceil(xyz[:,1].max())-np.floor(ymin)).astype(int)+1
+    zmin = xyz[:,2].min()
+    zr = (np.ceil(xyz[:,2].max())-np.floor(zmin)).astype(int)+1
+    
+    origin = np.array([xmin,ymin,zmin])
+    si = np.floor(origin).astype(int) # start index
+    xyz -= origin
+    dom = np.zeros([xr,yr,zr],dtype=np.uint8)
+    indx,indy,indz = np.indices((xr,yr,zr))
+    #Calculate the tesselation of the points
+    hull = ConvexHull(xyz)
+    # Assume 3d for now
+    #Calculate normals from the vector cross product of the vectors defined by joining points in the simplices
+    vab = xyz[hull.simplices[:,0]]-xyz[hull.simplices[:,1]]
+    vac = xyz[hull.simplices[:,0]]-xyz[hull.simplices[:,2]]
+    nrmls = np.cross(vab,vac)
+    #Scale normal vectors to unit length
+    nrmlen = np.sum(nrmls**2,axis=-1)**(1./2)
+    nrmls = nrmls*np.tile((1/nrmlen),(3,1)).T
+    #Center of Mass
+    center = np.mean(xyz,axis=0)
+    #Any point from each simplex
+    a = xyz[hull.simplices[:,0]]
+    #Make sure all normals point inwards
+    dp = np.sum((np.tile(center,(len(a),1))-a)*nrmls,axis=-1)
+    k = dp<0
+    nrmls[k]=-nrmls[k]
+    #Now we want to test whether dot(x,N) >= dot(a,N)
+    aN = np.sum(nrmls*a,axis=-1)
+    
+    aN = np.sum(nrmls*a,axis=-1)
+        
+    for plane_index in range(len(a)):
+        eqx = nrmls[plane_index][0]*(indx)
+        eqy = nrmls[plane_index][1]*(indy)
+        eqz = nrmls[plane_index][2]*(indz)
+        xN = eqx + eqy + eqz
+        dom[xN - aN[plane_index] >= 0-tol] += 1
+    dom[dom<len(a)]=0
+    dom[dom==len(a)]=1
+    ds = np.shape(dom)
+    temp_arr = np.zeros_like(geometry._hull_image,dtype=bool)
+    temp_arr[si[0]:si[0]+ds[0],si[1]:si[1]+ds[1],si[2]:si[2]+ds[2]]=dom
+    geometry._hull_image[temp_arr]=pore
+    del temp_arr
+    
 def _voxel_centroid(image,pores=None,vox_len=1e-6):
     r'''
     Calculate Pore Centroid from indices of the voronoi voxel image generated in _get_voxel_volume
@@ -130,7 +186,7 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,add_boundary=True):
         #only need one chunk
         cx = cy = cz = 1
         chunk_len = np.max(np.shape(pore_space))
-    except MemoryError:
+    except:
         logger.info("Domain too large to fit into memory so chunking domain to process image, this may take some time")
         #do chunking
         chunk_len = 100
@@ -545,8 +601,8 @@ def in_hull_volume(network,
     geometry._hull_image = hull_image
     for pore in nbps:
         logger.info("Processing Pore: "+str(pore)+" of "+str(len(nbps)))
-        vert = np.asarray([i for i in network["pore.vert_index"][pore].values()])/vox_len
-        inhull(geometry,vert,pore)
+        verts = np.asarray([i for i in network["pore.vert_index"][pore].values()])/vox_len
+        inhull2(geometry,verts,pore)
     for pore in nbps:
         pore_vox[pore] = np.sum((geometry._hull_image==pore)*(geometry._fibre_image==1))
         fibre_vox[pore] = np.sum((geometry._hull_image==pore)*(geometry._fibre_image==0))

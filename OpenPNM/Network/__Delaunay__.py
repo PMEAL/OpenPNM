@@ -528,7 +528,8 @@ class Delaunay(GenericNetwork):
                     elif len(np.unique(throat_verts[:,2])) == 1:
                         new_pore_coord[2]=np.unique(throat_verts[:,2])
                     else:
-                        new_pore_coord = throat_verts.mean()
+                        new_pore_coord = np.mean(throat_verts,axis=0)
+                        pass
                     bound_coords.append(new_pore_coord)
                     bound_conns.append(np.array([my_pore,new_throat_count+Np]))
                     bound_vert_index.append(dict(zip(v,throat_verts)))
