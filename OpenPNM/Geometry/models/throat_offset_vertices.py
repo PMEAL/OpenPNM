@@ -7,6 +7,8 @@ throat_offset_vertices -- Offeset throat vertices using a fibre radius parameter
 import scipy as sp
 import OpenPNM.Utilities.vertexops as vo
 import OpenPNM.Utilities.transformations as tr
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 def voronoi(network,
             geometry,
@@ -68,6 +70,7 @@ def distance_transform(network,
     z_axis = [0,0,1]
     
     for i in range(Nt):
+        logger.info("Processing throat " +str(i+1)+" of "+str(Nt))
         " For boundaries some facets will already be aligned with the axis - if this is the case a rotation is unnecessary and could also cause problems "
         angle = tr.angle_between_vectors(normals[i],z_axis)
         if (angle==0.0)or(angle==np.pi):

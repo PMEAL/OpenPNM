@@ -13,8 +13,8 @@ from multiprocessing import Pool
 from scipy import ndimage
 from scipy.io import savemat
 import gc
-from OpenPNM.Base import logging
 from scipy.stats import itemfreq
+from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
 def inhull(geometry,xyz,pore,tol=1e-7):
@@ -113,7 +113,13 @@ def inhull2(geometry,xyz,pore,tol=1e-12):
     temp_arr = np.zeros_like(geometry._hull_image,dtype=bool)
     temp_arr[si[0]:si[0]+ds[0],si[1]:si[1]+ds[1],si[2]:si[2]+ds[2]]=dom
     geometry._hull_image[temp_arr]=pore
+    hull_num = np.sum(dom)
+    dom = dom * geometry._fibre_image[si[0]:si[0]+ds[0],si[1]:si[1]+ds[1],si[2]:si[2]+ds[2]]
+    pore_num = np.sum(dom)
+    fibre_num = hull_num - pore_num
+    
     del temp_arr
+    return pore_num, fibre_num
     
 def _voxel_centroid(image,pores=None,vox_len=1e-6):
     r'''
@@ -600,16 +606,16 @@ def in_hull_volume(network,
     hull_image = np.ones_like(fibre_image,dtype=np.uint16)
     geometry._hull_image = hull_image
     for pore in nbps:
-        logger.info("Processing Pore: "+str(pore)+" of "+str(len(nbps)))
+        logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(nbps)))
         verts = np.asarray([i for i in network["pore.vert_index"][pore].values()])/vox_len
-        inhull2(geometry,verts,pore)
-    for pore in nbps:
-        pore_vox[pore] = np.sum((geometry._hull_image==pore)*(geometry._fibre_image==1))
-        fibre_vox[pore] = np.sum((geometry._hull_image==pore)*(geometry._fibre_image==0))
+        pore_vox[pore],fibre_vox[pore] = inhull2(geometry,verts,pore)
+    #for pore in nbps:
+    #    pore_vox[pore] = np.sum((geometry._hull_image==pore)*(geometry._fibre_image==1))
+    #    fibre_vox[pore] = np.sum((geometry._hull_image==pore)*(geometry._fibre_image==0))
     
     volume = pore_vox*voxel
     geometry["pore.fibre_voxels"]=fibre_vox[geom_pores]
     geometry["pore.pore_voxels"]=pore_vox[geom_pores]
-    geometry["pore.centroid"]=_voxel_centroid(geometry._hull_image,nbps,vox_len)[geom_pores]
+    #geometry["pore.centroid"]=_voxel_centroid(geometry._hull_image,nbps,vox_len)[geom_pores]
     
     return volume[geom_pores]

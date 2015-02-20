@@ -44,7 +44,7 @@ def hagen_poiseuille(physics,
     mut = phase.interpolate_data(mup)
     pdia = network[pore_diameter]
     if calc_pore_len:
-        lengths = misc.conduit_lengths(network,mode='centroid')
+        lengths = misc.conduit_lengths(network,mode='pore')
         plen1 = lengths[:,0]
         plen2 = lengths[:,2]
     else:        
