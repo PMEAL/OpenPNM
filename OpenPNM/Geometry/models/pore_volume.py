@@ -17,7 +17,7 @@ from OpenPNM.Base import logging
 from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
-def inhull(geometry,xyz,pore,tol=1e-12):
+def inhull(geometry,xyz,pore,tol=1e-7):
     r"""
     Tests whether points lie within a convex hull or not. Method computes a tesselation of the hull works out the normals
     of the facets. Then tests whether dot(x.normals) < dot(a.normals) where a is the the first vertex of the facets
