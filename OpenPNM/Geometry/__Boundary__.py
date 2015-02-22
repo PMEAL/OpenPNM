@@ -15,6 +15,10 @@ class Boundary(GenericGeometry):
 
     Parameters
     ----------
+    network : OpenPNM Network object
+        The Network to which the Geometry object should be associated
+    pores, throats : array_like
+        The pores and/or throats where the Geometry should be applied
     shape: str
         Stick and Ball or Cube and Cuboid? ('spheres','cubes')
 
