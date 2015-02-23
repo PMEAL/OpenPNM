@@ -543,7 +543,7 @@ class GenericNetwork(Core):
         else:
             raise Exception('Mask received was neither Nt nor Np long')
         temp = self.create_adjacency_matrix(data=temp, sprsfmt='csr', dropzeros=True)
-        clusters = sprs.csgraph.connected_components(temp)[1]
+        clusters = sprs.csgraph.connected_components(csgraph=temp,directed=False)[1]
         return clusters
 
     #--------------------------------------------------------------------------
