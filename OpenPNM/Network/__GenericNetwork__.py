@@ -210,7 +210,47 @@ class GenericNetwork(Core):
             temp = temp.tolil()
         logger.debug('create_incidence_matrix: End of method')
         return temp
-
+        
+    def _create_admittance_matrix(self,data):
+        r'''
+        Creates an admittance matrix from provided conductance values.  The 
+        returned matrix can be inverted to solve the Laplace equation for a
+        linear transport processes (ie. Fick's or Fourier's Law).  The 
+        admittance matrix is sometimes called the Laplacian matrix.
+        
+        Parameters
+        ----------
+        data : array_like
+            The list of throat property values that represent the conductance
+            between pores
+            
+        Returns
+        -------
+        A sparse (CSR) admittance matrix for use in linear transport 
+        calculations involving the Laplace equation.
+        
+        '''
+        logger.debug('create_laplacian_matrix: Start of method')
+        
+        #Check if provided data is valid
+        data = sp.ones((self.Nt,))
+        if sp.shape(data)[0] != self.Nt:
+            raise Exception('Received dataset of incorrect length')
+            
+        # Fix row, col & data so that a symmetric matrix will result
+        row = sp.append(self['throat.conns'][:,0],self['throat.conns'][:,1])
+        col = sp.append(self['throat.conns'][:,1],self['throat.conns'][:,0])
+        data = sp.append(data,data)
+        # Add diagonal of 1's to the matrix
+        row = sp.append(row,self.Ps)
+        col = sp.append(col,self.Ps)
+        data = sp.append(data,sp.ones((self.Np,)))
+        # Convert row, col & data to scipy COO matrix
+        adjmat = sprs.coo.coo_matrix((data,(row,col)),(self.Np,self.Np))
+        # Obtain the Laplacian martrix
+        lapmat = sprs.csgraph.laplacian(adjmat)
+        return lapmat
+        
     def find_connected_pores(self,throats=[],flatten=False):
         r"""
         Return a list of pores connected to the given list of throats
