@@ -194,7 +194,7 @@ class MatFile(GenericNetwork):
             add_boundaries = False
         Ps = sp.where([pore not in boundary_pores for pore in self.pores()])[0]
         Ts = sp.where([throat not in boundary_throats for throat in self.throats()])[0]
-        geom = OpenPNM.Geometry.GenericGeometry(network=self,pores=Ps,throats=Ts)
+        geom = OpenPNM.Geometry.GenericGeometry(network=self,pores=Ps,throats=Ts,name='internal')
         geom['pore.volume'] = sp.ravel(sp.array(self._dictionary['pvolume'][self._pore_map[Ps]],float))
         geom['pore.diameter'] = sp.ravel(sp.array(self._dictionary['pdiameter'][self._pore_map[Ps]],float))
         geom['throat.diameter'] = sp.ravel(sp.array(self._dictionary['tdiameter'][self._throat_map[Ts]],float))
