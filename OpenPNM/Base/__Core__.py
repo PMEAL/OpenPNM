@@ -1280,8 +1280,8 @@ class Core(dict):
         Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
         
-    netTs = property(fget=map_throats)
-    netPs = property(fget=map_pores)
+    Tnet = property(fget=map_throats)
+    Pnet = property(fget=map_pores)
         
     def _isa(self,keyword=None,obj=None):
         r'''
