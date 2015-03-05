@@ -52,7 +52,7 @@ class InvasionPercolationTimed(GenericAlgorithm):
     def __init__(self,**kwords):
         r'''
         '''
-        super(InvasionPercolation,self).__init__(**kwords)
+        super(InvasionPercolationTimed,self).__init__(**kwords)
         logger.info("Create IP Algorithm Object")
 
     def run(self,invading_phase,
@@ -149,7 +149,7 @@ class InvasionPercolationTimed(GenericAlgorithm):
         self._throat_volume_name = throat_volume_name
         self._throat_diameter_name = throat_diameter_name
 
-        super(InvasionPercolation,self).run()
+        super(InvasionPercolationTimed,self).run()
 
     def _setup_for_IP(self):
         r"""
