@@ -202,7 +202,7 @@ class MatFile(GenericNetwork):
         geom.add_model(propname='throat.area',model=OpenPNM.Geometry.models.throat_area.cylinder)
 
         if add_boundaries:
-            boun = OpenPNM.Geometry.Boundary(network=self,pores=boundary_pores,throats=boundary_throats)
+            boun = OpenPNM.Geometry.Boundary(network=self,pores=boundary_pores,throats=boundary_throats,name='boundary')
             self['pore.top_boundary']=self.tomask(pores=self.pores(['top','boundary'],mode='intersection'))
             self['pore.bottom_boundary']=self.tomask(pores=self.pores(['bottom','boundary'],mode='intersection'))
             self['pore.left_boundary']=self.tomask(pores=self.pores(['left','boundary'],mode='intersection'))
