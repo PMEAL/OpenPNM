@@ -210,7 +210,7 @@ class GenericNetwork(Core):
             temp = temp.tolil()
         logger.debug('create_incidence_matrix: End of method')
         return temp
-
+         
     def find_connected_pores(self,throats=[],flatten=False):
         r"""
         Return a list of pores connected to the given list of throats
@@ -888,16 +888,13 @@ class GenericNetwork(Core):
             conns = sp.vstack((adjmat.row, adjmat.col)).T
         if method == 'nearest':
             P1 = pores_1
-            P2 = pores_2 + N_init['pore']  # Increment pores on donor
+            P2 = pores_2 + N_init['pore'] # Increment pores on donor
             P = sp.hstack((P1,P2))
             C1 = self['pore.coords'][pores_1]
             C2 = donor['pore.coords'][pores_2]
             D = sp.spatial.distance.cdist(C1,C2)
-            N = sp.shape(D)[0]
-            Dmin = sp.ndarray([N,],dtype=int)
-            for row in range(0,N):
-                Dmin[row] = sp.where(D[row]==sp.amin(D[row,:]))[0]
-            conns = sp.vstack((P1,P2[Dmin])).T
+            [P1_ind,P2_ind] = sp.where(D<=len_max)
+            conns = sp.vstack((P1[P1_ind],P2[P2_ind])).T
 
         #Enter donor's pores into the Network
         self.extend(pore_coords=donor['pore.coords'])
@@ -909,7 +906,7 @@ class GenericNetwork(Core):
         C1 = self['pore.coords'][conns[:,0]]
         C2 = self['pore.coords'][conns[:,1]]
         L = sp.sum((C1 - C2)**2,axis=1)**0.5
-        conns = conns[L<=len_max]
+#        conns = conns[L<=len_max]
 
         #Add donor labels to recipient network
         if label_suffix != None:
