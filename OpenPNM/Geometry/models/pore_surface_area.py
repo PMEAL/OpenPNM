@@ -12,8 +12,8 @@ def sphere(geometry,
     r"""
     Calculate internal surface area for a spherical pore
     """
-    D = geometry[pore_diameter]
-    value = 2*_sp.constants.pi*D
+    R = geometry[pore_diameter]/2
+    value = 4*_sp.constants.pi*R**2
     return value
 
 def cube(geometry,
