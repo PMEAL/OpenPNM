@@ -104,7 +104,11 @@ class GenericGeometry(Core):
                 temp += self._net['pore.'+key]
             overlaps = sp.sum(temp*self._net.tomask(pores=pores))
             if overlaps > 0:
-                raise Exception('The given pores overlap with an existing Geometry object')
+                if overlaps == self.Np:
+                    logger.info('All pores in existing geometry accounted for')
+                    del self['pore.all']
+                else:
+                    raise Exception('The given pores overlap with an existing Geometry object')
             #Initialize locations
             self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
             #Specify Geometry locations in Network dictionary
@@ -116,7 +120,11 @@ class GenericGeometry(Core):
                 temp += self._net['throat.'+key]
             overlaps = sp.sum(temp*self._net.tomask(throats=throats))
             if overlaps > 0:
-                raise Exception('The given throats overlap with an existing Geometry object')
+                if overlaps == self.Nt:
+                    logger.info('All throats in existing geometry accounted for')
+                    del self['throat.all']
+                else:
+                    raise Exception('The given throats overlap with an existing Geometry object')
             #Initialize locations
             self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
             #Specify Geometry locations in Network dictionary

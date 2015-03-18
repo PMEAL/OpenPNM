@@ -567,7 +567,7 @@ class GenericNetwork(Core):
             - 'isolated': No connections between parents or siblings
         '''
         if (self._geometries != []):
-            raise Exception('Network has active Geometries, cannot proceed')
+            logger.warning('Network has active Geometries, new pores must be assigned a Geometry')
         if (self._phases != []):
             raise Exception('Network has active Phases, cannot proceed')
 
@@ -628,7 +628,7 @@ class GenericNetwork(Core):
 
         '''
         if (self._geometries != []):
-            raise Exception('Network has active Geometries, cannot proceed')
+            logger.warning('Network has active Geometries, new pores must be assigned a Geometry')
         if (self._phases != []):
             raise Exception('Network has active Phases, cannot proceed')
 
