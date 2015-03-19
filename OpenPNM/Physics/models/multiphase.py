@@ -103,7 +103,10 @@ def late_pore_filling(physics,
     prop = phase[throat_capillary_pressure]
     neighborTs = network.find_neighbor_throats(pores,flatten=False)
     Pc_star = sp.array([sp.amin(prop[row]) for row in neighborTs])
-    Swp = Swp_star*(Pc_star/Pc)**eta
+    if Pc > 0:
+        Swp = Swp_star*(Pc_star/Pc)**eta
+    else:
+        Swp = sp.zeros(len(Pc_star))
     if wetting_phase:
         values = Swp*phase[pore_occupancy]*(Pc_star<Pc)
     else:

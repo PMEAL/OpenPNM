@@ -268,6 +268,7 @@ class Voronoi(GenericGeometry):
         
         n = sp.sum(vox_diff) # Total number of voxels to put back into image
         vol_diff = (fvu-fvc)*1e-18 # amount to adjust pore volumes by
+        vol_diff[vol_diff<0]=0 #don't account for positive volume changes
         self["pore.volume"] -= vol_diff
         "Now need to adjust the pore diameters"
         from scipy.special import cbrt

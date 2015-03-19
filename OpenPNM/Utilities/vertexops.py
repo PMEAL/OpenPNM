@@ -535,8 +535,8 @@ def scale(network,scale_factor=[1,1,1],preserve_vol=False,linear_scaling=[False,
             #x_vert_array.fill(x_vert)
             #vert_scale = (scale_factor - 1)*x_vert_array + 1
             vert_scale = _linear_scale_factor(vert,minmax,scale_factor,linear_scaling)
-            if np.abs(np.sum(vert_scale - lin_scale[pore])) > 0 :
-                print("Linear Scaling ERORR!!!")
+            #if np.abs(np.sum(vert_scale - lin_scale[pore])) > 0 :
+            #    print("Linear Scaling ERORR!!!")
             network["pore.vert_index"][pore][i] = vert*vert_scale
     #Cycle through all vertices of all throats updating vertex values
     for throat in network.throats():
@@ -548,6 +548,11 @@ def scale(network,scale_factor=[1,1,1],preserve_vol=False,linear_scaling=[False,
             #network["throat.vert_index"][throat][i] = network["throat.vert_index"][throat][i]*vert_scale
             vert_scale = _linear_scale_factor(vert,minmax,scale_factor,linear_scaling)
             network["throat.vert_index"][throat][i] = vert*vert_scale
+    #Scale the vertices on the voronoi diagram stored on the network
+    #These are used for adding boundaries on the Delaunay network class
+    vert = network._vor.vertices
+    vert_scale = _linear_scale_factor(vert,minmax,scale_factor,linear_scaling)
+    network._vor.vertices = vert*vert_scale
 
 def _linear_scale_factor(points=None,minmax=[0,1,0,1,0,1],scale_factor=[1,1,1],linear_scaling=[False,False,False]):
     " Work out the linear scale factor of a point or set of points based on the domain extent, an absolute scale factor "

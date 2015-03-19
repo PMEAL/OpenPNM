@@ -331,7 +331,8 @@ class OrdinaryPercolation(GenericAlgorithm):
           Plot drainage capillary pressure curve
           """
           try:
-            PcPoints = sp.unique(self['pore.inv_Pc'])
+            #PcPoints = sp.unique(self['pore.inv_Pc'])
+              PcPoints = self._inv_points.copy()
           except:
             raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
           pores=self._net.pores(labels=pore_label)
@@ -342,9 +343,17 @@ class OrdinaryPercolation(GenericAlgorithm):
           Tvol = self._net['throat.'+throat_volume]
           Pvol_tot = sum(Pvol)
           Tvol_tot = sum(Tvol)
+          Swp_frac=0.10
+          pore_fill_power = 2.0
           for i in range(0,sp.size(PcPoints)):
               Pc = PcPoints[i]
-              Snwp_p[i] = sum(Pvol[self._p_inv[pores]<=Pc])/Pvol_tot
+              try:
+                  Swp = Swp_frac*(self._p_inv[pores]/Pc)**pore_fill_power # account for late pore filling effects
+                  Swp[self._p_inv==sp.inf]=1.0 # pores not invaded are filled with wetting phase
+              except:
+                  Swp = Swp_frac
+              Snwp_vol = (1-Swp)*Pvol
+              Snwp_p[i] = sum(Snwp_vol[self._p_inv[pores]<=Pc])/Pvol_tot
               Snwp_t[i] = sum(Tvol[self._t_inv[throats]<=Pc])/Tvol_tot
           if sp.mean(self._phase_inv["pore.contact_angle"]) < 90:
               Snwp_p = 1 - Snwp_p

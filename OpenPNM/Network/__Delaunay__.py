@@ -143,9 +143,24 @@ class Delaunay(GenericNetwork):
     
         return p
         
+    def _prob_func4(self,m):
+        ps = [0.0,0.2,0.4,0.6,0.8,1.0] #points over which to apply the different piecwise linear functions
+        gs = [0.0,-2.0,0.0,2.0,0.0] #gradients 
+        condlist=[(m >=ps[0])*(m <ps[1]), (m >=ps[1])*(m <ps[2]), (m >=ps[2])*(m <ps[3]), (m>=ps[3])*(m<ps[4]), (m>=ps[4])*(m<ps[5])]
+        h=0.8 #starting probability
+        choicelist=[]
+        for i in range(len(condlist)):
+            if i != 0:
+                h+=gs[i-1]*(ps[i]-ps[i-1]) #new start point
+            choicelist.append(h+(gs[i]*(m-ps[i]))) #function
+    
+        p = np.select(condlist, choicelist)
+    
+        return p
+        
     def _reject(self,point,coord):
 
-        if coord < 2:
+        if coord == 0:
             P = self._prob_func3(point)
         else:
             P = self._prob_func3(point)
@@ -550,6 +565,8 @@ class Delaunay(GenericNetwork):
         right = self.pores()[self['pore.coords'][:,1]==max_point[1]]
         bottom = self.pores()[self['pore.coords'][:,2]==min_point[2]]
         top = self.pores()[self['pore.coords'][:,2]==max_point[2]]
+        if len(top)==0:
+            top=self.pores()[self['pore.coords'][:,2]==np.asarray(bound_coords)[:,2].max()]
         #Assign labels
         self['pore.boundary'] = False
         self['pore.boundary'][new_pore_ids] = True

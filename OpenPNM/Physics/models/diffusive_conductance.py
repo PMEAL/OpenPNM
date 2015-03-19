@@ -57,7 +57,7 @@ def bulk_diffusion(physics,
     DABp = phase[pore_diffusivity]
     DABt = phase.interpolate_data(data=DABp)
     if calc_pore_len:
-        lengths = misc.conduit_lengths(network,mode='centroid')
+        lengths = misc.conduit_lengths(network,mode='pore')
         plen1 = lengths[:,0]
         plen2 = lengths[:,2]
     else:        
