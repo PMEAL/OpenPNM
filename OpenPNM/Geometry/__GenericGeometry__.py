@@ -98,31 +98,6 @@ class GenericGeometry(Core):
         if throats != []:
             throats = sp.array(throats,ndmin=1)
             self._set_locations(element='throat',locations=throats,mode=mode)
-            
-    def _set_locations(self,element,locations,mode='add'):
-        r'''
-        Private method used for assigning Geometry and Physics objects to 
-        specified locations
-        '''
-        net = self._net
-        if mode == 'add':
-            #Check for existing object
-            temp = sp.zeros((net._count(element),),bool)
-            for key in net.geometries():
-                temp += net[element+'.'+key]
-            overlaps = sp.sum(temp*net._tomask(locations=locations,element=element))
-            if overlaps > 0:
-                if overlaps == self._count(element):
-                    logger.info('All '+element+'s in existing object are accounted for')
-                    del self[element+'.all']
-                else:
-                    raise Exception('The given '+element+'s overlap with an existing object')
-            #Initialize locations
-            self[element+'.all'] = sp.ones((sp.shape(locations)[0],),dtype=bool)
-            #Set locations in Network dictionary
-            self._net[element+'.'+self.name][locations] = True
-        if mode == 'remove':
-            pass
 
 if __name__ == '__main__':
     #Run doc tests

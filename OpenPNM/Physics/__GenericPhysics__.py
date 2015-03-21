@@ -91,31 +91,6 @@ class GenericPhysics(OpenPNM.Base.Core):
             throats = sp.array(throats,ndmin=1)
             self._set_locations(element='throat',locations=throats,mode=mode)
             
-    def _set_locations(self,element,locations,mode='add'):
-        r'''
-        Private method used for assigning Geometry and Physics objects to 
-        specified locations
-        '''
-        phase = self._phases[0]
-        if mode == 'add':
-            #Check for existing object
-            temp = sp.zeros((self._net._count(element),),bool)
-            for key in phase.physics():
-                temp += phase[element+'.'+key]
-            overlaps = sp.sum(temp*self._net._tomask(locations=locations,element=element))
-            if overlaps > 0:
-                if overlaps == self._count(element):
-                    logger.info('All '+element+'s in existing object are accounted for')
-                    del self[element+'.all']
-                else:
-                    raise Exception('The given '+element+'s overlap with an existing object')
-            #Initialize locations
-            self[element+'.all'] = sp.ones((sp.shape(locations)[0],),dtype=bool)
-            #Set locations in Network dictionary
-            phase[element+'.'+self.name][locations] = True
-        if mode == 'remove':
-            pass
-
 if __name__ == '__main__':
     print('none yet')
 

@@ -1127,6 +1127,49 @@ class Core(dict):
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
         return temp
+        
+    def _set_locations(self,element,locations,mode='add'):
+        r'''
+        Private method used for assigning Geometry and Physics objects to 
+        specified locations
+        '''
+        net = self._net
+        if self._isa('Geometry'):
+            boss_obj = self._net
+            co_objs = boss_obj.geometries()
+        elif self._isa('Physics'):
+            boss_obj = self._phases[0]
+            co_objs = boss_obj.physics()
+        else:
+            logger.warning('Setting locations only applies to Geometry or Physics objects')
+            return
+        if mode == 'add':
+            #Check for existing object
+            temp = sp.zeros((net._count(element),),bool)
+            for key in co_objs:
+                temp += net[element+'.'+key]
+            overlaps = sp.sum(temp*net._tomask(locations=locations,element=element))
+            if overlaps > 0:
+                if overlaps == self._count(element):
+                    logger.info('All '+element+'s in existing object are accounted for')
+                    del self[element+'.all']
+                else:
+                    raise Exception('The given '+element+'s overlap with an existing object')
+            #Initialize locations
+            self[element+'.all'] = sp.ones((sp.shape(locations)[0],),dtype=bool)
+            #Set locations in Network dictionary
+            net[element+'.'+self.name][locations] = True
+            boss_obj[element+'.'+self.name][locations] = True
+        if mode == 'remove':
+            inds = net._map(element=element,locations=locations,target=self,return_mapping=False)
+            keep = ~self._tomask(locations=inds,element=element)
+            for item in self.keys():
+                if item.split('.')[0] == element:
+                    temp = self[item][keep]
+                    self.update({item:temp})
+            #Set locations in Network dictionary                
+            net[element+'.'+self.name][inds] = False
+            boss_obj[element+'.'+self.name][inds] = False
 
     def _map(self,element,locations,target,return_mapping):
         r'''
