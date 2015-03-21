@@ -72,51 +72,49 @@ class GenericPhysics(OpenPNM.Base.Core):
         else:  # ...Then check Network
             return self._phases[0][key][self._phases[0][element+'.'+self.name]]
 
-    def set_locations(self,pores=[],throats=[]):
+    def set_locations(self,pores=[],throats=[],mode='add'):
         r'''
-        This method can be used to set the pore and throats locations of an
-        *empty* object.  Once locations have been set they can not be changed.
+        Set the pore and throat locations of the Physics object
 
         Parameters
         ----------
         pores and throats : array_like
             The list of pores and/or throats where the object should be applied.
-
-        Notes
-        -----
-        This method is intended to assist in the process of loading saved
-        objects.  Save data can be loaded onto an empty object, then the object
-        can be reassociated with a Network manually by setting the pore and
-        throat locations on the object.
+        mode : string
+            Indicates whether list of pores or throats is to be added or removed
+            from the object.  Options are 'add' (default) or 'remove'.
         '''
-        pores = sp.array(pores,ndmin=1)
-        throats = sp.array(throats,ndmin=1)
-        if len(pores) > 0:
-            #Check for existing Geometry in pores
-            temp = sp.zeros((self._net.Np,),bool)
-            for key in self._phases[0].physics():
-                temp += self._phases[0]['pore.'+key]
-            overlaps = sp.sum(temp*self._net.tomask(pores=pores))
+        if pores != []:
+            pores = sp.array(pores,ndmin=1)
+            self._set_locations(element='pore',locations=pores,mode=mode)
+        if throats != []:
+            throats = sp.array(throats,ndmin=1)
+            self._set_locations(element='throat',locations=throats,mode=mode)
+            
+    def _set_locations(self,element,locations,mode='add'):
+        r'''
+        Private method used for assigning Geometry and Physics objects to 
+        specified locations
+        '''
+        phase = self._phases[0]
+        if mode == 'add':
+            #Check for existing object
+            temp = sp.zeros((self._net._count(element),),bool)
+            for key in phase.physics():
+                temp += phase[element+'.'+key]
+            overlaps = sp.sum(temp*self._net._tomask(locations=locations,element=element))
             if overlaps > 0:
-                raise Exception('The given pores overlap with an existing Physics object')
+                if overlaps == self._count(element):
+                    logger.info('All '+element+'s in existing object are accounted for')
+                    del self[element+'.all']
+                else:
+                    raise Exception('The given '+element+'s overlap with an existing object')
             #Initialize locations
-            self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
-            #Specify Physics locations in Phase dictionary
-            self._phases[0]['pore.'+self.name][pores] = True
-            self._net['pore.'+self.name][pores] = True
-        if len(throats) > 0:
-            #Check for existing Geometry in pores
-            temp = sp.zeros((self._net.Nt,),bool)
-            for key in self._phases[0].physics():
-                temp += self._phases[0]['throat.'+key]
-            overlaps = sp.sum(temp*self._net.tomask(throats=throats))
-            if overlaps > 0:
-                raise Exception('The given throats overlap with an existing Physics object')
-            #Initialize locations
-            self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-            #Specify Physics locations in Phase dictionary
-            self._phases[0]['throat.'+self.name][throats] = True
-            self._net['throat.'+self.name][throats] = True
+            self[element+'.all'] = sp.ones((sp.shape(locations)[0],),dtype=bool)
+            #Set locations in Network dictionary
+            phase[element+'.'+self.name][locations] = True
+        if mode == 'remove':
+            pass
 
 if __name__ == '__main__':
     print('none yet')
