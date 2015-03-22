@@ -1161,7 +1161,7 @@ class Core(dict):
             net[element+'.'+self.name][locations] = True
             boss_obj[element+'.'+self.name][locations] = True
         if mode == 'remove':
-            inds = net._map(element=element,locations=locations,target=self,return_mapping=False)
+            inds = boss_obj._map(element=element,locations=locations,target=self,return_mapping=False)
             keep = ~self._tomask(locations=inds,element=element)
             for item in self.keys():
                 if item.split('.')[0] == element:
