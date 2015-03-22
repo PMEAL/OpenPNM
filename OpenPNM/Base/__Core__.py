@@ -1132,6 +1132,25 @@ class Core(dict):
         r'''
         Private method used for assigning Geometry and Physics objects to 
         specified locations
+        
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.Np
+        125
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=sp.arange(0,120),throats=pn.Ts)
+        >>> [geom.Np, geom.Nt]
+        [120, 300]
+        >>> geom['pore.dummy'] = True
+        >>> health = pn.check_geometry_health()
+        >>> pores = health['undefined_pores']
+        >>> geom.set_locations(pores=pores)
+        >>> [geom.Np, geom.Nt]
+        [125, 300]
+        >>> geom.num_pores('dummy')
+        120
+        >>> geom.set_locations(pores=pores,mode='remove')
         '''
         net = self._net
         if self._isa('Geometry'):
@@ -1144,19 +1163,26 @@ class Core(dict):
             logger.warning('Setting locations only applies to Geometry or Physics objects')
             return
         if mode == 'add':
-            #Check for existing object
+            #Check if locations are already assigned to another object
             temp = sp.zeros((net._count(element),),bool)
             for key in co_objs:
                 temp += net[element+'.'+key]
             overlaps = sp.sum(temp*net._tomask(locations=locations,element=element))
             if overlaps > 0:
-                if overlaps == self._count(element):
-                    logger.info('All '+element+'s in existing object are accounted for')
-                    del self[element+'.all']
-                else:
-                    raise Exception('The given '+element+'s overlap with an existing object')
-            #Initialize locations
-            self[element+'.all'] = sp.ones((sp.shape(locations)[0],),dtype=bool)
+                raise Exception('Some of the given '+element+'s overlap with an existing object')
+            # Retrieve existing locations
+            temp = sp.copy(net[element+'.'+self.name])
+            # Add new locations to list
+            temp[locations] = True
+            # Initialize new 'all' array
+            self.update({element+'.all': sp.where(temp)[0]})
+            # Correct the length of 'labels'
+            temp = ~temp
+            inds = net._get_indices(element=element,labels=self.name)
+            for item in self.labels():
+                if item.split('.')[0] == element:
+                    temp[inds] = self[item]
+                    self.update({item:temp})
             #Set locations in Network dictionary
             net[element+'.'+self.name][locations] = True
             boss_obj[element+'.'+self.name][locations] = True
@@ -1170,6 +1196,8 @@ class Core(dict):
             #Set locations in Network dictionary                
             net[element+'.'+self.name][inds] = False
             boss_obj[element+'.'+self.name][inds] = False
+        # Finally, regenerate all models to correct the length of all prop array
+        self.models.regenerate()
 
     def _map(self,element,locations,target,return_mapping):
         r'''
