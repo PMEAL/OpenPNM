@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ===============================================================================
-Network.tools.binary_ops: Assorted topological manipulation methods
+Network.tools.topology: Assorted topological manipulation methods
 ===============================================================================
 
 """
