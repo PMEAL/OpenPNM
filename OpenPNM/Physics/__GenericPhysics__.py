@@ -23,20 +23,28 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     phase : OpenPNM Phase object
         The Phase object to which this Physics applies
+        
+    geometry : OpenPNM Geometry object
+        The Geometry object that defines the pores/throats where this Physics
+        should be applied.  If this argument is supplied, then pores and 
+        throats cannot be specified.
 
     pores and/or throats : array_like
         The list of pores and throats where this physics applies. If either are
         left blank this will apply the physics nowhere.  The locations can be
-        change after instantiation using ``set_locations()``.
+        change after instantiation using ``set_locations()``.  If pores and
+        throats are supplied, than a geometry cannot be specified.
 
     name : str, optional
         A unique string name to identify the Physics object, typically same as
         instance name but can be anything.  If left blank, and name will be
         generated that include the class name and a random string.
+        
+    
 
     """
 
-    def __init__(self,network=None,phase=None,pores=[],throats=[],**kwargs):
+    def __init__(self,network=None,phase=None,geometry=None,pores=[],throats=[],**kwargs):
         super(GenericPhysics,self).__init__(**kwargs)
         logger.name = self.name
 
@@ -53,6 +61,12 @@ class GenericPhysics(OpenPNM.Base.Core):
         else:
             phase._physics.append(self)  # Register self with phase
             self._phases.append(phase)  # Register phase with self
+            
+        if geometry is not None:
+            if (pores != []) or (throats != []):
+                raise Exception('Cannot specify a Geometry AND pores or throats')
+            pores = self._net.toindices(self._net['pore.'+geometry.name])
+            throats = self._net.toindices(self._net['throat.'+geometry.name])
 
         #Initialize a label dictionary in the associated fluid
         self._phases[0]['pore.'+self.name] = False
