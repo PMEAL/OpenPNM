@@ -7,6 +7,7 @@ GenericNetwork: Abstract class to construct pore networks
 """
 import scipy as sp
 import scipy.sparse as sprs
+import scipyi.spatial as sptl
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Base import Core, Controller, Tools, logging
 logger = logging.getLogger(__name__)
@@ -545,6 +546,18 @@ class GenericNetwork(Core):
         temp = self.create_adjacency_matrix(data=temp, sprsfmt='csr', dropzeros=True)
         clusters = sprs.csgraph.connected_components(csgraph=temp,directed=False)[1]
         return clusters
+        
+    def _find_nearest_pores(self,pores,distance=0):
+        r'''
+        Still a work in progress, but will be useful for finding spatially 
+        near, but not topologically connected pores.
+        '''
+        kd = sptl.cKDTree(self['pore.coords'])
+        if distance == 0:
+            pass
+        elif distance > 0:
+            Pn = kd.query_ball_point(self['pore.coords'][pores])[1]
+        return Pn
 
     #--------------------------------------------------------------------------
     '''Network Manipulation Methods'''
