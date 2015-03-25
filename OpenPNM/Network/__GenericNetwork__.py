@@ -553,6 +553,10 @@ class GenericNetwork(Core):
     def extend(self,pore_coords=[],throat_conns=[],labels=[]):
         topo.extend(network=self,pore_coords=pore_coords,throat_conns=throat_conns,labels=labels)
     extend.__doc__ = topo.extend.__doc__
+    
+    def trim(self,pores=[],throats=[]):
+        topo.trim(network=self,pores=pores,throats=throats)
+    trim.__doc__ = topo.trim.__doc__
         
     def clone_pores(self,pores,apply_label=['clone'],mode='parents'):
         r'''

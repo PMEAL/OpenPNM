@@ -12,10 +12,13 @@ logger = _logging.getLogger(__name__)
 def extend(network,pore_coords=[],throat_conns=[],labels=[]):
     r'''
     Add individual pores and/or throats to the network from a list of coords
-    or conns.
+    or conns.  This is an in-place operation, meaning the received Network
+    object will be altered directly.
 
     Parameters
     ----------
+    network : OpenPNM Network Object
+        The Network to which pores or throats should be added
     pore_coords : array_like
         The coordinates of the pores to add
     throat_conns : array_like
@@ -33,7 +36,7 @@ def extend(network,pore_coords=[],throat_conns=[],labels=[]):
     if (network._phases != []):
         raise Exception('Network has active Phases, cannot proceed')
 
-    logger.warning('Extending network')
+    logger.info('Extending network')
     Np_old = network.num_pores()
     Nt_old = network.num_throats()
     Np = Np_old + int(_sp.size(pore_coords)/3)
@@ -94,10 +97,13 @@ def extend(network,pore_coords=[],throat_conns=[],labels=[]):
     
 def trim(network, pores=[], throats=[]):
     '''
-    Remove pores or throats from the network.
+    Remove pores or throats from the network.  This is an in-place operation, 
+    meaning the received Network object will be altered directly.
 
     Parameters
     ----------
+    network : OpenPNM Network Object
+        The Network from which pores or throats should be removed
     pores (or throats) : array_like
         A boolean mask of length Np (or Nt) or a list of indices of the
         pores (or throats) to be removed.
