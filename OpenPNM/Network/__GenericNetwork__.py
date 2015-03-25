@@ -7,7 +7,7 @@ GenericNetwork: Abstract class to construct pore networks
 """
 import scipy as sp
 import scipy.sparse as sprs
-import scipyi.spatial as sptl
+import scipy.spatial as sptl
 import OpenPNM.Utilities.misc as misc
 import OpenPNM.Utilities.topology as topo
 from OpenPNM.Base import Core, Controller, Tools, logging
@@ -570,196 +570,14 @@ class GenericNetwork(Core):
     def trim(self,pores=[],throats=[]):
         topo.trim(network=self,pores=pores,throats=throats)
     trim.__doc__ = topo.trim.__doc__
-        
+    
     def clone_pores(self,pores,apply_label=['clone'],mode='parents'):
-        r'''
-        Clones the specified pores and adds them to the network
+        topo.clone_pores(network=self,pores=pores,apply_label=apply_label,mode=mode)
+    clone_pores.__doc__ = topo.clone_pores.__doc__
 
-        Parameters
-        ----------
-        pores : array_like
-            List of pores to clone
-        apply_labels : string, or list of strings
-            The labels to apply to the clones, default is 'clone'
-        mode : string
-            Controls the connections between parents and clones.  Options are:
-
-            - 'parents': (Default) Each clone is connected only to its parent
-            - 'siblings': Clones are only connected to each other in the same manner as parents were connected
-            - 'isolated': No connections between parents or siblings
-        '''
-        if (self._geometries != []):
-            logger.warning('Network has active Geometries, new pores must be assigned a Geometry')
-        if (self._phases != []):
-            raise Exception('Network has active Phases, cannot proceed')
-
-        logger.debug('Cloning pores')
-        apply_label = list(apply_label)
-        #Clone pores
-        Np = self.num_pores()
-        Nt = self.num_throats()
-        parents = sp.array(pores,ndmin=1)
-        pcurrent = self['pore.coords']
-        pclone = pcurrent[pores,:]
-        pnew = sp.concatenate((pcurrent,pclone),axis=0)
-        Npnew = sp.shape(pnew)[0]
-        clones = sp.arange(Np,Npnew)
-        #Add clone labels to network
-        for item in apply_label:
-            if ('pore.'+item) not in self.keys():
-                self['pore.'+item] = False
-            if ('throat.'+item) not in self.keys():
-                self['throat.'+item] = False
-        #Add connections between parents and clones
-        if mode == 'parents':
-            tclone = sp.vstack((parents,clones)).T
-            self.extend(pore_coords=pclone,throat_conns=tclone)
-        if mode == 'siblings':
-            ts = self.find_neighbor_throats(pores=pores,mode='intersection')
-            tclone = self['throat.conns'][ts] + self.num_pores()
-            self.extend(pore_coords=pclone,throat_conns=tclone)
-        if mode == 'isolated':
-            self.extend(pore_coords=pclone)
-        #Apply provided labels to cloned pores
-        for item in apply_label:
-            self['pore.'+item][self.pores('all')>=Np] = True
-            self['throat.'+item][self.throats('all')>=Nt] = True
-
-        # Any existing adjacency and incidence matrices will be invalid
-        self._update_network()
-
-    def stitch(self,donor,pores_1,pores_2,method='delaunay',len_max=sp.inf,label_suffix=''):
-        r'''
-        Stitches a second a network to the current network.
-
-        Parameters
-        ----------
-        donor : OpenPNM Network Object
-            The Network to stitch on to the current Network
-
-        pores_1 : array_like
-            The pores on the current Network
-
-        pores_2 : array_like
-            The pores on the donor Network
-            
-        label_suffix : string or None
-            Some text to append to each label in the donor Network before
-            inserting them into the recipient.  The default is to append no 
-            text, but a common option would be to append the donor Network's 
-            name. To insert none of the donor labels, use None.
-
-        len_max : float
-            Set a length limit on length of new throats
-
-        method : string (default = 'delaunay')
-            The method to use when making pore to pore connections. Options are:
-
-            - 'delaunay' : Use a Delaunay tessellation
-            - 'nearest' : Connects each pore on the receptor network to its nearest pore on the donor network
-            
-        Notes
-        -----
-        Before stitching it is necessary to translate the pore coordinates of 
-        one of the Networks so that it is positioned correctly relative to the
-        other.  
-        
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn2 = OpenPNM.Network.TestNet()
-        >>> [pn.Np, pn.Nt]
-        [125, 300]
-        >>> [pn2.Np, pn2.Nt]
-        [125, 300]
-        >>> pn2['pore.coords'][:,2] += 5.0  # Translate pn2 up 5 units in the Z-direction
-        >>> pn.stitch(donor=pn2,pores_1=pn.pores('top'),pores_2=pn2.pores('bottom'),len_max=1.0)
-        >>> [pn.Np, pn.Nt]
-        [250, 625]
-
-        '''
-        # Ensure Networks have no associated objects yet
-        if (len(self._simulation()) > 1) or (len(donor._simulation()) > 1):
-            raise Exception('Cannot stitch a Network with active sibling objects')
-        # Get the initial number of pores and throats
-        N_init = {}
-        N_init['pore']  = self.Np
-        N_init['throat'] = self.Nt
-        if method == 'delaunay':
-            P1 = pores_1
-            P2 = pores_2 + N_init['pore']  # Increment pores on donor
-            P = sp.hstack((P1,P2))
-            C1 = self['pore.coords'][pores_1]
-            C2 = donor['pore.coords'][pores_2]
-            C = sp.vstack((C1,C2))
-            T = sp.spatial.Delaunay(C)
-            a = T.simplices
-            b = []
-            for i in range(0,4):  # Turn simplices into pairs of connections
-                for j in range(0,4):
-                    if i != j:
-                        b.append(sp.vstack((a[:,i],a[:,j])).T)
-            c = sp.vstack((b))  # Convert list b to numpy array
-            #Remove thraot connections to self
-            K1 = sp.in1d(P[c][:,0],P1)*sp.in1d(P[c][:,1],P2)
-            K2 = sp.in1d(P[c][:,0],P2)*sp.in1d(P[c][:,1],P1)
-            K = sp.where(K1 + K2)[0]
-            #Remove duplicate throat connections
-            i = P[c][K][:,0]
-            j = P[c][K][:,1]
-            v = sp.ones_like(i)
-            N = self.Np + donor.Np
-            adjmat = sprs.coo.coo_matrix((v,(i,j)),shape=(N,N))
-            #Convert to csr and back to coo to remove duplicates
-            adjmat = adjmat.tocsr()
-            adjmat = adjmat.tocoo()
-            #Remove lower triangular to remove bidirectional
-            adjmat = sprs.triu(adjmat,k=1,format="coo")
-            #Convert adjmat into 'throat.conns'
-            conns = sp.vstack((adjmat.row, adjmat.col)).T
-        if method == 'nearest':
-            P1 = pores_1
-            P2 = pores_2 + N_init['pore'] # Increment pores on donor
-            P = sp.hstack((P1,P2))
-            C1 = self['pore.coords'][pores_1]
-            C2 = donor['pore.coords'][pores_2]
-            D = sp.spatial.distance.cdist(C1,C2)
-            [P1_ind,P2_ind] = sp.where(D<=len_max)
-            conns = sp.vstack((P1[P1_ind],P2[P2_ind])).T
-
-        #Enter donor's pores into the Network
-        self.extend(pore_coords=donor['pore.coords'])
-
-        #Enter donor's throats into the Network
-        self.extend(throat_conns=donor['throat.conns']+N_init['pore'])
-
-        #Trim throats that are longer then given len_max
-        C1 = self['pore.coords'][conns[:,0]]
-        C2 = self['pore.coords'][conns[:,1]]
-        L = sp.sum((C1 - C2)**2,axis=1)**0.5
-#        conns = conns[L<=len_max]
-
-        #Add donor labels to recipient network
-        if label_suffix != None:
-            if label_suffix != '':
-                label_suffix = '_'+label_suffix
-            for label in donor.labels():
-                element = label.split('.')[0]
-                locations = sp.where(self._get_indices(element)>=N_init[element])[0]
-                try:
-                    self[label+label_suffix]
-                except:
-                    self[label+label_suffix] = False
-                self[label+label_suffix][locations] = donor[label]
-
-        #Add the new stitch throats to the Network
-        self.extend(throat_conns=conns,labels='stitched')
-        
-        # Remove donor from Controller, if present
-        # This check allows for the reuse of a donor Network multiple times
-        if donor in ctrl.values():
-            ctrl.purge_object(donor)
+    def stitch(self,donor,P_donor,P_network,method='delaunay',len_max=sp.inf,label_suffix=''):
+        topo.stitch(network=self,donor=donor,P_donor=P_donor,P_network=P_network,method=method,len_max=len_max,label_suffix=label_suffix)
+    stitch.__doc__ = topo.stitch.__doc__
 
     def check_network_health(self):
         r'''
