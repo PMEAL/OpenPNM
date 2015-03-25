@@ -8,4 +8,4 @@ Contents
 
 """
 
-import *
+from . import topology
