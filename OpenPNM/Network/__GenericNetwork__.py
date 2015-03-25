@@ -1088,17 +1088,6 @@ class GenericNetwork(Core):
         '''
         raise NotImplementedError()
 
-    def isolated_pores(self):
-        r'''
-        This method checks to see whether any pores are isolated from the network and
-        returns a boolean mask
-        '''
-        isolated = [False]*(self.num_pores())
-        for pore in self.pores():
-            if pore not in self["throat.conns"]:
-                isolated[pore]=True
-        return isolated
-
     def domain_pore_volume(self):
         r'''
         '''
