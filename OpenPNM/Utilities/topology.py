@@ -6,13 +6,12 @@ Network.tools.topology: Assorted topological manipulation methods
 
 """
 import scipy as _sp
-from OpenPNM.Base import Controller, logging
-ctrl = Controller()
-logger = logging.getLogger(__name__)
+from OpenPNM.Base import logging as _logging
+logger = _logging.getLogger(__name__)
 
 def extend(network,pore_coords=[],throat_conns=[],labels=[]):
     r'''
-    Add individual pores (or throats) to the network from a list of coords
+    Add individual pores and/or throats to the network from a list of coords
     or conns.
 
     Parameters
@@ -27,31 +26,30 @@ def extend(network,pore_coords=[],throat_conns=[],labels=[]):
     Notes
     -----
     This needs to be enhanced so that it increases the size of all pore
-    and throat props and labels on ALL associated objects.  At the moment
-    if throws an error is there are ANY associated objects.
+    and throat props and labels on ALL associated Phase objects.  At the
+    moment it throws an error is there are any associated Phases.
 
     '''
-    if (network._geometries != []):
-        raise Exception('Network has active Geometries, cannot proceed')
     if (network._phases != []):
         raise Exception('Network has active Phases, cannot proceed')
 
-    logger.debug('Extending network')
+    logger.warning('Extending network')
     Np_old = network.num_pores()
     Nt_old = network.num_throats()
     Np = Np_old + int(_sp.size(pore_coords)/3)
     Nt = Nt_old + int(_sp.size(throat_conns)/2)
-    #Adjust 'all' labels
+    # Adjust 'all' labels
     del network['pore.all'], network['throat.all']
     network['pore.all'] = _sp.ones((Np,),dtype=bool)
     network['throat.all'] = _sp.ones((Nt,),dtype=bool)
-    #Add coords and conns
+    # Add coords and conns
     if pore_coords != []:
         coords = _sp.vstack((network['pore.coords'],pore_coords))
         network['pore.coords'] = coords
     if throat_conns != []:
         conns = _sp.vstack((network['throat.conns'],throat_conns))
         network['throat.conns'] = conns
+    # Increase size of any prop or label arrays on Network
     for item in network.keys():
         if item.split('.')[1] not in ['coords','conns','all']:
             if item.split('.')[0] == 'pore':
@@ -91,12 +89,12 @@ def extend(network,pore_coords=[],throat_conns=[],labels=[]):
                 if 'throat.'+label not in network.labels():
                     network['throat.'+label] = False
                 network['throat.'+label][Ts] = True
-
+    # Regnerate the adjacency matrices
     network._update_network()
     
-def trim(self, pores=[], throats=[]):
+def trim(network, pores=[], throats=[]):
     '''
-    Remove pores (or throats) from the network.
+    Remove pores or throats from the network.
 
     Parameters
     ----------
@@ -125,34 +123,36 @@ def trim(self, pores=[], throats=[]):
     296
 
     '''
-    for net in self.controller.networks():
-        if net._parent is self:
+    ctrl = network.controller
+    for net in ctrl.networks():
+        if net._parent is network:
             raise Exception('This Network has been cloned, cannot trim')
-
-    if pores != []:
+    if (pores != []) and (throats != []):
+        raise Exception('Cannot delete pores and throats simultaneously')
+    elif pores != []:
         pores = _sp.array(pores,ndmin=1)
-        Pkeep = _sp.ones((self.num_pores(),),dtype=bool)
+        Pkeep = _sp.ones((network.num_pores(),),dtype=bool)
         Pkeep[pores] = False
-        Tkeep = _sp.ones((self.num_throats(),),dtype=bool)
-        Ts = self.find_neighbor_throats(pores)
+        Tkeep = _sp.ones((network.num_throats(),),dtype=bool)
+        Ts = network.find_neighbor_throats(pores)
         if len(Ts)>0:
             Tkeep[Ts] = False
     elif throats != []:
         throats = _sp.array(throats,ndmin=1)
-        Tkeep = _sp.ones((self.num_throats(),),dtype=bool)
+        Tkeep = _sp.ones((network.num_throats(),),dtype=bool)
         Tkeep[throats] = False
-        Pkeep = self['pore.all'].copy()
+        Pkeep = network['pore.all'].copy()
     else:
         logger.warning('No pores or throats recieved')
         return
 
     # Trim all associated objects
-    for item in self._geometries+self._physics+self._phases:
-        Pnet = self['pore.'+item.name]*Pkeep
-        Tnet = self['throat.'+item.name]*Tkeep
-        temp = self.map_pores(pores=_sp.where(Pnet)[0],target=item,return_mapping=True)
+    for item in network._geometries+network._physics+network._phases:
+        Pnet = network['pore.'+item.name]*Pkeep
+        Tnet = network['throat.'+item.name]*Tkeep
+        temp = network.map_pores(pores=_sp.where(Pnet)[0],target=item,return_mapping=True)
         Ps = temp['target']
-        temp = self.map_throats(throats=_sp.where(Tnet)[0],target=item,return_mapping=True)
+        temp = network.map_throats(throats=_sp.where(Tnet)[0],target=item,return_mapping=True)
         Ts = temp['target']
         # Then resize 'all
         item.update({'pore.all' : _sp.ones((_sp.sum(Pnet),),dtype=bool)})
@@ -169,33 +169,33 @@ def trim(self, pores=[], throats=[]):
                     item[key] = temp[Ps]
 
     #Remap throat connections
-    Pmap = _sp.ones((self.Np,),dtype=int)*-1
+    Pmap = _sp.ones((network.Np,),dtype=int)*-1
     Pmap[Pkeep] = _sp.arange(0,_sp.sum(Pkeep))
-    tpore1 = self['throat.conns'][:,0]
-    tpore2 = self['throat.conns'][:,1]
+    tpore1 = network['throat.conns'][:,0]
+    tpore2 = network['throat.conns'][:,1]
     Tnew1 = Pmap[tpore1[Tkeep]]
     Tnew2 = Pmap[tpore2[Tkeep]]
     #Write 'all' label specifically
-    self.update({'throat.all' : _sp.ones((_sp.sum(Tkeep),),dtype=bool)})
-    self.update({'pore.all' : _sp.ones((_sp.sum(Pkeep),),dtype=bool)})
+    network.update({'throat.all' : _sp.ones((_sp.sum(Tkeep),),dtype=bool)})
+    network.update({'pore.all' : _sp.ones((_sp.sum(Pkeep),),dtype=bool)})
     # Write throat connections specifically
-    self.update({'throat.conns' : _sp.vstack((Tnew1,Tnew2)).T})
+    network.update({'throat.conns' : _sp.vstack((Tnew1,Tnew2)).T})
     # Overwrite remaining data and info
-    for item in list(self.keys()):
+    for item in list(network.keys()):
         if item.split('.')[-1] not in ['conns','all']:
-            temp = self.pop(item)
+            temp = network.pop(item)
             if item.split('.')[0] == 'throat':
-                logger.debug('Trimming {a} from {b}'.format(a=item,b=self.name))
-                self[item] = temp[Tkeep]
+                logger.debug('Trimming {a} from {b}'.format(a=item,b=network.name))
+                network[item] = temp[Tkeep]
             if item.split('.')[0] == 'pore':
-                logger.debug('Trimming {a} from {b}'.format(a=item,b=self.name))
-                self[item] = temp[Pkeep]
+                logger.debug('Trimming {a} from {b}'.format(a=item,b=network.name))
+                network[item] = temp[Pkeep]
 
     #Reset network graphs
-    self._update_network(mode='regenerate')
+    network._update_network(mode='regenerate')
 
     #Check Network health
-    health = self.check_network_health()
+    health = network.check_network_health()
     if health['trim_pores'] != []:
         logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
         pass

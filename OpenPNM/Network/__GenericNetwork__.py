@@ -8,6 +8,7 @@ GenericNetwork: Abstract class to construct pore networks
 import scipy as sp
 import scipy.sparse as sprs
 import OpenPNM.Utilities.misc as misc
+import OpenPNM.Utilities.topology as topo
 from OpenPNM.Base import Core, Controller, Tools, logging
 logger = logging.getLogger(__name__)
 ctrl = Controller()
@@ -549,6 +550,10 @@ class GenericNetwork(Core):
     #--------------------------------------------------------------------------
     '''Network Manipulation Methods'''
     #--------------------------------------------------------------------------
+    def extend(self,pore_coords=[],throat_conns=[],labels=[]):
+        topo.extend(network=self,pore_coords=pore_coords,throat_conns=throat_conns,labels=labels)
+    extend.__doc__ = topo.extend.__doc__
+        
     def clone_pores(self,pores,apply_label=['clone'],mode='parents'):
         r'''
         Clones the specified pores and adds them to the network
