@@ -1179,6 +1179,13 @@ class Core(dict):
             return
             
         if mode == 'add':
+            # Check if any constant values exist on the object
+            for item in self.props():
+                if (item not in self.models.keys()) or (self.models[item]['regen_mode'] == 'constant'):
+                    logger.critical('Constant values or models were found on object.'
+                    'These will be the wrong length after this operation, ' 
+                    'which will break the data integrity. ' 
+                    'Run network.check_data_health to investigate further.')
             # Ensure locations are not already assigned to another object
             temp = sp.zeros((net._count(element),),bool)
             for key in co_objs:
@@ -1212,15 +1219,15 @@ class Core(dict):
                     self.update({item:blank[net[element+'.all']]})
                     
         if mode == 'remove':
-            inds = boss_obj._map(element=element,locations=locations,target=self)
-            keep = ~self._tomask(locations=inds,element=element)
+            self_inds = boss_obj._map(element=element,locations=locations,target=self)
+            keep = ~self._tomask(locations=self_inds,element=element)
             for item in self.keys():
                 if item.split('.')[0] == element:
                     temp = self[item][keep]
                     self.update({item:temp})
             #Set locations in Network dictionary                
-            net[element+'.'+self.name][inds] = False
-            boss_obj[element+'.'+self.name][inds] = False
+            net[element+'.'+self.name][locations] = False
+            boss_obj[element+'.'+self.name][locations] = False
             
         # Finally, regenerate all models to correct the length of all prop array
         self.models.regenerate()
