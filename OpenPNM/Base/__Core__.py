@@ -1127,8 +1127,112 @@ class Core(dict):
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
         return temp
+        
+    def _set_locations(self,element,locations,mode='add'):
+        r'''
+        Private method used for assigning Geometry and Physics objects to 
+        specified locations
+        
+        Parameters
+        ----------
+        element : string
+            Either 'pore' or 'throat' indicating which type of element is being
+            work upon
+        locations : array_like
+            The pore or throat locations in terms of Network numbering to add 
+            (or remove) from the object
+        mode : string
+            Either 'add' or 'remove', the default is add.  
+        
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.Np
+        125
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=sp.arange(5,125),throats=pn.Ts)
+        >>> [geom.Np, geom.Nt]
+        [120, 300]
+        >>> geom['pore.dummy'] = True
+        >>> health = pn.check_geometry_health()
+        >>> pores = health['undefined_pores']
+        >>> geom.set_locations(pores=pores)
+        >>> [geom.Np, geom.Nt]
+        [125, 300]
+        >>> geom.pores(labels='dummy',mode='not')  # Dummy as assigned BEFORE these pores were added
+        array([0, 1, 2, 3, 4])
+        >>> geom.set_locations(pores=pores,mode='remove')
+        >>> [geom.Np, geom.Nt]
+        [125, 300]
+        >>> geom.num_pores(labels='dummy',mode='not')  # All pores without 'dummy' label are gone
+        0 
+        '''
+        net = self._net
+        if self._isa('Geometry'):
+            boss_obj = self._net
+            co_objs = boss_obj.geometries()
+        elif self._isa('Physics'):
+            boss_obj = self._phases[0]
+            co_objs = boss_obj.physics()
+        else:
+            logger.warning('Setting locations only applies to Geometry or Physics objects')
+            return
+            
+        if mode == 'add':
+            # Check if any constant values exist on the object
+            for item in self.props():
+                if (item not in self.models.keys()) or (self.models[item]['regen_mode'] == 'constant'):
+                    logger.critical('Constant values or models were found on object.'
+                    'These will be the wrong length after this operation, ' 
+                    'which will break the data integrity. ' 
+                    'Run network.check_data_health to investigate further.')
+            # Ensure locations are not already assigned to another object
+            temp = sp.zeros((net._count(element),),bool)
+            for key in co_objs:
+                temp += net[element+'.'+key]
+            overlaps = sp.sum(temp*net._tomask(locations=locations,element=element))
+            if overlaps > 0:
+                raise Exception('Some of the given '+element+'s overlap with an existing object')
 
-    def _map(self,element,locations,target,return_mapping):
+            # Store original Network indices for later use
+            old_inds = sp.copy(net[element+'.'+self.name])
+            
+            # Create new 'all' label for new size
+            new_len = self._count(element=element) + sp.size(locations)
+            self.update({element+'.all': sp.ones((new_len,),dtype=bool)})  # Initialize new 'all' array
+            
+            # Set locations in Network (and Phase) dictionary
+            if element+'.'+self.name not in net.keys():
+                net[element+'.'+self.name] = False
+            net[element+'.'+self.name][locations] = True
+            if element+'.'+self.name not in boss_obj.keys():
+                boss_obj[element+'.'+self.name] = False
+            boss_obj[element+'.'+self.name][locations] = True
+
+            # Increase size of labels (add False at new locations)         
+            blank = ~sp.copy(self[element+'.all'])
+            labels = self.labels()
+            labels.remove(element+'.all')
+            for item in labels:
+                if item.split('.')[0] == element:
+                    blank[old_inds] = self[item]
+                    self.update({item:blank[net[element+'.all']]})
+                    
+        if mode == 'remove':
+            self_inds = boss_obj._map(element=element,locations=locations,target=self)
+            keep = ~self._tomask(locations=self_inds,element=element)
+            for item in self.keys():
+                if item.split('.')[0] == element:
+                    temp = self[item][keep]
+                    self.update({item:temp})
+            #Set locations in Network dictionary                
+            net[element+'.'+self.name][locations] = False
+            boss_obj[element+'.'+self.name][locations] = False
+            
+        # Finally, regenerate all models to correct the length of all prop array
+        self.models.regenerate()
+
+    def _map(self,element,locations,target,return_mapping=False):
         r'''
         '''
         # Initialize things
