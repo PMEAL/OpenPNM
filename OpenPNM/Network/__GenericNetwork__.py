@@ -9,7 +9,7 @@ import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 import OpenPNM.Utilities.misc as misc
-import OpenPNM.Utilities.topology as topo
+from OpenPNM.Utilities import topology as topo
 from OpenPNM.Base import Core, Controller, Tools, logging
 logger = logging.getLogger(__name__)
 ctrl = Controller()
