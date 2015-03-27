@@ -376,3 +376,74 @@ class topology(object):
         # This check allows for the reuse of a donor Network multiple times
         if donor in _ctrl.values():
             _ctrl.purge_object(donor)
+            
+    def subdivide(self,network,pores,divisions,labels=[]):
+        r'''
+        '''
+        mro = [item.__name__ for item in network.__class__.__mro__]
+        if 'Cubic' not in mro:
+            raise Exception('Subdivide is only supported for Cubic Networks')
+        from OpenPNM.Network import Cubic
+        pores = _sp.array(pores,ndmin=1)
+        if _sp.allclose(_sp.around(divisions**(1/3)), divisions**(1/3)):
+            shape = _sp.around([divisions**(1/3),divisions**(1/3),divisions**(1/3)])
+            spacing = network._spacing/divisions**(1/3)
+            new_net = Cubic(shape=shape,spacing=spacing)
+            new_net['pore.surface'] = False
+            new_net['pore.surface'][new_net.pores(labels=['left','right','front','back','top','bottom'])] = True
+        elif _sp.allclose(_sp.around(divisions**(1/2)), divisions**(1/2)):
+            shape = [divisions**(1/2),divisions**(1/2),divisions**(1/2)]
+            single_dim = _sp.where(_sp.array(network._shape)==1)[0]
+            shape[single_dim] = 1
+            spacing = network._spacing/divisions**(1/2)
+            new_net = Cubic(shape=shape,spacing=spacing)
+            new_net['pore.surface'] = False
+            labels = [['left','right'],['front','back'],['top','bottom']]
+            for dim in [0,1,2]:
+                if dim != single_dim:
+                    new_net['pore.surface'][new_net.pores(labels=labels[dim])] = True
+        else:
+            raise Exception('Subdivide not implemented for 1D Networks...yet')
+        network['pore.interior'] = False
+        network['pore.surface'] = False
+        for P in pores:
+            shift = network['pore.coords'][P] - network._spacing/2
+            new_net['pore.coords'] += shift
+            Pn = network.find_neighbor_pores(pores=P)
+            network['pore.interior'][Pn] = True
+            Np1 = network.Np
+            self.extend(network=network,pore_coords=new_net['pore.coords'],
+                        throat_conns=new_net['throat.conns']+new_net.Np,
+                        labels=labels)
+            network['pore.surface'][Np1:] = new_net['pore.surface']
+            self.trim(network=network,pores=P)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
