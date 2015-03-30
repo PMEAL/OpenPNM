@@ -177,8 +177,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         #Generate a tlist containing boolean values for throat state
         Tinvaded = self._t_cap<=inv_val
-        #if self._residual_throats is not None:
-        #    Tinvaded[self._residual_throats]=True
         #Finding all pores that can be invaded at specified pressure
         clusters = self._net.find_clusters(Tinvaded)
         #Find all pores with at least 1 invaded throat (invaded)
@@ -188,8 +186,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         temp = P12[Tinvaded]
         temp = sp.hstack((temp[:,0],temp[:,1]))
         Pinvaded[temp] = True
-        #if self._residual_pores is not None:
-        #    Pinvaded[self._residual_pores]=True
         if self._AL:
             #Add injection sites to Pinvaded
             Pinvaded[self._inv_sites] = True
@@ -213,7 +209,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         tmask = (pmask[temp[:,0]] + pmask[temp[:,1]])*(Tinvaded)
         self._t_inv[(self._t_inv==sp.inf)*(tmask)] = inv_val
 
-    def evaluate_trapping(self, outlets):
+    def evaluate_trapping_tomt(self, outlets):
         r"""
         Finds trapped pores and throats after a full ordinary
         percolation drainage has been run
@@ -254,6 +250,48 @@ class OrdinaryPercolation(GenericAlgorithm):
                 trapped_throat_array[trapped_throats]=True
                 self._t_trap[(self._t_trap == 0)*trapped_throat_array] = inv_val
                 self._t_trap[(self._t_trap == 0)*(Cstate==2)] = inv_val
+        self._p_inv[self._p_trap > 0] = sp.inf
+        self._t_inv[self._t_trap > 0] = sp.inf
+        self['pore.inv_Pc']=self._p_inv
+        self['throat.inv_Pc']=self._t_inv
+    
+    def evaluate_trapping(self, outlets):
+        r"""
+        Finds trapped pores and throats after a full ordinary
+        percolation drainage has been run
+        Parameters
+        ----------
+        outlets : array_like
+            A list of pores that define the wetting phase outlets.
+            Disconnection from these outlets results in trapping.
+        """
+        self._p_trap = sp.zeros_like(self._p_inv, dtype=float)
+        self._t_trap = sp.zeros_like(self._t_inv, dtype=float)
+        try:
+            inv_points = sp.unique(self._p_inv)  # Get points used in OP
+        except:
+            logger.error('Orindary percolation has not been run!')
+            raise Exception('Aborting algorithm')
+        tind = self._net.throats()
+        conns = self._net.find_connected_pores(tind)
+        for inv_val in inv_points[0:-1]:
+            #Find clusters of defender pores
+            Pinvaded = self._p_inv <= inv_val
+            Cstate = sp.sum(Pinvaded[conns], axis=1)
+            Tinvaded = self._t_inv <= inv_val
+            Cstate = Cstate + Tinvaded #0 = all open, 1=1 pore filled, 2=2 pores filled 3=2 pores + 1 throat filled
+            clusters = self._net.find_clusters(Cstate==0)
+            ##Clean up clusters (invaded = -1, defended >=0)
+            clusters = clusters*(~Pinvaded) - (Pinvaded)
+            #Identify clusters connected to outlet sites
+            out_clusters = sp.unique(clusters[outlets])
+            trapped_pores = ~sp.in1d(clusters, out_clusters)
+            self._p_trap[(self._p_trap == 0)[trapped_pores]] = inv_val
+            trapped_throats = self._net.find_neighbor_throats(trapped_pores,mode='intersection')
+            if len(trapped_throats)> 0:
+                self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
+            #trapped_throats = sp.where(Cstate==2)[0]
+            #self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
         self._p_inv[self._p_trap > 0] = sp.inf
         self._t_inv[self._t_trap > 0] = sp.inf
         self['pore.inv_Pc']=self._p_inv
