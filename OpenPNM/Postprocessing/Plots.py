@@ -203,6 +203,11 @@ def distributions(net,
     else:
         include_pores = net["pore.all"]
         include_throats = net["throat.all"]
+        
+    if exclude_boundaries:
+        include_pores *= ~net["pore.boundary"]
+        include_throats *= ~net["throat.boundary"]
+        
     pores = net.pores()[include_pores]
     throats = net.throats()[include_throats]
 
