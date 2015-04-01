@@ -52,10 +52,10 @@ class topology(object):
         network['pore.all'] = _sp.ones((Np,),dtype=bool)
         network['throat.all'] = _sp.ones((Nt,),dtype=bool)
         # Add coords and conns
-        if pore_coords != []:
+        if _sp.size(pore_coords) > 0:
             coords = _sp.vstack((network['pore.coords'],pore_coords))
             network['pore.coords'] = coords
-        if throat_conns != []:
+        if _sp.size(throat_conns) > 0:
             conns = _sp.vstack((network['throat.conns'],throat_conns))
             network['throat.conns'] = conns
         # Increase size of any prop or label arrays on Network
@@ -88,12 +88,12 @@ class topology(object):
             for label in labels:
                 #Remove pore or throat from label, if present
                 label = label.split('.')[-1]
-                if pore_coords != []:
+                if _sp.size(pore_coords) > 0:
                     Ps = _sp.r_[Np_old:Np]
                     if 'pore.'+label not in network.labels():
                         network['pore.'+label] = False
                     network['pore.'+label][Ps] = True
-                if throat_conns != []:
+                if _sp.size(throat_conns) > 0:
                     Ts = _sp.r_[Nt_old:Nt]
                     if 'throat.'+label not in network.labels():
                         network['throat.'+label] = False
