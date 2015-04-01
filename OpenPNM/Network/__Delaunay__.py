@@ -590,7 +590,7 @@ class Delaunay(GenericNetwork):
         if len(occluded_ts) > 0:
             self.trim(throats=occluded_ts)
         "Also get rid of isolated pores"
-        isolated_ps = self.pores()[np.asarray(self.isolated_pores())]
+        isolated_ps = self.check_network_health()['isolated_pores']
         if len(isolated_ps) > 0:
             self.trim(isolated_ps)
 

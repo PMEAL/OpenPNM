@@ -68,6 +68,7 @@ def hagen_poiseuille(physics,
     #remove any non-positive lengths
     tlen[tlen<=0] = 1e-12
     gt = _sp.pi*(tdia)**4/(128*tlen*mut)
+    gt[~(gt>0)] = _sp.inf #Set 0 conductance pores (boundaries) to inf
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     value = value[phase.throats(physics.name)]
     return value
