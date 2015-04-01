@@ -47,7 +47,7 @@ class GenericLinearTransport(GenericAlgorithm):
             self._conductance = 'throat.'+conductance.split('.')[-1]
             self._quantity = 'pore.'+self._phase.name+'_'+quantity.split('.')[-1]
             #Check health of conductance vector
-            if self._phase.check_data_health(props=self._conductance,quiet=True):
+            if self._phase.check_data_health(props=self._conductance).health:
                 self['throat.conductance'] = self._phase[self._conductance]
             else:
                 raise Exception('The provided throat conductance has problems')
@@ -188,7 +188,8 @@ class GenericLinearTransport(GenericAlgorithm):
                     for phys in matching_physics:
                         phys.models[source_name]['x'] = x0
                         phys.regenerate(source_name)
-                        loc = pores[sp.in1d(pores,phys.map_pores())]                    
+                        map_pores = phys.map_pores()
+                        loc = pores[sp.in1d(pores,map_pores)]  
                         if mode=='merge':
                             try:                            
                                 if sp.sum(sp.in1d(loc,self.pores(source_name)))>0:
@@ -196,9 +197,10 @@ class GenericLinearTransport(GenericAlgorithm):
                             except KeyError: pass                    
                         self['pore.source_'+prop][loc]= True                   
                        
-                        # for modes in ['update','merge','overwrite']   
-                        self['pore.source_'+source_mode+'_s1_'+prop][loc] = phys[source_name][:,0][sp.in1d(phys.map_pores(),pores)]
-                        self['pore.source_'+source_mode+'_s2_'+prop][loc] = phys[source_name][:,1][sp.in1d(phys.map_pores(),pores)]
+                        # for modes in ['update','merge','overwrite']  
+                        map_pores_loc = sp.in1d(map_pores,pores)
+                        self['pore.source_'+source_mode+'_s1_'+prop][loc] = phys[source_name][:,0][map_pores_loc]
+                        self['pore.source_'+source_mode+'_s2_'+prop][loc] = phys[source_name][:,1][map_pores_loc]
                         if not source_mode=='linear':
                             self['pore.source_maxiter'][loc] = maxiter                                
                             self['pore.source_tol'][loc] = tol                                
@@ -389,7 +391,8 @@ class GenericLinearTransport(GenericAlgorithm):
             try:
                 temp = self.pores(self._phase.name+'_Dirichlet',mode='difference')
             except:
-                raise Exception('The linear transport solver needs at least one Dirichlet boundary condition for the phase which is attached to '+self.name)
+                temp = self.pores()
+                logger.warning('No direct Dirichlet boundary condition has been applied to the phase '+self._phase.name+' in the algorithm '+self.name)
             loc1 = sp.in1d(tpore1,temp)
             loc2 = sp.in1d(tpore2,temp)
             modified_tpore1 = tpore1[loc1]

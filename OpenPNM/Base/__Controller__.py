@@ -30,25 +30,24 @@ class Controller(dict):
         self.comments = 'Using OpenPNM ' + OpenPNM.__version__
 
     def __str__(self):
-        header = ('-'*60)
-        print(header)
-        print("{c:<10s} {a:<25s} {b:<25s}".format(a='Class', b='Name', c='Type'))
-        print(header)
-        for item in self.networks():
-            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Network'))
-        print(header)
-        for item in self.geometries():
-            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Geometry'))
-        print(header)
-        for item in self.phases():
-            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Phase'))
-        print(header)
-        for item in self.physics():
-            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Physics'))
-        print(header)
-        for item in self.algorithms():
-            print("{c:<10s} {a:<25s} {b:<25s}".format(a=item.__class__.__name__, b=item.name, c='Algorithm'))
-        print(header)
+        for net in self.networks():
+            header = ('-'*60)
+            print(header)
+            print('{a:<15} {b:<20} ({c})'.format(a='Object: ',b='Name',c='Class'))
+            print(header)
+            print('{a:<15} {b:<20} ({c})'.format(a='Network: ',b=net.name,c=net.__class__.__name__))
+            for geom in net._geometries:
+                print('++ {a:<12} {b:<20} ({c})'.format(a='Geometry: ',b=geom.name,c=geom.__class__.__name__))
+            for phase in net._phases:
+                if len(phase._phases)==0:
+                    print('+ {a:<13} {b:<20} ({c})'.format(a='Pure Phase: ',b=phase.name,c=phase.__class__.__name__))
+                if len(phase._phases)>1:
+                    print('+ {a:<13} {b:<20} ({c})'.format(a='Mixture Phase: ',b=phase.name,c=phase.__class__.__name__))
+                    comps = phase.phases()
+                    for compname in comps:
+                        print('++ {a:<12} {b:<20} ({c})}'.format(a='Component Phase: ',b=phase.name,c=phase.__class__.__name__))
+                for phys in phase._physics:
+                    print('++ {a:<12} {b:<20} ({c})'.format(a='Physics: ',b=phys.name,c=phys.__class__.__name__))
         return ''
         
     def _setloglevel(self,level):
@@ -58,27 +57,6 @@ class Controller(dict):
         print('Log level is currently set to -->',logger.level)
         
     loglevel = property(fget=_getloglevel,fset=_setloglevel)
-
-    def show_tree(self):
-        r'''
-        Prints a heirarchical list of object associations
-        '''
-        for net in self.networks():
-            header = ('-'*60)
-            print(header)
-            print('Network: '+net.name)
-            for geom in net.geometries():
-                print('+ '+'Geometry: '+geom)
-            for phase in net.phases():
-                if len(net.phases(phase)[0].phases())==0:
-                    print('+ '+'Pure Phase: '+phase)
-                if len(net.phases(phase)[0].phases())>1:
-                    print('+ '+'Mixture Phase: '+phase)
-                    comps = net.phases(phase).phases()
-                    for compname in comps:
-                        print('+++ '+'Component Phase: '+compname)
-                for phys in net.phases(phase)[0].physics():
-                    print('++ '+'Physics: '+phys)
 
     def networks(self):
         r'''
@@ -372,12 +350,17 @@ class Controller(dict):
             self.clear()
         self = _pickle.load(open(filename+'.pnm','rb'))
 
-    def export(self,filename='',fileformat='VTK'):
+    def export(self,network=None,filename='',fileformat='VTK'):
         r'''
         Export data to the specified file format.
 
         Parameters
         ----------
+        network : OpenPNM Network Object
+            This Network and all of its phases will be written to the specified 
+            file.  If no Netowrk is given it will check to ensure that only one
+            Network exists on the Controller and use that.  If there is more 
+            than one Network an error is thrown.
         filename : string, optional
             The file name to save as.  If no name is given then the name of
             suppiled object is used.  If no object is given, the name of the
@@ -389,16 +372,19 @@ class Controller(dict):
             2. MAT: Suitable for loading data into Matlab for post-processing
 
         '''
+        if network is None:
+            if len(self.networks()) == 1:
+                network = self.networks()[0]
+            else:
+                raise Exception('Multiple Networks found, please specify which to Export')
         import OpenPNM.Utilities.IO as io
         if fileformat == 'VTK':
-            net = self.networks()[0]
-            phases = net._phases
-            io.VTK.save(filename=filename,network=net,phases=phases)
+            phases = network._phases
+            io.VTK.save(filename=filename,network=network,phases=phases)
             return
         if fileformat == 'MAT':
-            net = self.networks()[0]
-            phases = net._phases
-            io.MAT.save(filename=filename,network=net,phases=phases)
+            phases = network._phases
+            io.MAT.save(filename=filename,network=network,phases=phases)
             return
 
     def _script(self,filename,mode='read'):

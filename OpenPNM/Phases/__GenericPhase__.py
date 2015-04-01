@@ -5,8 +5,7 @@ module __GenericPhase__: Base class for building Phase objects
 ===============================================================================
 
 """
-from OpenPNM.Base import Core
-from OpenPNM.Base import logging
+from OpenPNM.Base import Core, Tools, logging
 logger = logging.getLogger(__name__)
 from OpenPNM.Network import GenericNetwork
 import OpenPNM.Phases.models
@@ -137,7 +136,7 @@ class GenericPhase(Core):
                 Tind = self['throat.'+item]
                 Ptemp[Pind] = Ptemp[Pind] + 1
                 Ttemp[Tind] = Ttemp[Tind] + 1
-        health = {}
+        health = Tools.HealthDict()
         health['overlapping_pores'] = sp.where(Ptemp>1)[0].tolist()
         health['undefined_pores'] = sp.where(Ptemp==0)[0].tolist()
         health['overlapping_throats'] = sp.where(Ttemp>1)[0].tolist()

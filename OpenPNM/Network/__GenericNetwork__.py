@@ -5,13 +5,13 @@ GenericNetwork: Abstract class to construct pore networks
 ===============================================================================
 
 """
-import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
+import scipy.spatial as sptl
 import OpenPNM.Utilities.misc as misc
-from OpenPNM.Base import Core
-from OpenPNM.Base import logging
+from OpenPNM.Base import Core, Controller, Tools, logging
 logger = logging.getLogger(__name__)
+ctrl = Controller()
 
 class GenericNetwork(Core):
     r"""
@@ -23,7 +23,6 @@ class GenericNetwork(Core):
         Unique name for Network object
 
     """
-
     def __init__(self,**kwargs):
         r"""
         Initialize Network
@@ -212,7 +211,7 @@ class GenericNetwork(Core):
             temp = temp.tolil()
         logger.debug('create_incidence_matrix: End of method')
         return temp
-
+         
     def find_connected_pores(self,throats=[],flatten=False):
         r"""
         Return a list of pores connected to the given list of throats
@@ -545,8 +544,20 @@ class GenericNetwork(Core):
         else:
             raise Exception('Mask received was neither Nt nor Np long')
         temp = self.create_adjacency_matrix(data=temp, sprsfmt='csr', dropzeros=True)
-        clusters = sprs.csgraph.connected_components(temp)[1]
+        clusters = sprs.csgraph.connected_components(csgraph=temp,directed=False)[1]
         return clusters
+        
+    def _find_nearest_pores(self,pores,distance=0):
+        r'''
+        Still a work in progress, but will be useful for finding spatially 
+        near, but not topologically connected pores.
+        '''
+        kd = sptl.cKDTree(self['pore.coords'])
+        if distance == 0:
+            pass
+        elif distance > 0:
+            Pn = kd.query_ball_point(self['pore.coords'][pores])[1]
+        return Pn
 
     #--------------------------------------------------------------------------
     '''Network Manipulation Methods'''
@@ -569,7 +580,7 @@ class GenericNetwork(Core):
             - 'isolated': No connections between parents or siblings
         '''
         if (self._geometries != []):
-            raise Exception('Network has active Geometries, cannot proceed')
+            logger.warning('Network has active Geometries, new pores must be assigned a Geometry')
         if (self._phases != []):
             raise Exception('Network has active Phases, cannot proceed')
 
@@ -630,7 +641,7 @@ class GenericNetwork(Core):
 
         '''
         if (self._geometries != []):
-            raise Exception('Network has active Geometries, cannot proceed')
+            logger.warning('Network has active Geometries, new pores must be assigned a Geometry')
         if (self._phases != []):
             raise Exception('Network has active Phases, cannot proceed')
 
@@ -727,7 +738,7 @@ class GenericNetwork(Core):
             if net._parent is self:
                 raise Exception('This Network has been cloned, cannot trim')
 
-        if pores is not None:
+        if len(pores) > 0:
             pores = sp.array(pores,ndmin=1)
             Pkeep = sp.ones((self.num_pores(),),dtype=bool)
             Pkeep[pores] = False
@@ -735,7 +746,7 @@ class GenericNetwork(Core):
             Ts = self.find_neighbor_throats(pores)
             if len(Ts)>0:
                 Tkeep[Ts] = False
-        elif throats is not None:
+        elif len(throats) > 0:
             throats = sp.array(throats,ndmin=1)
             Tkeep = sp.ones((self.num_throats(),),dtype=bool)
             Tkeep[throats] = False
@@ -798,43 +809,70 @@ class GenericNetwork(Core):
             logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
             pass
 
-    def _stitch(self,network_2,pores_1,pores_2,method='delaunay',len_max=sp.inf):
+    def stitch(self,donor,pores_1,pores_2,method='delaunay',len_max=sp.inf,label_suffix=''):
         r'''
         Stitches a second a network to the current network.
 
         Parameters
         ----------
-        network_2 : OpenPNM Network Object
-            The network to stitch on to the current network
+        donor : OpenPNM Network Object
+            The Network to stitch on to the current Network
 
         pores_1 : array_like
-            The pores on the recipient network
+            The pores on the current Network
 
-        label_2 : array_like
-            The pores label on the doner network
+        pores_2 : array_like
+            The pores on the donor Network
+            
+        label_suffix : string or None
+            Some text to append to each label in the donor Network before
+            inserting them into the recipient.  The default is to append no 
+            text, but a common option would be to append the donor Network's 
+            name. To insert none of the donor labels, use None.
 
         len_max : float
             Set a length limit on length of new throats
 
         method : string (default = 'delaunay')
-            The method to use when making pore to pore connections.
-
-            Options are:
+            The method to use when making pore to pore connections. Options are:
 
             - 'delaunay' : Use a Delaunay tessellation
             - 'nearest' : Connects each pore on the receptor network to its nearest pore on the donor network
+            
+        Notes
+        -----
+        Before stitching it is necessary to translate the pore coordinates of 
+        one of the Networks so that it is positioned correctly relative to the
+        other.  
+        
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn2 = OpenPNM.Network.TestNet()
+        >>> [pn.Np, pn.Nt]
+        [125, 300]
+        >>> [pn2.Np, pn2.Nt]
+        [125, 300]
+        >>> pn2['pore.coords'][:,2] += 5.0  # Translate pn2 up 5 units in the Z-direction
+        >>> pn.stitch(donor=pn2,pores_1=pn.pores('top'),pores_2=pn2.pores('bottom'),len_max=1.0)
+        >>> [pn.Np, pn.Nt]
+        [250, 625]
 
         '''
+        # Ensure Networks have no associated objects yet
+        if (len(self._simulation()) > 1) or (len(donor._simulation()) > 1):
+            raise Exception('Cannot stitch a Network with active sibling objects')
         # Get the initial number of pores and throats
         N_init = {}
         N_init['pore']  = self.Np
         N_init['throat'] = self.Nt
         if method == 'delaunay':
             P1 = pores_1
-            P2 = pores_2 + Np  # Increment pores on network_2
+            P2 = pores_2 + N_init['pore']  # Increment pores on donor
             P = sp.hstack((P1,P2))
             C1 = self['pore.coords'][pores_1]
-            C2 = network_2['pore.coords'][pores_2]
+            C2 = donor['pore.coords'][pores_2]
             C = sp.vstack((C1,C2))
             T = sp.spatial.Delaunay(C)
             a = T.simplices
@@ -852,7 +890,7 @@ class GenericNetwork(Core):
             i = P[c][K][:,0]
             j = P[c][K][:,1]
             v = sp.ones_like(i)
-            N = self.Np + network_2.Np
+            N = self.Np + donor.Np
             adjmat = sprs.coo.coo_matrix((v,(i,j)),shape=(N,N))
             #Convert to csr and back to coo to remove duplicates
             adjmat = adjmat.tocsr()
@@ -863,41 +901,46 @@ class GenericNetwork(Core):
             conns = sp.vstack((adjmat.row, adjmat.col)).T
         if method == 'nearest':
             P1 = pores_1
-            P2 = pores_2 + N_init['pore']  # Increment pores on network_2
+            P2 = pores_2 + N_init['pore'] # Increment pores on donor
             P = sp.hstack((P1,P2))
             C1 = self['pore.coords'][pores_1]
-            C2 = network_2['pore.coords'][pores_2]
+            C2 = donor['pore.coords'][pores_2]
             D = sp.spatial.distance.cdist(C1,C2)
-            N = sp.shape(D)[0]
-            Dmin = sp.ndarray([N,],dtype=int)
-            for row in range(0,N):
-                Dmin[row] = sp.where(D[row]==sp.amin(D[row,:]))[0]
-            conns = sp.vstack((P1,P2[Dmin])).T
+            [P1_ind,P2_ind] = sp.where(D<=len_max)
+            conns = sp.vstack((P1[P1_ind],P2[P2_ind])).T
 
-        #Enter network_2's pores into the Network
-        self.extend(pore_coords=network_2['pore.coords'])
+        #Enter donor's pores into the Network
+        self.extend(pore_coords=donor['pore.coords'])
 
-        #Enter network_2's throats into the Network
-        self.extend(throat_conns=network_2['throat.conns']+N_init['pore'])
+        #Enter donor's throats into the Network
+        self.extend(throat_conns=donor['throat.conns']+N_init['pore'])
 
         #Trim throats that are longer then given len_max
         C1 = self['pore.coords'][conns[:,0]]
         C2 = self['pore.coords'][conns[:,1]]
         L = sp.sum((C1 - C2)**2,axis=1)**0.5
-        conns = conns[L<=len_max]
+#        conns = conns[L<=len_max]
 
         #Add donor labels to recipient network
-        for label in network_2.labels():
-            element = label.split('.')[0]
-            locations = sp.where(self._get_indices(element)>=N_init[element])[0]
-            try:
-                self[label]
-            except:
-                self[label] = False
-            self[label][locations] = network_2[label]
+        if label_suffix != None:
+            if label_suffix != '':
+                label_suffix = '_'+label_suffix
+            for label in donor.labels():
+                element = label.split('.')[0]
+                locations = sp.where(self._get_indices(element)>=N_init[element])[0]
+                try:
+                    self[label+label_suffix]
+                except:
+                    self[label+label_suffix] = False
+                self[label+label_suffix][locations] = donor[label]
 
-        #Lastly, add the new stitch throats to the Network
+        #Add the new stitch throats to the Network
         self.extend(throat_conns=conns,labels='stitched')
+        
+        # Remove donor from Controller, if present
+        # This check allows for the reuse of a donor Network multiple times
+        if donor in ctrl.values():
+            ctrl.purge_object(donor)
 
     def check_network_health(self):
         r'''
@@ -924,7 +967,7 @@ class GenericNetwork(Core):
         - This is just a 'check' method and does not 'fix' the problems it finds
         '''
 
-        health = {}
+        health = Tools.HealthDict()
         health['disconnected_clusters'] = []
         health['isolated_pores'] = []
         health['trim_pores'] = []
@@ -994,7 +1037,7 @@ class GenericNetwork(Core):
             Tind = self['throat.'+item]
             Ptemp[Pind] = Ptemp[Pind] + 1
             Ttemp[Tind] = Ttemp[Tind] + 1
-        health = {}
+        health = Tools.HealthDict()
         health['overlapping_pores'] = sp.where(Ptemp>1)[0].tolist()
         health['undefined_pores'] = sp.where(Ptemp==0)[0].tolist()
         health['overlapping_throats'] = sp.where(Ttemp>1)[0].tolist()
@@ -1044,17 +1087,6 @@ class GenericNetwork(Core):
         r'''
         '''
         raise NotImplementedError()
-
-    def isolated_pores(self):
-        r'''
-        This method checks to see whether any pores are isolated from the network and
-        returns a boolean mask
-        '''
-        isolated = [False]*(self.num_pores())
-        for pore in self.pores():
-            if pore not in self["throat.conns"]:
-                isolated[pore]=True
-        return isolated
 
     def domain_pore_volume(self):
         r'''

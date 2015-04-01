@@ -15,6 +15,7 @@ from . import pore_diameter
 from . import pore_misc
 from . import pore_seed
 from . import pore_volume
+from . import pore_surface_area
 from . import pore_vertices
 from . import throat_vertices
 from . import throat_normal

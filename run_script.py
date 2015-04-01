@@ -53,7 +53,7 @@ OP_1.return_results(Pc=7000)
 #------------------------------------------------------------------------------
 inlets = pn.pores('bottom_boundary')
 outlets = pn.pores('top_boundary')
-IP_1 = OpenPNM.Algorithms.InvasionPercolationBasic(network=pn,name='IP_1')
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn,name='IP_1')
 IP_1.run(phase=water,inlets=inlets)
 IP_1.return_results()
 
@@ -98,6 +98,5 @@ except Exception as e:
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-import OpenPNM.Utilities.IO as io
-io.VTK.save(network=pn,phases=[air,water])
+ctrl.export()
 

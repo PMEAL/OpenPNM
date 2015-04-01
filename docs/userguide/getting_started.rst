@@ -3,15 +3,13 @@
 ###############################################################################
 Getting Started with OpenPNM
 ###############################################################################
-The OpenPNM framework is built upon 5 main objects, Networks, Geometries, Phases, Physics and Algorithms.  All of these objects are subclassed from the Python 'dictionary' or ``dict``, which is a data storage class similar to a *struct* in C or Matlab.  Using a ``dict`` means that multiple pieces of data can be stored on each object, and accessed by name (i.e. object_name['pore.diameter']) which provide easy and direct access to the numerical data.  Each OpenPNM object stores its own data, so the *Network* object stores topological information, *Geometries* stores pore and throat size related information, *Phases* stores the physical properties of the fluids and solids in the network, *Physics* stores pore-scale physics information, and *Algorithms* store the results of simulations and calculations.  A detailed discussion of the OpenPNM data storage scheme is provided :ref:`here<network>`.
-
-The OpenPNM objects use ``dict`` as a starting point, but augment it by adding a variety of methods that work with the data stored in the dictionaries.  For instance, the basic ``dict`` class only has a few methods for reading and removing data from the dictionary, while an OpenPNM object has many additional methods related to pore network modeling, such as querying the number of pores in the network.  
+The OpenPNM framework is built upon 5 main objects, Networks, Geometries, Phases, Physics and Algorithms, which are referred to as the *Core* objects.  All of these objects are derived from subclasses of the Python 'dictionary' or ``dict``, which is a data storage class similar to a *struct* in C or Matlab.  Using a ``dict`` means that multiple pieces of data can be stored on each object, and accessed by name (i.e. ``obj['pore.diameter']``) which provide easy and direct access to the numerical data.  Each OpenPNM object stores its own data, so the *Network* object stores topological information, *Geometries* stores pore and throat size related information, *Phases* stores the physical properties of the fluids and solids in the network, *Physics* stores pore-scale physics information, and *Algorithms* store the results of simulations and calculations.  A detailed discussion of the OpenPNM data storage scheme is provided :ref:`here<network>`.
 
 ===============================================================================
 Main Modules
 ===============================================================================
 
-1 `Network`_: The Network object is the main *controller* object for the framework.  It contains all the topological information about the **Network**, as well as methods for querying and manipulating the topology. 
+1 `Network`_: The Network object has two main roles.  Firstly, it contains all the topological information about the **Network**, along with methods for querying and manipulating the topology.  Secondly, Networks hold a special position since there can be only ONE network per simulation, and they are essentially the glue that holds the other objects together. 
 
 2 `Geometry`_: Geometry objects manage the pore-scale geometrical properties of the Network such as pore volume and throat diameter.  A simulation may have multiple Geometry objects depending on the problem being modeled.  For instance, a stratified material may have a separate Geometry object for each layer if the pore and throat sizes differ between them.  
 
@@ -65,7 +63,7 @@ OpenPNM.Network.Cubic: 	net1
 9     throat.all                          54        
 ------------------------------------------------------------
 
-As can be seen from the print-out of the Network, 'net1' has 27 pores with 54 throats, 3 'properties' and 9 'labels'.  The labels were applied to this Network by the Cubic generator, and they have no special meaning but are useful (with the exception of 'all', but more on this later).  The 'pore.coords' and 'throat.conns' properties, however, are absolutely essential to the network as these define the topology and spatial arrangement of the pores and throats.  ('pore.index' is non-essential).  
+As can be seen from the print-out of the Network, 'net1' has 27 pores with 54 throats, 3 'properties' and 9 'labels'.  The labels were applied to this Network by the Cubic generator, and they have no special meaning but are useful (with the exception of 'all', but more on this later).  The 'pore.coords' and 'throat.conns' properties, however, are absolutely essential to the network as these define the topology and spatial arrangement of the pores and throats.  
 
 The Network object is explained further in the :ref:`Network Documentation<network>`.
 
@@ -86,8 +84,8 @@ You'll notice that the Network object has no *pore-scale* geometric information 
 5     throat.area                            54 / 54   
 6     throat.diameter                        54 / 54   
 7     throat.length                          54 / 54   
-8    throat.seed                            54 / 54   
-9    throat.surface_area                    54 / 54   
+8     throat.seed                            54 / 54   
+9     throat.surface_area                    54 / 54   
 10    throat.volume                          54 / 54   
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
@@ -98,7 +96,7 @@ You'll notice that the Network object has no *pore-scale* geometric information 
 
 As can be seen this Geometry object contains all the expected pore-scale geometric information.  The 'stick_and_ball' subclass is provided with OpenPNM and already contains all the pore scale models pre-selected.  Further details on creating a custom Geometry object are provided in the :ref:`Geometry Documentation<geometry>`.
 
-The instantiation of this object has a few requirements that should be pointed out.  Firstly, it must receive a Network object to which it is to be associated.  Secondly, it must receive a list of pores and throats where it is to apply.  In the above example, ``geom`` applies to *all* pores and throats, but it possible and likely that multiple Geometry objects will be applied to the same Network.  
+The instantiation of this object has a few requirements that should be pointed out.  Firstly, it must receive a Network object to which it is to be associated.  All Core objects have this requirement which allows the Network to track all objects that are associated with it (except Networks themselves).  Secondly, it must receive a list of pores and throats where it is to apply.  In the above example, ``geom`` applies to *all* pores and throats, but it possible and likely that multiple Geometry objects will be applied to the same Network.  
 
 ===============================================================================
 Phases
@@ -127,12 +125,12 @@ In any pore network simulation there are usually several fluids whose transport 
 
 The *Air* subclass is included with OpenPNM and contains all necessary models for calculating each property as a function of the conditions.  Building a custom Phase to represent other fluids is outlined in the :ref:`Phases Documentation<phases>`.
 
-Notice that pores and throats were *not* sent to the GenericPhase constructor.  This is because *Phases* exist everywhere.  This might seem counterintuitive in a multiphase simulation where one phase displaces another, but it is much easier to calculate the *Phase* properties everywhere, and separately track where each phase is present and in what amount.  
+Notice that pores and throats were *not* sent to the GenericPhase constructor.  This is because *Phases* exist everywhere.  This might seem counterintuitive in a multiphase simulation where one phase displaces another, but it is much easier to calculate the *Phase* properties everywhere, and separately track where each phase is present and in what amount.  Note that a Network must be received as an argument like all Core objects, which links the object to the same simulation.
 
 ===============================================================================
 Physics
 ===============================================================================
-When performing a pore network simulation, one of the main aims is to combine phase properties with geometry sizes to estimate the behavior of a fluid as it moves through the pore space.  The pore-scale physics models required for this are managed by Physics objects:
+One of the main aims of pore network modeling is to combine phase properties with geometry sizes to estimate the behavior of a fluid as it moves through the pore space.  The pore-scale physics models required for this are managed by Physics objects:
 
 >>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores('all'),throats=pn.throats('all'))
 >>> print(phys)
@@ -182,9 +180,13 @@ OpenPNM.Algorithms.FickianDiffusion: 	FickianDiffusion_kr2XO
 3     throat.all                          54        
 ------------------------------------------------------------
 
-As can be seen in the above print-out, the Algorithm object contains some boundary condition related properties and labels, but more importantly, it contains 'pore.air_mole_fraction' which is the result of the ``FickianAlgorithm`` simulation.  Each algorithm in OpenPNM will produce a different result with a different name, and this data stays encapsulated in the Algorithm object unless otherwise desired.  For instance, if the 'pore.air_mole_fraction' data is required in another algorithm, then it is necessary to write it to 'air':
+As can be seen in the above print-out, the Algorithm object contains some boundary condition related properties and labels, but more importantly, it contains 'pore.air_mole_fraction' which is the result of the ``FickianAlgorithm`` simulation.  Each algorithm in OpenPNM will produce a different result with a different name, and this data stays encapsulated in the Algorithm object unless otherwise desired.  For instance, if the 'pore.air_mole_fraction' data is required in another algorithm, then it is necessary to write it to 'air' using:
 
 >>> air['pore.air_mole_fraction'] = alg['pore.air_mole_fraction']
+
+or 
+
+>>> alg.return_results()
 
 More detailed information about Algorithm objects can be found in the :ref:`Algorithm Documentation<algorithms>`
 
