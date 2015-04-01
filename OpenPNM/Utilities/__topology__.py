@@ -139,9 +139,9 @@ class topology(object):
         for net in ctrl.networks():
             if net._parent is network:
                 raise Exception('This Network has been cloned, cannot trim')
-        if (pores != []) and (throats != []):
+        if (_sp.size(pores) > 0) and (_sp.size(throats) > 0):
             raise Exception('Cannot delete pores and throats simultaneously')
-        elif pores != []:
+        elif _sp.size(pores) > 0:
             pores = _sp.array(pores,ndmin=1)
             Pkeep = _sp.ones((network.num_pores(),),dtype=bool)
             Pkeep[pores] = False
@@ -149,7 +149,7 @@ class topology(object):
             Ts = network.find_neighbor_throats(pores)
             if len(Ts)>0:
                 Tkeep[Ts] = False
-        elif throats != []:
+        elif _sp.size(throats) > 0:
             throats = _sp.array(throats,ndmin=1)
             Tkeep = _sp.ones((network.num_throats(),),dtype=bool)
             Tkeep[throats] = False
@@ -413,10 +413,10 @@ class topology(object):
             network['pore.interior'][Pn] = True
             Np1 = network.Np
             self.extend(network=network,pore_coords=new_net['pore.coords'],
-                        throat_conns=new_net['throat.conns']+new_net.Np,
+                        throat_conns=new_net['throat.conns']+Np1,
                         labels=labels)
             network['pore.surface'][Np1:] = new_net['pore.surface']
-            self.trim(network=network,pores=P)
+        self.trim(network=network,pores=pores)
         
         
         
