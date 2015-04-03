@@ -3,14 +3,12 @@
 ===============================================================================
 Physics
 ===============================================================================
-Physics objects are where geometric data and fluid property data are combined to compute the pore-scale physical behavior in the simulation.  For instance, the capillary entry pressure for a throat is a function of size (from Geometry) and the surface tension of the fluid (from Phase), but there are many ways to compute the actual entry pressure, including the Washburn equation for a cylinder, or the Purcell equation for a toroid.  Specifying unique pore-scale Physics models is what sets pore network simulations apart from each other.  The Physics object manages these pore-scale properties and models.
-
-.. inheritance-diagram:: OpenPNM.Physics.GenericPhysics
+Physics objects are where geometric data and phase property data are combined to compute the pore-scale physical behavior in the simulation.  For instance, the capillary entry pressure for a throat is a function of size (from Geometry) and the surface tension of the fluid (from Phase), but there are many ways to compute the actual entry pressure, including the Washburn equation for a cylinder, or the Purcell equation for a toroid.  Specifying unique pore-scale Physics models is what sets pore network simulations apart from each other.  The Physics object manages these pore-scale properties.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Basic Usage
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Physics objects have the most requirements for initialization.  A Physics object must be associated with a Network and a Phase, and must also be assigned to certain pores and throats.
+Physics objects have the most requirements for initialization.  A Physics object must be associated with a Network, a Geometry object that implies which pores and throats the Physics applies to, and a Phase object which specifies which phase properties apply.
 
 .. code-block:: python
 
@@ -21,10 +19,7 @@ Physics objects have the most requirements for initialization.  A Physics object
 	air = OpenPNM.Phases.Air(network=pn)
 	phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts,name='phys_1')
 
-Several important events occur upon instantiation of a Physics object.  Mainly, label arrays are created in the Phase object, called 'pore.phys_1' and 'throat.phys_1'.  These labels indicate where in the full Network the Physics object applies.
-
-It is possible to set the pore and throat locations of a Physics object after instantiation.  The ``set_locations`` method accepts a list of pores and/or throats and then updates the label arrays accordingly.  This only works on an object that has NOT previously been assigned to any pores and/or throats.  Once the assignment is made it cannot be undone.  This functionality is useful for associating a saved Physics objects with a simulation.  
-
+Several important events occur upon instantiation of a Physics object.  Mainly, label arrays are created in the Phase object, called 'pore.phys_1' and 'throat.phys_1'.  These labels indicate which pores and throats in full domain the Physics object applies.  These locations are recorded in the Phase object to enable data exchange between the Phase and Physics, as described in the following note.
 
 .. note:: **Accessing Physics Data Via the Phase**
 
@@ -42,7 +37,7 @@ It is possible to set the pore and throat locations of a Physics object after in
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Adding Models
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-OpenPNM ships with a collection of prewritten pore-scale physics models.  They are located under Physics.models.  They are further categorized into files according to the phenomena they describe (i.e. Physics.models.capillary_pressure).  Inside each file there are several options (e.g. washburn, and purcell).  To utilize one of these models on a Physics object it must be added using ``add_model``:
+OpenPNM includes a collection of prewritten pore-scale physics models.  They are located under Physics.models.  They are further categorized according to the phenomena they describe (i.e. Physics.models.capillary_pressure).  Inside each file there are several options (e.g. washburn, and purcell).  To utilize one of these models on a Physics object it must be added using ``add_model``:
 
 >>> model = OpenPNM.Physics.models.capillary_pressure.washburn
 >>> phys.add_model(propname='throat.capillary_pressure',model=model)

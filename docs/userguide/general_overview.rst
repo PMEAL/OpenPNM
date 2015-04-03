@@ -30,27 +30,37 @@ OpenPNM differentiates between two types of data for pores and throats: 'propert
 
 The physical details about pores and throats is referred to as 'properties', which includes information such as 'pore volume' and 'throat length'.  Properties can be accessed using standard Python dictionary syntax:
 
->>> pn['pore.index'][1]
-1
->>> pn['pore.index'][[0,1]]
-array([0, 1])
+.. code-block:: python
+    
+	>>> import OpenPNM
+	>>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+    >>> pn['pore.index'][1]
+    1
+    >>> pn['pore.index'][[0,1]]
+    array([0, 1])
 
 Writing data also uses dictionary syntax, but with a few caveats due to the fact that OpenPNM has subclassed ``__setitem__`` to 'protect' the integrity of the data. 
 
->>> pn['pore.index'][10] = 3
->>> pn['pore.index'][10]
-3
+.. code-block:: python
+    
+    >>> pn['pore.index'][10] = 3
+    >>> pn['pore.index'][10]
+    3
 
 The main 'caveat' is that data will all be forced to be either Np or Nt long, so the following attempt to write a scalar value will result in a vector of length Np (filled with 1's): 
 
->>> pn['pore.dummy'] = 1.0
+.. code-block:: python
+    
+    >>> pn['pore.dummy'] = 1.0
 
 To quickly see a list of all defined 'properties' use ``props``.  You can specify whether only 'pore' or 'throat' properties should be returned, but the default is both:
 
->>> pn.props()
-['pore.index', 'pore.coords', 'throat.conns']
->>> pn.props('pore')
-['pore.index', 'pore.coords']
+.. code-block:: python
+
+    >>> pn.props()
+    ['pore.index', 'pore.coords', 'throat.conns']
+    >>> pn.props('pore')
+    ['pore.index', 'pore.coords']
 
 For more details on ``props``, see the method's docstring.  
 
@@ -58,41 +68,62 @@ The second type of information is referred to as 'labels'.  Labels were conceive
 
 The only distinction between 'labels' and 'properties' is that 'labels' are boolean masks of True/False.  Thus a True in element 10 of the array 'pore.top' means that the label 'top' has been applied to pore 10.  Adding and removing existing labels to pores and throats is simply a matter of setting the element to True or False.  Creating a new label is a bit more tricky.  'label' arrays are like any array and they must be defined before they can be indexed, so to apply the label 'dummy_1' to pore 10 requires the following 2 steps:
 
->>> pn['pore.dummy_1'] = False
->>> pn['pore.dummy_1'][10] = True
+.. code-block:: python
+    
+    >>> pn['pore.dummy_1'] = False
+    >>> pn['pore.dummy_1'][10] = True
 
 Now that this label array has been created and True values have been inserted, it is a simple matter to recall which pores have 'dummy_1' by finding the locations of the True elements:
 
->>> sp.where(pn['pore.dummy_1'])[0]
+.. code-block:: python
+    
+    >>> sp.where(pn['pore.dummy_1'])[0]
 
 OpenPNM provides a more convenient way to perform this query with the ``pores`` and ``throats`` methods that are outlined below.  
 
 The ``labels`` method can be used to obtain a list of all defined labels. This method optionally accepts a list of pores or throats as an argument and returns only the labels that have been applied to the specified locations.  
 
->>> pn.labels()
-['pore.all', 'pore.back', 'pore.bottom', 'pore.front', 'pore.internal', 'pore.left', 'pore.right', 'pore.top', 'throat.all']
+.. code-block:: python
+    >>> pn.labels()
+    ['pore.all', 'pore.back', 'pore.bottom', 'pore.front', 'pore.internal', 'pore.left', 'pore.right', 'pore.top', 'throat.all']
 
 ``labels`` also has a ``mode`` argument that controls some set-theory logic to the returned list (such as 'union', 'intersection', etc).  See the method's docstring for full details.
+
+.. note:: The Importance of Labels
+	
+	Labels play a central role in OpenPNM.  It allows for pores and throats to be *tagged*, or *categorized* into certain groups, which makes it very convenient to select a set of pores or throats as needed.  For instance, the Cubic network generation adds several labels to the Network by default, such as 'top', 'front', etc.  To select all the pores on the 'top' of the network, it is simply a matter of finding where the label of 'top' has been applied.  Of course, OpenPNM incorporates several tools for this.  To see a list (printed to the command lines) of all the labels currently applied to the network use ``pn.labels()``.  The process of selecting pores with a certain label (or labels) is demonstrated below:
+
+	.. code-block:: python
+	
+		pores = pn.pores(labels='top')  # Finds top face
+		pores = pn.throats(labels=['top','front'], mode='intersection')  # Finds top-front edge
+	
+	A similar approach is used to find throats.  More details on the usage these functions and their options can be found in their documentation.  
 
 -------------------------------------------------------------------------------
 Counts and Indices
 -------------------------------------------------------------------------------
 One of the most common questions about a network is "how many pores and throats does it have?"  This can be answered very easily with the ``num_pores`` and ``num_throats`` methods.  Because these methods are used so often, there are also shortcuts: ``Np`` and ``Nt``.  
 
->>> pn.num_pores()
-27
+.. code-block:: python
+    
+    >>> pn.num_pores()
+    27
 
 It is also possible to 'count' only pores that have a certain label (shortcuts``Np`` and ``Nt`` don't work with this counting method):
 
->>> pn.num_pores('top')
-9
+.. code-block:: python
+
+    >>> pn.num_pores('top')
+    9
 
 These counting methods actually work by counting the number of True elements in the given label array.  
 
 Another highly used feature is to retrieve a list of pores or throats that have a certain label applied to them.  This is of course the entire purpose of 'labels'.  To receive a list of pores on the 'top' of the Cubic network:
 
->>> pn.pores('top')
-array([ 2,  5,  8, 11, 14, 17, 20, 23, 26], dtype=int64)
+.. code-block:: python
+    >>> pn.pores('top')
+    array([ 2,  5,  8, 11, 14, 17, 20, 23, 26], dtype=int64)
 
 The ``pores`` and ``throats`` methods both accept a 'mode' argument that allows for set-theory logic to be applied to the query, such as returning 'unions' and 'intersections' of locations. For complete details see the docstring for these methods.  
 
@@ -107,51 +138,11 @@ Naming
 -------------------------------------------------------------------------------
 All OpenPNM objects are given a name upon instantiation.  The name can be specified in the initialization statement:
 
->>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],name='test_net_1')
->>> pn.name
-'test_net_1'
+.. code-block:: python
+    
+    >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],name='test_net_1')
+    >>> pn.name
+    'test_net_1'
 
 The name of an object is stored under the attribute 'name'. If a name is not provided, then a name will be automatically generated by appending 5 random characters to the class name (e.g. 'Cubic_riTSw').  It is also not possible to have two objects with the same name associated with a Network.  Names can be changed by simply assigning a new string to the ``name``.  
    
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Models Dictionary
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Models are one of the most important aspects of OpenPNM, as they allow the user to specify a 'model' for calculating 'pore.volume', rather than just entering numerical values into a geometry_object['pore.volume'] array.  It is mainly through customized models that users can tailor OpenPNM to a specific situation, though OpenPNM includes a variety of pre-written models.  These are stored under each Module in a folder called 'models'.  For instance, Geometry.models.pore_diameter contains several methods for calculating pore diameters.  
-
-Each Core object has a ``models`` attribute where all information about pore-scale models are stored.  Upon instantiation of each ``Core`` object, a ``ModelsDict`` object is stored in its ``models`` attribute.  The ``ModelsDict`` class is a subclass of the Python ``dict`` class, which has several features added for dealing specifically with models.  A detailed description of the Models Dictionary class can be found :ref:`here<models>`.
-
-Adding a model to an object is done as follows:
-
-(1) A handle to the desired model is retrieved.
-(2) The models is attached to the target object using ``add_model``.
-
-This process is demonstrated by added a random pore seed model to a Geometry object:
-
-.. code-block:: python
-
-	geom = OpenPNM.Geometry.GenericGeometry()  # Creates an empty Geometry object
-	mod = OpenPNM.Geometry.models.pore_misc.random  # Get a handle to the desired model
-	geom.add_model(propname='pore.seed',model=mod,seed=0)  # Assign model to the object
-	
-The *propname* and *model* arguments are required by the ``add_model`` method, but the *seed* argument is passed on the model, and it specifies the initialization value for the random number generator.  
-
-The ``add_model`` method runs the model and places the data in the dictionary given by *propname*. It also saves the model in a special dictionary attached to the object (object.models) also under the same *propname*.  When the data is requested from the object it returns the 'static' copy located in the object's dictionary.  In order to recalculate the data the model stored in the private dictionary must be rerun.  This is accomplished with the ``regenerate`` method.  This method takes an optional list of *propnames* that should be regenerated.  It should also be pointed out that models are regenerated in the order that they were added to the object so some care must be taken to ensure that changes in property values cascade through the object correctly.  The ``ModelsDict`` class has functions for updating the model order.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

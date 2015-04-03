@@ -5,7 +5,7 @@ Customizing OpenPNM
 ===============================================================================
 The OpenPNM framework was designed specifically with extensibility and customization in mind.  Every user will apply OpenPNM to a unique problem, and will therefore require unique pore scale models, phase properties, algorithms and so on.  
 
-There are two ways to customize OpenPNM.  The first is to download the source code and *hack* it.  With this approach it is possible to create your own sub-classes, add pore-scale models, define new topology generators, and to add or change OpenPNM methods.  The other approach is to install OpenPNM in your Python PATH (using ``pip install openpnm``) as with any other package such as Scipy, and write custom functions in a separate 'working directory' rather than in the source code.  In this scenario you can perform all of the same customizations as the first approach, with the exception of changing OpenPNM's native methods (in fact even this is possible, but that's another story).  The second approach is the recommended way for several reasons.  It avoid accidental changes to the framework, it allows users to keep their 'projects' compartmentalized, and it is much easier for users to contribute their work to OpenPNM project (which we highly encourage) since sections can be 'cut and pasted' into the framework cleanly.  The second approach will be explained in detail below.
+There are two ways to customize OpenPNM.  The first is to download the source code and *hack* it.  With this approach it is possible to create your own sub-classes, add pore-scale models, define new topology generators, and to add or change OpenPNM methods.  The other approach is to install OpenPNM in your Python PATH (using ``pip install openpnm``) as with any other package such as Scipy, and write custom functions in a separate 'working directory' rather than in the source code.  In this scenario you can perform all of the same customizations as the first approach, with the exception of changing OpenPNM's native methods (in fact even this is possible, but that's another story).  The second approach is the recommended way for several reasons.  It avoids accidental changes to the framework, it allows users to keep their 'projects' compartmentalized, and it is much easier for users to contribute their work to OpenPNM project (which we highly encourage) since sections can be 'cut and pasted' into the framework cleanly.  The second approach will be explained in detail below.
 
 The following discussions assume that all custom files will be stored in a folder called 'my_pnm`, that will be the 'working directory'.  
 
@@ -42,7 +42,7 @@ The next step is to have this model to calculate something useful.  Assume that 
 	    rough_area = projected_area**roughness_parameter
 	    return rough_area
 		
-It was noted above that the ``add_model`` method sent in several extra arguments 'just-in-case'.  Among these arguments are the object from which the method is called.  Since 'surface_roughness' will be attached to a Geometry object, this function will receive it as 'geometry'.  We can now update our script:
+It was noted above that the ``add_model`` method sent in several extra arguments 'just-in-case'.  Among these arguments are the object from which the method is called.  Since 'surface_roughness' will be attached to a Geometry object, this function will receive it as 'geometry' automatically.  We can now update our script:
 
 .. code-block:: python
 
@@ -120,7 +120,7 @@ Let's create a Geometry subclass that is representative of Berea Sandstone.  Sta
 	    def __init__(self,**kwargs):
         super(berea_sandstone,self).__init__(**kwargs)
 		
-The above is a basic template that is no different than GenericGeometry yet.  The important thing to notice here is the the ``__init__`` of the parent class is invoked using the ``super`` method.  This means that all arguments passed to ``BereaSandstone`` are bundled into 'kwargs' and passed to ``GenericGeometry``, which will run all of the task that are necessary for OpenPNM objects to work, such as registering this custom Geometry with the Network.
+The above is a basic template that is no different than GenericGeometry yet.  The important thing to notice here is the the ``__init__`` of the parent class is invoked using the ``super`` method.  This means that all arguments passed to ``BereaSandstone`` are bundled into 'kwargs' and passed to ``GenericGeometry``, which will run all of the tasks that are necessary for OpenPNM objects to work, such as registering this custom Geometry with the Network.
 
 The next step is to actually customize the class.  In OpenPNM, all the subclasses of Geometry, Phase and Physics are literally just a collection of 'models' with appropriate parameters to reproduce a specific material, fluid or set of physics.  The BereaSandstone class then just needs a set of suitable 'models':
 
