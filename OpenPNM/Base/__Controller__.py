@@ -251,50 +251,42 @@ class Controller(dict):
         del self[obj.name]
         self[obj.name] = obj
         return obj_new
-
-    def save_object(self,obj,filename=''):
+        
+    def save_simulation(self,network,filename=''):
         r'''
-        Save a single OpenPNM object to a 'pno' file.  The main purpose of this
-        is to save a copy of the object's data dictionary to a file.  This is
-        useful for saving Algorithm objects that contain numerical results.
-
+        Save a single Network simulation to a 'net' file, including all of its
+        associated objects, but not Algorithms
+        
         Parameters
         ----------
-        obj : OpenPNM object
-            The object to save.  
-        filename : string (optional)
-            The file name to use when saving.  If no name is given the object
-            name is used.
+        network : OpenPNM Network object
+            The Network to save
+        filename : string, optional
+            If no filename is given the name of the Network is used
         '''
         if filename == '':
-            filename = obj.name
+            filename = network.name
         else:
-            filename = filename.split('.')[0]
-
-        obj._ctrl = {}
-        obj._net = []
-        obj._geometries = []
-        obj._physics = []
-        obj._phases = []
-
+            filename = filename.rstrip('.net')
+        
+        network._ctrl = {}
         #Save nested dictionary pickle
-        _pickle.dump(obj,open(filename+'.pno','wb'))
-
-    def load_object(self,filename):
+        _pickle.dump(network,open(filename+'.net','wb'))      
+        network._ctrl = self
+        
+    def load_simulation(self,filename):
         r'''
-        Load a single object saved as a 'pno' file.  This object will be a 
-        standalone entity so many methods that expect information about 
-        associations will fail, but the numerical data in the dictionary can 
-        be accessed.
-
+        Loads a Network simulation fromt the specified 'net' file and adds it
+        to the Controller
+        
         Parameters
         ----------
         filename : string
-            The file name to load.  The file extension must be 'pno'.
+            The name of the file containing the Network simulation to load
         '''
-        filename = filename.split('.')[0]
-        obj = _pickle.load(open(filename+'.pno','rb'))
-        obj.controller = self
+        filename = filename.rstrip('.net')
+        net = _pickle.load(open(filename+'.net','rb'))
+        net.controller = self
 
     def save(self,filename=''):
         r'''
@@ -303,8 +295,8 @@ class Controller(dict):
         Parameters
         ----------
         filename : string, optional
-            The file name to save as. If none is given the name of the Network
-            object is used.
+            The file name to save as. If no filename is provided the current
+            date and time is used.
 
         Examples
         --------
@@ -322,9 +314,11 @@ class Controller(dict):
         True
         '''
         if filename == '':
-            filename = self.networks()[0].name
+            from datetime import datetime
+            i = datetime.now()
+            filename = i.strftime('%Y-%m-%d_%H-%M-%S')
         else:
-            filename = filename.split('.')[0]
+            filename = filename.rstrip('.pnm')
 
         #Save nested dictionary pickle
         _pickle.dump(self,open(filename+'.pnm','wb'))
@@ -344,7 +338,7 @@ class Controller(dict):
         over write the calling objects information AND remove any references
         to the calling object from existing objects.
         '''
-        filename = filename.split('.')[0]
+        filename = filename.strip('.pnm')
         if self != {}:
             print('Warning: Loading data onto non-empty controller object, existing data will be lost')
             self.clear()
