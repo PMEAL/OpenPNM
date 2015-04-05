@@ -111,11 +111,16 @@ class InvasionPercolation(GenericAlgorithm):
             Paraview for instance, using this sequence information.  
         
         '''
-        pores = sp.array(pores)
-        if sp.shape(pores)[0] == 0:
+        pores = sp.array(pores,ndmin=1)
+        throats = sp.array(throats,ndmin=1)
+        if len(pores) == 0:
             pores = self.Ps
-        self._phase['throat.invasion_sequence'] = self['throat.invasion_sequence']
-        self._phase['pore.invasion_sequence'] = self['pore.invasion_sequence']
+        if len(throats) == 0:
+            throats = self.Ts
+        self._phase['throat.invasion_sequence'] = sp.nan
+        self._phase['pore.invasion_sequence'] = sp.nan
+        self._phase['throat.invasion_sequence'][throats] = self['throat.invasion_sequence'][throats]
+        self._phase['pore.invasion_sequence'][pores] = self['pore.invasion_sequence'][pores]
 
 if __name__ == '__main__':
     print('no tests yet')
