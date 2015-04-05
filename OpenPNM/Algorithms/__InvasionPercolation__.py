@@ -116,6 +116,32 @@ class InvasionPercolation(GenericAlgorithm):
             pores = self.Ps
         self._phase['throat.invasion_sequence'] = self['throat.invasion_sequence']
         self._phase['pore.invasion_sequence'] = self['pore.invasion_sequence']
+    def _apply_flow(self,flowrate):
+        r'''
+        Convert the invaded sequence into an invaded time for a given flow rate
+        considering the volume of each pore. 
+        
+        Parameters
+        ----------
+        flowrate : float
+            The flow rate that fluid is to be inject
+            
+        Returns
+        -------
+        Creates an array called 'invasion_time' in the Algorithm dictionary
+        
+        Notes
+        -----
+        This does not include the volume of the throats...not really sure how
+        to do that yet.  
+        
+        '''
+        b = sp.argsort(self['pore.invasion_sequence'])
+        c = sp.cumsum(self._net['pore.volume'][b]/flowrate)
+        t = sp.zeros((self.Np,))
+        t[b] = c  # Convert back to original order
+        self._phase['pore.invasion_time'] = t
+        
 
 if __name__ == '__main__':
     print('no tests yet')
