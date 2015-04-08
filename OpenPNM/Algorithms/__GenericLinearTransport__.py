@@ -59,7 +59,14 @@ class GenericLinearTransport(GenericAlgorithm):
         RHS_added_data = sp.zeros(self.Np)        
         for label in self.labels():
             if 'pore.source_' in label:
-                source_name = label.replace('pore.source_',"")
+                source_name = 'pore.'+(label.split('.')[-1]).replace('source_',"")
+                matching_physics = [phys for phys in self._phase._physics if source_name in phys.models.keys()]
+                for phys in matching_physics:
+                    x = phys.models[source_name]['x']
+                    if x!='' and type(x)==str:
+                        if x.split('.')[-1]!=quantity.split('.')[-1]:
+                            raise Exception('The quantity(pore.'+x.split('.')[-1]+'), provided by source term('+source_name+'), is different from the main quantity(pore.'+quantity.split('.')[-1]+') in '+self.name+' algorithm.')
+                source_name = label.replace('pore.source_',"")   
                 if  'pore.source_linear_s1_'+source_name in self.props():
                     prop1 = 'pore.source_linear_s1_'+source_name 
                     pores = -sp.isnan(self[prop1])
@@ -159,6 +166,7 @@ class GenericLinearTransport(GenericAlgorithm):
                     if 'pore.source_maxiter' not in self.props():
                         self['pore.source_maxiter'] = sp.ones((self.Np,),dtype=float)*sp.nan  
          
+                    if x0 is None : x0 = 0
                     self._guess = x0
                     # Check value of maxiter
                     if maxiter is None:
@@ -184,10 +192,18 @@ class GenericLinearTransport(GenericAlgorithm):
                         self['pore.source_'+source_mode+'_s1_'+prop] = sp.ones((self.Np,),dtype=float)*sp.nan
                         self['pore.source_'+source_mode+'_s2_'+prop] = sp.ones((self.Np,),dtype=float)*sp.nan           
                     # Setting the source term for all the modes except 'remove'
-                    matching_physics = [phys for phys in self._phase._physics if source_name in phys.props()]
+                    matching_physics = [phys for phys in self._phase._physics if source_name in phys.models.keys()]
                     for phys in matching_physics:
+                        x = phys.models[source_name]['x']
+                        return_rate = phys.models[source_name]['return_rate']
+                        regen_mode = phys.models[source_name]['regen_mode']
                         phys.models[source_name]['x'] = x0
-                        phys.regenerate(source_name)
+                        phys.models[source_name]['return_rate'] = False
+                        phys.models[source_name]['regen_mode'] = 'normal'
+                        s_regen =  phys.models[source_name].regenerate()
+                        phys.models[source_name]['x'] = x
+                        phys.models[source_name]['return_rate'] = return_rate 
+                        phys.models[source_name]['regen_mode'] = regen_mode
                         map_pores = phys.map_pores()
                         loc = pores[sp.in1d(pores,map_pores)]  
                         if mode=='merge':
@@ -199,8 +215,8 @@ class GenericLinearTransport(GenericAlgorithm):
                        
                         # for modes in ['update','merge','overwrite']  
                         map_pores_loc = sp.in1d(map_pores,pores)
-                        self['pore.source_'+source_mode+'_s1_'+prop][loc] = phys[source_name][:,0][map_pores_loc]
-                        self['pore.source_'+source_mode+'_s2_'+prop][loc] = phys[source_name][:,1][map_pores_loc]
+                        self['pore.source_'+source_mode+'_s1_'+prop][loc] = s_regen[:,0][map_pores_loc]
+                        self['pore.source_'+source_mode+'_s2_'+prop][loc] = s_regen[:,1][map_pores_loc]
                         if not source_mode=='linear':
                             self['pore.source_maxiter'][loc] = maxiter                                
                             self['pore.source_tol'][loc] = tol                                

@@ -1,5 +1,7 @@
+.. _paraview_example:
+
 ===============================================================================
-Plot OpenPNM results in Paraview
+Using Paraview to Visualize Output
 ===============================================================================
 This tutorial will show step by step how to plot the networks into Paraview. This post-processing software is open-source and can be downloaded at http://www.paraview.org/.
 

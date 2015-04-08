@@ -139,6 +139,7 @@ class Core(dict):
                     item['pore.'+name] = item.pop('pore.'+self.name)
                 if 'throat.'+self.name in item.keys():
                     item['throat.'+name] = item.pop('throat.'+self.name)
+            self._ctrl[name] = self._ctrl.pop(self.name)
         self._name = name
 
     def _get_name(self):
@@ -822,7 +823,7 @@ class Core(dict):
             temp = sp.ones((net.Np,))*sp.nan
             for pore in Ps:
                 neighborTs = net.find_neighbor_throats(pore)
-                neighborTs = net.filter_by_label(throats=neighborTs,label=label)
+                neighborTs = net.filter_by_label(throats=neighborTs,labels=label)
                 temp[pore] = sp.mean(data[neighborTs])
             values = temp[Ps]
         elif sp.shape(data)[0] == self.Np:
