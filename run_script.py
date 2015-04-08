@@ -1,4 +1,6 @@
 import OpenPNM
+import time
+st = time.time()
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 from OpenPNM.Geometry import models as gm
 ctrl = OpenPNM.Base.Controller()
@@ -100,3 +102,4 @@ except Exception as e:
 #------------------------------------------------------------------------------
 ctrl.export()
 
+print("sim time:" + str(time.time()-st))

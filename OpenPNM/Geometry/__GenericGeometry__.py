@@ -78,7 +78,7 @@ class GenericGeometry(Core):
         else:  # ...Then check Network
             return self._net[key][self._net[element+'.'+self.name]]
 
-    def set_locations(self,pores=[],throats=[],mode='add'):
+    def set_locations(self,pores=None,throats=None,mode='add'):
         r'''
         Set the pore and throat locations of the Geometry object
 
@@ -92,10 +92,10 @@ class GenericGeometry(Core):
             from the object.  Options are 'add' (default) or 'remove'.
 
         '''
-        if pores != []:
+        if pores is not None:
             pores = sp.array(pores,ndmin=1)
             self._set_locations(element='pore',locations=pores,mode=mode)
-        if throats != []:
+        if throats is not None:
             throats = sp.array(throats,ndmin=1)
             self._set_locations(element='throat',locations=throats,mode=mode)
 

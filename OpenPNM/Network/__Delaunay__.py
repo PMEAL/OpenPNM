@@ -570,6 +570,8 @@ class Delaunay(GenericNetwork):
         #Assign labels
         self['pore.boundary'] = False
         self['pore.boundary'][new_pore_ids] = True
+        self['throat.boundary'] = False
+        self['throat.boundary'][new_throat_ids] = True
         self['pore.right_boundary'] = False
         self['pore.left_boundary'] = False
         self['pore.front_boundary'] = False
