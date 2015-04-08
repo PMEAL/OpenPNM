@@ -19,26 +19,41 @@ Ps = pn.pores()
 Ts = pn.throats()
 phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
 #Add some additional models to phys_air
+phys_air['pore.item1'] = 0.5e-13
+phys_air['pore.item2'] = 1.5
+phys_air['pore.item3'] = 2.5e-14
+phys_air['pore.item4'] = 0.16e-14
+phys_air['pore.item5'] = 10
+phys_air['pore.item6'] = 4
+phys_air['pore.item7'] = -1.4
+phys_air['pore.item8'] = 0.133
+phys_air['pore.item9'] = -5.1e-14
+phys_air['pore.item10'] = 0.8e-11
+phys_air['pore.item11'] = 0.5
+phys_air['pore.item12'] = 2
+phys_air['pore.item13'] = -0.34
+phys_air['pore.item14'] = 2e-14
+
 phys_air.add_model(model=OpenPNM.Physics.models.generic_source_term.power_law,
                    propname='pore.blah1',
-                   A1=0.5e-13,
-                   A2=1.5,
-                   A3=2.5e-14)
+                   A1='pore.item1',
+                   A2='pore.item2',
+                   A3='pore.item3')
 phys_air.add_model(model=OpenPNM.Physics.models.generic_source_term.logarithm,
                    propname='pore.blah2',
-                   A1=0.16e-14,
-                   A2=10,
-                   A3=4,
-                   A4=-1.4,
-                   A5=0.133,
-                   A6=-5.1e-14)
+                   A1='pore.item4',
+                   A2='pore.item5',
+                   A3='pore.item6',
+                   A4='pore.item7',
+                   A5='pore.item8',
+                   A6='pore.item9')
 phys_air.add_model(model=OpenPNM.Physics.models.generic_source_term.natural_exponential,
                    propname='pore.blah3',
-                   A1=0.8e-11,
-                   A2=0.5,
-                   A3=2,
-                   A4=-0.34,
-                   A5=2e-14)
+                   A1='pore.item10',
+                   A2='pore.item11',
+                   A3='pore.item12',
+                   A4='pore.item13',
+                   A5='pore.item14')
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------

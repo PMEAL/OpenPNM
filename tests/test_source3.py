@@ -19,15 +19,21 @@ Ps = pn.pores()
 Ts = pn.throats()
 phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
 #Add some additional models to phys_air
+phys_air['pore.item1'] = 0.5e-13
+phys_air['pore.item2'] = 1.5
+phys_air['pore.item3'] = 2.5e-14
+phys_air['pore.item4'] = 0.9e-13
+phys_air['pore.item5'] = -4e-14
+
 phys_air.add_model(model=OpenPNM.Physics.models.generic_source_term.power_law,
                    propname='pore.blah1',
-                   A1=0.5e-13,
-                   A2=1.5,
-                   A3=2.5e-14)
+                   A1='pore.item1',
+                   A2='pore.item2',
+                   A3='pore.item3')
 phys_air.add_model(model=OpenPNM.Physics.models.generic_source_term.linear,
                    propname='pore.blah2',
-                   A1=0.9e-13,
-                   A2=-4e-14)
+                   A1='pore.item4',
+                   A2='pore.item5')
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
