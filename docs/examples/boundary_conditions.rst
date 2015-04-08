@@ -93,7 +93,7 @@ This runs the algorithm using 'throat.diffusive_conductance' as the conductance.
 
 Each Algorithm must subclass the `return_results()` method so that it sends the correct information out the network and/or phase.  In the case of the Fickian Algorithm, the 'mole_fraction' of the phase is stored on the Phase object in question.  Running a different version of the Algorithm and calling `return_results()` will overwrite any previous values.  The results of this simulation should produce the following visualization (done in Paraview):
 
-.. image:: BC1.png
+.. image:: http://imgur.com/Ae9cG0D
 
 -------------------------------------------------------------------------------
 Apply Neumann Conditions to a Group of Internal Pores
@@ -110,7 +110,7 @@ The code below sets the total rate leaving a group of pores cumulatively.  Note 
 
 This results in the image below, where a region of high concentration can be seen in the core of the domain due to the mass production:
 
-.. image:: BC2.png
+.. image:: http://imgur.com/px45ANu
 
 -------------------------------------------------------------------------------
 Apply Neumann Conditions in Several Pores Individually
@@ -128,4 +128,4 @@ One of the options for specifying Neumann conditions is to apply the same rate t
 
 This results in image below.  Notice that the concentration on the inlet face is not uniform, and that the smaller pores have a somewhat higher concentration (darker red), which is necessary if their flux is the be the same as larger, more conductive pores.
 
-.. image:: BC3.png
+.. image:: http://imgur.com/50hGves
