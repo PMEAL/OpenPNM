@@ -9,7 +9,7 @@ from collections import OrderedDict
 from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
 
-class GenericModel(dict):
+class ModelWrapper(dict):
     r"""
     Accepts a model from the OpenPNM model library, as well as all required 
     and optional argumnents, then wraps it in a custom dictionary with 
@@ -125,7 +125,7 @@ class ModelsDict(OrderedDict):
     """
     
     def __setitem__(self,propname,model):
-        temp = GenericModel(propname=propname,model=None)
+        temp = ModelWrapper(propname=propname,model=None)
         temp.update(**model)
         super(ModelsDict,self).__setitem__(propname,temp)
         
