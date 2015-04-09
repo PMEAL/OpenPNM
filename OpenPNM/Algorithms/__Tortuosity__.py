@@ -1,40 +1,27 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Jeff Gostick (jeff@gostick.ca)
-# License: TBD
-# Copyright (c) 2013
-
-
 """
-module __Tortuosity__: Network Tortuosity Algorithm
 ========================================================================
+Tortuosity: Network Tortuosity Algorithm
+========================================================================
+This algorithm uses Djkstra's algorithm to get the shortest path between
+two points folliwng the network, and the the direct distance between the same
+points.  The ratio of these is returned as the 'tortuosity'
 
-.. warning:: The classes of this module should be loaded through the 'Algorithms.__init__.py' file.
-
+TODO: It currently uses the 'throat.length' to weight the network connections
+but this should probably use diffusive conductance.
 """
 
 import scipy as sp
 import scipy.sparse.csgraph as spgr
-import OpenPNM
-
-from .__GenericAlgorithm__ import GenericAlgorithm
+from OpenPNM.Algorithms import GenericAlgorithm
+import OpenPNM.Network
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 class Tortuosity(GenericAlgorithm):
     r"""
     Determines the tortuosity of the network using a shortest path search algorithm.
 
-    Parameters
-    ----------
-
-    loglevel : integer, optional
-        Level of the logger (10=Debug, 20=INFO, 30=Warning, 40=Error, 50=Critical)
-    loggername : string, optional
-        Set the name of the logger to be output on the console. Defaults to class name.
-
-    Note
-    ----
-    n/a
-    
     """
 
     def __init__(self, **kwargs):
@@ -42,8 +29,8 @@ class Tortuosity(GenericAlgorithm):
 
         """
         super(Tortuosity,self).__init__(**kwargs)
-        self._logger.debug("Create Tortuosity Object")
-        
+        logger.debug("Create Tortuosity Object")
+
     def estimate_time(self):
         r'''
         '''
@@ -59,42 +46,43 @@ class Tortuosity(GenericAlgorithm):
         k = sp.median(self._net.num_neighbors(pores=self._net.pores()))
         t_est = O*(N*(N*k + N*sp.log(N)))
         print("Based on the network size and PC performance, this algorithm will require: ",t_est,' seconds')
-        return 
+        return
 
     def run(self,phase=None):
         r'''
         '''
-        self._logger.warning('This algorithm can take some time...')
+        logger.warning('This algorithm can take some time...')
         graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],sprsfmt='csr')
-        
-        if phase != None:
+
+        if phase is not None:
             self._phase = phase
             if 'throat.occupancy' in self._phase.props():
                 temp = self._net['throat.length']*(self._phase['throat.occupancy']==1)
                 graph = self._net.create_adjacency_matrix(data=temp,sprsfmt='csr',prop='temp')
-        
-        self._net.tic()
+
+        #self._net.tic()
         path = spgr.shortest_path(csgraph = graph, method='D', directed = False)
-        self._net.toc()
-        
+        #self._net.toc()
+
         Px = sp.array(self._net['pore.coords'][:,0],ndmin=2)
         Py = sp.array(self._net['pore.coords'][:,1],ndmin=2)
         Pz = sp.array(self._net['pore.coords'][:,2],ndmin=2)
-        
+
         Cx = sp.square(Px.T - Px)
         Cy = sp.square(Py.T - Py)
         Cz = sp.square(Pz.T - Pz)
         Ds = sp.sqrt(Cx + Cy + Cz)
-        
+
         temp = path/Ds
-        
+        #temp = path
+
         temp[sp.isnan(temp)] = 0
         temp[sp.isinf(temp)] = 0
-        
+
         return temp
-        
-        
-        
+
+
+
 
 
 

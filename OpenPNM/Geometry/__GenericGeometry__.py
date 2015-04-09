@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 GenericGeometry -- Base class to manage pore scale geometry
@@ -5,10 +6,12 @@ GenericGeometry -- Base class to manage pore scale geometry
 
 """
 
-import OpenPNM
-from OpenPNM.Base import Core
-import OpenPNM.Geometry.models
 import scipy as sp
+from OpenPNM.Base import Core
+from OpenPNM.Base import logging
+from OpenPNM.Network import GenericNetwork
+logger = logging.getLogger(__name__)
+import OpenPNM.Geometry.models
 
 class GenericGeometry(Core):
     r"""
@@ -18,15 +21,14 @@ class GenericGeometry(Core):
     ----------
     network : OpenPNM Network Object
 
+    pores and/or throats : array_like
+        The list of pores and throats where this physics applies. If either are
+        left blank this will apply the physics nowhere.  The locations can be
+        change after instantiation using ``set_locations()``.
+
     name : string
         A unique name to apply to the object.  This name will also be used as a
         label to identify where this this geometry applies.
-
-    loglevel : int
-        Level of the logger (10=Debug, 20=Info, 30=Warning, 40=Error, 50=Critical)
-
-    loggername : string (optional)
-        Sets a custom name for the logger, to help identify logger messages
 
     Examples
     --------
@@ -36,23 +38,18 @@ class GenericGeometry(Core):
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)
     """
 
-    def __init__(self,network=None,pores=[],throats=[],name=None,seed=None,**kwargs):
+    def __init__(self,network=None,pores=[],throats=[],seed=None,**kwargs):
         r"""
         Initialize
         """
         super(GenericGeometry,self).__init__(**kwargs)
-        self._logger.debug("Class Constructor")
+        logger.name = self.name
 
-        #Initialize locations
-        self['pore.all'] = sp.array([],ndmin=1,dtype=bool)
-        self['throat.all'] = sp.array([],ndmin=1,dtype=bool)
-
-        if network == None:
-            self._net = OpenPNM.Network.GenericNetwork()
+        if network is None:
+            self._net = GenericNetwork()
         else:
             self._net = network  # Attach network to self
             self._net._geometries.append(self)  # Register self with network.geometries
-        self.name = name
 
         #Initialize a label dictionary in the associated network
         self._net['pore.'+self.name] = False
@@ -60,51 +57,47 @@ class GenericGeometry(Core):
         self.set_locations(pores=pores,throats=throats)
         self._seed = seed
 
-    def set_locations(self,pores=[],throats=[]):
+    def __getitem__(self,key):
+        element = key.split('.')[0]
+        # Convert self.name into 'all'
+        if key.split('.')[-1] == self.name:
+            key = element + '.all'
+
+        if key in self.keys():  # Look for data on self...
+            return super(GenericGeometry,self).__getitem__(key)
+        if key == 'throat.conns':  # Handle specifically
+            [P1,P2] = self._net['throat.conns'][self._net[element+'.'+self.name]].T
+            Pmap = sp.zeros((self._net.Np,),dtype=int)-1
+            Pmap[self._net.pores(self.name)] = self.Ps
+            conns = sp.array([Pmap[P1],Pmap[P2]]).T
+            # Replace -1's with nans
+            if sp.any(conns==-1):
+                conns = sp.array(conns,dtype=object)
+                conns[sp.where(conns==-1)] = sp.nan
+            return conns
+        else:  # ...Then check Network
+            return self._net[key][self._net[element+'.'+self.name]]
+
+    def set_locations(self,pores=[],throats=[],mode='add'):
         r'''
-        This method can be used to set the pore and throats locations of an
-        *empty* object.  Once locations have been set they can not be changed.
-        
+        Set the pore and throat locations of the Geometry object
+
         Parameters
         ----------
         pores and throats : array_like
-            The list of pores and/or throats where the object should be applied.
-            
-        Notes
-        -----
-        This method is intended to assist in the process of loading saved
-        objects.  Save data can be loaded onto an empty object, then the object 
-        can be reassociated with a Network manually by setting the pore and 
-        throat locations on the object.  
+            The list of pores and/or throats in the Network where the object 
+            should be applied
+        mode : string
+            Indicates whether list of pores or throats is to be added or removed
+            from the object.  Options are 'add' (default) or 'remove'.
+
         '''
-        pores = sp.array(pores,ndmin=1)
-        throats = sp.array(throats,ndmin=1)
-        if len(pores)>0:
-            #Check for existing Geometry in pores
-            temp = sp.zeros((self._net.Np,),bool)
-            for key in self._net.geometries():
-                temp += self._net['pore.'+key]
-            overlaps = sp.sum(temp*self._net.tomask(pores=pores))
-            if overlaps > 0:
-                raise Exception('The given pores overlap with an existing Geometry object')
-            #Initialize locations
-            self['pore.all'] = sp.ones((sp.shape(pores)[0],),dtype=bool)
-            self['pore.map'] = pores
-            #Specify Geometry locations in Network dictionary
-            self._net['pore.'+self.name][pores] = True
-        if len(throats)>0:
-            #Check for existing Geometry in pores
-            temp = sp.zeros((self._net.Nt,),bool)
-            for key in self._net.geometries():
-                temp += self._net['throat.'+key]
-            overlaps = sp.sum(temp*self._net.tomask(throats=throats))
-            if overlaps > 0:
-                raise Exception('The given throats overlap with an existing Geometry object')
-            #Initialize locations
-            self['throat.all'] = sp.ones((sp.shape(throats)[0],),dtype=bool)
-            self['throat.map'] = throats
-            #Specify Geometry locations in Network dictionary
-            self._net['throat.'+self.name][throats] = True
+        if len(pores) > 0:
+            pores = sp.array(pores,ndmin=1)
+            self._set_locations(element='pore',locations=pores,mode=mode)
+        if len(throats) > 0:
+            throats = sp.array(throats,ndmin=1)
+            self._set_locations(element='throat',locations=throats,mode=mode)
 
 if __name__ == '__main__':
     #Run doc tests

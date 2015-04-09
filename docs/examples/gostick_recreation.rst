@@ -147,12 +147,12 @@ To run our ordinary percolation, we will:
     OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,invading_phase=water,defending_phase=air)
     OP_1.run(inlets=used_inlets,npts=100)
 
-This algorithm performed a start to finish simulation, which fully flooded the network. The 'update_results()' command can be used to update the phase occupancy values throughout the network. 
+This algorithm performed a start to finish simulation, which fully flooded the network. The 'return_results()' command can be used to update the phase occupancy values throughout the network. 
 
 .. code-block:: python
 
     #Update the simulation until saturation is at 50%
-    OP_1.update_results(sat=0.5) 
+    OP_1.return_results(sat=0.5) 
 	
 If we watch a video of the ordinary percolation taking place (which we can do inside paraview), our video should look something like this:
 
@@ -404,7 +404,7 @@ References
     #prevents extremely small diffusivity and permeability values in the z direction
     used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
     
-    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,loglevel=30,invading_phase=water,defending_phase=air)
+    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,invading_phase=water,defending_phase=air)
     OP_1.run(inlets = used_inlets,npts=100)
     
     sat = []
@@ -417,7 +417,7 @@ References
     
     num_seq = 20
     for x in range(num_seq+1):
-        OP_1.update_results(sat = x/num_seq)
+        OP_1.return_results(sat = x/num_seq)
     
         #printing out so we know how far along we are
         print('seq = '+str(round(max_inv_seq*(x/num_seq)))+' Seq out of '+str(round(max_inv_seq))+' total sequences')

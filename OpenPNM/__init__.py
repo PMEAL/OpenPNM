@@ -35,13 +35,14 @@ Import
 
 """
 
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
+import scipy as sp
 
-__requires__ = [
-    'scipy'
-]
+if sp.__version__ < '0.14.0':
+	raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
+
+__version__ = '1.1-beta'
+
+__requires__ = ['scipy']
 
 from . import Base
 from . import Utilities

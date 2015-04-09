@@ -62,7 +62,7 @@ OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=sgl,invading_phase = water
 OP_1.run(inlets = used_inlets,npts=100)
 
 #Update the simulation until saturation is at 50%
-OP_1.update_results(sat=0.5)
+OP_1.return_results(sat=0.5)
 
 #adding multiphase conductances
 phys_air.add_model(model=OpenPNM.Physics.models.multiphase.conduit_conductance,

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ===============================================================================
 module __FourierConduction__: Conductive heat transfer
@@ -6,18 +7,20 @@ module __FourierConduction__: Conductive heat transfer
 A subclass of GenericLinearTransport to simulate heat conduction
 
 """
-import OpenPNM
 import scipy as sp
-from OpenPNM.Algorithms.__GenericLinearTransport__ import GenericLinearTransport
+from OpenPNM.Algorithms import GenericLinearTransport
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 class FourierConduction(GenericLinearTransport):
     r"""
     A subclass of GenericLinearTransport to simulate heat conduction.  The 2
     main roles of this subclass are to set the default property names and to
     implement a method for calculating the effective conductivity of the network.
-        
+
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
@@ -28,30 +31,33 @@ class FourierConduction(GenericLinearTransport):
     >>> BC2_pores = pn.pores('bottom')
     >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
     >>> alg.run()
-    >>> alg.update_results()
+    >>> alg.return_results()
     >>> Ceff = round(alg._calc_eff_prop(), 3) #This line and the next line should fail until someone writes this function
     >>> print(Ceff) #unless something changed with our test objects, this should print "0.025"
     0.822
-    
-    
+
+
     """
-    
+
     def __init__(self,**kwargs):
         r'''
         '''
         super(FourierConduction,self).__init__(**kwargs)
-        self._logger.info('Create '+self.__class__.__name__+' Object')
-        
-    def run(self,conductance='thermal_conductance',quantity='temperature',**params):
+        logger.info('Create '+self.__class__.__name__+' Object')
+
+    def setup(self,conductance='thermal_conductance',quantity='temperature',super_pore_conductance=None,**params):
         r'''
-        '''  
-        self._logger.info('Setup '+self.__class__.__name__)         
-        super(FourierConduction,self).setup(conductance=conductance,quantity=quantity)
-        
-        super(GenericLinearTransport,self).run()
-        
+        This setup provides the initial requirements for the solver setup.
+        '''
+        logger.info("Setup "+self.__class__.__name__)
+        super(FourierConduction,self).setup(conductance=conductance,quantity=quantity,super_pore_conductance=super_pore_conductance)
+
+    def calc_effective_conductivity(self):
+        r'''
+        This calculates the effective thermal conductivity in this linear transport algorithm.
+        '''
+        return self._calc_eff_prop()
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=True)
-    

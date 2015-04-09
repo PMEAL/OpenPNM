@@ -1,11 +1,11 @@
+# -*- coding: utf-8 -*-
 """
+===============================================================================
 module Physics
 ===============================================================================
 
 """
 
-import OpenPNM
-import scipy as sp
 from OpenPNM.Physics import models as pm
 from OpenPNM.Physics.__GenericPhysics__ import GenericPhysics
 
@@ -17,12 +17,12 @@ class Standard(GenericPhysics):
 
     Parameters
     ----------
-    network : OpenPNM Network object 
+    network : OpenPNM Network object
         The network to which this Physics should be attached
-        
-    phase : OpenPNM Phase object 
+
+    phase : OpenPNM Phase object
         The Phase object to which this Physics applies
-        
+
     pores and throats : array_like
         The pores and throats where this Physics object applies
 
@@ -30,22 +30,21 @@ class Standard(GenericPhysics):
 
     def __init__(self,**kwargs):
         super(Standard,self).__init__(**kwargs)
-        self._logger.debug("Construct class")
         self._generate()
-        
+
     def _generate(self):
         for phase in self._phases:
             temp = [item.split('.')[1] for item in phase.props()]
             if 'viscosity' in temp:
-                self.add_model(propname='throat.hydraulic_conductance',
+                self.models.add(propname='throat.hydraulic_conductance',
                                model=pm.hydraulic_conductance.hagen_poiseuille)
             if 'diffusivity' in temp:
-                self.add_model(propname='throat.diffusive_conductance',
+                self.models.add(propname='throat.diffusive_conductance',
                                model=pm.diffusive_conductance.bulk_diffusion)
             if 'surface_tension' in temp:
-                self.add_model(propname='throat.capillary_pressure',
+                self.models.add(propname='throat.capillary_pressure',
                                model=pm.capillary_pressure.washburn)
-        
+
 if __name__ == '__main__':
     print('none yet')
 

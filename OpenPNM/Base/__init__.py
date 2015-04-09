@@ -3,17 +3,30 @@ r"""
 :mod:`OpenPNM.Base` -- Abstract Base Class, and Core Data Class
 ###############################################################################
 
-.. autoclass:: OpenPNM.Base.Base
+.. autoclass:: OpenPNM.Base.Controller
    :members:
    :undoc-members:
-   :show-inheritance: 
-   
+   :show-inheritance:
+
 .. autoclass:: OpenPNM.Base.Core
    :members:
    :undoc-members:
-   :show-inheritance: 
+   :show-inheritance:
+   
+.. autoclass:: OpenPNM.Base.Tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 """
 
-from .__Base__ import Base
+import logging as logging
+# set up logging to file - see previous section for more details
+logging.basicConfig(level=logging.WARNING,
+                    format='%(asctime)s | %(levelname)-8s | %(name)s.%(funcName)s | %(message)s',
+                    )
+
+from .__Controller__ import Controller
+from .__ModelsDict__ import ModelsDict
+from . import __Tools__ as Tools
 from .__Core__ import Core

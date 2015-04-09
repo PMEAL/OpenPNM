@@ -1,32 +1,30 @@
 # -*- coding: utf-8 -*-
-
-import OpenPNM
-from OpenPNM.Phases.__GenericPhase__ import GenericPhase
+from OpenPNM.Phases import GenericPhase
 
 class TestPhase(GenericPhase):
     r'''
-    Creates Phase object with a default name 'testphase' and preset values for an air-like 
-    
+    Creates Phase object with a default name 'testphase' and preset values for an air-like
+
     Parameters
     ----------
     network : OpenPNM Network object
-        The network to which this phase object will be attached.  
-        
+        The network to which this phase object will be attached.
+
     Notes
     -----
     This explicit association is necessary so the Phase object can initialize
     data arrays of the correct size to store network data.
-    
+
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> water = OpenPNM.Phases.Water(network=pn)
     '''
     def __init__(self,name=None,**kwargs):
         super(TestPhase,self).__init__(name=name,**kwargs)
-        self._logger.debug("Construct class")
         self._generate()
-        
+
     def _generate(self):
         self['pore.temperature'] = 298.0
         self['pore.surface_tension'] = 0.072
@@ -43,5 +41,6 @@ class TestPhase(GenericPhase):
 
 
 if __name__ =="__main__":
+    import OpenPNM
     pn = OpenPNM.Network.TestNet()
     water = OpenPNM.Phases.Water(network=pn)

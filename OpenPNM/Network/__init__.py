@@ -5,7 +5,7 @@ r"""
 
 Contents
 --------
-**GenericNetwork** -- Contains many classes for working with the topology of the
+**GenericNetwork** -- Contains many methods ` for working with the topology of the
 networks
 
 **Subclasses** -- Inherit from GenericNetwork, and contain additional methods for
@@ -22,6 +22,9 @@ Classes
 
 .. autoclass:: Delaunay
    :members:
+
+.. autoclass:: DelaunayCubic
+   :members:
    
 .. autoclass:: MatFile
    :members:
@@ -31,8 +34,7 @@ Classes
 from .__GenericNetwork__ import GenericNetwork
 from .__Cubic__ import Cubic
 from .__Delaunay__ import Delaunay
+from .__DelaunayCubic__ import DelaunayCubic
 from .__MatFile__ import MatFile
 from .__TestNet__ import TestNet
 from . import models
-
-
