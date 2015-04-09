@@ -37,10 +37,10 @@ The next step is to have this model to calculate something useful.  Assume that 
 .. code-block:: python
 
 	def surface_roughness(geometry,roughness_parameter,**kwargs):
-	    P_diam = geometry['pore.diameter']
-	    projected_area = 4*3.14159*(P_diam/2)**2
-	    rough_area = projected_area**roughness_parameter
-	    return rough_area
+		P_diam = geometry['pore.diameter']
+		projected_area = 4*3.14159*(P_diam/2)**2
+		rough_area = projected_area**roughness_parameter
+		return rough_area
 		
 It was noted above that the ``add_model`` method sent in several extra arguments 'just-in-case'.  Among these arguments are the object from which the method is called.  Since 'surface_roughness' will be attached to a Geometry object, this function will receive it as 'geometry' automatically.  We can now update our script:
 
@@ -61,9 +61,9 @@ It was noted above that the ``add_model`` method sent in several extra arguments
 
 	#Assign model to geometry
 	geom.add_model(propname='pore.surface_area',
-				   model=my_models.surface_roughness,
-				   roughness_parameter=2.2)
-				   
+					model=my_models.surface_roughness,
+					roughness_parameter=2.2)
+
 The print-out of 'geom 'reveals that indeed the model has been added:
 
 >>> print(geom)
@@ -117,10 +117,10 @@ Let's create a Geometry subclass that is representative of Berea Sandstone.  Sta
 
 .. code-block:: python
 
-    import OpenPNM
+	import OpenPNM
 	class BereaSandstone(OpenPNM.Geometry.GenericGeometry):
-	    def __init__(self,**kwargs):
-        super(berea_sandstone,self).__init__(**kwargs)
+		def __init__(self,**kwargs):
+			super(berea_sandstone,self).__init__(**kwargs)
 		
 The above is a basic template that is no different than GenericGeometry yet.  The important thing to notice here is the the ``__init__`` of the parent class is invoked using the ``super`` method.  This means that all arguments passed to ``BereaSandstone`` are bundled into *'kwargs'* and passed to **GenericGeometry**, which will run all of the tasks that are necessary for OpenPNM objects to work, such as registering this custom Geometry with the Network.
 
@@ -128,22 +128,22 @@ The next step is to actually customize the class.  In OpenPNM, all the subclasse
 
 .. code-block:: python
 
-    import OpenPNM
+	import OpenPNM
 	class BereaSandstone(OpenPNM.Geometry.GenericGeometry):
-	    def __init__(self,**kwargs):
-        super(berea_sandstone,self).__init__(**kwargs)
+		def __init__(self,**kwargs):
+			super(berea_sandstone,self).__init__(**kwargs)
 		
 		mod = OpenPNM.Geometry.models.pore_misc.random
 		self.add_model(propname='pore.seed',
-		               model=mod)
+						model=mod)
 					   
 		mod = OpenPNM.Geometry.models.pore_diameter.sphere
 		self.add_model(propname='pore.diameter',
-		               model=mod,
-					   psd_name='weibull_min',
-                       psd_shape=2.5,
-                       psd_loc=4e-4,
-                       psd_scale=4e-4)
+						model=mod,
+						psd_name='weibull_min',
+						psd_shape=2.5,
+						psd_loc=4e-4,
+						psd_scale=4e-4)
 					   
 
 The first of the above two models creates a property called 'pore.seed', which is just a list of random numbers that will be used to seed the pore size distribution.  The second model uses the Scipy.stats package to generate 'pore.diameter' values from the 'weibull_min' distribution using the given parameters.  
@@ -161,27 +161,4 @@ Creating Customized Algorithms
 Algorithms can also be customized as described above.  The GenericAlgorithm has a few additional methods that are meant to be implemented by subclasses, such as ``return_results``.  The intention of this method is to send the pertinent results of a calculation 'out' of the Algorithm object and to the correct object in the simulation.  This step is handy, but is not actually necessary.  One can of course manually transfer data from an Algorithm to a Phase, for instance with:
 
 >>> air['pore.temperature'] = thermal_simulation['pore.T']
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
