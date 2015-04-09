@@ -10,8 +10,8 @@ import scipy as _sp
 def washburn(physics,
              phase,
              network,
-             pore_surface_tension='pore.surface_tension',
-             pore_contact_angle='pore.contact_angle',
+             surface_tension='throat.surface_tension',
+             contact_angle='throat.contact_angle',
              throat_diameter='throat.diameter',
              **kwargs):
     r"""
@@ -20,9 +20,18 @@ def washburn(physics,
     Parameters
     ----------
     network : OpenPNM Network Object
-        The network on which to apply the calculation
+        The Network object is 
     phase : OpenPNM Phase Object
-        Phase object for the invading phases
+        Phase object for the invading phases containing the surface tension and
+        contact angle values.
+    sigma : dict key (string)
+        The dictionary key containing the surface tension values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    theta : dict key (string)
+        The dictionary key containing the contact angle values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
 
     Notes
     -----
@@ -35,10 +44,16 @@ def washburn(physics,
     suitable for highly non-wetting invading phases in most materials.
 
     """
-    sigma = phase[pore_surface_tension]
-    sigma = phase.interpolate_data(data=sigma)
-    theta = phase[pore_contact_angle]
-    theta = phase.interpolate_data(data=theta)
+    if surface_tension.split('.')[0] == 'pore':
+        sigma = phase[surface_tension]
+        sigma = phase.interpolate_data(data=sigma)
+    else:
+        sigma = phase[surface_tension]
+    if contact_angle.split('.')[0] == 'pore':
+        theta = phase[contact_angle]
+        theta = phase.interpolate_data(data=theta)
+    else:
+        theta = phase[contact_angle]
     r = network[throat_diameter]/2
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
     value = value[phase.throats(physics.name)]
@@ -48,8 +63,8 @@ def purcell(physics,
             phase,
             network,
             r_toroid,
-            pore_surface_tension='pore.surface_tension',
-            pore_contact_angle='pore.contact_angle',
+            surface_tension='throat.surface_tension',
+            contact_angle='throat.contact_angle',
             throat_diameter='throat.diameter',
             **kwargs):
     r"""
@@ -58,15 +73,17 @@ def purcell(physics,
     Parameters
     ----------
     network : OpenPNM Network Object
-        The network on which to apply the calculation
-    sigma : float, array_like
-        Surface tension of the invading/defending phase pair.  Units must be 
-        consistent with the throat size values, but SI is encouraged.
-    theta : float, array_like
-        Contact angle formed by a droplet of the invading phase and solid 
-        surface, measured through the defending phase phase.  Angle must be given in degrees.
+        The Network on which to apply the calculation
+    sigma : dict key (string)
+        The dictionary key containing the surface tension values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    theta : dict key (string)
+        The dictionary key containing the contact angle values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
     r_toroid : float or array_like
-        The radius of the solid
+        The radius of the toroid surrounding the pore
 
     Notes
     -----
@@ -86,10 +103,16 @@ def purcell(physics,
     TODO: Triple check the accuracy of this equation
     """
 
-    sigma = phase[pore_surface_tension]
-    sigma = phase.interpolate_data(data=sigma)
-    theta = phase[pore_contact_angle]
-    theta = phase.interpolate_data(data=theta)
+    if surface_tension.split('.')[0] == 'pore':
+        sigma = phase[surface_tension]
+        sigma = phase.interpolate_data(data=sigma)
+    else:
+        sigma = phase[surface_tension]
+    if contact_angle.split('.')[0] == 'pore':
+        theta = phase[contact_angle]
+        theta = phase.interpolate_data(data=theta)
+    else:
+        theta = phase[contact_angle]
     r = network[throat_diameter]/2
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))

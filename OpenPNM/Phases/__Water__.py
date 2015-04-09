@@ -4,12 +4,12 @@ from OpenPNM.Phases import models as fm
 
 class Water(GenericPhase):
     r'''
-    Creates Phase object with a default name 'water' and preset values for water
+    Creates Phase object with preset values for Water
 
     Parameters
     ----------
     network : OpenPNM Network object
-        The network to which this phase object will be attached.
+        The Network to which this phase object will be associated.
 
     Notes
     -----
