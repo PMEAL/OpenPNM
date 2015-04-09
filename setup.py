@@ -29,11 +29,10 @@ setup(
               'OpenPNM.Utilities',
               'OpenPNM.Algorithms',
               'OpenPNM.Postprocessing'],
-    version='1.1-beta',
+    version='1.1',
     description="A framework for conducting pore network modeling simulations of multiphase transport in porous materials.",
     author='OpenPNM Team',
     author_email='jeff.gostick@mcgill.ca',
     download_url='https://github.com/pmeal/OpenPNM/',
-    url='https://github.com/pmeal/OpenPNM',
-	install_requires = ['scipy>=0.14.0'],
+    url='https://github.com/pmeal/OpenPNM'
 )
