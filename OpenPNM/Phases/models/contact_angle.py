@@ -9,7 +9,7 @@ import scipy as sp
 def young(phase,
           sigma_sg,
           sigma_sl,
-          surface_tension='throat.surface_tension',
+          surface_tension='pore.surface_tension',
           **kwargs):
     r'''
     Calculate contact angle using Young's equation

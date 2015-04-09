@@ -10,8 +10,8 @@ import scipy as _sp
 def washburn(physics,
              phase,
              network,
-             surface_tension='throat.surface_tension',
-             contact_angle='throat.contact_angle',
+             surface_tension='pore.surface_tension',
+             contact_angle='pore.contact_angle',
              throat_diameter='throat.diameter',
              **kwargs):
     r"""
@@ -63,8 +63,8 @@ def purcell(physics,
             phase,
             network,
             r_toroid,
-            surface_tension='throat.surface_tension',
-            contact_angle='throat.contact_angle',
+            surface_tension='pore.surface_tension',
+            contact_angle='pore.contact_angle',
             throat_diameter='throat.diameter',
             **kwargs):
     r"""
