@@ -9,7 +9,7 @@ statistical pore size distributions
 import scipy as _sp
 
 def perlin_noise(geometry,freq=1,octaves=4,mode='classic',**kwargs):
-    r'''
+    r"""
     Generate pore seed values using the Perlin noise algorithm.  This approach
     imparts some spatial clumpiness to the pore seeds.
 
@@ -49,7 +49,7 @@ def perlin_noise(geometry,freq=1,octaves=4,mode='classic',**kwargs):
 
     ``matplotlib.pyplot.imshow(im[:,25,:],interpolation='none')``
 
-    '''
+    """
     from noise import pnoise3, snoise3
     import scipy.stats as spst
 
@@ -78,7 +78,7 @@ def perlin_noise(geometry,freq=1,octaves=4,mode='classic',**kwargs):
     return values.flatten()
 
 def distance_from_inclusion(geometry,p,**kwargs):
-    r'''
+    r"""
     Genrate spatially correlated pore seeds by calculating distance from random
     locations (inclusions) in the domain
 
@@ -112,7 +112,7 @@ def distance_from_inclusion(geometry,p,**kwargs):
 
     ``matplotlib.pyplot.imshow(im[:,25,:],interpolation='none')``
 
-    '''
+    """
     import scipy.ndimage as _spim
     net = geometry._net
     #The following will only work on Cubic networks
@@ -131,7 +131,7 @@ def distance_from_inclusion(geometry,p,**kwargs):
     return values
 
 def spatially_correlated(geometry,network,weights=None,strel=None,**kwargs):
-    r'''
+    r"""
     Generates pore seeds that are spatailly correlated with their neighbors.
 
     Parameters
@@ -181,7 +181,7 @@ def spatially_correlated(geometry,network,weights=None,strel=None,**kwargs):
 
     ``matplotlib.pyplot.imshow(im[:,25,:],interpolation='none')``
 
-    '''
+    """
     import scipy.ndimage as spim
     import scipy.stats as spst
     #The following will only work on Cubic networks

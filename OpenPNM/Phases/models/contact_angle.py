@@ -11,7 +11,7 @@ def young(phase,
           sigma_sl,
           surface_tension='pore.surface_tension',
           **kwargs):
-    r'''
+    r"""
     Calculate contact angle using Young's equation
     
     Notes
@@ -23,7 +23,7 @@ def young(phase,
     sigma_sl is the solid-liquid interfacial tension [J/m^2]
     theta is the Young contact angle [rad]
            
-    '''
+    """
     if surface_tension.split('.')[0] == 'pore':
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(data=sigma)

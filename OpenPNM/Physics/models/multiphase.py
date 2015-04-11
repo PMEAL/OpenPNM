@@ -81,7 +81,7 @@ def late_pore_filling(physics,
                       pore_occupancy='pore.occupancy',
                       throat_capillary_pressure='throat.capillary_pressure',
                       **kwargs):
-    r'''
+    r"""
     Applies a late pore filling model to calculate fractional pore filling as 
     a function of applied capillary pressure.
     
@@ -98,7 +98,7 @@ def late_pore_filling(physics,
         Indicates whether supplied phase is the wetting or non-wetting phase
     
     
-    '''
+    """
     pores = phase.pores(physics.name)
     prop = phase[throat_capillary_pressure]
     neighborTs = network.find_neighbor_throats(pores,flatten=False)

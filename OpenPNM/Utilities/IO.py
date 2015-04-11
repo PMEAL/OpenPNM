@@ -40,7 +40,7 @@ class VTK():
 
     @staticmethod
     def save(network,filename='',phases=[]):
-        r'''
+        r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
 
@@ -70,7 +70,7 @@ class VTK():
         >>> # Delete the new file
         >>> import os
         >>> os.remove('test_pn.vtp')
-        '''
+        """
 
         if filename == '':
             filename = network.name
@@ -134,13 +134,14 @@ class VTK():
 
     @staticmethod
     def load(filename):
-        r'''
+        r"""
         Read in pore and throat data from a saved VTK file.
 
         Notes
         -----
         This will NOT reproduce original simulation, since all models and object
-        relationships are lost.  Use IO.Save and IO.Load for that.'''
+        relationships are lost.  Use IO.Save and IO.Load for that.
+        """
         network = OpenPNM.Network.GenericNetwork()
         tree = _ET.parse(filename)
         piece_node = tree.find('PolyData').find('Piece')
@@ -192,9 +193,9 @@ class VTK():
         return array
 
 class MAT():
-    r'''
+    r"""
     Class for reading and writing OpenPNM data to a Matlab 'mat' file
-    '''
+    """
 
     def __init__(self,**kwargs):
         r"""
@@ -265,9 +266,9 @@ class MAT():
 
     @staticmethod
     def load():
-        r'''
+        r"""
         This method is not implemented yet.
-        '''
+        """
         raise NotImplemented()
 
 

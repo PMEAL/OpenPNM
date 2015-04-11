@@ -15,7 +15,7 @@ from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
 class MatFile(GenericNetwork):
-    r'''
+    r"""
     MatFile - constructs a pore network from a perfectly formatted .mat file (MATLAB)
     Create network from Matlab file. Returns OpenPNM.Network.GenericNetwork()
     object. The extra data of 'type' will trigger internal and boundary pores.
@@ -82,7 +82,7 @@ class MatFile(GenericNetwork):
     +----------------+------------+----------------------------------+
 
 
-    '''
+    """
     def __init__(self,filename='', path='', xtra_pore_data=None, xtra_throat_data=None,**kwargs):
 
         r"""
@@ -252,7 +252,7 @@ class MatFile(GenericNetwork):
                     pass
 
     def domain_length(self,face_1,face_2):
-        r'''
+        r"""
         Calculate the distance between two faces of the network
 
         Parameters
@@ -267,7 +267,7 @@ class MatFile(GenericNetwork):
         Notes
         -----
         - Does not yet check if input faces are perpendicular to each other
-        '''
+        """
         #Ensure given points are coplanar before proceeding
         if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
             #Find distance between given faces
@@ -288,7 +288,7 @@ class MatFile(GenericNetwork):
 
 
     def domain_area(self,face):
-        r'''
+        r"""
         Calculate the area of a given network face
 
         Parameters
@@ -299,7 +299,7 @@ class MatFile(GenericNetwork):
         Returns
         -------
         The area of the specified face
-        '''
+        """
         coords = self['pore.coords'][face]
         rads = self['pore.diameter'][face]/2.
         # calculate the area of the 3 principle faces of the bounding cuboid

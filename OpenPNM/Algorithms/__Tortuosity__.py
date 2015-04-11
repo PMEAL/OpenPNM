@@ -32,8 +32,8 @@ class Tortuosity(GenericAlgorithm):
         logger.debug("Create Tortuosity Object")
 
     def estimate_time(self):
-        r'''
-        '''
+        r"""
+        """
         pn_temp = OpenPNM.Network.TestNet()
         graph = pn_temp.create_adjacency_matrix(sprsfmt='csr')
         self._net.tic()
@@ -49,8 +49,8 @@ class Tortuosity(GenericAlgorithm):
         return
 
     def run(self,phase=None):
-        r'''
-        '''
+        r"""
+        """
         logger.warning('This algorithm can take some time...')
         graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],sprsfmt='csr')
 

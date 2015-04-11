@@ -25,13 +25,13 @@ class TestNet(GenericNetwork):
         self.generate()
 
     def generate(self):
-        '''
+        r"""
         Create test network, of cubic geometry [5,5,5]
 
         Parameters
         ----------
         This network type accepts no arguments
-        '''
+        """
         self._generate_setup()
         self._generate_pores()
         self._generate_throats()

@@ -2,7 +2,7 @@
 from OpenPNM.Phases import GenericPhase
 
 class TestPhase(GenericPhase):
-    r'''
+    r"""
     Creates Phase object with a default name 'testphase' and preset values for an air-like
 
     Parameters
@@ -20,7 +20,7 @@ class TestPhase(GenericPhase):
     >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> water = OpenPNM.Phases.Water(network=pn)
-    '''
+    """
     def __init__(self,name=None,**kwargs):
         super(TestPhase,self).__init__(name=name,**kwargs)
         self._generate()

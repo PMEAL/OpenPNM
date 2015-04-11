@@ -29,13 +29,13 @@ class InvasionPercolation(GenericAlgorithm):
     """
 
     def __init__(self,**kwargs):
-        r'''
+        r"""
 
-        '''
+        """
         super(InvasionPercolation,self).__init__(**kwargs)
 
     def run(self,phase,inlets,throat_prop='throat.capillary_pressure'):
-        r'''
+        r"""
         Perform the algorithm
         
         Parameters
@@ -51,7 +51,7 @@ class InvasionPercolation(GenericAlgorithm):
             The name of the throat property containing the capillary entry
             pressure.  The default is 'throat.capillary_pressure'.
         
-        '''
+        """
         import heapq as hq
         queue = []
         hq.heapify(queue)
@@ -87,7 +87,7 @@ class InvasionPercolation(GenericAlgorithm):
         self['pore.invasion_sequence'] = p_inv
         
     def return_results(self,pores=[],throats=[]):
-        r'''
+        r"""
         Places the results of the IP simulation into the Phase object.
         
         Parameters
@@ -104,7 +104,7 @@ class InvasionPercolation(GenericAlgorithm):
             possible to recontruct an animation of the invasion process, in
             Paraview for instance, using this sequence information.  
         
-        '''
+        """
         pores = sp.array(pores,ndmin=1)
         throats = sp.array(throats,ndmin=1)
         if len(pores) == 0:
@@ -117,7 +117,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._phase['pore.invasion_sequence'][pores] = self['pore.invasion_sequence'][pores]
 
     def apply_flow(self,flowrate):
-        r'''
+        r"""
         Convert the invaded sequence into an invaded time for a given flow rate
         considering the volume of invaded pores and throats.
         
@@ -131,7 +131,7 @@ class InvasionPercolation(GenericAlgorithm):
         Creates a throat array called 'invasion_time' in the Algorithm 
         dictionary
         
-        '''
+        """
         P12 = self._net['throat.conns']  # List of throats conns
         a = self['throat.invasion_sequence']  # Invasion sequence
         b = sp.argsort(self['throat.invasion_sequence'])

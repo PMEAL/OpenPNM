@@ -5,7 +5,7 @@ def profiles(network,
              fig=None,
              values=None,
              bins=[10,10,10]):
-    r'''
+    r"""
     Compute the profiles for the property of interest and plots it in all
     three dimensions
 
@@ -23,7 +23,7 @@ def profiles(network,
     -----
     Either propname or values can be sent, but not both
 
-    '''
+    """
     if fig is None:
         fig = _plt.figure()
     ax1 = fig.add_subplot(131)
@@ -48,7 +48,7 @@ def profiles(network,
 def porosity_profile(network,
                       fig=None, axis=2):
 
-    r'''
+    r"""
     Compute and plot the porosity profile in all three dimensions
 
     Parameters
@@ -61,7 +61,7 @@ def porosity_profile(network,
     the area of the porous medium at any position is calculated from the
     maximum pore coordinates in each direction
 
-    '''
+    """
     if fig is None:
         fig = _plt.figure()
     L_x = _sp.amax(network['pore.coords'][:,0]) + _sp.mean(((21/88.0)*network['pore.volume'])**(1/3.0))
@@ -106,7 +106,7 @@ def porosity_profile(network,
 
 def saturation_profile(network, phase, fig=None, axis=2):
 
-    r'''
+    r"""
     Compute and plot the saturation profile in all three dimensions
 
     Parameters
@@ -115,7 +115,7 @@ def saturation_profile(network, phase, fig=None, axis=2):
     phase : the invading or defending phase to plot its saturation distribution
     axis : integer type 0 for x-axis, 1 for y-axis, 2 for z-axis
 
-    '''
+    """
     if fig is None:
         fig = _plt.figure()
     if phase is None:
@@ -234,7 +234,7 @@ def distributions(net,
 
 def pore_size_distribution(network, fig=None,):
 
-    r'''
+    r"""
     Plot the pore and throat size distribution which is the accumulated 
     volume vs. the diameter in a semilog plot
 
@@ -242,7 +242,7 @@ def pore_size_distribution(network, fig=None,):
     ----------
     network : OpenPNM Network object
     
-    '''
+    """
     if fig is None:
         fig = _plt.figure()
     dp = network['pore.diameter']

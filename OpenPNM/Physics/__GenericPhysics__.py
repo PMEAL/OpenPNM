@@ -87,7 +87,7 @@ class GenericPhysics(OpenPNM.Base.Core):
             return self._phases[0][key][self._phases[0][element+'.'+self.name]]
 
     def set_locations(self,pores=[],throats=[],mode='add'):
-        r'''
+        r"""
         Set the pore and throat locations of the Physics object
 
         Parameters
@@ -97,7 +97,7 @@ class GenericPhysics(OpenPNM.Base.Core):
         mode : string
             Indicates whether list of pores or throats is to be added or removed
             from the object.  Options are 'add' (default) or 'remove'.
-        '''
+        """
         if len(pores) > 0:
             pores = sp.array(pores,ndmin=1)
             self._set_locations(element='pore',locations=pores,mode=mode)

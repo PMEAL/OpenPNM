@@ -3,7 +3,7 @@ from OpenPNM.Phases import GenericPhase
 from OpenPNM.Phases import models as fm
 
 class Water(GenericPhase):
-    r'''
+    r"""
     Creates Phase object with preset values for Water
 
     Parameters
@@ -22,7 +22,7 @@ class Water(GenericPhase):
     >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> water = OpenPNM.Phases.Water(network=pn)
-    '''
+    """
     def __init__(self,name=None,**kwargs):
         super(Water,self).__init__(name=name,**kwargs)
         self._generate()

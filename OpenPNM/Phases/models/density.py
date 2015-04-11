@@ -7,9 +7,9 @@ Submodule -- density
 import scipy as _sp
 
 def standard(phase,**kwargs):
-    r'''
+    r"""
     Calculates the mass density from the molecular weight and molar density
-    '''
+    """
     MW = phase['pore.molecular_weight']
     rho = phase['pore.molar_density']
     value = rho*MW

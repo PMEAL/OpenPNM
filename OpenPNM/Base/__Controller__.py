@@ -1,8 +1,8 @@
-'''
+"""
 ###############################################################################
 Controller:  Overall controller class
 ###############################################################################
-'''
+"""
 import pickle as _pickle
 import copy as _copy
 import time, random, string
@@ -25,8 +25,8 @@ class Controller(dict):
         return Controller.__instance__
 
     def __init__(self):
-        r'''
-        '''
+        r"""
+        """
         self.comments = 'Using OpenPNM ' + OpenPNM.__version__
 
     def __str__(self):
@@ -59,33 +59,33 @@ class Controller(dict):
     loglevel = property(fget=_getloglevel,fset=_setloglevel)
 
     def networks(self):
-        r'''
+        r"""
         Returns a list of all Network objects
-        '''
+        """
         return self._get_objects(obj_type='GenericNetwork')
 
     def geometries(self):
-        r'''
+        r"""
         Returns a list of all Geometry objects
-        '''
+        """
         return self._get_objects(obj_type='GenericGeometry')
 
     def phases(self):
-        r'''
+        r"""
         Returns a list of all Phase objects
-        '''
+        """
         return self._get_objects(obj_type='GenericPhase')
 
     def physics(self):
-        r'''
+        r"""
         Returns a list of all Physics objects
-        '''
+        """
         return self._get_objects(obj_type='GenericPhysics')
 
     def algorithms(self):
-        r'''
+        r"""
         Returns a list of all Algorithm objects
-        '''
+        """
         return self._get_objects(obj_type='GenericAlgorithm')
 
     def _get_objects(self,obj_type):
@@ -97,19 +97,19 @@ class Controller(dict):
         return temp
 
     def clear(self):
-        r'''
+        r"""
         This is an overloaded version of the standard dict's ``clear`` method.
         This completely clears the Controller object's dict as expected, but
         also removes links to the Controller object in all objects.
 
-        '''
+        """
         for item in self.keys():
             self[item]._ctrl = {}
         self.__dict__ = {}
         super(Controller,self).clear()
         
     def update(self,arg):
-        r'''
+        r"""
         This is a subclassed version of the standard dict's ``update`` method.  
         It can accept a dictionary of OpenPNM Core objects in which case it 
         adds the objects to the Controller.  It can also accept an OpenPNM 
@@ -122,7 +122,7 @@ class Controller(dict):
         The Network (and other Core objects) do not store Algorithms, so this
         update will not add any Algorithm objects to the Controller.  This may
         change.  
-        '''
+        """
         if arg.__class__ == dict:
             for item in arg.keys():
                 self[item] = arg[item]
@@ -138,7 +138,7 @@ class Controller(dict):
                     item._ctrl = self
 
     def purge_object(self,obj,mode='single'):
-        r'''
+        r"""
         Remove an object, including all traces of it in its associated objects
 
         Parameters
@@ -171,7 +171,7 @@ class Controller(dict):
         False
         >>> 'pore.'+geom.name in pn.keys()  # geom's labels are removed from the Network too
         False
-        '''
+        """
         if mode == 'complete':
             if obj._net is None:
                 net = obj
@@ -196,7 +196,7 @@ class Controller(dict):
             del self[name]
 
     def ghost_object(self,obj):
-        r'''
+        r"""
         Create a ghost OpenPNM Object containing all the data, methods and 
         associations of the original object, but without registering the ghost
         anywhere.   This ghost is intended as a disposable object, for 
@@ -244,7 +244,7 @@ class Controller(dict):
         >>> geo2 in pn._geometries  # But the Network remains aware of the ancestor only
         False
 
-        '''
+        """
         obj_new = _copy.copy(obj)
         obj_new.__dict__ = obj.__dict__
         obj_new._ctrl = {}
@@ -253,7 +253,7 @@ class Controller(dict):
         return obj_new
         
     def save_simulation(self,network,filename=''):
-        r'''
+        r"""
         Save a single Network simulation to a 'net' file, including all of its
         associated objects, but not Algorithms
         
@@ -263,7 +263,7 @@ class Controller(dict):
             The Network to save
         filename : string, optional
             If no filename is given the name of the Network is used
-        '''
+        """
         if filename == '':
             filename = network.name
         else:
@@ -275,7 +275,7 @@ class Controller(dict):
         network._ctrl = self
         
     def load_simulation(self,filename):
-        r'''
+        r"""
         Loads a Network simulation fromt the specified 'net' file and adds it
         to the Controller
         
@@ -283,13 +283,13 @@ class Controller(dict):
         ----------
         filename : string
             The name of the file containing the Network simulation to load
-        '''
+        """
         filename = filename.rstrip('.net')
         net = _pickle.load(open(filename+'.net','rb'))
         net.controller = self
 
     def save(self,filename=''):
-        r'''
+        r"""
         Save the entire state of the Controller to a 'pnm' file.
 
         Parameters
@@ -312,7 +312,7 @@ class Controller(dict):
         >>> ctrl.load('test.pnm')
         >>> pn.name in ctrl.keys()
         True
-        '''
+        """
         if filename == '':
             from datetime import datetime
             i = datetime.now()
@@ -324,7 +324,7 @@ class Controller(dict):
         _pickle.dump(self,open(filename+'.pnm','wb'))
 
     def load(self,filename):
-        r'''
+        r"""
         Load an entire Controller from a 'pnm' file.
 
         Parameters
@@ -337,7 +337,7 @@ class Controller(dict):
         This calls the ``clear`` method of the Controller object, so it will
         over write the calling objects information AND remove any references
         to the calling object from existing objects.
-        '''
+        """
         filename = filename.strip('.pnm')
         if self != {}:
             print('Warning: Loading data onto non-empty controller object, existing data will be lost')
@@ -345,7 +345,7 @@ class Controller(dict):
         self = _pickle.load(open(filename+'.pnm','rb'))
 
     def export(self,network=None,filename='',fileformat='VTK'):
-        r'''
+        r"""
         Export data to the specified file format.
 
         Parameters
@@ -365,7 +365,7 @@ class Controller(dict):
             1. VTK: Suitable for visualizing in VTK capable software such as Paraview
             2. MAT: Suitable for loading data into Matlab for post-processing
 
-        '''
+        """
         if network is None:
             if len(self.networks()) == 1:
                 network = self.networks()[0]
@@ -382,7 +382,7 @@ class Controller(dict):
             return
 
     def _script(self,filename,mode='read'):
-        r'''
+        r"""
         Save or reload the script files used for the modeling
 
         Parameters
@@ -393,7 +393,7 @@ class Controller(dict):
             Whether to 'archive' the given script file on the object or to
             'retrieve' it from the object and create a new file with it.  The
             default is 'archive'.
-        '''
+        """
         filename = filename.split('.')[0]+'.py'
         if mode == 'archive':
             with open(filename, "rb") as read_file:
@@ -418,7 +418,7 @@ class Controller(dict):
     comments = property(fget=_get_comments,fset=_set_comments)
 
     def clone_simulation(self,network,name=None):
-        r'''
+        r"""
         Accepts a Network object and creates a complete clone including all 
         associated objects.  All objects in the cloned simulation are 
         registered with the Controller object and are fully functional.
@@ -441,7 +441,7 @@ class Controller(dict):
         Examples
         --------
         None yet
-        '''
+        """
         if network._parent != None:
             logger.error('Cannot clone a network that is already a clone')
             return

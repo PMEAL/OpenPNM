@@ -41,9 +41,9 @@ class Delaunay(GenericNetwork):
     """
 
     def __init__(self,num_pores=None,domain_size=None,**kwargs):
-        '''
+        """
         Create Delauny network object
-        '''
+        """
         super(Delaunay,self).__init__(**kwargs)
         if (num_pores and domain_size) is None:
             num_pores = 1
@@ -52,7 +52,7 @@ class Delaunay(GenericNetwork):
             self.generate(num_pores,domain_size)
 
     def generate(self,num_pores,domain_size):
-        r'''
+        r"""
         Method to trigger the generation of the network
 
         Parameters
@@ -62,7 +62,7 @@ class Delaunay(GenericNetwork):
         num_pores : int
             Number of pores to place randomly within domain
 
-        '''
+        """
         logger.info("Start of network topology generation")
         self._generate_setup(num_pores,domain_size)
         self._generate_pores()
@@ -79,9 +79,9 @@ class Delaunay(GenericNetwork):
             self._Ly = domain_size[1]
             self._Lz = domain_size[2]
             self._Np = num_pores
-            r'''
+            r"""
             TODO: Fix this, btype should be received as an argument
-            '''
+            """
             self._btype = [0,0,0]
         else:
             logger.error("domain_size and num_pores must be specified")
@@ -217,11 +217,11 @@ class Delaunay(GenericNetwork):
         logger.debug(sys._getframe().f_code.co_name+": End of method")
 
     def _add_labels(self):
-        r'''
+        r"""
         Deprecated if using add_boundaries()
         This finds surface pores simply by proximity to the domain boundaries.
         A better approach is necessary
-        '''
+        """
         coords = self['pore.coords']
         self['pore.front'] = coords[:,0]<(0.1*self._Lx)
         self['pore.back'] = coords[:,0]>(0.9*self._Lx)

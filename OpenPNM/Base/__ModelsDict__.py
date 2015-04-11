@@ -1,8 +1,8 @@
-'''
+"""
 ###############################################################################
 ModelsDict:  Abstract Class for Containing Models
 ###############################################################################
-'''
+"""
 import inspect
 import scipy as sp
 from collections import OrderedDict
@@ -47,9 +47,9 @@ class ModelWrapper(dict):
         return ' '
         
     def regenerate(self):
-        r'''
+        r"""
         Regenerate the model
-        '''
+        """
         master = self._find_master()
         #Determine object type, and assign associated objects
         self_type = [item.__name__ for item in master.__class__.__mro__]
@@ -145,7 +145,7 @@ class ModelsDict(OrderedDict):
         return list(super(ModelsDict,self).keys())
             
     def regenerate(self, props='', mode='inclusive'):
-        r'''
+        r"""
         This updates properties using any models on the object that were
         assigned using ``add_model``
 
@@ -175,7 +175,7 @@ class ModelsDict(OrderedDict):
         >>> geom['pore.area'][0]  # Look at pore area calculated with new diameter
         4
 
-        '''
+        """
         master = self._find_master()
         if props == '':  # If empty, assume all models are to be regenerated
             props = list(self.keys())
@@ -203,7 +203,7 @@ class ModelsDict(OrderedDict):
                 logger.warning('Requested proptery is not a dynamic model: '+item)
             
     def add(self,propname,model,regen_mode='normal',**kwargs):
-        r'''
+        r"""
         Add specified property estimation model to the object.
 
         Parameters
@@ -254,7 +254,7 @@ class ModelsDict(OrderedDict):
         seed                 None / (None)
         ------------------------------------------------------------
 
-        '''
+        """
         master = self._find_master()
         if master == None:
             logger.warning('ModelsDict has no master, changing regen_mode to deferred')
@@ -278,7 +278,7 @@ class ModelsDict(OrderedDict):
             pass
         
     def remove(self,propname):
-        r'''
+        r"""
         Removes selected model from the dictionary, as well as removing its
         associated data from the master Core object.
         
@@ -286,13 +286,13 @@ class ModelsDict(OrderedDict):
         ----------
         propname : string
             The name of the model to remove
-        '''
+        """
         master = self._find_master()
         temp = master.pop(propname,None)
         del self[propname]
 
     def reorder(self,new_order):
-        r'''
+        r"""
         Reorders the models on the object to change the order in which they
         are regenerated, where item 0 is calculated first.
 
@@ -313,7 +313,7 @@ class ModelsDict(OrderedDict):
         >>> geom.models.keys()
         ['throat.length', 'pore.seed', 'throat.seed']
 
-        '''
+        """
         #Generate numbered list of current models
         order = [item for item in list(self.keys())]
         #Remove supplied models from list

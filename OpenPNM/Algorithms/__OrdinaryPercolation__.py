@@ -73,7 +73,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             access_limited=True,
             trapping=False,
             **kwargs):
-        r'''
+        r"""
         Parameters
         ----------
         inlets : array_like
@@ -103,7 +103,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         pores that have 0 volume, and set these as the inlets.
 
 
-        '''
+        """
         # Parse params
         self._inv_sites = inlets
         self._npts = npts
@@ -352,9 +352,9 @@ class OrdinaryPercolation(GenericAlgorithm):
               PcPoints *= -1
           plt.plot(PcPoints,Snwp_p,'r.-')
           plt.plot(PcPoints,Snwp_t,'b.-')
-          r'''
+          r"""
           TODO: Add legend to distinguish the pore and throat curves
-          '''
+          """
           #plt.xlim(xmin=0)
           plt.show()
 

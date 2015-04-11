@@ -23,8 +23,8 @@ class Cube_and_Cuboid(GenericGeometry):
         self._generate()
 
     def _generate(self):
-        r'''
-        '''
+        r"""
+        """
         self.models.add(propname='pore.seed',
                         model=gm.pore_misc.random,
                         seed=self._seed)

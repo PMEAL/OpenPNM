@@ -43,8 +43,8 @@ class Boundary(GenericGeometry):
         self._generate(shape)
 
     def _generate(self,shape):
-        r'''
-        '''
+        r"""
+        """
         try:
             self['pore.seed']
             seeds = True

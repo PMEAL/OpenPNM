@@ -11,7 +11,7 @@ from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
 class FickianDiffusion(GenericLinearTransport):
-    r'''
+    r"""
     A subclass of GenericLinearTransport to simulate binary diffusion.  The 2
     main roles of this subclass are to set the default property names and to
     implement a method for calculating the effective diffusion coefficient
@@ -36,26 +36,26 @@ class FickianDiffusion(GenericLinearTransport):
     0.025
 
 
-    '''
+    """
 
     def __init__(self,**kwargs):
-        r'''
+        r"""
 
-        '''
+        """
         super(FickianDiffusion,self).__init__(**kwargs)
         logger.info('Create '+self.__class__.__name__+' Object')
 
     def setup(self,conductance='diffusive_conductance',quantity='mole_fraction',super_pore_conductance=None,**params):
-        r'''
+        r"""
         This setup provides the initial requirements for the solver setup.
-        '''
+        """
         logger.info("Setup "+self.__class__.__name__)
         super(FickianDiffusion,self).setup(conductance=conductance,quantity=quantity,super_pore_conductance=super_pore_conductance)
 
     def calc_eff_diffusivity(self):
-        r'''
+        r"""
         This calculates the effective diffusivity in this linear transport algorithm.
-        '''
+        """
         D_normal = self._calc_eff_prop()
         self._eff_property = D_normal/sp.mean(self._phase['pore.molar_density'])
         return self._eff_property
