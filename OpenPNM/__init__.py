@@ -52,4 +52,11 @@ from . import Phases
 from . import Physics
 from . import Algorithms
 from . import Postprocessing
+from .Base import Controller as ctrl
+_controller = ctrl()
+del ctrl
+save = _controller.save
+load = _controller.load
+export = _controller.export
+view = _controller.__str__
 
