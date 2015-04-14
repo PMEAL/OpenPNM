@@ -1,8 +1,8 @@
-'''
+"""
 ###############################################################################
 Tools:  Useful classes for use throughout the project
 ###############################################################################
-'''
+"""
 import scipy as _sp
 from collections import OrderedDict as _odict
 
@@ -50,12 +50,12 @@ class ClonedCore(dict):
         self.name = obj.name
 
 class HealthDict(PrintableDict):
-    r'''
+    r"""
     This class adds a 'health' check to a standard dictionary.  This check 
     looks into the dict values, and considers empty lists as healthy and all 
     else as unhealthy.  If one or more entries is 'unhealthy' the health method
     returns False.
-    '''            
+    """            
     def _get_health(self):
         health = True
         for item in self.keys():

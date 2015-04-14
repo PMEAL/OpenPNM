@@ -23,9 +23,9 @@ class GenericLinearTransport(GenericAlgorithm):
     """
 
     def __init__(self,phase=None,**kwargs):
-        r'''
+        r"""
         Initializing the class
-        '''
+        """
         super(GenericLinearTransport,self).__init__(**kwargs)
         if phase is None:
             self._phase = GenericPhase()
@@ -35,10 +35,10 @@ class GenericLinearTransport(GenericAlgorithm):
             else:   self._phases.append(phase)
 
     def setup(self,conductance,quantity,super_pore_conductance):
-        r'''
+        r"""
         This setup provides the initial data for the solver from the provided properties. 
         It also creates the matrices A and b.
-        '''
+        """
         # For each group of pores with Neumann_group BC, user can send a value for the conductance between that group and its corresponding super pore 
         if super_pore_conductance is None:  self.super_pore_conductance = []
         else:   self.super_pore_conductance =  super_pore_conductance 
@@ -81,7 +81,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self.b = self._build_RHS_matrix(modified_RHS_pores = self.Ps,RHS_added_data = -RHS_added_data)   
     
     def set_source_term(self,source_name=None,pores=None,x0=None,tol=None,maxiter=None,mode='merge'):
-        r'''
+        r"""
         Apply source terms to specified pores
 
         Parameters
@@ -105,7 +105,7 @@ class GenericLinearTransport(GenericAlgorithm):
         Notes
         -----
         Difference between 'merge' and 'update' modes: in the merge, a new value cannot be applied to a pore with existing one, but in the 'update' it is possible. 
-        '''
+        """
         if mode not in ['merge','overwrite','remove','update']:
             raise Exception('The mode ('+mode+') cannot be applied to the set_source_term!')
         # Checking for existance of source_name
@@ -223,19 +223,19 @@ class GenericLinearTransport(GenericAlgorithm):
         else:   Exception('No source_name has been sent for set_source_term method in the algorithm '+self.name)
             
     def run(self,**kwargs):
-        r'''
+        r"""
         This calls the setup method in the algorithm and then runs the outer iteration stage. 
         All of the arguments used in setup and solve methods, can be sent here as kwargs.
-        '''
+        """
         logger.info("Setup "+self.__class__.__name__)
         self.setup(**kwargs)
         self._do_outer_iteration_stage(**kwargs)    
     
     def _do_outer_iteration_stage(self,**kwargs):
-        r'''
+        r"""
         This calls the solve method in the algorithm. 
         Many other outer loops can be added here as well, before or after calling solve method.
-        '''        
+        """        
         self.solve(**kwargs)        
 
     def solve(self,A=None,
@@ -273,9 +273,9 @@ class GenericLinearTransport(GenericAlgorithm):
         logger.info('Writing the results to '+'[\''+self._quantity+'\'] in the '+self.name+' algorithm.')
 
     def _do_one_inner_iteration(self,A,b,**kwargs):
-        r'''
+        r"""
         This method solves AX = b and returns the result to the corresponding algorithm.
-        '''
+        """
         logger.info("Solving AX = b for the sparse matrices")
         
         if A is None: A = self.A
@@ -328,9 +328,9 @@ class GenericLinearTransport(GenericAlgorithm):
         return X
 
     def _do_inner_iteration_stage(self,guess,**kwargs):
-        r'''
+        r"""
         This inner loop updates the source terms based on the new values of the quantity, then modifies A and b matrices, solves AX = b and returns the result.
-        ''' 
+        """ 
         # Updating the source terms        
         s1 = sp.zeros(self._coeff_dimension)
         s2 = sp.zeros(self._coeff_dimension)
@@ -365,12 +365,12 @@ class GenericLinearTransport(GenericAlgorithm):
         return X,t,A,b
 
     def return_results(self,pores=None,throats=None,**kwargs):
-        r'''
+        r"""
         Send results of simulation out the the appropriate locations.
 
         This is a basic version of the update that simply sends out the main
         result (quantity). More elaborate updates should be subclassed.
-        '''
+        """
         if pores is None:
             pores = self.Ps
         if throats is None:
@@ -394,9 +394,9 @@ class GenericLinearTransport(GenericAlgorithm):
     def _build_coefficient_matrix(self,modified_diag_pores=None,
                                       diag_added_data=None,
                                       mode='overwrite'):
-        r'''
+        r"""
         This builds the sparse coefficient matrix for the linear solver.
-        '''
+        """
         if mode == 'overwrite':  
             
             # Filling coefficient matrix
@@ -498,9 +498,9 @@ class GenericLinearTransport(GenericAlgorithm):
     def _build_RHS_matrix(self,modified_RHS_pores=None,
                           RHS_added_data=None,
                           mode='overwrite'):
-        r'''
+        r"""
         This builds the right-hand-side matrix for the linear solver.
-        '''
+        """
         if mode=='overwrite':
             A_dim = self._coeff_dimension
             b = sp.zeros([A_dim,1])
@@ -534,7 +534,7 @@ class GenericLinearTransport(GenericAlgorithm):
         return(b)
 
     def rate(self,pores=None,network=None,conductance=None,X_value=None,mode='group'):
-        r'''
+        r"""
         Send a list of pores and receive the net rate
         of material moving into them.
 
@@ -556,7 +556,7 @@ class GenericLinearTransport(GenericAlgorithm):
             - 'group'(default): It returns the cumulative rate moving into them
             - 'single': It calculates the rate for each pore individually.
 
-        '''
+        """
         if network is None: network = self._net
         if conductance is None: conductance = self['throat.conductance']
         if X_value is None: X_value = self[self._quantity]
@@ -590,7 +590,7 @@ class GenericLinearTransport(GenericAlgorithm):
         return(sp.array(R,ndmin=1))
 
     def _calc_eff_prop(self,check_health=False):
-        r'''
+        r"""
         This returns the main parameters for calculating the effective property in a linear transport equation.
         It also checks for the proper boundary conditions, inlets and outlets.
 
@@ -598,7 +598,7 @@ class GenericLinearTransport(GenericAlgorithm):
         ----------
         check_health : boolean(optional)
             It analyzes the inlet and outlet pores to check their spatial positions
-        '''
+        """
         try:
             self[self._quantity]
         except:

@@ -24,8 +24,8 @@ class Toray090(GenericGeometry):
         self._generate()
 
     def _generate(self):
-        r'''
-        '''
+        r"""
+        """
         self.models.add(propname='pore.seed',
                         model=gm.pore_misc.random,
                         num_range=[0,0.95],

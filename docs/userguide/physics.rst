@@ -10,12 +10,14 @@ Basic Usage
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 **Physics** objects have the most requirements for initialization.  A **Physics** object must be associated with a **Network**, a **Geometry** object that implies which pores and throats the **Physics** applies to, and a **Phase** object which specifies which thermophysical properties apply.
 
-pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-Ps = pn.pores('all')
-Ts = pn.throats('all')
-geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=Ps,throats=Ts)
-air = OpenPNM.Phases.Air(network=pn)
-phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts,name='phys_1')
+.. code-block:: python
+
+	pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+	Ps = pn.pores('all')
+	Ts = pn.throats('all')
+	geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=Ps,throats=Ts)
+	air = OpenPNM.Phases.Air(network=pn)
+	phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts,name='phys_1')
 
 Several important events occur upon instantiation of a Physics object.  Mainly, *label* arrays are created in the **Phase** object, called 'pore.phys_1' and 'throat.phys_1'.  These indicate which pores and throats in full domain the **Physics** object applies.  These locations are recorded in the **Phase** object to enable data exchange between the **Phase** and **Physics**, as described in the following note.
 

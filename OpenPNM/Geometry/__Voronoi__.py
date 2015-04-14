@@ -34,8 +34,8 @@ class Voronoi(GenericGeometry):
         
 
     def _generate(self,fibre_rad):
-        r'''
-        '''
+        r"""
+        """
 
         self.models.add(propname='pore.vertices',
                         model=gm.pore_vertices.voronoi)

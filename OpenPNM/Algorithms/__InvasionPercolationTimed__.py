@@ -50,8 +50,8 @@ class InvasionPercolationTimed(GenericAlgorithm):
 
     """
     def __init__(self,**kwords):
-        r'''
-        '''
+        r"""
+        """
         super(InvasionPercolationTimed,self).__init__(**kwords)
         logger.info("Create IP Algorithm Object")
 
@@ -576,8 +576,8 @@ class InvasionPercolationTimed(GenericAlgorithm):
             print('     IP algorithm at 100% completion at ',np.round(misc.toc(quiet=True)),' seconds')
 
     def cluster_update(self,cl_num,pores,throats,int_throats,bad_throat=-1):
-        r'''
-        '''
+        r"""
+        """
         int_throats = sp.unique(int_throats)
         int_throats = int_throats[int_throats!=bad_throat]
         pores = sp.unique(pores)

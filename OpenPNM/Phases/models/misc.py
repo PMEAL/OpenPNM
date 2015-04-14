@@ -64,7 +64,7 @@ def polynomial(phase,a,poreprop='pore.temperature',**kwargs):
     return value
 
 def ideal_mixture(phase,propname,pore_prop=None,composition='pore.mole_fraction',**kwargs):
-    r'''
+    r"""
     Calcualtes a given mixture property as the composition weighted average
     of the pure compononent properties
 
@@ -97,7 +97,7 @@ def ideal_mixture(phase,propname,pore_prop=None,composition='pore.mole_fraction'
         :math:`P_{i}` is the property of interest for pure species *i*
 
 
-    '''
+    """
     if pore_prop is None:
         pore_prop = propname
     value = _sp.zeros((phase.Np,))
@@ -106,7 +106,7 @@ def ideal_mixture(phase,propname,pore_prop=None,composition='pore.mole_fraction'
     return value
 
 def mixture_value(phase,propname,**kwargs):
-    r'''
+    r"""
     Adopts the specified property value from the parent mixture phase
 
     Parameters
@@ -116,7 +116,7 @@ def mixture_value(phase,propname,**kwargs):
         is automatically passed and used as the property name to fetch from
         the mixture object
 
-    '''
+    """
     mixture = phase._phases[0]
     vals = mixture[propname]
     return vals

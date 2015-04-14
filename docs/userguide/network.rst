@@ -87,7 +87,7 @@ Creating Custom Network Topology Generators
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 For description of how to create customized subclasses, see :ref:`Customizing OpenPNM<customizing>`
 
-.. note:: Network Topology: In Depth
+.. note:: **Network Topology: In Depth**
 
 	As the name suggests, pore network modeling borrows significantly from the fields of network and graph theory.  During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as `graph-tool <http://graph-tool.skewed.de/>`_ and `NetworkX <http://networkx.github.io/>`_) should be used to store the network topology.  It was decided that storage of network property data should be simply stored as 1D Numpy ndarrays (see `Numpy <http://www.numpy.org/>`_).  In this form the data storage would be very transparent, since all engineers are used to working with 1D arrays (i.e. vectors), and also very efficiently since this allows a high degree of code vectorization.  Fortuitously, around the same time as this discussion, Scipy started to include the `compressed sparse graph <http://docs.scipy.org/doc/scipy/reference/sparse.csgraph.html>`_ library, which contained numerous graph theory algorithms.  The CSGraph library requires adjacency matrices which happens to be how OpenPNM stores network connections as described below.
 

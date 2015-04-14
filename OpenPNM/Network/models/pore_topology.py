@@ -9,7 +9,7 @@ import scipy as _sp
 def get_subscripts(network,
                    shape,
                    **kwargs):
-    r'''
+    r"""
     Return the 3D subscripts (i,j,k) into the cubic network
 
     Parameters
@@ -17,7 +17,7 @@ def get_subscripts(network,
     shape : list
         The (i,j,k) shape of the network in number of pores in each direction
 
-    '''
+    """
     if network.num_pores('internal') != _sp.prod(shape):
         print('Supplied shape does not match Network size, cannot proceed')
     else:
@@ -34,7 +34,7 @@ def get_subscripts(network,
 def adjust_spacing(network,
                    new_spacing,
                    **kwargs):
-    r'''
+    r"""
     Adjust the the pore-to-pore lattice spacing on a cubic network
 
     Parameters
@@ -47,7 +47,7 @@ def adjust_spacing(network,
     At present this method only applies a uniform spacing in all directions.
     This is a limiation of OpenPNM Cubic Networks in general, and not of the
     method.
-    '''
+    """
     coords = network['pore.coords']
     try:
         spacing = network._spacing
@@ -61,7 +61,7 @@ def reduce_coordination(network,
                         z,
                         mode='random',
                         **kwargs):
-    r'''
+    r"""
     Reduce the coordination number to the specified z value
 
     Parameters
@@ -85,7 +85,7 @@ def reduce_coordination(network,
     Pores with only 1 throat will be ignored in all calculations since these
     are generally boundary pores.
 
-    '''
+    """
     T_trim = ~network['throat.all']
     T_nums = network.num_neighbors(network.pores())
     #Find protected throats

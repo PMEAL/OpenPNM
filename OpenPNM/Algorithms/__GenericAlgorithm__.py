@@ -85,7 +85,7 @@ class GenericAlgorithm(Core):
         pass
 
     def set_boundary_conditions(self,component=None,bctype='',bcvalue=None,pores=None,throats=None,mode='merge'):
-        r'''
+        r"""
         Apply boundary conditions to specified pores or throats
 
         Parameters
@@ -117,7 +117,7 @@ class GenericAlgorithm(Core):
         So when new condition is going to be applied to a specific location, any existing one
         should be removed or overwritten.
         2- BCs for pores and for throats should be applied independently.
-        '''
+        """
         try: self._existing_BC
         except: self._existing_BC = []
         if component is None:

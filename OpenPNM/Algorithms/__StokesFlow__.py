@@ -11,7 +11,7 @@ from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
 class StokesFlow(GenericLinearTransport):
-    r'''
+    r"""
     A subclass of GenericLinearTransport to simulate viscous flow.  The 2
     main roles of this subclass are to set the default property names and to
     implement a method for calculating the hydraulic permeability of the network.
@@ -34,25 +34,25 @@ class StokesFlow(GenericLinearTransport):
     >>> print(Peff) #unless something changed with our test objects, this should print "1.8663e-05"
     1.8663e-05
 
-    '''
+    """
 
     def __init__(self,**kwargs):
-        r'''
-        '''
+        r"""
+        """
         super(StokesFlow,self).__init__(**kwargs)
         logger.info('Create '+self.__class__.__name__+' Object')
 
     def setup(self,conductance='hydraulic_conductance',quantity='pressure',super_pore_conductance=None,**params):
-        r'''
+        r"""
         This setup provides the initial requirements for the solver setup.
-        '''
+        """
         logger.info("Setup "+self.__class__.__name__)
         super(StokesFlow,self).setup(conductance=conductance,quantity=quantity,super_pore_conductance=super_pore_conductance)
         
     def calc_eff_permeability(self):
-        r'''
+        r"""
         This calculates the effective permeability in this linear transport algorithm.
-        '''
+        """
         D_normal = self._calc_eff_prop()
         self._eff_property = D_normal*sp.mean(self._phase['pore.viscosity'])
         return self._eff_property

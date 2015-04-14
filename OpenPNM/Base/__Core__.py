@@ -1,8 +1,8 @@
-'''
+"""
 ###############################################################################
 Core:  Core Data Class
 ###############################################################################
-'''
+"""
 import pprint, string, random
 import scipy as sp
 import scipy.constants
@@ -13,9 +13,9 @@ from OpenPNM.Base import Controller
 ctrl = Controller()
 
 class Core(dict):
-    r'''
+    r"""
     Contains OpenPNM specificmethods for working with the data in the dictionaries
-    '''
+    """
 
     def __new__(typ, *args, **kwargs):
         obj = dict.__new__(typ, *args, **kwargs)
@@ -34,9 +34,9 @@ class Core(dict):
         return obj    
     
     def __init__(self, name=None, **kwargs):
-        r'''
+        r"""
         Initialize
-        '''
+        """
         super(Core,self).__init__()
         logger.debug('Initializing Core class')
         self.name = name
@@ -55,7 +55,7 @@ class Core(dict):
             return False
 
     def __setitem__(self,key,value):
-        r'''
+        r"""
         This is a subclass of the default __setitem__ behavior.  The main aim
         is to limit what type and shape of data can be written to protect
         the integrity of the network.
@@ -69,7 +69,7 @@ class Core(dict):
         >>> pn['pore.example_property'][0]
         100
 
-        '''
+        """
         #Enforce correct dict naming
         element = key.split('.')[0]
         if (element != 'pore') and (element != 'throat'):
@@ -156,9 +156,9 @@ class Core(dict):
         return temp
     
     def clear(self):
-        r'''
+        r"""
         A subclassed version of the standard dict's clear method
-        '''
+        """
         pall = self['pore.all']
         tall = self['throat.all']
         super(Core,self).clear()
@@ -166,7 +166,7 @@ class Core(dict):
         self.update({'pore.all':pall})
         
     #--------------------------------------------------------------------------
-    '''Model Manipulation Methods'''
+    """Model Manipulation Methods"""
     #--------------------------------------------------------------------------
     #Note: These methods have been moved to the ModelsDict class but are left
     #here for backward compatibility
@@ -185,7 +185,7 @@ class Core(dict):
     #--------------------------------------------------------------------------
 
     def _find_object(self,obj_name='',obj_type=''):
-        r'''
+        r"""
         Find objects associated with a given network model by name or type
 
         Parameters
@@ -205,7 +205,7 @@ class Core(dict):
         -------
         OpenPNM object or list of objects
 
-        '''
+        """
         if obj_name != '':
             obj = []
             if obj_name in ctrl.keys():
@@ -223,7 +223,7 @@ class Core(dict):
             return objs
 
     def physics(self,phys_name=[]):
-        r'''
+        r"""
         Retrieves Physics associated with the object
 
         Parameters
@@ -235,7 +235,7 @@ class Core(dict):
             If name is NOT provided, then a list of Physics names is returned.
             If a name or list of names IS provided, then the Physics object(s)
             with those name(s) is returned.
-        '''
+        """
         # If arg given as string, convert to list
         if type(phys_name) == str:
             phys_name = [phys_name]
@@ -249,7 +249,7 @@ class Core(dict):
         return phys
 
     def phases(self,phase_name=[]):
-        r'''
+        r"""
         Retrieves Phases associated with the object
 
         Parameters
@@ -261,7 +261,7 @@ class Core(dict):
             If name is NOT provided, then a list of phase names is returned. If
             a name are provided, then a list containing the requested objects
             is returned.
-        '''
+        """
         # If arg given as string, convert to list
         if type(phase_name) == str:
             phase_name = [phase_name]
@@ -275,7 +275,7 @@ class Core(dict):
         return phase
 
     def geometries(self,geom_name=[]):
-        r'''
+        r"""
         Retrieves Geometry object(s) associated with the object
 
         Parameters
@@ -287,7 +287,7 @@ class Core(dict):
             If name is NOT provided, then a list of Geometry names is returned.
             If a name IS provided, then the Geometry object of that name is
             returned.
-        '''
+        """
         # If arg given as string, convert to list
         if type(geom_name) == str:
             geom_name = [geom_name]
@@ -301,7 +301,7 @@ class Core(dict):
         return geom
 
     def network(self,name=''):
-        r'''
+        r"""
         Retrieves the network associated with the object.  If the object is
         a network, then it returns a handle to itself.
 
@@ -317,7 +317,7 @@ class Core(dict):
         Notes
         -----
         This doesn't quite work yet...we have to decide how to treat sub-nets first
-        '''
+        """
         if name == '':
             if self._net is None:
                 net = [self]
@@ -332,10 +332,10 @@ class Core(dict):
         return net
 
     #--------------------------------------------------------------------------
-    '''Data Query Methods'''
+    """Data Query Methods"""
     #--------------------------------------------------------------------------
     def props(self,element='',mode='all'):
-        r'''
+        r"""
         Returns a list containing the names of all defined pore or throat
         properties.
 
@@ -372,7 +372,7 @@ class Core(dict):
         ['throat.conns']
         >>> #pn.props() # this lists both, but in random order, which breaks
         >>> #           # our automatic document testing so it's commented here
-        '''
+        """
 
         props = []
         for item in self.keys():
@@ -404,10 +404,10 @@ class Core(dict):
 
 
     def _get_labels(self,element='',locations=[],mode='union'):
-        r'''
+        r"""
         This is the actual label getter method, but it should not be called directly.
         Wrapper methods have been created, use labels().
-        '''
+        """
         # Collect list of all pore OR throat labels
         labels = []
         for item in self.keys():
@@ -454,7 +454,7 @@ class Core(dict):
                 print('unrecognized mode')
 
     def labels(self,element='',pores=[],throats=[],mode='union'):
-        r'''
+        r"""
         Returns the labels applied to specified pore or throat locations
 
         Parameters
@@ -485,7 +485,7 @@ class Core(dict):
         ['pore.all', 'pore.bottom', 'pore.front', 'pore.left']
         >>> pn.labels(pores=[0,1,5,6],mode='intersection')
         ['pore.all', 'pore.bottom']
-        '''
+        """
         if (pores == []) and (throats == []):
             if element == '':
                 temp = []
@@ -511,7 +511,7 @@ class Core(dict):
         return temp
 
     def filter_by_label(self,pores=[],throats=[],labels='',mode='union'):
-        r'''
+        r"""
         Returns which of the supplied pores (or throats) has the specified label
 
         Parameters
@@ -547,7 +547,7 @@ class Core(dict):
         >>> Ps = pn.pores(['top','bottom','front'],mode='union')
         >>> pn.filter_by_label(pores=Ps,labels=['top','front'],mode='intersection')
         array([100, 105, 110, 115, 120])
-        '''
+        """
         if type(labels) == str:  # Convert input to list
             labels = [labels]
         # Convert inputs to locations and element
@@ -565,10 +565,10 @@ class Core(dict):
         return locations[ind]
 
     def _get_indices(self,element,labels=['all'],mode='union'):
-        r'''
+        r"""
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
-        '''
+        """
         element.rstrip('s')  # Correct plural form of element keyword
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
@@ -616,7 +616,7 @@ class Core(dict):
         return ind
 
     def pores(self,labels='all',mode='union'):
-        r'''
+        r"""
         Returns pore locations where given labels exist.
 
         Parameters
@@ -645,7 +645,7 @@ class Core(dict):
         array([  0,   5,  10, 122, 123, 124])
         >>> pn.pores(labels=['top','front'],mode='intersection')
         array([100, 105, 110, 115, 120])
-        '''
+        """
         if labels == 'all':
             Np = sp.shape(self['pore.all'])[0]
             ind = sp.arange(0,Np)
@@ -655,13 +655,13 @@ class Core(dict):
 
     @property
     def Ps(self):
-        r'''
+        r"""
         A shortcut to get a list of all pores on the object
-        '''
+        """
         return self.pores()
 
     def throats(self,labels='all',mode='union'):
-        r'''
+        r"""
         Returns throat locations where given labels exist.
 
         Parameters
@@ -689,7 +689,7 @@ class Core(dict):
         >>> Tind[0:5]
         array([0, 1, 2, 3, 4])
 
-        '''
+        """
         if labels == 'all':
             Nt = sp.shape(self['throat.all'])[0]
             ind = sp.arange(0,Nt)
@@ -699,16 +699,16 @@ class Core(dict):
 
     @property
     def Ts(self):
-        r'''
+        r"""
         A shortcut to get a list of all throats on the object
-        '''
+        """
         return self.throats()
 
     def _tomask(self,locations,element):
-        r'''
+        r"""
         This is a generalized version of tomask that accepts a string of
         'pore' or 'throat' for programmatic access.
-        '''
+        """
         if sp.shape(locations)[0] == 0:
             return sp.zeros_like(self._get_indices(element=element),dtype=bool)
         if element in ['pore','pores']:
@@ -724,7 +724,7 @@ class Core(dict):
         return mask
 
     def tomask(self,pores=None,throats=None):
-        r'''
+        r"""
         Convert a list of pore or throat indices into a boolean mask of the
         correct length
 
@@ -739,7 +739,7 @@ class Core(dict):
             A boolean mask of length Np or Nt with True in the locations of
             pores or throats received.
 
-        '''
+        """
         if pores is not None:
             mask = self._tomask(element='pore',locations=pores)
         if throats is not None:
@@ -747,7 +747,7 @@ class Core(dict):
         return mask
 
     def toindices(self,mask):
-        r'''
+        r"""
         Convert a boolean mask a list of pore or throat indices
 
         Parameters
@@ -769,7 +769,7 @@ class Core(dict):
         in pn.pores()[mask] or pn.throats()[mask].  This method is just a thin
         convenience function and is a compliment to tomask().
 
-        '''
+        """
         if sp.shape(mask)[0] == self.num_pores():
             indices = self.pores()[mask]
         elif sp.shape(mask)[0] == self.num_throats():
@@ -839,7 +839,7 @@ class Core(dict):
         return values
 
     def _interleave_data(self,prop,sources):
-        r'''
+        r"""
         Retrieves requested property from associated objects, to produce a full
         Np or Nt length array.
         
@@ -888,7 +888,7 @@ class Core(dict):
         >>> boun['pore.test_bool'] = sp.rand(boun.Np)<0.5
         >>> print(pn['pore.test_bool'].dtype)
         bool
-        '''
+        """
         element = prop.split('.')[0]
         temp = sp.ndarray((self._count(element)))
         nan_locs = sp.ndarray((self._count(element)),dtype='bool')
@@ -954,7 +954,7 @@ class Core(dict):
         return temp
 
     def num_pores(self,labels='all',mode='union'):
-        r'''
+        r"""
         Returns the number of pores of the specified labels
 
         Parameters
@@ -1000,7 +1000,7 @@ class Core(dict):
         >>> pn.num_pores(labels=['top','front'],mode='not_intersection')
         40
 
-        '''
+        """
         if labels == 'all':
             Np = sp.shape(self.get('pore.all'))[0]
         else:
@@ -1014,13 +1014,13 @@ class Core(dict):
 
     @property
     def Np(self):
-        r'''
+        r"""
         A shortcut to query the total number of pores on the object'
-        '''
+        """
         return self.num_pores()
 
     def num_throats(self,labels='all',mode='union'):
-        r'''
+        r"""
         Return the number of throats of the specified labels
 
         Parameters
@@ -1064,7 +1064,7 @@ class Core(dict):
         >>> pn.num_throats(labels=['top','front'],mode='not_intersection')
         72
 
-        '''
+        """
         if labels == 'all':
             Nt = sp.shape(self.get('throat.all'))[0]
         else:
@@ -1077,13 +1077,13 @@ class Core(dict):
 
     @property
     def Nt(self):
-        r'''
+        r"""
         A shortcut to query the total number of throats on the object'
-        '''
+        """
         return self.num_throats()
 
     def _count(self,element=None):
-        r'''
+        r"""
         Returns a dictionary containing the number of pores and throats in
         the network, stored under the keys 'pore' or 'throat'
 
@@ -1118,7 +1118,7 @@ class Core(dict):
         125
         >>> pn._count('throat')
         300
-        '''
+        """
         if element in ['pore','pores']:
             temp = self.num_pores()
         elif element in ['throat','throats']:
@@ -1130,7 +1130,7 @@ class Core(dict):
         return temp
         
     def _set_locations(self,element,locations,mode='add'):
-        r'''
+        r"""
         Private method used for assigning Geometry and Physics objects to 
         specified locations
         
@@ -1167,7 +1167,7 @@ class Core(dict):
         [125, 300]
         >>> geom.num_pores(labels='dummy',mode='not')  # All pores without 'dummy' label are gone
         0 
-        '''
+        """
         net = self._net
         if self._isa('Geometry'):
             boss_obj = self._net
@@ -1234,8 +1234,8 @@ class Core(dict):
         self.models.regenerate()
 
     def _map(self,element,locations,target,return_mapping=False):
-        r'''
-        '''
+        r"""
+        """
         # Initialize things
         locations = sp.array(locations,ndmin=1)
         mapping = {}
@@ -1286,7 +1286,7 @@ class Core(dict):
             return mapping['target']
 
     def map_pores(self,target=None,pores=None,return_mapping=False):
-        r'''
+        r"""
         Accepts a list of pores from the caller object and maps them onto the
         given target object
 
@@ -1324,7 +1324,7 @@ class Core(dict):
         array([100, 101, 102, 103, 104])
         >>> pn.map_pores(target=geom,pores=Ps)
         array([0, 1, 2, 3, 4])
-        '''
+        """
         if pores is None:
             pores = self.Ps
         if target is None:
@@ -1336,7 +1336,7 @@ class Core(dict):
         return Ps
 
     def map_throats(self,target=None,throats=None,return_mapping=False):
-        r'''
+        r"""
         Accepts a list of throats from the caller object and maps them onto the
         given target object
 
@@ -1374,7 +1374,7 @@ class Core(dict):
         array([260, 262, 264, 266])
         >>> pn.map_throats(target=geom,throats=Ts)
         array([0, 1, 2, 3])
-        '''
+        """
         if throats is None:
             throats = self.Ts
         if target is None:
@@ -1389,8 +1389,8 @@ class Core(dict):
     Pnet = property(fget=map_pores)
         
     def _isa(self,keyword=None,obj=None):
-        r'''
-        '''
+        r"""
+        """
         if keyword is None:
             mro = [item.__name__ for item in self.__class__.__mro__]
         if obj is None:
@@ -1431,7 +1431,7 @@ class Core(dict):
             return query
             
     def check_data_health(self,props=[],element=''):
-        r'''
+        r"""
         Check the health of pore and throat data arrays.
 
         Parameters
@@ -1463,7 +1463,7 @@ class Core(dict):
         ------------------------------------------------------------
         >>> a.health
         True
-        '''
+        """
         health = Tools.HealthDict()
         if props == []:
             props = self.props(element)

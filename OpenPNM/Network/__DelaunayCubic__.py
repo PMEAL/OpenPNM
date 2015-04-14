@@ -35,9 +35,9 @@ class DelaunayCubic(Delaunay):
     """
 
     def __init__(self,shape=None, template=None, spacing=[1,1,1],jiggle_factor=0.1,arrangement='SC',**kwargs):
-        '''
+        """
         Create Delauny network object
-        '''
+        """
         if shape is not None:
             self._arr = np.atleast_3d(np.empty(shape))
         elif template is not None:

@@ -192,9 +192,9 @@ class Scene(object):
     ticks = count(0)
 
     def __init__(self, parent=None, fix_camera=True):
-        '''
+        """
         fix_camera : more sensible default
-        '''
+        """
         if parent is not None:
             self.renWin = parent.GetRenderWindow()
             self.iren = self.renWin.GetInteractor()
@@ -218,9 +218,9 @@ class Scene(object):
         self.renWin.Render()
 
     def save(self, frames, outfile='animated.gif'):
-        '''
+        """
         takes a snapshot of the frames at given t, and returns the paths
-        '''
+        """
         windowToImage = vtk.vtkWindowToImageFilter()
         windowToImage.SetInput(self.renWin)
         writer = vtk.vtkPNGWriter()

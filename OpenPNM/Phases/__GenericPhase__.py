@@ -79,7 +79,7 @@ class GenericPhase(Core):
             return super(GenericPhase,self).__getitem__(key)
 
     def set_component(self,phase,mode='add'):
-        r'''
+        r"""
         This method is used to add or remove a ficticious phase object to this
         object.
 
@@ -90,7 +90,7 @@ class GenericPhase(Core):
 
         mode : string
             Indicates whether to 'add' or 'remove' the supplied Phase object
-        '''
+        """
         if mode == 'add':
             if phase.name in self.phases():
                 logger.error('Phase already present')
@@ -112,10 +112,10 @@ class GenericPhase(Core):
                 pass
 
     def check_mixture_health(self):
-        r'''
+        r"""
         Query the properties of the 'virtual phases' that make up a mixture
         to ensure they all add up
-        '''
+        """
         mole_sum = sp.zeros((self.Np,))
         for comp in self._phases:
             try:
@@ -125,9 +125,9 @@ class GenericPhase(Core):
         return mole_sum
 
     def check_physics_health(self):
-        r'''
+        r"""
         Perform a check to find pores which have overlapping or undefined Physics
-        '''
+        """
         phys = self.physics()
         Ptemp = sp.zeros((self.Np,))
         Ttemp = sp.zeros((self.Nt,))

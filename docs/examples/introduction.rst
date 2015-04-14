@@ -12,7 +12,7 @@ The first thing you must do is import the OpenPNM code so you have access to the
 
 .. code-block:: python
     
-    import OpenPNM
+	import OpenPNM
 	ctrl = OpenPNM.Base.Controller()
    
 The **Controller** object provides high-level oversight to all the simulations existing in memory at any given time.  Its main purpose is saving, loading and export data to files.  
@@ -135,14 +135,8 @@ We are still not ready to perform any simulations.  The last step is to define t
 
 .. code-block:: python
     
-	phys_water = OpenPNM.Physics.GenericPhysics(network=pn,
-	                                            phase=water,
-												geometry=geom,
-												name='standard_water_physics')
-	phys_air = OpenPNM.Physics.GenericPhysics(network=pn,
-											  phase=air,
-											  geometry=geom,
-											  name='standard_air_physics')
+	phys_water = OpenPNM.Physics.GenericPhysics(network=pn,phase=water,geometry=geom)
+	phys_air = OpenPNM.Physics.GenericPhysics(network=pn,phase=air,geometry=geom)
 
 -------------------------------------------------------------------------------
 Add Desired Methods to Physics Objects
@@ -167,7 +161,6 @@ As with phases and geometry objects, the next steps are first to load the model 
 Run some simulations
 -------------------------------------------------------------------------------
 
-
 .. code-block:: python
 
 	alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
@@ -185,7 +178,7 @@ Run some simulations
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Visualise the Results
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-We can now visualise our network and simulation results.  OpenPNM does not (yet) support native visualization, so data must be exported to a file for exploration in another program such as any of the several VTK front ends (I.e. Paraview).  
+We can now visualise our network and simulation results.  OpenPNM does not (yet) support native visualization, so data must be exported to a file for exploration in another program such as any of the several VTK front ends (I.e. Paraview). 
 
 .. code-block:: python
 

@@ -40,11 +40,11 @@ Then the phase object is created and a custom value is set.
 	air = OpenPNM.Phases.Air(network=pn)
 	air['pore.Dac'] = 1e-7  # Add custom properties directly
 
-In the next step, a physics object is instantiated. A physics objects can span over several geometries, so we need to specify again to which pores and throats it should apply. In this case, we want it to apply to all pores and throats of the network. Hence the variables 'Ps' and 'Ts' are again passed during the creation of the physics object.
+In the next step, a physics object is instantiated. A physics objects can span over several geometries, so we need to specify again to which pores and throats it should apply. 
 
 .. code-block:: python
 
-	phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
+	phys = OpenPNM.Physics.Standard(network=pn,phase=air,geometry=geo)
 
 Now we tell the physics object to use the 'bulk_diffusion' of the 'diffusive_conductance' model.
 

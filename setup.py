@@ -16,6 +16,13 @@ except ImportError:
 
 setup(
     name='OpenPNM',
+    description="A framework for conducting pore network modeling simulations of multiphase transport in porous materials.",
+    version='1.1',
+    classifiers=['Development Status :: 5 - Production/Stable',
+                 'License :: OSI Approved :: MIT License',
+                 'Programming Language :: Python',
+                 'Topic :: Scientific/Engineering',
+                 'Topic :: Scientific/Engineering :: Physics'],
     packages=['OpenPNM',
               'OpenPNM.Base',
               'OpenPNM.Network',
@@ -29,11 +36,8 @@ setup(
               'OpenPNM.Utilities',
               'OpenPNM.Algorithms',
               'OpenPNM.Postprocessing'],
-    version='1.1-beta',
-    description="A framework for conducting pore network modeling simulations of multiphase transport in porous materials.",
     author='OpenPNM Team',
     author_email='jeff.gostick@mcgill.ca',
     download_url='https://github.com/pmeal/OpenPNM/',
-    url='https://github.com/pmeal/OpenPNM',
-	install_requires = ['scipy>=0.14.0'],
+    url='https://github.com/pmeal/OpenPNM'
 )

@@ -160,11 +160,11 @@ class Cubic(GenericNetwork):
             self.trim(~arr.flatten())
 
     def add_boundaries(self):
-        r'''
+        r"""
         This method uses ``clone_pores`` to clone the surface pores (labeled
         'left','right', etc), then shifts them to the periphery of the domain,
         and gives them the label 'right_face', 'left_face', etc.
-        '''
+        """
         x,y,z = self['pore.coords'].T
 
         Lc = sp.amax(sp.diff(x)) #this currently works but is very fragile
@@ -190,7 +190,7 @@ class Cubic(GenericNetwork):
             self['pore.coords'][ind] = coords
 
     def asarray(self,values):
-        r'''
+        r"""
         Retreive values as a rectangular array, rather than the OpenPNM list format
 
         Parameters
@@ -202,7 +202,7 @@ class Cubic(GenericNetwork):
         -----
         This method can break on networks that have had boundaries added.  It
         will usually work IF the list of values came only from 'internal' pores.
-        '''
+        """
         if sp.shape(values)[0] > self.num_pores('internal'):
             raise Exception('The received values are bigger than the original network')
         Ps = sp.array(self['pore.index'][self.pores('internal')],dtype=int)
@@ -212,7 +212,7 @@ class Cubic(GenericNetwork):
         return arr
 
     def fromarray(self,array,propname):
-        r'''
+        r"""
         Apply data to the network based on a rectangular array filled with
         values.  Each array location corresponds to a pore in the network.
 
@@ -224,7 +224,7 @@ class Cubic(GenericNetwork):
 
         propname : string
             The name of the pore property being added.
-        '''
+        """
         array = sp.atleast_3d(array)
         if sp.shape(array) != self._shape:
             raise Exception('The received array does not match the original network')
@@ -235,7 +235,7 @@ class Cubic(GenericNetwork):
         self[propname][self.pores('internal')] = temp[Ps]
 
     def domain_length(self,face_1,face_2):
-        r'''
+        r"""
         Calculate the distance between two faces of the network
 
         Parameters
@@ -250,7 +250,7 @@ class Cubic(GenericNetwork):
         Notes
         -----
         - Does not yet check if input faces are perpendicular to each other
-        '''
+        """
         #Ensure given points are coplanar before proceeding
         if misc.iscoplanar(self['pore.coords'][face_1]) and misc.iscoplanar(self['pore.coords'][face_2]):
             #Find distance between given faces
@@ -271,7 +271,7 @@ class Cubic(GenericNetwork):
 
 
     def domain_area(self,face):
-        r'''
+        r"""
         Calculate the area of a given network face
 
         Parameters
@@ -282,7 +282,7 @@ class Cubic(GenericNetwork):
         Returns
         -------
         The area of the specified face
-        '''
+        """
         coords = self['pore.coords'][face]
         rads = self['pore.diameter'][face]/2.
         # calculate the area of the 3 principle faces of the bounding cuboid

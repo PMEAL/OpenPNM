@@ -52,9 +52,9 @@ def eotvos(phase,
            k,
            pore_molar_density='pore.molar_density',
            **kwargs):
-    r'''
+    r"""
     Documentation for this method is being updated, we are sorry for the inconvenience.
-    '''
+    """
     Tc = phase['pore.Tc']
     T = phase['pore.temperature']
     Vm = 1/phase[pore_molar_density]
@@ -65,9 +65,9 @@ def guggenheim_katayama(phase,
                         K2,
                         n,
                         **kwargs):
-    r'''
+    r"""
     Documentation for this method is being updated, we are sorry for the inconvenience.
-    '''
+    """
     T = phase['pore.temperature']
     Pc = phase['pore.Pc']
     Tc = phase['pore.Tc']
