@@ -547,16 +547,39 @@ class GenericNetwork(Core):
         clusters = sprs.csgraph.connected_components(csgraph=temp,directed=False)[1]
         return clusters
         
-    def _find_nearest_pores(self,pores,distance=0):
+    def find_nearest_pores(self,pores,distance=0):
         r"""
-        Still a work in progress, but will be useful for finding spatially 
-        near, but not topologically connected pores.
+        Find all pores with a given distance of the input pore(s) regardless of
+        whether or not they are toplogically connected.
+        
+        Parameters
+        ----------
+        pores : array_like
+            The list of pores for whom nearby neighbors are to be found
+        distance : scalar
+            The within which the nearby should be found
+            
+        Returns
+        -------
+            A list of pores which are within the given spatial distance.  If a
+            list of N pores is supplied, then a an N-long list of such lists is
+            returned.  The returned lists each contain the pore for which the
+            neighbors were sought.
+        
+        Examples
+        --------
+        >>> import OpenPNM as op
+        >>> pn = op.Network.TestNet()
+        >>> pn.find_nearest_pores(pores=[0,1],distance=1)
+        array([[0, 1, 25, 5], [0, 1, 26, 6, 2]], dtype=object)
+        >>> pn.find_nearest_pores(pores=[0,1],distance=.5)
+        array([[0], [1]], dtype=object)
         """
         kd = sptl.cKDTree(self['pore.coords'])
         if distance == 0:
             pass
         elif distance > 0:
-            Pn = kd.query_ball_point(self['pore.coords'][pores])[1]
+            Pn = kd.query_ball_point(self['pore.coords'][pores],r=distance)
         return Pn
 
     #--------------------------------------------------------------------------
