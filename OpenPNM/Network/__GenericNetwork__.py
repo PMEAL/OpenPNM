@@ -575,8 +575,6 @@ class GenericNetwork(Core):
     def clone_pores(self,pores,apply_label=['clone'],mode='parents'):
         topo.clone_pores(network=self,pores=pores,apply_label=apply_label,mode=mode)
     clone_pores.__doc__ = topo.clone_pores.__doc__
-        if len(pores) > 0:
-        elif len(throats) > 0:
 
     def stitch(self,donor,P_donor,P_network,method='delaunay',len_max=sp.inf,label_suffix=''):
         topo.stitch(network=self,donor=donor,P_donor=P_donor,P_network=P_network,method=method,len_max=len_max,label_suffix=label_suffix)
