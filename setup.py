@@ -39,7 +39,7 @@ setup(
         'scipy>=0.14.0',
         'matplotlib'
     ],
-    tests_requires = [
+    tests_require = [
         'pytest'
     ],
     author = 'OpenPNM Team',

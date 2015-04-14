@@ -1,24 +1,27 @@
 OpenPNM
 =======
 
+.. image:: https://travis-ci.org/PMEAL/OpenPNM.svg?branch=add-travis-ci
+    :target: https://travis-ci.org/PMEAL/OpenPNM
+
 .. contents::
 
 What is OpenPNM?
 --------------
 
-OpenPNM is open-source framework for conducting pore network modeling 
-simulations of multiphase transport in porous materials.  It includes 
-modules for generating various common network topologies, pore and 
+OpenPNM is open-source framework for conducting pore network modeling
+simulations of multiphase transport in porous materials.  It includes
+modules for generating various common network topologies, pore and
 throat geometry models, pore scale physics models, and fluid property
 estimation.  It also contains a large set of algorithms for running various
-simulations such drainage curves, gas diffusion, permeability, and more.  
+simulations such drainage curves, gas diffusion, permeability, and more.
 
 OpenPNM is written in Python making extensive use of Scipy. Python is a very
 flexible object oriented programming language that will be familiar to those
 with experience using Matlab.  OpenPNM takes advantages of the OOP paradigm
-to structure the framework.  Our goal is to help other scientists and engineers 
-harness the power and intuitive pore network modeling approach, so if you are 
-interested in this package, please contact us through Github, or email one of 
+to structure the framework.  Our goal is to help other scientists and engineers
+harness the power and intuitive pore network modeling approach, so if you are
+interested in this package, please contact us through Github, or email one of
 the developer directly.
 
 
