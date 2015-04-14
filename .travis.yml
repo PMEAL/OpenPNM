@@ -1,0 +1,9 @@
+language: python
+python:
+    - '3.3'
+
+install:
+    - python setup.py -q install
+
+script:
+    - python run_tests.py
