@@ -36,7 +36,7 @@ phys_air = op.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
 phys_air.models.add(model=op.Physics.models.diffusive_conductance.bulk_diffusion,
                     propname='throat.gdiff_ac',
                     pore_diffusivity='pore.Dac')
-op
+
 #==============================================================================
 '''Begin Simulations'''
 #==============================================================================
