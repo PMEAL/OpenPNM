@@ -16,11 +16,10 @@ simulations such drainage curves, gas diffusion, permeability, and more.
 OpenPNM is written in Python making extensive use of Scipy. Python is a very
 flexible object oriented programming language that will be familiar to those
 with experience using Matlab.  OpenPNM takes advantages of the OOP paradigm
-to structure the framework, but we stress that it is coded by engineers 
-without significant prior knowledge of object-oriented coding.  Our goal
-is to help other scientists and engineers harness the power and intuitive
-pore network modeling approach, so if you are interested in this package, 
-please contact us through Github, or email one of the developer directly.
+to structure the framework.  Our goal is to help other scientists and engineers 
+harness the power and intuitive pore network modeling approach, so if you are 
+interested in this package, please contact us through Github, or email one of 
+the developer directly.
 
 
 Installation
