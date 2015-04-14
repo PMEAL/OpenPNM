@@ -283,10 +283,10 @@ class topology(object):
         donor : OpenPNM Network Object
             The Network to stitch on to the current Network
     
-        pores_1 : array_like
+        P_network : array_like
             The pores on the current Network
     
-        pores_2 : array_like
+        P_donor : array_like
             The pores on the donor Network
             
         label_suffix : string or None
