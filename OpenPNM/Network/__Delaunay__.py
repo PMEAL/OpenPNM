@@ -40,7 +40,7 @@ class Delaunay(GenericNetwork):
 
     """
 
-    def __init__(self,num_pores=None,domain_size=None,**kwargs):
+    def __init__(self,num_pores=None,domain_size=None,prob=None,**kwargs):
         '''
         Create Delauny network object
         '''
@@ -49,9 +49,9 @@ class Delaunay(GenericNetwork):
             num_pores = 1
             domain_size = [1.0,1.0,1.0]
         else:
-            self.generate(num_pores,domain_size)
+            self.generate(num_pores,domain_size,prob)
 
-    def generate(self,num_pores,domain_size):
+    def generate(self,num_pores,domain_size,prob):
         r'''
         Method to trigger the generation of the network
 
@@ -61,11 +61,13 @@ class Delaunay(GenericNetwork):
             Bounding cube for internal pore positions
         num_pores : int
             Number of pores to place randomly within domain
+        prob : 3D array with probability of point with relative domain coordinates being kept
+            Array does not have to be same size as domain as positions are re-scaled
 
         '''
         logger.info("Start of network topology generation")
         self._generate_setup(num_pores,domain_size)
-        self._generate_pores()
+        self._generate_pores(prob)
         self._generate_throats()
         logger.debug("Network generation complete")
 
@@ -87,8 +89,30 @@ class Delaunay(GenericNetwork):
             logger.error("domain_size and num_pores must be specified")
             raise Exception('domain_size and num_pores must be specified')
 
-
-    def _generate_pores(self):
+    def _generate_pores(self,prob=None):
+        r"""
+        Generate the pores with numbering scheme.
+        """
+        logger.info("Place randomly located pores in the domain")
+        if prob is not None:
+            coords=[]
+            i=0
+            while i < self._Np:
+                coord = np.random.rand(3)
+                [indx,indy,indz]=np.floor(coord*np.shape(prob)).astype(int)
+                p = prob[indx][indy][indz]
+                if np.random.rand(1)<=p:
+                    coords.append(coord)
+                    i +=1
+            coords = np.asarray(coords)
+        else:
+            coords = np.random.rand([self._Np,3])
+        
+        coords*=np.array([self._Lx,self._Ly,self._Lz])
+        self['pore.coords'] = coords
+        logger.debug("End of method")
+        
+    def _generate_pores_old(self):
         r"""
         Generate the pores with numbering scheme.
         """
