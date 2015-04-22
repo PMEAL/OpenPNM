@@ -11,6 +11,7 @@ pn['pore.micro'] = True
 nano_pores = [2,13,14,15]
 pn.subdivide(pores=nano_pores,shape=[4,4,4],labels='nano')
 #============================================================================
+assert pn.Np == (125+4*64-4)
 assert pn.Nt == (300+(4*144)-16+15*16+16)
 ##==============================================================================
 ctrl.export(network=pn,filename='nano')

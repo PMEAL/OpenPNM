@@ -614,8 +614,8 @@ class GenericNetwork(Core):
         topo.stitch(network=self,donor=donor,P_donor=P_donor,P_network=P_network,method=method,len_max=len_max,label_suffix=label_suffix)
     stitch.__doc__ = topo.stitch.__doc__
 
-    def connect_pores(self,pores1,pores2):
-        return topo.connect_pores(network=self,pores1=pores1,pores2=pores2)
+    def connect_pores(self,pores1,pores2,labels=[]):
+        topo.connect_pores(network=self,pores1=pores1,pores2=pores2,labels=labels)
     connect_pores.__doc__ = topo.connect_pores.__doc__
 
     def subdivide(self,pores=[],shape=[],labels=[]):

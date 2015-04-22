@@ -378,7 +378,7 @@ class topology(object):
             _ctrl.purge_object(donor)
     
 
-    def connect_pores(self,network,pores1,pores2):
+    def connect_pores(self,network,pores1,pores2,labels=[]):
         r'''
         Returns the possible connections between two group of pores.
     
@@ -421,7 +421,7 @@ class topology(object):
         array1 = _sp.repeat(pores1,size2)
         array2 = _sp.tile(pores2,size1)
         conns = _sp.vstack([array1,array2]).T
-        return conns
+        self.extend(network=network,throat_conns=conns,labels=labels)
         
     def subdivide(self,network,pores,shape,labels=[]):
         r'''
@@ -431,6 +431,11 @@ class topology(object):
             raise Exception('Subdivide is only supported for Cubic Networks')
         from OpenPNM.Network import Cubic
         pores = _sp.array(pores,ndmin=1)
+        try:
+            b = network.pores('boundary')
+            if (_sp.in1d(pores,b)).any():
+                raise Exception('boundary pores cannot be subdivided!')
+        except KeyError: pass
         division = _sp.unique(shape)
         if _sp.size(division)!=1:
             raise Exception('Subdivide can only support subdivisions for Cubic Networks with unique dimensions')
@@ -454,7 +459,6 @@ class topology(object):
         old_coords = _sp.copy(new_net['pore.coords'])
         d = division-1
         if labels==[]:  labels = ['pore.subdivided_'+new_net.name]
-        default_labels =  ['pore.bottom', 'pore.top','pore.left','pore.right','pore.front','pore.back','pore.internal','pore.boundary']       
         for P in pores:
             # shifting the new network to the right location and attaching it to the main network
             shift = network['pore.coords'][P] - network._spacing/2
@@ -468,24 +472,26 @@ class topology(object):
                         throat_conns=new_net['throat.conns']+Np1,
                         labels=labels,network=network)
             network['pore.surface'][Np1:] = new_net['pore.surface']
-            for l in network.labels(pores=P):
-                if l in default_labels: network[l][Np1:] = True
             # stitching the old pores of the main network to the new extended pores
             for neighbor in Pn:
-                if neighbor in Pn_old_net:
-                    if _sp.size(shape)==3:  f = _sp.sqrt(2)
-                    elif _sp.size(shape)==2:    f = 1
+                if _sp.size(shape)==3:  f = _sp.sqrt(2)
+                elif _sp.size(shape)==2:    f = 1
+                if 'pore.boundary' in network.labels(pores=neighbor):
+                    lmax = ((f*(d*new_net._spacing/2))**2+(network._spacing/2-(d*new_net._spacing/2))**2)**0.5+1e-10 
+                elif neighbor in Pn_old_net:
                     lmax = ((f*(d*new_net._spacing/2))**2+(network._spacing-(d*new_net._spacing/2))**2)**0.5+1e-10 
                 elif neighbor in Pn_new_net:
                     lmax = network._spacing-2*(d*new_net._spacing/2) + 1e-10
                 near_pores = _sp.array(network.find_nearest_pores(pores=neighbor,distance=lmax),ndmin=1)
                 near_neighbor_pores = near_pores[_sp.in1d(near_pores,network.pores('surface'))]
-                conns = self.connect_pores(network=network,pores1=neighbor,pores2=near_neighbor_pores)
-                self.extend(network=network,throat_conns=conns,labels=labels)
+                self.connect_pores(network=network,pores1=neighbor,pores2=near_neighbor_pores,labels=labels)
+ 
             network['pore.surface'] = False    
-            new_net['pore.coords'] = _sp.copy(old_coords)   
+            new_net['pore.coords'] = _sp.copy(old_coords) 
+        network._label_surfaces()
         del network['pore.surface'] 
         self.trim(network=network,pores=pores)
+
         
         
         

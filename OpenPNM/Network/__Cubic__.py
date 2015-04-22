@@ -146,18 +146,30 @@ class Cubic(GenericNetwork):
         self['throat.all']   = np.ones(len(self['throat.conns']), dtype=bool)
         self['pore.index']   = sp.arange(0,len(self['pore.coords']))
 
-        x,y,z = self['pore.coords'].T
-        self['pore.internal'] = self['pore.all']
-        self['pore.front']    = x <= x.min()
-        self['pore.back']     = x >= x.max()
-        self['pore.left']     = y <= y.min()
-        self['pore.right']    = y >= y.max()
-        self['pore.bottom']   = z <= z.min()
-        self['pore.top']      = z >= z.max()
+        self._label_surfaces()
 
         #If an image was sent as 'template', then trim network to image shape
         if template is not None:
             self.trim(~arr.flatten())
+
+    def _label_surfaces(self):
+        r'''
+        It applies the default surface labels for a cubic network
+        '''        
+        x,y,z = self['pore.coords'].T
+        labels = ['internal','front','back','left','right','bottom','top']
+        for label in labels:
+            if 'pore.'+label not in self.keys():  self['pore.'+label] = False
+        if 'pore.boundary' in self.keys():  internal = -self['pore.boundary']
+        else:   internal = self['pore.all']
+        self['pore.internal'] = internal
+        self['pore.front'][x <= x.min()]  = True
+        self['pore.back'][x >= x.max()]   = True
+        self['pore.left'][y <= y.min()]   = True
+        self['pore.right'][y >= y.max()]  = True
+        self['pore.bottom'][z <= z.min()] = True
+        self['pore.top'][z >= z.max()]    = True 
+        
 
     def add_boundaries(self):
         r"""
