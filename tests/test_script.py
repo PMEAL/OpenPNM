@@ -62,13 +62,13 @@ def test_stitch():
     pn = OpenPNM.Network.Cubic(shape=[Nx,Ny,Nz])
     pn2 = OpenPNM.Network.Cubic(shape=[Nx,Ny,Nz])
     pn2['pore.coords'][:,2] += Nz
-    pn.stitch(donor=pn2,pores_1=pn.pores('top'),pores_2=pn2.pores('bottom'),len_max=1,method='delaunay')
+    pn.stitch(donor=pn2,P_network=pn.pores('top'),P_donor=pn2.pores('bottom'),len_max=1,method='nearest')
     assert pn.Np == 2*pn2.Np  # Ensure number of pores doubled
     assert pn.Nt == 2*pn2.Nt + Nx*Ny  # Ensure correct number of new stitch throats
     assert pn2 not in ctrl.values()  # Donor Network is removed from Controller
     # Reuse the donor Network in another stitch
     pn2['pore.coords'][:,2] -= 2*Nz
-    pn.stitch(donor=pn2,pores_1=pn.pores('bottom'),pores_2=pn2.pores('top'),len_max=1,method='nearest')
+    pn.stitch(donor=pn2,P_network=pn.pores('bottom'),P_donor=pn2.pores('top'),len_max=1,method='nearest')
     assert pn.Np == 3*pn2.Np  # Ensure number of pores increased again
     assert pn.Nt == 3*pn2.Nt + 2*Nx*Ny  # Ensure correct number of new stitch throats
     ctrl.clear()
