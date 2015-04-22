@@ -37,6 +37,17 @@ class GenericNetwork(Core):
         self._adjacency_matrix = {}
 
     def __setitem__(self,prop,value):
+        if prop=='throat.conns':
+            if sp.shape(value)[1]!=2:
+                logger.error('wrong size for throat conns!')
+            else:
+                mask = value[:,0]>value[:,1]
+                if mask.any():  
+                    logger.debug('the first column in (throat.conns) should be smaller than the second one.')
+                    v1 = sp.copy(value[:,0][mask])
+                    v2 = sp.copy(value[:,1][mask])
+                    value[:,0][mask] = v2
+                    value[:,1][mask] = v1 
         for geom in self._geometries:
             if (prop in geom.keys()) and ('all' not in prop.split('.')):
                 logger.error(prop+' is already defined in at least one associated Geometry object')
@@ -602,6 +613,10 @@ class GenericNetwork(Core):
     def stitch(self,donor,P_donor,P_network,method='delaunay',len_max=sp.inf,label_suffix=''):
         topo.stitch(network=self,donor=donor,P_donor=P_donor,P_network=P_network,method=method,len_max=len_max,label_suffix=label_suffix)
     stitch.__doc__ = topo.stitch.__doc__
+
+    def connect_pores(self,pores1,pores2):
+        return topo.connect_pores(network=self,pores1=pores1,pores2=pores2)
+    connect_pores.__doc__ = topo.connect_pores.__doc__
 
     def check_network_health(self):
         r"""

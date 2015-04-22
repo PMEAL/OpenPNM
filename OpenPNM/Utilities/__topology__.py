@@ -376,7 +376,53 @@ class topology(object):
         # This check allows for the reuse of a donor Network multiple times
         if donor in _ctrl.values():
             _ctrl.purge_object(donor)
-            
+    
+
+    def connect_pores(self,network,pores1,pores2):
+        r'''
+        Returns the possible connections between two group of pores.
+    
+        Parameters
+        ----------
+        networK : OpenPNM Network Object
+    
+        pores1 : array_like
+            The first group of pores on the network
+    
+        pores2 : array_like
+            The second group of pores on the network
+           
+        Notes
+        -----
+        It return the connections in a format which is acceptable by 
+        the default OpenPNM connection key ('throat.conns').  
+                
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.Nt
+        300
+        >>> conns = pn.connect_pores(pores1=[22,32],pores2=[16,80,68])
+        >>> conns
+        array([[22, 16],
+               [22, 80],
+               [22, 68],
+               [32, 16],
+               [32, 80],
+               [32, 68]])
+        >>> pn.extend(throat_conns=conns)
+        >>> pn.Nt
+        306        
+        
+        '''
+        size1 = _sp.size(pores1)
+        size2 = _sp.size(pores2)
+        array1 = _sp.repeat(pores1,size2)
+        array2 = _sp.tile(pores2,size1)
+        conns = _sp.vstack([array1,array2]).T
+        return conns
+        
     def subdivide(self,network,pores,divisions,labels=[]):
         r'''
         '''
