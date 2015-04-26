@@ -786,7 +786,7 @@ def print_throat(geom,throats_in):
             upper_bound_y = ymin + my_range*1.5
             plt.axis((lower_bound_x,upper_bound_x,lower_bound_y,upper_bound_y))
             plt.grid(b=True, which='major', color='b', linestyle='-')
-            plt.axis('off')
+            #plt.axis('off')
             centroid = tr.rotate_and_chop(coms[i],normals[i],[0,0,1])
             incent = tr.rotate_and_chop(incentre[i],normals[i],[0,0,1])
             plt.scatter(centroid[0][0],centroid[0][1])
@@ -796,7 +796,7 @@ def print_throat(geom,throats_in):
             u = inradius[i]*np.cos(t)+incent[0][0]
             v = inradius[i]*np.sin(t)+incent[0][1]
             plt.plot(u,v,'r-')
-            #ax.ticklabel_format(style='sci', scilimits=(0,0))
+            ax.ticklabel_format(style='sci', scilimits=(0,0))
             fig.show()
     else:
         print("Please provide throat indices")

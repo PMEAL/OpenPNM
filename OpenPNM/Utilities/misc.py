@@ -202,8 +202,11 @@ def conduit_lengths(network,throats=None,mode='pore'):
         try:
             pcentroids = network['pore.centroid']
             tcentroids = network['throat.centroid']
-            plen1 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,0]]-tcentroids),1))-network['throat.length']/2
-            plen2 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,1]]-tcentroids),1))-network['throat.length']/2
+            if _sp.sum(_sp.isnan(tcentroids)) == 0:
+                plen1 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,0]]-tcentroids),1))-network['throat.length']/2
+                plen2 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,1]]-tcentroids),1))-network['throat.length']/2
+            else:
+                mode='pore'
         except KeyError:
             mode = 'pore'
     if mode == 'pore':
