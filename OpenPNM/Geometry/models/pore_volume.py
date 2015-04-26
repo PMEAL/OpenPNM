@@ -210,7 +210,10 @@ def _get_fibre_image(network,cpores,vox_len,fibre_rad,add_boundary=True):
     line_points = bresenham(cverts,vox_len)
     line_ints = (np.around((line_points/vox_len),0)).astype(int)
     for x,y,z in line_ints:
-        pore_space[x][y][z]=0
+        try:
+            pore_space[x][y][z]=0
+        except IndexError:
+            logger.warning("Some elements in image processing are out of bounds")
     #print("about to dt")
     
     

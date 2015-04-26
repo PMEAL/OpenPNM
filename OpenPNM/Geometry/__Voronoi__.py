@@ -51,9 +51,9 @@ class Voronoi(GenericGeometry):
                         model=gm.throat_vertices.voronoi)
         self.models.add(propname='pore.volume',
                         model=gm.pore_volume.in_hull_volume,fibre_rad=fibre_rad)
-        #trim pores with zero volume
-        tp = self.pores()[self['pore.volume']<=0.0]
-        self._net.trim(pores=self.map_pores(self._net,tp))
+        #trim non boundary pores with zero volume
+        #tp = self.pores()[(self['pore.volume']<=0.0)*(~self["pore.boundary"])]
+        #self._net.trim(pores=self.map_pores(self._net,tp))
         
         self.models.add(propname='throat.normal',
                         model=gm.throat_normal.voronoi)
@@ -261,6 +261,7 @@ class Voronoi(GenericGeometry):
             return
         fvu = self["pore.fibre_voxels"] # uncompressed number of fibre voxels in each pore
         r1 = self["pore.diameter"]/2
+        r1[r1==0]=1 # Most likely boundary pores - prevents divide by zero (vol change zero anyway)
         vo.scale(network=self._net,scale_factor=factor,preserve_vol=False)
         self.models.regenerate()
         
@@ -270,7 +271,10 @@ class Voronoi(GenericGeometry):
             #n = sp.sum(vox_diff) # Total number of voxels to put back into image
             vol_diff = (fvu-fvc)*1e-18 # amount to adjust pore volumes by (based on 1 micron cubed voxels for volume calc)
             vol_diff[vol_diff<0]=0 #don't account for positive volume changes
+            pv1 = self["pore.volume"].copy()
             self["pore.volume"] -= vol_diff
+            self["pore.volume"][self["pore.volume"]<0.0]=0.0
+            pv2 = self["pore.volume"].copy()
             "Now need to adjust the pore diameters"
             from scipy.special import cbrt
             rdiff = cbrt(3*np.abs(vol_diff)/(4*sp.pi))
@@ -278,34 +282,37 @@ class Voronoi(GenericGeometry):
             self["pore.diameter"] -= 2*rdiff*sp.sign(vol_diff)
             "Now as a crude approximation adjust all the throat areas and diameters"
             "by the same ratio as the increase in a spherical pore surface area"
-            spd = 2*rdiff/r1 + (rdiff/r1)**2 # surface-area percentage difference
+            #spd = 2*rdiff/r1 + (rdiff/r1)**2 # surface-area percentage difference
+            spd = np.ones(len(fvu))
+            spd[fvu>0] = (pv2[fvu>0]/pv1[fvu>0])**(2/3)
+            spd[spd>1.0]=1.0
             tconns = self._net["throat.conns"][self.map_throats(self._net,self.throats())]
             "Need to work out the average volume change for the two pores connected by each throat"
             "Boundary pores will be connected to a throat outside this geometry if there are multiple geoms so get mapping"
             mapping = self._net.map_pores(self,self._net.pores(),return_mapping=True)
             source = list(mapping['source'])
             target = list(mapping['target'])
-            ta_diff_avg = np.zeros(len(tconns))
+            ta_diff_avg = np.ones(len(tconns))
             for i in np.arange(len(tconns)):
                 np1,np2 = tconns[i]
                 if np1 in source and np2 in source:
                     gp1 = target[source.index(np1)]
                     gp2 = target[source.index(np2)]
-                    ta_diff_avg[i] = (spd[gp1]*sp.sign(vol_diff[gp1])+spd[gp2]*sp.sign(vol_diff[gp2]))/2
+                    ta_diff_avg[i] = (spd[gp1]+spd[gp2])/2
                 elif np1 in source:
                     gp1 = target[source.index(np1)]
-                    ta_diff_avg[i] = spd[gp1]*sp.sign(vol_diff[gp1])
-                elif np2 in mapping['source']:
+                    ta_diff_avg[i] = spd[gp1]
+                elif np2 in source:
                     gp2 = target[source.index(np2)]
-                    ta_diff_avg[i] = spd[gp2]*sp.sign(vol_diff[gp2])       
-            self["throat.area"] *= 1+ta_diff_avg
+                    ta_diff_avg[i] = spd[gp2]      
+            self["throat.area"] *= ta_diff_avg
             self["throat.area"][self["throat.area"]<0]=0
             self["throat.diameter"] = 2*sp.sqrt(self["throat.area"]/sp.pi)
         
-        tt = self.throats()[self['throat.area']<=0.0] # trim throats
-        tp = self.pores()[self['pore.volume']<=0.0] # trim pores
-        self._net.trim(throats=self.map_throats(self._net,tt))
-        self._net.trim(pores=self.map_pores(self._net,tp))
+        #tt = self.throats()[self['throat.area']<=0.0] # trim throats
+        #tp = self.pores()[self['pore.volume']<=0.0*(~self["pore.boundary"])] # trim non-boundary pores with zero volume
+        #self._net.trim(throats=self.map_throats(self._net,tt))
+        #self._net.trim(pores=self.map_pores(self._net,tp))
         self._net.trim_occluded_throats() # this removes pores with zero throats
         
         #"Now the recreated fibre image will have the wrong number of fibre volumes so add them back in at semi-random"
