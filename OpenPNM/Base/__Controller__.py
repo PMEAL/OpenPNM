@@ -343,6 +343,7 @@ class Controller(dict):
             print('Warning: Loading data onto non-empty controller object, existing data will be lost')
             self.clear()
         self = _pickle.load(open(filename+'.pnm','rb'))
+        return self
 
     def export(self,network=None,filename='',fileformat='VTK'):
         r"""
