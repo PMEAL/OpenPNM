@@ -394,8 +394,8 @@ class topology(object):
            
         Notes
         -----
-        It return the connections in a format which is acceptable by 
-        the default OpenPNM connection key ('throat.conns').  
+        It creates the connections in a format which is acceptable by 
+        the default OpenPNM connection key ('throat.conns') and adds them to the network.  
                 
         Examples
         --------
@@ -403,17 +403,16 @@ class topology(object):
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.Nt
         300
-        >>> conns = pn.connect_pores(pores1=[22,32],pores2=[16,80,68])
-        >>> conns
-        array([[22, 16],
+        >>> pn.connect_pores(pores1=[22,32],pores2=[16,80,68])
+        >>> pn.Nt
+        306   
+        >>> pn['throat.conns'][300:306]
+        array([[16, 22],
                [22, 80],
                [22, 68],
-               [32, 16],
+               [16, 32],
                [32, 80],
-               [32, 68]])
-        >>> pn.extend(throat_conns=conns)
-        >>> pn.Nt
-        306        
+               [32, 68]])     
         
         '''
         size1 = _sp.size(pores1)
@@ -425,43 +424,88 @@ class topology(object):
         
     def subdivide(self,network,pores,shape,labels=[]):
         r'''
+        It trim the pores and replace them by cubic networks with the sent shape.
+        
+        Parameters
+        ----------
+        networK : OpenPNM Network Object
+    
+        pores : array_like
+            The first group of pores to be replaced
+    
+        shape : array_like
+            The shape of cubic networks in the target locations
+           
+        Notes
+        -----
+        - It works only for cubic networks.
+                
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.Cubic(shape=[5,6,5],spacing=0.001,name='micro')
+        >>> pn.Np
+        150
+        >>> nano_pores = [2,13,14,15]
+        >>> pn.subdivide(pores=nano_pores,shape=[4,7,3],labels='nano')
+        >>> pn.Np
+        482
+        >>> assert pn.Np == (150+4*(4*7*3)-4)
+        
         '''
         mro = [item.__name__ for item in network.__class__.__mro__]
         if 'Cubic' not in mro:
             raise Exception('Subdivide is only supported for Cubic Networks')
         from OpenPNM.Network import Cubic
         pores = _sp.array(pores,ndmin=1)
+        
+        # Checks to find boundary pores in the selected pores
         try:
             b = network.pores('boundary')
             if (_sp.in1d(pores,b)).any():
                 raise Exception('boundary pores cannot be subdivided!')
         except KeyError: pass
-        division = _sp.unique(shape)
-        if _sp.size(division)!=1:
-            raise Exception('Subdivide can only support subdivisions for Cubic Networks with unique dimensions')
-        elif _sp.size(shape)==2 or _sp.size(shape)==3:
-                spacing = network._spacing/division
-                new_net = Cubic(shape=shape,spacing=spacing)
-                new_net['pore.surface'] = False
-                new_net['pore.surface'][new_net.pores(labels=['left','right','front','back','top','bottom'])] = True
 
+        # Assigning right shape and division    
+        if _sp.size(shape)!=2 and _sp.size(shape)!=3: 
+            raise Exception('Subdivide not implemented for Networks other than 2D and 3D')            
+        elif _sp.size(shape)==3 and 1 not in shape: 
+            div = _sp.array(shape,ndmin=1)
+            single_dim = None
         else:
-            raise Exception('Subdivide not implemented for Networks other than 2D abd 3D')
-        network['pore.surface'] = False
-        if _sp.size(shape)==2:
             single_dim = _sp.where(_sp.array(network._shape)==1)[0]
-            new_net['pore.coords'][:,single_dim] = _sp.unique(network['pore.coords'][:,single_dim])
-            main_labels = [['left','right'],['front','back'],['top','bottom']]
-            for dim in [0,1,2]:
-                if dim != single_dim:
-                    new_net['pore.surface'][new_net.pores(labels=main_labels[dim])] = True
+            if _sp.size(single_dim)==0:   single_dim=None
+            if _sp.size(shape)==3:  div = _sp.array(shape,ndmin=1)
+            else:
+                div = _sp.zeros(3,dtype=_sp.int32)
+                if single_dim is None:  dim = 2
+                else:   dim = single_dim
+                div[dim] = 1
+                div[-_sp.array(div,ndmin=1,dtype=bool)]= _sp.array(shape,ndmin=1)
+        
+        #creating small network and handling labels
+        network_spacing = network._spacing
+        new_net_spacing = network_spacing/div
+        new_net = Cubic(shape=div,spacing= new_net_spacing)
+        main_labels = ['left','right','front','back','top','bottom']
+        if single_dim is not None:
+            label_groups = _sp.array([['front','back'],['left','right'],['top','bottom']])
+            non_single_labels = label_groups[_sp.array([0,1,2])!=single_dim]
+        for l in main_labels:
+            new_net['pore.surface_'+l] = False
+            network['pore.surface_'+l] = False
+            if single_dim is None:
+                new_net['pore.surface_'+l][new_net.pores(labels=l)] = True
+            else:
+                for ind in [0,1]:
+                    loc = (non_single_labels[ind]==l)
+                    new_net['pore.surface_'+l][new_net.pores(non_single_labels[ind][loc])] = True                         
 
-        old_coords = _sp.copy(new_net['pore.coords'])
-        d = division-1
+        old_coords = _sp.copy(new_net['pore.coords'])            
         if labels==[]:  labels = ['pore.subdivided_'+new_net.name]
         for P in pores:
             # shifting the new network to the right location and attaching it to the main network
-            shift = network['pore.coords'][P] - network._spacing/2
+            shift = network['pore.coords'][P] - network_spacing/2
             new_net['pore.coords'] += shift
             Pn = network.find_neighbor_pores(pores=P)
             try:    Pn_new_net = network.pores(labels)
@@ -471,54 +515,32 @@ class topology(object):
             self.extend(pore_coords=new_net['pore.coords'],
                         throat_conns=new_net['throat.conns']+Np1,
                         labels=labels,network=network)
-            network['pore.surface'][Np1:] = new_net['pore.surface']
+            
+            # moving the temporary labels to the big network
+            for l in main_labels:            
+                network['pore.surface_'+l][Np1:] = new_net['pore.surface_'+l]
+            
             # stitching the old pores of the main network to the new extended pores
+            surf_pores = network.pores('surface_*')
+            surf_coord = network['pore.coords'][surf_pores]
             for neighbor in Pn:
-                if _sp.size(shape)==3:  f = _sp.sqrt(2)
-                elif _sp.size(shape)==2:    f = 1
-                if 'pore.boundary' in network.labels(pores=neighbor):
-                    lmax = ((f*(d*new_net._spacing/2))**2+(network._spacing/2-(d*new_net._spacing/2))**2)**0.5+1e-10 
-                elif neighbor in Pn_old_net:
-                    lmax = ((f*(d*new_net._spacing/2))**2+(network._spacing-(d*new_net._spacing/2))**2)**0.5+1e-10 
+                neighbor_coord = network['pore.coords'][neighbor]
+                dist = [round(_sp.inner(neighbor_coord-x,neighbor_coord-x),20) for x in surf_coord]
+                nearest_neighbor = surf_pores[dist==_sp.amin(dist)]
+                if neighbor in Pn_old_net:
+                    coplanar_labels = network.labels(pores=nearest_neighbor)
+                    new_neighbors = network.pores(coplanar_labels,mode='intersection')
+                    if _sp.size(new_neighbors)==0:  # This might happen to the edge of the small network
+                        common_label = [l for l in network.labels(pores=nearest_neighbor,mode='intersection') if 'surface_' in l] 
+                        new_neighbors = network.pores(common_label)
                 elif neighbor in Pn_new_net:
-                    lmax = network._spacing-2*(d*new_net._spacing/2) + 1e-10
-                near_pores = _sp.array(network.find_nearest_pores(pores=neighbor,distance=lmax),ndmin=1)
-                near_neighbor_pores = near_pores[_sp.in1d(near_pores,network.pores('surface'))]
-                self.connect_pores(network=network,pores1=neighbor,pores2=near_neighbor_pores,labels=labels)
- 
-            network['pore.surface'] = False    
+                    new_neighbors = nearest_neighbor
+                self.connect_pores(network=network,pores1=neighbor,pores2=new_neighbors,labels=labels)
+            
+            # Removing temporary labels
+            for l in main_labels:   network['pore.surface_'+l] = False    
             new_net['pore.coords'] = _sp.copy(old_coords) 
+       
         network._label_surfaces()
-        del network['pore.surface'] 
-        self.trim(network=network,pores=pores)
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        for l in main_labels:   del network['pore.surface_'+l]    
+        self.trim(network=network,pores=pores) 
