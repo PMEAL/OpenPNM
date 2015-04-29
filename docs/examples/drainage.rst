@@ -13,7 +13,7 @@ Start by generating a basic cubic network and the other required components:
 .. code-block:: python
 
 	import OpenPNM
-	pn = OpenPNM.Network.Cubic(name='net',shape=[10,10,10])
+	pn = OpenPNM.Network.Cubic(name='net',shape=[10,10,10],spacing=0.0001)
 	pn.add_boundaries()
 
 The last call adds a layer of boundary pores around the network after it is generated. These boundary pores will be used in the following calculations. Next we generate a geometry for the network and the phase, in this case air. A geometry can span over a part of the network only, so we need to specify to which pores and throats this geometry object should apply. For this example, we want it to apply to all pores and throats of the network. To do so, we can get all pore and throat indices of the network with the ``pn.pores()`` and ``pn.throats()`` calls, and pass these to the geometry object.
@@ -22,7 +22,7 @@ The last call adds a layer of boundary pores around the network after it is gene
 
 	Ps = pn.pores()
 	Ts = pn.throats()
-	geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,name='basic',pores=Ps,throats=Ts)
+	geom = OpenPNM.Geometry.Toray090(network=pn,name='basic',pores=Ps,throats=Ts)
 	air = OpenPNM.Phases.Air(network=pn)
 	water = OpenPNM.Phases.Water(network=pn)
 
@@ -36,7 +36,7 @@ To perform most algorithms, it is necessary to define the pore scale physics tha
 
 Then add the desired methods to this object using:
 
->>>	phys.add_model(propname='throat.pc',model=OpenPNM.Physics.models.capillary_pressure.washburn)
+>>>	phys.add_model(propname='throat.capillary_pressure',model=OpenPNM.Physics.models.capillary_pressure.washburn)
 
 This means that the Physics object will now have a function called 'capillary_pressure', that when called will calculate throat entry pressures using the 'washburn' model.  The Washburn model requires that the Phase object (Water in this case) has the necessary physical properties of surface tension and contact angle.
 
@@ -70,7 +70,7 @@ To change this value, the 'pore.contact_angle' property of the Water object can 
 
 .. code-block:: python
 
-    water['pore.contact_angle'] = 140
+    water['pore.contact_angle'] = 140.0
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Run a Drainage Simulation
@@ -78,16 +78,18 @@ Run a Drainage Simulation
 
 At this point, the system is fully defined and ready to perform some simulations.  A typical algorithm used in pore network modeling is to use ordinary percolation to simulate drainage of wetting phase by invasion of a nonwetting phase.  An Algorithm object is be created as follows:
 
->>>	OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn)
+>>>	OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water)
 
 Before performing simulations with this algorithm it is necessary to specify the desired experimental parameters in the ``run()`` command:
 
->>>	Ps = pn.pores(labels=['bottom_face'])
->>>	OP_1.run(invading_phase=water,defending_phase=air,inlets=Ps)
+>>>	Ps = pn.pores(labels=['bottom_boundary'])
+>>>	OP_1.run(inlets=Ps)
 
-The first line in the finds all the pores in the network that are labeled 'bottom_face' and assigns it to 'Ps'.  This labeling step was applied during the network construction.  The list of pores which are to be considered as phase inlets along with which phases are the invading and defending phase are set to the `run()` method and the algorithm proceeds.  Upon completion one can view resulting capillary pressure curving using the following command:
+The first line in the finds all the pores in the network that are labeled 'bottom_boundary' and assigns it to 'Ps'.  This labeling step was applied during the network construction.  The list of pores which are to be considered as phase inlets along with which phases are the invading and defending phase are set to the `run()` method and the algorithm proceeds.  Upon completion one can view resulting capillary pressure curving using the following command:
 
 >>>	OP_1.plot_drainage_curve()
+
+The red and blue lines represent the filling of pores and throats separately.  The non-zero starting point of the red lines (pores) is due to the fact that the inlet pores are invaded at the start of the process.  This can be avoided by defining a second geometry for boundary pores that have zero volume.  
 
 -------------------------------------------------------------------------------
 Sharing Algorithm Results Throughout the Simulation
