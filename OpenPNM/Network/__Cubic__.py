@@ -75,7 +75,7 @@ class Cubic(GenericNetwork):
     >>> pn.Nt < Nt_original
     True
     """
-    def __init__(self, shape=None, template=None, spacing=1, connectivity=6, **kwargs):
+    def __init__(self, shape=None, template=None, spacing=[1,1,1], connectivity=6, **kwargs):
         super(Cubic, self).__init__(**kwargs)
 
         if shape is not None:
@@ -86,7 +86,7 @@ class Cubic(GenericNetwork):
             arr = np.atleast_3d(np.empty([1,1,1]))
 
         self._shape = sp.shape(arr)  # Store original network shape
-        self._spacing = spacing  # Store network spacing instead of calculating it
+        self._spacing = sp.ones(3)*sp.array(spacing,ndmin=1)    # Store network spacing
 
         points = np.array([i for i,v in np.ndenumerate(arr)], dtype=float)
         points += 0.5
@@ -178,14 +178,13 @@ class Cubic(GenericNetwork):
         and gives them the label 'right_face', 'left_face', etc.
         """
         x,y,z = self['pore.coords'].T
-
-        Lc = sp.amax(sp.diff(x)) #this currently works but is very fragile
+        Lcx,Lcy,Lcz = self._spacing
 
         offset = {}
         offset['front'] = offset['left'] = offset['bottom'] = [0,0,0]
-        offset['back']  = [x.max()+Lc/2,0,0]
-        offset['right'] = [0,y.max()+Lc/2,0]
-        offset['top']   = [0,0,z.max()+Lc/2]
+        offset['back']  = [Lcx*self._shape[0],0,0]
+        offset['right'] = [0,Lcy*self._shape[1],0]
+        offset['top']   = [0,0,Lcz*self._shape[2]]
 
         scale = {}
         scale['front']  = scale['back']  = [0,1,1]
