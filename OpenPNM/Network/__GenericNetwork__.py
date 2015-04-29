@@ -618,10 +618,6 @@ class GenericNetwork(Core):
         topo.connect_pores(network=self,pores1=pores1,pores2=pores2,labels=labels)
     connect_pores.__doc__ = topo.connect_pores.__doc__
 
-    def subdivide(self,pores=[],shape=[],labels=[]):
-        topo.subdivide(network=self,pores=pores,shape=shape,labels=labels)
-    subdivide.__doc__ = topo.subdivide.__doc__
-
     def check_network_health(self):
         r"""
         This method check the network topological health by checking for:

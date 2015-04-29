@@ -9,8 +9,10 @@ import numpy as np
 import scipy as sp
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Network import GenericNetwork
+from OpenPNM.Utilities import topology
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
+topo = topology()
 
 class Cubic(GenericNetwork):
     r"""
@@ -320,6 +322,9 @@ class Cubic(GenericNetwork):
             pass
         return A
 
+    def subdivide(self,pores=[],shape=[],labels=[]):
+        topo.subdivide(network=self,pores=pores,shape=shape,labels=labels)
+    subdivide.__doc__ = topo.subdivide.__doc__
 
 if __name__ == '__main__':
     import doctest
