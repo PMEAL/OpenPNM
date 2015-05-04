@@ -15,4 +15,4 @@ install:
     - python setup.py install
 
 script:
-    - python run_tests.py
+    - py.test
