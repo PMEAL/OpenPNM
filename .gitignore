@@ -4,3 +4,5 @@
 *.pnm
 build/
 dist/
+.coverage
+*.vtp

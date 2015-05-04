@@ -1,8 +1,8 @@
 OpenPNM
 =======
 
-.. image:: https://travis-ci.org/PMEAL/OpenPNM.svg?branch=add-travis-ci
-    :target: https://travis-ci.org/PMEAL/OpenPNM
+.. image:: https://travis-ci.org/PMEAL/OpenPNM.svg?branch=develop :target: https://travis-ci.org/PMEAL/OpenPNM
+.. image:: https://coveralls.io/repos/PMEAL/OpenPNM/badge.svg :target: https://coveralls.io/r/PMEAL/OpenPNM
 
 .. contents::
 
