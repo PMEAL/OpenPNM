@@ -35,7 +35,7 @@ This generates a topological network called *pn* which contains pores at the cor
 	pn.num_throats()  # 2700
 	pn.find_neighbor_pores(pores=[1])  # [0,2,11,101]
 	pn.labels(pores=[1])  # ['all','bottom','left']
-	pn.pores(labels = 'bottom')  # [0,1,2,3,4,5,6,7,8,9]
+	pn.pores(labels = 'bottom')
 
 This data may also be stored in a variable:
 
@@ -71,14 +71,14 @@ Then, the different geometry models are added one by one to the object geom.
 .. code-block:: python
 
     geom.add_model(propname='pore.seed',model=gm.pore_misc.random) #begin adding the desired methods to 'geom'
-	geom.add_model(propname='pore.diameter',
-				   model=gm.pore_diameter.sphere,
-				   psd_name='weibull_min',
+    geom.add_model(propname='pore.diameter',
+                   model=gm.pore_diameter.sphere,
+                   psd_name='weibull_min',
                    psd_shape=2.77,
                    psd_loc=6.9e-7,
                    psd_scale=9.8e-6,
                    psd_offset=10e-6)
-    geom.add_model(propname='throat.seed',model=gm.throat_misc.neighbor,pore_prop='pore.seed',mode='min')
+    geom.add_model(propname='throat.diameter',model=gm.throat_misc.neighbor,pore_prop='pore.diameter',mode='min')
     geom.add_model(propname='pore.volume',model=gm.pore_volume.sphere)
     geom.add_model(propname='pore.area',model=gm.pore_area.spherical)
     geom.add_model(propname='throat.length',model=gm.throat_length.straight)
@@ -120,9 +120,9 @@ Then, water and air properties are then defined by the code below. Note that som
     air.add_model(propname='pore.molar_density',model=fm.molar_density.ideal_gas,R=8.314)
     water['pore.diffusivity'] = 1e-12
     water['pore.viscosity'] = 0.001
-    water['pore.molar_density'] = 44445	
-	water['pore.contact_angle'] = 110
-	water['pore.surface_tension'] = 0.072
+    water['pore.molar_density'] = 44445.0
+    water['pore.contact_angle'] = 110.0
+    water['pore.surface_tension'] = 0.072
 
 	
 The first above lines retrieve the requested property estimation model from the submodule indicated by the `propname` argument, and assign that method to the corresponding property of the phases on each pore location.  The last five lines set a constant value, by placing it directly into a new dictionary entry.
@@ -153,8 +153,8 @@ As with phases and geometry objects, the next steps are first to load the model 
 	                     r_toroid=1.e-5)
 	phys_water.add_model(propname='throat.hydraulic_conductance',
 	                     model=pm.hydraulic_conductance.hagen_poiseuille)
-	phys_water.add_model(propname='throat.diffusive_conductance',
-	                     model=pm.diffusive_conductance.bulk_diffusion)
+	phys_air.add_model(propname='throat.diffusive_conductance',
+	                   model=pm.diffusive_conductance.bulk_diffusion)
 	phys_air.add_model(propname='throat.hydraulic_conductance',
 	                   model=pm.hydraulic_conductance.hagen_poiseuille) 
 -------------------------------------------------------------------------------
@@ -165,9 +165,9 @@ Run some simulations
 
 	alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
 	# Assign Dirichlet boundary conditions to top and bottom surface pores
-	BC1_pores = pn.pores('right_boundary')
+	BC1_pores = pn.pores('right')
 	alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
-	BC2_pores = pn.pores('left_boundary')
+	BC2_pores = pn.pores('left')
 	alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
 	# Use desired diffusive_conductance in the diffusion calculation (conductance for the dry network or water-filled network)
 	alg.run()

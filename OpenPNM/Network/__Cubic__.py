@@ -9,8 +9,10 @@ import numpy as np
 import scipy as sp
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Network import GenericNetwork
+from OpenPNM.Utilities import topology
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
+topo = topology()
 
 class Cubic(GenericNetwork):
     r"""
@@ -75,7 +77,7 @@ class Cubic(GenericNetwork):
     >>> pn.Nt < Nt_original
     True
     """
-    def __init__(self, shape=None, template=None, spacing=1, connectivity=6, **kwargs):
+    def __init__(self, shape=None, template=None, spacing=[1,1,1], connectivity=6, **kwargs):
         super(Cubic, self).__init__(**kwargs)
 
         if shape is not None:
@@ -86,7 +88,7 @@ class Cubic(GenericNetwork):
             arr = np.atleast_3d(np.empty([1,1,1]))
 
         self._shape = sp.shape(arr)  # Store original network shape
-        self._spacing = spacing  # Store network spacing instead of calculating it
+        self._spacing = sp.ones(3)*sp.array(spacing,ndmin=1)    # Store network spacing
 
         points = np.array([i for i,v in np.ndenumerate(arr)], dtype=float)
         points += 0.5
@@ -146,18 +148,30 @@ class Cubic(GenericNetwork):
         self['throat.all']   = np.ones(len(self['throat.conns']), dtype=bool)
         self['pore.index']   = sp.arange(0,len(self['pore.coords']))
 
-        x,y,z = self['pore.coords'].T
-        self['pore.internal'] = self['pore.all']
-        self['pore.front']    = x <= x.min()
-        self['pore.back']     = x >= x.max()
-        self['pore.left']     = y <= y.min()
-        self['pore.right']    = y >= y.max()
-        self['pore.bottom']   = z <= z.min()
-        self['pore.top']      = z >= z.max()
+        self._label_surfaces()
 
         #If an image was sent as 'template', then trim network to image shape
         if template is not None:
             self.trim(~arr.flatten())
+
+    def _label_surfaces(self):
+        r'''
+        It applies the default surface labels for a cubic network
+        '''        
+        x,y,z = self['pore.coords'].T
+        labels = ['internal','front','back','left','right','bottom','top']
+        for label in labels:
+            if 'pore.'+label not in self.keys():  self['pore.'+label] = False
+        if 'pore.boundary' in self.keys():  internal = -self['pore.boundary']
+        else:   internal = self['pore.all']
+        self['pore.internal'] = internal
+        self['pore.front'][x <= x.min()]  = True
+        self['pore.back'][x >= x.max()]   = True
+        self['pore.left'][y <= y.min()]   = True
+        self['pore.right'][y >= y.max()]  = True
+        self['pore.bottom'][z <= z.min()] = True
+        self['pore.top'][z >= z.max()]    = True 
+        
 
     def add_boundaries(self):
         r"""
@@ -166,14 +180,13 @@ class Cubic(GenericNetwork):
         and gives them the label 'right_face', 'left_face', etc.
         """
         x,y,z = self['pore.coords'].T
-
-        Lc = sp.amax(sp.diff(x)) #this currently works but is very fragile
+        Lcx,Lcy,Lcz = self._spacing
 
         offset = {}
         offset['front'] = offset['left'] = offset['bottom'] = [0,0,0]
-        offset['back']  = [x.max()+Lc/2,0,0]
-        offset['right'] = [0,y.max()+Lc/2,0]
-        offset['top']   = [0,0,z.max()+Lc/2]
+        offset['back']  = [Lcx*self._shape[0],0,0]
+        offset['right'] = [0,Lcy*self._shape[1],0]
+        offset['top']   = [0,0,Lcz*self._shape[2]]
 
         scale = {}
         scale['front']  = scale['back']  = [0,1,1]
@@ -309,6 +322,9 @@ class Cubic(GenericNetwork):
             pass
         return A
 
+    def subdivide(self,pores=[],shape=[],labels=[]):
+        topo.subdivide(network=self,pores=pores,shape=shape,labels=labels)
+    subdivide.__doc__ = topo.subdivide.__doc__
 
 if __name__ == '__main__':
     import doctest
