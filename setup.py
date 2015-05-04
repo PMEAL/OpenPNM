@@ -40,7 +40,9 @@ setup(
         'matplotlib'
     ],
     tests_require = [
-        'pytest'
+        'pytest',
+        'python-coveralls',
+        'coverage'
     ],
     author = 'OpenPNM Team',
     author_email = 'jeff.gostick@mcgill.ca',
