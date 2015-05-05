@@ -1,3 +1,6 @@
+[run]
+source = OpenPNM
+
 [report]
 omit =
     *__init__*

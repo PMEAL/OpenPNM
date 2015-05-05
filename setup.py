@@ -41,11 +41,11 @@ setup(
         'noise'
     ],
     tests_require = [
+        'tox',
         'pytest',
         'pytest-cov',
-        'interlude',
-        'tox',
-        'python-coveralls'
+        'python-coveralls',
+        'interlude'
     ],
     author = 'OpenPNM Team',
     author_email = 'jeff.gostick@mcgill.ca',
