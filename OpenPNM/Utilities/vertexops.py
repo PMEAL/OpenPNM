@@ -509,8 +509,8 @@ def scale(network,scale_factor=[1,1,1],preserve_vol=True):
     >>> Vol = vo.vertex_dimension(pn,B1,B2)
     >>> vo.scale(network=pn,scale_factor=[2,1,1])
     >>> Vol2 = vo.vertex_dimension(pn,B1,B2)
-    >>> np.around(Vol-Vol2,5)
-    0.0
+    >>> np.around(Vol-Vol2,5) == 0.0
+    True
     >>> vo.scale(network=pn,scale_factor=[2,1,1],preserve_vol=False)
     >>> Vol3 = vo.vertex_dimension(pn,B1,B2)
     >>> np.around(Vol3/Vol,5)
@@ -565,8 +565,8 @@ def vertex_dimension(network,face1=[],face2=[],parm='volume'):
     2.0
     >>> vo.vertex_dimension(pn,B1,B2,'area_xz')
     3.0
-    >>> vo.vertex_dimension(pn,B1,B2,'minmax')
-    [0.0, 3.0, 0.0, 2.0, 0.0, 1.0]
+    >>> vo.vertex_dimension(pn,B1,B2,'minmax') == [0.0, 3.0, 0.0, 2.0, 0.0, 1.0]
+    True
     """
     pores=np.array([],dtype=int)
     if len(face1)>0:

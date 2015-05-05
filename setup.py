@@ -37,10 +37,13 @@ setup(
     ],
     install_requires = [
         'scipy>=0.14.0',
-        'matplotlib'
+        'matplotlib',
+        'noise'
     ],
     tests_require = [
-        'pytest'
+        'pytest',
+        'interlude',
+        'tox'
     ],
     author = 'OpenPNM Team',
     author_email = 'jeff.gostick@mcgill.ca',

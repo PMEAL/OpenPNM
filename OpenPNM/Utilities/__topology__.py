@@ -20,7 +20,7 @@ class topology(object):
         Add individual pores and/or throats to the network from a list of coords
         or conns.  This is an in-place operation, meaning the received Network
         object will be altered directly.
-    
+
         Parameters
         ----------
         network : OpenPNM Network Object
@@ -31,17 +31,17 @@ class topology(object):
             The throat connections to add
         labels : string, or list of strings, optional
             A list of labels to apply to the new pores and throats
-    
+
         Notes
         -----
         This needs to be enhanced so that it increases the size of all pore
         and throat props and labels on ALL associated Phase objects.  At the
         moment it throws an error is there are any associated Phases.
-    
+
         '''
         if (network._phases != []):
             raise Exception('Network has active Phases, cannot proceed')
-    
+
         logger.info('Extending network')
         Np_old = network.num_pores()
         Nt_old = network.num_throats()
@@ -100,12 +100,12 @@ class topology(object):
                     network['throat.'+label][Ts] = True
         # Regnerate the adjacency matrices
         network._update_network()
-        
+
     def trim(self,network, pores=[], throats=[]):
         '''
-        Remove pores or throats from the network.  This is an in-place operation, 
+        Remove pores or throats from the network.  This is an in-place operation,
         meaning the received Network object will be altered directly.
-    
+
         Parameters
         ----------
         network : OpenPNM Network Object
@@ -113,13 +113,13 @@ class topology(object):
         pores (or throats) : array_like
             A boolean mask of length Np (or Nt) or a list of indices of the
             pores (or throats) to be removed.
-    
+
         Notes
         -----
         Trimming only adjusts Phase, Geometry, and Physics objects. Trimming a
         Network that has already been used to run simulations will break those
         simulation objects.
-    
+
         Examples
         --------
         >>> import OpenPNM
@@ -133,7 +133,7 @@ class topology(object):
         124
         >>> pn.Nt
         296
-    
+
         '''
         ctrl = network.controller
         for net in ctrl.networks():
@@ -157,7 +157,7 @@ class topology(object):
         else:
             logger.warning('No pores or throats recieved')
             return
-    
+
         # Trim all associated objects
         for item in network._geometries+network._physics+network._phases:
             Pnet = network['pore.'+item.name]*Pkeep
@@ -179,7 +179,7 @@ class topology(object):
                     if key.split('.')[0] == 'pore':
                         logger.debug('Trimming {a} from {b}'.format(a=key,b=item.name))
                         item[key] = temp[Ps]
-    
+
         #Remap throat connections
         Pmap = _sp.ones((network.Np,),dtype=int)*-1
         Pmap[Pkeep] = _sp.arange(0,_sp.sum(Pkeep))
@@ -202,20 +202,20 @@ class topology(object):
                 if item.split('.')[0] == 'pore':
                     logger.debug('Trimming {a} from {b}'.format(a=item,b=network.name))
                     network[item] = temp[Pkeep]
-    
+
         #Reset network graphs
         network._update_network(mode='regenerate')
-    
+
         #Check Network health
         health = network.check_network_health()
         if health['trim_pores'] != []:
             logger.warning('Isolated pores exist!  Run check_network_health to ID which pores to remove.')
             pass
-        
+
     def clone_pores(self,network,pores,apply_label=['clone'],mode='parents'):
         r'''
         Clones the specified pores and adds them to the network
-    
+
         Parameters
         ----------
         network : OpenPNM Network Object
@@ -226,7 +226,7 @@ class topology(object):
             The labels to apply to the clones, default is 'clone'
         mode : string
             Controls the connections between parents and clones.  Options are:
-    
+
             - 'parents': (Default) Each clone is connected only to its parent
             - 'siblings': Clones are only connected to each other in the same manner as parents were connected
             - 'isolated': No connections between parents or siblings
@@ -235,7 +235,7 @@ class topology(object):
             logger.warning('Network has active Geometries, new pores must be assigned a Geometry')
         if (network._phases != []):
             raise Exception('Network has active Phases, cannot proceed')
-    
+
         logger.debug('Cloning pores')
         apply_label = list(apply_label)
         #Clone pores
@@ -267,49 +267,49 @@ class topology(object):
         for item in apply_label:
             network['pore.'+item][network.pores('all')>=Np] = True
             network['throat.'+item][network.throats('all')>=Nt] = True
-    
+
         # Any existing adjacency and incidence matrices will be invalid
         network._update_network()
-        
+
     def stitch(self,network,donor,P_network,P_donor,method='delaunay',len_max=_sp.inf,label_suffix=''):
         r'''
         Stitches a second a network to the current network.
-    
+
         Parameters
         ----------
         networK : OpenPNM Network Object
             The Network that will to which to donor Network will be attached
-            
+
         donor : OpenPNM Network Object
             The Network to stitch on to the current Network
-    
+
         P_network : array_like
             The pores on the current Network
-    
+
         P_donor : array_like
             The pores on the donor Network
-            
+
         label_suffix : string or None
             Some text to append to each label in the donor Network before
-            inserting them into the recipient.  The default is to append no 
-            text, but a common option would be to append the donor Network's 
+            inserting them into the recipient.  The default is to append no
+            text, but a common option would be to append the donor Network's
             name. To insert none of the donor labels, use None.
-    
+
         len_max : float
             Set a length limit on length of new throats
-    
+
         method : string (default = 'delaunay')
             The method to use when making pore to pore connections. Options are:
-    
+
             - 'delaunay' : Use a Delaunay tessellation
             - 'nearest' : Connects each pore on the receptor network to its nearest pore on the donor network
-            
+
         Notes
         -----
-        Before stitching it is necessary to translate the pore coordinates of 
+        Before stitching it is necessary to translate the pore coordinates of
         one of the Networks so that it is positioned correctly relative to the
-        other.  
-        
+        other.
+
         Examples
         --------
         >>> import OpenPNM
@@ -319,11 +319,11 @@ class topology(object):
         [125, 300]
         >>> [pn2.Np, pn2.Nt]
         [125, 300]
-        >>> pn2['pore.coords'][:,2] += 5.0  # Translate pn2 up 5 units in the Z-direction
-        >>> pn.stitch(donor=pn2,pores_1=pn.pores('top'),pores_2=pn2.pores('bottom'),len_max=1.0)
+        >>> pn2['pore.coords'][:, 2] += 5.0  # Translate pn2 up 5 units in the Z-direction
+        >>> pn.stitch(donor=pn2,P_network=pn.pores('top'),P_donor=pn2.pores('bottom'),len_max=1.0)
         >>> [pn.Np, pn.Nt]
         [250, 625]
-    
+
         '''
         # Ensure Networks have no associated objects yet
         if (len(network._simulation()) > 1) or (len(donor._simulation()) > 1):
@@ -343,20 +343,20 @@ class topology(object):
             D = _sp.spatial.distance.cdist(C1,C2)
             [P1_ind,P2_ind] = _sp.where(D<=len_max)
             conns = _sp.vstack((P1[P1_ind],P2[P2_ind])).T
-    
-        #Enter donor's pores into the Network
+
+        # Enter donor's pores into the Network
         self.extend(network=network,pore_coords=donor['pore.coords'])
-    
-        #Enter donor's throats into the Network
+
+        # Enter donor's throats into the Network
         self.extend(network=network,throat_conns=donor['throat.conns']+N_init['pore'])
-    
-        #Trim throats that are longer then given len_max
+
+        # Trim throats that are longer then given len_max
         C1 = network['pore.coords'][conns[:,0]]
         C2 = network['pore.coords'][conns[:,1]]
         L = _sp.sum((C1 - C2)**2,axis=1)**0.5
         conns = conns[L<=len_max]
-    
-        #Add donor labels to recipient network
+
+        # Add donor labels to recipient network
         if label_suffix != None:
             if label_suffix != '':
                 label_suffix = '_'+label_suffix
@@ -368,52 +368,51 @@ class topology(object):
                 except:
                     network[label+label_suffix] = False
                 network[label+label_suffix][locations] = donor[label]
-    
-        #Add the new stitch throats to the Network
+
+        # Add the new stitch throats to the Network
         self.extend(network=network,throat_conns=conns,labels='stitched')
-        
+
         # Remove donor from Controller, if present
         # This check allows for the reuse of a donor Network multiple times
         if donor in _ctrl.values():
             _ctrl.purge_object(donor)
-    
 
     def connect_pores(self,network,pores1,pores2,labels=[]):
         r'''
         Returns the possible connections between two group of pores.
-    
+
         Parameters
         ----------
         networK : OpenPNM Network Object
-    
+
         pores1 : array_like
             The first group of pores on the network
-    
+
         pores2 : array_like
             The second group of pores on the network
-           
+
         Notes
         -----
-        It creates the connections in a format which is acceptable by 
-        the default OpenPNM connection key ('throat.conns') and adds them to the network.  
-                
+        It creates the connections in a format which is acceptable by
+        the default OpenPNM connection key ('throat.conns') and adds them to the network.
+
         Examples
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.Nt
         300
-        >>> pn.connect_pores(pores1=[22,32],pores2=[16,80,68])
+        >>> pn.connect_pores(pores1=[22, 32], pores2=[16, 80, 68])
         >>> pn.Nt
-        306   
+        306
         >>> pn['throat.conns'][300:306]
         array([[16, 22],
                [22, 80],
                [22, 68],
                [16, 32],
                [32, 80],
-               [32, 68]])     
-        
+               [32, 68]])
+
         '''
         size1 = _sp.size(pores1)
         size2 = _sp.size(pores2)
@@ -421,44 +420,44 @@ class topology(object):
         array2 = _sp.tile(pores2,size1)
         conns = _sp.vstack([array1,array2]).T
         self.extend(network=network,throat_conns=conns,labels=labels)
-        
+
     def subdivide(self,network,pores,shape,labels=[]):
         r'''
         It trim the pores and replace them by cubic networks with the sent shape.
-        
+
         Parameters
         ----------
         networK : OpenPNM Network Object
-    
+
         pores : array_like
             The first group of pores to be replaced
-    
+
         shape : array_like
             The shape of cubic networks in the target locations
-           
+
         Notes
         -----
         - It works only for cubic networks.
-                
+
         Examples
         --------
         >>> import OpenPNM
-        >>> pn = OpenPNM.Network.Cubic(shape=[5,6,5],spacing=0.001,name='micro')
+        >>> pn = OpenPNM.Network.Cubic(shape=[5,6,5], spacing=0.001)
         >>> pn.Np
         150
         >>> nano_pores = [2,13,14,15]
-        >>> pn.subdivide(pores=nano_pores,shape=[4,7,3],labels='nano')
+        >>> pn.subdivide(pores=nano_pores, shape=[4,7,3], labels='nano')
         >>> pn.Np
         482
         >>> assert pn.Np == (150+4*(4*7*3)-4)
-        
+
         '''
         mro = [item.__name__ for item in network.__class__.__mro__]
         if 'Cubic' not in mro:
             raise Exception('Subdivide is only supported for Cubic Networks')
         from OpenPNM.Network import Cubic
         pores = _sp.array(pores,ndmin=1)
-        
+
         # Checks to find boundary pores in the selected pores
         try:
             b = network.pores('boundary')
@@ -466,10 +465,10 @@ class topology(object):
                 raise Exception('boundary pores cannot be subdivided!')
         except KeyError: pass
 
-        # Assigning right shape and division    
-        if _sp.size(shape)!=2 and _sp.size(shape)!=3: 
-            raise Exception('Subdivide not implemented for Networks other than 2D and 3D')            
-        elif _sp.size(shape)==3 and 1 not in shape: 
+        # Assigning right shape and division
+        if _sp.size(shape)!=2 and _sp.size(shape)!=3:
+            raise Exception('Subdivide not implemented for Networks other than 2D and 3D')
+        elif _sp.size(shape)==3 and 1 not in shape:
             div = _sp.array(shape,ndmin=1)
             single_dim = None
         else:
@@ -482,7 +481,7 @@ class topology(object):
                 else:   dim = single_dim
                 div[dim] = 1
                 div[-_sp.array(div,ndmin=1,dtype=bool)]= _sp.array(shape,ndmin=1)
-        
+
         #creating small network and handling labels
         network_spacing = network._spacing
         new_net_spacing = network_spacing/div
@@ -499,9 +498,9 @@ class topology(object):
             else:
                 for ind in [0,1]:
                     loc = (non_single_labels[ind]==l)
-                    new_net['pore.surface_'+l][new_net.pores(non_single_labels[ind][loc])] = True                         
+                    new_net['pore.surface_'+l][new_net.pores(non_single_labels[ind][loc])] = True
 
-        old_coords = _sp.copy(new_net['pore.coords'])            
+        old_coords = _sp.copy(new_net['pore.coords'])
         if labels==[]:  labels = ['pore.subdivided_'+new_net.name]
         for P in pores:
             # shifting the new network to the right location and attaching it to the main network
@@ -515,11 +514,11 @@ class topology(object):
             self.extend(pore_coords=new_net['pore.coords'],
                         throat_conns=new_net['throat.conns']+Np1,
                         labels=labels,network=network)
-            
+
             # moving the temporary labels to the big network
-            for l in main_labels:            
+            for l in main_labels:
                 network['pore.surface_'+l][Np1:] = new_net['pore.surface_'+l]
-            
+
             # stitching the old pores of the main network to the new extended pores
             surf_pores = network.pores('surface_*')
             surf_coord = network['pore.coords'][surf_pores]
@@ -531,16 +530,16 @@ class topology(object):
                     coplanar_labels = network.labels(pores=nearest_neighbor)
                     new_neighbors = network.pores(coplanar_labels,mode='intersection')
                     if _sp.size(new_neighbors)==0:  # This might happen to the edge of the small network
-                        common_label = [l for l in network.labels(pores=nearest_neighbor,mode='intersection') if 'surface_' in l] 
+                        common_label = [l for l in network.labels(pores=nearest_neighbor,mode='intersection') if 'surface_' in l]
                         new_neighbors = network.pores(common_label)
                 elif neighbor in Pn_new_net:
                     new_neighbors = nearest_neighbor
                 self.connect_pores(network=network,pores1=neighbor,pores2=new_neighbors,labels=labels)
-            
+
             # Removing temporary labels
-            for l in main_labels:   network['pore.surface_'+l] = False    
-            new_net['pore.coords'] = _sp.copy(old_coords) 
-       
+            for l in main_labels:   network['pore.surface_'+l] = False
+            new_net['pore.coords'] = _sp.copy(old_coords)
+
         network._label_surfaces()
-        for l in main_labels:   del network['pore.surface_'+l]    
-        self.trim(network=network,pores=pores) 
+        for l in main_labels:   del network['pore.surface_'+l]
+        self.trim(network=network,pores=pores)

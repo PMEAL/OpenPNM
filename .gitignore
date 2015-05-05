@@ -4,3 +4,4 @@
 *.pnm
 build/
 dist/
+.tox/

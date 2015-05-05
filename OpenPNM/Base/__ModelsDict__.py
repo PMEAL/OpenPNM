@@ -11,8 +11,8 @@ logger = logging.getLogger()
 
 class ModelWrapper(dict):
     r"""
-    Accepts a model from the OpenPNM model library, as well as all required 
-    and optional argumnents, then wraps it in a custom dictionary with 
+    Accepts a model from the OpenPNM model library, as well as all required
+    and optional argumnents, then wraps it in a custom dictionary with
     various methods for working with the models.
 
     """
@@ -21,7 +21,7 @@ class ModelWrapper(dict):
 
     def __call__(self):
         return self['model'](**self)
-        
+
     def __str__(self):
         header = '-'*60
         print(header)
@@ -45,7 +45,7 @@ class ModelWrapper(dict):
                 print("{a:<20s} {b} / ({c})".format(a=item, b=self[item], c=defs[item]))
         print(header)
         return ' '
-        
+
     def regenerate(self):
         r"""
         Regenerate the model
@@ -68,7 +68,7 @@ class ModelWrapper(dict):
             kwargs['network'] = master
         kwargs.update(self)
         return self['model'](**kwargs)
-        
+
     def _find_master(self):
         ctrl = Controller()
         master = []
@@ -83,12 +83,12 @@ class ModelWrapper(dict):
 
 class ModelsDict(OrderedDict):
     r"""
-    This custom dictionary stores the models that are associated with each 
+    This custom dictionary stores the models that are associated with each
     OpenPNM object.  This is an ordered dict with a few additional methods.
-    This ModelsDict class can be created as a standalone object, then 
-    associated with an OpenPNM object, and ModelsDicts from one object can 
-    be copied and attached to another.  
-    
+    This ModelsDict class can be created as a standalone object, then
+    associated with an OpenPNM object, and ModelsDicts from one object can
+    be copied and attached to another.
+
     Examples
     --------
     >>> import OpenPNM
@@ -97,15 +97,14 @@ class ModelsDict(OrderedDict):
     >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=Ps,throats=pn.Ts)
     >>> print(geom.models)  # Show models included on TestGeometry
     ------------------------------------------------------------
-    #     Property Name                  Regeneration Mode   
+    #     Property Name                  Regeneration Mode
     ------------------------------------------------------------
-    0     pore.seed                      normal              
-    1     throat.length                  normal              
-    2     throat.seed                    normal              
+    0     pore.seed                      normal
+    1     throat.length                  normal
+    2     throat.seed                    normal
     ------------------------------------------------------------
-    
     It is possible to use the ModelsDict from one object with another object:
-    
+
     >>> Ps = pn.pores('top')
     >>> boun = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps)
     >>> boun.models  # The boun object has no models in its Models dict
@@ -114,21 +113,19 @@ class ModelsDict(OrderedDict):
     >>> boun.models = mod  # Use the same set of models on boun as geom
     >>> print(boun.models)
     ------------------------------------------------------------
-    #     Property Name                  Regeneration Mode   
+    #     Property Name                  Regeneration Mode
     ------------------------------------------------------------
-    0     pore.seed                      normal              
-    1     throat.length                  normal              
-    2     throat.seed                    normal              
+    0     pore.seed                      normal
+    1     throat.length                  normal
+    2     throat.seed                    normal
     ------------------------------------------------------------
-    
-
     """
-    
+
     def __setitem__(self,propname,model):
         temp = ModelWrapper(propname=propname,model=None)
         temp.update(**model)
         super(ModelsDict,self).__setitem__(propname,temp)
-        
+
     def __str__(self):
         header = '-'*60
         print(header)
@@ -140,10 +137,10 @@ class ModelsDict(OrderedDict):
             count += 1
         print(header)
         return ' '
-        
+
     def keys(self):
         return list(super(ModelsDict,self).keys())
-            
+
     def regenerate(self, props='', mode='inclusive'):
         r"""
         This updates properties using any models on the object that were
@@ -201,7 +198,7 @@ class ModelsDict(OrderedDict):
                 count += 1
             else:
                 logger.warning('Requested proptery is not a dynamic model: '+item)
-            
+
     def add(self,propname,model,regen_mode='normal',**kwargs):
         r"""
         Add specified property estimation model to the object.
@@ -253,7 +250,7 @@ class ModelsDict(OrderedDict):
         regen_mode           normal / (---)
         seed                 None / (None)
         ------------------------------------------------------------
-
+        
         """
         master = self._find_master()
         if master == None:
@@ -276,12 +273,12 @@ class ModelsDict(OrderedDict):
             master[propname] = self[propname].regenerate()
         if regen_mode in ['deferred','on_demand']:
             pass
-        
+
     def remove(self,propname):
         r"""
         Removes selected model from the dictionary, as well as removing its
         associated data from the master Core object.
-        
+
         Parameters
         ----------
         propname : string
@@ -326,7 +323,7 @@ class ModelsDict(OrderedDict):
         #Now rebuild models OrderedDict in new order
         for item in order:
             self.move_to_end(item)
-        
+
     def _find_master(self):
         ctrl = Controller()
         master = []
@@ -340,6 +337,3 @@ class ModelsDict(OrderedDict):
 if __name__ == '__main__':
     pn = OpenPNM.Network.TestNet()
     a = ModelsDict()
-
-
-
