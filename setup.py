@@ -42,10 +42,10 @@ setup(
     ],
     tests_require = [
         'pytest',
+        'pytest-cov',
         'interlude',
         'tox',
-        'python-coveralls',
-        'coverage'
+        'python-coveralls'
     ],
     author = 'OpenPNM Team',
     author_email = 'jeff.gostick@mcgill.ca',
