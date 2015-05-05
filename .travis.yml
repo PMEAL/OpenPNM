@@ -1,18 +1,13 @@
 language: python
+
 python:
     - '3.3'
+
 install:
-    - sudo apt-get update
-    - wget http://repo.continuum.io/miniconda/Miniconda3-3.4.2-Linux-x86_64.sh -O miniconda.sh;
-    - bash miniconda.sh -b -p $HOME/miniconda
-    - export PATH="$HOME/miniconda/bin:$PATH"
-    - hash -r
-    - conda config --set always_yes yes --set changeps1 no
-    - conda update -q conda
-    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION scipy matplotlib
+    - pip install -r requirements.txt
 
 script:
-    - tox
+    - tox -- --cov OpenPNM
 
 after_success:
     - coveralls
