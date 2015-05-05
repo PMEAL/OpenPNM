@@ -103,6 +103,8 @@ class ModelsDict(OrderedDict):
     1     throat.length                  normal
     2     throat.seed                    normal
     ------------------------------------------------------------
+    <BLANKLINE>
+
     It is possible to use the ModelsDict from one object with another object:
 
     >>> Ps = pn.pores('top')
@@ -250,7 +252,7 @@ class ModelsDict(OrderedDict):
         regen_mode           normal / (---)
         seed                 None / (None)
         ------------------------------------------------------------
-        
+        <BLANKLINE>
         """
         master = self._find_master()
         if master == None:

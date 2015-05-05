@@ -642,7 +642,7 @@ class Core(dict):
         >>> pn = OpenPNM.Network.TestNet()
         >>> pind = pn.pores(labels=['top','front'],mode='union')
         >>> pind[[0,1,2,-3,-2,-1]]
-        array([0, 1, 5, 122, 123, 124])
+        array([  0,   5,  10, 122, 123, 124])
         >>> pn.pores(labels=['top','front'],mode='intersection')
         array([100, 105, 110, 115, 120])
         """
@@ -875,7 +875,7 @@ class Core(dict):
         float64
         >>> boun['pore.test_int'] = sp.ones(boun.Np).astype(int)
         >>> print(pn['pore.test_int'].dtype)
-        int32
+        int64
         >>> boun['pore.test_int'] = sp.rand(boun.Np)<0.5
         >>> print(pn['pore.test_int'].dtype)
         bool
@@ -1461,6 +1461,7 @@ class Core(dict):
         throat.conns              []
         pore.coords               []
         ------------------------------------------------------------
+        <BLANKLINE>
         >>> a.health
         True
         """
@@ -1482,12 +1483,12 @@ class Core(dict):
         return health
 
     def __str__(self):
-        header = '-'*60
-        print(header)
-        print(self.__module__.replace('__','')+': \t',self.name)
-        print(header)
-        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values'))
-        print(header)
+        horizonal_rule = '-'*60
+        string = horizonal_rule
+        string += self.__module__.replace('__','')+': \t', self.name
+        string += horizonal_rule
+        string += "{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values')
+        string += horizonal_rule
         count = 0
         props = self.props()
         props.sort()
@@ -1500,10 +1501,10 @@ class Core(dict):
                 required = self._count(item.split('.')[0])
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] - a.sum(axis=0,keepdims=(a.ndim-1)==0)[0]
-                print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
-        print(header)
-        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations'))
-        print(header)
+                string += "{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required)
+        string += horizonal_rule
+        string += "{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations')
+        string + horizonal_rule
         count = 0
         labels = self.labels()
         labels.sort()
@@ -1512,9 +1513,9 @@ class Core(dict):
             prop=item
             if len(prop)>35:
                 prop = prop[0:32]+'...'
-            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item])))
-        print(header)
-        return ''
+            string += "{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item]))
+        string += horizonal_rule
+        return string
 
 if __name__ == '__main__':
     import doctest
