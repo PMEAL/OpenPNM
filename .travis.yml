@@ -11,8 +11,11 @@ install:
     - conda update -q conda
     - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION scipy matplotlib
     - source activate test-environment
-    - pip install pytest
+    - pip install pytest python-coveralls coverage
     - python setup.py install
 
 script:
     - py.test
+
+after_success:
+    - coveralls
