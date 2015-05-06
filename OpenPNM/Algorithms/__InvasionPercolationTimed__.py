@@ -173,9 +173,8 @@ class InvasionPercolationTimed(GenericAlgorithm):
                 logger.error('Capillary pressure neither assigned to defending phase '+self._phase_def.name
                     +' nor to invading phase '+self._phase.name)
                 pass
-        if self._timing:
-            # calculate Volume_coef for each throat
-            self._Tvol_coef = tdia*tdia*tdia*np.pi/12/self['throat.inv_Pc']
+        # calculate Volume_coef for each throat
+        self._Tvol_coef = tdia*tdia*tdia*np.pi/12/self['throat.inv_Pc']
         # Creating an array for invaded Pores(Np long, 0 for uninvaded, cluster number for inaveded)
         self['pore.cluster_final'] = 0
         self['pore.cluster_original'] = 0

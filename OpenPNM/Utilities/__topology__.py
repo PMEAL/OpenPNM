@@ -271,7 +271,7 @@ class topology(object):
         # Any existing adjacency and incidence matrices will be invalid
         network._update_network()
 
-    def stitch(self,network,donor,P_network,P_donor,method='delaunay',len_max=_sp.inf,label_suffix=''):
+    def stitch(self,network,donor,P_network,P_donor,method='nearest',len_max=_sp.inf,label_suffix=''):
         r'''
         Stitches a second a network to the current network.
 
@@ -332,8 +332,6 @@ class topology(object):
         N_init = {}
         N_init['pore']  = network.Np
         N_init['throat'] = network.Nt
-        if method == 'delaunay':
-            pass
         if method == 'nearest':
             P1 = P_network
             P2 = P_donor + N_init['pore'] # Increment pores on donor
@@ -343,6 +341,8 @@ class topology(object):
             D = _sp.spatial.distance.cdist(C1,C2)
             [P1_ind,P2_ind] = _sp.where(D<=len_max)
             conns = _sp.vstack((P1[P1_ind],P2[P2_ind])).T
+        else:
+            raise RuntimeError('<{}> method not supported'.format(method))
 
         # Enter donor's pores into the Network
         self.extend(network=network,pore_coords=donor['pore.coords'])

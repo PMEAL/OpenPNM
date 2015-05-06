@@ -296,7 +296,6 @@ def drainage_curves(inv_alg,
          IP algorithm at 40 % completion at 0.0 seconds
          IP algorithm at 60 % completion at 0.0 seconds
          IP algorithm at 100% completion at  0.0  seconds
-    >>> OpenPNM.Postprocessing.Plots.drainage_curves(IP, timing='inv_time')
     """
     inv_throats = inv_alg.toindices(inv_alg['throat.'+seq]>0)
     sort_seq = _sp.argsort(inv_alg['throat.'+seq][inv_throats])

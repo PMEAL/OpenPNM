@@ -95,15 +95,6 @@ class ModelsDict(OrderedDict):
     >>> pn = OpenPNM.Network.TestNet()
     >>> Ps = pn.pores(labels='top',mode='not')
     >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=Ps,throats=pn.Ts)
-    >>> print(geom.models)  # Show models included on TestGeometry
-    ------------------------------------------------------------
-    #     Property Name                  Regeneration Mode
-    ------------------------------------------------------------
-    0     pore.seed                      normal
-    1     throat.length                  normal
-    2     throat.seed                    normal
-    ------------------------------------------------------------
-    <BLANKLINE>
 
     It is possible to use the ModelsDict from one object with another object:
 
@@ -113,14 +104,6 @@ class ModelsDict(OrderedDict):
     ModelsDict()
     >>> mod = geom.models.copy()  # Create a copy of geom's models
     >>> boun.models = mod  # Use the same set of models on boun as geom
-    >>> print(boun.models)
-    ------------------------------------------------------------
-    #     Property Name                  Regeneration Mode
-    ------------------------------------------------------------
-    0     pore.seed                      normal
-    1     throat.length                  normal
-    2     throat.seed                    normal
-    ------------------------------------------------------------
     """
 
     def __setitem__(self,propname,model):
