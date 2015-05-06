@@ -40,18 +40,18 @@ class Delaunay(GenericNetwork):
 
     """
 
-    def __init__(self,num_pores=None,domain_size=None,prob=None,**kwargs):
+    def __init__(self,num_pores=None,domain_size=None,prob=None,base_points=None,**kwargs):
         '''
         Create Delauny network object
         '''
         super(Delaunay,self).__init__(**kwargs)
-        if (num_pores and domain_size) is None:
+        if (num_pores is None) * (domain_size is None) * (base_points is None):
             num_pores = 1
             domain_size = [1.0,1.0,1.0]
         else:
-            self.generate(num_pores,domain_size,prob)
+            self.generate(num_pores,domain_size,prob,base_points)
 
-    def generate(self,num_pores,domain_size,prob):
+    def generate(self,num_pores,domain_size,prob,base_points):
         r'''
         Method to trigger the generation of the network
 
@@ -66,17 +66,26 @@ class Delaunay(GenericNetwork):
 
         '''
         logger.info("Start of network topology generation")
-        self._generate_setup(num_pores,domain_size)
-        self._generate_pores(prob)
+        self._generate_setup(num_pores,domain_size,base_points)
+        if base_points is not None:
+            self['pore.coords'] = base_points
+        else:
+            self._generate_pores(prob)
         self._generate_throats()
         logger.debug("Network generation complete")
 
-    def _generate_setup(self,num_pores,domain_size):
+    def _generate_setup(self,num_pores,domain_size,base_points):
         r"""
         Perform applicable preliminary checks and calculations required for generation
         """
         logger.debug("generate_setup: Perform preliminary calculations")
-        if domain_size is not None and num_pores is not None:
+        if domain_size is not None:
+            if num_pores is None: 
+                if base_points is not None:
+                    num_pores = len(base_points)
+                else:
+                    logger.error("domain_size and base_points must be specified")
+                    raise Exception('domain_size and base_points must be specified')
             self._Lx = domain_size[0]
             self._Ly = domain_size[1]
             self._Lz = domain_size[2]
@@ -106,7 +115,7 @@ class Delaunay(GenericNetwork):
                     i +=1
             coords = np.asarray(coords)
         else:
-            coords = np.random.rand([self._Np,3])
+            coords = np.random.random([self._Np,3])
         
         coords*=np.array([self._Lx,self._Ly,self._Lz])
         self['pore.coords'] = coords

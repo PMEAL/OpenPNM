@@ -37,11 +37,12 @@ class Voronoi(GenericGeometry):
         if int(sp.__version__.split('.')[1]) < 13:
             raise Exception('The installed version of Scipy is too old, Voronoi cannot run')
         super(Voronoi,self).__init__(**kwargs)
+        self._fibre_rad = fibre_rad
         if load_gen == 'gen':
-            self._generate(fibre_rad)
+            self._generate()
         
 
-    def _generate(self,fibre_rad):
+    def _generate(self):
         r'''
         Set all the required models
         '''
@@ -50,7 +51,7 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='throat.vertices',
                         model=gm.throat_vertices.voronoi)
         self.models.add(propname='pore.volume',
-                        model=gm.pore_volume.in_hull_volume,fibre_rad=fibre_rad)
+                        model=gm.pore_volume.in_hull_volume,fibre_rad=self._fibre_rad)
         #trim non boundary pores with zero volume
         #tp = self.pores()[(self['pore.volume']<=0.0)*(~self["pore.boundary"])]
         #self._net.trim(pores=self.map_pores(self._net,tp))
@@ -59,7 +60,7 @@ class Voronoi(GenericGeometry):
                         model=gm.throat_normal.voronoi)
         self.models.add(propname='throat.offset_vertices',
                         model=gm.throat_offset_vertices.distance_transform,
-                        offset=fibre_rad,
+                        offset=self._fibre_rad,
                         set_dependent = True)
         self.models.add(propname='pore.seed',
                         model=gm.pore_misc.random,
@@ -78,7 +79,7 @@ class Voronoi(GenericGeometry):
                         model=gm.throat_diameter.voronoi)
         self.models.add(propname='throat.length',
                         model=gm.throat_length.constant,
-                        const=fibre_rad*2)
+                        const=self._fibre_rad*2)
         self.models.add(propname='throat.volume',
                         model=gm.throat_volume.extrusion)
         self.models.add(propname='throat.surface_area',
@@ -308,6 +309,7 @@ class Voronoi(GenericGeometry):
             self["throat.area"] *= ta_diff_avg
             self["throat.area"][self["throat.area"]<0]=0
             self["throat.diameter"] = 2*sp.sqrt(self["throat.area"]/sp.pi)
+            self["throat.indiameter"] *= sp.sqrt(ta_diff_avg)
         
         #tt = self.throats()[self['throat.area']<=0.0] # trim throats
         #tp = self.pores()[self['pore.volume']<=0.0*(~self["pore.boundary"])] # trim non-boundary pores with zero volume
