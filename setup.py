@@ -45,6 +45,7 @@ setup(
         'tox',
         'pytest',
         'pytest-cov',
+        'pytest-pep8',
         'python-coveralls',
         'interlude'
     ],
