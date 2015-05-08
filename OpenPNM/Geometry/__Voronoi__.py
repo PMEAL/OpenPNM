@@ -51,11 +51,7 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='throat.vertices',
                         model=gm.throat_vertices.voronoi)
         self.models.add(propname='pore.volume',
-                        model=gm.pore_volume.in_hull_volume,fibre_rad=self._fibre_rad)
-        #trim non boundary pores with zero volume
-        #tp = self.pores()[(self['pore.volume']<=0.0)*(~self["pore.boundary"])]
-        #self._net.trim(pores=self.map_pores(self._net,tp))
-        
+                        model=gm.pore_volume.in_hull_volume,fibre_rad=self._fibre_rad)        
         self.models.add(propname='throat.normal',
                         model=gm.throat_normal.voronoi)
         self.models.add(propname='throat.offset_vertices',
@@ -183,54 +179,37 @@ class Voronoi(GenericGeometry):
         ax.legend(handles, labels,loc=1)
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     
-    def compress_slice_mark1(self,plane=None,index=None,n=10):
-        r'''
-        compress_slice by removing pores pixels
+    def _random_array_split(self,array,n):
         '''
-        #n = sp.around(1/compression).astype(int) # number of pixels to remove
-        slice_image = self.get_fibre_slice(plane,index)
-        shape = sp.shape(slice_image)
-        compressed_image = sp.zeros([shape[0],shape[1]-n])
-        for i in sp.arange(shape[1]):
-            column = slice_image[i,:]
-            mini_columns = sp.array_split(sp.arange(len(column)),n)# roughly equally sized arrays of column indices
-            ps = sp.array([],dtype=int)
-            for mini in mini_columns:
-                pi = mini[column[mini]==1]# non-zero indices (i.e. pore space)
-                fi = mini[column[mini]==0]# zero indices (i.e. fibre space)
-                if len(pi > 0):                           
-                    #add back in pore pixels missing one from every mini-column           
-                    ps = sp.concatenate((ps,fi,pi[:len(pi)-1]))
-                else:
-                    #destroying fibre - bad but work out later!!!
-                    ps = sp.concatenate((ps,fi[:len(fi)-1])) 
-            ps.sort()
-            compressed_image[i,:]=column[ps]
-        plt.figure()
-        plt.imshow(slice_image,cmap='Greys',  interpolation='nearest')
-        plt.figure()
-        plt.imshow(compressed_image,cmap='Greys',  interpolation='nearest')
-        print("Fibre voxels before compression: "+str(sp.sum(slice_image==0)))
-        print("Fibre voxels after compression: "+str(sp.sum(compressed_image==0)))
+        Use array split but shuffle chunks so that bigger and smaller ones are randomly distributed
+        '''
+        chunks = np.array_split(array,n)
+        lengths = np.asarray([len(chunk) for chunk in chunks])
+        np.random.shuffle(lengths)
+        start=0
+        output=[]
+        for l in lengths:
+            output.append(array[start:start+l])
+            start+=l
+        return output
         
-    def compress_slice(self,plane=None,index=None,compression=0.1):
+    def compress_slice(self,slice_image,compression=0.1,plot=False):
         r'''
         compress_slice by removing pores pixels
+        compression represents the percentage reduction in height
         '''
-        #n = sp.around(1/compression).astype(int) # number of pixels to remove
-        slice_image = self.get_fibre_slice(plane,index)
         shape = sp.shape(slice_image)
         n = sp.ceil(compression*shape[1]).astype(int) #number of pixels to remove from pore space
         compressed_image = sp.zeros([shape[0],shape[1]-n])#initiate everything as fibre
         #cycle through columns in the image
-        for i in sp.arange(shape[1]):
+        for i in sp.arange(shape[0]):
             column = slice_image[i,:]
             pi = sp.arange(len(column))[column==1]# non-zero indices (i.e. pore space)
             fi = sp.arange(len(column))[column==0]# zero indices (i.e. fibre space)
-            sp.random.shuffle(pi) # randomize the pore space indices
+            #sp.random.shuffle(pi) # randomize the pore space indices
             if len(pi) > n:
                 ps = sp.array([],dtype=int)
-                chunks = sp.array_split(pi,n)
+                chunks = self._random_array_split(pi,n)
                 for chunk in chunks:
                     ps = sp.concatenate((ps,chunk[0:len(chunk)-1]))
                 ps = sp.concatenate((fi,ps))
@@ -239,13 +218,31 @@ class Voronoi(GenericGeometry):
             else:
                 #everything fibre
                 pass
+        if plot:        
+            plt.figure()
+            plt.imshow(slice_image,cmap='Greys',  interpolation='nearest')
+            plt.figure()
+            plt.imshow(compressed_image,cmap='Greys',  interpolation='nearest')
+            print("Fibre voxels before compression: "+str(sp.sum(slice_image==0)))
+            print("Fibre voxels after compression: "+str(sp.sum(compressed_image==0)))
+        
+        return compressed_image
+        
+    def compress_fibre_image(self,compression=None):
+        r'''
+        Compress the fibre image slice by slice
+        '''
+        fibre_image_shape = np.shape(self._fibre_image)
+        num_slice = fibre_image_shape[0]
+        compressed_image = np.ones_like(self._fibre_image,dtype=np.uint8)
+        for slice_id in sp.arange(1,num_slice):
+            logger.info("Compressing Slice "+str(slice_id+1)+" of "+str(num_slice))
+            compressed_slice = self.compress_slice(slice_image=self._fibre_image[slice_id,:,:],compression=compression)
+            cshape =np.shape(compressed_slice)
+            compressed_image[slice_id,:cshape[0],:cshape[1]] = compressed_slice
+        
+        self._compressed_fibre_image = compressed_image[:,:,:cshape[1]]
             
-        plt.figure()
-        plt.imshow(slice_image,cmap='Greys',  interpolation='nearest')
-        plt.figure()
-        plt.imshow(compressed_image,cmap='Greys',  interpolation='nearest')
-        print("Fibre voxels before compression: "+str(sp.sum(slice_image==0)))
-        print("Fibre voxels after compression: "+str(sp.sum(compressed_image==0)))
         
     def compress_geometry(self,factor=None,preserve_fibres=False):
         r'''
@@ -268,8 +265,6 @@ class Voronoi(GenericGeometry):
         
         if preserve_fibres:
             fvc = self["pore.fibre_voxels"] # compressed number of fibre voxels in each pore
-            #vox_diff = fvu-fvc # Number of fibre voxels to put back into each pore
-            #n = sp.sum(vox_diff) # Total number of voxels to put back into image
             vol_diff = (fvu-fvc)*1e-18 # amount to adjust pore volumes by (based on 1 micron cubed voxels for volume calc)
             vol_diff[vol_diff<0]=0 #don't account for positive volume changes
             pv1 = self["pore.volume"].copy()
@@ -283,7 +278,6 @@ class Voronoi(GenericGeometry):
             self["pore.diameter"] -= 2*rdiff*sp.sign(vol_diff)
             "Now as a crude approximation adjust all the throat areas and diameters"
             "by the same ratio as the increase in a spherical pore surface area"
-            #spd = 2*rdiff/r1 + (rdiff/r1)**2 # surface-area percentage difference
             spd = np.ones(len(fvu))
             spd[fvu>0] = (pv2[fvu>0]/pv1[fvu>0])**(2/3)
             spd[spd>1.0]=1.0
@@ -311,37 +305,7 @@ class Voronoi(GenericGeometry):
             self["throat.diameter"] = 2*sp.sqrt(self["throat.area"]/sp.pi)
             self["throat.indiameter"] *= sp.sqrt(ta_diff_avg)
         
-        #tt = self.throats()[self['throat.area']<=0.0] # trim throats
-        #tp = self.pores()[self['pore.volume']<=0.0*(~self["pore.boundary"])] # trim non-boundary pores with zero volume
-        #self._net.trim(throats=self.map_throats(self._net,tt))
-        #self._net.trim(pores=self.map_pores(self._net,tp))
-        self._net.trim_occluded_throats() # this removes pores with zero throats
-        
-        #"Now the recreated fibre image will have the wrong number of fibre volumes so add them back in at semi-random"
-        #b_img = self._fibre_image_boundary #distance transform image to identify boundary layer
-        #"Cycle through to find distance corresponding roughly to where new fibre layer should be"
-        #for l in itemfreq(b_img)[1:,0]:
-        #    sel = (b_img == l)
-        #    b = sp.sum(sel) #number of voxels in current boundary layer
-        #    if b < n:
-        #        self._fibre_image[sel]=0 # expand fibre space to fill whole boundary layer
-        #        n -= b # adjust n to be remainder
-        #    else:
-        #        if n > 0:
-        #            m = 0
-        #            for i in sp.nditer(sel,op_flags=['readwrite']): #only keep n True values in the selection
-        #                if i == True and m >= n:
-        #                    i[...] = False
-        #                    m +=1
-        #                elif i == True:
-        #                    m +=1
-        #            self._fibre_image[sel]=0 # expand fibre space to fill first n boundary layer voxels
-        #            break
-        #        else:
-        #            break
-        #if sp.sum(self._fibre_image==0) != sp.sum(fvu):
-        #    print("Something went wrong with compression")
-        
+        self._net.trim_occluded_throats() # this removes pores with zero throats       
         
         
 if __name__ == '__main__':
