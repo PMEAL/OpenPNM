@@ -58,7 +58,7 @@ class StokesFlow(GenericLinearTransport):
         transport algorithm.
         """
         d_normal = self._calc_eff_prop()
-        self._eff_property = d_normal*sp.mean(self._phase['pore.viscosity'])
+        self._eff_property = d_normal * sp.mean(self._phase['pore.viscosity'])
         return self._eff_property
 
 
