@@ -37,10 +37,10 @@ class Tortuosity(GenericAlgorithm):
         t = self._net.toc(quiet=True)
         N = 125
         k = 6
-        O = t/(N*(N*k + N*sp.log(N)))
+        O = t / (N * (N * k + N * sp.log(N)))
         N = self._net.num_pores()
         k = sp.median(self._net.num_neighbors(pores=self._net.pores()))
-        t_est = O*(N*(N*k + N*sp.log(N)))
+        t_est = O * (N * (N * k + N * sp.log(N)))
         print('Based on the network size and PC performance, this algorithm \
               will require: ', t_est, ' seconds')
         return
@@ -54,7 +54,7 @@ class Tortuosity(GenericAlgorithm):
             self._phase = phase
             if 'throat.occupancy' in self._phase.props():
                 temp = self._net['throat.length'] * \
-                       (self._phase['throat.occupancy'] == 1)
+                    (self._phase['throat.occupancy'] == 1)
                 graph = self._net.create_adjacency_matrix(data=temp,
                                                           sprsfmt='csr',
                                                           prop='temp')

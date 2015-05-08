@@ -18,16 +18,16 @@ Classes
 
 .. autoclass:: InvasionPercolation
    :members:
-   
+
 .. autoclass:: FickianDiffusion
    :members:
 
 .. autoclass:: StokesFlow
    :members:
-   
+
 .. autoclass:: OhmicConduction
    :members:
-   
+
 .. autoclass:: FourierConduction
    :members:
 
