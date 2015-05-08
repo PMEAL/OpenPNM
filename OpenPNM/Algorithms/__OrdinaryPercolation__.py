@@ -132,8 +132,8 @@ class OrdinaryPercolation(GenericAlgorithm):
                               phase ' + self._phase_def.name +
                              ' nor to invading phase ' + self._phase_inv.name)
         if inv_points is None:
-            min_p = sp.amin(self._t_cap)*0.98  # nudge min_p down slightly
-            max_p = sp.amax(self._t_cap)*1.02  # bump max_p up slightly
+            min_p = sp.amin(self._t_cap) * 0.98  # nudge min_p down slightly
+            max_p = sp.amax(self._t_cap) * 1.02  # bump max_p up slightly
             logger.info('Generating list of invasion pressures')
             if min_p == 0:
                 min_p = sp.linspace(min_p, max_p, self._npts)[1]
@@ -196,22 +196,22 @@ class OrdinaryPercolation(GenericAlgorithm):
             # Add injection sites to Pinvaded
             Pinvaded[self._inv_sites] = True
             # Clean up clusters (not invaded = -1, invaded >=0)
-            clusters = clusters*(Pinvaded) - (~Pinvaded)
+            clusters = clusters * (Pinvaded) - (~Pinvaded)
             # Identify clusters connected to invasion sites
             inv_clusters = sp.unique(clusters[self._inv_sites])
         else:
             # Clean up clusters (not invaded = -1, invaded >=0)
-            clusters = clusters*(Pinvaded) - (~Pinvaded)
+            clusters = clusters * (Pinvaded) - (~Pinvaded)
             # All clusters are invasion sites
             inv_clusters = sp.r_[0:self._net.num_pores()]
         # Store invasion pressure in pores and throats
         pmask = np.in1d(clusters, inv_clusters)
         # Store result of invasion step
-        self._p_inv[(self._p_inv == sp.inf)*(pmask)] = inv_val
+        self._p_inv[(self._p_inv == sp.inf) * (pmask)] = inv_val
         # Determine Pc_invaded for throats as well
         temp = self._net['throat.conns']
-        tmask = (pmask[temp[:, 0]] + pmask[temp[:, 1]])*Tinvaded
-        self._t_inv[(self._t_inv == sp.inf)*(tmask)] = inv_val
+        tmask = (pmask[temp[:, 0]] + pmask[temp[:, 1]]) * Tinvaded
+        self._t_inv[(self._t_inv == sp.inf) * (tmask)] = inv_val
 
     def evaluate_trapping(self, outlets):
         r"""
@@ -244,18 +244,18 @@ class OrdinaryPercolation(GenericAlgorithm):
             Cstate = Cstate + Tinvaded
             clusters = self._net.find_clusters(Cstate == 0)
             # Clean up clusters (invaded = -1, defended >=0)
-            clusters = clusters*(~Pinvaded) - (Pinvaded)
+            clusters = clusters * (~Pinvaded) - (Pinvaded)
             # Identify clusters connected to outlet sites
             out_clusters = sp.unique(clusters[outlets])
             trapped_pores = ~sp.in1d(clusters, out_clusters)
             trapped_pores[Pinvaded] = False
             if sum(trapped_pores) > 0:
-                self._p_trap[(self._p_trap == 0)*trapped_pores] = inv_val
+                self._p_trap[(self._p_trap == 0) * trapped_pores] = inv_val
                 trapped_throats = self._net.find_neighbor_throats(trapped_pores)
-                trapped_throat_array = np.asarray([False]*len(Cstate))
+                trapped_throat_array = np.asarray([False] * len(Cstate))
                 trapped_throat_array[trapped_throats] = True
-                self._t_trap[(self._t_trap == 0)*trapped_throat_array] = inv_val
-                self._t_trap[(self._t_trap == 0)*(Cstate == 2)] = inv_val
+                self._t_trap[(self._t_trap == 0) * trapped_throat_array] = inv_val
+                self._t_trap[(self._t_trap == 0) * (Cstate == 2)] = inv_val
         self._p_inv[self._p_trap > 0] = sp.inf
         self._t_inv[self._t_trap > 0] = sp.inf
         self['pore.inv_Pc'] = self._p_inv
@@ -299,7 +299,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             t_seq = self['throat.inv_seq'] <= seq
             # Apply occupancy to invading phase
             temp = sp.array(p_seq, dtype=sp.float_, ndmin=1)
-            self._phase_inv['pore.'+occupancy] = temp
+            self._phase_inv['pore.' + occupancy] = temp
             temp = sp.array(t_seq, dtype=sp.float_, ndmin=1)
             self._phase_inv['throat.' + occupancy] = temp
             # Apply occupancy to defending phase
