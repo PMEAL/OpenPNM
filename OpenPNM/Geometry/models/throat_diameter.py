@@ -73,7 +73,7 @@ def incircle(geometry, **kwargs):
                 # Define Linear Program Variables
                 # The centre of the incircle adjustment
                 cx = pu.LpVariable('cx', None, None, pu.LpContinuous)
-                cy = pu.LpVariable(/cy, None, None, pu.LpContinuous)
+                cy = pu.LpVariable('cy', None, None, pu.LpContinuous)
                 # Radius of the incircle
                 R = pu.LpVariable('R', 0, None, pu.LpContinuous)
                 # Slack variables for shortest distance between centre and simplices
