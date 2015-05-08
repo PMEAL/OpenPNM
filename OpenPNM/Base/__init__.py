@@ -19,11 +19,11 @@ r"""
    :show-inheritance:
 
 """
+import logging as logging
 from .__Controller__ import Controller
 from .__ModelsDict__ import ModelsDict
 from . import __Tools__ as Tools
 from .__Core__ import Core
-import logging as logging
 
 # Set up logging to file - see previous section for more details
 log_format = \
