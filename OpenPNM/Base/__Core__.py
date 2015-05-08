@@ -31,8 +31,8 @@ class Core(dict):
         obj._parent = None
         #Initialize ordered dict for storing property models
         obj.models = ModelsDict()
-        return obj    
-    
+        return obj
+
     def __init__(self, name=None, **kwargs):
         r"""
         Initialize
@@ -41,13 +41,13 @@ class Core(dict):
         logger.debug('Initializing Core class')
         self.name = name
         self.controller = ctrl
-        
+
     def __repr__(self):
         return '<%s.%s object at %s>' % (
         self.__class__.__module__,
         self.__class__.__name__,
         hex(id(self)))
-        
+
     def __eq__(self,other):
         if hex(id(self)) == hex(id(other)):
             return True
@@ -108,7 +108,7 @@ class Core(dict):
             else:
                 logger.warning('Cannot write vector with an array of the wrong length: '+key)
                 pass
-            
+
     def _set_ctrl(self,controller):
         if self.name in controller.keys():
             raise Exception('An object with that name is already present in simulation')
@@ -146,7 +146,7 @@ class Core(dict):
         return self._name
 
     name = property(_get_name,_set_name)
-    
+
     def _simulation(self):
         temp = []
         temp += [self._net]
@@ -154,7 +154,7 @@ class Core(dict):
         temp += self._net._geometries
         temp += self._net._physics
         return temp
-    
+
     def clear(self):
         r"""
         A subclassed version of the standard dict's clear method
@@ -164,7 +164,7 @@ class Core(dict):
         super(Core,self).clear()
         self.update({'throat.all':tall})
         self.update({'pore.all':pall})
-        
+
     #--------------------------------------------------------------------------
     """Model Manipulation Methods"""
     #--------------------------------------------------------------------------
@@ -172,14 +172,14 @@ class Core(dict):
     #here for backward compatibility
     def add_model(self,propname,model,regen_mode='normal',**kwargs):
         self.models.add(propname=propname,model=model,regen_mode=regen_mode,**kwargs)
-        
+
     add_model.__doc__ = ModelsDict.add.__doc__
-        
+
     def regenerate(self,props='',mode='inclusive'):
         self.models.regenerate(props=props,mode=mode)
 
     regenerate.__doc__ = ModelsDict.regenerate.__doc__
-    
+
     #--------------------------------------------------------------------------
     'Object lookup methods'
     #--------------------------------------------------------------------------
@@ -842,24 +842,24 @@ class Core(dict):
         r"""
         Retrieves requested property from associated objects, to produce a full
         Np or Nt length array.
-        
+
         Parameters
         ----------
         prop : string
             The property name to be retrieved
         sources : list
             List of object names OR objects from which data is retrieved
-            
+
         Returns
         -------
         A full length (Np or Nt) array of requested property values.
-        
+
         Notes
         -----
         This makes an effort to maintain the data 'type' when possible; however
         when data is missing this can be tricky.  Float and boolean data is
         fine, but missing ints are converted to float when nans are inserted.
-        
+
         Examples
         --------
         >>> import OpenPNM
@@ -875,7 +875,7 @@ class Core(dict):
         float64
         >>> boun['pore.test_int'] = sp.ones(boun.Np).astype(int)
         >>> print(pn['pore.test_int'].dtype)
-        int32
+        int64
         >>> boun['pore.test_int'] = sp.rand(boun.Np)<0.5
         >>> print(pn['pore.test_int'].dtype)
         bool
@@ -1128,23 +1128,23 @@ class Core(dict):
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
         return temp
-        
+
     def _set_locations(self,element,locations,mode='add'):
         r"""
-        Private method used for assigning Geometry and Physics objects to 
+        Private method used for assigning Geometry and Physics objects to
         specified locations
-        
+
         Parameters
         ----------
         element : string
             Either 'pore' or 'throat' indicating which type of element is being
             work upon
         locations : array_like
-            The pore or throat locations in terms of Network numbering to add 
+            The pore or throat locations in terms of Network numbering to add
             (or remove) from the object
         mode : string
-            Either 'add' or 'remove', the default is add.  
-        
+            Either 'add' or 'remove', the default is add.
+
         Examples
         --------
         >>> import OpenPNM
@@ -1164,9 +1164,9 @@ class Core(dict):
         array([0, 1, 2, 3, 4])
         >>> geom.set_locations(pores=pores,mode='remove')
         >>> [geom.Np, geom.Nt]
-        [125, 300]
+        [120, 300]
         >>> geom.num_pores(labels='dummy',mode='not')  # All pores without 'dummy' label are gone
-        0 
+        0
         """
         net = self._net
         if self._isa('Geometry'):
@@ -1178,14 +1178,14 @@ class Core(dict):
         else:
             logger.warning('Setting locations only applies to Geometry or Physics objects')
             return
-            
+
         if mode == 'add':
             # Check if any constant values exist on the object
             for item in self.props():
                 if (item not in self.models.keys()) or (self.models[item]['regen_mode'] == 'constant'):
                     logger.critical('Constant values or models were found on object.'
-                    'These will be the wrong length after this operation, ' 
-                    'which will break the data integrity. ' 
+                    'These will be the wrong length after this operation, '
+                    'which will break the data integrity. '
                     'Run network.check_data_health to investigate further.')
             # Ensure locations are not already assigned to another object
             temp = sp.zeros((net._count(element),),bool)
@@ -1197,11 +1197,11 @@ class Core(dict):
 
             # Store original Network indices for later use
             old_inds = sp.copy(net[element+'.'+self.name])
-            
+
             # Create new 'all' label for new size
             new_len = self._count(element=element) + sp.size(locations)
             self.update({element+'.all': sp.ones((new_len,),dtype=bool)})  # Initialize new 'all' array
-            
+
             # Set locations in Network (and Phase) dictionary
             if element+'.'+self.name not in net.keys():
                 net[element+'.'+self.name] = False
@@ -1210,7 +1210,7 @@ class Core(dict):
                 boss_obj[element+'.'+self.name] = False
             boss_obj[element+'.'+self.name][locations] = True
 
-            # Increase size of labels (add False at new locations)         
+            # Increase size of labels (add False at new locations)
             blank = ~sp.copy(self[element+'.all'])
             labels = self.labels()
             labels.remove(element+'.all')
@@ -1218,7 +1218,7 @@ class Core(dict):
                 if item.split('.')[0] == element:
                     blank[old_inds] = self[item]
                     self.update({item:blank[net[element+'.all']]})
-                    
+
         if mode == 'remove':
             self_inds = boss_obj._map(element=element,locations=locations,target=self)
             keep = ~self._tomask(locations=self_inds,element=element)
@@ -1226,10 +1226,10 @@ class Core(dict):
                 if item.split('.')[0] == element:
                     temp = self[item][keep]
                     self.update({item:temp})
-            #Set locations in Network dictionary                
+            #Set locations in Network dictionary
             net[element+'.'+self.name][locations] = False
             boss_obj[element+'.'+self.name][locations] = False
-            
+
         # Finally, regenerate all models to correct the length of all prop array
         self.models.regenerate()
 
@@ -1239,7 +1239,7 @@ class Core(dict):
         # Initialize things
         locations = sp.array(locations,ndmin=1)
         mapping = {}
-        
+
         # Analyze input object's relationship
         if self._net == target._net:  # Objects are siblings...easy
             maskS = self._net[element+'.'+self.name]
@@ -1269,12 +1269,12 @@ class Core(dict):
         temp[maskT] = target._get_indices(element=element)
         locsT = temp[locsS]
         mapping['target'] = locsT
-        
+
         # Find overlapping locations in source and target to define mapping
         keep = (locsS>=0)*(locsT>=0)
         mapping['source'] = mapping['source'][keep]
         mapping['target'] = mapping['target'][keep]
-        
+
         # Return results as an arrary or one-to-one mapping if requested
         if return_mapping == True:
             return mapping
@@ -1343,13 +1343,13 @@ class Core(dict):
         Parameters
         ----------
         throats : array_like
-            The list of throats on the caller object.  If no throats are 
+            The list of throats on the caller object.  If no throats are
             supplied then all the throats of the calling object are used.
 
         target : OpenPNM object, optional
             The object for which a list of pores is desired.  If no object is
             supplied then the object's associated Network is used.
-            
+
         return_mapping : boolean (default is False)
             If True, a dictionary containing 'source' locations, and 'target'
             locations is returned.  Any 'source' locations not found in the
@@ -1384,10 +1384,10 @@ class Core(dict):
                 target = self._net
         Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
         return Ts
-        
+
     Tnet = property(fget=map_throats)
     Pnet = property(fget=map_pores)
-        
+
     def _isa(self,keyword=None,obj=None):
         r"""
         """
@@ -1429,7 +1429,7 @@ class Core(dict):
                 elif self._net is obj._net:
                     query = True
             return query
-            
+
     def check_data_health(self,props=[],element=''):
         r"""
         Check the health of pore and throat data arrays.
@@ -1445,7 +1445,7 @@ class Core(dict):
 
         Returns
         -------
-        Returns a HealthDict object which a basic dictionary with an added 
+        Returns a HealthDict object which a basic dictionary with an added
         ``health`` attribute that is True is all entries in the dict are
         deemed healthy (empty lists), or False otherwise.
 
@@ -1453,15 +1453,8 @@ class Core(dict):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> health = pn.check_data_health()
-        >>> print(health)
-        ------------------------------------------------------------
-        key                       value                    
-        ------------------------------------------------------------
-        throat.conns              []
-        pore.coords               []
-        ------------------------------------------------------------
-        >>> a.health
+        >>> health_check = pn.check_data_health()
+        >>> health_check.health
         True
         """
         health = Tools.HealthDict()
@@ -1482,12 +1475,12 @@ class Core(dict):
         return health
 
     def __str__(self):
-        header = '-'*60
-        print(header)
-        print(self.__module__.replace('__','')+': \t',self.name)
-        print(header)
-        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values'))
-        print(header)
+        horizonal_rule = '-'*60
+        lines  = [horizonal_rule]
+        lines += [self.__module__.replace('__','')+': \t'+self.name]
+        lines += [horizonal_rule]
+        lines += ["{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values')]
+        lines += [horizonal_rule]
         count = 0
         props = self.props()
         props.sort()
@@ -1500,10 +1493,10 @@ class Core(dict):
                 required = self._count(item.split('.')[0])
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] - a.sum(axis=0,keepdims=(a.ndim-1)==0)[0]
-                print("{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required))
-        print(header)
-        print("{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations'))
-        print(header)
+                lines += ["{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required)]
+        lines += [horizonal_rule]
+        lines += ["{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations')]
+        lines += [horizonal_rule]
         count = 0
         labels = self.labels()
         labels.sort()
@@ -1512,11 +1505,10 @@ class Core(dict):
             prop=item
             if len(prop)>35:
                 prop = prop[0:32]+'...'
-            print("{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item])))
-        print(header)
-        return ''
+            lines += ["{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item]))]
+        lines += [horizonal_rule]
+        return '\n'.join(lines)
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=False)
-

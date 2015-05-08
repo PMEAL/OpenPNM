@@ -49,13 +49,13 @@ class Controller(dict):
                 for phys in phase._physics:
                     print('++ {a:<12} {b:<20} ({c})'.format(a='Physics: ',b=phys.name,c=phys.__class__.__name__))
         return ''
-        
+
     def _setloglevel(self,level):
         logger.setLevel(level)
-    
+
     def _getloglevel(self):
         print('Log level is currently set to -->',logger.level)
-        
+
     loglevel = property(fget=_getloglevel,fset=_setloglevel)
 
     def networks(self):
@@ -107,21 +107,21 @@ class Controller(dict):
             self[item]._ctrl = {}
         self.__dict__ = {}
         super(Controller,self).clear()
-        
+
     def update(self,arg):
         r"""
-        This is a subclassed version of the standard dict's ``update`` method.  
-        It can accept a dictionary of OpenPNM Core objects in which case it 
-        adds the objects to the Controller.  It can also accept an OpenPNM 
-        Network object in which case it extracts all associated objects and 
+        This is a subclassed version of the standard dict's ``update`` method.
+        It can accept a dictionary of OpenPNM Core objects in which case it
+        adds the objects to the Controller.  It can also accept an OpenPNM
+        Network object in which case it extracts all associated objects and
         adds them to the Controller.  In both cases it adds the Controller to
         all object's ``controller`` attribute.
-        
+
         Notes
         -----
         The Network (and other Core objects) do not store Algorithms, so this
         update will not add any Algorithm objects to the Controller.  This may
-        change.  
+        change.
         """
         if arg.__class__ == dict:
             for item in arg.keys():
@@ -144,12 +144,12 @@ class Controller(dict):
         Parameters
         ----------
         obj : OpenPNM Object
-            The object to be removed.  This method removes all traces of the 
-            object from everywhere, including all the object tracking lists and 
+            The object to be removed.  This method removes all traces of the
+            object from everywhere, including all the object tracking lists and
             label dictionaries of every object.
         mode : string
             Dicates the type of purge to be performed.  Options are:
-            
+
             - 'single': Only purges the specified object
             - 'complete': Purges the specified object AND all of its associated objects
 
@@ -197,9 +197,9 @@ class Controller(dict):
 
     def ghost_object(self,obj):
         r"""
-        Create a ghost OpenPNM Object containing all the data, methods and 
+        Create a ghost OpenPNM Object containing all the data, methods and
         associations of the original object, but without registering the ghost
-        anywhere.   This ghost is intended as a disposable object, for 
+        anywhere.   This ghost is intended as a disposable object, for
         instance, to receive data without overwriting existing data.
 
         Parameters
@@ -225,9 +225,9 @@ class Controller(dict):
         True
         >>> pn2.controller is ctrl # pn2 is not associated with existing Controller
         False
-        
+
         It can also be used to create ghosts of other object types:
-        
+
         >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
         >>> geo2 = ctrl.ghost_object(geom)
         >>> geom is geo2
@@ -251,12 +251,12 @@ class Controller(dict):
         del self[obj.name]
         self[obj.name] = obj
         return obj_new
-        
+
     def save_simulation(self,network,filename=''):
         r"""
         Save a single Network simulation to a 'net' file, including all of its
         associated objects, but not Algorithms
-        
+
         Parameters
         ----------
         network : OpenPNM Network object
@@ -268,17 +268,17 @@ class Controller(dict):
             filename = network.name
         else:
             filename = filename.rstrip('.net')
-        
+
         network._ctrl = {}
         #Save nested dictionary pickle
-        _pickle.dump(network,open(filename+'.net','wb'))      
+        _pickle.dump(network,open(filename+'.net','wb'))
         network._ctrl = self
-        
+
     def load_simulation(self,filename):
         r"""
         Loads a Network simulation fromt the specified 'net' file and adds it
         to the Controller
-        
+
         Parameters
         ----------
         filename : string
@@ -351,9 +351,9 @@ class Controller(dict):
         Parameters
         ----------
         network : OpenPNM Network Object
-            This Network and all of its phases will be written to the specified 
+            This Network and all of its phases will be written to the specified
             file.  If no Netowrk is given it will check to ensure that only one
-            Network exists on the Controller and use that.  If there is more 
+            Network exists on the Controller and use that.  If there is more
             than one Network an error is thrown.
         filename : string, optional
             The file name to save as.  If no name is given then the name of
@@ -419,14 +419,14 @@ class Controller(dict):
 
     def clone_simulation(self,network,name=None):
         r"""
-        Accepts a Network object and creates a complete clone including all 
-        associated objects.  All objects in the cloned simulation are 
+        Accepts a Network object and creates a complete clone including all
+        associated objects.  All objects in the cloned simulation are
         registered with the Controller object and are fully functional.
-        
+
         Returns
         -------
-        A handle to the new Network object, which will include handles to 
-        clones of all associated objects.  
+        A handle to the new Network object, which will include handles to
+        clones of all associated objects.
 
         See Also
         --------
@@ -435,7 +435,7 @@ class Controller(dict):
         Notes
         -----
         One useful application of this method is to create a cloned simulation
-        that can be trimmed to a smaller size.  This small simulation will 
+        that can be trimmed to a smaller size.  This small simulation will
         result in much faster Algorithms calculations.
 
         Examples
@@ -466,15 +466,3 @@ class Controller(dict):
 
 if __name__ == '__main__':
     ctrl = Controller()
-
-
-
-
-
-
-
-
-
-
-
-

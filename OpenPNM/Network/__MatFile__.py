@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ===============================================================================
-MatFile: Subclass to import Networks from a Matlab 'mat' file
+MatFile: Subclass to import Networks from a Matlab '.mat' file
 ===============================================================================
 
 """
@@ -41,8 +41,8 @@ class MatFile(GenericNetwork):
     >>> import OpenPNM, os
     >>> fname = 'test_pn' # or 'test_pn.mat'
     >>> longpath = os.path.abspath(__file__) # line needed for auto-tests
-    >>> path,file = os.path.split(longpath) #unfortunately, auto-tests fail without this. Just type in the path of your own file, or leave it blank to search in your current directory.
-    >>> pn = OpenPNM.Network.MatFile(filename=fname,path=path,xtra_pore_data='type',xtra_throat_data='type')
+    >>> path, file = os.path.split(longpath)  # unfortunately, auto-tests fail without this. Just type in the path of your own file, or leave it blank to search in your current directory.
+    >>> pn = OpenPNM.Network.MatFile(filename=fname, path=path, xtra_pore_data='type', xtra_throat_data='type')
 
     Notes
     ------
@@ -80,9 +80,8 @@ class MatFile(GenericNetwork):
     |                | int        | of throats in network.           |
     |                |            | (more details below)             |
     +----------------+------------+----------------------------------+
-
-
     """
+
     def __init__(self,filename='', path='', xtra_pore_data=None, xtra_throat_data=None,**kwargs):
 
         r"""
@@ -194,7 +193,7 @@ class MatFile(GenericNetwork):
             add_boundaries = False
         Ps = sp.where([pore not in boundary_pores for pore in self.pores()])[0]
         Ts = sp.where([throat not in boundary_throats for throat in self.throats()])[0]
-        geom = OpenPNM.Geometry.GenericGeometry(network=self,pores=Ps,throats=Ts,name='internal')
+        geom = OpenPNM.Geometry.GenericGeometry(network=self,pores=Ps,throats=Ts)
         geom['pore.volume'] = sp.ravel(sp.array(self._dictionary['pvolume'][self._pore_map[Ps]],float))
         geom['pore.diameter'] = sp.ravel(sp.array(self._dictionary['pdiameter'][self._pore_map[Ps]],float))
         geom['throat.diameter'] = sp.ravel(sp.array(self._dictionary['tdiameter'][self._throat_map[Ts]],float))

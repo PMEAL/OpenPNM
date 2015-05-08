@@ -4,3 +4,6 @@
 *.pnm
 build/
 dist/
+.tox/
+.coverage
+*.vtp

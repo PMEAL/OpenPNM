@@ -207,6 +207,3 @@ def spatially_correlated(geometry,network,weights=None,strel=None,**kwargs):
     values = fn1.cdf(temp)
     values = values[geometry.map_pores(target=network,pores=geometry.Ps)]
     return values
-
-
-

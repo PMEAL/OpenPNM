@@ -42,12 +42,12 @@ class GenericNetwork(Core):
                 logger.error('wrong size for throat conns!')
             else:
                 mask = value[:,0]>value[:,1]
-                if mask.any():  
+                if mask.any():
                     logger.debug('the first column in (throat.conns) should be smaller than the second one.')
                     v1 = sp.copy(value[:,0][mask])
                     v2 = sp.copy(value[:,1][mask])
                     value[:,0][mask] = v2
-                    value[:,1][mask] = v1 
+                    value[:,1][mask] = v1
         for geom in self._geometries:
             if (prop in geom.keys()) and ('all' not in prop.split('.')):
                 logger.error(prop+' is already defined in at least one associated Geometry object')
@@ -63,13 +63,13 @@ class GenericNetwork(Core):
             return self._interleave_data(key,self.geometries())
         else:
             return super(GenericNetwork,self).__getitem__(key)
-            
+
     def _set_net(self,network):
         pass
     def _get_net(self):
         return self
     _net = property(fset=_set_net,fget=_get_net)
-    
+
     #--------------------------------------------------------------------------
     """Graph Theory and Network Query Methods"""
     #--------------------------------------------------------------------------
@@ -224,7 +224,7 @@ class GenericNetwork(Core):
             temp = temp.tolil()
         logger.debug('create_incidence_matrix: End of method')
         return temp
-         
+
     def find_connected_pores(self,throats=[],flatten=False):
         r"""
         Return a list of pores connected to the given list of throats
@@ -559,26 +559,26 @@ class GenericNetwork(Core):
         temp = self.create_adjacency_matrix(data=temp, sprsfmt='csr', dropzeros=True)
         clusters = sprs.csgraph.connected_components(csgraph=temp,directed=False)[1]
         return clusters
-        
+
     def find_nearest_pores(self,pores,distance=0):
         r"""
         Find all pores with a given distance of the input pore(s) regardless of
         whether or not they are toplogically connected.
-        
+
         Parameters
         ----------
         pores : array_like
             The list of pores for whom nearby neighbors are to be found
         distance : scalar
             The within which the nearby should be found
-            
+
         Returns
         -------
             A list of pores which are within the given spatial distance.  If a
             list of N pores is supplied, then a an N-long list of such lists is
             returned.  The returned lists each contain the pore for which the
             neighbors were sought.
-        
+
         Examples
         --------
         >>> import OpenPNM as op
@@ -601,17 +601,17 @@ class GenericNetwork(Core):
     def extend(self,pore_coords=[],throat_conns=[],labels=[]):
         topo.extend(network=self,pore_coords=pore_coords,throat_conns=throat_conns,labels=labels)
     extend.__doc__ = topo.extend.__doc__
-    
+
     def trim(self,pores=[],throats=[]):
         topo.trim(network=self,pores=pores,throats=throats)
     trim.__doc__ = topo.trim.__doc__
-    
+
     def clone_pores(self,pores,apply_label=['clone'],mode='parents'):
         topo.clone_pores(network=self,pores=pores,apply_label=apply_label,mode=mode)
     clone_pores.__doc__ = topo.clone_pores.__doc__
 
-    def stitch(self,donor,P_donor,P_network,method='delaunay',len_max=sp.inf,label_suffix=''):
-        topo.stitch(network=self,donor=donor,P_donor=P_donor,P_network=P_network,method=method,len_max=len_max,label_suffix=label_suffix)
+    def stitch(self,donor,P_donor,P_network,len_max=sp.inf,label_suffix=''):
+        topo.stitch(network=self,donor=donor,P_donor=P_donor,P_network=P_network,len_max=len_max,label_suffix=label_suffix)
     stitch.__doc__ = topo.stitch.__doc__
 
     def connect_pores(self,pores1,pores2,labels=[]):
@@ -848,13 +848,3 @@ if __name__ == '__main__':
     #Run doc tests
     import doctest
     doctest.testmod(verbose=True)
-
-
-
-
-
-
-
-
-
-

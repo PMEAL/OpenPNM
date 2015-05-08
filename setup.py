@@ -36,11 +36,17 @@ setup(
         'OpenPNM.Postprocessing'
     ],
     install_requires = [
+        'numpy',
         'scipy>=0.14.0',
-        'matplotlib'
+        'matplotlib',
+        'noise'
     ],
     tests_require = [
-        'pytest'
+        'tox',
+        'pytest',
+        'pytest-cov',
+        'python-coveralls',
+        'interlude'
     ],
     author = 'OpenPNM Team',
     author_email = 'jeff.gostick@mcgill.ca',

@@ -164,14 +164,14 @@ def saturation_profile(network, phase, fig=None, axis=2):
 
     if vals[-1]==1.:
         vals = vals[::-1]
-    
+
     yaxis = vals
     xaxis = steps/n_max
     _plt.plot(xaxis,yaxis,'bo-')
     _plt.xlabel(xlab)
     _plt.ylabel('Saturation')
     fig.show()
-    
+
 def distributions(net,
                   fig = None,
                   throat_diameter='throat.diameter',
@@ -190,10 +190,10 @@ def distributions(net,
     """
     if fig is None:
         fig = _plt.figure()
-        
+
     fig.subplots_adjust(hspace = 0.4)
     fig.subplots_adjust(wspace = 0.4)
-    
+
     if geom_list is not None:
         include_pores = [False]*net.num_pores()
         include_throats = [False]*net.num_throats()
@@ -235,13 +235,13 @@ def distributions(net,
 def pore_size_distribution(network, fig=None,):
 
     r"""
-    Plot the pore and throat size distribution which is the accumulated 
+    Plot the pore and throat size distribution which is the accumulated
     volume vs. the diameter in a semilog plot
 
     Parameters
     ----------
     network : OpenPNM Network object
-    
+
     """
     if fig is None:
         fig = _plt.figure()
@@ -262,7 +262,7 @@ def pore_size_distribution(network, fig=None,):
     _plt.xlabel('Pore & Throat Diameter (m)')
     _plt.ylabel('Cumulative Volume (m^3)')
     fig.show()
-    
+
 def drainage_curves(inv_alg,
                     fig=None,
                     Pc='inv_Pc',
@@ -296,7 +296,6 @@ def drainage_curves(inv_alg,
          IP algorithm at 40 % completion at 0.0 seconds
          IP algorithm at 60 % completion at 0.0 seconds
          IP algorithm at 100% completion at  0.0  seconds
-    >>> OpenPNM.Postprocessing.Plots.drainage_curves(IP,timing='inv_time')
     """
     inv_throats = inv_alg.toindices(inv_alg['throat.'+seq]>0)
     sort_seq = _sp.argsort(inv_alg['throat.'+seq][inv_throats])
