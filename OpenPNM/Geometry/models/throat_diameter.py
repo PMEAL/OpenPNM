@@ -86,7 +86,7 @@ def incircle(geometry, **kwargs):
                 for j in range(len(A)):
                     # Ni.(C-Ai)-Si = 0
                     prob += N[j][0]*(C[0]+cx) + N[j][1]*(C[1]+cy) - \
-                            N[j][0]*A[j][0] - N[j][1]*A[j][1] - S[j] == 0
+                        N[j][0]*A[j][0] - N[j][1]*A[j][1] - S[j] == 0
                     # Si >= R
                     prob += S[j] >= R
                 # Solve the LP

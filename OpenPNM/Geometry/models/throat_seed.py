@@ -9,4 +9,3 @@ import scipy as _sp
 
 def na():
     pass
-
