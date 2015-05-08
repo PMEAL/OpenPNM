@@ -9,6 +9,7 @@ Stick_and_Ball -- A standard 'stick & ball' geometrical model
 from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry import GenericGeometry
 
+
 class Stick_and_Ball(GenericGeometry):
     r"""
     Stick and Ball subclass of GenericGeometry.  This subclass is meant as a
@@ -23,10 +24,7 @@ class Stick_and_Ball(GenericGeometry):
     """
 
     def __init__(self, **kwargs):
-        r"""
-        Initialize
-        """
-        super(Stick_and_Ball,self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._generate()
 
     def _generate(self):
@@ -63,6 +61,5 @@ class Stick_and_Ball(GenericGeometry):
                         model=gm.throat_surface_area.cylinder)
 
 if __name__ == '__main__':
-    #Run doc tests
     import doctest
     doctest.testmod(verbose=True)
