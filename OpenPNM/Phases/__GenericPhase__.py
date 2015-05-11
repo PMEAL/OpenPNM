@@ -5,11 +5,12 @@ module __GenericPhase__: Base class for building Phase objects
 ===============================================================================
 
 """
-from OpenPNM.Base import Core, Tools, logging
-logger = logging.getLogger(__name__)
 from OpenPNM.Network import GenericNetwork
 import OpenPNM.Phases.models
+from OpenPNM.Base import Core, Tools, logging
 import scipy as sp
+logger = logging.getLogger(__name__)
+
 
 class GenericPhase(Core):
     r"""
@@ -35,8 +36,8 @@ class GenericPhase(Core):
         instance name but can be anything.
 
     """
-    def __init__(self,network=None,components=[],**kwargs):
-        super(GenericPhase,self).__init__(**kwargs)
+    def __init__(self, network=None, components=[], **kwargs):
+        super().__init__(**kwargs)
         logger.name = self.name
 
         if network is None:
@@ -48,7 +49,7 @@ class GenericPhase(Core):
         self['pore.all'] = self._net['pore.all']
         self['throat.all'] = self._net['throat.all']
 
-        #Set standard conditions on the fluid to get started
+        # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
 
@@ -61,24 +62,25 @@ class GenericPhase(Core):
                 self.set_component(phase=comp)
         self._net._phases.append(self)  # Append this Phase to the Network
 
-    def __setitem__(self,prop,value):
+    def __setitem__(self, prop, value):
         for phys in self._physics:
             if (prop in phys.keys()) and ('all' not in prop.split('.')):
-                    logger.error(prop+' is already defined in at least one associated Physics object')
+                    logger.error(prop + ' is already defined in at least one \
+                                 associated Physics object')
                     return
-        super(GenericPhase,self).__setitem__(prop,value)
+        super().__setitem__(prop, value)
 
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         if key.split('.')[-1] == self.name:
             element = key.split('.')[0]
             return self[element+'.all']
         if key not in self.keys():
             logger.debug(key+' not on Phase, constructing data from Physics')
-            return self._interleave_data(key,sources=self._physics)
+            return self._interleave_data(key, sources=self._physics)
         else:
-            return super(GenericPhase,self).__getitem__(key)
+            return super().__getitem__(key)
 
-    def set_component(self,phase,mode='add'):
+    def set_component(self, phase, mode='add'):
         r"""
         This method is used to add or remove a ficticious phase object to this
         object.
@@ -96,13 +98,15 @@ class GenericPhase(Core):
                 logger.error('Phase already present')
                 pass
             else:
-                self._phases.append(phase) # Associate any sub-phases with self
+                self._phases.append(phase)  # Associate any sub-phases with self
                 phase._phases.append(self)  # Associate self with sub-phases
-                #Add models for components to inherit mixture T and P
-                phase.models.add(propname='pore.temperature',model=OpenPNM.Phases.models.misc.mixture_value)
-                phase.models.add(propname='pore.pressure',model=OpenPNM.Phases.models.misc.mixture_value)
-                #Move T and P models to beginning of regeneration order
-                phase.models.reorder({'pore.temperature':0,'pore.pressure':1})
+                # Add models for components to inherit mixture T and P
+                phase.models.add(propname='pore.temperature',
+                                 model=OpenPNM.Phases.models.misc.mixture_value)
+                phase.models.add(propname='pore.pressure',
+                                 model=OpenPNM.Phases.models.misc.mixture_value)
+                # Move T and P models to beginning of regeneration order
+                phase.models.reorder({'pore.temperature': 0, 'pore.pressure': 1})
         elif mode == 'remove':
             if phase.name in self.phases():
                 self._phases.remove(phase)
@@ -137,10 +141,8 @@ class GenericPhase(Core):
                 Ptemp[Pind] = Ptemp[Pind] + 1
                 Ttemp[Tind] = Ttemp[Tind] + 1
         health = Tools.HealthDict()
-        health['overlapping_pores'] = sp.where(Ptemp>1)[0].tolist()
-        health['undefined_pores'] = sp.where(Ptemp==0)[0].tolist()
-        health['overlapping_throats'] = sp.where(Ttemp>1)[0].tolist()
-        health['undefined_throats'] = sp.where(Ttemp==0)[0].tolist()
+        health['overlapping_pores'] = sp.where(Ptemp > 1)[0].tolist()
+        health['undefined_pores'] = sp.where(Ptemp == 0)[0].tolist()
+        health['overlapping_throats'] = sp.where(Ttemp > 1)[0].tolist()
+        health['undefined_throats'] = sp.where(Ttemp == 0)[0].tolist()
         return health
-
-
