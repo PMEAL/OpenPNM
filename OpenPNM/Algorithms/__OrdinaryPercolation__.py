@@ -296,7 +296,23 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_inv[self._t_trap > 0] = sp.inf
         self['pore.inv_Pc']=self._p_inv
         self['throat.inv_Pc']=self._t_inv
-
+    
+    def evaluate_late_pore_filling(self,Pc,Swp_init=0.75,eta=3.0,wetting_phase=False):
+        r"""
+        Compute the volume fraction of the phase in each pore given an initial 
+        wetting phase fraction (Swp_init) and a growth exponent (eta)
+        returns the fraction of the pore volume occupied by wetting or non-wetting phase
+        Assumes Non-wetting phase displaces wetting phase
+        """
+        Swp = Swp_init*(self._p_inv/Pc)**eta
+        Swp[self._p_inv > Pc]=1.0
+        Snwp = 1-Swp
+        if wetting_phase:
+            return Swp
+        else:
+            return Snwp
+        
+        
     def return_results(self, Pc=0, seq=None, sat=None, occupancy='occupancy'):
         r"""
         Updates the occupancy status of invading and defending phases
@@ -360,8 +376,6 @@ class OrdinaryPercolation(GenericAlgorithm):
                 temp = sp.array(~t_inv,dtype=sp.float_,ndmin=1)
                 self._phase_def['throat.'+occupancy]=temp
 
-
-
     def plot_drainage_curve(self,
                             pore_volume='volume',
                             throat_volume='volume',pore_label='all',throat_label='all'):
@@ -369,8 +383,7 @@ class OrdinaryPercolation(GenericAlgorithm):
           Plot drainage capillary pressure curve
           """
           try:
-            #PcPoints = sp.unique(self['pore.inv_Pc'])
-              PcPoints = self._inv_points.copy()
+            PcPoints = sp.unique(self['pore.inv_Pc'])
           except:
             raise Exception('Cannot print drainage curve: ordinary percolation simulation has not been run')
           pores=self._net.pores(labels=pore_label)
@@ -381,17 +394,9 @@ class OrdinaryPercolation(GenericAlgorithm):
           Tvol = self._net['throat.'+throat_volume]
           Pvol_tot = sum(Pvol)
           Tvol_tot = sum(Tvol)
-          Swp_frac=0.10
-          pore_fill_power = 2.0
           for i in range(0,sp.size(PcPoints)):
               Pc = PcPoints[i]
-              try:
-                  Swp = Swp_frac*(self._p_inv[pores]/Pc)**pore_fill_power # account for late pore filling effects
-                  Swp[self._p_inv==sp.inf]=1.0 # pores not invaded are filled with wetting phase
-              except:
-                  Swp = Swp_frac
-              Snwp_vol = (1-Swp)*Pvol
-              Snwp_p[i] = sum(Snwp_vol[self._p_inv[pores]<=Pc])/Pvol_tot
+              Snwp_p[i] = sum(Pvol[self._p_inv[pores]<=Pc])/Pvol_tot
               Snwp_t[i] = sum(Tvol[self._t_inv[throats]<=Pc])/Tvol_tot
           if sp.mean(self._phase_inv["pore.contact_angle"]) < 90:
               Snwp_p = 1 - Snwp_p
@@ -399,9 +404,9 @@ class OrdinaryPercolation(GenericAlgorithm):
               PcPoints *= -1
           plt.plot(PcPoints,Snwp_p,'r.-')
           plt.plot(PcPoints,Snwp_t,'b.-')
-          r'''
+          r"""
           TODO: Add legend to distinguish the pore and throat curves
-          '''
+          """
           #plt.xlim(xmin=0)
           plt.show()
 
