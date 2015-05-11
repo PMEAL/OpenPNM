@@ -192,32 +192,41 @@ class Voronoi(GenericGeometry):
             output.append(array[start:start+l])
             start+=l
         return output
-        
+    
     def compress_slice(self,slice_image,compression=0.1,plot=False):
         r'''
-        compress_slice by removing pores pixels
+        compress_slice by shifting fibre pixels
         compression represents the percentage reduction in height
         '''
         shape = sp.shape(slice_image)
         n = sp.ceil(compression*shape[1]).astype(int) #number of pixels to remove from pore space
-        compressed_image = sp.zeros([shape[0],shape[1]-n])#initiate everything as fibre
+        compressed_image = sp.ones([shape[0],shape[1]-n])#initiate everything as pores
         #cycle through columns in the image
         for i in sp.arange(shape[0]):
-            column = slice_image[i,:]
-            pi = sp.arange(len(column))[column==1]# non-zero indices (i.e. pore space)
+            column = slice_image[i,:].copy()
+            #pi = sp.arange(len(column))[column==1]# non-zero indices (i.e. pore space)
             fi = sp.arange(len(column))[column==0]# zero indices (i.e. fibre space)
-            #sp.random.shuffle(pi) # randomize the pore space indices
-            if len(pi) > n:
-                ps = sp.array([],dtype=int)
-                chunks = self._random_array_split(pi,n)
-                for chunk in chunks:
-                    ps = sp.concatenate((ps,chunk[0:len(chunk)-1]))
-                ps = sp.concatenate((fi,ps))
-                ps.sort()
-                compressed_image[i,:len(ps)]=column[ps]
-            else:
-                #everything fibre
-                pass
+            cfi = np.around((1-compression)*fi,0).astype(int)
+            #don't allow fibres to overlap
+            freq = itemfreq(cfi)
+            up_down = 1 # even things out a bit by shifting up and down alternatively
+            for index,f in freq:
+                if f > 1:
+                    shift = 1
+                    while shift < 20 and f > 1:
+                        #check whether next index available
+                        test_index = index+(up_down*shift)
+                        if (test_index not in cfi) and (test_index > -1) and (test_index <= shape[1]-n):
+                            cfi = np.hstack((cfi,test_index))
+                            f -= 1      
+                        else:
+                            shift += 1
+                    up_down *= -1
+    
+            column.fill(1)
+            column[cfi]=0
+            compressed_image[i,:]=column[:shape[1]-n]
+
         if plot:        
             plt.figure()
             plt.imshow(slice_image,cmap='Greys',  interpolation='nearest')
