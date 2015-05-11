@@ -6,9 +6,10 @@ Submodule -- diffusivity
 """
 import scipy as sp
 
-def fuller(phase,MA,MB,vA,vB,**kwargs): 
+
+def fuller(phase, MA, MB, vA, vB, **kwargs):
     r"""
-    Uses Fuller model to estimate diffusion coefficient for gases from first 
+    Uses Fuller model to estimate diffusion coefficient for gases from first
     principles at conditions of interest
 
     Parameters
@@ -31,9 +32,11 @@ def fuller(phase,MA,MB,vA,vB,**kwargs):
     value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3)+vB**(1./3))**2)*1e-4
     return value
 
-def fuller_scaling(phase,DABo,To,Po,**kwargs):
+
+def fuller_scaling(phase, DABo, To, Po, **kwargs):
     r"""
-    Uses Fuller model to adjust a diffusion coefficient for gases from reference conditions to conditions of interest
+    Uses Fuller model to adjust a diffusion coefficient for gases from reference
+    conditions to conditions of interest
 
     Parameters
     ----------
@@ -50,9 +53,11 @@ def fuller_scaling(phase,DABo,To,Po,**kwargs):
     value = DABo*(Ti/To)**1.75*(Po/Pi)
     return value
 
-def tyn_calus(phase,VA,VB,sigma_A,sigma_B,**kwargs):
+
+def tyn_calus(phase, VA, VB, sigma_A, sigma_B, **kwargs):
     r"""
-    Uses Tyn_Calus model to estimate diffusion coefficient in a dilute liquid solution of A in B from first principles at conditions of interest
+    Uses Tyn_Calus model to estimate diffusion coefficient in a dilute liquid
+    solution of A in B from first principles at conditions of interest
 
     Parameters
     ----------
@@ -72,12 +77,15 @@ def tyn_calus(phase,VA,VB,sigma_A,sigma_B,**kwargs):
     """
     T = phase['pore.temperature']
     mu = phase['pore.viscosity']
-    value = 8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T*(sigma_B/sigma_A)**0.15/(mu*1e3)
+    value = \
+        8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T*(sigma_B/sigma_A)**0.15/(mu*1e3)
     return value
 
-def tyn_calus_Scaling(phase,DABo,To,mu_o,**kwargs):
+
+def tyn_calus_Scaling(phase, DABo, To, mu_o, **kwargs):
     r"""
-    Uses Tyn_Calus model to adjust a diffusion coeffciient for liquids from reference conditions to conditions of interest
+    Uses Tyn_Calus model to adjust a diffusion coeffciient for liquids from
+    reference conditions to conditions of interest
 
     Parameters
     ----------

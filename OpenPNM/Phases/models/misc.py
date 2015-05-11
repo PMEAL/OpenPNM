@@ -8,14 +8,16 @@ Models for applying basic phase properties
 """
 import scipy as _sp
 
-def constant(phase,value,**kwargs):
+
+def constant(phase, value, **kwargs):
     r"""
     Assigns specified constant value
     """
     temp = _sp.ones(_sp.shape(phase.pores()))*value
     return temp
 
-def random(phase,seed=None,**kwargs):
+
+def random(phase, seed=None, **kwargs):
     r"""
     Assigns specified constant value
     """
@@ -23,7 +25,8 @@ def random(phase,seed=None,**kwargs):
     value = _sp.random.rand(_sp.shape(phase.pores())[0])
     return value
 
-def linear(phase,m,b,poreprop='pore.temperature',**kwargs):
+
+def linear(phase, m, b, poreprop='pore.temperature', **kwargs):
     r"""
     Calculates a property as a linear function of a given property
 
@@ -41,7 +44,8 @@ def linear(phase,m,b,poreprop='pore.temperature',**kwargs):
     value = b + m*T
     return value
 
-def polynomial(phase,a,poreprop='pore.temperature',**kwargs):
+
+def polynomial(phase, a, poreprop='pore.temperature', **kwargs):
     r"""
     Calculates a property as a polynomial function of a given property
 
@@ -59,11 +63,13 @@ def polynomial(phase,a,poreprop='pore.temperature',**kwargs):
     """
     x = phase[poreprop]
     value = 0.0
-    for i in range(0,len(a)):
+    for i in range(0, len(a)):
         value += a[i]*x**i
     return value
 
-def ideal_mixture(phase,propname,pore_prop=None,composition='pore.mole_fraction',**kwargs):
+
+def ideal_mixture(phase, propname, pore_prop=None,
+                  composition='pore.mole_fraction', **kwargs):
     r"""
     Calcualtes a given mixture property as the composition weighted average
     of the pure compononent properties
@@ -102,10 +108,11 @@ def ideal_mixture(phase,propname,pore_prop=None,composition='pore.mole_fraction'
         pore_prop = propname
     value = _sp.zeros((phase.Np,))
     for comp in phase._phases:
-        value= value + comp[pore_prop]*comp[composition]
+        value = value + comp[pore_prop]*comp[composition]
     return value
 
-def mixture_value(phase,propname,**kwargs):
+
+def mixture_value(phase, propname, **kwargs):
     r"""
     Adopts the specified property value from the parent mixture phase
 
@@ -120,6 +127,3 @@ def mixture_value(phase,propname,**kwargs):
     mixture = phase._phases[0]
     vals = mixture[propname]
     return vals
-
-
-
