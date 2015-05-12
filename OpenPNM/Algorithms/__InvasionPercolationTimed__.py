@@ -694,8 +694,3 @@ class InvasionPercolationTimed(GenericAlgorithm):
             self['throat.defended']=sp.array(~inv_throats, dtype='float')
         except:
             print('A partner phase has not been set so inverse occupancy cannot be set')
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

@@ -59,7 +59,3 @@ class Stick_and_Ball(GenericGeometry):
                         model=gm.throat_area.cylinder)
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.cylinder)
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

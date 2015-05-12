@@ -1508,7 +1508,3 @@ class Core(dict):
             lines += ["{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item]))]
         lines += [horizonal_rule]
         return '\n'.join(lines)
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=False)

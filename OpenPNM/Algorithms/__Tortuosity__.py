@@ -75,6 +75,3 @@ class Tortuosity(GenericAlgorithm):
         temp[sp.isinf(temp)] = 0
 
         return temp
-
-if __name__ == '__main__':
-    print('no tests yet')

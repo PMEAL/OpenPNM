@@ -380,7 +380,3 @@ def drainage_curves(inv_alg, fig=None, Pc='inv_Pc', sat='inv_sat',
     ax5.grid(True)
     ax6.grid(True)
     fig.show()
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

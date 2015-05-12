@@ -52,7 +52,3 @@ class Cube_and_Cuboid(GenericGeometry):
                         model=gm.throat_area.cuboid)
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.cuboid)
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)
