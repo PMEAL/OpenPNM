@@ -614,9 +614,11 @@ class GenericNetwork(Core):
                          apply_label=apply_label, mode=mode)
     clone_pores.__doc__ = topo.clone_pores.__doc__
 
-    def stitch(self, donor, P_donor, P_network, len_max=sp.inf, label_suffix=''):
-        topo.stitch(network=self, donor=donor, P_donor=P_donor, P_network=P_network,
-                    len_max=len_max, label_suffix=label_suffix)
+    def stitch(self, donor, P_donor, P_network, method, len_max=sp.inf,
+               label_suffix=''):
+        topo.stitch(network=self, donor=donor, P_donor=P_donor,
+                    P_network=P_network, method=method, len_max=len_max,
+                    label_suffix=label_suffix)
     stitch.__doc__ = topo.stitch.__doc__
 
     def connect_pores(self, pores1, pores2, labels=[]):
@@ -840,7 +842,7 @@ class GenericNetwork(Core):
             # If that fails, use the max face area of the bounding cuboid
             A = max([yz, xz, xy])
         if not misc.iscoplanar(self['pore.coords'][face]):
-            logger.warning('The supplied pores are not coplanar. Area will be \
-                            approximate')
+            logger.warning('The supplied pores are not coplanar. Area will be'
+                           'approximate')
             pass
         return A

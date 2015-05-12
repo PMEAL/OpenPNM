@@ -21,7 +21,7 @@ class Core(dict):
         obj = dict.__new__(typ, *args, **kwargs)
         obj.update({'pore.all': sp.array([],ndmin=1,dtype=bool)})
         obj.update({'throat.all': sp.array([],ndmin=1,dtype=bool)})
-        #Initialize phase, physics, and geometry tracking lists
+        # Initialize phase, physics, and geometry tracking lists
         obj._name = None
         obj._ctrl = {}
         obj._phases = []
@@ -29,7 +29,7 @@ class Core(dict):
         obj._physics = []
         obj._net = None
         obj._parent = None
-        #Initialize ordered dict for storing property models
+        # Initialize ordered dict for storing property models
         obj.models = ModelsDict()
         return obj
 

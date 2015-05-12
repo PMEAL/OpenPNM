@@ -14,6 +14,7 @@ from OpenPNM.Base import logging
 from OpenPNM.Network import GenericNetwork
 logger = logging.getLogger(__name__)
 
+
 class GenericAlgorithm(Core):
     r"""
     GenericAlgorithm - Base class to execute algorithms
@@ -34,8 +35,8 @@ class GenericAlgorithm(Core):
 
     """
 
-    def __init__(self, network=None, **kwords):
-        super().__init__(**kwords)
+    def __init__(self, network=None, **kwargs):
+        super().__init__(**kwargs)
         logger.name = self.name
 
         if network is None:
@@ -47,7 +48,7 @@ class GenericAlgorithm(Core):
         self['pore.all'] = self._net['pore.all']
         self['throat.all'] = self._net['throat.all']
 
-    def run(self,**params):
+    def run(self, **params):
         r"""
         Main run command for the algorithm
         """
@@ -78,10 +79,11 @@ class GenericAlgorithm(Core):
         """
         pass
 
-    def return_results(self,**kwargs):
+    def return_results(self, **kwargs):
         pass
 
-    def set_boundary_conditions(self,component=None,bctype='',bcvalue=None,pores=None,throats=None,mode='merge'):
+    def set_boundary_conditions(self, component=None, bctype='', bcvalue=None,
+                                pores=None, throats=None, mode='merge'):
         r"""
         Apply boundary conditions to specified pores or throats
 
@@ -115,115 +117,137 @@ class GenericAlgorithm(Core):
         should be removed or overwritten.
         2- BCs for pores and for throats should be applied independently.
         """
-        try: self._existing_BC
-        except: self._existing_BC = []
+        try:
+            self._existing_BC
+        except AttributeError:
+            self._existing_BC = []
         if component is None:
-            if sp.size(self._phases)!=1:
-                raise Exception('In each use of set_boundary_conditions method, one component should be specified or attached to the algorithm.' )
+            if sp.size(self._phases) != 1:
+                raise Exception('In each use of set_boundary_conditions method,'
+                                ' one component should be specified or attached'
+                                ' to the algorithm.')
             else:
                 component = self._phases[0]
         else:
-            if sp.size(component)!=1:
-                raise Exception('For using set_boundary_conditions method, only one component should be specified.')
+            if sp.size(component) != 1:
+                raise Exception('For using set_boundary_conditions method, only'
+                                ' one component should be specified.')
 
-        if mode not in ['merge','overwrite','remove']:
-            raise Exception('The mode ('+mode+') cannot be applied to the set_boundary_conditions!')
+        if mode not in ['merge', 'overwrite', 'remove']:
+            raise Exception('The mode (' + mode + ') cannot be applied to the '
+                            'set_boundary_conditions!')
 
-        logger.debug('BC applies to the component: '+component.name)
-        #If mode is 'remove', also bypass checks
+        logger.debug('BC applies to the component: ' + component.name)
+        # If mode is 'remove', also bypass checks
         if mode == 'remove':
             if pores is None and throats is None:
-                if bctype=='':
+                if bctype == '':
                     raise Exception('No bctype/pore/throat is specified')
                 else:
                     for item in self.labels():
-                        if bctype == (item.split('.')[-1]).replace(self._phase.name+'_',"") :
+                        if bctype == (item.split('.')[-1]).replace(self._phase.name + '_', ''):
                             element = item.split('.')[0]
                             try:
-                                del self[element+'.'+component.name+'_bcval_'+bctype]
-                            except: pass
-                            try:
-                                del self[element+'.'+component.name+'_'+bctype]
-                            except:
+                                del self[element + '.' + component.name + '_bcval_' + bctype]
+                            except KeyError:
                                 pass
-                    logger.debug('Removing '+bctype+' from all locations for '+component.name+' in '+self.name)
+                            try:
+                                del self[element + '.' + component.name + '_' + bctype]
+                            except KeyError:
+                                pass
+                    logger.debug('Removing ' + bctype + ' from all locations for ' + component.name + ' in ' + self.name)
                     self._existing_BC.remove(bctype)
             else:
                 if pores is not None:
-                    if bctype!='':
-                        self['pore.'+component.name+'_bcval_'+bctype][pores] = sp.nan
-                        self['pore.'+component.name+'_'+bctype][pores] = False
-                        logger.debug('Removing '+bctype+' from the specified pores for '+component.name+' in '+self.name)
-                    else:   raise Exception('Cannot remove BC from the pores unless bctype is specified')
+                    if bctype != '':
+                        self['pore.' + component.name + '_bcval_' + bctype][pores] = sp.nan
+                        self['pore.' + component.name + '_' + bctype][pores] = False
+                        logger.debug('Removing ' + bctype + ' from the specified pores for ' + component.name + ' in ' + self.name)
+                    else:
+                        raise Exception('Cannot remove BC from the pores unless bctype is specified')
 
                 if throats is not None:
-                    if bctype!='':
-                        self['throat.'+component.name+'_bcval_'+bctype][throats] = sp.nan
-                        self['throat.'+component.name+'_'+bctype][throats] = False
-                        logger.debug('Removing '+bctype+' from the specified throats for '+component.name+' in '+self.name)
-                    else:   raise Exception('Cannot remove BC from the throats unless bctype is specified')
+                    if bctype != '':
+                        self['throat.' + component.name + '_bcval_' + bctype][throats] = sp.nan
+                        self['throat.' + component.name + '_' + bctype][throats] = False
+                        logger.debug('Removing ' + bctype + ' from the specified throats for ' + component.name + ' in ' + self.name)
+                    else:
+                        raise Exception('Cannot remove BC from the throats unless bctype is specified')
 
             return
-        #Validate bctype
+        # Validate bctype
         if bctype == '':
             raise Exception('bctype must be specified')
-        #Validate pores/throats
+        # Validate pores/throats
         if pores is None and throats is None:
             raise Exception('pores/throats must be specified')
         elif pores is not None and throats is not None:
             raise Exception('BC for pores and throats must be specified independently')
-        elif  throats is None:
-            element ='pore'
-            loc = sp.array(pores,ndmin=1)
-            all_length = self.num_pores()
+        elif throats is None:
+            element = 'pore'
+            loc = sp.array(pores, ndmin=1)
+            all_length = self.Np
         elif pores is None:
-            element ='throat'
-            loc = sp.array(throats,ndmin=1)
-            all_length = self.num_throats()
+            element = 'throat'
+            loc = sp.array(throats, ndmin=1)
+            all_length = self.Nt
         else:
             raise Exception('Problem with the pore and/or throat list')
-        #Validate bcvalue
+        # Validate bcvalue
         if bcvalue is not None:
-            #Check bcvalues are compatible with bctypes
-            if bctype == 'Neumann_group':  #Only scalars are acceptable
+            # Check bcvalues are compatible with bctypes
+            if bctype == 'Neumann_group':  # Only scalars are acceptable
                 if sp.size(bcvalue) != 1:
                     raise Exception('When specifying Neumann_group, bcval should be a scalar')
                 else:
                     bcvalue = sp.float64(bcvalue)
                     if 'Neumann_group' not in self._existing_BC:
-                        setattr(self,'_'+element+'_'+component.name+'_Neumann_group_location',[])
-                    getattr(self,'_'+element+'_'+component.name+'_Neumann_group_location').append(loc)
-            else: #Only scalars or Np/Nt-long are acceptable
+                        setattr(self, '_' + element + '_' + component.name +
+                                '_Neumann_group_location', [])
+                    getattr(self, '_' + element + '_' + component.name +
+                            '_Neumann_group_location').append(loc)
+            else:  # Only scalars or Np/Nt-long are acceptable
                 if sp.size(bcvalue) == 1:
-                    bcvalue = sp.ones(sp.shape(loc))*bcvalue
+                    bcvalue = sp.ones(sp.shape(loc)) * bcvalue
                 elif sp.size(bcvalue) != sp.size(loc):
                     raise Exception('The pore/throat list and bcvalue list are different lengths')
-        #Confirm that prop and label arrays exist
-        if element+'.'+component.name+'_bcval_'+bctype not in self.props():
-            self[element+'.'+component.name+'_bcval_'+bctype] = sp.ones((all_length,),dtype=float)*sp.nan
-        if element+'.'+component.name+'_'+bctype not in self.labels():
-            self[element+'.'+component.name+'_'+bctype] = sp.zeros((all_length,),dtype=bool)
-        #Check all BC from specified locations, prior to setting new ones
+        # Confirm that prop and label arrays exist
+        if element + '.' + component.name + '_bcval_' + bctype not in self.props():
+            self[element + '.' + component.name + '_bcval_' + bctype] = sp.ones((all_length,), dtype=float) * sp.nan
+        if element + '.' + component.name + '_' + bctype not in self.labels():
+            self[element + '.' + component.name + '_' + bctype] = sp.zeros((all_length,), dtype=bool)
+        # Check all BC from specified locations, prior to setting new ones
         for item in self.labels():
-            bcname = (item.split('.')[-1]).replace(component.name+'_',"")
-            if bcname in self._existing_BC  and item.split('.')[0]==element:
-                if mode=='merge':
+            bcname = (item.split('.')[-1]).replace(component.name + '_', "")
+            if bcname in self._existing_BC and item.split('.')[0] == element:
+                if mode == 'merge':
                     try:
-                        self[element+'.'+component.name+'_bcval_'+bcname][loc]
-                        if not (sp.isnan(self[element+'.'+component.name+'_bcval_'+bcname][loc]).all() and sp.sum(self[element+'.'+component.name+'_'+bcname][loc])==0):
-                            raise Exception('Because of the existing BCs, the method cannot apply new BC with the merge mode to the specified pore/throat.')
-                    except KeyError: pass
-        #Set boundary conditions based on supplied mode
+                        self[element + '.' + component.name + '_bcval_' + bcname][loc]
+                        condition1 = sp.isnan(self[element + '.' + component.name +
+                                                   '_bcval_' + bcname][loc]).all()
+                        condition2 = sp.sum(self[element + '.' + component.name +
+                                                 '_' + bcname][loc]) == 0
+                        if not (condition1 and condition2):
+                            raise Exception('Because of the existing BCs, '
+                                            'the method cannot apply new BC '
+                                            'with the merge mode to the specified pore/throat.')
+                    except KeyError:
+                        pass
+        # Set boundary conditions based on supplied mode
         if mode == 'merge':
-            if bcvalue is not None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
-            self[element+'.'+component.name+'_'+bctype][loc] = True
-            if bctype not in self._existing_BC: self._existing_BC.append(bctype)
+            if bcvalue is not None:
+                self[element + '.' + component.name + '_bcval_' + bctype][loc] = bcvalue
+            self[element + '.' + component.name + '_' + bctype][loc] = True
+            if bctype not in self._existing_BC:
+                self._existing_BC.append(bctype)
         elif mode == 'overwrite':
-            self[element+'.'+component.name+'_bcval_'+bctype] = sp.ones((all_length,),dtype=float)*sp.nan
-            if bcvalue is not None:   self[element+'.'+component.name+'_bcval_'+bctype][loc] = bcvalue
-            self[element+'.'+component.name+'_'+bctype] = sp.zeros((all_length,),dtype=bool)
-            self[element+'.'+component.name+'_'+bctype][loc] = True
-            if bctype not in self._existing_BC: self._existing_BC.append(bctype)
+            self[element + '.' + component.name + '_bcval_' + bctype] = sp.ones((all_length,), dtype=float) * sp.nan
+            if bcvalue is not None:
+                self[element + '.' + component.name + '_bcval_' + bctype][loc] = bcvalue
+            self[element + '.' + component.name + '_' + bctype] = sp.zeros((all_length,), dtype=bool)
+            self[element + '.' + component.name + '_' + bctype][loc] = True
+            if bctype not in self._existing_BC:
+                self._existing_BC.append(bctype)
 
 if __name__ == '__main__':
     import OpenPNM

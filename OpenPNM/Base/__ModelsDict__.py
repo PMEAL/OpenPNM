@@ -84,9 +84,10 @@ class ModelWrapper(dict):
                     if ctrl[item].models[model] is self:
                         master.append(ctrl[item])
         if len(master) > 1:
-            raise Exception('More than one master found! This model dictionary \
-                            has been associated with multiple objects. To use \
-                            the same dictionary multiple times use the copy method.')
+            raise Exception('More than one master found! This model dictionary '
+                            'has been associated with multiple objects. To use '
+                            'the same dictionary multiple times use the copy'
+                            'method.')
         return master[0]
 
 
@@ -341,9 +342,9 @@ class ModelsDict(OrderedDict):
             if ctrl[item].models is self:
                 master.append(ctrl[item])
         if len(master) > 1:
-            raise Exception('More than one master found! This model dictionary \
-                             has been associated with multiple objects. To use the \
-                             same dictionary multiple times use the copy method.')
+            raise Exception('More than one master found! This model dictionary '
+                            'has been associated with multiple objects. To use the '
+                            'same dictionary multiple times use the copy method.')
         return master[0]
 
 if __name__ == '__main__':
