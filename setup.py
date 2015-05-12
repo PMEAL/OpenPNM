@@ -39,7 +39,8 @@ setup(
         'numpy',
         'scipy>=0.14.0',
         'matplotlib',
-        'noise'
+        'noise',
+        'scikit-learn'
     ],
     tests_require = [
         'tox',
