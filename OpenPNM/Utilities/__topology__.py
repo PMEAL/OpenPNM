@@ -336,7 +336,7 @@ class topology(object):
         [125, 300]
         >>> pn2['pore.coords'][:, 2] += 5.0
         >>> pn.stitch(donor=pn2, P_network=pn.pores('top'),
-        ...           P_donor=pn2.pores('bottom'), len_max=1.0)
+        ...           P_donor=pn2.pores('bottom'), method='nearest', len_max=1.0)
         >>> [pn.Np, pn.Nt]
         [250, 625]
 
