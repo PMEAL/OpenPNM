@@ -326,7 +326,7 @@ def rotation_matrix(angle, direction, point=None):
     direction *= sina
     R += numpy.array([[0.0, -direction[2], direction[1]],
                       [direction[2], 0.0, -direction[0]],
-                      [-direction[1], direction[0],  0.0]])
+                      [-direction[1], direction[0], 0.0]])
     M = numpy.identity(4)
     M[:3, :3] = R
     if point is not None:
@@ -620,10 +620,10 @@ def clip_matrix(left, right, bottom, top, near, far, perspective=False):
 
     """
     if left >= right or bottom >= top or near >= far:
-        raise ValueError("invalid frustum")
+        raise ValueError('invalid frustum')
     if perspective:
         if near <= _EPS:
-            raise ValueError("invalid frustum: near <= 0")
+            raise ValueError('invalid frustum: near <= 0')
         t = 2.0 * near
         M = [[t/(left-right), 0.0, (right+left)/(right-left), 0.0],
              [0.0, t/(bottom-top), (top+bottom)/(top-bottom), 0.0],
@@ -963,10 +963,10 @@ def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):
         xx, yy, zz = numpy.sum(v0 * v1, axis=1)
         xy, yz, zx = numpy.sum(v0 * numpy.roll(v1, -1, axis=0), axis=1)
         xz, yx, zy = numpy.sum(v0 * numpy.roll(v1, -2, axis=0), axis=1)
-        N = [[xx+yy+zz, 0.0,      0.0,      0.0],
-             [yz-zy,    xx-yy-zz, 0.0,      0.0],
-             [zx-xz,    xy+yx,    yy-xx-zz, 0.0],
-             [xy-yx,    zx+xz,    yz+zy,    zz-xx-yy]]
+        N = [[xx+yy+zz, 0.0, 0.0, 0.0],
+             [yz-zy, xx-yy-zz, 0.0, 0.0],
+             [zx-xz, xy+yx, yy-xx-zz, 0.0],
+             [xy-yx, zx+xz, yz+zy, zz-xx-yy]]
         # quaternion: eigenvector corresponding to most positive eigenvalue
         w, V = numpy.linalg.eigh(N)
         q = V[:, numpy.argmax(w)]
@@ -1332,10 +1332,10 @@ def quaternion_from_matrix(matrix, isprecise=False):
         m21 = M[2, 1]
         m22 = M[2, 2]
         # symmetric matrix K
-        K = numpy.array([[m00-m11-m22, 0.0,         0.0,         0.0],
-                         [m01+m10,     m11-m00-m22, 0.0,         0.0],
-                         [m02+m20,     m12+m21,     m22-m00-m11, 0.0],
-                         [m21-m12,     m02-m20,     m10-m01,     m00+m11+m22]])
+        K = numpy.array([[m00-m11-m22, 0.0, 0.0, 0.0],
+                         [m01+m10, m11-m00-m22, 0.0, 0.0],
+                         [m02+m20, m12+m21, m22-m00-m11, 0.0],
+                         [m21-m12, m02-m20, m10-m01, m00+m11+m22]])
         K /= 3.0
         # quaternion is eigenvector of K that corresponds to largest eigenvalue
         w, V = numpy.linalg.eigh(K)
