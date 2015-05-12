@@ -36,9 +36,6 @@ class GenericAlgorithm(Core):
     """
 
     def __init__(self, network=None, **kwords):
-        r"""
-        Initialize
-        """
         super().__init__(**kwords)
         logger.name = self.name
 

@@ -22,9 +22,6 @@ class GenericLinearTransport(GenericAlgorithm):
     FourierConduction, StokesFlow and OhmicConduction.
     """
     def __init__(self, phase=None, **kwargs):
-        r"""
-        Initializing the class
-        """
         super().__init__(**kwargs)
         if phase is None:
             self._phase = GenericPhase()
