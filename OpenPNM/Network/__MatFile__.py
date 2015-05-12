@@ -377,8 +377,8 @@ class MatFile(GenericNetwork):
             # If that fails, use the max face area of the bounding cuboid
             A = max([yz, xz, xy])
         if not misc.iscoplanar(self['pore.coords'][face]):
-            logger.warning('The supplied pores are not coplanar. Area will be \
-                            approximate')
+            logger.warning('The supplied pores are not coplanar. Area will be'
+                           'approximate')
             pass
         return A
 

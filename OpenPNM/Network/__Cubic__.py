@@ -224,8 +224,8 @@ class Cubic(GenericNetwork):
         will usually work IF the list of values came only from 'internal' pores.
         """
         if sp.shape(values)[0] > self.num_pores('internal'):
-            raise Exception('The received values are bigger than the original \
-                             network')
+            raise Exception('The received values are bigger than the original'
+                            'network')
         Ps = sp.array(self['pore.index'][self.pores('internal')], dtype=int)
         arr = sp.ones(self._shape)*sp.nan
         ind = sp.unravel_index(Ps, self._shape)
@@ -329,8 +329,8 @@ class Cubic(GenericNetwork):
             # If that fails, use the max face area of the bounding cuboid
             A = max([yz, xz, xy])
         if not misc.iscoplanar(self['pore.coords'][face]):
-            logger.warning('The supplied pores are not coplanar. Area will be \
-                            approximate')
+            logger.warning('The supplied pores are not coplanar. Area will be'
+                           'approximate')
             pass
         return A
 
