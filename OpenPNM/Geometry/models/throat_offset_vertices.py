@@ -62,8 +62,8 @@ def distance_transform(network, geometry, offset, **kwargs):
     eroded_verts = sp.ndarray(Nt, dtype=object)
 
     res = 200
-    vertices = geometry["throat.vertices"]
-    normals = geometry["throat.normal"]
+    vertices = geometry['throat.vertices']
+    normals = geometry['throat.normal']
     z_axis = [0, 0, 1]
 
     for i in range(Nt):

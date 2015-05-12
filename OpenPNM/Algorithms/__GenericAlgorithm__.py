@@ -34,11 +34,8 @@ class GenericAlgorithm(Core):
 
     """
 
-    def __init__(self,network=None,**kwords):
-        r"""
-        Initialize
-        """
-        super(GenericAlgorithm,self).__init__(**kwords)
+    def __init__(self, network=None, **kwords):
+        super().__init__(**kwords)
         logger.name = self.name
 
         if network is None:
@@ -128,7 +125,7 @@ class GenericAlgorithm(Core):
         else:
             if sp.size(component)!=1:
                 raise Exception('For using set_boundary_conditions method, only one component should be specified.')
-        
+
         if mode not in ['merge','overwrite','remove']:
             raise Exception('The mode ('+mode+') cannot be applied to the set_boundary_conditions!')
 
@@ -191,9 +188,9 @@ class GenericAlgorithm(Core):
             if bctype == 'Neumann_group':  #Only scalars are acceptable
                 if sp.size(bcvalue) != 1:
                     raise Exception('When specifying Neumann_group, bcval should be a scalar')
-                else:   
+                else:
                     bcvalue = sp.float64(bcvalue)
-                    if 'Neumann_group' not in self._existing_BC: 
+                    if 'Neumann_group' not in self._existing_BC:
                         setattr(self,'_'+element+'_'+component.name+'_Neumann_group_location',[])
                     getattr(self,'_'+element+'_'+component.name+'_Neumann_group_location').append(loc)
             else: #Only scalars or Np/Nt-long are acceptable
