@@ -39,7 +39,7 @@ class GenericAlgorithm(Core):
         r"""
         Initialize
         """
-        super(GenericAlgorithm, self).__init__(**kwords)
+        super().__init__(**kwords)
         logger.name = self.name
 
         if network is None:
@@ -148,7 +148,7 @@ class GenericAlgorithm(Core):
                     raise Exception('No bctype/pore/throat is specified')
                 else:
                     for item in self.labels():
-                        if bctype == (item.split('.')[-1]).replace(self._phase.name + '_', ""):
+                        if bctype == (item.split('.')[-1]).replace(self._phase.name + '_', ''):
                             element = item.split('.')[0]
                             try:
                                 del self[element + '.' + component.name + '_bcval_' + bctype]

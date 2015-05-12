@@ -25,7 +25,7 @@ class GenericLinearTransport(GenericAlgorithm):
         r"""
         Initializing the class
         """
-        super(GenericLinearTransport, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if phase is None:
             self._phase = GenericPhase()
         else:
@@ -61,20 +61,19 @@ class GenericLinearTransport(GenericAlgorithm):
         RHS_added_data = sp.zeros(self.Np)
         for label in self.labels():
             if 'pore.source_' in label:
-                source_name = 'pore.' + (label.split('.')[-1]).replace('source_', "")
+                source_name = 'pore.' + (label.split('.')[-1]).replace('source_', '')
                 matching_physics = [phys for phys in self._phase._physics
                                     if source_name in phys.models.keys()]
                 for phys in matching_physics:
                     x = phys.models[source_name]['x']
                     if x != '' and type(x) == str:
                         if x.split('.')[-1] != quantity.split('.')[-1]:
-                            raise Exception(
-                                            'The quantity(pore.' + x.split('.')[-1] +
+                            raise Exception('The quantity(pore.' + x.split('.')[-1] +
                                             '), provided by source term(' + source_name +
                                             '), is different from the main quantity(pore.' +
                                             quantity.split('.')[-1] + ') in ' + self.name +
                                             ' algorithm.')
-                source_name = label.replace('pore.source_', "")
+                source_name = label.replace('pore.source_', '')
                 if 'pore.source_linear_s1_' + source_name in self.props():
                     prop1 = 'pore.source_linear_s1_' + source_name
                     pores = ~sp.isnan(self[prop1])
@@ -83,10 +82,10 @@ class GenericLinearTransport(GenericAlgorithm):
                     pores = ~sp.isnan(self[prop2])
                     RHS_added_data[pores] = RHS_added_data[pores] + self[prop2][pores]
         # Creating A and b based on the conductance values and new linear terms
-        logger.info("Creating Coefficient matrix for the algorithm")
+        logger.info('Creating Coefficient matrix for the algorithm')
         self.A = self._build_coefficient_matrix(modified_diag_pores=self.Ps,
                                                 diag_added_data=diag_added_data)
-        logger.info("Creating RHS matrix for the algorithm")
+        logger.info('Creating RHS matrix for the algorithm')
         self.b = self._build_RHS_matrix(modified_RHS_pores=self.Ps,
                                         RHS_added_data=-RHS_added_data)
 
@@ -143,7 +142,7 @@ class GenericLinearTransport(GenericAlgorithm):
                             if pores is 'all':
                                 for item in self.labels():
                                     if 'pore.source_' in item:
-                                        prop = (item.split('.')[-1]).replace('source_', "")
+                                        prop = (item.split('.')[-1]).replace('source_', '')
                                         del self['pore.source_' + prop]
                                         for s in s_mode:
                                             try:
@@ -157,7 +156,7 @@ class GenericLinearTransport(GenericAlgorithm):
                             else:
                                 for item in self.labels():
                                     if 'pore.source_' in item:
-                                        prop = (item.split('.')[-1]).replace('source_', "")
+                                        prop = (item.split('.')[-1]).replace('source_', '')
                                         self['pore.source_' + prop][pores] = False
                                         for s in s_mode:
                                             try:
@@ -218,7 +217,7 @@ class GenericLinearTransport(GenericAlgorithm):
                         try:
                             maxiter = int(maxiter)
                         except (ValueError, TypeError):
-                            raise Exception("input for maxiter cannot be converted to integer!")
+                            raise Exception('input for maxiter cannot be converted to integer!')
                         if maxiter > 0:
                             source_mode = 'nonlinear'
                         elif maxiter == 0:
@@ -230,7 +229,7 @@ class GenericLinearTransport(GenericAlgorithm):
                         try:
                             tol = float(tol)
                         except (ValueError, TypeError):
-                            raise Exception("input for tol cannot be converted to float!")
+                            raise Exception('input for tol cannot be converted to float!')
 
                     if 'pore.source_' + prop not in self.labels() or mode == 'overwrite':
                         self['pore.source_' + prop] = sp.zeros((self.Np,), dtype=bool)
@@ -266,7 +265,6 @@ class GenericLinearTransport(GenericAlgorithm):
                                 pass
                         self['pore.source_' + prop][loc] = True
 
-                        # for modes in ['update','merge','overwrite']
                         map_pores_loc = sp.in1d(map_pores, pores)
                         self['pore.source_' + source_mode + '_s1_' + prop][loc] = s_regen[:, 0][map_pores_loc]
                         self['pore.source_' + source_mode + '_s2_' + prop][loc] = s_regen[:, 1][map_pores_loc]
@@ -313,7 +311,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self._iterative_solver = iterative_solver
 
         # Executes the right algorithm
-        if any("pore.source_nonlinear" in s for s in self.props()):
+        if any('pore.source_nonlinear' in s for s in self.props()):
             X = self._do_one_outer_iteration(**kwargs)
         else:
             X = self._do_one_inner_iteration(A, b, **kwargs)
@@ -328,7 +326,7 @@ class GenericLinearTransport(GenericAlgorithm):
         r"""
         This method solves AX = b and returns the result to the corresponding algorithm.
         """
-        logger.info("Solving AX = b for the sparse matrices")
+        logger.info('Solving AX = b for the sparse matrices')
 
         if A is None:
             A = self.A
@@ -369,16 +367,16 @@ class GenericLinearTransport(GenericAlgorithm):
         # The main Picard loop
         while t > self._tol_for_all and step <= self._maxiter_for_all:
             X, t, A, b = self._do_inner_iteration_stage(guess=self._guess, **kwargs)
-            logger.info("tol for Picard source_algorithm in step " + str(step) + " : " + str(t))
+            logger.info('tol for Picard source_algorithm in step ' + str(step) + ' : ' + str(t))
             self._guess = X
             step += 1
         # Check for divergence
         self._steps = step
         if t >= self._tol_for_all and step > self._maxiter_for_all:
-            raise Exception("Iterative algorithm for the source term reached "
-                            "to the maxiter: " + str(self._maxiter_for_all) +
-                            " without achieving tol: " + str(self._tol_for_all))
-        logger.info("Picard algorithm for source term converged!")
+            raise Exception('Iterative algorithm for the source term reached '
+                            'to the maxiter: ' + str(self._maxiter_for_all) +
+                            ' without achieving tol: ' + str(self._tol_for_all))
+        logger.info('Picard algorithm for source term converged!')
         self.A = A
         self.b = b
         self._tol_reached = t
@@ -393,7 +391,7 @@ class GenericLinearTransport(GenericAlgorithm):
         s2 = sp.zeros(self._coeff_dimension)
         for label in self.labels():
             if 'pore.source_' in label:
-                source_name = label.replace('pore.source_', "")
+                source_name = label.replace('pore.source_', '')
                 if 'pore.source_nonlinear_s1_' + source_name in self.props():
                     tol = min(sp.unique(self['pore.source_tol'][self.pores('source_'+source_name)]))
                     maxiter = max(sp.unique(self['pore.source_maxiter'][self.pores('source_'+source_name)]))
@@ -431,7 +429,7 @@ class GenericLinearTransport(GenericAlgorithm):
         if throats is None:
             throats = self.Ts
 
-        phase_quantity = self._quantity.replace(self._phase.name + '_', "")
+        phase_quantity = self._quantity.replace(self._phase.name + '_', '')
         if phase_quantity not in self._phase.props():
             self._phase[phase_quantity] = sp.nan
         self._phase[phase_quantity][pores] = self[self._quantity][pores]
@@ -701,7 +699,7 @@ class GenericLinearTransport(GenericAlgorithm):
                 pass
 
         # Fetch area and length of domain
-        if "pore.vert_index" in self._net.props():
+        if 'pore.vert_index' in self._net.props():
             A = vo.vertex_dimension(network=self._net, face1=inlets, parm='area')
             L = vo.vertex_dimension(network=self._net, face1=inlets, face2=outlets,
                                     parm='length')
