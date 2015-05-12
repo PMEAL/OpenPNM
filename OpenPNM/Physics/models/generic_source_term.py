@@ -116,7 +116,7 @@ def power_law(physics, phase, A1='', A2='', A3='', x='',
             x = 'pore.' + x.split('.')[-1]
             try:
                 X = physics[x]
-            except:
+            except KeyError:
                 raise Exception(physics.name +
                                 ' does not have the pore property :' + x + '!')
         else:
@@ -188,7 +188,7 @@ def exponential(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
             x = 'pore.'+x.split('.')[-1]
             try:
                 X = physics[x]
-            except:
+            except KeyError:
                 raise Exception(physics.name +
                                 ' does not have the pore property :' + x + '!')
         else:
@@ -229,8 +229,8 @@ def exponential(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
         return a['1'] * a['2'] ** (a['3'] * X ** a['4'] + a['5']) + a['6']
     else:
         S1 = a['1'] * a['3'] * a['4'] * \
-             X ** (a['4'] - 1) * _sp.log(a['2']) * \
-             a['2'] ** (a['3'] * X ** a['4'] + a['5'])
+            X ** (a['4'] - 1) * _sp.log(a['2']) * \
+            a['2'] ** (a['3'] * X ** a['4'] + a['5'])
         S2 = a['1'] * a['2'] ** (a['3'] * X ** a['4'] + a['5']) * \
             (1 - a['3'] * a['4'] * _sp.log(a['2']) * X ** a['4']) + a['6']
         return(_sp.vstack((S1, S2)).T)
@@ -266,7 +266,7 @@ def natural_exponential(physics, phase, A1='', A2='', A3='', A4='', A5='',
             x = 'pore.'+x.split('.')[-1]
             try:
                 X = physics[x]
-            except:
+            except KeyError:
                 raise Exception(physics.name +
                                 ' does not have the pore property :' + x + '!')
         else:
@@ -307,8 +307,8 @@ def natural_exponential(physics, phase, A1='', A2='', A3='', A4='', A5='',
         return(a['1'] * _sp.exp(a['2'] * X ** a['3'] + a['4']) + a['5'])
     else:
         S1 = a['1'] * a['2'] * \
-             a['3'] * X ** (a['3'] - 1) * \
-             _sp.exp(a['2'] * X ** a['3'] + a['4'])
+            a['3'] * X ** (a['3'] - 1) * \
+            _sp.exp(a['2'] * X ** a['3'] + a['4'])
         S2 = a['1'] * (1 - a['2'] * a['3'] * X ** a['3']) * \
             _sp.exp(a['2'] * X ** a['3'] + a['4']) + a['5']
         return(_sp.vstack((S1, S2)).T)
@@ -344,7 +344,7 @@ def logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
             x = 'pore.' + x.split('.')[-1]
             try:
                 X = physics[x]
-            except:
+            except KeyError:
                 raise Exception(physics.name +
                                 ' does not have the pore property :' + x + '!')
         else:
@@ -386,8 +386,8 @@ def logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
                _sp.log(a['2']) + a['6'])
     else:
         S1 = a['1'] * a['3'] * a['4'] * \
-             X ** (a['4'] - 1) / \
-             (_sp.log(a['2']) * (a['3'] * X ** a['4'] + a['5']))
+            X ** (a['4'] - 1) / \
+            (_sp.log(a['2']) * (a['3'] * X ** a['4'] + a['5']))
         S2 = a['1'] * _sp.log(a['3'] * X ** a['4'] + a['5']) / \
             _sp.log(a['2']) + a['6'] - a['1'] * a['3'] * \
             a['4'] * X ** a['4'] / \
@@ -425,7 +425,7 @@ def natural_logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='',
             x = 'pore.' + x.split('.')[-1]
             try:
                 X = physics[x]
-            except:
+            except KeyError:
                 raise Exception(physics.name +
                                 ' does not have the pore property :' + x + '!')
         else:
@@ -467,8 +467,8 @@ def natural_logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='',
         return(a['1'] * _sp.log(a['2'] * X ** a['3'] + a['4']) + a['5'])
     else:
         S1 = a['1'] * a['2'] * a['3'] * \
-             X ** (a['3'] - 1) / \
-             (a['2'] * X ** a['3'] + a['4'])
+            X ** (a['3'] - 1) / \
+            (a['2'] * X ** a['3'] + a['4'])
         S2 = a['1'] * _sp.log(a['2'] * X ** a['3'] + a['4']) + \
             a['5'] - a['1'] * a['2'] * a['3'] * \
             X ** a['3'] / (a['2'] * X ** a['3'] + a['4'])
