@@ -1,3 +1,3 @@
 class PoreCentroidTest:
-  def test_voronoi(self):
-      pass
+    def test_voronoi(self):
+        pass
