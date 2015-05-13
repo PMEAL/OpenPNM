@@ -39,12 +39,14 @@ setup(
         'numpy',
         'scipy>=0.14.0',
         'matplotlib',
-        'noise'
+        'noise',
+        'scikit-image'
     ],
     tests_require = [
         'tox',
         'pytest',
         'pytest-cov',
+        'pytest-pep8',
         'python-coveralls',
         'interlude'
     ],

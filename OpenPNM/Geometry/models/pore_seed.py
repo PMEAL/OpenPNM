@@ -8,7 +8,8 @@ statistical pore size distributions
 """
 import scipy as _sp
 
-def perlin_noise(geometry,freq=1,octaves=4,mode='classic',**kwargs):
+
+def perlin_noise(geometry, freq=1, octaves=4, mode='classic', **kwargs):
     r"""
     Generate pore seed values using the Perlin noise algorithm.  This approach
     imparts some spatial clumpiness to the pore seeds.
@@ -40,14 +41,15 @@ def perlin_noise(geometry,freq=1,octaves=4,mode='classic',**kwargs):
     Examples
     --------
     >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[50,50,50])
+    >>> pn = OpenPNM.Network.Cubic(shape=[50, 50, 50])
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
-    >>> geom.add_model(propname='pore.seed',model=OpenPNM.Geometry.models.pore_seed.perlin_noise)
+    >>> geom.add_model(propname='pore.seed',
+    ...                model=OpenPNM.Geometry.models.pore_seed.perlin_noise)
     >>> im = pn.asarray(geom['pore.seed'])
 
     Visualizing the end result can be done with:
 
-    ``matplotlib.pyplot.imshow(im[:,25,:],interpolation='none')``
+    ``matplotlib.pyplot.imshow(im[:, 25, :],interpolation='none')``
 
     """
     from noise import pnoise3, snoise3
@@ -59,25 +61,26 @@ def perlin_noise(geometry,freq=1,octaves=4,mode='classic',**kwargs):
     elif mode == 'simplex':
         model = snoise3
     freq = freq * octaves
-    #The following will only work on Cubic networks
+    # The following will only work on Cubic networks
     x = net._shape[0]
     y = net._shape[1]
     z = net._shape[2]
-    temp = _sp.ndarray((x,y,z))
+    temp = _sp.ndarray((x, y, z))
     for k in range(z):
         for j in range(y):
             for i in range(x):
-                temp[i,j,k] = model(i / freq, j / freq, k / freq, octaves) + 0.5
-    #Assuming that the noise is normally distributed, find seeds of that dist
-    temp = _sp.reshape(temp,(temp.size,))
+                temp[i, j, k] = model(i / freq, j / freq, k / freq, octaves) + 0.5
+    # Assuming that the noise is normally distributed, find seeds of that dist
+    temp = _sp.reshape(temp, (temp.size,))
     x_mean = _sp.mean(temp)
     x_sigma = _sp.sqrt(1/(temp.size-1)*_sp.sum((temp - x_mean)**2))
-    fn1 = spst.norm(loc=x_mean,scale=x_sigma)
+    fn1 = spst.norm(loc=x_mean, scale=x_sigma)
     values = fn1.cdf(temp)
-    values = values[geometry.map_pores(target=net,pores=geometry.Ps)]
+    values = values[geometry.map_pores(target=net, pores=geometry.Ps)]
     return values.flatten()
 
-def distance_from_inclusion(geometry,p,**kwargs):
+
+def distance_from_inclusion(geometry, p, **kwargs):
     r"""
     Genrate spatially correlated pore seeds by calculating distance from random
     locations (inclusions) in the domain
@@ -98,14 +101,16 @@ def distance_from_inclusion(geometry,p,**kwargs):
     Notes
     -----
     - This method uses image analysis tools, so only works on Cubic networks
-    - At present the result contains edge artifacts since no inclusions are present beyond the image boundary
+    - At present the result contains edge artifacts since no inclusions are present
+      beyond the image boundary
 
     Examples
     --------
     >>> import OpenPNM
     >>> pn = OpenPNM.Network.Cubic(shape=[50,50,50])
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
-    >>> geom.add_model(propname='pore.seed',model=OpenPNM.Geometry.models.pore_seed.distance_from_inclusion,p = 0.001)
+    >>> model = OpenPNM.Geometry.models.pore_seed.distance_from_inclusion
+    >>> geom.add_model(propname='pore.seed', model=model, p=0.001)
     >>> im = pn.asarray(geom['pore.seed'])
 
     Visualizing the end result can be done with:
@@ -115,22 +120,23 @@ def distance_from_inclusion(geometry,p,**kwargs):
     """
     import scipy.ndimage as _spim
     net = geometry._net
-    #The following will only work on Cubic networks
+    # The following will only work on Cubic networks
     x = net._shape[0]
     y = net._shape[1]
     z = net._shape[2]
-    img = _sp.rand(x,y,z)>p
-    #Pad image by tiling
-    a = _sp.tile(img,[3,3,3])
-    b = a[x:-x,y:-y,z:-z]
-    #Perform distance transform
+    img = _sp.rand(x, y, z) > p
+    # Pad image by tiling
+    a = _sp.tile(img, [3, 3, 3])
+    b = a[x:-x, y:-y, z:-z]
+    # Perform distance transform
     img = _spim.distance_transform_bf(b)
-    #Convert back to pore-list
+    # Convert back to pore-list
     values = img.flatten()
-    values = values[geometry.map_pores(target=net,pores=geometry.Ps)]
+    values = values[geometry.map_pores(target=net, pores=geometry.Ps)]
     return values
 
-def spatially_correlated(geometry,network,weights=None,strel=None,**kwargs):
+
+def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
     r"""
     Generates pore seeds that are spatailly correlated with their neighbors.
 
@@ -167,43 +173,50 @@ def spatially_correlated(geometry,network,weights=None,strel=None,**kwargs):
 
     References
     ----------
-    .. [2] J. Gostick et al, Pore network modeling of fibrous gas diffusion layers for polymer electrolyte membrane fuel cells. J Power Sources 173 (2007) 277–290
+    .. [2] J. Gostick et al, Pore network modeling of fibrous gas diffusion layers
+           for polymer electrolyte membrane fuel cells. J Power Sources 173 (2007)
+           277–290
 
     Examples
     --------
     >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[50,50,50])
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
-    >>> geom.add_model(propname='pore.seed',model=OpenPNM.Geometry.models.pore_seed.spatially_correlated,weights=[2,2,2])
+    >>> pn = OpenPNM.Network.Cubic(shape=[50, 50, 50])
+    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
+    ...                                         pores=pn.Ps,
+    ...                                         throats=pn.Ts)
+    >>> geom.add_model(propname='pore.seed',
+    ...               model=OpenPNM.Geometry.models.pore_seed.spatially_correlated,
+    ...               weights=[2, 2, 2])
     >>> im = pn.asarray(geom['pore.seed'])
 
     Visualizing the end result can be done with:
 
-    ``matplotlib.pyplot.imshow(im[:,25,:],interpolation='none')``
+    ``matplotlib.pyplot.imshow(im[:, 25, :],interpolation='none')``
 
     """
     import scipy.ndimage as spim
     import scipy.stats as spst
-    #The following will only work on Cubic networks
+    # The following will only work on Cubic networks
     x = network._shape[0]
     y = network._shape[1]
     z = network._shape[2]
-    im = _sp.rand(x,y,z)
+    im = _sp.rand(x, y, z)
     if strel is None:  # Then generate a strel
         if sum(weights) == 0:
             # If weights of 0 are sent, then skip everything and return rands.
             return im.flatten()
         w = _sp.array(weights)
         strel = _sp.zeros(w*2+1)
-        strel[:,w[1],w[2]] = 1
-        strel[w[0],:,w[2]] = 1
-        strel[w[0],w[1],:] = 1
-    im = spim.convolve(im,strel)
-    #Convolution is no longer randomly distributed, so fit a gaussian and find it's seeds
+        strel[:, w[1], w[2]] = 1
+        strel[w[0], :, w[2]] = 1
+        strel[w[0], w[1], :] = 1
+    im = spim.convolve(im, strel)
+    # Convolution is no longer randomly distributed, so fit a gaussian
+    # and find it's seeds
     temp = im.flatten()
     x_mean = _sp.mean(temp)
     x_sigma = _sp.sqrt(1/(temp.size-1)*_sp.sum((temp - x_mean)**2))
-    fn1 = spst.norm(loc=x_mean,scale=x_sigma)
+    fn1 = spst.norm(loc=x_mean, scale=x_sigma)
     values = fn1.cdf(temp)
-    values = values[geometry.map_pores(target=network,pores=geometry.Ps)]
+    values = values[geometry.map_pores(target=network, pores=geometry.Ps)]
     return values

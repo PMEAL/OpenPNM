@@ -324,9 +324,9 @@ def rotation_matrix(angle, direction, point=None):
     R = numpy.diag([cosa, cosa, cosa])
     R += numpy.outer(direction, direction) * (1.0 - cosa)
     direction *= sina
-    R += numpy.array([[ 0.0,         -direction[2],  direction[1]],
-                      [ direction[2], 0.0,          -direction[0]],
-                      [-direction[1], direction[0],  0.0]])
+    R += numpy.array([[0.0, -direction[2], direction[1]],
+                      [direction[2], 0.0, -direction[0]],
+                      [-direction[1], direction[0], 0.0]])
     M = numpy.identity(4)
     M[:3, :3] = R
     if point is not None:
@@ -355,13 +355,13 @@ def rotation_from_matrix(matrix):
     w, W = numpy.linalg.eig(R33.T)
     i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
     if not len(i):
-        raise ValueError("no unit eigenvector corresponding to eigenvalue 1")
+        raise ValueError('No unit eigenvector corresponding to eigenvalue 1')
     direction = numpy.real(W[:, i[-1]]).squeeze()
     # point: unit eigenvector of R33 corresponding to eigenvalue of 1
     w, Q = numpy.linalg.eig(R)
     i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
     if not len(i):
-        raise ValueError("no unit eigenvector corresponding to eigenvalue 1")
+        raise ValueError('No unit eigenvector corresponding to eigenvalue 1')
     point = numpy.real(Q[:, i[-1]]).squeeze()
     point /= point[3]
     # rotation angle depending on direction
@@ -445,14 +445,13 @@ def scale_from_matrix(matrix):
     w, V = numpy.linalg.eig(M)
     i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
     if not len(i):
-        raise ValueError("no eigenvector corresponding to eigenvalue 1")
+        raise ValueError('No eigenvector corresponding to eigenvalue 1')
     origin = numpy.real(V[:, i[-1]]).squeeze()
     origin /= origin[3]
     return factor, origin, direction
 
 
-def projection_matrix(point, normal, direction=None,
-                      perspective=None, pseudo=False):
+def projection_matrix(point, normal, direction=None, perspective=None, pseudo=False):
     """Return matrix to project onto plane defined by point and normal.
 
     Using either perspective point, projection direction, or none of both.
@@ -621,10 +620,10 @@ def clip_matrix(left, right, bottom, top, near, far, perspective=False):
 
     """
     if left >= right or bottom >= top or near >= far:
-        raise ValueError("invalid frustum")
+        raise ValueError('invalid frustum')
     if perspective:
         if near <= _EPS:
-            raise ValueError("invalid frustum: near <= 0")
+            raise ValueError('invalid frustum: near <= 0')
         t = 2.0 * near
         M = [[t/(left-right), 0.0, (right+left)/(right-left), 0.0],
              [0.0, t/(bottom-top), (top+bottom)/(top-bottom), 0.0],
@@ -792,15 +791,14 @@ def decompose_matrix(matrix):
         angles[0] = math.atan2(row[1, 2], row[2, 2])
         angles[2] = math.atan2(row[0, 1], row[0, 0])
     else:
-        #angles[0] = math.atan2(row[1, 0], row[1, 1])
         angles[0] = math.atan2(-row[2, 1], row[1, 1])
         angles[2] = 0.0
 
     return scale, shear, angles, translate, perspective
 
 
-def compose_matrix(scale=None, shear=None, angles=None, translate=None,
-                   perspective=None):
+def compose_matrix(scale=None, shear=None, angles=None,
+                   translate=None, perspective=None):
     """Return transformation matrix from sequence of transformations.
 
     This is the inverse of the decompose_matrix function.
@@ -873,10 +871,10 @@ def orthogonalization_matrix(lengths, angles):
     cosa, cosb, cosg = numpy.cos(angles)
     co = (cosa * cosb - cosg) / (sina * sinb)
     return numpy.array([
-        [ a*sinb*math.sqrt(1.0-co*co),  0.0,    0.0, 0.0],
-        [-a*sinb*co,                    b*sina, 0.0, 0.0],
-        [ a*cosb,                       b*cosa, c,   0.0],
-        [ 0.0,                          0.0,    0.0, 1.0]])
+        [a*sinb*math.sqrt(1.0-co*co), 0.0, 0.0, 0.0],
+        [-a*sinb*co, b*sina, 0.0, 0.0],
+        [a*cosb, b*cosa, c, 0.0],
+        [0.0, 0.0, 0.0, 1.0]])
 
 
 def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):
@@ -965,10 +963,10 @@ def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):
         xx, yy, zz = numpy.sum(v0 * v1, axis=1)
         xy, yz, zx = numpy.sum(v0 * numpy.roll(v1, -1, axis=0), axis=1)
         xz, yx, zy = numpy.sum(v0 * numpy.roll(v1, -2, axis=0), axis=1)
-        N = [[xx+yy+zz, 0.0,      0.0,      0.0],
-             [yz-zy,    xx-yy-zz, 0.0,      0.0],
-             [zx-xz,    xy+yx,    yy-xx-zz, 0.0],
-             [xy-yx,    zx+xz,    yz+zy,    zz-xx-yy]]
+        N = [[xx+yy+zz, 0.0, 0.0, 0.0],
+             [yz-zy, xx-yy-zz, 0.0, 0.0],
+             [zx-xz, xy+yx, yy-xx-zz, 0.0],
+             [xy-yx, zx+xz, yz+zy, zz-xx-yy]]
         # quaternion: eigenvector corresponding to most positive eigenvalue
         w, V = numpy.linalg.eigh(N)
         q = V[:, numpy.argmax(w)]
@@ -1035,8 +1033,7 @@ def superimposition_matrix(v0, v1, scale=False, usesvd=True):
     """
     v0 = numpy.array(v0, dtype=numpy.float64, copy=False)[:3]
     v1 = numpy.array(v1, dtype=numpy.float64, copy=False)[:3]
-    return affine_matrix_from_points(v0, v1, shear=False,
-                                     scale=scale, usesvd=usesvd)
+    return affine_matrix_from_points(v0, v1, shear=False, scale=scale, usesvd=usesvd)
 
 
 def euler_matrix(ai, aj, ak, axes='sxyz'):
@@ -1135,22 +1132,22 @@ def euler_from_matrix(matrix, axes='sxyz'):
     if repetition:
         sy = math.sqrt(M[i, j]*M[i, j] + M[i, k]*M[i, k])
         if sy > _EPS:
-            ax = math.atan2( M[i, j],  M[i, k])
-            ay = math.atan2( sy,       M[i, i])
-            az = math.atan2( M[j, i], -M[k, i])
+            ax = math.atan2(M[i, j], M[i, k])
+            ay = math.atan2(sy, M[i, i])
+            az = math.atan2(M[j, i], -M[k, i])
         else:
-            ax = math.atan2(-M[j, k],  M[j, j])
-            ay = math.atan2( sy,       M[i, i])
+            ax = math.atan2(-M[j, k], M[j, j])
+            ay = math.atan2(sy, M[i, i])
             az = 0.0
     else:
         cy = math.sqrt(M[i, i]*M[i, i] + M[j, i]*M[j, i])
         if cy > _EPS:
-            ax = math.atan2( M[k, j],  M[k, k])
-            ay = math.atan2(-M[k, i],  cy)
-            az = math.atan2( M[j, i],  M[i, i])
+            ax = math.atan2(M[k, j], M[k, k])
+            ay = math.atan2(-M[k, i], cy)
+            az = math.atan2(M[j, i], M[i, i])
         else:
-            ax = math.atan2(-M[j, k],  M[j, j])
-            ay = math.atan2(-M[k, i],  cy)
+            ax = math.atan2(-M[j, k], M[j, j])
+            ay = math.atan2(-M[k, i], cy)
             az = 0.0
 
     if parity:
@@ -1265,10 +1262,10 @@ def quaternion_matrix(quaternion):
     q *= math.sqrt(2.0 / n)
     q = numpy.outer(q, q)
     return numpy.array([
-        [1.0-q[2, 2]-q[3, 3],     q[1, 2]-q[3, 0],     q[1, 3]+q[2, 0], 0.0],
-        [    q[1, 2]+q[3, 0], 1.0-q[1, 1]-q[3, 3],     q[2, 3]-q[1, 0], 0.0],
-        [    q[1, 3]-q[2, 0],     q[2, 3]+q[1, 0], 1.0-q[1, 1]-q[2, 2], 0.0],
-        [                0.0,                 0.0,                 0.0, 1.0]])
+        [1.0-q[2, 2]-q[3, 3], q[1, 2]-q[3, 0], q[1, 3]+q[2, 0], 0.0],
+        [q[1, 2]+q[3, 0], 1.0-q[1, 1]-q[3, 3], q[2, 3]-q[1, 0], 0.0],
+        [q[1, 3]-q[2, 0], q[2, 3]+q[1, 0], 1.0-q[1, 1]-q[2, 2], 0.0],
+        [0.0, 0.0, 0.0, 1.0]])
 
 
 def quaternion_from_matrix(matrix, isprecise=False):
@@ -1335,10 +1332,10 @@ def quaternion_from_matrix(matrix, isprecise=False):
         m21 = M[2, 1]
         m22 = M[2, 2]
         # symmetric matrix K
-        K = numpy.array([[m00-m11-m22, 0.0,         0.0,         0.0],
-                         [m01+m10,     m11-m00-m22, 0.0,         0.0],
-                         [m02+m20,     m12+m21,     m22-m00-m11, 0.0],
-                         [m21-m12,     m02-m20,     m10-m01,     m00+m11+m22]])
+        K = numpy.array([[m00-m11-m22, 0.0, 0.0, 0.0],
+                         [m01+m10, m11-m00-m22, 0.0, 0.0],
+                         [m02+m20, m12+m21, m22-m00-m11, 0.0],
+                         [m21-m12, m02-m20, m10-m01, m00+m11+m22]])
         K /= 3.0
         # quaternion is eigenvector of K that corresponds to largest eigenvalue
         w, V = numpy.linalg.eigh(K)
@@ -1359,9 +1356,9 @@ def quaternion_multiply(quaternion1, quaternion0):
     w0, x0, y0, z0 = quaternion0
     w1, x1, y1, z1 = quaternion1
     return numpy.array([-x1*x0 - y1*y0 - z1*z0 + w1*w0,
-                         x1*w0 + y1*z0 - z1*y0 + w1*x0,
+                        x1*w0 + y1*z0 - z1*y0 + w1*x0,
                         -x1*z0 + y1*w0 + z1*x0 + w1*y0,
-                         x1*y0 - y1*x0 + z1*w0 + w1*z0], dtype=numpy.float64)
+                        x1*y0 - y1*x0 + z1*w0 + w1*z0], dtype=numpy.float64)
 
 
 def quaternion_conjugate(quaternion):
@@ -1822,14 +1819,10 @@ def angle_between_vectors(v0, v1, directed=True, axis=0):
         dot /= vector_norm(v0, axis=axis) * vector_norm(v1, axis=axis)
     except RuntimeWarning:
         "Do nothing"
-        #print(v0,v1)
-        #dot =0
     try:
-        angle= numpy.arccos(dot if directed else numpy.fabs(dot))
-
+        angle = numpy.arccos(dot if directed else numpy.fabs(dot))
     except RuntimeWarning:
-        angle=0
-        #print("Run time error on arccos, v0: " + str(v0) + " v1: " + str(v1) + " dot: " +str(dot))
+        angle = 0
     return angle
 
 
@@ -1880,7 +1873,8 @@ def is_same_transform(matrix0, matrix1):
     matrix1 /= matrix1[3, 3]
     return numpy.allclose(matrix0, matrix1)
 
-def rotate_and_chop(verts,normal,axis=[0,0,1]):
+
+def rotate_and_chop(verts, normal, axis=[0, 0, 1]):
     r"""
     Method to rotate a set of vertices (or coords) to align with an axis
     points must be coplanar and normal must be given
@@ -1888,36 +1882,38 @@ def rotate_and_chop(verts,normal,axis=[0,0,1]):
     Used to prepare verts for printing or calculating convex hull in order to arrange
     them in hull order for calculations and printing
     """
-    xaxis=[1,0,0]
-    yaxis=[0,1,0]
-    zaxis=[0,0,1]
-    angle = angle_between_vectors(normal,axis)
-    if (angle==0.0)or(angle==numpy.pi):
-        "We are already aligned"
+    xaxis = [1, 0, 0]
+    yaxis = [0, 1, 0]
+    zaxis = [0, 0, 1]
+    angle = angle_between_vectors(normal, axis)
+    if angle == 0.0 or angle == numpy.pi:
+        # We are already aligned
         facet = verts
     else:
-        M = rotation_matrix(angle_between_vectors(normal,axis),vector_product(normal,axis))
+        M = rotation_matrix(angle_between_vectors(normal, axis),
+                            vector_product(normal, axis))
         try:
-            facet = numpy.dot(verts,M[:3,:3].T)
+            facet = numpy.dot(verts, M[:3, :3].T)
         except ValueError:
             print(verts)
-            print(M[:3,:3].T)
+            print(M[:3, :3].T)
     try:
-        x = facet[:,0]
-        y = facet[:,1]
-        z = facet[:,2]
+        x = facet[:, 0]
+        y = facet[:, 1]
+        z = facet[:, 2]
     except IndexError:
         x = facet[0]
         y = facet[1]
         z = facet[2]
-    " Work out span of points and set axes scales to cover this and be equal in both dimensions "
+    # Work out span of points and set axes scales to cover this and be
+    # equal in both dimensions
     if axis == xaxis:
-        output = numpy.column_stack((y,z))
+        output = numpy.column_stack((y, z))
     elif axis == yaxis:
-        output = numpy.column_stack((x,z))
+        output = numpy.column_stack((x, z))
     elif axis == zaxis:
-        output = numpy.column_stack((x,y))
+        output = numpy.column_stack((x, y))
     else:
         output = facet
-    
+
     return output

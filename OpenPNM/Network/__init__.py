@@ -25,7 +25,7 @@ Classes
 
 .. autoclass:: DelaunayCubic
    :members:
-   
+
 .. autoclass:: MatFile
    :members:
 

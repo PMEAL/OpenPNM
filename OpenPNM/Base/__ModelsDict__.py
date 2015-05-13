@@ -9,6 +9,7 @@ from collections import OrderedDict
 from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
 
+
 class ModelWrapper(dict):
     r"""
     Accepts a model from the OpenPNM model library, as well as all required
@@ -16,33 +17,38 @@ class ModelWrapper(dict):
     various methods for working with the models.
 
     """
-    def __init__(self,**kwargs):
+
+    COMPONENTS = ['model', 'network', 'geometry', 'phase', 'physics', 'propname']
+
+    def __init__(self, **kwargs):
         self.update(**kwargs)
 
     def __call__(self):
         return self['model'](**self)
 
     def __str__(self):
-        header = '-'*60
+        header = '-' * 60
         print(header)
-        print(self['model'].__module__+'.'+self['model'].__name__)
+        print(self['model'].__module__ + '.' + self['model'].__name__)
         print(header)
-        print("{a:<20s} {b}".format(a='Argument Name',b='Value / (Default)'))
+        print('{a:<20s} {b}'.format(a='Argument Name', b='Value / (Default)'))
         print(header)
         # Scan default argument names and values of model
         defs = {}
-        if self['model'].__defaults__ != None:
+        if self['model'].__defaults__ is not None:
             vals = list(inspect.getargspec(self['model']).defaults)
             keys = inspect.getargspec(self['model']).args[-len(vals):]
             # Put defaults into the dict
-            defs.update(zip(keys,vals))
+            defs.update(zip(keys, vals))
         keys = list(self.keys())
         keys.sort()
         for item in keys:
-            if item not in ['model','network','geometry','phase','physics','propname']:
+            if item not in self.COMPONENTS:
                 if item not in defs.keys():
                     defs[item] = '---'
-                print("{a:<20s} {b} / ({c})".format(a=item, b=self[item], c=defs[item]))
+                print('{a:<20s} {b} / ({c})'.format(a=item,
+                                                    b=self[item],
+                                                    c=defs[item]))
         print(header)
         return ' '
 
@@ -51,7 +57,7 @@ class ModelWrapper(dict):
         Regenerate the model
         """
         master = self._find_master()
-        #Determine object type, and assign associated objects
+        # Determine object type, and assign associated objects
         self_type = [item.__name__ for item in master.__class__.__mro__]
         kwargs = {}
         if 'GenericGeometry' in self_type:
@@ -78,8 +84,12 @@ class ModelWrapper(dict):
                     if ctrl[item].models[model] is self:
                         master.append(ctrl[item])
         if len(master) > 1:
-            raise Exception('More than one master found! This model dictionary has been associated with multiple objects. To use the same dictionary multiple times use the copy method.')
+            raise Exception('More than one master found! This model dictionary '
+                            'has been associated with multiple objects. To use '
+                            'the same dictionary multiple times use the copy'
+                            'method.')
         return master[0]
+
 
 class ModelsDict(OrderedDict):
     r"""
@@ -106,25 +116,29 @@ class ModelsDict(OrderedDict):
     >>> boun.models = mod  # Use the same set of models on boun as geom
     """
 
-    def __setitem__(self,propname,model):
-        temp = ModelWrapper(propname=propname,model=None)
+    def __setitem__(self, propname, model):
+        temp = ModelWrapper(propname=propname, model=None)
         temp.update(**model)
-        super(ModelsDict,self).__setitem__(propname,temp)
+        super().__setitem__(propname, temp)
 
     def __str__(self):
-        header = '-'*60
+        header = '-' * 60
         print(header)
-        print("{n:<5s} {a:<30s} {b:<20s}".format(n='#', a='Property Name', b='Regeneration Mode'))
+        print('{n:<5s} {a:<30s} {b:<20s}'.format(n='#',
+                                                 a='Property Name',
+                                                 b='Regeneration Mode'))
         print(header)
         count = 0
         for item in self.keys():
-            print("{n:<5d} {a:<30s} {b:<20s}".format(n=count, a=item, b=self[item]['regen_mode']))
+            print('{n:<5d} {a:<30s} {b:<20s}'.format(n=count,
+                                                     a=item,
+                                                     b=self[item]['regen_mode']))
             count += 1
         print(header)
         return ' '
 
     def keys(self):
-        return list(super(ModelsDict,self).keys())
+        return list(super().keys())
 
     def regenerate(self, props='', mode='inclusive'):
         r"""
@@ -145,11 +159,13 @@ class ModelsDict(OrderedDict):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
+        ...                                         pores=pn.pores(),
+        ...                                         throats=pn.throats())
         >>> geom['pore.diameter'] = 1
         >>> import OpenPNM.Geometry.models as gm  # Import Geometry model library
         >>> f = gm.pore_area.cubic
-        >>> geom.add_model(propname='pore.area',model=f)  # Add model to Geometry object
+        >>> geom.add_model(propname='pore.area', model=f)
         >>> geom['pore.area'][0]  # Look at area value in pore 0
         1
         >>> geom['pore.diameter'] = 2
@@ -158,10 +174,13 @@ class ModelsDict(OrderedDict):
         4
 
         """
+
         master = self._find_master()
-        if props == '':  # If empty, assume all models are to be regenerated
+        # If empty, assume all models are to be regenerated
+        if props == '':
             props = list(self.keys())
-            for item in props:  # Remove models if they are meant to be regenerated 'on_demand' only
+            # Remove models if they are meant to be regenerated 'on_demand' only
+            for item in props:
                 if self[item]['regen_mode'] == 'on_demand':
                     props.remove(item)
         elif type(props) == str:
@@ -179,12 +198,12 @@ class ModelsDict(OrderedDict):
         for item in props:
             if item in list(self.keys()):
                 master[item] = self[item].regenerate()
-                logger.info(str(count)+' : '+item)
+                logger.info(str(count) + ' : ' + item)
                 count += 1
             else:
-                logger.warning('Requested proptery is not a dynamic model: '+item)
+                logger.warning('Requested proptery is not a dynamic model: ' + item)
 
-    def add(self,propname,model,regen_mode='normal',**kwargs):
+    def add(self, propname, model, regen_mode='normal', **kwargs):
         r"""
         Add specified property estimation model to the object.
 
@@ -200,13 +219,17 @@ class ModelsDict(OrderedDict):
         regen_mode : string
             Controls when and if the property is regenerated. Options are:
 
-            * 'normal' : The property is stored as static data and is only regenerated when the object's ``regenerate`` is called
+            * 'normal' : The property is stored as static data and is only
+                         regenerated when the object's ``regenerate`` is called
 
-            * 'constant' : The property is calculated once when this method is first run, but always maintains the same value
+            * 'constant' : The property is calculated once when this method is first
+                           run, but always maintains the same value
 
-            * 'deferred' : The model is stored on the object but not run until ``regenerate`` is called
+            * 'deferred' : The model is stored on the object but not run until
+                           ``regenerate`` is called
 
-            * 'on_demand' : The model is stored on the object but not run, AND will only run if specifically requested in ``regenerate``
+            * 'on_demand' : The model is stored on the object but not run, AND will
+                            only run if specifically requested in ``regenerate``
 
         Notes
         -----
@@ -238,28 +261,29 @@ class ModelsDict(OrderedDict):
         <BLANKLINE>
         """
         master = self._find_master()
-        if master == None:
-            logger.warning('ModelsDict has no master, changing regen_mode to deferred')
+        if master is None:
+            logger.warning('ModelsDict has no master, changing regen_mode \
+                            to deferred')
             regen_mode = 'deferred'
-        #Build dictionary containing default model values, plus other required info
-        f = {'model':model,'regen_mode':regen_mode}
+        # Build dictionary containing default model values, plus other required info
+        f = {'model': model, 'regen_mode': regen_mode}
         # Scan default argument names and values of model
-        if model.__defaults__ != None:
+        if model.__defaults__ is not None:
             vals = list(inspect.getargspec(model).defaults)
             keys = inspect.getargspec(model).args[-len(vals):]
             # Put defaults into the dict
-            f.update(zip(keys,vals))
+            f.update(zip(keys, vals))
         # Update dictionary with supplied arguments, overwriting defaults
         f.update(**kwargs)
         # Add model to ModelsDict
         self[propname] = f
         # Now generate data as necessary
-        if regen_mode in ['normal','constant']:
+        if regen_mode in ['normal', 'constant']:
             master[propname] = self[propname].regenerate()
-        if regen_mode in ['deferred','on_demand']:
+        if regen_mode in ['deferred', 'on_demand']:
             pass
 
-    def remove(self,propname):
+    def remove(self, propname):
         r"""
         Removes selected model from the dictionary, as well as removing its
         associated data from the master Core object.
@@ -270,10 +294,10 @@ class ModelsDict(OrderedDict):
             The name of the model to remove
         """
         master = self._find_master()
-        temp = master.pop(propname,None)
+        temp = master.pop(propname, None)
         del self[propname]
 
-    def reorder(self,new_order):
+    def reorder(self, new_order):
         r"""
         Reorders the models on the object to change the order in which they
         are regenerated, where item 0 is calculated first.
@@ -288,24 +312,26 @@ class ModelsDict(OrderedDict):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
+        >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,
+        ...                                      pores=pn.Ps,
+        ...                                      throats=pn.Ts)
         >>> geom.models.keys()
         ['pore.seed', 'throat.seed', 'throat.length']
-        >>> geom.models.reorder({'pore.seed':1,'throat.length':0})
+        >>> geom.models.reorder({'pore.seed': 1, 'throat.length': 0})
         >>> geom.models.keys()
         ['throat.length', 'pore.seed', 'throat.seed']
 
         """
-        #Generate numbered list of current models
+        # Generate numbered list of current models
         order = [item for item in list(self.keys())]
-        #Remove supplied models from list
+        # Remove supplied models from list
         for item in new_order:
             order.remove(item)
-        #Add models back to list in new order
+        # Add models back to list in new order
         inv_dict = {v: k for k, v in new_order.items()}
         for item in inv_dict:
-            order.insert(item,inv_dict[item])
-        #Now rebuild models OrderedDict in new order
+            order.insert(item, inv_dict[item])
+        # Now rebuild models OrderedDict in new order
         for item in order:
             self.move_to_end(item)
 
@@ -316,7 +342,9 @@ class ModelsDict(OrderedDict):
             if ctrl[item].models is self:
                 master.append(ctrl[item])
         if len(master) > 1:
-            raise Exception('More than one master found! This model dictionary has been associated with multiple objects. To use the same dictionary multiple times use the copy method.')
+            raise Exception('More than one master found! This model dictionary '
+                            'has been associated with multiple objects. To use the '
+                            'same dictionary multiple times use the copy method.')
         return master[0]
 
 if __name__ == '__main__':

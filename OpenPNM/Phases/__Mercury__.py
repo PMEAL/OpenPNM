@@ -2,6 +2,7 @@
 from OpenPNM.Phases import GenericPhase
 from OpenPNM.Phases import models as fm
 
+
 class Mercury(GenericPhase):
     r"""
     Creates Phase object with a default name 'Hg' and preset values for
@@ -20,7 +21,8 @@ class Mercury(GenericPhase):
 
     References
     ----------
-    [1] Thermophysical Properties of Materials for Nuclear Engineering: IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:
+    [1] Thermophysical Properties of Materials for Nuclear Engineering: IAEA,
+        Vienna, 2008. ISBN 978-92-0-106508-7:
 
     Examples
     --------
@@ -29,8 +31,8 @@ class Mercury(GenericPhase):
     >>> hg = OpenPNM.Phases.Mercury(network=pn)
 
     """
-    def __init__(self,name=None,**kwargs):
-        super(Mercury,self).__init__(name=name,**kwargs)
+    def __init__(self, name=None, **kwargs):
+        super().__init__(name=name, **kwargs)
         self._generate()
 
     def _generate(self):
@@ -40,32 +42,28 @@ class Mercury(GenericPhase):
         self['pore.critical_volume'] = 0.000189                        # kg/m3
         self['pore.contact_angle'] = 140                               # Degree
         self.models.add(propname='pore.vapor_pressure',                 # Pa
-                       model=fm.vapor_pressure.antoine,
-                       A=9.85767,
-                       B=3007.129,
-                       C=-10.001)
+                        model=fm.vapor_pressure.antoine,
+                        A=9.85767, B=3007.129, C=-10.001)
         self.models.add(propname='pore.density',                        # kg/m3
-                       model=fm.misc.linear,
-                       poreprop='pore.temperature',
-                       b=14280.9,
-                       m=-2.47004)
+                        model=fm.misc.linear,
+                        poreprop='pore.temperature',
+                        b=14280.9, m=-2.47004)
         self.models.add(propname='pore.molar_density',
-                       model=fm.molar_density.standard)                # mol/m3
+                        model=fm.molar_density.standard)                # mol/m3
         self.models.add(propname='pore.surface_tension',                # N/m
-                       model=fm.misc.linear,
-                       poreprop='pore.temperature',
-                       b=0.56254,
-                       m=-0.00028)
+                        model=fm.misc.linear,
+                        poreprop='pore.temperature',
+                        b=0.56254, m=-0.00028)
         self.models.add(propname='pore.thermal_conductivity',           # W/m.K
-                       model=fm.misc.polynomial,
-                       poreprop='pore.temperature',
-                       a = [3.98691,0.0170967, -0.0000063862])
+                        model=fm.misc.polynomial,
+                        poreprop='pore.temperature',
+                        a=[3.98691, 0.0170967, -0.0000063862])
         self.models.add(propname='pore.viscosity',                      # kg/m.s
-                       model=fm.misc.polynomial,
-                       poreprop='pore.temperature',
-                       a = [0.00355837,-0.0000100131,1.23684E-08,-5.16836E-12])
+                        model=fm.misc.polynomial,
+                        poreprop='pore.temperature',
+                        a=[0.00355837, -0.0000100131, 1.23684E-08, -5.16836E-12])
 
-if __name__ =="__main__":
+if __name__ == '__main__':
     import OpenPNM
     pn = OpenPNM.Network.TestNet()
     air = OpenPNM.Phases.Air(network=pn)
