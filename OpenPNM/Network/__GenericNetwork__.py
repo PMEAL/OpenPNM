@@ -350,7 +350,7 @@ class GenericNetwork(Core):
         """
         pores = sp.array(pores, ndmin=1)
         if sp.size(pores) == 0:
-            return sp.array([],ndmin=1)
+            return sp.array([], ndmin=1)
         #Test for existence of incidence matrix
         try:
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
@@ -420,7 +420,7 @@ class GenericNetwork(Core):
         """
         pores = sp.array(pores,ndmin=1)
         if sp.size(pores) == 0:
-            return sp.array([],ndmin=1)
+            return sp.array([], ndmin=1)
         # Test for existence of incidence matrix
         try:
             neighborTs = self._incidence_matrix['lil'].rows[[pores]]
