@@ -28,10 +28,10 @@ class PrintableDict(_odict):
     def __str__(self):
         header = '-' * 60
         print(header)
-        print("{a:<25s} {b:<25s}".format(a='key', b='value'))
+        print('{a:<25s} {b:<25s}'.format(a='key', b='value'))
         print(header)
         for item in self.keys():
-            print("{a:<25s} {b}".format(a=item, b=self[item]))
+            print('{a:<25s} {b}'.format(a=item, b=self[item]))
         print(header)
         return ''
 

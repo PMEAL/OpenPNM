@@ -122,20 +122,19 @@ class ModelsDict(OrderedDict):
         super().__setitem__(propname, temp)
 
     def __str__(self):
-        header = '-' * 60
-        print(header)
-        print('{n:<5s} {a:<30s} {b:<20s}'.format(n='#',
-                                                 a='Property Name',
-                                                 b='Regeneration Mode'))
-        print(header)
-        count = 0
-        for item in self.keys():
-            print('{n:<5d} {a:<30s} {b:<20s}'.format(n=count,
-                                                     a=item,
-                                                     b=self[item]['regen_mode']))
-            count += 1
-        print(header)
-        return ' '
+        horizontal_rule = ('-' * 60) + '\n'
+        string = ''
+        string += horizontal_rule
+        string += '{n:<5s} {a:<30s} {b}\n'.format(n='#',
+                                                  a='Property Name',
+                                                  b='Regeneration Mode')
+        string += horizontal_rule
+        for item, i in self.keys():
+            string += '{n:<5d} {a:<30s} {b:<20s}'.format(n=(i + 1),
+                                                         a=item,
+                                                         b=self[item]['regen_mode'])
+        string += horizontal_rule
+        return string
 
     def keys(self):
         return list(super().keys())

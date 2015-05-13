@@ -16,7 +16,7 @@ before_install:
 
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib
-  - pip install pytest python-coveralls pytest-cov pytest-pep8
+  - pip install -r test_requirements.txt
   - python setup.py install
 
 script:
