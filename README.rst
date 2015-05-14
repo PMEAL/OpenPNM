@@ -43,10 +43,10 @@ Documentation
 
 OpenPNM documentation is available on the web:
 
-    http://openpnm.org
+    http://openpnm.org/docs
 
 
-Web sites
+Web Sites
 ---------
 
 The user's site is:
@@ -54,8 +54,10 @@ The user's site is:
     http://openpnm.org
 
 
-Mailing Lists
+Communication
 -------------
+
+For information on the latest releases and other important events, join the OpenPNM mailing list
 
 Please see the developer's discussion on GitHub:
 
