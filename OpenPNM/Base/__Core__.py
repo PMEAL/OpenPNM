@@ -486,7 +486,7 @@ class Core(dict):
         >>> pn.labels(pores=[0,1,5,6],mode='intersection')
         ['pore.all', 'pore.bottom']
         """
-        if (pores == []) and (throats == []):
+        if (sp.size(pores) == 0) and (sp.size(throats) == 0):
             if element == '':
                 temp = []
                 temp = self._get_labels(element='pore')
@@ -498,12 +498,12 @@ class Core(dict):
             else:
                 logger.error('Unrecognized element')
                 return
-        elif pores is not []:
+        elif sp.size(pores) != 0:
             if pores == 'all':
                 pores = self.pores()
             pores = sp.array(pores,ndmin=1)
             temp = self._get_labels(element='pore',locations=pores, mode=mode)
-        elif throats is not []:
+        elif sp.size(throats) != 0:
             if throats == 'all':
                 throats = self.throats()
             throats = sp.array(throats,ndmin=1)
