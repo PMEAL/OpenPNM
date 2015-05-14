@@ -1,6 +1,6 @@
 [run]
-source = OpenPNM
-
-[report]
 omit =
     *__init__*
+    test/*
+    setup.py
+    run_script.py
