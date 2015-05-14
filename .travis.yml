@@ -12,7 +12,7 @@ before_install:
   - conda update --yes conda
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
   - sudo rm -rf /dev/shm
-  - sudo ln -s /run/shm /dev/shmd
+  - sudo ln -s /run/shm /dev/shm
 
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib
