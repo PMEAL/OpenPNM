@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
+import OpenPNM
+
 sys.path.append(os.getcwd())
 
 try:
@@ -12,7 +14,7 @@ except ImportError:
 setup(
     name = 'OpenPNM',
     description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials.',
-    version = '1.1',
+    version = OpenPNM.__version__,
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
