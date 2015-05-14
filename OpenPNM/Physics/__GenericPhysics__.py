@@ -63,7 +63,7 @@ class GenericPhysics(OpenPNM.Base.Core):
             self._phases.append(phase)  # Register phase with self
 
         if geometry is not None:
-            if (pores != []) or (throats != []):
+            if (sp.size(pores) > 0) or (sp.size(throats) > 0):
                 raise Exception('Cannot specify a Geometry AND pores or throats')
             pores = self._net.toindices(self._net['pore.' + geometry.name])
             throats = self._net.toindices(self._net['throat.' + geometry.name])
