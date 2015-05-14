@@ -415,7 +415,7 @@ class Core(dict):
                 if self[item].dtype in ['bool']:
                     labels.append(item)
         labels.sort()
-        if locations == []:
+        if sp.size(locations) == 0:
             return Tools.PrintableList(labels)
         else:
             labels = sp.array(labels)
@@ -551,10 +551,10 @@ class Core(dict):
         if type(labels) == str:  # Convert input to list
             labels = [labels]
         # Convert inputs to locations and element
-        if pores != []:
+        if sp.size(pores) > 0:
             element = 'pore'
             locations = sp.array(pores)
-        if throats != []:
+        if sp.size(throats) > 0:
             element = 'throat'
             locations = sp.array(throats)
         # Do it
