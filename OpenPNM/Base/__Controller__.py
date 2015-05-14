@@ -69,7 +69,7 @@ class Controller(dict):
         logger.setLevel(level)
 
     def _getloglevel(self):
-        print('Log level is currently set to -->', logger.level)
+        return 'Log level is currently set to: ' + str(logger.level)
 
     loglevel = property(fget=_getloglevel, fset=_setloglevel)
 

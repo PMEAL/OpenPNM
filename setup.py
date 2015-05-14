@@ -42,14 +42,6 @@ setup(
         'noise',
         'scikit-image'
     ],
-    tests_require = [
-        'tox',
-        'pytest',
-        'pytest-cov',
-        'pytest-pep8',
-        'python-coveralls',
-        'interlude'
-    ],
     author = 'OpenPNM Team',
     author_email = 'jeff.gostick@mcgill.ca',
     download_url = 'https://github.com/pmeal/OpenPNM/',

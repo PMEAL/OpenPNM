@@ -40,7 +40,7 @@ def test_controller():
     ctrl.purge_object(geom2)  # Purge Geometry from simulation
     assert geom2.name not in ctrl.keys()  # Geometry is purged from Controller
     assert 'pore.'+geom2.name not in pn2.keys()  # Geometry label is removed from Simulation objects too
-    
+
 def test_cubic_standard_call():
     pn = OpenPNM.Network.Cubic(shape=[3,4,5])
     np.testing.assert_almost_equal(pn['pore.coords'][0], [0.5,0.5,0.5])
@@ -55,7 +55,7 @@ def test_trim_extend():
     pn.extend(pore_coords=[0,0,0],throat_conns=[[124,0]])
     assert [pn.Np,pn.Nt] == [125,298]
     assert sp.all(sp.in1d(pn.find_neighbor_pores(pores=0),[ 1,  5, 25, 124]))
-  
+
 def test_stitch():
     ctrl = OpenPNM.Base.Controller()
     [Nx,Ny,Nz]=[10,10,10]
@@ -96,7 +96,7 @@ def test_linear_solvers():
   alg_3.set_boundary_conditions(bctype='Neumann_group', bcvalue = -3e-10, pores=BC1_pores)
   alg_3.set_boundary_conditions(bctype='Dirichlet', bcvalue=0, pores=BC2_pores)
   alg_3.run()
-  
+
   alg_4 = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
   alg_4.set_boundary_conditions(bctype='Neumann_group', bcvalue = -3e-10, pores=BC1_pores)
   alg_4.set_boundary_conditions(bctype='Dirichlet', bcvalue=0, pores=BC2_pores)
@@ -154,8 +154,6 @@ def test_open_air_diffusivity():
     phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
     BC1_pores = pn.pores(labels=['top_boundary'])
     BC2_pores = pn.pores(labels=['bottom_boundary'])
-    print('length =',round(pn.domain_length(BC1_pores,BC2_pores)))
-    print('area = ',round(pn.domain_area(BC1_pores),2),round(pn.domain_area(BC2_pores),2))
     Diff = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
     # Assign Dirichlet boundary conditions to top and bottom surface pores
     Diff.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
@@ -328,7 +326,7 @@ def test_mapping():
     a = geom3.map_throats(throats=geom3.Ts,target=pn)
     b = pn.map_throats(throats=a,target=geom3)
     assert(sp.all(b == geom3.Ts))
-    
+
 def test_geometries():
     ctrl = OpenPNM.Base.Controller()
     pn = OpenPNM.Network.TestNet()
@@ -349,8 +347,3 @@ def test_geometries():
     pn = OpenPNM.Network.Delaunay(num_pores=20,domain_size=[1,1,1])
     geom = OpenPNM.Geometry.Voronoi(network=pn,pores=pn.Ps,throats=pn.Ts)
     ctrl.clear()
-    
-    
-
-if __name__ == '__main__':
-  pytest.main()

@@ -79,7 +79,3 @@ class Boundary(GenericGeometry):
             self.models.add(propname='throat.surface_area',
                             model=gm.throat_surface_area.cuboid)
         self['pore.area'] = 1.0
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

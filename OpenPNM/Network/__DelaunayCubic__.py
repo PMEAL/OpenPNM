@@ -122,8 +122,3 @@ class DelaunayCubic(Delaunay):
 
         self['pore.coords'] = points
         logger.debug(sys._getframe().f_code.co_name + ': End of method')
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

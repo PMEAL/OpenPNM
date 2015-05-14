@@ -8,3 +8,4 @@ dist/
 .coverage
 *.vtp
 .cache
+.DS_Store

@@ -394,7 +394,3 @@ class OrdinaryPercolation(GenericAlgorithm):
         plt.title('Primay Drainage Curve')
         plt.grid(True)
         plt.show()
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

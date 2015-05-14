@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class FickianDiffusion(GenericLinearTransport):
     r"""
-    A subclass of GenericLinearTransport to simulate binary diffusion.  The 2
+    A subclass of GenericLinearTransport to simulate binary diffusion. The 2
     main roles of this subclass are to set the default property names and to
     implement a method for calculating the effective diffusion coefficient
     of the network.
@@ -69,8 +69,3 @@ class FickianDiffusion(GenericLinearTransport):
         d_normal = self._calc_eff_prop()
         self._eff_property = d_normal / sp.mean(self._phase['pore.molar_density'])
         return self._eff_property
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

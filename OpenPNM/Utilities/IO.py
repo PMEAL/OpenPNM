@@ -269,8 +269,3 @@ class MAT():
         This method is not implemented yet.
         """
         raise NotImplemented()
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

@@ -337,7 +337,3 @@ class Cubic(GenericNetwork):
     def subdivide(self, pores=[], shape=[], labels=[]):
         topo.subdivide(network=self, pores=pores, shape=shape, labels=labels)
     subdivide.__doc__ = topo.subdivide.__doc__
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

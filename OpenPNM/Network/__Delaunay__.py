@@ -623,7 +623,3 @@ class Delaunay(GenericNetwork):
         isolated_ps = self.check_network_health()['isolated_pores']
         if len(isolated_ps) > 0:
             self.trim(isolated_ps)
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

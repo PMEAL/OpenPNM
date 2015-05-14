@@ -35,8 +35,8 @@ class GenericAlgorithm(Core):
 
     """
 
-    def __init__(self, network=None, **kwords):
-        super().__init__(**kwords)
+    def __init__(self, network=None, **kwargs):
+        super().__init__(**kwargs)
         logger.name = self.name
 
         if network is None:
