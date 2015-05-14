@@ -351,7 +351,7 @@ class GenericNetwork(Core):
         pores = sp.array(pores, ndmin=1)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1)
-        #Test for existence of incidence matrix
+        # Test for existence of incidence matrix
         try:
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
         except:
@@ -418,7 +418,7 @@ class GenericNetwork(Core):
         >>> pn.find_neighbor_throats(pores=[0, 1],flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
-        pores = sp.array(pores,ndmin=1)
+        pores = sp.array(pores, ndmin=1)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1)
         # Test for existence of incidence matrix
