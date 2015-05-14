@@ -284,8 +284,8 @@ class GenericNetwork(Core):
         TODO: This now works on 'vector' inputs, but is not actually vectorized
         in the Numpy sense, so could be slow with large P1,P2 inputs
         """
-        P1 = sp.array(P1,ndmin=1)
-        P2 = sp.array(P2,ndmin=1)
+        P1 = sp.array(P1, ndmin=1)
+        P2 = sp.array(P2, ndmin=1)
         Ts1 = self.find_neighbor_throats(P1, flatten=False)
         Ts2 = self.find_neighbor_throats(P2, flatten=False)
         Ts = []
