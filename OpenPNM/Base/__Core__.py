@@ -3,7 +3,7 @@
 Core:  Core Data Class
 ###############################################################################
 """
-import pprint, string, random
+import string, random
 import scipy as sp
 import scipy.constants
 from OpenPNM.Base import logging, Tools
@@ -19,8 +19,8 @@ class Core(dict):
 
     def __new__(typ, *args, **kwargs):
         obj = dict.__new__(typ, *args, **kwargs)
-        obj.update({'pore.all': sp.array([],ndmin=1,dtype=bool)})
-        obj.update({'throat.all': sp.array([],ndmin=1,dtype=bool)})
+        obj.update({'pore.all': sp.array([], ndmin=1, dtype=bool)})
+        obj.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
         # Initialize phase, physics, and geometry tracking lists
         obj._name = None
         obj._ctrl = {}
@@ -34,19 +34,16 @@ class Core(dict):
         return obj
 
     def __init__(self, name=None, **kwargs):
-        r"""
-        Initialize
-        """
-        super(Core,self).__init__()
+        super().__init__()
         logger.debug('Initializing Core class')
         self.name = name
         self.controller = ctrl
 
     def __repr__(self):
         return '<%s.%s object at %s>' % (
-        self.__class__.__module__,
-        self.__class__.__name__,
-        hex(id(self)))
+            self.__class__.__module__,
+            self.__class__.__name__,
+            hex(id(self)))
 
     def __eq__(self,other):
         if hex(id(self)) == hex(id(other)):
@@ -870,12 +867,10 @@ class Core(dict):
         >>> Ps = pn.pores('top')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
         >>> boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
-        >>> geom['pore.test_int'] = sp.random.randint(0,100,geom.Np)
+        >>> geom['pore.test_int'] = sp.random.randint(0, 100, geom.Np)
         >>> print(pn['pore.test_int'].dtype)
         float64
         >>> boun['pore.test_int'] = sp.ones(boun.Np).astype(int)
-        >>> print(pn['pore.test_int'].dtype)
-        int64
         >>> boun['pore.test_int'] = sp.rand(boun.Np)<0.5
         >>> print(pn['pore.test_int'].dtype)
         bool
@@ -891,9 +886,9 @@ class Core(dict):
         """
         element = prop.split('.')[0]
         temp = sp.ndarray((self._count(element)))
-        nan_locs = sp.ndarray((self._count(element)),dtype='bool')
+        nan_locs = sp.ndarray((self._count(element)), dtype='bool')
         nan_locs.fill(False)
-        bool_locs = sp.ndarray((self._count(element)),dtype='bool')
+        bool_locs = sp.ndarray((self._count(element)), dtype='bool')
         bool_locs.fill(False)
         dtypes = []
         dtypenames = []
