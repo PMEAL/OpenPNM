@@ -43,23 +43,27 @@ Documentation
 
 OpenPNM documentation is available on the web:
 
-    http://openpnm.org
+    http://openpnm.org/docs
 
 
-Web sites
+Web Sites
 ---------
 
-The user's site is:
+The main project website is:
 
     http://openpnm.org
 
 
-Mailing Lists
+Communication
 -------------
 
-Please see the developer's discussion on GitHub:
+For information on the latest releases and other important events, join the OpenPNM mailing list:
 
-    https://github.com/PMEAL/OpenPNM/issues
+	http://openpnm.org/news
+
+If you require help on any aspect of OpenPNM, contact us on Gitter:
+
+    https://gitter.im/PMEAL/OpenPNM
 
 
 Latest source code
@@ -85,6 +89,10 @@ Developer information
 
 If you would like to take part in OpenPNM development, please join the discussion on Github.
 We are a small group and can guide you directly.
+
+Please see the developer's discussion on Gitter:
+
+    https://gitter.im/PMEAL/OpenPNM
 
 
 License information
