@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+import os
+import OpenPNM
+import subprocess
+
+VERSION = OpenPNM.__version__
+
+
+def publish():
+    subprocess.call(['python3', 'setup.py', 'upload', '-r', 'pypi'])
+    print('Done.')
+
+pwd = os.getcwd()
+egg_info = os.path.join(pwd, 'OpenPNM.egg-info')
+dist = os.path.join(pwd, 'dist')
+
+if os.path.isdir(egg_info) and os.path.isdir(dist):
+    response = input('Are you sure you want to publish version ' + VERSION +
+                     ' of OpenPNM? (y/n): ')
+    if response is 'y':
+        publish()
+else:
+    print('There is no build of OpenPNM present, run ./bin/build,'
+          ' and try again.')
