@@ -284,12 +284,12 @@ class GenericNetwork(Core):
         TODO: This now works on 'vector' inputs, but is not actually vectorized
         in the Numpy sense, so could be slow with large P1,P2 inputs
         """
+        P1 = sp.array(P1, ndmin=1)
+        P2 = sp.array(P2, ndmin=1)
         Ts1 = self.find_neighbor_throats(P1, flatten=False)
         Ts2 = self.find_neighbor_throats(P2, flatten=False)
         Ts = []
-        if sp.shape(P1) == ():
-            P1 = [P1]
-            P2 = [P2]
+
         for row in range(0, len(P1)):
             if P1[row] == P2[row]:
                 throat = []
@@ -349,6 +349,9 @@ class GenericNetwork(Core):
         array([ 3,  5,  7, 25, 27])
         """
         pores = sp.array(pores, ndmin=1)
+        if sp.size(pores) == 0:
+            return sp.array([], ndmin=1)
+        # Test for existence of incidence matrix
         try:
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
         except:
@@ -415,6 +418,9 @@ class GenericNetwork(Core):
         >>> pn.find_neighbor_throats(pores=[0, 1],flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
+        pores = sp.array(pores, ndmin=1)
+        if sp.size(pores) == 0:
+            return sp.array([], ndmin=1)
         # Test for existence of incidence matrix
         try:
             neighborTs = self._incidence_matrix['lil'].rows[[pores]]
