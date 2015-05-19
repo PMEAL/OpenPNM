@@ -722,7 +722,6 @@ class GenericNetwork(Core):
 
         return (p_clusters, t_clusters)
 
-    def find_nearest_pores(self, pores, distance=0):
         r"""
         Find all pores within a given distance of the input pore(s) regardless
         of whether or not they are toplogically connected.
@@ -732,7 +731,7 @@ class GenericNetwork(Core):
         pores : array_like
             The list of pores for whom nearby neighbors are to be found
         distance : scalar
-            The within which the nearby pores should be found
+            The maximum distance within which the nearby should be found
 
         Returns
         -------
@@ -745,9 +744,9 @@ class GenericNetwork(Core):
         --------
         >>> import OpenPNM as op
         >>> pn = op.Network.TestNet()
-        >>> pn.find_nearest_pores(pores=[0, 1],distance=1)
+        >>> pn.find_nearby_pores(pores=[0, 1],distance=1)
         array([[0, 1, 25, 5], [0, 1, 26, 6, 2]], dtype=object)
-        >>> pn.find_nearest_pores(pores=[0, 1],distance=.5)
+        >>> pn.find_nearby_pores(pores=[0, 1],distance=.5)
         array([[0], [1]], dtype=object)
         """
         kd = sptl.cKDTree(self['pore.coords'])
