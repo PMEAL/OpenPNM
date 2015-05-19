@@ -344,8 +344,7 @@ class ModelsDict(OrderedDict):
             raise Exception('More than one master found! This model dictionary '
                             'has been associated with multiple objects. To use the '
                             'same dictionary multiple times use the copy method.')
-        return master[0]
+        elif len(master) == 0:
+            raise Exception('ModelsDict has no master.')
 
-if __name__ == '__main__':
-    pn = OpenPNM.Network.TestNet()
-    a = ModelsDict()
+        return master[0]

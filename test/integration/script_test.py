@@ -326,7 +326,7 @@ def test_mapping():
     a = geom3.map_throats(throats=geom3.Ts,target=pn)
     b = pn.map_throats(throats=a,target=geom3)
     assert(sp.all(b == geom3.Ts))
-
+'''
 def test_geometries():
     ctrl = OpenPNM.Base.Controller()
     pn = OpenPNM.Network.TestNet()
@@ -347,3 +347,4 @@ def test_geometries():
     pn = OpenPNM.Network.Delaunay(num_pores=20,domain_size=[1,1,1])
     geom = OpenPNM.Geometry.Voronoi(network=pn,pores=pn.Ps,throats=pn.Ts)
     ctrl.clear()
+'''

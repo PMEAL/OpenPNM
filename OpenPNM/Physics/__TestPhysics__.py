@@ -46,6 +46,3 @@ class TestPhysics(GenericPhysics):
                 self['throat.thermal_conductance'] = \
                     phase['throat.thermal_conductivity'] * \
                     self._net['throat.diameter'] / self._net['throat.length']
-
-if __name__ == '__main__':
-    print('none yet')
