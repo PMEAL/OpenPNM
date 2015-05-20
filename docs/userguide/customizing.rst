@@ -5,16 +5,16 @@ Customizing OpenPNM
 ===============================================================================
 The OpenPNM framework was designed specifically with extensibility and customization in mind.  Every user will apply OpenPNM to a unique problem, and will therefore require unique pore scale models, phase properties, algorithms and so on.  
 
-There are two ways to customize OpenPNM.  The first is to download the source code and *hack* it.  With this approach it is possible to create your own sub-classes, add pore-scale models, define new topology generators, and to add or change OpenPNM methods.  The other approach is to install OpenPNM in your Python PATH (using ``pip install openpnm``) as with any other package such as Scipy, and write custom functions in a separate 'working directory' rather than in the source code.  In this scenario you can perform all of the same customizations as the first approach, with the exception of changing OpenPNM's native methods (in fact even this is possible, but that's another story).  The second approach is the recommended way for several reasons.  It avoid accidental changes to the framework, it allows users to keep their 'projects' compartmentalized, and it is much easier for users to contribute their work to OpenPNM project (which we highly encourage) since sections can be 'cut and pasted' into the framework cleanly.  The second approach will be explained in detail below.
+There are two ways to customize OpenPNM.  The first is to download the source code and *hack* it.  With this approach it is possible to create your own sub-classes, add pore-scale models, define new topology generators, and to add or change OpenPNM methods.  The other approach is to install OpenPNM in your Python PATH (using ``pip install openpnm``) as with any other package such as Scipy, and write custom functions in a separate 'working directory' rather than in the source code.  In this scenario, you can perform all of the same customizations as the first approach, with the exception of changing OpenPNM's native methods (in fact even this is possible, but that's another story).  The second approach is the recommended way for several reasons.  It avoids accidental changes to the framework, it allows users to keep their 'projects' compartmentalized, and it is much easier for users to contribute their work to OpenPNM project (which we highly encourage) since sections can be 'cut and pasted' or 'merged' into the framework cleanly.  The second approach will be explained in detail below.
 
 The following discussions assume that all custom files will be stored in a folder called 'my_pnm`, that will be the 'working directory'.  
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Creating Custom Models
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-In the working directory, place a file called 'my_models.py' (or any name you wish).  This file will be the home of all the custom models that will be created. Models that are in this file can be added to *any* object using the ``add_model`` command.  The 'models' mechanism in OpenPNM was designed to be as straight-forward as possible to use, for users without any experience in object oriented coding.  Each model is simply a 'function' definition, with no inheritance, classes or any unnecessary complications.  
+In the working directory, place a file called 'my_models.py' (or any name you wish).  This file will be the home of all the custom models that will be created. Models that are in this file can be added to *any* object using the ``add_model`` command.  The *'models'* mechanism in OpenPNM was designed to be as straight-forward as possible, for users without any experience in object oriented coding.  Each model is simply a 'function' definition, with no inheritance, classes or any unnecessary complications.  
 
-Let's create a model called 'surface_roughness' that calculates the surface area of a pore accounting for surface roughness, that accepts a single 'roughness parameter' and is a function of pore size.  Start by writing a function in the 'my_models.py' file that simply accepts the 'roughness_parameter' and returns it:
+Let's create a model called 'surface_roughness' that calculates the surface area of a pore accounting for surface roughness, that accepts a single 'roughness parameter' and is a function of pore size.  Start by writing a function in the 'my_models.py' file that simply accepts the 'roughness_parameter' and simply returns it:
 
 .. code-block:: python
 
@@ -37,12 +37,12 @@ The next step is to have this model to calculate something useful.  Assume that 
 .. code-block:: python
 
 	def surface_roughness(geometry,roughness_parameter,**kwargs):
-	    P_diam = geometry['pore.diameter']
-	    projected_area = 4*3.14159*(P_diam/2)**2
-	    rough_area = projected_area**roughness_parameter
-	    return rough_area
+		P_diam = geometry['pore.diameter']
+		projected_area = 4*3.14159*(P_diam/2)**2
+		rough_area = projected_area**roughness_parameter
+		return rough_area
 		
-It was noted above that the ``add_model`` method sent in several extra arguments 'just-in-case'.  Among these arguments are the object from which the method is called.  Since 'surface_roughness' will be attached to a Geometry object, this function will receive it as 'geometry'.  We can now update our script:
+It was noted above that the ``add_model`` method sent in several extra arguments 'just-in-case'.  Among these arguments are the object from which the method is called.  Since 'surface_roughness' will be attached to a Geometry object, this function will receive it as 'geometry' automatically.  We can now update our script:
 
 .. code-block:: python
 
@@ -61,9 +61,9 @@ It was noted above that the ``add_model`` method sent in several extra arguments
 
 	#Assign model to geometry
 	geom.add_model(propname='pore.surface_area',
-				   model=my_models.surface_roughness,
-				   roughness_parameter=2.2)
-				   
+					model=my_models.surface_roughness,
+					roughness_parameter=2.2)
+
 The print-out of 'geom 'reveals that indeed the model has been added:
 
 >>> print(geom)
@@ -98,6 +98,8 @@ In the 'surface_roughness' example above, the function assumed that pore diamete
 
 Note that *pore_diameter* is now an argument name, which defaults to 'pore.diameter'.  Different *pore diameters* can be specified when calling ``add_model``:
 
+.. code-block:: python
+
 	#Assign model to geometry
 	geom.add_model(propname='pore.surface_area',
 				   model=my_models.surface_roughness,
@@ -115,33 +117,33 @@ Let's create a Geometry subclass that is representative of Berea Sandstone.  Sta
 
 .. code-block:: python
 
-    import OpenPNM
+	import OpenPNM
 	class BereaSandstone(OpenPNM.Geometry.GenericGeometry):
-	    def __init__(self,**kwargs):
-        super(berea_sandstone,self).__init__(**kwargs)
+		def __init__(self,**kwargs):
+			super(berea_sandstone,self).__init__(**kwargs)
 		
-The above is a basic template that is no different than GenericGeometry yet.  The important thing to notice here is the the ``__init__`` of the parent class is invoked using the ``super`` method.  This means that all arguments passed to ``BereaSandstone`` are bundled into 'kwargs' and passed to ``GenericGeometry``, which will run all of the task that are necessary for OpenPNM objects to work, such as registering this custom Geometry with the Network.
+The above is a basic template that is no different than GenericGeometry yet.  The important thing to notice here is the the ``__init__`` of the parent class is invoked using the ``super`` method.  This means that all arguments passed to ``BereaSandstone`` are bundled into *'kwargs'* and passed to **GenericGeometry**, which will run all of the tasks that are necessary for OpenPNM objects to work, such as registering this custom Geometry with the Network.
 
 The next step is to actually customize the class.  In OpenPNM, all the subclasses of Geometry, Phase and Physics are literally just a collection of 'models' with appropriate parameters to reproduce a specific material, fluid or set of physics.  The BereaSandstone class then just needs a set of suitable 'models':
 
 .. code-block:: python
 
-    import OpenPNM
+	import OpenPNM
 	class BereaSandstone(OpenPNM.Geometry.GenericGeometry):
-	    def __init__(self,**kwargs):
-        super(berea_sandstone,self).__init__(**kwargs)
+		def __init__(self,**kwargs):
+			super(berea_sandstone,self).__init__(**kwargs)
 		
 		mod = OpenPNM.Geometry.models.pore_misc.random
 		self.add_model(propname='pore.seed',
-		               model=mod)
+						model=mod)
 					   
 		mod = OpenPNM.Geometry.models.pore_diameter.sphere
 		self.add_model(propname='pore.diameter',
-		               model=mod,
-					   psd_name='weibull_min',
-                       psd_shape=2.5,
-                       psd_loc=4e-4,
-                       psd_scale=4e-4)
+						model=mod,
+						psd_name='weibull_min',
+						psd_shape=2.5,
+						psd_loc=4e-4,
+						psd_scale=4e-4)
 					   
 
 The first of the above two models creates a property called 'pore.seed', which is just a list of random numbers that will be used to seed the pore size distribution.  The second model uses the Scipy.stats package to generate 'pore.diameter' values from the 'weibull_min' distribution using the given parameters.  
@@ -159,27 +161,4 @@ Creating Customized Algorithms
 Algorithms can also be customized as described above.  The GenericAlgorithm has a few additional methods that are meant to be implemented by subclasses, such as ``return_results``.  The intention of this method is to send the pertinent results of a calculation 'out' of the Algorithm object and to the correct object in the simulation.  This step is handy, but is not actually necessary.  One can of course manually transfer data from an Algorithm to a Phase, for instance with:
 
 >>> air['pore.temperature'] = thermal_simulation['pore.T']
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -18,8 +18,8 @@ Subpackages
    * - :mod:`OpenPNM.Network`
      - Storage and manipulations of network topoologies and data stored on them.
    * - :mod:`OpenPNM.Geometry`
-     - Geometry for pore networks. (Random cubic, image based, Voronoi). Should also contain
-       a mapper of the pore network back on the segmented image.
+     - Geometry for pore networks. (Random cubic, image based, Voronoi). Should also
+       contain a mapper of the pore network back on the segmented image.
    * - :mod:`OpenPNM.Physics`
      - Module containing pore scale physics models and equations.
    * - :mod:`OpenPNM.Phases`
@@ -38,9 +38,9 @@ Import
 import scipy as sp
 
 if sp.__version__ < '0.14.0':
-	raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
+    raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
 
-__version__ = '1.1-beta'
+__version__ = '1.1.0'
 
 __requires__ = ['scipy']
 
@@ -52,5 +52,3 @@ from . import Phases
 from . import Physics
 from . import Algorithms
 from . import Postprocessing
-
-

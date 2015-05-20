@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+import subprocess
+
+subprocess.call(['python3', 'setup.py', 'sdist'])

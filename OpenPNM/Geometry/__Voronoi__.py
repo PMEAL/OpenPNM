@@ -20,6 +20,7 @@ from scipy.io import savemat
 from scipy import ndimage
 from scipy.stats import itemfreq
 
+
 class Voronoi(GenericGeometry):
     r"""
     Voronoi subclass of GenericGeometry.
@@ -27,25 +28,16 @@ class Voronoi(GenericGeometry):
     Parameters
     ----------
 
-
     """
 
-    def __init__(self, fibre_rad = 3.5e-06, load_gen='gen', **kwargs):
-        r"""
-        Initialize
-        """
-        if int(sp.__version__.split('.')[1]) < 13:
-            raise Exception('The installed version of Scipy is too old, Voronoi cannot run')
-        super(Voronoi,self).__init__(**kwargs)
+    def __init__(self, fibre_rad=3e-06, load_gen='gen', **kwargs):
+        super().__init__(**kwargs)
         self._fibre_rad = fibre_rad
         if load_gen == 'gen':
             self._generate()
-        
 
     def _generate(self):
-        r'''
-        Set all the required models
-        '''
+        #Set all the required models
         self.models.add(propname='pore.vertices',
                         model=gm.pore_vertices.voronoi)
         self.models.add(propname='throat.vertices',
@@ -57,7 +49,7 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='throat.offset_vertices',
                         model=gm.throat_offset_vertices.distance_transform,
                         offset=self._fibre_rad,
-                        set_dependent = True)
+                        set_dependent=True)
         self.models.add(propname='pore.seed',
                         model=gm.pore_misc.random,
                         seed=self._seed)
@@ -70,7 +62,7 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='pore.diameter',
                         model=gm.pore_diameter.voronoi)
         self.models.add(propname='pore.area',
-                        model=gm.pore_area.spherical)          
+                        model=gm.pore_area.spherical)
         self.models.add(propname='throat.diameter',
                         model=gm.throat_diameter.voronoi)
         self.models.add(propname='throat.length',
@@ -320,7 +312,7 @@ class Voronoi(GenericGeometry):
 if __name__ == '__main__':
     import OpenPNM
     pn = OpenPNM.Network.Delaunay(name='test_net')
-    pn.generate(num_pores=100, domain_size=[0.0001,0.0001,0.0001])
+    pn.generate(num_pores=100, domain_size=[0.0001, 0.0001, 0.0001])
     pn.add_boundaries()
-    test = OpenPNM.Geometry.Voronoi(pores=pn.Ps,throats=pn.Ts,network=pn)
+    test = OpenPNM.Geometry.Voronoi(pores=pn.Ps, throats=pn.Ts, network=pn)
     pn.regenerate_geometries()

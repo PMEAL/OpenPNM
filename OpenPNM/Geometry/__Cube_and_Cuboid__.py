@@ -9,6 +9,7 @@ Cube_and_Cuboid -- A standard Cubic pore and Cuboic throat model
 from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry import GenericGeometry
 
+
 class Cube_and_Cuboid(GenericGeometry):
     r"""
     Toray090 subclass of GenericGeometry
@@ -16,15 +17,10 @@ class Cube_and_Cuboid(GenericGeometry):
     """
 
     def __init__(self, **kwargs):
-        r"""
-        Initialize
-        """
-        super(Cube_and_Cuboid,self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._generate()
 
     def _generate(self):
-        r'''
-        '''
         self.models.add(propname='pore.seed',
                         model=gm.pore_misc.random,
                         seed=self._seed)
@@ -56,9 +52,3 @@ class Cube_and_Cuboid(GenericGeometry):
                         model=gm.throat_area.cuboid)
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.cuboid)
-
-if __name__ == '__main__':
-    #Run doc tests
-    import doctest
-    doctest.testmod(verbose=True)
-

@@ -2,7 +2,8 @@ import scipy as _sp
 import time as _time
 from scipy.spatial.distance import cdist as dist
 
-def reflect_pts(coords,nplane):
+
+def reflect_pts(coords, nplane):
     r'''
     Reflect points across the given plane
 
@@ -24,7 +25,8 @@ def reflect_pts(coords,nplane):
     '''
     pass
 
-def crop_pts(coords,box):
+
+def crop_pts(coords, box):
     r'''
     Drop all points lying outside the box
 
@@ -46,9 +48,10 @@ def crop_pts(coords,box):
     This needs to be made more general so that an arbitray cuboid with any
     orientation can be supplied, using Np x 8 points
     '''
-    coords = coords[_sp.any(coords<box[0],axis=1)]
-    coords = coords[_sp.any(coords>box[1],axis=1)]
+    coords = coords[_sp.any(coords < box[0], axis=1)]
+    coords = coords[_sp.any(coords > box[1], axis=1)]
     return coords
+
 
 def iscoplanar(coords):
     r'''
@@ -64,15 +67,15 @@ def iscoplanar(coords):
     -------
     A boolean value of whether given points are colplanar (True) or not (False)
     '''
-    coords = _sp.array(coords,ndmin=1)
+    coords = _sp.array(coords, ndmin=1)
     if _sp.shape(coords)[0] < 3:
         raise Exception('At least 3 input pores are required')
 
-    Px = coords[:,0]
-    Py = coords[:,1]
-    Pz = coords[:,2]
+    Px = coords[:, 0]
+    Py = coords[:, 1]
+    Pz = coords[:, 2]
 
-    #Do easy check first, for common coordinate
+    # Do easy check first, for common coordinate
     if _sp.shape(_sp.unique(Px))[0] == 1:
         return True
     if _sp.shape(_sp.unique(Py))[0] == 1:
@@ -80,17 +83,18 @@ def iscoplanar(coords):
     if _sp.shape(_sp.unique(Pz))[0] == 1:
         return True
 
-    #Perform rigorous check using vector algebra
-    n = _sp.array((Px - Px[0],Py - Py[0],Pz - Pz[0])).T
-    n0 = _sp.array((Px[-1] - Px[0],Py[-1] - Py[0],Pz[-1] - Pz[0])).T
+    # Perform rigorous check using vector algebra
+    n = _sp.array((Px - Px[0], Py - Py[0], Pz - Pz[0])).T
+    n0 = _sp.array((Px[-1] - Px[0], Py[-1] - Py[0], Pz[-1] - Pz[0])).T
 
-    n_cross = _sp.cross(n0,n)
-    n_dot = _sp.multiply(n0,n_cross)
+    n_cross = _sp.cross(n0, n)
+    n_dot = _sp.multiply(n0, n_cross)
 
     if _sp.sum(_sp.absolute(n_dot)) == 0:
         return True
     else:
         return False
+
 
 def tic():
     r'''
@@ -99,6 +103,7 @@ def tic():
     '''
     global _startTime_for_tictoc
     _startTime_for_tictoc = _time.time()
+
 
 def toc(quiet=False):
     r'''
@@ -113,7 +118,7 @@ def toc(quiet=False):
     '''
     if '_startTime_for_tictoc' in globals():
         t = _time.time() - _startTime_for_tictoc
-        if quiet == False:
+        if quiet is False:
             print('Elapsed time in seconds: ', t)
         else:
             return t
@@ -129,20 +134,21 @@ def unique_list(input_list):
     if len(input_list) > 0:
         dim = _sp.shape(input_list)[1]
         for i in input_list:
-            match=False
+            match = False
             for j in output_list:
                 if dim == 3:
-                    if (i[0]==j[0]) and (i[1]==j[1]) and (i[2]==j[2]):
-                        match=True
+                    if i[0] == j[0] and i[1] == j[1] and i[2] == j[2]:
+                        match = True
                 elif dim == 2:
-                    if (i[0]==j[0]) and (i[1]==j[1]):
-                        match=True
-                elif dim ==1:
-                    if (i[0]==j[0]):
-                        match=True
-            if match==False:
+                    if i[0] == j[0] and i[1] == j[1]:
+                        match = True
+                elif dim == 1:
+                    if i[0] == j[0]:
+                        match = True
+            if match is False:
                 output_list.append(i)
     return output_list
+
 
 def amalgamate_data(objs=[]):
     r"""
@@ -152,10 +158,13 @@ def amalgamate_data(objs=[]):
     if type(objs) is not list:
         objs = list(objs)
     data_amalgamated = {}
-    exclusion_list = ['pore.centroid','pore.vertices','throat.centroid','throat.offset_vertices','throat.vertices','throat.normal','throat.perimeter','pore.vert_index','throat.vert_index']
+    exclusion_list = ['pore.centroid', 'pore.vertices', 'throat.centroid',
+                      'throat.offset_vertices', 'throat.vertices', 'throat.normal',
+                      'throat.perimeter', 'pore.vert_index', 'throat.vert_index']
     for item in objs:
         mro = [module.__name__ for module in item.__class__.__mro__]
-        if 'GenericNetwork' in mro: #if Network object, combine Geometry and Network keys
+        # If Network object, combine Geometry and Network keys
+        if 'GenericNetwork' in mro:
             keys = []
             for key in item.keys():
                 keys.append(key)
@@ -179,17 +188,20 @@ def amalgamate_data(objs=[]):
                     if _sp.amax(item[key]) < _sp.inf:
                         element = key.split('.')[0]
                         propname = key.split('.')[1]
-                        dict_name = element+'.'+item.name+'_'+propname
-                        if key in ['pore.coords', 'throat.conns', 'pore.all','throat.all']:
+                        dict_name = element + '.' + item.name + '_' + propname
+                        if key in ['pore.coords', 'throat.conns',
+                                   'pore.all', 'throat.all']:
                             dict_name = key
-                        data_amalgamated.update({dict_name : item[key]})
+                        data_amalgamated.update({dict_name: item[key]})
                 except TypeError:
                     pass
     return data_amalgamated
 
-def conduit_lengths(network,throats=None,mode='pore'):
+
+def conduit_lengths(network, throats=None, mode='pore'):
     r"""
-    Return the respective lengths of the conduit components defined by the throat conns P1 T P2
+    Return the respective lengths of the conduit components defined by the throat
+    conns P1 T P2
     mode = 'pore' - uses pore coordinates
     mode = 'centroid' uses pore and throat centroids
     """
@@ -198,27 +210,29 @@ def conduit_lengths(network,throats=None,mode='pore'):
     Ps = network['throat.conns']
     pdia = network['pore.diameter']
 
-    if mode ==  'centroid':
+    if mode == 'centroid':
         try:
             pcentroids = network['pore.centroid']
             tcentroids = network['throat.centroid']
-            if _sp.sum(_sp.isnan(tcentroids)) == 0:
-                plen1 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,0]]-tcentroids),1))-network['throat.length']/2
-                plen2 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:,1]]-tcentroids),1))-network['throat.length']/2
+            if _sp.sum(_sp.isnan(pcentroids)) + _sp.sum(_sp.isnan(tcentroids)) > 0:
+                mode = 'pore'
             else:
-                mode='pore'
+                plen1 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:, 0]] -
+                                         tcentroids), 1))-network['throat.length']/2
+                plen2 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:, 1]] -
+                                         tcentroids), 1))-network['throat.length']/2
         except KeyError:
             mode = 'pore'
     if mode == 'pore':
-        #Find half-lengths of each pore
+        # Find half-lengths of each pore
         pcoords = network['pore.coords']
-        #   Find the pore-to-pore distance, minus the throat length
-        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:,0]]-pcoords[Ps[:,1]]),1))-network['throat.length']
-        #don't allow negative lengths
+        # Find the pore-to-pore distance, minus the throat length
+        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:, 0]] -
+                                   pcoords[Ps[:, 1]]), 1)) - network['throat.length']
         lengths[lengths<=0.0]=2e-9
         #   Calculate the fraction of that distance from the first pore
         try:
-            fractions = pdia[Ps[:,0]]/(pdia[Ps[:,0]]+pdia[Ps[:,1]])
+            fractions = pdia[Ps[:, 0]]/(pdia[Ps[:, 0]] + pdia[Ps[:, 1]])
             #Don't allow zero lengths
             fractions[fractions==0.0]=0.5
             fractions[fractions==1.0]=0.5
@@ -227,5 +241,4 @@ def conduit_lengths(network,throats=None,mode='pore'):
         plen1 = lengths*fractions
         plen2 = lengths*(1-fractions)
 
-    return _sp.vstack((plen1,network['throat.length'],plen2)).T[throats]
-
+    return _sp.vstack((plen1, network['throat.length'], plen2)).T[throats]

@@ -5,7 +5,7 @@ r"""
 
 Contents
 --------
-**GenericNetwork** -- Contains many classes for working with the topology of the
+**GenericNetwork** -- Contains many methods ` for working with the topology of the
 networks
 
 **Subclasses** -- Inherit from GenericNetwork, and contain additional methods for
@@ -25,7 +25,7 @@ Classes
 
 .. autoclass:: DelaunayCubic
    :members:
-   
+
 .. autoclass:: MatFile
    :members:
 

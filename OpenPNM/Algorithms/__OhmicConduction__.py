@@ -10,8 +10,9 @@ from OpenPNM.Algorithms import GenericLinearTransport
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
+
 class OhmicConduction(GenericLinearTransport):
-    r'''
+    r"""
     A subclass of GenericLinearTransport to simulate electron and ionic
     conduction.  The 2 main roles of this subclass are to set the default
     property names and to implement a method for calculating the effective
@@ -21,9 +22,11 @@ class OhmicConduction(GenericLinearTransport):
     --------
     >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
-    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn, pores=pn.pores(),
+    ...                                     throats=pn.throats())
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
-    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
+    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,
+    ...                                     pores=pn.pores(), throats=pn.throats())
     >>> phys1['throat.electrical_conductance'] = 1
     >>> alg = OpenPNM.Algorithms.OhmicConduction(network=pn, phase=phase1)
     >>> BC1_pores = pn.pores('top')
@@ -36,29 +39,24 @@ class OhmicConduction(GenericLinearTransport):
     >>> print(Ceff)
     1.012
 
+    """
 
-    '''
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        logger.info('Create ' + self.__class__.__name__ + ' Object')
 
-    def __init__(self,**kwargs):
-        r'''
-        '''
-        super(OhmicConduction,self).__init__(**kwargs)
-        logger.info('Create '+self.__class__.__name__+' Object')
-
-    def setup(self,conductance='electrical_conductance',quantity='voltage',super_pore_conductance=None,**params):
-        r'''
+    def setup(self, conductance='electrical_conductance',
+              quantity='voltage', super_pore_conductance=None, **params):
+        r"""
         This setup provides the initial requirements for the solver setup.
-        '''
-        logger.info("Setup "+self.__class__.__name__)
-        super(OhmicConduction,self).setup(conductance=conductance,quantity=quantity,super_pore_conductance=super_pore_conductance)
+        """
+        logger.info('Setup ' + self.__class__.__name__)
+        super().setup(conductance=conductance, quantity=quantity,
+                      super_pore_conductance=super_pore_conductance)
 
     def calc_effective_conductivity(self):
-        r'''
-        This calculates the effective electrical conductivity in this linear transport algorithm.
-        '''
+        r"""
+        This calculates the effective electrical conductivity in this linear
+        transport algorithm.
+        """
         return self._calc_eff_prop()
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

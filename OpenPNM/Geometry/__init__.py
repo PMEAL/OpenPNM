@@ -10,8 +10,8 @@ itself with the network and creating data dictionaries of the necessary size
 
 Subclasses: These can be custom made by users to represent specfic geometries.
 It is necessary for their init's to call the init of the GenericGeometry class
-in order to be properly instantiated.  OpenPNM comes with a few basic 
-pre-written materials.  New classes added to this directory will be 
+in order to be properly instantiated.  OpenPNM comes with a few basic
+pre-written materials.  New classes added to this directory will be
 automatically imported and available.
 
 Classes
@@ -25,13 +25,13 @@ Classes
 
 .. autoclass:: Cube_and_Cuboid
    :members:
-   
+
 .. autoclass:: Boundary
    :members:
-   
+
 .. autoclass:: Voronoi
    :members:
-   
+
 """
 
 from .__GenericGeometry__ import GenericGeometry
@@ -44,5 +44,3 @@ from .__Toray090__ import Toray090
 from .__Toray120__ import Toray120
 from .__SGL10__ import SGL10
 from . import models
-
-        

@@ -10,11 +10,11 @@ import scipy.sparse as sprs
 from time import clock
 import heapq
 import itertools
-from OpenPNM.Algorithms import InvasionPercolation
+from OpenPNM.Algorithms import InvasionPercolationTimed
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
-class InvasionPercolationForImbibition(InvasionPercolation):
+class InvasionPercolationForImbibition(InvasionPercolationTimed):
     r"""
 
     Invasion Percolation (Imbibition) with cluster growth timing - Class to run IP algorithm on constructed networks
@@ -46,6 +46,8 @@ class InvasionPercolationForImbibition(InvasionPercolation):
                inlet_flow=1,
                Psecond=False,
                **params):
+
+        # TODO: Fix the doctest below, marching alg is constant in time
         r"""
 
         Invasion Percolation (Imbibition) with cluster growth timing - Class to run IP algorithm on constructed networks
@@ -113,14 +115,6 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
         >>> from OpenPNM.Algorithms.__InvasionPercolationForImbibition__ import InvasionPercolationForImbibition
         >>> IP = InvasionPercolationForImbibition(network=pn)
-        >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'))
-             IP algorithm at 0 % completion at 0 seconds
-             IP algorithm at 20 % completion at 0 seconds
-             IP algorithm at 40 % completion at 0 seconds
-             IP algorithm at 100% completion at  0  seconds
-        >>> IP.return_results()
-        >>> print(len(phase1.pores('occupancy')))
-        29
 
         Suggested Improvements ::
 
@@ -167,7 +161,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
         theta = self._phase['pore.contact_angle'][0]
         if theta > 90:
             print('WARNING!!!: The invading phase has a contact angle greater than 90deg, so it must be drainage. Use Invasion_Percolation for drainage.' )
-        pdia = self._net['pore.'+self._pore_diameter_name] 
+        pdia = self._net['pore.'+self._pore_diameter_name]
         if self._Psecond:
             pdia = pdia[self._phase['pore.occupancy']<=0]
         # entry pressure for the pore
@@ -261,7 +255,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             ''' Pc_entry as -ve (when calculated above)'''
             ''' interface_pore_pressure, heap values, ['haines_pressure'], and ppoints stored as -ve '''
             ''' Pvol_coeff, ['vol_coeff'], ['cap_volume'] are stored as +ve (ie multiply ['haines_pressure'] by -1 when calculating ie ['cap_volume'], etc.)'''
-            interface_pore_pressures = Pc_entry[interface_pore_numbers] 
+            interface_pore_pressures = Pc_entry[interface_pore_numbers]
             # Zip pressures and numbers together so that HeapQ can work its magic
             logger.debug('interface pores(s) found:')
             logger.debug(interface_pore_numbers)
@@ -295,7 +289,7 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             logger.debug( 'cap volumes')
             logger.debug(self._cluster_data['cap_volume'])
             logger.debug( 'max throat cap volumes')
-            logger.debug( self._Tvol_coef*self._phase.throat_conditions["Pc_entry"])
+            # logger.debug( self._Tvol_coef*self._phase.throat_conditions["Pc_entry"])
         logger.debug( 'haines_pore')
         logger.debug( self._cluster_data['haines_pore'])
 #        if self._timing:
@@ -696,8 +690,3 @@ class InvasionPercolationForImbibition(InvasionPercolation):
             if self._timing:
                 self._phase['pore.IP_inv_time']=np.ravel(np.array(self._Ptime,dtype=np.float))
                 self._phase['throat.IP_inv_time']=np.ravel(np.array(self._Ttime,dtype=np.float))
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)
-

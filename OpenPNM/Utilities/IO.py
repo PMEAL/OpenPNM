@@ -6,7 +6,6 @@ import pickle as _pickle
 from xml.etree import ElementTree as _ET
 
 
-
 class VTK():
     r"""
     Class for writing a Vtp file to be read by ParaView
@@ -31,16 +30,12 @@ class VTK():
     </VTKFile>
     '''.strip()
 
-
-    def __init__(self,**kwargs):
-        r"""
-        Initialize
-        """
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     @staticmethod
-    def save(network,filename='',phases=[]):
-        r'''
+    def save(network, filename='', phases=[]):
+        r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
 
@@ -60,9 +55,12 @@ class VTK():
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-        >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,
+        ...                                       pores=pn.pores(),
+        ...                                       throats=pn.throats())
         >>> air = OpenPNM.Phases.Air(network=pn)
-        >>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,pores=pn.pores(),throats=pn.throats())
+        >>> phys = OpenPNM.Physics.Standard(network=pn, phase=air,
+        ...                                 pores=pn.pores(), throats=pn.throats())
 
         >>> import OpenPNM.Utilities.IO as io
         >>> io.VTK.save(pn,'test_pn.vtp',[air])
@@ -70,11 +68,11 @@ class VTK():
         >>> # Delete the new file
         >>> import os
         >>> os.remove('test_pn.vtp')
-        '''
+        """
 
         if filename == '':
             filename = network.name
-        filename = filename.split('.')[0]+'.vtp'
+        filename = filename.split('.')[0] + '.vtp'
 
         root = _ET.fromstring(VTK._TEMPLATE)
         objs = []
@@ -108,44 +106,49 @@ class VTK():
         point_data_node = piece_node.find('PointData')
         for key in key_list:
             array = am[key]
-            if array.dtype == _np.bool: array = array.astype(int)
-            if array.size != num_points: continue
+            if array.dtype == _np.bool:
+                array = array.astype(int)
+            if array.size != num_points:
+                continue
             element = VTK._array_to_element(key, array)
             point_data_node.append(element)
 
         cell_data_node = piece_node.find('CellData')
         for key in key_list:
             array = am[key]
-            if array.dtype == _np.bool: array = array.astype(int)
-            if array.size != num_throats: continue
+            if array.dtype == _np.bool:
+                array = array.astype(int)
+            if array.size != num_throats:
+                continue
             element = VTK._array_to_element(key, array)
             cell_data_node.append(element)
 
         tree = _ET.ElementTree(root)
         tree.write(filename)
 
-        #Make pretty
-        with open(filename, "r+") as f:
+        # Make pretty
+        with open(filename, 'r+') as f:
             string = f.read()
-            string = string.replace("</DataArray>", "</DataArray>\n\t\t\t")
+            string = string.replace('</DataArray>', '</DataArray>\n\t\t\t')
             f.seek(0)
             # consider adding header: '<?xml version="1.0"?>\n'+
             f.write(string)
 
     @staticmethod
     def load(filename):
-        r'''
+        r"""
         Read in pore and throat data from a saved VTK file.
 
         Notes
         -----
         This will NOT reproduce original simulation, since all models and object
-        relationships are lost.  Use IO.Save and IO.Load for that.'''
+        relationships are lost.  Use IO.Save and IO.Load for that.
+        """
         network = OpenPNM.Network.GenericNetwork()
         tree = _ET.parse(filename)
         piece_node = tree.find('PolyData').find('Piece')
 
-        # extract connectivity
+        # Extract connectivity
         conn_element = piece_node.find('Lines').find('DataArray')
         array = VTK._element_to_array(conn_element, 2)
         network['throat.conns'] = array.T
@@ -162,23 +165,23 @@ class VTK():
     @staticmethod
     def _array_to_element(name, array, n=1):
         dtype_map = {
-            'int8'   : 'Int8',
-            'int16'  : 'Int16',
-            'int32'  : 'Int32',
-            'int64'  : 'Int64',
-            'uint8'  : 'UInt8',
-            'uint16' : 'UInt16',
-            'uint32' : 'UInt32',
-            'uint64' : 'UInt64',
+            'int8': 'Int8',
+            'int16': 'Int16',
+            'int32': 'Int32',
+            'int64': 'Int64',
+            'uint8': 'UInt8',
+            'uint16': 'UInt16',
+            'uint32': 'UInt32',
+            'uint64': 'UInt64',
             'float32': 'Float32',
             'float64': 'Float64',
-            'str'    : 'String',
+            'str': 'String',
         }
         element = _ET.Element('DataArray')
         element.set("Name", name)
         element.set("NumberOfComponents", str(n))
         element.set("type", dtype_map[str(array.dtype)])
-        element.text = '\t'.join(map(str,array.ravel()))
+        element.text = '\t'.join(map(str, array.ravel()))
         return element
 
     @staticmethod
@@ -191,16 +194,11 @@ class VTK():
             array = array.reshape(array.size//n, n)
         return array
 
-class MAT():
-    r'''
-    Class for reading and writing OpenPNM data to a Matlab 'mat' file
-    '''
 
-    def __init__(self,**kwargs):
-        r"""
-        Initialize
-        """
-        super().__init__(**kwargs)
+class MAT():
+    r"""
+    Class for reading and writing OpenPNM data to a Matlab 'mat' file
+    """
 
     @staticmethod
     def save(network, filename='', phases=[]):
@@ -223,26 +221,28 @@ class MAT():
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
+        >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,
+        ...                                     pores=pn.pores(),
+        ...                                     throats=pn.throats())
         >>> air = OpenPNM.Phases.TestPhase()
         >>> import OpenPNM.Utilities.IO as io
-        >>> io.MAT.save(network=pn,filename='test_pn.mat',phases=air)
+        >>> io.MAT.save(network=pn, filename='test_pn.mat', phases=air)
 
-        >>> #Remove newly created file
+        >>> # Remove newly created file
         >>> import os
         >>> os.remove('test_pn.mat')
 
         """
         if filename == '':
             filename = network.name
-        filename = filename.split('.')[0]+'.mat'
+        filename = filename.split('.')[0] + '.mat'
 
         pnMatlab = {}
         new = []
         old = []
         for keys in network.keys():
             old.append(keys)
-            new.append(keys.replace('.','_'))
+            new.append(keys.replace('.', '_'))
 
         for i in range(len(network)):
             pnMatlab[new[i]] = network[old[i]]
@@ -256,22 +256,16 @@ class MAT():
 
                 for keys in phases[j].keys():
                     old.append(keys)
-                    new.append(phases[j].name+'_'+keys.replace('.','_'))
+                    new.append(phases[j].name+'_'+keys.replace('.', '_'))
 
                 for i in range(len(phases[j])):
                     pnMatlab[new[i]] = phases[j][old[i]]
 
-        _sp.io.savemat(file_name=filename,mdict=pnMatlab)
+        _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
     @staticmethod
     def load():
-        r'''
+        r"""
         This method is not implemented yet.
-        '''
+        """
         raise NotImplemented()
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)
-
