@@ -13,8 +13,7 @@ def bulk_diffusion(physics, phase, network, pore_molar_density='pore.molar_densi
                    pore_diffusivity='pore.diffusivity', pore_area='pore.area',
                    pore_diameter='pore.diameter', throat_area='throat.area',
                    throat_length='throat.length', throat_diameter='throat.diameter',
-                   calc_pore_len=True, shape_factor='throat.shape_factor', **kwargs):
-                   
+                   calc_pore_len=True, shape_factor='throat.shape_factor', **kwargs):             
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
@@ -41,7 +40,6 @@ def bulk_diffusion(physics, phase, network, pore_molar_density='pore.molar_densi
     parea = network[pore_area]
     pdia = network[pore_diameter]
     # Get the properties of every throat
-    #tarea = network[throat_area]
     tdia = network[throat_diameter]
     tarea = _sp.pi*(tdia/2)**2
     tlen = network[throat_length]
@@ -70,14 +68,15 @@ def bulk_diffusion(physics, phase, network, pore_molar_density='pore.molar_densi
     gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat, remove any non-positive lengths
     tlen[tlen <= 0] = 1e-12
-    #get shape factor
+    # Get shape factor
     try:
         sf = network[shape_factor]
     except:
         sf = _sp.ones(network.num_throats())
         sf.fill(_sp.pi*8)
     gt = (_sp.pi*8/sf)*ct*DABt*tarea/tlen
-    gt[~(gt > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    # Set 0 conductance pores (boundaries) to inf
+    gt[~(gt > 0)] = _sp.inf
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     value = value[phase.throats(physics.name)]
     return value
