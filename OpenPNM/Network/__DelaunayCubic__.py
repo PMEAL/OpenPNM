@@ -59,7 +59,7 @@ class DelaunayCubic(Delaunay):
                          domain_size=self._domain_size,
                          **kwargs)
 
-    def _generate_pores(self,prob=None):
+    def _generate_pores(self, prob=None):
         r"""
         Generate the pores with numbering scheme.
         """

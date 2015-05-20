@@ -63,7 +63,7 @@ def hagen_poiseuille(physics, phase, network, pore_diameter='pore.diameter',
     tlen = network[throat_length]
     # Remove any non-positive lengths
     tlen[tlen <= 0] = 1e-12
-    #get shape factor
+    # Get shape factor
     try:
         sf = network[shape_factor]
     except:
