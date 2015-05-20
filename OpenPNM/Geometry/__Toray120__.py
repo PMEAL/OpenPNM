@@ -3,24 +3,25 @@ module __Toray120__: Subclass of GenericGeometry for a standard Toray TGPH120
 gas diffusion layer.s
 ===============================================================================
 
-.. warning:: The classes of this module should be loaded through the 'Geometry.__init__.py' file.
+.. warning:: The classes of this module should be loaded through the
+'Geometry.__init__.py' file.
 
 """
 
 from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry import GenericGeometry
 
+
 class Toray120(GenericGeometry):
     r"""
     Toray120 subclass of GenericGeometry
-
     """
 
     def __init__(self, **kwargs):
         r"""
         Initialize
         """
-        super(Toray120,self).__init__(**kwargs)
+        super(Toray120, self).__init__(**kwargs)
         self._generate()
 
     def _generate(self):
@@ -28,7 +29,7 @@ class Toray120(GenericGeometry):
         '''
         self.models.add(propname='pore.seed',
                         model=gm.pore_misc.random,
-                        num_range=[0,0.95],
+                        num_range=[0, 0.95],
                         seed=self._seed,
                         regen_mode='constant')
         self.models.add(propname='throat.seed',

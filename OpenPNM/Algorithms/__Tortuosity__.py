@@ -49,14 +49,14 @@ class Tortuosity(GenericAlgorithm):
     def run(self, phase=None, throats=None):
         logger.warning('This algorithm can take some time...')
         conduit_lengths = sp.sum(misc.conduit_lengths(network=self._net,
-        			 mode='centroid'),axis=1)
+                                 mode='centroid'), axis=1)
         graph = self._net.create_adjacency_matrix(data=conduit_lengths,
-        					  sprsfmt='csr')
+                                                  sprsfmt='csr')
 
         if phase is not None:
             self._phase = phase
             if 'throat.occupancy' in self._phase.props():
-                temp = conduit_lengths*(self._phase['throat.occupancy']==1)
+                temp = conduit_lengths*(self._phase['throat.occupancy'] == 1)
                 graph = self._net.create_adjacency_matrix(data=temp,
                                                           sprsfmt='csr',
                                                           prop='temp')
