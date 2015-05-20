@@ -192,7 +192,7 @@ def _get_fibre_image(network, cpores, vox_len, fibre_rad, add_boundary=True):
         for cj in range(cy):
             for ck in range(cz):
                 "Work out chunk range"
-                logger.info("Processing Fibre Chunk: "+str(cnum)+" of "+
+                logger.info("Processing Fibre Chunk: "+str(cnum)+" of " +
                             str(num_chunks))
                 cxmin = ci*chunk_len
                 cxmax = (ci+1)*chunk_len + 5*fibre_rad.astype(int)
@@ -513,9 +513,8 @@ def voronoi_vox(network,
             for ck in np.array_split(indz, fibre_split[2]):
 
                 logger.info("Processing Chunk: "+str(cnum)+" of "+str(num_chunks))
-                chunk_pvols, chunk_fvols, chunk_pores = \
-                _get_voxel_volume(network, geometry, [ci, cj, ck], vox_len,
-                                  fibre_rad, fibre_image)
+                chunk_pvols, chunk_fvols, chunk_pores = _get_voxel_volume(
+                network, geometry, [ci, cj, ck], vox_len, fibre_rad, fibre_image)
                 # this volume may not be the entire pore volume as some pores span
                 # multiple chunks, hence the addition
                 volume[chunk_pores] += chunk_pvols*voxel
@@ -559,8 +558,8 @@ def in_hull_volume(network, geometry, fibre_rad, vox_len=1e-6, **kwargs):
     geometry._hull_image = hull_image
     for pore in nbps:
         logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(nbps)))
-        verts = np.asarray([i for i in network["pore.vert_index"][pore].values()]) \
-                / vox_len
+        verts = np.asarray([i for i in network["pore.vert_index"][pore].values()])
+        verts /= vox_len
         pore_vox[pore], fibre_vox[pore] = inhull(geometry, verts, pore)
 
     volume = pore_vox*voxel
