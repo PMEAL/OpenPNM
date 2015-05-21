@@ -109,12 +109,13 @@ def minpore(network,
             **kwargs):
 
     r"""
-    Assign the throat diameter to be equal to the smallest connecting pore diameter
-    If zero (in case of boundaries) take it to be the maximum of the connecting pore diameters
+    Assign the throat diameter to be equal to the smallest connecting pore
+    diameter. If zero (in case of boundaries) take it to be the maximum of
+    the connecting pore diameters
     """
     gTs = geometry.throats()
     nTs = geometry.map_throats(network, gTs)
     pDs = network["pore.diameter"][network["throat.conns"][nTs]]
     value = np.min(pDs, axis=1)
-    value[value == 0.0]=np.max(pDs, axis=1)[value == 0.0]
+    value[value == 0.0] = np.max(pDs, axis=1)[value == 0.0]
     return value

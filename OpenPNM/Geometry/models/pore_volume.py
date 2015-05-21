@@ -513,13 +513,17 @@ def voronoi_vox(network,
             for ck in np.array_split(indz, fibre_split[2]):
 
                 logger.info("Processing Chunk: "+str(cnum)+" of "+str(num_chunks))
-                chunk_pvols, chunk_fvols, chunk_pores = _get_voxel_volume(
-                network, geometry, [ci, cj, ck], vox_len, fibre_rad, fibre_image)
+                cpvols, cfvols, cpores = _get_voxel_volume(network,
+                                                           geometry,
+                                                           [ci, cj, ck],
+                                                           vox_len,
+                                                           fibre_rad,
+                                                           fibre_image)
                 # this volume may not be the entire pore volume as some pores span
                 # multiple chunks, hence the addition
-                volume[chunk_pores] += chunk_pvols*voxel
-                pore_vox[chunk_pores] += chunk_pvols
-                fibre_vox[chunk_pores] += chunk_fvols
+                volume[cpores] += cpvols*voxel
+                pore_vox[cpores] += cpvols
+                fibre_vox[cpores] += cfvols
                 cnum += 1
 
     geometry["pore.fibre_voxels"] = fibre_vox[geom_pores]

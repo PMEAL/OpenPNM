@@ -62,8 +62,8 @@ class Delaunay(GenericNetwork):
             Bounding cube for internal pore positions
         num_pores : int
             Number of pores to place randomly within domain
-        prob : 3D array with probability of point with relative domain 
-            coordinates being kept. Array does not have to be same size as 
+        prob : 3D array with probability of point with relative domain
+            coordinates being kept. Array does not have to be same size as
             domain because positions are re-scaled
 
         """
@@ -83,7 +83,7 @@ class Delaunay(GenericNetwork):
         """
         logger.debug('generate_setup: Perform preliminary calculations')
         if domain_size is not None:
-            if num_pores is None: 
+            if num_pores is None:
                 if base_points is not None:
                     num_pores = len(base_points)
                 else:
@@ -107,22 +107,21 @@ class Delaunay(GenericNetwork):
         """
         logger.info('Place randomly located pores in the domain')
         if prob is not None:
-            coords=[]
-            i=0
+            coords = []
+            i = 0
             while i < self._Np:
                 coord = np.random.rand(3)
-                [indx,indy,indz]=np.floor(coord*np.shape(prob)).astype(int)
+                [indx, indy, indz] = np.floor(coord*np.shape(prob)).astype(int)
                 p = prob[indx][indy][indz]
-                if np.random.rand(1)<=p:
+                if np.random.rand(1) <= p:
                     coords.append(coord)
-                    i +=1
+                    i += 1
             coords = np.asarray(coords)
         else:
-            coords = np.random.random([self._Np,3])
-        
-        coords*=np.array([self._Lx,self._Ly,self._Lz])
-        self['pore.coords'] = coords
+            coords = np.random.random([self._Np, 3])
 
+        coords *= np.array([self._Lx, self._Ly, self._Lz])
+        self['pore.coords'] = coords
 
     def _generate_throats(self):
         r"""
@@ -531,7 +530,7 @@ class Delaunay(GenericNetwork):
                     elif len(np.unique(throat_verts[:, 2])) == 1:
                         new_pore_coord[2] = np.unique(throat_verts[:, 2])
                     else:
-                        new_pore_coord = np.mean(throat_verts,axis=0)
+                        new_pore_coord = np.mean(throat_verts, axis=0)
                         pass
                     bound_coords.append(new_pore_coord)
                     bound_conns.append(np.array([my_pore, new_throat_count + Np]))
@@ -553,8 +552,9 @@ class Delaunay(GenericNetwork):
         right = self.pores()[self['pore.coords'][:, 1] == max_point[1]]
         bottom = self.pores()[self['pore.coords'][:, 2] == min_point[2]]
         top = self.pores()[self['pore.coords'][:, 2] == max_point[2]]
-        if len(top)==0:
-            top=self.pores()[self['pore.coords'][:,2]==np.asarray(bound_coords)[:,2].max()]
+        if len(top) == 0:
+            top = self.pores()[self['pore.coords'][:, 2] ==
+                               np.asarray(bound_coords)[:, 2].max()]
         # Assign labels
         self['pore.boundary'] = False
         self['pore.boundary'][new_pore_ids] = True
@@ -617,7 +617,7 @@ class Delaunay(GenericNetwork):
         After the offsetting routine throats with zero area have been fully occluded.
         Remove these from the network and also remove pores that are isolated
         """
-        occluded_ts = self['throat.area']==0
+        occluded_ts = self['throat.area'] == 0
         if np.sum(occluded_ts) > 0:
             self.trim(throats=occluded_ts)
         # Also get rid of isolated pores

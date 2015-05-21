@@ -229,7 +229,7 @@ def conduit_lengths(network, throats=None, mode='pore'):
         # Find the pore-to-pore distance, minus the throat length
         lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:, 0]] -
                                    pcoords[Ps[:, 1]]), 1)) - network['throat.length']
-        lengths[lengths<=0.0] = 2e-9
+        lengths[lengths <= 0.0] = 2e-9
         # Calculate the fraction of that distance from the first pore
         try:
             fractions = pdia[Ps[:, 0]]/(pdia[Ps[:, 0]] + pdia[Ps[:, 1]])

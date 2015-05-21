@@ -164,14 +164,14 @@ class Voronoi(GenericGeometry):
         pz = sp.zeros(l[2])
 
         for x in sp.arange(l[0]):
-            px[x] = sp.sum(self._fibre_image[x, :, :]) \
-                    / sp.size(self._fibre_image[x, :, :])
+            px[x] = sp.sum(self._fibre_image[x, :, :])
+            px[x] /= sp.size(self._fibre_image[x, :, :])
         for y in sp.arange(l[1]):
-            py[y] = sp.sum(self._fibre_image[:, y, :]) \
-                    / sp.size(self._fibre_image[:, y, :])
+            py[y] = sp.sum(self._fibre_image[:, y, :])
+            py[y] /= sp.size(self._fibre_image[:, y, :])
         for z in sp.arange(l[2]):
-            pz[z] = sp.sum(self._fibre_image[:, :, z]) \
-                    / sp.size(self._fibre_image[:, :, z])
+            pz[z] = sp.sum(self._fibre_image[:, :, z])
+            pz[z] /= sp.size(self._fibre_image[:, :, z])
 
         fig = plt.figure()
         ax = fig.gca()
