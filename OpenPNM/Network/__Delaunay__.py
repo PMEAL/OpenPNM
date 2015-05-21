@@ -13,8 +13,6 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from scipy.spatial import Voronoi
-from scipy import stats as st
-from scipy.special import cbrt
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
@@ -42,18 +40,19 @@ class Delaunay(GenericNetwork):
 
     """
 
-    def __init__(self, num_pores=None, domain_size=None, **kwargs):
+    def __init__(self, num_pores=None, domain_size=None, prob=None,
+                 base_points=None, **kwargs):
         """
         Create Delauny network object
         """
         super().__init__(**kwargs)
-        if (num_pores and domain_size) is None:
+        if (num_pores is None) * (domain_size is None) * (base_points is None):
             num_pores = 1
             domain_size = [1.0, 1.0, 1.0]
         else:
-            self.generate(num_pores, domain_size)
+            self.generate(num_pores, domain_size, prob, base_points)
 
-    def generate(self, num_pores, domain_size):
+    def generate(self, num_pores, domain_size, prob, base_points):
         r"""
         Method to trigger the generation of the network
 
@@ -63,21 +62,33 @@ class Delaunay(GenericNetwork):
             Bounding cube for internal pore positions
         num_pores : int
             Number of pores to place randomly within domain
+        prob : 3D array with probability of point with relative domain
+            coordinates being kept. Array does not have to be same size as
+            domain because positions are re-scaled
 
         """
         logger.info('Start of network topology generation')
-        self._generate_setup(num_pores, domain_size)
-        self._generate_pores()
+        self._generate_setup(num_pores, domain_size, base_points)
+        if base_points is not None:
+            self['pore.coords'] = base_points
+        else:
+            self._generate_pores(prob)
         self._generate_throats()
         logger.debug('Network generation complete')
 
-    def _generate_setup(self, num_pores, domain_size):
+    def _generate_setup(self, num_pores, domain_size, base_points):
         r"""
         Perform applicable preliminary checks and calculations required for
         generation
         """
         logger.debug('generate_setup: Perform preliminary calculations')
-        if domain_size is not None and num_pores is not None:
+        if domain_size is not None:
+            if num_pores is None:
+                if base_points is not None:
+                    num_pores = len(base_points)
+                else:
+                    logger.error("domain_size and base_points must be specified")
+                    raise Exception('domain_size and base_points must be specified')
             self._Lx = domain_size[0]
             self._Ly = domain_size[1]
             self._Lz = domain_size[2]
@@ -90,43 +101,27 @@ class Delaunay(GenericNetwork):
             logger.error('domain_size and num_pores must be specified')
             raise Exception('domain_size and num_pores must be specified')
 
-    def _generate_pores(self):
+    def _generate_pores(self, prob=None):
         r"""
         Generate the pores with numbering scheme.
         """
         logger.info('Place randomly located pores in the domain')
-        coords = np.zeros([self._Np, 3])
-        # Reject points close to boundaries - if False there will be slightly more
-        rejection = [False, False, True]
-        for j in range(3):
+        if prob is not None:
+            coords = []
             i = 0
             while i < self._Np:
-                coord = np.random.uniform(0, 1, 1)
-                if self._reject(coord) == rejection[j]:
-                    coords[i][j] = coord
+                coord = np.random.rand(3)
+                [indx, indy, indz] = np.floor(coord*np.shape(prob)).astype(int)
+                p = prob[indx][indy][indz]
+                if np.random.rand(1) <= p:
+                    coords.append(coord)
                     i += 1
-        coords *= np.array([self._Lx, self._Ly, self._Lz])
-
-        self['pore.coords'] = coords
-
-    def _prob_func(self, m):
-        a = 35
-        b = 0.2
-        p = ((m**a) + ((1-m)**a) + (2*b))/(1 + (2*b))
-        return p
-
-    def _reject(self, point):
-
-        P = self._prob_func(point)
-        nrand = np.random.uniform(0, 1, 1)
-        # Place more points at the sides of the domain and fewer at the
-        # top and bottom
-        if P < nrand:
-            rejection = True
+            coords = np.asarray(coords)
         else:
-            rejection = False
+            coords = np.random.random([self._Np, 3])
 
-        return rejection
+        coords *= np.array([self._Lx, self._Ly, self._Lz])
+        self['pore.coords'] = coords
 
     def _generate_throats(self):
         r"""
@@ -535,7 +530,8 @@ class Delaunay(GenericNetwork):
                     elif len(np.unique(throat_verts[:, 2])) == 1:
                         new_pore_coord[2] = np.unique(throat_verts[:, 2])
                     else:
-                        new_pore_coord = throat_verts.mean()
+                        new_pore_coord = np.mean(throat_verts, axis=0)
+                        pass
                     bound_coords.append(new_pore_coord)
                     bound_conns.append(np.array([my_pore, new_throat_count + Np]))
                     bound_vert_index.append(dict(zip(v, throat_verts)))
@@ -556,9 +552,14 @@ class Delaunay(GenericNetwork):
         right = self.pores()[self['pore.coords'][:, 1] == max_point[1]]
         bottom = self.pores()[self['pore.coords'][:, 2] == min_point[2]]
         top = self.pores()[self['pore.coords'][:, 2] == max_point[2]]
+        if len(top) == 0:
+            top = self.pores()[self['pore.coords'][:, 2] ==
+                               np.asarray(bound_coords)[:, 2].max()]
         # Assign labels
         self['pore.boundary'] = False
         self['pore.boundary'][new_pore_ids] = True
+        self['throat.boundary'] = False
+        self['throat.boundary'][new_throat_ids] = True
         self['pore.right_boundary'] = False
         self['pore.left_boundary'] = False
         self['pore.front_boundary'] = False
@@ -616,8 +617,8 @@ class Delaunay(GenericNetwork):
         After the offsetting routine throats with zero area have been fully occluded.
         Remove these from the network and also remove pores that are isolated
         """
-        occluded_ts = list(self.throats()[self['throat.area'] == 0])
-        if len(occluded_ts) > 0:
+        occluded_ts = self['throat.area'] == 0
+        if np.sum(occluded_ts) > 0:
             self.trim(throats=occluded_ts)
         # Also get rid of isolated pores
         isolated_ps = self.check_network_health()['isolated_pores']

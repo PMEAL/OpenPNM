@@ -23,7 +23,7 @@ def compactness(geometry, throat_perimeter='throat.perimeter',
     C = _sp.ones(geometry.num_throats())
     C[ts] = P[ts]**2/A[ts]
     verts = geometry['throat.offset_vertices']
-    for i in range(len(verts)):
+    for i in ts:
         if len(verts[i]) == 3:
             # Triangular Correction
             C[i] = C[i]*(25/17) + (40*_sp.sqrt(3)/17)

@@ -98,10 +98,10 @@ class GenericPhysics(OpenPNM.Base.Core):
             Indicates whether list of pores or throats is to be added or removed
             from the object.  Options are 'add' (default) or 'remove'.
         """
-        if len(pores) > 0:
+        if sp.size(pores) > 0:
             pores = sp.array(pores, ndmin=1)
             self._set_locations(element='pore', locations=pores, mode=mode)
-        if len(throats) > 0:
+        if sp.size(throats) > 0:
             throats = sp.array(throats, ndmin=1)
             self._set_locations(element='throat', locations=throats, mode=mode)
 

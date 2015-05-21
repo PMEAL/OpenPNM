@@ -531,7 +531,8 @@ def all_overlap(array):
     return all_overlap
 
 
-def scale(network, scale_factor=[1, 1, 1], preserve_vol=True):
+def scale(network, scale_factor=[1, 1, 1], preserve_vol=False,
+          linear_scaling=[False, False, False]):
     r"""
     A method for scaling the coordinates and vertices to create anisotropic networks
     The original domain volume can be preserved by setting preserve_vol = True
@@ -546,32 +547,79 @@ def scale(network, scale_factor=[1, 1, 1], preserve_vol=True):
     >>> B1 = pn.pores("left_boundary")
     >>> B2 = pn.pores("right_boundary")
     >>> Vol = vo.vertex_dimension(pn,B1,B2)
-    >>> vo.scale(network=pn,scale_factor=[2,1,1])
+    >>> vo.scale(network=pn,scale_factor=[2,1,1],preserve_vol=True)
     >>> Vol2 = vo.vertex_dimension(pn,B1,B2)
     >>> np.around(Vol-Vol2,5) == 0.0
     True
     >>> vo.scale(network=pn,scale_factor=[2,1,1],preserve_vol=False)
     >>> Vol3 = vo.vertex_dimension(pn,B1,B2)
-    >>> np.around(Vol3/Vol,5)
-    2.0
+    >>> np.around(Vol3/Vol,5) == 2.0
+    True
 
     """
     from scipy.special import cbrt
     import scipy as sp
+    minmax = np.around(vertex_dimension(network=network,
+                                        face1=network.pores(), parm='minmax'), 10)
     scale_factor = np.asarray(scale_factor)
     if preserve_vol is True:
         scale_factor = scale_factor/(cbrt(sp.prod(scale_factor)))
-    network['pore.coords'] = network['pore.coords']*scale_factor
+
+    lin_scale = _linear_scale_factor(network["pore.coords"], minmax,
+                                     scale_factor, linear_scaling)
+
+    network["pore.coords"] = network["pore.coords"]*lin_scale
     # Cycle through all vertices of all pores updating vertex values
     for pore in network.pores():
         for i, vert in network['pore.vert_index'][pore].items():
-            network['pore.vert_index'][pore][i] = \
-                network['pore.vert_index'][pore][i]*scale_factor
+            vert_scale = _linear_scale_factor(vert, minmax,
+                                              scale_factor, linear_scaling)
+            network["pore.vert_index"][pore][i] = vert*vert_scale
     # Cycle through all vertices of all throats updating vertex values
     for throat in network.throats():
         for i, vert in network['throat.vert_index'][throat].items():
-            network['throat.vert_index'][throat][i] = \
-                network['throat.vert_index'][throat][i]*scale_factor
+
+            vert_scale = _linear_scale_factor(vert, minmax,
+                                              scale_factor, linear_scaling)
+            network["throat.vert_index"][throat][i] = vert*vert_scale
+    # Scale the vertices on the voronoi diagram stored on the network
+    # These are used for adding boundaries on the Delaunay network class
+    vert = network._vor.vertices
+    vert_scale = _linear_scale_factor(vert, minmax, scale_factor, linear_scaling)
+    network._vor.vertices = vert*vert_scale
+
+
+def _linear_scale_factor(points=None,
+                         minmax=[0, 1, 0, 1, 0, 1],
+                         scale_factor=[1, 1, 1],
+                         linear_scaling=[False, False, False]):
+    r"""
+    Work out the linear scale factor of a point or set of points based on the
+    domain extent, an absolute scale factor and linear_scaling booleans for each
+    coordinate. If all False the absolute scaling is applied equally across the
+    domain. If one linear_scaling boolean is True then a linear function is
+    applied to scaling the co-ordinates along that axis. If more than one boolean
+    is true then a combined linear function is applied
+    """
+    [xmin, xmax, ymin, ymax, zmin, zmax] = minmax
+    max_array = np.array([(xmax-xmin), (ymax-ymin), (zmax-zmin)])
+    pos_array = points/max_array
+    shape = np.shape(points)
+    if len(shape) == 1:
+        combined_pos = np.ones([1])
+        for i in range(3):
+            if linear_scaling[i] == True:
+                combined_pos *= pos_array[i]
+        lin_scale = (scale_factor - 1)*combined_pos + 1
+    else:
+        combined_pos = np.ones([shape[0]])
+        for i in range(3):
+            if linear_scaling[i] == True:
+                combined_pos *= pos_array[:, i]
+        pos_array = np.vstack((combined_pos, combined_pos, combined_pos)).T
+        lin_scale = (scale_factor - 1)*pos_array + 1
+
+    return lin_scale
 
 
 def vertex_dimension(network, face1=[], face2=[], parm='volume'):
@@ -682,11 +730,11 @@ def porosity(network):
     """
     domain_vol = vertex_dimension(network, network.pores(), parm='volume')
     try:
-        pore_vol = sum(network['pore.volume'])
+        pore_vol = np.sum(network['pore.volume'])
     except KeyError:
         print('Geometries must be assigned first')
         pore_vol = 0
-    porosity = pore_vol/domain_vol
+    porosity = np.around(pore_vol/domain_vol, 3)
     return porosity
 
 
@@ -758,6 +806,7 @@ def print_throat(geom, throats_in):
         inradius = 0.5*geom['throat.indiameter'][throats]
         for i in range(len(throats)):
             fig = plt.figure()
+            ax = fig.add_subplot(111)
             vert_2D = tr.rotate_and_chop(verts[i], normals[i], [0, 0, 1])
             hull = ConvexHull(vert_2D, qhull_options='QJ Pp')
             for simplex in hull.simplices:
@@ -795,9 +844,10 @@ def print_throat(geom, throats_in):
             u = inradius[i]*np.cos(t)+incent[0][0]
             v = inradius[i]*np.sin(t)+incent[0][1]
             plt.plot(u, v, 'r-')
+            ax.ticklabel_format(style='sci', scilimits=(0, 0))
             fig.show()
     else:
-        print('Please provide throat indices')
+        print("Please provide throat indices")
 
 
 def print_pore(geom, pores, fig=None, axis_bounds=None):
@@ -818,6 +868,7 @@ def print_pore(geom, pores, fig=None, axis_bounds=None):
     if len(pores) > 0:
         net_pores = geom.map_pores(geom._net, pores)
         centroids = geom['pore.centroid'][pores]
+        net_throats = geom._net.find_neighbor_throats(pores=net_pores)
         throats = geom._net.map_throats(geom,
                                         net_throats,
                                         return_mapping=True)['target']
@@ -862,6 +913,7 @@ def print_pore(geom, pores, fig=None, axis_bounds=None):
             ax.set_ylim(ymin, ymax)
             ax.set_zlim(zmin, zmax)
             ax.scatter(centroids[:, 0], centroids[:, 1], centroids[:, 2], c='y')
+            ax.ticklabel_format(style='sci', scilimits=(0, 0))
             plt.show()
         else:
             print_throat(throats)

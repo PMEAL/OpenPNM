@@ -1,6 +1,8 @@
 import OpenPNM
+import time
+st = time.time()
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
-
+from OpenPNM.Geometry import models as gm
 ctrl = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
@@ -14,7 +16,7 @@ pn.add_boundaries()
 Ps = pn.pores('boundary',mode='not')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
 geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
-
+geom.models.add(propname='throat.length',model=gm.throat_length.straight)
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
 boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
@@ -101,3 +103,4 @@ except Exception as e:
 #------------------------------------------------------------------------------
 ctrl.export()
 
+print("sim time:" + str(time.time()-st))

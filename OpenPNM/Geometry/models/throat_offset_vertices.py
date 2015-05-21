@@ -7,6 +7,8 @@ throat_offset_vertices -- Offeset throat vertices using a fibre radius parameter
 import scipy as sp
 import OpenPNM.Utilities.vertexops as vo
 import OpenPNM.Utilities.transformations as tr
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 
 def voronoi(network, geometry, offset, **kwargs):
@@ -67,6 +69,7 @@ def distance_transform(network, geometry, offset, **kwargs):
     z_axis = [0, 0, 1]
 
     for i in range(Nt):
+        logger.info("Processing throat " + str(i+1)+" of "+str(Nt))
         # For boundaries some facets will already be aligned with the axis - if this
         # is the case a rotation is unnecessary and could also cause problems
         angle = tr.angle_between_vectors(normals[i], z_axis)
@@ -115,6 +118,9 @@ def distance_transform(network, geometry, offset, **kwargs):
             z_plane = sp.unique(np.around(z, order+2))
             if len(z_plane) > 1:
                 print('Rotation for image analysis failed')
+                temp_arr = np.ones(1)
+                temp_arr.fill(np.mean(z_plane))
+                z_plane = temp_arr
             "Fill in the convex hull polygon"
             convhullimg = convex_hull_image(img_pad)
             # Perform a Distance Transform and black out points less than r to create
