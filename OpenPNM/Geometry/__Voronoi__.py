@@ -16,7 +16,6 @@ from OpenPNM.Geometry import GenericGeometry
 from OpenPNM.Base import logging
 import matplotlib.pyplot as plt
 from scipy.io import savemat
-from scipy import ndimage
 from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 

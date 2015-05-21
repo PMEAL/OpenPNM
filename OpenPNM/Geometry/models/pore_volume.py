@@ -9,11 +9,8 @@ import numpy as np
 from scipy.spatial import Delaunay
 from scipy.spatial import ConvexHull
 import OpenPNM.Utilities.misc as misc
-from multiprocessing import Pool
 from scipy import ndimage
-from scipy.io import savemat
 import gc
-from scipy.stats import itemfreq
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
@@ -125,7 +122,7 @@ def _get_vertex_range(verts):
     return [vxmin, vxmax, vymin, vymax, vzmin, vzmax]
 
 
-def _get_fibre_image(network, cpores, vox_len, fibre_rad, add_boundary=True):
+def _get_fibre_image(network, cpores, vox_len, fibre_rad):
     r"""
     Produce image by filling in voxels along throat edges using Bresenham line
     Then performing distance transform on fibre voxels to erode the pore space
@@ -154,7 +151,6 @@ def _get_fibre_image(network, cpores, vox_len, fibre_rad, add_boundary=True):
     try:
         pore_space = np.ones([lx, ly, lz], dtype=np.uint8)
         fibre_space = np.zeros(shape=[lx, ly, lz], dtype=np.uint8)
-        boundary_space = np.zeros(shape=[lx, ly, lz], dtype=np.uint8)
         dt = np.zeros([lx, ly, lz], dtype=float)
         # Only need one chunk
         cx = cy = cz = 1
@@ -178,7 +174,7 @@ def _get_fibre_image(network, cpores, vox_len, fibre_rad, add_boundary=True):
             cz = 1
 
     "Get image of the fibres"
-    line_points = bresenham(cverts, vox_len)
+    line_points = bresenham(cverts, vox_len/2)
     line_ints = (np.around((line_points/vox_len), 0)).astype(int)
     for x, y, z in line_ints:
         try:
@@ -216,112 +212,28 @@ def _get_fibre_image(network, cpores, vox_len, fibre_rad, add_boundary=True):
                 fibre_space[cxmin:cxmax,
                             cymin:cymax,
                             czmin:czmax][dt > fibre_rad] = 1
-                items = itemfreq(dt)[:, 0]
-                if add_boundary:
-                    b = 1
-                    for i, d in enumerate(items):
-                        if d > fibre_rad:
-                            boundary_space[cxmin:cxmax,
-                                           cymin:cymax,
-                                           czmin:czmax][dt == d] = b
-                            b += 1
                 del dt
                 cnum += 1
     del pore_space
-
-    if add_boundary:
-        return fibre_space, boundary_space
-    else:
-        return fibre_space
-
-
-def _get_voxel_volume(network, geometry, chunk, vox_len, fibre_rad, fibre_image):
-    r"""
-    Calculate the volume by divinding space into voxels, working out nearest
-    neighours to get hulls returns number of voxels in pore both fibre and
-    open space portions
-    """
-    points = network["pore.coords"]
-    "Unpack the pores and range of the chunk"
-    [ci, cj, ck] = chunk
-    start = [ci[0], cj[0], ck[0]]
-    lx = len(ci)
-    ly = len(cj)
-    lz = len(ck)
-    cxmin = (ci.min()-0.5)*vox_len
-    cxmax = (ci.max()+0.5)*vox_len
-    cymin = (cj.min()-0.5)*vox_len
-    cymax = (cj.max()+0.5)*vox_len
-    czmin = (ck.min()-0.5)*vox_len
-    czmax = (ck.max()+0.5)*vox_len
-    "Find points within the range of the chunk"
-    cpores = network.pores()[(points[:, 0] >= cxmin) *
-                             (points[:, 0] < cxmax) *
-                             (points[:, 1] >= cymin) *
-                             (points[:, 1] < cymax) *
-                             (points[:, 2] >= czmin) *
-                             (points[:, 2] < czmax)]
-    "Boundary pores have zero volume so we ignore them, only evaluate nearest"
-    "neighbors for points directly in chunk and those connected by network"
-    # Get list of non-boundary pores, these have zero volume
-    nbps = network.pores('boundary', mode='not')
-    neighbors = network.find_neighbor_pores(pores=cpores)
-    all_pores = np.concatenate((cpores, neighbors))
-    my_pores = np.asarray(list(set(all_pores).intersection(set(nbps))))
-    if len(my_pores) == 0:
-        return np.zeros(len(cpores))
-    my_points = points[my_pores]
-    pore_volume = _sp.zeros(len(my_pores), dtype=int)
-    # Need for when domain is compressed or stretched to ensure
-    # that the total fibre vol conserved
-    fibre_volume = _sp.zeros(len(my_pores), dtype=int)
-
-    "Get chunk of fibre image"
-    fibre_space = fibre_image[ci[0]:ci[0]+lx, cj[0]:cj[0]+ly, ck[0]:ck[0]+lz]
-
-    "Assign each voxel in he chunk the index of its nearest neighbor"
-    hull_space = np.zeros([lx, ly, lz], dtype=np.uint16)
-    from sklearn.neighbors import NearestNeighbors
-    my_points /= vox_len
-    my_points -= np.array([ci[0], cj[0], ck[0]]).astype(float)
-    "Zero the indices to fit with the chunk indices"
-    ci -= ci[0]
-    cj -= cj[0]
-    ck -= ck[0]
-    nbrs = NearestNeighbors(n_neighbors=1, algorithm='kd_tree').fit(my_points)
-    qs = []
-    for i in ci:
-        for j in cj:
-            for k in ck:
-                qs.append([i, j, k])
-    indices = nbrs.kneighbors(qs, return_distance=False)
-    for n, [i, j, k] in enumerate(qs):
-        hull_space[i][j][k] = my_pores[indices[n]]
-    del indices
-    del nbrs
-
-    for index, pore in enumerate(my_pores):
-        pore_volume[index] = np.sum((fibre_space == 1) & (hull_space == pore))
-        fibre_volume[index] = np.sum((fibre_space == 0) & (hull_space == pore))
-    logger.info("Size of Chunk Space: "+str(np.size(hull_space)))
-    "Save hull space into Voronoi image"
-    geometry._voronoi_image[start[0]:start[0]+lx,
-                            start[1]:start[1]+ly,
-                            start[2]:start[2]+lz] = hull_space
-    del fibre_space
-    del hull_space
-    gc.collect()
-
-    return pore_volume, fibre_volume, my_pores
+    return fibre_space
 
 
 def bresenham(faces, dx):
     line_points = []
     for face in faces:
         # Get in hull order
-        f2d = face[:, 0:2]
+        fx = face[:,0]
+        fy = face[:,1]
+        fz = face[:,2]
+        # Find the axis with the smallest spread of points and remove it to make 2D
+        if (np.std(fx) < np.std(fy)) and (np.std(fx) < np.std(fz)):
+            f2d = np.vstack((fy, fz)).T
+        elif (np.std(fy) < np.std(fx)) and (np.std(fy) < np.std(fz)):
+            f2d = np.vstack((fx, fz)).T
+        else:
+            f2d = np.vstack((fx, fy)).T
         hull = ConvexHull(f2d, qhull_options='QJ Pp')
-        face = face[hull.vertices]
+        face = np.around(face[hull.vertices],6)
         for i in range(len(face)):
             vec = face[i]-face[i-1]
             vec_length = np.linalg.norm(vec)
@@ -467,78 +379,6 @@ def voronoi(network, geometry, **kwargs):
     return volume
 
 
-def voronoi_vox(network,
-                geometry,
-                fibre_rad,
-                vox_len=1e-6,
-                **kwargs):
-    r"""
-    Compute the pore volumes by creating a voxel image of the domain with
-    Bresenham lines creating fibres.
-    Warning this method takes longer than standard voronoi calculation
-    Maximum domain size for one chunk is 700**3
-    N.B may be inefficient as whole network is calculated and then specific
-    geometry returned
-    """
-    import OpenPNM.Utilities.vertexops as vo
-    Np = network.num_pores()
-    geom_pores = geometry.map_pores(network, geometry.pores())
-    volume = _sp.zeros(Np)
-    pore_vox = _sp.zeros(Np, dtype=int)
-    fibre_vox = _sp.zeros(Np, dtype=int)
-    voxel = vox_len**3
-    # Voxel length
-    fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len, 0).astype(int)
-
-    "Get the fibre image"
-    fibre_image, boundary_image = _get_fibre_image(network,
-                                                   geom_pores,
-                                                   vox_len,
-                                                   fibre_rad,
-                                                   add_boundary=True)
-    # Save as private variables
-    geometry._fibre_image = fibre_image
-    geometry._fibre_image_boundary = boundary_image
-    fibre_shape = np.asarray(np.shape(fibre_image))
-    fibre_split = np.ceil(fibre_shape/200)
-    indx = np.arange(0, fibre_shape[0])
-    indy = np.arange(0, fibre_shape[1])
-    indz = np.arange(0, fibre_shape[2])
-    num_chunks = np.prod(fibre_split)
-    geometry._voronoi_image = np.ndarray(np.shape(fibre_image), dtype=np.uint16)
-    "Split domain to manage memory"
-    cnum = 1
-    for ci in np.array_split(indx, fibre_split[0]):
-        for cj in np.array_split(indy, fibre_split[1]):
-            for ck in np.array_split(indz, fibre_split[2]):
-
-                logger.info("Processing Chunk: "+str(cnum)+" of "+str(num_chunks))
-                cpvols, cfvols, cpores = _get_voxel_volume(network,
-                                                           geometry,
-                                                           [ci, cj, ck],
-                                                           vox_len,
-                                                           fibre_rad,
-                                                           fibre_image)
-                # this volume may not be the entire pore volume as some pores span
-                # multiple chunks, hence the addition
-                volume[cpores] += cpvols*voxel
-                pore_vox[cpores] += cpvols
-                fibre_vox[cpores] += cfvols
-                cnum += 1
-
-    geometry["pore.fibre_voxels"] = fibre_vox[geom_pores]
-    geometry["pore.pore_voxels"] = pore_vox[geom_pores]
-    geometry["pore.centroid"] = _voxel_centroid(geometry._voronoi_image, vox_len)
-    "Due to the number of voxel volume being slightly greater than the domain"
-    "vertex extent the pore volumes are slightly too big by a few percent"
-    "Fudge this back"
-    vox_vol = np.size(fibre_image)*voxel
-    dom_vol = vo.vertex_dimension(network, network.pores())
-    volume *= dom_vol/vox_vol
-
-    return volume[geom_pores]
-
-
 def in_hull_volume(network, geometry, fibre_rad, vox_len=1e-6, **kwargs):
     r"""
     Work out the voxels inside the convex hull of the voronoi vertices of each pore
@@ -549,13 +389,16 @@ def in_hull_volume(network, geometry, fibre_rad, vox_len=1e-6, **kwargs):
     pore_vox = _sp.zeros(Np, dtype=int)
     fibre_vox = _sp.zeros(Np, dtype=int)
     voxel = vox_len**3
-    nbps = network.pores('boundary', mode='not')
+    try:
+        nbps = network.pores('boundary', mode='not')
+    except KeyError:
+        # Boundaries have not been generated
+        nbps = network.pores()
     # Voxel length
     fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len, 0).astype(int)
 
     "Get the fibre image"
-    fibre_image = _get_fibre_image(network, geom_pores, vox_len, fibre_rad,
-                                   add_boundary=False)
+    fibre_image = _get_fibre_image(network, geom_pores, vox_len, fibre_rad)
     # Save as private variables
     geometry._fibre_image = fibre_image
     hull_image = np.ones_like(fibre_image, dtype=np.uint16)
