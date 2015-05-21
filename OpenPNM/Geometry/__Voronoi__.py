@@ -51,6 +51,8 @@ class Voronoi(GenericGeometry):
                         model=gm.throat_offset_vertices.distance_transform,
                         offset=self._fibre_rad,
                         set_dependent=True)
+        self.models.add(propname='throat.shape_factor',
+                        model=gm.throat_shape_factor.compactness)
         self.models.add(propname='pore.seed',
                         model=gm.pore_misc.random,
                         seed=self._seed)

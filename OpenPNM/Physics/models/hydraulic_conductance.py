@@ -68,8 +68,7 @@ def hagen_poiseuille(physics, phase, network, pore_diameter='pore.diameter',
         sf = network[shape_factor]
     except:
         sf = _sp.ones(network.num_throats())
-        sf.fill(_sp.pi*8)
-    gt = (_sp.pi*8/sf)*_sp.pi*(tdia)**4/(128*tlen*mut)
+    gt = (1/sf)*_sp.pi*(tdia)**4/(128*tlen*mut)
     gt[~(gt > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     value = value[phase.throats(physics.name)]
