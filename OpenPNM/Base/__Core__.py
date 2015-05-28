@@ -108,7 +108,7 @@ class Core(dict):
 
     def _set_ctrl(self,controller):
         if self.name in controller.keys():
-            raise Exception('An object with that name is already present in simulation')
+            raise Exception('An object named '+self.name+' is already present in simulation')
         self._ctrl = controller
         controller.update({self.name: self})
 
@@ -130,7 +130,7 @@ class Core(dict):
             for item in objs:
                 keys = [key.split('.')[-1] for key in item.keys()]
                 if name in keys:
-                    raise Exception('That name is already in use as an array name')
+                    raise Exception(name+' is already in use as an array name')
             for item in objs:
                 if 'pore.'+self.name in item.keys():
                     item['pore.'+name] = item.pop('pore.'+self.name)
