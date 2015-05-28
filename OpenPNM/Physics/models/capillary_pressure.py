@@ -116,6 +116,66 @@ def purcell(physics, phase, network, r_toroid,
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r) * \
         (_sp.cos(_sp.radians(theta - alpha)) /
-            (1 + R/r*(1-_sp.cos(_sp.radians(alpha)))))
+            (1 + R/r*(1 - _sp.cos(_sp.radians(alpha)))))
     value = value[phase.throats(physics.name)]
     return value
+
+def static_pressure(physics,
+                    phase,
+                    density = 'pore.density',
+                    g = [0,0,9.81],
+                    **kwargs):
+    r'''
+    Finds the highest point on each cluster and adds the corresponding static
+    fluid pressure to the entry pressure of each throat.
+
+    Parameters
+    ----------
+    g : list
+        A three component vector describing the direction and magnitude of the
+        force acting on the fluid.  The default is [0,0,9.81] corresponding to
+        earth's gravity acting in the downward z-direction.
+
+    '''
+    net = physics._net
+    static_pressure = _sp.zeros((net.Np,))
+    rho = phase[density]
+    g = _sp.array(g)
+    clusters = net.find_clusters(phase['throat.invaded'])
+    Ps = net.find_connected_pores(phase['throat.invaded'],flatten=True)
+    Ps = net.tomask(Ps)
+    clusters[~Ps] = -1
+    cluster_nums = _sp.unique(clusters)[1:]
+    for cluster in cluster_nums:
+        Ps = _sp.where(clusters == cluster)[0]
+        tops = _sp.amax(net['pore.coords'][Ps,:], axis=0)
+        h = tops - net['pore.coords'][Ps]
+        P_temp = g*h
+        P_temp = _sp.reshape(P_temp[:, _sp.where(g>0)[0]], -1)
+        static_pressure[Ps] = P_temp*rho[Ps]
+    return static_pressure
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

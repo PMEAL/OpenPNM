@@ -14,6 +14,9 @@ pn.add_boundaries()
 Ps = pn.pores('boundary',mode='not')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
 geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
+geom.models['pore.seed']['seed'] = 0
+geom.models['pore.seed']['regen_mode'] = 'normal'
+geom.regenerate()
 
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
@@ -23,7 +26,6 @@ boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 '''Build Phases'''
 #==============================================================================
 air = OpenPNM.Phases.Air(network=pn,name='air')
-air['pore.Dac'] = 1e-7  # Add custom properties directly
 water = OpenPNM.Phases.Water(network=pn,name='water')
 
 #==============================================================================
@@ -34,9 +36,9 @@ Ts = pn.throats()
 phys_water = OpenPNM.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts)
 phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
 #Add some additional models to phys_air
-phys_air.models.add(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion,
-                    propname='throat.gdiff_ac',
-                    pore_diffusivity='pore.Dac')
+phys_air.models.add(model=OpenPNM.Physics.models.capillary_pressure.static_pressure,
+                    propname='pore.static_pressure',
+                    regen_mode='deferred')
 
 #==============================================================================
 '''Begin Simulations'''
@@ -79,22 +81,6 @@ phys_air.models.add(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
 alg.run(conductance='throat.diffusive_conductance')
 alg.return_results()
 Deff = alg.calc_eff_diffusivity()
-
-try:
-    # this creates a time step x num_pores, which is what the animated object needs
-    inv_seq = water['pore.IP_inv_seq'].squeeze()
-    history = []
-    for i in sorted(set(inv_seq)):
-      history.append( (inv_seq != 0) & (inv_seq < i) )
-    # try to perofrm an animated 3D rendering
-    from OpenPNM.Postprocessing.Graphics import Scene, Wires
-    wires = Wires(pn['pore.coords'], pn['throat.conns'], history)
-    scene = Scene()
-    scene.add_actors([wires])
-    scene.play()
-
-except Exception as e:
-    pass
 
 #------------------------------------------------------------------------------
 '''Export to VTK'''
