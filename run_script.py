@@ -53,12 +53,24 @@ OP_1.return_results(Pc=7000)
 #------------------------------------------------------------------------------
 '''Perform Invasion Percolation'''
 #------------------------------------------------------------------------------
-inlets = pn.pores('bottom_boundary')
-outlets = pn.pores('top_boundary')
-IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn,name='IP_1')
+IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn)
+inlets = pn.pores('front_boundary')
+outlets = pn.pores('back_boundary')
 IP_1.run(phase=water,inlets=inlets)
 IP_1.apply_flow(flowrate=1e-15)
 IP_1.return_results()
+
+#------------------------------------------------------------------------------
+'''Perform Invasion Percolation using Version 2'''
+#------------------------------------------------------------------------------
+IP_2 = OpenPNM.Algorithms.InvasionPercolation2(network=pn)
+inlets = pn.pores('front_boundary')
+IP_2.setup(phase=water, inlets=inlets)
+filled = False
+while not filled:
+    filled = IP_2.run(nsteps=10)
+    # Recalculate static pressure
+
 
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
