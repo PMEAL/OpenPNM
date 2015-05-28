@@ -69,8 +69,6 @@ IP_2.setup(phase=water, inlets=inlets)
 filled = False
 while not filled:
     filled = IP_2.run(nsteps=10)
-    # Recalculate static pressure
-
 
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
