@@ -1,11 +1,13 @@
 import OpenPNM
+import scipy as sp
+import matplotlib.pyplot as plt
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 
 ctrl = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net')
+pn = OpenPNM.Network.Cubic(shape=[25,1,25],spacing=0.0001,name='net')
 pn.add_boundaries()
 
 #==============================================================================
@@ -25,8 +27,10 @@ boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 #==============================================================================
 '''Build Phases'''
 #==============================================================================
-air = OpenPNM.Phases.Air(network=pn,name='air')
 water = OpenPNM.Phases.Water(network=pn,name='water')
+air = OpenPNM.Phases.Air(network=pn,name='air')
+air['pore.surface_tension'] = 0.072
+air['pore.contact_angle'] = 0
 
 #==============================================================================
 '''Build Physics'''
@@ -34,66 +38,57 @@ water = OpenPNM.Phases.Water(network=pn,name='water')
 Ps = pn.pores()
 Ts = pn.throats()
 phys_water = OpenPNM.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts)
+#Add some additional models to phys_water
+phys_water.models.add(model=OpenPNM.Physics.models.capillary_pressure.static_pressure,
+                      propname='pore.static_pressure',
+                      regen_mode='deferred')
 phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
-#Add some additional models to phys_air
-phys_air.models.add(model=OpenPNM.Physics.models.capillary_pressure.static_pressure,
-                    propname='pore.static_pressure',
-                    regen_mode='deferred')
+phys_air.models['throat.capillary_pressure'] = phys_water.models['throat.capillary_pressure'].copy()
 
 #==============================================================================
 '''Begin Simulations'''
 #==============================================================================
-'''Perform a Drainage Experiment (OrdinaryPercolation)'''
-#------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air)
-Ps = pn.pores(labels=['bottom_boundary'])
-OP_1.run(inlets=Ps)
-OP_1.return_results(Pc=7000)
-
-#------------------------------------------------------------------------------
-'''Perform Invasion Percolation'''
-#------------------------------------------------------------------------------
-IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn)
-inlets = pn.pores('front_boundary')
-outlets = pn.pores('back_boundary')
-IP_1.run(phase=water,inlets=inlets)
-IP_1.apply_flow(flowrate=1e-15)
-IP_1.return_results()
-
-#------------------------------------------------------------------------------
 '''Perform Invasion Percolation using Version 2'''
 #------------------------------------------------------------------------------
-IP_2 = OpenPNM.Algorithms.InvasionPercolation2(network=pn)
-inlets = pn.pores('front_boundary')
-IP_2.setup(phase=water, inlets=inlets)
+IP = OpenPNM.Algorithms.InvasionPercolation2(network=pn)
+inlets = pn.pores('top_boundary')
 filled = False
 while not filled:
-    filled = IP_2.run(nsteps=10)
+    IP.setup(phase=air, inlets=inlets)
+    filled = IP.run(nsteps=50)
+    water['throat.occupancy'] = False
+    Ts = pn.find_neighbor_throats(IP['pore.invaded'] == -1, mode='intersection')
+    water['throat.occupancy'][Ts] = True
+    phys_water.models.regenerate()
+    P12 = pn['throat.conns']
+    temp = sp.amax(phys_water['pore.static_pressure'][P12],axis=1)
+    phys_water['throat.capillary_pressure'] += temp
 
-#------------------------------------------------------------------------------
-'''Perform Fickian Diffusion'''
-#------------------------------------------------------------------------------
-alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
-# Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.pores('right_boundary')
-alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
-BC2_pores = pn.pores('left_boundary')
-alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
-#Add new model to air's physics that accounts for water occupancy
-phys_air.models.add(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
-                    propname='throat.conduit_diffusive_conductance',
-                    throat_conductance='throat.diffusive_conductance',
-                    throat_occupancy='throat.occupancy',
-                    pore_occupancy='pore.occupancy',
-                    mode='strict',
-                    factor=0)
-#Use desired diffusive_conductance in the diffusion calculation (conductance for the dry network or water-filled network)
-alg.run(conductance='throat.diffusive_conductance')
-alg.return_results()
-Deff = alg.calc_eff_diffusivity()
+plt.matshow(pn.asarray(phys_water['pore.static_pressure'][pn.pores('internal')])[:,0,:].T,interpolation='none',origin='lower')
 
-#------------------------------------------------------------------------------
-'''Export to VTK'''
-#------------------------------------------------------------------------------
-ctrl.export()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
