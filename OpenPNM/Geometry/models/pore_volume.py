@@ -15,7 +15,7 @@ from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
 
-def inhull(geometry, xyz, pore, tol=1e-12):
+def inhull(geometry, xyz, pore, tol=1e-7):
     r"""
     Tests whether points lie within a convex hull or not.
     Computes a tesselation of the hull works out the normals of the facets.
@@ -401,11 +401,12 @@ def in_hull_volume(network, geometry, fibre_rad, vox_len=1e-6, **kwargs):
     fibre_image = _get_fibre_image(network, geom_pores, vox_len, fibre_rad)
     # Save as private variables
     geometry._fibre_image = fibre_image
-    hull_image = np.ones_like(fibre_image, dtype=np.uint16)
+    hull_image = np.ones_like(fibre_image, dtype=np.uint16)*-1
     geometry._hull_image = hull_image
     for pore in nbps:
         logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(nbps)))
         verts = np.asarray([i for i in network["pore.vert_index"][pore].values()])
+        verts = np.asarray(misc.unique_list(np.around(verts,6)))
         verts /= vox_len
         pore_vox[pore], fibre_vox[pore] = inhull(geometry, verts, pore)
 
