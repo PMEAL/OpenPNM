@@ -38,7 +38,7 @@ class InvasionPercolation2(GenericAlgorithm):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def setup(self,phase,inlets,throat_prop='throat.capillary_pressure'):
+    def setup(self, phase, p_inlets, throat_prop='throat.capillary_pressure'):
         r"""
         Specify the overall parameters for the algorithm
 
@@ -48,9 +48,8 @@ class InvasionPercolation2(GenericAlgorithm):
             The phase to be injected into the Network.  The Phase must have the
             capillary entry pressure values for the system.
 
-
-        inlets : array_like
-            The list of inlet pores from which the Phase can enter the Network
+        p_inlets : array_like
+            The list of inlet pores from which the Phase can enter the Network.
 
         throat_prop : string
             The name of the throat property containing the capillary entry
@@ -61,6 +60,7 @@ class InvasionPercolation2(GenericAlgorithm):
         When ``setup`` is called the entire Algorithm is reset, so this can be
         used to repeat a calculation if desired.
         """
+        p_inlets = sp.array(p_inlets, ndmin=1)
         self._phase = phase
         # Setup arrays and info
         t_entry = phase[throat_prop]
@@ -71,10 +71,15 @@ class InvasionPercolation2(GenericAlgorithm):
         self['throat.invaded'] = -sp.ones_like(self._net.Ts)
         self['pore.invaded'] = -sp.ones_like(self._net.Ps)
 
-        self._queue = []
-        self['pore.invaded'][inlets] = 0
+        self['pore.invaded'][p_inlets] = 0
         # Perform initial analysis on input pores
-        Ts = self._net.find_neighbor_throats(pores=inlets)
+        Ts = self._net.find_neighbor_throats(pores=p_inlets, mode='intersection')
+        # Set throats connecting inlet pores to filled
+        self['throat.invaded'][Ts] = 0
+        # Set other throats as potential invaded thorats
+        Ts = self._net.find_neighbor_throats(pores=p_inlets, mode='not_intersection')
+        # Add throats to the queue
+        self._queue = []
         [hq.heappush(self._queue, T) for T in self['throat.order'][Ts]]
         hq.heapify(self._queue)
         self._tcount = 0

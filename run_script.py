@@ -7,7 +7,7 @@ ctrl = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(shape=[25,1,25],spacing=0.0001,name='net')
+pn = OpenPNM.Network.Cubic(shape=[25,1,25],spacing=0.001,name='net')
 pn.add_boundaries()
 
 #==============================================================================
@@ -53,23 +53,22 @@ phys_air.models['throat.capillary_pressure'] = phys_water.models['throat.capilla
 IP = OpenPNM.Algorithms.InvasionPercolation2(network=pn)
 inlets = pn.pores('top_boundary')
 filled = False
+count = 0
 while not filled:
-    IP.setup(phase=air, inlets=inlets)
+    count += 1
+    print('Loop number:', count)
+    IP.setup(phase=air, p_inlets=inlets)
     filled = IP.run(nsteps=50)
     water['throat.occupancy'] = False
     Ts = pn.find_neighbor_throats(IP['pore.invaded'] == -1, mode='intersection')
     water['throat.occupancy'][Ts] = True
-    phys_water.models.regenerate()
+    phys_water.models.regenerate('pore.static_pressure')
     P12 = pn['throat.conns']
     temp = sp.amax(phys_water['pore.static_pressure'][P12],axis=1)
     phys_water['throat.capillary_pressure'] += temp
+    inlets = IP['pore.invaded']>=0
 
 plt.matshow(pn.asarray(phys_water['pore.static_pressure'][pn.pores('internal')])[:,0,:].T,interpolation='none',origin='lower')
-
-
-
-
-
 
 
 
