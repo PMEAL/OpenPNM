@@ -254,7 +254,12 @@ class GenericNetwork(Core):
         >>> pn.find_connected_pores(throats=[0,1], flatten=True)
         array([0, 1, 5])
         """
-        Ps = self['throat.conns'][throats]
+        Ts = sp.array(throats,ndmin=1)
+        if Ts.dtype == bool:
+            Ts = self.toindices(Ts)
+        if sp.size(Ts) == 0:
+            return sp.ndarray([0,2],dtype=int)
+        Ps = self['throat.conns'][Ts]
         if flatten:
             Ps = sp.unique(sp.hstack(Ps))
         return Ps

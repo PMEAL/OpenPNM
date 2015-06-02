@@ -767,6 +767,7 @@ class Core(dict):
         convenience function and is a compliment to tomask().
 
         """
+        mask = sp.array(mask,ndmin=1)
         if sp.shape(mask)[0] == self.num_pores():
             indices = self.pores()[mask]
         elif sp.shape(mask)[0] == self.num_throats():
