@@ -402,3 +402,34 @@ class Delaunay(GenericNetwork):
         isolated_ps = self.check_network_health()['isolated_pores']
         if len(isolated_ps) > 0:
             self.trim(isolated_ps)
+    
+    def export_vor_fibres(self):
+        r"""
+        Run through the throat vertices, compute the convex hull order and save
+        the vertices and ordered faces in a pickle dictionary to be used in 
+        blender
+        """
+        import pickle as pickle
+        Indices = []
+        for t in self.throats():
+            indices = list(self["throat.vert_index"][t].keys())
+            verts = self._vor.vertices[indices]
+            # Need to order the indices in convex hull order
+            # Compute the standard deviation in all coordinates and eliminate
+            # the axis with the smallest to make 2d
+            stds = [np.std(verts[:,0]),np.std(verts[:,1]), np.std(verts[:,2])]
+            if np.argmin(stds) == 0:
+                verts2d = np.vstack((verts[:, 1], verts[:, 2])).T
+            elif np.argmin(stds) == 1:
+                verts2d = np.vstack((verts[:, 0], verts[:, 2])).T
+            else:
+                verts2d = np.vstack((verts[:, 0], verts[:, 1])).T
+            # 2d convexhull returns vertices in hull order
+            hull2d= sptl.ConvexHull(verts2d, qhull_options='QJ Pp')
+            # Re-order the vertices and save as list (blender likes them as lists)
+            Indices.append(np.asarray(indices)[hull2d.vertices].tolist())
+        # Create dictionary to pickle    
+        data = {}
+        data["Verts"] = self._vor.vertices
+        data["Indices"] = Indices
+        pickle.dump( data, open( "fibres.p", "wb" ) )
