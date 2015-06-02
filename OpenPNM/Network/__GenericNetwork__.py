@@ -354,6 +354,8 @@ class GenericNetwork(Core):
         array([ 3,  5,  7, 25, 27])
         """
         pores = sp.array(pores, ndmin=1)
+        if pores.dtype == bool:
+            pores = self.toindices(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1)
         # Test for existence of incidence matrix
@@ -424,6 +426,8 @@ class GenericNetwork(Core):
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
         pores = sp.array(pores, ndmin=1)
+        if pores.dtype == bool:
+            pores = self.toindices(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1)
         # Test for existence of incidence matrix
@@ -482,11 +486,18 @@ class GenericNetwork(Core):
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
         """
+        pores = sp.array(pores,ndmin=1)
+        if pores.dtype == bool:
+            pores = self.toindices(pores)
+        if sp.size(pores) == 0:
+            return sp.array([],ndmin=1,dtype=int)
 
         # Count number of neighbors
         if flatten:
-            neighborPs = self.find_neighbor_pores(pores, flatten=True,
-                                                  mode='union', excl_self=True)
+            neighborPs = self.find_neighbor_pores(pores,
+                                                  flatten=True,
+                                                  mode='union',
+                                                  excl_self=True)
             num = sp.shape(neighborPs)[0]
         else:
             neighborPs = self.find_neighbor_pores(pores, flatten=False)
@@ -560,11 +571,11 @@ class GenericNetwork(Core):
             An Np long list of clusters numbers
 
         """
-        if sp.shape(mask)[0] == self.num_throats():
+        if sp.size(mask) == self.num_throats():
             # Convert to boolean mask if not already
             temp = sp.zeros((self.num_throats(),), dtype=bool)
             temp[mask] = True
-        elif sp.shape(mask)[0] == self.num_pores():
+        elif sp.size(mask) == self.num_pores():
             conns = self.find_connected_pores(throats=self.throats())
             conns[:, 0] = mask[conns[:, 0]]
             conns[:, 1] = mask[conns[:, 1]]
