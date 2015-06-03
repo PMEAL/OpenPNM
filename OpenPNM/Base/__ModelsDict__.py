@@ -91,8 +91,9 @@ class ModelWrapper(dict):
 
 class GenericModel(ModelWrapper):
     r"""
-    This class is deprecated, and is replaced by ModelWrapper.  This is kept
-    here to support legacy issues.
+    This class was deprecated, and replaced by ModelWrapper.  Unfortunately,
+    this broke the ability to load files that were saved prior to the
+    deprecation.  This is placed here as a 'wrapper' to the new ModelsWraper.
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
