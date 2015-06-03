@@ -191,11 +191,11 @@ def _get_fibre_image(network, cpores, vox_len, fibre_rad):
                 logger.info("Processing Fibre Chunk: "+str(cnum)+" of " +
                             str(num_chunks))
                 cxmin = ci*chunk_len
-                cxmax = (ci+1)*chunk_len + 5*fibre_rad.astype(int)
+                cxmax = np.int(np.ceil((ci+1)*chunk_len + 5*fibre_rad))
                 cymin = cj*chunk_len
-                cymax = (cj+1)*chunk_len + 5*fibre_rad.astype(int)
+                cymax = np.int(np.ceil((cj+1)*chunk_len + 5*fibre_rad))
                 czmin = ck*chunk_len
-                czmax = (ck+1)*chunk_len + 5*fibre_rad.astype(int)
+                czmax = np.int(np.ceil((ck+1)*chunk_len + 5*fibre_rad))
                 "Don't overshoot"
                 if cxmax > lx:
                     cxmax = lx
