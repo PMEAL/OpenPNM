@@ -212,8 +212,7 @@ def static_pressure(network,
     clusters[~Ps] = -1
     # Remove the -1 cluster from list
     cluster_nums = _sp.unique(clusters)
-    if len(cluster_nums) > 1:
-        cluster_nums = cluster_nums[:-1]
+    cluster_nums = cluster_nums[~_sp.in1d(cluster_nums,-1)]
     # Scan through each labelled cluster and find static pressure within
     for cluster in cluster_nums:
         Ps = _sp.where(clusters == cluster)[0]

@@ -128,6 +128,9 @@ class InvasionPercolation2(GenericAlgorithm):
             # Extract actual throat number
             t_next = self['throat.sorted'][t]
             # If throat is duplicated
+            while len(self._queue) > 0 and self._queue[0] == t:
+                # Note: Preventing duplicate entries below might save some time here
+                t = hq.heappop(self._queue)
             self['throat.invaded'][t_next] = self._tcount
             # Find pores connected to newly invaded throat
             Ps = self._net['throat.conns'][t_next]
