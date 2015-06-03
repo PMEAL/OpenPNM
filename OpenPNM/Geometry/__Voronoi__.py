@@ -28,11 +28,11 @@ class Voronoi(GenericGeometry):
     ----------
     name : string
         A unique name for the network
-    
+
     fibre_rad: float
         Fibre radius to apply to Voronoi edges when calculating pore and throat
         sizes
-        
+
     voxel_vol : boolean
         Determines whether to calculate pore volumes by creating a voxel image
         or to use the offset vertices of the throats. Voxel method is slower
@@ -65,7 +65,7 @@ class Voronoi(GenericGeometry):
                             fibre_rad=self._fibre_rad)
         else:
             self.models.add(propname='pore.volume',
-                        model=gm.pore_volume.voronoi)
+                            model=gm.pore_volume.voronoi)
         self.models.add(propname='throat.shape_factor',
                         model=gm.throat_shape_factor.compactness)
         self.models.add(propname='pore.seed',
@@ -98,11 +98,20 @@ class Voronoi(GenericGeometry):
         If the voronoi voxel method was implemented to calculate pore volumes
         an image of the fibre space has already been calculated and stored on
         the geometry. If not generate it
+
+        Parameters
+        ----------
+        fibre_rad : float
+        Fibre radius to apply to Voronoi edges when calculating pore and throat
+        sizes
+
+        vox_len : float
+        Length of voxel edge when dividing domain
         """
 
-        if hasattr(self,'_fibre_image'):
-            logger.info('fibre image already created') 
-            return            
+        if hasattr(self, '_fibre_image'):
+            logger.info('fibre image already created')
+            return
         else:
             if fibre_rad is None:
                 fibre_rad = self._fibre_rad
@@ -117,8 +126,13 @@ class Voronoi(GenericGeometry):
         If the voronoi voxel method was implemented to calculate pore volumes
         an image of the fibre space has already been calculated and stored on
         the geometry.
+
+        Parameters
+        ----------
+        mat_file : string
+        Filename of Matlab file to save fibre image
         """
-        if hasattr(self,'_fibre_image') == False:
+        if hasattr(self, '_fibre_image') == False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
@@ -129,8 +143,18 @@ class Voronoi(GenericGeometry):
         r"""
         Plot an image of a slice through the fibre image
         plane contains percentage values of the length of the image in each axis
+
+        Parameters
+        ----------
+        plane : array_like
+        List of 3 values, [x,y,z], 2 must be zero and the other must be between
+        zero and one representing the fraction of the domain to slice along
+        the non-zero axis
+
+        index : array_like
+        similar to plane but instead of the fraction an index of the image is used
         """
-        if hasattr(self,'_fibre_image') == False:
+        if hasattr(self, '_fibre_image') == False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return None
@@ -172,8 +196,18 @@ class Voronoi(GenericGeometry):
     def plot_fibre_slice(self, plane=None, index=None):
         r'''
         Plot one slice from the fibre image
+
+        Parameters
+        ----------
+        plane : array_like
+        List of 3 values, [x,y,z], 2 must be zero and the other must be between
+        zero and one representing the fraction of the domain to slice along
+        the non-zero axis
+
+        index : array_like
+        similar to plane but instead of the fraction an index of the image is used
         '''
-        if hasattr(self,'_fibre_image') == False:
+        if hasattr(self, '_fibre_image') == False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
@@ -187,7 +221,7 @@ class Voronoi(GenericGeometry):
         Return a porosity profile in all orthogonal directions by summing
         the voxel volumes in consectutive slices.
         '''
-        if hasattr(self,'_fibre_image') == False:
+        if hasattr(self, '_fibre_image') == False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
@@ -220,76 +254,6 @@ class Voronoi(GenericGeometry):
         ax.legend(handles, labels, loc=1)
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-    def _compress_slice(self, slice_image, compression=0.1, plot=False):
-        r'''
-        compress_slice by shifting fibre pixels
-        compression represents the percentage reduction in height
-        '''
-        shape = sp.shape(slice_image)
-        # number of pixels to remove from pore space
-        n = sp.ceil(compression*shape[1]).astype(int)
-        # initiate everything as pores
-        compressed_image = sp.ones([shape[0], shape[1]-n])
-        # cycle through columns in the image
-        for i in sp.arange(shape[0]):
-            column = slice_image[i, :].copy()
-            fi = sp.arange(len(column))[column == 0]
-            cfi = np.around((1-compression)*fi, 0).astype(int)
-            # don't allow fibres to overlap
-            freq = itemfreq(cfi)
-            # even things out a bit by shifting up and down alternatively
-            up_down = 1
-            for index, f in freq:
-                if f > 1:
-                    shift = 1
-                    while shift < 20 and f > 1:
-                        # check whether next index available
-                        test_index = index+(up_down*shift)
-                        if (test_index not in cfi) and \
-                           (test_index > -1) and \
-                           (test_index <= shape[1]-n):
-                            cfi = np.hstack((cfi, test_index))
-                            f -= 1
-                        else:
-                            shift += 1
-                    up_down *= -1
-
-            column.fill(1)
-            column[cfi] = 0
-            compressed_image[i, :] = column[:shape[1]-n]
-
-        if plot:
-            plt.figure()
-            plt.imshow(slice_image, cmap='Greys', interpolation='nearest')
-            plt.figure()
-            plt.imshow(compressed_image, cmap='Greys', interpolation='nearest')
-            print("Fibre voxels before compression: " +
-                  str(sp.sum(slice_image == 0)))
-            print("Fibre voxels after compression: " +
-                  str(sp.sum(compressed_image == 0)))
-
-        return compressed_image
-
-    def compress_fibre_image(self, compression=None):
-        r'''
-        Compress the fibre image slice by slice
-        '''
-        if hasattr(self,'_fibre_image') == False:
-            logger.warning('This method only works when a fibre image exists, ' +
-                           'please run make_fibre_image')
-            return
-        fibre_image_shape = np.shape(self._fibre_image)
-        num_slice = fibre_image_shape[0]
-        compressed_image = np.ones_like(self._fibre_image, dtype=np.uint8)
-        for slice_id in sp.arange(1, num_slice):
-            logger.info("Compressing Slice "+str(slice_id+1)+" of "+str(num_slice))
-            cs = self._compress_slice(slice_image=self._fibre_image[slice_id, :, :],
-                                     compression=compression)
-            cshape = np.shape(cs)
-            compressed_image[slice_id, :cshape[0], :cshape[1]] = cs
-
-        self._compressed_fibre_image = compressed_image[:, :, :cshape[1]]
-
     def compress_geometry(self, factor=None, preserve_fibres=False):
         r'''
         Adjust the vertices and recalculate geometry. Save fibre voxels before
@@ -297,14 +261,25 @@ class Voronoi(GenericGeometry):
         Shape will not be conserved. Also make adjustments to the pore and throat
         properties given an approximate volume change from adding the missing fibre
         voxels back in
+
+        Parameters
+        ----------
+        factor : array_like
+        List of 3 values, [x,y,z], 2 must be one and the other must be between
+        zero and one representing the fraction of the domain height to compress
+        to.
+
+        preserve_fibres : boolean
+        If the fibre image has been generated and used to calculate pore volumes
+        then preserve fibre volume artificially by adjusting pore and throat sizes
         '''
         if factor is None:
             logger.warning('Please supply a compression factor in the form ' +
-                            '[1,1,CR], with CR < 1')
+                           '[1,1,CR], with CR < 1')
             return
         if sp.any(sp.asarray(factor) > 1):
             logger.warning('The supplied compression factor is greater than 1, ' +
-                            'the method is not tested for stretching')
+                           'the method is not tested for stretching')
             return
         # uncompressed number of fibre voxels in each pore
         fvu = self["pore.fibre_voxels"]

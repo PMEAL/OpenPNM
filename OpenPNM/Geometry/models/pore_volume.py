@@ -222,9 +222,9 @@ def bresenham(faces, dx):
     line_points = []
     for face in faces:
         # Get in hull order
-        fx = face[:,0]
-        fy = face[:,1]
-        fz = face[:,2]
+        fx = face[:, 0]
+        fy = face[:, 1]
+        fz = face[:, 2]
         # Find the axis with the smallest spread of points and remove it to make 2D
         if (np.std(fx) < np.std(fy)) and (np.std(fx) < np.std(fz)):
             f2d = np.vstack((fy, fz)).T
@@ -233,7 +233,7 @@ def bresenham(faces, dx):
         else:
             f2d = np.vstack((fx, fy)).T
         hull = ConvexHull(f2d, qhull_options='QJ Pp')
-        face = np.around(face[hull.vertices],6)
+        face = np.around(face[hull.vertices], 6)
         for i in range(len(face)):
             vec = face[i]-face[i-1]
             vec_length = np.linalg.norm(vec)
@@ -406,7 +406,7 @@ def in_hull_volume(network, geometry, fibre_rad, vox_len=1e-6, **kwargs):
     for pore in nbps:
         logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(nbps)))
         verts = np.asarray([i for i in network["pore.vert_index"][pore].values()])
-        verts = np.asarray(misc.unique_list(np.around(verts,6)))
+        verts = np.asarray(misc.unique_list(np.around(verts, 6)))
         verts /= vox_len
         pore_vox[pore], fibre_vox[pore] = inhull(geometry, verts, pore)
 

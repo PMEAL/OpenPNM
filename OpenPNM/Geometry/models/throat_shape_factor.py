@@ -37,6 +37,6 @@ def compactness(geometry, throat_perimeter='throat.perimeter',
     # For a perfect circle alpha = 8*pi so normalize by this
     alpha /= 8*_sp.pi
     # Very small throats could have values less than one
-    alpha[alpha<1.0] = 1.0
+    alpha[alpha < 1.0] = 1.0
 
     return alpha

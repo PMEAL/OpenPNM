@@ -31,11 +31,11 @@ class Delaunay(GenericNetwork):
         Bounding cube for internal pore positions
     num_pores : int
         Number of pores to place randomly within domain
-    prob : 3D float array 
-        Values should be between 0 and 1 as determines probability of point 
-        with relative domain coordinates being kept. Array does not have to 
+    prob : 3D float array
+        Values should be between 0 and 1 as determines probability of point
+        with relative domain coordinates being kept. Array does not have to
         be same size as domain because positions are re-scaled
-    base_points : [Np,3] float array 
+    base_points : [Np,3] float array
         coordinates to use instead of random generation
     Examples
     --------
@@ -87,10 +87,10 @@ class Delaunay(GenericNetwork):
         elif num_pores is None and base_points is not None:
             num_pores = len(base_points)
         elif num_pores is not None and base_points is not None:
-            logger.warning('both num_pores and base_points arguments given'+
+            logger.warning('both num_pores and base_points arguments given' +
                            ' num_pores over-written')
             num_pores = len(base_points)
-                
+
         self._Lx = domain_size[0]
         self._Ly = domain_size[1]
         self._Lz = domain_size[2]
@@ -402,11 +402,11 @@ class Delaunay(GenericNetwork):
         isolated_ps = self.check_network_health()['isolated_pores']
         if len(isolated_ps) > 0:
             self.trim(isolated_ps)
-    
+
     def export_vor_fibres(self):
         r"""
         Run through the throat vertices, compute the convex hull order and save
-        the vertices and ordered faces in a pickle dictionary to be used in 
+        the vertices and ordered faces in a pickle dictionary to be used in
         blender
         """
         import pickle as pickle
@@ -417,7 +417,7 @@ class Delaunay(GenericNetwork):
             # Need to order the indices in convex hull order
             # Compute the standard deviation in all coordinates and eliminate
             # the axis with the smallest to make 2d
-            stds = [np.std(verts[:,0]),np.std(verts[:,1]), np.std(verts[:,2])]
+            stds = [np.std(verts[:, 0]), np.std(verts[:, 1]), np.std(verts[:, 2])]
             if np.argmin(stds) == 0:
                 verts2d = np.vstack((verts[:, 1], verts[:, 2])).T
             elif np.argmin(stds) == 1:
@@ -425,11 +425,11 @@ class Delaunay(GenericNetwork):
             else:
                 verts2d = np.vstack((verts[:, 0], verts[:, 1])).T
             # 2d convexhull returns vertices in hull order
-            hull2d= sptl.ConvexHull(verts2d, qhull_options='QJ Pp')
+            hull2d = sptl.ConvexHull(verts2d, qhull_options='QJ Pp')
             # Re-order the vertices and save as list (blender likes them as lists)
             Indices.append(np.asarray(indices)[hull2d.vertices].tolist())
-        # Create dictionary to pickle    
+        # Create dictionary to pickle
         data = {}
         data["Verts"] = self._vor.vertices
         data["Indices"] = Indices
-        pickle.dump( data, open( "fibres.p", "wb" ) )
+        pickle.dump(data, open("fibres.p", "wb"))
