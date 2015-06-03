@@ -91,6 +91,15 @@ class ModelWrapper(dict):
         return master[0]
 
 
+class GenericModel(ModelWrapper):
+    r"""
+    This class is deprecated, and is replaced by ModelWrapper. This is kept
+    here to support legacy issues.
+    """
+    def init(self, kwargs):
+        super().init(kwargs)
+
+
 class ModelsDict(OrderedDict):
     r"""
     This custom dictionary stores the models that are associated with each
