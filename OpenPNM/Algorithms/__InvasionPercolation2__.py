@@ -37,6 +37,9 @@ class InvasionPercolation2(GenericAlgorithm):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._tcount = 0
+        self['throat.invaded'] = -sp.ones_like(self._net.Ts)
+        self['pore.invaded'] = -sp.ones_like(self._net.Ps)
 
     def setup(self, phase, p_inlets, throat_prop='throat.capillary_pressure'):
         r"""
@@ -68,21 +71,18 @@ class InvasionPercolation2(GenericAlgorithm):
         self['throat.sorted'] = sp.argsort(t_entry, axis=0)
         self['throat.order'] = sp.zeros_like(self['throat.sorted'])
         self['throat.order'][self['throat.sorted']] = sp.arange(0, self._net.Nt)
-        self['throat.invaded'] = -sp.ones_like(self._net.Ts)
-        self['pore.invaded'] = -sp.ones_like(self._net.Ps)
 
-        self['pore.invaded'][p_inlets] = 0
+        self['pore.invaded'][p_inlets] = self._tcount
         # Perform initial analysis on input pores
         Ts = self._net.find_neighbor_throats(pores=p_inlets, mode='intersection')
         # Set throats connecting inlet pores to filled
-        self['throat.invaded'][Ts] = 0
+        self['throat.invaded'][Ts] = self._tcount
         # Set other throats as potential invaded thorats
         Ts = self._net.find_neighbor_throats(pores=p_inlets, mode='not_intersection')
         # Add throats to the queue
         self._queue = []
         [hq.heappush(self._queue, T) for T in self['throat.order'][Ts]]
         hq.heapify(self._queue)
-        self._tcount = 0
 
     def run(self, nsteps=None):
         r"""

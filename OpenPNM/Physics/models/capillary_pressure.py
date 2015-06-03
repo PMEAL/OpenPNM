@@ -207,7 +207,7 @@ def static_pressure(network,
     # Labels clusters of defending phase
     clusters = network.find_clusters(physics[throat_prop])
     # Set non-invaded pores to label of -1
-    Ps = network.find_connected_pores(physics[throat_prop],flatten=True)
+    Ps = network.find_connected_pores(physics[throat_prop], flatten=True)
     Ps = network.tomask(Ps)
     clusters[~Ps] = -1
     # Remove the -1 cluster from list
