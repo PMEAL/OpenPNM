@@ -9,7 +9,6 @@ from collections import OrderedDict
 from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
 
-
 class ModelWrapper(dict):
     r"""
     Accepts a model from the OpenPNM model library, as well as all required
@@ -90,6 +89,13 @@ class ModelWrapper(dict):
                             'method.')
         return master[0]
 
+class GenericModel(ModelWrapper):
+    r"""
+    This class is deprecated, and is replaced by ModelWrapper.  This is kept
+    here to support legacy issues.
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 class ModelsDict(OrderedDict):
     r"""
