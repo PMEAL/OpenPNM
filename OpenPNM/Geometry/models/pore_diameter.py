@@ -13,7 +13,50 @@ from scipy.spatial import ConvexHull
 def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
            pore_seed='pore.seed', psd_offset=0, **kwargs):
     r"""
-    Calculate pore diameter from seed values for a spherical pore body
+    Calculate pore diameter from given seed values.
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry Object
+        The Geometry object which this model is associated with.
+
+    psd_name : string
+        The name of the statistical distribution to use. This model uses the
+        Scipy.stats module, so any of the distributions available there are
+        suitable options.
+
+    psd_shape, loc and scale : scalars
+        The parameters to send to the selected statistics model.  Most of the
+        Scipy.stats models accept the same keyword arguments.  Note that the
+        psd_ prefix is added by OpenPNM to indicate 'pore size distribution'.
+
+    psd_offset : scalar
+        Controls the minimum value in the pore size distribution by shifting
+        the entire set of values by the given offset.  This is useful for
+        avoiding pore sizes too close to zero.
+
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.Cubic(shape=[10,10,10])
+    >>> geo = OpenPNM.Geometry.GenericGeometry(network=pn,
+                                               pores=pn.Ps,
+                                               throats=pn.Ts)
+    >>> geo['pore.seed_values'] = sp.rand(geo.Np)
+    >>> list(geo.props())  # Check that the seed_values are present
+    ['pore.seed_values']
+    >>> geo.models.add(propname = 'pore.diameter',
+                       model = OpenPNM.Geometry.models.pore_diameter.sphere,
+                       pore_seed = 'pore.seed_values',
+                       psd_name = 'weibull_min',
+                       psd_shape = 2.77,
+                       psd_loc = 6.9e-7,
+                       psd_scale = 9.8e-6,
+                       psd_offset = 10e-6)
+    >>> sorted(list(geo.models))  # Check that the model is present
+    ['pore.diameter']
+    >>> sorted(list(geo.props()))  # Check that the numerical values are there
+    ['pore.diameter', 'pore.seed_values']
     """
     import scipy.stats as spst
     prob_fn = getattr(spst, psd_name)
