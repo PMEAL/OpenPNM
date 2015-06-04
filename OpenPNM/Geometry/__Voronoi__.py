@@ -245,9 +245,9 @@ class Voronoi(GenericGeometry):
         fig = plt.figure()
         ax = fig.gca()
         plots = []
-        plots.append(plt.plot(sp.arange(l[0])/l[0], px, label='x'))
-        plots.append(plt.plot(sp.arange(l[1])/l[1], py, label='y'))
-        plots.append(plt.plot(sp.arange(l[2])/l[2], pz, label='z'))
+        plots.append(plt.plot(sp.arange(l[0])/l[0], px,'r', label='x'))
+        plots.append(plt.plot(sp.arange(l[1])/l[1], py,'g', label='y'))
+        plots.append(plt.plot(sp.arange(l[2])/l[2], pz,'b', label='z'))
         plt.xlabel('Normalized Distance')
         plt.ylabel('Porosity')
         handles, labels = ax.get_legend_handles_labels()
