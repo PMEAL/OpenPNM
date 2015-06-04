@@ -254,11 +254,11 @@ class GenericNetwork(Core):
         >>> pn.find_connected_pores(throats=[0,1], flatten=True)
         array([0, 1, 5])
         """
-        Ts = sp.array(throats,ndmin=1)
+        Ts = sp.array(throats, ndmin=1)
         if Ts.dtype == bool:
             Ts = self.toindices(Ts)
         if sp.size(Ts) == 0:
-            return sp.ndarray([0,2],dtype=int)
+            return sp.ndarray([0,2], dtype=int)
         Ps = self['throat.conns'][Ts]
         if flatten:
             Ps = sp.unique(sp.hstack(Ps))
@@ -357,7 +357,7 @@ class GenericNetwork(Core):
         if pores.dtype == bool:
             pores = self.toindices(pores)
         if sp.size(pores) == 0:
-            return sp.array([], ndmin=1, dtyep=int)
+            return sp.array([], ndmin=1, dtype=int)
         # Test for existence of incidence matrix
         try:
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
