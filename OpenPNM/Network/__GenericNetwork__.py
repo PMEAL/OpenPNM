@@ -254,7 +254,12 @@ class GenericNetwork(Core):
         >>> pn.find_connected_pores(throats=[0,1], flatten=True)
         array([0, 1, 5])
         """
-        Ps = self['throat.conns'][throats]
+        Ts = sp.array(throats, ndmin=1)
+        if Ts.dtype == bool:
+            Ts = self.toindices(Ts)
+        if sp.size(Ts) == 0:
+            return sp.ndarray([0,2], dtype=int)
+        Ps = self['throat.conns'][Ts]
         if flatten:
             Ps = sp.unique(sp.hstack(Ps))
         return Ps
@@ -349,8 +354,10 @@ class GenericNetwork(Core):
         array([ 3,  5,  7, 25, 27])
         """
         pores = sp.array(pores, ndmin=1)
+        if pores.dtype == bool:
+            pores = self.toindices(pores)
         if sp.size(pores) == 0:
-            return sp.array([], ndmin=1)
+            return sp.array([], ndmin=1, dtype=int)
         # Test for existence of incidence matrix
         try:
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
@@ -419,8 +426,10 @@ class GenericNetwork(Core):
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
         pores = sp.array(pores, ndmin=1)
+        if pores.dtype == bool:
+            pores = self.toindices(pores)
         if sp.size(pores) == 0:
-            return sp.array([], ndmin=1)
+            return sp.array([], ndmin=1, dtype=int)
         # Test for existence of incidence matrix
         try:
             neighborTs = self._incidence_matrix['lil'].rows[[pores]]
@@ -477,11 +486,18 @@ class GenericNetwork(Core):
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
         """
+        pores = sp.array(pores,ndmin=1)
+        if pores.dtype == bool:
+            pores = self.toindices(pores)
+        if sp.size(pores) == 0:
+            return sp.array([],ndmin=1,dtype=int)
 
         # Count number of neighbors
         if flatten:
-            neighborPs = self.find_neighbor_pores(pores, flatten=True,
-                                                  mode='union', excl_self=True)
+            neighborPs = self.find_neighbor_pores(pores,
+                                                  flatten=True,
+                                                  mode='union',
+                                                  excl_self=True)
             num = sp.shape(neighborPs)[0]
         else:
             neighborPs = self.find_neighbor_pores(pores, flatten=False)
@@ -519,6 +535,8 @@ class GenericNetwork(Core):
         >>> pn['pore.domain2'][[5, 6, 7]] = True
         >>> pn.find_interface_throats(labels=['domain1', 'domain2'])
         array([1, 4, 7])
+
+        TODO: It might be a good idea to allow overlapping regions
         """
         Tind = sp.array([], ndmin=1)
         if sp.shape(labels)[0] != 2:
@@ -555,11 +573,11 @@ class GenericNetwork(Core):
             An Np long list of clusters numbers
 
         """
-        if sp.shape(mask)[0] == self.num_throats():
+        if sp.size(mask) == self.num_throats():
             # Convert to boolean mask if not already
             temp = sp.zeros((self.num_throats(),), dtype=bool)
             temp[mask] = True
-        elif sp.shape(mask)[0] == self.num_pores():
+        elif sp.size(mask) == self.num_pores():
             conns = self.find_connected_pores(throats=self.throats())
             conns[:, 0] = mask[conns[:, 0]]
             conns[:, 1] = mask[conns[:, 1]]
