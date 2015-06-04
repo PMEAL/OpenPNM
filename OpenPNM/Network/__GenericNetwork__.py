@@ -535,6 +535,8 @@ class GenericNetwork(Core):
         >>> pn['pore.domain2'][[5, 6, 7]] = True
         >>> pn.find_interface_throats(labels=['domain1', 'domain2'])
         array([1, 4, 7])
+
+        TODO: It might be a good idea to allow overlapping regions
         """
         Tind = sp.array([], ndmin=1)
         if sp.shape(labels)[0] != 2:
