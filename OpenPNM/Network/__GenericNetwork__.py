@@ -357,7 +357,7 @@ class GenericNetwork(Core):
         if pores.dtype == bool:
             pores = self.toindices(pores)
         if sp.size(pores) == 0:
-            return sp.array([], ndmin=1)
+            return sp.array([], ndmin=1, dtyep=int)
         # Test for existence of incidence matrix
         try:
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
@@ -429,7 +429,7 @@ class GenericNetwork(Core):
         if pores.dtype == bool:
             pores = self.toindices(pores)
         if sp.size(pores) == 0:
-            return sp.array([], ndmin=1)
+            return sp.array([], ndmin=1, dtype=int)
         # Test for existence of incidence matrix
         try:
             neighborTs = self._incidence_matrix['lil'].rows[[pores]]
