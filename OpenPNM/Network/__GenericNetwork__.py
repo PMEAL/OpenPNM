@@ -571,17 +571,148 @@ class GenericNetwork(Core):
                                                      directed=False)[1]
         return clusters
 
+    def find_clusters2(self, mask=[], t_labels=False):
+        r"""
+        Identify connected clusters of pores in the network.  This method can
+        also return a list of throat labels, which correspond to the pore
+        labels to which the throat is connected.  either site and bond
+        percolation can be consider, see description of input arguments for
+        details.
+
+        Parameters
+        ----------
+        mask : array_like, boolean
+            A list of active bonds or sites (throats or pores).  If the mask is
+            Np long, then the method will perform a site percolation, while if
+            the mask is Nt long bond percolation will be performed.
+
+        t_labels : boolean (default id False)
+            Indicates if throat cluster labels should also be returned. If true
+            then a tuple containing both p_clusters and t_clusters is returned.
+
+        Returns
+        -------
+        A Np long list of pore clusters numbers, unless t_labels is True in
+        which case a tuple containing both pore and throat cluster labels is
+        returned.  The label numbers corresond such that pores and throats with
+        the same label are part of the same cluster.
+
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> import scipy as sp
+        >>> sp.random.seed = 0  # Set seed value for random number generator
+        >>> pn = OpenPNM.Network.Cubic(shape=[25,25,1])
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
+                                                    pores=pn.Ps,
+                                                    throats=pn.Ts)
+        >>> geom['pore.seed'] = sp.rand(pn.Np)
+        >>> geom['throat.seed'] = sp.rand(pn.Nt)
+
+        Bond percolation is achieved by sending a list of invaded throats:
+
+        >>> (p_bond,t_bond) = pn.find_clusters2(mask=geom['throat.seed'] < 0.3,
+                                                t_labels=True)
+
+        Site percolation is achieved by sending a list of invaded pores:
+
+        >>> (p_site,t_site) = pn.find_clusters2(mask=geom['pore.seed'] < 0.3,
+                                      t_labels=True)
+
+        To visualize the invasion pattern, use matplotlib's matshow method:
+
+        .. code-block:: python
+
+            import matplotlib.pyplot as plt
+            im_bond = pn.asarray(p_bond)[:,:,0]
+            im_site = pn.asarray(p_site)[:,:,0]
+            plt.subplot(1,2,1)
+            plt.imshow(im_site,interpolation='none')
+            plt.subplot(1,2,2)
+            plt.imshow(im_bond,interpolation='none')
+
+        """
+        # Parse the input arguments
+        mask = sp.array(mask,ndmin=1)
+        if mask.dtype != bool:
+            raise Exception('Mask must be a boolean array of Np or Nt length')
+
+        # If pore mask was givenk perform site percolatoin
+        if sp.size(mask) == self.Np:
+            (p_clusters, t_clusters) = self._site_percolation(mask)
+        elif sp.size(mask) == self.Nt:
+            (p_clusters, t_clusters) = self._bond_percolation(mask)
+        else:
+            raise Exception('Mask received was neither Nt nor Np long')
+
+        if t_labels:
+            return (p_clusters, t_clusters)
+        else:
+            return p_clusters
+
+    def _site_percolation(self,pmask):
+        r"""
+        """
+        # Find throats that produce site percolation
+        conns = sp.copy(self['throat.conns'])
+        conns[:, 0] = pmask[conns[:, 0]]
+        conns[:, 1] = pmask[conns[:, 1]]
+        # Only if both pores are True is the throat set to True
+        tmask = sp.array(conns[:, 0]*conns[:, 1], dtype=bool)
+
+        # Perform the clustering using scipy.csgraph
+        csr = self.create_adjacency_matrix(data=tmask,
+                                           sprsfmt='csr',
+                                           dropzeros=True)
+        clusters = sprs.csgraph.connected_components(csgraph=csr,
+                                                     directed=False)[1]
+
+        # Adjust cluster numbers such that non-invaded pores are labelled -1
+        # Note: The following line also takes care of assigning cluster numbers
+        # to single isolated invaded pores
+        p_clusters = (clusters + 1)*(pmask) - 1
+        # Label invaded throats with their neighboring pore's label
+        t_clusters = clusters[self['throat.conns']]
+        ind = (t_clusters[:,0] == t_clusters[:,1])
+        t_clusters = t_clusters[:,0]
+        # Label non-invaded throats with -1
+        t_clusters[~ind] = -1
+
+        return (p_clusters, t_clusters)
+
+    def _bond_percolation(self,tmask):
+        r"""
+        """
+        # Perform the clustering using scipy.csgraph
+        csr = self.create_adjacency_matrix(data=tmask,
+                                           sprsfmt='csr',
+                                           dropzeros=True)
+        clusters = sprs.csgraph.connected_components(csgraph=csr,
+                                                     directed=False)[1]
+
+        # Convert clusters to a more usable output:
+        # Find pores attached to each invaded throats
+        Ps = self.find_connected_pores(throats=tmask,flatten=True)
+        # Adjust cluster numbers such that non-invaded pores are labelled -1
+        p_clusters = (clusters + 1)*(self.tomask(pores=Ps).astype(int)) - 1
+        # Label invaded throats with their neighboring pore's label
+        t_clusters = clusters[self['throat.conns']][:,0]
+        # Label non-invaded throats with -1
+        t_clusters[~tmask] = -1
+
+        return (p_clusters, t_clusters)
+
     def find_nearest_pores(self, pores, distance=0):
         r"""
-        Find all pores with a given distance of the input pore(s) regardless of
-        whether or not they are toplogically connected.
+        Find all pores within a given distance of the input pore(s) regardless
+        of whether or not they are toplogically connected.
 
         Parameters
         ----------
         pores : array_like
             The list of pores for whom nearby neighbors are to be found
         distance : scalar
-            The within which the nearby should be found
+            The within which the nearby pores should be found
 
         Returns
         -------
