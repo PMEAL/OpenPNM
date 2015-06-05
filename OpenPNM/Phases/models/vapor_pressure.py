@@ -10,7 +10,7 @@ Methods for predicing the vapor pressure of pure species
 import scipy as sp
 
 
-def antoine(phase, A, B, C, **kwargs):
+def antoine(phase, A, B, C, pore_temperature='pore.temperature', **kwargs):
     r"""
     Uses Antoine equation [1]_ to estimate vapor pressure of a pure component
 
@@ -21,29 +21,38 @@ def antoine(phase, A, B, C, **kwargs):
             these coefficients should be converted such that the Temperature
             is in [K] and the vapor pressure is in [Pa].
 
+    pore_temperature : string
+        The dictionary key containing the phase temperature values
+
     [1] Antoine, C. (1888), Vapor Pressure: a new relationship between pressure
         and temperature, Comptes Rendus des Séances de l'Académie des Sciences
         (in French) 107: 681–684, 778–780, 836–837
 
     """
-    T = phase['pore.temperature']
+    T = phase[pore_temperature]
     value = (10**(A-B/(C+T)))
     return value
 
 
-def water(phase, **kwargs):
+def water(phase,
+          pore_temperature='pore.temperature',
+          pore_salinity = 'pore.salinity',
+          **kwargs):
     r"""
     Calculates vapor pressure of pure water or seawater given by [1]_ based on
     Raoult's law. The pure water vapor pressure is given by [2]_
 
     Parameters
     ----------
-    T, S: strings
-        Property names where phase temperature and salinity are located.
+    pore_temperature : strings
+        The dictionary key containing the phase temperature values
+
+    pore_salinity : strings
+        The dictionary key containing the phase salinity values
 
     Returns
     -------
-    Pv_sw, the vapor pressure of water/seawater in [Pa]
+    The vapor pressure of water/seawater in [Pa]
 
     Notes
     -----
@@ -59,9 +68,9 @@ def water(phase, **kwargs):
     [2] ASHRAE handbook: Fundamentals, ASHRAE; 2005.
 
     """
-    T = phase['pore.temperature']
+    T = phase[pore_temperature]
     try:
-        S = phase['pore.salinity']
+        S = phase[pore_salinity]
     except:
         S = 0
     a1 = -5.8002206E+03
