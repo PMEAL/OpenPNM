@@ -4,12 +4,13 @@ Submodule -- diffusivity
 ===============================================================================
 
 """
-import scipy as sp
+import scipy as _sp
 
 
 def fuller(phase, MA, MB, vA, vB,
            pore_temperature='pore.temperature',
-           pore_pressure='pore.pressure'**kwargs):
+           pore_pressure='pore.pressure',
+           **kwargs):
     r"""
     Uses Fuller model to estimate diffusion coefficient for gases from first
     principles at conditions of interest
