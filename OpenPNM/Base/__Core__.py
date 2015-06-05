@@ -70,7 +70,7 @@ class Core(dict):
         # Enforce correct dict naming
         element = key.split('.')[0]
         if (element != 'pore') and (element != 'throat'):
-            print('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
+            logger.error('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
             return
         # Convert value to an ndarray
         value = sp.array(value,ndmin=1)
@@ -86,7 +86,7 @@ class Core(dict):
                     super(Core, self).__setitem__(key,value)
                 else:
                     logger.warning(key+' is already defined.')
-                    pass
+                    return
             else:
                 logger.debug(key+' is being defined.')
                 super(Core, self).__setitem__(key,value)
@@ -447,7 +447,7 @@ class Core(dict):
                     temp[i] = list(labels[arr[i,:]])
                 return temp
             else:
-                print('unrecognized mode')
+                logger.error('unrecognized mode:'+mode)
 
     def labels(self,element='',pores=[],throats=[],mode='union'):
         r"""
