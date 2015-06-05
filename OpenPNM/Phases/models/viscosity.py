@@ -10,7 +10,10 @@ Models for predicting phase viscosity
 import scipy as sp
 
 
-def water(phase, **kwargs):
+def water(phase,
+          pore_T='pore.temperature',
+          pore_salinity='pore.salinity',
+          **kwargs):
     r"""
     Calculates viscosity of pure water or seawater at atmospheric pressure
     using Eq. (22) given by Sharqawy et. al [1]_. Values at temperature higher
@@ -18,8 +21,15 @@ def water(phase, **kwargs):
 
     Parameters
     ----------
-    T, S: strings
-        Property names where phase temperature and salinity are located.
+    phase : OpenPNM Phase Object
+
+    pore_temperature : string
+        The dictionary key containing the temperature values.  Temperature must
+        be in Kelvin for this emperical equation to work
+
+    pore_salinity : string
+        The dictionary key containing the salinity values.  Salinity must be
+        expressed in g of salt per kg of solution (ppt).
 
     Returns
     -------
@@ -38,9 +48,9 @@ def water(phase, **kwargs):
         Treatment, 2010.
 
     """
-    T = phase['pore.temperature']
+    T = phase[pore_T]
     try:
-        S = phase['pore.salinity']
+        S = phase[pore_salinity]
     except:
         S = 0
     TC = T-273.15
@@ -62,8 +72,9 @@ def water(phase, **kwargs):
     value = mu_sw
     return value
 
-
-def reynolds(phase, uo, b, **kwargs):
+def reynolds(phase, uo, b,
+             pore_T='pore.temperature',
+             **kwargs):
     r"""
     Uses exponential model by Reynolds [1]_ for the temperature dependance of
     shear viscosity
@@ -74,38 +85,49 @@ def reynolds(phase, uo, b, **kwargs):
             Coefficients of the viscosity exponential model (mu = u0*Exp(-b*T)
             where T is the temperature in Kelvin
 
+    pore_T : string
+        The dictionary key containing the temperature values (K)
+
     [1] Reynolds O. (1886). Phil Trans Royal Soc London, v. 177, p.157.
 
     """
-    T = phase['pore.temperature']
+    T = phase[pore_T]
     value = uo*sp.exp(b*T)
     return value
 
-
-def chung(phase, MW='molecular_weight', Tc='critical_temperature',
-          Vc='critical_volume', **kwargs):
+def chung(phase,
+          pore_T='pore.temperature',
+          pore_MW='pore.molecular_weight',
+          pore_Tc='pore.critical_temperature',
+          pore_Vc='pore.critical_volume',
+          **kwargs):
     r"""
     Uses Chung et al. [2]_ model to estimate viscosity for gases with low pressure
     (much less than the critical pressure) at conditions of interest
 
     Parameters
     ----------
-    Vc :  float, array_like
-        Critical volume of the gas (m3/kmol)
-    Tc :  float, array_like
-        Critical temperature of the gas (K)
-    MW : float, array_like
-        Molecular weight of the gas (kg/kmol)
+    pore_T : string
+        The dictionary key containing the temperature values (K)
+
+    pore_Tc : string
+        The dictionary key containing the temperature values (K)
+
+    pore_MW : string
+        The dictionary key containing the molecular weight values (kg/mol)
+
+    pore_Vc : string
+        The dictionary key containing the critical volume values (m3/kmol)
 
     [2] Chung, T.H., Lee, L.L., and Starling, K.E., Applications of Kinetic Gas
         Theories and Multiparameter Correlation for Prediction of Dilute Gas
         Viscosity and Thermal Conductivity”, Ind. Eng. Chem. Fundam.23:8, 1984.
 
     """
-    T = phase['pore.temperature']
-    MW = phase['pore.'+MW]
-    Tc = phase['pore.'+Tc]
-    Vc = phase['pore.'+Vc]
+    T = phase[pore_T]
+    MW = phase[pore_MW]
+    Tc = phase[pore_Tc]
+    Vc = phase[pore_Vc]
     Tr = T / Tc
     Tstar = 1.2593*Tr
     A = 1.161415
