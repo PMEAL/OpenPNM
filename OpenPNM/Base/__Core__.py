@@ -457,7 +457,12 @@ class Core(dict):
         ----------
         pores (or throats) : array_like
             The pores (or throats) whose labels are sought.  If left empty a
-            dictionary containing all pore and throat labels is returned.
+            list containing all pore and throat labels is returned.
+
+        element : string
+            Controls whether pore or throat labels are returned.  If empty then
+            both are returned.
+
         mode : string, optional
             Controls how the query should be performed
 
