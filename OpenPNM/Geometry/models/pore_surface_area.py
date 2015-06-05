@@ -36,21 +36,6 @@ def sphere(geometry, network,
         The dictioanry key to the throat area array.  Throat areas are needed
         since their insection with the pore are removed from the computation.
 
-    Examples
-    --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[10,10,10])
-    >>> geo = OpenPNM.Geometry.GenericGeometry(network=pn,
-                                               pores=pn.Ps,
-                                               throats=pn.Ts)
-    >>> geo['pore.diameter'] = sp.rand(geo.Np)
-    >>> geo.models.add(propname='pore.surface_area',
-                       model=OpenPNM.Geometry.models.pore_surface_area.sphere)
-    >>> list(geo.models)  # Check that the model is present
-    ['pore.surface_area']
-    >>> sorted(list(geo.props()))  # Check that the numerical values are there
-    ['pore.diameter', 'pore.surface_area']
-
     """
     R = geometry[pore_diameter]/2
     Asurf = 4*_sp.constants.pi*R**2

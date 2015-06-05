@@ -49,7 +49,9 @@ def perlin_noise(geometry, freq=1, octaves=4, mode='classic', **kwargs):
 
     Visualizing the end result can be done with:
 
-    ``matplotlib.pyplot.imshow(im[:, 25, :],interpolation='none')``
+    .. code-block:: python
+
+        matplotlib.pyplot.imshow(im[:, 25, :],interpolation='none')
 
     """
     from noise import pnoise3, snoise3
@@ -115,7 +117,9 @@ def distance_from_inclusion(geometry, p, **kwargs):
 
     Visualizing the end result can be done with:
 
-    ``matplotlib.pyplot.imshow(im[:,25,:],interpolation='none')``
+    .. code-block:: python
+
+        matplotlib.pyplot.imshow(im[:,25,:],interpolation='none')
 
     """
     import scipy.ndimage as _spim
@@ -191,7 +195,9 @@ def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
 
     Visualizing the end result can be done with:
 
-    ``matplotlib.pyplot.imshow(im[:, 25, :],interpolation='none')``
+    .. code-block:: python
+
+        matplotlib.pyplot.imshow(im[:, 25, :],interpolation='none')
 
     """
     import scipy.ndimage as spim

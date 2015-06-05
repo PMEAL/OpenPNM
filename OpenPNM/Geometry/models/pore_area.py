@@ -22,24 +22,6 @@ def spherical(geometry, pore_diameter='pore.diameter', **kwargs):
         The dictionary key of the array on the Geometry object containing the
         pore diameter values necessary to find the area.
 
-    Examples
-    --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[10,10,10])
-    >>> geo = OpenPNM.Geometry.GenericGeometry(network=pn,
-                                               pores=pn.Ps,
-                                               throats=pn.Ts)
-    >>> geo['pore.diameter'] = sp.rand(geo.Np)
-    >>> list(geo.props())  # Check that the seed_values are present
-    ['pore.diameter']
-    >>> geo.models.add(propname = 'pore.area',
-                       model = OpenPNM.Geometry.models.pore_area.sphere,
-                       pore_diameter = 'pore.diameter')
-    >>> sorted(list(geo.models))  # Check that the model is present
-    ['pore.area']
-    >>> sorted(list(geo.props()))  # Check that the numerical values are there
-    ['pore.diameter', 'pore.area']
-
     """
     diams = geometry[pore_diameter]
     value = _sp.constants.pi/4*(diams)**2
@@ -61,23 +43,6 @@ def cubic(geometry, pore_diameter='pore.diameter', **kwargs):
         The dictionary key of the array on the Geometry object containing the
         pore diameter values necessary to find the area.
 
-    Examples
-    --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[10,10,10])
-    >>> geo = OpenPNM.Geometry.GenericGeometry(network=pn,
-                                               pores=pn.Ps,
-                                               throats=pn.Ts)
-    >>> geo['pore.diameter'] = sp.rand(geo.Np)
-    >>> list(geo.props())  # Check that the seed_values are present
-    ['pore.diameter']
-    >>> geo.models.add(propname = 'pore.area',
-                       model = OpenPNM.Geometry.models.pore_area.cube,
-                       pore_diameter = 'pore.diameter')
-    >>> sorted(list(geo.models))  # Check that the model is present
-    ['pore.area']
-    >>> sorted(list(geo.props()))  # Check that the numerical values are there
-    ['pore.diameter', 'pore.area']
 
     """
     diams = geometry[pore_diameter]
