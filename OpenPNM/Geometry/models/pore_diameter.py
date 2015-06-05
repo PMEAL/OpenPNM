@@ -18,7 +18,9 @@ def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
     Parameters
     ----------
     geometry : OpenPNM Geometry Object
-        The Geometry object which this model is associated with.
+        The Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
 
     psd_name : string
         The name of the statistical distribution to use. This model uses the
@@ -64,10 +66,65 @@ def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
     value = P.ppf(geometry[pore_seed]) + psd_offset
     return value
 
+def equivalent_sphere(geometry, pore_volume='pore.volume', **kwargs):
+    r"""
+    Calculate pore diameter as the diameter of a sphere with an equivalent
+    volume.
+
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.Cubic(shape=[10,10,10])
+    >>> geo = OpenPNM.Geometry.GenericGeometry(network=pn,
+                                               pores=pn.Ps,
+                                               throats=pn.Ts)
+    >>> geo['pore.volume'] = sp.rand(geo.Np)
+    >>> list(geo.props())  # Check that the volumes are present
+    ['pore.diameter']
+    >>> geo.models.add(propname='pore.diameter',
+                       model=OpenPNM.Geometry.models.pore_diameter.equivalent_sphere,
+                       pore_volume='pore.volume')
+    >>> sorted(list(geo.models))  # Check that the model is present
+    ['pore.diameter']
+    >>> sorted(list(geo.props()))  # Check that the numerical values are there
+    ['pore.diameter', 'pore.volume']
+    """
+    from scipy.special import cbrt
+    pore_vols = geometry[pore_volume]
+    value = cbrt(6*pore_vols/_sp.pi)
+    return value
+
+def equivalent_cube(geometry, pore_volume='pore.volume', **kwargs):
+    r"""
+    Calculate pore diameter as the width of a cube with an equivalent volume.
+
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.Cubic(shape=[10,10,10])
+    >>> geo = OpenPNM.Geometry.GenericGeometry(network=pn,
+                                               pores=pn.Ps,
+                                               throats=pn.Ts)
+    >>> geo['pore.volume'] = sp.rand(geo.Np)
+    >>> list(geo.props())  # Check that the volumes are present
+    ['pore.diameter']
+    >>> geo.models.add(propname='pore.diameter',
+                       model=OpenPNM.Geometry.models.pore_diameter.equivalent_cube,
+                       pore_volume='pore.volume')
+    >>> sorted(list(geo.models))  # Check that the model is present
+    ['pore.diameter']
+    >>> sorted(list(geo.props()))  # Check that the numerical values are there
+    ['pore.diameter', 'pore.volume']
+    """
+    from scipy.special import cbrt
+    pore_vols = geometry[pore_volume]
+    value = cbrt(pore_vols)
+    return value
 
 def voronoi(geometry, pore_volume='pore.volume', **kwargs):
     r"""
-    Calculate pore diameter from equivalent sphere - volumes must be calculated first
+    Calculate pore diameter from equivalent sphere - volumes must be calculated
+    first.
     """
     from scipy.special import cbrt
     pore_vols = geometry[pore_volume]
