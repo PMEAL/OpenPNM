@@ -8,16 +8,26 @@ Submodule -- thermal_conductance
 import scipy as sp
 
 
-def water(phase, **kwargs):
+def water(phase,
+          pore_T='pore.temperature',
+          pore_salinity='pore.salinity',
+          **kwargs):
     r"""
-    Calculates thermal conductivity of pure water or seawater at atmospheric pressure
-    using the correlation given in [1]_. Values at temperature higher
+    Calculates thermal conductivity of pure water or seawater at atmospheric
+    pressure using the correlation given in [1]_. Values at temperature higher
     than the normal boiling temperature are calculated at the saturation pressure.
 
     Parameters
     ----------
-    T, S: strings
-        Property names where phase temperature and salinity are located.
+    phase : OpenPNM Phase Object
+
+    pore_temperature : string
+        The dictionary key containing the temperature values.  Temperature must
+        be in Kelvin for this emperical equation to work
+
+    pore_salinity : string
+        The dictionary key containing the salinity values.  Salinity must be
+        expressed in g of salt per kg of solution (ppt).
 
     Returns
     -------
@@ -35,9 +45,9 @@ def water(phase, **kwargs):
     [1] D. T. Jamieson, and J. S. Tudhope, Desalination, 8, 393-401, 1970.
 
     """
-    T = phase['pore.temperature']
+    T = phase[pore_T]
     try:
-        S = phase['pore.salinity']
+        S = phase[pore_salinity]
     except:
         S = 0
     T68 = 1.00024*T  # convert from T_90 to T_68
@@ -49,25 +59,46 @@ def water(phase, **kwargs):
     return value
 
 
-def chung(phase, Cv, MW, acentric, pore_viscosity='pore.viscosity', **kwargs):
+def chung(phase,
+          pore_Cv='pore.heat_capacity',
+          pore_acentric='pore.acentric_factor',
+          pore_MW='pore.molecular_weight',
+          pore_viscosity='pore.viscosity',
+          pore_T='pore.temperature',
+          pore_Tc='pore.critical_temperature',
+          **kwargs):
     r"""
     Uses Chung et al. model to estimate thermal conductivity for gases with
     low pressure(<10 bar) from first principles at conditions of interest
 
     Parameters
     ----------
-    Cv :  float, array_like
-        Heat capacity at constant volume (J/(mol.K))
-    MW : float, array_like
-        Molecular weight of the component (kg/mol)
-    acentric : float, array_like
-        Acentric factor of the component
+    pore_acentric : string
+        Dictionary key containing the acentric factor of the component
+
+    pore_Cv :  string
+        Dictionary key containing the heat capacity at constant volume (J/(mol.K))
+
+    pore_MW : string
+        Dictionary key containing the molecular weight of the component (kg/mol)
+
+    pore_viscosity : string
+        The dictionary key containing the viscosity values (Pa.s)
+
+    pore_T : string
+        The dictionary key containing the temperature values (K)
+
+    pore_Tc: string
+        The dictionary key containing the critical temperature values (K)
 
     """
+    Cv = phase[pore_Cv]
+    acentric = phase[pore_acentric]
+    MW = phase[pore_MW]
     R = 8.314
-    T = phase['pore.temperature']
+    T = phase[pore_T]
     mu = phase[pore_viscosity]
-    Tc = phase['pore.Tc']
+    Tc = phase[pore_Tc]
     Tr = T/Tc
     z = 2.0 + 10.5*Tr**2
     beta = 0.7862 - 0.7109*acentric + 1.3168*acentric**2
@@ -78,22 +109,35 @@ def chung(phase, Cv, MW, acentric, pore_viscosity='pore.viscosity', **kwargs):
     return value
 
 
-def sato(phase, Tb, MW, **params):
+def sato(phase,
+         pore_MW='pore.molecular_weight',
+         pore_Tb='pore.boiling_point',
+         pore_T='pore.temperature',
+         pore_Tc='pore.critical_temperature',
+         **params):
     r"""
     Uses Sato et al. model to estimate thermal conductivity for pure liquids
     from first principles at conditions of interest
 
     Parameters
     ----------
-    Tb :  float, array_like
-        Boiling temperature of the component (K)
-    MW : float, array_like
-        Molecular weight of the component (kg/mol)
+    pore_Tb :  string
+        Dictionary key containing the toiling temperature of the component (K)
+
+    pore_MW : string
+        Dictionary key containing the molecular weight of the component (kg/mol)
+
+    pore_T : string
+        The dictionary key containing the temperature values (K)
+
+    pore_Tc: string
+        The dictionary key containing the critical temperature values (K)
 
     """
-    T = phase['pore.temperature']
-    Tc = phase['pore.Tc']
-    Tbr = Tb/Tc
+    T = phase[pore_T]
+    Tc = phase[pore_Tc]
+    MW = phase[pore_MW]
+    Tbr = phase[pore_Tb]/Tc
     Tr = T/Tc
     value = (1.11/((MW*1e3)**0.5))*(3+20*(1-Tr)**(2/3))/(3+20*(1-Tbr)**(2/3))
     return value
