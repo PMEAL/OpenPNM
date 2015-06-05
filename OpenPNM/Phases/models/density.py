@@ -32,7 +32,7 @@ def standard(phase,
 def ideal_gas(phase,
               pore_pressure='pore.pressure',
               pore_temperature='pore.temperature',
-              pore_molecular_weight='pore.molecular_weight',
+              pore_MW='pore.molecular_weight',
               **kwargs):
     r"""
     Uses ideal gas law to calculate the mass density of an ideal gas
@@ -52,7 +52,7 @@ def ideal_gas(phase,
 
     P = phase[pore_pressure]
     T = phase[pore_temperature]
-    MW = phase[pore_molecular_weight]
+    MW = phase[pore_MW]
     R = 8.31447
     value = P/(R*T)*MW
     return value
