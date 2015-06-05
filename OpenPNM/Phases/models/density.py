@@ -40,11 +40,13 @@ def ideal_gas(phase,
     Parameters
     ----------
     pore_pressure : string
+        The dictionary key containing the pressure values (Pa)
 
     pore_temperature : string
+        The dictionary key containing the temperature values (K)
 
     pore_molecular_weight : string
-
+        The dictionary key containing the molecular weight values (kg/mol)
 
     """
 
