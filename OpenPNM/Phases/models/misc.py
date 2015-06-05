@@ -26,7 +26,7 @@ def random(phase, seed=None, **kwargs):
     return value
 
 
-def linear(phase, m, b, pore_prop, **kwargs):
+def linear(phase, m, b, poreprop, **kwargs):
     r"""
     Calculates a property as a linear function of a given property
 
@@ -35,17 +35,17 @@ def linear(phase, m, b, pore_prop, **kwargs):
     m, b : floats
         Slope and intercept of the linear corelation
 
-    pore_prop : string
+    poreprop : string
         The dictionary key containing the independent variable or phase
         property to be used in the correlation.
 
     """
-    T = phase[pore_prop]
+    T = phase[poreprop]
     value = b + m*T
     return value
 
 
-def polynomial(phase, a, pore_prop, **kwargs):
+def polynomial(phase, a, poreprop, **kwargs):
     r"""
     Calculates a property as a polynomial function of a given property
 
@@ -56,19 +56,19 @@ def polynomial(phase, a, pore_prop, **kwargs):
         list corresponds to a0 and so on.  Note that no entries can be skipped
         so 0 coefficients must be sent as 0.
 
-    pore_prop : string
+    poreprop : string
         The dictionary key containing the independent variable or phase
         property to be used in the correlation.
 
     """
-    x = phase[pore_prop]
+    x = phase[poreprop]
     value = 0.0
     for i in range(0, len(a)):
         value += a[i]*x**i
     return value
 
 
-def ideal_mixture(phase, pore_prop,
+def ideal_mixture(phase, poreprop,
                   composition='pore.mole_fraction',
                   **kwargs):
     r"""
@@ -77,7 +77,7 @@ def ideal_mixture(phase, pore_prop,
 
     Parameters
     ----------
-    pore_prop : string
+    poreprop : string
         The dictionary key containing the independent variable or phase
         property to be used in the correlation.
 
@@ -109,7 +109,7 @@ def ideal_mixture(phase, pore_prop,
     """
     value = _sp.zeros((phase.Np,))
     for comp in phase._phases:
-        value = value + comp[pore_prop]*comp[composition]
+        value = value + comp[poreprop]*comp[composition]
     return value
 
 
