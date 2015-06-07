@@ -37,7 +37,7 @@ class DiffusivityTest:
 
     def test_tyn_calus_scaling(self):
         self.phase.models.add(propname='pore.diffusivity',
-                              model=OpenPNM.Phases.models.diffusivity.tyn_calus_Scaling,
+                              model=OpenPNM.Phases.models.diffusivity.tyn_calus_scaling,
                               DABo=5.26300839e-05,
                               mu_o=3e-5,
                               To=273)
