@@ -65,7 +65,8 @@ def water(phase,
     r"""
     Calculates density of pure water or seawater at atmospheric pressure
     using Eq. (8) given by Sharqawy et. al [1]_. Values at temperature higher
-    than the normal boiling temperature are calculated at the saturation pressure.
+    than the normal boiling temperature are calculated at the saturation
+    pressure.
 
     Parameters
     ----------
@@ -93,8 +94,8 @@ def water(phase,
 
     References
     ----------
-    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and Water
-        Treatment, 2010.
+    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
+        Water Treatment, 2010.
 
     """
     T = phase['pore.temperature']

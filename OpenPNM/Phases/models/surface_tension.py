@@ -13,9 +13,10 @@ def water(phase,
           pore_salinity='pore.salinity',
           **kwargs):
     r"""
-    Calculates surface tension of pure water or seawater at atmospheric pressure
-    using Eq. (28) given by Sharqawy et. al [1]_. Values at temperature higher
-    than the normal boiling temperature are calculated at the saturation pressure.
+    Calculates surface tension of pure water or seawater at atmospheric
+    pressure using Eq. (28) given by Sharqawy et. al [1]_. Values at
+    temperature higher than the normal boiling temperature are calculated at
+    the saturation pressure.
 
     Parameters
     ----------
@@ -40,8 +41,8 @@ def water(phase,
 
     References
     ----------
-    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and Water
-    Treatment, 2010.
+    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
+    Water Treatment, 2010.
 
     """
     T = phase['pore.temperature']

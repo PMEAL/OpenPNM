@@ -258,7 +258,7 @@ class GenericNetwork(Core):
         if Ts.dtype == bool:
             Ts = self.toindices(Ts)
         if sp.size(Ts) == 0:
-            return sp.ndarray([0,2], dtype=int)
+            return sp.ndarray([0, 2], dtype=int)
         Ps = self['throat.conns'][Ts]
         if flatten:
             Ps = sp.unique(sp.hstack(Ps))
@@ -486,11 +486,11 @@ class GenericNetwork(Core):
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
         """
-        pores = sp.array(pores,ndmin=1)
+        pores = sp.array(pores, ndmin=1)
         if pores.dtype == bool:
             pores = self.toindices(pores)
         if sp.size(pores) == 0:
-            return sp.array([],ndmin=1,dtype=int)
+            return sp.array([], ndmin=1, dtype=int)
 
         # Count number of neighbors
         if flatten:
@@ -620,7 +620,7 @@ class GenericNetwork(Core):
         >>> import OpenPNM
         >>> import scipy as sp
         >>> sp.random.seed = 0  # Set seed value for random number generator
-        >>> pn = OpenPNM.Network.Cubic(shape=[25,25,1])
+        >>> pn = OpenPNM.Network.Cubic(shape=[25, 25, 1])
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
                                                     pores=pn.Ps,
                                                     throats=pn.Ts)
@@ -635,23 +635,23 @@ class GenericNetwork(Core):
         Site percolation is achieved by sending a list of invaded pores:
 
         >>> (p_site,t_site) = pn.find_clusters2(mask=geom['pore.seed'] < 0.3,
-                                      t_labels=True)
+                                                t_labels=True)
 
         To visualize the invasion pattern, use matplotlib's matshow method:
 
         .. code-block:: python
 
             import matplotlib.pyplot as plt
-            im_bond = pn.asarray(p_bond)[:,:,0]
-            im_site = pn.asarray(p_site)[:,:,0]
-            plt.subplot(1,2,1)
-            plt.imshow(im_site,interpolation='none')
-            plt.subplot(1,2,2)
-            plt.imshow(im_bond,interpolation='none')
+            im_bond = pn.asarray(p_bond)[:, :, 0]
+            im_site = pn.asarray(p_site)[:, :, 0]
+            plt.subplot(1, 2, 1)
+            plt.imshow(im_site, interpolation='none')
+            plt.subplot(1, 2, 2)
+            plt.imshow(im_bond, interpolation='none')
 
         """
         # Parse the input arguments
-        mask = sp.array(mask,ndmin=1)
+        mask = sp.array(mask, ndmin=1)
         if mask.dtype != bool:
             raise Exception('Mask must be a boolean array of Np or Nt length')
 
@@ -668,7 +668,7 @@ class GenericNetwork(Core):
         else:
             return p_clusters
 
-    def _site_percolation(self,pmask):
+    def _site_percolation(self, pmask):
         r"""
         """
         # Find throats that produce site percolation
@@ -691,14 +691,14 @@ class GenericNetwork(Core):
         p_clusters = (clusters + 1)*(pmask) - 1
         # Label invaded throats with their neighboring pore's label
         t_clusters = clusters[self['throat.conns']]
-        ind = (t_clusters[:,0] == t_clusters[:,1])
-        t_clusters = t_clusters[:,0]
+        ind = (t_clusters[:, 0] == t_clusters[:, 1])
+        t_clusters = t_clusters[:, 0]
         # Label non-invaded throats with -1
         t_clusters[~ind] = -1
 
         return (p_clusters, t_clusters)
 
-    def _bond_percolation(self,tmask):
+    def _bond_percolation(self, tmask):
         r"""
         """
         # Perform the clustering using scipy.csgraph
@@ -710,11 +710,11 @@ class GenericNetwork(Core):
 
         # Convert clusters to a more usable output:
         # Find pores attached to each invaded throats
-        Ps = self.find_connected_pores(throats=tmask,flatten=True)
+        Ps = self.find_connected_pores(throats=tmask, flatten=True)
         # Adjust cluster numbers such that non-invaded pores are labelled -1
         p_clusters = (clusters + 1)*(self.tomask(pores=Ps).astype(int)) - 1
         # Label invaded throats with their neighboring pore's label
-        t_clusters = clusters[self['throat.conns']][:,0]
+        t_clusters = clusters[self['throat.conns']][:, 0]
         # Label non-invaded throats with -1
         t_clusters[~tmask] = -1
 
@@ -842,7 +842,7 @@ class GenericNetwork(Core):
         # Compile lists of which specfic throats are duplicates
         # Be VERY careful here, as throats are not in order
         mergeTs = []
-        for i in range(0,self.Np):
+        for i in range(0, self.Np):
             if sp.any(sp.array(temp.data[i]) > 1):
                 ind = sp.where(sp.array(temp.data[i]) > 1)[0]
                 P = sp.array(temp.rows[i])[ind]
@@ -855,7 +855,7 @@ class GenericNetwork(Core):
         temp = sprs.triu(adjmat, k=1)
         num_upper = temp.sum()
         if num_full > num_upper:
-            biTs = sp.where(self['throat.conns'][:,0] > self['throat.conns'][:,1])[0]
+            biTs = sp.where(self['throat.conns'][:, 0] > self['throat.conns'][:, 1])[0]
             health['bidirectional_throats'] = biTs.tolist()
 
         return health

@@ -50,8 +50,8 @@ def fuller_scaling(phase, DABo, To, Po,
                    pore_pressure='pore.pressure',
                    **kwargs):
     r"""
-    Uses Fuller model to adjust a diffusion coefficient for gases from reference
-    conditions to conditions of interest
+    Uses Fuller model to adjust a diffusion coefficient for gases from
+    reference conditions to conditions of interest
 
     Parameters
     ----------

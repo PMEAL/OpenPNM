@@ -17,7 +17,8 @@ def water(phase,
     r"""
     Calculates viscosity of pure water or seawater at atmospheric pressure
     using Eq. (22) given by Sharqawy et. al [1]_. Values at temperature higher
-    than the normal boiling temperature are calculated at the saturation pressure.
+    than the normal boiling temperature are calculated at the saturation
+    pressure.
 
     Parameters
     ----------
@@ -44,8 +45,8 @@ def water(phase,
 
     References
     ----------
-    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and Water
-        Treatment, 2010.
+    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
+        Water Treatment, 2010.
 
     """
     T = phase[pore_T]
@@ -72,6 +73,7 @@ def water(phase,
     value = mu_sw
     return value
 
+
 def reynolds(phase, uo, b,
              pore_T='pore.temperature',
              **kwargs):
@@ -95,6 +97,7 @@ def reynolds(phase, uo, b,
     value = uo*sp.exp(b*T)
     return value
 
+
 def chung(phase,
           pore_T='pore.temperature',
           pore_MW='pore.molecular_weight',
@@ -102,8 +105,8 @@ def chung(phase,
           pore_Vc='pore.critical_volume',
           **kwargs):
     r"""
-    Uses Chung et al. [2]_ model to estimate viscosity for gases with low pressure
-    (much less than the critical pressure) at conditions of interest
+    Uses Chung et al. [2]_ model to estimate viscosity for gases with low
+    pressure (much less than the critical pressure) at conditions of interest.
 
     Parameters
     ----------

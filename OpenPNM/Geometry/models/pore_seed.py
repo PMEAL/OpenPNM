@@ -8,6 +8,7 @@ statistical pore size distributions
 """
 import scipy as _sp
 
+
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     r"""
     Assign random number to pores, for use in statistical distributions that
@@ -31,6 +32,7 @@ def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     value = _sp.random.rand(geometry.num_pores(),)
     value = value*range_size + range_min
     return value
+
 
 def distance_from_inclusion(geometry, p, **kwargs):
     r"""

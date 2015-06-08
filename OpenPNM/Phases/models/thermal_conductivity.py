@@ -15,7 +15,8 @@ def water(phase,
     r"""
     Calculates thermal conductivity of pure water or seawater at atmospheric
     pressure using the correlation given in [1]_. Values at temperature higher
-    than the normal boiling temperature are calculated at the saturation pressure.
+    than the normal boiling temperature are calculated at the saturation
+    pressure.
 
     Parameters
     ----------
@@ -77,10 +78,12 @@ def chung(phase,
         Dictionary key containing the acentric factor of the component
 
     pore_Cv :  string
-        Dictionary key containing the heat capacity at constant volume (J/(mol.K))
+        Dictionary key containing the heat capacity at constant volume
+        (J/(mol.K))
 
     pore_MW : string
-        Dictionary key containing the molecular weight of the component (kg/mol)
+        Dictionary key containing the molecular weight of the component
+        (kg/mol)
 
     pore_viscosity : string
         The dictionary key containing the viscosity values (Pa.s)
@@ -125,7 +128,8 @@ def sato(phase,
         Dictionary key containing the toiling temperature of the component (K)
 
     pore_MW : string
-        Dictionary key containing the molecular weight of the component (kg/mol)
+        Dictionary key containing the molecular weight of the component
+        (kg/mol)
 
     pore_T : string
         The dictionary key containing the temperature values (K)

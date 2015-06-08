@@ -48,8 +48,8 @@ class ModelWrapper(dict):
                 if item not in defs.keys():
                     defs[item] = '---'
                 lines.append('{0:<20s} {1} / ({2})'.format(item,
-                                                          self[item],
-                                                          defs[item]))
+                                                           self[item],
+                                                           defs[item]))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
@@ -91,6 +91,7 @@ class ModelWrapper(dict):
                             'method.')
         return master[0]
 
+
 class GenericModel(ModelWrapper):
     r"""
     This class was deprecated, and replaced by ModelWrapper.  Unfortunately,
@@ -99,6 +100,7 @@ class GenericModel(ModelWrapper):
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
 
 class ModelsDict(OrderedDict):
     r"""

@@ -6,6 +6,7 @@ Submodule -- electrical_conductivity
 """
 import scipy as _sp
 
+
 def percolating_continua(phase,
                          phi_crit,
                          tau,
@@ -39,6 +40,6 @@ def percolating_continua(phase,
     '''
     sigma = phase[bulk_property]
     phi = phase[volume_fraction]
-    diff_phi = _sp.clip(phi - phi_crit,a_min=0,a_max=_sp.inf)
+    diff_phi = _sp.clip(phi - phi_crit, a_min=0, a_max=_sp.inf)
     sigma_eff = sigma*(diff_phi)**tau
     return sigma_eff

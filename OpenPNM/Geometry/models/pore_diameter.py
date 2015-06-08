@@ -44,6 +44,7 @@ def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
     value = P.ppf(geometry[pore_seed]) + psd_offset
     return value
 
+
 def equivalent_sphere(geometry, pore_volume='pore.volume', **kwargs):
     r"""
     Calculate pore diameter as the diameter of a sphere with an equivalent
@@ -64,6 +65,7 @@ def equivalent_sphere(geometry, pore_volume='pore.volume', **kwargs):
     value = cbrt(6*pore_vols/_sp.pi)
     return value
 
+
 def equivalent_cube(geometry, pore_volume='pore.volume', **kwargs):
     r"""
     Calculate pore diameter as the width of a cube with an equivalent volume.
@@ -82,6 +84,7 @@ def equivalent_cube(geometry, pore_volume='pore.volume', **kwargs):
     pore_vols = geometry[pore_volume]
     value = cbrt(pore_vols)
     return value
+
 
 def voronoi(geometry, pore_volume='pore.volume', **kwargs):
     r"""

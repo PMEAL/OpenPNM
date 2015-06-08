@@ -51,7 +51,7 @@ def ideal_gas(phase,
         The dictionary key containing the density in kg/m3
 
     pore_pressure : string
-        The dictionary key contain the pressure values in Pascals (Pa)
+        The dictionary key containing the pressure values in Pascals (Pa)
 
     Returns
     -------
@@ -83,16 +83,18 @@ def vanderwaals(phase,
     Parameters
     ----------
     pore_P : string
-        The dictionary key contain the pressure values in Pascals (Pa)
+        The dictionary key containing the pressure values in Pascals (Pa)
 
     pore_T : string
-        The dictionary key contain the temperature values in Kelvin (K)
+        The dictionary key containing the temperature values in Kelvin (K)
 
     pore_Pc : string
-        The dictionary key contain the critical pressure values in Pascals (Pa)
+        The dictionary key containing the critical pressure values in Pascals
+        (Pa)
 
     pore_Tc : string
-        The dictionary key contain the critical temperature values in Kelvin (K)
+        The dictionary key containing the critical temperature values in Kelvin
+        (K)
 
     Returns
     -------

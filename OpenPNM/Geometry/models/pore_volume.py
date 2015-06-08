@@ -9,6 +9,7 @@ import numpy as np
 from scipy.spatial import Delaunay
 import OpenPNM.Utilities.misc as misc
 
+
 def sphere(geometry, pore_diameter='pore.diameter', **kwargs):
     r"""
     Calculate pore volume from diameter assuming a spherical pore body
@@ -47,6 +48,7 @@ def cube(geometry, pore_diameter='pore.diameter', **kwargs):
     diams = geometry[pore_diameter]
     value = diams**3
     return value
+
 
 def _get_hull_volume(points):
     r"""
@@ -120,6 +122,7 @@ def _get_hull_volume(points):
         hull_COM = hull_centroid
 
     return hull_volume, hull_COM
+
 
 def voronoi(network, geometry, **kwargs):
     r"""

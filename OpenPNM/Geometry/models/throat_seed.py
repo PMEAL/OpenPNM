@@ -6,6 +6,7 @@ Submodule -- throat_seeds
 """
 import scipy as _sp
 
+
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     r"""
     Assign random number to throats, for use in statistical distributions that

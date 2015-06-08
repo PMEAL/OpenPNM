@@ -23,7 +23,8 @@ def antoine(phase, A, B, C, pore_temperature='pore.temperature', **kwargs):
         mmHg and C, but converts all properties internally to returrn Pascals.
 
     pore_temperature : string
-        The dictionary key containing the phase temperature values in Kelvin [K]
+        The dictionary key containing the phase temperature values in Kelvin
+        [K]
 
     [1] Antoine, C. (1888), Vapor Pressure: a new relationship between pressure
         and temperature, Comptes Rendus des Séances de l'Académie des Sciences
@@ -37,7 +38,7 @@ def antoine(phase, A, B, C, pore_temperature='pore.temperature', **kwargs):
 
 def water(phase,
           pore_temperature='pore.temperature',
-          pore_salinity = 'pore.salinity',
+          pore_salinity='pore.salinity',
           **kwargs):
     r"""
     Calculates vapor pressure of pure water or seawater given by [1]_ based on
@@ -64,8 +65,8 @@ def water(phase,
 
     References
     ----------
-    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and Water
-        Treatment, 2010.
+    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
+    Water Treatment, 2010.
     [2] ASHRAE handbook: Fundamentals, ASHRAE; 2005.
 
     """
