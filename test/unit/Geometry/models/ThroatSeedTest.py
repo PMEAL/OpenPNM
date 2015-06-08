@@ -17,15 +17,15 @@ class ThroatSeedTest:
         assert sp.amax(self.geo['throat.seed']) > 1.9
         assert sp.amin(self.geo['throat.seed']) > 0.1
 
-    def test_neighbor(self):
+    def test_neighbor_min(self):
         self.geo.models.add(propname='throat.seed_max',
-                            model=OpenPNM.Geometry.models.pore_seed.neighbor,
+                            model=OpenPNM.Geometry.models.throat_seed.neighbor,
                             mode='max')
         self.geo.models.add(propname='throat.seed_min',
-                            model=OpenPNM.Geometry.models.pore_seed.neighbor,
+                            model=OpenPNM.Geometry.models.throat_seed.neighbor,
                             mode='min')
         self.geo.models.add(propname='throat.seed_mean',
-                            model=OpenPNM.Geometry.models.pore_seed.neighbor,
+                            model=OpenPNM.Geometry.models.throat_seed.neighbor,
                             mode='mean')
         assert sp.all(self.geo['throat.seed_min'] <= self.geo['throat.seed_max'])
         assert sp.all(self.geo['throat.seed_min'] <= self.geo['throat.seed_mean'])

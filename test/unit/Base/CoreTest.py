@@ -290,6 +290,6 @@ class CoreTest:
 
     def test_get_indices_wildcard(self):
         a = self.net._get_indices(element='pore', labels='ri*')
-        assert a == [6, 7, 8, 15, 16, 17, 24, 25, 26]
+        assert sp.all(a == [6, 7, 8, 15, 16, 17, 24, 25, 26])
         b = self.net._get_indices(element='pore', labels='*ght')
         assert a == b

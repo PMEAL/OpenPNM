@@ -9,9 +9,9 @@ class SurfaceTensionTest:
         self.phase['pore.temperature'] = 298.0  # K
         self.phase['pore.molecular_weight'] = 0.018  # kg/mol
         self.phase['pore.critical_temperature'] = 647.15  # K
-        self.phase['pore.critical_pressure'] = 3771000.0 # Pa
+        self.phase['pore.critical_pressure'] = 3771000.0  # Pa
         self.phase['pore.salinity'] = 0  # g/kg
-        self.phase['pore.molar_density'] = 55.5  #mol/m3
+        self.phase['pore.molar_density'] = 55.5  # mol/m3
 
     def test_water(self):
         f = OpenPNM.Phases.models.surface_tension.water
