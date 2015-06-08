@@ -3,7 +3,7 @@ import scipy as sp
 
 class DensityTest:
     def setup_class(self):
-        self.net = OpenPNM.Network.Cubic(shape=[3,3,3])
+        self.net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
         self.phase = OpenPNM.Phases.GenericPhase(network=self.net)
         self.phase['pore.temperature'] = 298.0  # K
         self.phase['pore.pressure'] = 101325.0  # Pa

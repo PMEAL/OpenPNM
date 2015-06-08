@@ -16,21 +16,22 @@ def antoine(phase, A, B, C, pore_temperature='pore.temperature', **kwargs):
 
     Parameters
     ----------
-    A, B, C :  float, array_like
-            Antoine vapor pressure coefficients for pure compounds. Note that
-            these coefficients should be converted such that the Temperature
-            is in [K] and the vapor pressure is in [Pa].
+    A, B, C :  scalars
+        Antoine vapor pressure coefficients for pure compounds. Since virtually
+        all Antoine coefficients are reported for units of mmHg and C for
+        historical reaons, this method assumes these A, B and C values are for
+        mmHg and C, but converts all properties internally to returrn Pascals.
 
     pore_temperature : string
-        The dictionary key containing the phase temperature values
+        The dictionary key containing the phase temperature values in Kelvin [K]
 
     [1] Antoine, C. (1888), Vapor Pressure: a new relationship between pressure
         and temperature, Comptes Rendus des Séances de l'Académie des Sciences
         (in French) 107: 681–684, 778–780, 836–837
 
     """
-    T = phase[pore_temperature]
-    value = (10**(A-B/(C+T)))
+    T = phase[pore_temperature] - 273.15
+    value = (10**(A-B/(C+T)))/760*101325
     return value
 
 

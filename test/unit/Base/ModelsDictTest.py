@@ -40,7 +40,7 @@ class ModelsDictTest:
                 self.models_dict.add('test model', {})
 
         def test_add_with_more_than_one_master(self):
-            
+            pass
 
         def test_remove(self):
             pass

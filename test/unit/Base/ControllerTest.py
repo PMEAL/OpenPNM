@@ -7,7 +7,7 @@ class ControllerTest:
 
     def setup_class(self):
         self.controller = Controller()
-        self.net = OpenPNM.Network.Cubic(shape=[10,10,10],'test_net')
+        self.net = OpenPNM.Network.Cubic(shape=[10, 10, 10], 'test_net')
         self.geo = OpenPNM.Geometry.TestGeometry(network=self.net,
                                                  pores=self.net.Ps,
                                                  throats=self.net.Ts)
