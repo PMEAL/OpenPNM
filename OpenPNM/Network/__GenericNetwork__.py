@@ -838,14 +838,17 @@ class GenericNetwork(Core):
         v = sp.array(self['throat.all'], dtype=int)
         Np = self.num_pores()
         adjmat = sprs.coo_matrix((v, (i, j)), [Np, Np])
-        temp = adjmat.tocsr()  # Convert to CSR to combine duplicates
-        temp = adjmat.tocoo()  # And back to COO
-        mergedTs = sp.where(temp.data > 1)
-        Ps12 = sp.vstack((temp.row[mergedTs], temp.col[mergedTs])).T
-        dupTs = []
-        for i in range(0, sp.shape(Ps12)[0]):
-            dupTs.append(self.find_connecting_throat(Ps12[i, 0], Ps12[i, 1]).tolist)
-        health['duplicate_throats'] = dupTs
+        temp = adjmat.tolil()  # Convert to lil to combine duplicates
+        # Compile lists of which specfic throats are duplicates
+        # Be VERY careful here, as throats are not in order
+        mergeTs = []
+        for i in range(0,self.Np):
+            if sp.any(sp.array(temp.data[i]) > 1):
+                ind = sp.where(sp.array(temp.data[i]) > 1)[0]
+                P = sp.array(temp.rows[i])[ind]
+                Ts = self.find_connecting_throat(P1=i, P2=P)[0]
+                mergeTs.append(Ts)
+        health['duplicate_throats'] = mergeTs
 
         # Check for bidirectional throats
         num_full = adjmat.sum()

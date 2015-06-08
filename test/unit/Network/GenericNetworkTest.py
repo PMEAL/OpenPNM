@@ -126,5 +126,67 @@ class GenericNetworkTest:
         a = self.network.find_interface_throats(labels=['domain1', 'domain3'])
         assert sp.size(a) == 0
 
+    def test_check_network_health_healthy(self):
+        a = self.net.check_network_health()
+        assert len(list(a.values())) == 5
+        assert sp.size(list(a.values())) == 0
+
+    def test_check_network_isolated_pores(self):
+        net = OpenPNM.Network.Cubic(shape=[5,5,5])
+        Ts = net.find_neighbor_throats(pores=0)
+        net.trim(throats=Ts)
+        a = net.check_network_health()
+        assert a['isolated_pores'] == 0
+        net.trim(a['trim_pores'])
+        a = net.check_network_health()
+        assert sp.size(list(a.values())) == 0
+
+    def test_check_network_health_duplicate_throat(self):
+        net = OpenPNM.Network.Cubic(shape=[5,5,5])
+        P12 = net['throat.conns'][0]
+        net.extend(throat_conns=[P12])
+        a = net.check_network_health()
+        assert len(a['duplicate_throats'][0]) == 2
+
+    def test_check_network_health_triplicate_throats(self):
+        net = OpenPNM.Network.Cubic(shape=[5,5,5])
+        P12 = net['throat.conns'][0]
+        net.extend(throat_conns=[P12])
+        net.extend(throat_conns=[P12])
+        a = net.check_network_health()
+        assert len(a['duplicate_throats'][0]) == 3
+
+    def test_check_network_health_multiple_duplicate_throats(self):
+        net = OpenPNM.Network.Cubic(shape=[5,5,5])
+        P12 = net['throat.conns'][0]
+        net.extend(throat_conns=[P12])
+        P12 = net['throat.conns'][1]
+        net.extend(throat_conns=[P12])
+        a = net.check_network_health()
+        assert len(a['duplicate_throats'][1]) == 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
