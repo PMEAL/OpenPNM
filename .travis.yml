@@ -20,7 +20,7 @@ install:
   - python setup.py install
 
 script:
-    - ./bin/test pep8 cov
+    - py.test -v --pep8 --cov=. --cov-config=.coveragerc
 
 after_success:
     - coveralls

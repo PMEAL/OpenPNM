@@ -3,7 +3,7 @@
 import sys
 import subprocess
 
-command = ['py.test', '-v']
+command = ['py.test']
 
 if 'pep8' in sys.argv:
     command.append('--pep8')
