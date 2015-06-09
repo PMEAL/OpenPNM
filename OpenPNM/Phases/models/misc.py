@@ -21,7 +21,7 @@ def random(phase, seed=None, **kwargs):
     r"""
     Assigns specified constant value
     """
-    _sp.random.seed(seed)
+    _sp.random.seed(seed=seed)
     value = _sp.random.rand(phase.Np)
     return value
 

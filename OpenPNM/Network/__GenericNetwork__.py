@@ -619,7 +619,7 @@ class GenericNetwork(Core):
         --------
         >>> import OpenPNM
         >>> import scipy as sp
-        >>> sp.random.seed = 0  # Set seed value for random number generator
+        >>> sp.random.seed(0)  # Set seed value for random number generator
         >>> pn = OpenPNM.Network.Cubic(shape=[25, 25, 1])
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
                                                     pores=pn.Ps,
