@@ -26,23 +26,28 @@ class CoreTest:
 
     def test_props_models(self):
         a = self.geo.props(mode='models')
-        assert sorted(a) == ['pore.volume', 'throat.area']
+        b = ['pore.volume', 'throat.area']
+        assert sorted(a) == sorted(b)
 
     def test_props_constants(self):
         a = self.geo.props(mode='constants')
-        assert sorted(a) == ['pore.diameter', 'throat.diameter']
+        ['pore.diameter', 'throat.diameter']
+        assert sorted(a) == sorted(b)
 
     def test_props_pores_all(self):
         a = self.geo.props(element='pores')
-        assert sorted(a) == ['pore.diameter', 'pore.volume']
+        ['pore.diameter', 'pore.volume']
+        assert sorted(a) == sorted(b)
 
     def test_props_pores_models(self):
         a = self.geo.props(element='pores', mode='models')
-        assert sorted(a) == ['pore.volume']
+        b = ['pore.volume']
+        assert sorted(a) == sorted(b)
 
     def test_props_pores_constants(self):
         a = self.geo.props(element='pores', mode='constants')
-        assert sorted(a) == ['pore.diameter']
+        b = ['pore.diameter']
+        assert sorted(a) == sorted(b)
 
     def test_labels(self):
         a = self.net.labels()
@@ -50,13 +55,15 @@ class CoreTest:
 
     def test_labels_on_pores(self):
         a = self.net.labels(element='pores')
-        assert sorted(a) == ['pore.all', 'pore.back', 'pore.bottom',
-                             'pore.front', 'pore.internal', 'pore.left',
-                             'pore.right', 'pore.'+self.geo.name, 'pore.top']
+        b = ['pore.all', 'pore.back', 'pore.bottom', 'pore.front',
+             'pore.internal', 'pore.left', 'pore.right', 'pore.'+self.geo.name,
+             'pore.top']
+        assert sorted(a) == sorted(b)
 
     def test_labels_on_throats(self):
         a = self.net.labels(element='throats')
-        assert sorted(a) == ['throat.all', 'throat.'+self.geo.name]
+        b = ['throat.all', 'throat.'+self.geo.name]
+        assert sorted(a) == sorted(b)
 
     def test_labels_on_foo(self):
         a = self.net.labels(element='foo')
@@ -64,13 +71,15 @@ class CoreTest:
 
     def test_labels_on_all_pores(self):
         a = self.net.labels(pores='all')
-        assert sorted(a) == ['pore.all', 'pore.back', 'pore.bottom',
-                             'pore.front', 'pore.internal', 'pore.left',
-                             'pore.right', 'pore.'+self.geo.name, 'pore.top']
+        b = ['pore.all', 'pore.back', 'pore.bottom', 'pore.front',
+             'pore.internal', 'pore.left', 'pore.right', 'pore.'+self.geo.name,
+             'pore.top']
+        assert sorted(a) == sorted(b)
 
     def test_labels_on_all_throats(self):
         a = self.net.labels(throats='all')
-        assert sorted(a) == ['throat.all', 'throat.'+self.geo.name]
+        b = ['throat.all', 'throat.'+self.geo.name]
+        assert sorted(a) == sorted(b)
 
     def test_labels_on_one_pore(self):
         a = self.net.labels(pores=0)
@@ -297,4 +306,4 @@ class CoreTest:
         a = self.net._get_indices(element='pore', labels='ri*')
         assert sp.all(a == [6, 7, 8, 15, 16, 17, 24, 25, 26])
         b = self.net._get_indices(element='pore', labels='*ght')
-        assert a == b
+        assert sp.all(a == b)

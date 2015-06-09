@@ -37,7 +37,7 @@ class CubicTest:
 
     def test_domain_area(self):
         A = self.net.domain_area(face=self.net.pores('top'))
-        assert sp.allclose(A, 25, rtol=1e-02)
+        assert sp.allclose(A, 25, rtol=0.1)
 
     def test_domain_length(self):
         L = self.net.domain_length(face_1=self.net.pores('top'),
