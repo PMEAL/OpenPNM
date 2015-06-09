@@ -619,8 +619,7 @@ class GenericNetwork(Core):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.Cubic(shape=[25, 25, 1])
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
-                                                    pores=pn.Ps,
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=pn.Ps,
                                                     throats=pn.Ts)
         >>> geom['pore.seed'] = sp.rand(pn.Np)
         >>> geom['throat.seed'] = sp.rand(pn.Nt)

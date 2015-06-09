@@ -89,10 +89,10 @@ class GenericNetworkTest:
         a = self.net.find_neighbor_throats(pores=[0, 2], mode='intersection')
         assert sp.size(a) == 0
 
-    def test_find_neighbor_throats_numeric_notintersection(self):
+    def test_find_neighbor_throats_numeric_not_intersection(self):
         a = self.net.find_neighbor_throats(pores=[0, 2],
                                            mode='not_intersection')
-        assert sp.all(a == [0, 1, 2,  900, 902, 1800, 1802])
+        assert sp.all(a == [0, 1, 2, 900, 902, 1800, 1802])
 
     def test_num_neighbors_empty(self):
         a = self.net.num_neighbors(pores=[])
