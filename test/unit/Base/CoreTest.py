@@ -31,12 +31,12 @@ class CoreTest:
 
     def test_props_constants(self):
         a = self.geo.props(mode='constants')
-        ['pore.diameter', 'throat.diameter']
+        b = ['pore.diameter', 'throat.diameter']
         assert sorted(a) == sorted(b)
 
     def test_props_pores_all(self):
         a = self.geo.props(element='pores')
-        ['pore.diameter', 'pore.volume']
+        b = ['pore.diameter', 'pore.volume']
         assert sorted(a) == sorted(b)
 
     def test_props_pores_models(self):
@@ -152,6 +152,10 @@ class CoreTest:
 
     def test_pores_two_labels_not_intersection(self):
         a = self.net.pores(labels=['top', 'front'], mode='not_intersection')
+        assert sp.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
+
+    def test_pores_two_labels_difference(self):
+        a = self.net.pores(labels=['top', 'front'], mode='difference')
         assert sp.all(a == [9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25])
 
     def test_throats(self):
@@ -285,7 +289,6 @@ class CoreTest:
             flag = True
         assert flag
 
-    def test_clear(self):
         Np = self.geo.Np
         Nt = self.geo.Nt
         self.geo.clear()
