@@ -8,6 +8,7 @@ class ThroatSeedTest:
         self.geo = OpenPNM.Geometry.GenericGeometry(network=self.net,
                                                     pores=self.net.Ps,
                                                     throats=self.net.Ts)
+        self.geo['pore.seed'] = sp.rand(self.net.Np)
 
     def test_random(self):
         self.geo.models.add(propname='throat.seed',
@@ -17,7 +18,7 @@ class ThroatSeedTest:
         assert sp.amax(self.geo['throat.seed']) > 1.9
         assert sp.amin(self.geo['throat.seed']) > 0.1
 
-    def test_neighbor_min(self):
+    def test_neighbor(self):
         self.geo.models.add(propname='throat.seed_max',
                             model=OpenPNM.Geometry.models.throat_seed.neighbor,
                             mode='max')
