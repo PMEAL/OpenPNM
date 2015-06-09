@@ -30,8 +30,8 @@ class GenericGeometryTest:
         a = self.geo['throat.conns']
         assert sp.all(len(a) == self.geo.Nt)
         assert sp.amax(a) == (self.geo.Np - 1)
-        b = sp.where(~(a[:, 1] < sp.inf))[0]
-        assert sp.size(b) > 0
+        b = [pore for pore in a[:, 1] if pore is not sp.nan]
+        assert sp.size(b) > self.geo.Np - 25
 
     def test_getitem_geo2_conns_has_no_nans(self):
         # Because of the way geo2 was constructed it has not dangling throats
