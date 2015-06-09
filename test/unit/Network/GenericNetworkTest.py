@@ -3,7 +3,6 @@ import scipy as sp
 
 
 class GenericNetworkTest:
-
     def setup_class(self):
         self.net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
 
@@ -124,10 +123,10 @@ class GenericNetworkTest:
         self.net['pore.domain2'] = False
         self.net['pore.domain3'] = False
         self.net['pore.domain1'][[0, 1, 2]] = True
-        self.net['pore.domain2'][[5, 6, 7]] = True
-        self.net['pore.domain3'][18:26] = True
+        self.net['pore.domain2'][[100, 101, 102]] = True
+        self.net['pore.domain3'][900:] = True
         a = self.net.find_interface_throats(labels=['domain1', 'domain2'])
-        assert a == [20]
+        assert sp.all(a == [1800, 1801, 1802])
         a = self.net.find_interface_throats(labels=['domain1', 'domain3'])
         assert sp.size(a) == 0
 
