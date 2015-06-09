@@ -10,6 +10,46 @@ from scipy.spatial import Delaunay
 import OpenPNM.Utilities.misc as misc
 
 
+def sphere(geometry, pore_diameter='pore.diameter', **kwargs):
+    r"""
+    Calculate pore volume from diameter assuming a spherical pore body
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry Object
+        The Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    pore_diameter : string
+        The dictionary key to the pore diameter values
+
+    """
+    diams = geometry[pore_diameter]
+    value = _sp.pi/6*diams**3
+    return value
+
+
+def cube(geometry, pore_diameter='pore.diameter', **kwargs):
+    r"""
+    Calculate pore volume from diameter assuming a cubic pore body
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry Object
+        The Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    pore_diameter : string
+        The dictionary key to the pore diameter values
+
+    """
+    diams = geometry[pore_diameter]
+    value = diams**3
+    return value
+
+
 def _get_hull_volume(points):
     r"""
     Calculate the volume of a set of points by dividing the bounding surface
@@ -82,24 +122,6 @@ def _get_hull_volume(points):
         hull_COM = hull_centroid
 
     return hull_volume, hull_COM
-
-
-def sphere(geometry, pore_diameter='pore.diameter', **kwargs):
-    r"""
-    Calculate pore volume from diameter for a spherical pore body
-    """
-    diams = geometry[pore_diameter]
-    value = _sp.pi/6*diams**3
-    return value
-
-
-def cube(geometry, pore_diameter='pore.diameter', **kwargs):
-    r"""
-    Calculate pore volume from diameter for a cubic pore body
-    """
-    diams = geometry[pore_diameter]
-    value = diams**3
-    return value
 
 
 def voronoi(network, geometry, **kwargs):

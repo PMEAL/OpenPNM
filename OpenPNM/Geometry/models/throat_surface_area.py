@@ -33,8 +33,8 @@ def extrusion(geometry, throat_perimeter='throat.perimeter',
               throat_length='throat.length', **kwargs):
     r"""
     Calculate surface area from perimeter and length -
-    perimeter calculated when throat area is calculated so must be run in correct
-    order
+    perimeter calculated when throat area is calculated so must be run in
+    correct order
     """
     P = geometry[throat_perimeter]
     L = geometry[throat_length]

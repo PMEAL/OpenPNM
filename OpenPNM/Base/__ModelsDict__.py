@@ -4,10 +4,10 @@ ModelsDict:  Abstract Class for Containing Models
 ###############################################################################
 """
 import inspect
-import scipy as sp
 from collections import OrderedDict
 from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
+
 
 class ModelWrapper(dict):
     r"""
@@ -48,8 +48,8 @@ class ModelWrapper(dict):
                 if item not in defs.keys():
                     defs[item] = '---'
                 lines.append('{0:<20s} {1} / ({2})'.format(item,
-                                                          self[item],
-                                                          defs[item]))
+                                                           self[item],
+                                                           defs[item]))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
@@ -91,6 +91,7 @@ class ModelWrapper(dict):
                             'method.')
         return master[0]
 
+
 class GenericModel(ModelWrapper):
     r"""
     This class was deprecated, and replaced by ModelWrapper.  Unfortunately,
@@ -99,6 +100,7 @@ class GenericModel(ModelWrapper):
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
 
 class ModelsDict(OrderedDict):
     r"""
@@ -350,8 +352,7 @@ class ModelsDict(OrderedDict):
             raise Exception('More than one master found! This model dictionary '
                             'has been associated with multiple objects. To use the '
                             'same dictionary multiple times use the copy method.')
-        return master[0]
+        elif len(master) == 0:
+            raise Exception('ModelsDict has no master.')
 
-if __name__ == '__main__':
-    pn = OpenPNM.Network.TestNet()
-    a = ModelsDict()
+        return master[0]
