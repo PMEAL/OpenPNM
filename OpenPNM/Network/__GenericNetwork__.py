@@ -855,7 +855,8 @@ class GenericNetwork(Core):
         temp = sprs.triu(adjmat, k=1)
         num_upper = temp.sum()
         if num_full > num_upper:
-            biTs = sp.where(self['throat.conns'][:, 0] > self['throat.conns'][:, 1])[0]
+            biTs = sp.where(self['throat.conns'][:, 0] >
+                            self['throat.conns'][:, 1])[0]
             health['bidirectional_throats'] = biTs.tolist()
 
         return health

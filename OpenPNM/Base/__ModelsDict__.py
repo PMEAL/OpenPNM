@@ -4,10 +4,10 @@ ModelsDict:  Abstract Class for Containing Models
 ###############################################################################
 """
 import inspect
-import scipy as sp
 from collections import OrderedDict
 from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
+
 
 class ModelWrapper(dict):
     r"""
