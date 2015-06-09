@@ -289,7 +289,7 @@ class Controller(dict):
 
         """
         obj_new = _copy.copy(obj)
-        obj_new.__dict__ = obj.__dict__
+        obj_new.__dict__ = _copy.copy(obj.__dict__)
         obj_new._ctrl = {}
         del self[obj.name]
         self[obj.name] = obj
@@ -496,16 +496,12 @@ class Controller(dict):
         net = _copy.deepcopy(network)
         self.update(net)
         if name is None:
-            for _ in range(5):
-                name = ''.join(random.choice(string.ascii_uppercase +
-                                             string.ascii_lowercase +
-                                             string.digits))
+            name = ''.join(random.choice(string.ascii_uppercase +
+                                         string.ascii_lowercase +
+                                         string.digits) for _ in range(5))
         for item in list(self.keys()):
-            temp = self.pop(item)
-            temp._parent = network
-            new_name = temp.name + '_' + name
-            temp.name = new_name
-            self[temp.name] = temp
+            self[item]._parent = network
+            self[item].name = self[item].name + '_' + name
         # Add parent Network numbering to clone
         net['pore.' + network.name] = network.Ps
         net['throat.' + network.name] = network.Ts

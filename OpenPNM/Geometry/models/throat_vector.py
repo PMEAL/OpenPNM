@@ -16,7 +16,7 @@ def pore_to_pore(geometry, network, **kwargs):
     There is an important impicit assumption here: the positive direction is
     taken as the direction from the pore with the lower index to the higher.
     This corresponds to the pores in the 1st and 2nd columns of the
-    'conns' array as stored on the network.
+    'throat.conns' array as stored on the etwork.
     """
     throats = network.throats(geometry.name)
     pores = network.find_connected_pores(throats, flatten=False)

@@ -7,55 +7,83 @@ Submodule -- density
 import scipy as _sp
 
 
-def standard(phase, **kwargs):
+def standard(phase,
+             pore_MW='pore.molecular_weight',
+             pore_molar_density='pore.molar_density',
+             **kwargs):
     r"""
     Calculates the mass density from the molecular weight and molar density
+
+    Parameters
+    ----------
+    pore_MW : string
+        The dictionary key containing the molecular weight values
+
+    pore_molar_density : string
+        The dictionary key containing the molar density values
+
     """
-    MW = phase['pore.molecular_weight']
-    rho = phase['pore.molar_density']
+    MW = phase[pore_MW]
+    rho = phase[pore_molar_density]
     value = rho*MW
     return value
 
 
-def ideal_gas(phase, **kwargs):
+def ideal_gas(phase,
+              pore_pressure='pore.pressure',
+              pore_temperature='pore.temperature',
+              pore_MW='pore.molecular_weight',
+              **kwargs):
     r"""
     Uses ideal gas law to calculate the mass density of an ideal gas
 
     Parameters
     ----------
-    P, T, MW: float, array_like
-        P pressure of the gas in [Pa]
-        T temperature of the gas in [K]
-        MW molecular weight of the gas in [kg/kmole]
+    pore_pressure : string
+        The dictionary key containing the pressure values (Pa)
 
-    Returns
-    -------
-    rho, the density in [mol/m3]
+    pore_temperature : string
+        The dictionary key containing the temperature values (K)
+
+    pore_molecular_weight : string
+        The dictionary key containing the molecular weight values (kg/mol)
 
     """
 
-    P = phase['pore.pressure']
-    T = phase['pore.temperature']
-    MW = phase['pore.molecular_weight']
+    P = phase[pore_pressure]
+    T = phase[pore_temperature]
+    MW = phase[pore_MW]
     R = 8.31447
     value = P/(R*T)*MW
     return value
 
 
-def water(phase, **kwargs):
+def water(phase,
+          pore_temperature='pore.temperature',
+          pore_salinity='pore.salinity',
+          **kwargs):
     r"""
     Calculates density of pure water or seawater at atmospheric pressure
     using Eq. (8) given by Sharqawy et. al [1]_. Values at temperature higher
-    than the normal boiling temperature are calculated at the saturation pressure.
+    than the normal boiling temperature are calculated at the saturation
+    pressure.
 
     Parameters
     ----------
-    T, S: strings
-        Property names where phase temperature and salinity are located.
+    phase : OpenPNM Phase Object
+
+    pore_temperature : string
+        The dictionary key containing the temperature values.  Temperature must
+        be in Kelvin for this emperical equation to work
+
+    pore_salinity : string
+        The dictionary key containing the salinity values.  Salinity must be
+        expressed in g of salt per kg of solution (ppt).
+
 
     Returns
     -------
-    rho_sw, the density of water/seawater in [kg/m3]
+    The density of water/seawater in [kg/m3]
 
     Notes
     -----
@@ -66,8 +94,8 @@ def water(phase, **kwargs):
 
     References
     ----------
-    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and Water
-        Treatment, 2010.
+    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
+        Water Treatment, 2010.
 
     """
     T = phase['pore.temperature']
