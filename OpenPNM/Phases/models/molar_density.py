@@ -121,5 +121,5 @@ def vanderwaals(phase,
     a0 = sp.ones(sp.shape(a1))
     coeffs = sp.vstack((a0, a1, a2, a3)).T
     density = sp.array([sp.roots(C) for C in coeffs])
-    value = sp.real(density[:,2])*1e6  # Convert it to mol/m3
+    value = sp.real(density[:, 2])*1e6  # Convert it to mol/m3
     return value
