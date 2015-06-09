@@ -584,7 +584,9 @@ class GenericNetwork(Core):
             temp = sp.array(conns[:, 0]*conns[:, 1], dtype=bool)
         else:
             raise Exception('Mask received was neither Nt nor Np long')
-        temp = self.create_adjacency_matrix(data=temp, sprsfmt='csr', dropzeros=True)
+        temp = self.create_adjacency_matrix(data=temp,
+                                            sprsfmt='csr',
+                                            dropzeros=True)
         clusters = sprs.csgraph.connected_components(csgraph=temp,
                                                      directed=False)[1]
         return clusters
@@ -619,20 +621,21 @@ class GenericNetwork(Core):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.Cubic(shape=[25, 25, 1])
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=pn.Ps,
-                                                    throats=pn.Ts)
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
+        ...                                         pores=pn.Ps,
+        ...                                         throats=pn.Ts)
         >>> geom['pore.seed'] = sp.rand(pn.Np)
         >>> geom['throat.seed'] = sp.rand(pn.Nt)
 
         Bond percolation is achieved by sending a list of invaded throats:
 
         >>> (p_bond,t_bond) = pn.find_clusters2(mask=geom['throat.seed'] < 0.3,
-                                                t_labels=True)
+        ...                                     t_labels=True)
 
         Site percolation is achieved by sending a list of invaded pores:
 
         >>> (p_site,t_site) = pn.find_clusters2(mask=geom['pore.seed'] < 0.3,
-                                                t_labels=True)
+        ...                                     t_labels=True)
 
         To visualize the invasion pattern, use matplotlib's matshow method
         along with the Cubic Network's asarray method which converts list based
@@ -776,7 +779,10 @@ class GenericNetwork(Core):
     stitch.__doc__ = topo.stitch.__doc__
 
     def connect_pores(self, pores1, pores2, labels=[]):
-        topo.connect_pores(network=self, pores1=pores1, pores2=pores2, labels=labels)
+        topo.connect_pores(network=self,
+                           pores1=pores1,
+                           pores2=pores2,
+                           labels=labels)
     connect_pores.__doc__ = topo.connect_pores.__doc__
 
     def check_network_health(self):
@@ -958,9 +964,9 @@ class GenericNetwork(Core):
             f1 = self['pore.coords'][face_1]
             f2 = self['pore.coords'][face_2]
             distavg = [0, 0, 0]
-            distavg[0] = sp.absolute(sp.average(f1[:, 0]) - sp.average(f2[:, 0]))
-            distavg[1] = sp.absolute(sp.average(f1[:, 1]) - sp.average(f2[:, 1]))
-            distavg[2] = sp.absolute(sp.average(f1[:, 2]) - sp.average(f2[:, 2]))
+            distavg[0] = sp.absolute(sp.average(f1[:, 0])-sp.average(f2[:, 0]))
+            distavg[1] = sp.absolute(sp.average(f1[:, 1])-sp.average(f2[:, 1]))
+            distavg[2] = sp.absolute(sp.average(f1[:, 2])-sp.average(f2[:, 2]))
             L = max(distavg)
         return L
 

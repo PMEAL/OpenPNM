@@ -41,7 +41,7 @@ class GenericNetworkTest:
     def test_find_neighbor_pores_numeric_union(self):
         a = self.net.find_neighbor_pores(pores=[0, 2],
                                          mode='union')
-        assert sp.all(a == [1, 3, 10,  12, 100, 102])
+        assert sp.all(a == [1, 3, 10, 12, 100, 102])
 
     def test_find_neighbor_pores_numeric_intersection(self):
         a = self.net.find_neighbor_pores(pores=[0, 2],
