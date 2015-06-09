@@ -637,7 +637,9 @@ class GenericNetwork(Core):
         >>> (p_site,t_site) = pn.find_clusters2(mask=geom['pore.seed'] < 0.3,
                                                 t_labels=True)
 
-        To visualize the invasion pattern, use matplotlib's matshow method:
+        To visualize the invasion pattern, use matplotlib's matshow method
+        along with the Cubic Network's asarray method which converts list based
+        data to square arrays:
 
         .. code-block:: python
 

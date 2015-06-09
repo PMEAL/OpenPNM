@@ -56,7 +56,7 @@ class CoreTest:
 
     def test_labels_on_throats(self):
         a = self.net.labels(element='throats')
-        assert sorted(a) == ['throat.all', 'throat.'+geo.name]
+        assert sorted(a) == ['throat.all', 'throat.'+self.geo.name]
 
     def test_labels_on_foo(self):
         a = self.net.labels(element='foo')
