@@ -289,7 +289,7 @@ class Controller(dict):
 
         """
         obj_new = _copy.copy(obj)
-        obj_new.__dict__ = obj.__dict__
+        obj_new.__dict__ = _copy.copy(obj.__dict__)
         obj_new._ctrl = {}
         del self[obj.name]
         self[obj.name] = obj
