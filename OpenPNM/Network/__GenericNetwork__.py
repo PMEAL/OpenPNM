@@ -752,7 +752,7 @@ class GenericNetwork(Core):
         >>> pn.find_nearby_pores(pores=[0, 1], distance=1)
         array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
         >>> pn.find_nearby_pores(pores=[0, 1], distance=0.5)
-        array([], shape=(2, 0), dtype=int32)
+        array([], shape=(2, 0), dtype=int64)
         """
         # Convert to ND-array
         pores = sp.array(pores, ndmin=1)
@@ -761,14 +761,14 @@ class GenericNetwork(Core):
             pores = self.Ps[pores]
         # Handle an empty array if given
         if sp.size(pores) == 0:
-            return sp.array([], dtype=int)
+            return sp.array([], dtype=sp.int64)
         if distance <= 0:
             logger.error('Provided distances should be greater than 0')
             if flatten:
                 Pn = sp.array([])
             else:
                 Pn = sp.array([sp.array([]) for i in range(0, len(pores))])
-            return Pn.astype(int)
+            return Pn.astype(sp.int64)
         # Create kdTree objects
         kd = sptl.cKDTree(self['pore.coords'])
         kd_pores = sptl.cKDTree(self['pore.coords'][pores])
@@ -789,7 +789,7 @@ class GenericNetwork(Core):
             [temp.append(sp.array(Pn[i])) for i in range(0, sp.size(pores))]
             Pn = sp.array(temp)
         if Pn.dtype == float:
-            Pn = Pn.astype(int)
+            Pn = Pn.astype(sp.int64)
         return Pn
 
     def extend(self, pore_coords=[], throat_conns=[], labels=[]):
