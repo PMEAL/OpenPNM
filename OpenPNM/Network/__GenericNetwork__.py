@@ -722,17 +722,21 @@ class GenericNetwork(Core):
 
         return (p_clusters, t_clusters)
 
-    def find_nearest_pores(self, pores, distance=0):
+    def find_nearby_pores(self, pores, distance, flatten=False, excl_self=True):
         r"""
-        Find all pores within a given distance of the input pore(s) regardless
-        of whether or not they are toplogically connected.
+        Find all pores within a given radial distance of the input pore(s)
+        regardless of whether or not they are toplogically connected.
 
         Parameters
         ----------
         pores : array_like
             The list of pores for whom nearby neighbors are to be found
         distance : scalar
-            The within which the nearby pores should be found
+            The maximum distance within which the nearby should be found
+        excl_self : bool
+            Controls whether the input pores should be included in the returned
+            list.  The default is True which means they are not included.
+        flatten :
 
         Returns
         -------
@@ -743,18 +747,49 @@ class GenericNetwork(Core):
 
         Examples
         --------
-        >>> import OpenPNM as op
-        >>> pn = op.Network.TestNet()
-        >>> pn.find_nearest_pores(pores=[0, 1],distance=1)
-        array([[0, 1, 25, 5], [0, 1, 26, 6, 2]], dtype=object)
-        >>> pn.find_nearest_pores(pores=[0, 1],distance=.5)
-        array([[0], [1]], dtype=object)
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.find_nearby_pores(pores=[0, 1], distance=1)
+        array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
+        >>> pn.find_nearby_pores(pores=[0, 1], distance=0.5)
+        array([], shape=(2, 0), dtype=int64)
         """
+        # Convert to ND-array
+        pores = sp.array(pores, ndmin=1)
+        # Convert boolean mask to indices if necessary
+        if pores.dtype == bool:
+            pores = self.Ps[pores]
+        # Handle an empty array if given
+        if sp.size(pores) == 0:
+            return sp.array([], dtype=sp.int64)
+        if distance <= 0:
+            logger.error('Provided distances should be greater than 0')
+            if flatten:
+                Pn = sp.array([])
+            else:
+                Pn = sp.array([sp.array([]) for i in range(0, len(pores))])
+            return Pn.astype(sp.int64)
+        # Create kdTree objects
         kd = sptl.cKDTree(self['pore.coords'])
-        if distance == 0:
-            pass
-        elif distance > 0:
-            Pn = kd.query_ball_point(self['pore.coords'][pores], r=distance)
+        kd_pores = sptl.cKDTree(self['pore.coords'][pores])
+        # Perform search
+        Pn = kd_pores.query_ball_tree(kd, r=distance)
+        # Sort the indices in each list
+        [Pn[i].sort() for i in range(0, sp.size(pores))]
+        if flatten:  # Convert list of lists to a flat nd-array
+            temp = []
+            [temp.extend(Ps) for Ps in Pn]
+            Pn = sp.unique(temp)
+            if excl_self:  # Remove inputs if necessary
+                Pn = Pn[~sp.in1d(Pn, pores)]
+        else:  # Convert list of lists to an nd-array of nd-arrays
+            if excl_self:  # Remove inputs if necessary
+                [Pn[i].remove(pores[i]) for i in range(0, sp.size(pores))]
+            temp = []
+            [temp.append(sp.array(Pn[i])) for i in range(0, sp.size(pores))]
+            Pn = sp.array(temp)
+        if Pn.dtype == float:
+            Pn = Pn.astype(sp.int64)
         return Pn
 
     def extend(self, pore_coords=[], throat_conns=[], labels=[]):
