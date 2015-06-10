@@ -722,7 +722,7 @@ class GenericNetwork(Core):
 
         return (p_clusters, t_clusters)
 
-    def find_nearby_pores(self, pores, distance, excl_self=True):
+    def find_nearby_pores(self, pores, distance, flatten=False, excl_self=True):
         r"""
         Find all pores within a given radial distance of the input pore(s)
         regardless of whether or not they are toplogically connected.
@@ -736,6 +736,7 @@ class GenericNetwork(Core):
         excl_self : bool
             Controls whether the input pores should be included in the returned
             list.  The default is True which means they are not included.
+        flatten :
 
         Returns
         -------
@@ -762,19 +763,32 @@ class GenericNetwork(Core):
         if sp.size(pores) == 0:
             return sp.array([], dtype=float)
         if distance <= 0:
-            raise Exception('Provided distance must be greater than 0')
+            logger.error('Provided distances must be greater than 0, an empty \
+            array will be returned')
+            if flatten:
+                Pn = sp.array([])
+            else:
+                Pn = sp.array([sp.array([]) for i in range(0, len(pores))])
+            return Pn
         # Create kdTree objects
         kd = sptl.cKDTree(self['pore.coords'])
         kd_pores = sptl.cKDTree(self['pore.coords'][pores])
         # Perform search
         Pn = kd_pores.query_ball_tree(kd, r=distance)
-        # Sort the indices in each list (probably unnecessary)
+        # Sort the indices in each list
         [Pn[i].sort() for i in range(0, sp.size(pores))]
-        # Remove references to self in each list
-        if excl_self is True:
-            [Pn[i].remove(pores[i]) for i in range(0, sp.size(pores))
-                if pores[i] in Pn[i]]
-        Pn = sp.array(Pn)
+        if flatten:  # Convert list of lists to a flat nd-array
+            temp = []
+            [temp.extend(Ps) for Ps in Pn]
+            Pn = sp.unique(temp)
+            if excl_self:  # Remove inputs if necessary
+                Pn = Pn[~sp.in1d(Pn, pores)]
+        else:  # Convert list of lists to an nd-array of nd-arrays
+            if excl_self:  # Remove inputs if necessary
+                [Pn[i].remove(pores[i]) for i in range(0, sp.size(pores))]
+            temp = []
+            [temp.append(sp.array(Pn[i])) for i in range(0, sp.size(pores))]
+            Pn = sp.array(temp)
         return Pn
 
     def extend(self, pore_coords=[], throat_conns=[], labels=[]):
