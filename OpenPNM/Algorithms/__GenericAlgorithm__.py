@@ -247,8 +247,8 @@ class GenericAlgorithm(Core):
             if bcname in self._existing_BC and item.split('.')[0] == element:
                 if mode == 'merge':
                     try:
-                        c1_label = element + '.' + component.name + '_bcval_' \
-                                   + bcname
+                        c1_label = element + '.' + component.name + \
+                                  '_bcval_' + bcname
                         self[c1_label][loc]
                         condition1 = sp.isnan(self[c1_label][loc]).all()
                         c2_label = element + '.' + component.name + '_' \

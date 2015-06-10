@@ -88,9 +88,9 @@ class GenericLinearTransport(GenericAlgorithm):
                         self[prop2][pores]
         # Creating A and b based on the conductance values and new linear terms
         logger.info('Creating Coefficient matrix for the algorithm')
-        self.A = self._build_coefficient_matrix(
-                                        modified_diag_pores=self.Ps,
-                                        diag_added_data=diag_added_data)
+        d = diag_added_data
+        self.A = self._build_coefficient_matrix(modified_diag_pores=self.Ps,
+                                                diag_added_data=d)
         logger.info('Creating RHS matrix for the algorithm')
         self.b = self._build_RHS_matrix(modified_RHS_pores=self.Ps,
                                         RHS_added_data=-RHS_added_data)
@@ -240,9 +240,8 @@ class GenericLinearTransport(GenericAlgorithm):
                         self['pore.source_tol'] = sp.ones((self.Np,),
                                                           dtype=float) * sp.nan
                     if 'pore.source_maxiter' not in self.props():
-                        self['pore.source_maxiter'] = sp.ones((self.Np,),
-                                                              dtype=float) \
-                                                              * sp.nan
+                        maxiter_arr = sp.ones((self.Np,), dtype=float) * sp.nan
+                        self['pore.source_maxiter'] = maxiter_arr
 
                     if x0 is None:
                         x0 = 0
