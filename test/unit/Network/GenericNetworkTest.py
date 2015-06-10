@@ -206,14 +206,3 @@ class GenericNetworkTest:
                                        excl_self=False)
         assert sp.size(a) == 17
         assert sp.all(sp.in1d([0, 1], a))
-
-
-
-
-
-
-
-
-
-
-
