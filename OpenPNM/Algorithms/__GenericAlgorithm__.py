@@ -126,19 +126,19 @@ class GenericAlgorithm(Core):
             self._existing_BC = []
         if component is None:
             if sp.size(self._phases) != 1:
-                raise Exception('In each use of set_boundary_conditions \
-                                method, one component should be specified or \
-                                attached to the algorithm.')
+                raise Exception('In each use of set_boundary_conditions ' +
+                                'method, one component should be specified ' +
+                                'or attached to the algorithm.')
             else:
                 component = self._phases[0]
         else:
             if sp.size(component) != 1:
-                raise Exception('For using set_boundary_conditions method, \
-                                only one component should be specified.')
+                raise Exception('For using set_boundary_conditions method, ' +
+                                'only one component should be specified.')
 
         if mode not in ['merge', 'overwrite', 'remove']:
-            raise Exception('The mode (' + mode + ') cannot be applied to the \
-                            set_boundary_conditions!')
+            raise Exception('The mode (' + mode + ') cannot be applied to ' +
+                            'the set_boundary_conditions!')
 
         logger.debug('BC applies to the component: ' + component.name)
         # If mode is 'remove', also bypass checks
@@ -162,8 +162,9 @@ class GenericAlgorithm(Core):
                                          '_' + bctype]
                             except KeyError:
                                 pass
-                    logger.debug('Removing ' + bctype + ' from all locations \
-                                 for ' + component.name + ' in ' + self.name)
+                    logger.debug('Removing ' + bctype + ' from all locations' +
+                                 ' for ' + component.name + ' in ' +
+                                 self.name)
                     self._existing_BC.remove(bctype)
             else:
                 if pores is not None:
@@ -173,12 +174,12 @@ class GenericAlgorithm(Core):
                         self[prop_label][pores] = sp.nan
                         info_label = 'pore.' + component.name + '_' + bctype
                         self[info_label][pores] = False
-                        logger.debug('Removing ' + bctype + ' from the \
-                                     specified pores for ' + component.name +
+                        logger.debug('Removing ' + bctype + ' from the ' +
+                                     'specified pores for ' + component.name +
                                      ' in ' + self.name)
                     else:
-                        raise Exception('Cannot remove BC from the pores \
-                                        unless bctype is specified')
+                        raise Exception('Cannot remove BC from the pores ' +
+                                        'unless bctype is specified')
 
                 if throats is not None:
                     if bctype != '':
@@ -187,12 +188,12 @@ class GenericAlgorithm(Core):
                         self[prop_label][throats] = sp.nan
                         info_label = 'throat.' + component.name + '_' + bctype
                         self[info_label][throats] = False
-                        logger.debug('Removing ' + bctype + ' from the \
-                                     specified throats for ' + component.name +
-                                     ' in ' + self.name)
+                        logger.debug('Removing ' + bctype + ' from the ' +
+                                     'specified throats for ' +
+                                     component.name + ' in ' + self.name)
                     else:
-                        raise Exception('Cannot remove BC from the throats \
-                                        unless bctype is specified')
+                        raise Exception('Cannot remove BC from the throats ' +
+                                        'unless bctype is specified')
 
             return
         # Validate bctype
@@ -202,8 +203,8 @@ class GenericAlgorithm(Core):
         if pores is None and throats is None:
             raise Exception('pores/throats must be specified')
         elif pores is not None and throats is not None:
-            raise Exception('BC for pores and throats must be specified \
-                            independently.')
+            raise Exception('BC for pores and throats must be specified ' +
+                            'independently.')
         elif throats is None:
             element = 'pore'
             loc = sp.array(pores, ndmin=1)
@@ -219,8 +220,8 @@ class GenericAlgorithm(Core):
             # Check bcvalues are compatible with bctypes
             if bctype == 'Neumann_group':  # Only scalars are acceptable
                 if sp.size(bcvalue) != 1:
-                    raise Exception('When specifying Neumann_group, bcval \
-                                    should be a scalar')
+                    raise Exception('When specifying Neumann_group, bcval ' +
+                                    'should be a scalar')
                 else:
                     bcvalue = sp.float64(bcvalue)
                     if 'Neumann_group' not in self._existing_BC:
@@ -232,8 +233,8 @@ class GenericAlgorithm(Core):
                 if sp.size(bcvalue) == 1:
                     bcvalue = sp.ones(sp.shape(loc)) * bcvalue
                 elif sp.size(bcvalue) != sp.size(loc):
-                    raise Exception('The pore/throat list and bcvalue list \
-                                    are different lengths')
+                    raise Exception('The pore/throat list and bcvalue list ' +
+                                    'are different lengths')
         # Confirm that prop and label arrays exist
         l_prop = element + '.' + component.name + '_bcval_' + bctype
         if l_prop not in self.props():
@@ -255,10 +256,10 @@ class GenericAlgorithm(Core):
                         c2_label = c1 + '_' + bcname
                         condition2 = sp.sum(self[c2_label][loc]) == 0
                         if not (condition1 and condition2):
-                            raise Exception('Because of the existing BCs, \
-                                            the method cannot apply new BC \
-                                            with the merge mode to the \
-                                            specified pore/throat.')
+                            raise Exception('Because of the existing BCs, ' +
+                                            'the method cannot apply new BC ' +
+                                            'with the merge mode to the ' +
+                                            'specified pore/throat.')
                     except KeyError:
                         pass
         # Set boundary conditions based on supplied mode
