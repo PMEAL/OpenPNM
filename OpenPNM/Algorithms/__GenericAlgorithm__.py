@@ -247,12 +247,12 @@ class GenericAlgorithm(Core):
             if bcname in self._existing_BC and item.split('.')[0] == element:
                 if mode == 'merge':
                     try:
-                        c1_label = element + '.' + component.name + \
-                                  '_bcval_' + bcname
+                        c1 = element + '.' + component.name
+                        c2 = '_bcval_' + bcname
+                        c1_label = c1 + c2
                         self[c1_label][loc]
                         condition1 = sp.isnan(self[c1_label][loc]).all()
-                        c2_label = element + '.' + component.name + '_' \
-                            + bcname
+                        c2_label = c1 + '_' + bcname
                         condition2 = sp.sum(self[c2_label][loc]) == 0
                         if not (condition1 and condition2):
                             raise Exception('Because of the existing BCs, \
