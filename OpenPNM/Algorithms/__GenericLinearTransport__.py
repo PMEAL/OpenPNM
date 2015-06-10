@@ -103,25 +103,29 @@ class GenericLinearTransport(GenericAlgorithm):
         Parameters
         ----------
         source_name : string
-            Specifies the name of source term from a Physics object to apply.
+          Specifies the name of source term from a Physics object to apply.
         pores : array_like
-            The pores where the boundary conditions should be applied
+          The pores where the boundary conditions should be applied
         x0 : array_like, optional
-            By sending guess values for the quantity, the method calculates the
-             source terms and stores them in the algorithm
+          By sending guess values for the quantity, the method calculates the
+          source terms and stores them in the algorithm
         tol : float, optional
-            Tolerance for the iterative method. (if maxiter>0)
+          Tolerance for the iterative method. (if maxiter>0)
+        maxiter : integer, optional
+          Maximum number of iterations for this source term. Iteration will
+          stop after maxiter steps.
         mode : string, optional
-            Controls how the source terms should be applied.  Options are:
-            - 'merge': Inserts specified values, leaving existing values
-              elsewhere
-            - 'overwrite': Inserts specified values, clearing all other values
-            - 'remove': Removes boundary conditions from specified locations
-            - 'update': Allows to insert specified values to new locations,
-              updating existing ones
-        maxiter: integer
-            Maximum number of iterations for this source term. Iteration will
-            stop after maxiter steps.
+          Controls how the source terms should be applied.
+          Options are:
+                - 'merge': Inserts specified values, leaving existing values \
+                  elsewhere.
+                - 'overwrite': Inserts specified values, clearing all other \
+                  values.
+                - 'remove': Removes boundary conditions from specified \
+                  locations.
+                - 'update': Allows to insert specified values to new \
+                  locations, updating existing ones.
+
         Notes
         -----
         Difference between 'merge' and 'update' modes: in the merge, a new
@@ -133,6 +137,8 @@ class GenericLinearTransport(GenericAlgorithm):
         if mode not in ['merge', 'overwrite', 'remove', 'update']:
             raise Exception('The mode (' + mode + ') cannot be applied to ' +
                             'the set_source_term!')
+        if pores is not None:
+            pores = sp.array(pores, ndmin=1)
         # Checking for existance of source_name
         if source_name is not None:
             s_group = sp.array(source_name, ndmin=1)
@@ -295,8 +301,8 @@ class GenericLinearTransport(GenericAlgorithm):
                         loc = pores[sp.in1d(pores, map_pores)]
                         if mode == 'merge':
                             try:
-                                if sp.sum(sp.in1d(
-                                        loc, self.pores(source_name))) > 0:
+                                spore = self.pores('source_' + prop)
+                                if sp.sum(sp.in1d(loc, spore)) > 0:
                                     raise Exception('Because of the existing '
                                                     'source term, the method '
                                                     'cannot apply new source '
@@ -305,7 +311,6 @@ class GenericLinearTransport(GenericAlgorithm):
                             except KeyError:
                                 pass
                         self['pore.source_' + prop][loc] = True
-
                         map_pores_loc = sp.in1d(map_pores, pores)
                         self['pore.source_' + source_mode +
                              '_s1_' + prop][loc] = s_regen[:, 0][map_pores_loc]
@@ -363,7 +368,7 @@ class GenericLinearTransport(GenericAlgorithm):
         else:
             X = self._do_one_inner_iteration(A, b, **kwargs)
         self.X = X
-        self._Neumann_super_X = self.X[:self._coeff_dimension]
+        self._Neumann_super_X = self.X[self.Np:self._coeff_dimension]
         # Removing the additional super pore variables from the results
         self[self._quantity] = self.X[self.Ps]
         logger.info('Writing the results to ' + '[\'' + self._quantity +

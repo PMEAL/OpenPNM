@@ -90,12 +90,12 @@ class GenericAlgorithm(Core):
         Parameters
         ----------
         bctype : string
-            Specifies the type or the name of boundary condition to apply.
+            Specifies the type or the name of boundary condition to apply. \
             The types can be one one of the followings:
-            - 'Dirichlet' : Specify the quantity in each location
-            - 'Neumann' : Specify the flow rate into each location
-            - 'Neumann_group' : Specify the net flow rate into a group of
-            pores/throats
+                 - 'Dirichlet' : Specify the quantity in each location
+                 - 'Neumann' : Specify the flow rate into each location
+                 - 'Neumann_group' : Specify the net flow rate into a group
+                   of pores/throats
         component : OpenPNM Phase object
             The Phase object to which this BC applies
         bcvalue : array_like
@@ -107,19 +107,18 @@ class GenericAlgorithm(Core):
         mode : string, optional
             Controls how the conditions are applied.  Options are:
 
-            - 'merge': Inserts the specified values, leaving existing values
-            elsewhere
+            - 'merge': Inserts the specified values, leaving existing values \
+              elsewhere
             - 'overwrite': Inserts specified values, clearing all other values
             - 'remove': Removes boundary conditions from specified locations
 
         Notes
         -----
-        1. It is not possible to have multiple boundary conditions for a
-        specified location in just one algorithm.
-        So when new condition is going to be applied to a specific location,
-        any existing one
-        should be removed or overwritten.
-        2- BCs for pores and for throats should be applied independently.
+        - It is not possible to have multiple boundary conditions for a
+          specified location in just one algorithm. So when new condition is
+          going to be applied to a specific location, any existing one should
+          be removed or overwritten.
+        - BCs for pores and for throats should be applied independently.
         """
         try:
             self._existing_BC
