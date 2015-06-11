@@ -591,7 +591,7 @@ class GenericNetwork(Core):
         r"""
         Identify connected clusters of pores in the network.  This method can
         also return a list of throat labels, which correspond to the pore
-        labels to which the throat is connected.  either site and bond
+        labels to which the throat is connected.  Either site and bond
         percolation can be consider, see description of input arguments for
         details.
 
@@ -610,15 +610,15 @@ class GenericNetwork(Core):
         -------
         A Np long list of pore clusters numbers, unless t_labels is True in
         which case a tuple containing both pore and throat cluster labels is
-        returned.  The label numbers corresond such that pores and throats with
-        the same label are part of the same cluster.
+        returned.  The label numbers correspond such that pores and throats
+        with the same label are part of the same cluster.
 
         Examples
         --------
         >>> import OpenPNM
         >>> import scipy as sp
         >>> sp.random.seed = 0  # Set seed value for random number generator
-        >>> pn = OpenPNM.Network.Cubic(shape=[25,25,1])
+        >>> pn = OpenPNM.Network.Cubic(shape=[25, 25, 1])
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
                                                     pores=pn.Ps,
                                                     throats=pn.Ts)
@@ -633,29 +633,30 @@ class GenericNetwork(Core):
         Site percolation is achieved by sending a list of invaded pores:
 
         >>> (p_site,t_site) = pn.find_clusters2(mask=geom['pore.seed'] < 0.3,
-                                      t_labels=True)
+                                                t_labels=True)
 
         To visualize the invasion pattern, use matplotlib's matshow method:
 
         .. code-block:: python
 
             import matplotlib.pyplot as plt
-            im_bond = pn.asarray(p_bond)[:,:,0]
-            im_site = pn.asarray(p_site)[:,:,0]
-            plt.subplot(1,2,1)
-            plt.imshow(im_site,interpolation='none')
-            plt.subplot(1,2,2)
-            plt.imshow(im_bond,interpolation='none')
+            im_bond = pn.asarray(p_bond)[:, :, 0]
+            im_site = pn.asarray(p_site)[:, :, 0]
+            plt.subplot(1, 2, 1)
+            plt.imshow(im_site, interpolation='none')
+            plt.subplot(1, 2, 2)
+            plt.imshow(im_bond, interpolation='none')
 
         """
         # Parse the input arguments
-        mask = sp.array(mask,ndmin=1)
+        mask = sp.array(mask, ndmin=1)
         if mask.dtype != bool:
             raise Exception('Mask must be a boolean array of Np or Nt length')
 
-        # If pore mask was givenk perform site percolatoin
+        # If pore mask was given perform site percolation
         if sp.size(mask) == self.Np:
             (p_clusters, t_clusters) = self._site_percolation(mask)
+        # If pore mask was given perform bond percolation
         elif sp.size(mask) == self.Nt:
             (p_clusters, t_clusters) = self._bond_percolation(mask)
         else:
@@ -666,7 +667,7 @@ class GenericNetwork(Core):
         else:
             return p_clusters
 
-    def _site_percolation(self,pmask):
+    def _site_percolation(self, pmask):
         r"""
         """
         # Find throats that produce site percolation
@@ -674,7 +675,7 @@ class GenericNetwork(Core):
         conns[:, 0] = pmask[conns[:, 0]]
         conns[:, 1] = pmask[conns[:, 1]]
         # Only if both pores are True is the throat set to True
-        tmask = sp.array(conns[:, 0]*conns[:, 1], dtype=bool)
+        tmask = sp.all(conns, axis=1)
 
         # Perform the clustering using scipy.csgraph
         csr = self.create_adjacency_matrix(data=tmask,
@@ -689,14 +690,14 @@ class GenericNetwork(Core):
         p_clusters = (clusters + 1)*(pmask) - 1
         # Label invaded throats with their neighboring pore's label
         t_clusters = clusters[self['throat.conns']]
-        ind = (t_clusters[:,0] == t_clusters[:,1])
-        t_clusters = t_clusters[:,0]
+        ind = (t_clusters[:, 0] == t_clusters[:, 1])
+        t_clusters = t_clusters[:, 0]
         # Label non-invaded throats with -1
         t_clusters[~ind] = -1
 
         return (p_clusters, t_clusters)
 
-    def _bond_percolation(self,tmask):
+    def _bond_percolation(self, tmask):
         r"""
         """
         # Perform the clustering using scipy.csgraph
@@ -708,11 +709,11 @@ class GenericNetwork(Core):
 
         # Convert clusters to a more usable output:
         # Find pores attached to each invaded throats
-        Ps = self.find_connected_pores(throats=tmask,flatten=True)
-        # Adjust cluster numbers such that non-invaded pores are labelled -1
+        Ps = self.find_connected_pores(throats=tmask, flatten=True)
+        # Adjust cluster numbers such that non-invaded pores are labelled -0
         p_clusters = (clusters + 1)*(self.tomask(pores=Ps).astype(int)) - 1
         # Label invaded throats with their neighboring pore's label
-        t_clusters = clusters[self['throat.conns']][:,0]
+        t_clusters = clusters[self['throat.conns']][:, 0]
         # Label non-invaded throats with -1
         t_clusters[~tmask] = -1
 
@@ -999,3 +1000,18 @@ class GenericNetwork(Core):
                            'approximate')
             pass
         return A
+
+    def _compress_labels(self, label_array):
+        # Make cluster number contiguous
+        array = sp.array(label_array)
+        if array.dtype != int:
+            raise Exception('label_array must be intergers')
+        min_val = sp.amin(array)
+        if min_val >= 0:
+            min_val = 0
+        array = array + sp.absolute(min_val)
+        nums = sp.unique(array)
+        temp = sp.zeros((sp.amax(array)+1,))
+        temp[nums] = sp.arange(0, sp.size(nums))
+        array = temp[array].astype(array.dtype)
+        return array
