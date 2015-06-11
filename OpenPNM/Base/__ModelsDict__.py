@@ -4,10 +4,10 @@ ModelsDict:  Abstract Class for Containing Models
 ###############################################################################
 """
 import inspect
-import scipy as sp
 from collections import OrderedDict
 from OpenPNM.Base import logging, Controller
 logger = logging.getLogger()
+
 
 class ModelWrapper(dict):
     r"""
@@ -26,12 +26,14 @@ class ModelWrapper(dict):
         return self['model'](**self)
 
     def __str__(self):
-        header = '-' * 60
-        print(header)
-        print(self['model'].__module__ + '.' + self['model'].__name__)
-        print(header)
-        print('{a:<20s} {b}'.format(a='Argument Name', b='Value / (Default)'))
-        print(header)
+        if self['model'] is None:
+            return 'No model specified.'
+        horizontal_rule = '-' * 60
+        lines = [horizontal_rule]
+        lines.append(self['model'].__module__ + '.' + self['model'].__name__)
+        lines.append(horizontal_rule)
+        lines.append('{0:<20s} {1}'.format('Argument Name', 'Value / (Default)'))
+        lines.append(horizontal_rule)
         # Scan default argument names and values of model
         defs = {}
         if self['model'].__defaults__ is not None:
@@ -45,11 +47,11 @@ class ModelWrapper(dict):
             if item not in self.COMPONENTS:
                 if item not in defs.keys():
                     defs[item] = '---'
-                print('{a:<20s} {b} / ({c})'.format(a=item,
-                                                    b=self[item],
-                                                    c=defs[item]))
-        print(header)
-        return ' '
+                lines.append('{0:<20s} {1} / ({2})'.format(item,
+                                                           self[item],
+                                                           defs[item]))
+        lines.append(horizontal_rule)
+        return '\n'.join(lines)
 
     def regenerate(self):
         r"""
@@ -89,6 +91,7 @@ class ModelWrapper(dict):
                             'method.')
         return master[0]
 
+
 class GenericModel(ModelWrapper):
     r"""
     This class was deprecated, and replaced by ModelWrapper.  Unfortunately,
@@ -97,6 +100,7 @@ class GenericModel(ModelWrapper):
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
 
 class ModelsDict(OrderedDict):
     r"""
@@ -129,19 +133,17 @@ class ModelsDict(OrderedDict):
         super().__setitem__(propname, temp)
 
     def __str__(self):
-        horizontal_rule = ('-' * 60) + '\n'
-        string = ''
-        string += horizontal_rule
-        string += '{n:<5s} {a:<30s} {b}\n'.format(n='#',
-                                                  a='Property Name',
-                                                  b='Regeneration Mode')
-        string += horizontal_rule
-        for item, i in self.keys():
-            string += '{n:<5d} {a:<30s} {b:<20s}'.format(n=(i + 1),
-                                                         a=item,
-                                                         b=self[item]['regen_mode'])
-        string += horizontal_rule
-        return string
+        horizontal_rule = '-' * 60
+        lines = [horizontal_rule]
+        lines.append('{0:<5s} {1:<30s} {2}'.format('#',
+                                                   'Property Name',
+                                                   'Regeneration Mode'))
+        lines.append(horizontal_rule)
+        for i, item in enumerate(self.keys()):
+            str = '{0:<5d} {1:<30s} {2:<20s}'
+            lines.append(str.format(i + 1, item, self[item]['regen_mode']))
+        lines.append(horizontal_rule)
+        return '\n'.join(lines)
 
     def keys(self):
         return list(super().keys())
@@ -264,7 +266,6 @@ class ModelsDict(OrderedDict):
         regen_mode           normal / (---)
         seed                 None / (None)
         ------------------------------------------------------------
-        <BLANKLINE>
         """
         master = self._find_master()
         if master is None:
@@ -351,8 +352,7 @@ class ModelsDict(OrderedDict):
             raise Exception('More than one master found! This model dictionary '
                             'has been associated with multiple objects. To use the '
                             'same dictionary multiple times use the copy method.')
-        return master[0]
+        elif len(master) == 0:
+            raise Exception('ModelsDict has no master.')
 
-if __name__ == '__main__':
-    pn = OpenPNM.Network.TestNet()
-    a = ModelsDict()
+        return master[0]

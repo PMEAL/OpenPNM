@@ -280,29 +280,8 @@ def drainage_curves(inv_alg, fig=None, Pc='inv_Pc', sat='inv_sat',
     The invasion algorithm for which the graphs are desired
 
     timing : string
-    if algorithm keeps track of simulated time, insert string here.
+    if algorithm keeps track of simulated time, insert string here
 
-    Examples
-    --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,
-    ...                                     pores=pn.pores(),
-    ...                                     throats=pn.throats())
-    >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
-    >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
-    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,
-    ...                                     pores=pn.pores(),throats=pn.throats())
-    >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,
-    ...                                     pores=pn.pores(),throats=pn.throats())
-    >>> IP = OpenPNM.Algorithms.InvasionPercolationTimed(network=pn)
-    >>> IP.run(invading_phase=phase1, defending_phase=phase2,
-    ...        inlets=pn.pores('top'), outlets=pn.pores('bottom'))
-         IP algorithm at 0 % completion at 0.0 seconds
-         IP algorithm at 20 % completion at 0.0 seconds
-         IP algorithm at 40 % completion at 0.0 seconds
-         IP algorithm at 60 % completion at 0.0 seconds
-         IP algorithm at 100% completion at  0.0  seconds
     """
     inv_throats = inv_alg.toindices(inv_alg['throat.' + seq] > 0)
     sort_seq = _sp.argsort(inv_alg['throat.'+seq][inv_throats])

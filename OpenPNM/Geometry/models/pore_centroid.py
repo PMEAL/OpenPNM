@@ -1,7 +1,7 @@
 r"""
 ===============================================================================
-pore_centroid -- N.B Neither method is accurate but is quicker than that implemented
-                 in pore.volume
+pore_centroid -- N.B Neither method is accurate but is quicker than that
+                 implemented in pore.volume
 ===============================================================================
 
 """

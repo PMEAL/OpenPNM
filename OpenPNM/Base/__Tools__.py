@@ -9,15 +9,13 @@ from collections import OrderedDict as _odict
 
 class PrintableList(list):
     def __str__(self):
-        horizonal_rule = ('-' * 60) + '\n'
-        string = ''
-        string += '\n'
-        string += horizonal_rule
+        horizontal_rule = '-' * 60
+        lines = [horizontal_rule]
         self.sort()
         for i, item in enumerate(self):
-            string += '{0}\t: {1}'.format(i + 1, item)
-        string += horizonal_rule
-        return string
+            lines.append('{0}\t: {1}'.format(i + 1, item))
+        lines.append(horizontal_rule)
+        return '\n'.join(lines)
 
 
 class PrintableDict(_odict):
@@ -26,14 +24,14 @@ class PrintableDict(_odict):
         return text
 
     def __str__(self):
-        header = '-' * 60
-        print(header)
-        print('{a:<25s} {b:<25s}'.format(a='key', b='value'))
-        print(header)
+        horizontal_rule = '-' * 60
+        lines = [horizontal_rule]
+        lines.append('{0:<25s} {1}'.format('key', 'value'))
+        lines.append(horizontal_rule)
         for item in self.keys():
-            print('{a:<25s} {b}'.format(a=item, b=self[item]))
-        print(header)
-        return ''
+            lines.append('{0:<25s} {1}'.format(item, self[item]))
+        lines.append(horizontal_rule)
+        return '\n'.join(lines)
 
 
 class AttributVeiew(object):

@@ -254,11 +254,11 @@ class GenericNetwork(Core):
         >>> pn.find_connected_pores(throats=[0,1], flatten=True)
         array([0, 1, 5])
         """
-        Ts = sp.array(throats,ndmin=1)
+        Ts = sp.array(throats, ndmin=1)
         if Ts.dtype == bool:
             Ts = self.toindices(Ts)
         if sp.size(Ts) == 0:
-            return sp.ndarray([0,2],dtype=int)
+            return sp.ndarray([0, 2], dtype=int)
         Ps = self['throat.conns'][Ts]
         if flatten:
             Ps = sp.unique(sp.hstack(Ps))
@@ -486,11 +486,11 @@ class GenericNetwork(Core):
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
         """
-        pores = sp.array(pores,ndmin=1)
+        pores = sp.array(pores, ndmin=1)
         if pores.dtype == bool:
             pores = self.toindices(pores)
         if sp.size(pores) == 0:
-            return sp.array([],ndmin=1,dtype=int)
+            return sp.array([], ndmin=1, dtype=int)
 
         # Count number of neighbors
         if flatten:
@@ -535,6 +535,8 @@ class GenericNetwork(Core):
         >>> pn['pore.domain2'][[5, 6, 7]] = True
         >>> pn.find_interface_throats(labels=['domain1', 'domain2'])
         array([1, 4, 7])
+
+        TODO: It might be a good idea to allow overlapping regions
         """
         Tind = sp.array([], ndmin=1)
         if sp.shape(labels)[0] != 2:
@@ -582,7 +584,9 @@ class GenericNetwork(Core):
             temp = sp.array(conns[:, 0]*conns[:, 1], dtype=bool)
         else:
             raise Exception('Mask received was neither Nt nor Np long')
-        temp = self.create_adjacency_matrix(data=temp, sprsfmt='csr', dropzeros=True)
+        temp = self.create_adjacency_matrix(data=temp,
+                                            sprsfmt='csr',
+                                            dropzeros=True)
         clusters = sprs.csgraph.connected_components(csgraph=temp,
                                                      directed=False)[1]
         return clusters
@@ -616,26 +620,26 @@ class GenericNetwork(Core):
         Examples
         --------
         >>> import OpenPNM
-        >>> import scipy as sp
-        >>> sp.random.seed = 0  # Set seed value for random number generator
         >>> pn = OpenPNM.Network.Cubic(shape=[25, 25, 1])
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
-                                                    pores=pn.Ps,
-                                                    throats=pn.Ts)
+        ...                                         pores=pn.Ps,
+        ...                                         throats=pn.Ts)
         >>> geom['pore.seed'] = sp.rand(pn.Np)
         >>> geom['throat.seed'] = sp.rand(pn.Nt)
 
         Bond percolation is achieved by sending a list of invaded throats:
 
         >>> (p_bond,t_bond) = pn.find_clusters2(mask=geom['throat.seed'] < 0.3,
-                                                t_labels=True)
+        ...                                     t_labels=True)
 
         Site percolation is achieved by sending a list of invaded pores:
 
         >>> (p_site,t_site) = pn.find_clusters2(mask=geom['pore.seed'] < 0.3,
-                                                t_labels=True)
+        ...                                     t_labels=True)
 
-        To visualize the invasion pattern, use matplotlib's matshow method:
+        To visualize the invasion pattern, use matplotlib's matshow method
+        along with the Cubic Network's asarray method which converts list based
+        data to square arrays:
 
         .. code-block:: python
 
@@ -719,17 +723,21 @@ class GenericNetwork(Core):
 
         return (p_clusters, t_clusters)
 
-    def find_nearest_pores(self, pores, distance=0):
+    def find_nearby_pores(self, pores, distance, flatten=False, excl_self=True):
         r"""
-        Find all pores within a given distance of the input pore(s) regardless
-        of whether or not they are toplogically connected.
+        Find all pores within a given radial distance of the input pore(s)
+        regardless of whether or not they are toplogically connected.
 
         Parameters
         ----------
         pores : array_like
             The list of pores for whom nearby neighbors are to be found
         distance : scalar
-            The within which the nearby pores should be found
+            The maximum distance within which the nearby should be found
+        excl_self : bool
+            Controls whether the input pores should be included in the returned
+            list.  The default is True which means they are not included.
+        flatten :
 
         Returns
         -------
@@ -740,18 +748,49 @@ class GenericNetwork(Core):
 
         Examples
         --------
-        >>> import OpenPNM as op
-        >>> pn = op.Network.TestNet()
-        >>> pn.find_nearest_pores(pores=[0, 1],distance=1)
-        array([[0, 1, 25, 5], [0, 1, 26, 6, 2]], dtype=object)
-        >>> pn.find_nearest_pores(pores=[0, 1],distance=.5)
-        array([[0], [1]], dtype=object)
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.find_nearby_pores(pores=[0, 1], distance=1)
+        array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
+        >>> pn.find_nearby_pores(pores=[0, 1], distance=0.5)
+        array([], shape=(2, 0), dtype=int64)
         """
+        # Convert to ND-array
+        pores = sp.array(pores, ndmin=1)
+        # Convert boolean mask to indices if necessary
+        if pores.dtype == bool:
+            pores = self.Ps[pores]
+        # Handle an empty array if given
+        if sp.size(pores) == 0:
+            return sp.array([], dtype=sp.int64)
+        if distance <= 0:
+            logger.error('Provided distances should be greater than 0')
+            if flatten:
+                Pn = sp.array([])
+            else:
+                Pn = sp.array([sp.array([]) for i in range(0, len(pores))])
+            return Pn.astype(sp.int64)
+        # Create kdTree objects
         kd = sptl.cKDTree(self['pore.coords'])
-        if distance == 0:
-            pass
-        elif distance > 0:
-            Pn = kd.query_ball_point(self['pore.coords'][pores], r=distance)
+        kd_pores = sptl.cKDTree(self['pore.coords'][pores])
+        # Perform search
+        Pn = kd_pores.query_ball_tree(kd, r=distance)
+        # Sort the indices in each list
+        [Pn[i].sort() for i in range(0, sp.size(pores))]
+        if flatten:  # Convert list of lists to a flat nd-array
+            temp = []
+            [temp.extend(Ps) for Ps in Pn]
+            Pn = sp.unique(temp)
+            if excl_self:  # Remove inputs if necessary
+                Pn = Pn[~sp.in1d(Pn, pores)]
+        else:  # Convert list of lists to an nd-array of nd-arrays
+            if excl_self:  # Remove inputs if necessary
+                [Pn[i].remove(pores[i]) for i in range(0, sp.size(pores))]
+            temp = []
+            [temp.append(sp.array(Pn[i])) for i in range(0, sp.size(pores))]
+            Pn = sp.array(temp)
+        if Pn.dtype == float:
+            Pn = Pn.astype(sp.int64)
         return Pn
 
     def extend(self, pore_coords=[], throat_conns=[], labels=[]):
@@ -776,7 +815,10 @@ class GenericNetwork(Core):
     stitch.__doc__ = topo.stitch.__doc__
 
     def connect_pores(self, pores1, pores2, labels=[]):
-        topo.connect_pores(network=self, pores1=pores1, pores2=pores2, labels=labels)
+        topo.connect_pores(network=self,
+                           pores1=pores1,
+                           pores2=pores2,
+                           labels=labels)
     connect_pores.__doc__ = topo.connect_pores.__doc__
 
     def check_network_health(self):
@@ -837,21 +879,26 @@ class GenericNetwork(Core):
         v = sp.array(self['throat.all'], dtype=int)
         Np = self.num_pores()
         adjmat = sprs.coo_matrix((v, (i, j)), [Np, Np])
-        temp = adjmat.tocsr()  # Convert to CSR to combine duplicates
-        temp = adjmat.tocoo()  # And back to COO
-        mergedTs = sp.where(temp.data > 1)
-        Ps12 = sp.vstack((temp.row[mergedTs], temp.col[mergedTs])).T
-        dupTs = []
-        for i in range(0, sp.shape(Ps12)[0]):
-            dupTs.append(self.find_connecting_throat(Ps12[i, 0], Ps12[i, 1]).tolist)
-        health['duplicate_throats'] = dupTs
+        temp = adjmat.tolil()  # Convert to lil to combine duplicates
+        # Compile lists of which specfic throats are duplicates
+        # Be VERY careful here, as throats are not in order
+        mergeTs = []
+        for i in range(0, self.Np):
+            if sp.any(sp.array(temp.data[i]) > 1):
+                ind = sp.where(sp.array(temp.data[i]) > 1)[0]
+                P = sp.array(temp.rows[i])[ind]
+                Ts = self.find_connecting_throat(P1=i, P2=P)[0]
+                mergeTs.append(Ts)
+        health['duplicate_throats'] = mergeTs
 
         # Check for bidirectional throats
         num_full = adjmat.sum()
         temp = sprs.triu(adjmat, k=1)
         num_upper = temp.sum()
         if num_full > num_upper:
-            health['bidirectional_throats'] = str(num_full-num_upper) + ' detected!'
+            biTs = sp.where(self['throat.conns'][:, 0] >
+                            self['throat.conns'][:, 1])[0]
+            health['bidirectional_throats'] = biTs.tolist()
 
         return health
 
@@ -953,9 +1000,9 @@ class GenericNetwork(Core):
             f1 = self['pore.coords'][face_1]
             f2 = self['pore.coords'][face_2]
             distavg = [0, 0, 0]
-            distavg[0] = sp.absolute(sp.average(f1[:, 0]) - sp.average(f2[:, 0]))
-            distavg[1] = sp.absolute(sp.average(f1[:, 1]) - sp.average(f2[:, 1]))
-            distavg[2] = sp.absolute(sp.average(f1[:, 2]) - sp.average(f2[:, 2]))
+            distavg[0] = sp.absolute(sp.average(f1[:, 0])-sp.average(f2[:, 0]))
+            distavg[1] = sp.absolute(sp.average(f1[:, 1])-sp.average(f2[:, 1]))
+            distavg[2] = sp.absolute(sp.average(f1[:, 2])-sp.average(f2[:, 2]))
             L = max(distavg)
         return L
 
