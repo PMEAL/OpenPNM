@@ -29,41 +29,45 @@ class Controller(dict):
         self.comments = 'Using OpenPNM ' + OpenPNM.__version__
 
     def __str__(self):
+        lines = []
+        horizontal_rule = 60 * '-'
         for net in self.networks():
-            header = '-'*60
-            print(header)
-            print('{a:<15} {b:<20} ({c})'.format(a='Object: ', b='Name', c='Class'))
-            print(header)
-            print('{a:<15} {b:<20} ({c})'.format(a='Network: ',
-                                                 b=net.name,
-                                                 c=net.__class__.__name__))
+            lines.append(horizontal_rule)
+            lines.append('{0:<15} {1:<20} ({2})'.format('Object:',
+                                                        'Name',
+                                                        'Class'))
+            lines.append(horizontal_rule)
+            lines.append('{0:<15} {1:<20} ({2})'.format('Network:',
+                                                        net.name,
+                                                        net.__class__.__name__))
             for geom in net._geometries:
-                print('++ {a:<12} {b:<20} ({c})'.format(a='Geometry: ',
-                                                        b=geom.name,
-                                                        c=geom.__class__.__name__))
+                str = '++ {0:<12} {1:<20} ({2})'
+                lines.append(str.format('Geometry: ',
+                                        geom.name,
+                                        geom.__class__.__name__))
             for phase in net._phases:
                 if len(phase._phases) == 0:
-                    str = '+ {a:<13} {b:<20} ({c})'
-                    print(str.format(a='Pure Phase: ',
-                                     b=phase.name,
-                                     c=phase.__class__.__name__))
+                    str = '+ {0:<13} {1:<20} ({2})'
+                    lines.append(str.format('Pure Phase: ',
+                                            phase.name,
+                                            phase.__class__.__name__))
                 if len(phase._phases) > 1:
-                    str = '+ {a:<13} {b:<20} ({c})'
-                    print(str.format(a='Mixture Phase: ',
-                                     b=phase.name,
-                                     c=phase.__class__.__name__))
+                    str = '+ {0:<13} {1:<20} ({2})'
+                    lines.append(str.format('Mixture Phase: ',
+                                            phase.name,
+                                            phase.__class__.__name__))
                     comps = phase.phases()
                     for compname in comps:
-                        str = '++ {a:<12} {b:<20} ({c})}'
-                        print(str.format(a='Component Phase: ',
-                                         b=phase.name,
-                                         c=phase.__class__.__name__))
+                        str = '++ {0:<12} {1:<20} ({2})}'
+                        lines.append(str.format('Component Phase: ',
+                                                phase.name,
+                                                phase.__class__.__name__))
                 for phys in phase._physics:
-                    str = '++ {a:<12} {b:<20} ({c})'
-                    print(str.format(a='Physics: ',
-                                     b=phys.name,
-                                     c=phys.__class__.__name__))
-        return ''
+                    str = '++ {0:<12} {1:<20} ({2})'
+                    lines.append(str.format('Physics: ',
+                                            phys.name,
+                                            phys.__class__.__name__))
+        return '\n'.join(lines)
 
     def _setloglevel(self, level):
         logger.setLevel(level)
@@ -285,7 +289,7 @@ class Controller(dict):
 
         """
         obj_new = _copy.copy(obj)
-        obj_new.__dict__ = obj.__dict__
+        obj_new.__dict__ = _copy.copy(obj.__dict__)
         obj_new._ctrl = {}
         del self[obj.name]
         self[obj.name] = obj
@@ -492,16 +496,12 @@ class Controller(dict):
         net = _copy.deepcopy(network)
         self.update(net)
         if name is None:
-            for _ in range(5):
-                name = ''.join(random.choice(string.ascii_uppercase +
-                                             string.ascii_lowercase +
-                                             string.digits))
+            name = ''.join(random.choice(string.ascii_uppercase +
+                                         string.ascii_lowercase +
+                                         string.digits) for _ in range(5))
         for item in list(self.keys()):
-            temp = self.pop(item)
-            temp._parent = network
-            new_name = temp.name + '_' + name
-            temp.name = new_name
-            self[temp.name] = temp
+            self[item]._parent = network
+            self[item].name = self[item].name + '_' + name
         # Add parent Network numbering to clone
         net['pore.' + network.name] = network.Ps
         net['throat.' + network.name] = network.Ts

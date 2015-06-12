@@ -103,19 +103,6 @@ class InvasionPercolationForImbibition(InvasionPercolationTimed):
             IP_inv_seq      : 0 for uninvaded, simulation step for invaded
             IP_inv_time     : 0 for uninvaded, simulation time for invaded
 
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
-        >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
-        >>> phase1['pore.contact_angle'] = 20
-        >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
-        >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
-        >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
-        >>> from OpenPNM.Algorithms.__InvasionPercolationForImbibition__ import InvasionPercolationForImbibition
-        >>> IP = InvasionPercolationForImbibition(network=pn)
-
         Suggested Improvements ::
 
             a) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).

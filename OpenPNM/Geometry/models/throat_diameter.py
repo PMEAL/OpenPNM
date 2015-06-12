@@ -9,7 +9,6 @@ import numpy as np
 
 import OpenPNM.Utilities.transformations as tr
 from scipy.spatial import ConvexHull
-import time
 
 
 def cylinder(geometry, tsd_name, tsd_shape, tsd_loc, tsd_scale,

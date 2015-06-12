@@ -67,18 +67,18 @@ class Core(dict):
         100
 
         """
-        #Enforce correct dict naming
+        # Enforce correct dict naming
         element = key.split('.')[0]
         if (element != 'pore') and (element != 'throat'):
-            print('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
+            logger.error('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
             return
-        #Convert value to an ndarray
+        # Convert value to an ndarray
         value = sp.array(value,ndmin=1)
         #Skip checks for 'coords', 'conns'
         if (key == 'pore.coords') or (key == 'throat.conns'):
             super(Core, self).__setitem__(key,value)
             return
-        #Skip checks for protected props, and prevent changes if defined
+        # Skip checks for protected props, and prevent changes if defined
         if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
@@ -86,12 +86,12 @@ class Core(dict):
                     super(Core, self).__setitem__(key,value)
                 else:
                     logger.warning(key+' is already defined.')
-                    pass
+                    return
             else:
                 logger.debug(key+' is being defined.')
                 super(Core, self).__setitem__(key,value)
             return
-        #Write value to dictionary
+        # Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
             logger.debug('Broadcasting scalar value into vector: '+key)
             value = sp.ones((self._count(element),),dtype=value.dtype)*value
@@ -396,7 +396,6 @@ class Core(dict):
             if element == '': temp = constants
             else: temp = [item for item in constants if item.split('.')[0]==element]
         a = Tools.PrintableList(temp)
-        # a.sort()
         return a
 
 
@@ -448,7 +447,7 @@ class Core(dict):
                     temp[i] = list(labels[arr[i,:]])
                 return temp
             else:
-                print('unrecognized mode')
+                logger.error('unrecognized mode:'+mode)
 
     def labels(self,element='',pores=[],throats=[],mode='union'):
         r"""
@@ -458,7 +457,12 @@ class Core(dict):
         ----------
         pores (or throats) : array_like
             The pores (or throats) whose labels are sought.  If left empty a
-            dictionary containing all pore and throat labels is returned.
+            list containing all pore and throat labels is returned.
+
+        element : string
+            Controls whether pore or throat labels are returned.  If empty then
+            both are returned.
+
         mode : string, optional
             Controls how the query should be performed
 
@@ -1472,36 +1476,42 @@ class Core(dict):
         return health
 
     def __str__(self):
-        horizonal_rule = '-'*60
-        lines  = [horizonal_rule]
-        lines += [self.__module__.replace('__','')+': \t'+self.name]
-        lines += [horizonal_rule]
-        lines += ["{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Properties', c='Valid Values')]
-        lines += [horizonal_rule]
-        count = 0
+        horizonal_rule = '-' * 60
+        lines = [horizonal_rule]
+        lines.append(self.__module__.replace('__', '') + ': \t' + self.name)
+        lines.append(horizonal_rule)
+        lines.append("{0:<5s} {1:<35s} {2:<10s}".format('#',
+                                                        'Properties',
+                                                        'Valid Values'))
+        lines.append(horizonal_rule)
         props = self.props()
         props.sort()
-        for item in props:
+        for i, item in enumerate(props):
             if self[item].dtype != object:
-                count = count + 1
-                prop=item
-                if len(prop)>35:
-                    prop = prop[0:32]+'...'
+                prop = item
+                if len(prop) > 35:
+                    prop = prop[0:32] + '...'
                 required = self._count(item.split('.')[0])
                 a = sp.isnan(self[item])
-                defined = sp.shape(self[item])[0] - a.sum(axis=0,keepdims=(a.ndim-1)==0)[0]
-                lines += ["{a:<5d} {b:<35s} {c:>5d} / {d:<5d}".format(a=count, b=prop, c=defined, d=required)]
-        lines += [horizonal_rule]
-        lines += ["{a:<5s} {b:<35s} {c:<10s}".format(a='#', b='Labels', c='Assigned Locations')]
-        lines += [horizonal_rule]
-        count = 0
+                defined = sp.shape(self[item])[0] - a.sum(axis=0,
+                                                          keepdims=(a.ndim-1)==0)[0]
+                lines.append("{0:<5d} {1:<35s} {2:>5d} / {3:<5d}".format(i + 1,
+                                                                         prop,
+                                                                         defined,
+                                                                         required))
+        lines.append(horizonal_rule)
+        lines.append("{0:<5s} {1:<35s} {2:<10s}".format('#',
+                                                        'Labels',
+                                                        'Assigned Locations'))
+        lines.append(horizonal_rule)
         labels = self.labels()
         labels.sort()
-        for item in labels:
-            count = count + 1
-            prop=item
+        for i, item in enumerate(labels):
+            prop = item
             if len(prop)>35:
-                prop = prop[0:32]+'...'
-            lines += ["{a:<5d} {b:<35s} {c:<10d}".format(a=count, b=prop, c=sp.sum(self[item]))]
-        lines += [horizonal_rule]
+                prop = prop[0:32] + '...'
+            lines.append("{0:<5d} {1:<35s} {2:<10d}".format(i + 1,
+                                                            prop,
+                                                            sp.sum(self[item])))
+        lines.append(horizonal_rule)
         return '\n'.join(lines)

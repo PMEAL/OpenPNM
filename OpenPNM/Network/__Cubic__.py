@@ -127,7 +127,7 @@ class Cubic(GenericNetwork):
         elif connectivity == 8:
             joints = corner_joints
         elif connectivity == 12:
-            joints = corner_joints
+            joints = edge_joints
         elif connectivity == 14:
             joints = face_joints + corner_joints
         elif connectivity == 18:
