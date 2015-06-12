@@ -1,4 +1,5 @@
-import OpenPNM, os
+import OpenPNM
+import os
 from OpenPNM.Base import Controller
 
 
