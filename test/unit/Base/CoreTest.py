@@ -409,3 +409,17 @@ class CoreTest:
     def test_geometry_lookup_by_name(self):
         a = self.net1.geometries(self.geo1.name)
         assert a == [self.geo1]
+
+    def test_set_locations_overlapping(self):
+        temp = self.net1.geometries()
+        try:
+            self.geo2 = OpenPNM.Geometry.GenericGeometry(network=self.net1,
+                                                         pores=[0, 1, 2])
+        except:
+            pass
+        assert self.net1.geometries() == temp
+
+    def test_set_locations_remove_pores(self):
+        Np = self.geo1.Np
+        self.geo1.set_locations(pores=self.net1.pores('top'), mode='remove')
+        assert Np > self.geo1.Np
