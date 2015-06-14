@@ -543,12 +543,14 @@ class Core(dict):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.filter_by_label(pores=[0,1,5,6],labels='left')
+        >>> pn.filter_by_label(pores=[0,1,5,6], labels='left')
         array([0, 1])
-        >>> Ps = pn.pores(['top','bottom','front'],mode='union')
-        >>> pn.filter_by_label(pores=Ps,labels=['top','front'],mode='intersection')
+        >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='union')
+        >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
+        if labels == '':  # Handle empty labels
+            labels = 'all'
         if type(labels) == str:  # Convert input to list
             labels = [labels]
         # Convert inputs to locations and element
@@ -560,8 +562,8 @@ class Core(dict):
             locations = sp.array(throats)
         # Do it
         labels = [element+'.'+item.split('.')[-1] for item in labels]
-        all_locs = self._get_indices(element=element,labels=labels,mode=mode)
-        mask = self._tomask(locations=all_locs,element=element)
+        all_locs = self._get_indices(element=element, labels=labels, mode=mode)
+        mask = self._tomask(locations=all_locs, element=element)
         ind = mask[locations]
         return locations[ind]
 

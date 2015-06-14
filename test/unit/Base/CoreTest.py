@@ -18,6 +18,18 @@ class CoreTest:
         self.geo['throat.label2'] = False
         self.geo['throat.label1'][0:6] = True
         self.geo['throat.label2'][3:9] = True
+        self.net1 = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        self.geo1 = OpenPNM.Geometry.GenericGeometry(network=self.net1,
+                                                     pores=self.net1.Ps,
+                                                     throats=self.net1.Ts)
+        self.phase1 = OpenPNM.Phases.GenericPhase(network=self.net1)
+        self.phase2 = OpenPNM.Phases.GenericPhase(network=self.net1)
+        self.phys1 = OpenPNM.Physics.GenericPhysics(network=self.net1,
+                                                    geometry=self.geo1,
+                                                    phase=self.phase1)
+        self.phys2 = OpenPNM.Physics.GenericPhysics(network=self.net1,
+                                                    geometry=self.geo1,
+                                                    phase=self.phase2)
 
     def test_props_all(self):
         a = self.geo.props()
@@ -179,6 +191,63 @@ class CoreTest:
                              mode='not_intersection')
         assert sp.all(a == [0, 1, 2, 6, 7, 8])
 
+    def test_filter_by_label_pores_no_label(self):
+        Ps = self.net.pores(['top', 'bottom', 'front'])
+        a = self.net.filter_by_label(pores=Ps)
+        assert sp.all(a == Ps.tolist())
+
+    def test_filter_by_label_pores_one_label_as_string(self):
+        Ps = self.net.pores(['top', 'bottom', 'front'])
+        a = self.net.filter_by_label(pores=Ps, labels='top')
+        b = [2, 5, 8, 11, 14, 17, 20, 23, 26]
+        assert sp.all(a == b)
+
+    def test_filter_by_label_pores_one_label_as_list(self):
+        Ps = self.net.pores(['top', 'bottom', 'front'])
+        a = self.net.filter_by_label(pores=Ps, labels=['top'])
+        b = [2, 5, 8, 11, 14, 17, 20, 23, 26]
+        assert sp.all(a == b)
+
+    def test_filter_by_label_pores_two_labels_union(self):
+        Ps = self.net.pores(['top', 'bottom', 'front'])
+        a = self.net.filter_by_label(pores=Ps,
+                                     labels=['top', 'bottom'],
+                                     mode='union')
+        b = [0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26]
+        assert sp.all(a == b)
+
+    def test_filter_by_label_pores_two_labels_intersection(self):
+        Ps = self.net.pores(['top', 'bottom', 'front'])
+        a = self.net.filter_by_label(pores=Ps,
+                                     labels=['top', 'front'],
+                                     mode='intersection')
+        b = [2, 5, 8]
+        assert sp.all(a == b)
+
+    def test_filter_by_label_pores_two_labels_intersection_empty(self):
+        Ps = self.net.pores(['top', 'bottom', 'front'])
+        a = self.net.filter_by_label(pores=Ps,
+                                     labels=['top', 'bottom'],
+                                     mode='intersection')
+        b = []
+        assert sp.all(a == b)
+
+    def test_filter_by_label_pores_two_labels_not_intersection(self):
+        Ps = self.net.pores(['top', 'bottom', 'front'])
+        a = self.net.filter_by_label(pores=Ps,
+                                     labels=['top', 'front'],
+                                     mode='not_intersection')
+        b = [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26]
+        assert sp.all(a == b)
+
+    def test_filter_by_label_pores_two_labels_not(self):
+        Ps = self.net.pores(['top', 'bottom', 'front'])
+        a = self.net.filter_by_label(pores=Ps,
+                                     labels=['top', 'front'],
+                                     mode='not')
+        b = [9, 12, 15, 18, 21, 24]
+        assert sp.all(a == b)
+
     def test_tomask_pores(self):
         a = self.net.tomask(pores=self.net.pores('top'))
         assert sp.sum(a) == 9
@@ -200,6 +269,16 @@ class CoreTest:
         mask[Ts] = True
         a = self.net.toindices(mask)
         assert sp.all(a == Ts)
+
+    def test_toindices_wrong_mask(self):
+        mask = sp.zeros((self.net.Nt)-2, dtype=bool)
+        mask[[0, 3, 6]] = True
+        a = None
+        try:
+            a = self.net.toindices(mask)
+        except:
+            pass
+        assert a is None
 
     def test_num_pores(self):
         a = self.net.num_pores()
@@ -310,3 +389,23 @@ class CoreTest:
         assert sp.all(a == [6, 7, 8, 15, 16, 17, 24, 25, 26])
         b = self.net._get_indices(element='pore', labels='*ght')
         assert sp.all(a == b)
+
+    def test_object_rename(self):
+        self.geo1.name = 'new_name'
+        assert self.geo1.name == 'new_name'
+
+    def test_object_duplicate_name(self):
+        temp = self.geo1.name
+        try:
+            self.geo1.name = self.net1.name
+        except:
+            pass
+        assert self.geo1.name == temp
+
+    def test_geometry_lookup_all(self):
+        a = self.net1.geometries()
+        assert a == [self.geo1.name]
+
+    def test_geometry_lookup_by_name(self):
+        a = self.net1.geometries(self.geo1.name)
+        assert a == [self.geo1]
