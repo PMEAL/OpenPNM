@@ -33,6 +33,7 @@ class OrdinaryPercolation2(GenericAlgorithm):
               inv_phase,
               p_inlets=[],
               p_outlets=[],
+              p_residual=[],
               t_entry='throat.capillary_pressure'):
         r"""
         inv_phase : OpenPNM Phase Object
@@ -61,7 +62,8 @@ class OrdinaryPercolation2(GenericAlgorithm):
         if sp.size(p_inlets) > 0:
             if p_inlets.dtype == bool:
                 p_inlets = self._net.Ps[p_inlets]
-            self['pore.inlets'] = p_inlets
+            self['pore.inlets'] = False
+            self['pore.inlets'][p_inlets] = True
 
         p_outlets = sp.array(p_outlets)
         if sp.size(p_outlets) > 0:
@@ -71,8 +73,7 @@ class OrdinaryPercolation2(GenericAlgorithm):
 
         self['throat.entry_pressure'] = inv_phase[t_entry]
 
-    def run(self, npts=25, inv_points=None, access_limited=True,
-            trapping=False, **kwargs):
+    def run(self, npts=25, inv_points=None, access_limited=True):
         r"""
         Parameters
         ----------
@@ -85,27 +86,23 @@ class OrdinaryPercolation2(GenericAlgorithm):
             A list of specific pressure point(s) to apply.
 
         """
+        self._AL = access_limited
         if inv_points is None:
             logger.info('Generating list of invasion pressures')
-            min_p = sp.amin(self['throat.entry']) * 0.98  # nudge down slightly
-            max_p = sp.amax(self['throat.entry']) * 1.02  # bump up slightly
-            self._inv_points = sp.logspace(sp.log10(min_p),
-                                           sp.log10(max_p),
-                                           self._npts)
-        else:
-            self._inv_points = inv_points
+            min_p = sp.amin(self['throat.entry_pressure']) * 0.98  # nudge down
+            max_p = sp.amax(self['throat.entry_pressure']) * 1.02  # bump up
+            inv_points = sp.logspace(sp.log10(min_p),
+                                     sp.log10(max_p),
+                                     npts)
         # Execute calculation
-        self._do_outer_iteration_stage()
+        self._do_outer_iteration_stage(inv_points)
 
-    def _do_outer_iteration_stage(self):
+    def _do_outer_iteration_stage(self, inv_points):
         # Generate curve from points
-        for inv_val in self._inv_points:
+        for inv_val in inv_points:
             # Apply one applied pressure and determine invaded pores
             logger.info('Applying capillary pressure: ' + str(inv_val))
             self._do_one_inner_iteration(inv_val)
-        # Store results using networks' get/set method
-        self['pore.inv_Pc'] = self._p_inv
-        self['throat.inv_Pc'] = self._t_inv
         # Find invasion sequence values (to correspond with IP algorithm)
         self._p_seq = sp.searchsorted(sp.unique(self._p_inv), self._p_inv)
         self._t_seq = sp.searchsorted(sp.unique(self._t_inv), self._t_inv)
@@ -128,41 +125,31 @@ class OrdinaryPercolation2(GenericAlgorithm):
 
     def _do_one_inner_iteration(self, inv_val):
         r"""
-        Determine which throats are invaded at a given applied capillary pressure.
-
-        This function uses the scipy.csgraph module for the cluster labeling
-        algorithm (connected_components).
+        Determine which throats are invaded at a given applied capillary
+        pressure.
 
         """
         # Generate a tlist containing boolean values for throat state
         Tinvaded = self['throat.entry_pressure'] <= inv_val
         # Find all pores that can be invaded at specified pressure
-        clusters = self._net.find_clusters(Tinvaded)
-        # Find all pores with at least 1 invaded throat (invaded)
-        Pinvaded = sp.zeros_like(clusters, dtype=bool)
-        Ts = self._net.throats()
-        P12 = self._net.find_connected_pores(Ts)
-        temp = P12[Tinvaded]
-        temp = sp.hstack((temp[:, 0], temp[:, 1]))
-        Pinvaded[temp] = True
+        clusters = self._net.find_clusters2(Tinvaded)
+        temp = sp.unique(clusters)
+        compressed_labels = {temp[i]: i for i in range(0, len(temp))}
+        clusters = [compressed_labels[clusters[i]]
+                    for i in range(0, len(clusters))]
+        clusters = sp.array(clusters)
         if self._AL:
-            # Add injection sites to Pinvaded
-            Pinvaded[self._inv_sites] = True
-            # Clean up clusters (not invaded = -1, invaded >=0)
-            clusters = clusters * (Pinvaded) - (~Pinvaded)
             # Identify clusters connected to invasion sites
-            inv_clusters = sp.unique(clusters[self._inv_sites])
+            inv_clusters = sp.unique(clusters[self['pore.inlets']])
         else:
-            # Clean up clusters (not invaded = -1, invaded >=0)
-            clusters = clusters * (Pinvaded) - (~Pinvaded)
             # All clusters are invasion sites
-            inv_clusters = sp.r_[0:self._net.num_pores()]
+            inv_clusters = clusters
         # Store invasion pressure in pores and throats
         pmask = np.in1d(clusters, inv_clusters)
         # Store result of invasion step
-        self._p_inv[(self._p_inv == sp.inf) * (pmask)] = inv_val
+        self['pore.invaded'][(self['pore.invaded'] == sp.inf) * (pmask)] = inv_val
         # Determine Pc_invaded for throats as well
-        temp = self._net['throat.conns']
+        temp = self._net['throat.conns'].copy()
         tmask = (pmask[temp[:, 0]] + pmask[temp[:, 1]]) * Tinvaded
         self._t_inv[(self._t_inv == sp.inf) * (tmask)] = inv_val
 
