@@ -10,35 +10,13 @@ from OpenPNM.Utilities import vertexops as vo
 from scipy.spatial import ConvexHull
 
 
-def voronoi(geometry, **kwargs):
-    r"""
-    Calculate the geometrical centroid of the throat from the voronoi vertices.
-    """
-    verts = geometry['throat.vertices']
-    offset_verts = geometry['throat.offset_vertices']
-    value = _sp.ndarray([len(verts), 3])
-    for i in range(len(verts)):
-        if len(offset_verts[i]) > 2:
-            value[i] = _sp.array([offset_verts[i][:, 0].mean(),
-                                  offset_verts[i][:, 1].mean(),
-                                  offset_verts[i][:, 2].mean()])
-        elif len(verts[i]) > 2:
-            value[i] = _sp.array([verts[i][:, 0].mean(),
-                                  verts[i][:, 1].mean(),
-                                  verts[i][:, 2].mean()])
-        else:
-            value[i] = _sp.array([0, 0, 0])
-
-    return value
-
-
-def centre_of_mass(geometry, **kwargs):
+def centre_of_mass(geometry,vertices='throat.offset_vertices',**kwargs):
     r"""
     Calculate the centre of mass of the throat from the voronoi vertices.
     """
     Nt = geometry.num_throats()
     outer_verts = geometry['throat.vertices']
-    offset_verts = geometry['throat.offset_vertices']
+    offset_verts = geometry[vertices]
     normal = geometry['throat.normal']
     z_axis = [0, 0, 1]
     value = _sp.ndarray([Nt, 3])

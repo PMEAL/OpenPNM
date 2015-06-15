@@ -78,11 +78,13 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='pore.centroid',
                         model=gm.pore_centroid.voronoi)
         self.models.add(propname='pore.diameter',
-                        model=gm.pore_diameter.voronoi)
+                        model=gm.pore_diameter.equivalent_sphere)
+        self.models.add(propname='pore.indiameter',
+                        model=gm.pore_diameter.centroids)
         self.models.add(propname='pore.area',
                         model=gm.pore_area.spherical)
         self.models.add(propname='throat.diameter',
-                        model=gm.throat_diameter.voronoi)
+                        model=gm.throat_diameter.equivalent_circle)
         self.models.add(propname='throat.length',
                         model=gm.throat_length.constant,
                         const=self._fibre_rad*2)
@@ -193,8 +195,8 @@ class Voronoi(GenericGeometry):
 
         return slice_image
 
-    def plot_fibre_slice(self, plane=None, index=None):
-        r'''
+    def plot_fibre_slice(self, plane=None, index=None, fig=None):
+        r"""
         Plot one slice from the fibre image
 
         Parameters
@@ -206,21 +208,24 @@ class Voronoi(GenericGeometry):
 
         index : array_like
         similar to plane but instead of the fraction an index of the image is used
-        '''
+        """
         if hasattr(self, '_fibre_image') == False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
         slice_image = self.get_fibre_slice(plane, index)
         if slice_image is not None:
-            plt.figure()
+            if fig is None:
+                plt.figure()
             plt.imshow(slice_image, cmap='Greys', interpolation='nearest')
+            
+        return fig
 
-    def plot_porosity_profile(self):
-        r'''
+    def plot_porosity_profile(self, fig=None):
+        r"""
         Return a porosity profile in all orthogonal directions by summing
         the voxel volumes in consectutive slices.
-        '''
+        """
         if hasattr(self, '_fibre_image') == False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
@@ -242,20 +247,22 @@ class Voronoi(GenericGeometry):
             pz[z] = sp.sum(self._fibre_image[:, :, z])
             pz[z] /= sp.size(self._fibre_image[:, :, z])
 
-        fig = plt.figure()
+        if fig is None:
+            fig = plt.figure()
         ax = fig.gca()
         plots = []
-        plots.append(plt.plot(sp.arange(l[0])/l[0], px,'r', label='x'))
-        plots.append(plt.plot(sp.arange(l[1])/l[1], py,'g', label='y'))
-        plots.append(plt.plot(sp.arange(l[2])/l[2], pz,'b', label='z'))
+        plots.append(plt.plot(sp.arange(l[0])/l[0], px, 'r', label='x'))
+        plots.append(plt.plot(sp.arange(l[1])/l[1], py, 'g', label='y'))
+        plots.append(plt.plot(sp.arange(l[2])/l[2], pz, 'b', label='z'))
         plt.xlabel('Normalized Distance')
         plt.ylabel('Porosity')
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels, loc=1)
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        return fig
 
     def compress_geometry(self, factor=None, preserve_fibres=False):
-        r'''
+        r"""
         Adjust the vertices and recalculate geometry. Save fibre voxels before
         and after then put them back into the image to preserve fibre volume.
         Shape will not be conserved. Also make adjustments to the pore and throat
@@ -272,7 +279,7 @@ class Voronoi(GenericGeometry):
         preserve_fibres : boolean
         If the fibre image has been generated and used to calculate pore volumes
         then preserve fibre volume artificially by adjusting pore and throat sizes
-        '''
+        """
         if factor is None:
             logger.warning('Please supply a compression factor in the form ' +
                            '[1,1,CR], with CR < 1')
