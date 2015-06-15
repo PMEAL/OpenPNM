@@ -43,8 +43,10 @@ class OrdinaryPercolation(GenericAlgorithm):
     ...                                     throats=pn.throats())
     >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
     >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
-    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,
-    ...                                     pores=pn.pores(), throats=pn.throats())
+    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn,
+    ...                                     phase=phase1,
+    ...                                     pores=pn.pores(),
+    ...                                     throats=pn.throats())
     >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,
     ...                                     pores=pn.pores(), throats=pn.throats())
     >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,
@@ -69,7 +71,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         logger.debug('Create Drainage Percolation Algorithm Object')
 
-    def run(self, inlets, npts=25, inv_points=None,
+    def run(self, inlets, outlets=[], npts=25, inv_points=None,
             capillary_pressure='capillary_pressure', access_limited=True,
             trapping=False, **kwargs):
         r"""
@@ -103,6 +105,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         self._inv_sites = inlets
+        self._out_sites = outlets
         self._npts = npts
         self._p_cap = capillary_pressure  # Name of throat entry pressure prop
         self._AL = access_limited
@@ -172,6 +175,9 @@ class OrdinaryPercolation(GenericAlgorithm):
             sat += new_sat
             self['pore.inv_sat'][inv_pores] = sat
             self['throat.inv_sat'][inv_throats] = sat
+        if self._TR:
+            logger.info('Evaluating trapping')
+            self.evaluate_trapping(outlets=self._out_sites)
 
     def _do_one_inner_iteration(self, inv_val):
         r"""
