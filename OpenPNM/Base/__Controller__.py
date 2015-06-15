@@ -468,6 +468,16 @@ class Controller(dict):
         associated objects.  All objects in the cloned simulation are
         registered with the Controller object and are fully functional.
 
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The Network object that is to be cloned.  Because a Network has
+            handles to ALL associated objects it acts as the representative
+            for the entire simulation.
+
+        name : string
+            This string will be appended to the name of all cloned objects.
+
         Returns
         -------
         A handle to the new Network object, which will include handles to
@@ -480,33 +490,55 @@ class Controller(dict):
         Notes
         -----
         One useful application of this method is to create a cloned simulation
-        that can be trimmed to a smaller size.  This small simulation will
+        that can be trimmed to a smaller size.  This smaller simulation will
         result in much faster Algorithms calculations.
 
         Examples
         --------
-        None yet
+        >>> import OpenPNM
+        >>> ctrl = OpenPNM.Base.Controller()
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn2 = ctrl.clone_simulation(pn, name='cloned')
+        >>> pn2 is pn
+        False
         """
         if network._parent is not None:
             logger.error('Cannot clone a network that is already a clone')
             return
+        if name is None:
+            name = ''.join(random.choice(string.ascii_uppercase +
+                                         string.ascii_lowercase +
+                                         string.digits) for _ in range(5))
+        if self._validate_name(network.name + '_' + name) is False:
+            logger.error('The provided name is already in use')
+            return
+
         bak = {}
         bak.update(self)
         self.clear()
         net = _copy.deepcopy(network)
         self.update(net)
-        if name is None:
-            name = ''.join(random.choice(string.ascii_uppercase +
-                                         string.ascii_lowercase +
-                                         string.digits) for _ in range(5))
+
+        # Add supplied name suffix to all cloned objects
         for item in list(self.keys()):
             self[item]._parent = network
             self[item].name = self[item].name + '_' + name
+
         # Add parent Network numbering to clone
         net['pore.' + network.name] = network.Ps
         net['throat.' + network.name] = network.Ts
         self.update(bak)
         return net
+
+    def _validate_name(self, name):
+        valid_name = True
+        for item_name in list(self.keys()):
+            if name == item_name:
+                return False
+            for array_name in list(self[item_name].keys()):
+                if name == array_name.split('.')[1]:
+                    return False
+        return valid_name
 
     def export_topology(self, network, filename='topo.p'):
         r"""
