@@ -104,6 +104,3 @@ class GenericPhysics(OpenPNM.Base.Core):
         if len(throats) > 0:
             throats = sp.array(throats, ndmin=1)
             self._set_locations(element='throat', locations=throats, mode=mode)
-
-if __name__ == '__main__':
-    print('none yet')
