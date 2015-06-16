@@ -98,7 +98,7 @@ def centroids(network, geometry, **kwargs):
     pore_map = geometry.map_pores(target=network,
                                   pores=geometry.pores(),
                                   return_mapping=True)
-    
+
     for i, net_pore in enumerate(pore_map['target']):
         geom_pore = pore_map['source'][i]
         net_throats = geometry._net.find_neighbor_throats(net_pore)

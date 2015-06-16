@@ -1,8 +1,6 @@
 import OpenPNM
 import scipy as sp
 import matplotlib.pyplot as plt
-from OpenPNM.Geometry import models as gm
-import OpenPNM.Utilities.misc as misc
 import OpenPNM.Utilities.vertexops as vo
 
 
@@ -27,36 +25,36 @@ class VertexOpsTest:
                                             fibre_rad=self.fibre_rad,
                                             voxel_vol=False,
                                             name='vor')
-                                            
+                
     def test_scale(self):
-        factor = [1,1,0.5]
+        factor = [1, 1, 0.5]
         vo.scale(network=self.net,
                  scale_factor=factor,
                  linear_scaling=[True, False, False],
                  preserve_vol=False)
-    
+
     def test_print_throat(self):
         fig = plt.figure()
-        vo.print_throat(self.geo,[0],fig)
+        vo.print_throat(self.geo, [0], fig)
         del fig
-    
+
     def test_print_pore(self):
         fig = plt.figure()
-        vo.print_throat(self.geo,[0],fig)
+        vo.print_throat(self.geo, [0], fig)
         del fig
-    
+
     def test_porosity(self):
         por = vo.porosity(self.net)
         assert por < 1.0
-        
+
     def test_tortuosity(self):
         tor = vo.tortuosity(self.net)
         assert sp.all(tor > 1.0)
-        
+
     def test_pore2centroid(self):
         temp_coords = self.net['pore.coords']
-        self.geo['pore.centroid'] = sp.ones([self.geo.num_pores(),3])
+        self.geo['pore.centroid'] = sp.ones([self.geo.num_pores(), 3])
         vo.pore2centroid(self.net)
-        assert sp.sum(self.net['pore.coords']
-                      - sp.ones([self.geo.num_pores(),3])) == 0.0
+        assert sp.sum(self.net['pore.coords'] -
+                      sp.ones([self.geo.num_pores(), 3])) == 0.0
         self.net['pore.coords'] = temp_coords

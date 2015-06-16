@@ -10,7 +10,7 @@ from OpenPNM.Utilities import vertexops as vo
 from scipy.spatial import ConvexHull
 
 
-def centre_of_mass(geometry,vertices='throat.offset_vertices',**kwargs):
+def centre_of_mass(geometry, vertices='throat.offset_vertices', **kwargs):
     r"""
     Calculate the centre of mass of the throat from the voronoi vertices.
     """

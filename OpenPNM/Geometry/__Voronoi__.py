@@ -218,7 +218,7 @@ class Voronoi(GenericGeometry):
             if fig is None:
                 plt.figure()
             plt.imshow(slice_image, cmap='Greys', interpolation='nearest')
-            
+
         return fig
 
     def plot_porosity_profile(self, fig=None):

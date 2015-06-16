@@ -53,51 +53,51 @@ class VoronoiTest:
         self.geo_vox.compress_geometry(factor=[1, 1, 0.5])
         height2 = self.net.domain_length(b1, b2)
         assert sp.around(height1/height2, 5) == 2.0
-    
+
     def test_plot_porosity_profile(self):
         fig = plt.figure()
         self.geo_vox.plot_porosity_profile(fig)
         del fig
-    
+
     def test_plot_fibre_slice(self):
         fig = plt.figure()
         self.geo_vox.plot_fibre_slice(fig)
         del fig
-    
+
     def test_export_fibre_image(self):
         self.geo_vox.export_fibre_image(mat_file='OpenPNMFibres')
-    
+
     def test_make_fibre_image(self):
         del(self.geo_vox._fibre_image)
         self.geo_vox.make_fibre_image()
-        assert hasattr(self.geo_vox,'_fibre_image') == True
-    
+        assert hasattr(self.geo_vox, '_fibre_image') == True
+
     def test_voronoi_vert(self):
         self.ctrl.purge_object(self.geo_vox)
         fibre_rad = 5e-6
         Ps = self.net.pores()
         Ts = self.net.throats()
         self.geo_vert = OpenPNM.Geometry.Voronoi(network=self.net,
-                                                pores=Ps,
-                                                throats=Ts,
-                                                fibre_rad=fibre_rad,
-                                                voxel_vol=False,
-                                                name='vor_vert')
-        self.geo_vert.models.add(propname = 'throat.area2',
+                                                 pores=Ps,
+                                                 throats=Ts,
+                                                 fibre_rad=fibre_rad,
+                                                 voxel_vol=False,
+                                                 name='vor_vert')
+        self.geo_vert.models.add(propname='throat.area2',
                                  model=gm.throat_area.voronoi)
-        assert sp.all(sp.absolute(1 - self.geo_vert["throat.area2"]/
+        assert sp.all(sp.absolute(1 - self.geo_vert["throat.area2"] /
                                   self.geo_vert['throat.area']) < 0.05)
-        self.geo_vert.models.add(propname = 'throat.centroid2',
+        self.geo_vert.models.add(propname='throat.centroid2',
                                  model=gm.throat_centroid.centre_of_mass)
-        assert sp.absolute(sp.sum(self.geo_vert['throat.centroid']-
+        assert sp.absolute(sp.sum(self.geo_vert['throat.centroid'] -
                                   self.geo_vert['throat.centroid2'])) < 1e-10
-        self.geo_vert.models.add(propname = 'throat.perimeter2',
+        self.geo_vert.models.add(propname='throat.perimeter2',
                                  model=gm.throat_perimeter.voronoi)
-        assert sp.all(sp.absolute(1 - self.geo_vert['throat.perimeter2']/
+        assert sp.all(sp.absolute(1 - self.geo_vert['throat.perimeter2'] /
                                   self.geo_vert['throat.perimeter']) < 0.05)
-        self.geo_vert.models.add(propname = 'throat.length2',
+        self.geo_vert.models.add(propname='throat.length2',
                                  model=gm.throat_length.voronoi)
-        cond_lengths = sp.sum(misc.conduit_lengths(network = self.net,
-                                                   mode='centroid'),axis=1)
-        assert sp.all(sp.absolute(1 - cond_lengths/
+        cond_lengths = sp.sum(misc.conduit_lengths(network=self.net,
+                                                   mode='centroid'), axis=1)
+        assert sp.all(sp.absolute(1 - cond_lengths /
                       self.geo_vert['throat.length2']) < 0.05)
