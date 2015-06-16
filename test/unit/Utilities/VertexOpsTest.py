@@ -25,7 +25,7 @@ class VertexOpsTest:
                                             fibre_rad=self.fibre_rad,
                                             voxel_vol=False,
                                             name='vor')
-                
+
     def test_scale(self):
         factor = [1, 1, 0.5]
         vo.scale(network=self.net,

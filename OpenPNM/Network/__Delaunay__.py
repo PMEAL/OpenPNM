@@ -212,27 +212,6 @@ class Delaunay(GenericNetwork):
         self['throat.vert_index'] = throat_verts
         logger.debug(sys._getframe().f_code.co_name + ': End of method')
 
-    def domain_size(self, dimension=''):
-        r"""
-        This is a simple way to find the domain sizes.
-        N.B
-        Will not work with saved and loaded networks
-        """
-        if dimension == 'front' or dimension == 'back':
-            return self._Ly*self._Lz
-        if dimension == 'left' or dimension == 'right':
-            return self._Lx*self._Lz
-        if dimension == 'top' or dimension == 'bottom':
-            return self._Lx*self._Ly
-        if dimension == 'volume':
-            return self._Lx*self._Ly*self._Lz
-        if dimension == 'height':
-            return self._Lz
-        if dimension == 'width':
-            return self._Lx
-        if dimension == 'depth':
-            return self._Ly
-
     def add_boundaries(self):
 
         r"""
@@ -358,16 +337,6 @@ class Delaunay(GenericNetwork):
         r"""
         Returns the distance between two faces
         No coplanar checking this is done in vertex_dimension
-
-        Example
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1])
-        >>> pn.add_boundaries()
-        >>> B1 = pn.pores('left_boundary')
-        >>> B2 = pn.pores('right_boundary')
-        >>> pn.domain_length(B1,B2)
-        2.0
         """
         L = vo.vertex_dimension(self, face_1, face_2, parm='length')
         return L
@@ -376,15 +345,6 @@ class Delaunay(GenericNetwork):
         r"""
         Returns the area of a face
         No coplanar checking this is done in vertex_dimension
-        Example
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1])
-        >>> pn.add_boundaries()
-        >>> B1 = pn.pores('left_boundary')
-        >>> B2 = pn.pores('right_boundary')
-        >>> pn.domain_area(B1)
-        3.0
         """
         A = vo.vertex_dimension(self, face, parm='area')
 

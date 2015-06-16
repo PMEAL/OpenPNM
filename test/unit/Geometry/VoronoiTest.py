@@ -2,7 +2,7 @@ import OpenPNM
 import scipy as sp
 import matplotlib.pyplot as plt
 from OpenPNM.Geometry import models as gm
-import OpenPNM.Utilities.misc as misc
+import os
 
 
 class VoronoiTest:
@@ -64,9 +64,6 @@ class VoronoiTest:
         self.geo_vox.plot_fibre_slice(fig)
         del fig
 
-    def test_export_fibre_image(self):
-        self.geo_vox.export_fibre_image(mat_file='OpenPNMFibres')
-
     def test_make_fibre_image(self):
         del(self.geo_vox._fibre_image)
         self.geo_vox.make_fibre_image()
@@ -95,9 +92,3 @@ class VoronoiTest:
                                  model=gm.throat_perimeter.voronoi)
         assert sp.all(sp.absolute(1 - self.geo_vert['throat.perimeter2'] /
                                   self.geo_vert['throat.perimeter']) < 0.05)
-        self.geo_vert.models.add(propname='throat.length2',
-                                 model=gm.throat_length.voronoi)
-        cond_lengths = sp.sum(misc.conduit_lengths(network=self.net,
-                                                   mode='centroid'), axis=1)
-        assert sp.all(sp.absolute(1 - cond_lengths /
-                      self.geo_vert['throat.length2']) < 0.05)

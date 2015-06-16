@@ -93,7 +93,7 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.extrusion)
         self.models.add(propname='throat.c2c',
-                        model=gm.throat_length.voronoi)
+                        model=gm.throat_length.c2c)
 
     def make_fibre_image(self, fibre_rad=None, vox_len=1e-6):
         r"""

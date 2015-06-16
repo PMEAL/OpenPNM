@@ -540,17 +540,5 @@ class Controller(dict):
                     return False
         return valid_name
 
-    def export_topology(self, network, filename='topo.p'):
-        r"""
-        Just dump the coords, conns and diameters of pores and throats
-        """
-        import pickle as pickle
-        data = {}
-        data["coords"] = network["pore.coords"]
-        data["conns"] = network["throat.conns"][network.throats('boundary',mode='not')]
-        data["p_diam"] = network["pore.diameter"]
-        data["t_diam"] = network["throat.diameter"]
-        pickle.dump(data, open(filename, "wb"))
-
 if __name__ == '__main__':
     ctrl = Controller()

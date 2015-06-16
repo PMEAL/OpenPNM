@@ -27,6 +27,19 @@ class DelaunayCubic(Delaunay):
     name : string
         A unique name for the network
 
+    shape : tuple of ints
+        The (i,j,k) size and shape of the network.
+
+    spacing : 3 x 1 array defining the base lattice spacing of the network
+
+    perturbation : float between 0 and 1 controlling the maximum perturbation
+        of lattice points as a fraction of the lattice spacing
+
+    arrangement : string
+        usage:  'SC'- Simple Cubic (default if left blank)
+                'O' - Orthorhombic
+                'BCC' - Body Centred Cubic
+                'FCC' - Face Centred Cubic
     Examples
     --------
     >>> import OpenPNM
@@ -38,12 +51,10 @@ class DelaunayCubic(Delaunay):
 
     """
 
-    def __init__(self, shape=None, template=None, spacing=[1, 1, 1],
-                 jiggle_factor=0.1, arrangement='SC', **kwargs):
+    def __init__(self, shape=None, spacing=[1, 1, 1],
+                 perturbation=0.1, arrangement='SC', **kwargs):
         if shape is not None:
             self._arr = np.atleast_3d(np.empty(shape))
-        elif template is not None:
-            self._arr = sp.array(template, ndmin=3, dtype=bool)
         else:
             self._arr = np.atleast_3d(np.empty([3, 3, 3]))
 
@@ -53,7 +64,7 @@ class DelaunayCubic(Delaunay):
         self._spacing = sp.asarray(spacing)
         self._num_pores = np.prod(np.asarray(self._shape))
         self._domain_size = np.asarray(self._shape) * self._spacing
-        self._jiggle_factor = jiggle_factor
+        self._perturbation = perturbation
         self._arrangement = arrangement
         super().__init__(num_pores=self._num_pores,
                          domain_size=self._domain_size,
@@ -116,7 +127,7 @@ class DelaunayCubic(Delaunay):
             face_points = np.asarray(face_points)
             points = np.concatenate((points, face_points))
 
-        jiggle = (np.random.rand(len(points), 3)-0.5)*self._jiggle_factor
+        jiggle = (np.random.rand(len(points), 3)-0.5)*self._perturbation
         points += jiggle
         points *= self._spacing
 
