@@ -29,10 +29,7 @@ def equivalent_circle(geometry, throat_area='throat.area', **kwargs):
     return value
 
 
-def minpore(network,
-            geometry,
-            **kwargs):
-
+def minpore(network, geometry, **kwargs):
     r"""
     Assign the throat diameter to be equal to the smallest connecting pore
     diameter. If zero (in case of boundaries) take it to be the maximum of

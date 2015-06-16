@@ -348,11 +348,3 @@ class Voronoi(GenericGeometry):
             logger.warning('Fibre volume is not be conserved under compression')
         # Remove pores with zero throats
         self._net.trim_occluded_throats()
-
-if __name__ == '__main__':
-    import OpenPNM
-    pn = OpenPNM.Network.Delaunay(name='test_net')
-    pn.generate(num_pores=100, domain_size=[0.0001, 0.0001, 0.0001])
-    pn.add_boundaries()
-    test = OpenPNM.Geometry.Voronoi(pores=pn.Ps, throats=pn.Ts, network=pn)
-    pn.regenerate_geometries()

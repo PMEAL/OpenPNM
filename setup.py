@@ -41,7 +41,7 @@ setup(
         'numpy',
         'scipy>=0.14.0',
         'matplotlib',
-        'skimage'
+        'scikit-image'
     ],
     author = 'OpenPNM Team',
     author_email = 'jeff.gostick@mcgill.ca',

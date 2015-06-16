@@ -840,7 +840,6 @@ class Core(dict):
             raise Exception()
         return values
 
-    #@profile
     def _interleave_data(self,prop,sources):
         r"""
         Retrieves requested property from associated objects, to produce a full

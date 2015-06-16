@@ -62,8 +62,3 @@ class Toray120(GenericGeometry):
                         model=gm.throat_area.cylinder)
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.cylinder)
-
-if __name__ == '__main__':
-    import OpenPNM
-    pn = OpenPNM.Network.TestNet()
-    pass
