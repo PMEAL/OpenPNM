@@ -147,7 +147,8 @@ class OrdinaryPercolation2(GenericAlgorithm):
         # Store invasion pressure in pores and throats
         pmask = np.in1d(clusters, inv_clusters)
         # Store result of invasion step
-        self['pore.invaded'][(self['pore.invaded'] == sp.inf) * (pmask)] = inv_val
+        inds = (self['pore.invaded'] == sp.inf) * (pmask)
+        self['pore.invaded'][inds] = inv_val
         # Determine Pc_invaded for throats as well
         temp = self._net['throat.conns'].copy()
         tmask = (pmask[temp[:, 0]] + pmask[temp[:, 1]]) * Tinvaded
