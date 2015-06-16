@@ -48,8 +48,3 @@ class Water(GenericPhase):
                         A=10.1965, B=1730.63, C=-39.720)
         self.models.add(propname='pore.viscosity',
                         model=fm.viscosity.water)             # kg/m.s
-
-if __name__ == '__main__':
-    import OpenPNM
-    pn = OpenPNM.Network.TestNet()
-    water = OpenPNM.Phases.Water(network=pn)

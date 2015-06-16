@@ -539,6 +539,3 @@ class Controller(dict):
                 if name == array_name.split('.')[1]:
                     return False
         return valid_name
-
-if __name__ == '__main__':
-    ctrl = Controller()

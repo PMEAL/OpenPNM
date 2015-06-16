@@ -1,5 +1,4 @@
 import OpenPNM
-import os
 from OpenPNM.Base import Controller
 
 
@@ -22,7 +21,6 @@ class ControllerTest:
         assert self.controller == {}
         self.controller.load(self.net.name)
         assert self.net.name in self.controller.keys()
-        os.remove(self.net.name+'.pnm')
 
     def teardown_class(self):
         del(self.controller)

@@ -63,11 +63,3 @@ class Voronoi(GenericGeometry):
                         model=gm.throat_volume.extrusion)
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.extrusion)
-
-if __name__ == '__main__':
-    import OpenPNM
-    pn = OpenPNM.Network.Delaunay(name='test_net')
-    pn.generate(num_pores=100, domain_size=[0.0001, 0.0001, 0.0001])
-    pn.add_boundaries()
-    test = OpenPNM.Geometry.Voronoi(pores=pn.Ps, throats=pn.Ts, network=pn)
-    pn.regenerate_geometries()
