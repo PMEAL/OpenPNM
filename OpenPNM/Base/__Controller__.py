@@ -58,9 +58,9 @@ class Controller(dict):
                                             phase.__class__.__name__))
                     comps = phase.phases()
                     for compname in comps:
-                        str = '++ {0:<12} {1:<20} ({2})}'
+                        str = '++ {0:<12} {1:<20} ({2})'
                         lines.append(str.format('Component Phase: ',
-                                                phase.name,
+                                                compname,
                                                 phase.__class__.__name__))
                 for phys in phase._physics:
                     str = '++ {0:<12} {1:<20} ({2})'
