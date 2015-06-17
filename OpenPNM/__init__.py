@@ -40,7 +40,7 @@ import scipy as sp
 if sp.__version__ < '0.14.0':
     raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
 __requires__ = ['scipy']
 
