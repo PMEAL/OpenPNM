@@ -543,12 +543,14 @@ class Core(dict):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.filter_by_label(pores=[0,1,5,6],labels='left')
+        >>> pn.filter_by_label(pores=[0,1,5,6], labels='left')
         array([0, 1])
-        >>> Ps = pn.pores(['top','bottom','front'],mode='union')
-        >>> pn.filter_by_label(pores=Ps,labels=['top','front'],mode='intersection')
+        >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='union')
+        >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
+        if labels == '':  # Handle empty labels
+            labels = 'all'
         if type(labels) == str:  # Convert input to list
             labels = [labels]
         # Convert inputs to locations and element
@@ -560,8 +562,8 @@ class Core(dict):
             locations = sp.array(throats)
         # Do it
         labels = [element+'.'+item.split('.')[-1] for item in labels]
-        all_locs = self._get_indices(element=element,labels=labels,mode=mode)
-        mask = self._tomask(locations=all_locs,element=element)
+        all_locs = self._get_indices(element=element, labels=labels, mode=mode)
+        mask = self._tomask(locations=all_locs, element=element)
         ind = mask[locations]
         return locations[ind]
 
@@ -1182,17 +1184,18 @@ class Core(dict):
         if mode == 'add':
             # Check if any constant values exist on the object
             for item in self.props():
-                if (item not in self.models.keys()) or (self.models[item]['regen_mode'] == 'constant'):
-                    logger.critical('Constant values or models were found on object.'
-                    'These will be the wrong length after this operation, '
-                    'which will break the data integrity. '
-                    'Run network.check_data_health to investigate further.')
+                if (item not in self.models.keys()) or \
+                   (self.models[item]['regen_mode'] == 'constant'):
+                    logger.critical('Constant models found on object,' +
+                                    'models must be rerun manually')
             # Ensure locations are not already assigned to another object
-            temp = sp.zeros((net._count(element),),bool)
+            temp = sp.zeros((net._count(element), ), dtype=bool)
             for key in co_objs:
                 temp += net[element+'.'+key]
-            overlaps = sp.sum(temp*net._tomask(locations=locations,element=element))
+            overlaps = sp.sum(temp*net._tomask(locations=locations,
+                                               element=element))
             if overlaps > 0:
+                self.controller.purge_object(self)
                 raise Exception('Some of the given '+element+'s overlap with an existing object')
 
             # Store original Network indices for later use
@@ -1200,7 +1203,8 @@ class Core(dict):
 
             # Create new 'all' label for new size
             new_len = self._count(element=element) + sp.size(locations)
-            self.update({element+'.all': sp.ones((new_len,),dtype=bool)})  # Initialize new 'all' array
+            # Initialize new 'all' array
+            self.update({element+'.all': sp.ones((new_len, ), dtype=bool)})
 
             # Set locations in Network (and Phase) dictionary
             if element+'.'+self.name not in net.keys():
@@ -1217,27 +1221,29 @@ class Core(dict):
             for item in labels:
                 if item.split('.')[0] == element:
                     blank[old_inds] = self[item]
-                    self.update({item:blank[net[element+'.all']]})
+                    self.update({item: blank[net[element+'.all']]})
 
         if mode == 'remove':
-            self_inds = boss_obj._map(element=element,locations=locations,target=self)
-            keep = ~self._tomask(locations=self_inds,element=element)
+            self_inds = boss_obj._map(element=element,
+                                      locations=locations,
+                                      target=self)
+            keep = ~self._tomask(locations=self_inds, element=element)
             for item in self.keys():
                 if item.split('.')[0] == element:
                     temp = self[item][keep]
-                    self.update({item:temp})
-            #Set locations in Network dictionary
+                    self.update({item: temp})
+            # Set locations in Network dictionary
             net[element+'.'+self.name][locations] = False
             boss_obj[element+'.'+self.name][locations] = False
 
-        # Finally, regenerate all models to correct the length of all prop array
+        # Finally, regenerate models to correct the length of all prop array
         self.models.regenerate()
 
-    def _map(self,element,locations,target,return_mapping=False):
+    def _map(self, element, locations, target, return_mapping=False):
         r"""
         """
         # Initialize things
-        locations = sp.array(locations,ndmin=1)
+        locations = sp.array(locations, ndmin=1)
         mapping = {}
 
         # Analyze input object's relationship
@@ -1250,42 +1256,42 @@ class Core(dict):
                 maskT = ~self._net[element+'.all']
                 tempT = target._net[element+'.'+target.name]
                 inds = target._net[element+'.'+self._net.name][tempT]
-                maskT[inds]  = True
+                maskT[inds] = True
             if target._parent is None:  # Target is parent object
                 maskT = target._net[element+'.'+target.name]
                 maskS = ~target._net[element+'.all']
                 tempS = self._net[element+'.'+self.name]
                 inds = self._net[element+'.'+target._net.name][tempS]
-                maskS[inds]  = True
+                maskS[inds] = True
 
         # Convert source locations to Network indices
-        temp = sp.zeros(sp.shape(maskS),dtype=int)-1
+        temp = sp.zeros(sp.shape(maskS), dtype=int)-1
         temp[maskS] = self._get_indices(element=element)
-        locsS = sp.where(sp.in1d(temp,locations))[0]
+        locsS = sp.where(sp.in1d(temp, locations))[0]
         mapping['source'] = locations
 
         # Find locations in target
-        temp = sp.zeros(sp.shape(maskT),dtype=int)-1
+        temp = sp.zeros(sp.shape(maskT), dtype=int)-1
         temp[maskT] = target._get_indices(element=element)
         locsT = temp[locsS]
         mapping['target'] = locsT
 
         # Find overlapping locations in source and target to define mapping
-        keep = (locsS>=0)*(locsT>=0)
+        keep = (locsS >= 0)*(locsT >= 0)
         mapping['source'] = mapping['source'][keep]
         mapping['target'] = mapping['target'][keep]
 
         # Return results as an arrary or one-to-one mapping if requested
-        if return_mapping == True:
+        if return_mapping is True:
             return mapping
         else:
-            if sp.sum(locsS>=0) < sp.shape(sp.unique(locations))[0]:
+            if sp.sum(locsS >= 0) < sp.shape(sp.unique(locations))[0]:
                 raise Exception('Some locations not found on Source object')
-            if sp.sum(locsT>=0) < sp.shape(sp.unique(locations))[0]:
+            if sp.sum(locsT >= 0) < sp.shape(sp.unique(locations))[0]:
                 raise Exception('Some locations not found on Target object')
             return mapping['target']
 
-    def map_pores(self,target=None,pores=None,return_mapping=False):
+    def map_pores(self, target=None, pores=None, return_mapping=False):
         r"""
         Accepts a list of pores from the caller object and maps them onto the
         given target object
@@ -1332,10 +1338,16 @@ class Core(dict):
                 target = self
             else:
                 target = self._net
-        Ps = self._map(element='pore',locations=pores,target=target,return_mapping=return_mapping)
+        Ps = self._map(element='pore',
+                       locations=pores,
+                       target=target,
+                       return_mapping=return_mapping)
         return Ps
 
-    def map_throats(self,target=None,throats=None,return_mapping=False):
+    def map_throats(self,
+                    target=None,
+                    throats=None,
+                    return_mapping=False):
         r"""
         Accepts a list of throats from the caller object and maps them onto the
         given target object
@@ -1382,13 +1394,16 @@ class Core(dict):
                 target = self
             else:
                 target = self._net
-        Ts = self._map(element='throat',locations=throats,target=target,return_mapping=return_mapping)
+        Ts = self._map(element='throat',
+                       locations=throats,
+                       target=target,
+                       return_mapping=return_mapping)
         return Ts
 
     Tnet = property(fget=map_throats)
     Pnet = property(fget=map_pores)
 
-    def _isa(self,keyword=None,obj=None):
+    def _isa(self, keyword=None, obj=None):
         r"""
         """
         if keyword is None:
@@ -1396,19 +1411,19 @@ class Core(dict):
         if obj is None:
             query = False
             mro = [item.__name__ for item in self.__class__.__mro__]
-            if keyword in ['net','Network','GenericNetwork']:
+            if keyword in ['net', 'Network', 'GenericNetwork']:
                 if 'GenericNetwork' in mro:
                     query = True
-            elif keyword in ['geom','Geometry','GenericGeometry']:
+            elif keyword in ['geom', 'Geometry', 'GenericGeometry']:
                 if 'GenericGeometry' in mro:
                     query = True
-            elif keyword in ['phase','Phase','GenericPhase']:
+            elif keyword in ['phase', 'Phase', 'GenericPhase']:
                 if 'GenericPhase' in mro:
                     query = True
-            elif keyword in ['phys','Physics','GenericPhysics']:
+            elif keyword in ['phys', 'Physics', 'GenericPhysics']:
                 if 'GenericPhysics' in mro:
                     query = True
-            elif keyword in ['alg','Algorithm','GenericAlgorithm']:
+            elif keyword in ['alg', 'Algorithm', 'GenericAlgorithm']:
                 if 'GenericAlgorithm' in mro:
                     query = True
             elif keyword in ['clone']:
@@ -1430,7 +1445,7 @@ class Core(dict):
                     query = True
             return query
 
-    def check_data_health(self,props=[],element=''):
+    def check_data_health(self, props=[], element=''):
         r"""
         Check the health of pore and throat data arrays.
 
@@ -1507,7 +1522,7 @@ class Core(dict):
         labels.sort()
         for i, item in enumerate(labels):
             prop = item
-            if len(prop)>35:
+            if len(prop) > 35:
                 prop = prop[0:32] + '...'
             lines.append("{0:<5d} {1:<35s} {2:<10d}".format(i + 1,
                                                             prop,

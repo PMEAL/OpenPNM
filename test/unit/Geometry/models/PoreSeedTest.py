@@ -25,3 +25,11 @@ class PoreSeedTest:
                             weights=[2, 2, 2])
         assert sp.amin(self.geo['pore.seed'] > 0)
         assert sp.amax(self.geo['pore.seed'] < 1)
+
+    def test_spatially_correlated_zero_weights(self):
+        f = OpenPNM.Geometry.models.pore_seed.spatially_correlated
+        self.geo.models.add(propname='pore.seed',
+                            model=f,
+                            weights=[0, 0, 0])
+        assert sp.amin(self.geo['pore.seed'] > 0)
+        assert sp.amax(self.geo['pore.seed'] < 1)

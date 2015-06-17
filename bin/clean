@@ -16,6 +16,8 @@ FILES_TO_DELETE = [
     'test_net.pnm',
     'nano.vtp',
     '.coverage'
+    '*.pnm',
+    '*.net'
 ]
 
 BYTE_CODE = '.+\.pyc'

@@ -41,9 +41,3 @@ class TestPhase(GenericPhase):
         self['pore.thermal_conductivity'] = 1
         self['throat.thermal_conductivity'] = \
             self.interpolate_data(data=self['pore.thermal_conductivity'])
-
-
-if __name__ == '__main__':
-    import OpenPNM
-    pn = OpenPNM.Network.TestNet()
-    water = OpenPNM.Phases.Water(network=pn)

@@ -270,6 +270,42 @@ def test_thermal_conduction():
     assert sp.amax(np.absolute(diff)) < 0.015
 
 
+def test_OP_standard():
+    pn = OpenPNM.Network.Cubic(shape=[10, 10, 10], spacing=0.0001)
+    geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
+    water = OpenPNM.Phases.Water(network=pn)
+    phys = OpenPNM.Physics.GenericPhysics(network=pn,
+                                          geometry=geom,
+                                          phase=water)
+    f = OpenPNM.Physics.models.capillary_pressure.washburn
+    phys.models.add(propname='throat.capillary_pressure',
+                    model=f)
+    OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,
+                                                invading_phase=water)
+    OP.run(inlets=pn.pores('top'))
+    V_inv = sp.sum(pn['pore.volume'][OP['pore.inv_Pc'] < sp.inf])
+    V_tot = sp.sum(pn['pore.volume'])
+    assert V_inv/V_tot == 1.0
+
+
+def test_OP_trapping():
+    pn = OpenPNM.Network.Cubic(shape=[10, 10, 10], spacing=0.0001)
+    geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
+    water = OpenPNM.Phases.Water(network=pn)
+    phys = OpenPNM.Physics.GenericPhysics(network=pn,
+                                          geometry=geom,
+                                          phase=water)
+    f = OpenPNM.Physics.models.capillary_pressure.washburn
+    phys.models.add(propname='throat.capillary_pressure',
+                    model=f)
+    OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,
+                                                invading_phase=water)
+    OP.run(inlets=pn.pores('top'), outlets=pn.pores('bottom'), trapping=True)
+    V_inv = sp.sum(pn['pore.volume'][OP['pore.inv_Pc'] < sp.inf])
+    V_tot = sp.sum(pn['pore.volume'])
+    assert V_inv/V_tot < 0.95
+
+
 def test_Darcy_alg():
     # Generate Network and clean up some of boundaries
     divs = [1, 50, 10]

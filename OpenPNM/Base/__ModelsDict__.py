@@ -115,16 +115,29 @@ class ModelsDict(OrderedDict):
     >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> Ps = pn.pores(labels='top',mode='not')
-    >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=Ps,throats=pn.Ts)
+    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps, throats=pn.Ts)
+
+    Add a model to the object's ModelsDict:
+
+    >>> f = OpenPNM.Geometry.models.pore_seed.random
+    >>> geom.models.add(propname='pore.seed', model=f, seed=0)
 
     It is possible to use the ModelsDict from one object with another object:
 
     >>> Ps = pn.pores('top')
-    >>> boun = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps)
+    >>> boun = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps)
     >>> boun.models  # The boun object has no models in its Models dict
     ModelsDict()
     >>> mod = geom.models.copy()  # Create a copy of geom's models
     >>> boun.models = mod  # Use the same set of models on boun as geom
+
+    Because ``copy`` was used above, the ModelsDict on the two objects are
+    equal but different:
+
+    >>> boun.models == geom.models
+    True
+    >>> boun.models is geom.models
+    False
     """
 
     def __setitem__(self, propname, model):
