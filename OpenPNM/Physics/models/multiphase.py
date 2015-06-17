@@ -48,7 +48,7 @@ def conduit_conductance(physics, phase, network, throat_conductance,
     calculated.
 
     """
-    throats = phase.throats(physics.name)
+    throats = phase.Ts
     if mode == 'loose':
         closed_conduits = -sp.array(phase[throat_occupancy], dtype=bool)
     else:
@@ -96,7 +96,7 @@ def late_pore_filling(physics, phase, network, Pc, Swp_star=0.2, eta=3,
 
 
     """
-    pores = phase.pores(physics.name)
+    pores = phase.Ps
     prop = phase[throat_capillary_pressure]
     neighborTs = network.find_neighbor_throats(pores, flatten=False)
     Pc_star = sp.array([sp.amin(prop[row]) for row in neighborTs])
@@ -105,5 +105,5 @@ def late_pore_filling(physics, phase, network, Pc, Swp_star=0.2, eta=3,
         values = Swp*phase[pore_occupancy]*(Pc_star < Pc)
     else:
         values = (1-Swp)*(1-phase[pore_occupancy])*(Pc_star < Pc)
-    values = values[phase.throats(physics.name)]
+    values = values[phase.pores(physics.name)]
     return values
