@@ -25,12 +25,17 @@ class GenericLinearTransport(GenericAlgorithm):
         super().__init__(**kwargs)
         if phase is None:
             self._phase = GenericPhase()
+            self._phases.append(self._phase)
         else:
             self._phase = phase  # Register phase with self
             if sp.size(phase) != 1:
                 self._phases = phase
             else:
                 self._phases.append(phase)
+        for comp in self._phases:
+            if comp.Np != self.Np:
+                raise Exception(comp.name + ' has different Np size than the' +
+                                ' algorithm ' + self.name)
 
     def setup(self, conductance, quantity, super_pore_conductance):
         r"""
@@ -50,8 +55,7 @@ class GenericLinearTransport(GenericAlgorithm):
                              quantity.split('.')[-1]
             # Check health of conductance vector
             if self._phase.check_data_health(props=self._conductance).health:
-                m = self._net.map_throats(target=self._phase, throats=self.Ts)
-                self['throat.conductance'] = self._phase[self._conductance][m]
+                self['throat.conductance'] = self._phase[self._conductance]
             else:
                 raise Exception('The provided throat conductance has problems')
         else:
@@ -295,8 +299,6 @@ class GenericLinearTransport(GenericAlgorithm):
                         phys.models[source_name]['return_rate'] = return_rate
                         phys.models[source_name]['regen_mode'] = regen_mode
                         map_pores = phys.map_pores()
-                        map_pores = self._phase.map_pores(target=self._net,
-                                                          pores=map_pores)
                         loc = pores[sp.in1d(pores, map_pores)]
                         if mode == 'merge':
                             try:
