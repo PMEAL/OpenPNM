@@ -66,7 +66,7 @@ def conduit_conductance(physics, phase, network, throat_conductance,
     open_conduits = -closed_conduits
     throat_value = phase[throat_conductance]
     value = throat_value*open_conduits + throat_value*closed_conduits*factor
-    value = value[phase.throats(physics.name)]    
+    value = value[phase.throats(physics.name)]
     return value
 
 
