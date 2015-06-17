@@ -66,6 +66,7 @@ def conduit_conductance(physics, phase, network, throat_conductance,
     open_conduits = -closed_conduits
     throat_value = phase[throat_conductance]
     value = throat_value*open_conduits + throat_value*closed_conduits*factor
+    value = value[phase.throats(physics.name)]    
     return value
 
 
@@ -104,4 +105,5 @@ def late_pore_filling(physics, phase, network, Pc, Swp_star=0.2, eta=3,
         values = Swp*phase[pore_occupancy]*(Pc_star < Pc)
     else:
         values = (1-Swp)*(1-phase[pore_occupancy])*(Pc_star < Pc)
+    value = value[phase.throats(physics.name)]    
     return values
