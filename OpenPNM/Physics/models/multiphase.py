@@ -105,5 +105,5 @@ def late_pore_filling(physics, phase, network, Pc, Swp_star=0.2, eta=3,
         values = Swp*phase[pore_occupancy]*(Pc_star < Pc)
     else:
         values = (1-Swp)*(1-phase[pore_occupancy])*(Pc_star < Pc)
-    value = value[phase.throats(physics.name)]    
+    values = values[phase.throats(physics.name)]
     return values
