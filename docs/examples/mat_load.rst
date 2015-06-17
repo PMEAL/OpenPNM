@@ -1,5 +1,9 @@
 .. _matload:
 
+.. warning::
+
+    The following exmaple was painstakingly created using version 1.0 of OpenPNM.  The change to version 1.1 may have broken a few small lines in this example.  
+
 ===============================================================================
 Loading Networks Saved in MATLAB
 ===============================================================================

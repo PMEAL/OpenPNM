@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+import sys
+import subprocess
+
+command = ['py.test']
+
+if 'pep8' in sys.argv:
+    command.append('--pep8')
+
+if 'cov' in sys.argv:
+    command.extend(['--cov-report=term-missing', '--cov=.', '--cov-config=.coveragerc'])
+
+subprocess.call(command)

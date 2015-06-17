@@ -1,0 +1,11 @@
+*.egg
+*.egg-info
+*.py[co]
+*.pnm
+*.net
+build/
+dist/
+.coverage
+*.vtp
+.cache
+.DS_Store

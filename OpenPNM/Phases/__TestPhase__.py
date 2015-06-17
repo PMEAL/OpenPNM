@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from OpenPNM.Phases import GenericPhase
 
+
 class TestPhase(GenericPhase):
-    r'''
-    Creates Phase object with a default name 'testphase' and preset values for an air-like
+    r"""
+    Creates Phase object with a default name 'testphase' and preset values for an
+    air-like
 
     Parameters
     ----------
@@ -20,9 +22,9 @@ class TestPhase(GenericPhase):
     >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> water = OpenPNM.Phases.Water(network=pn)
-    '''
-    def __init__(self,name=None,**kwargs):
-        super(TestPhase,self).__init__(name=name,**kwargs)
+    """
+    def __init__(self, name=None, **kwargs):
+        super().__init__(name=name, **kwargs)
         self._generate()
 
     def _generate(self):
@@ -37,10 +39,5 @@ class TestPhase(GenericPhase):
         self['pore.critical_volume'] = 0.0883
         self['pore.contact_angle'] = 120
         self['pore.thermal_conductivity'] = 1
-        self['throat.thermal_conductivity'] = self.interpolate_data(data=self['pore.thermal_conductivity'])
-
-
-if __name__ =="__main__":
-    import OpenPNM
-    pn = OpenPNM.Network.TestNet()
-    water = OpenPNM.Phases.Water(network=pn)
+        self['throat.thermal_conductivity'] = \
+            self.interpolate_data(data=self['pore.thermal_conductivity'])

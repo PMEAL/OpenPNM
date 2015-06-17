@@ -25,23 +25,6 @@ class InvasionPercolationTimed(GenericAlgorithm):
     name : string
         The name this algorithm will go by
 
-    Examples
-    --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
-    >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
-    >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
-    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,pores=pn.pores(),throats=pn.throats())
-    >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,pores=pn.pores(),throats=pn.throats())
-    >>> IP = OpenPNM.Algorithms.InvasionPercolationTimed(network=pn)
-    >>> IP.run(invading_phase=phase1, defending_phase=phase2, inlets=pn.pores('top'), outlets=pn.pores('bottom'),report=0)
-         IP algorithm at 0 % completion at 0.0 seconds
-         IP algorithm at 100% completion at  0.0  seconds
-    >>> IP.return_results()
-    >>> max(phase1['pore.IP_inv_seq']) #unless something changed with our test objects, this should print "60"
-    60
-
     Suggested Improvements ::
 
         a) Allow updating of cluster flow-rates (this will require a delta-t calculation at each step, instead of a total t calculation).
@@ -50,8 +33,8 @@ class InvasionPercolationTimed(GenericAlgorithm):
 
     """
     def __init__(self,**kwords):
-        r'''
-        '''
+        r"""
+        """
         super(InvasionPercolationTimed,self).__init__(**kwords)
         logger.info("Create IP Algorithm Object")
 
@@ -173,9 +156,8 @@ class InvasionPercolationTimed(GenericAlgorithm):
                 logger.error('Capillary pressure neither assigned to defending phase '+self._phase_def.name
                     +' nor to invading phase '+self._phase.name)
                 pass
-        if self._timing:
-            # calculate Volume_coef for each throat
-            self._Tvol_coef = tdia*tdia*tdia*np.pi/12/self['throat.inv_Pc']
+        # calculate Volume_coef for each throat
+        self._Tvol_coef = tdia*tdia*tdia*np.pi/12/self['throat.inv_Pc']
         # Creating an array for invaded Pores(Np long, 0 for uninvaded, cluster number for inaveded)
         self['pore.cluster_final'] = 0
         self['pore.cluster_original'] = 0
@@ -576,8 +558,8 @@ class InvasionPercolationTimed(GenericAlgorithm):
             print('     IP algorithm at 100% completion at ',np.round(misc.toc(quiet=True)),' seconds')
 
     def cluster_update(self,cl_num,pores,throats,int_throats,bad_throat=-1):
-        r'''
-        '''
+        r"""
+        """
         int_throats = sp.unique(int_throats)
         int_throats = int_throats[int_throats!=bad_throat]
         pores = sp.unique(pores)
@@ -695,8 +677,3 @@ class InvasionPercolationTimed(GenericAlgorithm):
             self['throat.defended']=sp.array(~inv_throats, dtype='float')
         except:
             print('A partner phase has not been set so inverse occupancy cannot be set')
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(verbose=True)

@@ -7,7 +7,8 @@ from matplotlib import cm
 try:
     import vtk
 except ImportError:
-    vtk = type("", (), {'vtkActor': object})
+    vtk = type('', (), {'vtkActor': object})
+
 
 class Actor(vtk.vtkActor):
 
@@ -16,7 +17,7 @@ class Actor(vtk.vtkActor):
 
     def pointArray(self, _points):
         points = vtk.vtkPoints()
-        for x,y,z in _points:
+        for x, y, z in _points:
             points.InsertNextPoint(x, y, z)
         return points
 
@@ -51,8 +52,8 @@ class Actor(vtk.vtkActor):
             cmap = 'coolwarm'
         colormap = cm.get_cmap(cmap)
         mapped = colormap(array)
-        for r,g,b,a in 255*mapped:
-            colors.InsertNextTuple3(r,g,b)
+        for r, g, b, a in 255*mapped:
+            colors.InsertNextTuple3(r, g, b)
         return colors
 
     def update(self, t=0):
@@ -61,7 +62,8 @@ class Actor(vtk.vtkActor):
 
 class Wires(Actor):
 
-    def __init__(self, vertex_coords, edge_pairs, vertex_weights=None, alpha=1, cmap=None):
+    def __init__(self, vertex_coords, edge_pairs, vertex_weights=None,
+                 alpha=1, cmap=None):
         self.polydata = vtk.vtkPolyData()
         self.polydata.SetPoints(self.pointArray(vertex_coords))
         self.polydata.SetLines(self.lineArray(edge_pairs))
@@ -83,7 +85,8 @@ class Wires(Actor):
 
     def update(self, t=0):
         i = t % len(self.weights)
-        self.polydata.GetPointData().SetScalars(self.colorArray(self.weights[i], self.cmap))
+        self.polydata.GetPointData().SetScalars(self.colorArray(self.weights[i],
+                                                                self.cmap))
 
 
 class Surface(Actor):
@@ -114,8 +117,8 @@ class Surface(Actor):
         # update z-positions
         points = self.polydata.GetPoints()
         for i, v in enumerate(values):
-            x,y,_ = points.GetPoint(i)
-            points.SetPoint(i, x, y, v+self.offset)
+            x, y, _ = points.GetPoint(i)
+            points.SetPoint(i, x, y, v + self.offset)
         # update colors
         normalized = np.true_divide(values, np.abs(self.weights).max())
         normalized = np.subtract(normalized, self.weights.min())
@@ -156,7 +159,7 @@ class Tubes(Actor):
 
 class Spheres(Actor):
 
-    def __init__(self, centers, radii, alpha=1, color=(1,1,1)):
+    def __init__(self, centers, radii, alpha=1, color=(1, 1, 1)):
         self.polydata = vtk.vtkPolyData()
         self.polydata.SetPoints(self.pointArray(centers))
         self.radii = np.atleast_2d(radii)
@@ -173,9 +176,9 @@ class Spheres(Actor):
         self.SetMapper(self.mapper)
 
         self.GetProperty().SetOpacity(alpha)
-        r,g,b = color
+        r, g, b = color
         self.mapper.SetScalarVisibility(False)
-        self.GetProperty().SetColor(r,g,b)
+        self.GetProperty().SetColor(r, g, b)
 
     def glyph_method(self):
         pid = self.glypher.GetPointId()
@@ -192,9 +195,9 @@ class Scene(object):
     ticks = count(0)
 
     def __init__(self, parent=None, fix_camera=True):
-        '''
+        """
         fix_camera : more sensible default
-        '''
+        """
         if parent is not None:
             self.renWin = parent.GetRenderWindow()
             self.iren = self.renWin.GetInteractor()
@@ -211,16 +214,17 @@ class Scene(object):
             self.iren.SetInteractorStyle(camera)
 
     def update_all(self, object=None, event=None, t=None):
-        if t is None:   t = next(self.ticks)
+        if t is None:
+            t = next(self.ticks)
         for aid in range(self.ren.VisibleActorCount()):
             actor = self.ren.GetActors().GetItemAsObject(aid)
             actor.update(t)
         self.renWin.Render()
 
     def save(self, frames, outfile='animated.gif'):
-        '''
+        """
         takes a snapshot of the frames at given t, and returns the paths
-        '''
+        """
         windowToImage = vtk.vtkWindowToImageFilter()
         windowToImage.SetInput(self.renWin)
         writer = vtk.vtkPNGWriter()
@@ -233,7 +237,7 @@ class Scene(object):
             windowToImage.Modified()
             writer.SetFileName(f.name)
             writer.Write()
-            slide_paths.append( f.name )
+            slide_paths.append(f.name)
 
         call(["convert"] + slide_paths + [outfile])
         call(["rm"] + slide_paths)
