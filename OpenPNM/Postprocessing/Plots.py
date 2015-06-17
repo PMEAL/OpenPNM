@@ -43,7 +43,7 @@ def profiles(network, fig=None, values=None, bins=[10, 10, 10]):
         ax[n].plot(xaxis, yaxis, 'bo-')
         ax[n].set_xlabel(xlab[n])
         ax[n].set_ylabel('Slice Value')
-    fig.show()
+    return fig
 
 
 def porosity_profile(network, fig=None, axis=2):
@@ -107,7 +107,7 @@ def porosity_profile(network, fig=None, axis=2):
     _plt.plot(xaxis, yaxis, 'bo-')
     _plt.xlabel(xlab)
     _plt.ylabel('Porosity')
-    fig.show()
+    return fig
 
 
 def saturation_profile(network, phase, fig=None, axis=2):
@@ -179,7 +179,7 @@ def saturation_profile(network, phase, fig=None, axis=2):
     _plt.plot(xaxis, yaxis, 'bo-')
     _plt.xlabel(xlab)
     _plt.ylabel('Saturation')
-    fig.show()
+    return fig
 
 
 def distributions(net, fig=None, throat_diameter='throat.diameter',
@@ -235,7 +235,7 @@ def distributions(net, fig=None, throat_diameter='throat.diameter',
     ax4.set_xlabel('Throat Length')
     ax4.set_ylabel('Frequency')
     ax4.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
-    fig.show()
+    return fig
 
 
 def pore_size_distribution(network, fig=None):
@@ -266,7 +266,7 @@ def pore_size_distribution(network, fig=None):
     _plt.semilogx(xaxis, yaxis, 'b.-')
     _plt.xlabel('Pore & Throat Diameter (m)')
     _plt.ylabel('Cumulative Volume (m^3)')
-    fig.show()
+    return fig
 
 
 def drainage_curves(inv_alg, fig=None, Pc='inv_Pc', sat='inv_sat',
@@ -358,4 +358,4 @@ def drainage_curves(inv_alg, fig=None, Pc='inv_Pc', sat='inv_sat',
     ax4.grid(True)
     ax5.grid(True)
     ax6.grid(True)
-    fig.show()
+    return fig
