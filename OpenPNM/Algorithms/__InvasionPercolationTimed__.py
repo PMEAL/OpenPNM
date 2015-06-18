@@ -306,14 +306,14 @@ class InvasionPercolationTimed(GenericAlgorithm):
         self._plast = len(np.nonzero(self['pore.cluster_final'])[0])
         if self._timing:
             # determine the cluster with the earliest Haines time
-            self._current_cluster = 1 + self._cluster_data['haines_time'].tolist().index(min(self._cluster_data['haines_time']))
+            self._current_cluster = 1 + self._cluster_data['haines_time'].tolist().index(np.min(self._cluster_data['haines_time']))
             # update simulation clock
             logger.debug( 'sim time = ')
             logger.debug(self._sim_time)
             logger.debug(' haines time:')
             logger.debug( self._cluster_data['haines_time'])
             # The code really messes up when the [0] isn't in the next line. sim_time seems to just point to a place on the haines time array
-            self._sim_time = min(self._cluster_data['haines_time'])
+            self._sim_time = np.min(self._cluster_data['haines_time'])
             logger.debug( 'sim time after update= ')
             logger.debug(self._sim_time)
         else:
@@ -371,7 +371,7 @@ class InvasionPercolationTimed(GenericAlgorithm):
 
         # Mark throat as invaded
         self['throat.inv_seq'][tinvade] = self._tseq
-        self['throat.inv_pres'][tinvade] = max(max(self['throat.inv_pres']),self['throat.inv_Pc'][tinvade])
+        self['throat.inv_pres'][tinvade] = np.max((np.max(self['throat.inv_pres']),self['throat.inv_Pc'][tinvade]))
         if self._timing:
             self['throat.inv_time'][tinvade] = self._sim_time
             # update self._cluster_data.['pore_volume']
@@ -379,7 +379,7 @@ class InvasionPercolationTimed(GenericAlgorithm):
             # Remove throat's contribution to the vol_coef
             self._cluster_data['vol_coef'][self._current_cluster-1] = self._cluster_data['vol_coef'][self._current_cluster-1] - self._Tvol_coef[tinvade]
         # Mark pore as invaded
-        Pores = self._net.find_connected_pores(tinvade)
+        Pores = self._net.find_connected_pores(tinvade,flatten=True)
         # If both pores are already invaded:
         if np.in1d(Pores,np.nonzero(self['pore.cluster_final'])[0]).all():
             self._NewPore = -1
@@ -388,12 +388,12 @@ class InvasionPercolationTimed(GenericAlgorithm):
             clusters = self._cluster_data['transform'][self['pore.cluster_final'][Pores]-1]
             logger.debug('clusters = ')
             logger.debug(clusters)
-            self._current_cluster = min(clusters)
+            self._current_cluster = np.min(clusters)
             self['throat.cluster_final'][tinvade] = self._current_cluster
             # if pores are from 2 different clusters:
             if self['pore.cluster_final'][Pores[0]]!=self['pore.cluster_final'][Pores[1]] :
                 # find name of larger cluster number
-                maxCluster = max(clusters)
+                maxCluster = np.max(clusters)
                 curCluster = self._current_cluster
                 if emptyCluster == maxCluster:
                     fullCluster = curCluster
@@ -456,7 +456,7 @@ class InvasionPercolationTimed(GenericAlgorithm):
             if self._timing:
                 self['pore.inv_time'][self._NewPore] = self._sim_time
             self['pore.inv_seq'][self._NewPore] = self._tseq
-            self['pore.inv_pres'][self._NewPore] = max(self['throat.inv_pres'])
+            self['pore.inv_pres'][self._NewPore] = np.max(self['throat.inv_pres'])
             if self._timing:
                 # update self._cluster_data.['pore_volume']
                 self._cluster_data['pore_volume'][self._current_cluster-1] += self._pore_volumes[self._NewPore]
@@ -642,18 +642,18 @@ class InvasionPercolationTimed(GenericAlgorithm):
             if IPsat is not None:
                 sat_pores = self['pore.inv_sat']<=IPsat
                 sat_throats = self['throat.inv_sat']<=IPsat
-                if sum(sat_pores) == 0:
+                if np.sum(sat_pores) == 0:
                     IPseq = 0
                 else:
-                    IPseq = max([max(self['throat.inv_seq'][sat_throats]),max(self['pore.inv_seq'][sat_pores])])
+                    IPseq = np.max([np.max(self['throat.inv_seq'][sat_throats]),np.max(self['pore.inv_seq'][sat_pores])])
             else:
                 if IPpres != None:
                     sat_pores = self['pore.inv_pres']<=IPpres
                     sat_throats = self['throat.inv_pres']<=IPpres
-                    if sum(sat_pores) == 0:
+                    if np.sum(sat_pores) == 0:
                         IPseq = 0
                     else:
-                        IPseq = max([max(self['throat.inv_seq'][sat_throats]),max(self['pore.inv_seq'][sat_pores])])
+                        IPseq = np.max([np.max(self['throat.inv_seq'][sat_throats]),np.max(self['pore.inv_seq'][sat_pores])])
                 else:
                     IPseq = self._tseq
 
@@ -666,7 +666,7 @@ class InvasionPercolationTimed(GenericAlgorithm):
             inv_throats = (self['throat.inv_seq']>0)&(self['throat.inv_seq']<=IPseq)
             self._phase['throat.'+occupancy][inv_throats] = 1.
             self['throat.invaded'] = inv_throats
-            self.sat = max(self['throat.inv_sat'][inv_throats])
+            self.sat = np.max(self['throat.inv_sat'][inv_throats])
 
         except:
             print('Something bad happened while trying to update phase',self._phase.name)

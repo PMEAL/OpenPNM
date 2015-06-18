@@ -213,7 +213,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         tmask = (pmask[temp[:, 0]] + pmask[temp[:, 1]]) * Tinvaded
         self._t_inv[(self._t_inv == sp.inf) * (tmask)] = inv_val
 
-    def evaluate_trapping(self, outlets):
+    def evaluate_trapping_tomt(self, outlets):
         r"""
         Finds trapped pores and throats after a full ordinary
         percolation drainage has been run
@@ -260,6 +260,67 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._t_inv[self._t_trap > 0] = sp.inf
         self['pore.inv_Pc'] = self._p_inv
         self['throat.inv_Pc'] = self._t_inv
+
+    def evaluate_trapping(self, outlets):
+        r"""
+        Finds trapped pores and throats after a full ordinary
+        percolation drainage has been run
+        Parameters
+        ----------
+        outlets : array_like
+            A list of pores that define the wetting phase outlets.
+            Disconnection from these outlets results in trapping.
+        """
+        self._p_trap = sp.zeros_like(self._p_inv, dtype=float)
+        self._t_trap = sp.zeros_like(self._t_inv, dtype=float)
+        try:
+            inv_points = sp.unique(self._p_inv)  # Get points used in OP
+        except:
+            logger.error('Orindary percolation has not been run!')
+            raise Exception('Aborting algorithm')
+        tind = self._net.throats()
+        conns = self._net.find_connected_pores(tind)
+        for inv_val in inv_points[0:-1]:
+            # Find clusters of defender pores
+            Pinvaded = self._p_inv <= inv_val
+            Cstate = sp.sum(Pinvaded[conns], axis=1)
+            Tinvaded = self._t_inv <= inv_val
+            Cstate = Cstate + Tinvaded
+            # 0 = all open, 1=1 pore filled
+            # 2=2 pores filled
+            # 3=2 pores + 1 throat filled
+            clusters = self._net.find_clusters(Cstate == 0)
+            # Clean up clusters (invaded = -1, defended >=0)
+            clusters = clusters*(~Pinvaded) - (Pinvaded)
+            # Identify clusters connected to outlet sites
+            out_clusters = sp.unique(clusters[outlets])
+            trapped_pores = ~sp.in1d(clusters, out_clusters)
+            self._p_trap[(self._p_trap == 0)[trapped_pores]] = inv_val
+            trapped_throats = self._net.find_neighbor_throats(trapped_pores,
+                                                              mode='intersection')
+            if len(trapped_throats) > 0:
+                self._t_trap[(self._t_trap == 0)[trapped_throats]] = inv_val
+        self._p_inv[self._p_trap > 0] = sp.inf
+        self._t_inv[self._t_trap > 0] = sp.inf
+        self['pore.inv_Pc'] = self._p_inv
+        self['throat.inv_Pc'] = self._t_inv
+
+    def evaluate_late_pore_filling(self, Pc, Swp_init=0.75, eta=3.0,
+                                   wetting_phase=False):
+        r"""
+        Compute the volume fraction of the phase in each pore given an initial
+        wetting phase fraction (Swp_init) and a growth exponent (eta)
+        returns the fraction of the pore volume occupied by wetting or
+        non-wetting phase.
+        Assumes Non-wetting phase displaces wetting phase
+        """
+        Swp = Swp_init*(self._p_inv/Pc)**eta
+        Swp[self._p_inv > Pc] = 1.0
+        Snwp = 1-Swp
+        if wetting_phase:
+            return Swp
+        else:
+            return Snwp
 
     def return_results(self, Pc=0, seq=None, sat=None, occupancy='occupancy'):
         r"""
