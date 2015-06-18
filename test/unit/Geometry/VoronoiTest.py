@@ -54,16 +54,6 @@ class VoronoiTest:
         height2 = self.net.domain_length(b1, b2)
         assert sp.around(height1/height2, 5) == 2.0
 
-    def test_plot_porosity_profile(self):
-        fig = plt.figure()
-        self.geo_vox.plot_porosity_profile(fig)
-        del fig
-
-    def test_plot_fibre_slice(self):
-        fig = plt.figure()
-        self.geo_vox.plot_fibre_slice(fig)
-        del fig
-
     def test_make_fibre_image(self):
         del(self.geo_vox._fibre_image)
         self.geo_vox.make_fibre_image()

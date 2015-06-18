@@ -33,16 +33,6 @@ class VertexOpsTest:
                  linear_scaling=[True, False, False],
                  preserve_vol=False)
 
-    def test_print_throat(self):
-        fig = plt.figure()
-        vo.print_throat(self.geo, [0], fig)
-        del fig
-
-    def test_print_pore(self):
-        fig = plt.figure()
-        vo.print_throat(self.geo, [0], fig)
-        del fig
-
     def test_porosity(self):
         por = vo.porosity(self.net)
         assert por < 1.0
