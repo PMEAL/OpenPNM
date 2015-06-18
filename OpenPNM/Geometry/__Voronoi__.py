@@ -45,6 +45,10 @@ class Voronoi(GenericGeometry):
         super().__init__(**kwargs)
         self._fibre_rad = fibre_rad
         self._voxel_vol = voxel_vol
+        try:
+            self._vox_len = kwargs['vox_len']
+        except:
+            self._vox_len = 1e-6
         self._generate()
 
     def _generate(self):
@@ -59,10 +63,23 @@ class Voronoi(GenericGeometry):
                         model=gm.throat_offset_vertices.distance_transform,
                         offset=self._fibre_rad,
                         set_dependent=True)
+
+        " Get rid of occluded throats in this Geometry"
+        zero_ts = self.throats()[self['throat.area'] == 0.0]
+        net_zero_ts = self.map_throats(target=self._net,
+                                       throats=zero_ts,
+                                       return_mapping=False)
+        self._net.trim(throats=net_zero_ts)
+        " Check network health and trim isolated pores "
+        h = self._net.check_network_health()
+        if np.size(h['trim_pores']) > 0:
+            self._net.trim(pores=h['trim_pores'])
+
         if self._voxel_vol:
             self.models.add(propname='pore.volume',
                             model=gm.pore_volume.in_hull_volume,
-                            fibre_rad=self._fibre_rad)
+                            fibre_rad=self._fibre_rad,
+                            vox_len=self._vox_len)
         else:
             self.models.add(propname='pore.volume',
                             model=gm.pore_volume.voronoi)
@@ -217,7 +234,8 @@ class Voronoi(GenericGeometry):
         if slice_image is not None:
             if fig is None:
                 plt.figure()
-            plt.imshow(slice_image, cmap='Greys', interpolation='nearest')
+            plt.imshow(slice_image.T, cmap='Greys', origin='lower',
+                       interpolation='nearest')
 
         return fig
 

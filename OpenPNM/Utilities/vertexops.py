@@ -314,30 +314,32 @@ def tortuosity(network=None):
     return 1 / np.cos(np.array([theta_x, theta_y, theta_z]))
 
 
-def print_throat(geom, throats_in, fig=None):
+def print_throat(geometry, throats, fig=None):
     r"""
     Print a given throat or list of throats accepted as [1, 2, 3, ..., n]
     Original vertices plus offset vertices are rotated to align with
     the z-axis and then printed in 2D
+    e.g vo.print_throat(geom, [34, 65, 99])
     """
     import matplotlib.pyplot as plt
-    throats = []
-    for throat in throats_in:
-        if throat in range(geom.num_throats()):
-            throats.append(throat)
+    throat_list = []
+    for throat in throats:
+        if throat in range(geometry.num_throats()):
+            throat_list.append(throat)
         else:
             print('Throat: ' + str(throat) + ' not part of geometry')
-    if len(throats) > 0:
-        verts = geom['throat.vertices'][throats]
-        offsets = geom['throat.offset_vertices'][throats]
-        normals = geom['throat.normal'][throats]
-        coms = geom['throat.centroid'][throats]
-        incentre = geom['throat.incentre'][throats]
-        inradius = 0.5*geom['throat.indiameter'][throats]
-        for i in range(len(throats)):
+    if len(throat_list) > 0:
+        verts = geometry['throat.vertices'][throat_list]
+        offsets = geometry['throat.offset_vertices'][throat_list]
+        normals = geometry['throat.normal'][throat_list]
+        coms = geometry['throat.centroid'][throat_list]
+        incentre = geometry['throat.incentre'][throat_list]
+        inradius = 0.5*geometry['throat.indiameter'][throat_list]
+        row_col = np.ceil(np.sqrt(len(throat_list)))
+        for i in range(len(throat_list)):
             if fig is None:
                 fig = plt.figure()
-            ax = fig.add_subplot(111)
+            ax = fig.add_subplot(row_col, row_col, i+1)
             vert_2D = tr.rotate_and_chop(verts[i], normals[i], [0, 0, 1])
             hull = ConvexHull(vert_2D, qhull_options='QJ Pp')
             for simplex in hull.simplices:
@@ -382,38 +384,40 @@ def print_throat(geom, throats_in, fig=None):
     return fig
 
 
-def print_pore(geom, pores, fig=None, axis_bounds=None):
+def print_pore(geometry, pores, fig=None, axis_bounds=None, include_points=False):
     r"""
     Print all throats around a given pore or list of pores accepted
     as [1, 2, 3, ..., n]
-    e.g geom.print_pore([34, 65, 99])
+    e.g vo.print_pore(geom, [34, 65, 99])
     Original vertices plus offset vertices used to create faces and
     then printed in 3D
     To print all pores (n)
     pore_range = np.arange(0,n-1,1)
-    geom.print_pore(pore_range)
+    vo.print_pore(geom, pore_range)
     """
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     if len(pores) > 0:
-        net_pores = geom.map_pores(geom._net, pores)
-        centroids = geom['pore.centroid'][pores]
-        net_throats = geom._net.find_neighbor_throats(pores=net_pores)
-        throats = geom._net.map_throats(geom,
-                                        net_throats,
-                                        return_mapping=True)['target']
+        net_pores = geometry.map_pores(geometry._net, pores)
+        centroids = geometry['pore.centroid'][pores]
+        coords = geometry._net['pore.coords'][net_pores]
+        net_throats = geometry._net.find_neighbor_throats(pores=net_pores)
+        throats = geometry._net.map_throats(geometry,
+                                            net_throats,
+                                            return_mapping=True)['target']
+        tcentroids = geometry["throat.centroid"][throats]
         # Can't create volume from one throat
         if 1 <= len(throats):
-            verts = geom['throat.vertices'][throats]
-            normals = geom['throat.normal'][throats]
+            verts = geometry['throat.vertices'][throats]
+            normals = geometry['throat.normal'][throats]
             # Get verts in hull order
             ordered_verts = []
             for i in range(len(verts)):
                 vert_2D = tr.rotate_and_chop(verts[i], normals[i], [0, 0, 1])
                 hull = ConvexHull(vert_2D, qhull_options='QJ Pp')
                 ordered_verts.append(verts[i][hull.vertices])
-            offsets = geom['throat.offset_vertices'][throats]
+            offsets = geometry['throat.offset_vertices'][throats]
             ordered_offs = []
             for i in range(len(offsets)):
                 offs_2D = tr.rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
@@ -422,7 +426,7 @@ def print_pore(geom, pores, fig=None, axis_bounds=None):
             # Get domain extents for setting axis
             if axis_bounds is None:
                 [xmin, xmax, ymin, ymax, zmin, zmax] = \
-                    vertex_dimension(geom._net, pores, parm='minmax')
+                    vertex_dimension(geometry._net, pores, parm='minmax')
             else:
                 [xmin, xmax, ymin, ymax, zmin, zmax] = axis_bounds
             if fig is None:
@@ -441,7 +445,11 @@ def print_pore(geom, pores, fig=None, axis_bounds=None):
             ax.set_xlim(xmin, xmax)
             ax.set_ylim(ymin, ymax)
             ax.set_zlim(zmin, zmax)
-            ax.scatter(centroids[:, 0], centroids[:, 1], centroids[:, 2], c='y')
+            if include_points:
+                ax.scatter(centroids[:, 0], centroids[:, 1], centroids[:, 2], c='y')
+                ax.scatter(tcentroids[:, 0], tcentroids[:, 1], tcentroids[:, 2],
+                           c='r')
+                ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2], c='b')
             ax.ticklabel_format(style='sci', scilimits=(0, 0))
             plt.show()
         else:

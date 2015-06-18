@@ -17,12 +17,13 @@ def voronoi(network, geometry, vertices='throat.centroid', **kwargs):
                                   return_mapping=True)
     for i, net_pore in enumerate(pore_map['target']):
         geom_pore = pore_map['source'][i]
-        net_throats = geometry._net.find_neighbor_throats(net_pore)
-        geom_throats = geometry._net.map_throats(target=geometry,
-                                                 throats=net_throats,
-                                                 return_mapping=False)
+        net_throats = network.find_neighbor_throats(net_pore)
+        geom_throats = network.map_throats(target=geometry,
+                                           throats=net_throats,
+                                           return_mapping=False)
         verts = geometry[vertices][geom_throats]
-        value[geom_pore] = _sp.array([verts[:, 0].mean(),
-                                      verts[:, 1].mean(),
-                                      verts[:, 2].mean()])
+        " Ignore all zero centroids "
+        verts = verts[~_sp.all(verts == 0, axis=1)]
+        value[geom_pore] = _sp.mean(verts, axis=0)
+
     return value
