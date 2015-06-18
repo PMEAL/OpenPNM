@@ -276,7 +276,7 @@ class Voronoi(GenericGeometry):
         plt.ylabel('Porosity')
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels, loc=1)
-        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
         return fig
 
     def compress_geometry(self, factor=None, preserve_fibres=False):
