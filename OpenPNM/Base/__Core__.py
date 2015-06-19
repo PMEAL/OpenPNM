@@ -3,14 +3,16 @@
 Core:  Core Data Class
 ###############################################################################
 """
-import string, random
+from OpenPNM.Base import Controller
+import string
+import random
 import scipy as sp
 import scipy.constants
 from OpenPNM.Base import logging, Tools
 from OpenPNM.Base import ModelsDict
 logger = logging.getLogger()
-from OpenPNM.Base import Controller
 ctrl = Controller()
+
 
 class Core(dict):
     r"""
@@ -45,13 +47,13 @@ class Core(dict):
             self.__class__.__name__,
             hex(id(self)))
 
-    def __eq__(self,other):
+    def __eq__(self, other):
         if hex(id(self)) == hex(id(other)):
             return True
         else:
             return False
 
-    def __setitem__(self,key,value):
+    def __setitem__(self, key, value):
         r"""
         This is a subclass of the default __setitem__ behavior.  The main aim
         is to limit what type and shape of data can be written to protect
@@ -73,51 +75,53 @@ class Core(dict):
             logger.error('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
             return
         # Convert value to an ndarray
-        value = sp.array(value,ndmin=1)
-        #Skip checks for 'coords', 'conns'
+        value = sp.array(value, ndmin=1)
+        # Skip checks for 'coords', 'conns'
         if (key == 'pore.coords') or (key == 'throat.conns'):
-            super(Core, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key, value)
             return
         # Skip checks for protected props, and prevent changes if defined
         if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
                     logger.debug(key+' is being defined.')
-                    super(Core, self).__setitem__(key,value)
+                    super(Core, self).__setitem__(key, value)
                 else:
                     logger.warning(key+' is already defined.')
                     return
             else:
                 logger.debug(key+' is being defined.')
-                super(Core, self).__setitem__(key,value)
+                super(Core, self).__setitem__(key, value)
             return
         # Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
             logger.debug('Broadcasting scalar value into vector: '+key)
-            value = sp.ones((self._count(element),),dtype=value.dtype)*value
-            super(Core, self).__setitem__(key,value)
+            value = sp.ones((self._count(element), ), dtype=value.dtype)*value
+            super(Core, self).__setitem__(key, value)
         elif sp.shape(value)[0] == self._count(element):
             logger.debug('Updating vector: '+key)
-            super(Core, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key, value)
         else:
             if self._count(element) == 0:
-                self.update({key:value})
+                self.update({key: value})
             else:
                 logger.warning('Cannot write vector with an array of the wrong length: '+key)
                 pass
 
-    def _set_ctrl(self,controller):
+    def _set_ctrl(self, controller):
         if self.name in controller.keys():
             raise Exception('An object named '+self.name+' is already present in simulation')
-        self._ctrl = controller
-        controller.update({self.name: self})
+        ctrl.update({self.name: self})
 
     def _get_ctrl(self):
-        return self._ctrl
+        if self.name in ctrl:
+            return ctrl
+        else:
+            return {}
 
-    controller = property(_get_ctrl,_set_ctrl)
+    controller = property(_get_ctrl, _set_ctrl)
 
-    def _set_name(self,name):
+    def _set_name(self, name):
         if name in self.controller.keys():
             raise Exception('An object named '+name+' already exists')
         elif name is None:
@@ -136,13 +140,13 @@ class Core(dict):
                     item['pore.'+name] = item.pop('pore.'+self.name)
                 if 'throat.'+self.name in item.keys():
                     item['throat.'+name] = item.pop('throat.'+self.name)
-            self._ctrl[name] = self._ctrl.pop(self.name)
+            self.controller[name] = self.controller.pop(self.name)
         self._name = name
 
     def _get_name(self):
         return self._name
 
-    name = property(_get_name,_set_name)
+    name = property(_get_name, _set_name)
 
     def _simulation(self):
         temp = []
@@ -158,30 +162,33 @@ class Core(dict):
         """
         pall = self['pore.all']
         tall = self['throat.all']
-        super(Core,self).clear()
-        self.update({'throat.all':tall})
-        self.update({'pore.all':pall})
+        super(Core, self).clear()
+        self.update({'throat.all': tall})
+        self.update({'pore.all': pall})
 
-    #--------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     """Model Manipulation Methods"""
-    #--------------------------------------------------------------------------
-    #Note: These methods have been moved to the ModelsDict class but are left
-    #here for backward compatibility
-    def add_model(self,propname,model,regen_mode='normal',**kwargs):
-        self.models.add(propname=propname,model=model,regen_mode=regen_mode,**kwargs)
+    # -------------------------------------------------------------------------
+    # Note: These methods have been moved to the ModelsDict class but are left
+    # here for backward compatibility
+    def add_model(self, propname, model, regen_mode='normal', **kwargs):
+        self.models.add(propname=propname,
+                        model=model,
+                        regen_mode=regen_mode,
+                        **kwargs)
 
     add_model.__doc__ = ModelsDict.add.__doc__
 
-    def regenerate(self,props='',mode='inclusive'):
-        self.models.regenerate(props=props,mode=mode)
+    def regenerate(self, props='', mode='inclusive'):
+        self.models.regenerate(props=props, mode=mode)
 
     regenerate.__doc__ = ModelsDict.regenerate.__doc__
 
-    #--------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     'Object lookup methods'
-    #--------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
-    def _find_object(self,obj_name='',obj_type=''):
+    def _find_object(self, obj_name='', obj_type=''):
         r"""
         Find objects associated with a given network model by name or type
 
@@ -209,17 +216,17 @@ class Core(dict):
                 obj = ctrl[obj_name]
             return obj
         elif obj_type != '':
-            if obj_type in ['Geometry','Geometries','geometry','geometries']:
+            if obj_type in ['Geometry', 'Geometries', 'geometry', 'geometries']:
                 objs = ctrl.geometries()
-            elif obj_type in ['Phase','Phases','phase','phases']:
+            elif obj_type in ['Phase', 'Phases', 'phase', 'phases']:
                 objs = ctrl.phases()
-            elif obj_type in ['Physics','physics']:
+            elif obj_type in ['Physics', 'physics']:
                 objs = ctrl.physics()
-            elif obj_type in ['Network','Networks','network','networks']:
+            elif obj_type in ['Network', 'Networks', 'network', 'networks']:
                 objs = ctrl.networks()
             return objs
 
-    def physics(self,phys_name=[]):
+    def physics(self, phys_name=[]):
         r"""
         Retrieves Physics associated with the object
 
@@ -271,7 +278,7 @@ class Core(dict):
                     phase.append(item)
         return phase
 
-    def geometries(self,geom_name=[]):
+    def geometries(self, geom_name=[]):
         r"""
         Retrieves Geometry object(s) associated with the object
 
@@ -297,7 +304,7 @@ class Core(dict):
                     geom.append(item)
         return geom
 
-    def network(self,name=''):
+    def network(self, name=''):
         r"""
         Retrieves the network associated with the object.  If the object is
         a network, then it returns a handle to itself.
@@ -323,15 +330,15 @@ class Core(dict):
         else:
             net = []
             temp = self._find_object(obj_name=name)
-            if hasattr(temp,'_isa'):
+            if hasattr(temp, '_isa'):
                 if temp._isa('Network'):
                     net = temp
         return net
 
-    #--------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     """Data Query Methods"""
-    #--------------------------------------------------------------------------
-    def props(self,element='',mode='all'):
+    # -------------------------------------------------------------------------
+    def props(self, element='', mode='all'):
         r"""
         Returns a list containing the names of all defined pore or throat
         properties.
@@ -415,41 +422,41 @@ class Core(dict):
             return Tools.PrintableList(labels)
         else:
             labels = sp.array(labels)
-            locations = sp.array(locations,ndmin=1)
+            locations = sp.array(locations, ndmin=1)
             if locations.dtype in ['bool']:
                 locations = self._get_indices(element=element)[locations]
             else:
-                locations = sp.array(locations,dtype=int)
-            arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
+                locations = sp.array(locations, dtype=int)
+            arr = sp.zeros((sp.shape(locations)[0], len(labels)), dtype=bool)
             col = 0
             for item in labels:
-                arr[:,col] = self[item][locations]
+                arr[:, col] = self[item][locations]
                 col = col + 1
             if mode == 'count':
-                return sp.sum(arr,axis=1)
+                return sp.sum(arr, axis=1)
             if mode == 'union':
-                temp = labels[sp.sum(arr,axis=0)>0]
+                temp = labels[sp.sum(arr, axis=0) > 0]
                 temp.tolist()
                 return Tools.PrintableList(temp)
             if mode == 'intersection':
-                temp = labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
+                temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
                 temp.tolist()
                 return Tools.PrintableList(temp)
             if mode in ['difference', 'not']:
-                temp = labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
+                temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
                 temp.tolist()
                 return Tools.PrintableList(temp)
             if mode == 'mask':
                 return arr
             if mode == 'none':
-                temp = sp.ndarray((sp.shape(locations,)[0],),dtype=object)
-                for i in sp.arange(0,sp.shape(locations,)[0]):
-                    temp[i] = list(labels[arr[i,:]])
+                temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
+                for i in sp.arange(0, sp.shape(locations, )[0]):
+                    temp[i] = list(labels[arr[i, :]])
                 return temp
             else:
                 logger.error('unrecognized mode:'+mode)
 
-    def labels(self,element='',pores=[],throats=[],mode='union'):
+    def labels(self,element='', pores=[], throats=[], mode='union'):
         r"""
         Returns the labels applied to specified pore or throat locations
 
@@ -492,26 +499,26 @@ class Core(dict):
                 temp = []
                 temp = self._get_labels(element='pore')
                 temp.extend(self._get_labels(element='throat'))
-            elif element in ['pore','pores']:
-                temp = self._get_labels(element='pore',locations=[], mode=mode)
-            elif element in ['throat','throats']:
-                temp = self._get_labels(element='throat',locations=[], mode=mode)
+            elif element in ['pore', 'pores']:
+                temp = self._get_labels(element='pore', locations=[], mode=mode)
+            elif element in ['throat', 'throats']:
+                temp = self._get_labels(element='throat', locations=[], mode=mode)
             else:
                 logger.error('Unrecognized element')
                 return
         elif sp.size(pores) != 0:
             if pores == 'all':
                 pores = self.pores()
-            pores = sp.array(pores,ndmin=1)
-            temp = self._get_labels(element='pore',locations=pores, mode=mode)
+            pores = sp.array(pores, ndmin=1)
+            temp = self._get_labels(element='pore', locations=pores, mode=mode)
         elif sp.size(throats) != 0:
             if throats == 'all':
                 throats = self.throats()
-            throats = sp.array(throats,ndmin=1)
-            temp = self._get_labels(element='throat',locations=throats,mode=mode)
+            throats = sp.array(throats, ndmin=1)
+            temp = self._get_labels(element='throat', locations=throats, mode=mode)
         return temp
 
-    def filter_by_label(self,pores=[],throats=[],labels='',mode='union'):
+    def filter_by_label(self, pores=[], throats=[], labels='', mode='union'):
         r"""
         Returns which of the supplied pores (or throats) has the specified label
 
