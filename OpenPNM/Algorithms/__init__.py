@@ -46,3 +46,4 @@ from .__InvasionPercolation__ import InvasionPercolation
 from .__InvasionPercolationTimed__ import InvasionPercolationTimed
 from .__OrdinaryPercolation__ import OrdinaryPercolation
 from . __Tortuosity__ import Tortuosity
+from .__InvasionPercolationImb__ import InvasionPercolationImb
