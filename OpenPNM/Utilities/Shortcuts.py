@@ -1,15 +1,18 @@
-import string, random
+import string
+import random
 import OpenPNM.Phases
 
+
 def solve_linear(pn, ics):
-    # circumvent bug with naming by creating random names
-    name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+    # Circumvent bug with naming by creating random names
+    name = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                   for _ in range(6))
     pseudo = OpenPNM.Phases.GenericPhase(network=pn, name=name)
-    pseudo['throat.electrical_conductance']=1
+    pseudo['throat.electrical_conductance'] = 1
 
     alg = OpenPNM.Algorithms.OhmicConduction(network=pn)
-    alg['pore.BCval']=ics
-    alg['pore.Dirichlet']=ics!=0
+    alg['pore.BCval'] = ics
+    alg['pore.Dirichlet'] = ics != 0
     alg.run(active_phase=pseudo)
     alg.return_results()
 

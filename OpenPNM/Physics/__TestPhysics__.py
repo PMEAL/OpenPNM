@@ -9,6 +9,7 @@ module Physics
 from OpenPNM.Physics import models as pm
 from OpenPNM.Physics import GenericPhysics
 
+
 class TestPhysics(GenericPhysics):
     r"""
     Base class to generate a generic Physics object.  The user must specify models
@@ -28,8 +29,8 @@ class TestPhysics(GenericPhysics):
 
     """
 
-    def __init__(self,**kwargs):
-        super(TestPhysics,self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self._generate()
 
     def _generate(self):
@@ -42,9 +43,6 @@ class TestPhysics(GenericPhysics):
             if 'surface_tension' in temp:
                 self['throat.capillary_pressure'] = 1/self._net['throat.diameter']
             if 'thermal_conductivity' in temp:
-                self['throat.thermal_conductance'] = phase['throat.thermal_conductivity']*self._net['throat.diameter']/self._net['throat.length']
-
-if __name__ == '__main__':
-    print('none yet')
-
-
+                self['throat.thermal_conductance'] = \
+                    phase['throat.thermal_conductivity'] * \
+                    self._net['throat.diameter'] / self._net['throat.length']

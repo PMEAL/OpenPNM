@@ -37,10 +37,9 @@ Import
 import scipy as sp
 
 if sp.__version__ < '0.14.0':
-	raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
-del sp
+    raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
 
-__version__ = '1.1'
+__version__ = '1.2.0'
 
 __requires__ = ['scipy']
 
@@ -53,10 +52,10 @@ from . import Physics
 from . import Algorithms
 from . import Postprocessing
 from .Base import Controller as ctrl
+
 _controller = ctrl()
 del ctrl
 save = _controller.save
 load = _controller.load
 export = _controller.export
 view = _controller.__str__
-

@@ -6,9 +6,8 @@ pore_topology -- functions for monitoring and adjusting topology
 """
 import scipy as _sp
 
-def get_subscripts(network,
-                   shape,
-                   **kwargs):
+
+def get_subscripts(network, shape, **kwargs):
     r"""
     Return the 3D subscripts (i,j,k) into the cubic network
 
@@ -26,14 +25,13 @@ def get_subscripts(network,
         i = a[0].flatten()
         j = a[1].flatten()
         k = a[2].flatten()
-        ind = _sp.vstack((i,j,k)).T
-        vals = _sp.ones((network.Np,3))*_sp.nan
+        ind = _sp.vstack((i, j, k)).T
+        vals = _sp.ones((network.Np, 3))*_sp.nan
         vals[network.pores('internal')] = ind
         return vals
 
-def adjust_spacing(network,
-                   new_spacing,
-                   **kwargs):
+
+def adjust_spacing(network, new_spacing, **kwargs):
     r"""
     Adjust the the pore-to-pore lattice spacing on a cubic network
 
@@ -57,10 +55,8 @@ def adjust_spacing(network,
         pass
     return coords
 
-def reduce_coordination(network,
-                        z,
-                        mode='random',
-                        **kwargs):
+
+def reduce_coordination(network, z, mode='random', **kwargs):
     r"""
     Reduce the coordination number to the specified z value
 
@@ -72,8 +68,10 @@ def reduce_coordination(network,
     mode : string, optional
         Controls the logic used to trim connections.  Options are:
 
-        - 'random': (default) Throats will be randomly removed to achieve a coordination of z
-        - 'max': All pores will be adjusted to have a maximum coordination of z (not implemented yet)
+        - 'random': (default) Throats will be randomly removed to achieve a
+                    coordination of z
+        - 'max': All pores will be adjusted to have a maximum coordination of z
+                 (not implemented yet)
 
     Returns
     -------
@@ -88,19 +86,13 @@ def reduce_coordination(network,
     """
     T_trim = ~network['throat.all']
     T_nums = network.num_neighbors(network.pores())
-    #Find protected throats
-    T_keep = network.find_neighbor_throats(pores=(T_nums==1))
+    # Find protected throats
+    T_keep = network.find_neighbor_throats(pores=(T_nums == 1))
     if mode == 'random':
-        z_ave = _sp.average(T_nums[T_nums>1])
+        z_ave = _sp.average(T_nums[T_nums > 1])
         f_trim = (z_ave - z)/z_ave
-        T_trim = _sp.rand(network.Nt)<f_trim
+        T_trim = _sp.rand(network.Nt) < f_trim
         T_trim = T_trim*(~network.tomask(throats=T_keep))
     if mode == 'max':
         pass
     return T_trim
-
-
-
-
-
-
