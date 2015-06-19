@@ -58,4 +58,16 @@ del ctrl
 save = _controller.save
 load = _controller.load
 export = _controller.export
-view = _controller.__str__
+clear = _controller.clear
+purge_object = _controller.purge_object
+
+
+def view():
+    print(_controller.__str__())
+
+
+
+
+
+
+
