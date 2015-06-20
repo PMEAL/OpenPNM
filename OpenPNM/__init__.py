@@ -16,7 +16,7 @@ Subpackages
    * - Name
      - Description
    * - :mod:`OpenPNM.Network`
-     - Storage of network topoology and methods for working with the data stored on them.
+     - Storage of network topoology and methods for querying topology.
    * - :mod:`OpenPNM.Geometry`
      - Manages the geometrical properties of the pores and throats.
    * - :mod:`OpenPNM.Physics`
@@ -64,10 +64,3 @@ purge_object = _controller.purge_object
 
 def view():
     print(_controller.__str__())
-
-
-
-
-
-
-

@@ -210,7 +210,7 @@ class Controller(dict):
         False
         >>> pn2.keys() == pn.keys()  # They have otherwise identical data
         True
-        >>> pn2.controller is ctrl # pn2 is not associated with existing Controller
+        >>> pn2 in ctrl.values() # pn2 is not associated with existing Controller
         False
 
         It can also be used to create ghosts of other object types:
@@ -231,8 +231,8 @@ class Controller(dict):
         False
 
         # The ghost is not registered with the Controller
-        >>> geo2.controller
-        {}
+        >>> geo2 in ctrl.values()
+        False
 
         # The following comparisons look at some 'behind the scenes' information
         # The ghost and ancestor are assoicated with the same Network
