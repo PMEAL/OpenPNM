@@ -298,6 +298,7 @@ class Controller(dict):
         --------
         >>> import OpenPNM
         >>> ctrl = OpenPNM.Base.Controller()
+        >>> ctrl.clear()  # Ensure no previous objects are present
         >>> pn = OpenPNM.Network.TestNet()
         >>> ctrl.save('test.pnm')
         >>> pn.name in ctrl.keys()
@@ -331,8 +332,7 @@ class Controller(dict):
         Notes
         -----
         This calls the ``clear`` method of the Controller object, so it will
-        over write the calling objects information AND remove any references
-        to the calling object from existing objects.
+        remove all existing objects in the current workspace.
         """
         filename = filename.strip('.pnm')
         if self != {}:
@@ -340,7 +340,7 @@ class Controller(dict):
                    existing data will be lost')
             self.clear()
 
-        self = _pickle.load(open(filename+'.pnm','rb'))
+        self = _pickle.load(open(filename+'.pnm', 'rb'))
         return self
 
     def export(self, network=None, filename='', fileformat='VTK'):

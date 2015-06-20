@@ -1,7 +1,8 @@
 r"""
-##################################################################################
-:mod:`OpenPNM` --  A pore network modeling framework for simulating tranport in porous media
-##################################################################################
+###############################################################################
+:mod:`OpenPNM` --  A pore network modeling framework for simulating tranport in
+porous media
+###############################################################################
 
 Documentation is available in the docstrings and in the on-line documentation.
 
@@ -33,15 +34,12 @@ Import
 >>> import OpenPNM
 
 """
-
 import scipy as sp
-
 if sp.__version__ < '0.14.0':
     raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
 
-__version__ = '1.2.0'
-
 __requires__ = ['scipy']
+__version__ = '1.2.0'
 
 from . import Base
 from . import Utilities
