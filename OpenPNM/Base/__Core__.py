@@ -25,7 +25,6 @@ class Core(dict):
         obj.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
         # Initialize phase, physics, and geometry tracking lists
         obj._name = None
-        obj._ctrl = {}
         obj._phases = []
         obj._geometries = []
         obj._physics = []
@@ -111,7 +110,7 @@ class Core(dict):
     def _set_ctrl(self, controller):
         if self.name in controller.keys():
             raise Exception('An object named '+self.name+' is already present in simulation')
-        ctrl.update({self.name: self})
+        controller[self.name] = self
 
     def _get_ctrl(self):
         if self.name in ctrl:
