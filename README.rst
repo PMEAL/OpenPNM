@@ -3,7 +3,7 @@ OpenPNM
 
 .. image:: https://travis-ci.org/PMEAL/OpenPNM.svg?branch=develop
    :target: https://travis-ci.org/PMEAL/OpenPNM
-.. image:: https://coveralls.io/repos/PMEAL/OpenPNM/badge.svg
+.. image:: https://coveralls.io/repos/PMEAL/OpenPNM/badge.svg?branch=develop
    :target: https://coveralls.io/r/PMEAL/OpenPNM
 .. image:: https://badges.gitter.im/Join%20Chat.svg
    :alt: Join the chat at https://gitter.im/PMEAL/OpenPNM
