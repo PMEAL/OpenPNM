@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 
 import sys
-import subprocess
+import pytest
 
-command = ['py.test']
+args = ['-v']
 
 if 'pep8' in sys.argv:
-    command.append('--pep8')
+    args.append('--pep8')
 
 if 'cov' in sys.argv:
-    command.extend(['--cov-report=term-missing', '--cov=.', '--cov-config=.coveragerc'])
+    args.extend(['--cov-report=term-missing',
+                 '--cov=OpenPNM',
+                 '--cov-config=.coveragerc',
+                 '--no-cov-on-fail'])
 
-subprocess.call(command)
+exit_code = pytest.main(args)
+exit(exit_code)

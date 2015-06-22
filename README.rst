@@ -1,10 +1,14 @@
 OpenPNM
 =======
+.. image:: https://badge.fury.io/py/openpnm.svg
+   :target: http://badge.fury.io/py/openpnm
 
 .. image:: https://travis-ci.org/PMEAL/OpenPNM.svg?branch=develop
    :target: https://travis-ci.org/PMEAL/OpenPNM
-.. image:: https://coveralls.io/repos/PMEAL/OpenPNM/badge.svg
+
+.. image:: https://coveralls.io/repos/PMEAL/OpenPNM/badge.svg?branch=develop
    :target: https://coveralls.io/r/PMEAL/OpenPNM
+
 .. image:: https://badges.gitter.im/Join%20Chat.svg
    :alt: Join the chat at https://gitter.im/PMEAL/OpenPNM
    :target: https://gitter.im/PMEAL/OpenPNM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
