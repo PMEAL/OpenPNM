@@ -23,4 +23,4 @@ script:
     - ./bin/test pep8 cov
 
 after_success:
-    - coveralls
+    - codecov
