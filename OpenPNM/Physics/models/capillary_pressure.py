@@ -116,6 +116,106 @@ def purcell(physics, phase, network, r_toroid,
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r) * \
         (_sp.cos(_sp.radians(theta - alpha)) /
-            (1 + R/r*(1-_sp.cos(_sp.radians(alpha)))))
+            (1 + R/r*(1 - _sp.cos(_sp.radians(alpha)))))
     value = value[phase.throats(physics.name)]
     return value
+
+
+def static_pressure(network,
+                    physics,
+                    phase,
+                    pore_density='pore.density',
+                    pore_occupancy='pore.occupancy',
+                    g=[0, 0, 9.81],
+                    **kwargs):
+    r'''
+    Finds the highest point on each cluster and adds the corresponding static
+    fluid pressure to the entry pressure of each throat.
+
+    Parameters
+    ----------
+    pore_occupancy : dictionary key (string)
+        The name of the array on the phase object describing the phase
+        distribution.
+
+    density : dictionary key (string)
+        String providing the dictionary location of the phase density.  The
+        default is 'pore.density'.
+
+    g : list
+        A three component vector describing the direction and magnitude of the
+        force acting on the fluid.  The default is [0,0,9.81] corresponding to
+        Earth's gravity acting in the downward z-direction.
+
+    Returns
+    -------
+    An Np long list containing the static fluid pressure within each pore.
+
+    Notes
+    -----
+    (1) It is important to remember that the 'top' of the Network corresponds
+    to the maximum coordinate value.  The static pressure is thus calculated
+    using the distance from the 'top' of the Network.
+
+    (2) There is a slight flaw in the logic of sending the pore occupancy,
+    rather than throat occupancy: cluster labeling using pore occupancy invokes
+    site percolation rather then bond percolation.  Hence, although it is
+    physically possible for two neighboring pores to be on different clusters,
+    this method will count them as on the same clusters.  This inaccuracy was
+    necessary, however, so that the method worked for both defending and
+    invading phase.
+
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.Cubic(shape=[25,1,50], spacing=0.0001)
+    >>> water = OpenPNM.Phases.Water(network=pn)
+    >>> water['pore.density'] = 997  # kg/m3
+    >>> phys_water = OpenPNM.Physics.GenericPhysics(network=pn,
+                                                    phase=water,
+                                                    pores=pn.Ps,
+                                                    throats=pn.Ts)
+
+    Add the 'static_pressure' model to the water Physics object:
+
+    >>> f = OpenPNM.Physics.models.capillary_pressure.static_pressure
+    >>> phys_water.models.add(model=f,
+                              propname='pore.static_pressure',
+                              pore_occupancy='pore.occupancy',
+                              density='pore.density',
+                              regen_mode='deferred')
+
+    Rigorously speaking, it is necessary to create an IP algorithm to determine
+    a water distribution in the Network, but for the sake of this example, an
+    artificial distribution will be used:
+
+    >>> water['pore.occupancy'] = sp.rand(pn.Np,) < 0.5
+    >>> phys_water.models.regenerate()
+
+    To visualize the result use:
+
+    .. code-block:: python
+
+        plt.matshow(pn.asarray(phys_water['pore.static_pressure'])[:,0,:].T,
+                    interpolation='none',
+                    origin='lower')
+
+    '''
+    # Setup model variables and parameters
+    static_pressure = _sp.zeros((network.Np,))
+    rho = phase[pore_density]
+    g = _sp.array(g)
+    # Labels clusters of defending phase
+    clusters = network.find_clusters2(phase[pore_occupancy])
+    # Remove the -1 cluster from list
+    cluster_nums = _sp.unique(clusters)
+    cluster_nums = cluster_nums[~_sp.in1d(cluster_nums, -1)]
+    # Scan through each labelled cluster and find static pressure within
+    for cluster in cluster_nums:
+        Ps = _sp.where(clusters == cluster)[0]
+        tops = _sp.amax(network['pore.coords'][Ps, :], axis=0)
+        h = tops - network['pore.coords'][Ps]
+        P_temp = g*h
+        P_temp = _sp.reshape(P_temp[:, _sp.where(g > 0)[0]], -1)
+        static_pressure[Ps] = P_temp*rho[Ps]
+    return static_pressure

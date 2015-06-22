@@ -1,11 +1,13 @@
 import OpenPNM
+import scipy as sp
+import matplotlib.pyplot as plt
 print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 
 ctrl = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net')
+pn = OpenPNM.Network.Cubic(shape=[25,1,100],spacing=0.001,name='net')
 pn.add_boundaries()
 
 #==============================================================================
@@ -14,6 +16,9 @@ pn.add_boundaries()
 Ps = pn.pores('boundary',mode='not')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
 geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
+geom.models['pore.seed']['seed'] = 0
+geom.models['pore.seed']['regen_mode'] = 'normal'
+geom.regenerate()
 
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
@@ -22,9 +27,10 @@ boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 #==============================================================================
 '''Build Phases'''
 #==============================================================================
-air = OpenPNM.Phases.Air(network=pn,name='air')
-air['pore.Dac'] = 1e-7  # Add custom properties directly
 water = OpenPNM.Phases.Water(network=pn,name='water')
+air = OpenPNM.Phases.Air(network=pn,name='air')
+air['pore.surface_tension'] = 0.072
+air['pore.contact_angle'] = 0
 
 #==============================================================================
 '''Build Physics'''
@@ -32,72 +38,64 @@ water = OpenPNM.Phases.Water(network=pn,name='water')
 Ps = pn.pores()
 Ts = pn.throats()
 phys_water = OpenPNM.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts)
+#Add some additional models to phys_water
+phys_water.models.add(model=OpenPNM.Physics.models.capillary_pressure.static_pressure,
+                      propname='pore.static_pressure',
+                      regen_mode='deferred')
 phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
-#Add some additional models to phys_air
-phys_air.models.add(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion,
-                    propname='throat.gdiff_ac',
-                    pore_diffusivity='pore.Dac')
+phys_air.models['throat.capillary_pressure'] = phys_water.models['throat.capillary_pressure'].copy()
 
 #==============================================================================
 '''Begin Simulations'''
 #==============================================================================
-'''Perform a Drainage Experiment (OrdinaryPercolation)'''
+'''Perform Invasion Percolation using Version 2'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air)
-Ps = pn.pores(labels=['bottom_boundary'])
-OP_1.run(inlets=Ps)
-OP_1.return_results(Pc=7000)
+IP = OpenPNM.Algorithms.InvasionPercolation2(network=pn)
+inlets = pn.pores('top_boundary')
+filled = False
+count = 0
+#while not filled:
+while count < 20:
+    count += 1
+    print('Loop number:', count)
+    IP.setup(phase=air, p_inlets=inlets)
+    filled = IP.run(nsteps=50)
+    water['throat.occupancy'] = False
+    water['throat.occupancy'][IP['throat.invaded'] == -1] = True
+    phys_water.models.regenerate('pore.static_pressure')
+    P12 = pn['throat.conns']
+    temp = sp.amax(phys_water['pore.static_pressure'][P12],axis=1)
+    phys_water['throat.capillary_pressure'] += temp
+    inlets = (IP['pore.invaded'] >= 0)
 
-#------------------------------------------------------------------------------
-'''Perform Invasion Percolation'''
-#------------------------------------------------------------------------------
-inlets = pn.pores('bottom_boundary')
-outlets = pn.pores('top_boundary')
-IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn,name='IP_1')
-IP_1.run(phase=water,inlets=inlets)
-IP_1.apply_flow(flowrate=1e-15)
-IP_1.return_results()
+Ps = pn.pores('internal')
+plt.matshow(pn.asarray(phys_water['pore.static_pressure'][Ps])[:,0,:].T,
+                       interpolation='none',
+                       origin='lower')
 
-#------------------------------------------------------------------------------
-'''Perform Fickian Diffusion'''
-#------------------------------------------------------------------------------
-alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
-# Assign Dirichlet boundary conditions to top and bottom surface pores
-BC1_pores = pn.pores('right_boundary')
-alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
-BC2_pores = pn.pores('left_boundary')
-alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
-#Add new model to air's physics that accounts for water occupancy
-phys_air.models.add(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
-                    propname='throat.conduit_diffusive_conductance',
-                    throat_conductance='throat.diffusive_conductance',
-                    throat_occupancy='throat.occupancy',
-                    pore_occupancy='pore.occupancy',
-                    mode='strict',
-                    factor=0)
-#Use desired diffusive_conductance in the diffusion calculation (conductance for the dry network or water-filled network)
-alg.run(conductance='throat.diffusive_conductance')
-alg.return_results()
-Deff = alg.calc_eff_diffusivity()
+plt.matshow(pn.asarray(IP['pore.invaded'][Ps])[:,0,:].T,
+                       interpolation='none',
+                       origin='lower')
 
-try:
-    # this creates a time step x num_pores, which is what the animated object needs
-    inv_seq = water['pore.IP_inv_seq'].squeeze()
-    history = []
-    for i in sorted(set(inv_seq)):
-      history.append( (inv_seq != 0) & (inv_seq < i) )
-    # try to perofrm an animated 3D rendering
-    from OpenPNM.Postprocessing.Graphics import Scene, Wires
-    wires = Wires(pn['pore.coords'], pn['throat.conns'], history)
-    scene = Scene()
-    scene.add_actors([wires])
-    scene.play()
 
-except Exception as e:
-    pass
 
-#------------------------------------------------------------------------------
-'''Export to VTK'''
-#------------------------------------------------------------------------------
-ctrl.export()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
