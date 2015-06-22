@@ -166,7 +166,7 @@ def amalgamate_data(objs=[]):
         # If Network object, combine Geometry and Network keys
         if 'GenericNetwork' in mro:
             keys = []
-            for key in item.keys():
+            for key in list(item.keys()):
                 keys.append(key)
             for geom in item._geometries:
                 for key in geom.keys():

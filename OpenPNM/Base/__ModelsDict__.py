@@ -79,9 +79,9 @@ class ModelWrapper(dict):
     def _find_master(self):
         ctrl = Controller()
         master = []
-        for item in ctrl.keys():
+        for item in list(ctrl.keys()):
             if ctrl[item].models is not None:
-                for model in ctrl[item].models.keys():
+                for model in list(ctrl[item].models.keys()):
                     if ctrl[item].models[model] is self:
                         master.append(ctrl[item])
         if len(master) > 1:
@@ -211,7 +211,7 @@ class ModelsDict(OrderedDict):
             for item in props:
                 temp.remove(item)
             props = temp
-        for item in self.keys():
+        for item in list(self.keys()):
             if self[item]['regen_mode'] == 'constant':
                 props.remove(item)
         logger.info('Models are being recalculated in the following order: ')
@@ -358,7 +358,7 @@ class ModelsDict(OrderedDict):
     def _find_master(self):
         ctrl = Controller()
         master = []
-        for item in ctrl.keys():
+        for item in list(ctrl.keys()):
             if ctrl[item].models is self:
                 master.append(ctrl[item])
         if len(master) > 1:

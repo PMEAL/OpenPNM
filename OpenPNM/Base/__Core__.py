@@ -3,14 +3,16 @@
 Core:  Core Data Class
 ###############################################################################
 """
-import string, random
+from OpenPNM.Base import Controller
+import string
+import random
 import scipy as sp
 import scipy.constants
 from OpenPNM.Base import logging, Tools
 from OpenPNM.Base import ModelsDict
 logger = logging.getLogger()
-from OpenPNM.Base import Controller
 ctrl = Controller()
+
 
 class Core(dict):
     r"""
@@ -23,7 +25,6 @@ class Core(dict):
         obj.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
         # Initialize phase, physics, and geometry tracking lists
         obj._name = None
-        obj._ctrl = {}
         obj._phases = []
         obj._geometries = []
         obj._physics = []
@@ -45,13 +46,13 @@ class Core(dict):
             self.__class__.__name__,
             hex(id(self)))
 
-    def __eq__(self,other):
+    def __eq__(self, other):
         if hex(id(self)) == hex(id(other)):
             return True
         else:
             return False
 
-    def __setitem__(self,key,value):
+    def __setitem__(self, key, value):
         r"""
         This is a subclass of the default __setitem__ behavior.  The main aim
         is to limit what type and shape of data can be written to protect
@@ -73,56 +74,58 @@ class Core(dict):
             logger.error('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
             return
         # Convert value to an ndarray
-        value = sp.array(value,ndmin=1)
-        #Skip checks for 'coords', 'conns'
+        value = sp.array(value, ndmin=1)
+        # Skip checks for 'coords', 'conns'
         if (key == 'pore.coords') or (key == 'throat.conns'):
-            super(Core, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key, value)
             return
         # Skip checks for protected props, and prevent changes if defined
         if key.split('.')[1] in ['all']:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
                     logger.debug(key+' is being defined.')
-                    super(Core, self).__setitem__(key,value)
+                    super(Core, self).__setitem__(key, value)
                 else:
                     logger.warning(key+' is already defined.')
                     return
             else:
                 logger.debug(key+' is being defined.')
-                super(Core, self).__setitem__(key,value)
+                super(Core, self).__setitem__(key, value)
             return
         # Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
             logger.debug('Broadcasting scalar value into vector: '+key)
-            value = sp.ones((self._count(element),),dtype=value.dtype)*value
-            super(Core, self).__setitem__(key,value)
+            value = sp.ones((self._count(element), ), dtype=value.dtype)*value
+            super(Core, self).__setitem__(key, value)
         elif sp.shape(value)[0] == self._count(element):
             logger.debug('Updating vector: '+key)
-            super(Core, self).__setitem__(key,value)
+            super(Core, self).__setitem__(key, value)
         else:
             if self._count(element) == 0:
-                self.update({key:value})
+                self.update({key: value})
             else:
                 logger.warning('Cannot write vector with an array of the wrong length: '+key)
                 pass
 
-    def _set_ctrl(self,controller):
+    def _set_ctrl(self, controller):
         if self.name in controller.keys():
             raise Exception('An object named '+self.name+' is already present in simulation')
-        self._ctrl = controller
-        controller.update({self.name: self})
+        controller[self.name] = self
 
     def _get_ctrl(self):
-        return self._ctrl
+        if self in ctrl.values():
+            return ctrl
+        else:
+            return {}
 
-    controller = property(_get_ctrl,_set_ctrl)
+    controller = property(_get_ctrl, _set_ctrl)
 
-    def _set_name(self,name):
+    def _set_name(self, name):
         if name in self.controller.keys():
             raise Exception('An object named '+name+' already exists')
         elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
-            name = self.__module__.split('.')[-1].strip('__') + '_' + name
+            name = self.__class__.__name__ + '_' + name
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
@@ -131,18 +134,20 @@ class Core(dict):
                 keys = [key.split('.')[-1] for key in item.keys()]
                 if name in keys:
                     raise Exception(name+' is already in use as an array name')
+            # If name is OK, then rename all related arrays (i.e. labels)
             for item in objs:
                 if 'pore.'+self.name in item.keys():
                     item['pore.'+name] = item.pop('pore.'+self.name)
                 if 'throat.'+self.name in item.keys():
                     item['throat.'+name] = item.pop('throat.'+self.name)
-            self._ctrl[name] = self._ctrl.pop(self.name)
+            self.controller[name] = self
+            del self.controller[self.name]
         self._name = name
 
     def _get_name(self):
         return self._name
 
-    name = property(_get_name,_set_name)
+    name = property(_get_name, _set_name)
 
     def _simulation(self):
         temp = []
@@ -158,30 +163,33 @@ class Core(dict):
         """
         pall = self['pore.all']
         tall = self['throat.all']
-        super(Core,self).clear()
-        self.update({'throat.all':tall})
-        self.update({'pore.all':pall})
+        super(Core, self).clear()
+        self.update({'throat.all': tall})
+        self.update({'pore.all': pall})
 
-    #--------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     """Model Manipulation Methods"""
-    #--------------------------------------------------------------------------
-    #Note: These methods have been moved to the ModelsDict class but are left
-    #here for backward compatibility
-    def add_model(self,propname,model,regen_mode='normal',**kwargs):
-        self.models.add(propname=propname,model=model,regen_mode=regen_mode,**kwargs)
+    # -------------------------------------------------------------------------
+    # Note: These methods have been moved to the ModelsDict class but are left
+    # here for backward compatibility
+    def add_model(self, propname, model, regen_mode='normal', **kwargs):
+        self.models.add(propname=propname,
+                        model=model,
+                        regen_mode=regen_mode,
+                        **kwargs)
 
     add_model.__doc__ = ModelsDict.add.__doc__
 
-    def regenerate(self,props='',mode='inclusive'):
-        self.models.regenerate(props=props,mode=mode)
+    def regenerate(self, props='', mode='inclusive'):
+        self.models.regenerate(props=props, mode=mode)
 
     regenerate.__doc__ = ModelsDict.regenerate.__doc__
 
-    #--------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     'Object lookup methods'
-    #--------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
-    def _find_object(self,obj_name='',obj_type=''):
+    def _find_object(self, obj_name='', obj_type=''):
         r"""
         Find objects associated with a given network model by name or type
 
@@ -209,17 +217,17 @@ class Core(dict):
                 obj = ctrl[obj_name]
             return obj
         elif obj_type != '':
-            if obj_type in ['Geometry','Geometries','geometry','geometries']:
+            if obj_type in ['Geometry', 'Geometries', 'geometry', 'geometries']:
                 objs = ctrl.geometries()
-            elif obj_type in ['Phase','Phases','phase','phases']:
+            elif obj_type in ['Phase', 'Phases', 'phase', 'phases']:
                 objs = ctrl.phases()
-            elif obj_type in ['Physics','physics']:
+            elif obj_type in ['Physics', 'physics']:
                 objs = ctrl.physics()
-            elif obj_type in ['Network','Networks','network','networks']:
+            elif obj_type in ['Network', 'Networks', 'network', 'networks']:
                 objs = ctrl.networks()
             return objs
 
-    def physics(self,phys_name=[]):
+    def physics(self, phys_name=[]):
         r"""
         Retrieves Physics associated with the object
 
@@ -271,7 +279,7 @@ class Core(dict):
                     phase.append(item)
         return phase
 
-    def geometries(self,geom_name=[]):
+    def geometries(self, geom_name=[]):
         r"""
         Retrieves Geometry object(s) associated with the object
 
@@ -297,7 +305,7 @@ class Core(dict):
                     geom.append(item)
         return geom
 
-    def network(self,name=''):
+    def network(self, name=''):
         r"""
         Retrieves the network associated with the object.  If the object is
         a network, then it returns a handle to itself.
@@ -323,15 +331,15 @@ class Core(dict):
         else:
             net = []
             temp = self._find_object(obj_name=name)
-            if hasattr(temp,'_isa'):
+            if hasattr(temp, '_isa'):
                 if temp._isa('Network'):
                     net = temp
         return net
 
-    #--------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     """Data Query Methods"""
-    #--------------------------------------------------------------------------
-    def props(self,element='',mode='all'):
+    # -------------------------------------------------------------------------
+    def props(self, element='', mode='all'):
         r"""
         Returns a list containing the names of all defined pore or throat
         properties.
@@ -372,7 +380,7 @@ class Core(dict):
         """
 
         props = []
-        for item in self.keys():
+        for item in list(self.keys()):
             if self[item].dtype != bool:
                 props.append(item)
 
@@ -406,7 +414,7 @@ class Core(dict):
         """
         # Collect list of all pore OR throat labels
         labels = []
-        for item in self.keys():
+        for item in list(self.keys()):
             if item.split('.')[0] == element:
                 if self[item].dtype in ['bool']:
                     labels.append(item)
@@ -415,41 +423,41 @@ class Core(dict):
             return Tools.PrintableList(labels)
         else:
             labels = sp.array(labels)
-            locations = sp.array(locations,ndmin=1)
+            locations = sp.array(locations, ndmin=1)
             if locations.dtype in ['bool']:
                 locations = self._get_indices(element=element)[locations]
             else:
-                locations = sp.array(locations,dtype=int)
-            arr = sp.zeros((sp.shape(locations)[0],len(labels)),dtype=bool)
+                locations = sp.array(locations, dtype=int)
+            arr = sp.zeros((sp.shape(locations)[0], len(labels)), dtype=bool)
             col = 0
             for item in labels:
-                arr[:,col] = self[item][locations]
+                arr[:, col] = self[item][locations]
                 col = col + 1
             if mode == 'count':
-                return sp.sum(arr,axis=1)
+                return sp.sum(arr, axis=1)
             if mode == 'union':
-                temp = labels[sp.sum(arr,axis=0)>0]
+                temp = labels[sp.sum(arr, axis=0) > 0]
                 temp.tolist()
                 return Tools.PrintableList(temp)
             if mode == 'intersection':
-                temp = labels[sp.sum(arr,axis=0)==sp.shape(locations,)[0]]
+                temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
                 temp.tolist()
                 return Tools.PrintableList(temp)
             if mode in ['difference', 'not']:
-                temp = labels[sp.sum(arr,axis=0)!=sp.shape(locations,)[0]]
+                temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
                 temp.tolist()
                 return Tools.PrintableList(temp)
             if mode == 'mask':
                 return arr
             if mode == 'none':
-                temp = sp.ndarray((sp.shape(locations,)[0],),dtype=object)
-                for i in sp.arange(0,sp.shape(locations,)[0]):
-                    temp[i] = list(labels[arr[i,:]])
+                temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
+                for i in sp.arange(0, sp.shape(locations, )[0]):
+                    temp[i] = list(labels[arr[i, :]])
                 return temp
             else:
                 logger.error('unrecognized mode:'+mode)
 
-    def labels(self,element='',pores=[],throats=[],mode='union'):
+    def labels(self,element='', pores=[], throats=[], mode='union'):
         r"""
         Returns the labels applied to specified pore or throat locations
 
@@ -492,26 +500,26 @@ class Core(dict):
                 temp = []
                 temp = self._get_labels(element='pore')
                 temp.extend(self._get_labels(element='throat'))
-            elif element in ['pore','pores']:
-                temp = self._get_labels(element='pore',locations=[], mode=mode)
-            elif element in ['throat','throats']:
-                temp = self._get_labels(element='throat',locations=[], mode=mode)
+            elif element in ['pore', 'pores']:
+                temp = self._get_labels(element='pore', locations=[], mode=mode)
+            elif element in ['throat', 'throats']:
+                temp = self._get_labels(element='throat', locations=[], mode=mode)
             else:
                 logger.error('Unrecognized element')
                 return
         elif sp.size(pores) != 0:
             if pores == 'all':
                 pores = self.pores()
-            pores = sp.array(pores,ndmin=1)
-            temp = self._get_labels(element='pore',locations=pores, mode=mode)
+            pores = sp.array(pores, ndmin=1)
+            temp = self._get_labels(element='pore', locations=pores, mode=mode)
         elif sp.size(throats) != 0:
             if throats == 'all':
                 throats = self.throats()
-            throats = sp.array(throats,ndmin=1)
-            temp = self._get_labels(element='throat',locations=throats,mode=mode)
+            throats = sp.array(throats, ndmin=1)
+            temp = self._get_labels(element='throat', locations=throats, mode=mode)
         return temp
 
-    def filter_by_label(self,pores=[],throats=[],labels='',mode='union'):
+    def filter_by_label(self, pores=[], throats=[], labels='', mode='union'):
         r"""
         Returns which of the supplied pores (or throats) has the specified label
 
@@ -1178,16 +1186,14 @@ class Core(dict):
             boss_obj = self._phases[0]
             co_objs = boss_obj.physics()
         else:
-            logger.warning('Setting locations only applies to Geometry or Physics objects')
-            return
+            raise Exception('Setting locations only applies to Geometry or Physics objects')
 
         if mode == 'add':
             # Check if any constant values exist on the object
             for item in self.props():
                 if (item not in self.models.keys()) or \
                    (self.models[item]['regen_mode'] == 'constant'):
-                    logger.critical('Constant models found on object,' +
-                                    'models must be rerun manually')
+                    raise Exception('Constant properties found on object, cannot increase size')
             # Ensure locations are not already assigned to another object
             temp = sp.zeros((net._count(element), ), dtype=bool)
             for key in co_objs:
@@ -1195,8 +1201,7 @@ class Core(dict):
             overlaps = sp.sum(temp*net._tomask(locations=locations,
                                                element=element))
             if overlaps > 0:
-                self.controller.purge_object(self)
-                raise Exception('Some of the given '+element+'s overlap with an existing object')
+                raise Exception('Some of the given '+element+'s are assigned to an existing object')
 
             # Store original Network indices for later use
             old_inds = sp.copy(net[element+'.'+self.name])
@@ -1223,21 +1228,21 @@ class Core(dict):
                     blank[old_inds] = self[item]
                     self.update({item: blank[net[element+'.all']]})
 
+            # Finally, regenerate models to correct the length of all arrays
+            self.models.regenerate()
+
         if mode == 'remove':
             self_inds = boss_obj._map(element=element,
                                       locations=locations,
                                       target=self)
             keep = ~self._tomask(locations=self_inds, element=element)
-            for item in self.keys():
+            for item in list(self.keys()):
                 if item.split('.')[0] == element:
                     temp = self[item][keep]
                     self.update({item: temp})
             # Set locations in Network dictionary
             net[element+'.'+self.name][locations] = False
             boss_obj[element+'.'+self.name][locations] = False
-
-        # Finally, regenerate models to correct the length of all prop array
-        self.models.regenerate()
 
     def _map(self, element, locations, target, return_mapping=False):
         r"""
@@ -1402,6 +1407,17 @@ class Core(dict):
 
     Tnet = property(fget=map_throats)
     Pnet = property(fget=map_pores)
+
+    def _parse_locations(self, locations):
+        locs = sp.array(locations, ndmin=1)
+        if locs.dtype == bool:
+            if sp.size(locs) == self.Np:
+                locs = self.Ps(locs)
+            elif sp.size(locs) == self.Nt:
+                locs = self.Ts(locs)
+            else:
+                raise Exception('List of locations is neither Np nor Nt long')
+        return locs
 
     def _isa(self, keyword=None, obj=None):
         r"""
