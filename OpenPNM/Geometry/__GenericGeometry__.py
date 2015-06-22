@@ -57,7 +57,7 @@ class GenericGeometry(Core):
             self.set_locations(pores=pores, throats=throats)
         except:
             self.controller.purge_object(self)
-            raise Exception('Provided pore/throat locations are in use, instantiation cannot proceed')
+            raise Exception('Provided locations are in use, instantiation cancelled')
 
     def __getitem__(self, key):
         element = key.split('.')[0]
@@ -65,7 +65,7 @@ class GenericGeometry(Core):
         if key.split('.')[-1] == self.name:
             key = element + '.all'
 
-        if key in self.keys():  # Look for data on self...
+        if key in list(self.keys()):  # Look for data on self...
             return super(GenericGeometry, self).__getitem__(key)
         if key == 'throat.conns':  # Handle specifically
             [P1, P2] = \

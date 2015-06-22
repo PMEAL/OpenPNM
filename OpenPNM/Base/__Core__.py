@@ -380,7 +380,7 @@ class Core(dict):
         """
 
         props = []
-        for item in self.keys():
+        for item in list(self.keys()):
             if self[item].dtype != bool:
                 props.append(item)
 
@@ -414,7 +414,7 @@ class Core(dict):
         """
         # Collect list of all pore OR throat labels
         labels = []
-        for item in self.keys():
+        for item in list(self.keys()):
             if item.split('.')[0] == element:
                 if self[item].dtype in ['bool']:
                     labels.append(item)
@@ -1236,7 +1236,7 @@ class Core(dict):
                                       locations=locations,
                                       target=self)
             keep = ~self._tomask(locations=self_inds, element=element)
-            for item in self.keys():
+            for item in list(self.keys()):
                 if item.split('.')[0] == element:
                     temp = self[item][keep]
                     self.update({item: temp})

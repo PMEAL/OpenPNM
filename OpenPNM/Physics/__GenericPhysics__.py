@@ -77,7 +77,7 @@ class GenericPhysics(OpenPNM.Base.Core):
             self.set_locations(pores=pores, throats=throats)
         except:
             self.controller.purge_object(self)
-            raise Exception('Provided pore/throat locations are in use, instantiation cannot proceed')
+            raise Exception('Provided locations are in use, instantiation cancelled')
 
     def __getitem__(self, key):
         element = key.split('.')[0]

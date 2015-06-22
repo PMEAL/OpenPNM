@@ -240,7 +240,7 @@ class MAT():
         pnMatlab = {}
         new = []
         old = []
-        for keys in network.keys():
+        for keys in list(network.keys()):
             old.append(keys)
             new.append(keys.replace('.', '_'))
 
