@@ -92,6 +92,8 @@ class GenericGeometry(Core):
             from the object.  Options are 'add' (default) or 'remove'.
 
         """
+        pores = self._parse_locations(pores)
+        throats = self._parse_locations(throats)
         if len(pores) > 0:
             pores = sp.array(pores, ndmin=1)
             self._set_locations(element='pore', locations=pores, mode=mode)

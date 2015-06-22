@@ -26,6 +26,7 @@ class ControllerTest:
     def test_save_and_load_simulation(self):
         a = OpenPNM.Network.Cubic(shape=[10, 10, 10])
         self.controller.save_simulation(a)
+        assert a in self.controller.values()
 
     def test_ghost_object(self):
         a = self.controller.ghost_object(self.net)
@@ -68,10 +69,11 @@ class ControllerTest:
 if __name__ == '__main__':
     a = ControllerTest()
     a.setup_class()
-    a.test_save_and_load_workspace()
-    a.test_save_and_load_simulation()
-    a.test_ghost_object()
-    a.test_purge_object()
-    a.test_clone_simulation()
+    b = a.__class__.__dict__
+    for item in b:
+        if item.split('_')[0] == 'test':
+            print('-'*50)
+            print('Testing:'+item)
+            b[item](self=a)
     a.teardown_class()
     print('tests complete')

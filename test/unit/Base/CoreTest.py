@@ -370,7 +370,6 @@ class CoreTest:
 
         Np = self.geo.Np
         Nt = self.geo.Nt
-        self.geo.clear()
         assert self.geo.Np == Np
         assert self.geo.Nt == Nt
 
@@ -423,3 +422,13 @@ class CoreTest:
         Np = self.geo1.Np
         self.geo1.set_locations(pores=self.net1.pores('top'), mode='remove')
         assert Np > self.geo1.Np
+
+if __name__ == '__main__':
+    a = CoreTest()
+    a.setup_class()
+    b = a.__class__.__dict__
+    for item in b:
+        print(item)
+        print(a.geo.labels())
+        if item.split('_')[0] == 'test':
+            b[item](self=a)

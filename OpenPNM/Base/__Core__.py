@@ -113,7 +113,7 @@ class Core(dict):
         controller[self.name] = self
 
     def _get_ctrl(self):
-        if self.name in ctrl:
+        if self in ctrl.values():
             return ctrl
         else:
             return {}
@@ -125,7 +125,7 @@ class Core(dict):
             raise Exception('An object named '+name+' already exists')
         elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
-            name = self.__module__.split('.')[-1].strip('__') + '_' + name
+            name = self.__class__.__name__ + '_' + name
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
@@ -1408,6 +1408,17 @@ class Core(dict):
 
     Tnet = property(fget=map_throats)
     Pnet = property(fget=map_pores)
+
+    def _parse_locations(self, locations):
+        locs = sp.array(locations, ndmin=1)
+        if locs.dtype == bool:
+            if sp.size(locs) == self.Np:
+                locs = self.Ps(locs)
+            elif sp.size(locs) == self.Nt:
+                locs = self.Ts(locs)
+            else:
+                raise Exception('List of locations is neither Np nor Nt long')
+        return locs
 
     def _isa(self, keyword=None, obj=None):
         r"""
