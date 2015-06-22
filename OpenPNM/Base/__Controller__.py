@@ -468,11 +468,11 @@ class Controller(dict):
             return
 
         net = _copy.deepcopy(network)  # Make clone
-        net.name = network.name + '_' + name  # Rename it
+        net._name = network.name + '_' + name  # Rename it
         # Add supplied name suffix to all cloned objects
-        for item in network._phases + network._physics + network._geometries:
+        for item in net._phases + net._physics + net._geometries:
             item._parent = network
-            item.name = item.name + '_' + name
+            item._name = item.name + '_' + name
         self._insert_simulation(net)  # Add simulation to Controller
 
         # Add parent Network numbering to clone
