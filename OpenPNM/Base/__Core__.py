@@ -1184,16 +1184,14 @@ class Core(dict):
             boss_obj = self._phases[0]
             co_objs = boss_obj.physics()
         else:
-            logger.warning('Setting locations only applies to Geometry or Physics objects')
-            return
+            raise Exception('Setting locations only applies to Geometry or Physics objects')
 
         if mode == 'add':
             # Check if any constant values exist on the object
             for item in self.props():
                 if (item not in self.models.keys()) or \
                    (self.models[item]['regen_mode'] == 'constant'):
-                    logger.critical('Constant models found on object,' +
-                                    'models must be rerun manually')
+                    raise Exception('Constant properties found on object, cannot increase size')
             # Ensure locations are not already assigned to another object
             temp = sp.zeros((net._count(element), ), dtype=bool)
             for key in co_objs:
@@ -1201,8 +1199,7 @@ class Core(dict):
             overlaps = sp.sum(temp*net._tomask(locations=locations,
                                                element=element))
             if overlaps > 0:
-                self.controller.purge_object(self)
-                raise Exception('Some of the given '+element+'s overlap with an existing object')
+                raise Exception('Some of the given '+element+'s are assigned to an existing object')
 
             # Store original Network indices for later use
             old_inds = sp.copy(net[element+'.'+self.name])
@@ -1229,6 +1226,9 @@ class Core(dict):
                     blank[old_inds] = self[item]
                     self.update({item: blank[net[element+'.all']]})
 
+            # Finally, regenerate models to correct the length of all arrays
+            self.models.regenerate()
+
         if mode == 'remove':
             self_inds = boss_obj._map(element=element,
                                       locations=locations,
@@ -1241,9 +1241,6 @@ class Core(dict):
             # Set locations in Network dictionary
             net[element+'.'+self.name][locations] = False
             boss_obj[element+'.'+self.name][locations] = False
-
-        # Finally, regenerate models to correct the length of all prop array
-        self.models.regenerate()
 
     def _map(self, element, locations, target, return_mapping=False):
         r"""

@@ -53,7 +53,11 @@ class GenericGeometry(Core):
         # Initialize a label dictionary in the associated network
         self._net['pore.'+self.name] = False
         self._net['throat.'+self.name] = False
-        self.set_locations(pores=pores, throats=throats)
+        try:
+            self.set_locations(pores=pores, throats=throats)
+        except:
+            self.controller.purge_object(self)
+            raise Exception('Provided pore/throat locations are in use, instantiation cannot proceed')
 
     def __getitem__(self, key):
         element = key.split('.')[0]
