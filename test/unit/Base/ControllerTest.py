@@ -28,6 +28,17 @@ class ControllerTest:
         self.controller.save_simulation(a)
         assert a in self.controller.values()
 
+    def test_load_v120_pnm(self):
+        temp = self.controller.copy()
+        self.controller.clear()
+        self.controller.load('test_v120.pnm')
+        a = ['Boundary_hy4Ey', 'FickianDiffusion_LjxxQ', 'IP_1',
+             'OrdinaryPercolation_BI85q', 'Standard_GIaef',
+             'Standard_HmuMH', 'Toray090_935N3', 'air', 'net', 'water']
+        assert sorted(list(self.controller.keys())) == a
+        self.controller.clear()
+        self.controller.update(temp)
+
     def test_ghost_object(self):
         a = self.controller.ghost_object(self.net)
         # Different objects...
@@ -62,7 +73,8 @@ class ControllerTest:
         del(self.geo)
         filelist = os.listdir(".")
         for f in filelist:
-            if f.split('.')[-1] in ['pnm', 'net', 'vtp']:
+            if (f.split('.')[-1] in ['pnm', 'net', 'vtp']) and \
+               (f.split('.')[0] not in ['test_v120']):
                 os.remove(f)
 
 
