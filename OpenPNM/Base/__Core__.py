@@ -134,12 +134,14 @@ class Core(dict):
                 keys = [key.split('.')[-1] for key in item.keys()]
                 if name in keys:
                     raise Exception(name+' is already in use as an array name')
+            # If name is OK, then rename all related arrays (i.e. labels)
             for item in objs:
                 if 'pore.'+self.name in item.keys():
                     item['pore.'+name] = item.pop('pore.'+self.name)
                 if 'throat.'+self.name in item.keys():
                     item['throat.'+name] = item.pop('throat.'+self.name)
-            self.controller[name] = self.controller.pop(self.name)
+            self.controller[name] = self
+            del self.controller[self.name]
         self._name = name
 
     def _get_name(self):

@@ -41,9 +41,14 @@ class Controller(dict):
                                                         net.__class__.__name__))
             for geom in net._geometries:
                 str = '++ {0:<12} {1:<20} ({2})'
-                lines.append(str.format('Geometry: ',
-                                        geom.name,
-                                        geom.__class__.__name__))
+                if geom in self.values():
+                    lines.append(str.format('Geometry: ',
+                                            geom.name,
+                                            geom.__class__.__name__))
+                else:
+                    lines.append(str.format('ERROR: ',
+                                            geom.name,
+                                            'Object Not in Controller'))
             for phase in net._phases:
                 if len(phase._phases) == 0:
                     str = '+ {0:<13} {1:<20} ({2})'
@@ -63,9 +68,14 @@ class Controller(dict):
                                                 phase.__class__.__name__))
                 for phys in phase._physics:
                     str = '++ {0:<12} {1:<20} ({2})'
-                    lines.append(str.format('Physics: ',
-                                            phys.name,
-                                            phys.__class__.__name__))
+                    if phys in self.values():
+                        lines.append(str.format('Physics: ',
+                                                phys.name,
+                                                phys.__class__.__name__))
+                    else:
+                        lines.append(str.format('ERROR: ',
+                                                phys.name,
+                                                'Object Not in Controller'))
         return '\n'.join(lines)
 
     def _setloglevel(self, level):
