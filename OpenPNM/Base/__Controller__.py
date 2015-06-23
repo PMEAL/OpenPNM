@@ -478,12 +478,12 @@ class Controller(dict):
             return
 
         net = _copy.deepcopy(network)  # Make clone
-        net._name = network.name + '_' + name  # Rename it
         # Add supplied name suffix to all cloned objects
-        for item in net._phases + net._physics + net._geometries:
+        for item in net._simulation():
             item._parent = network
-            item._name = item.name + '_' + name
-        self._insert_simulation(net)  # Add simulation to Controller
+            item.name = item.name + '_' + name
+
+#        self._insert_simulation(net)  # Add simulation to Controller
 
         # Add parent Network numbering to clone
         net['pore.' + network.name] = network.Ps
@@ -493,17 +493,22 @@ class Controller(dict):
     def _validate_name(self, name):
         valid_name = True
         for item_name in list(self.keys()):
+            # Check object names for conflict
             if name == item_name:
                 return False
+            # Also check array names on all objects
             for array_name in list(self[item_name].keys()):
                 if name == array_name.split('.')[1]:
                     return False
         return valid_name
 
     def _insert_simulation(self, network):
+        for item in network._simulation():
+            if item.name in self.keys():
+                raise Exception('An object named '+item.name+' is already present')
         if network.name not in self.keys():
             self[network.name] = network
-            for item in network._phases + network._physics + network._geometries:
+            for item in network._simulation():
                 self[item.name] = item
         else:
             print('Duplicate name found in Controller')

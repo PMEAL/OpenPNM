@@ -38,7 +38,6 @@ class Core(dict):
         super().__init__()
         logger.debug('Initializing Core class')
         self.name = name
-        self.controller = ctrl
 
     def __repr__(self):
         return '<%s.%s object at %s>' % (
@@ -107,24 +106,21 @@ class Core(dict):
                 logger.warning('Cannot write vector with an array of the wrong length: '+key)
                 pass
 
-    def _set_ctrl(self, controller):
-        if self.name in controller.keys():
-            raise Exception('An object named '+self.name+' is already present in simulation')
-        controller[self.name] = self
-
     def _get_ctrl(self):
         if self in ctrl.values():
             return ctrl
         else:
             return {}
 
-    controller = property(_get_ctrl, _set_ctrl)
+    controller = property(_get_ctrl)
 
     def _set_name(self, name):
-        if name in self.controller.keys():
+        if name in ctrl.keys():
             raise Exception('An object named '+name+' already exists')
         elif name is None:
-            name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(5))
+            name = ''.join(random.choice(string.ascii_uppercase +
+                                         string.ascii_lowercase +
+                                         string.digits) for _ in range(5))
             name = self.__class__.__name__ + '_' + name
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
@@ -140,8 +136,12 @@ class Core(dict):
                     item['pore.'+name] = item.pop('pore.'+self.name)
                 if 'throat.'+self.name in item.keys():
                     item['throat.'+name] = item.pop('throat.'+self.name)
-            self.controller[name] = self
-            del self.controller[self.name]
+        # Remove reference to object under old name, if present
+        for item in list(ctrl.items()):
+            if item[1] is self:
+                ctrl.pop(item[0])
+        # Add object to controller under new name
+        ctrl[name] = self
         self._name = name
 
     def _get_name(self):
@@ -575,12 +575,12 @@ class Core(dict):
         ind = mask[locations]
         return locations[ind]
 
-    def _get_indices(self,element,labels=['all'],mode='union'):
+    def _get_indices(self, element, labels=['all'], mode='union'):
         r"""
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         """
-        element.rstrip('s')  # Correct plural form of element keyword
+        element = element.rstrip('s')  # Correct plural form of element keyword
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
         if type(labels) == str:  # Convert string to list, if necessary
@@ -588,45 +588,47 @@ class Core(dict):
         for label in labels:  # Parse the labels list for wildcards "*"
             if label.startswith('*'):
                 labels.remove(label)
-                temp = [item for item in self.labels() if item.split('.')[-1].endswith(label.strip('*'))]
+                temp = [item for item in self.labels()
+                        if item.split('.')[-1].endswith(label.strip('*'))]
                 if temp == []:
                     temp = [label.strip('*')]
                 labels.extend(temp)
             if label.endswith('*'):
                 labels.remove(label)
-                temp = [item for item in self.labels() if item.split('.')[-1].startswith(label.strip('*'))]
+                temp = [item for item in self.labels()
+                        if item.split('.')[-1].startswith(label.strip('*'))]
                 if temp == []:
                     temp = [label.strip('*')]
                 labels.extend(temp)
         # Begin computing label array
         if mode == 'union':
-            union = sp.zeros_like(self[element+'.all'],dtype=bool)
-            for item in labels: #iterate over labels list and collect all indices
+            union = sp.zeros_like(self[element+'.all'], dtype=bool)
+            for item in labels:  # Iterate over labels and collect all indices
                     union = union + self[element+'.'+item.split('.')[-1]]
             ind = union
         elif mode == 'intersection':
-            intersect = sp.ones_like(self[element+'.all'],dtype=bool)
-            for item in labels: #iterate over labels list and collect all indices
+            intersect = sp.ones_like(self[element+'.all'], dtype=bool)
+            for item in labels:  # Iterate over labels and collect all indices
                     intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
         elif mode == 'not_intersection':
-            not_intersect = sp.zeros_like(self[element+'.all'],dtype=int)
-            for item in labels: #iterate over labels list and collect all indices
+            not_intersect = sp.zeros_like(self[element+'.all'], dtype=int)
+            for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
-        elif mode in ['difference','not']:
-            none = sp.zeros_like(self[element+'.all'],dtype=int)
-            for item in labels: #iterate over labels list and collect all indices
+        elif mode in ['difference', 'not']:
+            none = sp.zeros_like(self[element+'.all'], dtype=int)
+            for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 none = none - sp.int8(info)
             ind = (none == 0)
-        #Extract indices from boolean mask
-        ind = sp.where(ind==True)[0]
+        # Extract indices from boolean mask
+        ind = sp.where(ind)[0]
         ind = ind.astype(dtype=int)
         return ind
 
-    def pores(self,labels='all',mode='union'):
+    def pores(self, labels='all', mode='union'):
         r"""
         Returns pore locations where given labels exist.
 
@@ -659,9 +661,9 @@ class Core(dict):
         """
         if labels == 'all':
             Np = sp.shape(self['pore.all'])[0]
-            ind = sp.arange(0,Np)
+            ind = sp.arange(0, Np)
         else:
-            ind = self._get_indices(element='pore',labels=labels,mode=mode)
+            ind = self._get_indices(element='pore', labels=labels, mode=mode)
         return ind
 
     @property
@@ -671,7 +673,7 @@ class Core(dict):
         """
         return self.pores()
 
-    def throats(self,labels='all',mode='union'):
+    def throats(self, labels='all', mode='union'):
         r"""
         Returns throat locations where given labels exist.
 
