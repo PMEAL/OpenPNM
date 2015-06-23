@@ -15,9 +15,8 @@ logger = logging.getLogger()
 
 class Controller(dict):
     # The following __instance__ class variable and subclassed __new__ method
-    # makes the Controller class a 'Singleton'.  This way, the _ctrl attribute
-    # of every OpenPNM object is the same, AND if you create a ctrl on the
-    # command line (ctrl = OpenPNM.Base.Controller()) it will be the same ctrl!
+    # makes the Controller class a 'Singleton'.  This way, any instantiation
+    # of a controller object anywhere in the code will return the same object.
     __instance__ = None
 
     def __new__(cls, *args, **kwargs):
@@ -42,9 +41,14 @@ class Controller(dict):
                                                         net.__class__.__name__))
             for geom in net._geometries:
                 str = '++ {0:<12} {1:<20} ({2})'
-                lines.append(str.format('Geometry: ',
-                                        geom.name,
-                                        geom.__class__.__name__))
+                if geom in self.values():
+                    lines.append(str.format('Geometry: ',
+                                            geom.name,
+                                            geom.__class__.__name__))
+                else:
+                    lines.append(str.format('ERROR: ',
+                                            geom.name,
+                                            'Object Not in Controller'))
             for phase in net._phases:
                 if len(phase._phases) == 0:
                     str = '+ {0:<13} {1:<20} ({2})'
@@ -64,9 +68,14 @@ class Controller(dict):
                                                 phase.__class__.__name__))
                 for phys in phase._physics:
                     str = '++ {0:<12} {1:<20} ({2})'
-                    lines.append(str.format('Physics: ',
-                                            phys.name,
-                                            phys.__class__.__name__))
+                    if phys in self.values():
+                        lines.append(str.format('Physics: ',
+                                                phys.name,
+                                                phys.__class__.__name__))
+                    else:
+                        lines.append(str.format('ERROR: ',
+                                                phys.name,
+                                                'Object Not in Controller'))
         return '\n'.join(lines)
 
     def _setloglevel(self, level):
@@ -109,52 +118,11 @@ class Controller(dict):
 
     def _get_objects(self, obj_type):
         temp = []
-        for obj in self.keys():
+        for obj in list(self.keys()):
             mro = [item.__name__ for item in self[obj].__class__.__mro__]
             if obj_type in mro:
                 temp.append(self[obj])
         return temp
-
-    def clear(self):
-        r"""
-        This is an overloaded version of the standard dict's ``clear`` method.
-        This completely clears the Controller object's dict as expected, but
-        also removes links to the Controller object in all objects.
-
-        """
-        for item in self.keys():
-            self[item]._ctrl = {}
-        self.__dict__ = {}
-        super().clear()
-
-    def update(self, arg):
-        r"""
-        This is a subclassed version of the standard dict's ``update`` method.
-        It can accept a dictionary of OpenPNM Core objects in which case it
-        adds the objects to the Controller.  It can also accept an OpenPNM
-        Network object in which case it extracts all associated objects and
-        adds them to the Controller.  In both cases it adds the Controller to
-        all object's ``controller`` attribute.
-
-        Notes
-        -----
-        The Network (and other Core objects) do not store Algorithms, so this
-        update will not add any Algorithm objects to the Controller.  This may
-        change.
-        """
-        if arg.__class__ == dict:
-            for item in arg.keys():
-                self[item] = arg[item]
-                arg[item]._ctrl = self
-        else:
-            mro = [item.__name__ for item in arg.__class__.__mro__]
-            if 'GenericNetwork' in mro:
-                net = arg
-                self[net.name] = net
-                net._ctrl = self
-                for item in net._geometries + net._physics + net._phases:
-                    self[item.name] = item
-                    item._ctrl = self
 
     def purge_object(self, obj, mode='single'):
         r"""
@@ -221,8 +189,6 @@ class Controller(dict):
                     [x for x in self[item]._phases if x is not obj]
                 self[item]._physics[:] = \
                     [x for x in self[item]._physics if x is not obj]
-            # Set object's controller attribute to an empty dict
-            self[name]._ctrl = {}
             # Remove object from Controller dict
             del self[name]
 
@@ -254,7 +220,7 @@ class Controller(dict):
         False
         >>> pn2.keys() == pn.keys()  # They have otherwise identical data
         True
-        >>> pn2.controller is ctrl # pn2 is not associated with existing Controller
+        >>> pn2 in ctrl.values() # pn2 is not associated with existing Controller
         False
 
         It can also be used to create ghosts of other object types:
@@ -275,8 +241,8 @@ class Controller(dict):
         False
 
         # The ghost is not registered with the Controller
-        >>> geo2.controller
-        {}
+        >>> geo2 in ctrl.values()
+        False
 
         # The following comparisons look at some 'behind the scenes' information
         # The ghost and ancestor are assoicated with the same Network
@@ -290,7 +256,6 @@ class Controller(dict):
         """
         obj_new = _copy.copy(obj)
         obj_new.__dict__ = _copy.copy(obj.__dict__)
-        obj_new._ctrl = {}
         del self[obj.name]
         self[obj.name] = obj
         return obj_new
@@ -312,10 +277,8 @@ class Controller(dict):
         else:
             filename = filename.rstrip('.net')
 
-        network._ctrl = {}
         # Save nested dictionary pickle
         _pickle.dump(network, open(filename + '.net', 'wb'))
-        network._ctrl = self
 
     def load_simulation(self, filename):
         r"""
@@ -329,7 +292,7 @@ class Controller(dict):
         """
         filename = filename.rstrip('.net')
         net = _pickle.load(open(filename + '.net', 'rb'))
-        net.controller = self
+        self[net.name] = net
 
     def save(self, filename=''):
         r"""
@@ -345,6 +308,7 @@ class Controller(dict):
         --------
         >>> import OpenPNM
         >>> ctrl = OpenPNM.Base.Controller()
+        >>> ctrl.clear()  # Ensure no previous objects are present
         >>> pn = OpenPNM.Network.TestNet()
         >>> ctrl.save('test.pnm')
         >>> pn.name in ctrl.keys()
@@ -378,15 +342,15 @@ class Controller(dict):
         Notes
         -----
         This calls the ``clear`` method of the Controller object, so it will
-        over write the calling objects information AND remove any references
-        to the calling object from existing objects.
+        remove all existing objects in the current workspace.
         """
         filename = filename.strip('.pnm')
         if self != {}:
-            print('Warning: Loading data onto non-empty controller object, \
-                   existing data will be lost')
+            print('Warning: Loading data onto non-empty controller object' +
+                  'existing data will be lost')
             self.clear()
-        self = _pickle.load(open(filename + '.pnm', 'rb'))
+
+        self = _pickle.load(open(filename+'.pnm', 'rb'))
 
     def export(self, network=None, filename='', fileformat='VTK'):
         r"""
@@ -457,7 +421,7 @@ class Controller(dict):
         if hasattr(self, '_comments') is False:
             print('No comments found')
         else:
-            for key in self._comments.keys():
+            for key in list(self._comments.keys()):
                 print(key, ': ', self._comments[key])
 
     comments = property(fget=_get_comments, fset=_set_comments)
@@ -513,29 +477,36 @@ class Controller(dict):
             logger.error('The provided name is already in use')
             return
 
-        bak = {}
-        bak.update(self)
-        self.clear()
-        net = _copy.deepcopy(network)
-        self.update(net)
-
+        net = _copy.deepcopy(network)  # Make clone
         # Add supplied name suffix to all cloned objects
-        for item in list(self.keys()):
-            self[item]._parent = network
-            self[item].name = self[item].name + '_' + name
+        for item in net._simulation():
+            item._parent = network
+            item.name = item.name + '_' + name
 
         # Add parent Network numbering to clone
         net['pore.' + network.name] = network.Ps
         net['throat.' + network.name] = network.Ts
-        self.update(bak)
         return net
 
     def _validate_name(self, name):
         valid_name = True
         for item_name in list(self.keys()):
+            # Check object names for conflict
             if name == item_name:
                 return False
+            # Also check array names on all objects
             for array_name in list(self[item_name].keys()):
-                if name == array_name.split('.')[1]:
+                if name == array_name.split('.')[-1]:
                     return False
         return valid_name
+
+    def _insert_simulation(self, network):
+        for item in network._simulation():
+            if item.name in self.keys():
+                raise Exception('An object named '+item.name+' is already present')
+        if network.name not in self.keys():
+            self[network.name] = network
+            for item in network._simulation():
+                self[item.name] = item
+        else:
+            print('Duplicate name found in Controller')
