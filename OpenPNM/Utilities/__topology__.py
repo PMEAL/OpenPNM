@@ -60,7 +60,7 @@ class topology(object):
             conns = _sp.vstack((network['throat.conns'], throat_conns))
             network['throat.conns'] = conns
         # Increase size of any prop or label arrays on Network
-        for item in network.keys():
+        for item in list(network.keys()):
             if item.split('.')[1] not in ['coords', 'conns', 'all']:
                 if item.split('.')[0] == 'pore':
                     N = Np
@@ -541,7 +541,7 @@ class topology(object):
                 Pn_new_net = network.pores(labels)
             except:
                 Pn_new_net = []
-            Pn_old_net = Pn[-_sp.in1d(Pn, Pn_new_net)]
+            Pn_old_net = Pn[~_sp.in1d(Pn, Pn_new_net)]
             Np1 = network.Np
             self.extend(pore_coords=new_net['pore.coords'],
                         throat_conns=new_net['throat.conns'] + Np1,

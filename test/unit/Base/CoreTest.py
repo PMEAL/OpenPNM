@@ -1,5 +1,7 @@
 import OpenPNM
 import scipy as sp
+ctrl = OpenPNM.Base.Controller()
+ctrl.loglevel = 60
 
 
 class CoreTest:
@@ -370,7 +372,6 @@ class CoreTest:
 
         Np = self.geo.Np
         Nt = self.geo.Nt
-        self.geo.clear()
         assert self.geo.Np == Np
         assert self.geo.Nt == Nt
 
@@ -391,8 +392,10 @@ class CoreTest:
         assert sp.all(a == b)
 
     def test_object_rename(self):
+        assert self.geo1 in ctrl.values()
         self.geo1.name = 'new_name'
         assert self.geo1.name == 'new_name'
+        assert self.geo1 in ctrl.values()
 
     def test_object_duplicate_name(self):
         temp = self.geo1.name
@@ -410,16 +413,138 @@ class CoreTest:
         a = self.net1.geometries(self.geo1.name)
         assert a == [self.geo1]
 
-    def test_set_locations_overlapping(self):
-        temp = self.net1.geometries()
+    def test_set_locations_add_on_empty_geometry(self):
+        # 'empty' meaning assigned nowhere, with no models or props
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo = OpenPNM.Geometry.GenericGeometry(network=net)
+        assert geo.Np == 0
+        assert geo.Nt == 0
+        geo.set_locations(pores=net.Ps)
+        assert geo.Np == net.Np
+        assert geo.Nt == 0
+        geo.set_locations(throats=net.Ts)
+        assert geo.Np == net.Np
+        assert geo.Nt == net.Nt
+        del ctrl[net.name]
+        del ctrl[geo.name]
+
+    def test_set_locations_add_and_remove_on_empty_geometry(self):
+        # 'empty' meaning assigned nowhere, with no models or props
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo = OpenPNM.Geometry.GenericGeometry(network=net,
+                                               pores=net.Ps,
+                                               throats=net.Ts)
+        Np = geo.Np
+        geo.set_locations(pores=0, mode='remove')
+        assert Np > geo.Np
+        del ctrl[net.name]
+        del ctrl[geo.name]
+
+    def test_set_locations_overlapping_on_empty_geometry(self):
+        # 'empty' meaning assigned nowhere, with no models or props
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo1 = OpenPNM.Geometry.GenericGeometry(network=net,
+                                                pores=net.pores('top'))
+        geo2 = OpenPNM.Geometry.GenericGeometry(network=net)
         try:
-            self.geo2 = OpenPNM.Geometry.GenericGeometry(network=self.net1,
-                                                         pores=[0, 1, 2])
+            geo2.set_locations(pores=net.pores('top'))
         except:
             pass
-        assert self.net1.geometries() == temp
+        assert geo2.Np == 0
+        del ctrl[net.name]
+        del ctrl[geo1.name]
+        del ctrl[geo2.name]
 
-    def test_set_locations_remove_pores(self):
-        Np = self.geo1.Np
-        self.geo1.set_locations(pores=self.net1.pores('top'), mode='remove')
-        assert Np > self.geo1.Np
+    def test_set_locations_add_successivly_on_empty_geometry(self):
+        # 'empty' meaning assigned nowhere, with no models or props
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo = OpenPNM.Geometry.GenericGeometry(network=net)
+        assert geo.Np == 0
+        assert geo.Nt == 0
+        geo.set_locations(pores=net.pores('top'))
+        assert geo.Np == 9
+        assert geo.Nt == 0
+        geo.set_locations(pores=net.pores('bottom'))
+        assert geo.Np == 18
+        assert geo.Nt == 0
+        del ctrl[net.name]
+        del ctrl[geo.name]
+
+    def test_set_locations_add_duplicates_on_empty_geometry(self):
+        # 'empty' meaning assigned nowhere, with no models or props
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo = OpenPNM.Geometry.GenericGeometry(network=net)
+        assert geo.Np == 0
+        assert geo.Nt == 0
+        geo.set_locations(pores=net.pores('top'))
+        assert geo.Np == 9
+        assert geo.Nt == 0
+        try:
+            geo.set_locations(pores=net.pores('front'))
+        except:
+            pass
+        assert geo.Np == 9
+        assert geo.Nt == 0
+        del ctrl[net.name]
+        del ctrl[geo.name]
+
+    def test_set_locations_remove_on_realistic_geometry(self):
+        # 'realistic' meaning assigned to pores, and has models and props
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo = OpenPNM.Geometry.GenericGeometry(network=net,
+                                               pores=net.Ps,
+                                               throats=net.Ts)
+        geo['pore.prop'] = sp.arange(0, net.Np)
+        f = OpenPNM.Geometry.models.pore_misc.random
+        geo.models.add(propname='pore.regenerating_model',
+                       model=f,
+                       seed=0,
+                       regen_mode='normal')
+        geo.models.add(propname='pore.constant_model',
+                       model=f,
+                       seed=0,
+                       regen_mode='constant')
+        geo.set_locations(pores=0, mode='remove')
+        assert geo.Np == 26
+        geo.set_locations(pores=1, mode='remove')
+        assert geo.Np == 25
+        del ctrl[net.name]
+        del ctrl[geo.name]
+
+    def test_set_locations_add_on_realistic_geometry(self):
+        # 'realistic' meaning assigned to pores, and has models and contants
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo = OpenPNM.Geometry.GenericGeometry(network=net,
+                                               pores=net.pores('top'))
+        geo['pore.prop'] = sp.arange(0, net.num_pores('top'))
+        f = OpenPNM.Geometry.models.pore_misc.random
+        geo.models.add(propname='pore.regenerating_model',
+                       model=f,
+                       seed=0,
+                       regen_mode='normal')
+        geo.models.add(propname='pore.constant_model',
+                       model=f,
+                       seed=0,
+                       regen_mode='constant')
+        try:
+            geo.set_locations(pores=net.pores('bottom'), mode='add')
+        except:
+            pass
+        assert geo.Np == 9
+        del ctrl[net.name]
+        del ctrl[geo.name]
+
+    def test_set_locations_add_on_geometry_models_only(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo = OpenPNM.Geometry.GenericGeometry(network=net,
+                                               pores=net.pores('top'))
+        f = OpenPNM.Geometry.models.pore_misc.random
+        geo.models.add(propname='pore.regenerating_model',
+                       model=f,
+                       seed=0,
+                       regen_mode='normal')
+        geo.set_locations(pores=net.pores('bottom'), mode='add')
+        assert geo.Np == 18
+        assert sp.size(geo['pore.regenerating_model']) == 18
+        del ctrl[net.name]
+        del ctrl[geo.name]

@@ -240,7 +240,7 @@ class MAT():
         pnMatlab = {}
         new = []
         old = []
-        for keys in network.keys():
+        for keys in list(network.keys()):
             old.append(keys)
             new.append(keys.replace('.', '_'))
 
@@ -254,7 +254,7 @@ class MAT():
                 new = []
                 old = []
 
-                for keys in phases[j].keys():
+                for keys in list(phases[j].keys()):
                     old.append(keys)
                     new.append(phases[j].name+'_'+keys.replace('.', '_'))
 

@@ -39,7 +39,7 @@ class GenericGeometry(Core):
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     """
 
-    def __init__(self, network=None, pores=[], throats=[], seed=None, **kwargs):
+    def __init__(self, network=None, pores=[], throats=[], **kwargs):
         super().__init__(**kwargs)
         logger.name = self.name
 
@@ -53,8 +53,11 @@ class GenericGeometry(Core):
         # Initialize a label dictionary in the associated network
         self._net['pore.'+self.name] = False
         self._net['throat.'+self.name] = False
-        self.set_locations(pores=pores, throats=throats)
-        self._seed = seed
+        try:
+            self.set_locations(pores=pores, throats=throats)
+        except:
+            self.controller.purge_object(self)
+            raise Exception('Provided locations are in use, instantiation cancelled')
 
     def __getitem__(self, key):
         element = key.split('.')[0]
@@ -62,7 +65,7 @@ class GenericGeometry(Core):
         if key.split('.')[-1] == self.name:
             key = element + '.all'
 
-        if key in self.keys():  # Look for data on self...
+        if key in list(self.keys()):  # Look for data on self...
             return super(GenericGeometry, self).__getitem__(key)
         if key == 'throat.conns':  # Handle specifically
             [P1, P2] = \
@@ -92,6 +95,8 @@ class GenericGeometry(Core):
             from the object.  Options are 'add' (default) or 'remove'.
 
         """
+        pores = self._parse_locations(pores)
+        throats = self._parse_locations(throats)
         if len(pores) > 0:
             pores = sp.array(pores, ndmin=1)
             self._set_locations(element='pore', locations=pores, mode=mode)

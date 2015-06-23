@@ -42,8 +42,7 @@ class Voronoi(GenericGeometry):
         self._net.trim_occluded_throats()
 
         self.models.add(propname='pore.seed',
-                        model=gm.pore_misc.random,
-                        seed=self._seed)
+                        model=gm.pore_misc.random)
         self.models.add(propname='throat.seed',
                         model=gm.throat_misc.neighbor,
                         pore_prop='pore.seed',
