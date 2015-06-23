@@ -483,8 +483,6 @@ class Controller(dict):
             item._parent = network
             item.name = item.name + '_' + name
 
-#        self._insert_simulation(net)  # Add simulation to Controller
-
         # Add parent Network numbering to clone
         net['pore.' + network.name] = network.Ps
         net['throat.' + network.name] = network.Ts
@@ -498,7 +496,7 @@ class Controller(dict):
                 return False
             # Also check array names on all objects
             for array_name in list(self[item_name].keys()):
-                if name == array_name.split('.')[1]:
+                if name == array_name.split('.')[-1]:
                     return False
         return valid_name
 

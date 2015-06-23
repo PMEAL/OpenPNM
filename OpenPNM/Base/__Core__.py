@@ -125,23 +125,21 @@ class Core(dict):
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
-            objs = self._simulation()
-            for item in objs:
-                keys = [key.split('.')[-1] for key in item.keys()]
-                if name in keys:
-                    raise Exception(name+' is already in use as an array name')
-            # If name is OK, then rename all related arrays (i.e. labels)
-            for item in objs:
-                if 'pore.'+self.name in item.keys():
-                    item['pore.'+name] = item.pop('pore.'+self.name)
-                if 'throat.'+self.name in item.keys():
-                    item['throat.'+name] = item.pop('throat.'+self.name)
+            if ctrl._validate_name(name):
+                # Rename any label arrays
+                for item in self._simulation():
+                    if 'pore.'+self.name in item.keys():
+                        item['pore.'+name] = item.pop('pore.'+self.name)
+                    if 'throat.'+self.name in item.keys():
+                        item['throat.'+name] = item.pop('throat.'+self.name)
+            else:
+                raise Exception('The provided name is already in use')
         # Remove reference to object under old name, if present
         for item in list(ctrl.items()):
             if item[1] is self:
                 ctrl.pop(item[0])
         # Add object to controller under new name
-        ctrl[name] = self
+        ctrl.update({name: self})
         self._name = name
 
     def _get_name(self):
