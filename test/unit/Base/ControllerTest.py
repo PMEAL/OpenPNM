@@ -28,17 +28,6 @@ class ControllerTest:
         self.controller.save_simulation(a)
         assert a in self.controller.values()
 
-    def test_load_v120_pnm(self):
-        temp = self.controller.copy()
-        self.controller.clear()
-        self.controller.load('test_v120.pnm')
-        a = ['Boundary_hy4Ey', 'FickianDiffusion_LjxxQ', 'IP_1',
-             'OrdinaryPercolation_BI85q', 'Standard_GIaef',
-             'Standard_HmuMH', 'Toray090_935N3', 'air', 'net', 'water']
-        assert sorted(list(self.controller.keys())) == a
-        self.controller.clear()
-        self.controller.update(temp)
-
     def test_ghost_object(self):
         a = self.controller.ghost_object(self.net)
         # Different objects...
@@ -76,16 +65,3 @@ class ControllerTest:
             if (f.split('.')[-1] in ['pnm', 'net', 'vtp']) and \
                (f.split('.')[0] not in ['test_v120']):
                 os.remove(f)
-
-
-if __name__ == '__main__':
-    a = ControllerTest()
-    a.setup_class()
-    b = a.__class__.__dict__
-    for item in b:
-        if item.split('_')[0] == 'test':
-            print('-'*50)
-            print('Testing:'+item)
-            b[item](self=a)
-    a.teardown_class()
-    print('tests complete')

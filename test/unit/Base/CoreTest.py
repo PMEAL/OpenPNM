@@ -548,12 +548,3 @@ class CoreTest:
         assert sp.size(geo['pore.regenerating_model']) == 18
         del ctrl[net.name]
         del ctrl[geo.name]
-
-if __name__ == '__main__':
-    a = CoreTest()
-    a.setup_class()
-    b = a.__class__.__dict__
-    for item in b:
-        if item.split('_')[0] == 'test':
-            print('-'*79, '\n', item)
-            b[item](self=a)
