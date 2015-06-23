@@ -306,19 +306,23 @@ class Controller(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> ctrl = OpenPNM.Base.Controller()
-        >>> ctrl.clear()  # Ensure no previous objects are present
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> ctrl.save('test.pnm')
-        >>> pn.name in ctrl.keys()
-        True
-        >>> ctrl.clear()
-        >>> ctrl.keys()
-        dict_keys([])
-        >>> ctrl.load('test.pnm')
-        >>> pn.name in ctrl.keys()
-        True
+
+        .. code-block:: python
+
+            import OpenPNM
+            ctrl = OpenPNM.Base.Controller()
+            ctrl.clear()  # Ensure no previous objects are present
+            pn = OpenPNM.Network.TestNet()
+            ctrl.save('test.pnm')
+            pn.name in ctrl.keys()
+            #=> True
+            ctrl.clear()
+            ctrl.keys()
+            dict_keys([])
+            ctrl.load('test.pnm')
+            pn.name in ctrl.keys()
+            #=> True
+
         """
         if filename == '':
             from datetime import datetime
