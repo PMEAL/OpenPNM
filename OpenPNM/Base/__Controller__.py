@@ -118,7 +118,7 @@ class Controller(dict):
 
     def _get_objects(self, obj_type):
         temp = []
-        for obj in self.keys():
+        for obj in list(self.keys()):
             mro = [item.__name__ for item in self[obj].__class__.__mro__]
             if obj_type in mro:
                 temp.append(self[obj])
@@ -421,7 +421,7 @@ class Controller(dict):
         if hasattr(self, '_comments') is False:
             print('No comments found')
         else:
-            for key in self._comments.keys():
+            for key in list(self._comments.keys()):
                 print(key, ': ', self._comments[key])
 
     comments = property(fget=_get_comments, fset=_set_comments)

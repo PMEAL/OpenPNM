@@ -28,7 +28,7 @@ class PrintableDict(_odict):
         lines = [horizontal_rule]
         lines.append('{0:<25s} {1}'.format('key', 'value'))
         lines.append(horizontal_rule)
-        for item in self.keys():
+        for item in list(self.keys()):
             lines.append('{0:<25s} {1}'.format(item, self[item]))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
@@ -61,7 +61,7 @@ class HealthDict(PrintableDict):
     """
     def _get_health(self):
         health = True
-        for item in self.keys():
+        for item in list(self.keys()):
             if self[item] != []:
                 health = False
         return health

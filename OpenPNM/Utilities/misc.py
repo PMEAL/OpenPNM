@@ -169,16 +169,16 @@ def amalgamate_data(objs=[]):
             for key in list(item.keys()):
                 keys.append(key)
             for geom in item._geometries:
-                for key in geom.keys():
+                for key in list(geom.keys()):
                     if key not in keys:
                         keys.append(key)
         else:
             if 'GenericPhase' in mro:
                 keys = []
-                for key in item.keys():
+                for key in list(item.keys()):
                     keys.append(key)
                 for physics in item._physics:
-                    for key in physics.keys():
+                    for key in list(physics.keys()):
                         if key not in keys:
                             keys.append(key)
         keys.sort()
