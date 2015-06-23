@@ -541,7 +541,7 @@ class topology(object):
                 Pn_new_net = network.pores(labels)
             except:
                 Pn_new_net = []
-            Pn_old_net = Pn[-_sp.in1d(Pn, Pn_new_net)]
+            Pn_old_net = Pn[~_sp.in1d(Pn, Pn_new_net)]
             Np1 = network.Np
             self.extend(pore_coords=new_net['pore.coords'],
                         throat_conns=new_net['throat.conns'] + Np1,
