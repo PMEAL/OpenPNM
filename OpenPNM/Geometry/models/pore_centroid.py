@@ -12,6 +12,7 @@ def voronoi(network, geometry, vertices='throat.centroid', **kwargs):
     Calculate the centroid from the mean of the throat centroids
     """
     value = _sp.ndarray([geometry.num_pores(), 3])
+    value.fill(0.0)
     pore_map = geometry.map_pores(target=network,
                                   pores=geometry.pores(),
                                   return_mapping=True)
@@ -24,6 +25,7 @@ def voronoi(network, geometry, vertices='throat.centroid', **kwargs):
         verts = geometry[vertices][geom_throats]
         " Ignore all zero centroids "
         verts = verts[~_sp.all(verts == 0, axis=1)]
-        value[geom_pore] = _sp.mean(verts, axis=0)
+        if len(verts) > 0:
+            value[geom_pore] = _sp.mean(verts, axis=0)
 
     return value
