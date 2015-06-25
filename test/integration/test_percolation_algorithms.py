@@ -6,8 +6,8 @@ ctrl = OpenPNM.Base.Controller()
 
 def test_IP_old_approach():
     ctrl.clear()
-    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.0001)
-    geom = OpenPNM.Geometry.Toray090(network=pn)
+    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
+    geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
     phys = OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
     inlets = pn.pores('left')
@@ -26,7 +26,7 @@ def test_IP_old_approach():
 def test_IP_new_approach():
     ctrl.clear()
     pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.0001)
-    geom = OpenPNM.Geometry.Toray090(network=pn)
+    geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
     phys = OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
     inlets = pn.pores('left')
@@ -44,19 +44,37 @@ def test_IP_new_approach():
     ctrl.clear()
 
 
+def test_OP_old_approach():
+    ctrl.clear()
+    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.0001)
+    geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
+    water = OpenPNM.Phases.Water(network=pn)
+    phys = OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
+    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,
+                                                  invading_phase=water)
+    Ps = pn.pores(labels=['left'])
+    OP_1.run(inlets=Ps)
+    OP_1.return_results(Pc=7000)
+    a = ['pore.all', 'pore.inlets', 'pore.inv_Pc', 'pore.inv_sat',
+         'pore.inv_seq', 'throat.all', 'throat.entry_pressure',
+         'throat.inv_Pc', 'throat.inv_sat', 'throat.inv_seq']
+    assert sorted(list(OP_1.keys())) == a
+    ctrl.clear()
+
+
 def test_OP_new_approach():
     ctrl.clear()
     pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.0001)
-    geom = OpenPNM.Geometry.Toray090(network=pn)
+    geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
     phys = OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
     inlets = pn.pores('left')
     OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn)
-    OP.setup(inv_phase=water)
+    OP.setup(invading_phase=water)
     OP.set_inlets(pores=inlets)
     OP.run(npts=25)
-    a = ['pore.all', 'pore.inlets', 'pore.inv_seq', 'pore.invaded',
-         'throat.all', 'throat.entry_pressure', 'throat.inv_seq',
-         'throat.invaded']
+    a = ['pore.all', 'pore.inlets', 'pore.inv_Pc', 'pore.inv_sat',
+         'pore.inv_seq', 'throat.all', 'throat.entry_pressure',
+         'throat.inv_Pc', 'throat.inv_sat', 'throat.inv_seq']
     assert sorted(list(OP.keys())) == a
     ctrl.clear()
