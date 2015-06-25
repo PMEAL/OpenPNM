@@ -54,9 +54,8 @@ inlets = pn.pores('bottom_boundary')
 outlets = pn.pores('top_boundary')
 IP_1 = op.Algorithms.InvasionPercolation(network=pn,name='IP_1')
 IP_1.run(phase=water,inlets=inlets)
-IP_1.apply_flow(flowrate=1e-15)
 IP_1.return_results()
- 
+
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
