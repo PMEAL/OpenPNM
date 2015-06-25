@@ -64,6 +64,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         self['throat.inv_sat'] = sp.inf
         self._inv_phase = invading_phase
         self._def_phase = defending_phase
+        self._trapping = False
 
     def set_inlets(self, pores):
         r"""
@@ -71,7 +72,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         Parameters
         ----------
-        p_inlets : array_like
+        pores : array_like
             The injection points from which the invading phase accesses the
             Network.  If no inlets are specified then the algorithm assumes
             no access limitations apply to the invading phase, which is
@@ -92,6 +93,31 @@ class OrdinaryPercolation(GenericAlgorithm):
             self['pore.inlets'] = False
             self['pore.inlets'][Ps] = True
 
+    def set_outlets(self, pores, defending_phase=None):
+        r"""
+        Specify outlet locations
+
+        Parameters
+        ----------
+        pores : array_like
+            The pores through which the defending phase exits the Network.
+
+        defending_phase : OpenPNM Phase Object
+            The Phase object defining the defending phase.  The defending Phase
+            may be specified during the ``setup`` step, or through this method.
+        """
+        if defending_phase is not None:
+            self._def_phase = defending_phase
+
+        self._trapping = True
+
+        Ps = sp.array(pores)
+        if sp.size(Ps) > 0:
+            if Ps.dtype == bool:
+                Ps = self._net.Ps[Ps]
+            self['pore.outlets'] = False
+            self['pore.outlets'][Ps] = True
+
     def run(self, npts=25, inv_points=None, access_limited=True, **kwargs):
         r"""
         Parameters
@@ -106,7 +132,11 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         if 'inlets' in kwargs.keys():
+            print('Inlets recieved, passing to set_inlets')
             self.set_inlets(pores=kwargs['inlets'])
+        if 'outlets' in kwargs.keys():
+            print('Outlets recieved, passing to set_outlets')
+            self.set_outlets(pores=kwargs['outlets'])
         self._AL = access_limited
         if inv_points is None:
             logger.info('Generating list of invasion pressures')
@@ -132,6 +162,9 @@ class OrdinaryPercolation(GenericAlgorithm):
                                                self['pore.inv_Pc'])
         self['throat.inv_seq'] = sp.searchsorted(sp.unique(self['throat.inv_Pc']),
                                                  self['throat.inv_Pc'])
+
+        if self._trapping:
+            self.evaluate_trapping(self['pore.outlets'])
 
     def _do_one_inner_iteration(self, inv_val):
         r"""
@@ -171,13 +204,19 @@ class OrdinaryPercolation(GenericAlgorithm):
     def evaluate_trapping(self, p_outlets):
         r"""
         Finds trapped pores and throats after a full ordinary
-        percolation drainage has been run
+        percolation simulation has been run.
 
         Parameters
         ----------
         p_outlets : array_like
             A list of pores that define the wetting phase outlets.
             Disconnection from these outlets results in trapping.
+
+        Returns
+        -------
+        It creates arrays called ``pore.trapped`` and ``throat.trapped``, but
+        also adjusts the ``pore.inv_Pc`` and ``throat.inv_Pc`` arrays to set
+        trapped locations to have infinite invasion pressure.
 
         """
         self['pore.trapped'] = sp.zeros([self.Np, ], dtype=float)
@@ -216,6 +255,8 @@ class OrdinaryPercolation(GenericAlgorithm):
                 self['throat.trapped'][inds] = inv_val
         self['pore.trapped'][self['pore.trapped'] > 0] = sp.inf
         self['throat.trapped'][self['throat.trapped'] > 0] = sp.inf
+        self['pore.inv_Pc'][self['pore.trapped'] > 0] = sp.inf
+        self['throat.inv_Pc'][self['throat.trapped'] > 0] = sp.inf
 
     def return_results(self, Pc=0, seq=None, sat=None, occupancy='occupancy'):
         r"""

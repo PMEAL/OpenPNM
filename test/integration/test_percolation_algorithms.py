@@ -25,7 +25,7 @@ def test_IP_old_approach():
 
 def test_IP_new_approach():
     ctrl.clear()
-    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.0001)
+    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
     phys = OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
@@ -46,7 +46,7 @@ def test_IP_new_approach():
 
 def test_OP_old_approach():
     ctrl.clear()
-    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.0001)
+    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
     phys = OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
@@ -64,7 +64,7 @@ def test_OP_old_approach():
 
 def test_OP_new_approach():
     ctrl.clear()
-    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.0001)
+    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
     phys = OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
@@ -77,4 +77,30 @@ def test_OP_new_approach():
          'pore.inv_seq', 'throat.all', 'throat.entry_pressure',
          'throat.inv_Pc', 'throat.inv_sat', 'throat.inv_seq']
     assert sorted(list(OP.keys())) == a
+    V_inv = sp.sum(pn['pore.volume'][OP['pore.inv_Pc'] < sp.inf])
+    V_tot = sp.sum(pn['pore.volume'])
+    assert V_inv/V_tot == 1.0
+    ctrl.clear()
+
+
+def test_OP_trapping():
+    ctrl.clear()
+    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
+    geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
+    water = OpenPNM.Phases.Water(network=pn)
+    air = OpenPNM.Phases.Air(network=pn)
+    phys = OpenPNM.Physics.GenericPhysics(network=pn,
+                                          geometry=geom,
+                                          phase=water)
+    f = OpenPNM.Physics.models.capillary_pressure.washburn
+    phys.models.add(propname='throat.capillary_pressure',
+                    model=f)
+
+    OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,
+                                                invading_phase=water,
+                                                defending_phase=air)
+    OP.run(inlets=pn.pores('left'), outlets=pn.pores('right'), trapping=True)
+    V_inv = sp.sum(pn['pore.volume'][OP['pore.inv_Pc'] < sp.inf])
+    V_tot = sp.sum(pn['pore.volume'])
+    assert V_inv/V_tot < 1.0
     ctrl.clear()

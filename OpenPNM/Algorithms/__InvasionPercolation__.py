@@ -114,7 +114,7 @@ class InvasionPercolation(GenericAlgorithm):
             Ps = Ps[p_inv[Ps] < 0]
             if len(Ps) > 0:
                 p_inv[Ps] = self._tcount
-                Ts = self._net.find_neighbor_throats(pores=Ps)  # Find connected throats
+                Ts = self._net.find_neighbor_throats(pores=Ps)
                 Ts = Ts[t_inv[Ts] < 0]  # Remove already invaded throats from Ts
                 [hq.heappush(queue, T) for T in t_order[Ts]]
             count += 1
