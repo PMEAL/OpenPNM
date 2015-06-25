@@ -56,7 +56,7 @@ IP_1 = op.Algorithms.InvasionPercolation(network=pn,name='IP_1')
 IP_1.run(phase=water,inlets=inlets)
 IP_1.apply_flow(flowrate=1e-15)
 IP_1.return_results()
- 
+
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
@@ -85,12 +85,6 @@ try:
     history = []
     for i in sorted(set(inv_seq)):
       history.append( (inv_seq != 0) & (inv_seq < i) )
-    # try to perofrm an animated 3D rendering
-    from op.Postprocessing.Graphics import Scene, Wires
-    wires = Wires(pn['pore.coords'], pn['throat.conns'], history)
-    scene = Scene()
-    scene.add_actors([wires])
-    scene.play()
 
 except Exception as e:
     pass
@@ -99,4 +93,3 @@ except Exception as e:
 '''Export to VTK'''
 #------------------------------------------------------------------------------
 op.export()
-
