@@ -50,7 +50,7 @@ class ControllerTest:
 
     def test_save_and_load_simulation(self):
         a = OpenPNM.Network.Cubic(shape=[10, 10, 10])
-        self.controller.save_simulation(a)
+        self.controller.save_simulation(a, join(TEMP_DIR, 'test_simulation'))
         assert a in self.controller.values()
 
     def test_ghost_object(self):
