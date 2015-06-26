@@ -1,13 +1,11 @@
-import OpenPNM
+import OpenPNM as op
 import time
 st = time.time()
-print('-----> Using OpenPNM version: '+OpenPNM.__version__)
 from OpenPNM.Geometry import models as gm
-ctrl = OpenPNM.Base.Controller()
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
-pn = OpenPNM.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net')
+pn = op.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net')
 pn.add_boundaries()
 
 #==============================================================================
@@ -15,28 +13,28 @@ pn.add_boundaries()
 #==============================================================================
 Ps = pn.pores('boundary',mode='not')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
-geom = OpenPNM.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
+geom = op.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
 geom.models.add(propname='throat.length',model=gm.throat_length.straight)
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
-boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
+boun = op.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 
 #==============================================================================
 '''Build Phases'''
 #==============================================================================
-air = OpenPNM.Phases.Air(network=pn,name='air')
+air = op.Phases.Air(network=pn,name='air')
 air['pore.Dac'] = 1e-7  # Add custom properties directly
-water = OpenPNM.Phases.Water(network=pn,name='water')
+water = op.Phases.Water(network=pn,name='water')
 
 #==============================================================================
 '''Build Physics'''
 #==============================================================================
 Ps = pn.pores()
 Ts = pn.throats()
-phys_water = OpenPNM.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts)
-phys_air = OpenPNM.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
+phys_water = op.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts)
+phys_air = op.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
 #Add some additional models to phys_air
-phys_air.models.add(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion,
+phys_air.models.add(model=op.Physics.models.diffusive_conductance.bulk_diffusion,
                     propname='throat.gdiff_ac',
                     pore_diffusivity='pore.Dac')
 
@@ -45,7 +43,7 @@ phys_air.models.add(model=OpenPNM.Physics.models.diffusive_conductance.bulk_diff
 #==============================================================================
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 #------------------------------------------------------------------------------
-OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air)
+OP_1 = op.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air)
 Ps = pn.pores(labels=['bottom_boundary'])
 OP_1.run(inlets=Ps)
 OP_1.return_results(Pc=7000)
@@ -55,22 +53,21 @@ OP_1.return_results(Pc=7000)
 #------------------------------------------------------------------------------
 inlets = pn.pores('bottom_boundary')
 outlets = pn.pores('top_boundary')
-IP_1 = OpenPNM.Algorithms.InvasionPercolation(network=pn,name='IP_1')
+IP_1 = op.Algorithms.InvasionPercolation(network=pn,name='IP_1')
 IP_1.run(phase=water,inlets=inlets)
-IP_1.apply_flow(flowrate=1e-15)
 IP_1.return_results()
 
 #------------------------------------------------------------------------------
 '''Perform Fickian Diffusion'''
 #------------------------------------------------------------------------------
-alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
+alg = op.Algorithms.FickianDiffusion(network=pn,phase=air)
 # Assign Dirichlet boundary conditions to top and bottom surface pores
 BC1_pores = pn.pores('right_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
 BC2_pores = pn.pores('left_boundary')
 alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
 #Add new model to air's physics that accounts for water occupancy
-phys_air.models.add(model=OpenPNM.Physics.models.multiphase.conduit_conductance,
+phys_air.models.add(model=op.Physics.models.multiphase.conduit_conductance,
                     propname='throat.conduit_diffusive_conductance',
                     throat_conductance='throat.diffusive_conductance',
                     throat_occupancy='throat.occupancy',
@@ -88,12 +85,6 @@ try:
     history = []
     for i in sorted(set(inv_seq)):
       history.append( (inv_seq != 0) & (inv_seq < i) )
-    # try to perofrm an animated 3D rendering
-    from OpenPNM.Postprocessing.Graphics import Scene, Wires
-    wires = Wires(pn['pore.coords'], pn['throat.conns'], history)
-    scene = Scene()
-    scene.add_actors([wires])
-    scene.play()
 
 except Exception as e:
     pass
@@ -101,6 +92,6 @@ except Exception as e:
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-ctrl.export()
+op.export()
 
 print("sim time:" + str(time.time()-st))

@@ -26,7 +26,6 @@ class Toray090(GenericGeometry):
         self.models.add(propname='pore.seed',
                         model=gm.pore_misc.random,
                         num_range=[0, 0.95],
-                        seed=self._seed,
                         regen_mode='constant')
         self.models.add(propname='throat.seed',
                         model=gm.throat_misc.neighbor,
@@ -58,8 +57,3 @@ class Toray090(GenericGeometry):
                         model=gm.throat_area.cylinder)
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.cylinder)
-
-if __name__ == '__main__':
-    import OpenPNM
-    pn = OpenPNM.Network.TestNet()
-    pass

@@ -277,9 +277,3 @@ class GenericAlgorithm(Core):
             self[l_label][loc] = True
             if bctype not in self._existing_BC:
                 self._existing_BC.append(bctype)
-
-if __name__ == '__main__':
-    import OpenPNM
-    pn = OpenPNM.Network.TestNet()
-    test = OpenPNM.Algorithms.GenericAlgorithm(network=pn)
-    test.run()

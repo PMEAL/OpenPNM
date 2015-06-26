@@ -45,6 +45,3 @@ class Standard(GenericPhysics):
             if 'surface_tension' in temp:
                 self.models.add(propname='throat.capillary_pressure',
                                 model=pm.capillary_pressure.washburn)
-
-if __name__ == '__main__':
-    print('none yet')

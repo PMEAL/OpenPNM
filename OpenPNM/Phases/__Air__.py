@@ -55,8 +55,3 @@ class Air(GenericPhase):
                         model=fm.misc.polynomial,
                         poreprop='pore.temperature',
                         a=[0.00000182082, 6.51815E-08, -3.48553E-11, 1.11409E-14])
-
-if __name__ == "__main__":
-    import OpenPNM
-    pn = OpenPNM.Network.TestNet()
-    air = OpenPNM.Phases.Air(network=pn)

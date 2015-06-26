@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""
-    Simulates a capillary drainage experiment by looping through a list of
+    Simulates a capillary drainage experiment by applying a list of increasing
     capillary pressures.
 
     Parameters
@@ -24,221 +24,215 @@ class OrdinaryPercolation(GenericAlgorithm):
     network : OpenPNM Network Object
         The network upon which the simulation will be run
 
-    invading_phase : OpenPNM Phase Object
-        The phase to be forced into the network at increasingly high pressures
-
-    defending_phase : OpenPNM Phase Object, optional
-        The phase originally residing in the network prior to invasion.  This
-        is only necessary so that the pressure at which the phase is drained
-        can be stored on the phase.
-
     name : string, optional
         The name to assign to the Algorithm Object
 
-    Examples
-    --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> geo = OpenPNM.Geometry.TestGeometry(network=pn, pores=pn.pores(),
-    ...                                     throats=pn.throats())
-    >>> phase1 = OpenPNM.Phases.TestPhase(network=pn)
-    >>> phase2 = OpenPNM.Phases.TestPhase(network=pn)
-    >>> phys1 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase1,
-    ...                                     pores=pn.pores(), throats=pn.throats())
-    >>> phys2 = OpenPNM.Physics.TestPhysics(network=pn, phase=phase2,
-    ...                                     pores=pn.pores(), throats=pn.throats())
-    >>> OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,
-    ...                                             invading_phase=phase1,
-    ...                                             defending_phase=phase2)
-    >>> OP.run(inlets=pn.pores('top'))
-    >>> med_Pc = sp.median(OP['pore.inv_Pc'])
-    >>> OP.return_results(med_Pc)
-    >>> print(len(phase1.pores('occupancy')))
-    71
-
-    To run this algorithm, use 'setup()' to provide the necessary simulation
     """
 
-    def __init__(self, invading_phase=None, defending_phase=None,
-                 residual_pores=None, residual_throats=None, **kwargs):
-        super().__init__(**kwargs)
-        self._phase_inv = invading_phase
-        self._phase_def = defending_phase
-        self._residual_pores = residual_pores
-        self._residual_throats = residual_throats
+    def __init__(self, network, name=None, **kwargs):
+        super().__init__(network=network, name=name)
+        if len(kwargs.keys()) > 0:
+            self.setup(**kwargs)
 
-        logger.debug('Create Drainage Percolation Algorithm Object')
-
-    def run(self, inlets, npts=25, inv_points=None,
-            capillary_pressure='capillary_pressure', access_limited=True,
-            trapping=False, **kwargs):
+    def setup(self,
+              invading_phase,
+              defending_phase=None,
+              t_entry='throat.capillary_pressure',
+              **kwargs):
         r"""
-        Parameters
-        ----------
-        inlets : array_like
-            The list of pores which are the injection sources
+        invading_phase : OpenPNM Phase Object
+            The invading phase to be injected into the Network
 
-        npts : int, optional
-            The number of pressure points to apply.  The list of pressures
-            is logarithmically spaced between the lowest and highest throat
-            entry pressures in the network.
+        p_inlets : array_like
+            The injection points from which the invading phase accesses the
+            Network.  If no inlets are specified then the algorithm assumes
+            no access limitations apply to the invading phase, which is
+            equivalent to performaing a standard bond ordinary percolation.
 
-        inv_points : array_like, optional
-            A list of specific pressure points to apply.
-
-        access_limited : boolean
-            Only pores and throats connected to the inlet sites can be invaded
-
-        trapping : boolean
-            Wetting phase that is cut-off from the outlets becomes immobile.
-            If outlet pores have not been provided then this argument is
-            ignored.
 
         Notes
         -----
         The 'inlet' pores are initially filled with invading fluid to start the
         simulation.  To avoid the capillary pressure curve showing a non-zero
         starting saturation at low pressures, it is necessary to apply boundary
-        pores that have 0 volume, and set these as the inlets.
-
+        pores that have zero-volume, and set these as the inlets.
         """
-        self._inv_sites = inlets
-        self._npts = npts
-        self._p_cap = capillary_pressure  # Name of throat entry pressure prop
-        self._AL = access_limited
-        self._TR = trapping
+        self['throat.entry_pressure'] = invading_phase[t_entry]
+        self['pore.inv_Pc'] = sp.inf
+        self['throat.inv_Pc'] = sp.inf
+        self['pore.inv_sat'] = sp.inf
+        self['throat.inv_sat'] = sp.inf
+        self._inv_phase = invading_phase
+        self._def_phase = defending_phase
+        self._trapping = False
 
-        # Create pore and throat conditions lists to store inv_val at
-        # which each is invaded
-        self._p_inv = sp.zeros((self._net.num_pores(),), dtype=float)
-        self._p_inv.fill(sp.inf)
-        self._p_seq = sp.zeros_like(self._p_inv, dtype=int)
-        self._t_inv = sp.zeros((self._net.num_throats(),), dtype=float)
-        self._t_inv.fill(sp.inf)
-        self._t_seq = sp.zeros_like(self._t_inv, dtype=int)
-        # Determine the invasion pressures to apply
-        try:
-            self._t_cap = self._phase_inv['throat.' + self._p_cap]
-        except:
-            logger.error('Capillary pressure not assigned to invading phase ' +
-                         self._phase_inv.name +
-                         ', check for capillary pressure in defending phase ' +
-                         self._phase_def.name + ' instead')
-            try:
-                self._t_cap = self._phase_def['throat.' + self._p_cap]
-            except:
-                pass
-                logger.error('Capillary pressure neither assigned to defending \
-                              phase ' + self._phase_def.name +
-                             ' nor to invading phase ' + self._phase_inv.name)
-        if inv_points is None:
-            min_p = sp.amin(self._t_cap) * 0.98  # nudge min_p down slightly
-            max_p = sp.amax(self._t_cap) * 1.02  # bump max_p up slightly
-            logger.info('Generating list of invasion pressures')
-            if min_p == 0:
-                min_p = sp.linspace(min_p, max_p, self._npts)[1]
-            self._inv_points = sp.logspace(sp.log10(min_p),
-                                           sp.log10(max_p),
-                                           self._npts)
-        else:
-            self._inv_points = inv_points
-        self._do_outer_iteration_stage()
-
-    def _do_outer_iteration_stage(self):
-        # Generate curve from points
-        for inv_val in self._inv_points:
-            # Apply one applied pressure and determine invaded pores
-            logger.info('Applying capillary pressure: ' + str(inv_val))
-            self._do_one_inner_iteration(inv_val)
-        # Store results using networks' get/set method
-        self['pore.inv_Pc'] = self._p_inv
-        self['throat.inv_Pc'] = self._t_inv
-        # Find invasion sequence values (to correspond with IP algorithm)
-        self._p_seq = sp.searchsorted(sp.unique(self._p_inv), self._p_inv)
-        self._t_seq = sp.searchsorted(sp.unique(self._t_inv), self._t_inv)
-        self['pore.inv_seq'] = self._p_seq
-        self['throat.inv_seq'] = self._t_seq
-        # Calculate Saturations
-        v_total = sp.sum(self._net['pore.volume']) + \
-            sp.sum(self._net['throat.volume'])
-        sat = 0.
-        self['pore.inv_sat'] = 1.
-        self['throat.inv_sat'] = 1.
-        for i in range(self._npts):
-            inv_pores = sp.where(self._p_seq == i)[0]
-            inv_throats = sp.where(self._t_seq == i)[0]
-            new_sat = (sum(self._net['pore.volume'][inv_pores]) +
-                       sum(self._net['throat.volume'][inv_throats])) / v_total
-            sat += new_sat
-            self['pore.inv_sat'][inv_pores] = sat
-            self['throat.inv_sat'][inv_throats] = sat
-
-    def _do_one_inner_iteration(self, inv_val):
+    def set_inlets(self, pores):
         r"""
-        Determine which throats are invaded at a given applied capillary pressure.
-
-        This function uses the scipy.csgraph module for the cluster labeling
-        algorithm (connected_components).
-
-        """
-        # Generate a tlist containing boolean values for throat state
-        Tinvaded = self._t_cap <= inv_val
-        # Finding all pores that can be invaded at specified pressure
-        clusters = self._net.find_clusters(Tinvaded)
-        # Find all pores with at least 1 invaded throat (invaded)
-        Pinvaded = sp.zeros_like(clusters, dtype=bool)
-        Ts = self._net.throats()
-        P12 = self._net.find_connected_pores(Ts)
-        temp = P12[Tinvaded]
-        temp = sp.hstack((temp[:, 0], temp[:, 1]))
-        Pinvaded[temp] = True
-        if self._AL:
-            # Add injection sites to Pinvaded
-            Pinvaded[self._inv_sites] = True
-            # Clean up clusters (not invaded = -1, invaded >=0)
-            clusters = clusters * (Pinvaded) - (~Pinvaded)
-            # Identify clusters connected to invasion sites
-            inv_clusters = sp.unique(clusters[self._inv_sites])
-        else:
-            # Clean up clusters (not invaded = -1, invaded >=0)
-            clusters = clusters * (Pinvaded) - (~Pinvaded)
-            # All clusters are invasion sites
-            inv_clusters = sp.r_[0:self._net.num_pores()]
-        # Store invasion pressure in pores and throats
-        pmask = np.in1d(clusters, inv_clusters)
-        # Store result of invasion step
-        self._p_inv[(self._p_inv == sp.inf) * (pmask)] = inv_val
-        # Determine Pc_invaded for throats as well
-        temp = self._net['throat.conns']
-        tmask = (pmask[temp[:, 0]] + pmask[temp[:, 1]]) * Tinvaded
-        self._t_inv[(self._t_inv == sp.inf) * (tmask)] = inv_val
-
-    def evaluate_trapping_tomt(self, outlets):
-        r"""
-        Finds trapped pores and throats after a full ordinary
-        percolation drainage has been run
+        Specify inlet locations
 
         Parameters
         ----------
-        outlets : array_like
+        pores : array_like
+            The injection points from which the invading phase accesses the
+            Network.  If no inlets are specified then the algorithm assumes
+            no access limitations apply to the invading phase, which is
+            equivalent to performaing a standard bond ordinary percolation.
+
+
+        Notes
+        -----
+        The 'inlet' pores are initially filled with invading fluid to start the
+        simulation.  To avoid the capillary pressure curve showing a non-zero
+        starting saturation at low pressures, it is necessary to apply boundary
+        pores that have zero-volume, and set these as the inlets.
+        """
+        Ps = sp.array(pores)
+        if sp.size(Ps) > 0:
+            if Ps.dtype == bool:
+                Ps = self._net.Ps[Ps]
+            self['pore.inlets'] = False
+            self['pore.inlets'][Ps] = True
+
+    def set_outlets(self, pores, defending_phase=None):
+        r"""
+        Specify outlet locations
+
+        Parameters
+        ----------
+        pores : array_like
+            The pores through which the defending phase exits the Network.
+
+        defending_phase : OpenPNM Phase Object
+            The Phase object defining the defending phase.  The defending Phase
+            may be specified during the ``setup`` step, or through this method.
+        """
+        if defending_phase is not None:
+            self._def_phase = defending_phase
+
+        self._trapping = True
+
+        Ps = sp.array(pores)
+        if sp.size(Ps) > 0:
+            if Ps.dtype == bool:
+                Ps = self._net.Ps[Ps]
+            self['pore.outlets'] = False
+            self['pore.outlets'][Ps] = True
+
+    def run(self, npts=25, inv_points=None, access_limited=True, **kwargs):
+        r"""
+        Parameters
+        ----------
+        npts : int (default = 25)
+            The number of pressure points to apply.  The list of pressures
+            is logarithmically spaced between the lowest and highest throat
+            entry pressures in the network.
+
+        inv_points : array_like, optional
+            A list of specific pressure point(s) to apply.
+
+        """
+        if 'inlets' in kwargs.keys():
+            print('Inlets recieved, passing to set_inlets')
+            self.set_inlets(pores=kwargs['inlets'])
+        if 'outlets' in kwargs.keys():
+            print('Outlets recieved, passing to set_outlets')
+            self.set_outlets(pores=kwargs['outlets'])
+        self._AL = access_limited
+        if inv_points is None:
+            logger.info('Generating list of invasion pressures')
+            min_p = sp.amin(self['throat.entry_pressure']) * 0.98  # nudge down
+            max_p = sp.amax(self['throat.entry_pressure']) * 1.02  # bump up
+            inv_points = sp.logspace(sp.log10(min_p),
+                                     sp.log10(max_p),
+                                     npts)
+
+        self._npts = sp.size(inv_points)
+        # Execute calculation
+        self._do_outer_iteration_stage(inv_points)
+
+    def _do_outer_iteration_stage(self, inv_points):
+        # Generate curve from points
+        for inv_val in inv_points:
+            # Apply one applied pressure and determine invaded pores
+            logger.info('Applying capillary pressure: ' + str(inv_val))
+            self._do_one_inner_iteration(inv_val)
+
+        # Find invasion sequence values (to correspond with IP algorithm)
+        self['pore.inv_seq'] = sp.searchsorted(sp.unique(self['pore.inv_Pc']),
+                                               self['pore.inv_Pc'])
+        self['throat.inv_seq'] = sp.searchsorted(sp.unique(self['throat.inv_Pc']),
+                                                 self['throat.inv_Pc'])
+
+        if self._trapping:
+            self.evaluate_trapping(self['pore.outlets'])
+
+    def _do_one_inner_iteration(self, inv_val):
+        r"""
+        Determine which throats are invaded at a given applied capillary
+        pressure.
+
+        """
+        # Generate a tlist containing boolean values for throat state
+        Tinvaded = self['throat.entry_pressure'] <= inv_val
+        # Find all pores that can be invaded at specified pressure
+        [pclusters, tclusters] = self._net.find_clusters2(mask=Tinvaded,
+                                                          t_labels=True)
+        if self._AL:
+            # Identify clusters connected to invasion sites
+            inv_clusters = sp.unique(pclusters[self['pore.inlets']])
+            inv_clusters = inv_clusters[inv_clusters >= 0]
+        else:
+            # All clusters are invasion sites
+            inv_clusters = pclusters
+        # Find pores on the invading clusters
+        pmask = np.in1d(pclusters, inv_clusters)
+        # Store current applied pressure in newly invaded pores
+        pinds = (self['pore.inv_Pc'] == sp.inf) * (pmask)
+        self['pore.inv_Pc'][pinds] = inv_val
+        # Find throats on the invading clusters
+        tmask = np.in1d(tclusters, inv_clusters)
+        # Store current applied pressure in newly invaded throats
+        tinds = (self['throat.inv_Pc'] == sp.inf) * (tmask)
+        self['throat.inv_Pc'][tinds] = inv_val
+        # Store total network saturation
+        tsat = sp.sum(self._net['throat.volume'][self['throat.inv_Pc'] <= inv_val])
+        psat = sp.sum(self._net['pore.volume'][self['pore.inv_Pc'] <= inv_val])
+        total = sp.sum(self._net['throat.volume']) + sp.sum(self._net['pore.volume'])
+        self['pore.inv_sat'][pinds] = (tsat + psat)/total
+        self['throat.inv_sat'][tinds] = (tsat + psat)/total
+
+    def evaluate_trapping(self, p_outlets):
+        r"""
+        Finds trapped pores and throats after a full ordinary
+        percolation simulation has been run.
+
+        Parameters
+        ----------
+        p_outlets : array_like
             A list of pores that define the wetting phase outlets.
             Disconnection from these outlets results in trapping.
 
+        Returns
+        -------
+        It creates arrays called ``pore.trapped`` and ``throat.trapped``, but
+        also adjusts the ``pore.inv_Pc`` and ``throat.inv_Pc`` arrays to set
+        trapped locations to have infinite invasion pressure.
+
         """
-        self._p_trap = sp.zeros_like(self._p_inv, dtype=float)
-        self._t_trap = sp.zeros_like(self._t_inv, dtype=float)
+        self['pore.trapped'] = sp.zeros([self.Np, ], dtype=float)
+        self['throat.trapped'] = sp.zeros([self.Nt, ], dtype=float)
         try:
-            inv_points = sp.unique(self._p_inv)  # Get points used in OP
+            # Get points used in OP
+            inv_points = sp.unique(self['pore.inv_Pc'])
         except:
-            logger.error('Orindary percolation has not been run!')
-            raise Exception('Aborting algorithm')
+            raise Exception('Orindary percolation has not been run!')
         tind = self._net.throats()
         conns = self._net.find_connected_pores(tind)
         for inv_val in inv_points[0:-1]:
             # Find clusters of defender pores
-            Pinvaded = self._p_inv <= inv_val
+            Pinvaded = self['pore.inv_Pc'] <= inv_val
             Cstate = sp.sum(Pinvaded[conns], axis=1)
-            Tinvaded = self._t_inv <= inv_val
+            Tinvaded = self['throat.inv_Pc'] <= inv_val
             # 0 = all open, 1=1 pore filled,
             # 2=2 pores filled 3=2 pores + 1 throat filled
             Cstate = Cstate + Tinvaded
@@ -246,22 +240,23 @@ class OrdinaryPercolation(GenericAlgorithm):
             # Clean up clusters (invaded = -1, defended >=0)
             clusters = clusters * (~Pinvaded) - (Pinvaded)
             # Identify clusters connected to outlet sites
-            out_clusters = sp.unique(clusters[outlets])
+            out_clusters = sp.unique(clusters[p_outlets])
             trapped_pores = ~sp.in1d(clusters, out_clusters)
             trapped_pores[Pinvaded] = False
             if sum(trapped_pores) > 0:
-                self._p_trap[(self._p_trap == 0) * trapped_pores] = inv_val
+                inds = (self['pore.trapped'] == 0) * trapped_pores
+                self['pore.trapped'][inds] = inv_val
                 trapped_throats = self._net.find_neighbor_throats(trapped_pores)
                 trapped_throat_array = np.asarray([False] * len(Cstate))
                 trapped_throat_array[trapped_throats] = True
-                self._t_trap[(self._t_trap == 0) * trapped_throat_array] = inv_val
-                self._t_trap[(self._t_trap == 0) * (Cstate == 2)] = inv_val
-        self._p_inv[self._p_trap > 0] = sp.inf
-        self._t_inv[self._t_trap > 0] = sp.inf
-        self['pore.inv_Pc'] = self._p_inv
-        self['throat.inv_Pc'] = self._t_inv
-
-    def evaluate_trapping(self, outlets):
+                inds = (self['throat.trapped'] == 0) * trapped_throat_array
+                self['throat.trapped'][inds] = inv_val
+                inds = (self['throat.trapped'] == 0) * (Cstate == 2)
+                self['throat.trapped'][inds] = inv_val
+        self['pore.trapped'][self['pore.trapped'] > 0] = sp.inf
+        self['throat.trapped'][self['throat.trapped'] > 0] = sp.inf
+        self['pore.inv_Pc'][self['pore.trapped'] > 0] = sp.inf
+        self['throat.inv_Pc'][self['throat.trapped'] > 0] = sp.inf
         r"""
         Finds trapped pores and throats after a full ordinary
         percolation drainage has been run
@@ -329,60 +324,60 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         p_inv = self['pore.inv_Pc']
-        self._phase_inv['pore.inv_Pc'] = p_inv
+        self._inv_phase['pore.inv_Pc'] = p_inv
         t_inv = self['throat.inv_Pc']
-        self._phase_inv['throat.inv_Pc'] = t_inv
+        self._inv_phase['throat.inv_Pc'] = t_inv
         # Apply invasion sequence values (to correspond with IP algorithm)
         p_seq = self['pore.inv_seq']
-        self._phase_inv['pore.inv_seq'] = p_seq
+        self._inv_phase['pore.inv_seq'] = p_seq
         t_seq = self['throat.inv_seq']
-        self._phase_inv['throat.inv_seq'] = t_seq
+        self._inv_phase['throat.inv_seq'] = t_seq
         # Apply saturation to pores and throats
-        self._phase_inv['pore.inv_sat'] = self['pore.inv_sat']
-        self._phase_inv['throat.inv_sat'] = self['throat.inv_sat']
+        self._inv_phase['pore.inv_sat'] = self['pore.inv_sat']
+        self._inv_phase['throat.inv_sat'] = self['throat.inv_sat']
 
         if sat is not None:
             p_inv = self['pore.inv_sat'] <= sat
             t_inv = self['throat.inv_sat'] <= sat
             # Apply occupancy to invading phase
             temp = sp.array(p_inv, dtype=sp.float_, ndmin=1)
-            self._phase_inv['pore.' + occupancy] = temp
+            self._inv_phase['pore.' + occupancy] = temp
             temp = sp.array(t_inv, dtype=sp.float_, ndmin=1)
-            self._phase_inv['throat.' + occupancy] = temp
+            self._inv_phase['throat.' + occupancy] = temp
             # Apply occupancy to defending phase
-            if self._phase_def is not None:
+            if self._def_phase is not None:
                 temp = sp.array(~p_inv, dtype=sp.float_, ndmin=1)
-                self._phase_def['pore.' + occupancy] = temp
+                self._def_phase['pore.' + occupancy] = temp
                 temp = sp.array(~t_inv, dtype=sp.float_, ndmin=1)
-                self._phase_def['throat.' + occupancy] = temp
+                self._def_phase['throat.' + occupancy] = temp
         elif seq is not None:
             p_seq = self['pore.inv_seq'] <= seq
             t_seq = self['throat.inv_seq'] <= seq
             # Apply occupancy to invading phase
             temp = sp.array(p_seq, dtype=sp.float_, ndmin=1)
-            self._phase_inv['pore.' + occupancy] = temp
+            self._inv_phase['pore.' + occupancy] = temp
             temp = sp.array(t_seq, dtype=sp.float_, ndmin=1)
-            self._phase_inv['throat.' + occupancy] = temp
+            self._inv_phase['throat.' + occupancy] = temp
             # Apply occupancy to defending phase
-            if self._phase_def is not None:
+            if self._def_phase is not None:
                 temp = sp.array(~p_seq, dtype=sp.float_, ndmin=1)
-                self._phase_def['pore.' + occupancy] = temp
+                self._def_phase['pore.' + occupancy] = temp
                 temp = sp.array(~t_seq, dtype=sp.float_, ndmin=1)
-                self._phase_def['throat.' + occupancy] = temp
+                self._def_phase['throat.' + occupancy] = temp
         else:
             p_inv = self['pore.inv_Pc'] <= Pc
             t_inv = self['throat.inv_Pc'] <= Pc
             # Apply occupancy to invading phase
             temp = sp.array(p_inv, dtype=sp.float_, ndmin=1)
-            self._phase_inv['pore.' + occupancy] = temp
+            self._inv_phase['pore.' + occupancy] = temp
             temp = sp.array(t_inv, dtype=sp.float_, ndmin=1)
-            self._phase_inv['throat.' + occupancy] = temp
+            self._inv_phase['throat.' + occupancy] = temp
             # Apply occupancy to defending phase
-            if self._phase_def is not None:
+            if self._def_phase is not None:
                 temp = sp.array(~p_inv, dtype=sp.float_, ndmin=1)
-                self._phase_def['pore.' + occupancy] = temp
+                self._def_phase['pore.' + occupancy] = temp
                 temp = sp.array(~t_inv, dtype=sp.float_, ndmin=1)
-                self._phase_def['throat.' + occupancy] = temp
+                self._def_phase['throat.' + occupancy] = temp
 
     def plot_drainage_curve(self, pore_volume='volume', throat_volume='volume',
                             pore_label='all', throat_label='all'):
@@ -398,24 +393,30 @@ class OrdinaryPercolation(GenericAlgorithm):
         throats = self._net.throats(labels=throat_label)
         Snwp_t = sp.zeros_like(PcPoints)
         Snwp_p = sp.zeros_like(PcPoints)
+        Snwp_all = sp.zeros_like(PcPoints)
         Pvol = self._net['pore.' + pore_volume]
         Tvol = self._net['throat.' + throat_volume]
-        Pvol_tot = sum(Pvol)
-        Tvol_tot = sum(Tvol)
+        Pvol_tot = sp.sum(Pvol)
+        Tvol_tot = sp.sum(Tvol)
+        vol_tot = Pvol_tot + Tvol_tot
         for i in range(0, sp.size(PcPoints)):
             Pc = PcPoints[i]
-            Snwp_p[i] = sum(Pvol[self._p_inv[pores] <= Pc]) / Pvol_tot
-            Snwp_t[i] = sum(Tvol[self._t_inv[throats] <= Pc]) / Tvol_tot
-        if sp.mean(self._phase_inv['pore.contact_angle']) < 90:
+            Snwp_p[i] = sp.sum(Pvol[self['pore.inv_Pc'][pores] <= Pc]) / vol_tot
+            Snwp_t[i] = sp.sum(Tvol[self['throat.inv_Pc'][throats] <= Pc]) / vol_tot
+            Snwp_all[i] = (sp.sum(Tvol[self['throat.inv_Pc'][throats] <= Pc]) +
+                           sp.sum(Pvol[self['pore.inv_Pc'][pores] <= Pc])) / vol_tot
+        if sp.mean(self._inv_phase['pore.contact_angle']) < 90:
             Snwp_p = 1 - Snwp_p
             Snwp_t = 1 - Snwp_t
             PcPoints *= -1
+        fig = plt.figure()
+        plt.plot(PcPoints, Snwp_all, 'g.-')
         plt.plot(PcPoints, Snwp_p, 'r.-')
         plt.plot(PcPoints, Snwp_t, 'b.-')
         r"""
         TODO: Add legend to distinguish the pore and throat curves
         """
-        plt.show()
+        return fig
 
     def plot_primary_drainage_curve(self, pore_volume='volume',
                                     throat_volume='volume', pore_label='all',
@@ -432,26 +433,29 @@ class OrdinaryPercolation(GenericAlgorithm):
                             simulation has not been run')
         pores = self._net.pores(labels=pore_label)
         throats = self._net.throats(labels=throat_label)
+        p_inv = self['pore.inv_Pc']
+        t_inv = self['throat.inv_Pc']
         Snwp_t = sp.zeros_like(PcPoints)
         Snwp_p = sp.zeros_like(PcPoints)
         Snwp_all = sp.zeros_like(PcPoints)
         Swp_all = sp.zeros_like(PcPoints)
         Pvol = self._net['pore.' + pore_volume]
         Tvol = self._net['throat.' + throat_volume]
-        Pvol_tot = sum(Pvol)
-        Tvol_tot = sum(Tvol)
+        Pvol_tot = sp.sum(Pvol)
+        Tvol_tot = sp.sum(Tvol)
         for i in range(0, sp.size(PcPoints)):
             Pc = PcPoints[i]
-            Snwp_p[i] = sum(Pvol[self._p_inv[pores] <= Pc]) / Pvol_tot
-            Snwp_t[i] = sum(Tvol[self._t_inv[throats] <= Pc]) / Tvol_tot
-            Snwp_all[i] = (sum(Tvol[self._t_inv[throats] <= Pc]) +
-                           sum(Pvol[self._p_inv[pores] <= Pc])) / \
+            Snwp_p[i] = sp.sum(Pvol[p_inv[pores] <= Pc]) / Pvol_tot
+            Snwp_t[i] = sp.sum(Tvol[t_inv[throats] <= Pc]) / Tvol_tot
+            Snwp_all[i] = (sp.sum(Tvol[t_inv[throats] <= Pc]) +
+                           sp.sum(Pvol[p_inv[pores] <= Pc])) / \
                           (Tvol_tot + Pvol_tot)
             Swp_all[i] = 1 - Snwp_all[i]
+        fig = plt.figure()
         plt.plot(Swp_all, PcPoints, 'k.-')
         plt.xlim(xmin=0)
         plt.xlabel('Saturation of wetting phase')
         plt.ylabel('Capillary Pressure [Pa]')
         plt.title('Primay Drainage Curve')
         plt.grid(True)
-        plt.show()
+        return fig

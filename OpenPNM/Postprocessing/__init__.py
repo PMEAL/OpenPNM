@@ -8,4 +8,3 @@ r"""
 """
 
 from . import Plots
-from . import Graphics
