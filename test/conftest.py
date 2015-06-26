@@ -13,9 +13,15 @@ def fixtures_directory(request):
 @pytest.fixture(autouse=True)
 def temp_directory(request):
     temp_dir = join(dirname(realpath(__file__)), 'temp')
-    mkdir(temp_dir)
+    try:
+        mkdir(temp_dir)
+    except:
+        pass
     request.function.__globals__['TEMP_DIR'] = temp_dir
 
     def clean():
-        rmtree(temp_dir)
+        try:
+            rmtree(temp_dir)
+        except:
+            pass
     request.addfinalizer(clean)
