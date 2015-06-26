@@ -84,12 +84,6 @@ try:
     history = []
     for i in sorted(set(inv_seq)):
       history.append( (inv_seq != 0) & (inv_seq < i) )
-    # try to perofrm an animated 3D rendering
-    from op.Postprocessing.Graphics import Scene, Wires
-    wires = Wires(pn['pore.coords'], pn['throat.conns'], history)
-    scene = Scene()
-    scene.add_actors([wires])
-    scene.play()
 
 except Exception as e:
     pass
@@ -98,4 +92,3 @@ except Exception as e:
 '''Export to VTK'''
 #------------------------------------------------------------------------------
 op.export()
-
