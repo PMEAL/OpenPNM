@@ -110,6 +110,7 @@ class Voronoi(GenericGeometry):
                         model=gm.throat_surface_area.extrusion)
         self.models.add(propname='throat.c2c',
                         model=gm.throat_length.c2c)
+    
     def make_fibre_image(self, fibre_rad=None, vox_len=1e-6):
         r"""
         If the voronoi voxel method was implemented to calculate pore volumes
