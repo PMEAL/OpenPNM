@@ -41,19 +41,25 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
     suitable for highly non-wetting invading phases in most materials.
 
     """
-    if surface_tension.split('.')[0] == 'pore':
+    if ((surface_tension.split('.')[0] == 'pore') and
+       (throat_diameter.split('.')[0] == 'throat')):
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(data=sigma)
     else:
         sigma = phase[surface_tension]
-    if contact_angle.split('.')[0] == 'pore':
+    if ((contact_angle.split('.')[0] == 'pore') and
+       (throat_diameter.split('.')[0] == 'throat')):
         theta = phase[contact_angle]
         theta = phase.interpolate_data(data=theta)
     else:
         theta = phase[contact_angle]
     r = network[throat_diameter]/2
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
-    value = value[phase.throats(physics.name)]
+    if throat_diameter.split('.')[0] == 'throat':
+        value = value[phase.throats(physics.name)]
+    else:
+        value = value[phase.pores(physics.name)]
+    value[_sp.absolute(value) == _sp.inf] = 0
     return value
 
 
@@ -101,12 +107,14 @@ def purcell(physics, phase, network, r_toroid,
     TODO: Triple check the accuracy of this equation
     """
 
-    if surface_tension.split('.')[0] == 'pore':
+    if ((surface_tension.split('.')[0] == 'pore') and
+       (throat_diameter.split('.')[0] == 'throat')):
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(data=sigma)
     else:
         sigma = phase[surface_tension]
-    if contact_angle.split('.')[0] == 'pore':
+    if ((contact_angle.split('.')[0] == 'pore') and
+       (throat_diameter.split('.')[0] == 'throat')):
         theta = phase[contact_angle]
         theta = phase.interpolate_data(data=theta)
     else:
@@ -117,5 +125,8 @@ def purcell(physics, phase, network, r_toroid,
     value = (-2*sigma/r) * \
         (_sp.cos(_sp.radians(theta - alpha)) /
             (1 + R/r*(1-_sp.cos(_sp.radians(alpha)))))
-    value = value[phase.throats(physics.name)]
+    if throat_diameter.split('.')[0] == 'throat':
+        value = value[phase.throats(physics.name)]
+    else:
+        value = value[phase.pores(physics.name)]
     return value
