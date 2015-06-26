@@ -97,6 +97,7 @@ class GenericGeometry(Core):
         """
         pores = self._parse_locations(pores)
         throats = self._parse_locations(throats)
+        if sp.size(pores) > 0:
             pores = sp.array(pores, ndmin=1)
             self._set_locations(element='pore', locations=pores, mode=mode)
         if sp.size(throats) > 0:
