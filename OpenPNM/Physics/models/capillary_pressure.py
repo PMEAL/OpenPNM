@@ -42,13 +42,13 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
 
     """
     if ((surface_tension.split('.')[0] == 'pore') and
-        (throat_diameter.split('.')[0] == 'throat')):
+       (throat_diameter.split('.')[0] == 'throat')):
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(data=sigma)
     else:
         sigma = phase[surface_tension]
     if ((contact_angle.split('.')[0] == 'pore') and
-        (throat_diameter.split('.')[0] == 'throat')):
+       (throat_diameter.split('.')[0] == 'throat')):
         theta = phase[contact_angle]
         theta = phase.interpolate_data(data=theta)
     else:
@@ -108,13 +108,13 @@ def purcell(physics, phase, network, r_toroid,
     """
 
     if ((surface_tension.split('.')[0] == 'pore') and
-        (throat_diameter.split('.')[0] == 'throat')):
+       (throat_diameter.split('.')[0] == 'throat')):
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(data=sigma)
     else:
         sigma = phase[surface_tension]
     if ((contact_angle.split('.')[0] == 'pore') and
-        (throat_diameter.split('.')[0] == 'throat')):
+       (throat_diameter.split('.')[0] == 'throat')):
         theta = phase[contact_angle]
         theta = phase.interpolate_data(data=theta)
     else:

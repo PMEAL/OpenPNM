@@ -61,9 +61,9 @@ class InvasionPercolationImb(GenericAlgorithm):
         # Setup arrays and info
         t_entry = phase[throat_prop]
         p_entry = phase[pore_prop]
-        #switch algorithm to sort highest first
-        t_seq = sp.zeros(len(t_entry),dtype=int)
-        p_seq = sp.zeros(len(p_entry),dtype=int)
+        # switch algorithm to sort highest first
+        t_seq = sp.zeros(len(t_entry), dtype=int)
+        p_seq = sp.zeros(len(p_entry), dtype=int)
         t_inv_Pc = sp.zeros(len(t_entry))
         p_inv_Pc = sp.zeros(len(p_entry))
         # Perform initial analysis on input pores
@@ -79,17 +79,17 @@ class InvasionPercolationImb(GenericAlgorithm):
                 inv_Pc = Pc
             # Extract actual throat number
             if data_type == 't':
-                t_seq[index]=sequence
-                t_inv_Pc[index]=inv_Pc
-                sequence+=1
+                t_seq[index] = sequence
+                t_inv_Pc[index] = inv_Pc
+                sequence += 1
                 newPs = net['throat.conns'][index]
                 for P in newPs:
                     if p_seq[P] == 0:
-                        hq.heappush(queue, (p_entry[P], P, 'p')) 
+                        hq.heappush(queue, (p_entry[P], P, 'p'))
             elif data_type == 'p':
-                p_seq[index]=sequence
-                p_inv_Pc[index]=inv_Pc
-                sequence+=1
+                p_seq[index] = sequence
+                p_inv_Pc[index] = inv_Pc
+                sequence += 1
                 newTs = net.find_neighbor_throats(pores=index)
                 for T in newTs:
                     if t_seq[T] == 0:
