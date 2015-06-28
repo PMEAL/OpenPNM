@@ -664,12 +664,12 @@ class CoreTest:
     def test_parse_locations_bool_pores(self):
         a = self.net._parse_locations(locations=sp.ones([self.net.Np, ],
                                                         dtype=bool))
-        assert a == self.net.Np
+        assert sp.all(a == self.net.Ps)
 
     def test_parse_locations_bool_throat(self):
         a = self.net._parse_locations(locations=sp.ones([self.net.Nt, ],
                                                         dtype=bool))
-        assert a == self.net.Nt
+        assert sp.all(a == self.net.Ts)
 
     def test_parse_locations_bool_wrong_length(self):
         flag = False
@@ -685,7 +685,7 @@ class CoreTest:
         assert sp.all(a == self.net2.pores(self.geo21.name))
 
     def test_map_pores_geometry2_onto_network(self):
-        a = self.geo22.map_pores(target=self.net2, pores=self.geo22)
+        a = self.geo22.map_pores(target=self.net2, pores=self.geo22.Ps)
         assert sp.all(a == self.net2.pores(self.geo22.name))
 
     def test_map_pores_network_onto_self(self):
