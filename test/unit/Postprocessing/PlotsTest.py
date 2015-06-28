@@ -1,5 +1,7 @@
 import OpenPNM
-import matplotlib
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
 
 
 class PlotsTest:
@@ -15,12 +17,12 @@ class PlotsTest:
 
     def test_distributions(self):
         a = OpenPNM.Postprocessing.Plots.distributions(self.net)
-        assert isinstance(a, matplotlib.figure.Figure)
+        assert isinstance(a, mpl.figure.Figure)
 
     def test_pore_size_distribution(self):
         a = OpenPNM.Postprocessing.Plots.pore_size_distribution(self.net)
-        assert isinstance(a, matplotlib.figure.Figure)
+        assert isinstance(a, mpl.figure.Figure)
 
     def test_porosity_profile(self):
         a = OpenPNM.Postprocessing.Plots.porosity_profile(self.net, axis=0)
-        assert isinstance(a, matplotlib.figure.Figure)
+        assert isinstance(a, mpl.figure.Figure)
