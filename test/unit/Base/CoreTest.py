@@ -33,6 +33,14 @@ class CoreTest:
                                                     geometry=self.geo1,
                                                     phase=self.phase2)
 
+    def test_clear(self):
+        dict_ = self.geo.copy()
+        self.geo.clear()
+        assert self.geo.Np == 0
+        assert self.geo.Nt == 0
+        assert list(self.geo.keys()) == ['pore.all', 'throat.all']
+        self.geo.update(dict_)
+
     def test_props_all(self):
         a = self.geo.props()
         assert sorted(a) == ['pore.diameter', 'pore.volume',
@@ -282,6 +290,10 @@ class CoreTest:
             pass
         assert a is None
 
+    def test_count(self):
+        a = self.net._count()
+        assert a == {'pore': 27, 'throat': 54}
+
     def test_num_pores(self):
         a = self.net.num_pores()
         assert a == 27
@@ -412,6 +424,14 @@ class CoreTest:
     def test_geometry_lookup_by_name(self):
         a = self.net1.geometries(self.geo1.name)
         assert a == [self.geo1]
+
+    def test_set_locations_on_phase(self):
+        flag = False
+        try:
+            self.phase1._set_locations(element='pores', locations=1)
+        except:
+            flag = True
+        assert flag
 
     def test_set_locations_add_on_empty_geometry(self):
         # 'empty' meaning assigned nowhere, with no models or props
@@ -548,3 +568,103 @@ class CoreTest:
         assert sp.size(geo['pore.regenerating_model']) == 18
         del ctrl[net.name]
         del ctrl[geo.name]
+
+    def test_find_all_physics(self):
+        a = self.net1.physics()
+        b = [self.phys1.name, self.phys2.name]
+        assert a == b
+
+    def test_find_physics_by_name(self):
+        a = self.net1.physics(self.phys1.name)
+        assert self.phys1 in a
+        assert self.phys2 not in a
+        a = self.net1.physics([self.phys1.name, self.phys2.name])
+        assert self.phys1 in a
+        assert self.phys2 in a
+
+    def test_find_all_phases(self):
+        a = self.net1.phases()
+        b = [self.phase1.name, self.phase2.name]
+        assert a == b
+
+    def test_find_phases_by_name(self):
+        a = self.net1.phases(self.phase1.name)
+        assert self.phase1 in a
+        assert self.phase2 not in a
+        a = self.net1.phases([self.phase1.name, self.phase2.name])
+        assert self.phase1 in a
+        assert self.phase2 in a
+
+    def test_find_all_geometries(self):
+        a = self.net1.geometries()
+        b = [self.geo1.name]
+        assert a == b
+
+    def test_find_geometries_by_name(self):
+        a = self.net1.phases(self.phase1.name)
+        assert self.phase1 in a
+        assert self.phase2 not in a
+        a = self.net1.phases([self.phase1.name, self.phase2.name])
+        assert self.phase1 in a
+        assert self.phase2 in a
+
+    def test_find_network_from_geometry(self):
+        a = self.geo.network()
+        assert a == [self.net]
+
+    def test_find_network_by_name_from_geometry(self):
+        a = self.geo.network(self.net.name)
+        assert a == self.net
+
+    def test_find_network_from_phase(self):
+        a = self.phase1.network()
+        assert a == [self.net1]
+
+    def test_find_network_by_name_from_phase(self):
+        a = self.phase1.network(self.net1.name)
+        assert a == self.net1
+
+    def test_find_network_from_physics(self):
+        a = self.phys1.network()
+        assert a == [self.net1]
+
+    def test_find_network_by_name_from_physics(self):
+        a = self.phys1.network(self.net1.name)
+        assert a == self.net1
+
+    def test_object_print(self):
+        a = self.net.__str__()
+        assert type(a) == str
+
+    def test_object_representation(self):
+        a = self.net.__repr__()
+        assert type(a) == str
+
+    def test_parse_locations_int(self):
+        a = self.net._parse_locations(locations=0)
+        assert type(a) == sp.ndarray
+        assert sp.all(a == 0)
+
+    def test_parse_locations_list(self):
+        a = self.net._parse_locations(locations=[0, 1])
+        assert type(a) == sp.ndarray
+        assert sp.all(a == [0, 1])
+
+    def test_parse_locations_bool_pores(self):
+        a = self.net._parse_locations(locations=sp.ones([self.net.Np, ],
+                                                        dtype=bool))
+        assert a == self.net.Np
+
+    def test_parse_locations_bool_throat(self):
+        a = self.net._parse_locations(locations=sp.ones([self.net.Nt, ],
+                                                        dtype=bool))
+        assert a == self.net.Nt
+
+    def test_parse_locations_bool_wrong_length(self):
+        flag = False
+        try:
+            self.net._parse_locations(locations=sp.ones([self.net.Nt+1, ],
+                                                        dtype=bool))
+        except:
+            flag = True
+        assert flag
