@@ -32,6 +32,17 @@ class CoreTest:
         self.phys2 = OpenPNM.Physics.GenericPhysics(network=self.net1,
                                                     geometry=self.geo1,
                                                     phase=self.phase2)
+        self.net2 = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        Ps = sp.arange(0, 18)
+        Ts = self.net2.find_neighbor_pores(Ps, mode='union')
+        self.geo21 = OpenPNM.Geometry.GenericGeometry(network=self.net2,
+                                                      pores=Ps,
+                                                      throats=Ts)
+        Ps = sp.arange(18, 27)
+        Ts = self.net2.find_neighbor_pores(Ps, mode='intersection')
+        self.geo22 = OpenPNM.Geometry.GenericGeometry(network=self.net2,
+                                                      pores=Ps,
+                                                      throats=Ts)
 
     def test_clear(self):
         dict_ = self.geo.copy()
@@ -665,6 +676,26 @@ class CoreTest:
         try:
             self.net._parse_locations(locations=sp.ones([self.net.Nt+1, ],
                                                         dtype=bool))
+        except:
+            flag = True
+        assert flag
+
+    def test_map_pores_geometry1_onto_network(self):
+        a = self.geo21.map_pores(target=self.net2)
+        assert sp.all(a == self.net2.pores(self.geo21.name))
+
+    def test_map_pores_geometry2_onto_network(self):
+        a = self.geo22.map_pores(target=self.net2, pores=self.geo22)
+        assert sp.all(a == self.net2.pores(self.geo22.name))
+
+    def test_map_pores_network_onto_self(self):
+        a = self.net2.map_pores(target=self.net2)
+        assert sp.all(a == self.net2.pores())
+
+    def test_map_pores_geometry_onto_other_geometry(self):
+        flag = False
+        try:
+            self.geo21.map_pores(target=self.geo22)
         except:
             flag = True
         assert flag
