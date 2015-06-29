@@ -46,3 +46,12 @@ class GenericGeometryTest:
         a = self.geo.pores(self.geo.name)
         b = self.geo.Ps
         assert sp.all(a == b)
+
+    def test_initialize_with_overlapping_locations(self):
+        flag = False
+        try:
+            OpenPNM.Geometry.GenericGeometry(network=self.net,
+                                             pores=[0])
+        except:
+            flag = True
+        assert flag
