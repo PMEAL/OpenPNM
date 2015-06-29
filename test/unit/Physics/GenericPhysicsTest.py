@@ -54,7 +54,5 @@ class GenericPhysicsTest:
     def test_get_item_self_name(self):
         a = self.phys1.get('pore.'+self.phys1.name)
         assert a is None
-        a = self.phys1['pore.'+self.name]
+        a = self.phys1['pore.'+self.phys1.name]
         assert sp.sum(a) == self.phys1.Np
-
-

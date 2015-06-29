@@ -701,7 +701,7 @@ class CoreTest:
             flag = True
         assert flag
 
-    def test_mapping():
+    def test_mapping(self):
         # Create small cubic network
         pn = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=0.0001)
         # Assign 3 different geometries to each layer in the z-direction
