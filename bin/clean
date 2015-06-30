@@ -12,10 +12,9 @@ DIRECTORIES_TO_DELETE = [
 ]
 
 FILES_TO_DELETE = [
-    'test.pnm',
-    'test_net.pnm',
     'nano.vtp',
     '.coverage'
+    '*.net'
 ]
 
 BYTE_CODE = '.+\.pyc'

@@ -42,8 +42,3 @@ class TestGeometry(GenericGeometry):
         self['throat.area'] = _sp.constants.pi/4*(self['throat.diameter'])**2
         self['throat.surface_area'] = _sp.constants.pi/(self['throat.diameter']) * \
             self['throat.length']
-
-if __name__ == '__main__':
-    import OpenPNM
-    pn = OpenPNM.Network.TestNet()
-    pass

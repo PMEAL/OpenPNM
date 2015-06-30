@@ -107,7 +107,3 @@ class TestNet(GenericNetwork):
             ps1 = self['pore.'+item][ps[:, 1]]
             ts = ts[ps1*ps0]
             self['throat.'+item] = self.tomask(throats=ts)
-if __name__ == '__main__':
-    import OpenPNM
-    pn = OpenPNM.Network.TestNet()
-    print(pn.name)

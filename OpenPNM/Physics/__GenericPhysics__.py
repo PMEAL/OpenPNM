@@ -68,12 +68,16 @@ class GenericPhysics(OpenPNM.Base.Core):
             pores = self._net.toindices(self._net['pore.' + geometry.name])
             throats = self._net.toindices(self._net['throat.' + geometry.name])
 
-        # Initialize a label dictionary in the associated fluid
+        # Initialize a label dictionary in the associated phase and network
         self._phases[0]['pore.'+self.name] = False
         self._phases[0]['throat.'+self.name] = False
         self._net['pore.'+self.name] = False
         self._net['throat.'+self.name] = False
-        self.set_locations(pores=pores, throats=throats)
+        try:
+            self.set_locations(pores=pores, throats=throats)
+        except:
+            self.controller.purge_object(self)
+            raise Exception('Provided locations are in use, instantiation cancelled')
 
     def __getitem__(self, key):
         element = key.split('.')[0]
@@ -104,6 +108,3 @@ class GenericPhysics(OpenPNM.Base.Core):
         if len(throats) > 0:
             throats = sp.array(throats, ndmin=1)
             self._set_locations(element='throat', locations=throats, mode=mode)
-
-if __name__ == '__main__':
-    print('none yet')

@@ -44,6 +44,5 @@ from .__OhmicConduction__ import OhmicConduction
 from .__StokesFlow__ import StokesFlow
 from .__InvasionPercolation__ import InvasionPercolation
 from .__InvasionPercolation2__ import InvasionPercolation2
-from .__InvasionPercolationTimed__ import InvasionPercolationTimed
 from .__OrdinaryPercolation__ import OrdinaryPercolation
-from . __Tortuosity__ import Tortuosity
+from .__Tortuosity__ import Tortuosity

@@ -10,3 +10,4 @@ This section contains recipes and various code snippets which may be useful but 
    :maxdepth: 1
    
    pore_scale_models.rst
+   algorithms/index.rst
