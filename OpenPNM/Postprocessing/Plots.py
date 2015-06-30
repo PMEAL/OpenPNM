@@ -11,15 +11,11 @@ def profiles(network, fig=None, values=None, bins=[10, 10, 10]):
     ----------
     network : OpenPNM Network object
 
-    values : array_like, optional
+    values : array_like
         The pore property values to be plotted as a profile
 
     bins : int or list of ints, optional
         The number of bins to divide the domain into for averaging.
-
-    Notes
-    -----
-    Either propname or values can be sent, but not both
 
     """
     if fig is None:
