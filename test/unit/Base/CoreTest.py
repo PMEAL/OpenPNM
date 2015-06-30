@@ -768,3 +768,14 @@ class CoreTest:
         a = geom3.map_throats(throats=geom3.Ts, target=pn)
         b = pn.map_throats(throats=a, target=geom3)
         assert(sp.all(b == geom3.Ts))
+
+    def check_data_health(self):
+        a = self.net.check_data_health()
+        assert a.health
+        for item in a.values():
+            assert item == []
+        self.net['pore.data_test'] = sp.nan
+        a = self.net.check_data_health()
+        assert not a.health
+        assert a['pore.data_test'] == 'Has NaNs'
+        del self.net['pore.data_test']

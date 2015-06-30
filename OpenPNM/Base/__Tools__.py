@@ -34,24 +34,6 @@ class PrintableDict(_odict):
         return '\n'.join(lines)
 
 
-class AttributVeiew(object):
-    def __init__(self, d):
-        temp = {}
-        for item in d:
-            if type(d[item][0]) == _sp.bool_:
-                key = 'label_' + item.replace('.', '_')
-            else:
-                key = 'prop_' + item.replace('.', '_')
-            temp[key] = d[item]
-        self.__dict__ = temp
-
-
-class ClonedCore(dict):
-    def __init__(self, obj):
-        self.update(obj)
-        self.name = obj.name
-
-
 class HealthDict(PrintableDict):
     r"""
     This class adds a 'health' check to a standard dictionary.  This check
