@@ -172,18 +172,18 @@ def static_pressure(network,
     >>> water = OpenPNM.Phases.Water(network=pn)
     >>> water['pore.density'] = 997  # kg/m3
     >>> phys_water = OpenPNM.Physics.GenericPhysics(network=pn,
-                                                    phase=water,
-                                                    pores=pn.Ps,
-                                                    throats=pn.Ts)
+    ...                                             phase=water,
+    ...                                             pores=pn.Ps,
+    ...                                             throats=pn.Ts)
 
     Add the 'static_pressure' model to the water Physics object:
 
     >>> f = OpenPNM.Physics.models.capillary_pressure.static_pressure
     >>> phys_water.models.add(model=f,
-                              propname='pore.static_pressure',
-                              pore_occupancy='pore.occupancy',
-                              density='pore.density',
-                              regen_mode='deferred')
+    ...                       propname='pore.static_pressure',
+    ...                       pore_occupancy='pore.occupancy',
+    ...                       density='pore.density',
+    ...                       regen_mode='deferred')
 
     Rigorously speaking, it is necessary to create an IP algorithm to determine
     a water distribution in the Network, but for the sake of this example, an
