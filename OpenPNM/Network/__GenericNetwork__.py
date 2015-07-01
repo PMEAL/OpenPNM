@@ -595,7 +595,7 @@ class GenericNetwork(Core):
         r"""
         Identify connected clusters of pores in the network.  This method can
         also return a list of throat labels, which correspond to the pore
-        labels to which the throat is connected.  either site and bond
+        labels to which the throat is connected.  Either site and bond
         percolation can be consider, see description of input arguments for
         details.
 
@@ -614,8 +614,8 @@ class GenericNetwork(Core):
         -------
         A Np long list of pore clusters numbers, unless t_labels is True in
         which case a tuple containing both pore and throat cluster labels is
-        returned.  The label numbers corresond such that pores and throats with
-        the same label are part of the same cluster.
+        returned.  The label numbers correspond such that pores and throats
+        with the same label are part of the same cluster.
 
         Examples
         --------
@@ -657,9 +657,10 @@ class GenericNetwork(Core):
         if mask.dtype != bool:
             raise Exception('Mask must be a boolean array of Np or Nt length')
 
-        # If pore mask was givenk perform site percolatoin
+        # If pore mask was given perform site percolation
         if sp.size(mask) == self.Np:
             (p_clusters, t_clusters) = self._site_percolation(mask)
+        # If pore mask was given perform bond percolation
         elif sp.size(mask) == self.Nt:
             (p_clusters, t_clusters) = self._bond_percolation(mask)
         else:
@@ -678,7 +679,7 @@ class GenericNetwork(Core):
         conns[:, 0] = pmask[conns[:, 0]]
         conns[:, 1] = pmask[conns[:, 1]]
         # Only if both pores are True is the throat set to True
-        tmask = sp.array(conns[:, 0]*conns[:, 1], dtype=bool)
+        tmask = sp.all(conns, axis=1)
 
         # Perform the clustering using scipy.csgraph
         csr = self.create_adjacency_matrix(data=tmask,
@@ -713,7 +714,7 @@ class GenericNetwork(Core):
         # Convert clusters to a more usable output:
         # Find pores attached to each invaded throats
         Ps = self.find_connected_pores(throats=tmask, flatten=True)
-        # Adjust cluster numbers such that non-invaded pores are labelled -1
+        # Adjust cluster numbers such that non-invaded pores are labelled -0
         p_clusters = (clusters + 1)*(self.tomask(pores=Ps).astype(int)) - 1
         # Label invaded throats with their neighboring pore's label
         t_clusters = clusters[self['throat.conns']][:, 0]
@@ -1046,3 +1047,18 @@ class GenericNetwork(Core):
                            'approximate')
             pass
         return A
+
+    def _compress_labels(self, label_array):
+        # Make cluster number contiguous
+        array = sp.array(label_array)
+        if array.dtype != int:
+            raise Exception('label_array must be intergers')
+        min_val = sp.amin(array)
+        if min_val >= 0:
+            min_val = 0
+        array = array + sp.absolute(min_val)
+        nums = sp.unique(array)
+        temp = sp.zeros((sp.amax(array)+1,))
+        temp[nums] = sp.arange(0, sp.size(nums))
+        array = temp[array].astype(array.dtype)
+        return array
