@@ -46,12 +46,19 @@ class CoreTest:
                                                       throats=Ts)
 
     def test_clear(self):
-        dict_ = self.geo.copy()
-        self.geo.clear()
-        assert self.geo.Np == 0
-        assert self.geo.Nt == 0
-        assert list(self.geo.keys()) == ['pore.all', 'throat.all']
-        self.geo.update(dict_)
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        b = sorted(list(net.keys()))
+        dict_ = net.copy()
+        net.clear()
+        assert net.Np == 0
+        assert net.Nt == 0
+        a = sorted(list(net.keys()))
+        assert a == ['pore.all', 'throat.all']
+        net.update(dict_)
+        assert net.Np == 27
+        assert net.Nt == 54
+        a = sorted(list(net.keys()))
+        assert a == b
 
     def test_props_all(self):
         a = self.geo.props()

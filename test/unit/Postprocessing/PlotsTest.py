@@ -37,14 +37,14 @@ class PlotsTest:
         a = OpenPNM.Postprocessing.Plots.porosity_profile(self.net, axis=2)
         assert isinstance(a, mpl.figure.Figure)
 
-    def test_profiles(self):
-        vals = self.geo['pore.diameter']
-        a = OpenPNM.Postprocessing.Plots.profiles(self.net, values=vals)
-        assert isinstance(a, mpl.figure.Figure)
-
-    def test_saturation_profile(self):
-        self.water['pore.occupancy'] = self.IP['pore.invaded'] < 500
-        self.water['throat.occupancy'] = self.IP['throat.invaded'] < 500
-        a = OpenPNM.Postprocessing.Plots.saturation_profile(self.net,
-                                                            phase=self.water)
-        assert isinstance(a, mpl.figure.Figure)
+#    def test_profiles(self):
+#        vals = self.geo['pore.diameter']
+#        a = OpenPNM.Postprocessing.Plots.profiles(self.net, values=vals)
+#        assert isinstance(a, mpl.figure.Figure)
+#
+#    def test_saturation_profile(self):
+#        self.water['pore.occupancy'] = self.IP['pore.invaded'] < 500
+#        self.water['throat.occupancy'] = self.IP['throat.invaded'] < 500
+#        a = OpenPNM.Postprocessing.Plots.saturation_profile(self.net,
+#                                                            phase=self.water)
+#        assert isinstance(a, mpl.figure.Figure)
