@@ -26,3 +26,13 @@ class VaporPressureTest:
                               pore_temperature='pore.temperature',
                               pore_salinity='pore.salinity')
         assert sp.allclose(self.phase['pore.test'], 3536.01)
+
+    def test_water_no_salinity(self):
+        f = OpenPNM.Phases.models.vapor_pressure.water
+        del self.phase['pore.salinity']
+        self.phase.models.add(propname='pore.test',
+                              model=f,
+                              pore_temperature='pore.temperature',
+                              pore_salinity='pore.salinity')
+        assert sp.allclose(self.phase['pore.test'], 3536.01)
+        self.phase['pore.salinity'] = sp.zeros((self.phase.Np,))
