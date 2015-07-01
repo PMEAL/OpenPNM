@@ -168,6 +168,7 @@ def static_pressure(network,
     Examples
     --------
     >>> import OpenPNM
+    >>> import scipy as sp
     >>> pn = OpenPNM.Network.Cubic(shape=[25,1,50], spacing=0.0001)
     >>> water = OpenPNM.Phases.Water(network=pn)
     >>> water['pore.density'] = 997  # kg/m3
