@@ -50,13 +50,14 @@ IP = op.Algorithms.InvasionPercolationDrying(network=pn)
 IP.setup(invading_phase=air, defending_phase=water)
 IP.set_inlets(pores=pn.pores('front'))
 
+D = op.Algorithms.FickianDiffusion(network=pn, phase=air)
+Ps_in = pn.pores('front')
 
 ims = []
 fig = plt.figure()
 i = 0
 while sp.sum(IP['pore.invaded'] == -1) > 0:
     # Calculate the diffusion of vapor given the existing invasion pattern
-    D = op.Algorithms.FickianDiffusion(network=pn, phase=air)
     Ps_out = pn.toindices(IP['pore.invaded'] == -1)
     Ps_in = pn.pores('front')
     D.set_boundary_conditions(pores=Ps_out,
@@ -83,7 +84,6 @@ while sp.sum(IP['pore.invaded'] == -1) > 0:
     im = pn.asarray(im)[:, :, 0]
     ims.append((plt.imshow(im, interpolation='none'),))
     # Purge diffusion object, so it can be restarted (fix this)
-    ctrl.purge_object(D)
     i += 1
 
 im_ani = animation.ArtistAnimation(fig,
