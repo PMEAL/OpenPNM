@@ -670,11 +670,9 @@ class GenericLinearTransport(GenericAlgorithm):
                 b[NG_loc] = sp.reshape(NG_arr, [NG_l, 1])
             except KeyError:
                 pass
+        if mode == 'modify_RHS':
+            b = sp.copy(self.b)
         if mode in ['overwrite', 'modify_RHS']:
-            try:
-                b = sp.copy(self.b)
-            except AttributeError:
-                pass
             # Adding necessary terms to the RHS for non-Dirichlet pores
             if modified_RHS_pores is not None and RHS_added_data is not None:
                 if sp.size(modified_RHS_pores) == sp.size(RHS_added_data):
