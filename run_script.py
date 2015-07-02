@@ -10,7 +10,7 @@ ctrl.loglevel = 30
 # =============================================================================
 '''Build Topological Network'''
 # =============================================================================
-pn = op.Network.Cubic(shape=[50, 50, 1], spacing=1, name='net')
+pn = op.Network.Cubic(shape=[30, 30, 1], spacing=1, name='net')
 
 # =============================================================================
 '''Build Geometry'''
@@ -92,6 +92,6 @@ im_ani = animation.ArtistAnimation(fig,
                                    repeat_delay=3000,
                                    blit=True)
 
-FFMpegWriter = animation.writers['ffmpeg_file']
-writer = FFMpegWriter(fps=15)
-im_ani.save('test2.mp4', writer=writer)
+Writer = animation.writers['ffmpeg']
+writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+# im_ani.save('test2.mp4', writer=writer)
