@@ -54,13 +54,8 @@ IP.set_inlets(pores=pn.pores('front'))
 ims = []
 fig = plt.figure()
 i = 0
-while sp.sum(IP['pore.invaded'] == -1) > 29:
-    qs = IP.queues
-    for i in range(len(qs)):
-        q = qs[i]
-        IP.run2(queue=q, volume=0.5)
-    IP.qregen()
-    # Recalculate the diffusion of water vapor
+while sp.sum(IP['pore.invaded'] == -1) > 0:
+    # Calculate the diffusion of vapor given the existing invasion pattern
     D = op.Algorithms.FickianDiffusion(network=pn, phase=air)
     Ps_out = pn.toindices(IP['pore.invaded'] == -1)
     Ps_in = pn.pores('front')
@@ -73,11 +68,21 @@ while sp.sum(IP['pore.invaded'] == -1) > 29:
                               bctype='Dirichlet',
                               mode='merge')
     D.run()
+
+    # Update the invasion pattern based on vapor loss from each cluster
+    qs = IP.queues
+    for qnum in range(len(qs)):
+        print(str(qnum)+' : ', end='')
+        r = sp.absolute(D.rate(pores=IP['pore.queue_number'] == qnum))
+        IP.run2(queue=qs[qnum], volume=r*6000)
+    IP.qregen()
+
     # Create image and store for making an animation
     im = sp.copy(D['pore.air_mole_fraction'])
     im[Ps_out] = sp.nan
     im = pn.asarray(im)[:, :, 0]
     ims.append((plt.imshow(im, interpolation='none'),))
+    # Purge diffusion object, so it can be restarted (fix this)
     ctrl.purge_object(D)
     i += 1
 
@@ -87,6 +92,6 @@ im_ani = animation.ArtistAnimation(fig,
                                    repeat_delay=3000,
                                    blit=True)
 
-Writer = animation.writers['imagemagick']
-writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
-im_ani.save('test.mp4', writer=writer)
+FFMpegWriter = animation.writers['ffmpeg_file']
+writer = FFMpegWriter(fps=15)
+im_ani.save('test2.mp4', writer=writer)
