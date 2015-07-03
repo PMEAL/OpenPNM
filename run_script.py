@@ -10,7 +10,7 @@ ctrl.loglevel = 30
 # =============================================================================
 '''Build Topological Network'''
 # =============================================================================
-pn = op.Network.Cubic(shape=[30, 30, 1], spacing=1, name='net')
+pn = op.Network.Cubic(shape=[50, 30, 1], spacing=1, name='net')
 
 # =============================================================================
 '''Build Geometry'''
@@ -37,6 +37,9 @@ water = op.Phases.Water(network=pn, name='water')
 Ps = pn.pores()
 Ts = pn.throats()
 phys_water = op.Physics.Standard(network=pn, phase=water, pores=Ps, throats=Ts)
+f = op.Physics.models.capillary_pressure.static_pressure
+phys_water.models.add(propname='pore.static_pressure',
+                      model=f)
 phys_air = op.Physics.Standard(network=pn, phase=air, pores=Ps, throats=Ts)
 
 # =============================================================================
