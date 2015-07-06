@@ -21,7 +21,7 @@ def voronoi(network, geometry, vertices='throat.centroid', **kwargs):
         net_throats = network.find_neighbor_throats(net_pore)
         geom_throats = network.map_throats(target=geometry,
                                            throats=net_throats,
-                                           return_mapping=False)
+                                           return_mapping=True)['target']
         verts = geometry[vertices][geom_throats]
         " Ignore all zero centroids "
         verts = verts[~_sp.all(verts == 0, axis=1)]

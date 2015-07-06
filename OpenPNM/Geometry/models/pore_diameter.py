@@ -104,7 +104,7 @@ def centroids(network, geometry, **kwargs):
         net_throats = geometry._net.find_neighbor_throats(net_pore)
         geom_throats = geometry._net.map_throats(target=geometry,
                                                  throats=net_throats,
-                                                 return_mapping=False)
+                                                 return_mapping=True)['target']
         tcs = geometry["throat.centroid"][geom_throats]
         pc = geometry["pore.centroid"][geom_pore]
         value[geom_pore] = _sp.mean(_sp.sqrt(((tcs-pc)*(tcs-pc))[:, 0] +

@@ -73,6 +73,7 @@ def bulk_diffusion(physics, phase, network, pore_molar_density='pore.molar_densi
         sf = network[shape_factor]
     except:
         sf = _sp.ones(network.num_throats())
+    sf[_sp.isnan(sf)] = 1.0
     gt = (1/sf)*ct*DABt*tarea/tlen
     # Set 0 conductance pores (boundaries) to inf
     gt[~(gt > 0)] = _sp.inf
