@@ -267,8 +267,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         non-wetting phase.
         Assumes Non-wetting phase displaces wetting phase
         """
-        Swp = Swp_init*(self._p_inv/Pc)**eta
-        Swp[self._p_inv > Pc] = 1.0
+        Swp = Swp_init*(self['pore.inv_Pc']/Pc)**eta
+        Swp[self['pore.inv_Pc'] > Pc] = 1.0
         Snwp = 1-Swp
         if wetting_phase:
             return Swp
