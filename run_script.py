@@ -39,7 +39,8 @@ Ts = pn.throats()
 phys_water = op.Physics.Standard(network=pn, phase=water, pores=Ps, throats=Ts)
 f = op.Physics.models.capillary_pressure.static_pressure
 phys_water.models.add(propname='pore.static_pressure',
-                      model=f)
+                      model=f,
+                      regen_mode='deferred')
 phys_air = op.Physics.Standard(network=pn, phase=air, pores=Ps, throats=Ts)
 
 # =============================================================================
