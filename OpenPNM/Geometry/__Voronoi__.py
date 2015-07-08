@@ -104,8 +104,7 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='throat.length',
                         model=gm.throat_length.constant,
                         const=self._fibre_rad*2)
-        self.models.add(propname='throat.volume',
-                        model=gm.throat_volume.extrusion)
+        self['throat.volume'] = 0.0
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.extrusion)
         self.models.add(propname='throat.c2c',
@@ -139,7 +138,7 @@ class Voronoi(GenericGeometry):
                                                                 vox_len,
                                                                 fibre_rad)
 
-    def export_fibre_image(self, mat_file='OpenPNMFibres'):
+    def _export_fibre_image(self, mat_file='OpenPNMFibres'):
         r"""
         If the voronoi voxel method was implemented to calculate pore volumes
         an image of the fibre space has already been calculated and stored on
@@ -157,7 +156,7 @@ class Voronoi(GenericGeometry):
         matlab_dict = {"fibres": self._fibre_image}
         savemat(mat_file, matlab_dict, format='5', long_field_names=True)
 
-    def get_fibre_slice(self, plane=None, index=None):
+    def _get_fibre_slice(self, plane=None, index=None):
         r"""
         Plot an image of a slice through the fibre image
         plane contains percentage values of the length of the image in each axis
@@ -229,7 +228,7 @@ class Voronoi(GenericGeometry):
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
-        slice_image = self.get_fibre_slice(plane, index)
+        slice_image = self._get_fibre_slice(plane, index)
         if slice_image is not None:
             if fig is None:
                 plt.figure()
