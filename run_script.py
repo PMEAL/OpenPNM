@@ -1,6 +1,7 @@
 import OpenPNM as op
-print('-----> Using OpenPNM version: '+op.__version__)
-
+import time
+st = time.time()
+from OpenPNM.Geometry import models as gm
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
@@ -13,7 +14,7 @@ pn.add_boundaries()
 Ps = pn.pores('boundary',mode='not')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
 geom = op.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
-
+geom.models.add(propname='throat.length',model=gm.throat_length.straight)
 Ps = pn.pores('boundary')
 Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
 boun = op.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
@@ -92,3 +93,5 @@ except Exception as e:
 '''Export to VTK'''
 #------------------------------------------------------------------------------
 op.export()
+
+print("sim time:" + str(time.time()-st))

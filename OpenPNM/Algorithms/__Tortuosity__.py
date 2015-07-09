@@ -16,6 +16,7 @@ import scipy.sparse.csgraph as spgr
 from OpenPNM.Algorithms import GenericAlgorithm
 import OpenPNM.Network
 from OpenPNM.Base import logging
+import OpenPNM.Utilities.misc as misc
 logger = logging.getLogger(__name__)
 
 
@@ -45,16 +46,17 @@ class Tortuosity(GenericAlgorithm):
               will require: ', t_est, ' seconds')
         return
 
-    def run(self, phase=None):
+    def run(self, phase=None, throats=None):
         logger.warning('This algorithm can take some time...')
-        graph = self._net.create_adjacency_matrix(data=self._net['throat.length'],
+        conduit_lengths = sp.sum(misc.conduit_lengths(network=self._net,
+                                 mode='centroid'), axis=1)
+        graph = self._net.create_adjacency_matrix(data=conduit_lengths,
                                                   sprsfmt='csr')
 
         if phase is not None:
             self._phase = phase
             if 'throat.occupancy' in self._phase.props():
-                temp = self._net['throat.length'] * \
-                    (self._phase['throat.occupancy'] == 1)
+                temp = conduit_lengths*(self._phase['throat.occupancy'] == 1)
                 graph = self._net.create_adjacency_matrix(data=temp,
                                                           sprsfmt='csr',
                                                           prop='temp')
