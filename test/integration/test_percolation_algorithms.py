@@ -1,4 +1,5 @@
 import scipy as sp
+import matplotlib
 import OpenPNM
 import pytest
 ctrl = OpenPNM.Base.Controller()
@@ -104,3 +105,20 @@ def test_OP_trapping():
     V_tot = sp.sum(pn['pore.volume'])
     assert V_inv/V_tot < 1.0
     ctrl.clear()
+
+
+def test_OP_plotting():
+    ctrl.clear()
+    pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
+    geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
+    water = OpenPNM.Phases.Water(network=pn)
+    OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
+    inlets = pn.pores('left')
+    OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn)
+    OP.setup(invading_phase=water)
+    OP.set_inlets(pores=inlets)
+    OP.run(npts=25)
+    a = OP.plot_drainage_curve()
+    assert isinstance(a, matplotlib.figure.Figure)
+    a = OP.plot_primary_drainage_curve()
+    assert isinstance(a, matplotlib.figure.Figure)

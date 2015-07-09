@@ -46,3 +46,18 @@ class GenericGeometryTest:
         a = self.geo.pores(self.geo.name)
         b = self.geo.Ps
         assert sp.all(a == b)
+
+    def test_get_item_self_name(self):
+        a = self.geo.get('pore.'+self.geo.name)
+        assert a is None
+        a = self.geo['pore.'+self.geo.name]
+        assert sp.sum(a) == self.geo.Np
+
+    def test_initialize_with_overlapping_locations(self):
+        flag = False
+        try:
+            OpenPNM.Geometry.GenericGeometry(network=self.net,
+                                             pores=[0])
+        except:
+            flag = True
+        assert flag

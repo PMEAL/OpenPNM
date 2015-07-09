@@ -1,5 +1,6 @@
 import OpenPNM
 import scipy as sp
+import pytest
 ctrl = OpenPNM.Base.Controller()
 ctrl.loglevel = 60
 
@@ -32,6 +33,32 @@ class CoreTest:
         self.phys2 = OpenPNM.Physics.GenericPhysics(network=self.net1,
                                                     geometry=self.geo1,
                                                     phase=self.phase2)
+        self.net2 = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        Ps = sp.arange(0, 18)
+        Ts = self.net2.find_neighbor_pores(Ps, mode='union')
+        self.geo21 = OpenPNM.Geometry.GenericGeometry(network=self.net2,
+                                                      pores=Ps,
+                                                      throats=Ts)
+        Ps = sp.arange(18, 27)
+        Ts = self.net2.find_neighbor_pores(Ps, mode='intersection')
+        self.geo22 = OpenPNM.Geometry.GenericGeometry(network=self.net2,
+                                                      pores=Ps,
+                                                      throats=Ts)
+
+    def test_clear(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        b = sorted(list(net.keys()))
+        dict_ = net.copy()
+        net.clear()
+        assert net.Np == 0
+        assert net.Nt == 0
+        a = sorted(list(net.keys()))
+        assert a == ['pore.all', 'throat.all']
+        net.update(dict_)
+        assert net.Np == 27
+        assert net.Nt == 54
+        a = sorted(list(net.keys()))
+        assert a == b
 
     def test_props_all(self):
         a = self.geo.props()
@@ -282,6 +309,10 @@ class CoreTest:
             pass
         assert a is None
 
+    def test_count(self):
+        a = self.net._count()
+        assert a == {'pore': 27, 'throat': 54}
+
     def test_num_pores(self):
         a = self.net.num_pores()
         assert a == 27
@@ -412,6 +443,14 @@ class CoreTest:
     def test_geometry_lookup_by_name(self):
         a = self.net1.geometries(self.geo1.name)
         assert a == [self.geo1]
+
+    def test_set_locations_on_phase(self):
+        flag = False
+        try:
+            self.phase1._set_locations(element='pores', locations=1)
+        except:
+            flag = True
+        assert flag
 
     def test_set_locations_add_on_empty_geometry(self):
         # 'empty' meaning assigned nowhere, with no models or props
@@ -548,3 +587,202 @@ class CoreTest:
         assert sp.size(geo['pore.regenerating_model']) == 18
         del ctrl[net.name]
         del ctrl[geo.name]
+
+    def test_find_all_physics(self):
+        a = self.net1.physics()
+        b = [self.phys1.name, self.phys2.name]
+        assert a == b
+
+    def test_find_physics_by_name(self):
+        a = self.net1.physics(self.phys1.name)
+        assert self.phys1 in a
+        assert self.phys2 not in a
+        a = self.net1.physics([self.phys1.name, self.phys2.name])
+        assert self.phys1 in a
+        assert self.phys2 in a
+
+    def test_find_all_phases(self):
+        a = self.net1.phases()
+        b = [self.phase1.name, self.phase2.name]
+        assert a == b
+
+    def test_find_phases_by_name(self):
+        a = self.net1.phases(self.phase1.name)
+        assert self.phase1 in a
+        assert self.phase2 not in a
+        a = self.net1.phases([self.phase1.name, self.phase2.name])
+        assert self.phase1 in a
+        assert self.phase2 in a
+
+    def test_find_all_geometries(self):
+        a = self.net1.geometries()
+        b = [self.geo1.name]
+        assert a == b
+
+    def test_find_geometries_by_name(self):
+        a = self.net1.phases(self.phase1.name)
+        assert self.phase1 in a
+        assert self.phase2 not in a
+        a = self.net1.phases([self.phase1.name, self.phase2.name])
+        assert self.phase1 in a
+        assert self.phase2 in a
+
+    def test_find_network_from_geometry(self):
+        a = self.geo.network()
+        assert a == [self.net]
+
+    def test_find_network_by_name_from_geometry(self):
+        a = self.geo.network(self.net.name)
+        assert a == self.net
+
+    def test_find_network_from_phase(self):
+        a = self.phase1.network()
+        assert a == [self.net1]
+
+    def test_find_network_by_name_from_phase(self):
+        a = self.phase1.network(self.net1.name)
+        assert a == self.net1
+
+    def test_find_network_from_physics(self):
+        a = self.phys1.network()
+        assert a == [self.net1]
+
+    def test_find_network_by_name_from_physics(self):
+        a = self.phys1.network(self.net1.name)
+        assert a == self.net1
+
+    def test_object_print(self):
+        a = self.net.__str__()
+        assert type(a) == str
+
+    def test_object_representation(self):
+        a = self.net.__repr__()
+        assert type(a) == str
+
+    def test_parse_locations_int(self):
+        a = self.net._parse_locations(locations=0)
+        assert type(a) == sp.ndarray
+        assert sp.all(a == 0)
+
+    def test_parse_locations_list(self):
+        a = self.net._parse_locations(locations=[0, 1])
+        assert type(a) == sp.ndarray
+        assert sp.all(a == [0, 1])
+
+    def test_parse_locations_bool_pores(self):
+        a = self.net._parse_locations(locations=sp.ones([self.net.Np, ],
+                                                        dtype=bool))
+        assert sp.all(a == self.net.Ps)
+
+    def test_parse_locations_bool_throat(self):
+        a = self.net._parse_locations(locations=sp.ones([self.net.Nt, ],
+                                                        dtype=bool))
+        assert sp.all(a == self.net.Ts)
+
+    def test_parse_locations_bool_wrong_length(self):
+        flag = False
+        try:
+            self.net._parse_locations(locations=sp.ones([self.net.Nt+1, ],
+                                                        dtype=bool))
+        except:
+            flag = True
+        assert flag
+
+    def test_map_pores_geometry1_onto_network(self):
+        a = self.geo21.map_pores(target=self.net2)
+        assert sp.all(a == self.net2.pores(self.geo21.name))
+
+    def test_map_pores_geometry2_onto_network(self):
+        a = self.geo22.map_pores(target=self.net2, pores=self.geo22.Ps)
+        assert sp.all(a == self.net2.pores(self.geo22.name))
+
+    def test_map_pores_network_onto_self(self):
+        a = self.net2.map_pores(target=self.net2)
+        assert sp.all(a == self.net2.pores())
+
+    def test_map_pores_geometry_onto_other_geometry(self):
+        flag = False
+        try:
+            self.geo21.map_pores(target=self.geo22)
+        except:
+            flag = True
+        assert flag
+
+    def test_mapping(self):
+        # Create small cubic network
+        pn = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=0.0001)
+        # Assign 3 different geometries to each layer in the z-direction
+        Pa = sp.arange(0, 9)
+        Ta = pn.find_neighbor_throats(Pa)
+        geom1 = OpenPNM.Geometry.GenericGeometry(network=pn,
+                                                 pores=Pa,
+                                                 throats=Ta)
+        Pc = sp.arange(18, 27)
+        Tc = pn.find_neighbor_throats(Pc)
+        geom3 = OpenPNM.Geometry.GenericGeometry(network=pn,
+                                                 pores=Pc,
+                                                 throats=Tc)
+        Pb = sp.arange(9, 18)
+        Tb = pn.find_neighbor_throats(pores=Pb, mode='intersection')
+        geom2 = OpenPNM.Geometry.GenericGeometry(network=pn,
+                                                 pores=Pb,
+                                                 throats=Tb)
+        # Create an index in the Network
+        pn['pore.num1'] = pn.Ps
+        # Create the same index across each geom
+        geom1['pore.num2'] = Pa
+        geom2['pore.num2'] = Pb
+        geom3['pore.num2'] = Pc
+        # Confirm two indexes match
+        assert(sp.all(pn['pore.num1'] == pn['pore.num2']))
+        # Send junk pores to ensure error is raised
+        with pytest.raises(Exception):
+            pn.map_pores(pores=[0, pn.Np-1], target=geom1)
+            pn.map_pores(pores=[0, pn.Np+1], target=geom1)
+            pn.map_pores(pores=[pn.Np-1], target=geom1)
+            pn.map_pores(pores=[pn.Np+1], target=geom1)
+            geom1.map_pores(pores=[0, geom1.Np+1], target=pn)
+            geom1.map_pores(pores=[0, pn.Np+1], target=pn)
+            geom1.map_pores(pores=[geom1.Np+1], target=pn)
+            geom1.map_pores(pores=[pn.Np+1], target=pn)
+            geom2.map_pores(pores=[0], target=geom1)
+            geom2.map_pores(pores=[geom2.Np+1], target=geom1)
+            geom2.map_pores(pores=[0, geom2.Np-1], target=geom1)
+            geom2.map_pores(pores=[0, geom2.Np+1], target=geom1)
+        # Trim column from center of Network
+        pn.trim(pores=[4, 13, 22])
+        # Confirm index still match
+        assert(sp.all(pn['pore.num1'] == pn['pore.num2']))
+        # Check mapping between each Geometry object and in both directions
+        # Check geom1
+        a = geom1.map_pores(pores=geom1.Ps, target=pn)
+        b = pn.map_pores(pores=a, target=geom1)
+        assert(sp.all(b == geom1.Ps))
+        a = geom1.map_throats(throats=geom1.Ts, target=pn)
+        b = pn.map_throats(throats=a, target=geom1)
+        assert(sp.all(b == geom1.Ts))
+        # Check geom2
+        a = geom2.map_pores(pores=geom2.Ps, target=pn)
+        b = pn.map_pores(pores=a, target=geom2)
+        assert(sp.all(b == geom2.Ps))
+        a = geom2.map_throats(throats=geom2.Ts, target=pn)
+        b = pn.map_throats(throats=a, target=geom2)
+        assert(sp.all(b == geom2.Ts))
+        # Check geom3
+        a = geom3.map_pores(pores=geom3.Ps, target=pn)
+        b = pn.map_pores(pores=a, target=geom3)
+        assert(sp.all(b == geom3.Ps))
+        a = geom3.map_throats(throats=geom3.Ts, target=pn)
+        b = pn.map_throats(throats=a, target=geom3)
+        assert(sp.all(b == geom3.Ts))
+
+    def check_data_health(self):
+        a = self.net.check_data_health()
+        assert a.health
+        for item in a.values():
+            assert item == []
+        self.net['pore.data_test'] = sp.nan
+        a = self.net.check_data_health()
+        assert not a.health
+        assert a['pore.data_test'] == 'Has NaNs'
+        del self.net['pore.data_test']

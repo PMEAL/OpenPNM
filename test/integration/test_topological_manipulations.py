@@ -1,5 +1,5 @@
 import OpenPNM
-import pytest
+from os.path import join
 import scipy as sp
 from OpenPNM.Utilities import topology
 ctrl = OpenPNM.Base.Controller()
@@ -15,7 +15,7 @@ def test_subdivide():
     pn.subdivide(pores=nano_pores, shape=[4, 4, 4], labels='nano')
     assert pn.Np == (125+4*64-4)
     assert pn.Nt == (300+(4*144)-16+15*16+16)
-    ctrl.export(network=pn, filename='nano')
+    ctrl.export(network=pn, filename=join(TEMP_DIR, 'nano'))
 
 
 def test_clone_and_trim():

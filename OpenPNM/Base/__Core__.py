@@ -157,13 +157,14 @@ class Core(dict):
 
     def clear(self):
         r"""
-        A subclassed version of the standard dict's clear method
+        A subclassed version of the standard dict's clear method.  This removes
+        ALL pore and throat properties and labels from the object, but keeps
+        empty versions of ``pore.all`` and ``throat.all`` which are required
+        for the object to still be functional.
         """
-        pall = self['pore.all']
-        tall = self['throat.all']
-        super(Core, self).clear()
-        self.update({'throat.all': tall})
-        self.update({'pore.all': pall})
+        super().clear()
+        self.update({'throat.all': sp.array([], ndmin=1, dtype=int)})
+        self.update({'pore.all': sp.array([], ndmin=1, dtype=int)})
 
     # -------------------------------------------------------------------------
     """Model Manipulation Methods"""
@@ -1412,9 +1413,9 @@ class Core(dict):
         locs = sp.array(locations, ndmin=1)
         if locs.dtype == bool:
             if sp.size(locs) == self.Np:
-                locs = self.Ps(locs)
+                locs = self.Ps[locs]
             elif sp.size(locs) == self.Nt:
-                locs = self.Ts(locs)
+                locs = self.Ts[locs]
             else:
                 raise Exception('List of locations is neither Np nor Nt long')
         return locs

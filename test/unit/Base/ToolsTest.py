@@ -31,3 +31,7 @@ class ToolsTest:
                 'second_key                second_value\n' + \
                 '------------------------------------------------------------'
             assert actual_string == expected_string
+
+        def test_representation(self):
+            a = self.dict.__repr__()
+            assert type(a) is str
