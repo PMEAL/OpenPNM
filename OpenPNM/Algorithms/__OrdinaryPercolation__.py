@@ -366,6 +366,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         if sp.mean(self._inv_phase['pore.contact_angle']) < 90:
             Snwp_p = 1 - Snwp_p
             Snwp_t = 1 - Snwp_t
+            Snwp_all = 1 - Snwp_all
             PcPoints *= -1
         fig = plt.figure()
         plt.plot(PcPoints, Snwp_all, 'g.-')

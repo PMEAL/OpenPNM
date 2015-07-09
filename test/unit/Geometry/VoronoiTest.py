@@ -43,7 +43,7 @@ class VoronoiTest:
                              'throat.vertices', 'throat.volume']
 
     def test_get_fibre_slice(self):
-        slc = self.geo_vox.get_fibre_slice(index=[0, 50, 0])
+        slc = self.geo_vox._get_fibre_slice(index=[0, 50, 0])
         assert sp.shape(slc) == (101, 101)
 
     def test_compress_geom(self):

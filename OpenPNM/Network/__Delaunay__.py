@@ -350,21 +350,6 @@ class Delaunay(GenericNetwork):
 
         return A
 
-    def _trim_occluded_throats(self):
-        r"""
-        After the offsetting routine throats with zero area have been fully occluded.
-        Remove these from the network and also remove pores that are isolated
-        To Do 
-        Move to topology utility
-        """
-        occluded_ts = self['throat.area'] == 0
-        if np.sum(occluded_ts) > 0:
-            self.trim(throats=occluded_ts)
-        # Also get rid of isolated pores
-        isolated_ps = self.check_network_health()['isolated_pores']
-        if len(isolated_ps) > 0:
-            self.trim(isolated_ps)
-
     def _export_vor_fibres(self):
         r"""
         Run through the throat vertices, compute the convex hull order and save

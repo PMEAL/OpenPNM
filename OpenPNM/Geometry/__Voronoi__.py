@@ -16,8 +16,9 @@ from OpenPNM.Geometry import GenericGeometry
 from OpenPNM.Base import logging
 import matplotlib.pyplot as plt
 from scipy.io import savemat
-from scipy.stats import itemfreq
+from OpenPNM.Utilities import topology
 logger = logging.getLogger(__name__)
+topo = topology()
 
 
 class Voronoi(GenericGeometry):
@@ -64,16 +65,7 @@ class Voronoi(GenericGeometry):
                         offset=self._fibre_rad,
                         set_dependent=True)
 
-        " Get rid of occluded throats in this Geometry"
-        zero_ts = self.throats()[self['throat.area'] == 0.0]
-        net_zero_ts = self.map_throats(target=self._net,
-                                       throats=zero_ts,
-                                       return_mapping=False)
-        self._net.trim(throats=net_zero_ts)
-        " Check network health and trim isolated pores "
-        h = self._net.check_network_health()
-        if np.size(h['trim_pores']) > 0:
-            self._net.trim(pores=h['trim_pores'])
+        topo.trim_occluded_throats(self._net, self.name)
 
         if self._voxel_vol:
             self.models.add(propname='pore.volume',
@@ -363,4 +355,4 @@ class Voronoi(GenericGeometry):
         else:
             logger.warning('Fibre volume is not be conserved under compression')
         # Remove pores with zero throats
-        self._net.trim_occluded_throats()
+        topo.trim_occluded_throats(self._net)

@@ -378,7 +378,7 @@ def plot_throat(geometry, throats, fig=None):
             v = inradius[i]*np.sin(t)+incent[0][1]
             plt.plot(u, v, 'r-')
             ax.ticklabel_format(style='sci', scilimits=(0, 0))
-            #fig.show()
+
     else:
         print("Please provide throat indices")
     return fig
@@ -451,9 +451,9 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None, include_points=False)
                            c='r')
                 ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2], c='b')
             ax.ticklabel_format(style='sci', scilimits=(0, 0))
-            #plt.show()
+
         else:
-            print_throat(throats)
+            plot_throat(geometry, throats, fig)
     else:
         print('Please provide pore indices')
     return fig
