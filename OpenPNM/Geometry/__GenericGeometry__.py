@@ -7,8 +7,8 @@ GenericGeometry -- Base class to manage pore scale geometry
 """
 
 import scipy as sp
-import OpenPNM.Geometry.models
 from OpenPNM.Base import Core
+from OpenPNM.Postprocessing import Plots
 from OpenPNM.Base import logging
 from OpenPNM.Network import GenericNetwork
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ class GenericGeometry(Core):
             return super(GenericGeometry, self).__getitem__(key)
         if key == 'throat.conns':  # Handle specifically
             [P1, P2] = \
-                self._net['throat.conns'][self._net[element + '.' + self.name]].T
+                self._net['throat.conns'][self._net[element+'.'+self.name]].T
             Pmap = sp.zeros((self._net.Np,), dtype=int) - 1
             Pmap[self._net.pores(self.name)] = self.Ps
             conns = sp.array([Pmap[P1], Pmap[P2]]).T
@@ -103,3 +103,15 @@ class GenericGeometry(Core):
         if sp.size(throats) > 0:
             throats = sp.array(throats, ndmin=1)
             self._set_locations(element='throat', locations=throats, mode=mode)
+
+    def plot_histograms(self,
+                        throat_diameter='throat.diameter',
+                        pore_diameter='pore.diameter',
+                        throat_length='throat.length'):
+
+        Plots.distributions(obj=self,
+                            throat_diameter=throat_diameter,
+                            pore_diameter=pore_diameter,
+                            throat_length=throat_length)
+
+    plot_histograms.__doc__ = Plots.distributions.__doc__
