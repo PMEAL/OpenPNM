@@ -5,7 +5,6 @@ GenericGeometry -- Base class to manage pore scale geometry
 ===============================================================================
 
 """
-
 import scipy as sp
 from OpenPNM.Base import Core
 from OpenPNM.Postprocessing import Plots
@@ -33,6 +32,7 @@ class GenericGeometry(Core):
 
     Examples
     --------
+    >>> import OpenPNM
     >>> pn = OpenPNM.Network.TestNet()
     >>> Ps = pn.pores()  # Get all pores
     >>> Ts = pn.throats()  # Get all throats
