@@ -16,8 +16,9 @@ from OpenPNM.Geometry import GenericGeometry
 from OpenPNM.Base import logging
 import matplotlib.pyplot as plt
 from scipy.io import savemat
-from scipy.stats import itemfreq
+from OpenPNM.Utilities import topology
 logger = logging.getLogger(__name__)
+topo = topology()
 
 
 class Voronoi(GenericGeometry):
@@ -64,16 +65,7 @@ class Voronoi(GenericGeometry):
                         offset=self._fibre_rad,
                         set_dependent=True)
 
-        " Get rid of occluded throats in this Geometry"
-        zero_ts = self.throats()[self['throat.area'] == 0.0]
-        net_zero_ts = self.map_throats(target=self._net,
-                                       throats=zero_ts,
-                                       return_mapping=False)
-        self._net.trim(throats=net_zero_ts)
-        " Check network health and trim isolated pores "
-        h = self._net.check_network_health()
-        if np.size(h['trim_pores']) > 0:
-            self._net.trim(pores=h['trim_pores'])
+        topo.trim_occluded_throats(self._net, self.name)
 
         if self._voxel_vol:
             self.models.add(propname='pore.volume',
@@ -104,8 +96,7 @@ class Voronoi(GenericGeometry):
         self.models.add(propname='throat.length',
                         model=gm.throat_length.constant,
                         const=self._fibre_rad*2)
-        self.models.add(propname='throat.volume',
-                        model=gm.throat_volume.extrusion)
+        self['throat.volume'] = 0.0
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.extrusion)
         self.models.add(propname='throat.c2c',
@@ -139,7 +130,7 @@ class Voronoi(GenericGeometry):
                                                                 vox_len,
                                                                 fibre_rad)
 
-    def export_fibre_image(self, mat_file='OpenPNMFibres'):
+    def _export_fibre_image(self, mat_file='OpenPNMFibres'):
         r"""
         If the voronoi voxel method was implemented to calculate pore volumes
         an image of the fibre space has already been calculated and stored on
@@ -157,7 +148,7 @@ class Voronoi(GenericGeometry):
         matlab_dict = {"fibres": self._fibre_image}
         savemat(mat_file, matlab_dict, format='5', long_field_names=True)
 
-    def get_fibre_slice(self, plane=None, index=None):
+    def _get_fibre_slice(self, plane=None, index=None):
         r"""
         Plot an image of a slice through the fibre image
         plane contains percentage values of the length of the image in each axis
@@ -229,7 +220,7 @@ class Voronoi(GenericGeometry):
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
-        slice_image = self.get_fibre_slice(plane, index)
+        slice_image = self._get_fibre_slice(plane, index)
         if slice_image is not None:
             if fig is None:
                 plt.figure()
@@ -364,4 +355,4 @@ class Voronoi(GenericGeometry):
         else:
             logger.warning('Fibre volume is not be conserved under compression')
         # Remove pores with zero throats
-        self._net.trim_occluded_throats()
+        topo.trim_occluded_throats(self._net)

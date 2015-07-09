@@ -18,16 +18,6 @@ class DelaunayTest:
                                             base_points=bp*scale)
         self.net.add_boundaries()
 
-    def test_trim_occluded_throats(self):
-        Np = self.net.num_pores()
-        Nt = self.net.num_throats()
-        T = self.net.throats('boundary')[0]
-        self.net["throat.area"] = 1
-        self.net["throat.area"][T] = 0
-        self.net.trim_occluded_throats()
-        assert self.net.num_pores() == Np - 1
-        assert self.net.num_throats() == Nt - 1
-
     def test_domain_dimensions(self):
         face1 = self.net.pores('bottom_boundary')
         face2 = self.net.pores('top_boundary')
@@ -37,5 +27,5 @@ class DelaunayTest:
                          3) == 1.0
 
     def test_export_vor_fibres(self):
-        self.net.export_vor_fibres()
+        self.net._export_vor_fibres()
         os.remove('fibres.p')
