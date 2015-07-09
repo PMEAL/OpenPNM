@@ -57,12 +57,12 @@ The 'vertexops' utility has two visualisation methods which are unique to Vorono
 
 .. code-block:: python
 
-	#print all pores in the Voronoi geometry
+	#plot all pores in the Voronoi geometry
 	import OpenPNM.Utilities.vertexops as vo
-	vo.print_pore(geo, geo.pores())
+	vo.plot_pore(geo, geo.pores())
 	throats = pn.find_neighbor_throats(pores=[0])
-	#print all throats connected to the first pore in the network
-	vo.print_throat(geo, throats)
+	#plot all throats connected to the first pore in the network
+	vo.plot_throat(geo, throats)
 
 .. image:: http://imgur.com/icZfxQ2.png
 
@@ -96,13 +96,13 @@ The following command creates a binary array which can be used in Matlab.
 
 .. code-block:: python
 
-	geo.export_fibre_image()
+	geo._export_fibre_image()
 
 In addition to visualization within OpenPNM using the voxel image it is possible to export a pickle dump of the throat vertices in convex hull order which form the skeleton of the fibres. 
 
 .. code-block:: python
 
-	pn.export_vor_fibres()
+	pn._export_vor_fibres()
 
 This can then be used in Blender to create images such as this:
 
