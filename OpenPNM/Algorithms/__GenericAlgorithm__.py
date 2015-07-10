@@ -109,7 +109,8 @@ class GenericAlgorithm(Core):
 
             - 'merge': Inserts the specified values, leaving existing values \
               elsewhere
-            - 'overwrite': Inserts specified values, clearing all other values
+            - 'overwrite': Inserts specified values, clearing all other \
+              values for that specific bctype
             - 'remove': Removes boundary conditions from specified locations
 
         Notes
@@ -140,65 +141,52 @@ class GenericAlgorithm(Core):
             raise Exception('The mode (' + mode + ') cannot be applied to ' +
                             'the set_boundary_conditions!')
 
-        logger.debug('BC applies to the component: ' + component.name)
+        logger.debug('BC method applies to the component: ' + component.name)
+        # Validate bctype
+        if bctype == '':
+            raise Exception('bctype must be specified!')
         # If mode is 'remove', also bypass checks
         if mode == 'remove':
             if pores is None and throats is None:
-                if bctype == '':
-                    raise Exception('No bctype/pore/throat is specified')
-                else:
-                    for item in self.labels():
-                        item_spl = item.split('.')
-                        if bctype == (item_spl[-1]).replace(self._phase.name +
-                                                            '_', ''):
-                            element = item_spl[0]
-                            try:
-                                del self[element + '.' + component.name +
-                                         '_bcval_' + bctype]
-                            except KeyError:
-                                pass
-                            try:
-                                del self[element + '.' + component.name +
-                                         '_' + bctype]
-                            except KeyError:
-                                pass
-                    logger.debug('Removing ' + bctype + ' from all locations' +
-                                 ' for ' + component.name + ' in ' +
-                                 self.name)
-                    self._existing_BC.remove(bctype)
+                for item in self.labels():
+                    item_spl = item.split('.')
+                    if bctype == (item_spl[-1]).replace(self._phase.name +
+                                                        '_', ''):
+                        element = item_spl[0]
+                        try:
+                            del self[element + '.' + component.name +
+                                     '_bcval_' + bctype]
+                        except KeyError:
+                            pass
+                        try:
+                            del self[element + '.' + component.name +
+                                     '_' + bctype]
+                        except KeyError:
+                            pass
+                logger.debug('Removing ' + bctype + ' from all locations' +
+                             ' for ' + component.name + ' in ' +
+                             self.name)
+                self._existing_BC.remove(bctype)
             else:
                 if pores is not None:
-                    if bctype != '':
-                        prop_label = 'pore.' + component.name + '_bcval_'\
-                                     + bctype
-                        self[prop_label][pores] = sp.nan
-                        info_label = 'pore.' + component.name + '_' + bctype
-                        self[info_label][pores] = False
-                        logger.debug('Removing ' + bctype + ' from the ' +
-                                     'specified pores for ' + component.name +
-                                     ' in ' + self.name)
-                    else:
-                        raise Exception('Cannot remove BC from the pores ' +
-                                        'unless bctype is specified')
-
+                    prop_label = 'pore.' + component.name + '_bcval_'\
+                                 + bctype
+                    self[prop_label][pores] = sp.nan
+                    info_label = 'pore.' + component.name + '_' + bctype
+                    self[info_label][pores] = False
+                    logger.debug('Removing ' + bctype + ' from the ' +
+                                 'specified pores for ' + component.name +
+                                 ' in ' + self.name)
                 if throats is not None:
-                    if bctype != '':
-                        prop_label = 'throat.' + component.name + '_bcval_'\
-                                     + bctype
-                        self[prop_label][throats] = sp.nan
-                        info_label = 'throat.' + component.name + '_' + bctype
-                        self[info_label][throats] = False
-                        logger.debug('Removing ' + bctype + ' from the ' +
-                                     'specified throats for ' +
-                                     component.name + ' in ' + self.name)
-                    else:
-                        raise Exception('Cannot remove BC from the throats ' +
-                                        'unless bctype is specified')
-
+                    prop_label = 'throat.' + component.name + '_bcval_'\
+                                 + bctype
+                    self[prop_label][throats] = sp.nan
+                    info_label = 'throat.' + component.name + '_' + bctype
+                    self[info_label][throats] = False
+                    logger.debug('Removing ' + bctype + ' from the ' +
+                                 'specified throats for ' +
+                                 component.name + ' in ' + self.name)
             return
-        # Validate bctype
-        if bctype == '':
-            raise Exception('bctype must be specified')
         # Validate pores/throats
         if pores is None and throats is None:
             raise Exception('pores/throats must be specified')
@@ -246,7 +234,7 @@ class GenericAlgorithm(Core):
         for item in self.labels():
             bcname = (item.split('.')[-1]).replace(component.name + '_', "")
             if bcname in self._existing_BC and item.split('.')[0] == element:
-                if mode == 'merge':
+                if mode in ['merge', 'overwrite']:
                     try:
                         c1 = element + '.' + component.name
                         c2 = '_bcval_' + bcname
@@ -256,10 +244,19 @@ class GenericAlgorithm(Core):
                         c2_label = c1 + '_' + bcname
                         condition2 = sp.sum(self[c2_label][loc]) == 0
                         if not (condition1 and condition2):
-                            raise Exception('Because of the existing BCs, ' +
-                                            'the method cannot apply new BC ' +
-                                            'with the merge mode to the ' +
-                                            'specified pore/throat.')
+                            if mode == 'merge':
+                                raise Exception('Because of the existing ' +
+                                                'BCs, the method cannot ' +
+                                                'apply new BC with the merge' +
+                                                ' mode to the specified pore' +
+                                                '/throat.')
+                            elif (mode == 'overwrite' and bcname != bctype):
+                                raise Exception('Because of the existing ' +
+                                                'BCs, the method cannot ' +
+                                                'apply new BC with overwrite' +
+                                                ' mode. This mode only ' +
+                                                'overwrites this bctype, ' +
+                                                'not the other ones.')                                
                     except KeyError:
                         pass
         # Set boundary conditions based on supplied mode

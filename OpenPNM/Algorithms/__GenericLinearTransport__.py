@@ -160,83 +160,39 @@ class GenericLinearTransport(GenericAlgorithm):
 
                 if mode == 'remove':
                     s_mode = ['linear', 'nonlinear']
-                    if source_name is None:
-                        if pores is not None:
-                            if pores is 'all':
-                                for item in self.labels():
-                                    if 'pore.source_' in item:
-                                        temp_item = item.split('.')[-1]
-                                        prop = temp_item.replace('source_', '')
-                                        del self['pore.source_' +
-                                                 prop]
-                                        for s in s_mode:
-                                            try:
-                                                del self['pore.source_' +
-                                                         s + '_s1_' + prop]
-                                            except KeyError:
-                                                pass
-                                            try:
-                                                del self['pore.source_' +
-                                                         s + '_s2_' + prop]
-                                            except KeyError:
-                                                pass
-                            else:
-                                for item in self.labels():
-                                    if 'pore.source_' in item:
-                                        temp_item = item.split('.')[-1]
-                                        prop = temp_item.replace('source_', '')
-                                        self['pore.source_' +
-                                             prop][pores] = False
-                                        for s in s_mode:
-                                            try:
-                                                self['pore.source_' +
-                                                     s + '_s1_' +
-                                                     prop][pores] = sp.nan
-                                            except KeyError:
-                                                pass
-                                            try:
-                                                self['pore.source_' +
-                                                     s + '_s2_' +
-                                                     prop][pores] = sp.nan
-                                            except KeyError:
-                                                pass
-                        else:
-                            raise Exception('No pores/source_name are ' +
-                                            'sent to the set_term_method!')
+                    if pores is None:
+                        try:
+                            del self['pore.source_' + prop]
+                        except KeyError:
+                            pass
+                        for s in s_mode:
+                            try:
+                                del self['pore.source_' +
+                                         s + '_s1_' + prop]
+                            except KeyError:
+                                pass
+                            try:
+                                del self['pore.source_' +
+                                         s + '_s2_' + prop]
+                            except KeyError:
+                                pass
                     else:
-                        if pores is None:
+                        try:
+                            self['pore.source_' + prop][pores] = False
+                        except KeyError:
+                            pass
+                        for s in s_mode:
                             try:
-                                del self['pore.source_' + prop]
+                                self['pore.source_' +
+                                     s + '_s1_' +
+                                     prop][pores] = sp.nan
                             except KeyError:
                                 pass
-                            for s in s_mode:
-                                try:
-                                    del self['pore.source_' +
-                                             s + '_s1_' + prop]
-                                except KeyError:
-                                    pass
-                                try:
-                                    del self['pore.source_' +
-                                             s + '_s2_' + prop]
-                                except KeyError:
-                                    pass
-                        else:
                             try:
-                                self['pore.source_' + prop][pores] = False
+                                self['pore.source_' +
+                                     s + '_s2_' + prop][pores] = sp.nan
                             except KeyError:
                                 pass
-                            for s in s_mode:
-                                try:
-                                    self['pore.source_' +
-                                         s + '_s1_' +
-                                         prop][pores] = sp.nan
-                                except KeyError:
-                                    pass
-                                try:
-                                    self['pore.source_' +
-                                         s + '_s2_' + prop][pores] = sp.nan
-                                except KeyError:
-                                    pass
 
                 else:
                     # Handle tol, x0 and maxiter for the Picard algorithm
@@ -321,8 +277,8 @@ class GenericLinearTransport(GenericAlgorithm):
                             self['pore.source_maxiter'][loc] = maxiter
                             self['pore.source_tol'][loc] = tol
         else:
-            Exception('No source_name has been sent for set_source_term ' +
-                      'method in the algorithm ' + self.name)
+            raise Exception('No source_name has been sent for set_source_' +
+                            'term method in the algorithm ' + self.name)
 
     def run(self, **kwargs):
         r"""
@@ -389,6 +345,9 @@ class GenericLinearTransport(GenericAlgorithm):
         if self._iterative_solver is None:
             X = sprslin.spsolve(A, b)
         else:
+            if self._iterative_solver not in ['cg', 'gmres']:
+                raise Exception('GenericLinearTransport does not support the' +
+                                ' requested iterative solver!')
             params = kwargs.copy()
             solver_params = ['x0', 'tol', 'maxiter', 'xtype', 'M', 'callback']
             [params.pop(item, None) for item in kwargs.keys()
@@ -401,8 +360,6 @@ class GenericLinearTransport(GenericAlgorithm):
                 result = sprslin.cg(A, b, **params)
             elif self._iterative_solver == 'gmres':
                 result = sprslin.gmres(A, b, **params)
-            elif self._iterative_solver == 'bicgstab':
-                result = sprslin.bicgstab(A, b, **params)
             X = result[0]
             self._iterative_solver_info = result[1]
         return X
