@@ -79,7 +79,7 @@ def linear(physics, phase, A1='', A2='', x='', return_rate=True, **kwargs):
                                 'type!')
 
     if return_rate:
-        return(a['1'] * X ** a['2'])
+        return(a['1'] * X + a['2'])
     else:
         S1 = a['1']
         S2 = a['2']
