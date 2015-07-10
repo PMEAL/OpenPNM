@@ -1,6 +1,5 @@
 import OpenPNM
 import numpy as np
-import OpenPNM.Physics.models as pm
 
 
 class GenericAlgorithmTest:
@@ -50,8 +49,7 @@ class GenericAlgorithmTest:
                                          mode='remove')
         Dp = np.sum(self.alg['pore.' + self.phase.name + '_Dirichlet'])
         assert Dp == 0
-        alg.set_boundary_conditions(bctype='Neumann',                            
-                                    mode='remove')
-        assert ('pore.' + selfphase.name + '_Neumann' not in alg.labels())
-
-
+        self.alg.set_boundary_conditions(bctype='Neumann',
+                                         mode='remove')
+        label = 'pore.' + self.phase.name + '_Neumann'
+        assert (label not in self.alg.labels())
