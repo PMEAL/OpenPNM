@@ -1,13 +1,11 @@
+.. _IP_timed:
 
+###############################################################################
+InvasionPercolationTimed -- Invasion Percolation with Timed Injection Rates
+###############################################################################
 
 .. code-block:: python
 
-	"""
-	===============================================================================
-	InvasionPercolationTimed -- Invasion Percolation with Timed Injection Rates
-	===============================================================================
-
-	"""
 	import scipy as sp
 	import numpy as np
 	import heapq
