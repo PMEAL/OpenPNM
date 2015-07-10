@@ -256,7 +256,7 @@ class GenericAlgorithm(Core):
                                                 'apply new BC with overwrite' +
                                                 ' mode. This mode only ' +
                                                 'overwrites this bctype, ' +
-                                                'not the other ones.')                                
+                                                'not the other ones.')
                     except KeyError:
                         pass
         # Set boundary conditions based on supplied mode

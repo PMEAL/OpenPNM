@@ -100,4 +100,3 @@ class GenericLinearTransportTest:
                                  mode='remove')
         assert ('pore.source_B' not in self.alg.labels())
         assert ('pore.source_A' not in self.alg.labels())
-
