@@ -50,7 +50,7 @@ class CubicTest:
     def test_asarray(self):
         nums = self.net.Ps
         arr = self.net.asarray(nums)
-        assert sp.shape(arr) == (3, 3, 3)
+        assert sp.shape(arr) == (5, 5, 5)
 
     def test_asarray_too_short(self):
         nums = self.net.Ps
