@@ -651,6 +651,16 @@ class CoreTest:
         a = self.phys1.network(self.net1.name)
         assert a == self.net1
 
+    def test_find_object_by_type(self):
+        a = self.net._find_object(obj_type='geometry')
+        assert type(a) is list
+        a = self.net._find_object(obj_type='phase')
+        assert type(a) is list
+        a = self.net._find_object(obj_type='physics')
+        assert type(a) is list
+        a = self.net._find_object(obj_type='network')
+        assert type(a) is list
+
     def test_object_print(self):
         a = self.net.__str__()
         assert type(a) == str

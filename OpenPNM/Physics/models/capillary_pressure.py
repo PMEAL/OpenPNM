@@ -12,7 +12,7 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
              contact_angle='pore.contact_angle', throat_diameter='throat.diameter',
              **kwargs):
     r"""
-    Computes the capillary entry pressure assuming the throat is a cylindrical tube.
+    Computes the capillary entry pressure assuming the throat in a cylindrical tube.
 
     Parameters
     ----------
@@ -41,14 +41,12 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
     suitable for highly non-wetting invading phases in most materials.
 
     """
-    if ((surface_tension.split('.')[0] == 'pore') and
-       (throat_diameter.split('.')[0] == 'throat')):
+    if surface_tension.split('.')[0] == 'pore':
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(data=sigma)
     else:
         sigma = phase[surface_tension]
-    if ((contact_angle.split('.')[0] == 'pore') and
-       (throat_diameter.split('.')[0] == 'throat')):
+    if contact_angle.split('.')[0] == 'pore':
         theta = phase[contact_angle]
         theta = phase.interpolate_data(data=theta)
     else:
@@ -107,14 +105,12 @@ def purcell(physics, phase, network, r_toroid,
     TODO: Triple check the accuracy of this equation
     """
 
-    if ((surface_tension.split('.')[0] == 'pore') and
-       (throat_diameter.split('.')[0] == 'throat')):
+    if surface_tension.split('.')[0] == 'pore':
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(data=sigma)
     else:
         sigma = phase[surface_tension]
-    if ((contact_angle.split('.')[0] == 'pore') and
-       (throat_diameter.split('.')[0] == 'throat')):
+    if contact_angle.split('.')[0] == 'pore':
         theta = phase[contact_angle]
         theta = phase.interpolate_data(data=theta)
     else:
