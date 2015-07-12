@@ -256,8 +256,7 @@ class Controller(dict):
         """
         obj_new = _copy.copy(obj)
         obj_new.__dict__ = _copy.copy(obj.__dict__)
-        del self[obj.name]
-        self[obj.name] = obj
+        self.update({obj.name: obj})
         return obj_new
 
     def save_simulation(self, network, filename=''):
