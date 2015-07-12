@@ -26,17 +26,13 @@ class ControllerTest:
         assert self.net.name in self.controller.keys()
 
     def test_save_and_load_no_filename(self):
-        self.controller.save(join(TEMP_DIR))
+        self.controller.save(join(TEMP_DIR, ''))
         self.controller.clear()
         assert self.controller == {}
-        self.controller.load(join(TEMP_DIR, self.net.name))
-        assert self.net.name in self.controller.keys()
-
-    def test_save_and_load_workspace(self):
-        self.controller.save(join(TEMP_DIR, self.net.name))
-        self.controller.clear()
-        assert self.controller == {}
-        self.controller.load(join(TEMP_DIR, self.net.name))
+        for file in os.listdir(TEMP_DIR):
+            if file.startswith("20"):  # This will start to fail on Jan 1, 2100
+                filename = file
+        self.controller.load(join(TEMP_DIR, filename))
         assert self.net.name in self.controller.keys()
 
     def test_load_v120_pnm(self):
@@ -70,7 +66,7 @@ class ControllerTest:
 
     def test_save_and_load_simulation_no_filename(self):
         a = OpenPNM.Network.Cubic(shape=[10, 10, 10])
-        self.controller.save_simulation(a, join(TEMP_DIR))
+        self.controller.save_simulation(a, join(TEMP_DIR, ''))
         assert a in self.controller.values()
         self.controller.purge_object(a, mode='complete')
         assert a not in self.controller.values()
