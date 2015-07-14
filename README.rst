@@ -66,7 +66,7 @@ Communication
 
 For information on the latest releases and other important events, join the OpenPNM mailing list:
 
-	http://openpnm.org/news
+    http://openpnm.org/news
 
 If you require help on any aspect of OpenPNM, contact us on Gitter:
 
