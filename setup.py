@@ -40,7 +40,8 @@ setup(
     install_requires = [
         'numpy',
         'scipy>=0.14.0',
-        'matplotlib'
+        'matplotlib',
+        'scikit-image'
     ],
     author = 'OpenPNM Team',
     author_email = 'jeff.gostick@mcgill.ca',

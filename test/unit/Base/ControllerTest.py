@@ -1,4 +1,5 @@
 import OpenPNM
+import os
 from os.path import join
 
 
@@ -10,22 +11,19 @@ class ControllerTest:
                                                  pores=self.net.Ps,
                                                  throats=self.net.Ts)
 
+    def test_string(self):
+        a = self.controller.__str__()
+        assert type(a) is str
+
     def test_get_log_level(self):
         self.controller.loglevel = 50
         assert self.controller.loglevel == 'Log level is currently set to: 50'
 
     def test_save_and_load(self):
-        self.controller.save(join(TEMP_DIR, self.net.name))
+        self.controller.save(join(TEMP_DIR, 'test_workspace'))
         self.controller.clear()
         assert self.controller == {}
-        self.controller.load(join(TEMP_DIR, self.net.name))
-        assert self.net.name in self.controller.keys()
-
-    def test_save_and_load_workspace(self):
-        self.controller.save(join(TEMP_DIR, self.net.name))
-        self.controller.clear()
-        assert self.controller == {}
-        self.controller.load(join(TEMP_DIR, self.net.name))
+        self.controller.load(join(TEMP_DIR, 'test_workspace'))
         assert self.net.name in self.controller.keys()
 
     def test_load_v120_pnm(self):
@@ -52,6 +50,10 @@ class ControllerTest:
         a = OpenPNM.Network.Cubic(shape=[10, 10, 10])
         self.controller.save_simulation(a, join(TEMP_DIR, 'test_simulation'))
         assert a in self.controller.values()
+        self.controller.purge_object(a, mode='complete')
+        assert a not in self.controller.values()
+        self.controller.load_simulation(join(TEMP_DIR, 'test_simulation'))
+        assert a.name in self.controller.keys()
 
     def test_ghost_object(self):
         a = self.controller.ghost_object(self.net)
@@ -65,7 +67,7 @@ class ControllerTest:
         # But that dictionary key is not a
         assert self.controller[a.name] is not a
 
-    def test_purge_object(self):
+    def test_purge_object_single(self):
         a = OpenPNM.Phases.GenericPhase(network=self.net)
         assert a.name in self.controller.keys()
         assert a in self.controller.values()
@@ -75,11 +77,31 @@ class ControllerTest:
         assert a not in self.controller.values()
         assert a.controller == {}
 
+    def test_purge_object_complete(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo = OpenPNM.Geometry.GenericGeometry(network=net)
+        geo.set_locations(pores=net.Ps, throats=net.Ts)
+        self.controller.purge_object(geo, mode='complete')
+        assert geo.name not in self.controller.keys()
+        assert net.name not in self.controller.keys()
+
     def test_clone_simulation(self):
         a = self.controller.clone_simulation(self.net)
         assert a.name != self.net.name
         assert a in self.controller.values()
         assert a.name in self.controller.keys()
+
+    def test_geometries(self):
+        a = self.controller.geometries()
+        assert type(a) is list
+
+    def test_physics(self):
+        a = self.controller.physics()
+        assert type(a) is list
+
+    def test_phases(self):
+        a = self.controller.phases()
+        assert type(a) is list
 
     def teardown_class(self):
         del(self.controller)

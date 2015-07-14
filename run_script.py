@@ -1,101 +1,97 @@
 import OpenPNM as op
-import scipy as sp
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-
-print('-----> Using OpenPNM version: '+op.__version__)
-ctrl = op.Base.Controller()
-ctrl.loglevel = 30
-
-# =============================================================================
+import time
+st = time.time()
+from OpenPNM.Geometry import models as gm
+#==============================================================================
 '''Build Topological Network'''
-# =============================================================================
-pn = op.Network.Cubic(shape=[50, 30, 1], spacing=1, name='net')
+#==============================================================================
+pn = op.Network.Cubic(shape=[5,6,7],spacing=0.0001,name='net')
+pn.add_boundaries()
 
-# =============================================================================
+#==============================================================================
 '''Build Geometry'''
-# =============================================================================
-geom = op.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
-geom.models['pore.seed']['seed'] = 0
-geom['pore.seed'] = geom.models['pore.seed'].regenerate()
-del geom.models['pore.diameter']
-geom['pore.diameter'] = geom['pore.seed'].copy()
-geom.models.add(propname='throat.diameter',
-                model=op.Geometry.models.throat_misc.neighbor,
-                mode='min')
-geom.models.regenerate()
+#==============================================================================
+Ps = pn.pores('boundary',mode='not')
+Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
+geom = op.Geometry.Toray090(network=pn,pores=Ps,throats=Ts)
+geom.models.add(propname='throat.length',model=gm.throat_length.straight)
+Ps = pn.pores('boundary')
+Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
+boun = op.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
 
-# =============================================================================
+#==============================================================================
 '''Build Phases'''
-# =============================================================================
-air = op.Phases.Air(network=pn, name='air')
-water = op.Phases.Water(network=pn, name='water')
+#==============================================================================
+air = op.Phases.Air(network=pn,name='air')
+air['pore.Dac'] = 1e-7  # Add custom properties directly
+water = op.Phases.Water(network=pn,name='water')
 
-# =============================================================================
+#==============================================================================
 '''Build Physics'''
-# =============================================================================
+#==============================================================================
 Ps = pn.pores()
 Ts = pn.throats()
-phys_water = op.Physics.Standard(network=pn, phase=water, pores=Ps, throats=Ts)
-f = op.Physics.models.capillary_pressure.static_pressure
-phys_water.models.add(propname='pore.static_pressure',
-                      model=f,
-                      regen_mode='deferred')
-phys_air = op.Physics.Standard(network=pn, phase=air, pores=Ps, throats=Ts)
+phys_water = op.Physics.Standard(network=pn,phase=water,pores=Ps,throats=Ts)
+phys_air = op.Physics.Standard(network=pn,phase=air,pores=Ps,throats=Ts)
+#Add some additional models to phys_air
+phys_air.models.add(model=op.Physics.models.diffusive_conductance.bulk_diffusion,
+                    propname='throat.gdiff_ac',
+                    pore_diffusivity='pore.Dac')
 
-# =============================================================================
+#==============================================================================
 '''Begin Simulations'''
-# =============================================================================
+#==============================================================================
+'''Perform a Drainage Experiment (OrdinaryPercolation)'''
+#------------------------------------------------------------------------------
+OP_1 = op.Algorithms.OrdinaryPercolation(network=pn,invading_phase=water,defending_phase=air)
+Ps = pn.pores(labels=['bottom_boundary'])
+OP_1.run(inlets=Ps)
+OP_1.return_results(Pc=7000)
 
-# -----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 '''Perform Invasion Percolation'''
-# -----------------------------------------------------------------------------
-IP = op.Algorithms.InvasionPercolationDrying(network=pn)
-IP.setup(invading_phase=air, defending_phase=water)
-IP.set_inlets(pores=pn.pores('front'))
+#------------------------------------------------------------------------------
+inlets = pn.pores('bottom_boundary')
+outlets = pn.pores('top_boundary')
+IP_1 = op.Algorithms.InvasionPercolation(network=pn,name='IP_1')
+IP_1.run(phase=water,inlets=inlets)
+IP_1.return_results()
 
-D = op.Algorithms.FickianDiffusion(network=pn, phase=air)
-Ps_in = pn.pores('front')
+#------------------------------------------------------------------------------
+'''Perform Fickian Diffusion'''
+#------------------------------------------------------------------------------
+alg = op.Algorithms.FickianDiffusion(network=pn,phase=air)
+# Assign Dirichlet boundary conditions to top and bottom surface pores
+BC1_pores = pn.pores('right_boundary')
+alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
+BC2_pores = pn.pores('left_boundary')
+alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
+#Add new model to air's physics that accounts for water occupancy
+phys_air.models.add(model=op.Physics.models.multiphase.conduit_conductance,
+                    propname='throat.conduit_diffusive_conductance',
+                    throat_conductance='throat.diffusive_conductance',
+                    throat_occupancy='throat.occupancy',
+                    pore_occupancy='pore.occupancy',
+                    mode='strict',
+                    factor=0)
+#Use desired diffusive_conductance in the diffusion calculation (conductance for the dry network or water-filled network)
+alg.run(conductance='throat.diffusive_conductance')
+alg.return_results()
+Deff = alg.calc_eff_diffusivity()
 
-ims = []
-fig = plt.figure()
-i = 0
-while sp.sum(IP['pore.invaded'] == -1) > 0:
-    # Calculate the diffusion of vapor given the existing invasion pattern
-    Ps_out = pn.toindices(IP['pore.invaded'] == -1)
-    Ps_in = pn.pores('front')
-    D.set_boundary_conditions(pores=Ps_out,
-                              bcvalue=0.5,
-                              bctype='Dirichlet',
-                              mode='overwrite')
-    D.set_boundary_conditions(pores=Ps_in,
-                              bcvalue=0.1,
-                              bctype='Dirichlet',
-                              mode='merge')
-    D.run()
+try:
+    # this creates a time step x num_pores, which is what the animated object needs
+    inv_seq = water['pore.IP_inv_seq'].squeeze()
+    history = []
+    for i in sorted(set(inv_seq)):
+      history.append( (inv_seq != 0) & (inv_seq < i) )
 
-    # Update the invasion pattern based on vapor loss from each cluster
-    qs = IP.queues
-    for qnum in range(len(qs)):
-        print(str(qnum)+' : ', end='')
-        r = sp.absolute(D.rate(pores=IP['pore.queue_number'] == qnum))
-        IP.run2(queue=qs[qnum], volume=r*6000)
-    IP.qregen()
+except Exception as e:
+    pass
 
-    # Create image and store for making an animation
-    im = sp.copy(D['pore.air_mole_fraction'])
-    im[Ps_out] = sp.nan
-    im = pn.asarray(im)[:, :, 0]
-    ims.append((plt.imshow(im, interpolation='none'),))
-    # Purge diffusion object, so it can be restarted (fix this)
-    i += 1
+#------------------------------------------------------------------------------
+'''Export to VTK'''
+#------------------------------------------------------------------------------
+op.export()
 
-im_ani = animation.ArtistAnimation(fig,
-                                   ims,
-                                   interval=50,
-                                   repeat_delay=3000,
-                                   blit=True)
-
-Writer = animation.writers['ffmpeg']
-writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
-# im_ani.save('test2.mp4', writer=writer)
+print("sim time:" + str(time.time()-st))

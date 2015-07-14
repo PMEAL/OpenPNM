@@ -178,35 +178,36 @@ def saturation_profile(network, phase, fig=None, axis=2):
     return fig
 
 
-def distributions(net, fig=None, throat_diameter='throat.diameter',
-                  pore_diameter='pore.diameter', throat_length='throat.length',
-                  exclude_boundaries=True, geom_list=None):
+def distributions(obj,
+                  throat_diameter='throat.diameter',
+                  pore_diameter='pore.diameter',
+                  throat_length='throat.length'):
     r"""
     Plot a montage of key network size distribution histograms
 
     Parameters
     ----------
-    net : OpenPNM Network Object
-    The network for which the graphs are desired
+    obj : OpenPNM Object
+        This object can either be a Network or a Geometry.  If a Network is
+        sent, then the histograms will display the properties for the entire
+        Network.  If a Geometry is sent, then only it's properties will be
+        shown.
+    throat_diameter : string
+        Dictionary key to the array containing throat diameter values
+    pore_diameter : string
+        Dictionary key to the array containing pore diameter values
+    throat_length : string
+        Dictionary key to the array containing throat length values
 
     """
-    if fig is None:
-        fig = _plt.figure()
+    fig = _plt.figure()
 
     fig.subplots_adjust(hspace=0.4)
     fig.subplots_adjust(wspace=0.4)
 
-    if geom_list is not None:
-        include_pores = [False]*net.num_pores()
-        include_throats = [False]*net.num_throats()
-        for geom in geom_list:
-            include_pores = include_pores | net['pore.' + geom]
-            include_throats = include_throats | net['throat.' + geom]
-    else:
-        include_pores = net['pore.all']
-        include_throats = net['throat.all']
-    pores = net.pores()[include_pores]
-    throats = net.throats()[include_throats]
+    pores = obj._net.pores(obj.name)
+    throats = obj._net.throats(obj.name)
+    net = obj._net
 
     ax1 = fig.add_subplot(221)
     ax1.hist(net[pore_diameter][pores], 25, facecolor='green')

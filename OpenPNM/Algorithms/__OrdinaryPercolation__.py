@@ -258,6 +258,23 @@ class OrdinaryPercolation(GenericAlgorithm):
         self['pore.inv_Pc'][self['pore.trapped'] > 0] = sp.inf
         self['throat.inv_Pc'][self['throat.trapped'] > 0] = sp.inf
 
+    def evaluate_late_pore_filling(self, Pc, Swp_init=0.75, eta=3.0,
+                                   wetting_phase=False):
+        r"""
+        Compute the volume fraction of the phase in each pore given an initial
+        wetting phase fraction (Swp_init) and a growth exponent (eta)
+        returns the fraction of the pore volume occupied by wetting or
+        non-wetting phase.
+        Assumes Non-wetting phase displaces wetting phase
+        """
+        Swp = Swp_init*(self['pore.inv_Pc']/Pc)**eta
+        Swp[self['pore.inv_Pc'] > Pc] = 1.0
+        Snwp = 1-Swp
+        if wetting_phase:
+            return Swp
+        else:
+            return Snwp
+
     def return_results(self, Pc=0, seq=None, sat=None, occupancy='occupancy'):
         r"""
         Updates the occupancy status of invading and defending phases
@@ -349,6 +366,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         if sp.mean(self._inv_phase['pore.contact_angle']) < 90:
             Snwp_p = 1 - Snwp_p
             Snwp_t = 1 - Snwp_t
+            Snwp_all = 1 - Snwp_all
             PcPoints *= -1
         fig = plt.figure()
         plt.plot(PcPoints, Snwp_all, 'g.-')

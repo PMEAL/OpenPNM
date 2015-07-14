@@ -25,7 +25,7 @@ def test_linear_solvers():
     alg_1.set_boundary_conditions(bctype='Dirichlet',
                                   bcvalue=0,
                                   pores=BC2_pores)
-    alg_1.run()
+    alg_1.run(iterative_solver='gmres')
 
     alg_2 = OpenPNM.Algorithms.FickianDiffusion(network=pn, phase=air)
     alg_2.set_boundary_conditions(bctype='Neumann',
@@ -34,7 +34,7 @@ def test_linear_solvers():
     alg_2.set_boundary_conditions(bctype='Dirichlet',
                                   bcvalue=0,
                                   pores=BC2_pores)
-    alg_2.run()
+    alg_2.run(iterative_solver='cg')
 
     alg_3 = OpenPNM.Algorithms.FickianDiffusion(network=pn, phase=air)
     alg_3.set_boundary_conditions(bctype='Neumann_group',
@@ -54,10 +54,6 @@ def test_linear_solvers():
                                   pores=BC2_pores)
     alg_4.setup()
     alg_4.solve()
-
-    print(alg_1['pore.'+air.name+'_mole_fraction'][BC1_pores])
-    print(alg_2['pore.'+air.name+'_mole_fraction'][BC1_pores])
-    print(alg_3['pore.'+air.name+'_mole_fraction'][BC1_pores])
 
     assert round(sp.absolute(alg_1.rate(BC1_pores))[0], 16) == round(sp.absolute(alg_1.rate(BC2_pores))[0], 16)
     assert round(sp.absolute(alg_2.rate(BC2_pores))[0], 16) == round(sp.absolute(sp.unique(alg_2['pore.'+air.name+'_bcval_Neumann']))[0]*len(BC1_pores), 16)

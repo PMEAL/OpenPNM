@@ -446,7 +446,7 @@ class topology(object):
 
         Parameters
         ----------
-        networK : OpenPNM Network Object
+        network : OpenPNM Network Object
 
         pores : array_like
             The first group of pores to be replaced
@@ -583,3 +583,29 @@ class topology(object):
         for l in main_labels:
             del network['pore.surface_'+l]
         self.trim(network=network, pores=pores)
+
+    def trim_occluded_throats(self, network, mask='all'):
+        r"""
+        Remove throats with zero area from the network and also remove
+        pores that are isolated (as a result or otherwise)
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+
+        mask : string
+            Applies routine only to pores and throats with this label
+        """
+        occluded_ts = network['throat.area'] == 0
+        if _sp.sum(occluded_ts) > 0:
+            # Apply mask
+            occluded_ts *= network["throat."+mask]
+            self.trim(network=network, throats=occluded_ts)
+        # Also get rid of isolated pores
+        isolated_ps = network.check_network_health()['isolated_pores']
+        if _sp.size(isolated_ps) > 0:
+            # Convert to Bool array and apply mask
+            temp_array = _sp.zeros(network.num_pores()).astype(bool)
+            temp_array[isolated_ps] = True
+            isolated_ps = temp_array * network["pore."+mask]
+            self.trim(network=network, pores=isolated_ps)

@@ -12,7 +12,7 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
              contact_angle='pore.contact_angle', throat_diameter='throat.diameter',
              **kwargs):
     r"""
-    Computes the capillary entry pressure assuming the throat is a cylindrical tube.
+    Computes the capillary entry pressure assuming the throat in a cylindrical tube.
 
     Parameters
     ----------
@@ -53,7 +53,11 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
         theta = phase[contact_angle]
     r = network[throat_diameter]/2
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
-    value = value[phase.throats(physics.name)]
+    if throat_diameter.split('.')[0] == 'throat':
+        value = value[phase.throats(physics.name)]
+    else:
+        value = value[phase.pores(physics.name)]
+    value[_sp.absolute(value) == _sp.inf] = 0
     return value
 
 
@@ -117,7 +121,10 @@ def purcell(physics, phase, network, r_toroid,
     value = (-2*sigma/r) * \
         (_sp.cos(_sp.radians(theta - alpha)) /
             (1 + R/r*(1 - _sp.cos(_sp.radians(alpha)))))
-    value = value[phase.throats(physics.name)]
+    if throat_diameter.split('.')[0] == 'throat':
+        value = value[phase.throats(physics.name)]
+    else:
+        value = value[phase.pores(physics.name)]
     return value
 
 

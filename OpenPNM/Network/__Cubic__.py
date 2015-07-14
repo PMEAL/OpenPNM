@@ -43,7 +43,7 @@ class Cubic(GenericNetwork):
         - 26: Faces, Edges and Corners
 
     template : array of booleans
-        An (i,j,k) array with True where the Network should be defiend and
+        An (i,j,k) array with True where the Network should be defined and
         False elsewhere. This approach is useful for creating networks of non-
         cuboid shape like spheres or cylinders, but still with a cubic lattice
         topology.

@@ -7,6 +7,7 @@ Submodule -- throat_area
 import scipy as _sp
 import OpenPNM.Utilities.transformations as tr
 import OpenPNM.Utilities.vertexops as vo
+from scipy.spatial import ConvexHull
 
 
 def cylinder(geometry, throat_diameter='throat.diameter', **kwargs):
@@ -60,6 +61,9 @@ def voronoi(geometry, **kwargs):
     for i in range(Nt):
         if len(verts[i]) > 2:
             verts_2D = tr.rotate_and_chop(verts[i], normals[i], [0, 0, 1])
+            # Get in hull order
+            hull = ConvexHull(verts_2D, qhull_options='QJ Pp')
+            verts_2D = verts_2D[hull.vertices]
             area[i] = vo.PolyArea2D(verts_2D)
         else:
             area[i] = 0.0
