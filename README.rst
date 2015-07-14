@@ -16,7 +16,7 @@ OpenPNM
 .. contents::
 
 What is OpenPNM?
---------------
+----------------
 
 OpenPNM is an open-source framework for performing pore network modeling
 simulations of multiphase transport in porous materials.  It includes
