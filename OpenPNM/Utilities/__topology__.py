@@ -525,8 +525,8 @@ class topology(object):
             else:
                 for ind in [0, 1]:
                     loc = (non_single_labels[ind] == l)
-                    pores = new_net.pores(non_single_labels[ind][loc])
-                    new_net['pore.surface_' + l][pores] = True
+                    temp_pores = new_net.pores(non_single_labels[ind][loc])
+                    new_net['pore.surface_' + l][temp_pores] = True
 
         old_coords = _sp.copy(new_net['pore.coords'])
         if labels == []:
