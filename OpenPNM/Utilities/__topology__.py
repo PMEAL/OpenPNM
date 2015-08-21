@@ -609,3 +609,16 @@ class topology(object):
             temp_array[isolated_ps] = True
             isolated_ps = temp_array * network["pore."+mask]
             self.trim(network=network, pores=isolated_ps)
+
+    def merge_pores(self, network, pores, labels=['merged']):
+        r"""
+        """
+        Pn = network.find_neighbor_pores(pores=pores,
+                                         mode='union',
+                                         flatten=True,
+                                         excl_self=True)
+        xyz = _sp.mean(network['pore.coords'][pores], axis=0)
+        self.extend(network, pore_coords=xyz, labels=labels)
+        Pnew = network.Ps[-1]
+        self.connect_pores(network, pores1=Pnew, pores2=Pn)
+        self.trim(network=network, pores=pores)
