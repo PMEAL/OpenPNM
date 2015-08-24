@@ -33,8 +33,3 @@ class TopologyTest:
         topo.merge_pores(network=net, pores=P, labels=['merged'])
         assert net.Np == 95
         assert net.Nt == 222
-
-if __name__ == '__main__':
-    self = TopologyTest()
-    self.setup_class()
-
