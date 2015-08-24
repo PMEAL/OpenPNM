@@ -643,7 +643,7 @@ class topology(object):
         >>> print(pn.Np)
         321
         >>> pn.pores('merged')
-        320
+        array([320])
         >>> pn.num_throats('merged')
         32
 
