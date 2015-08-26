@@ -631,7 +631,7 @@ class topology(object):
         they all form a continuous cluster.  For instance, it is recommended
         to use the ``find_nearby_pores`` method to find all pores within a
         certain distance of a given pore, and these can then be merged without
-        causing any abnormal connection.
+        causing any abnormal connections.
 
         Examples
         --------
