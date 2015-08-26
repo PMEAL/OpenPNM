@@ -631,3 +631,51 @@ class topology(object):
             temp_array[isolated_ps] = True
             isolated_ps = temp_array * network["pore."+mask]
             self.trim(network=network, pores=isolated_ps)
+
+    def merge_pores(self, network, pores, labels=['merged']):
+        r"""
+        Combines a selection of pores into a new single pore located at the
+        centroid of the selected pores and connected to all of their neighbors.
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+
+        pores : array_like
+            The list of pores which are to be combined into a new single pore
+
+        labels : string or list of strings
+            The labels to apply to the new pore and new throat connections
+
+        Notes
+        -----
+        The selection of pores should be chosen carefully, preferrable so that
+        they all form a continuous cluster.  For instance, it is recommended
+        to use the ``find_nearby_pores`` method to find all pores within a
+        certain distance of a given pore, and these can then be merged without
+        causing any abnormal connections.
+
+        Examples
+        --------
+        >>> import OpenPNM as op
+        >>> pn = op.Network.Cubic(shape=[20,20,1])
+        >>> topo = op.Utilities.topology()
+        >>> P = pn.find_nearby_pores(pores=111, distance=5, flatten=True)
+        >>> topo.merge_pores(network=pn, pores=P, labels=['merged'])
+        >>> print(pn.Np)
+        321
+        >>> pn.pores('merged')
+        array([320])
+        >>> pn.num_throats('merged')
+        32
+
+        """
+        Pn = network.find_neighbor_pores(pores=pores,
+                                         mode='union',
+                                         flatten=True,
+                                         excl_self=True)
+        xyz = _sp.mean(network['pore.coords'][pores], axis=0)
+        self.extend(network, pore_coords=xyz, labels=labels)
+        Pnew = network.Ps[-1]
+        self.connect_pores(network, pores1=Pnew, pores2=Pn, labels=labels)
+        self.trim(network=network, pores=pores)
