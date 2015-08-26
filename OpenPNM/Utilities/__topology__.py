@@ -612,8 +612,8 @@ class topology(object):
 
     def merge_pores(self, network, pores, labels=['merged']):
         r"""
-        Combines a selection of pores into a single pore, which is connected
-        to all the neighbors of the original pores.
+        Combines a selection of pores into a new single pore located at the
+        centroid of the selected pores and connected to all of their neighbors.
 
         Parameters
         ----------
