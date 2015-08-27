@@ -6,6 +6,7 @@ Network.tools.topology: Assorted topological manipulation methods
 
 """
 import scipy as _sp
+import numpy as _np
 import scipy.sparse as _sprs
 import scipy.spatial as _sptl
 from OpenPNM.Base import logging as _logging
@@ -351,7 +352,6 @@ class topology(object):
         if method == 'nearest':
             P1 = P_network
             P2 = P_donor + N_init['pore']  # Increment pores on donor
-            P = _sp.hstack((P1, P2))
             C1 = network['pore.coords'][P_network]
             C2 = donor['pore.coords'][P_donor]
             D = _sp.spatial.distance.cdist(C1, C2)
@@ -412,8 +412,8 @@ class topology(object):
         Notes
         -----
         It creates the connections in a format which is acceptable by
-        the default OpenPNM connection key ('throat.conns') and adds them to the
-        network.
+        the default OpenPNM connection key ('throat.conns') and adds them to
+        the network.
 
         Examples
         --------
@@ -439,6 +439,28 @@ class topology(object):
         array2 = _sp.tile(pores2, size1)
         conns = _sp.vstack([array1, array2]).T
         self.extend(network=network, throat_conns=conns, labels=labels)
+
+    def find_centroid(coords=None):
+        r'''
+        It finds the coordinates of the centroid of the sent pores.
+        '''
+        l = _np.float64(len(coords))
+        x, y, z = coords.T
+        sx = _np.sum(x)
+        sy = _np.sum(y)
+        sz = _np.sum(z)
+        c = _np.array([sx/l, sy/l, sz/l], ndmin=1)
+        return c
+
+    def find_pores_distance(network, pores1=None, pores2=None):
+        r'''
+        It finds the distance between two group of pores.
+        '''
+        from scipy.spatial.distance import cdist
+        p1 = _sp.array(pores1, ndmin=1)
+        p2 = _sp.array(pores2, ndmin=1)
+        coords = network['pore.coords']
+        return cdist(coords[p1], coords[p2])
 
     def subdivide(self, network, pores, shape, labels=[]):
         r'''
@@ -525,8 +547,8 @@ class topology(object):
             else:
                 for ind in [0, 1]:
                     loc = (non_single_labels[ind] == l)
-                    pores = new_net.pores(non_single_labels[ind][loc])
-                    new_net['pore.surface_' + l][pores] = True
+                    temp_pores = new_net.pores(non_single_labels[ind][loc])
+                    new_net['pore.surface_' + l][temp_pores] = True
 
         old_coords = _sp.copy(new_net['pore.coords'])
         if labels == []:
@@ -609,3 +631,51 @@ class topology(object):
             temp_array[isolated_ps] = True
             isolated_ps = temp_array * network["pore."+mask]
             self.trim(network=network, pores=isolated_ps)
+
+    def merge_pores(self, network, pores, labels=['merged']):
+        r"""
+        Combines a selection of pores into a new single pore located at the
+        centroid of the selected pores and connected to all of their neighbors.
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+
+        pores : array_like
+            The list of pores which are to be combined into a new single pore
+
+        labels : string or list of strings
+            The labels to apply to the new pore and new throat connections
+
+        Notes
+        -----
+        The selection of pores should be chosen carefully, preferrable so that
+        they all form a continuous cluster.  For instance, it is recommended
+        to use the ``find_nearby_pores`` method to find all pores within a
+        certain distance of a given pore, and these can then be merged without
+        causing any abnormal connections.
+
+        Examples
+        --------
+        >>> import OpenPNM as op
+        >>> pn = op.Network.Cubic(shape=[20,20,1])
+        >>> topo = op.Utilities.topology()
+        >>> P = pn.find_nearby_pores(pores=111, distance=5, flatten=True)
+        >>> topo.merge_pores(network=pn, pores=P, labels=['merged'])
+        >>> print(pn.Np)
+        321
+        >>> pn.pores('merged')
+        array([320])
+        >>> pn.num_throats('merged')
+        32
+
+        """
+        Pn = network.find_neighbor_pores(pores=pores,
+                                         mode='union',
+                                         flatten=True,
+                                         excl_self=True)
+        xyz = _sp.mean(network['pore.coords'][pores], axis=0)
+        self.extend(network, pore_coords=xyz, labels=labels)
+        Pnew = network.Ps[-1]
+        self.connect_pores(network, pores1=Pnew, pores2=Pn, labels=labels)
+        self.trim(network=network, pores=pores)

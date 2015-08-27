@@ -26,3 +26,10 @@ class TopologyTest:
         topo.trim_occluded_throats(self.net)
         assert self.net.num_pores() == Np - 1
         assert self.net.num_throats() == Nt - sp.size(ts)
+
+    def test_merge_pores(self):
+        net = OpenPNM.Network.Cubic(shape=[5, 5, 5], spacing=1)
+        P = net.find_nearby_pores(pores=67, distance=2, flatten=True)
+        topo.merge_pores(network=net, pores=P, labels=['merged'])
+        assert net.Np == 95
+        assert net.Nt == 222

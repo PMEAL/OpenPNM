@@ -15,8 +15,6 @@ def test_subdivide():
     pn.subdivide(pores=nano_pores, shape=[4, 4, 4], labels='nano')
     assert pn.Np == (125+4*64-4)
     assert pn.Nt == (300+(4*144)-16+15*16+16)
-    ctrl.export(network=pn, filename=join(TEMP_DIR, 'nano'))
-
 
 def test_clone_and_trim():
     ctrl.clear()
@@ -66,3 +64,33 @@ def test_stitch():
     assert pn.Np == 3*pn2.Np  # Ensure number of pores increased again
     assert pn.Nt == (3*pn2.Nt + 2*Nx*Ny)  # Ensure correct num of new throats
     ctrl.clear()
+
+
+def test_distance_center():
+    shape = sp.array([7, 5, 9])
+    spacing = sp.array([2, 1, 0.5])
+    pn = OpenPNM.Network.Cubic(shape=shape, spacing=spacing)
+    sx, sy, sz = spacing
+    center_coord = sp.around(topology.find_centroid(pn['pore.coords']), 7)
+    cx, cy, cz = center_coord
+    coords = pn['pore.coords']
+    x, y, z = coords.T
+    coords = sp.concatenate((coords, center_coord.reshape((1, 3))))
+    pn['pore.center'] = False
+    mask1 = (x <= (cx + sx/2)) * (y <= (cy + sy/2)) * (z <= (cz + sz/2))
+    mask2 = (x >= (cx - sx/2)) * (y >= (cy - sy/2)) * (z >= (cz - sz/2))
+    center_pores_mask = pn.Ps[mask1 * mask2]
+    pn['pore.center'][center_pores_mask] = True
+    center = pn.Ps[pn['pore.center']]
+    L1 = sp.amax(topology.find_pores_distance(network=pn,
+                                              pores1=center,
+                                              pores2=pn.Ps))
+    L2 = sp.amax(topology.find_pores_distance(network=pn,
+                                              pores1=pn.Ps,
+                                              pores2=pn.Ps))
+    l1 = ((shape[0] - 1) * sx) ** 2
+    l2 = ((shape[1] - 1) * sy) ** 2
+    l3 = ((shape[2] - 1) * sz) ** 2
+    L3 = sp.sqrt(l1 + l2 + l3)
+    assert sp.around(L1 * 2, 7) == sp.around(L2, 7)
+    assert sp.around(L2, 7) == sp.around(L3, 7)
