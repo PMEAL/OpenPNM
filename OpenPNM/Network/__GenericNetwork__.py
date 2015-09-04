@@ -365,23 +365,18 @@ class GenericNetwork(Core):
             temp = self.create_adjacency_matrix(sprsfmt='lil')
             self._adjacency_matrix['lil'] = temp
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
-        if [sp.asarray(x) for x in neighborPs if x] == []:
-            return sp.array([], ndmin=1)
         if flatten:
-            # All the empty lists must be removed to maintain data type after
-            # hstack (numpy bug?)
-            neighborPs = [sp.asarray(x) for x in neighborPs if x]
             neighborPs = sp.hstack(neighborPs)
             neighborPs = sp.concatenate((neighborPs, pores))
             # Remove references to input pores and duplicates
             if mode == 'not_intersection':
-                neighborPs = sp.array(sp.unique(sp.where(
-                    sp.bincount(neighborPs) == 1)[0]), dtype=int)
+                temp = sp.where(sp.bincount(neighborPs) == 1)[0]
+                neighborPs = sp.array(sp.unique(temp), dtype=int)
             elif mode == 'union':
                 neighborPs = sp.array(sp.unique(neighborPs), int)
             elif mode == 'intersection':
-                neighborPs = sp.array(sp.unique(sp.where(
-                    sp.bincount(neighborPs) > 1)[0]), dtype=int)
+                temp = sp.where(sp.bincount(neighborPs) > 1)[0]
+                neighborPs = sp.array(sp.unique(temp), dtype=int)
             if excl_self:
                 neighborPs = neighborPs[~sp.in1d(neighborPs, pores)]
         else:
