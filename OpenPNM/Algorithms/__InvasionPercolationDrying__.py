@@ -7,9 +7,11 @@ InvasionPercolationDrying: IP for drying of a wetting phase
 """
 import heapq as hq
 import scipy as sp
+from collections import namedtuple
 from OpenPNM.Algorithms import GenericAlgorithm
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
+Tinfo = namedtuple('queued_throat', ('order', 'number'))
 
 
 class InvasionPercolationDrying(GenericAlgorithm):
@@ -165,7 +167,7 @@ class InvasionPercolationDrying(GenericAlgorithm):
         Ts = self._parse_locations(throats)
         order = self['throat.order']
         queue = []
-        [hq.heappush(queue, (order[T], T)) for T in Ts]
+        [hq.heappush(queue, Tinfo(order[T], T)) for T in Ts]
         return queue
 
     def qpop(self, queue):
@@ -176,7 +178,7 @@ class InvasionPercolationDrying(GenericAlgorithm):
     def qpush(self, queue, throats):
         Ts = self._parse_locations(throats)
         order = self['throat.order']
-        [hq.heappush(queue, (order[T], T)) for T in Ts]
+        [hq.heappush(queue, Tinfo(order[T], T)) for T in Ts]
 
 
 
