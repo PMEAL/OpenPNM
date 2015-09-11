@@ -49,7 +49,7 @@ To change this value, the 'pore.contact_angle' property of the Water object can 
 >>> water['pore.contact_angle'] = 140.0
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Run a Drainage Simulation
+Run an Invasion Simulation
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 At this point, the system is fully defined and ready to perform some simulations.  An IP algorithm object is instantiated as follows:
@@ -59,3 +59,20 @@ At this point, the system is fully defined and ready to perform some simulations
 Before running the algorithm it is necessary to specify the inlet sites from where the invading fluid enters the network:
 
 >>> IP.set_inlets(pores=pn.pores('left'))
+
+The final step is to invaded the network.  This is accomplished with the ``run`` method of the IP object.
+
+>> IP.run()
+
+This method produces arrays called 'pore.invaded' and 'throat.invaded' on the IP object that contain the invasion sequence of each pore and throat, respectively.  To obtain the invading fluid configuration at some intermediate invasion state (for instance the first 200 invasions) it is simply a matter of applying a boolean operated to the 'pore.invaded' and 'throat.invaded' arrays such as:
+
+>>> Pinv = IP['pore.invaded'] < 200
+>>> Tinv = IP['throat.invaded'] < 200
+
+These partially invaded configurations could then be used to perform various simulations such as relative permeability.
+
+The ``run`` command takes an option argument of ``n_steps``, which if given performs a partial invasion of the network.  This approach is requried if you wish to perform more complex invasions such as 100 steps from the 'left', then 100 from the 'right'.  In this case the invasion pattern will not be the same as if the invasion had proceeded entirely from the 'left'.
+
+.. note:: Advanced IP
+
+    A more sophisticated version of the IP algorithm is currently under development that accepts the volume of injection rather than just the number of steps.  It also allows for multiple clusters be invaded at the same time, and for each defending cluster to be invaded at a different rate.  The basis IP algorithm described above will remain in the code since it is handy to have simple algorithm in many cases.
