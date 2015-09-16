@@ -5,6 +5,7 @@ GenericNetwork: Abstract class to construct pore networks
 ===============================================================================
 
 """
+import itertools
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
@@ -366,9 +367,13 @@ class GenericNetwork(Core):
             self._adjacency_matrix['lil'] = temp
             neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
         if flatten:
-            neighborPs = sp.hstack(neighborPs)
-            neighborPs = sp.concatenate((neighborPs, pores))
-            # Remove references to input pores and duplicates
+            # Convert rows of lil into single flat list
+            neighborPs = itertools.chain.from_iterable(neighborPs)
+            # Add input pores to list
+            neighborPs = itertools.chain.from_iterable([neighborPs, pores])
+            # Convert list to numpy array
+            neighborPs = sp.fromiter(neighborPs, dtype=int)
+            # Apply logic to include/exclude items of the set
             if mode == 'not_intersection':
                 temp = sp.where(sp.bincount(neighborPs) == 1)[0]
                 neighborPs = sp.array(sp.unique(temp), dtype=int)
@@ -380,8 +385,7 @@ class GenericNetwork(Core):
             if excl_self:
                 neighborPs = neighborPs[~sp.in1d(neighborPs, pores)]
         else:
-            for i in range(0, sp.size(pores)):
-                neighborPs[i] = sp.array(neighborPs[i], dtype=int)
+            sp.array([sp.array(neighborPs[i]) for i in range(0, len(pores))])
         return sp.array(neighborPs, ndmin=1)
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
@@ -432,14 +436,13 @@ class GenericNetwork(Core):
             temp = self.create_incidence_matrix(sprsfmt='lil')
             self._incidence_matrix['lil'] = temp
             neighborTs = self._incidence_matrix['lil'].rows[[pores]]
-        if [sp.asarray(x) for x in neighborTs if x] == []:
-            return sp.array([], ndmin=1)
         if flatten:
-            # All the empty lists must be removed to maintain data type after
-            # hstack (numpy bug?)
-            neighborTs = [sp.asarray(x) for x in neighborTs if x]
-            neighborTs = sp.hstack(neighborTs)
-            # Remove references to input pores and duplicates
+            # Convert rows of lil into single flat list
+            neighborTs = itertools.chain.from_iterable(neighborTs)
+            # Add input pores to list
+            neighborTs = itertools.chain.from_iterable([neighborTs, pores])
+            # Convert list to numpy array
+            neighborTs = sp.fromiter(neighborTs, dtype=int)
             if mode == 'not_intersection':
                 neighborTs = sp.unique(sp.where(sp.bincount(neighborTs) == 1)[0])
             elif mode == 'union':
