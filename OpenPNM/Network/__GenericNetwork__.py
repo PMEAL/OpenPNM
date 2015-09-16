@@ -114,13 +114,11 @@ class GenericNetwork(Core):
 
         """
         logger.debug('create_adjacency_matrix: Start of method')
-        Np = self.num_pores()
-        Nt = self.num_throats()
 
         # Check if provided data is valid
         if data is None:
-            data = sp.ones((self.num_throats(),))
-        elif sp.shape(data)[0] != Nt:
+            data = sp.ones((self.Nt,))
+        elif sp.shape(data)[0] != self.Nt:
             raise Exception('Received dataset of incorrect length')
 
         # Clear any zero-weighted connections
@@ -142,7 +140,7 @@ class GenericNetwork(Core):
             data = sp.append(data, data)
 
         # Generate sparse adjacency matrix in 'coo' format
-        temp = sprs.coo_matrix((data, (row, col)), (Np, Np))
+        temp = sprs.coo_matrix((data, (row, col)), (self.Np, self.Np))
 
         # Convert to requested format
         if sprsfmt == 'coo':
@@ -193,13 +191,10 @@ class GenericNetwork(Core):
         """
         logger.debug('create_incidence_matrix: Start of method')
 
-        Nt = self.num_throats()
-        Np = self.num_pores()
-
         # Check if provided data is valid
         if data is None:
-            data = sp.ones((self.num_throats(),))
-        elif sp.shape(data)[0] != Nt:
+            data = sp.ones((self.Nt,))
+        elif sp.shape(data)[0] != self.Nt:
             raise Exception('Received dataset of incorrect length')
 
         if dropzeros:
@@ -214,7 +209,7 @@ class GenericNetwork(Core):
         col = sp.append(col, col)
         data = sp.append(data[ind], data[ind])
 
-        temp = sprs.coo.coo_matrix((data, (row, col)), (Np, Nt))
+        temp = sprs.coo.coo_matrix((data, (row, col)), (self.Np, self.Nt))
 
         # Convert to requested format
         if sprsfmt == 'coo':
@@ -375,18 +370,18 @@ class GenericNetwork(Core):
             neighborPs = sp.fromiter(neighborPs, dtype=int)
             # Apply logic to include/exclude items of the set
             if mode == 'not_intersection':
-                temp = sp.where(sp.bincount(neighborPs) == 1)[0]
-                neighborPs = sp.array(sp.unique(temp), dtype=int)
+                neighborPs = sp.unique(sp.where(sp.bincount(neighborPs) == 1)[0])
             elif mode == 'union':
-                neighborPs = sp.array(sp.unique(neighborPs), int)
+                neighborPs = sp.unique(neighborPs)
             elif mode == 'intersection':
                 temp = sp.where(sp.bincount(neighborPs) > 1)[0]
-                neighborPs = sp.array(sp.unique(temp), dtype=int)
+                neighborPs = sp.unique(temp)
             if excl_self:
                 neighborPs = neighborPs[~sp.in1d(neighborPs, pores)]
         else:
+            # Convert lists in array to numpy arrays
             sp.array([sp.array(neighborPs[i]) for i in range(0, len(pores))])
-        return sp.array(neighborPs, ndmin=1)
+        return sp.array(neighborPs, ndmin=1, dtype=int)
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
         r"""
@@ -450,9 +445,9 @@ class GenericNetwork(Core):
             elif mode == 'intersection':
                 neighborTs = sp.unique(sp.where(sp.bincount(neighborTs) > 1)[0])
         else:
-            for i in range(0, sp.size(pores)):
-                neighborTs[i] = sp.array(neighborTs[i])
-        return sp.array(neighborTs, ndmin=1)
+            # Convert lists in array to numpy arrays
+            sp.array([sp.array(neighborTs[i]) for i in range(0, len(pores))])
+        return sp.array(neighborTs, ndmin=1, dtype=int)
 
     def num_neighbors(self, pores, flatten=False):
         r"""
@@ -570,6 +565,10 @@ class GenericNetwork(Core):
         clusters : array_like
             An Np long list of clusters numbers
 
+        See Also
+        --------
+        ``find_clusters2``
+
         """
         if sp.size(mask) == self.num_throats():
             # Convert to boolean mask if not already
@@ -592,21 +591,22 @@ class GenericNetwork(Core):
     def find_clusters2(self, mask=[], t_labels=False):
         r"""
         Identify connected clusters of pores in the network.  This method can
-        also return a list of throat labels, which correspond to the pore
-        labels to which the throat is connected.  Either site and bond
-        percolation can be consider, see description of input arguments for
-        details.
+        also return a list of throat cluster numbers, which correspond to the
+        cluster numbers of the pores to which the throat is connected.  Either
+        site and bond percolation can be consider, see description of input
+        arguments for details.
 
         Parameters
         ----------
         mask : array_like, boolean
             A list of active bonds or sites (throats or pores).  If the mask is
-            Np long, then the method will perform a site percolation, while if
+            Np long, then the method will perform a site percolation, and if
             the mask is Nt long bond percolation will be performed.
 
         t_labels : boolean (default id False)
-            Indicates if throat cluster labels should also be returned. If true
-            then a tuple containing both p_clusters and t_clusters is returned.
+            Indicates if throat cluster numbers should also be returned. If
+            true then a tuple containing both p_clusters and t_clusters is
+            returned.
 
         Returns
         -------
