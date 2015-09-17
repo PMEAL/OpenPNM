@@ -342,11 +342,11 @@ class GenericNetwork(Core):
         array([ 2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0, 1], mode='union', excl_self=False)
         array([ 0,  1,  2,  5,  6, 25, 26])
-        >>> pn.find_neighbor_pores(pores=[0, 2],flatten=False)
+        >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
         array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
-        >>> pn.find_neighbor_pores(pores=[0, 2],mode='intersection')
+        >>> pn.find_neighbor_pores(pores=[0, 2], mode='intersection')
         array([1])
-        >>> pn.find_neighbor_pores(pores=[0, 2],mode='not_intersection')
+        >>> pn.find_neighbor_pores(pores=[0, 2], mode='not_intersection')
         array([ 3,  5,  7, 25, 27])
         """
         pores = sp.array(pores, ndmin=1)
@@ -370,7 +370,8 @@ class GenericNetwork(Core):
             neighborPs = sp.fromiter(neighborPs, dtype=int)
             # Apply logic to include/exclude items of the set
             if mode == 'not_intersection':
-                neighborPs = sp.unique(sp.where(sp.bincount(neighborPs) == 1)[0])
+                temp = sp.where(sp.bincount(neighborPs) == 1)[0]
+                neighborPs = sp.unique(temp)
             elif mode == 'union':
                 neighborPs = sp.unique(neighborPs)
             elif mode == 'intersection':
@@ -378,10 +379,11 @@ class GenericNetwork(Core):
                 neighborPs = sp.unique(temp)
             if excl_self:
                 neighborPs = neighborPs[~sp.in1d(neighborPs, pores)]
+            return sp.array(neighborPs, ndmin=1, dtype=int)
         else:
             # Convert lists in array to numpy arrays
-            sp.array([sp.array(neighborPs[i]) for i in range(0, len(pores))])
-        return sp.array(neighborPs, ndmin=1, dtype=int)
+            neighborPs = [sp.array(neighborPs[i]) for i in range(0, len(pores))]
+            return sp.array(neighborPs, ndmin=1)
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
         r"""
@@ -434,8 +436,6 @@ class GenericNetwork(Core):
         if flatten:
             # Convert rows of lil into single flat list
             neighborTs = itertools.chain.from_iterable(neighborTs)
-            # Add input pores to list
-            neighborTs = itertools.chain.from_iterable([neighborTs, pores])
             # Convert list to numpy array
             neighborTs = sp.fromiter(neighborTs, dtype=int)
             if mode == 'not_intersection':
@@ -444,10 +444,11 @@ class GenericNetwork(Core):
                 neighborTs = sp.unique(neighborTs)
             elif mode == 'intersection':
                 neighborTs = sp.unique(sp.where(sp.bincount(neighborTs) > 1)[0])
+            return sp.array(neighborTs, ndmin=1, dtype=int)
         else:
             # Convert lists in array to numpy arrays
-            sp.array([sp.array(neighborTs[i]) for i in range(0, len(pores))])
-        return sp.array(neighborTs, ndmin=1, dtype=int)
+            neighborTs = [sp.array(neighborTs[i]) for i in range(0, len(pores))]
+            return sp.array(neighborTs, ndmin=1)
 
     def num_neighbors(self, pores, flatten=False):
         r"""
@@ -494,7 +495,7 @@ class GenericNetwork(Core):
             num = sp.shape(neighborPs)[0]
         else:
             neighborPs = self.find_neighbor_pores(pores, flatten=False)
-            num = sp.zeros(sp.shape(neighborPs), dtype=int)
+            num = sp.zeros(sp.shape(neighborPs)[0], dtype=int)
             for i in range(0, sp.shape(num)[0]):
                 num[i] = sp.size(neighborPs[i])
         return num
