@@ -1,5 +1,7 @@
 language: python
 
+sudo: false
+
 python:
 - '3.3'
 - '3.4'
@@ -12,8 +14,6 @@ before_install:
 - ./miniconda.sh -b
 - export PATH=/home/travis/miniconda/bin:$PATH
 - conda update --yes conda
-- sudo rm -rf /dev/shm
-- sudo ln -s /run/shm /dev/shm
 
 install:
 - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib
