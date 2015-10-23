@@ -124,14 +124,14 @@ class GenericNetwork(Core):
         # Clear any zero-weighted connections
         if dropzeros:
             ind = data > 0
+            conn = self['throat.conns'][ind]
+            data = data[ind]
         else:
-            ind = sp.ones_like(data, dtype=bool)
+            conn = self['throat.conns']
 
         # Get connectivity info from network
-        conn = self['throat.conns'][ind]
         row = conn[:, 0]
         col = conn[:, 1]
-        data = data[ind]
 
         # Append row & col to each other, and data to itself
         if sym:
