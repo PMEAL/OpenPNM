@@ -394,14 +394,18 @@ class Core(dict):
 
         temp = []
         if mode == 'all':
-            if element == '': temp = props
-            else: temp = [item for item in props if item.split('.')[0]==element]
+            if element == '':
+                temp = props
+            else:
+                temp = [item for item in props if item.split('.')[0] == element]
         elif mode == 'models':
-            if element == '': temp = models
-            else: temp = [item for item in models if item.split('.')[0]==element]
+            if element == '':
+                temp = models
+            else: temp = [item for item in models if item.split('.')[0] == element]
         elif mode == 'constants':
-            if element == '': temp = constants
-            else: temp = [item for item in constants if item.split('.')[0]==element]
+            if element == '':
+                temp = constants
+            else: temp = [item for item in constants if item.split('.')[0] == element]
         a = Tools.PrintableList(temp)
         return a
 
@@ -507,12 +511,12 @@ class Core(dict):
                 logger.error('Unrecognized element')
                 return
         elif sp.size(pores) != 0:
-            if pores == 'all':
+            if pores is 'all':
                 pores = self.pores()
             pores = sp.array(pores, ndmin=1)
             temp = self._get_labels(element='pore', locations=pores, mode=mode)
         elif sp.size(throats) != 0:
-            if throats == 'all':
+            if throats is 'all':
                 throats = self.throats()
             throats = sp.array(throats, ndmin=1)
             temp = self._get_labels(element='throat', locations=throats, mode=mode)
