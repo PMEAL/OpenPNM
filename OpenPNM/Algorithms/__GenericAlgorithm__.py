@@ -143,10 +143,10 @@ class GenericAlgorithm(Core):
 
         logger.debug('BC method applies to the component: ' + component.name)
         # Validate bctype
-        if bctype is '':
+        if bctype == '':
             raise Exception('bctype must be specified!')
         # If mode is 'remove', also bypass checks
-        if mode is 'remove':
+        if mode == 'remove':
             if pores is None and throats is None:
                 for item in self.labels():
                     item_spl = item.split('.')
@@ -206,7 +206,7 @@ class GenericAlgorithm(Core):
         # Validate bcvalue
         if bcvalue is not None:
             # Check bcvalues are compatible with bctypes
-            if bctype is 'Neumann_group':  # Only scalars are acceptable
+            if bctype == 'Neumann_group':  # Only scalars are acceptable
                 if sp.size(bcvalue) != 1:
                     raise Exception('When specifying Neumann_group, bcval ' +
                                     'should be a scalar')
@@ -244,13 +244,13 @@ class GenericAlgorithm(Core):
                         c2_label = c1 + '_' + bcname
                         condition2 = sp.sum(self[c2_label][loc]) == 0
                         if not (condition1 and condition2):
-                            if mode is 'merge':
+                            if mode == 'merge':
                                 raise Exception('Because of the existing ' +
                                                 'BCs, the method cannot ' +
                                                 'apply new BC with the merge' +
                                                 ' mode to the specified pore' +
                                                 '/throat.')
-                            elif (mode is 'overwrite' and bcname is not bctype):
+                            elif (mode == 'overwrite' and bcname != bctype):
                                 raise Exception('Because of the existing ' +
                                                 'BCs, the method cannot ' +
                                                 'apply new BC with overwrite' +
@@ -260,13 +260,13 @@ class GenericAlgorithm(Core):
                     except KeyError:
                         pass
         # Set boundary conditions based on supplied mode
-        if mode is 'merge':
+        if mode == 'merge':
             if bcvalue is not None:
                 self[l_prop][loc] = bcvalue
             self[l_label][loc] = True
             if bctype not in self._existing_BC:
                 self._existing_BC.append(bctype)
-        elif mode is 'overwrite':
+        elif mode == 'overwrite':
             self[l_prop] = sp.ones((all_length,), dtype=float) * sp.nan
             if bcvalue is not None:
                 self[l_prop][loc] = bcvalue

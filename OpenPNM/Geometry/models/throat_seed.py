@@ -51,10 +51,10 @@ def neighbor(geometry, network, pore_prop='pore.seed', mode='min', **kwargs):
     throats = network.throats(geometry.name)
     P12 = network.find_connected_pores(throats)
     pvalues = network[pore_prop][P12]
-    if mode is 'min':
+    if mode == 'min':
         value = _sp.amin(pvalues, axis=1)
-    if mode is 'max':
+    if mode == 'max':
         value = _sp.amax(pvalues, axis=1)
-    if mode is 'mean':
+    if mode == 'mean':
         value = _sp.mean(pvalues, axis=1)
     return value

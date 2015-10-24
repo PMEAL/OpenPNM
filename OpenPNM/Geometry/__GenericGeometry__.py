@@ -67,7 +67,7 @@ class GenericGeometry(Core):
 
         if key in list(self.keys()):  # Look for data on self...
             return super(GenericGeometry, self).__getitem__(key)
-        if key is 'throat.conns':  # Handle specifically
+        if key == 'throat.conns':  # Handle specifically
             [P1, P2] = \
                 self._net['throat.conns'][self._net[element+'.'+self.name]].T
             Pmap = sp.zeros((self._net.Np,), dtype=int) - 1

@@ -75,7 +75,7 @@ class Core(dict):
         # Convert value to an ndarray
         value = sp.array(value, ndmin=1)
         # Skip checks for 'coords', 'conns'
-        if (key is 'pore.coords') or (key is 'throat.conns'):
+        if (key == 'pore.coords') or (key == 'throat.conns'):
             super(Core, self).__setitem__(key, value)
             return
         # Skip checks for protected props, and prevent changes if defined
@@ -322,7 +322,7 @@ class Core(dict):
         -----
         This doesn't quite work yet...we have to decide how to treat sub-nets first
         """
-        if name is '':
+        if name == '':
             if self._net is None:
                 net = [self]
             else:
@@ -387,34 +387,29 @@ class Core(dict):
         constants = [item for item in props if item not in all_models]
         models = [item for item in props if item in all_models]
 
-        if element in ['pore', 'pores']:
+        if element in ['pore','pores']:
             element = 'pore'
-        elif element in ['throat', 'throats']:
+        elif element in ['throat','throats']:
             element = 'throat'
 
         temp = []
-        if mode is 'all':
-            if element is '':
-                temp = props
-            else:
-                temp = [item for item in props if item.split('.')[0] == element]
-        elif mode is 'models':
-            if element is '':
-                temp = models
-            else:
-                temp = [item for item in models if item.split('.')[0] == element]
-        elif mode is 'constants':
-            if element is '':
-                temp = constants
-            else:
-                temp = [item for item in constants if item.split('.')[0] == element]
+        if mode == 'all':
+            if element == '': temp = props
+            else: temp = [item for item in props if item.split('.')[0]==element]
+        elif mode == 'models':
+            if element == '': temp = models
+            else: temp = [item for item in models if item.split('.')[0]==element]
+        elif mode == 'constants':
+            if element == '': temp = constants
+            else: temp = [item for item in constants if item.split('.')[0]==element]
         a = Tools.PrintableList(temp)
         return a
 
-    def _get_labels(self, element='', locations=[], mode='union'):
+
+    def _get_labels(self,element='',locations=[],mode='union'):
         r"""
-        This is the actual label getter method, but it should not be called
-        directly.  Wrapper methods have been created, use labels().
+        This is the actual label getter method, but it should not be called directly.
+        Wrapper methods have been created, use labels().
         """
         # Collect list of all pore OR throat labels
         labels = []
@@ -437,13 +432,13 @@ class Core(dict):
             for item in labels:
                 arr[:, col] = self[item][locations]
                 col = col + 1
-            if mode is 'count':
+            if mode == 'count':
                 return sp.sum(arr, axis=1)
-            if mode is 'union':
+            if mode == 'union':
                 temp = labels[sp.sum(arr, axis=0) > 0]
                 temp.tolist()
                 return Tools.PrintableList(temp)
-            if mode is 'intersection':
+            if mode == 'intersection':
                 temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
                 temp.tolist()
                 return Tools.PrintableList(temp)
@@ -451,9 +446,9 @@ class Core(dict):
                 temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
                 temp.tolist()
                 return Tools.PrintableList(temp)
-            if mode is 'mask':
+            if mode == 'mask':
                 return arr
-            if mode is 'none':
+            if mode == 'none':
                 temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
                 for i in sp.arange(0, sp.shape(locations, )[0]):
                     temp[i] = list(labels[arr[i, :]])
@@ -461,7 +456,7 @@ class Core(dict):
             else:
                 logger.error('unrecognized mode:'+mode)
 
-    def labels(self, element='', pores=[], throats=[], mode='union'):
+    def labels(self,element='', pores=[], throats=[], mode='union'):
         r"""
         Returns the labels applied to specified pore or throat locations
 
@@ -561,9 +556,9 @@ class Core(dict):
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
-        if labels is '':  # Handle empty labels
+        if labels == '':  # Handle empty labels
             labels = 'all'
-        if type(labels) is str:  # Convert input to list
+        if type(labels) == str:  # Convert input to list
             labels = [labels]
         # Convert inputs to locations and element
         if sp.size(pores) > 0:
@@ -605,17 +600,17 @@ class Core(dict):
                     temp = [label.strip('*')]
                 labels.extend(temp)
         # Begin computing label array
-        if mode is 'union':
+        if mode == 'union':
             union = sp.zeros_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
                     union = union + self[element+'.'+item.split('.')[-1]]
             ind = union
-        elif mode is 'intersection':
+        elif mode == 'intersection':
             intersect = sp.ones_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
                     intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
-        elif mode is 'not_intersection':
+        elif mode == 'not_intersection':
             not_intersect = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
@@ -663,7 +658,7 @@ class Core(dict):
         >>> pn.pores(labels=['top','front'],mode='intersection')
         array([100, 105, 110, 115, 120])
         """
-        if labels is 'all':
+        if labels == 'all':
             Np = sp.shape(self['pore.all'])[0]
             ind = sp.arange(0, Np)
         else:
@@ -707,7 +702,7 @@ class Core(dict):
         array([0, 1, 2, 3, 4])
 
         """
-        if labels is 'all':
+        if labels == 'all':
             Nt = sp.shape(self['throat.all'])[0]
             ind = sp.arange(0,Nt)
         else:
@@ -930,7 +925,7 @@ class Core(dict):
                 values = item[prop]
                 dtypenames.append(values.dtype.name)
                 dtypes.append(values.dtype)
-                if values.dtype is 'bool':
+                if values.dtype == 'bool':
                     bool_locs[locations]=True
                 try: values_dim = sp.shape(values)[1]
                 except: pass
@@ -941,7 +936,7 @@ class Core(dict):
                         logger.warning(prop+' data has different dimensions, consider revising data in object '+str(item.name))
                 except:
                     temp = sp.ndarray([self._count(element),values_dim])
-            if values.dtype is 'object' and temp.dtype != 'object':
+            if values.dtype == 'object' and temp.dtype != 'object':
                 temp = temp.astype('object')
             temp[locations] = values  #Assign values
         #Check if requested prop was found on any sub-objects
@@ -1017,7 +1012,7 @@ class Core(dict):
         40
 
         """
-        if labels is 'all':
+        if labels == 'all':
             Np = sp.shape(self.get('pore.all'))[0]
         else:
             #convert string to list, if necessary
@@ -1081,7 +1076,7 @@ class Core(dict):
         72
 
         """
-        if labels is 'all':
+        if labels == 'all':
             Nt = sp.shape(self.get('throat.all'))[0]
         else:
             #convert string to list, if necessary
@@ -1194,11 +1189,11 @@ class Core(dict):
         else:
             raise Exception('Setting locations only applies to Geometry or Physics objects')
 
-        if mode is 'add':
+        if mode == 'add':
             # Check if any constant values exist on the object
             for item in self.props():
                 if (item not in self.models.keys()) or \
-                   (self.models[item]['regen_mode'] is 'constant'):
+                   (self.models[item]['regen_mode'] == 'constant'):
                     raise Exception('Constant properties found on object, cannot increase size')
             # Ensure locations are not already assigned to another object
             temp = sp.zeros((net._count(element), ), dtype=bool)
@@ -1237,7 +1232,7 @@ class Core(dict):
             # Finally, regenerate models to correct the length of all arrays
             self.models.regenerate()
 
-        if mode is 'remove':
+        if mode == 'remove':
             self_inds = boss_obj._map(element=element,
                                       locations=locations,
                                       target=self)

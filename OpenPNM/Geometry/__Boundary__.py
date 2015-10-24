@@ -70,11 +70,11 @@ class Boundary(GenericGeometry):
         self.models.add(propname='throat.length', model=gm.throat_length.straight)
         self['throat.volume'] = 0.0
         self['throat.seed'] = 0.0
-        if shape is 'spheres':
+        if shape == 'spheres':
             self.models.add(propname='throat.area', model=gm.throat_area.cylinder)
             self.models.add(propname='throat.surface_area',
                             model=gm.throat_surface_area.cylinder)
-        elif shape is 'cubes':
+        elif shape == 'cubes':
             self.models.add(propname='throat.area', model=gm.throat_area.cuboid)
             self.models.add(propname='throat.surface_area',
                             model=gm.throat_surface_area.cuboid)

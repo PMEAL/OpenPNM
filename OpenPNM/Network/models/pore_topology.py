@@ -88,11 +88,11 @@ def reduce_coordination(network, z, mode='random', **kwargs):
     T_nums = network.num_neighbors(network.pores())
     # Find protected throats
     T_keep = network.find_neighbor_throats(pores=(T_nums == 1))
-    if mode is 'random':
+    if mode == 'random':
         z_ave = _sp.average(T_nums[T_nums > 1])
         f_trim = (z_ave - z)/z_ave
         T_trim = _sp.rand(network.Nt) < f_trim
         T_trim = T_trim*(~network.tomask(throats=T_keep))
-    if mode is 'max':
+    if mode == 'max':
         pass
     return T_trim

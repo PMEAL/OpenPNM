@@ -37,7 +37,7 @@ def linear(physics, phase, A1='', A2='', x='', return_rate=True, **kwargs):
     the solution would coverge after the first pass anyway.
 
     """
-    if x is '':
+    if x == '':
         X = _sp.ones(physics.Np) * _sp.nan
     else:
         if type(x) == str:
@@ -63,7 +63,7 @@ def linear(physics, phase, A1='', A2='', x='', return_rate=True, **kwargs):
     source_params = [A1, A2]
     for ind in _sp.arange(_sp.size(source_params)):
         A = source_params[ind]
-        if A is '':
+        if A == '':
             a[str(ind+1)] = 0
         else:
             if type(A) == str:
@@ -109,7 +109,7 @@ def power_law(physics, phase, A1='', A2='', A3='', x='',
     -----
 
     """
-    if x is '':
+    if x == '':
         X = _sp.ones(physics.Np) * _sp.nan
     else:
         if type(x) == str:
@@ -135,7 +135,7 @@ def power_law(physics, phase, A1='', A2='', A3='', x='',
     source_params = [A1, A2, A3]
     for ind in _sp.arange(_sp.size(source_params)):
         A = source_params[ind]
-        if A is '':
+        if A == '':
             a[str(ind+1)] = 0
         else:
             if type(A) == str:
@@ -181,7 +181,7 @@ def exponential(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
     -----
 
     """
-    if x is '':
+    if x == '':
         X = _sp.ones(physics.Np) * _sp.nan
     else:
         if type(x) == str:
@@ -207,7 +207,7 @@ def exponential(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
     source_params = [A1, A2, A3, A4, A5, A6]
     for ind in _sp.arange(_sp.size(source_params)):
         A = source_params[ind]
-        if A is '':
+        if A == '':
             if ind == 0:
                 a[str(ind+1)] = 1
             else:
@@ -259,7 +259,7 @@ def natural_exponential(physics, phase, A1='', A2='', A3='', A4='', A5='',
     -----
 
     """
-    if x is '':
+    if x == '':
         X = _sp.ones(physics.Np)*_sp.nan
     else:
         if type(x) == str:
@@ -285,7 +285,7 @@ def natural_exponential(physics, phase, A1='', A2='', A3='', A4='', A5='',
     source_params = [A1, A2, A3, A4, A5]
     for ind in _sp.arange(_sp.size(source_params)):
         A = source_params[ind]
-        if A is '':
+        if A == '':
             if ind == 0:
                 a[str(ind+1)] = 1
             else:
@@ -337,7 +337,7 @@ def logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
     -----
 
     """
-    if x is '':
+    if x == '':
         X = _sp.ones(physics.Np)*_sp.nan
     else:
         if type(x) == str:
@@ -363,7 +363,7 @@ def logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
     source_params = [A1, A2, A3, A4, A5, A6]
     for ind in _sp.arange(_sp.size(source_params)):
         A = source_params[ind]
-        if A is '':
+        if A == '':
             if ind == 0:
                 a[str(ind+1)] = 1
             else:
@@ -418,7 +418,7 @@ def natural_logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='',
     -----
 
     """
-    if x is '':
+    if x == '':
         X = _sp.ones(physics.Np)*_sp.nan
     else:
         if type(x) == str:
@@ -445,7 +445,7 @@ def natural_logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='',
     source_params = [A1, A2, A3, A4, A5]
     for ind in _sp.arange(_sp.size(source_params)):
         A = source_params[ind]
-        if A is '':
+        if A == '':
             if ind == 0:
                 a[str(ind+1)] = 1
             else:

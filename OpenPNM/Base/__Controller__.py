@@ -168,7 +168,7 @@ class Controller(dict):
         >>> 'pore.' + geom.name in pn.keys()
         False
         """
-        if mode is 'complete':
+        if mode == 'complete':
             if obj._net is None:
                 net = obj
             else:
@@ -176,7 +176,7 @@ class Controller(dict):
             for item in net.geometries() + net.phases() + net.physics():
                 blank = self.pop(item, None)
             del self[net.name]
-        elif mode is 'single':
+        elif mode == 'single':
             name = obj.name
             for item in list(self.keys()):
                 # Remove label arrays from all other objects
@@ -271,7 +271,7 @@ class Controller(dict):
         filename : string, optional
             If no filename is given the name of the Network is used
         """
-        if filename is '':
+        if filename == '':
             filename = network.name
         else:
             filename = filename.rstrip('.net')
@@ -323,7 +323,7 @@ class Controller(dict):
             #=> True
 
         """
-        if filename is '':
+        if filename == '':
             from datetime import datetime
             i = datetime.now()
             filename = i.strftime('%Y-%m-%d_%H-%M-%S')
@@ -384,11 +384,11 @@ class Controller(dict):
                 raise Exception('Multiple Networks found, please specify \
                                 which to export')
         import OpenPNM.Utilities.IO as io
-        if fileformat is 'VTK':
+        if fileformat == 'VTK':
             phases = network._phases
             io.VTK.save(filename=filename, network=network, phases=phases)
             return
-        if fileformat is 'MAT':
+        if fileformat == 'MAT':
             phases = network._phases
             io.MAT.save(filename=filename, network=network, phases=phases)
             return
@@ -407,11 +407,11 @@ class Controller(dict):
             default is 'archive'.
         """
         filename = filename.split('.')[0]+'.py'
-        if mode is 'archive':
+        if mode == 'archive':
             with open(filename, 'rb') as read_file:
                 contents = read_file.read()
             self._script = contents
-        if mode is 'retrieve':
+        if mode == 'retrieve':
             with open(filename, 'wb') as write_file:
                 write_file.write(self._script)
 

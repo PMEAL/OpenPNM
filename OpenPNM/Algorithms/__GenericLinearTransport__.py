@@ -158,7 +158,7 @@ class GenericLinearTransport(GenericAlgorithm):
                 except ValueError:
                     pass
 
-                if mode is 'remove':
+                if mode == 'remove':
                     s_mode = ['linear', 'nonlinear']
                     if pores is None:
                         try:
@@ -231,7 +231,7 @@ class GenericLinearTransport(GenericAlgorithm):
                                             'converted to float!')
 
                     if ('pore.source_' + prop not in self.labels() or
-                            mode is 'overwrite'):
+                            mode == 'overwrite'):
                         self['pore.source_' + prop] = sp.zeros((self.Np,),
                                                                dtype=bool)
                         temp_arr = sp.ones((self.Np,), dtype=float) * sp.nan
@@ -256,7 +256,7 @@ class GenericLinearTransport(GenericAlgorithm):
                         phys.models[source_name]['regen_mode'] = regen_mode
                         map_pores = phys.map_pores()
                         loc = pores[sp.in1d(pores, map_pores)]
-                        if mode is 'merge':
+                        if mode == 'merge':
                             try:
                                 spore = self.pores('source_' + prop)
                                 if sp.sum(sp.in1d(loc, spore)) > 0:
@@ -356,9 +356,9 @@ class GenericLinearTransport(GenericAlgorithm):
             if tol is None:
                 tol = 1e-20
             params['tol'] = tol
-            if self._iterative_solver is 'cg':
+            if self._iterative_solver == 'cg':
                 result = sprslin.cg(A, b, **params)
-            elif self._iterative_solver is 'gmres':
+            elif self._iterative_solver == 'gmres':
                 result = sprslin.gmres(A, b, **params)
             X = result[0]
             self._iterative_solver_info = result[1]
@@ -473,7 +473,7 @@ class GenericLinearTransport(GenericAlgorithm):
         r"""
         This builds the sparse coefficient matrix for the linear solver.
         """
-        if mode is 'overwrite':
+        if mode == 'overwrite':
             # Filling coefficient matrix
             tpore1 = self._net['throat.conns'][:, 0]
             tpore2 = self._net['throat.conns'][:, 1]
@@ -580,7 +580,7 @@ class GenericLinearTransport(GenericAlgorithm):
                     raise Exception('Provided data and pores for modifying '
                                     'coefficient matrix should have the same' +
                                     ' size!')
-                if mode is 'overwrite':
+                if mode == 'overwrite':
                     self._diagonal_vals = diagonal_vals
             data = sp.append(self._non_source_data,
                              diagonal_vals[self._non_Dir_diag])
@@ -600,7 +600,7 @@ class GenericLinearTransport(GenericAlgorithm):
         This builds the right-hand-side matrix for the linear solver.
         """
 
-        if mode is 'overwrite':
+        if mode == 'overwrite':
             A_dim = self._coeff_dimension
             b = sp.zeros([A_dim, 1])
             try:
@@ -627,7 +627,7 @@ class GenericLinearTransport(GenericAlgorithm):
                 b[NG_loc] = sp.reshape(NG_arr, [NG_l, 1])
             except KeyError:
                 pass
-        if mode is 'modify_RHS':
+        if mode == 'modify_RHS':
             b = sp.copy(self.b)
         if mode in ['overwrite', 'modify_RHS']:
             # Adding necessary terms to the RHS for non-Dirichlet pores
@@ -680,19 +680,19 @@ class GenericLinearTransport(GenericAlgorithm):
             X_value = self[self._quantity]
         pores = sp.array(pores, ndmin=1)
         R = []
-        if mode is 'group':
+        if mode == 'group':
             t = network.find_neighbor_throats(pores, flatten=True,
                                               mode='not_intersection')
             throat_group_num = 1
-        elif mode is 'single':
+        elif mode == 'single':
             t = network.find_neighbor_throats(pores, flatten=False,
                                               mode='not_intersection')
             throat_group_num = sp.size(t)
         for i in sp.r_[0: throat_group_num]:
-            if mode is 'group':
+            if mode == 'group':
                 throats = t
                 P = pores
-            elif mode is 'single':
+            elif mode == 'single':
                 throats = t[i]
                 P = pores[i]
             p1 = network.find_connected_pores(throats)[:, 0]
