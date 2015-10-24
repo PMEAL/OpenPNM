@@ -672,6 +672,7 @@ class GenericNetwork(Core):
 
     def _site_percolation(self, pmask):
         r"""
+        This private method is called by 'find_clusters2'
         """
         # Find throats that produce site percolation
         conns = sp.copy(self['throat.conns'])
@@ -702,6 +703,7 @@ class GenericNetwork(Core):
 
     def _bond_percolation(self, tmask):
         r"""
+        This private method is called by 'find_clusters2'
         """
         # Perform the clustering using scipy.csgraph
         csr = self.create_adjacency_matrix(data=tmask,
@@ -732,11 +734,15 @@ class GenericNetwork(Core):
         pores : array_like
             The list of pores for whom nearby neighbors are to be found
         distance : scalar
-            The maximum distance within which the nearby should be found
+            The maximum distance within which the search should be performed
         excl_self : bool
             Controls whether the input pores should be included in the returned
             list.  The default is True which means they are not included.
-        flatten :
+        flatten : bool
+            If true returns a single list of all pores that match the criteria,
+            otherwise returns an array containing a sub-array for each input
+            pore, where each sub-array contains the pores that are nearby to
+            each given input pore.  The default is False.
 
         Returns
         -------
