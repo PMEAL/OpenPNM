@@ -39,13 +39,13 @@ def neighbor(network, geometry, throat_prop='', mode='min', **kwargs):
                                                flatten=False,
                                                mode='intersection')
     values = _sp.ones((_sp.shape(Ps)[0],))*_sp.nan
-    if mode == 'min':
+    if mode is 'min':
         for pore in Ps:
             values[pore] = _sp.amin(data[neighborTs[pore]])
-    if mode == 'max':
+    if mode is 'max':
         for pore in Ps:
             values[pore] = _sp.amax(data[neighborTs[pore]])
-    if mode == 'mean':
+    if mode is 'mean':
         for pore in Ps:
             values[pore] = _sp.mean(data[neighborTs[pore]])
     return values

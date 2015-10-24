@@ -83,7 +83,7 @@ class DelaunayCubic(Delaunay):
         "   0   0   0   "
         " 0   0   0   0 "
         "   0   0   0   "
-        if self._arrangement == 'O':
+        if self._arrangement is 'O':
             shift_y = np.array([0, 0.25, 0])
             shift_x = np.array([0.25, 0, 0])
             points[(points[:, 0] % 2 == 0)] -= shift_y
@@ -91,7 +91,7 @@ class DelaunayCubic(Delaunay):
             points[(points[:, 0] % 2 != 0)] += shift_y
             points[(points[:, 2] % 2 == 0)] += shift_x
         # BCC = Body Centre Cubic
-        if self._arrangement == 'BCC':
+        if self._arrangement is 'BCC':
             body_points = []
             for i in range(1, self._shape[0]):
                 for j in range(1, self._shape[1]):
@@ -101,7 +101,7 @@ class DelaunayCubic(Delaunay):
             points = np.concatenate((points, body_points))
 
         # FCC = Face Centre Cubic
-        if self._arrangement == 'FCC':
+        if self._arrangement is 'FCC':
             face_points = []
             for i in range(1, self._shape[0]):
                 for j in range(1, self._shape[1]):

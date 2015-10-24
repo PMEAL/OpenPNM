@@ -198,21 +198,21 @@ class ModelsDict(OrderedDict):
 
         master = self._find_master()
         # If empty, assume all models are to be regenerated
-        if props == '':
+        if props is '':
             props = list(self.keys())
             # Remove models if they are meant to be regenerated 'on_demand' only
             for item in props:
-                if self[item]['regen_mode'] == 'on_demand':
+                if self[item]['regen_mode'] is 'on_demand':
                     props.remove(item)
         elif type(props) == str:
             props = [props]
-        if mode == 'exclude':
+        if mode is 'exclude':
             temp = list(self.keys())
             for item in props:
                 temp.remove(item)
             props = temp
         for item in list(self.keys()):
-            if self[item]['regen_mode'] == 'constant':
+            if self[item]['regen_mode'] is 'constant':
                 props.remove(item)
         logger.info('Models are being recalculated in the following order: ')
         count = 0

@@ -36,7 +36,7 @@ class GenericNetwork(Core):
         self._adjacency_matrix = {}
 
     def __setitem__(self, prop, value):
-        if prop == 'throat.conns':
+        if prop is 'throat.conns':
             if sp.shape(value)[1] != 2:
                 logger.error('Wrong size for throat conns!')
             else:
@@ -143,11 +143,11 @@ class GenericNetwork(Core):
         temp = sprs.coo_matrix((data, (row, col)), (self.Np, self.Np))
 
         # Convert to requested format
-        if sprsfmt == 'coo':
+        if sprsfmt is 'coo':
             pass  # temp is already in coo format
-        if sprsfmt == 'csr':
+        if sprsfmt is 'csr':
             temp = temp.tocsr()
-        if sprsfmt == 'lil':
+        if sprsfmt is 'lil':
             temp = temp.tolil()
         logger.debug('create_adjacency_matrix: End of method')
         return temp
@@ -212,11 +212,11 @@ class GenericNetwork(Core):
         temp = sprs.coo.coo_matrix((data, (row, col)), (self.Np, self.Nt))
 
         # Convert to requested format
-        if sprsfmt == 'coo':
+        if sprsfmt is 'coo':
             pass  # temp is already in coo format
-        if sprsfmt == 'csr':
+        if sprsfmt is 'csr':
             temp = temp.tocsr()
-        if sprsfmt == 'lil':
+        if sprsfmt is 'lil':
             temp = temp.tolil()
         logger.debug('create_incidence_matrix: End of method')
         return temp
