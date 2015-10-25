@@ -588,7 +588,7 @@ def clip_matrix(left, right, bottom, top, near, far, perspective=False):
     return numpy.array(M)
 
 
-#def shear_matrix(angle, direction, point, normal):
+# def shear_matrix(angle, direction, point, normal):
 #    """Return matrix to shear by angle along direction vector on shear plane.
 #
 #    The shear plane is defined by a point and normal vector. The direction
@@ -619,7 +619,7 @@ def clip_matrix(left, right, bottom, top, near, far, perspective=False):
 #    return M
 
 
-#def shear_from_matrix(matrix):
+# def shear_from_matrix(matrix):
 #    """Return shear angle, direction and plane from shear matrix.
 #
 #    >>> angle = (numpy.random.random() - 0.5) * 4*math.pi
