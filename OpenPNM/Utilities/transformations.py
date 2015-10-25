@@ -135,47 +135,6 @@ References
 (16) Column Vectors vs. Row Vectors.
      http://steve.hollasch.net/cgindex/math/matrix/column-vec.html
 
-Examples
---------
->>> alpha, beta, gamma = 0.123, -1.234, 2.345
->>> origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
->>> I = identity_matrix()
->>> Rx = rotation_matrix(alpha, xaxis)
->>> Ry = rotation_matrix(beta, yaxis)
->>> Rz = rotation_matrix(gamma, zaxis)
->>> R = concatenate_matrices(Rx, Ry, Rz)
->>> euler = euler_from_matrix(R, 'rxyz')
->>> numpy.allclose([alpha, beta, gamma], euler)
-True
->>> Re = euler_matrix(alpha, beta, gamma, 'rxyz')
->>> is_same_transform(R, Re)
-True
->>> al, be, ga = euler_from_matrix(Re, 'rxyz')
->>> is_same_transform(Re, euler_matrix(al, be, ga, 'rxyz'))
-True
->>> qx = quaternion_about_axis(alpha, xaxis)
->>> qy = quaternion_about_axis(beta, yaxis)
->>> qz = quaternion_about_axis(gamma, zaxis)
->>> q = quaternion_multiply(qx, qy)
->>> q = quaternion_multiply(q, qz)
->>> Rq = quaternion_matrix(q)
->>> is_same_transform(R, Rq)
-True
->>> numpy.allclose(trans, [1, 2, 3])
-True
->>> numpy.allclose(shear, [0, math.tan(beta), 0])
-True
->>> is_same_transform(R, euler_matrix(axes='sxyz', *angles))
-True
->>> M1 = compose_matrix(scale, shear, angles, trans, persp)
->>> is_same_transform(M, M1)
-True
->>> v0, v1 = random_vector(3), random_vector(3)
->>> M = rotation_matrix(angle_between_vectors(v0, v1), vector_product(v0, v1))
->>> v2 = numpy.dot(v0, M[:3,:3].T)
->>> numpy.allclose(unit_vector(v1), unit_vector(v2))
-True
-
 """
 
 from __future__ import division, print_function
