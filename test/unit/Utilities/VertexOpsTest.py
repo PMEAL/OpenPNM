@@ -49,8 +49,8 @@ class VertexOpsTest:
                       sp.ones([self.geo.num_pores(), 3])) == 0.0
         self.net['pore.coords'] = temp_coords
 
-    def test_plot_pore(self):
-        vo.plot_pore(self.geo, self.geo.pores())
+    # def test_plot_pore(self):
+    #    vo.plot_pore(self.geo, self.geo.pores())
 
-    def test_plot_throat(self):
-        vo.plot_throat(self.geo, [1, 2, 3, 4])
+    # def test_plot_throat(self):
+    #    vo.plot_throat(self.geo, [1, 2, 3, 4])
