@@ -262,43 +262,50 @@ class GenericNetwork(Core):
 
     def find_connecting_throat(self, P1, P2):
         r"""
-        Return the throat number connecting pairs of pores
+        Find the throat number connecting pairs of pores
 
         Parameters
         ----------
         P1 , P2 : array_like
             The pore numbers whose throats are sought.  These can be vectors
-            of pore numbers, but must be the same length
+            of pore numbers, but must be the same length.
 
         Returns
         -------
-        Tnum : list of list of int
-            Returns throat number(s), or empty array if pores are not connected
+        Tnum : array of throat numbers
+            Returns throat number(s), or empty list if pores are not connected
+
+        Notes
+        -----
+        In future this should be changed to return a tuple containing indices
+        into the input pores and corresponding throat number.  In terms of the
+        example below is should return (array([1]), array([3])).  This would
+        avoid the ugly array of empty lists for non-connected pores.
 
         Examples
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
-        [[], [3], []]
+        array([[], 3, []], dtype=object)
 
-        TODO: This now works on 'vector' inputs, but is not actually vectorized
-        in the Numpy sense, so could be slow with large P1,P2 inputs
         """
         P1 = sp.array(P1, ndmin=1)
         P2 = sp.array(P2, ndmin=1)
-        Ts1 = self.find_neighbor_throats(P1, flatten=False)
-        Ts2 = self.find_neighbor_throats(P2, flatten=False)
-        Ts = []
-
-        for row in range(0, len(P1)):
-            if P1[row] == P2[row]:
-                throat = []
-            else:
-                throat = sp.intersect1d(Ts1[row], Ts2[row]).tolist()
-            Ts.insert(0, throat)
-        Ts.reverse()
-        return Ts
+        if sp.size(P1) != sp.size(P2):
+            raise Exception('Inlet pore lists P1 and P2 must be same length')
+        P1P2 = sp.vstack((P1, P2)).T
+        jP1P2 = P1P2[:, 0] + 1j*P1P2[:, 1]
+        Ps = sp.unique(sp.hstack([P1, P2]))
+        Ts = self.find_neighbor_throats(Ps, flatten=True, mode='intersection')
+        P12 = self.find_connected_pores(Ts)
+        jP12 = P12[:, 0] + 1j*P12[:, 1]
+        hits = sp.in1d(jP1P2, jP12)
+        Tpairs = -sp.ones(sp.shape(P1), dtype=int)
+        Tpairs[hits] = Ts[hits]
+        Tpairs = sp.array(Tpairs, dtype=object)
+        Tpairs[sp.where(~hits)[0]] = [[]]
+        return Tpairs
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True, excl_self=True):
         r"""
