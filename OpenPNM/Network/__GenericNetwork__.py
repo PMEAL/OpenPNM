@@ -300,6 +300,32 @@ class GenericNetwork(Core):
         Ts.reverse()
         return Ts
 
+    def find_connecting_throats(self, Ps, get_path=False):
+        r"""
+        Find the throat number connecting two given pores, or optionally, if
+        pores are not directly connected it returns a list of throats that
+        defines the shortest path between them.
+
+        Parameters
+        ----------
+        Ps : array_like
+            A N x 2 array of pore numbers, with each row containing the pair of
+            pore numbers for which the connecting throat is desired.
+
+        get_path : boolean (default is False)
+            If this is True then the shortest path between unconnected pairs
+            of pores is returned.
+
+        Returns
+        -------
+        A tuple containing indices into the input pore list and corresponding
+        throat number.  Pore pairs that are not directly connected are omitted
+        from the returned tuple.  If get_path is True then the shortest path
+        of connecting throats is
+
+        """
+        Ps = sp.array(Ps, ndmin=2)
+
     def find_neighbor_pores(self, pores, mode='union', flatten=True, excl_self=True):
         r"""
         Returns a list of pores neighboring the given pore(s)
