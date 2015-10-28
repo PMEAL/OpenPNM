@@ -68,7 +68,7 @@ class topology(object):
                 else:
                     N = Nt
                 if network[item].dtype == bool:
-                    temp = network[item]
+                    temp = _sp.where(network[item])[0]
                     network[item] = _sp.zeros((N,), dtype=bool)
                     network[item][temp] = True
                 elif network[item].dtype == object:
