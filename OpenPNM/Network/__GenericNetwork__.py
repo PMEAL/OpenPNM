@@ -300,17 +300,17 @@ class GenericNetwork(Core):
         Ts.reverse()
         return Ts
 
-    def find_connecting_throats(self, Ps, get_path=False):
+    def find_connecting_throats(self, pore_pairs, get_path=False):
         r"""
         Find the throat number connecting two given pores, or optionally, if
-        pores are not directly connected it returns a list of throats that
-        defines the shortest path between them.
+        pores are not directly connected find the list of throats that
+        define the shortest path between them.
 
         Parameters
         ----------
-        Ps : array_like
+        pore_pairs : array_like
             A N x 2 array of pore numbers, with each row containing the pair of
-            pore numbers for which the connecting throat is desired.
+            pores for which the connecting throat is desired.
 
         get_path : boolean (default is False)
             If this is True then the shortest path between unconnected pairs
@@ -318,13 +318,26 @@ class GenericNetwork(Core):
 
         Returns
         -------
-        A tuple containing indices into the input pore list and corresponding
-        throat number.  Pore pairs that are not directly connected are omitted
-        from the returned tuple.  If get_path is True then the shortest path
-        of connecting throats is
+        An 1D array with each elemen
 
         """
-        Ps = sp.array(Ps, ndmin=2)
+        Ps = sp.array(pore_pairs, ndmin=2)
+        graph = self.create_adjacency_matrix(sprsfmt='csr')
+        paths = sprs.csgraph.dijkstra(csgraph=graph,
+                                      indices=Ps[:, 0],
+                                      return_predecessors=True)[1]
+        result = sp.ndarray((sp.shape(Ps)[0], ), dtype=object)
+        for row in range(0, sp.shape(Ps)[0]):
+            j = Ps[row][1]
+            ans = [Ps[row][0]]
+            while paths[row][j] > -9999:
+                ans.append(j)
+                j = paths[row][j]
+            Ts = self.find_neighbor_throats(pores=ans, mode='intersection')
+            if (sp.size(Ts) > 1) and (get_path is False):
+                Ts = sp.array([], dtype=int)
+            result[row] = Ts
+        return result
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True, excl_self=True):
         r"""
