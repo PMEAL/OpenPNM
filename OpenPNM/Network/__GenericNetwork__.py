@@ -249,6 +249,12 @@ class GenericNetwork(Core):
                [0, 5]])
         >>> pn.find_connected_pores(throats=[0,1], flatten=True)
         array([0, 1, 5])
+
+        Notes
+        -----
+        This method basically just looks into the pn['throat.conns'] array and
+        retrieves the pores for each input throat.  The flatten option merely
+        stacks the two columns and eliminate non-unique values.
         """
         Ts = sp.array(throats, ndmin=1)
         if Ts.dtype == bool:
@@ -318,7 +324,17 @@ class GenericNetwork(Core):
 
         Returns
         -------
-        An 1D array with each elemen
+        An 1D array with each element contain the list of throats that form the
+        shortest path between each pair of pores.  If get_path is False, then '
+        an empty array is return for pore pairs that are not direct neighbors.
+
+        Notes
+        -----
+        The shortest path is found using Dijkstra's algorithm
+
+        See Also
+        --------
+        find_connecting_pores
 
         """
         Ps = sp.array(pore_pairs, ndmin=2)
@@ -338,6 +354,13 @@ class GenericNetwork(Core):
                 Ts = sp.array([], dtype=int)
             result[row] = Ts
         return result
+
+    def find_connecting_pores(self, pore_pairs):
+        r"""
+        """
+        Ps = sp.array(pore_pairs, ndmin=2)
+        path = self.find_connecting_throats(pore_pairs=Ps, get_path=True)
+#        for row in range(sp.shape(pore_pairs))
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True, excl_self=True):
         r"""
