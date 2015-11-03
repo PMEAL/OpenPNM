@@ -110,7 +110,7 @@ class GenericNetworkTest:
     def test_find_path_with_weights(self):
         w = sp.ones_like(self.net.Ts)
         w[0] = self.net.Nt + 1
-        a = self.find_path(([0, 1]), weights=w)
+        a = self.net.find_path(([0, 1]), weights=w)
         assert len(a['pores'][0]) > 2
         assert len(a['throats'][0]) > 1
 

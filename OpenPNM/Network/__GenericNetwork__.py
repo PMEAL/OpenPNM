@@ -339,9 +339,6 @@ class GenericNetwork(Core):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
-        >>> a = pn.find_path([0, 1])
-        >>> a
-        {'pores': [array([1, 0])], 'throats': [array([0])]}
         >>> a = pn.find_path([[0, 4], [0, 10]])
         >>> a['pores']
         [array([0, 1, 4]), array([ 0,  1, 10])]
