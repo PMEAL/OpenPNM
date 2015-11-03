@@ -358,9 +358,22 @@ class GenericNetwork(Core):
     def find_connecting_pores(self, pore_pairs):
         r"""
         """
+
         Ps = sp.array(pore_pairs, ndmin=2)
-        path = self.find_connecting_throats(pore_pairs=Ps, get_path=True)
-#        for row in range(sp.shape(pore_pairs))
+        graph = self.create_adjacency_matrix(sprsfmt='csr')
+        paths = sprs.csgraph.dijkstra(csgraph=graph,
+                                      indices=Ps[:, 0],
+                                      return_predecessors=True)[1]
+        result = sp.ndarray((sp.shape(Ps)[0], ), dtype=object)
+        for row in range(0, sp.shape(Ps)[0]):
+            j = Ps[row][1]
+            ans = []
+            while paths[row][j] > -9999:
+                ans.append(j)
+                j = paths[row][j]
+            ans.append(Ps[row][0])
+            result[row] = ans
+        return result
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True, excl_self=True):
         r"""
