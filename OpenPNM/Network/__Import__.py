@@ -18,8 +18,6 @@ class Import(GenericNetwork):
     """
     def __init__(self, file, **kwargs):
         super().__init__(**kwargs)
-        if type(file) is str:
-            pass
         rarr = sp.recfromcsv(file)
         try:
             Nt = len(rarr['throat_conns'])
@@ -42,9 +40,17 @@ class Import(GenericNetwork):
         # Now parse through all the other items
         for item in items:
             element = item.split('_')[0]
+            N = self._count(element)
             prop = item.split('_')[1]
             data = rarr[item]
             if data.dtype.char == 'S':
-                print('not sure how to deal with this yet')
-            else:
-                self.update({element+'.'+prop: data[0:self._count(element)]})
+                # If array contains some form or True and False
+                if data[0].decode().upper()[0] in ['T', 'F']:
+                    data = sp.chararray.decode(data)
+                    data = sp.chararray.upper(data)
+                    ind = sp.where(data == 'T')[0]
+                    data = sp.zeros((N,), dtype=bool)
+                    data[ind] = True
+                else:  # If data is an array of lists
+                    data = sp.array([list(sp.fromstring(rarr[item][i], sep=' ')) for i in range(N)])
+            self.update({element+'.'+prop: data[0:N]})
