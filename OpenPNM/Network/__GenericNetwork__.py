@@ -306,65 +306,57 @@ class GenericNetwork(Core):
         Ts.reverse()
         return Ts
 
-    def find_connecting_throats(self, pore_pairs, get_path=False):
+    def find_path(self, pore_pairs, weights=None):
         r"""
-        Find the throat number connecting two given pores, or optionally, if
-        pores are not directly connected find the list of throats that
-        define the shortest path between them.
+        Find the shortest path between pairs of pores.
 
         Parameters
         ----------
         pore_pairs : array_like
-            A N x 2 array of pore numbers, with each row containing the pair of
-            pores for which the connecting throat is desired.
+            An N x 2 array containing N pairs of pores for which the shortest
+            path is sought.
 
-        get_path : boolean (default is False)
-            If this is True then the shortest path between unconnected pairs
-            of pores is returned.
+        weights : array_like, optional
+            An Nt-long list of throat weights for the search.  Typically this
+            would be the throat lengths, but could also be used to represent
+            the phase configuration.  If no weights are given then the
+            standard topological connections of the Network are used.
 
         Returns
         -------
-        An 1D array with each element contain the list of throats that form the
-        shortest path between each pair of pores.  If get_path is False, then '
-        an empty array is return for pore pairs that are not direct neighbors.
+        A dictionary containing both the pores and throats that define the
+        shortest path connecting each pair of input pores.
 
         Notes
         -----
-        The shortest path is found using Dijkstra's algorithm
+        The shortest path is found using Dijkstra's algorithm included in the
+        scipy.sparse.csgraph module
 
-        See Also
+        TODO: The returned throat path contains the correct values, but not
+        necessarily in the true order
+
+        Examples
         --------
-        find_connecting_pores
-
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        >>> a = pn.find_path([0, 1])
+        >>> a
+        {'pores': [array([1, 0])], 'throats': [array([0])]}
+        >>> a = pn.find_path([[0, 4], [0, 10]])
+        >>> a['pores']
+        [array([0, 1, 4]), array([ 0,  1, 10])]
+        >>> a['throats']
+        [array([ 0, 19]), array([ 0, 37])]
         """
         Ps = sp.array(pore_pairs, ndmin=2)
-        graph = self.create_adjacency_matrix(sprsfmt='csr')
+        if weights is None:
+            weights = sp.ones_like(self.Ts)
+        graph = self.create_adjacency_matrix(data=weights, sprsfmt='csr')
         paths = sprs.csgraph.dijkstra(csgraph=graph,
                                       indices=Ps[:, 0],
                                       return_predecessors=True)[1]
-        result = sp.ndarray((sp.shape(Ps)[0], ), dtype=object)
-        for row in range(0, sp.shape(Ps)[0]):
-            j = Ps[row][1]
-            ans = [Ps[row][0]]
-            while paths[row][j] > -9999:
-                ans.append(j)
-                j = paths[row][j]
-            Ts = self.find_neighbor_throats(pores=ans, mode='intersection')
-            if (sp.size(Ts) > 1) and (get_path is False):
-                Ts = sp.array([], dtype=int)
-            result[row] = Ts
-        return result
-
-    def find_connecting_pores(self, pore_pairs):
-        r"""
-        """
-
-        Ps = sp.array(pore_pairs, ndmin=2)
-        graph = self.create_adjacency_matrix(sprsfmt='csr')
-        paths = sprs.csgraph.dijkstra(csgraph=graph,
-                                      indices=Ps[:, 0],
-                                      return_predecessors=True)[1]
-        result = sp.ndarray((sp.shape(Ps)[0], ), dtype=object)
+        pores = []
+        throats = []
         for row in range(0, sp.shape(Ps)[0]):
             j = Ps[row][1]
             ans = []
@@ -372,8 +364,12 @@ class GenericNetwork(Core):
                 ans.append(j)
                 j = paths[row][j]
             ans.append(Ps[row][0])
-            result[row] = ans
-        return result
+            ans.reverse()
+            pores.append(sp.array(ans))
+            throats.append(self.find_neighbor_throats(pores=ans,
+                                                      mode='intersection'))
+        dict_ = Tools.PrintableDict({'pores': pores, 'throats': throats})
+        return dict_
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True, excl_self=True):
         r"""
