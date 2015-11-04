@@ -1522,11 +1522,17 @@ class Core(dict):
         props = self.props()
         props.sort()
         for i, item in enumerate(props):
-            if self[item].dtype != object:
-                prop = item
-                if len(prop) > 35:
-                    prop = prop[0:32] + '...'
-                required = self._count(item.split('.')[0])
+            prop = item
+            required = self._count(item.split('.')[0])
+            if len(prop) > 35:  # Trim overly long prop names
+                prop = prop[0:32] + '...'
+            if self[item].dtype == object:  # Print objects differently
+                defined = sp.size(self[item])
+                lines.append("{0:<5d} {1:<35s} {2:>5d} / {3:<5d}".format(i + 1,
+                                                                         prop,
+                                                                         defined,
+                                                                         required))
+            else:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] - a.sum(axis=0,
                                                           keepdims=(a.ndim-1)==0)[0]

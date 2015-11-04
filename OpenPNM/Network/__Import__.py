@@ -44,13 +44,13 @@ class Import(GenericNetwork):
             prop = item.split('_')[1]
             data = rarr[item]
             if data.dtype.char == 'S':
-                # If array contains some form or True and False
-                if data[0].decode().upper()[0] in ['T', 'F']:
+                if data[0].decode().upper()[0] in ['T', 'F']: # If data is True and False
                     data = sp.chararray.decode(data)
                     data = sp.chararray.upper(data)
                     ind = sp.where(data == 'T')[0]
                     data = sp.zeros((N,), dtype=bool)
                     data[ind] = True
                 else:  # If data is an array of lists
-                    data = sp.array([list(sp.fromstring(rarr[item][i], sep=' ')) for i in range(N)])
+                    data = [list(sp.fromstring(rarr[item][i], sep=' ')) for i in range(N)]
+                    data = sp.array(data)
             self.update({element+'.'+prop: data[0:N]})
