@@ -19,6 +19,7 @@ before_install:
 # build wheel only if none present
 - travis_wait pip wheel --find-links=$HOME/.cache/pip/wheels --use-wheel --wheel-dir=$HOME/.cache/pip/wheels scipy
 # now install from it
+- pip install --upgrade pip
 - pip install --no-index --find-links=$HOME/.cache/pip/wheels scipy
 
 install:
