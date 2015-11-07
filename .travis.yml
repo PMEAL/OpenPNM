@@ -3,16 +3,14 @@ language: python
 sudo: false
 
 python:
-- '3.3'
 - '3.4'
 
 addons:
   apt:
     packages:
-      - python-numpy
-      - python-scipy
-      - python-pip
-      - python-virtualenv
+      - python3-numpy
+      - python3-scipy
+      - python3-matplotlib
 
 before_install:
 - export DISPLAY=:99.0
