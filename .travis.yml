@@ -8,7 +8,9 @@ python:
 addons:
   apt:
     packages:
-      - python3-matplotlib
+    - python3-matplotlib
+    - libatlas-base-dev
+    - gfortran
 
 before_install:
 - export DISPLAY=:99.0
