@@ -209,6 +209,57 @@ class Cubic(GenericNetwork):
             coords = coords*scale[label] + offset[label]
             self['pore.coords'][ind] = coords
 
+    def add_boundaries2(self, pores, offset, apply_label=None):
+        r"""
+        This method uses ``clone_pores`` to clone the input pores, then shifts
+        them the specified amount and direction, then applies the given label.
+
+        Parameters
+        ----------
+        pores : array_like
+            List of pores to offset.  If no pores are specified, then it
+            assumes that all surface pores are to be cloned.
+
+        offset : 3 x 1 array
+            The distance in vector form which the cloned boundary pores should
+            be offset.  If no spacing is provided, then the spacing is inferred
+            from the Network.
+
+        apply_label : string
+            This label is applied to the boundary pores.  If this labselel is not
+            given they all labels currently applied to the input pores are
+            cloned but '_boundary' is appended ('except for ``all``).
+        """
+        # Parse the input pores
+        Ps = sp.array(pores, ndmin=1)
+        if Ps.dtype is bool:
+            Ps = self.toindices(Ps)
+        if sp.size(pores) == 0:  # Handle an empty array if given
+            return sp.array([], dtype=sp.int64)
+        # Clone the specifed pores
+        self.clone_pores(pores=Ps)
+        del self['pore.clone']
+        # Find throat connections by finding nearby neighbors
+        temp = self.find_nearby_pores(pores=Ps,
+                                      distance=1e-10,
+                                      excl_self=False)
+        newPs = temp[:, 1]
+        # Assign new throat connections
+        self.extend(throat_conns=temp)
+        # Offset the cloned pores
+        self['pore.coords'][newPs] += offset
+        # Apply labels to boundary pores
+        if apply_label is None:
+            labs = self.labels(pores=Ps)
+            labs.remove('pore.all')
+            for item in labs:
+                if item+'_boundary' not in self.keys():
+                    self[item+'_boundary'] = False
+                self[item+'_boundary'][newPs] = self[item][Ps]
+        else:
+            self[apply_label] = False
+            self[apply_label][newPs] = True
+
     def asarray(self, values):
         r"""
         Retreive values as a rectangular array, rather than the OpenPNM list format
