@@ -1,181 +1,189 @@
 .. _getting_started:
 
 ###############################################################################
-Getting Started with OpenPNM
+A Quick Guide to Getting Started with OpenPNM
 ###############################################################################
-The OpenPNM framework is built upon 5 main objects, **Networks**, **Geometries**, **Phases**, **Physics** and **Algorithms**, which are referred to as the **Core** objects.  All of these objects are derived from subclasses of the Python *dictionary*, which is a data storage class similar to a *struct* in C or Matlab.  Using a *dictionary* means that multiple pieces of data can be stored on each object, and accessed by name (i.e. ``obj['pore.diameter']``) which provide easy and direct access to the numerical data.  Each OpenPNM object stores its own data, so the **Network** object stores topological information, **Geometries** store pore and throat size related information, **Phases** store the physical properties of the fluids and solids in the network, **Physics** store pore-scale physics information, and **Algorithms** store the results of simulations and calculations.  
 
 ===============================================================================
-Main Modules
+Building a Cubic Network
 ===============================================================================
 
-1. The `Network`_ object has two main roles.  Firstly, it contains all the topological information about the **Network**, along with methods for querying the topology.  Secondly, **Networks** hold a special position since there can be only ONE network per simulation, so they are essentially the glue that holds the other objects together. The terms **Network** and **Simulation** are used interchangeably.  
+The first thing you must do is import the OpenPNM code so you have access to the functions and methods, so in a blank *.py* file or at the python command line, start by entering the following line:
 
-2. `Geometry`_ objects manage the pore-scale geometrical properties of the **Network** such as pore volume and throat diameter.  A simulation may have multiple **Geometry** objects depending on the problem being modeled.  For instance, a stratified material may have a separate **Geometry** object for each layer if the pore and throat sizes differ between them.  
+.. code-block:: python
 
-3. `Phase`_ objects contain information about the thermophysical properties of the liquids, gases, and solids required in the simulation.  For instance, a **Phase** object for water would possess its temperature, as well as models for calculating its viscosity as a function of temperature (and any other relevant properties).
+	import OpenPNM
+	ctrl = OpenPNM.Base.Controller()
 
-4. `Physics`_ objects contain methods for calculating pores physical and conductance properties which use values from the **Phase** and **Geometry** objects. For instance, the hydraulic conductance of a throat requires knowing the throat diameter and length, as well as the fluid viscosity. 
+The **Controller** object provides high-level oversight to all the simulations existing in memory at any given time.  Its main purpose is saving, loading and export data to files.
 
-5. `Algorithms`_ are the objects that actually use the network properties defined by the above objects.  OpenPNM ships with an assortment of standard Algorithms, but is meant to be extended by users adding custom algorithms.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Initialize the Network Topology
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-The 5 objects listed above interact with each other to create a *Simulation*.  When viewed schematically, these objects interact as shown in the following figure:
+Next, it's time to generate a Network.  This is accomplished by choosing the desired network topology (e.g. cubic), then calling its respective method in OpenPNM with the desired parameters:
 
-.. image:: http://i.imgur.com/jfTpjFs.png
-	
-The vertical and horizontal overlap of these blocks represents the interactions of objects. As indicated, objects that overlap in the vertical dimension act on the same pores and throats, referred to generally as *locations*.  Objects that overlap in horizontal dimension interact with the same **Phase** object. For instance, ``Geometry 1`` overlaps with about half the pores (and throats) in the **Network**, but spans both ``Phase 1`` and ``Phase 2``.  ``Physics 1`` and ``Physics 3`` overlap with the same set of pores and throats as ``Geometry 1``, but each interacts with a different **Phase**.  This is because **Physics** objects require *geometric* information which is independent of the *phase* present in the pores, but it also requires thermophysical property information of the *phase*, hence one **Physics** is required for each **Phase**.  With this picture in mind, the relationships between objects and the flow of responsibility in the simulation as outlined below will hopefully be clear.  
+.. code-block:: python
 
-===============================================================================
-Network
-===============================================================================
-A Cubic Network can be created with:
+	pn = OpenPNM.Network.Cubic(name='net',shape=[10,10,10])
 
->>> import OpenPNM
->>> pn = OpenPNM.Network.Cubic(shape=[3,3,3],spacing=10,name='net1')
->>> print(pn)
-------------------------------------------------------------
-OpenPNM.Network.Cubic: 	net1
-------------------------------------------------------------
-#     Properties                          Valid Values
-------------------------------------------------------------
-1     pore.coords                            27 / 27   
-2     pore.index                             27 / 27   
-3     throat.conns                           54 / 54   
-------------------------------------------------------------
-#     Labels                              Assigned Locations
-------------------------------------------------------------
-1     pore.all                            27        
-2     pore.back                           9         
-3     pore.bottom                         9         
-4     pore.front                          9         
-5     pore.internal                       27        
-6     pore.left                           9         
-7     pore.right                          9         
-8     pore.top                            9         
-9     throat.all                          54        
-------------------------------------------------------------
+This generates a topological network called *pn* which contains pores at the correct spatial positions and connections between the pores according the desired topology, but without boundary pores.  The network can be queried for certain topological information such as:
 
-As can be seen from the print-out of the Network, ``pn`` has 27 pores with 54 throats, 3 *properties* and 9 *labels*.  The labels were applied to this Network by the **Cubic** generator, and they have no special meaning but are useful (with the exception of 'all', but more on this later).  The *'pore.coords'* and *'throat.conns'* properties, however, are absolutely essential as these define the topology and spatial arrangement of the pores and throats.  The **Network** object is explained further in the :ref:`Network Documentation<network>`.
+.. code-block:: python
 
-===============================================================================
-Geometry
-===============================================================================
-The **Network** object has no *pore-scale* geometric information such as *size* and *volume*.  This type of data is managed by **Geometry** objects.  A standard *stick and ball* **Geometry** object can be created with:
+	pn.num_pores()  # 1000
+	pn.num_throats()  # 2700
+	pn.find_neighbor_pores(pores=[1])  # [0,2,11,101]
+	pn.labels(pores=[1])  # ['all','bottom','left']
+	pn.pores(labels = 'bottom')
 
->>> geom = OpenPNM.Geometry.Stick_and_Ball(network=pn,pores=pn.pores('all'),throats=pn.throats('all'))
->>> print(geom)
-------------------------------------------------------------
-#     Properties                          Valid Values
-------------------------------------------------------------
-1     pore.area                              27 / 27   
-2     pore.diameter                          27 / 27   
-3     pore.seed                              27 / 27   
-4     pore.volume                            27 / 27   
-5     throat.area                            54 / 54   
-6     throat.diameter                        54 / 54   
-7     throat.length                          54 / 54   
-8     throat.seed                            54 / 54   
-9     throat.surface_area                    54 / 54   
-10    throat.volume                          54 / 54   
-------------------------------------------------------------
-#     Labels                              Assigned Locations
-------------------------------------------------------------
-1     pore.all                            27        
-2     throat.all                          54        
-------------------------------------------------------------
+This data may also be stored in a variable:
 
-This **Geometry** object contains all the expected pore-scale geometric information.  The *stick_and_ball* subclass is provided with OpenPNM and already contains all the pore scale models pre-selected.  Further details on creating a custom Geometry object are provided in the :ref:`Geometry Documentation<geometry>`.
+.. code-block:: python
 
-The instantiation of this object has a few requirements.  Firstly, it must receive the **Network** (``pn``) object with which it is to be associated.  All **Core** objects have this requirement which allows the **Network** to track all objects that are associated with it (except **Networks** themselves).  Secondly, it must receive a list of pores and throats where it is to apply.  In the above example, ``geom`` applies to *all* pores and throats, but it possible and likely that multiple **Geometry** objects will be applied to the same **Network**.  
+	Ps = pn.pores()
+	Ts = pn.throats()
 
-===============================================================================
-Phase
-===============================================================================
-In any simulation there are usually several fluids whose transport processes are to be simulated.  The thermo-physical properties of each of the fluids are managed by a **Phase** object:
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Initialize and Build a Geometry Object
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
->>> air = OpenPNM.Phases.Air(network=pn,name='air')
->>> print(air)
-------------------------------------------------------------
-#     Properties                          Valid Values
-------------------------------------------------------------
-1     pore.critical_pressure                 27 / 27   
-2     pore.critical_temperature              27 / 27   
-3     pore.diffusivity                       27 / 27   
-4     pore.molar_density                     27 / 27   
-5     pore.molecular_weight                  27 / 27   
-6     pore.pressure                          27 / 27   
-7     pore.temperature                       27 / 27   
-8     pore.viscosity                         27 / 27   
-------------------------------------------------------------
-#     Labels                              Assigned Locations
-------------------------------------------------------------
-1     pore.all                            27        
-2     throat.all                          54        
-------------------------------------------------------------
+The network does not contain any information about pore and throat sizes at this point.  The next step is to create a Geometry object to calculate the desired geometrical properties.
 
-The **Air** subclass is included with OpenPNM and contains all necessary models for calculating each property as a function of the conditions.  Building a custom **Phase** to represent other fluids is outlined in the :ref:`Phases Documentation<phases>`.
+.. code-block:: python
 
-Notice that pores and throats were *not* sent to the initialization of ``air``.  This is because **`Phase** objects exist everywhere.  This might seem counterintuitive in a multiphase simulation where one phase displaces another, but it is much easier to calculate the **Phase** properties everywhere, then separately track where each phase is present and in what amount. 
+	geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps,throats=Ts)  # instantiate geometry object
 
-===============================================================================
-Physics
-===============================================================================
-One of the main aims of pore network modeling is to combine phase properties with geometry sizes to estimate the behavior of a fluid as it moves through the pore space.  The pore-scale physics models required for this are managed by **Physics** objects:
+-------------------------------------------------------------------------------
+Add Desired Methods to Geometry
+-------------------------------------------------------------------------------
 
->>> phys = OpenPNM.Physics.Standard(network=pn,phase=air,geometry=geom)
->>> print(phys)
-------------------------------------------------------------
-OpenPNM.Physics.Standard: 	Standard_SzZPQ
-------------------------------------------------------------
-#     Properties                          Valid Values
-------------------------------------------------------------
-1     throat.diffusive_conductance           54 / 54   
-2     throat.hydraulic_conductance           54 / 54   
-------------------------------------------------------------
-#     Labels                              Assigned Locations
-------------------------------------------------------------
-1     pore.all                            27        
-2     throat.all                          54        
-------------------------------------------------------------
+This freshly instantiated object contains no methods for actual geometry calculations as yet.  A fully functional object is built by adding the desired methods.  For example, the most basic type of geometry is the so-called 'stick and ball' model, where pores are treated as spheres and throats as cylinders.  Furthermore, it is common to assign pore sizes without regard for spatial correlation, but then to assign throat sizes based on the size of the pores it connects.  This is accomplished by choosing the desired models for each property, then adding them to the geometry object.
 
-The *Standard* **Physics** object is a special subclass included with OpenPNM.  It uses the *standard* pore-scale physics models such as the *Hagen-Poiseuille* model for viscous pressure loss and the *Washburn* equation for capillarity.  Further details on creating custom **Physics** objects are provided in the :ref:`Physics Documentation<physics>`.
+The first step is to load the Geometry model library.
 
-The **Physics** object requires several arguments in its instantiation.  Like all other **Core** objects, it requires a **Network** object with which it is to be associated.  It also requires the **Phase** to which it applies.  This enables it to ask ``air`` for viscosity values when calculating hydraulic conductance, for example.  Finally, it requires the **Geometry** where the **Physics** should apply (i.e. ``geom``).  The ``geom`` was assigned to pores and/or throats when it was created, so this information is adopted by the ``phys``.
+.. code-block:: python
 
-===============================================================================
-Algorithms
-===============================================================================
-The final step in performing a pore network simulation is to run some algorithms to model transport processes in the network.  OpenPNM comes with numerous algorithms, such as *FickianDiffusion* for modeling diffusion mass transport:
+	import OpenPNM.Geometry.models as gm
 
->>> alg = OpenPNM.Algorithms.FickianDiffusion(network=pn, phase=air)
->>> Ps1 = pn.pores(labels=['top'])
->>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=Ps1)
->>> Ps2 = pn.pores(labels=['bottom'])
->>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=Ps2)
->>> alg.run()
->>> print(alg)
-------------------------------------------------------------
-OpenPNM.Algorithms.FickianDiffusion: 	FickianDiffusion_kr2XO
-------------------------------------------------------------
-#     Properties                          Valid Values
-------------------------------------------------------------
-1     pore.air_bcval_Dirichlet               18 / 27   
-2     pore.air_mole_fraction                 27 / 27   
-3     throat.conductance                     54 / 54   
-------------------------------------------------------------
-#     Labels                              Assigned Locations
-------------------------------------------------------------
-1     pore.air_Dirichlet                  18        
-2     pore.all                            27        
-3     throat.all                          54        
-------------------------------------------------------------
+Then, the different geometry models are added one by one to the object geom.
 
-As can be seen in the above print-out, the **Algorithm** object contains some boundary condition related *properties* and *labels*, but more importantly, it contains *'pore.air_mole_fraction'* which is the result of the *FickianAlgorithm* simulation.  Each algorithm in OpenPNM will produce a different result with a different name, and this data stays encapsulated in the **Algorithm** object unless otherwise desired.  For instance, if the *'pore.air_mole_fraction'* data is required in another **Algorithm**, then it is necessary to write it to ``air`` using:
+.. code-block:: python
 
->>> air['pore.air_mole_fraction'] = alg['pore.air_mole_fraction']
+    geom.add_model(propname='pore.seed',model=gm.pore_misc.random) #begin adding the desired methods to 'geom'
+    geom.add_model(propname='pore.diameter',
+                   model=gm.pore_diameter.sphere,
+                   psd_name='weibull_min',
+                   psd_shape=2.77,
+                   psd_loc=6.9e-7,
+                   psd_scale=9.8e-6,
+                   psd_offset=10e-6)
+    geom.add_model(propname='throat.diameter',model=gm.throat_misc.neighbor,pore_prop='pore.diameter',mode='min')
+    geom.add_model(propname='pore.volume',model=gm.pore_volume.sphere)
+    geom.add_model(propname='pore.area',model=gm.pore_area.spherical)
+    geom.add_model(propname='throat.length',model=gm.throat_length.straight)
+    geom.add_model(propname='throat.volume',model=gm.throat_volume.cylinder)
+    geom.add_model(propname='throat.area',model=gm.throat_area.cylinder)
 
-or 
+Each of the above commands extracts the model, assigns the specified parameters, and attaches the model to the Geometry object.
 
->>> alg.return_results()
+OpenPNM ships with many pre-written models available for each property, but adding custom models and even custom properties is designed to be easy.
 
-More detailed information about **Algorithm** objects can be found in the :ref:`Algorithm Documentation<algorithms>`
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Create Phases
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+At this point the model is now topologically and geometrically complete.  It has pore coordinates, pore and throat sizes and so on.  In order to perform any simulations, however, it is necessary to build Phases objects that e.g. represent the fluids in the simulations.  This is done using the same composition technique used to build the Geometry.  Phases objects are instantiated and attached to the Network as follows:
+
+.. code-block:: python
+
+	air = OpenPNM.Phases.GenericPhase(network=pn,name='air')
+	water = OpenPNM.Phases.GenericPhase(network=pn,name='water')
+
+-------------------------------------------------------------------------------
+Add Desired Methods to Phases
+-------------------------------------------------------------------------------
+
+Now it is necessary to fill out these two objects with the desired property calculation model.  For instance, these phases have a very different viscosity and these must be calculated differently.
+As for the geometric object, the phase models need to be load first:
+
+.. code-block:: python
+
+	from OpenPNM.Phases import models as fm
+
+Then, water and air properties are then defined by the code below. Note that some of the models, such as the Fuller model of diffusivity, needs input parameters as molar masses. These inputs are simply state in the add_model method.
+
+.. code-block:: python
+
+    air.add_model(propname='pore.diffusivity',model=fm.diffusivity.fuller,MA=0.03199,MB=0.0291,vA=16.3,vB=19.7)
+    air.add_model(propname='pore.viscosity',model=fm.viscosity.reynolds,uo=0.001,b=0.1)
+    air.add_model(propname='pore.molar_density',model=fm.molar_density.ideal_gas,R=8.314)
+    water['pore.diffusivity'] = 1e-12
+    water['pore.viscosity'] = 0.001
+    water['pore.molar_density'] = 44445.0
+    water['pore.contact_angle'] = 110.0
+    water['pore.surface_tension'] = 0.072
+
+
+The first above lines retrieve the requested property estimation model from the submodule indicated by the `propname` argument, and assign that method to the corresponding property of the phases on each pore location.  The last five lines set a constant value, by placing it directly into a new dictionary entry.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Create Pore Scale Physics Objects
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+We are still not ready to perform any simulations.  The last step is to define the desired pore scale physics, which defines how the phase and geometrical properties interact.  A classic example of this is the Washburn equation which predicts the pressure required to push a non-wetting fluid through a capillary of known size.  Because the Physics object defines the interaction of a Phase with the Geometry, it is necessary to build one physics object for each intersection between Geometry and Phase objects:
+
+.. code-block:: python
+
+	phys_water = OpenPNM.Physics.GenericPhysics(network=pn,phase=water,geometry=geom)
+	phys_air = OpenPNM.Physics.GenericPhysics(network=pn,phase=air,geometry=geom)
+
+-------------------------------------------------------------------------------
+Add Desired Methods to Physics Objects
+-------------------------------------------------------------------------------
+
+As with phases and geometry objects, the next steps are first to load the model library and to build-up the bare objects with the desired models:
+
+.. code-block:: python
+
+	from OpenPNM.Physics import models as pm
+
+	phys_water.add_model(propname='throat.capillary_pressure',
+	                     model=pm.capillary_pressure.purcell,
+	                     r_toroid=1.e-5)
+	phys_water.add_model(propname='throat.hydraulic_conductance',
+	                     model=pm.hydraulic_conductance.hagen_poiseuille)
+	phys_air.add_model(propname='throat.diffusive_conductance',
+	                   model=pm.diffusive_conductance.bulk_diffusion)
+	phys_air.add_model(propname='throat.hydraulic_conductance',
+	                   model=pm.hydraulic_conductance.hagen_poiseuille)
+-------------------------------------------------------------------------------
+Run some simulations
+-------------------------------------------------------------------------------
+
+.. code-block:: python
+
+	alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
+	# Assign Dirichlet boundary conditions to top and bottom surface pores
+	BC1_pores = pn.pores('right')
+	alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
+	BC2_pores = pn.pores('left')
+	alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
+	# Use desired diffusive_conductance in the diffusion calculation (conductance for the dry network or water-filled network)
+	alg.run()
+	alg.return_results()
+	# Calculate the macroscopic effective diffusivity through this Network
+	Deff = alg.calc_eff_diffusivity()
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Visualise the Results
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+We can now visualise our network and simulation results.  OpenPNM does not (yet) support native visualization, so data must be exported to a file for exploration in another program such as any of the several VTK front ends (I.e. Paraview).
+
+.. code-block:: python
+
+	ctrl.export(pn)
+
+This creates a *net.vtp* file in the active directory, which can be loaded from ParaView. For a quick tutorial on the use of Paraview with OpenPNM data, see :ref:`Using Paraview<paraview_example>`.
+
+To save an incomplete simulation for later work, the **Controller** object can be used to save the entire workspace (i.e. all simulations) using ``ctrl.save()``, or just the simulation of interest using ``ctrl.save_simulation(pn)``.

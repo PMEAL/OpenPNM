@@ -1,6 +1,6 @@
 .. OpenPNM documentation master file, created by
    sphinx-quickstart on Thu Nov 29 11:31:33 2012.
-   
+
 ###############################################################################
 OpenPNM: Pore Network Modeling in Python
 ###############################################################################
@@ -39,4 +39,3 @@ Documentation
    resources/index.rst
    docOpenPNM.rst
    docExtraSidebar.rst
-
