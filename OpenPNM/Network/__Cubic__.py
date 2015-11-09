@@ -226,9 +226,22 @@ class Cubic(GenericNetwork):
             from the Network.
 
         apply_label : string
-            This label is applied to the boundary pores.  If this labselel is not
+            This label is applied to the boundary pores.  If this label is not
             given they all labels currently applied to the input pores are
             cloned but '_boundary' is appended ('except for ``all``).
+
+        Examples
+        --------
+        >>> import OpenPNM as op
+        >>> pn = op.Network.Cubic(shape=[5, 5, 5])
+        >>> print(pn.Np)  # Confirm initial Network size
+        125
+        >>> Ps = pn.pores('top')  # Select pores on top face
+        >>> pn.add_boundaries2(pores=Ps, offset=[0, 0, 1])
+        >>> print(pn.Np)  # Confirm addition of 25 new pores
+        150
+        >>> 'pore.top_boundary' in pn.labels()  # Default label is created
+        True
         """
         # Parse the input pores
         Ps = sp.array(pores, ndmin=1)
@@ -257,8 +270,11 @@ class Cubic(GenericNetwork):
                     self[item+'_boundary'] = False
                 self[item+'_boundary'][newPs] = self[item][Ps]
         else:
-            self[apply_label] = False
-            self[apply_label][newPs] = True
+            label = apply_label.strip('pore.')
+            label = 'pore.' + label
+            print(label)
+            self[label] = False
+            self[label][newPs] = True
 
     def asarray(self, values):
         r"""
