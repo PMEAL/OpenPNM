@@ -50,7 +50,7 @@ class CubicTest:
     def test_add_boundaries2(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
         net.add_boundaries2(pores=net.pores('top'), offset=[0, 0, 1])
-        assert net.Np == 150
+        assert net.Np == 36
 
     def test_add_boundaries2_2D(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 1], spacing=1)
