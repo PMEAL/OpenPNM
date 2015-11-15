@@ -209,7 +209,7 @@ class Cubic(GenericNetwork):
             coords = coords*scale[label] + offset[label]
             self['pore.coords'][ind] = coords
 
-    def add_boundaries2(self, pores, offset, apply_label=None):
+    def add_boundaries_pores(self, pores, offset, apply_label=None):
         r"""
         This method uses ``clone_pores`` to clone the input pores, then shifts
         them the specified amount and direction, then applies the given label.
@@ -237,7 +237,7 @@ class Cubic(GenericNetwork):
         >>> print(pn.Np)  # Confirm initial Network size
         125
         >>> Ps = pn.pores('top')  # Select pores on top face
-        >>> pn.add_boundaries2(pores=Ps, offset=[0, 0, 1])
+        >>> pn.add_boundaries_pores(pores=Ps, offset=[0, 0, 1])
         >>> print(pn.Np)  # Confirm addition of 25 new pores
         150
         >>> 'pore.top_boundary' in pn.labels()  # Default label is created

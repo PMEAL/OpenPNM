@@ -47,12 +47,12 @@ class CubicTest:
         net = OpenPNM.Network.Cubic(shape=[3, 3])
         assert net._shape == (3, 3, 1)
 
-    def test_add_boundaries2(self):
+    def test_add_boundaries_pores(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
         net.add_boundaries2(pores=net.pores('top'), offset=[0, 0, 1])
         assert net.Np == 36
 
-    def test_add_boundaries2_2D(self):
+    def test_add_boundaries_pores_2D(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 1], spacing=1)
         Ps = net.Ps
         net.add_boundaries2(pores=Ps, offset=[0, 0, 1])
@@ -60,7 +60,7 @@ class CubicTest:
         net.add_boundaries2(pores=Ps, offset=[0, 0, -1])
         assert net.Np == 27
 
-    def test_add_boundaries2_custom_label(self):
+    def test_add_boundaries_pores_custom_label(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
         Ps = net.pores('top')
         net.add_boundaries2(pores=Ps,
