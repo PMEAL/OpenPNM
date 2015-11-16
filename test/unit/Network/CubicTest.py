@@ -47,30 +47,30 @@ class CubicTest:
         net = OpenPNM.Network.Cubic(shape=[3, 3])
         assert net._shape == (3, 3, 1)
 
-    def test_add_boundaries_pores(self):
+    def test_add_boundary_pores(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
-        net.add_boundaries2(pores=net.pores('top'), offset=[0, 0, 1])
+        net.add_boundary_pores(pores=net.pores('top'), offset=[0, 0, 1])
         assert net.Np == 36
 
     def test_add_boundaries_pores_2D(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 1], spacing=1)
         Ps = net.Ps
-        net.add_boundaries2(pores=Ps, offset=[0, 0, 1])
+        net.add_boundary_pores(pores=Ps, offset=[0, 0, 1])
         assert net.Np == 18
-        net.add_boundaries2(pores=Ps, offset=[0, 0, -1])
+        net.add_boundary_pores(pores=Ps, offset=[0, 0, -1])
         assert net.Np == 27
 
     def test_add_boundaries_pores_custom_label(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
         Ps = net.pores('top')
-        net.add_boundaries2(pores=Ps,
-                            offset=[0, 0, 1],
-                            apply_label='pore.test')
+        net.add_boundary_pores(pores=Ps,
+                               offset=[0, 0, 1],
+                               apply_label='pore.test')
         assert 'pore.test' in net.labels()
         Ps = net.pores('bottom')
-        net.add_boundaries2(pores=Ps,
-                            offset=[0, 0, -1],
-                            apply_label='test2')
+        net.add_boundary_pores(pores=Ps,
+                               offset=[0, 0, -1],
+                               apply_label='test2')
         assert 'pore.test2' in net.labels()
 
     def test_make_boundaries_periodic(self):
