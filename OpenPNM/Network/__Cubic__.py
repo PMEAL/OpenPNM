@@ -7,6 +7,7 @@ Cubic: Generate lattice-like networks
 """
 import numpy as np
 import scipy as sp
+import scipy.spatial as sptl
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Utilities import topology
@@ -275,6 +276,57 @@ class Cubic(GenericNetwork):
             print(label)
             self[label] = False
             self[label][newPs] = True
+
+    def make_boundaries_periodic(self, pores_1, pores_2, label='periodic'):
+        r"""
+        Accepts two sets of pores and connects them with new throats.  The
+        connections are determined by pairing each pore in ``pore_1`` with its
+        nearest pore in ``pores_2``.  For cubic Networks this will create
+        pairings with pores directly across the domain from each other,
+        assuming the input pores are 2D co-planar sets of pores.
+
+        Parameters
+        ----------
+        pores_1 and pores_2 : array_like
+            Lists of pores on the opposing faces which are to be linked to create
+            periodicity.
+
+        label = string
+            The label to apply to the newly created throats.  The default is
+            'periodic'.
+
+        Notes
+        -----
+        This method will raise an exception if the input pores do not create
+        fully unique pairs.  Specifically, the length of pore_1 and pores_2
+        must be the same AND each pore in pores_1 must pair up with one and
+        only one pore in pores_2, and vice versa.  If these conditions are
+        not met then periodicity was not acheived.
+
+        """
+        logger.debug('Creating periodic pores')
+        if sp.shape(pores_1)[0] != sp.shape(pores_2)[0]:
+            raise Exception('Unequal length inputs, periodicity not possible')
+        p1 = self['pore.coords'][pores_1]
+        p2 = self['pore.coords'][pores_2]
+        dist_mat = sptl.distance_matrix(p1, p2)
+        dist_min = sp.amin(dist_mat, axis=1, keepdims=True)
+        [a, b] = sp.where(dist_mat == dist_min)
+        pairs = sp.vstack([pores_1[a], pores_2[b]]).T
+        # Confirm that each pore in each list is only paired up once
+        temp_1 = sp.unique(pairs[:, 0])
+        if sp.shape(temp_1) < sp.shape(pores_1):
+            raise Exception('Non-unique pairs found, periodicity not met')
+        temp_2 = sp.unique(pairs[:, 1])
+        if sp.shape(temp_2) < sp.shape(pores_2):
+            raise Exception('Non-unique pairs found, periodicity not met')
+        # Add throats to the network for the periodic connections
+        self.extend(throat_conns=pairs, labels=label)
+        # Create a list which pores are connected which
+        self['pore.periodic_neighbor'] = sp.nan
+        self['pore.periodic_neighbor'][pairs[:, 0]] = pairs[:, 1]
+        self['pore.periodic_neighbor'][pairs[:, 1]] = pairs[:, 0]
+        logger.info('Periodic boundary pores added successfully')
 
     def asarray(self, values):
         r"""
