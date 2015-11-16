@@ -210,7 +210,7 @@ class Cubic(GenericNetwork):
             coords = coords*scale[label] + offset[label]
             self['pore.coords'][ind] = coords
 
-    def add_boundaries_pores(self, pores, offset, apply_label=None):
+    def add_boundary_pores(self, pores, offset, apply_label=None):
         r"""
         This method uses ``clone_pores`` to clone the input pores, then shifts
         them the specified amount and direction, then applies the given label.
