@@ -238,7 +238,7 @@ class Cubic(GenericNetwork):
         >>> print(pn.Np)  # Confirm initial Network size
         125
         >>> Ps = pn.pores('top')  # Select pores on top face
-        >>> pn.add_boundaries_pores(pores=Ps, offset=[0, 0, 1])
+        >>> pn.add_boundary_pores(pores=Ps, offset=[0, 0, 1])
         >>> print(pn.Np)  # Confirm addition of 25 new pores
         150
         >>> 'pore.top_boundary' in pn.labels()  # Default label is created
