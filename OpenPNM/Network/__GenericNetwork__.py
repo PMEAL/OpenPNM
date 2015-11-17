@@ -568,7 +568,7 @@ class GenericNetwork(Core):
 
         See Also
         --------
-        ``find_clusters2``
+        find_clusters2
 
         """
         if sp.size(mask) == self.num_throats():
