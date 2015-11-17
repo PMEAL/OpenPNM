@@ -40,8 +40,9 @@ def find_path(network, pore_pairs, weights=None):
     Examples
     --------
     >>> import OpenPNM
+    >>> import OpenPNM.Utilities.misc as misc
     >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
-    >>> a = pn.find_path([[0, 4], [0, 10]])
+    >>> a = misc.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
     >>> a['pores']
     [array([0, 1, 4]), array([ 0,  1, 10])]
     >>> a['throats']
