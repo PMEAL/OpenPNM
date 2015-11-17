@@ -2,6 +2,72 @@ import scipy as _sp
 import time as _time
 from scipy.spatial.distance import cdist as dist
 
+def find_path(network, pore_pairs, weights=None):
+    r"""
+    Find the shortest path between pairs of pores.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network object on which the search should be performed
+
+    pore_pairs : array_like
+        An N x 2 array containing N pairs of pores for which the shortest
+        path is sought.
+
+    weights : array_like, optional
+        An Nt-long list of throat weights for the search.  Typically this
+        would be the throat lengths, but could also be used to represent
+        the phase configuration.  If no weights are given then the
+        standard topological connections of the Network are used.
+
+    Returns
+    -------
+    A dictionary containing both the pores and throats that define the
+    shortest path connecting each pair of input pores.
+
+    Notes
+    -----
+    The shortest path is found using Dijkstra's algorithm included in the
+    scipy.sparse.csgraph module
+
+    TODO: The returned throat path contains the correct values, but not
+    necessarily in the true order
+
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+    >>> a = pn.find_path([[0, 4], [0, 10]])
+    >>> a['pores']
+    [array([0, 1, 4]), array([ 0,  1, 10])]
+    >>> a['throats']
+    [array([ 0, 19]), array([ 0, 37])]
+    """
+    Ps = sp.array(pore_pairs, ndmin=2)
+    if weights is None:
+        weights = sp.ones_like(network.Ts)
+    graph = network.create_adjacency_matrix(data=weights,
+                                            sprsfmt='csr',
+                                            dropzeros=False)
+    paths = sprs.csgraph.dijkstra(csgraph=graph,
+                                  indices=Ps[:, 0],
+                                  return_predecessors=True)[1]
+    pores = []
+    throats = []
+    for row in range(0, sp.shape(Ps)[0]):
+        j = Ps[row][1]
+        ans = []
+        while paths[row][j] > -9999:
+            ans.append(j)
+            j = paths[row][j]
+        ans.append(Ps[row][0])
+        ans.reverse()
+        pores.append(sp.array(ans))
+        throats.append(network.find_neighbor_throats(pores=ans,
+                                                     mode='intersection'))
+    dict_ = Tools.PrintableDict({'pores': pores, 'throats': throats})
+    return dict_
 
 def reflect_pts(coords, nplane):
     r'''
