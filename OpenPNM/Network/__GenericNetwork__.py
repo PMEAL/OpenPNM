@@ -249,6 +249,12 @@ class GenericNetwork(Core):
                [0, 5]])
         >>> pn.find_connected_pores(throats=[0,1], flatten=True)
         array([0, 1, 5])
+
+        Notes
+        -----
+        This method basically just looks into the pn['throat.conns'] array and
+        retrieves the pores for each input throat.  The flatten option merely
+        stacks the two columns and eliminate non-unique values.
         """
         Ts = sp.array(throats, ndmin=1)
         if Ts.dtype == bool:
