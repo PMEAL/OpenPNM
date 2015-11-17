@@ -1,5 +1,7 @@
 import scipy as _sp
 import time as _time
+import scipy.sparse as _sprs
+import OpenPNM as _op
 
 
 def find_path(network, pore_pairs, weights=None):
@@ -44,18 +46,18 @@ def find_path(network, pore_pairs, weights=None):
     >>> a['throats']
     [array([ 0, 19]), array([ 0, 37])]
     """
-    Ps = sp.array(pore_pairs, ndmin=2)
+    Ps = _sp.array(pore_pairs, ndmin=2)
     if weights is None:
-        weights = sp.ones_like(network.Ts)
+        weights = _sp.ones_like(network.Ts)
     graph = network.create_adjacency_matrix(data=weights,
                                             sprsfmt='csr',
                                             dropzeros=False)
-    paths = sprs.csgraph.dijkstra(csgraph=graph,
-                                  indices=Ps[:, 0],
-                                  return_predecessors=True)[1]
+    paths = _sprs.csgraph.dijkstra(csgraph=graph,
+                                   indices=Ps[:, 0],
+                                   return_predecessors=True)[1]
     pores = []
     throats = []
-    for row in range(0, sp.shape(Ps)[0]):
+    for row in range(0, _sp.shape(Ps)[0]):
         j = Ps[row][1]
         ans = []
         while paths[row][j] > -9999:
@@ -63,11 +65,13 @@ def find_path(network, pore_pairs, weights=None):
             j = paths[row][j]
         ans.append(Ps[row][0])
         ans.reverse()
-        pores.append(sp.array(ans))
+        pores.append(_sp.array(ans))
         throats.append(network.find_neighbor_throats(pores=ans,
                                                      mode='intersection'))
-    dict_ = Tools.PrintableDict({'pores': pores, 'throats': throats})
+    pdict = _op.Base.Tools.PrintableDict
+    dict_ = pdict({'pores': pores, 'throats': throats})
     return dict_
+
 
 def iscoplanar(coords):
     r'''
