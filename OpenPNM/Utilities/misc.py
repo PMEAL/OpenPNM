@@ -2,6 +2,7 @@ import scipy as _sp
 import time as _time
 import scipy.sparse as _sprs
 import OpenPNM as _op
+from scipy.spatial.distance import cdist as dist
 
 
 def find_path(network, pore_pairs, weights=None):
