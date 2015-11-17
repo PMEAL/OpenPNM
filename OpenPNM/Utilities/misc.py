@@ -1,6 +1,6 @@
 import scipy as _sp
 import time as _time
-from scipy.spatial.distance import cdist as dist
+
 
 def find_path(network, pore_pairs, weights=None):
     r"""
@@ -68,56 +68,6 @@ def find_path(network, pore_pairs, weights=None):
                                                      mode='intersection'))
     dict_ = Tools.PrintableDict({'pores': pores, 'throats': throats})
     return dict_
-
-def reflect_pts(coords, nplane):
-    r'''
-    Reflect points across the given plane
-
-    Parameters
-    ----------
-    coords : array_like
-        An Np x ndims array off [x,y,z] coordinates
-
-    nplane : array_like
-        A vector of length ndims, specifying the normal to the plane.  The tail
-        of the vector is assume to lie on the plane, and the reflection will
-        be applied in the direction of the vector.
-
-    Returns
-    -------
-    coords : array_like
-        An Np x ndmins vector of reflected point, not including the input points
-
-    '''
-    pass
-
-
-def crop_pts(coords, box):
-    r'''
-    Drop all points lying outside the box
-
-    Parameters
-    ----------
-    coords : array_like
-        An Np x ndims array off [x,y,z] coordinates
-
-    box : array_like
-        A 2 x ndims array of diametrically opposed corner coordintes
-
-    Returns
-    -------
-    coords : array_like
-        Inputs coordinates with outliers removed
-
-    Notes
-    -----
-    This needs to be made more general so that an arbitray cuboid with any
-    orientation can be supplied, using Np x 8 points
-    '''
-    coords = coords[_sp.any(coords < box[0], axis=1)]
-    coords = coords[_sp.any(coords > box[1], axis=1)]
-    return coords
-
 
 def iscoplanar(coords):
     r'''
