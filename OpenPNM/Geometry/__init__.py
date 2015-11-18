@@ -43,4 +43,5 @@ from .__Voronoi__ import Voronoi
 from .__Toray090__ import Toray090
 from .__Toray120__ import Toray120
 from .__SGL10__ import SGL10
+from .__PeriodicThroats__ import PeriodicThroats
 from . import models

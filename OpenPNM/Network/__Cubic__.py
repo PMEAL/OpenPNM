@@ -271,27 +271,27 @@ class Cubic(GenericNetwork):
                     self[item+'_boundary'] = False
                 self[item+'_boundary'][newPs] = self[item][Ps]
         else:
-            label = apply_label.strip('pore.')
+            label = apply_label.split('.')[-1]
             label = 'pore.' + label
-            print(label)
+            logger.debug('The label \''+label+'\' has been applied')
             self[label] = False
             self[label][newPs] = True
 
-    def make_boundaries_periodic(self, pores_1, pores_2, label='periodic'):
+    def make_boundaries_periodic(self, pores1, pores2, apply_label='periodic'):
         r"""
         Accepts two sets of pores and connects them with new throats.  The
-        connections are determined by pairing each pore in ``pore_1`` with its
-        nearest pore in ``pores_2``.  For cubic Networks this will create
+        connections are determined by pairing each pore in ``pores1`` with its
+        nearest pore in ``pores2``.  For cubic Networks this will create
         pairings with pores directly across the domain from each other,
         assuming the input pores are 2D co-planar sets of pores.
 
         Parameters
         ----------
         pores_1 and pores_2 : array_like
-            Lists of pores on the opposing faces which are to be linked to create
-            periodicity.
+            Lists of pores on the opposing faces which are to be linked to
+            create periodicity.
 
-        label = string
+        apply_label = string
             The label to apply to the newly created throats.  The default is
             'periodic'.
 
@@ -301,27 +301,28 @@ class Cubic(GenericNetwork):
         fully unique pairs.  Specifically, the length of pore_1 and pores_2
         must be the same AND each pore in pores_1 must pair up with one and
         only one pore in pores_2, and vice versa.  If these conditions are
-        not met then periodicity was not acheived.
+        not met then periodicity cannot be acheived, and an exception is
+        raised.
 
         """
         logger.debug('Creating periodic pores')
-        if sp.shape(pores_1)[0] != sp.shape(pores_2)[0]:
+        if sp.shape(pores1)[0] != sp.shape(pores2)[0]:
             raise Exception('Unequal length inputs, periodicity not possible')
-        p1 = self['pore.coords'][pores_1]
-        p2 = self['pore.coords'][pores_2]
+        p1 = self['pore.coords'][pores1]
+        p2 = self['pore.coords'][pores2]
         dist_mat = sptl.distance_matrix(p1, p2)
         dist_min = sp.amin(dist_mat, axis=1, keepdims=True)
         [a, b] = sp.where(dist_mat == dist_min)
-        pairs = sp.vstack([pores_1[a], pores_2[b]]).T
+        pairs = sp.vstack([pores1[a], pores2[b]]).T
         # Confirm that each pore in each list is only paired up once
         temp_1 = sp.unique(pairs[:, 0])
-        if sp.shape(temp_1) < sp.shape(pores_1):
+        if sp.shape(temp_1) < sp.shape(pores1):
             raise Exception('Non-unique pairs found, periodicity not met')
         temp_2 = sp.unique(pairs[:, 1])
-        if sp.shape(temp_2) < sp.shape(pores_2):
+        if sp.shape(temp_2) < sp.shape(pores2):
             raise Exception('Non-unique pairs found, periodicity not met')
         # Add throats to the network for the periodic connections
-        self.extend(throat_conns=pairs, labels=label)
+        self.extend(throat_conns=pairs, labels=apply_label)
         # Create a list which pores are connected which
         self['pore.periodic_neighbor'] = sp.nan
         self['pore.periodic_neighbor'][pairs[:, 0]] = pairs[:, 1]
