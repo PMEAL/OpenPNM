@@ -46,3 +46,5 @@ class PeriodicThroats(GenericGeometry):
 
         self['throat.length'] = 0
         self['throat.diameter'] = _sp.inf
+        self['throat.area'] = _sp.inf
+        self['throat.volume'] = 0
