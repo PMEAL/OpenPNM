@@ -277,7 +277,7 @@ class Cubic(GenericNetwork):
             self[label] = False
             self[label][newPs] = True
 
-    def make_boundaries_periodic(self, pores1, pores2, apply_label='periodic'):
+    def add_periodic_connections(self, pores1, pores2, apply_label='periodic'):
         r"""
         Accepts two sets of pores and connects them with new throats.  The
         connections are determined by pairing each pore in ``pores1`` with its

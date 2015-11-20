@@ -73,32 +73,32 @@ class CubicTest:
                                apply_label='test2')
         assert 'pore.test2' in net.labels()
 
-    def test_make_boundaries_periodic(self):
+    def test_add_periodic_connections(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
         p1 = net.pores('top')
         p2 = net.pores('bottom')
-        net.make_boundaries_periodic(pores_1=p1, pores_2=p2)
+        net.add_periodic_connections(pores1=p1, pores2=p2)
         assert net.Np == 27
         assert net.Nt == 63
 
-    def test_make_boundaries_periodic_nonunique_pores_exception(self):
+    def test_add_periodic_connections_nonunique_pores_exception(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
         p1 = net.pores('top')
         p2 = net.pores('left')
         flag = False
         try:
-            net.make_boundaries_periodic(pores_1=p1, pores_2=p2)
+            net.add_periodic_connections(pores1=p1, pores2=p2)
         except:
             flag = True
         assert flag
 
-    def test_make_boundaries_periodic_unequal_input_pores_exception(self):
+    def test_add_periodic_connections_unequal_input_pores_exception(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
         p1 = net.pores('top')
         p2 = sp.array(1, ndmin=1)
         flag = False
         try:
-            net.make_boundaries_periodic(pores_1=p1, pores_2=p2)
+            net.add_periodic_connections(pores1=p1, pores2=p2)
         except:
             flag = True
         assert flag
