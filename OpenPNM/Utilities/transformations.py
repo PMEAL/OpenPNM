@@ -135,55 +135,6 @@ References
 (16) Column Vectors vs. Row Vectors.
      http://steve.hollasch.net/cgindex/math/matrix/column-vec.html
 
-Examples
---------
->>> alpha, beta, gamma = 0.123, -1.234, 2.345
->>> origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
->>> I = identity_matrix()
->>> Rx = rotation_matrix(alpha, xaxis)
->>> Ry = rotation_matrix(beta, yaxis)
->>> Rz = rotation_matrix(gamma, zaxis)
->>> R = concatenate_matrices(Rx, Ry, Rz)
->>> euler = euler_from_matrix(R, 'rxyz')
->>> numpy.allclose([alpha, beta, gamma], euler)
-True
->>> Re = euler_matrix(alpha, beta, gamma, 'rxyz')
->>> is_same_transform(R, Re)
-True
->>> al, be, ga = euler_from_matrix(Re, 'rxyz')
->>> is_same_transform(Re, euler_matrix(al, be, ga, 'rxyz'))
-True
->>> qx = quaternion_about_axis(alpha, xaxis)
->>> qy = quaternion_about_axis(beta, yaxis)
->>> qz = quaternion_about_axis(gamma, zaxis)
->>> q = quaternion_multiply(qx, qy)
->>> q = quaternion_multiply(q, qz)
->>> Rq = quaternion_matrix(q)
->>> is_same_transform(R, Rq)
-True
->>> S = scale_matrix(1.23, origin)
->>> T = translation_matrix([1, 2, 3])
->>> Z = shear_matrix(beta, xaxis, origin, zaxis)
->>> R = random_rotation_matrix(numpy.random.rand(3))
->>> M = concatenate_matrices(T, R, Z, S)
->>> scale, shear, angles, trans, persp = decompose_matrix(M)
->>> numpy.allclose(scale, 1.23)
-True
->>> numpy.allclose(trans, [1, 2, 3])
-True
->>> numpy.allclose(shear, [0, math.tan(beta), 0])
-True
->>> is_same_transform(R, euler_matrix(axes='sxyz', *angles))
-True
->>> M1 = compose_matrix(scale, shear, angles, trans, persp)
->>> is_same_transform(M, M1)
-True
->>> v0, v1 = random_vector(3), random_vector(3)
->>> M = rotation_matrix(angle_between_vectors(v0, v1), vector_product(v0, v1))
->>> v2 = numpy.dot(v0, M[:3,:3].T)
->>> numpy.allclose(unit_vector(v1), unit_vector(v2))
-True
-
 """
 
 from __future__ import division, print_function
@@ -637,80 +588,80 @@ def clip_matrix(left, right, bottom, top, near, far, perspective=False):
     return numpy.array(M)
 
 
-def shear_matrix(angle, direction, point, normal):
-    """Return matrix to shear by angle along direction vector on shear plane.
+# def shear_matrix(angle, direction, point, normal):
+#    """Return matrix to shear by angle along direction vector on shear plane.
+#
+#    The shear plane is defined by a point and normal vector. The direction
+#    vector must be orthogonal to the plane's normal vector.
+#
+#    A point P is transformed by the shear matrix into P" such that
+#    the vector P-P" is parallel to the direction vector and its extent is
+#    given by the angle of P-P'-P", where P' is the orthogonal projection
+#    of P onto the shear plane.
+#
+#    >>> angle = (numpy.random.random() - 0.5) * 4*math.pi
+#    >>> direct = numpy.random.random(3) - 0.5
+#    >>> point = numpy.random.random(3) - 0.5
+#    >>> normal = numpy.cross(direct, numpy.random.random(3))
+#    >>> S = shear_matrix(angle, direct, point, normal)
+#    >>> numpy.allclose(1, numpy.linalg.det(S))
+#    True
+#
+#    """
+#    normal = unit_vector(normal[:3])
+#    direction = unit_vector(direction[:3])
+#    if abs(numpy.dot(normal, direction)) > 1e-6:
+#        raise ValueError("direction and normal vectors are not orthogonal")
+#    angle = math.tan(angle)
+#    M = numpy.identity(4)
+#    M[:3, :3] += angle * numpy.outer(direction, normal)
+#    M[:3, 3] = -angle * numpy.dot(point[:3], normal) * direction
+#    return M
 
-    The shear plane is defined by a point and normal vector. The direction
-    vector must be orthogonal to the plane's normal vector.
 
-    A point P is transformed by the shear matrix into P" such that
-    the vector P-P" is parallel to the direction vector and its extent is
-    given by the angle of P-P'-P", where P' is the orthogonal projection
-    of P onto the shear plane.
-
-    >>> angle = (numpy.random.random() - 0.5) * 4*math.pi
-    >>> direct = numpy.random.random(3) - 0.5
-    >>> point = numpy.random.random(3) - 0.5
-    >>> normal = numpy.cross(direct, numpy.random.random(3))
-    >>> S = shear_matrix(angle, direct, point, normal)
-    >>> numpy.allclose(1, numpy.linalg.det(S))
-    True
-
-    """
-    normal = unit_vector(normal[:3])
-    direction = unit_vector(direction[:3])
-    if abs(numpy.dot(normal, direction)) > 1e-6:
-        raise ValueError("direction and normal vectors are not orthogonal")
-    angle = math.tan(angle)
-    M = numpy.identity(4)
-    M[:3, :3] += angle * numpy.outer(direction, normal)
-    M[:3, 3] = -angle * numpy.dot(point[:3], normal) * direction
-    return M
-
-
-def shear_from_matrix(matrix):
-    """Return shear angle, direction and plane from shear matrix.
-
-    >>> angle = (numpy.random.random() - 0.5) * 4*math.pi
-    >>> direct = numpy.random.random(3) - 0.5
-    >>> point = numpy.random.random(3) - 0.5
-    >>> normal = numpy.cross(direct, numpy.random.random(3))
-    >>> S0 = shear_matrix(angle, direct, point, normal)
-    >>> angle, direct, point, normal = shear_from_matrix(S0)
-    >>> S1 = shear_matrix(angle, direct, point, normal)
-    >>> is_same_transform(S0, S1)
-    True
-
-    """
-    M = numpy.array(matrix, dtype=numpy.float64, copy=False)
-    M33 = M[:3, :3]
-    # normal: cross independent eigenvectors corresponding to the eigenvalue 1
-    w, V = numpy.linalg.eig(M33)
-    i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-4)[0]
-    if len(i) < 2:
-        raise ValueError("no two linear independent eigenvectors found %s" % w)
-    V = numpy.real(V[:, i]).squeeze().T
-    lenorm = -1.0
-    for i0, i1 in ((0, 1), (0, 2), (1, 2)):
-        n = numpy.cross(V[i0], V[i1])
-        w = vector_norm(n)
-        if w > lenorm:
-            lenorm = w
-            normal = n
-    normal /= lenorm
-    # direction and angle
-    direction = numpy.dot(M33 - numpy.identity(3), normal)
-    angle = vector_norm(direction)
-    direction /= angle
-    angle = math.atan(angle)
-    # point: eigenvector corresponding to eigenvalue 1
-    w, V = numpy.linalg.eig(M)
-    i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
-    if not len(i):
-        raise ValueError("no eigenvector corresponding to eigenvalue 1")
-    point = numpy.real(V[:, i[-1]]).squeeze()
-    point /= point[3]
-    return angle, direction, point, normal
+# def shear_from_matrix(matrix):
+#    """Return shear angle, direction and plane from shear matrix.
+#
+#    >>> angle = (numpy.random.random() - 0.5) * 4*math.pi
+#    >>> direct = numpy.random.random(3) - 0.5
+#    >>> point = numpy.random.random(3) - 0.5
+#    >>> normal = numpy.cross(direct, numpy.random.random(3))
+#    >>> S0 = shear_matrix(angle, direct, point, normal)
+#    >>> angle, direct, point, normal = shear_from_matrix(S0)
+#    >>> S1 = shear_matrix(angle, direct, point, normal)
+#    >>> is_same_transform(S0, S1)
+#    True
+#
+#    """
+#    M = numpy.array(matrix, dtype=numpy.float64, copy=False)
+#    M33 = M[:3, :3]
+#    # normal: cross independent eigenvectors corresponding to the eigenvalue 1
+#    w, V = numpy.linalg.eig(M33)
+#    i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-4)[0]
+#    if len(i) < 2:
+#        raise ValueError("no two linear independent eigenvectors found %s" % w)
+#    V = numpy.real(V[:, i]).squeeze().T
+#    lenorm = -1.0
+#    for i0, i1 in ((0, 1), (0, 2), (1, 2)):
+#        n = numpy.cross(V[i0], V[i1])
+#        w = vector_norm(n)
+#        if w > lenorm:
+#            lenorm = w
+#            normal = n
+#    normal /= lenorm
+#    # direction and angle
+#    direction = numpy.dot(M33 - numpy.identity(3), normal)
+#    angle = vector_norm(direction)
+#    direction /= angle
+#    angle = math.atan(angle)
+#    # point: eigenvector corresponding to eigenvalue 1
+#    w, V = numpy.linalg.eig(M)
+#    i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
+#    if not len(i):
+#        raise ValueError("no eigenvector corresponding to eigenvalue 1")
+#    point = numpy.real(V[:, i[-1]]).squeeze()
+#    point /= point[3]
+#    return angle, direction, point, normal
 
 
 def decompose_matrix(matrix):

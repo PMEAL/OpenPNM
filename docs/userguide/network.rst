@@ -3,9 +3,9 @@
 ===============================================================================
 Network
 ===============================================================================
-This module is the heart of OpenPNM.  It contains the *GenericNetwork* class which possesses a suite of topology query methods, based on the graph theory concepts of adjacency and incidence matrices.  The methods in *GenericNetwork* are fully agnostic to the type and topology of network due the generalized way that OpenPNM stores data.  This is explained in more detail below. 
+This module is the heart of OpenPNM.  It contains the *GenericNetwork* class which possesses a suite of topology query methods, based on the graph theory concepts of adjacency and incidence matrices.  The methods in *GenericNetwork* are fully agnostic to the type and topology of network due the generalized way that OpenPNM stores data.  This is explained in more detail below.
 
-All OpenPNM objects descend from the Python *dictionary* type, and have a number of additional methods for dealing with the OpenPNM related data.  The *GenericNetwork*` class is special in that it has a large number of *additional* methods to work with the topological data. 
+All OpenPNM objects descend from the Python *dictionary* type, and have a number of additional methods for dealing with the OpenPNM related data.  The *GenericNetwork* class is special in that it has a large number of *additional* methods to work with the topological data. 
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Basic Usage
@@ -20,13 +20,13 @@ OpenPNM.Network.GenericNetwork: 	GenericNetwork_GnSpz
 ------------------------------------------------------------
 #     Properties                          Valid Values
 ------------------------------------------------------------
-1     pore.coords                             0 / 0    
-2     throat.conns                            0 / 0    
+1     pore.coords                             0 / 0
+2     throat.conns                            0 / 0
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
-1     pore.all                            0         
-2     throat.all                          0         
+1     pore.all                            0
+2     throat.all                          0
 ------------------------------------------------------------
 
 As can be seen, a basic empty network has 0 pore coordinates and 0 throat connections, and the label *'all'* exists but is applied nowhere.  It is also possible to just get the number of pores or throats on the object:
@@ -47,21 +47,21 @@ OpenPNM.Network.Cubic: 	demo
 ------------------------------------------------------------
 #     Properties                          Valid Values
 ------------------------------------------------------------
-1     pore.coords                            27 / 27   
-2     pore.index                             27 / 27   
-3     throat.conns                           54 / 54   
+1     pore.coords                            27 / 27
+2     pore.index                             27 / 27
+3     throat.conns                           54 / 54
 ------------------------------------------------------------
 #     Labels                              Assigned Locations
 ------------------------------------------------------------
-1     pore.all                            27        
-2     pore.back                           9         
-3     pore.bottom                         9         
-4     pore.front                          9         
-5     pore.internal                       27        
-6     pore.left                           9         
-7     pore.right                          9         
-8     pore.top                            9         
-9     throat.all                          54        
+1     pore.all                            27
+2     pore.back                           9
+3     pore.bottom                         9
+4     pore.front                          9
+5     pore.internal                       27
+6     pore.left                           9
+7     pore.right                          9
+8     pore.top                            9
+9     throat.all                          54
 ------------------------------------------------------------
 
 The print-out of the network information shows that it has 27 pores and 54 throats, with properties of *'pore.coords'*, *'pore.index'*, and *'throat.conns'*.  Because the *Cubic* class only generates the topology, there is no information about pore and throat sizes.  The only requirements of a topology are that the pores have spatial locations (given by *'pore.coords'*) and throats know which two pores they connect (*'throat.conns'*).  (*'pore.index'* is required for other purposes).
@@ -80,7 +80,7 @@ array([[0, 1],
 	   [0, 3],
 	   [0, 9]])
 
-The best way to explore the available methods is to use an IDE or editor that support the autocomplete function, such as `Spyder <http://pythonhosted.org/spyder/>`_.  This way, you can type ``pn.`` and a pop-up list of available methods will appear.  Extensive documentation is also included inside the OpenPNM code itself in the form of 'docstrings' which will be interpreted by Spyder and shown in the *Object Inspector*.  These docstrings give a description of the required and optional arguments to each method, along with examples and notes where applicable.  
+The best way to explore the available methods is to use an IDE or editor that support the autocomplete function, such as `Spyder <http://pythonhosted.org/spyder/>`_.  This way, you can type ``pn.`` and a pop-up list of available methods will appear.  Extensive documentation is also included inside the OpenPNM code itself in the form of 'docstrings' which will be interpreted by Spyder and shown in the *Object Inspector*.  These docstrings give a description of the required and optional arguments to each method, along with examples and notes where applicable.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Creating Custom Network Topology Generators
@@ -103,7 +103,7 @@ For description of how to create customized subclasses, see :ref:`Customizing Op
 
 	3. Pores can have an arbitrary number of throats, including zero; however, pores with zero throats lead to singular matrices and other problems so should be avoided.
 
-	4. Two pores are connected by no more than one throat, unless there is some real physical reason for this.  Unintentional duplicate connections impact the rate of mass exchange between pores.  
+	4. Two pores are connected by no more than one throat, unless there is some real physical reason for this.  Unintentional duplicate connections impact the rate of mass exchange between pores.
 
 	A network has a certain number of pores, *Np*, and a certain number of throats, *Nt*.  Typically, *Nt* > *Np* since most pores have more than 1 throat.  If every pore has 1 throat (e.g. the network forms a circular chain), then *Nt* = *Np* - 1.  It can be *unofficially* stated that a network should have at least 2 pores connected by at least 1 throat (*Np* > 1 and *Nt* > 0).
 
@@ -126,4 +126,3 @@ For description of how to create customized subclasses, see :ref:`Customizing Op
 	**Incidence Matrices**
 
 	Another way to represent network connections is an incidence matrix.  This is similar to an adjacency matrix but rather than denoting which pores are connected to which, it denotes which pores are connected to which throats.  An incidence matrix is *Np*-by-*Nt* in size, with *Nt* non-zero elements.  The incidence matrix is useful for quickly querying which throats are connected to a given pore by finding the location of non-zero elements on a row.  Incidence matrices are generated as needed by OpenPNM internally for performing such queries, and the user does not usually interact with them.
-

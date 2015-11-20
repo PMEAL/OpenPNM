@@ -1,56 +1,78 @@
 import scipy as _sp
 import time as _time
+import scipy.sparse as _sprs
+import OpenPNM as _op
 from scipy.spatial.distance import cdist as dist
 
 
-def reflect_pts(coords, nplane):
-    r'''
-    Reflect points across the given plane
+def find_path(network, pore_pairs, weights=None):
+    r"""
+    Find the shortest path between pairs of pores.
 
     Parameters
     ----------
-    coords : array_like
-        An Np x ndims array off [x,y,z] coordinates
+    network : OpenPNM Network Object
+        The Network object on which the search should be performed
 
-    nplane : array_like
-        A vector of length ndims, specifying the normal to the plane.  The tail
-        of the vector is assume to lie on the plane, and the reflection will
-        be applied in the direction of the vector.
+    pore_pairs : array_like
+        An N x 2 array containing N pairs of pores for which the shortest
+        path is sought.
 
-    Returns
-    -------
-    coords : array_like
-        An Np x ndmins vector of reflected point, not including the input points
-
-    '''
-    pass
-
-
-def crop_pts(coords, box):
-    r'''
-    Drop all points lying outside the box
-
-    Parameters
-    ----------
-    coords : array_like
-        An Np x ndims array off [x,y,z] coordinates
-
-    box : array_like
-        A 2 x ndims array of diametrically opposed corner coordintes
+    weights : array_like, optional
+        An Nt-long list of throat weights for the search.  Typically this
+        would be the throat lengths, but could also be used to represent
+        the phase configuration.  If no weights are given then the
+        standard topological connections of the Network are used.
 
     Returns
     -------
-    coords : array_like
-        Inputs coordinates with outliers removed
+    A dictionary containing both the pores and throats that define the
+    shortest path connecting each pair of input pores.
 
     Notes
     -----
-    This needs to be made more general so that an arbitray cuboid with any
-    orientation can be supplied, using Np x 8 points
-    '''
-    coords = coords[_sp.any(coords < box[0], axis=1)]
-    coords = coords[_sp.any(coords > box[1], axis=1)]
-    return coords
+    The shortest path is found using Dijkstra's algorithm included in the
+    scipy.sparse.csgraph module
+
+    TODO: The returned throat path contains the correct values, but not
+    necessarily in the true order
+
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> import OpenPNM.Utilities.misc as misc
+    >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+    >>> a = misc.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
+    >>> a['pores']
+    [array([0, 1, 4]), array([ 0,  1, 10])]
+    >>> a['throats']
+    [array([ 0, 19]), array([ 0, 37])]
+    """
+    Ps = _sp.array(pore_pairs, ndmin=2)
+    if weights is None:
+        weights = _sp.ones_like(network.Ts)
+    graph = network.create_adjacency_matrix(data=weights,
+                                            sprsfmt='csr',
+                                            dropzeros=False)
+    paths = _sprs.csgraph.dijkstra(csgraph=graph,
+                                   indices=Ps[:, 0],
+                                   return_predecessors=True)[1]
+    pores = []
+    throats = []
+    for row in range(0, _sp.shape(Ps)[0]):
+        j = Ps[row][1]
+        ans = []
+        while paths[row][j] > -9999:
+            ans.append(j)
+            j = paths[row][j]
+        ans.append(Ps[row][0])
+        ans.reverse()
+        pores.append(_sp.array(ans))
+        throats.append(network.find_neighbor_throats(pores=ans,
+                                                     mode='intersection'))
+    pdict = _op.Base.Tools.PrintableDict
+    dict_ = pdict({'pores': pores, 'throats': throats})
+    return dict_
 
 
 def iscoplanar(coords):

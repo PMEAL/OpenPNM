@@ -92,6 +92,9 @@ class InvasionPercolation(GenericAlgorithm):
             n_steps = sp.inf
 
         queue = self.queue
+        if len(queue) == 0:
+            print('queue is empty, this network is fully invaded')
+            return
         t_sorted = self['throat.sorted']
         t_order = self['throat.order']
         t_inv = self['throat.invaded']
