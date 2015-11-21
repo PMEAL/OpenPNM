@@ -148,12 +148,34 @@ class InvasionPercolationDrying(GenericAlgorithm):
             # Add new throats to the queue
             self.qpush(queue=queue, throats=Ts)
 
-    def qregen(self):
-        self.queues = []
-        Pdef = self['pore.invaded'] == -1
+    def qregen(self, defenders=None):
+        r"""
+        Regerate the queues for each cluster of defending phase in the Network.
+        Clusters are found using the ``find_clusters2`` method of the Network.
+
+        Parameters
+        ----------
+        defenders : array_like
+            An Np long boolean array indicating which pores are filled with
+            defening phase.  If no argument is given, the method will look into
+            the ``'pore.invaded'`` array to find non-invaded pores.
+
+        Notes
+        -----
+        This algorithm is based on bond percolation, so the list of defending
+        pores is processed to get a list of defending throats.  The cluster
+        searching is then performed using these throats.
+
+        """
+        # Parse input pores
+        if defenders is None:
+            Pdef = self['pore.invaded'] == -1
+        self._parse_locations(Pdef)
+        # Find clusters of defending pores
         clusters = self._net.find_clusters2(mask=Pdef)
         self['pore.queue_number'] = -1
         label = 0
+        self.queues = []
         for c in sp.unique(clusters)[1:]:
             Ps = sp.where(clusters == c)[0]
             Ts = self._net.find_neighbor_throats(pores=Ps,
@@ -164,6 +186,19 @@ class InvasionPercolationDrying(GenericAlgorithm):
             label += 1
 
     def qmake(self, throats):
+        r"""
+        Makes an individual queue
+
+        Parameters
+        ----------
+        throats : array_like
+            A list of throats that comprise the queue
+
+        Returns
+        -------
+        A heapified list of throat order and throat number, sorted according
+        to ease of invasion.
+        """
         Ts = self._parse_locations(throats)
         order = self['throat.order']
         queue = []
@@ -171,11 +206,34 @@ class InvasionPercolationDrying(GenericAlgorithm):
         return queue
 
     def qpop(self, queue):
+        r"""
+        Pops the top item off of an individual queue
+
+        Parameters
+        ----------
+        queue : list
+            The heapified list from which the top entry should be popped.
+
+        Returns
+        -------
+        The number of the next most easily invaded throat
+        """
         Tup = hq.heappop(queue)
         T = Tup[1]
         return T
 
     def qpush(self, queue, throats):
+        r"""
+        Push at set of throats to a given queue
+
+        Parameters
+        ----------
+        queue : list
+            The heapified list to which the thoats should be added
+
+        throats : array_like
+            A list or array of throats to add to the queue
+        """
         Ts = self._parse_locations(throats)
         order = self['throat.order']
         [hq.heappush(queue, Tinfo(order[T], T)) for T in Ts]
