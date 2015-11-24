@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # transformations.py
 
-# Copyright (c) 2006-2014, Christoph Gohlke
-# Copyright (c) 2006-2014, The Regents of the University of California
+# Copyright (c) 2006-2015, Christoph Gohlke
+# Copyright (c) 2006-2015, The Regents of the University of California
 # Produced at the Laboratory for Fluorescence Dynamics
 # All rights reserved.
 #
@@ -44,13 +44,13 @@ functions to decompose transformation matrices.
 :Organization:
   Laboratory for Fluorescence Dynamics, University of California, Irvine
 
-:Version: 2013.06.29
+:Version: 2015.07.18
 
 Requirements
 ------------
-* `CPython 2.7 or 3.3 <http://www.python.org>`_
-* `Numpy 1.7 <http://www.numpy.org>`_
-* `Transformations.c 2013.01.18 <http://www.lfd.uci.edu/~gohlke/>`_
+* `CPython 2.7 or 3.4 <http://www.python.org>`_
+* `Numpy 1.9 <http://www.numpy.org>`_
+* `Transformations.c 2015.07.18 <http://www.lfd.uci.edu/~gohlke/>`_
   (recommended for speedup of some functions)
 
 Notes
@@ -100,6 +100,13 @@ be specified using a 4 character string or encoded 4-tuple:
   - repetition : first and last axis are same (1) or different (0).
   - frame : rotations are applied to static (0) or rotating (1) frame.
 
+Other Python packages and modules for 3D transformations and quaternions:
+
+* `Transforms3d <https://pypi.python.org/pypi/transforms3d>`_
+   includes most code of this module.
+* `Blender.mathutils <http://www.blender.org/api/blender_python_api>`_
+* `numpy-dtypes <https://github.com/numpy/numpy-dtypes>`_
+
 References
 ----------
 (1)  Matrices and transformations. Ronald Goldman.
@@ -135,6 +142,55 @@ References
 (16) Column Vectors vs. Row Vectors.
      http://steve.hollasch.net/cgindex/math/matrix/column-vec.html
 
+Examples
+--------
+>>> alpha, beta, gamma = 0.123, -1.234, 2.345
+>>> origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
+>>> I = identity_matrix()
+>>> Rx = rotation_matrix(alpha, xaxis)
+>>> Ry = rotation_matrix(beta, yaxis)
+>>> Rz = rotation_matrix(gamma, zaxis)
+>>> R = concatenate_matrices(Rx, Ry, Rz)
+>>> euler = euler_from_matrix(R, 'rxyz')
+>>> numpy.allclose([alpha, beta, gamma], euler)
+True
+>>> Re = euler_matrix(alpha, beta, gamma, 'rxyz')
+>>> is_same_transform(R, Re)
+True
+>>> al, be, ga = euler_from_matrix(Re, 'rxyz')
+>>> is_same_transform(Re, euler_matrix(al, be, ga, 'rxyz'))
+True
+>>> qx = quaternion_about_axis(alpha, xaxis)
+>>> qy = quaternion_about_axis(beta, yaxis)
+>>> qz = quaternion_about_axis(gamma, zaxis)
+>>> q = quaternion_multiply(qx, qy)
+>>> q = quaternion_multiply(q, qz)
+>>> Rq = quaternion_matrix(q)
+>>> is_same_transform(R, Rq)
+True
+>>> S = scale_matrix(1.23, origin)
+>>> T = translation_matrix([1, 2, 3])
+>>> Z = shear_matrix(beta, xaxis, origin, zaxis)
+>>> R = random_rotation_matrix(numpy.random.rand(3))
+>>> M = concatenate_matrices(T, R, Z, S)
+>>> scale, shear, angles, trans, persp = decompose_matrix(M)
+>>> numpy.allclose(scale, 1.23)
+True
+>>> numpy.allclose(trans, [1, 2, 3])
+True
+>>> numpy.allclose(shear, [0, math.tan(beta), 0])
+True
+>>> is_same_transform(R, euler_matrix(axes='sxyz', *angles))
+True
+>>> M1 = compose_matrix(scale, shear, angles, trans, persp)
+>>> is_same_transform(M, M1)
+True
+>>> v0, v1 = random_vector(3), random_vector(3)
+>>> M = rotation_matrix(angle_between_vectors(v0, v1), vector_product(v0, v1))
+>>> v2 = numpy.dot(v0, M[:3,:3].T)
+>>> numpy.allclose(unit_vector(v1), unit_vector(v2))
+True
+
 """
 
 from __future__ import division, print_function
@@ -143,9 +199,9 @@ import math
 
 import numpy
 
-__version__ = '2013.06.29'
+__version__ = '2015.07.18'
 __docformat__ = 'restructuredtext en'
-__all__ = []
+__all__ = ()
 
 
 def identity_matrix():
@@ -249,7 +305,7 @@ def rotation_matrix(angle, direction, point=None):
     >>> R = rotation_matrix(math.pi/2, [0, 0, 1], [1, 0, 0])
     >>> numpy.allclose(numpy.dot(R, [0, 0, 0, 1]), [1, -1, 0, 1])
     True
-    >>> angle = (numpy.random.random() - 0.5) * (2*math.pi)
+    >>> angle = (random.random() - 0.5) * (2*math.pi)
     >>> direc = numpy.random.random(3) - 0.5
     >>> point = numpy.random.random(3) - 0.5
     >>> R0 = rotation_matrix(angle, direc, point)
@@ -275,9 +331,9 @@ def rotation_matrix(angle, direction, point=None):
     R = numpy.diag([cosa, cosa, cosa])
     R += numpy.outer(direction, direction) * (1.0 - cosa)
     direction *= sina
-    R += numpy.array([[0.0, -direction[2], direction[1]],
-                      [direction[2], 0.0, -direction[0]],
-                      [-direction[1], direction[0], 0.0]])
+    R += numpy.array([[ 0.0,         -direction[2],  direction[1]],
+                      [ direction[2], 0.0,          -direction[0]],
+                      [-direction[1], direction[0],  0.0]])
     M = numpy.identity(4)
     M[:3, :3] = R
     if point is not None:
@@ -290,7 +346,7 @@ def rotation_matrix(angle, direction, point=None):
 def rotation_from_matrix(matrix):
     """Return rotation angle and axis from rotation matrix.
 
-    >>> angle = (numpy.random.random() - 0.5) * (2*math.pi)
+    >>> angle = (random.random() - 0.5) * (2*math.pi)
     >>> direc = numpy.random.random(3) - 0.5
     >>> point = numpy.random.random(3) - 0.5
     >>> R0 = rotation_matrix(angle, direc, point)
@@ -306,13 +362,13 @@ def rotation_from_matrix(matrix):
     w, W = numpy.linalg.eig(R33.T)
     i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
     if not len(i):
-        raise ValueError('No unit eigenvector corresponding to eigenvalue 1')
+        raise ValueError("no unit eigenvector corresponding to eigenvalue 1")
     direction = numpy.real(W[:, i[-1]]).squeeze()
     # point: unit eigenvector of R33 corresponding to eigenvalue of 1
     w, Q = numpy.linalg.eig(R)
     i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
     if not len(i):
-        raise ValueError('No unit eigenvector corresponding to eigenvalue 1')
+        raise ValueError("no unit eigenvector corresponding to eigenvalue 1")
     point = numpy.real(Q[:, i[-1]]).squeeze()
     point /= point[3]
     # rotation angle depending on direction
@@ -337,7 +393,7 @@ def scale_matrix(factor, origin=None, direction=None):
     >>> S = scale_matrix(-1.234)
     >>> numpy.allclose(numpy.dot(S, v)[:3], -1.234*v[:3])
     True
-    >>> factor = numpy.random.random() * 10 - 5
+    >>> factor = random.random() * 10 - 5
     >>> origin = numpy.random.random(3) - 0.5
     >>> direct = numpy.random.random(3) - 0.5
     >>> S = scale_matrix(factor, origin)
@@ -364,7 +420,7 @@ def scale_matrix(factor, origin=None, direction=None):
 def scale_from_matrix(matrix):
     """Return scaling factor, origin and direction from scaling matrix.
 
-    >>> factor = numpy.random.random() * 10 - 5
+    >>> factor = random.random() * 10 - 5
     >>> origin = numpy.random.random(3) - 0.5
     >>> direct = numpy.random.random(3) - 0.5
     >>> S0 = scale_matrix(factor, origin)
@@ -396,13 +452,14 @@ def scale_from_matrix(matrix):
     w, V = numpy.linalg.eig(M)
     i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
     if not len(i):
-        raise ValueError('No eigenvector corresponding to eigenvalue 1')
+        raise ValueError("no eigenvector corresponding to eigenvalue 1")
     origin = numpy.real(V[:, i[-1]]).squeeze()
     origin /= origin[3]
     return factor, origin, direction
 
 
-def projection_matrix(point, normal, direction=None, perspective=None, pseudo=False):
+def projection_matrix(point, normal, direction=None,
+                      perspective=None, pseudo=False):
     """Return matrix to project onto plane defined by point and normal.
 
     Using either perspective point, projection direction, or none of both.
@@ -571,10 +628,10 @@ def clip_matrix(left, right, bottom, top, near, far, perspective=False):
 
     """
     if left >= right or bottom >= top or near >= far:
-        raise ValueError('invalid frustum')
+        raise ValueError("invalid frustum")
     if perspective:
         if near <= _EPS:
-            raise ValueError('invalid frustum: near <= 0')
+            raise ValueError("invalid frustum: near <= 0")
         t = 2.0 * near
         M = [[t/(left-right), 0.0, (right+left)/(right-left), 0.0],
              [0.0, t/(bottom-top), (top+bottom)/(top-bottom), 0.0],
@@ -588,80 +645,80 @@ def clip_matrix(left, right, bottom, top, near, far, perspective=False):
     return numpy.array(M)
 
 
-# def shear_matrix(angle, direction, point, normal):
-#    """Return matrix to shear by angle along direction vector on shear plane.
-#
-#    The shear plane is defined by a point and normal vector. The direction
-#    vector must be orthogonal to the plane's normal vector.
-#
-#    A point P is transformed by the shear matrix into P" such that
-#    the vector P-P" is parallel to the direction vector and its extent is
-#    given by the angle of P-P'-P", where P' is the orthogonal projection
-#    of P onto the shear plane.
-#
-#    >>> angle = (numpy.random.random() - 0.5) * 4*math.pi
-#    >>> direct = numpy.random.random(3) - 0.5
-#    >>> point = numpy.random.random(3) - 0.5
-#    >>> normal = numpy.cross(direct, numpy.random.random(3))
-#    >>> S = shear_matrix(angle, direct, point, normal)
-#    >>> numpy.allclose(1, numpy.linalg.det(S))
-#    True
-#
-#    """
-#    normal = unit_vector(normal[:3])
-#    direction = unit_vector(direction[:3])
-#    if abs(numpy.dot(normal, direction)) > 1e-6:
-#        raise ValueError("direction and normal vectors are not orthogonal")
-#    angle = math.tan(angle)
-#    M = numpy.identity(4)
-#    M[:3, :3] += angle * numpy.outer(direction, normal)
-#    M[:3, 3] = -angle * numpy.dot(point[:3], normal) * direction
-#    return M
+def shear_matrix(angle, direction, point, normal):
+    """Return matrix to shear by angle along direction vector on shear plane.
+
+    The shear plane is defined by a point and normal vector. The direction
+    vector must be orthogonal to the plane's normal vector.
+
+    A point P is transformed by the shear matrix into P" such that
+    the vector P-P" is parallel to the direction vector and its extent is
+    given by the angle of P-P'-P", where P' is the orthogonal projection
+    of P onto the shear plane.
+
+    >>> angle = (random.random() - 0.5) * 4*math.pi
+    >>> direct = numpy.random.random(3) - 0.5
+    >>> point = numpy.random.random(3) - 0.5
+    >>> normal = numpy.cross(direct, numpy.random.random(3))
+    >>> S = shear_matrix(angle, direct, point, normal)
+    >>> numpy.allclose(1, numpy.linalg.det(S))
+    True
+
+    """
+    normal = unit_vector(normal[:3])
+    direction = unit_vector(direction[:3])
+    if abs(numpy.dot(normal, direction)) > 1e-6:
+        raise ValueError("direction and normal vectors are not orthogonal")
+    angle = math.tan(angle)
+    M = numpy.identity(4)
+    M[:3, :3] += angle * numpy.outer(direction, normal)
+    M[:3, 3] = -angle * numpy.dot(point[:3], normal) * direction
+    return M
 
 
-# def shear_from_matrix(matrix):
-#    """Return shear angle, direction and plane from shear matrix.
-#
-#    >>> angle = (numpy.random.random() - 0.5) * 4*math.pi
-#    >>> direct = numpy.random.random(3) - 0.5
-#    >>> point = numpy.random.random(3) - 0.5
-#    >>> normal = numpy.cross(direct, numpy.random.random(3))
-#    >>> S0 = shear_matrix(angle, direct, point, normal)
-#    >>> angle, direct, point, normal = shear_from_matrix(S0)
-#    >>> S1 = shear_matrix(angle, direct, point, normal)
-#    >>> is_same_transform(S0, S1)
-#    True
-#
-#    """
-#    M = numpy.array(matrix, dtype=numpy.float64, copy=False)
-#    M33 = M[:3, :3]
-#    # normal: cross independent eigenvectors corresponding to the eigenvalue 1
-#    w, V = numpy.linalg.eig(M33)
-#    i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-4)[0]
-#    if len(i) < 2:
-#        raise ValueError("no two linear independent eigenvectors found %s" % w)
-#    V = numpy.real(V[:, i]).squeeze().T
-#    lenorm = -1.0
-#    for i0, i1 in ((0, 1), (0, 2), (1, 2)):
-#        n = numpy.cross(V[i0], V[i1])
-#        w = vector_norm(n)
-#        if w > lenorm:
-#            lenorm = w
-#            normal = n
-#    normal /= lenorm
-#    # direction and angle
-#    direction = numpy.dot(M33 - numpy.identity(3), normal)
-#    angle = vector_norm(direction)
-#    direction /= angle
-#    angle = math.atan(angle)
-#    # point: eigenvector corresponding to eigenvalue 1
-#    w, V = numpy.linalg.eig(M)
-#    i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
-#    if not len(i):
-#        raise ValueError("no eigenvector corresponding to eigenvalue 1")
-#    point = numpy.real(V[:, i[-1]]).squeeze()
-#    point /= point[3]
-#    return angle, direction, point, normal
+def shear_from_matrix(matrix):
+    """Return shear angle, direction and plane from shear matrix.
+
+    >>> angle = (random.random() - 0.5) * 4*math.pi
+    >>> direct = numpy.random.random(3) - 0.5
+    >>> point = numpy.random.random(3) - 0.5
+    >>> normal = numpy.cross(direct, numpy.random.random(3))
+    >>> S0 = shear_matrix(angle, direct, point, normal)
+    >>> angle, direct, point, normal = shear_from_matrix(S0)
+    >>> S1 = shear_matrix(angle, direct, point, normal)
+    >>> is_same_transform(S0, S1)
+    True
+
+    """
+    M = numpy.array(matrix, dtype=numpy.float64, copy=False)
+    M33 = M[:3, :3]
+    # normal: cross independent eigenvectors corresponding to the eigenvalue 1
+    w, V = numpy.linalg.eig(M33)
+    i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-4)[0]
+    if len(i) < 2:
+        raise ValueError("no two linear independent eigenvectors found %s" % w)
+    V = numpy.real(V[:, i]).squeeze().T
+    lenorm = -1.0
+    for i0, i1 in ((0, 1), (0, 2), (1, 2)):
+        n = numpy.cross(V[i0], V[i1])
+        w = vector_norm(n)
+        if w > lenorm:
+            lenorm = w
+            normal = n
+    normal /= lenorm
+    # direction and angle
+    direction = numpy.dot(M33 - numpy.identity(3), normal)
+    angle = vector_norm(direction)
+    direction /= angle
+    angle = math.atan(angle)
+    # point: eigenvector corresponding to eigenvalue 1
+    w, V = numpy.linalg.eig(M)
+    i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
+    if not len(i):
+        raise ValueError("no eigenvector corresponding to eigenvalue 1")
+    point = numpy.real(V[:, i[-1]]).squeeze()
+    point /= point[3]
+    return angle, direction, point, normal
 
 
 def decompose_matrix(matrix):
@@ -742,14 +799,15 @@ def decompose_matrix(matrix):
         angles[0] = math.atan2(row[1, 2], row[2, 2])
         angles[2] = math.atan2(row[0, 1], row[0, 0])
     else:
+        #angles[0] = math.atan2(row[1, 0], row[1, 1])
         angles[0] = math.atan2(-row[2, 1], row[1, 1])
         angles[2] = 0.0
 
     return scale, shear, angles, translate, perspective
 
 
-def compose_matrix(scale=None, shear=None, angles=None,
-                   translate=None, perspective=None):
+def compose_matrix(scale=None, shear=None, angles=None, translate=None,
+                   perspective=None):
     """Return transformation matrix from sequence of transformations.
 
     This is the inverse of the decompose_matrix function.
@@ -822,10 +880,10 @@ def orthogonalization_matrix(lengths, angles):
     cosa, cosb, cosg = numpy.cos(angles)
     co = (cosa * cosb - cosg) / (sina * sinb)
     return numpy.array([
-        [a*sinb*math.sqrt(1.0-co*co), 0.0, 0.0, 0.0],
-        [-a*sinb*co, b*sina, 0.0, 0.0],
-        [a*cosb, b*cosa, c, 0.0],
-        [0.0, 0.0, 0.0, 1.0]])
+        [ a*sinb*math.sqrt(1.0-co*co),  0.0,    0.0, 0.0],
+        [-a*sinb*co,                    b*sina, 0.0, 0.0],
+        [ a*cosb,                       b*cosa, c,   0.0],
+        [ 0.0,                          0.0,    0.0, 1.0]])
 
 
 def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):
@@ -851,12 +909,12 @@ def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):
     >>> v0 = [[0, 1031, 1031, 0], [0, 0, 1600, 1600]]
     >>> v1 = [[675, 826, 826, 677], [55, 52, 281, 277]]
     >>> affine_matrix_from_points(v0, v1)
-    array([[  1.45489948e-01,   6.24811295e-04,   6.75500083e+02],
-           [  4.84502149e-04,   1.40938160e-01,   5.32497108e+01],
-           [  0.00000000e+00,   0.00000000e+00,   1.00000000e+00]])
+    array([[   0.14549,    0.00062,  675.50008],
+           [   0.00048,    0.14094,   53.24971],
+           [   0.     ,    0.     ,    1.     ]])
     >>> T = translation_matrix(numpy.random.random(3)-0.5)
     >>> R = random_rotation_matrix(numpy.random.random(3))
-    >>> S = scale_matrix(numpy.random.random())
+    >>> S = scale_matrix(random.random())
     >>> M = concatenate_matrices(T, R, S)
     >>> v0 = (numpy.random.rand(4, 100) - 0.5) * 20
     >>> v0[3] = 1
@@ -914,10 +972,10 @@ def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):
         xx, yy, zz = numpy.sum(v0 * v1, axis=1)
         xy, yz, zx = numpy.sum(v0 * numpy.roll(v1, -1, axis=0), axis=1)
         xz, yx, zy = numpy.sum(v0 * numpy.roll(v1, -2, axis=0), axis=1)
-        N = [[xx+yy+zz, 0.0, 0.0, 0.0],
-             [yz-zy, xx-yy-zz, 0.0, 0.0],
-             [zx-xz, xy+yx, yy-xx-zz, 0.0],
-             [xy-yx, zx+xz, yz+zy, zz-xx-yy]]
+        N = [[xx+yy+zz, 0.0,      0.0,      0.0],
+             [yz-zy,    xx-yy-zz, 0.0,      0.0],
+             [zx-xz,    xy+yx,    yy-xx-zz, 0.0],
+             [xy-yx,    zx+xz,    yz+zy,    zz-xx-yy]]
         # quaternion: eigenvector corresponding to most positive eigenvalue
         w, V = numpy.linalg.eigh(N)
         q = V[:, numpy.argmax(w)]
@@ -964,7 +1022,7 @@ def superimposition_matrix(v0, v1, scale=False, usesvd=True):
     >>> M = superimposition_matrix(v0, v1)
     >>> numpy.allclose(v1, numpy.dot(M, v0))
     True
-    >>> S = scale_matrix(numpy.random.random())
+    >>> S = scale_matrix(random.random())
     >>> T = translation_matrix(numpy.random.random(3)-0.5)
     >>> M = concatenate_matrices(T, R, S)
     >>> v1 = numpy.dot(M, v0)
@@ -984,7 +1042,8 @@ def superimposition_matrix(v0, v1, scale=False, usesvd=True):
     """
     v0 = numpy.array(v0, dtype=numpy.float64, copy=False)[:3]
     v1 = numpy.array(v1, dtype=numpy.float64, copy=False)[:3]
-    return affine_matrix_from_points(v0, v1, shear=False, scale=scale, usesvd=usesvd)
+    return affine_matrix_from_points(v0, v1, shear=False,
+                                     scale=scale, usesvd=usesvd)
 
 
 def euler_matrix(ai, aj, ak, axes='sxyz'):
@@ -1083,22 +1142,22 @@ def euler_from_matrix(matrix, axes='sxyz'):
     if repetition:
         sy = math.sqrt(M[i, j]*M[i, j] + M[i, k]*M[i, k])
         if sy > _EPS:
-            ax = math.atan2(M[i, j], M[i, k])
-            ay = math.atan2(sy, M[i, i])
-            az = math.atan2(M[j, i], -M[k, i])
+            ax = math.atan2( M[i, j],  M[i, k])
+            ay = math.atan2( sy,       M[i, i])
+            az = math.atan2( M[j, i], -M[k, i])
         else:
-            ax = math.atan2(-M[j, k], M[j, j])
-            ay = math.atan2(sy, M[i, i])
+            ax = math.atan2(-M[j, k],  M[j, j])
+            ay = math.atan2( sy,       M[i, i])
             az = 0.0
     else:
         cy = math.sqrt(M[i, i]*M[i, i] + M[j, i]*M[j, i])
         if cy > _EPS:
-            ax = math.atan2(M[k, j], M[k, k])
-            ay = math.atan2(-M[k, i], cy)
-            az = math.atan2(M[j, i], M[i, i])
+            ax = math.atan2( M[k, j],  M[k, k])
+            ay = math.atan2(-M[k, i],  cy)
+            az = math.atan2( M[j, i],  M[i, i])
         else:
-            ax = math.atan2(-M[j, k], M[j, j])
-            ay = math.atan2(-M[k, i], cy)
+            ax = math.atan2(-M[j, k],  M[j, j])
+            ay = math.atan2(-M[k, i],  cy)
             az = 0.0
 
     if parity:
@@ -1213,10 +1272,10 @@ def quaternion_matrix(quaternion):
     q *= math.sqrt(2.0 / n)
     q = numpy.outer(q, q)
     return numpy.array([
-        [1.0-q[2, 2]-q[3, 3], q[1, 2]-q[3, 0], q[1, 3]+q[2, 0], 0.0],
-        [q[1, 2]+q[3, 0], 1.0-q[1, 1]-q[3, 3], q[2, 3]-q[1, 0], 0.0],
-        [q[1, 3]-q[2, 0], q[2, 3]+q[1, 0], 1.0-q[1, 1]-q[2, 2], 0.0],
-        [0.0, 0.0, 0.0, 1.0]])
+        [1.0-q[2, 2]-q[3, 3],     q[1, 2]-q[3, 0],     q[1, 3]+q[2, 0], 0.0],
+        [    q[1, 2]+q[3, 0], 1.0-q[1, 1]-q[3, 3],     q[2, 3]-q[1, 0], 0.0],
+        [    q[1, 3]-q[2, 0],     q[2, 3]+q[1, 0], 1.0-q[1, 1]-q[2, 2], 0.0],
+        [                0.0,                 0.0,                 0.0, 1.0]])
 
 
 def quaternion_from_matrix(matrix, isprecise=False):
@@ -1248,6 +1307,10 @@ def quaternion_from_matrix(matrix, isprecise=False):
     >>> R = random_rotation_matrix()
     >>> q = quaternion_from_matrix(R)
     >>> is_same_transform(R, quaternion_matrix(q))
+    True
+    >>> R = euler_matrix(0.0, 0.0, numpy.pi/2.0)
+    >>> numpy.allclose(quaternion_from_matrix(R, isprecise=False),
+    ...                quaternion_from_matrix(R, isprecise=True))
     True
 
     """
@@ -1283,10 +1346,10 @@ def quaternion_from_matrix(matrix, isprecise=False):
         m21 = M[2, 1]
         m22 = M[2, 2]
         # symmetric matrix K
-        K = numpy.array([[m00-m11-m22, 0.0, 0.0, 0.0],
-                         [m01+m10, m11-m00-m22, 0.0, 0.0],
-                         [m02+m20, m12+m21, m22-m00-m11, 0.0],
-                         [m21-m12, m02-m20, m10-m01, m00+m11+m22]])
+        K = numpy.array([[m00-m11-m22, 0.0,         0.0,         0.0],
+                         [m01+m10,     m11-m00-m22, 0.0,         0.0],
+                         [m02+m20,     m12+m21,     m22-m00-m11, 0.0],
+                         [m21-m12,     m02-m20,     m10-m01,     m00+m11+m22]])
         K /= 3.0
         # quaternion is eigenvector of K that corresponds to largest eigenvalue
         w, V = numpy.linalg.eigh(K)
@@ -1307,9 +1370,9 @@ def quaternion_multiply(quaternion1, quaternion0):
     w0, x0, y0, z0 = quaternion0
     w1, x1, y1, z1 = quaternion1
     return numpy.array([-x1*x0 - y1*y0 - z1*z0 + w1*w0,
-                        x1*w0 + y1*z0 - z1*y0 + w1*x0,
+                         x1*w0 + y1*z0 - z1*y0 + w1*x0,
                         -x1*z0 + y1*w0 + z1*x0 + w1*y0,
-                        x1*y0 - y1*x0 + z1*w0 + w1*z0], dtype=numpy.float64)
+                         x1*y0 - y1*x0 + z1*w0 + w1*z0], dtype=numpy.float64)
 
 
 def quaternion_conjugate(quaternion):
@@ -1760,21 +1823,11 @@ def angle_between_vectors(v0, v1, directed=True, axis=0):
     True
 
     """
-    import warnings as w
-    w.simplefilter("error")
-    numpy.seterr(all='warn')
     v0 = numpy.array(v0, dtype=numpy.float64, copy=False)
     v1 = numpy.array(v1, dtype=numpy.float64, copy=False)
     dot = numpy.sum(v0 * v1, axis=axis)
-    try:
-        dot /= vector_norm(v0, axis=axis) * vector_norm(v1, axis=axis)
-    except RuntimeWarning:
-        "Do nothing"
-    try:
-        angle = numpy.arccos(dot if directed else numpy.fabs(dot))
-    except RuntimeWarning:
-        angle = 0
-    return angle
+    dot /= vector_norm(v0, axis=axis) * vector_norm(v1, axis=axis)
+    return numpy.arccos(dot if directed else numpy.fabs(dot))
 
 
 def inverse_matrix(matrix):
@@ -1825,46 +1878,33 @@ def is_same_transform(matrix0, matrix1):
     return numpy.allclose(matrix0, matrix1)
 
 
-def rotate_and_chop(verts, normal, axis=[0, 0, 1]):
-    r"""
-    Method to rotate a set of vertices (or coords) to align with an axis
-    points must be coplanar and normal must be given
-    Chops axis coord to give vertices back in 2D
-    Used to prepare verts for printing or calculating convex hull in order to arrange
-    them in hull order for calculations and printing
-    """
-    xaxis = [1, 0, 0]
-    yaxis = [0, 1, 0]
-    zaxis = [0, 0, 1]
-    angle = angle_between_vectors(normal, axis)
-    if angle == 0.0 or angle == numpy.pi:
-        # We are already aligned
-        facet = verts
-    else:
-        M = rotation_matrix(angle_between_vectors(normal, axis),
-                            vector_product(normal, axis))
-        try:
-            facet = numpy.dot(verts, M[:3, :3].T)
-        except ValueError:
-            print(verts)
-            print(M[:3, :3].T)
-    try:
-        x = facet[:, 0]
-        y = facet[:, 1]
-        z = facet[:, 2]
-    except IndexError:
-        x = facet[0]
-        y = facet[1]
-        z = facet[2]
-    # Work out span of points and set axes scales to cover this and be
-    # equal in both dimensions
-    if axis == xaxis:
-        output = numpy.column_stack((y, z))
-    elif axis == yaxis:
-        output = numpy.column_stack((x, z))
-    elif axis == zaxis:
-        output = numpy.column_stack((x, y))
-    else:
-        output = facet
+def _import_module(name, package=None, warn=True, prefix='_py_', ignore='_'):
+    """Try import all public attributes from module into global namespace.
 
-    return output
+    Existing attributes with name clashes are renamed with prefix.
+    Attributes starting with underscore are ignored by default.
+
+    Return True on successful import.
+
+    """
+    import warnings
+    from importlib import import_module
+    try:
+        if not package:
+            module = import_module(name)
+        else:
+            module = import_module('.' + name, package=package)
+    except ImportError:
+        if warn:
+            warnings.warn("failed to import module %s" % name)
+    else:
+        for attr in dir(module):
+            if ignore and attr.startswith(ignore):
+                continue
+            if prefix:
+                if attr in globals():
+                    globals()[prefix + attr] = globals()[attr]
+                elif warn:
+                    warnings.warn("no Python implementation of " + attr)
+            globals()[attr] = getattr(module, attr)
+        return True
