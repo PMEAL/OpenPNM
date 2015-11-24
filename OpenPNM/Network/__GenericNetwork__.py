@@ -865,6 +865,21 @@ class GenericNetwork(Core):
         health['duplicate_throats'] = []
         health['bidirectional_throats'] = []
         health['headless_throats'] = []
+        health['looped_throats'] = []
+
+        # Check for headless throats
+        hits = sp.where(self['throat.conns'] > self.Np - 1)[0]
+        if sp.size(hits) > 0:
+            health['headless_throats'] = sp.unique(hits)
+            logger.warning('Health check cannot complete due to connectivity '
+                           'errors. Please correct existing errors & recheck.')
+            return health
+
+        # Check for throats that loop back onto the same pore
+        P12 = self['throat.conns']
+        hits = sp.where(P12[:, 0] == P12[:, 1])[0]
+        if sp.size(hits) > 0:
+            health['looped_throats'] = hits
 
         # Check for individual isolated pores
         Ps = self.num_neighbors(self.pores())
@@ -885,14 +900,6 @@ class GenericNetwork(Core):
                 health['disconnected_clusters'].append(temp[c[i]])
                 if i > 0:
                     health['trim_pores'].extend(temp[c[i]])
-
-        # Check for headless throats
-        hits = sp.where(self['throat.conns'] > self.Np - 1)[0]
-        if sp.size(hits) > 0:
-            health['headless_throats'] = sp.unique(hits)
-            logger.error('Health check cannot complete due to connectivity '
-                         'errors. Please correct existing errors and recheck.')
-            return health
 
         # Check for duplicate throats
         i = self['throat.conns'][:, 0]
