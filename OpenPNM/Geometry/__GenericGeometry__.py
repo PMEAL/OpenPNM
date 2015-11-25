@@ -23,12 +23,12 @@ class GenericGeometry(Core):
 
     pores and/or throats : array_like
         The list of pores and throats where this physics applies. If either are
-        left blank this will apply the physics nowhere.  The locations can be
-        change after instantiation using ``set_locations()``.
+        left blank this will apply the Geometry nowhere.  The locations can be
+        changed after instantiation using ``set_locations()``.
 
     name : string
         A unique name to apply to the object.  This name will also be used as a
-        label to identify where this this geometry applies.
+        label to identify where this geometry applies.
 
     Examples
     --------
