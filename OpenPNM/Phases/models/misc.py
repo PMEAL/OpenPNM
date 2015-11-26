@@ -9,16 +9,6 @@ Models for applying basic phase properties
 import scipy as _sp
 
 
-
-def random(phase, seed=None, **kwargs):
-    r"""
-    Assigns specified constant value
-    """
-    _sp.random.seed(seed=seed)
-    value = _sp.random.rand(phase.Np)
-    return value
-
-
 def linear(phase, m, b, poreprop, **kwargs):
     r"""
     Calculates a property as a linear function of a given property
