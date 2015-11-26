@@ -64,6 +64,12 @@ class ControllerTest:
         self.controller.load_simulation(join(TEMP_DIR, 'test_simulation'))
         assert a.name in self.controller.keys()
 
+    def test_save_simulation_no_name(self):
+        a = OpenPNM.Network.Cubic(shape=[10, 10, 10])
+        self.controller.save_simulation(a)
+        self.controller.clear()
+        self.controller.load_simulation(a.name)
+
     def test_ghost_object(self):
         a = self.controller.ghost_object(self.net)
         # Different objects...
