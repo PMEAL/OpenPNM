@@ -74,5 +74,5 @@ class PoreMiscTest:
         self.geo.models.add(model=mod,
                             propname='pore.seed',
                             throat_prop='throat.seed',
-                            mode='max')
+                            mode='mean')
         assert sp.all(sp.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
