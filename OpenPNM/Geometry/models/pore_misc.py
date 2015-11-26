@@ -7,15 +7,6 @@ pore_misc -- miscillaneous and generic functions to apply to pores
 import scipy as _sp
 
 
-def constant(geometry, value, **kwargs):
-    r"""
-    Assign specified constant value.  This function is redundant and could be
-    accomplished with geometry['pore.prop'] = value.
-    """
-    value = _sp.ones(geometry.num_pores(),)*value
-    return value
-
-
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     r"""
     Assign random number to pore bodies
