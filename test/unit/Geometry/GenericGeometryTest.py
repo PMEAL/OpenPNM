@@ -61,3 +61,6 @@ class GenericGeometryTest:
         except:
             flag = True
         assert flag
+
+    def test_plot_histogram(self):
+        self.geo.plot_histograms()
