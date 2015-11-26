@@ -26,6 +26,15 @@ class ControllerTest:
         self.controller.load(join(TEMP_DIR, 'test_workspace'))
         assert self.net.name in self.controller.keys()
 
+    def test_load_overwrite_existing(self):
+        temp = self.controller.copy()
+        self.controller.save(join(TEMP_DIR, 'test_workspace'))
+        self.controller.load(join(TEMP_DIR, 'test_workspace'))
+        flag = [i for i in temp.keys() if i not in self.controller.keys()]
+
+    def test_save_no_name(self):
+        self.controller.save()
+
     def test_load_v120_pnm(self):
         temp = self.controller.copy()
         self.controller.clear()
