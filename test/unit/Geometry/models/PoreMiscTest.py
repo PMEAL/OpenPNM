@@ -2,6 +2,7 @@ import OpenPNM
 import scipy as sp
 import OpenPNM.Geometry.models as gm
 
+
 class PoreMiscTest:
 
     def setup_class(self):
@@ -41,6 +42,7 @@ class PoreMiscTest:
     def test_neighbor_min(self):
         catch = self.geo.pop('pore.seed', None)
         catch = self.geo.models.pop('pore.seed', None)
+        catch = self.geo.models.pop('throat.seed', None)
         mod = gm.pore_misc.neighbor
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
         self.geo.models.add(model=mod,
@@ -48,13 +50,14 @@ class PoreMiscTest:
                             throat_prop='throat.seed',
                             mode='min')
         assert sp.all(sp.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
-        pmax = sp.axmax(self.geo['pore.seed'])
+        pmax = sp.amax(self.geo['pore.seed'])
         tmax = sp.amax(self.geo['throat.seed'])
         assert pmax <= tmax
 
     def test_neighbor_max(self):
         catch = self.geo.pop('pore.seed', None)
         catch = self.geo.models.pop('pore.seed', None)
+        catch = self.geo.models.pop('throat.seed', None)
         mod = gm.pore_misc.neighbor
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
         self.geo.models.add(model=mod,
@@ -69,6 +72,7 @@ class PoreMiscTest:
     def test_neighbor_mean(self):
         catch = self.geo.pop('pore.seed', None)
         catch = self.geo.models.pop('pore.seed', None)
+        catch = self.geo.models.pop('throat.seed', None)
         mod = gm.pore_misc.neighbor
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
         self.geo.models.add(model=mod,

@@ -2,7 +2,8 @@ import OpenPNM
 import scipy as sp
 import OpenPNM.Geometry.models as gm
 
-class PoreMiscTest:
+
+class ThroatMiscTest:
 
     def setup_class(self):
         self.net = OpenPNM.Network.Cubic(shape=[5, 5, 5])
@@ -11,7 +12,7 @@ class PoreMiscTest:
                                                     throats=self.net.Ts)
 
     def test_random_no_seed(self):
-        mod = gm.throaqt_misc.random
+        mod = gm.throat_misc.random
         self.geo.models.add(model=mod,
                             propname='throat.seed',
                             seed=None)
