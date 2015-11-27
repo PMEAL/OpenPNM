@@ -1,6 +1,5 @@
 import OpenPNM
 import scipy as sp
-import matplotlib.pyplot as plt
 import OpenPNM.Utilities.vertexops as vo
 
 
@@ -54,3 +53,11 @@ class VertexOpsTest:
 
     # def test_plot_throat(self):
     #    vo.plot_throat(self.geo, [1, 2, 3, 4])
+
+    def test_rotate_and_chop(self):
+        throat_verts = self.geo["throat.vertices"][0]
+        throat_normal = self.geo["throat.normal"][0]
+        test = vo.rotate_and_chop(throat_verts, throat_normal, [0, 1, 0])
+        r, c = sp.shape(test)
+        assert r == len(throat_verts)
+        assert c == 2

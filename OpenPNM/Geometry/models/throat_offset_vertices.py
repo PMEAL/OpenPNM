@@ -5,7 +5,7 @@ throat_offset_vertices -- Offeset throat vertices using a fibre radius parameter
 
 """
 import scipy as sp
-import OpenPNM.Utilities.transformations as tr
+from transforms3d import _gohlketransforms as tr
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
