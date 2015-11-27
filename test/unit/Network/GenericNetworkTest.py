@@ -132,7 +132,14 @@ class GenericNetworkTest:
 
     def test_check_network_health_healthy(self):
         a = self.net.check_network_health()
-        assert len(list(a.values())) == 5
+        items = set(['disconnected_clusters',
+                     'isolated_pores',
+                     'trim_pores',
+                     'duplicate_throats',
+                     'bidirectional_throats',
+                     'headless_throats',
+                     'looped_throats'])
+        assert items == a.keys()
         assert sp.size(list(a.values())) == 0
 
     def test_check_network_isolated_pores(self):
@@ -169,13 +176,25 @@ class GenericNetworkTest:
         a = net.check_network_health()
         assert len(a['duplicate_throats'][1]) == 2
 
-    def test_check_network_health_bidirectional_throat(self):
+    def test_check_network_health_bidirectional_throats(self):
         net = OpenPNM.Network.Cubic(shape=[5, 5, 5])
         P12 = net['throat.conns'][0]
         net['throat.conns'][0] = [P12[1], P12[0]]
         a = net.check_network_health()
         assert sp.size(a['bidirectional_throats']) == 1
         assert sp.size(a['duplicate_throats']) == 0
+
+    def test_check_network_health_headless_throats(self):
+        net = OpenPNM.Network.Cubic(shape=[5, 5, 5])
+        net.extend(throat_conns=[[5, 5555]])
+        a = net.check_network_health()
+        assert a['headless_throats'] == sp.array([300])
+
+    def test_check_network_health_looped_throats(self):
+        net = OpenPNM.Network.Cubic(shape=[5, 5, 5])
+        net.extend(throat_conns=[[5, 5]])
+        a = net.check_network_health()
+        assert a['looped_throats'] == sp.array([300])
 
     def test_find_nearby_pores_distance_1(self):
         a = self.net.find_nearby_pores(pores=[0, 1], distance=1)
