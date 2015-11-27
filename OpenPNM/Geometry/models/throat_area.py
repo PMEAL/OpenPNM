@@ -5,7 +5,6 @@ Submodule -- throat_area
 
 """
 import scipy as _sp
-import OpenPNM.Utilities.transformations as tr
 import OpenPNM.Utilities.vertexops as vo
 from scipy.spatial import ConvexHull
 
@@ -60,7 +59,7 @@ def voronoi(geometry, **kwargs):
     area = _sp.ndarray(Nt)
     for i in range(Nt):
         if len(verts[i]) > 2:
-            verts_2D = tr.rotate_and_chop(verts[i], normals[i], [0, 0, 1])
+            verts_2D = vo.rotate_and_chop(verts[i], normals[i], [0, 0, 1])
             # Get in hull order
             hull = ConvexHull(verts_2D, qhull_options='QJ Pp')
             verts_2D = verts_2D[hull.vertices]
