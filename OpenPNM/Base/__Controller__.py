@@ -274,7 +274,7 @@ class Controller(dict):
         if filename == '':
             filename = network.name
         else:
-            filename = filename.rstrip('.net')
+            filename = filename.rsplit('.net', 1)[0]
 
         # Save nested dictionary pickle
         _pickle.dump(network, open(filename + '.net', 'wb'))

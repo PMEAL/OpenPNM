@@ -50,7 +50,7 @@ class ThroatMiscTest:
                             mode='min')
         P12 = self.net['throat.conns']
         tseed = sp.amin(self.geo['pore.seed'][P12], axis=1)
-        assert sp.all(self.geo['throat.seed'] == tseed)
+        assert sp.allclose(self.geo['throat.seed'], tseed)
 
     def test_neighbor_max(self):
         catch = self.geo.pop('throat.seed', None)
@@ -63,7 +63,7 @@ class ThroatMiscTest:
                             mode='max')
         P12 = self.net['throat.conns']
         tseed = sp.amax(self.geo['pore.seed'][P12], axis=1)
-        assert sp.all(self.geo['throat.seed'] == tseed)
+        assert sp.allclose(self.geo['throat.seed'], tseed)
 
     def test_neighbor_mean(self):
         catch = self.geo.pop('throat.seed', None)
@@ -76,4 +76,4 @@ class ThroatMiscTest:
                             mode='mean')
         P12 = self.net['throat.conns']
         tseed = sp.mean(self.geo['pore.seed'][P12], axis=1)
-        assert sp.all(self.geo['throat.seed'] == tseed)
+        assert sp.allclose(self.geo['throat.seed'], tseed)
