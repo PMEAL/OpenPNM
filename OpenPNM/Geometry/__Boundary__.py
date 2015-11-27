@@ -50,8 +50,12 @@ class Boundary(GenericGeometry):
             seeds = False
 
         if seeds:
-            self['pore.seed'] = 0.9999
-        self['pore.diameter'] = 0
+            self.models.add(propname='pore.seed',
+                            model=gm.pore_misc.constant,
+                            value=0.9999)
+        self.models.add(propname='pore.diameter',
+                        model=gm.pore_misc.constant,
+                        value=0)
         if seeds:
             self.models.add(propname='throat.seed',
                             model=gm.throat_misc.neighbor,

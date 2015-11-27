@@ -4,6 +4,8 @@ import OpenPNM.Geometry.models as gm
 
 
 class PoreMiscTest:
+    def test_constant(self):
+        pass
 
     def setup_class(self):
         self.net = OpenPNM.Network.Cubic(shape=[5, 5, 5])
