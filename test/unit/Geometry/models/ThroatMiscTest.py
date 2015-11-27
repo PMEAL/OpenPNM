@@ -46,7 +46,7 @@ class ThroatMiscTest:
         self.geo['pore.seed'] = sp.rand(self.net.Np,)
         self.geo.models.add(model=mod,
                             propname='throat.seed',
-                            throat_prop='pore.seed',
+                            pore_prop='pore.seed',
                             mode='min')
         P12 = self.net['throat.conns']
         tseed = sp.amin(self.geo['pore.seed'][P12], axis=1)
@@ -59,7 +59,7 @@ class ThroatMiscTest:
         self.geo['pore.seed'] = sp.rand(self.net.Np,)
         self.geo.models.add(model=mod,
                             propname='throat.seed',
-                            throat_prop='pore.seed',
+                            pore_prop='pore.seed',
                             mode='max')
         P12 = self.net['throat.conns']
         tseed = sp.amax(self.geo['pore.seed'][P12], axis=1)
@@ -72,7 +72,7 @@ class ThroatMiscTest:
         self.geo['pore.seed'] = sp.rand(self.net.Np,)
         self.geo.models.add(model=mod,
                             propname='throat.seed',
-                            throat_prop='pore.seed',
+                            pore_prop='pore.seed',
                             mode='mean')
         P12 = self.net['throat.conns']
         tseed = sp.mean(self.geo['pore.seed'][P12], axis=1)

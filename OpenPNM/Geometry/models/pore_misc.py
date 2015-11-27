@@ -15,6 +15,7 @@ def constant(geometry, value, **kwargs):
     value = _sp.ones(geometry.num_pores(),)*value
     return value
 
+
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     r"""
     Assign random number to pore bodies
