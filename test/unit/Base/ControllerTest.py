@@ -118,6 +118,51 @@ class ControllerTest:
         a = self.controller.phases()
         assert type(a) is list
 
+    def test_export_VTK_and_MAT(self):
+        fname = os.path.join(TEMP_DIR, 'test')
+        # Test VTK option
+        self.controller.export(network=self.net,
+                               filename=fname,
+                               fileformat='VTK')
+        assert os.path.isfile(fname+'.vtp')
+        os.remove(fname+'.vtp')
+        # Test Matlab matfile option
+        self.controller.export(network=self.net,
+                               filename=fname,
+                               fileformat='MAT')
+        assert os.path.isfile(fname+'.mat')
+        os.remove(fname+'.mat')
+
+    def test_export_one_network_none_specified(self):
+        fname = os.path.join(TEMP_DIR, 'test')
+        # Test VTK option
+        self.controller.export(filename=fname,
+                               fileformat='VTK')
+        assert os.path.isfile(fname+'.vtp')
+        os.remove(fname+'.vtp')
+
+    def test_export_many_networks_none_specified(self):
+        pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+        fname = os.path.join(TEMP_DIR, 'test')
+        # Test VTK option
+        flag = False
+        try:
+            self.controller.export(filename=fname,
+                                   fileformat='VTK')
+        except:
+            flag = True
+        assert flag
+
+    def test_set_get_comment(self):
+        comment = 'Testing the function with a unit test'
+        self.controller.comments = comment
+        flag = True
+        try:
+            self.controller.comments
+        except:
+            flag = False
+        assert flag
+
     def teardown_class(self):
         del(self.controller)
         del(self.net)
