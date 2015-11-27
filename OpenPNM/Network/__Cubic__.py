@@ -210,7 +210,7 @@ class Cubic(GenericNetwork):
             coords = coords*scale[label] + offset[label]
             self['pore.coords'][ind] = coords
 
-    def add_boundary_pores(self, pores, offset, apply_label=None):
+    def add_boundary_pores(self, pores, offset, apply_label='boundary'):
         r"""
         This method uses ``clone_pores`` to clone the input pores, then shifts
         them the specified amount and direction, then applies the given label.
@@ -227,9 +227,8 @@ class Cubic(GenericNetwork):
             from the Network.
 
         apply_label : string
-            This label is applied to the boundary pores.  If this label is not
-            given they all labels currently applied to the input pores are
-            cloned but '_boundary' is appended ('except for ``all``).
+            This label is applied to the boundary pores.  Default is
+            'boundary'.
 
         Examples
         --------
@@ -241,7 +240,7 @@ class Cubic(GenericNetwork):
         >>> pn.add_boundary_pores(pores=Ps, offset=[0, 0, 1])
         >>> print(pn.Np)  # Confirm addition of 25 new pores
         150
-        >>> 'pore.top_boundary' in pn.labels()  # Default label is created
+        >>> 'pore.boundary' in pn.labels()  # Default label is created
         True
         """
         # Parse the input pores
@@ -262,20 +261,12 @@ class Cubic(GenericNetwork):
         self.extend(throat_conns=temp)
         # Offset the cloned pores
         self['pore.coords'][newPs] += offset
-        # Apply labels to boundary pores
-        if apply_label is None:
-            labs = self.labels(pores=Ps)
-            labs.remove('pore.all')
-            for item in labs:
-                if item+'_boundary' not in self.keys():
-                    self[item+'_boundary'] = False
-                self[item+'_boundary'][newPs] = self[item][Ps]
-        else:
-            label = apply_label.split('.')[-1]
-            label = 'pore.' + label
-            logger.debug('The label \''+label+'\' has been applied')
-            self[label] = False
-            self[label][newPs] = True
+        # Apply labels to boundary pores (trim leading 'pores' if present)
+        label = apply_label.split('.')[-1]
+        label = 'pore.' + label
+        logger.debug('The label \''+label+'\' has been applied')
+        self[label] = False
+        self[label][newPs] = True
 
     def add_periodic_connections(self, pores1, pores2, apply_label='periodic'):
         r"""

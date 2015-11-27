@@ -26,6 +26,7 @@ before_install:
 
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib
+  - pip install transforms3d
   - pip install -r test_requirements.txt
   - python setup.py install
 
