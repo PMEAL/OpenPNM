@@ -120,8 +120,10 @@ class ControllerTest:
 
     def test_export_VTK_and_MAT(self):
         fname = os.path.join(TEMP_DIR, 'test')
+        self.controller.clear()
+        pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
         # Test VTK option
-        self.controller.export(network=self.net,
+        self.controller.export(network=pn,
                                filename=fname,
                                fileformat='VTK')
         assert os.path.isfile(fname+'.vtp')
@@ -135,6 +137,8 @@ class ControllerTest:
 
     def test_export_one_network_none_specified(self):
         fname = os.path.join(TEMP_DIR, 'test')
+        self.controller.clear()
+        OpenPNM.Network.Cubic(shape=[3, 3, 3])
         # Test VTK option
         self.controller.export(filename=fname,
                                fileformat='VTK')
@@ -142,7 +146,8 @@ class ControllerTest:
         os.remove(fname+'.vtp')
 
     def test_export_many_networks_none_specified(self):
-        pn = OpenPNM.Network.Cubic(shape=[3,3,3])
+        OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        OpenPNM.Network.Cubic(shape=[3, 3, 3])
         fname = os.path.join(TEMP_DIR, 'test')
         # Test VTK option
         flag = False
