@@ -81,7 +81,7 @@ class PoreMiscTest:
                             propname='pore.seed',
                             throat_prop='throat.seed',
                             mode='mean')
-        tmax = sp.amax(self.geo['thorat.seed'])
+        tmax = sp.amax(self.geo['throat.seed'])
         tmin = sp.amin(self.geo['throat.seed'])
         assert sp.all(self.geo['pore.seed'] > tmin)
         assert sp.all(self.geo['pore.seed'] < tmax)
