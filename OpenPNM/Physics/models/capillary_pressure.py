@@ -227,3 +227,56 @@ def static_pressure(network,
         P_temp = _sp.reshape(P_temp[:, _sp.where(g > 0)[0]], -1)
         static_pressure[Ps] = P_temp*rho[Ps]
     return static_pressure
+
+def cuboid(physics, phase, network,
+            surface_tension='pore.surface_tension',
+            contact_angle='pore.contact_angle',
+            throat_diameter='throat.diameter', **kwargs):
+    r"""
+    Computes the capillary entry pressure assuming the throat in a cube tube.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network object is
+    phase : OpenPNM Phase Object
+        Phase object for the invading phases containing the surface tension and
+        contact angle values.
+    sigma : dict key (string)
+        The dictionary key containing the surface tension values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    theta : dict key (string)
+        The dictionary key containing the contact angle values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
+
+    Notes
+    -----
+    The equation is taken from Non-equilibrium effects in capillarity and 
+    interfacial area in two-phase flow: dynamic pore-network modelling
+
+    """
+    if surface_tension.split('.')[0] == 'pore':
+        sigma = phase[surface_tension]
+        sigma = phase.interpolate_data(data=sigma)
+    else:
+        sigma = phase[surface_tension]
+    if contact_angle.split('.')[0] == 'pore':
+        theta = phase[contact_angle]
+        theta = phase.interpolate_data(data=theta)
+    else:
+        theta = phase[contact_angle]
+    #convert theta to rad
+    theta *= 2*_sp.pi/360
+    rad = network[throat_diameter]/2
+    
+    Theta = ((theta+_sp.cos(theta)**2-_sp.pi/4-_sp.sin(theta)*_sp.cos(theta))/
+    (_sp.cos(theta)-_sp.sqrt(_sp.pi/4-theta+_sp.sin(theta)*_sp.cos(theta))))
+    value = (sigma/rad)*Theta
+    if throat_diameter.split('.')[0] == 'throat':
+        value = value[phase.throats(physics.name)]
+    else:
+        value = value[phase.pores(physics.name)]
+    value[_sp.absolute(value) == _sp.inf] = 0
+    return value
