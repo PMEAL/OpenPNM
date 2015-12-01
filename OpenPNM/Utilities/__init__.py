@@ -11,7 +11,6 @@ r"""
 """
 
 from . import IO
-from . import transformations
 from . import misc
 from . import vertexops
 from .__topology__ import topology

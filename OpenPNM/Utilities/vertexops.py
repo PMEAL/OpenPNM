@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.spatial import ConvexHull
-from OpenPNM.Utilities import transformations as tr
+from transforms3d import _gohlketransforms as tr
 
 
 def PolyArea2D(pts):
@@ -340,12 +340,12 @@ def plot_throat(geometry, throats, fig=None):
             if fig is None:
                 fig = plt.figure()
             ax = fig.add_subplot(row_col, row_col, i+1)
-            vert_2D = tr.rotate_and_chop(verts[i], normals[i], [0, 0, 1])
+            vert_2D = rotate_and_chop(verts[i], normals[i], [0, 0, 1])
             hull = ConvexHull(vert_2D, qhull_options='QJ Pp')
             for simplex in hull.simplices:
                 plt.plot(vert_2D[simplex, 0], vert_2D[simplex, 1], 'k-', linewidth=2)
             plt.scatter(vert_2D[:, 0], vert_2D[:, 1])
-            offset_2D = tr.rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
+            offset_2D = rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
             offset_hull = ConvexHull(offset_2D, qhull_options='QJ Pp')
             for simplex in offset_hull.simplices:
                 plt.plot(offset_2D[simplex, 0], offset_2D[simplex, 1],
@@ -369,8 +369,8 @@ def plot_throat(geometry, throats, fig=None):
             upper_bound_y = ymin + my_range*1.5
             plt.axis((lower_bound_x, upper_bound_x, lower_bound_y, upper_bound_y))
             plt.grid(b=True, which='major', color='b', linestyle='-')
-            centroid = tr.rotate_and_chop(coms[i], normals[i], [0, 0, 1])
-            incent = tr.rotate_and_chop(incentre[i], normals[i], [0, 0, 1])
+            centroid = rotate_and_chop(coms[i], normals[i], [0, 0, 1])
+            incent = rotate_and_chop(incentre[i], normals[i], [0, 0, 1])
             plt.scatter(centroid[0][0], centroid[0][1])
             # Plot incircle
             t = np.linspace(0, 2*np.pi, 200)
@@ -414,13 +414,13 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None, include_points=False)
             # Get verts in hull order
             ordered_verts = []
             for i in range(len(verts)):
-                vert_2D = tr.rotate_and_chop(verts[i], normals[i], [0, 0, 1])
+                vert_2D = rotate_and_chop(verts[i], normals[i], [0, 0, 1])
                 hull = ConvexHull(vert_2D, qhull_options='QJ Pp')
                 ordered_verts.append(verts[i][hull.vertices])
             offsets = geometry['throat.offset_vertices'][throats]
             ordered_offs = []
             for i in range(len(offsets)):
-                offs_2D = tr.rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
+                offs_2D = rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
                 offs_hull = ConvexHull(offs_2D, qhull_options='QJ Pp')
                 ordered_offs.append(offsets[i][offs_hull.vertices])
             # Get domain extents for setting axis
@@ -457,3 +457,48 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None, include_points=False)
     else:
         print('Please provide pore indices')
     return fig
+
+
+def rotate_and_chop(verts, normal, axis=[0, 0, 1]):
+    r"""
+    Method to rotate a set of vertices (or coords) to align with an axis
+    points must be coplanar and normal must be given
+    Chops axis coord to give vertices back in 2D
+    Used to prepare verts for printing or calculating convex hull in order to arrange
+    them in hull order for calculations and printing
+    """
+    xaxis = [1, 0, 0]
+    yaxis = [0, 1, 0]
+    zaxis = [0, 0, 1]
+    angle = tr.angle_between_vectors(normal, axis)
+    if angle == 0.0 or angle == np.pi:
+        # We are already aligned
+        facet = verts
+    else:
+        M = tr.rotation_matrix(tr.angle_between_vectors(normal, axis),
+                               tr.vector_product(normal, axis))
+        try:
+            facet = np.dot(verts, M[:3, :3].T)
+        except ValueError:
+            print(verts)
+            print(M[:3, :3].T)
+    try:
+        x = facet[:, 0]
+        y = facet[:, 1]
+        z = facet[:, 2]
+    except IndexError:
+        x = facet[0]
+        y = facet[1]
+        z = facet[2]
+    # Work out span of points and set axes scales to cover this and be
+    # equal in both dimensions
+    if axis == xaxis:
+        output = np.column_stack((y, z))
+    elif axis == yaxis:
+        output = np.column_stack((x, z))
+    elif axis == zaxis:
+        output = np.column_stack((x, y))
+    else:
+        output = facet
+
+    return output
