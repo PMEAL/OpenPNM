@@ -6,7 +6,9 @@ Submodule -- capillary_pressure
 """
 
 import scipy as _sp
-
+import numpy as np
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 def washburn(physics, phase, network, surface_tension='pore.surface_tension',
              contact_angle='pore.contact_angle', throat_diameter='throat.diameter',
@@ -64,7 +66,8 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
 def purcell(physics, phase, network, r_toroid,
             surface_tension='pore.surface_tension',
             contact_angle='pore.contact_angle',
-            throat_diameter='throat.diameter', **kwargs):
+            diameter='throat.diameter', 
+            entity='throat',**kwargs):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a toroid.
 
@@ -105,23 +108,24 @@ def purcell(physics, phase, network, r_toroid,
     TODO: Triple check the accuracy of this equation
     """
 
-    if surface_tension.split('.')[0] == 'pore':
+    if surface_tension.split('.')[0] == 'pore' and entity == 'throat':
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(data=sigma)
     else:
         sigma = phase[surface_tension]
-    if contact_angle.split('.')[0] == 'pore':
+    if contact_angle.split('.')[0] == 'pore' and entity == 'throat':
         theta = phase[contact_angle]
         theta = phase.interpolate_data(data=theta)
     else:
         theta = phase[contact_angle]
-    r = network[throat_diameter]/2
+
+    r = network[diameter]/2
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r) * \
         (_sp.cos(_sp.radians(theta - alpha)) /
             (1 + R/r*(1 - _sp.cos(_sp.radians(alpha)))))
-    if throat_diameter.split('.')[0] == 'throat':
+    if entity == 'throat':
         value = value[phase.throats(physics.name)]
     else:
         value = value[phase.pores(physics.name)]
@@ -279,4 +283,40 @@ def cuboid(physics, phase, network,
     else:
         value = value[phase.pores(physics.name)]
     value[_sp.absolute(value) == _sp.inf] = 0
+    return value
+
+def from_throat(physics, phase, network,
+                capillary_pressure='throat.capillary_pressure',
+                operator='min',
+                **kwargs):
+    r"""
+    The capillary pressure for a pore is calculated from the adjoining throats
+    
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network object is
+    phase : OpenPNM Phase Object
+        Phase object for the invading phases containing the surface tension and
+        contact angle values.
+    capillary_pressure : string
+        label for throat data to use
+    operator : string
+        Operator for throat values to convert to pore value
+        Accepted values are min, max, mean
+    """
+    value = np.zeros(network.Np)
+    if operator == 'min':
+        f = lambda x : np.min(x)
+    elif operator == 'max':
+        f = lambda x : np.max(x)
+    elif operator == 'mean':
+        f = lambda x : np.mean(x)
+    else:
+        logger.warn("Operator "+operator+" not valid, min applied")
+        f = lambda x : np.min(x)
+    for i in range(network.Np):
+        ts = network.find_neighbor_throats(pores=i)
+        value[i] = f(physics[capillary_pressure][ts])
+
     return value
