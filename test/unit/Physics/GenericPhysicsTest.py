@@ -37,6 +37,7 @@ class GenericPhysicsTest:
         flag = False
         try:
             OpenPNM.Physics.GenericPhysics(network=self.net,
+                                           phase=self.phase1,
                                            pores=[0])
         except:
             flag = True
@@ -46,6 +47,7 @@ class GenericPhysicsTest:
         flag = False
         try:
             OpenPNM.Physics.GenericPhysics(network=self.net,
+                                           phase=self.phase1,
                                            geometry=self.geo1)
         except:
             flag = True
@@ -56,3 +58,12 @@ class GenericPhysicsTest:
         assert a is None
         a = self.phys1['pore.'+self.phys1.name]
         assert sp.sum(a) == self.phys1.Np
+
+    def test_instantiation_with_no_geom_or_phase(self):
+        phys = OpenPNM.Physics.GenericPhysics(network=self.net)
+        ctrl = phys.controller
+        assert phys in ctrl.values()
+        phase = phys._phases[0]
+        assert phase in ctrl.values()
+        assert phys.name in phase.physics()
+        assert phase.name in phys.phases()
