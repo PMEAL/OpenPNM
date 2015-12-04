@@ -67,3 +67,25 @@ class GenericPhysicsTest:
         assert phase in ctrl.values()
         assert phys.name in phase.physics()
         assert phase.name in phys.phases()
+
+    def test_reassign_to_different_phase(self):
+        net = OpenPNM.Network.Cubic(shape=[5, 5, 5])
+        geo1 = OpenPNM.Geometry.GenericGeometry(network=net,
+                                                pores=net.Ps,
+                                                throats=net.Ts)
+        phase1 = OpenPNM.Phases.GenericPhase(network=net)
+        phase2 = OpenPNM.Phases.GenericPhase(network=net)
+        phys = OpenPNM.Physics.GenericPhysics(network=net,
+                                              phase=phase1,
+                                              geometry=geo1)
+
+        assert phys.parent_phase is phase1
+        phys.parent_phase = phase2
+        assert 'pore.'+phys.name not in phase1.labels()
+        assert 'pore.'+phys.name in phase2.labels()
+        assert phys.phases()[0] == phase2.name
+        assert phase2.physics()[0] == phys.name
+        a = phase2.check_physics_health()
+        assert sum([len(value) for value in a.values()]) == 0
+        a = phase1.check_physics_health()
+        assert len(a['undefined_pores']) > 0
