@@ -13,7 +13,7 @@ Classes
 .. autoclass:: GenericAlgorithm
    :members:
 
-.. autoclass:: OrdinaryPercolation
+.. autoclass:: Drainage
    :members:
 
 .. autoclass:: InvasionPercolation
@@ -31,9 +31,6 @@ Classes
 .. autoclass:: FourierConduction
    :members:
 
-.. autoclass:: Tortuosity
-   :members:
-
 """
 
 from .__GenericAlgorithm__ import GenericAlgorithm
@@ -43,5 +40,4 @@ from .__FourierConduction__ import FourierConduction
 from .__OhmicConduction__ import OhmicConduction
 from .__StokesFlow__ import StokesFlow
 from .__InvasionPercolation__ import InvasionPercolation
-from .__OrdinaryPercolation__ import OrdinaryPercolation
-from .__Tortuosity__ import Tortuosity
+from .__Drainage__ import Drainage
