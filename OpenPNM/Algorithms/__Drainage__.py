@@ -28,23 +28,15 @@ class Drainage(GenericAlgorithm):
     phase : OpenPNM Phase Object
         The phase which will
 
-    name : string, optional
-        The name to assign to the Algorithm Object
-
-    throat_prop : string
-        The Phase property containing the values to use for the invasion
-        calculation.  The default is 'throat.capillary_pressure'.
-
-    trapping : boolean
-        Specifies whether trapping of the defending phase should be included.
-        The default is False.  If you wish to apply trapping you can also
-        specify outlet pores from which the defender can escape using
-        ``set_outlets``. If no outlets are specified the it is assume the
-        defender can escape anywhere that is not already filled by invading
-        fluid.
-
     Notes
     -----
+    This algorithm determines the pressure at which each pore and throat is
+    invaded given the boundary conditions and phase properties.  The results
+    are stored in arrays called 'pore.inv_Pc' and 'throat.inv_Pc'.  These
+    arrays contain numerical values corresponding to the entry pressure, so a
+    list of pores and/or throats that are invaded at a given capillary pressure
+    ``Pc`` can be found with a boolean check such as
+    ``alg['pore.inv_Pc'] <= Pc``
 
     """
 
@@ -59,9 +51,8 @@ class Drainage(GenericAlgorithm):
               trapping=False):
         r"""
         This method is used to specify necessary arguments to the simulation.
-        Note that all of these arguments can be sent to the initialization
-        since ``setup`` is automatically called.  This method useful for
-        resetting the Algorithm or apply more explicit control.
+        This method useful for resetting the Algorithm or applying more
+        explicit control.
 
         Parameters
         ----------
@@ -105,9 +96,11 @@ class Drainage(GenericAlgorithm):
             * 'add' : (default) Adds the newly recieved locations to any
             existing locations.  This is useful for incrementally adding
             inlets.
+
             * 'overwrite' : Deletes any present locations and adds new ones.
             This is useful for fixing mistaken inlets, or rerunning the
             algorithm with different inlet locations.
+
             * 'clear' : Removes the existing inlets and ignores any specified
             locations.  This is equivalent to calling the method with a mode
             of 'overwrite' and pores = [] or None.
@@ -142,9 +135,11 @@ class Drainage(GenericAlgorithm):
             * 'add' : (default) Adds the newly recieved locations to any
             existing locations.  This is useful for incrementally adding
             outlets.
+
             * 'overwrite' : Deletes any present locations and adds new ones.
             This is useful for fixing mistaken outlets, or rerunning the
             algorithm with different outlet locations.
+
             * 'clear' : Removes the existing outlets and ignores any specified
             locations. This is equivalent to calling the method with a mode
             of 'overwrite' and pores = [] or None.
@@ -172,9 +167,11 @@ class Drainage(GenericAlgorithm):
             * 'add' : (default) Adds the newly recieved locations to any
             existing locations.  This is useful for incrementally adding
             outlets.
+
             * 'overwrite' : Deletes any present locations and adds new ones.
             This is useful for fixing mistaken outlets, or rerunning the
             algorithm with different outlet locations.
+
             * 'clear' : Removes the existing outlets and ignores any specified
             locations. This is equivalent to calling the method with a mode
             of 'overwrite' and pores = [] or None.
@@ -267,36 +264,36 @@ class Drainage(GenericAlgorithm):
         # Find all pores that can be invaded at specified pressure
         [pclusters, tclusters] = self._net.find_clusters2(mask=Tinvaded,
                                                           t_labels=True)
+
         # Identify clusters connected to inlet sites
         inv_clusters = sp.unique(pclusters[self['pore.inlets']])
         inv_clusters = inv_clusters[inv_clusters >= 0]
+
         # Find pores on the invading clusters
         pmask = np.in1d(pclusters, inv_clusters)
         # Store current applied pressure in newly invaded pores
         pinds = (self['pore.inv_Pc'] == sp.inf) * (pmask)
         self['pore.inv_Pc'][pinds] = inv_val
+
         # Find throats on the invading clusters
         tmask = np.in1d(tclusters, inv_clusters)
         # Store current applied pressure in newly invaded throats
         tinds = (self['throat.inv_Pc'] == sp.inf) * (tmask)
         self['throat.inv_Pc'][tinds] = inv_val
+
         # Set residual pores and throats, if any, to invaded
         if sp.any(self['pore.residual']):
             self['pore.inv_Pc'][self['pore.residual']] = 0
         if sp.any(self['throat.residual']):
             self['throat.inv_Pc'][self['throat.residual']] = 0
 
-    def plot_primary_drainage_curve(self, pore_volume='volume',
-                                    throat_volume='volume'):
+    def get_drainage_data(self, pore_volume='volume', throat_volume='volume'):
         r"""
-        Plot the drainage curve as the  non-wetting phase saturation vs the
-        applied capillary pressure.
-
         Parameters
         ----------
         pore_volume and throat_volume : string
-            The dictionary key  where the pore and throat volume arrays
-            are stored.  The defaults are 'pore.volume' and 'throat.volume'.
+            The dictionary key  where the pore and throat volume arrays are
+            stored.  The defaults are 'pore.volume' and 'throat.volume'.
         """
         # Infer list of applied capillary pressures
         PcPoints = sp.unique(self['pore.inv_Pc'])
@@ -314,7 +311,33 @@ class Drainage(GenericAlgorithm):
         Vnwp_all = [Vnwp_p[i] + Vnwp_t[i] for i in range(0, len(PcPoints))]
         # Convert volumes to saturations by normalizing with total pore volume
         Snwp_all = [V/Total_vol for V in Vnwp_all]
+        return sp.vstack([PcPoints, Snwp_all]).T
+
+    def plot_drainage_curve(self,
+                            data=None,
+                            pore_volume='volume',
+                            throat_volume='volume'):
+        r"""
+        Plot the drainage curve as the non-wetting phase saturation vs the
+        applied capillary pressure.
+
+        Parameters
+        ----------
+        data : array_like
+            A 2D array of capillary pressure and non-wetting phase saturation
+            data for plotting.  This data can be obtained from the
+            ``get_drainage_data`` method.  If this data is not provided, then
+            the ``get_drainage_data`` method is called.
+        pore_volume and throat_volume : string
+            The dictionary key  where the pore and throat volume arrays are
+            stored.  The defaults are 'pore.volume' and 'throat.volume'.
+
+        """
         # Begin creating nicely formatted plot
+        data = self.drainage_data(pore_volume=pore_volume,
+                                  throat_volume=throat_volume)
+        PcPoints = data[:, 0]
+        Snwp_all = data[:, 1]
         fig = plt.figure()
         plt.plot(PcPoints, Snwp_all, 'ko-')
         plt.ylim(ymin=0)
