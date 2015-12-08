@@ -84,10 +84,12 @@ class Drainage(GenericAlgorithm):
         self['throat.inv_Pc'] = sp.inf
         self['pore.inlets'] = False
         self['pore.outlets'] = False
+        self['pore.residual'] = False
+        self['throat.residual'] = False
         self._inv_phase = invading_phase
         self._trapping = False
 
-    def set_inlets(self, pores):
+    def set_inlets(self, pores=None, mode='add'):
         r"""
         Set the locations from which the invading phase enters the network.
 
@@ -97,6 +99,18 @@ class Drainage(GenericAlgorithm):
             An array of pore numbers that are initially filled with invading
             phase, and from which clusters of invading phase grow and invade
             into the network.
+        mode : string
+            Controls how the new values are handled.  Options are:
+
+            * 'add' : (default) Adds the newly recieved locations to any
+            existing locations.  This is useful for incrementally adding
+            inlets.
+            * 'overwrite' : Deletes any present locations and adds new ones.
+            This is useful for fixing mistaken inlets, or rerunning the
+            algorithm with different inlet locations.
+            * 'clear' : Removes the existing inlets and ignores any specified
+            locations.  This is equivalent to calling the method with a mode
+            of 'overwrite' and pores = [] or None.
 
         Notes
         -----
@@ -106,12 +120,13 @@ class Drainage(GenericAlgorithm):
         pores that have zero-volume, and set these as the inlets.
         """
         Ps = self._parse_locations(pores)
-        if 'pore.outlets' in self.keys():
-            if sum(self['pore.outlets'][Ps]) > 0:
-                raise Exception('Some inlets are already defined as outlets')
+        if mode in ['clear', 'overwrite']:
+            self['pore.inlets'] = False
+        if sum(self['pore.outlets'][Ps]) > 0:
+            raise Exception('Some inlets are already defined as outlets')
         self['pore.inlets'][Ps] = True
 
-    def set_outlets(self, pores):
+    def set_outlets(self, pores=None, mode='add'):
         r"""
         Set the locations through which defending phase exits the network.
 
@@ -121,24 +136,72 @@ class Drainage(GenericAlgorithm):
             An array of pore numbers where defending phase can exit.  Any
             defending phase that does not have access to these pores will be
             trapped.
+        mode : string
+            Controls how the new values are handled.  Options are:
+
+            * 'add' : (default) Adds the newly recieved locations to any
+            existing locations.  This is useful for incrementally adding
+            outlets.
+            * 'overwrite' : Deletes any present locations and adds new ones.
+            This is useful for fixing mistaken outlets, or rerunning the
+            algorithm with different outlet locations.
+            * 'clear' : Removes the existing outlets and ignores any specified
+            locations. This is equivalent to calling the method with a mode
+            of 'overwrite' and pores = [] or None.
+
         """
         Ps = self._parse_locations(pores)
-        if 'pore.outlets' in self.keys():
-            if sum(self['pore.inlets'][Ps]) > 0:
-                raise Exception('Some outlets are already defined as inlets')
+        if mode in ['clear', 'overwrite']:
+            self['pore.outlets'] = False
+        if sum(self['pore.inlets'][Ps]) > 0:
+            raise Exception('Some outlets are already defined as inlets')
         self['pore.outlets'][Ps] = True
 
-    def set_residual(self, pores=None, throats=None):
+    def set_residual(self, pores=None, throats=None, mode='add'):
         r"""
         Specify locations of the residual wetting phase
+
+        Parameters
+        ----------
+        pores and throats : array_like
+            The pore and throat locations that are to be filled with invading
+            phase at the beginning of the simulation.
+        mode : string
+            Controls how the new values are handled.  Options are:
+
+            * 'add' : (default) Adds the newly recieved locations to any
+            existing locations.  This is useful for incrementally adding
+            outlets.
+            * 'overwrite' : Deletes any present locations and adds new ones.
+            This is useful for fixing mistaken outlets, or rerunning the
+            algorithm with different outlet locations.
+            * 'clear' : Removes the existing outlets and ignores any specified
+            locations. This is equivalent to calling the method with a mode
+            of 'overwrite' and pores = [] or None.
+
+        Notes
+        -----
+        Setting pores as initially filled only affects the saturation at the
+        start of the capillary pressure curve since pre-filled pores do not
+        contribute to the invasion process.  Setting throats as filled,
+        however, has a significant impact on the subsequent invasion since
+        these throats act as bridges to the percolation process.  Of course,
+        they also contribute to the starting saturation as well.
+
         """
+        if mode is 'clear':
+            self['pore.outlets'] = False
+            self['throat.outlets'] = False
+            return
         if pores is not None:
             Ps = self._parse_locations(pores)
-            self['pore.residual'] = False
+            if mode in ['clear', 'overwrite']:
+                self['pore.outlets'] = False
             self['pore.residual'][Ps] = True
         if throats is not None:
             Ts = self._parse_locations(throats)
-            self['throat.residual'] = False
+            if mode in ['clear', 'overwrite']:
+                self['throat.outlets'] = False
             self['throat.residual'][Ts] = True
 
     def run(self, npts=25, inv_pressures=None):
@@ -199,7 +262,7 @@ class Drainage(GenericAlgorithm):
         # Generate a tlist containing boolean values for throat state
         Tinvaded = self['throat.entry_pressure'] <= inv_val
         # Add residual throats, if any, to list of invaded throats
-        if 'throat.residual' in self.keys():
+        if sp.any(self['throat.residual']):
             Tinvaded = Tinvaded + self['throat.residual']
         # Find all pores that can be invaded at specified pressure
         [pclusters, tclusters] = self._net.find_clusters2(mask=Tinvaded,
@@ -218,9 +281,9 @@ class Drainage(GenericAlgorithm):
         tinds = (self['throat.inv_Pc'] == sp.inf) * (tmask)
         self['throat.inv_Pc'][tinds] = inv_val
         # Set residual pores and throats, if any, to invaded
-        if 'pore.residual' in self.keys():
+        if sp.any(self['pore.residual']):
             self['pore.inv_Pc'][self['pore.residual']] = 0
-        if 'throat.residual' in self.keys():
+        if sp.any(self['throat.residual']):
             self['throat.inv_Pc'][self['throat.residual']] = 0
 
     def plot_primary_drainage_curve(self, pore_volume='volume',
