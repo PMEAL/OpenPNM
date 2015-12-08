@@ -32,7 +32,3 @@ class StandardTest:
         except:
             flag = True
         assert flag
-
-
-
-
