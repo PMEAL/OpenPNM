@@ -82,6 +82,8 @@ class Drainage(GenericAlgorithm):
         self['throat.entry_pressure'] = invading_phase[throat_prop]
         self['pore.inv_Pc'] = sp.inf
         self['throat.inv_Pc'] = sp.inf
+        self['pore.inlets'] = False
+        self['pore.outlets'] = False
         self._inv_phase = invading_phase
         self._trapping = False
 
@@ -107,7 +109,6 @@ class Drainage(GenericAlgorithm):
         if 'pore.outlets' in self.keys():
             if sum(self['pore.outlets'][Ps]) > 0:
                 raise Exception('Some inlets are already defined as outlets')
-        self['pore.inlets'] = False
         self['pore.inlets'][Ps] = True
 
     def set_outlets(self, pores):
@@ -125,17 +126,20 @@ class Drainage(GenericAlgorithm):
         if 'pore.outlets' in self.keys():
             if sum(self['pore.inlets'][Ps]) > 0:
                 raise Exception('Some outlets are already defined as inlets')
-        self['pore.outlets'] = False
         self['pore.outlets'][Ps] = True
 
     def set_residual(self, pores=None, throats=None):
         r"""
         Specify locations of the residual wetting phase
         """
-        Ps = self._parse_locations(pores)
-        Ts = self._parse_locations(throats)
-        self['pore.inv_Pc'][Ps] = 0
-        self['throat.inv_Pc'][Ts] = 0
+        if pores is not None:
+            Ps = self._parse_locations(pores)
+            self['pore.residual'] = False
+            self['pore.residual'][Ps] = True
+        if throats is not None:
+            Ts = self._parse_locations(throats)
+            self['throat.residual'] = False
+            self['throat.residual'][Ts] = True
 
     def run(self, npts=25, inv_pressures=None):
         r"""
@@ -166,7 +170,7 @@ class Drainage(GenericAlgorithm):
             inv_points = sp.unique(inv_pressures)
 
         # Ensure inlets are set
-        if 'pore.inlets' not in self.keys():
+        if sp.sum(self['pore.inlets']) == 0:
             raise Exception('Inlet pores have not been specified')
 
         # Execute calculation
@@ -194,10 +198,13 @@ class Drainage(GenericAlgorithm):
         """
         # Generate a tlist containing boolean values for throat state
         Tinvaded = self['throat.entry_pressure'] <= inv_val
+        # Add residual throats, if any, to list of invaded throats
+        if 'throat.residual' in self.keys():
+            Tinvaded = Tinvaded + self['throat.residual']
         # Find all pores that can be invaded at specified pressure
         [pclusters, tclusters] = self._net.find_clusters2(mask=Tinvaded,
                                                           t_labels=True)
-        # Identify clusters connected to invasion sites
+        # Identify clusters connected to inlet sites
         inv_clusters = sp.unique(pclusters[self['pore.inlets']])
         inv_clusters = inv_clusters[inv_clusters >= 0]
         # Find pores on the invading clusters
@@ -210,40 +217,41 @@ class Drainage(GenericAlgorithm):
         # Store current applied pressure in newly invaded throats
         tinds = (self['throat.inv_Pc'] == sp.inf) * (tmask)
         self['throat.inv_Pc'][tinds] = inv_val
+        # Set residual pores and throats, if any, to invaded
+        if 'pore.residual' in self.keys():
+            self['pore.inv_Pc'][self['pore.residual']] = 0
+        if 'throat.residual' in self.keys():
+            self['throat.inv_Pc'][self['throat.residual']] = 0
 
     def plot_primary_drainage_curve(self, pore_volume='volume',
-                                    throat_volume='volume', pore_label='all',
-                                    throat_label='all'):
+                                    throat_volume='volume'):
         r"""
-        Plot the primary drainage curve as the capillary pressure on ordinate
-        and total saturation of the wetting phase on the abscissa.
-        This is the preffered style in the petroleum engineering
+        Plot the drainage curve as the  non-wetting phase saturation vs the
+        applied capillary pressure.
+
+        Parameters
+        ----------
+        pore_volume and throat_volume : string
+            The dictionary key  where the pore and throat volume arrays
+            are stored.  The defaults are 'pore.volume' and 'throat.volume'.
         """
-        try:
-            PcPoints = sp.unique(self['pore.inv_Pc'])
-        except:
-            raise Exception('Cannot print drainage curve: ordinary percolation \
-                            simulation has not been run')
-        pores = self._net.pores(labels=pore_label)
-        throats = self._net.throats(labels=throat_label)
-        p_inv = self['pore.inv_Pc']
-        t_inv = self['throat.inv_Pc']
-        Snwp_t = sp.zeros_like(PcPoints)
-        Snwp_p = sp.zeros_like(PcPoints)
-        Snwp_all = sp.zeros_like(PcPoints)
-        Swp_all = sp.zeros_like(PcPoints)
+        # Infer list of applied capillary pressures
+        PcPoints = sp.unique(self['pore.inv_Pc'])
+        # Get pore and throat volumes
         Pvol = self._net['pore.' + pore_volume]
         Tvol = self._net['throat.' + throat_volume]
-        Pvol_tot = sp.sum(Pvol)
-        Tvol_tot = sp.sum(Tvol)
-        for i in range(0, sp.size(PcPoints)):
-            Pc = PcPoints[i]
-            Snwp_p[i] = sp.sum(Pvol[p_inv[pores] <= Pc]) / Pvol_tot
-            Snwp_t[i] = sp.sum(Tvol[t_inv[throats] <= Pc]) / Tvol_tot
-            Snwp_all[i] = (sp.sum(Tvol[t_inv[throats] <= Pc]) +
-                           sp.sum(Pvol[p_inv[pores] <= Pc])) / \
-                          (Tvol_tot + Pvol_tot)
-            Swp_all[i] = 1 - Snwp_all[i]
+        Total_vol = sp.sum(Pvol) + sp.sum(Tvol)
+        # Find cumulative filled volume at each applied capillary pressure
+        Vnwp_t = []
+        Vnwp_p = []
+        for Pc in PcPoints:
+            Vnwp_p.append(sp.sum(Pvol[self['pore.inv_Pc'] <= Pc]))
+            Vnwp_t.append(sp.sum(Tvol[self['throat.inv_Pc'] <= Pc]))
+        # Combine throat and pore volumes into single total phase volume
+        Vnwp_all = [Vnwp_p[i] + Vnwp_t[i] for i in range(0, len(PcPoints))]
+        # Convert volumes to saturations by normalizing with total pore volume
+        Snwp_all = [V/Total_vol for V in Vnwp_all]
+        # Begin creating nicely formatted plot
         fig = plt.figure()
         plt.plot(PcPoints, Snwp_all, 'ko-')
         plt.ylim(ymin=0)
@@ -252,26 +260,3 @@ class Drainage(GenericAlgorithm):
         plt.title('Primary Drainage Curve')
         plt.grid(True)
         return fig
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
