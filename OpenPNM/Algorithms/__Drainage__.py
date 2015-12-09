@@ -28,15 +28,34 @@ class Drainage(GenericAlgorithm):
     phase : OpenPNM Phase Object
         The phase which will
 
-    Notes
-    -----
-    This algorithm determines the pressure at which each pore and throat is
-    invaded given the boundary conditions and phase properties.  The results
-    are stored in arrays called 'pore.inv_Pc' and 'throat.inv_Pc'.  These
-    arrays contain numerical values corresponding to the entry pressure, so a
-    list of pores and/or throats that are invaded at a given capillary pressure
-    ``Pc`` can be found with a boolean check such as
-    ``alg['pore.inv_Pc'] <= Pc``
+    Returns
+    -------
+    This algorithm creates several arrays and adds them to its own dictionary.
+    These include:
+
+    **'pore(throat).inv_Pc'** : The applied capillary pressure at which each
+    pore(throat) was invaded.
+
+    **'pore(throat).inv_Seq'** : The sequence each pore(throat) was filled.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> pn = op.Network.Cubic(shape=[20, 20, 20], spacing=0.001)
+    >>> pn.add_boundary_pores(pores=pn.pores('top'),
+                              offset=[0, 0, 0.5],
+                              apply_label='boundary_top')
+    >>> geo = op.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> water = op.Phases.Water(network=pn)
+    >>> phys = op.Physics.Standard(network=pn, phase=water, geometry=geo)
+
+    Once the basic Core objects are setup, the Algorithm can be created and
+    and run as follows:
+    >>> alg = op.Algorithms.Drainage(network=pn)
+    >>> alg.setup(invading_phase=water)
+    >>> alg.set_inlets(pores=pn.pores('pn.boundary_top'))
+    >>> alg.run()
+    >>> data = alg.get_drainage_data()
 
     """
 
@@ -50,9 +69,8 @@ class Drainage(GenericAlgorithm):
               throat_prop='throat.capillary_pressure',
               trapping=False):
         r"""
-        This method is used to specify necessary arguments to the simulation.
-        This method useful for resetting the Algorithm or applying more
-        explicit control.
+        Used to specify necessary arguments to the simulation.  This method is
+        useful for resetting the Algorithm or applying more explicit control.
 
         Parameters
         ----------
@@ -73,12 +91,14 @@ class Drainage(GenericAlgorithm):
         self['throat.entry_pressure'] = invading_phase[throat_prop]
         self['pore.inv_Pc'] = sp.inf
         self['throat.inv_Pc'] = sp.inf
+        self['pore.trapped'] = sp.inf
+        self['throat.trapped'] = sp.inf
         self['pore.inlets'] = False
         self['pore.outlets'] = False
         self['pore.residual'] = False
         self['throat.residual'] = False
         self._inv_phase = invading_phase
-        self._trapping = False
+        self._trapping = trapping
 
     def set_inlets(self, pores=None, mode='add'):
         r"""
@@ -93,15 +113,15 @@ class Drainage(GenericAlgorithm):
         mode : string
             Controls how the new values are handled.  Options are:
 
-            * 'add' : (default) Adds the newly recieved locations to any
+            **'add'** : (default) Adds the newly recieved locations to any
             existing locations.  This is useful for incrementally adding
             inlets.
 
-            * 'overwrite' : Deletes any present locations and adds new ones.
+            **'overwrite'** : Deletes any present locations and adds new ones.
             This is useful for fixing mistaken inlets, or rerunning the
             algorithm with different inlet locations.
 
-            * 'clear' : Removes the existing inlets and ignores any specified
+            **'clear'** : Removes the existing inlets and ignores any specified
             locations.  This is equivalent to calling the method with a mode
             of 'overwrite' and pores = [] or None.
 
@@ -109,8 +129,8 @@ class Drainage(GenericAlgorithm):
         -----
         The 'inlet' pores are initially filled with invading fluid to start the
         simulation.  To avoid the capillary pressure curve showing a non-zero
-        starting saturation at low pressures, it is necessary to apply boundary
-        pores that have zero-volume, and set these as the inlets.
+        starting saturation at low pressures, it is necessary to create
+        boundary pores that have zero-volume, and set these as the inlets.
         """
         Ps = self._parse_locations(pores)
         if mode in ['clear', 'overwrite']:
@@ -132,15 +152,15 @@ class Drainage(GenericAlgorithm):
         mode : string
             Controls how the new values are handled.  Options are:
 
-            * 'add' : (default) Adds the newly recieved locations to any
+            **'add'** : (default) Adds the newly recieved locations to any
             existing locations.  This is useful for incrementally adding
             outlets.
 
-            * 'overwrite' : Deletes any present locations and adds new ones.
+            **'overwrite'** : Deletes any present locations and adds new ones.
             This is useful for fixing mistaken outlets, or rerunning the
             algorithm with different outlet locations.
 
-            * 'clear' : Removes the existing outlets and ignores any specified
+            **'clear'** : Removes the existing outlets and ignores any specified
             locations. This is equivalent to calling the method with a mode
             of 'overwrite' and pores = [] or None.
 
@@ -164,17 +184,17 @@ class Drainage(GenericAlgorithm):
         mode : string
             Controls how the new values are handled.  Options are:
 
-            * 'add' : (default) Adds the newly recieved locations to any
+            **'add'** : (default) Adds the newly recieved locations to any
             existing locations.  This is useful for incrementally adding
             outlets.
 
-            * 'overwrite' : Deletes any present locations and adds new ones.
+            **'overwrite'** : Deletes any present locations and adds new ones.
             This is useful for fixing mistaken outlets, or rerunning the
             algorithm with different outlet locations.
 
-            * 'clear' : Removes the existing outlets and ignores any specified
-            locations. This is equivalent to calling the method with a mode
-            of 'overwrite' and pores = [] or None.
+            **'clear'** : Removes the existing outlets and ignores any
+            specified locations. This is equivalent to calling the method with
+            a mode of 'overwrite' and pores = [] or None.
 
         Notes
         -----
@@ -187,19 +207,22 @@ class Drainage(GenericAlgorithm):
 
         """
         if mode is 'clear':
-            self['pore.outlets'] = False
-            self['throat.outlets'] = False
+            self['pore.residual'] = False
+            self['throat.residual'] = False
             return
         if pores is not None:
             Ps = self._parse_locations(pores)
             if mode in ['clear', 'overwrite']:
-                self['pore.outlets'] = False
+                self['pore.residual'] = False
             self['pore.residual'][Ps] = True
         if throats is not None:
             Ts = self._parse_locations(throats)
             if mode in ['clear', 'overwrite']:
-                self['throat.outlets'] = False
+                self['throat.residual'] = False
             self['throat.residual'][Ts] = True
+
+    def set_boundary_conditions(self):
+        pass
 
     def run(self, npts=25, inv_pressures=None):
         r"""
@@ -233,17 +256,19 @@ class Drainage(GenericAlgorithm):
         if sp.sum(self['pore.inlets']) == 0:
             raise Exception('Inlet pores have not been specified')
 
-        # Execute calculation
-        self._do_outer_iteration_stage(inv_points)
+        # Ensure outlet pores are set if trapping is enabled
+        if self._trapping:
+            if sp.sum(self['pore.outlets']) == 0:
+                raise Exception('Outlet pores have not been specified')
 
-    def _do_outer_iteration_stage(self, inv_points):
-        r"""
-        """
         # Generate curve from points
         for inv_val in inv_points:
             # Apply one applied pressure and determine invaded pores
             logger.info('Applying capillary pressure: ' + str(inv_val))
-            self._do_one_inner_iteration(inv_val)
+            self._apply_percolation(inv_val)
+            if self._trapping:
+                logger.info('Checking for trapping')
+                self._check_trapping(inv_val)
 
         # Find invasion sequence values (to correspond with IP algorithm)
         Pinv = self['pore.inv_Pc']
@@ -251,16 +276,47 @@ class Drainage(GenericAlgorithm):
         Tinv = self['throat.inv_Pc']
         self['throat.inv_seq'] = sp.searchsorted(sp.unique(Tinv), Tinv)
 
-    def _do_one_inner_iteration(self, inv_val):
+    def _check_trapping(self, inv_val):
         r"""
-        Determine which throats are invaded at a given applied capillary
-        pressure.
+        Determine which pores and throats are trapped by invading phase
         """
-        # Generate a tlist containing boolean values for throat state
+        # Generate a list containing boolean values for throat state
+        Tinvaded = self['throat.inv_Pc'] < sp.inf
+        # Add residual throats, if any, to list of invaded throats
+        Tinvaded = Tinvaded + self['throat.residual']
+        # Invert logic to find defending throats
+        Tdefended = ~Tinvaded
+        [pclusters, tclusters] = self._net.find_clusters2(mask=Tdefended,
+                                                          t_labels=True)
+        # See which outlet pores remain uninvaded
+        outlets = self['pore.outlets']*(self['pore.inv_Pc'] == sp.inf)
+        # Identify clusters connected to remaining outlet sites
+        def_clusters = sp.unique(pclusters[outlets])
+        temp = sp.in1d(sp.unique(pclusters), def_clusters, invert=True)
+        trapped_clusters = sp.unique(pclusters)[temp]
+        trapped_clusters = trapped_clusters[trapped_clusters >= 0]
+
+        # Find defending clusters NOT connected to the outlet pores
+        pmask = np.in1d(pclusters, trapped_clusters)
+        # Store current applied pressure in newly trapped pores
+        pinds = (self['pore.trapped'] == sp.inf) * (pmask)
+        self['pore.trapped'][pinds] = inv_val
+
+        # Find throats on the trapped defending clusters
+        tinds = self._net.find_neighbor_throats(pores=pinds,
+                                                mode='intersection')
+        self['throat.trapped'][tinds] = inv_val
+        self['throat.entry_pressure'][tinds] = 1000000
+
+    def _apply_percolation(self, inv_val):
+        r"""
+        Determine which pores and throats are invaded at a given applied
+        capillary pressure.
+        """
+        # Generate a list containing boolean values for throat state
         Tinvaded = self['throat.entry_pressure'] <= inv_val
         # Add residual throats, if any, to list of invaded throats
-        if sp.any(self['throat.residual']):
-            Tinvaded = Tinvaded + self['throat.residual']
+        Tinvaded = Tinvaded + self['throat.residual']
         # Find all pores that can be invaded at specified pressure
         [pclusters, tclusters] = self._net.find_clusters2(mask=Tinvaded,
                                                           t_labels=True)
@@ -334,13 +390,15 @@ class Drainage(GenericAlgorithm):
 
         """
         # Begin creating nicely formatted plot
-        data = self.drainage_data(pore_volume=pore_volume,
-                                  throat_volume=throat_volume)
+        if data is None:
+            data = self.get_drainage_data(pore_volume=pore_volume,
+                                          throat_volume=throat_volume)
         PcPoints = data[:, 0]
         Snwp_all = data[:, 1]
         fig = plt.figure()
         plt.plot(PcPoints, Snwp_all, 'ko-')
         plt.ylim(ymin=0)
+        plt.ylim(ymax=1.0)
         plt.ylabel('Non-Wetting Phase Saturation')
         plt.xlabel('Capillary Pressure [Pa]')
         plt.title('Primary Drainage Curve')
