@@ -178,7 +178,9 @@ class Core(dict):
 
             **'complete'** : Removes all of the above AND sets the 'pore.all'
             and 'throat.all' labels to zero length.  This also removes any pore
-            and throat locations that were previously set.
+            and throat locations that were previously set.  This mode should be
+            used carefully since it can break some subtle aspects of the
+            framework; it is meant for advanced users and developers.
 
         Notes
         -----
