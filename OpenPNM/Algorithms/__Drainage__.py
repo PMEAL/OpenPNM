@@ -41,9 +41,9 @@ class Drainage(GenericAlgorithm):
     Examples
     --------
     >>> import OpenPNM as op
-    >>> pn = op.Network.Cubic(shape=[20, 20, 20], spacing=0.001)
+    >>> pn = op.Network.Cubic(shape=[20, 20, 20], spacing=10)
     >>> pn.add_boundary_pores(pores=pn.pores('top'),
-    ...                       offset=[0, 0, 0.5],
+    ...                       offset=[0, 0, 1],
     ...                       apply_label='boundary_top')
     >>> geo = op.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps, throats=pn.Ts)
     >>> water = op.Phases.Water(network=pn)
@@ -57,6 +57,24 @@ class Drainage(GenericAlgorithm):
     >>> alg.set_inlets(pores=pn.pores('pn.boundary_top'))
     >>> alg.run()
     >>> data = alg.get_drainage_data()
+
+    The ``data`` variable is a dictionary containing the numerical values of
+    the resultant capillary pressure curve.  The available values can be
+    inspected by typing ``data.keys()`` at the command line. These values can
+    of course be plotted with matplotlib or exported to a graphing program of
+    your choice.
+
+    The final step is to utilize these results elsewhere in your OpenPNM
+    simulation.  All Algorithms possess a method called ``return_results``
+    which as the name suggests send the results to the correct locations.  For
+    the 'Drainage Algorithm' this works as follows:
+
+    >>> alg.return_results(Pc=5000)
+
+    This command determines which pores and throats were filled at the applied
+    capillary pressure of 5000, and creates 'pore.occupancy' and
+    'throat.occupancy' arrays on the Phase object that was specfied as the
+    'invading_phase' in the ``setup_method``.
 
     """
 
@@ -169,7 +187,7 @@ class Drainage(GenericAlgorithm):
 
         """
         if self._trapping is False:
-            raise Exception('Setting outlets is meaningless unless trapping '+
+            raise Exception('Setting outlets is meaningless unless trapping' +
                             'was set to True during setup')
         # TODO: Should this check just turn on trapping automaticall?
         Ps = self._parse_locations(pores)
