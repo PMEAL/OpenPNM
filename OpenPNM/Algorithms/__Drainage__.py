@@ -25,8 +25,8 @@ class Drainage(GenericAlgorithm):
     network : OpenPNM Network Object
         The network upon which the simulation will be run
 
-    phase : OpenPNM Phase Object
-        The phase which will
+    name : string (optional)
+        The name to apply to the Algorithm for quick identification
 
     Notes
     -----
@@ -95,12 +95,12 @@ class Drainage(GenericAlgorithm):
             The Phase object containing the physical properties of the invading
             fluid.
 
-        throat_prop : string
+        throat_prop : string (optional)
             The dictionary key on the Phase object where the throat entry
             pressure values can be found.  The default is
             'throat.capillary_pressure'.
 
-        trapping : boolean
+        trapping : boolean (optional)
             Specifies whether wetting phase trapping should be included or not.
             The default is False.  Note that wetting phase outlets can be
             specified using the ``set_outlets`` method.  Otherwise it is
@@ -189,7 +189,7 @@ class Drainage(GenericAlgorithm):
         if self._trapping is False:
             raise Exception('Setting outlets is meaningless unless trapping' +
                             'was set to True during setup')
-        # TODO: Should this check just turn on trapping automaticall?
+        # TODO: Should this check just turn on trapping automatically?
         Ps = self._parse_locations(pores)
         if mode in ['clear', 'overwrite']:
             self['pore.outlets'] = False
