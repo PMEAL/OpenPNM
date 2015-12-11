@@ -517,7 +517,11 @@ class Drainage(GenericAlgorithm):
         Notes
         -----
         The Phase object that receives the updated occupancy arrays is the
-        one that was specified as the invading_phase' when ``setup`` was
+        one that was specified as the 'invading_phase' when ``setup`` was
         called.
         """
-        pass
+        Psatn = self['pore.inv_Pc'] <= Pc
+        Tsatn = self['throat.inv_Pc'] <= Pc
+        phase = self._inv_phase
+        phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
+        phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
