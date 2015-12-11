@@ -155,16 +155,57 @@ class Core(dict):
         temp += self._net._physics
         return temp
 
-    def clear(self):
+    def clear(self, mode='complete'):
         r"""
-        A subclassed version of the standard dict's clear method.  This removes
-        ALL pore and throat properties and labels from the object, but keeps
-        empty versions of ``pore.all`` and ``throat.all`` which are required
-        for the object to still be functional.
+        A subclassed version of the standard dict's clear method.  This can be
+        used to selectively clear certain aspects of the object, including
+        properties, labels and/or models.  It can also clear everything,
+        except for the 'pore.all' and 'throat.all' labels which are required
+        for object to remain functional.
+
+        Parameters
+        ----------
+        mode : string of list of strings
+            This controls what is cleared from the object.  Options are:
+
+            **'props'** : Removes all numerical property values from the object
+            dictionary.
+
+            **'labels'** : Removes all labels from the object dictionary
+
+            **'models'** : Removes all pore scale models from the object's
+            models dictionary (object.models)
+
+            **'complete'** : Removes all of the above AND sets the 'pore.all'
+            and 'throat.all' labels to zero length.  This also removes any pore
+            and throat locations that were previously set.
+
+        Notes
+        -----
+        The first three modes listed can be combined by sending a list
+        containing all desired modes.  The 'complete' mode essentially calls
+        all three so need not be combined with any other modes.
         """
-        super().clear()
-        self.update({'throat.all': sp.array([], ndmin=1, dtype=int)})
-        self.update({'pore.all': sp.array([], ndmin=1, dtype=int)})
+        if type(mode) is str:
+            mode = [mode]
+        if 'complete' in mode:
+            if self._isa('Geometry') or self._isa('Physics'):
+                self.set_locations(pores=self.Pnet,
+                                   throats=self.Tnet,
+                                   mode='remove')
+            super().clear()
+            self.models.clear()
+            self.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
+            self.update({'pore.all': sp.array([], ndmin=1, dtype=bool)})
+        if 'props' in mode:
+            for item in self.props():
+                del self[item]
+        if 'labels' in mode:
+            for item in self.labels():
+                if item not in ['pore.all', 'throat.all']:
+                    del self[item]
+        if 'models' in mode:
+            self.models.clear()
 
     # -------------------------------------------------------------------------
     """Model Manipulation Methods"""
