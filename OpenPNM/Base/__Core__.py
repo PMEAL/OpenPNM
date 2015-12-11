@@ -1414,6 +1414,8 @@ class Core(dict):
     Pnet = property(fget=map_pores)
 
     def _parse_locations(self, locations):
+        if locations is None:
+            locations = []
         locs = sp.array(locations, ndmin=1)
         if locs.dtype == bool:
             if sp.size(locs) == self.Np:
