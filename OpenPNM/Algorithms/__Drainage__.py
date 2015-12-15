@@ -83,8 +83,9 @@ class Drainage(GenericAlgorithm):
 
     def setup(self,
               invading_phase,
-              throat_prop='throat.capillary_pressure',
-              trapping=False):
+              entry_pressure='throat.capillary_pressure',
+              trapping=False,
+              pore_filling=None):
         r"""
         Used to specify necessary arguments to the simulation.  This method is
         useful for resetting the Algorithm or applying more explicit control.
@@ -95,7 +96,7 @@ class Drainage(GenericAlgorithm):
             The Phase object containing the physical properties of the invading
             fluid.
 
-        throat_prop : string (optional)
+        entry_pressure : string (optional)
             The dictionary key on the Phase object where the throat entry
             pressure values can be found.  The default is
             'throat.capillary_pressure'.
@@ -106,8 +107,19 @@ class Drainage(GenericAlgorithm):
             specified using the ``set_outlets`` method.  Otherwise it is
             assumed the wetting phase has no outlets.
 
+        pore_filling : string (optional)
+            The dictionary key on the Physics object where the late pore
+            filling model is located. The default is None, meaning that a
+            pore is completely filled upon penetration.
+
+        throat_filling : string (optional)
+            The dictionary key on the Physics object where the late throat
+            filling model is located. The default is None, meaning that a
+            throat is completely filled upon penetration.
+
         """
-        self['throat.entry_pressure'] = invading_phase[throat_prop]
+        self._pore_filling = pore_filling
+        self['throat.entry_pressure'] = invading_phase[entry_pressure]
         self['pore.inv_Pc'] = sp.inf
         self['throat.inv_Pc'] = sp.inf
         self['pore.trapped'] = sp.inf
@@ -117,6 +129,7 @@ class Drainage(GenericAlgorithm):
         self['pore.residual'] = False
         self['throat.residual'] = False
         self._inv_phase = invading_phase
+        self._pore_filling = pore_filling
         self._trapping = trapping
 
     def set_inlets(self, pores=None, mode='add'):
@@ -334,6 +347,7 @@ class Drainage(GenericAlgorithm):
         else:
             # Make sure the given invastion points are sensible
             inv_points = sp.unique(inv_pressures)
+        self._inv_points = inv_points
 
         # Ensure inlets are set
         if sp.sum(self['pore.inlets']) == 0:
@@ -345,7 +359,7 @@ class Drainage(GenericAlgorithm):
                 raise Exception('Outlet pores have not been specified')
 
         # Generate curve from points
-        for inv_val in inv_points:
+        for inv_val in self._inv_points:
             # Apply one applied pressure and determine invaded pores
             logger.info('Applying capillary pressure: ' + str(inv_val))
             self._apply_percolation(inv_val)
@@ -427,7 +441,9 @@ class Drainage(GenericAlgorithm):
         if sp.any(self['throat.residual']):
             self['throat.inv_Pc'][self['throat.residual']] = 0
 
-    def get_drainage_data(self, pore_volume='volume', throat_volume='volume'):
+    def get_drainage_data(self,
+                          pore_volume='pore.volume',
+                          throat_volume='throat.volume'):
         r"""
         Obtain the numerical values of the resultant capillary pressure curve.
 
@@ -444,21 +460,36 @@ class Drainage(GenericAlgorithm):
         each array.
         """
         # Infer list of applied capillary pressures
-        PcPoints = sp.unique(self['pore.inv_Pc'])
+        PcPoints = self._inv_points
         if PcPoints[-1] == sp.inf:  # Remove infinity from PcPoints if present
             PcPoints = PcPoints[:-1]
         # Get pore and throat volumes
-        Pvol = self._net['pore.' + pore_volume]
-        Tvol = self._net['throat.' + throat_volume]
+        Pvol = self._net[pore_volume]
+        Tvol = self._net[throat_volume]
         Total_vol = sp.sum(Pvol) + sp.sum(Tvol)
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
         Vnwp_p = []
         Vnwp_all = []
         for Pc in PcPoints:
-            Vp = sp.sum(Pvol[self['pore.inv_Pc'] <= Pc])
+            p_inv = self['pore.inv_Pc'] <= Pc
+            t_inv = self['throat.inv_Pc'] <= Pc
+            Vp = sp.sum(Pvol[p_inv])
+            Vt = sp.sum(Tvol[t_inv])
+            if self._pore_filling is not None:
+                key = self._pore_filling
+                Snwp = sp.zeros((self.Np,))
+                for phys in self._inv_phase._physics:
+                    # Update Physics model with current Pc
+                    temp_Pc = phys.models[key]['Pc']  # Store old Pc
+                    phys.models[key]['Pc'] = Pc
+                    # Regenerate Physics model and capture output locally
+                    Snwp[phys.Pnet] = phys.models[key].regenerate()
+                    phys.models[key]['Pc'] = temp_Pc  # Replace old Pc
+                Vp = Pvol*Snwp
+                Vp = sp.sum(Vp[p_inv])
+
             Vnwp_p.append(Vp)
-            Vt = sp.sum(Tvol[self['throat.inv_Pc'] <= Pc])
             Vnwp_t.append(Vt)
             Vnwp_all.append(Vp + Vt)
         # Convert volumes to saturations by normalizing with total pore volume
@@ -496,6 +527,10 @@ class Drainage(GenericAlgorithm):
         plt.ylabel(y_values)
         plt.xlabel(x_values)
         plt.grid(True)
+        if sp.amax(xdata) <= 1:
+            plt.xlim(xmin=0, xmax=1)
+        if sp.amax(ydata) <= 1:
+            plt.ylim(ymin=0, ymax=1)
         return fig
 
     def return_results(self, Pc):
