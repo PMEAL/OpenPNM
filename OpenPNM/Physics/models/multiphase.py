@@ -74,8 +74,11 @@ def late_throat_filling(network, phase, Pc_star, eta):
     pass
 
 
-def late_pore_filling(physics, phase, network, Pc, Swp_star=0.2, eta=3,
-                      wetting_phase=False, pore_occupancy='pore.occupancy',
+def late_pore_filling(physics, phase, network,
+                      Pc,
+                      Swp_star=0.2,
+                      eta=3,
+                      pc_star='pore.pc_star',
                       throat_capillary_pressure='throat.capillary_pressure',
                       **kwargs):
     r"""
@@ -86,27 +89,37 @@ def late_pore_filling(physics, phase, network, Pc, Swp_star=0.2, eta=3,
     ----------
     Pc : float
         The capillary pressure in the non-wetting phase (Pc > 0)
+
+    eta : float
+        Exponent to control the rate at which wetting phase is displaced
+
     Swp_star : float
         The residual wetting phase in an invaded pore immediately after
         nonwetting phase invasion
-    eta : float
-        Exponent to control the rate at which wetting phase is displaced
-    wetting_phase : boolean
-        Indicates whether supplied phase is the wetting or non-wetting phase
 
+    pc_star : string
+        The dictionary key to find or place the Pc_star array.  Pc_star is
+        the minimum pressure at which a pore can be invaded and is found as
+        the minimum entery pressure of all the pore's neighboring throats.  The
+        default is 'pore.Pc_star' and if this array is not found it is created.
+
+    throat_capillary_pressure : string
+        The dictionary key containing throat entry pressures.  The default is
+        'throat.capillary_pressure'.
 
     """
     pores = phase.Ps
     prop = phase[throat_capillary_pressure]
     neighborTs = network.find_neighbor_throats(pores, flatten=False)
-    Pc_star = sp.array([sp.amin(prop[row]) for row in neighborTs])
+
+    # If pc_star has not yet been calculated, do so
+    if pc_star not in physics.keys():
+        temp = sp.array([sp.amin(prop[row]) for row in neighborTs])
+        physics[pc_star] = temp
+
+    Swp = sp.ones(phase.Np,)
     if Pc > 0:
-        Swp = Swp_star*(Pc_star/Pc)**eta
-    else:
-        Swp = sp.zeros(len(Pc_star))
-    if wetting_phase:
-        values = Swp*phase[pore_occupancy]*(Pc_star < Pc)
-    else:
-        values = (1-Swp)*(1-phase[pore_occupancy])*(Pc_star < Pc)
+        Swp = Swp_star*(physics[pc_star]/Pc)**eta
+    values = (1-Swp)*(physics[pc_star] <= Pc)
     values = values[phase.pores(physics.name)]
     return values
