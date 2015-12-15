@@ -154,6 +154,8 @@ class Drainage(GenericAlgorithm):
             This is useful for fixing mistaken inlets, or rerunning the
             algorithm with different inlet locations.
 
+            **'remove'** : Removes teh received locations from the list of
+            inlet pores.
             **'clear'** : Removes the existing inlets and ignores any specified
             locations.  This is equivalent to calling the method with a mode
             of 'overwrite' and pores = [] or None.
@@ -170,7 +172,10 @@ class Drainage(GenericAlgorithm):
             self['pore.inlets'] = False
         if sum(self['pore.outlets'][Ps]) > 0:
             raise Exception('Some inlets are already defined as outlets')
-        self['pore.inlets'][Ps] = True
+        bool_val = True
+        if mode is 'remove':
+            bool_val = False
+        self['pore.inlets'][Ps] = bool_val
 
     def set_outlets(self, pores=None, mode='add'):
         r"""
@@ -194,6 +199,9 @@ class Drainage(GenericAlgorithm):
             This is useful for fixing mistaken outlets, or rerunning the
             algorithm with different outlet locations.
 
+            **'remove'** : Removes teh received locations from the list of
+            outlet pores.
+
             **'clear'** : Removes the existing outlets and ignores any
             specified locations. This is equivalent to calling the method with
             a mode of 'overwrite' and pores = [] or None.
@@ -208,7 +216,10 @@ class Drainage(GenericAlgorithm):
             self['pore.outlets'] = False
         if sum(self['pore.inlets'][Ps]) > 0:
             raise Exception('Some outlets are already defined as inlets')
-        self['pore.outlets'][Ps] = True
+        bool_val = True
+        if mode is 'remove':
+            bool_val = False
+        self['pore.outlets'][Ps] = bool_val
 
     def set_residual(self, pores=None, throats=None, mode='add'):
         r"""
@@ -231,9 +242,13 @@ class Drainage(GenericAlgorithm):
             This is useful for fixing mistaken outlets, or rerunning the
             algorithm with different outlet locations.
 
-            **'clear'** : Removes the existing outlets and ignores any
-            specified locations. This is equivalent to calling the method with
-            a mode of 'overwrite' and pores = [] or None.
+            **'remove'** : Removes teh received locations from the list of
+            residual pores and/or throats.  Both can be specified
+            simultaneously.
+
+            **'clear'** : Removes all existing residual locations.  This
+            ignores any specified locations and is equivalent to calling the
+            method with a mode of 'overwrite' and pores = [] or None.
 
         Notes
         -----
@@ -245,6 +260,7 @@ class Drainage(GenericAlgorithm):
         they also contribute to the starting saturation as well.
 
         """
+        bool_val = True
         if mode is 'clear':
             self['pore.residual'] = False
             self['throat.residual'] = False
@@ -253,12 +269,16 @@ class Drainage(GenericAlgorithm):
             Ps = self._parse_locations(pores)
             if mode in ['clear', 'overwrite']:
                 self['pore.residual'] = False
-            self['pore.residual'][Ps] = True
+            if mode is 'remove':
+                bool_val = False
+            self['pore.residual'][Ps] = bool_val
         if throats is not None:
             Ts = self._parse_locations(throats)
             if mode in ['clear', 'overwrite']:
                 self['throat.residual'] = False
-            self['throat.residual'][Ts] = True
+            if mode is 'remove':
+                bool_val = False
+            self['throat.residual'][Ts] = bool_val
 
     def set_boundary_conditions(self, bc_type=None, pores=None, throats=None,
                                 mode='add'):
@@ -274,7 +294,7 @@ class Drainage(GenericAlgorithm):
             **'outlets'** : For specifying where defending phase exits the
             Network if trapping is to be considered.
 
-            **'residual'** : For speficying the pore and throat locations of
+            **'residual'** : For specifying the pore and throat locations of
             existing residual phase in the Network at the start of the
             drainage.
 
@@ -295,21 +315,25 @@ class Drainage(GenericAlgorithm):
             This is useful for fixing mistaken outlets, or rerunning the
             algorithm with different outlet locations.
 
+            **'remove'** : Removes boundary conditions of the specified type
+            ('inlets', 'outlets', or 'residual') from the given locations.
+
             **'clear'** : Removes existing conditions of the specified type
             ('inlets', 'outlets' or 'residual') and ignores any specified
             locations. If 'bc_type' is not specified then all conditions are
             removed.
 
         """
-        if (mode == 'clear') and (bc_type is None):
-            self['pore.inlets'] = False
-            self['pore.outlets'] = False
-            self['pore.residual'] = False
-            self['throat.residual'] = False
-            return
-        else:
-            raise Exception('\'bc_type\' cannot be None unless mode \
-                            is \'clear\'')
+        if bc_type is None:
+            if mode == 'clear':
+                self['pore.inlets'] = False
+                self['pore.outlets'] = False
+                self['pore.residual'] = False
+                self['throat.residual'] = False
+                return
+            else:
+                raise Exception('\'bc_type\' cannot be None unless mode \
+                                is \'clear\'')
         if bc_type == 'residual':
             self.set_residual(pores=pores, throat=throats, mode=mode)
         elif bc_type == 'inlets':
