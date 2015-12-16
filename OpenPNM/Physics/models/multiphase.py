@@ -115,11 +115,10 @@ def late_pore_filling(physics, phase, network,
     # If pc_star has not yet been calculated, do so
     if pc_star not in physics.keys():
         temp = sp.array([sp.amin(prop[row]) for row in neighborTs])
-        physics[pc_star] = temp
+        physics[pc_star] = temp[physics.Pnet]
 
     Swp = sp.ones(phase.Np,)
     if Pc > 0:
         Swp = Swp_star*(physics[pc_star]/Pc)**eta
     values = (1-Swp)*(physics[pc_star] <= Pc)
-    values = values[phase.pores(physics.name)]
     return values
