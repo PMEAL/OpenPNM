@@ -85,7 +85,8 @@ class Drainage(GenericAlgorithm):
               invading_phase,
               entry_pressure='throat.capillary_pressure',
               trapping=False,
-              pore_filling=None):
+              pore_filling=None,
+              throat_filling=None):
         r"""
         Used to specify necessary arguments to the simulation.  This method is
         useful for resetting the Algorithm or applying more explicit control.
