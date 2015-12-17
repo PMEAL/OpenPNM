@@ -1415,7 +1415,7 @@ class Core(dict):
 
     def _parse_locations(self, locations):
         if locations is None:
-            locations = []
+            locations = sp.array([], ndmin=1, dtype=int)
         locs = sp.array(locations, ndmin=1)
         if locs.dtype == bool:
             if sp.size(locs) == self.Np:
