@@ -74,8 +74,46 @@ def conduit_conductance(physics, phase, network, throat_conductance,
     return value
 
 
-def late_throat_filling(network, phase, Pc_star, eta):
-    pass
+def late_throat_filling(network, phase, physics,
+                        Pc,
+                        Swp_star=0.11,
+                        eta=3,
+                        throat_entry_pressure='throat.capillary_pressure',
+                        **kwargs):
+    r"""
+    Applies a late thraot filling model to calculate fractional throat filling
+    as a function of applied capillary pressure.
+
+    Parameters
+    ----------
+    Pc : float
+        The capillary pressure in the non-wetting phase (Pc > 0)
+
+    eta : float
+        Exponent to control the rate at which wetting phase is displaced
+
+    Swp_star : float
+        The residual wetting phase in an invaded pore immediately after
+        nonwetting phase invasion
+
+    throat_entry_pressure : string
+        The dictionary key containing throat entry pressures.  The default is
+        'throat.capillary_pressure'.
+
+    Returns
+    -------
+    A Nt-list of containing the fraction of each throat that is filled with
+    non-wetting phase.  Note this method does NOT account for whether a throat
+    is actually filled or not; this needs to be done using some other external
+    criteria such as the 'throat.inv_Pc' array on a *Drainage* algorithm.
+
+    """
+    pc_star = physics[throat_entry_pressure]
+    Swp = sp.ones(phase.Np,)
+    if Pc > 0:
+        Swp = Swp_star*(physics[pc_star]/Pc)**eta
+    values = (1-Swp)*(physics[pc_star] <= Pc)
+    return values
 
 
 def late_pore_filling(physics, phase, network,
@@ -83,7 +121,7 @@ def late_pore_filling(physics, phase, network,
                       Swp_star=0.2,
                       eta=3,
                       pc_star='pore.pc_star',
-                      throat_capillary_pressure='throat.capillary_pressure',
+                      throat_entry_pressure='throat.capillary_pressure',
                       **kwargs):
     r"""
     Applies a late pore filling model to calculate fractional pore filling as
@@ -108,7 +146,7 @@ def late_pore_filling(physics, phase, network,
         The default is 'pore.Pc_star' and if this array is not found it is
         created.
 
-    throat_capillary_pressure : string
+    throat_entry_pressure : string
         The dictionary key containing throat entry pressures.  The default is
         'throat.capillary_pressure'.
 
@@ -121,7 +159,7 @@ def late_pore_filling(physics, phase, network,
 
     """
     pores = phase.Ps
-    prop = phase[throat_capillary_pressure]
+    prop = phase[throat_entry_pressure]
     neighborTs = network.find_neighbor_throats(pores, flatten=False)
 
     # If pc_star has not yet been calculated, do so
