@@ -156,6 +156,7 @@ class Drainage(GenericAlgorithm):
 
             **'remove'** : Removes teh received locations from the list of
             inlet pores.
+
             **'clear'** : Removes the existing inlets and ignores any specified
             locations.  This is equivalent to calling the method with a mode
             of 'overwrite' and pores = [] or None.
