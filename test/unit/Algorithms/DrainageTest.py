@@ -153,7 +153,7 @@ class DrainageTest:
         self.alg.setup(invading_phase=self.phase)
         Ps = sp.random.randint(0, self.net.Np, 10)
         self.alg.set_boundary_conditions(pores=Ps, bc_type='inlets')
-        self.run(npts=20)
+        self.alg.run(npts=20)
 
     def test_run_inv_pressures(self):
         self.alg.setup(invading_phase=self.phase)
@@ -166,7 +166,7 @@ class DrainageTest:
         self.alg.setup(invading_phase=self.phase)
         flag = False
         try:
-            self.run()
+            self.alg.run()
         except:
             flag = True
         assert flag
@@ -177,7 +177,7 @@ class DrainageTest:
         self.alg.set_boundary_conditions(pores=Ps, bc_type='inlets')
         flag = False
         try:
-            self.run()
+            self.alg.run()
         except:
             flag = True
         assert flag
