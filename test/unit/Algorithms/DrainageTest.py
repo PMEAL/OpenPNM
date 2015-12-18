@@ -66,7 +66,7 @@ class DrainageTest:
         assert flag
 
     def test_set_outlets_modes(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.phase, trapping=True)
 
         self.alg.set_outlets(pores=self.net.pores('top'), mode='add')
         assert sp.sum(self.alg['pore.outlets']) == 25
@@ -85,7 +85,7 @@ class DrainageTest:
         assert sp.sum(self.alg['pore.outlets']) == 0
 
     def test_set_residual_modes(self):
-        self.alg.setup(invading_phase=self.phase, trapping=True)
+        self.alg.setup(invading_phase=self.phase)
 
         Ps = sp.random.randint(0, self.net.Np, 10)
         Ts = self.net.find_neighbor_pores(pores=Ps)
@@ -152,7 +152,7 @@ class DrainageTest:
     def test_run_npts(self):
         self.alg.setup(invading_phase=self.phase)
         Ps = sp.random.randint(0, self.net.Np, 10)
-        self.alg.set_boundary_conditions(pores=Ps, bctype='inlets')
+        self.alg.set_boundary_conditions(pores=Ps, bc_type='inlets')
         self.run(npts=20)
 
     def test_run_inv_pressures(self):

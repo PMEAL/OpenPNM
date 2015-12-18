@@ -337,7 +337,7 @@ class Drainage(GenericAlgorithm):
                 raise Exception('\'bc_type\' cannot be None unless mode \
                                 is \'clear\'')
         if bc_type == 'residual':
-            self.set_residual(pores=pores, throat=throats, mode=mode)
+            self.set_residual(pores=pores, throats=throats, mode=mode)
         elif bc_type == 'inlets':
             self.set_inlets(pores=pores, mode=mode)
         elif bc_type == 'outlets':
