@@ -47,7 +47,7 @@ class DrainageTest:
         assert flag
 
     def test_set_outlets_conflicting_with_inlets(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.phase, trapping=True)
         self.alg['pore.inlets'][self.net.pores('top')] = True
         flag = False
         try:
