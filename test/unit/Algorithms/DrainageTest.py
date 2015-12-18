@@ -51,7 +51,7 @@ class DrainageTest:
         self.alg['pore.inlets'][self.net.pores('top')] = True
         flag = False
         try:
-            self.alg.set_outlets(pores=self.net.pores('top'), mode='add')
+            self.alg.set_outlets(pores=self.net.pores('top'))
         except:
             flag = True
         assert flag
@@ -145,6 +145,13 @@ class DrainageTest:
         flag = False
         try:
             self.alg.set_boundary_conditions(pores=Ps, bc_type='bad_type')
+        except:
+            flag = True
+        assert flag
+
+        flag = False
+        try:
+            self.alg.set_boundary_conditions(bc_type=None, mode='bad_type')
         except:
             flag = True
         assert flag
