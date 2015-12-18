@@ -1,6 +1,7 @@
 import scipy as sp
 import OpenPNM
 import pytest
+import matplotlib
 
 pn = OpenPNM.Network.Cubic(shape=[25, 25, 25], spacing=0.00005)
 pn['pore.internal'] = True
@@ -74,3 +75,12 @@ def test_late_pore_filling():
 
     assert sp.amin(data['nonwetting_phase_saturation']) == 0.0
     assert sp.amax(data['nonwetting_phase_saturation']) < 1.0
+
+
+def test_ploting():
+    drainage.setup(invading_phase=water)
+    drainage.set_inlets(pores=pn.pores('boundary_top'))
+    drainage.run()
+    data = drainage.get_drainage_data()
+    a = drainage.plot_drainage_curve(data)
+    assert isinstance(a, matplotlib.figure.Figure)
