@@ -108,11 +108,10 @@ def late_throat_filling(network, phase, physics,
     criteria such as the 'throat.inv_Pc' array on a *Drainage* algorithm.
 
     """
-    pc_star = physics[throat_entry_pressure]
-    Swp = sp.ones(phase.Np,)
+    Swp = sp.ones(physics.Nt,)
     if Pc > 0:
-        Swp = Swp_star*(physics[pc_star]/Pc)**eta
-    values = (1-Swp)*(physics[pc_star] <= Pc)
+        Swp = Swp_star*(physics[throat_entry_pressure]/Pc)**eta
+    values = (1-Swp)*(physics[throat_entry_pressure] <= Pc)
     return values
 
 
@@ -158,16 +157,16 @@ def late_pore_filling(physics, phase, network,
     criteria such as the 'pore.inv_Pc' array on a *Drainage* algorithm.
 
     """
-    pores = phase.Ps
-    prop = phase[throat_entry_pressure]
-    neighborTs = network.find_neighbor_throats(pores, flatten=False)
 
     # If pc_star has not yet been calculated, do so
     if pc_star not in physics.keys():
+        pores = phase.Ps
+        prop = phase[throat_entry_pressure]
+        neighborTs = network.find_neighbor_throats(pores, flatten=False)
         temp = sp.array([sp.amin(prop[row]) for row in neighborTs])
         physics[pc_star] = temp[physics.Pnet]
 
-    Swp = sp.ones(phase.Np,)
+    Swp = sp.ones(physics.Np,)
     if Pc > 0:
         Swp = Swp_star*(physics[pc_star]/Pc)**eta
     values = (1-Swp)*(physics[pc_star] <= Pc)
