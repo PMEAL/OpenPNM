@@ -84,9 +84,7 @@ class Drainage(GenericAlgorithm):
     def setup(self,
               invading_phase,
               entry_pressure='throat.capillary_pressure',
-              trapping=False,
-              pore_filling=None,
-              throat_filling=None):
+              trapping=False):
         r"""
         Used to specify necessary arguments to the simulation.  This method is
         useful for resetting the Algorithm or applying more explicit control.
@@ -108,16 +106,6 @@ class Drainage(GenericAlgorithm):
             specified using the ``set_outlets`` method.  Otherwise it is
             assumed the wetting phase has no outlets.
 
-        pore_filling : string (optional)
-            The dictionary key on the Physics object where the late pore
-            filling model is located. The default is None, meaning that a
-            pore is completely filled upon penetration.
-
-        throat_filling : string (optional)
-            The dictionary key on the Physics object where the late throat
-            filling model is located. The default is None, meaning that a
-            throat is completely filled upon penetration.
-
         """
         self['throat.entry_pressure'] = invading_phase[entry_pressure]
         self['pore.inv_Pc'] = sp.inf
@@ -129,8 +117,6 @@ class Drainage(GenericAlgorithm):
         self['pore.residual'] = False
         self['throat.residual'] = False
         self._inv_phase = invading_phase
-        self._pore_filling = pore_filling
-        self._throat_filling = throat_filling
         self._trapping = trapping
 
     def set_inlets(self, pores=None, mode='add'):
@@ -468,9 +454,24 @@ class Drainage(GenericAlgorithm):
         if sp.any(self['throat.residual']):
             self['throat.inv_Pc'][self['throat.residual']] = 0
 
-    def get_drainage_data(self):
+    def get_drainage_data(self, pore_volume='pore.volume',
+                          throat_volume='throat.volume',
+                          pore_filling=None,
+                          throat_filling=None):
         r"""
         Obtain the numerical values of the resultant capillary pressure curve.
+
+        Parameters
+        ----------
+        pore_volume and throat_volume : string (optional)
+            The dictionary key on the Geometry object where the pore or throat
+            volume data is located.  The defaults is 'pore.volume' and
+            'throat.volume'.
+
+        pore_filling and throat_filling: string (optional)
+            The dictionary key on the Physics object where the late pore or
+            throat filling model is located. The default is None, meaning that
+            a pore or throat is completely filled upon penetration.
 
         Returns
         -------
@@ -484,13 +485,17 @@ class Drainage(GenericAlgorithm):
         the keys 'pore.volume' and 'throat.volume'.  This cannot be customized
         at this time.
         """
+        self._throat_volume = 'throat.volume'
+        self._pore_volume = 'pore.volume'
+        self._pore_filling = 'pore.fractional_filling'
+        self._throat_filling = 'throat.fractional_filling'
         # Infer list of applied capillary pressures
         PcPoints = self._inv_points
         if PcPoints[-1] == sp.inf:  # Remove infinity from PcPoints if present
             PcPoints = PcPoints[:-1]
         # Get pore and throat volumes
-        Pvol = self._net['pore.volume']
-        Tvol = self._net['throat.volume']
+        Pvol = self._net[self._pore_volume]
+        Tvol = self._net[self._throat_volume]
         Total_vol = sp.sum(Pvol) + sp.sum(Tvol)
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
@@ -525,8 +530,10 @@ class Drainage(GenericAlgorithm):
     def _calc_fractional_filling(self, element, pressure):
         if element == 'pore':
             key = self._pore_filling
+            vol = self._pore_volume
         elif element == 'throat':
             key = self._throat_filling
+            vol = self._throat_volume
         else:
             raise Exception('element must be either \'pore\' or \'throat\'')
         Snwp = sp.zeros((self._count(element),))
@@ -536,9 +543,9 @@ class Drainage(GenericAlgorithm):
             phys.models[key]['Pc'] = pressure
             # Regenerate Physics model and capture output locally
             Snwp[phys.Pnet] = phys.models[key].regenerate()
-            phys.models[key]['Pc'] = temp_Pc  # Replace old Pc
+            phys.models[key]['Pc'] = temp_Pc  # Return old Pc
         inv = self[element+'.inv_Pc'] <= pressure
-        V = self._net[element+'.volume']*Snwp
+        V = self._net[vol]*Snwp
         V = sp.sum(V[inv])
         return V
 
