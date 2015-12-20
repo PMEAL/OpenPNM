@@ -155,7 +155,7 @@ class Drainage(GenericAlgorithm):
             This is useful for fixing mistaken inlets, or rerunning the
             algorithm with different inlet locations.
 
-            **'remove'** : Removes teh received locations from the list of
+            **'remove'** : Removes the received locations from the list of
             inlet pores.
 
             **'clear'** : Removes the existing inlets and ignores any specified
@@ -182,6 +182,8 @@ class Drainage(GenericAlgorithm):
     def set_outlets(self, pores=None, mode='add'):
         r"""
         Set the locations through which defending phase exits the network.
+        This is only necessary if 'trapping'was set to True when setup was
+        called.
 
         Parameters
         ----------
@@ -201,7 +203,7 @@ class Drainage(GenericAlgorithm):
             This is useful for fixing mistaken outlets, or rerunning the
             algorithm with different outlet locations.
 
-            **'remove'** : Removes teh received locations from the list of
+            **'remove'** : Removes the received locations from the list of
             outlet pores.
 
             **'clear'** : Removes the existing outlets and ignores any
@@ -225,7 +227,7 @@ class Drainage(GenericAlgorithm):
 
     def set_residual(self, pores=None, throats=None, mode='add'):
         r"""
-        Specify locations of the residual wetting phase
+        Specify locations of the residual invading (nonwetting) phase
 
         Parameters
         ----------
@@ -244,7 +246,7 @@ class Drainage(GenericAlgorithm):
             This is useful for fixing mistaken outlets, or rerunning the
             algorithm with different outlet locations.
 
-            **'remove'** : Removes teh received locations from the list of
+            **'remove'** : Removes the received locations from the list of
             residual pores and/or throats.  Both can be specified
             simultaneously.
 
@@ -297,7 +299,7 @@ class Drainage(GenericAlgorithm):
             Network if trapping is to be considered.
 
             **'residual'** : For specifying the pore and throat locations of
-            existing residual phase in the Network at the start of the
+            existing residual invading phase in the Network at the start of the
             drainage.
 
         pores and thorats: array_like
@@ -318,12 +320,11 @@ class Drainage(GenericAlgorithm):
             algorithm with different outlet locations.
 
             **'remove'** : Removes boundary conditions of the specified type
-            ('inlets', 'outlets', or 'residual') from the given locations.
+            from the given locations.
 
             **'clear'** : Removes existing conditions of the specified type
-            ('inlets', 'outlets' or 'residual') and ignores any specified
-            locations. If 'bc_type' is not specified then all conditions are
-            removed.
+            and ignores any specified locations. If 'bc_type' is not specified
+            then all conditions are removed.
 
         """
         if bc_type is None:
@@ -555,7 +556,7 @@ class Drainage(GenericAlgorithm):
             This dictionary should be obtained from the ``get_drainage_data``
             method.
 
-        x_values and y-values : string
+        x_values and y_values : string
             The dictionary keys of the arrays containing the x-values and
             y-values
 
