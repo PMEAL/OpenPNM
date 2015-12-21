@@ -45,7 +45,7 @@ class CoreTest:
                                                       pores=Ps,
                                                       throats=Ts)
 
-    def test_clear(self):
+    def test_clear_complete(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
         b = sorted(list(net.keys()))
         dict_ = net.copy()
@@ -59,6 +59,40 @@ class CoreTest:
         assert net.Nt == 54
         a = sorted(list(net.keys()))
         assert a == b
+
+    def test_clear_props(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        net.clear(mode='props')
+        assert len(net.props()) == 0
+
+    def test_clear_labels(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        net.clear(mode='labels')
+        assert len(net.labels()) == 2
+        assert net.Np == 27
+        assert net.Nt == 54
+
+    def test_clear_labels_and_props(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        net.clear(mode=['labels', 'props'])
+        assert len(net.labels()) == 2
+        assert net.Np == 27
+        assert net.Nt == 54
+        assert len(net.props()) == 0
+
+    def test_clear_models(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        geo = OpenPNM.Geometry.Stick_and_Ball(network=net,
+                                              pores=net.Ps,
+                                              throats=net.Ts)
+        geo.clear(mode='props')
+        assert len(geo.props()) == 0
+        geo['pore.seed'] = sp.rand(geo.Np)
+        geo.models.regenerate()
+        assert len(geo.props()) > 0
+        geo.clear(mode=['props', 'models'])
+        geo.models.regenerate()
+        assert len(geo.props()) == 0
 
     def test_props_all(self):
         a = self.geo.props()
