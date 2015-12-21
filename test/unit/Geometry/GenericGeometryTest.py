@@ -63,6 +63,12 @@ class GenericGeometryTest:
             flag = True
         assert flag
 
+    def test_plot_histogram(self):
+        self.geo['pore.diameter'] = 1
+        self.geo['throat.diameter'] = 1
+        self.geo['throat.length'] = 1
+        self.geo.plot_histograms()
+
     def test_clear(self):
         self.geo2.clear(mode='complete')
         assert len(self.geo2.props()) == 0
