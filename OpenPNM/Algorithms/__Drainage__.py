@@ -487,8 +487,8 @@ class Drainage(GenericAlgorithm):
         """
         self._throat_volume = 'throat.volume'
         self._pore_volume = 'pore.volume'
-        self._pore_filling = 'pore.fractional_filling'
-        self._throat_filling = 'throat.fractional_filling'
+        self._pore_filling = pore_filling
+        self._throat_filling = throat_filling
         # Infer list of applied capillary pressures
         PcPoints = self._inv_points
         if PcPoints[-1] == sp.inf:  # Remove infinity from PcPoints if present
@@ -503,19 +503,21 @@ class Drainage(GenericAlgorithm):
         Vnwp_all = []
         for Pc in PcPoints:
             # Calculate filled pore volumes
+            p_inv = self['pore.inv_Pc'] <= Pc
             if self._pore_filling is None:
-                p_inv = self['pore.inv_Pc'] <= Pc
                 Vp = sp.sum(Pvol[p_inv])
             else:
                 Vp = self._calc_fractional_filling(pressure=Pc,
                                                    element='pore')
+                Vp = sp.sum(Vp[p_inv])
             # Calculate filled throat volumes
+            t_inv = self['throat.inv_Pc'] <= Pc
             if self._throat_filling is None:
-                t_inv = self['throat.inv_Pc'] <= Pc
                 Vt = sp.sum(Tvol[t_inv])
             else:
                 Vt = self._calc_fractional_filling(pressure=Pc,
                                                    element='throat')
+                Vt = sp.sum(Vt[t_inv])
             Vnwp_p.append(Vp)
             Vnwp_t.append(Vt)
             Vnwp_all.append(Vp + Vt)
@@ -528,6 +530,27 @@ class Drainage(GenericAlgorithm):
         return data
 
     def _calc_fractional_filling(self, element, pressure):
+        r"""
+        Calculates the fractional filling of each pore or throat as the
+        supplied capillary pressure
+
+        Parameters
+        ----------
+        element : string
+            Can either be 'pore' or 'throat' indicating which type of element
+            to be calculated
+
+        pressure : float
+            The value of the capillary pressure to apply.  This value is sent
+            the to Physics model stored in the ``_pore(throat)_filling``
+            attribute of the object.  This attribute is set during the call
+            to ``get_drainage_data``.
+
+        Notes
+        -----
+        The 'pore(throat)_filling' model must accept the applied capillary
+        pressure as 'Pc'.  This is not customizable at the moment.
+        """
         if element == 'pore':
             key = self._pore_filling
             vol = self._pore_volume
@@ -544,9 +567,7 @@ class Drainage(GenericAlgorithm):
             # Regenerate Physics model and capture output locally
             Snwp[phys.Pnet] = phys.models[key].regenerate()
             phys.models[key]['Pc'] = temp_Pc  # Return old Pc
-        inv = self[element+'.inv_Pc'] <= pressure
         V = self._net[vol]*Snwp
-        V = sp.sum(V[inv])
         return V
 
     def plot_drainage_curve(self,
@@ -607,6 +628,13 @@ class Drainage(GenericAlgorithm):
         Psatn = self['pore.inv_Pc'] <= Pc
         Tsatn = self['throat.inv_Pc'] <= Pc
         phase = self._inv_phase
-        # TODO: This should calculate the fractional occupancy of each location
         phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
         phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
+        if self._pore_filling:
+            Vp = self._calc_fractional_filling(element='pore', pressure=Pc)
+            Sp = Vp/self._net[self._pore_volume]
+            phase['pore.partial_occupancy'] = Sp
+        if self._throat_filling:
+            Vt = self._calc_fractional_filling(element='throat', pressure=Pc)
+            St = Vt/self._net[self._throat_volume]
+            phase['throat.partial_occupancy'] = St

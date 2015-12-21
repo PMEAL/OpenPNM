@@ -71,9 +71,12 @@ def test_late_pore_filling():
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.run()
     data = drainage.get_drainage_data(pore_filling='pore.fractional_filling')
-
     assert sp.amin(data['nonwetting_phase_saturation']) == 0.0
     assert sp.amax(data['nonwetting_phase_saturation']) < 1.0
+
+    drainage.return_results()
+    assert 'pore.occupancy' in water.keys()
+    assert 'pore.partial_occupancy' in water.keys()
 
 
 def test_late_throat_filling():
@@ -91,6 +94,37 @@ def test_late_throat_filling():
 
     assert sp.amin(data['nonwetting_phase_saturation']) == 0.0
     assert sp.amax(data['nonwetting_phase_saturation']) < 1.0
+
+    drainage.return_results()
+    assert 'throat.occupany' in water.keys()
+    assert 'throat.partial_occupany' in water.keys()
+
+def test_late_pore_and_throat_filling():
+    phys.models.add(propname='pore.fractional_filling',
+                    model=OpenPNM.Physics.models.multiphase.late_pore_filling,
+                    Pc=0,
+                    Swp_star=0.2,
+                    eta=1)
+    mod = OpenPNM.Physics.models.multiphase.late_throat_filling
+    phys.models.add(propname='throat.fractional_filling',
+                    model=mod,
+                    Pc=0,
+                    Swp_star=0.2,
+                    eta=1)
+    phys.regenerate()
+    drainage.setup(invading_phase=water)
+    drainage.set_inlets(pores=pn.pores('boundary_top'))
+    drainage.run()
+    data = drainage.get_drainage_data(pore_filling='pore.fractional_filling',
+                                      throat_filling='throat.fractional_filling')
+    assert sp.amin(data['nonwetting_phase_saturation']) == 0.0
+    assert sp.amax(data['nonwetting_phase_saturation']) < 1.0
+
+    drainage.return_results()
+    assert 'pore.occupancy' in water.keys()
+    assert 'throat.occupany' in water.keys()
+    assert 'pore.partial_occupancy' in water.keys()
+    assert 'throat.partial_occupany' in water.keys()
 
 
 def test_ploting():
