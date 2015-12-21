@@ -3,6 +3,7 @@ import scipy as sp
 
 
 class GenericGeometryTest:
+
     def setup_class(self):
         self.net = OpenPNM.Network.Cubic(shape=[5, 5, 5])
         P = self.net.pores('top', mode='not')
@@ -61,6 +62,12 @@ class GenericGeometryTest:
         except:
             flag = True
         assert flag
+
+    def test_plot_histogram(self):
+        self.geo['pore.diameter'] = 1
+        self.geo['throat.diameter'] = 1
+        self.geo['throat.length'] = 1
+        self.geo.plot_histograms()
 
     def test_clear(self):
         self.geo2.clear(mode='complete')
