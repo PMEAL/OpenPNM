@@ -67,3 +67,14 @@ class GenericPhysicsTest:
         assert phase in ctrl.values()
         assert phys.name in phase.physics()
         assert phase.name in phys.phases()
+
+    def test_clear(self):
+        self.phys2 = OpenPNM.Physics.GenericPhysics(network=self.net,
+                                                    phase=self.phase2,
+                                                    geometry=self.geo1)
+        self.phys2.clear(mode='complete')
+        assert len(self.phys2.props()) == 0
+        assert len(self.phys2['pore.all']) == 0
+        assert len(self.phys2['throat.all']) == 0
+        assert self.net.num_pores(self.phys2.name) == 0
+        assert self.net.num_throats(self.phys2.name) == 0
