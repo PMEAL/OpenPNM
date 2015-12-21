@@ -96,7 +96,7 @@ def test_late_throat_filling():
     assert sp.amax(data['nonwetting_phase_saturation']) < 1.0
 
     drainage.return_results(Pc=5000)
-    assert 'throat.occupany' in water.keys()
+    assert 'throat.occupancy' in water.keys()
     assert 'throat.partial_occupancy' in water.keys()
 
 
@@ -123,7 +123,7 @@ def test_late_pore_and_throat_filling():
 
     drainage.return_results(Pc=5000)
     assert 'pore.occupancy' in water.keys()
-    assert 'throat.occupany' in water.keys()
+    assert 'throat.occupancy' in water.keys()
     assert 'pore.partial_occupancy' in water.keys()
     assert 'throat.partial_occupancy' in water.keys()
 
