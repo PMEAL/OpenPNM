@@ -274,7 +274,7 @@ class Controller(dict):
         if filename == '':
             filename = network.name
         else:
-            filename = filename.rstrip('.net')
+            filename = filename.rsplit('.net', 1)[0]
 
         # Save nested dictionary pickle
         _pickle.dump(network, open(filename + '.net', 'wb'))
@@ -289,9 +289,12 @@ class Controller(dict):
         filename : string
             The name of the file containing the Network simulation to load
         """
-        filename = filename.rstrip('.net')
+        filename = filename.rsplit('.net', 1)[0]
         net = _pickle.load(open(filename + '.net', 'rb'))
-        self[net.name] = net
+        if net.name not in self.keys():
+            self[net.name] = net
+        else:
+            raise Exception('Simulation with that name is already present')
 
     def save(self, filename=''):
         r"""
@@ -347,9 +350,9 @@ class Controller(dict):
         This calls the ``clear`` method of the Controller object, so it will
         remove all existing objects in the current workspace.
         """
-        filename = filename.strip('.pnm')
+        filename = filename.rsplit('.pnm', 1)[0]
         if self != {}:
-            print('Warning: Loading data onto non-empty controller object' +
+            print('Warning: Loading data onto non-empty controller object,' +
                   'existing data will be lost')
             self.clear()
 
