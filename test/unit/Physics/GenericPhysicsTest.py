@@ -89,3 +89,27 @@ class GenericPhysicsTest:
         assert sum([len(value) for value in a.values()]) == 0
         a = phase1.check_physics_health()
         assert len(a['undefined_pores']) > 0
+
+    def test_reassign_phase_regenerate_models(self):
+        physmods = OpenPNM.Physics.models
+        net = OpenPNM.Network.Cubic(shape=[5, 5, 5])
+        geo1 = OpenPNM.Geometry.GenericGeometry(network=net,
+                                                pores=net.Ps,
+                                                throats=net.Ts)
+        geo1['pore.diameter'] = 1
+        geo1['throat.diameter'] = 1
+        geo1['throat.length'] = 1
+        phase1 = OpenPNM.Phases.GenericPhase(network=net)
+        phase1['pore.viscosity'] = 1
+        phase2 = OpenPNM.Phases.GenericPhase(network=net)
+        phase2['pore.viscosity'] = 10
+        phys = OpenPNM.Physics.GenericPhysics(network=net,
+                                              phase=phase1,
+                                              geometry=geo1)
+        phys.models.add(propname='throat.hydraulic_conductance',
+                        model=physmods.hydraulic_conductance.hagen_poiseuille)
+        assert sp.allclose(phys['throat.hydraulic_conductance'], 0.02454369)
+        phys.parent_phase = phase2
+        assert sp.allclose(phys['throat.hydraulic_conductance'], 0.02454369)
+        phys.models.regenerate()
+        assert sp.allclose(phys['throat.hydraulic_conductance'], 0.00245437)
