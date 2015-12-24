@@ -209,6 +209,37 @@ class Core(dict):
         if 'models' in mode:
             self.models.clear()
 
+    def data(self, pores=None, throats=None):
+        r"""
+        Returns dictionary containing numerical data values for all properties
+        assigned to the specified pore and/or throat locations.
+
+        Parameters
+        ----------
+        pores and throats : array_like
+            A list of pore and/or throat locations for which property values
+            are desired.
+
+        Returns
+        -------
+        A dictionary whose keys are the pore and/or throat properties that
+        are defined on the object, with each entry containing a Numpy array
+        of the numerical data values at the specified locations.
+        """
+        pores = self._parse_locations(pores)
+        throats = self._parse_locations(throats)
+        dict_ = {}
+        if (sp.size(pores) == 0) and (sp.size(throats) == 0):
+            pores = self.Ps
+            throats = self.Ts
+        if sp.size(pores) > 0:
+            for item in self.props(element='pore'):
+                dict_.update({item: self[item][pores]})
+        if sp.size(throats) > 0:
+            for item in self.props(element='throat'):
+                dict_.update({item: self[item][throats]})
+        return Tools.PrintableDict(dict_)
+
     # -------------------------------------------------------------------------
     """Model Manipulation Methods"""
     # -------------------------------------------------------------------------
