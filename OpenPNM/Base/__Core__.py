@@ -72,6 +72,9 @@ class Core(dict):
         if (element != 'pore') and (element != 'throat'):
             logger.error('Array name \''+key+'\' does not begin with ' +
                          '\'pore\' or \'throat\'')
+            # TODO: This should probably also raise an excpetion, as follows:
+            # raise Exception('Array names must begin with \'pore\' or' +
+            #                 '\'throat\'')
             return
         # Convert value to an ndarray
         value = sp.array(value, ndmin=1)
@@ -106,7 +109,8 @@ class Core(dict):
             else:
                 logger.warning('Cannot write vector with an array of the ' +
                                'wrong length: '+key)
-                raise Exception('Cannot write vector of the wrong length')
+                # TODO: This should probably raise the following exception
+                # raise Exception('Cannot write vector of the wrong length')
 
     def _get_ctrl(self):
         if self in ctrl.values():
@@ -1044,6 +1048,8 @@ class Core(dict):
         if prop_found is False:
             raise KeyError(prop)
         # Analyze and assign data type
+        types_temp = ['int', 'nan', 'float', 'int32', 'int64', 'float32',
+                      'float64', 'bool']
         if sp.all([t in ['bool', 'nan'] for t in dtypenames]):
             # If all entries are 'bool' (or 'nan')
             temp = sp.array(temp, dtype='bool')
@@ -1052,9 +1058,7 @@ class Core(dict):
         elif sp.all([t == dtypenames[0] for t in dtypenames]):
             # If all entries are same type
             temp = sp.array(temp, dtype=dtypes[0])
-            types = ['int', 'nan', 'float', 'int32', 'int64', 'float32',
-                     'float64', 'bool']
-        elif sp.all([t in types for t in dtypenames]):
+        elif sp.all([t in types_temp for t in dtypenames]):
             # If all entries are 'bool' (or 'nan')
             if 'bool' in dtypenames:
                 temp = sp.array(temp, dtype='bool')
