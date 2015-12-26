@@ -392,7 +392,7 @@ class Core(dict):
     # -------------------------------------------------------------------------
     """Data Query Methods"""
     # -------------------------------------------------------------------------
-    def props(self, element='', mode='all'):
+    def props(self, element=None, mode='all'):
         r"""
         Returns a list containing the names of all defined pore or throat
         properties.
@@ -435,42 +435,33 @@ class Core(dict):
         >>> #pn.props()
         ['pore.coords', 'pore.index', 'throat.conns']
         """
+        allowed = ['all', 'models', 'constants']
+        mode = self._validate_mode(mode=mode, allowed=allowed)
+
+        if element is None:
+            element = ['pore', 'throat']
+        element = self._parse_element(element=element)
 
         props = []
         for item in list(self.keys()):
             if self[item].dtype != bool:
                 props.append(item)
 
-        all_models = list(self.models.keys())
-        constants = [item for item in props if item not in all_models]
-        models = [item for item in props if item in all_models]
+        models = list(self.models.keys())
+        constants = [item for item in props if item not in models]
 
-        if element in ['pore', 'pores']:
-            element = 'pore'
-        elif element in ['throat', 'throats']:
-            element = 'throat'
-
-        temp = []
-        if mode == 'all':
-            if element == '':
-                temp = props
-            else:
-                temp = [item for item in props
-                        if item.split('.')[0] == element]
-        elif mode == 'models':
-            if element == '':
-                temp = models
-            else:
-                temp = [item for item in models
-                        if item.split('.')[0] == element]
-        elif mode == 'constants':
-            if element == '':
-                temp = constants
-            else:
-                temp = [item for item in constants
-                        if item.split('.')[0] == element]
-        a = Tools.PrintableList(temp)
-        return a
+        vals = Tools.PrintableList()
+        if 'all' in mode:
+            temp = [item for item in props if item.split('.')[0] in element]
+            vals.extend(temp)
+            return vals
+        if 'models' in mode:
+            temp = [item for item in models if item.split('.')[0] in element]
+            vals.extend(temp)
+        if 'constants' in mode:
+            temp = [item for item in constants if item.split('.')[0] in element]
+            vals.extend(temp)
+        return vals
 
     def _get_labels(self, element='', locations=[], mode='union'):
         r"""
@@ -1576,15 +1567,16 @@ class Core(dict):
 
     def _parse_element(self, element):
         r"""
-        This private method is used to parse the keyword \'elements\' in many
+        This private method is used to parse the keyword \'element\' in many
         of the above methods
         """
-        if element is None:
-            return None
-        element = element.lower()
-        element = element.rsplit('s', maxsplit=1)[0]
-        if element not in ['pore', 'throat']:
-            raise Exception('Invalid element received')
+        if type(element) is str:
+            element = [element]
+        element = [item.lower() for item in element]
+        element = [item.rsplit('s', maxsplit=1)[0] for item in element]
+        for item in element:
+            if item not in ['pore', 'throat']:
+                raise Exception('Invalid element received')
         return element
 
     def _parse_labels(self, labels):
@@ -1594,9 +1586,10 @@ class Core(dict):
 
     def _validate_mode(self, mode, allowed=None):
         r"""
-        Check that the mode argument is either a string or list of strings.
-        Optionally, it can ensure that the received mode(s) are allowed for
-        the given method.
+        Check that the mode argument is either a string or list of strings and
+        return a list of strings.  If a single string is received, it is put
+        into a list.  Optionally, this method can ensure that the received
+        mode(s) are allowed for the given method.
         """
         if type(mode) is str:
             mode = [mode]
@@ -1606,8 +1599,6 @@ class Core(dict):
             if (allowed is not None) and (item not in allowed):
                 raise Exception('\'mode\' must be one of the following: ' +
                                 allowed.__str__())
-        if len(mode) == 1:
-            mode = mode[0]
         return mode
 
     def _isa(self, keyword=None, obj=None):
