@@ -72,7 +72,7 @@ class Core(dict):
         if (element != 'pore') and (element != 'throat'):
             logger.error('Array name \''+key+'\' does not begin with ' +
                          '\'pore\' or \'throat\'')
-            # TODO: This should probably also raise an excpetion, as follows:
+            # TODO: This should probably also raise an exception, as follows:
             # raise Exception('Array names must begin with \'pore\' or' +
             #                 '\'throat\'')
             return
@@ -194,8 +194,8 @@ class Core(dict):
         containing all desired modes.  The \'complete\' mode essentially calls
         all three so need not be combined with any other modes.
         """
-        if type(mode) is str:
-            mode = [mode]
+        allowed = ['props', 'labels', 'models', 'complete']
+        mode = self._validate_mode(mode=mode, allowed=allowed)
         if 'complete' in mode:
             if self._isa('Geometry') or self._isa('Physics'):
                 self.set_locations(pores=self.Pnet,
@@ -1593,11 +1593,21 @@ class Core(dict):
         return labels
 
     def _validate_mode(self, mode, allowed=None):
-        if type(mode) is not str:
-            raise Exception('\'mode\' argument must be a string')
-        if (allowed is not None) and (mode not in allowed):
-            raise Exception('\'mode\' must be one of the following:' +
-                            allowed)
+        r"""
+        Check that the mode argument is either a string or list of strings.
+        Optionally, it can ensure that the received mode(s) are allowed for
+        the given method.
+        """
+        if type(mode) is str:
+            mode = [mode]
+        for item in mode:
+            if type(item) is not str:
+                raise Exception('\'mode\' arguments must be strings')
+            if (allowed is not None) and (item not in allowed):
+                raise Exception('\'mode\' must be one of the following: ' +
+                                allowed.__str__())
+        if len(mode) == 1:
+            mode = mode[0]
         return mode
 
     def _isa(self, keyword=None, obj=None):
