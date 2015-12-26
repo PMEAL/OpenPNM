@@ -1243,11 +1243,11 @@ class Core(dict):
         300
         """
         element = self._parse_element(element=element)
-        if 'pore' in element:
+        if element == ['pore']:
             temp = self.num_pores()
-        elif 'throat' in element:
+        elif element == ['throat']:
             temp = self.num_throats()
-        elif ('pore' in element) and ('throat' in element):
+        elif set(element) == {'pore', 'throat'}:
             temp = {}
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
@@ -1555,6 +1555,8 @@ class Core(dict):
         This private method is used to parse the keyword \'element\' in many
         of the above methods
         """
+        if element is None:
+            element = ['pore', 'throat']
         if type(element) is str:
             element = [element]
         element = [item.lower() for item in element]
@@ -1644,7 +1646,7 @@ class Core(dict):
                     query = True
             return query
 
-    def check_data_health(self, props=[], element=''):
+    def check_data_health(self, props=[], element=None):
         r"""
         Check the health of pore and throat data arrays.
 
