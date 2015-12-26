@@ -182,16 +182,16 @@ class Core(dict):
             **'models'** : Removes all pore scale models from the object's
             models dictionary (object.models)
 
-            **'complete'** : Removes all of the above AND sets the 'pore.all'
-            and 'throat.all' labels to zero length.  This also removes any pore
-            and throat locations that were previously set.  This mode should be
-            used carefully since it can break some subtle aspects of the
-            framework; it is meant for advanced users and developers.
+            **'complete'** : Removes all of the above AND sets the \'pore.all\'
+            and \'throat.all\' labels to zero length.  This also removes any
+            pore and throat locations that were previously set.  This mode
+            should be used carefully since it can break some subtle aspects
+            of the framework; it is meant for advanced users and developers.
 
         Notes
         -----
         The first three modes listed can be combined by sending a list
-        containing all desired modes.  The 'complete' mode essentially calls
+        containing all desired modes.  The \'complete\' mode essentially calls
         all three so need not be combined with any other modes.
         """
         if type(mode) is str:
@@ -284,11 +284,12 @@ class Core(dict):
         ----------
         name : string or list of strings, optional
             The name(s) of the Physics object to retrieve
+
         Returns
         -------
-            If name is NOT provided, then a list of Physics names is returned.
-            If a name or list of names IS provided, then the Physics object(s)
-            with those name(s) is returned.
+        If name is NOT provided, then a list of Physics names is returned.
+        If a name or list of names IS provided, then the Physics object(s)
+        with those name(s) is returned.
         """
         # If arg given as string, convert to list
         if type(phys_name) == str:
@@ -310,11 +311,12 @@ class Core(dict):
         ----------
         name : string or list of strings, optional
             The name(s) of the Phase object(s) to retrieve.
+
         Returns
         -------
-            If name is NOT provided, then a list of phase names is returned. If
-            a name are provided, then a list containing the requested objects
-            is returned.
+        If name is NOT provided, then a list of phase names is returned. If
+        a name are provided, then a list containing the requested objects
+        is returned.
         """
         # If arg given as string, convert to list
         if type(phase_name) == str:
@@ -336,11 +338,12 @@ class Core(dict):
         ----------
         name : string or list of strings, optional
             The name(s) of the Geometry object to retrieve.
+
         Returns
         -------
-            If name is NOT provided, then a list of Geometry names is returned.
-            If a name IS provided, then the Geometry object of that name is
-            returned.
+        If name is NOT provided, then a list of Geometry names is returned.
+        If a name IS provided, then the Geometry object of that name is
+        returned.
         """
         # If arg given as string, convert to list
         if type(geom_name) == str:
@@ -429,8 +432,8 @@ class Core(dict):
         ['pore.coords']
         >>> pn.props('throat')
         ['throat.conns']
-        >>> #pn.props() # this lists both, but in random order, which breaks
-        >>> #           # our automatic document testing so it's commented here
+        >>> #pn.props()
+        ['pore.coords', 'pore.index', 'throat.conns']
         """
 
         props = []
@@ -472,7 +475,7 @@ class Core(dict):
     def _get_labels(self, element='', locations=[], mode='union'):
         r"""
         This is the actual label getter method, but it should not be called
-        directly.  Wrapper methods have been created, use labels().
+        directly.  Wrapper methods have been created, use ``labels``.
         """
         # Collect list of all pore OR throat labels
         labels = []
@@ -554,6 +557,11 @@ class Core(dict):
             value for the existance of labels as returned from
             ``labels(pores='all', mode='union'))``.
 
+        Returns
+        -------
+        A list containing the dictionary keys on the object limited by the
+        specified \'mode\'.
+
         Examples
         --------
         >>> import OpenPNM
@@ -624,6 +632,12 @@ class Core(dict):
         --------
         pores
         throats
+
+        Returns
+        -------
+        A list of pores (or throats) that have been filtered according the
+        given criteria.  The returned list is a subset of the received list of
+        pores (or throats).
 
         Examples
         --------
@@ -837,9 +851,8 @@ class Core(dict):
 
         Returns
         -------
-        mask : array_like
-            A boolean mask of length Np or Nt with True in the locations of
-            pores or throats received.
+        A boolean mask of length Np or Nt with True in the locations of
+        pores or throats received.
 
         """
         if pores is not None:
@@ -861,15 +874,14 @@ class Core(dict):
 
         Returns
         -------
-        indices : array_like
-            A list of pore or throat indices corresponding the locations where
-            the received mask was True.
+        A list of pore or throat indices corresponding the locations where
+        the received mask was True.
 
         Notes
         -----
         This behavior could just as easily be accomplished by using the mask
-        in pn.pores()[mask] or pn.throats()[mask].  This method is just a thin
-        convenience function and is a compliment to tomask().
+        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is just
+        a thin convenience function and is a compliment to ``tomask``.
 
         """
         mask = sp.array(mask, ndmin=1)
@@ -1301,7 +1313,7 @@ class Core(dict):
         >>> [geom.Np, geom.Nt]
         [125, 300]
 
-        The labhel \'pore.dummy\' was assigned BEFORE these pores were added
+        The label \'pore.dummy\' was assigned 'before' these pores were added
         >>> geom.pores(labels='dummy', mode='not')
         array([0, 1, 2, 3, 4])
         >>> geom.set_locations(pores=pores, mode='remove')
@@ -1546,6 +1558,10 @@ class Core(dict):
     Pnet = property(fget=map_pores)
 
     def _parse_locations(self, locations):
+        r"""
+        Accepts a list of pores or throats and returns a properly structured
+        Numpy array.  If the list is boolean it returns indices.
+        """
         if locations is None:
             locations = []
         locs = sp.array(locations, ndmin=1)
@@ -1557,6 +1573,32 @@ class Core(dict):
             else:
                 raise Exception('List of locations is neither Np nor Nt long')
         return locs
+
+    def _parse_element(self, element):
+        r"""
+        This private method is used to parse the keyword \'elements\' in many
+        of the above methods
+        """
+        if element is None:
+            return None
+        element = element.lower()
+        element = element.rsplit('s', maxsplit=1)[0]
+        if element not in ['pore', 'throat']:
+            raise Exception('Invalid element received')
+        return element
+
+    def _parse_labels(self, labels):
+        if type(labels) is str:
+            labels = [labels]
+        return labels
+
+    def _validate_mode(self, mode, allowed=None):
+        if type(mode) is not str:
+            raise Exception('\'mode\' argument must be a string')
+        if (allowed is not None) and (mode not in allowed):
+            raise Exception('\'mode\' must be one of the following:' +
+                            allowed)
+        return mode
 
     def _isa(self, keyword=None, obj=None):
         r"""
@@ -1609,6 +1651,7 @@ class Core(dict):
         element : string, optional
             Can be either 'pore' or 'throat', which will limit the checks to
             only those data arrays.
+
         props : list of pore (or throat) properties, optional
             If given, will limit the health checks to only the specfied
             properties.  Also useful for checking existance.
