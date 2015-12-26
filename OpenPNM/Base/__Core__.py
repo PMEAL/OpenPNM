@@ -664,24 +664,16 @@ class Core(dict):
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         """
+        # Parse and validate all input values
+        allowed = ['union', 'intersection', 'not_intersection', 'not',
+                   'difference']
+        mode = self._validate_mode(mode=mode, allowed=allowed)
         labels = self._parse_labels(labels=labels)
+        if len(mode) > 1:
+            raise Exception('This method can only apply one mode at a time')
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
-        for label in labels:  # Parse the labels list for wildcards "*"
-            if label.startswith('*'):
-                labels.remove(label)
-                temp = [item for item in self.labels()
-                        if item.split('.')[-1].endswith(label.strip('*'))]
-                if temp == []:
-                    temp = [label.strip('*')]
-                labels.extend(temp)
-            if label.endswith('*'):
-                labels.remove(label)
-                temp = [item for item in self.labels()
-                        if item.split('.')[-1].startswith(label.strip('*'))]
-                if temp == []:
-                    temp = [label.strip('*')]
-                labels.extend(temp)
+
         # Begin computing label array
         if 'union' in mode:
             union = sp.zeros_like(self[element+'.all'], dtype=bool)
@@ -745,9 +737,6 @@ class Core(dict):
         >>> pn.pores(labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
-        allowed = ['union', 'intersection', 'not_intersection', 'not',
-                   'difference']
-        mode = self._validate_mode(mode=mode, allowed=allowed)
         if labels == 'all':
             Np = sp.shape(self['pore.all'])[0]
             ind = sp.arange(0, Np)
@@ -797,8 +786,6 @@ class Core(dict):
         array([0, 1, 2, 3, 4])
 
         """
-        allowed = ['union', 'intersection', 'not_intersection', 'not']
-        mode = self._validate_mode(mode=mode, allowed=allowed)
         if labels == 'all':
             Nt = sp.shape(self['throat.all'])[0]
             ind = sp.arange(0, Nt)
@@ -1585,6 +1572,22 @@ class Core(dict):
     def _parse_labels(self, labels):
         if type(labels) is str:
             labels = [labels]
+        # Parse the labels list for wildcards "*"
+        for label in labels:
+            if label.startswith('*'):
+                labels.remove(label)
+                temp = [item for item in self.labels()
+                        if item.split('.')[-1].endswith(label.strip('*'))]
+                if temp == []:
+                    temp = [label.strip('*')]
+                labels.extend(temp)
+            if label.endswith('*'):
+                labels.remove(label)
+                temp = [item for item in self.labels()
+                        if item.split('.')[-1].startswith(label.strip('*'))]
+                if temp == []:
+                    temp = [label.strip('*')]
+                labels.extend(temp)
         return labels
 
     def _validate_mode(self, mode, allowed=None):
