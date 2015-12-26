@@ -1127,9 +1127,6 @@ class Core(dict):
         if labels == 'all':
             Np = sp.shape(self.get('pore.all'))[0]
         else:
-            # Convert string to list, if necessary
-            if type(labels) == str:
-                labels = [labels]
             # Count number of pores of specified type
             Ps = self.pores(labels=labels, mode=mode)
             Np = sp.shape(Ps)[0]
@@ -1196,9 +1193,6 @@ class Core(dict):
         if labels == 'all':
             Nt = sp.shape(self.get('throat.all'))[0]
         else:
-            # Convert string to list, if necessary
-            if type(labels) == str:
-                labels = [labels]
             # Count number of pores of specified type
             Ts = self.throats(labels=labels, mode=mode)
             Nt = sp.shape(Ts)[0]
@@ -1248,11 +1242,12 @@ class Core(dict):
         >>> pn._count('throat')
         300
         """
-        if element in ['pore', 'pores']:
+        element = self._parse_element(element=element)
+        if 'pore' in element:
             temp = self.num_pores()
-        elif element in ['throat', 'throats']:
+        elif 'throat' in element:
             temp = self.num_throats()
-        elif element is None:
+        elif ('pore' in element) and ('throat' in element):
             temp = {}
             temp['pore'] = self.num_pores()
             temp['throat'] = self.num_throats()
@@ -1378,7 +1373,7 @@ class Core(dict):
         r"""
         """
         # Initialize things
-        locations = sp.array(locations, ndmin=1)
+        locations = self._parse_locations(locations=locations)
         mapping = {}
 
         # Analyze input object's relationship
