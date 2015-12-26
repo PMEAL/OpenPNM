@@ -557,9 +557,9 @@ class Core(dict):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.labels(pores=[0,1,5,6])
+        >>> pn.labels(pores=[0, 1, 5, 6])
         ['pore.all', 'pore.bottom', 'pore.front', 'pore.left']
-        >>> pn.labels(pores=[0,1,5,6],mode='intersection')
+        >>> pn.labels(pores=[0, 1, 5, 6], mode='intersection')
         ['pore.all', 'pore.bottom']
         """
         if (sp.size(pores) == 0) and (sp.size(throats) == 0):
@@ -664,11 +664,9 @@ class Core(dict):
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         """
-        element = element.rstrip('s')  # Correct plural form of element keyword
+        labels = self._parse_labels(labels=labels)
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
-        if type(labels) == str:  # Convert string to list, if necessary
-            labels = [labels]
         for label in labels:  # Parse the labels list for wildcards "*"
             if label.startswith('*'):
                 labels.remove(label)
@@ -685,23 +683,23 @@ class Core(dict):
                     temp = [label.strip('*')]
                 labels.extend(temp)
         # Begin computing label array
-        if mode == 'union':
+        if 'union' in mode:
             union = sp.zeros_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
                     union = union + self[element+'.'+item.split('.')[-1]]
             ind = union
-        elif mode == 'intersection':
+        elif 'intersection' in mode:
             intersect = sp.ones_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
                     intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
-        elif mode == 'not_intersection':
+        elif 'not_intersection' in mode:
             not_intersect = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
-        elif mode in ['difference', 'not']:
+        elif ('not' in mode) or ('difference' in mode):
             none = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
@@ -741,12 +739,15 @@ class Core(dict):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pind = pn.pores(labels=['top','front'],mode='union')
-        >>> pind[[0,1,2,-3,-2,-1]]
+        >>> pind = pn.pores(labels=['top', 'front'], mode='union')
+        >>> pind[[0, 1, 2, -3, -2, -1]]
         array([  0,   5,  10, 122, 123, 124])
-        >>> pn.pores(labels=['top','front'],mode='intersection')
+        >>> pn.pores(labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
+        allowed = ['union', 'intersection', 'not_intersection', 'not',
+                   'difference']
+        mode = self._validate_mode(mode=mode, allowed=allowed)
         if labels == 'all':
             Np = sp.shape(self['pore.all'])[0]
             ind = sp.arange(0, Np)
@@ -796,6 +797,8 @@ class Core(dict):
         array([0, 1, 2, 3, 4])
 
         """
+        allowed = ['union', 'intersection', 'not_intersection', 'not']
+        mode = self._validate_mode(mode=mode, allowed=allowed)
         if labels == 'all':
             Nt = sp.shape(self['throat.all'])[0]
             ind = sp.arange(0, Nt)
