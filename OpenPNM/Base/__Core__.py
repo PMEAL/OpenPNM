@@ -431,9 +431,6 @@ class Core(dict):
         """
         allowed = ['all', 'models', 'constants']
         mode = self._validate_mode(mode=mode, allowed=allowed)
-
-        if element is None:
-            element = ['pore', 'throat']
         element = self._parse_element(element=element)
 
         props = []
@@ -635,17 +632,16 @@ class Core(dict):
         ...                    mode='intersection')
         array([100, 105, 110, 115, 120])
         """
-        if labels == '':  # Handle empty labels
-            labels = 'all'
-        if type(labels) == str:  # Convert input to list
-            labels = [labels]
-        # Convert inputs to locations and element
+        labels = self._parse_labels(labels=labels)
+        # Convert inputs to locations and element\
+        if (sp.size(throats) > 0) and (sp.size(pores) > 0):
+            raise Exception('Can only filter either pores OR labels per call')
         if sp.size(pores) > 0:
             element = 'pore'
-            locations = sp.array(pores)
+            locations = self._parse_locations(pores)
         if sp.size(throats) > 0:
             element = 'throat'
-            locations = sp.array(throats)
+            locations = self._parse_locations(throats)
         # Do it
         labels = [element+'.'+item.split('.')[-1] for item in labels]
         all_locs = self._get_indices(element=element, labels=labels, mode=mode)
@@ -662,9 +658,9 @@ class Core(dict):
         allowed = ['union', 'intersection', 'not_intersection', 'not',
                    'difference']
         mode = self._validate_mode(mode=mode, allowed=allowed)
-        labels = self._parse_labels(labels=labels)
         if len(mode) > 1:
             raise Exception('This method can only apply one mode at a time')
+        labels = self._parse_labels(labels=labels)
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
 
