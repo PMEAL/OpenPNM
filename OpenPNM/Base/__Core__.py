@@ -799,19 +799,12 @@ class Core(dict):
         This is a generalized version of tomask that accepts a string of
         'pore' or 'throat' for programmatic access.
         """
-        if sp.shape(locations)[0] == 0:
-            return sp.zeros_like(self._get_indices(element=element),
-                                 dtype=bool)
-        if element in ['pore', 'pores']:
-            Np = sp.shape(self['pore.all'])[0]
-            pores = sp.array(locations, ndmin=1)
-            mask = sp.zeros((Np, ), dtype=bool)
-            mask[pores] = True
-        if element in ['throat', 'throats']:
-            Nt = sp.shape(self['throat.all'])[0]
-            throats = sp.array(locations, ndmin=1)
-            mask = sp.zeros((Nt, ), dtype=bool)
-            mask[throats] = True
+        element = self._parse_element(element)
+        locations = self._parse_locations(locations)
+        N = sp.shape(self[element[0] + '.all'])[0]
+        ind = sp.array(locations, ndmin=1)
+        mask = sp.zeros((N, ), dtype=bool)
+        mask[ind] = True
         return mask
 
     def tomask(self, pores=None, throats=None):
