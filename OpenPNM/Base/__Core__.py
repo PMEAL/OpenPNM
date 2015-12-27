@@ -458,13 +458,14 @@ class Core(dict):
         """
         # Parse inputs
         locations = self._parse_locations(locations)
-        allowed = ['none', 'union', 'intersection', 'not', 'count', 'mask']
+        allowed = ['none', 'union', 'intersection', 'not', 'count', 'mask',
+                   'difference']
         mode = self._validate_mode(mode=mode, allowed=allowed, max_modes=1)
         element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
-        a = set([itm for itm in self.keys() if itm.split('.')[0] == element])
-        b = set([itm for itm in self.keys() if self[itm].dtype == bool])
-        labels = list(a.intersect(b))
+        a = set([k for k in self.keys() if k.split('.')[0] == element[0]])
+        b = set([k for k in self.keys() if self[k].dtype == bool])
+        labels = list(a.intersection(b))
         labels.sort()
         labels = sp.array(labels)  # Convert to ND-array for following checks
         arr = sp.zeros((sp.shape(locations)[0], len(labels)), dtype=bool)
@@ -472,29 +473,29 @@ class Core(dict):
         for item in labels:
             arr[:, col] = self[item][locations]
             col = col + 1
-        if mode == 'count':
+        if 'count' in mode:
             return sp.sum(arr, axis=1)
-        if mode == 'union':
+        if 'union' in mode:
             temp = labels[sp.sum(arr, axis=0) > 0]
             temp.tolist()
             return Tools.PrintableList(temp)
-        if mode == 'intersection':
+        if 'intersection' in mode:
             temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
             temp.tolist()
             return Tools.PrintableList(temp)
-        if mode in ['difference', 'not']:
+        if ('not' in mode) or ('difference' in mode):
             temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
             temp.tolist()
             return Tools.PrintableList(temp)
-        if mode == 'mask':
+        if 'mask' in mode:
             return arr
-        if mode == 'none':
+        if 'none' in mode:
             temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
             for i in sp.arange(0, sp.shape(locations, )[0]):
                 temp[i] = list(labels[arr[i, :]])
             return temp
         else:
-            logger.error('unrecognized mode:'+mode)
+            logger.error('unrecognized mode:'+str(mode))
 
     def labels(self, pores=[], throats=[], element=None, mode='union'):
         r"""
@@ -556,16 +557,16 @@ class Core(dict):
                          if self[key].dtype == bool])
                 labels.extend(list(a.intersection(b)))
         elif (sp.size(pores) > 0) and (sp.size(throats) > 0):
-            raise Exception('Cannot perform label query on pores and' +
-                            'throat simultaneously')
+            raise Exception('Cannot perform label query on pores and ' +
+                            'throats simultaneously')
         elif sp.size(pores) > 0:
-            labels.extend(self._get_labels(element='pore',
-                                           locations=pores,
-                                           mode=mode))
+            labels = self._get_labels(element='pore',
+                                      locations=pores,
+                                      mode=mode)
         elif sp.size(throats) > 0:
-            labels.extend(self._get_labels(element='throat',
-                                           locations=throats,
-                                           mode=mode))
+            labels = self._get_labels(element='throat',
+                                      locations=throats,
+                                      mode=mode)
         return labels
 
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='union'):

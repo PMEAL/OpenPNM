@@ -141,8 +141,12 @@ class CoreTest:
         assert sorted(a) == sorted(b)
 
     def test_labels_on_foo(self):
-        a = self.net.labels(element='foo')
-        assert a is None
+        flag = False
+        try:
+            a = self.net.labels(element='foo')
+        except:
+            flag = True
+        assert flag
 
     def test_labels_on_all_pores(self):
         a = self.net.labels(pores='all')
