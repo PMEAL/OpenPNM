@@ -68,12 +68,11 @@ class Core(dict):
 
         """
         # Enforce correct dict naming
-        element = key.split('.')[0]
-        self._parse_element(element)
+        element = self._parse_element(key.split('.')[0])[0]
         # Convert value to an ndarray
         value = sp.array(value, ndmin=1)
         # Skip checks for 'coords', 'conns'
-        if (key == 'pore.coords') or (key == 'throat.conns'):
+        if key in ['pore.coords', 'throat.conns']:
             super(Core, self).__setitem__(key, value)
             return
         # Skip checks for protected props, and prevent changes if defined
@@ -429,18 +428,15 @@ class Core(dict):
         >>> #pn.props()
         ['pore.coords', 'pore.index', 'throat.conns']
         """
+        # Parse Inputs
         allowed = ['all', 'models', 'constants']
         mode = self._validate_mode(mode=mode, allowed=allowed)
         element = self._parse_element(element=element)
-
-        props = []
-        for item in list(self.keys()):
-            if self[item].dtype != bool:
-                props.append(item)
-
+        # Prepare lists of each type of array
+        props = [item for item in self.keys() if self[item].dtype != bool]
         models = list(self.models.keys())
         constants = [item for item in props if item not in models]
-
+        # Execute desired array lookup
         vals = Tools.PrintableList()
         if 'all' in mode:
             temp = [item for item in props if item.split('.')[0] in element]
@@ -450,61 +446,57 @@ class Core(dict):
             temp = [item for item in models if item.split('.')[0] in element]
             vals.extend(temp)
         if 'constants' in mode:
-            temp = [item for item in constants if item.split('.')[0] in element]
+            temp = [item for item in constants
+                    if item.split('.')[0] in element]
             vals.extend(temp)
         return vals
 
-    def _get_labels(self, element='', locations=[], mode='union'):
+    def _get_labels(self, element, locations, mode):
         r"""
         This is the actual label getter method, but it should not be called
         directly.  Wrapper methods have been created, use ``labels``.
         """
+        # Parse inputs
+        locations = self._parse_locations(locations)
+        allowed = ['none', 'union', 'intersection', 'not', 'count', 'mask']
+        mode = self._validate_mode(mode=mode, allowed=allowed, max_modes=1)
+        element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
-        labels = []
-        for item in list(self.keys()):
-            if item.split('.')[0] == element:
-                if self[item].dtype in ['bool']:
-                    labels.append(item)
+        a = set([itm for itm in self.keys() if itm.split('.')[0] == element])
+        b = set([itm for itm in self.keys() if self[itm].dtype == bool])
+        labels = list(a.intersect(b))
         labels.sort()
-        if sp.size(locations) == 0:
-            return Tools.PrintableList(labels)
+        labels = sp.array(labels)  # Convert to ND-array for following checks
+        arr = sp.zeros((sp.shape(locations)[0], len(labels)), dtype=bool)
+        col = 0
+        for item in labels:
+            arr[:, col] = self[item][locations]
+            col = col + 1
+        if mode == 'count':
+            return sp.sum(arr, axis=1)
+        if mode == 'union':
+            temp = labels[sp.sum(arr, axis=0) > 0]
+            temp.tolist()
+            return Tools.PrintableList(temp)
+        if mode == 'intersection':
+            temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
+            temp.tolist()
+            return Tools.PrintableList(temp)
+        if mode in ['difference', 'not']:
+            temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
+            temp.tolist()
+            return Tools.PrintableList(temp)
+        if mode == 'mask':
+            return arr
+        if mode == 'none':
+            temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
+            for i in sp.arange(0, sp.shape(locations, )[0]):
+                temp[i] = list(labels[arr[i, :]])
+            return temp
         else:
-            labels = sp.array(labels)
-            locations = sp.array(locations, ndmin=1)
-            if locations.dtype in ['bool']:
-                locations = self._get_indices(element=element)[locations]
-            else:
-                locations = sp.array(locations, dtype=int)
-            arr = sp.zeros((sp.shape(locations)[0], len(labels)), dtype=bool)
-            col = 0
-            for item in labels:
-                arr[:, col] = self[item][locations]
-                col = col + 1
-            if mode == 'count':
-                return sp.sum(arr, axis=1)
-            if mode == 'union':
-                temp = labels[sp.sum(arr, axis=0) > 0]
-                temp.tolist()
-                return Tools.PrintableList(temp)
-            if mode == 'intersection':
-                temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
-                temp.tolist()
-                return Tools.PrintableList(temp)
-            if mode in ['difference', 'not']:
-                temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
-                temp.tolist()
-                return Tools.PrintableList(temp)
-            if mode == 'mask':
-                return arr
-            if mode == 'none':
-                temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
-                for i in sp.arange(0, sp.shape(locations, )[0]):
-                    temp[i] = list(labels[arr[i, :]])
-                return temp
-            else:
-                logger.error('unrecognized mode:'+mode)
+            logger.error('unrecognized mode:'+mode)
 
-    def labels(self, element='', pores=[], throats=[], mode='union'):
+    def labels(self, pores=[], throats=[], element=None, mode='union'):
         r"""
         Returns the labels applied to specified pore or throat locations
 
@@ -553,37 +545,30 @@ class Core(dict):
         >>> pn.labels(pores=[0, 1, 5, 6], mode='intersection')
         ['pore.all', 'pore.bottom']
         """
+        labels = Tools.PrintableList()
+        # Short-circuit query when no pores or throats are given
         if (sp.size(pores) == 0) and (sp.size(throats) == 0):
-            if element == '':
-                temp = []
-                temp = self._get_labels(element='pore')
-                temp.extend(self._get_labels(element='throat'))
-            elif element in ['pore', 'pores']:
-                temp = self._get_labels(element='pore',
-                                        locations=[],
-                                        mode=mode)
-            elif element in ['throat', 'throats']:
-                temp = self._get_labels(element='throat',
-                                        locations=[],
-                                        mode=mode)
-            else:
-                logger.error('Unrecognized element')
-                return
-        elif sp.size(pores) != 0:
-            if pores is 'all':
-                pores = self.pores()
-            pores = sp.array(pores, ndmin=1)
-            temp = self._get_labels(element='pore', locations=pores, mode=mode)
-        elif sp.size(throats) != 0:
-            if throats is 'all':
-                throats = self.throats()
-            throats = sp.array(throats, ndmin=1)
-            temp = self._get_labels(element='throat',
-                                    locations=throats,
-                                    mode=mode)
-        return temp
+            element = self._parse_element(element=element)
+            for item in element:
+                a = set([key for key in self.keys()
+                         if key.split('.')[0] == item])
+                b = set([key for key in self.keys()
+                         if self[key].dtype == bool])
+                labels.extend(list(a.intersection(b)))
+        elif (sp.size(pores) > 0) and (sp.size(throats) > 0):
+            raise Exception('Cannot perform label query on pores and' +
+                            'throat simultaneously')
+        elif sp.size(pores) > 0:
+            labels.extend(self._get_labels(element='pore',
+                                           locations=pores,
+                                           mode=mode))
+        elif sp.size(throats) > 0:
+            labels.extend(self._get_labels(element='throat',
+                                           locations=throats,
+                                           mode=mode))
+        return labels
 
-    def filter_by_label(self, pores=[], throats=[], labels='', mode='union'):
+    def filter_by_label(self, pores=[], throats=[], labels=None, mode='union'):
         r"""
         Returns which of the supplied pores (or throats) has the specified
         label
@@ -632,8 +617,10 @@ class Core(dict):
         ...                    mode='intersection')
         array([100, 105, 110, 115, 120])
         """
+        allowed = ['union', 'intersection', 'not_intersection', 'not']
+        mode = self._validate_mode(mode=mode, allowed=allowed, max_modes=1)
         labels = self._parse_labels(labels=labels)
-        # Convert inputs to locations and element\
+        # Convert inputs to locations and element
         if (sp.size(throats) > 0) and (sp.size(pores) > 0):
             raise Exception('Can only filter either pores OR labels per call')
         if sp.size(pores) > 0:
@@ -649,7 +636,7 @@ class Core(dict):
         ind = mask[locations]
         return locations[ind]
 
-    def _get_indices(self, element, labels=['all'], mode='union'):
+    def _get_indices(self, element, labels='all', mode='union'):
         r"""
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
@@ -657,10 +644,11 @@ class Core(dict):
         # Parse and validate all input values
         allowed = ['union', 'intersection', 'not_intersection', 'not',
                    'difference']
-        mode = self._validate_mode(mode=mode, allowed=allowed)
+        mode = self._validate_mode(mode=mode, allowed=allowed, max_modes=1)
         if len(mode) > 1:
             raise Exception('This method can only apply one mode at a time')
         labels = self._parse_labels(labels=labels)
+        element = self._parse_element(element)[0]
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
 
@@ -819,9 +807,9 @@ class Core(dict):
         pores or throats received.
 
         """
-        if pores is not None:
+        if (pores is not None) and (throats is None):
             mask = self._tomask(element='pore', locations=pores)
-        if throats is not None:
+        if (throats is not None) and (pores is None):
             mask = self._tomask(element='throat', locations=throats)
         return mask
 
@@ -974,6 +962,7 @@ class Core(dict):
         bool
         """
         element = prop.split('.')[0]
+        element = self._parse_element(element)
         temp = sp.ndarray((self._count(element)))
         nan_locs = sp.ndarray((self._count(element)), dtype='bool')
         nan_locs.fill(False)
@@ -1293,6 +1282,13 @@ class Core(dict):
         else:
             raise Exception('Setting locations only applies to Geometry or ' +
                             'Physics objects')
+        locations = self._parse_locations(locations)
+        element = self._parse_element(element)
+        if len(element) > 1:
+            raise Exception('Cannot set \'pores\' and \'throats\'' +
+                            'simultaneously')
+        else:
+            element = element[0]
 
         if mode == 'add':
             # Check if any constant values exist on the object
@@ -1536,10 +1532,12 @@ class Core(dict):
     def _parse_element(self, element):
         r"""
         This private method is used to parse the keyword \'element\' in many
-        of the above methods
+        of the above methods.  If the \'element\' is None, then a list
+        containing both \'pore\' and \'throat\' is return.
         """
         if element is None:
             element = ['pore', 'throat']
+        # Convert element to a list for subsequent processing
         if type(element) is str:
             element = [element]
         element = [item.lower() for item in element]
@@ -1550,6 +1548,8 @@ class Core(dict):
         return element
 
     def _parse_labels(self, labels):
+        if labels is None:
+            raise Exception('Labels cannot be None')
         if type(labels) is str:
             labels = [labels]
         # Parse the labels list for wildcards "*"
@@ -1570,7 +1570,7 @@ class Core(dict):
                 labels.extend(temp)
         return labels
 
-    def _validate_mode(self, mode, allowed=None):
+    def _validate_mode(self, mode, allowed=None, max_modes=None):
         r"""
         Check that the mode argument is either a string or list of strings and
         return a list of strings.  If a single string is received, it is put
@@ -1585,6 +1585,9 @@ class Core(dict):
             if (allowed is not None) and (item not in allowed):
                 raise Exception('\'mode\' must be one of the following: ' +
                                 allowed.__str__())
+        if max_modes and (len(mode) > max_modes):
+            raise Exception('The number of modes cannot exceed ' +
+                            str(max_modes))
         return mode
 
     def _isa(self, keyword=None, obj=None):

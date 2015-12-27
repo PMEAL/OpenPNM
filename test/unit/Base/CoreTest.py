@@ -256,8 +256,12 @@ class CoreTest:
 
     def test_filter_by_label_pores_no_label(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
-        a = self.net.filter_by_label(pores=Ps)
-        assert sp.all(a == Ps.tolist())
+        flag = False
+        try:
+            a = self.net.filter_by_label(pores=Ps)
+        except:
+            flag = True
+        assert flag
 
     def test_filter_by_label_pores_one_label_as_string(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
@@ -400,8 +404,12 @@ class CoreTest:
         assert a == 45
 
     def test_setitem_wrong_prefix(self):
-        self.geo['pore2.test'] = 0
-        assert 'pore2.test' not in self.geo.keys()
+        flag = False
+        try:
+            self.geo['pore2.test'] = 0
+        except:
+            flag = True
+        assert flag
 
     def test_setitem_wrong_length(self):
         self.geo['pore.test'] = sp.ones((self.geo.Np+1))
