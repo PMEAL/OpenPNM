@@ -1696,8 +1696,8 @@ class Core(dict):
                     prop = prop[0:32] + '...'
                 required = self._count(item.split('.')[0])
                 a = sp.isnan(self[item])
-                defined = sp.shape(self[item])[0] - a.sum(axis=0,
-                                                          keepdims=(a.ndim-1) == 0)[0]
+                defined = sp.shape(self[item])[0] \
+                    - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
                 lines.append("{0:<5d} {1:<35s} {2:>5d} / {3:<5d}".format(i + 1,
                                                                          prop,
                                                                          defined,
