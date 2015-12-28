@@ -530,7 +530,7 @@ class Core(dict):
             **'mask'**: returns an N x Lt array, where each row corresponds to
             a pore (or throat) location, and each column contains the truth
             value for the existance of labels as returned from
-            ``labels(pores='all', mode='union'))``.
+            ``labels(element='pores')``.
 
         Returns
         -------
@@ -1697,7 +1697,7 @@ class Core(dict):
                 required = self._count(item.split('.')[0])
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] - a.sum(axis=0,
-                                                          keepdims=(a.ndim-1)==0)[0]
+                                                          keepdims=(a.ndim-1) == 0)[0]
                 lines.append("{0:<5d} {1:<35s} {2:>5d} / {3:<5d}".format(i + 1,
                                                                          prop,
                                                                          defined,

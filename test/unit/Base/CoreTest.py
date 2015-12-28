@@ -149,14 +149,14 @@ class CoreTest:
         assert flag
 
     def test_labels_on_all_pores(self):
-        a = self.net.labels(pores='all')
+        a = self.net.labels(pores=self.net.Ps)
         b = ['pore.all', 'pore.back', 'pore.bottom', 'pore.front',
              'pore.internal', 'pore.left', 'pore.right', 'pore.'+self.geo.name,
              'pore.top']
         assert sorted(a) == sorted(b)
 
     def test_labels_on_all_throats(self):
-        a = self.net.labels(throats='all')
+        a = self.net.labels(throats=self.net.Ts)
         b = ['throat.all', 'throat.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
@@ -210,8 +210,12 @@ class CoreTest:
         assert a[0] != a[1]
 
     def test_labels_pores_mode_foo(self):
-        a = self.net.labels(pores=[0, 1], mode='foo')
-        assert a is None
+        flag = False
+        try:
+            a = self.net.labels(pores=[0, 1], mode='foo')
+        except:
+            flag = True
+        assert flag
 
     def test_pores(self):
         a = self.net.pores()
