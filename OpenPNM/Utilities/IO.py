@@ -1,6 +1,7 @@
 from OpenPNM.Utilities import misc
 import scipy as _sp
 import numpy as _np
+import pandas as _pd
 import os as _os
 import pickle as _pickle
 from xml.etree import ElementTree as _ET
@@ -142,7 +143,7 @@ class VTK():
         Notes
         -----
         This will NOT reproduce original simulation, since all models and object
-        relationships are lost.  Use IO.Save and IO.Load for that.
+        relationships are lost.
         """
         network = OpenPNM.Network.GenericNetwork()
         tree = _ET.parse(filename)
@@ -269,3 +270,62 @@ class MAT():
         This method is not implemented yet.
         """
         raise NotImplemented()
+
+
+class Pandas():
+
+    def save(network, phases=[]):
+        r"""
+        Returns a tuple containing Pandas DataFrames
+        """
+        # Gather list of prop names
+        pprops = set(network.props('pore'))
+        for item in network._geometries:
+            pprops = pprops.union(set(item.props('pore')))
+        tprops = set(network.props('throats'))
+        for item in network._geometries:
+            tprops = tprops.union(set(item.props('throat')))
+        # Add props to tdata and pdata, starting with coords and conns
+        pdata = {}
+        pdata.update({network.name+'.'+'pore.coordsX':
+                      network['pore.coords'][:, 0]})
+        pdata.update({network.name+'.'+'pore.coordsY':
+                      network['pore.coords'][:, 1]})
+        pdata.update({network.name+'.'+'pore.coordsZ':
+                      network['pore.coords'][:, 2]})
+        tdata = {}
+        tdata.update({network.name+'.'+'throat.conns1':
+                      network['throat.conns'][:, 0]})
+        tdata.update({network.name+'.'+'throat.conns2':
+                      network['throat.conns'][:, 0]})
+        for item in pprops:
+            pdata.update({network.name+'.'+item: network[item]})
+        for item in tprops:
+            tdata.update({network.name+'.'+item: network[item]})
+
+        for phase in phases:
+            # Gather list of prop names
+            pprops = set(phase.props('pore'))
+            for item in phase._physics:
+                pprops = pprops.union(set(item.props('pore')))
+            tprops = set(phase.props('throats'))
+            for item in phase._physics:
+                tprops = tprops.union(set(item.props('throat')))
+            # Add props to tdata and pdata
+            for item in pprops:
+                pdata.update({phase.name+'.'+item: phase[item]})
+            for item in tprops:
+                tdata.update({phase.name+'.'+item: phase[item]})
+
+        # Scan data and remove non-1D arrays
+        for item in list(pdata.keys()):
+            if _sp.shape(pdata[item]) != (network.Np,):
+                pdata.pop(item)
+        for item in list(tdata.keys()):
+            if _sp.shape(tdata[item]) != (network.Nt,):
+                tdata.pop(item)
+
+        data = {'pore.DataFrame': _pd.DataFrame.from_dict(pdata),
+                'thorat.DataFrame': _pd.DataFrame.from_dict(tdata)}
+
+        return data
