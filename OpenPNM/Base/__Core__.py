@@ -55,7 +55,9 @@ class Core(dict):
         r"""
         This is a subclass of the default __setitem__ behavior.  The main aim
         is to limit what type and shape of data can be written to protect
-        the integrity of the network.
+        the integrity of the network.  Specifically, this means only Np or Nt
+        long arrays can be written, and they must be called 'pore.___' or
+        'throat.___'.  Also, any scalars are cast into full length vectors.
 
 
         Example
@@ -1216,14 +1218,10 @@ class Core(dict):
         300
         """
         element = self._parse_element(element=element)
-        if element == ['pore']:
-            temp = self.num_pores()
-        elif element == ['throat']:
-            temp = self.num_throats()
-        elif set(element) == {'pore', 'throat'}:
-            temp = {}
-            temp['pore'] = self.num_pores()
-            temp['throat'] = self.num_throats()
+        temp = {elem: sp.size(self[elem+'.all']) for elem in element}
+        # TODO: In a future version this should always just return a dict
+        if len(temp) == 1:
+            temp = list(temp.values())[0]
         return temp
 
     def _set_locations(self, element, locations, mode='add'):
