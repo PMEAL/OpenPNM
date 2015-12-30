@@ -88,11 +88,11 @@ class GenericNetwork(Core):
         sprsfmt : string, optional
             The sparse storage format to return.  Options are:
 
-            * 'coo' : (default) This is the native format of OpenPNM data
+            **'coo'** : (default) This is the native format of OpenPNM data
 
-            * 'lil' : Enables row-wise slice of data
+            **'lil'** : Enables row-wise slice of data
 
-            * 'csr' : Favored by most linear algebra routines
+            **'csr'** : Favored by most linear algebra routines
 
         dropzeros : boolean, optional
             Remove 0 elements from the values, instead of creating 0-weighted
@@ -167,11 +167,11 @@ class GenericNetwork(Core):
         sprsfmt : string, optional
             The sparse storage format to return.  Options are:
 
-            * 'coo' : (default) This is the native format of OpenPNMs data
+            **'coo'** : (default) This is the native format of OpenPNMs data
 
-            * 'lil' : Enables row-wise slice of data
+            **'lil'** : Enables row-wise slice of data
 
-            * 'csr' : Favored by most linear algebra routines
+            **'csr'** : Favored by most linear algebra routines
 
         dropzeros : Boolean, optional
             Remove 0 elements from values, instead of creating 0-weighted
@@ -327,11 +327,11 @@ class GenericNetwork(Core):
         mode : string, optional
             Specifies which neighbors should be returned.  The options are:
 
-            * 'union' : All neighbors of the input pores
+            **'union'** : All neighbors of the input pores
 
-            * 'intersection' : Only neighbors shared by all input pores
+            **'intersection'** : Only neighbors shared by all input pores
 
-            * 'not_intersection' : Only neighbors not shared by any input pores
+            **'not_intersection'* : Only neighbors not shared by any input pores
 
         Returns
         -------
@@ -407,11 +407,11 @@ class GenericNetwork(Core):
         mode : string, optional
             Specifies which neighbors should be returned.  The options are:
 
-            * 'union' : All neighbors of the input pores
+            **'union'** : All neighbors of the input pores
 
-            * 'intersection' : Only neighbors shared by all input pores
+            **'intersection'** : Only neighbors shared by all input pores
 
-            * 'not_intersection' : Only neighbors not shared by any input pores
+            **'not_intersection'** : Only neighbors not shared by any input pores
 
         Returns
         -------
