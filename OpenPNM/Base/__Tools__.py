@@ -19,9 +19,11 @@ class PrintableList(list):
 
 
 class PrintableDict(_odict):
-    def __init__(self, header='value', **kwargs):
-        super().__init__(**kwargs)
-        self._header = header
+    def __init__(self, *args, **kwargs):
+        self._header = 'value'
+        if 'header' in kwargs:
+            self._header = kwargs.pop('header')
+        super().__init__(*args, **kwargs)
 
     def __repr__(self):
         text = dict(self).__str__()
