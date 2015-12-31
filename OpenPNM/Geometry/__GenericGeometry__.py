@@ -36,7 +36,9 @@ class GenericGeometry(Core):
     >>> pn = OpenPNM.Network.TestNet()
     >>> Ps = pn.pores()  # Get all pores
     >>> Ts = pn.throats()  # Get all throats
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
+    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
+    ...                                         pores=Ps,
+    ...                                         throats=Ts)
     """
 
     def __init__(self, network=None, pores=[], throats=[], **kwargs):
@@ -91,17 +93,13 @@ class GenericGeometry(Core):
             The list of pores and/or throats in the Network where the object
             should be applied
         mode : string
-            Indicates whether list of pores or throats is to be added or removed
-            from the object.  Options are 'add' (default) or 'remove'.
+            Indicates whether list of pores or throats is to be added or
+            removed from the object.  Options are 'add' (default) or 'remove'.
 
         """
-        pores = self._parse_locations(pores)
-        throats = self._parse_locations(throats)
         if sp.size(pores) > 0:
-            pores = sp.array(pores, ndmin=1)
             self._set_locations(element='pore', locations=pores, mode=mode)
         if sp.size(throats) > 0:
-            throats = sp.array(throats, ndmin=1)
             self._set_locations(element='throat', locations=throats, mode=mode)
 
     def plot_histograms(self,

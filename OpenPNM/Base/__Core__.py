@@ -70,7 +70,7 @@ class Core(dict):
 
         """
         # Enforce correct dict naming
-        element = self._parse_element(key.split('.')[0])[0]
+        element = self._parse_element(key.split('.')[0], single=True)
         # Convert value to an ndarray
         value = sp.array(value, ndmin=1)
         # Skip checks for 'coords', 'conns'
@@ -786,9 +786,9 @@ class Core(dict):
         This is a generalized version of tomask that accepts a string of
         'pore' or 'throat' for programmatic access.
         """
-        element = self._parse_element(element)
+        element = self._parse_element(element, single=True)
         locations = self._parse_locations(locations)
-        N = sp.shape(self[element[0] + '.all'])[0]
+        N = sp.shape(self[element + '.all'])[0]
         ind = sp.array(locations, ndmin=1)
         mask = sp.zeros((N, ), dtype=bool)
         mask[ind] = True
@@ -1282,12 +1282,7 @@ class Core(dict):
             raise Exception('Setting locations only applies to Geometry or ' +
                             'Physics objects')
         locations = self._parse_locations(locations)
-        element = self._parse_element(element)
-        if len(element) > 1:
-            raise Exception('Cannot set \'pores\' and \'throats\'' +
-                            'simultaneously')
-        else:
-            element = element[0]
+        element = self._parse_element(element, single=True)
 
         if mode == 'add':
             # Check if any constant values exist on the object
@@ -1529,11 +1524,26 @@ class Core(dict):
         locs = locs.astype(dtype=int)
         return locs
 
-    def _parse_element(self, element):
+    def _parse_element(self, element, single=False):
         r"""
         This private method is used to parse the keyword \'element\' in many
-        of the above methods.  If the \'element\' is None, then a list
-        containing both \'pore\' and \'throat\' is return.
+        of the above methods.
+
+        Parameters
+        ----------
+        element : string or list of strings
+            The element argument to check.  If is None is recieved, then a list
+            containing both \'pore\' and \'throat\' is returned.
+
+        single : boolean (default is False)
+            When set to True only a single element is allowed and it will also
+            return a string containing the element.
+
+        Returns
+        -------
+        When ``single`` is False (default) a list contain the element(s) is
+        returned.  When ``single`` is True a bare string containing the element
+        is returned.
         """
         if element is None:
             element = ['pore', 'throat']
@@ -1545,6 +1555,12 @@ class Core(dict):
         for item in element:
             if item not in ['pore', 'throat']:
                 raise Exception('Invalid element received')
+        if single:
+            if len(element) > 1:
+                raise Exception('Two elements recieved when single element ' +
+                                'requested')
+            else:
+                element = element[0]
         return element
 
     def _parse_labels(self, labels):
