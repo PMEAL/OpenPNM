@@ -256,14 +256,13 @@ class GenericNetwork(Core):
         retrieves the pores for each input throat.  The flatten option merely
         stacks the two columns and eliminate non-unique values.
         """
-        Ts = sp.array(throats, ndmin=1)
-        if Ts.dtype == bool:
-            Ts = self.toindices(Ts)
-        if sp.size(Ts) == 0:
-            return sp.ndarray([0, 2], dtype=int)
+        Ts = self._parse_locations(throats)
         Ps = self['throat.conns'][Ts]
         if flatten:
-            Ps = sp.unique(sp.hstack(Ps))
+            if sp.shape(Ps) == (0, 2):
+                Ps = sp.array([], ndmin=1, dtype=int)
+            else:
+                Ps = sp.unique(sp.hstack(Ps))
         return Ps
 
     def find_connecting_throat(self, P1, P2):
@@ -291,8 +290,8 @@ class GenericNetwork(Core):
         TODO: This now works on 'vector' inputs, but is not actually vectorized
         in the Numpy sense, so could be slow with large P1,P2 inputs
         """
-        P1 = sp.array(P1, ndmin=1)
-        P2 = sp.array(P2, ndmin=1)
+        P1 = self._parse_locations(P1)
+        P2 = self._parse_locations(P2)
         Ts1 = self.find_neighbor_throats(P1, flatten=False)
         Ts2 = self.find_neighbor_throats(P2, flatten=False)
         Ts = []
@@ -355,9 +354,7 @@ class GenericNetwork(Core):
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='not_intersection')
         array([ 3,  5,  7, 25, 27])
         """
-        pores = sp.array(pores, ndmin=1)
-        if pores.dtype == bool:
-            pores = self.toindices(pores)
+        pores = self._parse_locations(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
         # Test for existence of incidence matrix
@@ -427,9 +424,7 @@ class GenericNetwork(Core):
         >>> pn.find_neighbor_throats(pores=[0, 1],flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
-        pores = sp.array(pores, ndmin=1)
-        if pores.dtype == bool:
-            pores = self.toindices(pores)
+        pores = self._parse_locations(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
         # Test for existence of incidence matrix
@@ -486,12 +481,7 @@ class GenericNetwork(Core):
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
         """
-        pores = sp.array(pores, ndmin=1)
-        if pores.dtype == bool:
-            pores = self.toindices(pores)
-        if sp.size(pores) == 0:
-            return sp.array([], ndmin=1, dtype=int)
-
+        pores = self._parse_locations(pores)
         # Count number of neighbors
         if flatten:
             neighborPs = self.find_neighbor_pores(pores,
@@ -766,11 +756,7 @@ class GenericNetwork(Core):
         >>> pn.find_nearby_pores(pores=[0, 1], distance=0.5)
         array([], shape=(2, 0), dtype=int64)
         """
-        # Convert to ND-array
-        pores = sp.array(pores, ndmin=1)
-        # Convert boolean mask to indices if necessary
-        if pores.dtype == bool:
-            pores = self.Ps[pores]
+        pores = self._parse_locations(pores)
         # Handle an empty array if given
         if sp.size(pores) == 0:
             return sp.array([], dtype=sp.int64)

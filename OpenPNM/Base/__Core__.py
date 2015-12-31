@@ -1526,6 +1526,7 @@ class Core(dict):
                 locs = self.Ts[locs]
             else:
                 raise Exception('List of locations is neither Np nor Nt long')
+        locs = locs.astype(dtype=int)
         return locs
 
     def _parse_element(self, element):
