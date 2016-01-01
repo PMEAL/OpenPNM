@@ -78,14 +78,14 @@ class Core(dict):
             super(Core, self).__setitem__(key, value)
             return
         # Skip checks for protected props, and prevent changes if defined
-        if key.split('.')[1] in ['all']:
+        protected_keys = ['all']
+        if key.split('.')[1] in protected_keys:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
                     logger.debug(key+' is being defined.')
                     super(Core, self).__setitem__(key, value)
                 else:
                     logger.warning(key+' is already defined.')
-                    return
             else:
                 logger.debug(key+' is being defined.')
                 super(Core, self).__setitem__(key, value)
@@ -685,16 +685,17 @@ class Core(dict):
 
     def pores(self, labels='all', mode='union'):
         r"""
-        Returns pore locations where given labels exist.
+        Returns pore locations where given labels exist, according to the logic
+        specified by the mode argument.
 
         Parameters
         ----------
-        labels : list of strings, optional
-            The pore label(s) whose locations are requested.  If omitted, all
+        labels : string or list of strings
+            The label(s) whose pores locations are requested.  If omitted, all
             pore inidices are returned. This argument also accepts '*' for
             wildcard searches.
 
-        mode : string, optional
+        mode : string
             Specifies how the query should be performed.  The options are:
 
             **'union'** : (default) All pores with ANY of the given labels are
@@ -708,6 +709,11 @@ class Core(dict):
 
             **'not'** : Only pores with none of the given labels are returned.
 
+        Returns
+        -------
+        A Numpy array containing pore indices where the specified label(s)
+        exist.
+
         Examples
         --------
         >>> import OpenPNM
@@ -718,10 +724,10 @@ class Core(dict):
         >>> pn.pores(labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
-        if labels == 'all':
+        if labels == 'all':  # Shortcut if ALL pores are requested
             Np = sp.shape(self['pore.all'])[0]
             ind = sp.arange(0, Np)
-        else:
+        else:  # Apply full logic otherwise
             ind = self._get_indices(element='pore', labels=labels, mode=mode)
         return ind
 
@@ -734,16 +740,17 @@ class Core(dict):
 
     def throats(self, labels='all', mode='union'):
         r"""
-        Returns throat locations where given labels exist.
+        Returns throat locations where given labels exist, according to the
+        logic specified by the mode argument.
 
         Parameters
         ----------
-        labels : list of strings, optional
+        labels : string or list of strings
             The throat label(s) whose locations are requested.  If omitted,
             'all' throat inidices are returned.  This argument also accepts
             '*' for wildcard searches.
 
-        mode : string, optional
+        mode : string
             Specifies how the query should be performed.  The options are:
 
             **'union'** : (default) All throats with ANY of the given labels
@@ -757,6 +764,11 @@ class Core(dict):
 
             **'not'** : Only throats with none of the given labels are
             returned.
+
+        Returns
+        -------
+        A Numpy array containing the throat indices where the specified
+        label(s) exist.
 
         Examples
         --------
@@ -802,12 +814,27 @@ class Core(dict):
         Parameters
         ----------
         pores or throats : array_like
-            List of pore or throat indices
+            List of pore or throat indices.  Only one of these can be specified
+            at a time, and the returned result will be of the corresponding
+            length.
 
         Returns
         -------
-        A boolean mask of length Np or Nt with True in the locations of
-        pores or throats received.
+        A boolean mask of length Np or Nt with True in the specified pore or
+        throat locations.
+
+        Examples
+        --------
+        >>> import OpenPNM as op
+        >>> pn = op.Network.Cubic(shape=[3, 3, 3])
+        >>> mask = pn.tomask(pores=[0, 10, 20])
+        >>> sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)
+        3
+        >>> len(mask)  # Mask size is equal to the number of pores in network
+        27
+        >>> mask = pn.tomask(throats=[0, 10, 20])
+        >>> len(mask)  # Mask is now equal to number of throats in network
+        54
 
         """
         if (pores is not None) and (throats is None):
@@ -1553,8 +1580,8 @@ class Core(dict):
                 raise Exception('Invalid element received')
         if single:
             if len(element) > 1:
-                raise Exception('Two elements recieved when single element ' +
-                                'requested')
+                raise Exception('Both elements recieved when single element ' +
+                                'allowed')
             else:
                 element = element[0]
         return element
