@@ -812,8 +812,10 @@ class Core(dict):
         """
         if (pores is not None) and (throats is None):
             mask = self._tomask(element='pore', locations=pores)
-        if (throats is not None) and (pores is None):
+        elif (throats is not None) and (pores is None):
             mask = self._tomask(element='throat', locations=throats)
+        else:
+            raise Exception('Cannot specify both pores and throats')
         return mask
 
     def toindices(self, mask):
