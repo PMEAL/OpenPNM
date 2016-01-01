@@ -839,13 +839,7 @@ class Core(dict):
         a thin convenience function and is a compliment to ``tomask``.
 
         """
-        mask = sp.array(mask, ndmin=1)
-        if sp.shape(mask)[0] == self.num_pores():
-            indices = self.pores()[mask]
-        elif sp.shape(mask)[0] == self.num_throats():
-            indices = self.throats()[mask]
-        else:
-            raise Exception('Mask received was neither Np nor Nt long')
+        indices = self._parse_locations(mask)
         return indices
 
     def interpolate_data(self, data):
