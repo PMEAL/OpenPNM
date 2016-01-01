@@ -190,7 +190,7 @@ class Core(dict):
         all three so need not be combined with any other modes.
         """
         allowed = ['props', 'labels', 'models', 'complete']
-        mode = self._validate_mode(mode=mode, allowed=allowed)
+        mode = self._parse_mode(mode=mode, allowed=allowed)
         if 'complete' in mode:
             if self._isa('Geometry') or self._isa('Physics'):
                 self.set_locations(pores=self.Pnet,
@@ -432,7 +432,7 @@ class Core(dict):
         """
         # Parse Inputs
         allowed = ['all', 'models', 'constants']
-        mode = self._validate_mode(mode=mode, allowed=allowed)
+        mode = self._parse_mode(mode=mode, allowed=allowed)
         element = self._parse_element(element=element)
         # Prepare lists of each type of array
         props = [item for item in self.keys() if self[item].dtype != bool]
@@ -462,7 +462,7 @@ class Core(dict):
         locations = self._parse_locations(locations)
         allowed = ['none', 'union', 'intersection', 'not', 'count', 'mask',
                    'difference']
-        mode = self._validate_mode(mode=mode, allowed=allowed, max_modes=1)
+        mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
         a = set([k for k in self.keys() if k.split('.')[0] == element[0]])
@@ -475,23 +475,23 @@ class Core(dict):
         for item in labels:
             arr[:, col] = self[item][locations]
             col = col + 1
-        if 'count' in mode:
+        if mode in ['count']:
             return sp.sum(arr, axis=1)
-        if 'union' in mode:
+        if mode in ['union']:
             temp = labels[sp.sum(arr, axis=0) > 0]
             temp.tolist()
             return Tools.PrintableList(temp)
-        if 'intersection' in mode:
+        if mode in ['intersection']:
             temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
             temp.tolist()
             return Tools.PrintableList(temp)
-        if ('not' in mode) or ('difference' in mode):
+        if mode in ['not', 'difference']:
             temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
             temp.tolist()
             return Tools.PrintableList(temp)
-        if 'mask' in mode:
+        if mode in ['mask']:
             return arr
-        if 'none' in mode:
+        if mode in ['none']:
             temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
             for i in sp.arange(0, sp.shape(locations, )[0]):
                 temp[i] = list(labels[arr[i, :]])
@@ -621,7 +621,7 @@ class Core(dict):
         array([100, 105, 110, 115, 120])
         """
         allowed = ['union', 'intersection', 'not_intersection', 'not']
-        mode = self._validate_mode(mode=mode, allowed=allowed, max_modes=1)
+        mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         labels = self._parse_labels(labels=labels)
         # Convert inputs to locations and element
         if (sp.size(throats) > 0) and (sp.size(pores) > 0):
@@ -647,32 +647,30 @@ class Core(dict):
         # Parse and validate all input values
         allowed = ['union', 'intersection', 'not_intersection', 'not',
                    'difference']
-        mode = self._validate_mode(mode=mode, allowed=allowed, max_modes=1)
-        if len(mode) > 1:
-            raise Exception('This method can only apply one mode at a time')
+        mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         labels = self._parse_labels(labels=labels)
         element = self._parse_element(element)[0]
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
 
         # Begin computing label array
-        if 'union' in mode:
+        if mode in ['union']:
             union = sp.zeros_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
-                    union = union + self[element+'.'+item.split('.')[-1]]
+                union = union + self[element+'.'+item.split('.')[-1]]
             ind = union
-        elif 'intersection' in mode:
+        elif mode in ['intersection']:
             intersect = sp.ones_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
-                    intersect = intersect*self[element+'.'+item.split('.')[-1]]
+                intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
-        elif 'not_intersection' in mode:
+        elif mode in ['not_intersection']:
             not_intersect = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
-        elif ('not' in mode) or ('difference' in mode):
+        elif mode in ['not', 'difference']:
             none = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
@@ -1609,7 +1607,7 @@ class Core(dict):
                 labels.extend(temp)
         return labels
 
-    def _validate_mode(self, mode, allowed=None, max_modes=None):
+    def _parse_mode(self, mode, allowed=None, single=None):
         r"""
         Check that the mode argument is either a string or list of strings and
         return a list of strings.  If a single string is received, it is put
@@ -1624,9 +1622,12 @@ class Core(dict):
             if (allowed is not None) and (item not in allowed):
                 raise Exception('\'mode\' must be one of the following: ' +
                                 allowed.__str__())
-        if max_modes and (len(mode) > max_modes):
-            raise Exception('The number of modes cannot exceed ' +
-                            str(max_modes))
+        if single:
+            if len(mode) > 1:
+                raise Exception('Multiple modes received when only one mode ' +
+                                'allowed')
+            else:
+                mode = mode[0]
         return mode
 
     def _isa(self, keyword=None, obj=None):
