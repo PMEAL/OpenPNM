@@ -1529,8 +1529,23 @@ class Core(dict):
 
     def _parse_locations(self, locations):
         r"""
-        Accepts a list of pores or throats and returns a properly structured
-        Numpy array.  If the list is boolean it returns indices.
+        This private method accepts a list of pores or throats and returns a
+        properly structured Numpy array of indices.
+
+        Parameters
+        ----------
+        locations : multiple options
+            This argument can accept numerous different data types including
+            boolean masks, integers and arrays.
+
+        Returns
+        -------
+        A Numpy array of locations.
+
+        Notes
+        -----
+        This method should only be called by the method that is actually using
+        the locations, to avoid calling it multiple times.
         """
         if locations is None:
             locations = []
@@ -1585,6 +1600,21 @@ class Core(dict):
         return element
 
     def _parse_labels(self, labels):
+        r"""
+        This private method is used for converting \'labels\' to a proper
+        format, including dealing with wildcards (\*).
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The label or list of labels to be parsed. Note that the \* can be
+            used as a wildcard.
+
+        Returns
+        -------
+        A list of label strings, with all wildcard matches included if
+        applicable.
+        """
         if labels is None:
             raise Exception('Labels cannot be None')
         if type(labels) is str:
@@ -1609,10 +1639,29 @@ class Core(dict):
 
     def _parse_mode(self, mode, allowed=None, single=None):
         r"""
-        Check that the mode argument is either a string or list of strings and
-        return a list of strings.  If a single string is received, it is put
-        into a list.  Optionally, this method can ensure that the received
-        mode(s) are allowed for the given method.
+        This private method is for checking the \'mode\' used in the calling
+        method.
+
+        Parameters
+        ----------
+        mode : string or list of strings
+            The mode(s) to be parsed
+
+        allowed : list of strings
+            A list containing the allowed modes.  This list is defined by the
+            calling method.  If any of the received modes are not in the
+            allowed list an exception is raised.
+
+        single : boolean (default is False)
+            Indicates if only a single mode is allowed.  If this argument is
+            True than a string is returned rather than a list of strings, which
+            makes it easier to work with in the caller method.
+
+        Returns
+        -------
+        A list containing the received modes as strings, checked to ensure they
+        are all within the allowed set (if provoided).  Also, if the ``single``
+        argument was True, then a string is returned.
         """
         if type(mode) is str:
             mode = [mode]
