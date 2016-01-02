@@ -622,7 +622,6 @@ class Core(dict):
         """
         allowed = ['union', 'intersection', 'not_intersection', 'not']
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
-        labels = self._parse_labels(labels=labels)
         # Convert inputs to locations and element
         if (sp.size(throats) > 0) and (sp.size(pores) > 0):
             raise Exception('Can only filter either pores OR labels per call')
@@ -633,6 +632,7 @@ class Core(dict):
             element = 'throat'
             locations = self._parse_locations(throats)
         # Do it
+        labels = self._parse_labels(labels=labels, element=element)
         labels = [element+'.'+item.split('.')[-1] for item in labels]
         all_locs = self._get_indices(element=element, labels=labels, mode=mode)
         mask = self._tomask(locations=all_locs, element=element)
@@ -648,8 +648,8 @@ class Core(dict):
         allowed = ['union', 'intersection', 'not_intersection', 'not',
                    'difference']
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
-        labels = self._parse_labels(labels=labels)
-        element = self._parse_element(element)[0]
+        element = self._parse_element(element, single=True)
+        labels = self._parse_labels(labels=labels, element=element)
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
 
@@ -1124,7 +1124,7 @@ class Core(dict):
             Np = sp.shape(self.get('pore.all'))[0]
         else:
             # Count number of pores of specified type
-            Ps = self.pores(labels=labels, mode=mode)
+            Ps = self._get_indices(labels=labels, mode=mode, element='pore')
             Np = sp.shape(Ps)[0]
         return Np
 
@@ -1190,7 +1190,7 @@ class Core(dict):
             Nt = sp.shape(self.get('throat.all'))[0]
         else:
             # Count number of pores of specified type
-            Ts = self.throats(labels=labels, mode=mode)
+            Ts = self._get_indices(labels=labels, mode=mode, element='throat')
             Nt = sp.shape(Ts)[0]
         return Nt
 
@@ -1599,7 +1599,7 @@ class Core(dict):
                 element = element[0]
         return element
 
-    def _parse_labels(self, labels):
+    def _parse_labels(self, labels, element):
         r"""
         This private method is used for converting \'labels\' to a proper
         format, including dealing with wildcards (\*).
@@ -1619,23 +1619,22 @@ class Core(dict):
             raise Exception('Labels cannot be None')
         if type(labels) is str:
             labels = [labels]
-        # Parse the labels list for wildcards "*"
+        # Parse the labels list
+        parsed_labels = []
         for label in labels:
-            if label.startswith('*'):
-                labels.remove(label)
-                temp = [item for item in self.labels()
-                        if item.split('.')[-1].endswith(label.strip('*'))]
-                if temp == []:
-                    temp = [label.strip('*')]
-                labels.extend(temp)
-            if label.endswith('*'):
-                labels.remove(label)
-                temp = [item for item in self.labels()
-                        if item.split('.')[-1].startswith(label.strip('*'))]
-                if temp == []:
-                    temp = [label.strip('*')]
-                labels.extend(temp)
-        return labels
+            # Remove element from label, if present
+            if element in label:
+                label = label.split('.')[-1]
+            # Deal with wildcards
+            if '*' in label:
+                label = label.strip('*')
+                temp = [L for L in self.labels(element=element) if label in L]
+            elif element+'.'+label in self.keys():
+                temp = [element+'.'+label]
+            else:
+                raise KeyError('\''+element+'.'+label+'\''+' not found')
+            parsed_labels.extend(temp)
+        return parsed_labels
 
     def _parse_mode(self, mode, allowed=None, single=None):
         r"""
