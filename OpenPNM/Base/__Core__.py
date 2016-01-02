@@ -1627,8 +1627,11 @@ class Core(dict):
                 label = label.split('.')[-1]
             # Deal with wildcards
             if '*' in label:
-                label = label.strip('*')
-                temp = [L for L in self.labels(element=element) if label in L]
+                Ls = [L.split('.')[-1] for L in self.labels(element=element)]
+                if label.startswith('*'):
+                    temp = [L for L in Ls if L.endswith(label.strip('*'))]
+                if label.endswith('*'):
+                    temp = [L for L in Ls if L.startswith(label.strip('*'))]
             elif element+'.'+label in self.keys():
                 temp = [element+'.'+label]
             else:
