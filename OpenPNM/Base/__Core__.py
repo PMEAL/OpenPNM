@@ -1632,7 +1632,11 @@ class Core(dict):
             elif element+'.'+label in self.keys():
                 temp = [element+'.'+label]
             else:
-                raise KeyError('\''+element+'.'+label+'\''+' not found')
+                # TODO: The following Error should/could be raised but it
+                # breaks the net-geom and phase-phys look-up logic
+                # raise KeyError('\''+element+'.'+label+'\''+' not found')
+                logger.warning('\''+element+'.'+label+'\''+' not found')
+                temp = [element+'.'+label]
             parsed_labels.extend(temp)
         return parsed_labels
 
