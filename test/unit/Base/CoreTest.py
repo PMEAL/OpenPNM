@@ -736,6 +736,12 @@ class CoreTest:
         with pytest.raises(Exception):
             self.net._parse_element(element='pore2')
 
+    def test_parse_element_duplicate(self):
+        a = self.net._parse_element(element=['pore', 'pore'])
+        assert a == ['pore']
+        a = self.net._parse_element(element=['pore', 'pore'], single=True)
+        assert a == 'pore'
+
     def test_parse_element_single_true(self):
         with pytest.raises(Exception):
             self.net._parse_element(element=['pore', 'throat'], single=True)
@@ -762,6 +768,10 @@ class CoreTest:
         a = self.net._parse_labels(labels='pore.*t', element='pore')
         assert sorted(a) == ['pore.front', 'pore.left', 'pore.right']
 
+    def test_parse_labels_duplicates(self):
+        a = self.net._parse_labels(['pore.r*', 'pore.right'], element='pore')
+        assert a == ['pore.right']
+
     def test_parse_mode_string(self):
         a = self.net._parse_mode(mode='union')
         assert a == ['union']
@@ -778,6 +788,12 @@ class CoreTest:
         allowed = ['a', 'b', 'c']
         with pytest.raises(Exception):
             self.net._parse_mode(mode=['a', 'd'], allowed=allowed)
+
+    def test_parse_mode_duplicate(self):
+        a = self.net._parse_mode(mode=['union', 'union'])
+        assert a == ['union']
+        a = self.net._parse_mode(mode=['union', 'union'], single=True)
+        assert a == 'union'
 
     def test_map_pores_geometry1_onto_network(self):
         a = self.geo21.map_pores(target=self.net2)

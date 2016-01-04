@@ -1596,6 +1596,8 @@ class Core(dict):
         for item in element:
             if item not in ['pore', 'throat']:
                 raise Exception('Invalid element received')
+        # Remove duplicates if any
+        [element.remove(L) for L in element if element.count(L) > 1]
         if single:
             if len(element) > 1:
                 raise Exception('Both elements recieved when single element ' +
@@ -1647,6 +1649,9 @@ class Core(dict):
                 logger.warning('\''+element+'.'+label+'\''+' not found')
                 temp = [element+'.'+label]
             parsed_labels.extend(temp)
+            # Remove duplicates if any
+            [parsed_labels.remove(L) for L in parsed_labels
+             if parsed_labels.count(L) > 1]
         return parsed_labels
 
     def _parse_mode(self, mode, allowed=None, single=None):
@@ -1681,6 +1686,8 @@ class Core(dict):
             if (allowed is not None) and (item not in allowed):
                 raise Exception('\'mode\' must be one of the following: ' +
                                 allowed.__str__())
+        # Remove duplicates, if any
+        [mode.remove(L) for L in mode if mode.count(L) > 1]
         if single:
             if len(mode) > 1:
                 raise Exception('Multiple modes received when only one mode ' +
