@@ -141,12 +141,8 @@ class CoreTest:
         assert sorted(a) == sorted(b)
 
     def test_labels_on_foo(self):
-        flag = False
-        try:
-            a = self.net.labels(element='foo')
-        except:
-            flag = True
-        assert flag
+        with pytest.raises(Exception):
+            self.net.labels(element='foo')
 
     def test_labels_on_all_pores(self):
         a = self.net.labels(pores=self.net.Ps)
@@ -210,12 +206,8 @@ class CoreTest:
         assert a[0] != a[1]
 
     def test_labels_pores_mode_foo(self):
-        flag = False
-        try:
-            a = self.net.labels(pores=[0, 1], mode='foo')
-        except:
-            flag = True
-        assert flag
+        with pytest.raises(Exception):
+            self.net.labels(pores=[0, 1], mode='foo')
 
     def test_pores(self):
         a = self.net.pores()
@@ -264,12 +256,8 @@ class CoreTest:
 
     def test_filter_by_label_pores_no_label(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
-        flag = False
-        try:
-            a = self.net.filter_by_label(pores=Ps)
-        except:
-            flag = True
-        assert flag
+        with pytest.raises(Exception):
+            self.net.filter_by_label(pores=Ps)
 
     def test_filter_by_label_pores_one_label_as_string(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
@@ -348,12 +336,8 @@ class CoreTest:
     def test_toindices_wrong_mask(self):
         mask = sp.zeros((self.net.Nt)-2, dtype=bool)
         mask[[0, 3, 6]] = True
-        a = None
-        try:
-            a = self.net.toindices(mask)
-        except:
-            pass
-        assert a is None
+        with pytest.raises(Exception):
+            self.net.toindices(mask)
 
     def test_count(self):
         a = self.net._count()
@@ -412,12 +396,8 @@ class CoreTest:
         assert a == 45
 
     def test_setitem_wrong_prefix(self):
-        flag = False
-        try:
+        with pytest.raises(Exception):
             self.geo['pore2.test'] = 0
-        except:
-            flag = True
-        assert flag
 
     def test_setitem_wrong_length(self):
         self.geo['pore.test'] = sp.ones((self.geo.Np+1))
@@ -436,20 +416,12 @@ class CoreTest:
         # assert sp.sum(self.geo['pore.all']) == array_sum
 
     def test_object_name_name_conflict(self):
-        flag = False
-        try:
+        with pytest.raises(Exception):
             self.geo.name = self.net.name
-        except:
-            flag = True
-        assert flag
 
     def test_object_name_array_conflict(self):
-        flag = False
-        try:
+        with pytest.raises(Exception):
             self.geo.name = 'coords'
-        except:
-            flag = True
-        assert flag
 
         Np = self.geo.Np
         Nt = self.geo.Nt
@@ -457,13 +429,9 @@ class CoreTest:
         assert self.geo.Nt == Nt
 
     def test_get_indices(self):
-        flag = False
         temp = self.net.pop('pore.all')
-        try:
+        with pytest.raises(Exception):
             self.net._get_indices(element='pores', labels='blah')
-        except:
-            flag = True
-        assert flag
         self.net.update({'pore.all': temp})
 
     def test_get_indices_wildcard(self):
@@ -495,12 +463,8 @@ class CoreTest:
         assert a == [self.geo1]
 
     def test_set_locations_on_phase(self):
-        flag = False
-        try:
+        with pytest.raises(Exception):
             self.phase1._set_locations(element='pores', locations=1)
-        except:
-            flag = True
-        assert flag
 
     def test_set_locations_add_on_empty_geometry(self):
         # 'empty' meaning assigned nowhere, with no models or props
@@ -719,6 +683,23 @@ class CoreTest:
         a = self.net.__repr__()
         assert type(a) == str
 
+    def test_parse_locations_boolean(self):
+        b = sp.array([True, True, True])
+        with pytest.raises(Exception):
+            self.net._parse_locations(locations=b)
+        b = sp.zeros((self.net.Np,), dtype=bool)
+        assert len(self.net._parse_locations(locations=b)) == 0
+        b = sp.zeros((self.net.Nt,), dtype=bool)
+        b[[0, 1, 2]] = True
+        assert sp.shape(self.net._parse_locations(locations=b)) == (3,)
+
+    def test_parse_locations_None(self):
+        assert len(self.net._parse_locations(locations=None)) == 0
+
+    def test_parse_locations_string(self):
+        with pytest.raises(Exception):
+            self.net._parse_locations(locations='abc')
+
     def test_parse_locations_int(self):
         a = self.net._parse_locations(locations=0)
         assert type(a) == sp.ndarray
@@ -729,24 +710,74 @@ class CoreTest:
         assert type(a) == sp.ndarray
         assert sp.all(a == [0, 1])
 
-    def test_parse_locations_bool_pores(self):
-        a = self.net._parse_locations(locations=sp.ones([self.net.Np, ],
-                                                        dtype=bool))
-        assert sp.all(a == self.net.Ps)
+    def test_parse_element_None(self):
+        a = self.net._parse_element(element=None)
+        assert sorted(a) == ['pore', 'throat']
 
-    def test_parse_locations_bool_throat(self):
-        a = self.net._parse_locations(locations=sp.ones([self.net.Nt, ],
-                                                        dtype=bool))
-        assert sp.all(a == self.net.Ts)
+    def test_parse_element_various_strings(self):
+        a = self.net._parse_element(element='pore')
+        assert a == ['pore']
+        a = self.net._parse_element(element='Pore')
+        assert a == ['pore']
+        a = self.net._parse_element(element='pores')
+        assert a == ['pore']
+        a = self.net._parse_element(element='Pores')
+        assert a == ['pore']
+        a = self.net._parse_element(element='throat')
+        assert a == ['throat']
+        a = self.net._parse_element(element='Throat')
+        assert a == ['throat']
+        a = self.net._parse_element(element='throats')
+        assert a == ['throat']
+        a = self.net._parse_element(element='Throats')
+        assert a == ['throat']
 
-    def test_parse_locations_bool_wrong_length(self):
-        flag = False
-        try:
-            self.net._parse_locations(locations=sp.ones([self.net.Nt+1, ],
-                                                        dtype=bool))
-        except:
-            flag = True
-        assert flag
+    def test_parse_element_bad_string(self):
+        with pytest.raises(Exception):
+            self.net._parse_element(element='pore2')
+
+    def test_parse_element_single_true(self):
+        with pytest.raises(Exception):
+            self.net._parse_element(element=['pore', 'throat'], single=True)
+        a = self.net._parse_element(element=['pore'], single=True)
+        assert a == 'pore'
+
+    def test_parse_labels_none(self):
+        with pytest.raises(Exception):
+            self.net._parse_labels(labels=None, element='pore')
+
+    def test_parse_labels_string(self):
+        a = self.net._parse_labels(labels='top', element='pore')
+        assert a == ['pore.top']
+        a = self.net._parse_labels(labels='internal', element='throat')
+        assert a == ['throat.internal']
+        a = self.net._parse_labels(labels='pore.top', element='pore')
+        assert a == ['pore.top']
+        a = self.net._parse_labels(labels='throat.internal', element='throat')
+        assert a == ['throat.internal']
+
+    def test_parse_labels_wildcards(self):
+        a = self.net._parse_labels(labels='pore.b*', element='pore')
+        assert sorted(a) == ['pore.back', 'pore.bottom']
+        a = self.net._parse_labels(labels='pore.*t', element='pore')
+        assert sorted(a) == ['pore.front', 'pore.left', 'pore.right']
+
+    def test_parse_mode_string(self):
+        a = self.net._parse_mode(mode='union')
+        assert a == ['union']
+
+    def test_parse_mode_single(self):
+        a = self.net._parse_mode(mode=['union', 'intersection'])
+        assert sorted(a) == ['intersection', 'union']
+        with pytest.raises(Exception):
+            a = self.net._parse_mode(mode=['union1', 'union2'], single=True)
+        a = self.net._parse_mode(mode=['union1'], single=True)
+        assert a == 'union1'
+
+    def test_parse_mode_allowed(self):
+        allowed = ['a', 'b', 'c']
+        with pytest.raises(Exception):
+            self.net._parse_mode(mode=['a', 'd'], allowed=allowed)
 
     def test_map_pores_geometry1_onto_network(self):
         a = self.geo21.map_pores(target=self.net2)
@@ -761,12 +792,8 @@ class CoreTest:
         assert sp.all(a == self.net2.pores())
 
     def test_map_pores_geometry_onto_other_geometry(self):
-        flag = False
-        try:
+        with pytest.raises(Exception):
             self.geo21.map_pores(target=self.geo22)
-        except:
-            flag = True
-        assert flag
 
     def test_mapping(self):
         # Create small cubic network
@@ -836,7 +863,7 @@ class CoreTest:
         b = pn.map_throats(throats=a, target=geom3)
         assert(sp.all(b == geom3.Ts))
 
-    def check_data_health(self):
+    def test_check_data_health(self):
         a = self.net.check_data_health()
         assert a.health
         for item in a.values():

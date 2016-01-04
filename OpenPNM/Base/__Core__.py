@@ -1550,13 +1550,18 @@ class Core(dict):
         if locations is None:
             locations = []
         locs = sp.array(locations, ndmin=1)
+        if locs.dtype not in [bool, sp.float16, sp.float32, sp.float64,
+                              sp.int8, sp.int16, sp.int32, sp.int64]:
+            raise Exception('Invalid data type received as locations, ' +
+                            ' must be boolean or numeric')
         if locs.dtype == bool:
             if sp.size(locs) == self.Np:
                 locs = self.Ps[locs]
             elif sp.size(locs) == self.Nt:
                 locs = self.Ts[locs]
             else:
-                raise Exception('List of locations is neither Np nor Nt long')
+                raise Exception('Boolean list of locations must be either ' +
+                                'Np nor Nt long')
         locs = locs.astype(dtype=int)
         return locs
 
@@ -1632,6 +1637,7 @@ class Core(dict):
                     temp = [L for L in Ls if L.endswith(label.strip('*'))]
                 if label.endswith('*'):
                     temp = [L for L in Ls if L.startswith(label.strip('*'))]
+                temp = [element+'.'+L for L in temp]
             elif element+'.'+label in self.keys():
                 temp = [element+'.'+label]
             else:
@@ -1672,8 +1678,6 @@ class Core(dict):
         if type(mode) is str:
             mode = [mode]
         for item in mode:
-            if type(item) is not str:
-                raise Exception('\'mode\' arguments must be strings')
             if (allowed is not None) and (item not in allowed):
                 raise Exception('\'mode\' must be one of the following: ' +
                                 allowed.__str__())
