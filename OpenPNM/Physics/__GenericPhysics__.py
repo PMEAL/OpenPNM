@@ -101,8 +101,6 @@ class GenericPhysics(OpenPNM.Base.Core):
             from the object.  Options are 'add' (default) or 'remove'.
         """
         if sp.size(pores) > 0:
-            pores = sp.array(pores, ndmin=1)
             self._set_locations(element='pore', locations=pores, mode=mode)
         if sp.size(throats) > 0:
-            throats = sp.array(throats, ndmin=1)
             self._set_locations(element='throat', locations=throats, mode=mode)

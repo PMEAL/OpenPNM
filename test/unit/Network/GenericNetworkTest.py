@@ -26,7 +26,7 @@ class GenericNetworkTest:
 
     def test_find_connected_pores_empty_flattend(self):
         a = self.net.find_connected_pores(throats=[], flatten=True)
-        assert sp.shape(a) == (0, 2)
+        assert sp.shape(a) == (0, )
 
     def test_find_neighbor_pores_numeric(self):
         a = self.net.find_neighbor_pores(pores=[])
