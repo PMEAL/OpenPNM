@@ -765,8 +765,8 @@ class CoreTest:
     def test_parse_labels_wildcards(self):
         a = self.net._parse_labels(labels='pore.b*', element='pore')
         assert sorted(a) == ['pore.back', 'pore.bottom']
-        a = self.net._parse_labels(labels='pore.*t', element='pore')
-        assert sorted(a) == ['pore.front', 'pore.left', 'pore.right']
+        a = self.net._parse_labels(labels='pore.*ight', element='pore')
+        assert sorted(a) == ['pore.right']
 
     def test_parse_labels_duplicates(self):
         a = self.net._parse_labels(['pore.r*', 'pore.right'], element='pore')
