@@ -40,8 +40,10 @@ class Import(GenericNetwork):
     column corresponding to the label name (i.e. *pore_front*).  T indicates
     where the label applies and F otherwise.
     """
-    def __init__(self, file, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+    def from_csv(self, file):
         rarr = sp.recfromcsv(file)
         try:
             Nt = len(rarr['throat_conns'])
