@@ -290,19 +290,10 @@ class Pandas():
         tprops = set(network.props('throats'))
         for item in network._geometries:
             tprops = tprops.union(set(item.props('throat')))
-        # Add props to tdata and pdata, starting with coords and conns
+        # Add props to tdata and pdata
         pdata = {}
-        pdata.update({network.name+'.'+'pore.coordsX':
-                      network['pore.coords'][:, 0]})
-        pdata.update({network.name+'.'+'pore.coordsY':
-                      network['pore.coords'][:, 1]})
-        pdata.update({network.name+'.'+'pore.coordsZ':
-                      network['pore.coords'][:, 2]})
         tdata = {}
-        tdata.update({network.name+'.'+'throat.conns1':
-                      network['throat.conns'][:, 0]})
-        tdata.update({network.name+'.'+'throat.conns2':
-                      network['throat.conns'][:, 0]})
+
         for item in pprops:
             pdata.update({network.name+'.'+item: network[item]})
         for item in tprops:
@@ -322,13 +313,22 @@ class Pandas():
             for item in tprops:
                 tdata.update({phase.name+'.'+item: phase[item]})
 
-        # Scan data and remove non-1D arrays
+        # Scan data and convert non-1d arrays to strings
         for item in list(pdata.keys()):
             if _sp.shape(pdata[item]) != (network.Np,):
-                pdata.pop(item)
+                array = pdata.pop(item)
+                temp = _sp.empty((_sp.shape(array)[0], ), dtype=object)
+                for row in range(temp.shape[0]):
+                    temp[row] = str(array[row, :]).strip('[]')
+                pdata.update({item: temp})
+
         for item in list(tdata.keys()):
             if _sp.shape(tdata[item]) != (network.Nt,):
-                tdata.pop(item)
+                array = tdata.pop(item)
+                temp = _sp.empty((_sp.shape(array)[0], ), dtype=object)
+                for row in range(temp.shape[0]):
+                    temp[row] = str(array[row, :]).strip('[]')
+                tdata.update({item: temp})
 
         data = {'pore.DataFrame': _pd.DataFrame.from_dict(pdata),
                 'throat.DataFrame': _pd.DataFrame.from_dict(tdata)}
