@@ -356,8 +356,8 @@ class CSV():
         dfp = dataframes['pore.DataFrame']
         dft = dataframes['throat.DataFrame']
         f = open(filename+'_pore.csv', mode='x')
-        dfp.to_csv(f)
+        dfp.to_csv(f, index=False)
         f.close()
         f = open(filename+'_throat.csv', mode='x')
-        dft.to_csv(f)
+        dft.to_csv(f, index=False)
         f.close()
