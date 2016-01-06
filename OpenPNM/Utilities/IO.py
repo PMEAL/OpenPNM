@@ -283,24 +283,30 @@ class Pandas():
         Returns a dict containing 2 Pandas DataFrames with 'pore' and 'throat'
         data in each.
         """
-        # Gather list of prop names
+        # Initialize pore and throat data dictionary with conns and coords
+        pdata = {'pore_coords': network['pore.coords']}
+        tdata = {'throat_conns': network['throat.conns']}
+
+        # Gather list of prop names from network and geometries
         pprops = set(network.props('pore'))
         for item in network._geometries:
             pprops = pprops.union(set(item.props('pore')))
         tprops = set(network.props('throats'))
         for item in network._geometries:
             tprops = tprops.union(set(item.props('throat')))
-        # Add props to tdata and pdata
-        pdata = {}
-        tdata = {}
 
+        # Select data from network and geometries using keys
         for item in pprops:
-            key = 'pore.'+network.name+'_'+item.split('.')[1]
+            key = 'pore_'+network.name+'_'+item.split('.')[1]
             pdata.update({key: network[item]})
         for item in tprops:
-            key = 'throat.'+network.name+'_'+item.split('.')[1]
+            key = 'throat_'+network.name+'_'+item.split('.')[1]
             tdata.update({key: network[item]})
+        # Remove coords and conns from pdata and tdata
+        pdata.pop('pore_'+network.name+'_coords')
+        tdata.pop('throat_'+network.name+'_conns')
 
+        # Gather list of prop names from phases and physics
         for phase in phases:
             # Gather list of prop names
             pprops = set(phase.props('pore'))
