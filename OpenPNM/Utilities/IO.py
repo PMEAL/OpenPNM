@@ -1,4 +1,4 @@
-from OpenPNM.Utilities import misc
+from OpenPNM.Utilities import misc as _misc
 import scipy as _sp
 import numpy as _np
 import pandas as _pd
@@ -46,11 +46,12 @@ class VTK():
             The Network containing the data to be written
 
         filename : string, optional
-            Filename to write data.  If no name is given the file is named after
-            ther network
+            Filename to write data.  If no name is given the file is named
+            after ther network
 
         phases : list, optional
-            A list contain OpenPNM Phase object(s) containing data to be written
+            A list contain OpenPNM Phase object(s) containing data to be
+            written
 
         Examples
         --------
@@ -60,8 +61,10 @@ class VTK():
         ...                                       pores=pn.pores(),
         ...                                       throats=pn.throats())
         >>> air = OpenPNM.Phases.Air(network=pn)
-        >>> phys = OpenPNM.Physics.Standard(network=pn, phase=air,
-        ...                                 pores=pn.pores(), throats=pn.throats())
+        >>> phys = OpenPNM.Physics.Standard(network=pn,
+        ...                                 phase=air,
+        ...                                 pores=pn.pores(),
+        ...                                 throats=pn.throats())
 
         >>> import OpenPNM.Utilities.IO as io
         >>> io.VTK.save(pn,'test_pn.vtp',[air])
@@ -82,7 +85,7 @@ class VTK():
         for phase in phases:
             objs.append(phase)
         objs.append(network)
-        am = misc.amalgamate_data(objs=objs)
+        am = _misc.amalgamate_data(objs=objs)
         key_list = list(sorted(am.keys()))
         points = network['pore.coords']
         pairs = network['throat.conns']
@@ -142,8 +145,8 @@ class VTK():
 
         Notes
         -----
-        This will NOT reproduce original simulation, since all models and object
-        relationships are lost.
+        This will NOT reproduce original simulation, since all models and
+        object relationships are lost.
         """
         network = OpenPNM.Network.GenericNetwork()
         tree = _ET.parse(filename)
@@ -204,8 +207,8 @@ class MAT():
     @staticmethod
     def save(network, filename='', phases=[]):
         r"""
-        Write Network to a Mat file for exporting to Matlab. This method will be
-        enhanced in a future update, and it's functionality may change!
+        Write Network to a Mat file for exporting to Matlab. This method will
+        be enhanced in a future update, and it's functionality may change!
 
         Parameters
         ----------
@@ -274,9 +277,11 @@ class MAT():
 
 class Pandas():
 
-    def save(network, phases=[]):
+    @staticmethod
+    def get_data_frames(network, phases=[]):
         r"""
-        Returns a tuple containing Pandas DataFrames
+        Returns a dict containing 2 Pandas DataFrames with 'pore' and 'throat'
+        data in each.
         """
         # Gather list of prop names
         pprops = set(network.props('pore'))
@@ -326,6 +331,25 @@ class Pandas():
                 tdata.pop(item)
 
         data = {'pore.DataFrame': _pd.DataFrame.from_dict(pdata),
-                'thorat.DataFrame': _pd.DataFrame.from_dict(tdata)}
+                'throat.DataFrame': _pd.DataFrame.from_dict(tdata)}
 
         return data
+
+
+class CSV():
+
+    @staticmethod
+    def save(network, filename='', phases=[]):
+        if filename == '':
+            filename = network.name
+        if filename.endswith('.csv'):
+            filename = filename.rstrip('.csv')
+        dataframes = Pandas.get_data_frames(network=network, phases=phases)
+        dfp = dataframes['pore.DataFrame']
+        dft = dataframes['throat.DataFrame']
+        f = open(filename+'_pore.csv', mode='x')
+        dfp.to_csv(f)
+        f.close()
+        f = open(filename+'_throat.csv', mode='x')
+        dft.to_csv(f)
+        f.close()
