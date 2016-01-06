@@ -295,9 +295,11 @@ class Pandas():
         tdata = {}
 
         for item in pprops:
-            pdata.update({network.name+'.'+item: network[item]})
+            key = 'pore.'+network.name+'_'+item.split('.')[1]
+            pdata.update({key: network[item]})
         for item in tprops:
-            tdata.update({network.name+'.'+item: network[item]})
+            key = 'throat.'+network.name+'_'+item.split('.')[1]
+            tdata.update({key: network[item]})
 
         for phase in phases:
             # Gather list of prop names
