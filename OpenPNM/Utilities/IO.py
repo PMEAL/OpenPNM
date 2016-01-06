@@ -284,8 +284,8 @@ class Pandas():
         data in each.
         """
         # Initialize pore and throat data dictionary with conns and coords
-        pdata = {'pore_coords': network['pore.coords']}
-        tdata = {'throat_conns': network['throat.conns']}
+        pdata = {}
+        tdata = {}
 
         # Gather list of prop names from network and geometries
         pprops = set(network.props('pore'))
@@ -297,14 +297,11 @@ class Pandas():
 
         # Select data from network and geometries using keys
         for item in pprops:
-            key = 'pore_'+network.name+'_'+item.split('.')[1]
+            key = 'pore_'+item.split('.')[1]
             pdata.update({key: network[item]})
         for item in tprops:
-            key = 'throat_'+network.name+'_'+item.split('.')[1]
+            key = 'throat_'+item.split('.')[1]
             tdata.update({key: network[item]})
-        # Remove coords and conns from pdata and tdata
-        pdata.pop('pore_'+network.name+'_coords')
-        tdata.pop('throat_'+network.name+'_conns')
 
         # Gather list of prop names from phases and physics
         for phase in phases:
@@ -317,9 +314,9 @@ class Pandas():
                 tprops = tprops.union(set(item.props('throat')))
             # Add props to tdata and pdata
             for item in pprops:
-                pdata.update({phase.name+'.'+item: phase[item]})
+                pdata.update({item+'_'+phase.name: phase[item]})
             for item in tprops:
-                tdata.update({phase.name+'.'+item: phase[item]})
+                tdata.update({item+'_'+phase.name: phase[item]})
 
         # Scan data and convert non-1d arrays to strings
         for item in list(pdata.keys()):
