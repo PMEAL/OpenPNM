@@ -16,15 +16,24 @@ topo = topology()
 class Import(GenericNetwork):
     r"""
     This method is used to import data resulting from some external network
-    extraction tools {refs here?}.  The aim of this class is to define a
-    standard way to represent network data and transfer into OpenPNM.   The
-    main principle is to keep is as simple and general as possible, so the
-    CSV data format was used.
+    extraction tools.  The aim of this class is to define a standard way to
+    represent network data and transfer into OpenPNM.   The main principle is
+    to keep it as simple and general as possible, so the CSV data format was
+    used.
 
+    Parameters
+    ----------
+    filename : string (optional)
+        The name of the file containing the data to import.  Note that this
+        can be skipped durin the initialization step and data can be added
+        using the ``from_cvs`` method.
+
+    Notes
+    -----
     There are a few rules governing how the data should be stored:
 
-    1.  The first row of the file (column headers) should contain the
-    property names
+    1.  The first row of the file (column headers) must contain the
+    property names. The subsequent rows contain the data.
 
     2.  The property names should be in the format of *pore_volume* or
     *throat_length*.  In OpenPNM this will become *pore.volume* or
@@ -36,8 +45,15 @@ class Import(GenericNetwork):
     commas.  For instance, the *pore_coords* values should be X Y Z with
     spaces, not commas between them.
 
-    4.  Labels can also be imported by placing the characters T and F in a
-    column corresponding to the label name (i.e. *pore_front*).  T
+    4.  OpenPNM expects 'throat_conns' and 'pore_coords', as it uses these as
+    the basis for importing all other properties.
+
+    5. The file can contain both or either pore and throat data.  If pore data
+    is present then \'pore_coords\' is required, and similarlyh if throat data
+    is present then \'thorat_conns\' is required.
+
+    6.  Labels can also be imported by placing the characters T and F in a
+    column corresponding to the label name (i.e. *pore_front*).  Tq
     indicates where the label applies and F otherwise.
     """
 
@@ -47,10 +63,12 @@ class Import(GenericNetwork):
             self.from_csv(filename=filename)
 
     def from_csv(self, filename):
-
+        r"""
+        Accepts a file name, reads in the data, and adds it to the network
+        """
         rarr = sp.recfromcsv(filename)
         items = list(rarr.dtype.names)
-        if 'throat_conns' in items:
+        if 'throat_conns' in (list(self.keys()) + items):
             Nt = len(rarr['throat_conns'])
             self.update({'throat.all': sp.ones((Nt,), dtype=bool)})
             data = [sp.fromstring(rarr['throat_conns'][i], sep=' ')
@@ -59,7 +77,7 @@ class Import(GenericNetwork):
             items.remove('throat_conns')
         else:
             logger.warning('\'throat_conns\' not found')
-        if 'pore_coords' in items:
+        if 'pore_coords' in (list(self.keys()) + items):
             Np = len(rarr['pore_coords'])
             self.update({'pore.all': sp.ones((Np,), dtype=bool)})
             data = [sp.fromstring(rarr['pore_coords'][i], sep=' ')
@@ -86,4 +104,4 @@ class Import(GenericNetwork):
                     data = [list(sp.fromstring(rarr[item][i], sep=' '))
                             for i in range(N)]
                     data = sp.array(data)
-            self.update({element+'.'+prop: data[0:N]})
+            self[element+'.'+prop] = data[0:N]
