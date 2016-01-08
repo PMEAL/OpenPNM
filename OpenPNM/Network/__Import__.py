@@ -28,15 +28,19 @@ class Import(GenericNetwork):
         if filename:
             self.from_csv(filename=filename)
 
-    def from_csv(self, filename):
+    def from_csv(self, filename, overwrite=True):
         r"""
-        Accepts a file name, reads in the data, and adds it to the network
+        Accepts a file name, reads in the data, and adds it to the Network
 
         Parameters
         ----------
         filename : string (optional)
-        The name of the file containing the data to import.  The formatting of
-        this file is outlined below.
+            The name of the file containing the data to import.  The formatting
+            of this file is outlined below.
+
+        overwrite : bool (default is True)
+            Indicates whether existing data should be over written if a
+            conflicting entry exists in the CSV file.
 
         Notes
         -----
@@ -68,21 +72,27 @@ class Import(GenericNetwork):
         """
         rarr = sp.recfromcsv(filename)
         items = list(rarr.dtype.names)
-        if 'throat_conns' in (list(self.keys()) + items):
-            Nt = len(rarr['throat_conns'])
-            self.update({'throat.all': sp.ones((Nt,), dtype=bool)})
-            data = [sp.fromstring(rarr['throat_conns'][i], sep=' ')
-                    for i in range(Nt)]
-            self.update({'throat.conns': sp.vstack(data)})
+        if 'throat_conns' in items:
+            if ('throat.conns' in list(self.keys())) and (overwrite is False):
+                logger.warning('\'throat.conns\' is already defined')
+            else:
+                Nt = len(rarr['throat_conns'])
+                self.update({'throat.all': sp.ones((Nt,), dtype=bool)})
+                data = [sp.fromstring(rarr['throat_conns'][i], sep=' ')
+                        for i in range(Nt)]
+                self.update({'throat.conns': sp.vstack(data)})
             items.remove('throat_conns')
         else:
             logger.warning('\'throat_conns\' not found')
-        if 'pore_coords' in (list(self.keys()) + items):
-            Np = len(rarr['pore_coords'])
-            self.update({'pore.all': sp.ones((Np,), dtype=bool)})
-            data = [sp.fromstring(rarr['pore_coords'][i], sep=' ')
-                    for i in range(Np)]
-            self.update({'pore.coords': sp.vstack(data)})
+        if 'pore_coords' in items:
+            if ('pore.coords' in list(self.keys())) and (overwrite is False):
+                logger.warning('\'pore.coords\' is already defined')
+            else:
+                Np = len(rarr['pore_coords'])
+                self.update({'pore.all': sp.ones((Np,), dtype=bool)})
+                data = [sp.fromstring(rarr['pore_coords'][i], sep=' ')
+                        for i in range(Np)]
+                self.update({'pore.coords': sp.vstack(data)})
             items.remove('pore_coords')
         else:
             logger.warning('\'pore_coords\' not found')
@@ -104,4 +114,10 @@ class Import(GenericNetwork):
                     data = [list(sp.fromstring(rarr[item][i], sep=' '))
                             for i in range(N)]
                     data = sp.array(data)
-            self[element+'.'+prop] = data[0:N]
+            if element+'.'+prop in (self.keys()):
+                if overwrite is True:
+                    self[element+'.'+prop] = data[0:N]
+                else:
+                    logger.warning('\''+element+'.'+prop+'\' already present')
+            else:
+                self[element+'.'+prop] = data[0:N]
