@@ -1,4 +1,6 @@
 from OpenPNM.Utilities import misc as _misc
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 import scipy as _sp
 import numpy as _np
 import pandas as _pd
@@ -212,7 +214,6 @@ class MAT():
 
         Parameters
         ----------
-
         network : OpenPNM Network Object
 
         filename : string
@@ -280,8 +281,20 @@ class Pandas():
     @staticmethod
     def get_data_frames(network, phases=[]):
         r"""
-        Returns a dict containing 2 Pandas DataFrames with 'pore' and 'throat'
-        data in each.
+        Convert the Network (and optionally Phase) data to Pandas DataFrames.
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The Network containing the data to be stored
+
+        phases : list of OpenPNM Phase Objects
+            The data on each supplied phase will be added to the CSV file.
+
+        Returns
+        -------
+        A dict containing 2 Pandas DataFrames with 'pore' and 'throat' data in
+        each.
         """
         # Initialize pore and throat data dictionary with conns and coords
         pdata = {}
@@ -345,6 +358,27 @@ class CSV():
 
     @staticmethod
     def save(network, filename='', phases=[]):
+        r"""
+        Save all the pore and throat property data on the Network (and
+        optionally on any Phases objects) to CSV files.
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The Network containing the data to be stored
+
+        filename : string
+            The name of the file to store the data
+
+        phases : list of OpenPNM Phase Objects
+            The data on each supplied phase will be added to the CSV file.
+
+        Notes
+        -----
+        The data from all Geometry objects is added to the file automatically.
+        Furthermore, the Physics data is added for each Phase object that is
+        provided.
+        """
         if filename == '':
             filename = network.name
         if filename.endswith('.csv'):
@@ -358,3 +392,100 @@ class CSV():
         f = open(filename+'_throat.csv', mode='x')
         dft.to_csv(f, index=False)
         f.close()
+
+    @staticmethod
+    def load(network, filename, overwrite):
+        r"""
+        Accepts a file name, reads in the data, and adds it to the Network
+
+        Parameters
+        ----------
+        filename : string (optional)
+            The name of the file containing the data to import.  The formatting
+            of this file is outlined below.
+
+        overwrite : bool (default is True)
+            Indicates whether existing data should be over written if a
+            conflicting entry exists in the CSV file.
+
+        Notes
+        -----
+        There are a few rules governing how the data should be stored:
+
+        1.  The first row of the file (column headers) must contain the
+        property names. The subsequent rows contain the data.
+
+        2.  The property names should be in the format of *pore_volume* or
+        *throat_length*.  In OpenPNM this will become *pore.volume* or
+        *throat.length* (i.e. the underscore is replaced by a dot).
+
+        3.  Each column represents a specific property.  For Np x 1 or Nt x 1
+        data such as *pore_volume* this is straightforward.  For Np x m or
+        Nt x m data, it must be entered in as a set of values NOT separated by
+        commas.  For instance, the *pore_coords* values should be X Y Z with
+        spaces, not commas between them.
+
+        4.  OpenPNM expects 'throat_conns' and 'pore_coords', as it uses these
+        as the basis for importing all other properties.
+
+        5. The file can contain both or either pore and throat data.  If pore
+        data are present then \'pore_coords\' is required, and similarly if
+        throat data are present then \'throat_conns\' is required.
+
+        6.  Labels can also be imported by placing the characters T and F in a
+        column corresponding to the label name (i.e. *pore_front*).  T
+        indicates where the label applies and F otherwise.
+        """
+        rarr = _sp.recfromcsv(filename)
+        items = list(rarr.dtype.names)
+        if 'throat_conns' in items:
+            if ('throat.conns' in list(network.keys())) \
+                    and (overwrite is False):
+                logger.warning('\'throat.conns\' is already defined')
+            else:
+                Nt = len(rarr['throat_conns'])
+                network.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
+                data = [_sp.fromstring(rarr['throat_conns'][i], sep=' ')
+                        for i in range(Nt)]
+                network.update({'throat.conns': _sp.vstack(data)})
+            items.remove('throat_conns')
+        else:
+            logger.warning('\'throat_conns\' not found')
+        if 'pore_coords' in items:
+            if ('pore.coords' in list(network.keys())) \
+                    and (overwrite is False):
+                logger.warning('\'pore.coords\' is already defined')
+            else:
+                Np = len(rarr['pore_coords'])
+                network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
+                data = [_sp.fromstring(rarr['pore_coords'][i], sep=' ')
+                        for i in range(Np)]
+                network.update({'pore.coords': _sp.vstack(data)})
+            items.remove('pore_coords')
+        else:
+            logger.warning('\'pore_coords\' not found')
+
+        # Now parse through all the other items
+        for item in items:
+            element = item.split('_')[0]
+            N = network._count(element)
+            prop = item.split('_', maxsplit=1)[1]
+            data = rarr[item]
+            if data.dtype.char == 'S':
+                if data[0].decode().upper()[0] in ['T', 'F']:  # If boolean
+                    data = _sp.chararray.decode(data)
+                    data = _sp.chararray.upper(data)
+                    ind = _sp.where(data == 'T')[0]
+                    data = _sp.zeros((N,), dtype=bool)
+                    data[ind] = True
+                else:  # If data is an array of lists
+                    data = [list(_sp.fromstring(rarr[item][i], sep=' '))
+                            for i in range(N)]
+                    data = _sp.array(data)
+            if element+'.'+prop in (network.keys()):
+                if overwrite is True:
+                    network[element+'.'+prop] = data[0:N]
+                else:
+                    logger.warning('\''+element+'.'+prop+'\' already present')
+            else:
+                network[element+'.'+prop] = data[0:N]
