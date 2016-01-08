@@ -5,7 +5,7 @@ Submodule -- throat_centroid
 
 """
 import scipy as _sp
-from OpenPNM.Utilities import transformations as tr
+from transforms3d import _gohlketransforms as tr
 from OpenPNM.Utilities import vertexops as vo
 from scipy.spatial import ConvexHull
 

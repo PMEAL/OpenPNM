@@ -26,6 +26,15 @@ class ControllerTest:
         self.controller.load(join(TEMP_DIR, 'test_workspace'))
         assert self.net.name in self.controller.keys()
 
+    def test_load_overwrite_existing(self):
+        temp = self.controller.copy()
+        self.controller.save(join(TEMP_DIR, 'test_workspace'))
+        self.controller.load(join(TEMP_DIR, 'test_workspace'))
+        flag = [i for i in temp.keys() if i not in self.controller.keys()]
+
+    def test_save_no_name(self):
+        self.controller.save()
+
     def test_load_v120_pnm(self):
         temp = self.controller.copy()
         self.controller.clear()
@@ -54,6 +63,12 @@ class ControllerTest:
         assert a not in self.controller.values()
         self.controller.load_simulation(join(TEMP_DIR, 'test_simulation'))
         assert a.name in self.controller.keys()
+
+    def test_save_simulation_no_name(self):
+        a = OpenPNM.Network.Cubic(shape=[10, 10, 10])
+        self.controller.save_simulation(a)
+        self.controller.clear()
+        self.controller.load_simulation(a.name)
 
     def test_ghost_object(self):
         a = self.controller.ghost_object(self.net)
@@ -102,6 +117,56 @@ class ControllerTest:
     def test_phases(self):
         a = self.controller.phases()
         assert type(a) is list
+
+    def test_export_VTK_and_MAT(self):
+        fname = os.path.join(TEMP_DIR, 'test')
+        self.controller.clear()
+        pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        # Test VTK option
+        self.controller.export(network=pn,
+                               filename=fname,
+                               fileformat='VTK')
+        assert os.path.isfile(fname+'.vtp')
+        os.remove(fname+'.vtp')
+        # Test Matlab matfile option
+        self.controller.export(network=self.net,
+                               filename=fname,
+                               fileformat='MAT')
+        assert os.path.isfile(fname+'.mat')
+        os.remove(fname+'.mat')
+
+    def test_export_one_network_none_specified(self):
+        fname = os.path.join(TEMP_DIR, 'test')
+        self.controller.clear()
+        OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        # Test VTK option
+        self.controller.export(filename=fname,
+                               fileformat='VTK')
+        assert os.path.isfile(fname+'.vtp')
+        os.remove(fname+'.vtp')
+
+    def test_export_many_networks_none_specified(self):
+        OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        fname = os.path.join(TEMP_DIR, 'test')
+        # Test VTK option
+        flag = False
+        try:
+            self.controller.export(filename=fname,
+                                   fileformat='VTK')
+        except:
+            flag = True
+        assert flag
+
+    def test_set_get_comment(self):
+        comment = 'Testing the function with a unit test'
+        self.controller.comments = comment
+        flag = True
+        try:
+            self.controller.comments
+        except:
+            flag = False
+        assert flag
 
     def teardown_class(self):
         del(self.controller)

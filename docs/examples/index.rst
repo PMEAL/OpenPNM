@@ -9,7 +9,6 @@ Available Examples and Tutorials:
 .. toctree::
    :maxdepth: 1
 
-   introduction.rst
    drainage.rst
    IP.rst
    boundary_conditions.rst

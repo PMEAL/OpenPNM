@@ -249,6 +249,12 @@ class GenericNetwork(Core):
                [0, 5]])
         >>> pn.find_connected_pores(throats=[0,1], flatten=True)
         array([0, 1, 5])
+
+        Notes
+        -----
+        This method basically just looks into the pn['throat.conns'] array and
+        retrieves the pores for each input throat.  The flatten option merely
+        stacks the two columns and eliminate non-unique values.
         """
         Ts = sp.array(throats, ndmin=1)
         if Ts.dtype == bool:
@@ -568,7 +574,7 @@ class GenericNetwork(Core):
 
         See Also
         --------
-        ``find_clusters2``
+        find_clusters2
 
         """
         if sp.size(mask) == self.num_throats():
@@ -834,6 +840,7 @@ class GenericNetwork(Core):
             (2) Islands or isolated clusters of pores
             (3) Duplicate throats
             (4) Bidirectional throats (ie. symmetrical adjacency matrix)
+            (5) Headless throats
 
         Returns
         -------
@@ -857,6 +864,22 @@ class GenericNetwork(Core):
         health['trim_pores'] = []
         health['duplicate_throats'] = []
         health['bidirectional_throats'] = []
+        health['headless_throats'] = []
+        health['looped_throats'] = []
+
+        # Check for headless throats
+        hits = sp.where(self['throat.conns'] > self.Np - 1)[0]
+        if sp.size(hits) > 0:
+            health['headless_throats'] = sp.unique(hits)
+            logger.warning('Health check cannot complete due to connectivity '
+                           'errors. Please correct existing errors & recheck.')
+            return health
+
+        # Check for throats that loop back onto the same pore
+        P12 = self['throat.conns']
+        hits = sp.where(P12[:, 0] == P12[:, 1])[0]
+        if sp.size(hits) > 0:
+            health['looped_throats'] = hits
 
         # Check for individual isolated pores
         Ps = self.num_neighbors(self.pores())
@@ -882,8 +905,7 @@ class GenericNetwork(Core):
         i = self['throat.conns'][:, 0]
         j = self['throat.conns'][:, 1]
         v = sp.array(self['throat.all'], dtype=int)
-        Np = self.num_pores()
-        adjmat = sprs.coo_matrix((v, (i, j)), [Np, Np])
+        adjmat = sprs.coo_matrix((v, (i, j)), [self.Np, self.Np])
         temp = adjmat.tolil()  # Convert to lil to combine duplicates
         # Compile lists of which specfic throats are duplicates
         # Be VERY careful here, as throats are not in order
