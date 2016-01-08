@@ -33,3 +33,6 @@ class Import(GenericNetwork):
         io.CSV.load(network=self, filename=filename, overwrite=overwrite)
 
     from_csv.__doc__ = io.CSV.load.__doc__
+
+    def from_vtk(self, filename):
+        io.VTK.load(filename=filename)
