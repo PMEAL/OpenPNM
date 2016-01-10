@@ -269,10 +269,57 @@ class MAT():
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
     @staticmethod
-    def load():
+    def load(network, filename, overwrite=True):
         r"""
         This method is not implemented yet.
         """
+        import scipy.io as _spio
+        data = _spio.loadmat(filename)
+        # Deal with pore coords and throat conns specially
+        if 'throat_conns' in data.keys():
+            if ('throat.conns' in list(network.keys())) \
+                    and (overwrite is False):
+                logger.warning('\'throat.conns\' is already defined')
+            else:
+                network.update({'throat.conns':
+                                _sp.vstack(data['throat_conns'])})
+                Nt = _sp.shape(network['throat.conns'])[0]
+                network.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
+            del data['throat_conns']
+        else:
+            logger.warning('\'throat_conns\' not found')
+        if 'pore_coords' in data.keys():
+            if ('pore.coords' in list(network.keys())) \
+                    and (overwrite is False):
+                logger.warning('\'pore.coords\' is already defined')
+            else:
+                network.update({'pore.coords': _sp.vstack(data['pore_coords'])})
+                Np = _sp.shape(network['pore.coords'])[0]
+                network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
+            del data['pore_coords']
+        else:
+            logger.warning('\'pore_coords\' not found')
+
+        # Now parse through all the other items
+        items = [i for i in data.keys() if '__' not in i]
+        for item in items:
+            element = item.split('_')[0]
+            prop = item.split('_', maxsplit=1)[1]
+            vals = _sp.squeeze(data[item].T)
+            # If data is not standard array
+            if (_sp.sum(data[item] == 1) + _sp.sum(data[item] == 0)) \
+                    == network._count(element):  # If boolean
+                print(vals)
+                network[element+'.'+prop] = vals.astype(bool)
+            else:  # If data is an array of lists
+                pass
+            if element+'.'+prop in (network.keys()):
+                if overwrite is True:
+                    network[element+'.'+prop] = vals
+                else:
+                    logger.warning('\''+element+'.'+prop+'\' already present')
+            else:
+                network[element+'.'+prop] = vals
         raise NotImplemented()
 
 
