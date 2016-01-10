@@ -5,13 +5,10 @@ Import: Import networks from a standardized file format
 ===============================================================================
 
 """
-import scipy as sp
 from OpenPNM.Network import GenericNetwork
-from OpenPNM.Utilities import topology
 from OpenPNM.Utilities import IO as io
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
-topo = topology()
 
 
 class Import(GenericNetwork):
@@ -36,3 +33,8 @@ class Import(GenericNetwork):
 
     def from_vtk(self, filename):
         io.VTK.load(filename=filename)
+
+    def from_mat(self, filename, overwrite):
+        io.MAT.load(network=self, filename=filename, overwrite=overwrite)
+
+    from_mat.__doc__ = io.MAT.load.__doc__

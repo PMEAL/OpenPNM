@@ -293,7 +293,8 @@ class MAT():
                     and (overwrite is False):
                 logger.warning('\'pore.coords\' is already defined')
             else:
-                network.update({'pore.coords': _sp.vstack(data['pore_coords'])})
+                network.update({'pore.coords':
+                                _sp.vstack(data['pore_coords'])})
                 Np = _sp.shape(network['pore.coords'])[0]
                 network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
             del data['pore_coords']
@@ -306,11 +307,10 @@ class MAT():
             element = item.split('_')[0]
             prop = item.split('_', maxsplit=1)[1]
             vals = _sp.squeeze(data[item].T)
-            # If data is not standard array
-            if (_sp.sum(data[item] == 1) + _sp.sum(data[item] == 0)) \
+            # If data is not standard array, convert vals appropriately
+            if (_sp.sum(vals == 1) + _sp.sum(vals == 0)) \
                     == network._count(element):  # If boolean
-                print(vals)
-                network[element+'.'+prop] = vals.astype(bool)
+                vals = vals.astype(bool)
             else:  # If data is an array of lists
                 pass
             if element+'.'+prop in (network.keys()):
@@ -320,7 +320,6 @@ class MAT():
                     logger.warning('\''+element+'.'+prop+'\' already present')
             else:
                 network[element+'.'+prop] = vals
-        raise NotImplemented()
 
 
 class Pandas():
