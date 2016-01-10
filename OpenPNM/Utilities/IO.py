@@ -1,12 +1,12 @@
-from OpenPNM.Utilities import misc as _misc
-from OpenPNM.Base import logging
-logger = logging.getLogger(__name__)
 import scipy as _sp
 import numpy as _np
 import pandas as _pd
 import os as _os
 import pickle as _pickle
 from xml.etree import ElementTree as _ET
+from OpenPNM.Utilities import misc as _misc
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 
 class VTK():
@@ -55,25 +55,6 @@ class VTK():
             A list contain OpenPNM Phase object(s) containing data to be
             written
 
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.Cubic(shape=[3,3,3])
-        >>> geo = OpenPNM.Geometry.Stick_and_Ball(network=pn,
-        ...                                       pores=pn.pores(),
-        ...                                       throats=pn.throats())
-        >>> air = OpenPNM.Phases.Air(network=pn)
-        >>> phys = OpenPNM.Physics.Standard(network=pn,
-        ...                                 phase=air,
-        ...                                 pores=pn.pores(),
-        ...                                 throats=pn.throats())
-
-        >>> import OpenPNM.Utilities.IO as io
-        >>> io.VTK.save(pn,'test_pn.vtp',[air])
-
-        >>> # Delete the new file
-        >>> import os
-        >>> os.remove('test_pn.vtp')
         """
 
         if filename == '':
@@ -141,16 +122,25 @@ class VTK():
             f.write(string)
 
     @staticmethod
-    def load(filename):
+    def load(filename, network=None):
         r"""
         Read in pore and throat data from a saved VTK file.
+
+        Parameters
+        ----------
+        filename : string
+            The name of the 'vtk' file to open.
 
         Notes
         -----
         This will NOT reproduce original simulation, since all models and
         object relationships are lost.
         """
-        network = OpenPNM.Network.GenericNetwork()
+        return_flag = False
+        if network is None:
+            network = OpenPNM.Network.Import()
+            return_flag = True
+
         tree = _ET.parse(filename)
         piece_node = tree.find('PolyData').find('Piece')
 
@@ -166,7 +156,8 @@ class VTK():
             propname = key.strip(netname+'.')
             network[propname] = array
 
-        return network
+        if return_flag:
+            return network
 
     @staticmethod
     def _array_to_element(name, array, n=1):
@@ -222,21 +213,6 @@ class MAT():
         phases : list of phase objects ([])
             Phases that have properties we want to write to file
 
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> geo = OpenPNM.Geometry.TestGeometry(network=pn,
-        ...                                     pores=pn.pores(),
-        ...                                     throats=pn.throats())
-        >>> air = OpenPNM.Phases.TestPhase()
-        >>> import OpenPNM.Utilities.IO as io
-        >>> io.MAT.save(network=pn, filename='test_pn.mat', phases=air)
-
-        >>> # Remove newly created file
-        >>> import os
-        >>> os.remove('test_pn.mat')
-
         """
         if filename == '':
             filename = network.name
@@ -269,10 +245,54 @@ class MAT():
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
     @staticmethod
-    def load(network, filename, overwrite=True):
+    def load(filename, network=None, overwrite=True):
         r"""
-        This method is not implemented yet.
+        Loads data onto the given network from an appropriately formatted
+        'mat' file (i.e. MatLAB output).
+
+        Parameters
+        ----------
+        filename : string (optional)
+            The name of the file containing the data to import.  The formatting
+            of this file is outlined below.
+
+        network : OpenPNM Network Object
+            The Network object onto which the data should be loaded.  If no
+            Network is supplied than one will be created and returned.
+
+        overwrite : bool (default is True)
+            Indicates whether existing data should be over written if a
+            conflicting entry exists in the CSV file.
+
+        Returns
+        -------
+        If no Network object is supplied then one will be created and returned.
+
+        Notes
+        -----
+        The 'mat' file must contain data formatted as follows:
+
+        1. The file can contain either or both pore and throat data.
+
+        2. The property names should be in the format of ``pore_volume`` or
+        ``throat_surface_area`. In OpenPNM the first \'_\' will be replaced by
+        a \'.\' to give \'pore.volume\' or \'throat.surface_area\'.
+
+        3. If pore data is included in the file, then ``pore_coords`` must be
+        present, and if throat data is present then ``throat_conns`` must be
+        present.
+
+        4. Boolean data represented as 1's and 0's will be converted to the
+        Python boolean True and False.  These will become \'labels\' in
+        OpenPNM.
+
+
         """
+        return_flag = False
+        if network is None:
+            network = OpenPNM.Network.Import()
+            return_flag = True
+
         import scipy.io as _spio
         data = _spio.loadmat(filename)
         # Deal with pore coords and throat conns specially
@@ -321,6 +341,9 @@ class MAT():
             else:
                 network[element+'.'+prop] = vals
 
+        if return_flag:
+            return network
+
 
 class Pandas():
 
@@ -335,7 +358,7 @@ class Pandas():
             The Network containing the data to be stored
 
         phases : list of OpenPNM Phase Objects
-            The data on each supplied phase will be added to the CSV file.
+            The data on each supplied phase will be added to the CSV file
 
         Returns
         -------
@@ -440,7 +463,7 @@ class CSV():
         f.close()
 
     @staticmethod
-    def load(network, filename, overwrite):
+    def load(filename, network=None, overwrite):
         r"""
         Accepts a file name, reads in the data, and adds it to the Network
 
@@ -462,8 +485,8 @@ class CSV():
         property names. The subsequent rows contain the data.
 
         2.  The property names should be in the format of *pore_volume* or
-        *throat_length*.  In OpenPNM this will become *pore.volume* or
-        *throat.length* (i.e. the underscore is replaced by a dot).
+        *throat_surface_area*.  In OpenPNM this will become *pore.volume* or
+        *throat.surface_area* (i.e. the first underscore is replaced by a dot).
 
         3.  Each column represents a specific property.  For Np x 1 or Nt x 1
         data such as *pore_volume* this is straightforward.  For Np x m or
@@ -482,6 +505,11 @@ class CSV():
         column corresponding to the label name (i.e. *pore_front*).  T
         indicates where the label applies and F otherwise.
         """
+        return_flag = False
+        if network is None:
+            network = OpenPNM.Network.Import()
+            return_flag = True
+
         rarr = _sp.recfromcsv(filename)
         items = list(rarr.dtype.names)
         if 'throat_conns' in items:
@@ -535,3 +563,6 @@ class CSV():
                     logger.warning('\''+element+'.'+prop+'\' already present')
             else:
                 network[element+'.'+prop] = data[0:N]
+
+        if return_flag:
+            return network
