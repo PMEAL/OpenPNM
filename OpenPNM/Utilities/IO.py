@@ -141,7 +141,8 @@ class VTK():
             network = OpenPNM.Network.Import()
             return_flag = True
 
-        tree = _ET.parse(filename)
+        filename = filename.rsplit('.', maxsplit=1)[0]
+        tree = _ET.parse(filename+'.vtp')
         piece_node = tree.find('PolyData').find('Piece')
 
         # Extract connectivity
@@ -329,7 +330,7 @@ class MAT():
             vals = _sp.squeeze(data[item].T)
             # If data is not standard array, convert vals appropriately
             if (_sp.sum(vals == 1) + _sp.sum(vals == 0)) \
-                    == network._count(element):  # If boolean
+                    == _sp.shape(vals)[0]:  # If boolean
                 vals = vals.astype(bool)
             else:  # If data is an array of lists
                 pass
@@ -463,7 +464,7 @@ class CSV():
         f.close()
 
     @staticmethod
-    def load(filename, network=None, overwrite):
+    def load(filename, network=None, overwrite=True):
         r"""
         Accepts a file name, reads in the data, and adds it to the Network
 
@@ -481,27 +482,27 @@ class CSV():
         -----
         There are a few rules governing how the data should be stored:
 
-        1.  The first row of the file (column headers) must contain the
+        1. The first row of the file (column headers) must contain the
         property names. The subsequent rows contain the data.
 
-        2.  The property names should be in the format of *pore_volume* or
+        2. The property names should be in the format of *pore_volume* or
         *throat_surface_area*.  In OpenPNM this will become *pore.volume* or
         *throat.surface_area* (i.e. the first underscore is replaced by a dot).
 
-        3.  Each column represents a specific property.  For Np x 1 or Nt x 1
+        3. Each column represents a specific property.  For Np x 1 or Nt x 1
         data such as *pore_volume* this is straightforward.  For Np x m or
         Nt x m data, it must be entered in as a set of values NOT separated by
         commas.  For instance, the *pore_coords* values should be X Y Z with
         spaces, not commas between them.
 
-        4.  OpenPNM expects 'throat_conns' and 'pore_coords', as it uses these
+        4. OpenPNM expects 'throat_conns' and 'pore_coords', as it uses these
         as the basis for importing all other properties.
 
         5. The file can contain both or either pore and throat data.  If pore
         data are present then \'pore_coords\' is required, and similarly if
         throat data are present then \'throat_conns\' is required.
 
-        6.  Labels can also be imported by placing the characters T and F in a
+        6. Labels can also be imported by placing the characters T and F in a
         column corresponding to the label name (i.e. *pore_front*).  T
         indicates where the label applies and F otherwise.
         """
