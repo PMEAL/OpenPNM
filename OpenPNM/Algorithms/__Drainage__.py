@@ -101,10 +101,10 @@ class Drainage(GenericAlgorithm):
             'throat.capillary_pressure'.
 
         trapping : boolean (optional)
-            Specifies whether wetting phase trapping should be included or not.
-            The default is False.  Note that wetting phase outlets can be
-            specified using the ``set_outlets`` method.  Otherwise it is
-            assumed the wetting phase has no outlets.
+            Specifies whether defending phase trapping should be included or
+            not. The default is False.  Note that defending phase outlets can
+            be specified using the ``set_outlets`` method.  Otherwise it is
+            assumed the defending phase has no outlets.
 
         """
         self['throat.entry_pressure'] = invading_phase[entry_pressure]
@@ -198,9 +198,8 @@ class Drainage(GenericAlgorithm):
 
         """
         if self._trapping is False:
-            raise Exception('Setting outlets is meaningless unless trapping' +
+            raise Exception('Setting outlets is meaningless unless trapping ' +
                             'was set to True during setup')
-        # TODO: Should this check just turn on trapping automatically?
         Ps = self._parse_locations(pores)
         if mode in ['clear', 'overwrite']:
             self['pore.outlets'] = False
@@ -525,8 +524,8 @@ class Drainage(GenericAlgorithm):
         Snwp_all = [V/Total_vol for V in Vnwp_all]
         data = {}
         data['capillary_pressure'] = PcPoints
-        data['nonwetting_phase_saturation'] = Snwp_all
-        data['wetting_phase_saturation'] = [1-s for s in Snwp_all]
+        data['invading_phase_saturation'] = Snwp_all
+        data['defending_phase_saturation'] = [1-s for s in Snwp_all]
         return data
 
     def _calc_fractional_filling(self, element, pressure):
@@ -573,7 +572,7 @@ class Drainage(GenericAlgorithm):
     def plot_drainage_curve(self,
                             data=None,
                             x_values='capillary_pressure',
-                            y_values='nonwetting_phase_saturation'):
+                            y_values='invading_phase_saturation'):
         r"""
         Plot the drainage curve as the non-wetting phase saturation vs the
         applied capillary pressure.
@@ -590,6 +589,8 @@ class Drainage(GenericAlgorithm):
 
         """
         # Begin creating nicely formatted plot
+        if data is None:
+            data = self.get_drainage_data()
         xdata = data[x_values]
         ydata = data[y_values]
         fig = plt.figure()
