@@ -14,17 +14,25 @@ logger = logging.getLogger(__name__)
 class Import(GenericNetwork):
     r"""
     This method is used to import data resulting from some external network
-    extraction tools.  The aim of this class is to define a standard way to
-    represent network data and transfer into OpenPNM.   The main principle is
-    to keep it as simple and general as possible, so the CSV data format was
-    used.
+    extraction tools onto an OpenPNM Network object.
+
+    Notes
+    -----
+    This class currently has support for:
+
+    1. **CSV** : Comma-separated values such as spreadsheets saved from Excel
+    or Pandas
+
+    2. **MAT** : Matlab files containing named arrays
+
+    3. **Pajek** : A native output format of NetworkX
+
+    4. **VTK** : Visualization Tool-kit files in the legacy format.
 
     """
 
-    def __init__(self, filename=None, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if filename:
-            self.from_csv(filename=filename)
 
     def from_csv(self, filename, overwrite=True):
         io.CSV.load(network=self, filename=filename, overwrite=overwrite)
@@ -34,7 +42,11 @@ class Import(GenericNetwork):
     def from_vtk(self, filename):
         io.VTK.load(filename=filename)
 
-    def from_mat(self, filename, overwrite):
+    def from_mat(self, filename, overwrite=True):
         io.MAT.load(network=self, filename=filename, overwrite=overwrite)
 
     from_mat.__doc__ = io.MAT.load.__doc__
+
+    def from_pajek(self, filename, overwrite=True):
+        raise NotImplemented
+        # io.PAJEK.load(network=self, filename=filename, overwrite=overwrite)
