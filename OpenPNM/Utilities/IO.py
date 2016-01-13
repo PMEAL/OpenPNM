@@ -461,7 +461,7 @@ class CSV():
         f.close()
 
     @staticmethod
-    def load(filename, network=None, overwrite=True):
+    def load(filename, network={}, overwrite=True):
         r"""
         Accepts a file name, reads in the data, and adds it to the Network
 
@@ -503,29 +503,28 @@ class CSV():
         column corresponding to the label name (i.e. *pore_front*).  T
         indicates where the label applies and F otherwise.
         """
-        return_flag = False
-        if network is None:
-            return_flag = True
-        net_temp = network
-        network = OpenPNM.Network.Import()
+        if network == {}:
+            network = OpenPNM.Network.Import()
+        # Instantiate new empty dict
+        net = {}
 
         rarr = _sp.recfromcsv(filename)
         items = list(rarr.dtype.names)
         if 'throat_conns' in items:
             Nt = len(rarr['throat_conns'])
-            network.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
+            net.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
             data = [_sp.fromstring(rarr['throat_conns'][i], sep=' ')
                     for i in range(Nt)]
-            network.update({'throat.conns': _sp.vstack(data)})
+            net.update({'throat.conns': _sp.vstack(data)})
             items.remove('throat_conns')
         else:
             logger.warning('\'throat_conns\' not found')
         if 'pore_coords' in items:
             Np = len(rarr['pore_coords'])
-            network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
+            net.update({'pore.all': _sp.ones((Np,), dtype=bool)})
             data = [_sp.fromstring(rarr['pore_coords'][i], sep=' ')
                     for i in range(Np)]
-            network.update({'pore.coords': _sp.vstack(data)})
+            net.update({'pore.coords': _sp.vstack(data)})
             items.remove('pore_coords')
         else:
             logger.warning('\'pore_coords\' not found')
@@ -533,7 +532,7 @@ class CSV():
         # Now parse through all the other items
         for item in items:
             element = item.split('_')[0]
-            N = network._count(element)
+            N = _sp.shape(net[element+'.all'])[0]
             prop = item.split('_', maxsplit=1)[1]
             data = rarr[item]
             if data.dtype.char == 'S':
@@ -547,20 +546,17 @@ class CSV():
                     data = [list(_sp.fromstring(rarr[item][i], sep=' '))
                             for i in range(N)]
                     data = _sp.array(data)
-            network[element+'.'+prop] = data[0:N]
-
-        if return_flag:
-            return network
+            net[element+'.'+prop] = data[0:N]
 
         # Add newly read props to the network
-        for item in network.keys():
+        for item in net.keys():
             if overwrite:
-                net_temp[item] = network[item]
-            elif item not in net_temp:
-                net_temp[item] = network[item]
+                network.update({item: net[item]})
+            elif item not in network:
+                network.update({item: net[item]})
             else:
                 logger.warning('\''+item+'\' already present')
-        ctrl.purge_object(network)
+        return network
 
 
 class YAML():
