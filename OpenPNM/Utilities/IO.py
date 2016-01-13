@@ -293,33 +293,24 @@ class MAT():
         """
         return_flag = False
         if network is None:
-            network = OpenPNM.Network.Import()
             return_flag = True
+        net_temp = network
+        network = OpenPNM.Network.Import()
 
         import scipy.io as _spio
         data = _spio.loadmat(filename)
         # Deal with pore coords and throat conns specially
         if 'throat_conns' in data.keys():
-            if ('throat.conns' in list(network.keys())) \
-                    and (overwrite is False):
-                logger.warning('\'throat.conns\' is already defined')
-            else:
-                network.update({'throat.conns':
-                                _sp.vstack(data['throat_conns'])})
-                Nt = _sp.shape(network['throat.conns'])[0]
-                network.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
+            network.update({'throat.conns': _sp.vstack(data['throat_conns'])})
+            Nt = _sp.shape(network['throat.conns'])[0]
+            network.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
             del data['throat_conns']
         else:
             logger.warning('\'throat_conns\' not found')
         if 'pore_coords' in data.keys():
-            if ('pore.coords' in list(network.keys())) \
-                    and (overwrite is False):
-                logger.warning('\'pore.coords\' is already defined')
-            else:
-                network.update({'pore.coords':
-                                _sp.vstack(data['pore_coords'])})
-                Np = _sp.shape(network['pore.coords'])[0]
-                network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
+            network.update({'pore.coords': _sp.vstack(data['pore_coords'])})
+            Np = _sp.shape(network['pore.coords'])[0]
+            network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
             del data['pore_coords']
         else:
             logger.warning('\'pore_coords\' not found')
@@ -336,16 +327,20 @@ class MAT():
                 vals = vals.astype(bool)
             else:  # If data is an array of lists
                 pass
-            if element+'.'+prop in (network.keys()):
-                if overwrite is True:
-                    network[element+'.'+prop] = vals
-                else:
-                    logger.warning('\''+element+'.'+prop+'\' already present')
-            else:
-                network[element+'.'+prop] = vals
+            network[element+'.'+prop] = vals
 
         if return_flag:
             return network
+
+        # Add newly read props to the network
+        for item in network.keys():
+            if overwrite:
+                net_temp[item] = network[item]
+            elif item not in net_temp:
+                net_temp[item] = network[item]
+            else:
+                logger.warning('\''+item+'\' already present')
+        ctrl.purge_object(network)
 
 
 class Pandas():
@@ -510,34 +505,27 @@ class CSV():
         """
         return_flag = False
         if network is None:
-            network = OpenPNM.Network.Import()
             return_flag = True
+        net_temp = network
+        network = OpenPNM.Network.Import()
 
         rarr = _sp.recfromcsv(filename)
         items = list(rarr.dtype.names)
         if 'throat_conns' in items:
-            if ('throat.conns' in list(network.keys())) \
-                    and (overwrite is False):
-                logger.warning('\'throat.conns\' is already defined')
-            else:
-                Nt = len(rarr['throat_conns'])
-                network.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
-                data = [_sp.fromstring(rarr['throat_conns'][i], sep=' ')
-                        for i in range(Nt)]
-                network.update({'throat.conns': _sp.vstack(data)})
+            Nt = len(rarr['throat_conns'])
+            network.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
+            data = [_sp.fromstring(rarr['throat_conns'][i], sep=' ')
+                    for i in range(Nt)]
+            network.update({'throat.conns': _sp.vstack(data)})
             items.remove('throat_conns')
         else:
             logger.warning('\'throat_conns\' not found')
         if 'pore_coords' in items:
-            if ('pore.coords' in list(network.keys())) \
-                    and (overwrite is False):
-                logger.warning('\'pore.coords\' is already defined')
-            else:
-                Np = len(rarr['pore_coords'])
-                network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
-                data = [_sp.fromstring(rarr['pore_coords'][i], sep=' ')
-                        for i in range(Np)]
-                network.update({'pore.coords': _sp.vstack(data)})
+            Np = len(rarr['pore_coords'])
+            network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
+            data = [_sp.fromstring(rarr['pore_coords'][i], sep=' ')
+                    for i in range(Np)]
+            network.update({'pore.coords': _sp.vstack(data)})
             items.remove('pore_coords')
         else:
             logger.warning('\'pore_coords\' not found')
@@ -559,16 +547,20 @@ class CSV():
                     data = [list(_sp.fromstring(rarr[item][i], sep=' '))
                             for i in range(N)]
                     data = _sp.array(data)
-            if element+'.'+prop in (network.keys()):
-                if overwrite is True:
-                    network[element+'.'+prop] = data[0:N]
-                else:
-                    logger.warning('\''+element+'.'+prop+'\' already present')
-            else:
-                network[element+'.'+prop] = data[0:N]
+            network[element+'.'+prop] = data[0:N]
 
         if return_flag:
             return network
+
+        # Add newly read props to the network
+        for item in network.keys():
+            if overwrite:
+                net_temp[item] = network[item]
+            elif item not in net_temp:
+                net_temp[item] = network[item]
+            else:
+                logger.warning('\''+item+'\' already present')
+        ctrl.purge_object(network)
 
 
 class YAML():
