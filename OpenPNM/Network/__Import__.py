@@ -51,5 +51,4 @@ class Import(GenericNetwork):
     from_mat.__doc__ = io.MAT.load.__doc__
 
     def from_yaml(self, filename, overwrite=True):
-        raise NotImplemented
-        # io.YAML.load(network=self, filename=filename, overwrite=overwrite)
+        io.YAML.load(network=self, filename=filename, overwrite=overwrite)

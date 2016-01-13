@@ -1,12 +1,14 @@
 import scipy as _sp
 import numpy as _np
 import pandas as _pd
-import _yaml
-import _itertools
+import yaml as _yaml
+import itertools as _itertools
 from xml.etree import ElementTree as _ET
+import OpenPNM
 from OpenPNM.Utilities import misc as _misc
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
+ctrl = OpenPNM.Base.Controller()
 
 
 class VTK():
@@ -575,12 +577,14 @@ class YAML():
     def save():
         raise NotImplemented
 
-    def load(network=None, filename='', overwrite=True):
+    @staticmethod
+    def load(filename='', network=None, overwrite=True):
         # Instantiate empty GenericNetwork
         return_flag = False
         if network is None:
-            network = OpenPNM.Network.Import()
             return_flag = True
+        net_temp = network
+        network = OpenPNM.Network.Import()
 
         # Open file and read first line, to prevent networkx instantiation
         with open('test.yaml') as f:
@@ -640,3 +644,13 @@ class YAML():
 
         if return_flag:
             return network
+
+        # Add newly read props to the network
+        for item in network.keys():
+            if overwrite:
+                net_temp[item] = network[item]
+            elif item not in net_temp:
+                net_temp[item] = network[item]
+            else:
+                logger.warning('\''+item+'\' already present')
+        ctrl.purge_object(network)
