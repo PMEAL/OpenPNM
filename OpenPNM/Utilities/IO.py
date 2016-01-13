@@ -1,8 +1,8 @@
 import scipy as _sp
 import numpy as _np
 import pandas as _pd
-import os as _os
-import pickle as _pickle
+import _yaml
+import _itertools
 from xml.etree import ElementTree as _ET
 from OpenPNM.Utilities import misc as _misc
 from OpenPNM.Base import logging
@@ -564,6 +564,79 @@ class CSV():
                     logger.warning('\''+element+'.'+prop+'\' already present')
             else:
                 network[element+'.'+prop] = data[0:N]
+
+        if return_flag:
+            return network
+
+
+class YAML():
+
+    @staticmethod
+    def save():
+        raise NotImplemented
+
+    def load(network=None, filename='', overwrite=True):
+        # Instantiate empty GenericNetwork
+        return_flag = False
+        if network is None:
+            network = OpenPNM.Network.Import()
+            return_flag = True
+
+        # Open file and read first line, to prevent networkx instantiation
+        with open('test.yaml') as f:
+            f.readline()
+            a = _yaml.safe_load(f)
+
+        # Parsing node data
+        Np = len(a['node'])
+        network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
+        for n in a['node'].keys():
+            props = a['node'][n]
+            for item in props.keys():
+                val = a['node'][n][item]
+                if 'pore.'+item not in network.keys():
+                    dtype = type(val)
+                    if dtype is list:
+                        dtype = type(val[0])
+                        cols = len(val)
+                        network['pore.'+item] = _sp.ndarray((Np, cols),
+                                                            dtype=dtype)
+                    else:
+                        network['pore.'+item] = _sp.ndarray((Np,), dtype=dtype)
+                network['pore.'+item][n] = val
+
+        # Parsing edge data
+        # Deal with conns explicitly
+        conns = []
+        for n in a['edge'].keys():
+            neighbors = a['edge'][n].keys()
+            conns.extend([sorted([i, n]) for i in neighbors])
+        # Remove duplicate pairs from conns and sort
+        conns.sort()
+        conns = list(conns for conns, _ in _itertools.groupby(conns))
+        # Add conns to OpenPNM Network
+        Nt = len(conns)
+        network.update({'throat.all': _sp.ones(Nt, dtype=bool)})
+        network.update({'throat.conns': _sp.array(conns)})
+
+        # Scan through each edge and extract all its properties
+        i = 0
+        for t in conns:
+            props = a['edge'][t[0]][t[1]]
+            for item in props:
+                val = props[item]
+                if 'throat.'+item not in network.keys():
+                    dtype = type(val)
+                    if dtype is list:
+                        dtype = type(val[0])
+                        cols = len(val)
+                        network['throat.'+item] = _sp.ndarray((Nt, cols),
+                                                              dtype=dtype)
+                    else:
+                        network['throat.'+item] = _sp.ndarray((Nt,),
+                                                              dtype=dtype)
+                network['throat.'+item][i] = val
+            i += 1
 
         if return_flag:
             return network
