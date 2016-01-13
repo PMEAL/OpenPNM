@@ -21,13 +21,16 @@ class Import(GenericNetwork):
     This class currently has support for:
 
     1. **CSV** : Comma-separated values such as spreadsheets saved from Excel
-    or Pandas
+    or `Pandas <http://pandas.pydata.org/>`_
 
-    2. **MAT** : Matlab files containing named arrays
+    2. **MAT** : Matlab `'Mat-files'
+    <http://www.mathworks.com/help/matlab/ref/matfile.html>`_ containing
+    named arrays
 
-    3. **Pajek** : A native output format of NetworkX
+    3. **YAML** : An output format of `NetworkX <https://networkx.github.io/>`_
 
-    4. **VTK** : Visualization Tool-kit files in the legacy format.
+    4. **VTK** : `Visualization Toolkit <http://www.vtk.org/>`_ files in the
+    legacy format.
 
     """
 
@@ -47,6 +50,6 @@ class Import(GenericNetwork):
 
     from_mat.__doc__ = io.MAT.load.__doc__
 
-    def from_pajek(self, filename, overwrite=True):
+    def from_yaml(self, filename, overwrite=True):
         raise NotImplemented
-        # io.PAJEK.load(network=self, filename=filename, overwrite=overwrite)
+        # io.YAML.load(network=self, filename=filename, overwrite=overwrite)
