@@ -570,13 +570,13 @@ class YAML():
         raise NotImplemented
 
     @staticmethod
-    def load(filename='', network=None, overwrite=True):
-        # Instantiate empty GenericNetwork
-        return_flag = False
-        if network is None:
-            return_flag = True
-        net_temp = network
-        network = OpenPNM.Network.Import()
+    def load(filename, network={}, overwrite=True):
+        r"""
+        """
+        if network == {}:
+            network = OpenPNM.Network.Import()
+        # Instantiate new empty dict
+        net = {}
 
         # Open file and read first line, to prevent networkx instantiation
         with open('test.yaml') as f:
@@ -585,21 +585,21 @@ class YAML():
 
         # Parsing node data
         Np = len(a['node'])
-        network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
+        net.update({'pore.all': _sp.ones((Np,), dtype=bool)})
         for n in a['node'].keys():
             props = a['node'][n]
             for item in props.keys():
                 val = a['node'][n][item]
-                if 'pore.'+item not in network.keys():
+                if 'pore.'+item not in net.keys():
                     dtype = type(val)
                     if dtype is list:
                         dtype = type(val[0])
                         cols = len(val)
-                        network['pore.'+item] = _sp.ndarray((Np, cols),
-                                                            dtype=dtype)
+                        net['pore.'+item] = _sp.ndarray((Np, cols),
+                                                        dtype=dtype)
                     else:
-                        network['pore.'+item] = _sp.ndarray((Np,), dtype=dtype)
-                network['pore.'+item][n] = val
+                        net['pore.'+item] = _sp.ndarray((Np,), dtype=dtype)
+                net['pore.'+item][n] = val
 
         # Parsing edge data
         # Deal with conns explicitly
@@ -610,10 +610,10 @@ class YAML():
         # Remove duplicate pairs from conns and sort
         conns.sort()
         conns = list(conns for conns, _ in _itertools.groupby(conns))
-        # Add conns to OpenPNM Network
+        # Add conns to Network
         Nt = len(conns)
-        network.update({'throat.all': _sp.ones(Nt, dtype=bool)})
-        network.update({'throat.conns': _sp.array(conns)})
+        net.update({'throat.all': _sp.ones(Nt, dtype=bool)})
+        net.update({'throat.conns': _sp.array(conns)})
 
         # Scan through each edge and extract all its properties
         i = 0
@@ -621,28 +621,25 @@ class YAML():
             props = a['edge'][t[0]][t[1]]
             for item in props:
                 val = props[item]
-                if 'throat.'+item not in network.keys():
+                if 'throat.'+item not in net.keys():
                     dtype = type(val)
                     if dtype is list:
                         dtype = type(val[0])
                         cols = len(val)
-                        network['throat.'+item] = _sp.ndarray((Nt, cols),
-                                                              dtype=dtype)
+                        net['throat.'+item] = _sp.ndarray((Nt, cols),
+                                                          dtype=dtype)
                     else:
-                        network['throat.'+item] = _sp.ndarray((Nt,),
-                                                              dtype=dtype)
-                network['throat.'+item][i] = val
+                        net['throat.'+item] = _sp.ndarray((Nt,),
+                                                          dtype=dtype)
+                net['throat.'+item][i] = val
             i += 1
 
-        if return_flag:
-            return network
-
         # Add newly read props to the network
-        for item in network.keys():
+        for item in net.keys():
             if overwrite:
-                net_temp[item] = network[item]
-            elif item not in net_temp:
-                net_temp[item] = network[item]
+                network.update({item: net[item]})
+            elif item not in network:
+                network.update({item: net[item]})
             else:
                 logger.warning('\''+item+'\' already present')
-        ctrl.purge_object(network)
+        return network
