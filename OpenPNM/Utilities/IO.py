@@ -248,7 +248,7 @@ class MAT():
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
     @staticmethod
-    def load(filename, network=None, overwrite=True):
+    def load(filename, network={}, overwrite=True):
         r"""
         Loads data onto the given network from an appropriately formatted
         'mat' file (i.e. MatLAB output).
@@ -291,26 +291,24 @@ class MAT():
 
 
         """
-        return_flag = False
-        if network is None:
-            return_flag = True
-        net_temp = network
-        network = OpenPNM.Network.Import()
+        if network == {}:
+            network = OpenPNM.Network.Import()
+        net = {}
 
         import scipy.io as _spio
         data = _spio.loadmat(filename)
         # Deal with pore coords and throat conns specially
         if 'throat_conns' in data.keys():
-            network.update({'throat.conns': _sp.vstack(data['throat_conns'])})
-            Nt = _sp.shape(network['throat.conns'])[0]
-            network.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
+            net.update({'throat.conns': _sp.vstack(data['throat_conns'])})
+            Nt = _sp.shape(net['throat.conns'])[0]
+            net.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
             del data['throat_conns']
         else:
             logger.warning('\'throat_conns\' not found')
         if 'pore_coords' in data.keys():
-            network.update({'pore.coords': _sp.vstack(data['pore_coords'])})
-            Np = _sp.shape(network['pore.coords'])[0]
-            network.update({'pore.all': _sp.ones((Np,), dtype=bool)})
+            net.update({'pore.coords': _sp.vstack(data['pore_coords'])})
+            Np = _sp.shape(net['pore.coords'])[0]
+            net.update({'pore.all': _sp.ones((Np,), dtype=bool)})
             del data['pore_coords']
         else:
             logger.warning('\'pore_coords\' not found')
@@ -327,20 +325,12 @@ class MAT():
                 vals = vals.astype(bool)
             else:  # If data is an array of lists
                 pass
-            network[element+'.'+prop] = vals
+            net[element+'.'+prop] = vals
 
-        if return_flag:
-            return network
-
-        # Add newly read props to the network
-        for item in network.keys():
-            if overwrite:
-                net_temp[item] = network[item]
-            elif item not in net_temp:
-                net_temp[item] = network[item]
-            else:
-                logger.warning('\''+item+'\' already present')
-        ctrl.purge_object(network)
+        network = _update_network(network=network,
+                                  net=net,
+                                  overwrite=overwrite)
+        return network
 
 
 class Pandas():
@@ -368,10 +358,10 @@ class Pandas():
         tdata = {}
 
         # Gather list of prop names from network and geometries
-        pprops = set(network.props('pore'))
+        pprops = set(network.props('pore') + network.labels('pore'))
         for item in network._geometries:
             pprops = pprops.union(set(item.props('pore')))
-        tprops = set(network.props('throats'))
+        tprops = set(network.props('throat') + network.labels('throat'))
         for item in network._geometries:
             tprops = tprops.union(set(item.props('throat')))
 
@@ -386,10 +376,10 @@ class Pandas():
         # Gather list of prop names from phases and physics
         for phase in phases:
             # Gather list of prop names
-            pprops = set(phase.props('pore'))
+            pprops = set(phase.props('pore') + phase.labels('pore'))
             for item in phase._physics:
                 pprops = pprops.union(set(item.props('pore')))
-            tprops = set(phase.props('throats'))
+            tprops = set(phase.props('throat') + phase.labels('throat'))
             for item in phase._physics:
                 tprops = tprops.union(set(item.props('throat')))
             # Add props to tdata and pdata
@@ -448,17 +438,13 @@ class CSV():
         """
         if filename == '':
             filename = network.name
-        if filename.endswith('.csv'):
-            filename = filename.rstrip('.csv')
+        filename = filename.rstrip('.csv')
         dataframes = Pandas.get_data_frames(network=network, phases=phases)
         dfp = dataframes['pore.DataFrame']
         dft = dataframes['throat.DataFrame']
-        f = open(filename+'_pore.csv', mode='x')
-        dfp.to_csv(f, index=False)
-        f.close()
-        f = open(filename+'_throat.csv', mode='x')
-        dft.to_csv(f, index=False)
-        f.close()
+        b = dft.join(other=dfp, how='left')
+        with open(filename+'.csv', mode='x') as f:
+            b.to_csv(f, index=False)
 
     @staticmethod
     def load(filename, network={}, overwrite=True):
@@ -508,54 +494,39 @@ class CSV():
         # Instantiate new empty dict
         net = {}
 
-        rarr = _sp.recfromcsv(filename)
-        items = list(rarr.dtype.names)
-        if 'throat_conns' in items:
-            Nt = len(rarr['throat_conns'])
-            net.update({'throat.all': _sp.ones((Nt,), dtype=bool)})
-            data = [_sp.fromstring(rarr['throat_conns'][i], sep=' ')
-                    for i in range(Nt)]
-            net.update({'throat.conns': _sp.vstack(data)})
-            items.remove('throat_conns')
-        else:
-            logger.warning('\'throat_conns\' not found')
-        if 'pore_coords' in items:
-            Np = len(rarr['pore_coords'])
-            net.update({'pore.all': _sp.ones((Np,), dtype=bool)})
-            data = [_sp.fromstring(rarr['pore_coords'][i], sep=' ')
-                    for i in range(Np)]
-            net.update({'pore.coords': _sp.vstack(data)})
-            items.remove('pore_coords')
-        else:
-            logger.warning('\'pore_coords\' not found')
+        filename = filename.rstrip('.csv') + '.csv'
+        with open(filename) as f:
+            a = _pd.read_table(filepath_or_buffer=f,
+                               sep=',',
+                               skipinitialspace=True,
+                               index_col=False,
+                               true_values=['1', 'T', 't', 'True', 'true',
+                                            'TRUE'],
+                               false_values=['0', 'F', 'f', 'False', 'false',
+                                             'FALSE'])
 
         # Now parse through all the other items
-        for item in items:
+        for item in a.keys():
             element = item.split('_')[0]
-            N = _sp.shape(net[element+'.all'])[0]
             prop = item.split('_', maxsplit=1)[1]
-            data = rarr[item]
-            if data.dtype.char == 'S':
-                if data[0].decode().upper()[0] in ['T', 'F']:  # If boolean
-                    data = _sp.chararray.decode(data)
-                    data = _sp.chararray.upper(data)
-                    ind = _sp.where(data == 'T')[0]
-                    data = _sp.zeros((N,), dtype=bool)
-                    data[ind] = True
-                else:  # If data is an array of lists
-                    data = [list(_sp.fromstring(rarr[item][i], sep=' '))
-                            for i in range(N)]
-                    data = _sp.array(data)
-            net[element+'.'+prop] = data[0:N]
-
-        # Add newly read props to the network
-        for item in net.keys():
-            if overwrite:
-                network.update({item: net[item]})
-            elif item not in network:
-                network.update({item: net[item]})
+            data = _sp.array(a[item].dropna())
+            if type(data[0]) is str:
+                N = _sp.shape(data)[0]
+                if '.' in data[0].split(' ')[0]:
+                    dtype = float
+                else:
+                    dtype = int
+                temp = _sp.empty(_sp.shape(data), dtype=object)
+                for row in range(N):
+                    temp[row] = _sp.fromstring(data[row], sep=' ', dtype=dtype)
+                data = _sp.vstack(temp)
             else:
-                logger.warning('\''+item+'\' already present')
+                dtype = type(data[0])
+            net[element+'.'+prop] = data.astype(dtype)
+
+        network = _update_network(network=network,
+                                  net=net,
+                                  overwrite=overwrite)
         return network
 
 
@@ -563,11 +534,29 @@ class YAML():
 
     @staticmethod
     def save():
+        # TODO: This would be a great place for a new developer to contribute
         raise NotImplemented
 
     @staticmethod
     def load(filename, network={}, overwrite=True):
         r"""
+        Add data to an OpenPNM Network from a NetworkX generated YAML file.
+
+        Parameters
+        ----------
+        filename : string
+            The yaml file containing the NetworkX data
+
+        network : OpenPNM Network Object
+            The OpenPNM Network onto which the data should be loaded.  If no
+            Network is supplied then an empty Import Network is created and
+            returned.
+
+        overwite : boolean
+            A flag to indicate whether data existing on the Network should be
+            overwritten by data in the file or not.  This is useful when adding
+            data in a sequential manner from several different sources.
+
         """
         if network == {}:
             network = OpenPNM.Network.Import()
@@ -575,9 +564,12 @@ class YAML():
         net = {}
 
         # Open file and read first line, to prevent networkx instantiation
-        with open('test.yaml') as f:
-            f.readline()
-            a = _yaml.safe_load(f)
+        with open(filename) as f:
+            line = f.readline()
+            if line.starts('!!python/object:networkx.classes.graph.Graph'):
+                a = _yaml.safe_load(f)
+            else:
+                raise ('Provided file does not appear to a NetworkX file')
 
         # Parsing node data
         Np = len(a['node'])
@@ -630,12 +622,24 @@ class YAML():
                 net['throat.'+item][i] = val
             i += 1
 
-        # Add newly read props to the network
-        for item in net.keys():
-            if overwrite:
-                network.update({item: net[item]})
-            elif item not in network:
-                network.update({item: net[item]})
-            else:
-                logger.warning('\''+item+'\' already present')
+        network = _update_network(network=network,
+                                  net=net,
+                                  overwrite=overwrite)
         return network
+
+
+def _update_network(network, net, overwrite):
+    # Add newly read props to the network
+    if 'pore.coords' in net:
+        N = _sp.shape(net['pore.coords'])[0]
+        net.update({'pore.all': _sp.ones((N,), dtype=bool)})
+    if 'throat.conns' in net:
+        N = _sp.shape(net['throat.conns'])[0]
+        net.update({'throat.all': _sp.ones((N,), dtype=bool)})
+    for item in net.keys():
+        if overwrite:
+            network.update({item: net[item]})
+        elif item not in network:
+            network.update({item: net[item]})
+        else:
+            logger.warning('\''+item+'\' already present')
