@@ -632,13 +632,23 @@ class YAML():
 
 
 def _update_network(network, net, overwrite):
-    # Add newly read props to the network
+    # Infer Np from length of pore.prop arrays
     Np = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith('pore')]
-    if Np and _sp.all(Np == Np[0]):
-        net.update({'pore.all': _sp.ones((Np[0],), dtype=bool)})
+    if Np:
+        Np = _sp.array(Np)
+        if _sp.all(Np == Np[0]):
+            net.update({'pore.all': _sp.ones((Np[0],), dtype=bool)})
+        else:
+            logger.warning('Received pore data have inconsistent lengths')
+    # Infer Nt from length of throat.prop arrays
     Nt = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith('throat')]
-    if Nt and _sp.all(Nt == Nt[0]):
-        net.update({'throat.all': _sp.ones((Nt[0],), dtype=bool)})
+    if Nt:
+        Nt = _sp.array(Nt)
+        if _sp.all(Nt == Nt[0]):
+            net.update({'throat.all': _sp.ones((Nt[0],), dtype=bool)})
+        else:
+            logger.warning('Received throat data have inconsistent lengths')
+    # Add data on dummy net to actual network
     for item in net.keys():
         if overwrite:
             network.update({item: net[item]})
