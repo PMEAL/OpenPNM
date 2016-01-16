@@ -220,6 +220,8 @@ class MAT():
         if filename == '':
             filename = network.name
         filename = filename.split('.')[0] + '.mat'
+        if phases:  # Ensure it's a list
+            phases = list(phases)
 
         pnMatlab = {}
         new = []
@@ -353,6 +355,9 @@ class Pandas():
         A dict containing 2 Pandas DataFrames with 'pore' and 'throat' data in
         each.
         """
+        if phases:  # Ensure it's a list
+            phases = list(phases)
+
         # Initialize pore and throat data dictionary with conns and coords
         pdata = {}
         tdata = {}
@@ -367,11 +372,9 @@ class Pandas():
 
         # Select data from network and geometries using keys
         for item in pprops:
-            key = 'pore_'+item.split('.')[1]
-            pdata.update({key: network[item]})
+            pdata.update({item: network[item]})
         for item in tprops:
-            key = 'throat_'+item.split('.')[1]
-            tdata.update({key: network[item]})
+            tdata.update({item: network[item]})
 
         # Gather list of prop names from phases and physics
         for phase in phases:
@@ -384,9 +387,9 @@ class Pandas():
                 tprops = tprops.union(set(item.props('throat')))
             # Add props to tdata and pdata
             for item in pprops:
-                pdata.update({item+'_'+phase.name: phase[item]})
+                pdata.update({item+'|'+phase.name: phase[item]})
             for item in tprops:
-                tdata.update({item+'_'+phase.name: phase[item]})
+                tdata.update({item+'|'+phase.name: phase[item]})
 
         # Scan data and convert non-1d arrays to strings
         for item in list(pdata.keys()):
@@ -439,6 +442,8 @@ class CSV():
         if filename == '':
             filename = network.name
         filename = filename.rstrip('.csv')
+        if phases:  # Ensure it's a list
+            phases = list(phases)
         dataframes = Pandas.get_data_frames(network=network, phases=phases)
         dfp = dataframes['pore.DataFrame']
         dft = dataframes['throat.DataFrame']
@@ -468,26 +473,20 @@ class CSV():
         1. The first row of the file (column headers) must contain the
         property names. The subsequent rows contain the data.
 
-        2. The property names should be in the format of *pore_volume* or
-        *throat_surface_area*.  In OpenPNM this will become *pore.volume* or
-        *throat.surface_area* (i.e. the first underscore is replaced by a dot).
+        2. The property names should be in the usual OpenPNM format, such as
+        of *pore.volume* or *throat.surface_area*.
 
         3. Each column represents a specific property.  For Np x 1 or Nt x 1
-        data such as *pore_volume* this is straightforward.  For Np x m or
+        data such as *pore.volume* this is straightforward.  For Np x m or
         Nt x m data, it must be entered in as a set of values NOT separated by
-        commas.  For instance, the *pore_coords* values should be X Y Z with
+        commas.  For instance, the *pore.coords* values should be X Y Z with
         spaces, not commas between them.
 
-        4. OpenPNM expects 'throat_conns' and 'pore_coords', as it uses these
-        as the basis for importing all other properties.
+        4. The file can contain both or either pore and throat data.
 
-        5. The file can contain both or either pore and throat data.  If pore
-        data are present then \'pore_coords\' is required, and similarly if
-        throat data are present then \'throat_conns\' is required.
-
-        6. Labels can also be imported by placing the characters T and F in a
-        column corresponding to the label name (i.e. *pore_front*).  T
-        indicates where the label applies and F otherwise.
+        5. Labels can be imported by placing the characters TRUE and FALSE
+        in a column corresponding to the label name (i.e. *pore.front*).  TRUE
+        indicates where the label applies and FALSE otherwise.
         """
         if network == {}:
             network = OpenPNM.Network.Import()
@@ -500,19 +499,19 @@ class CSV():
                                sep=',',
                                skipinitialspace=True,
                                index_col=False,
-                               true_values=['1', 'T', 't', 'True', 'true',
+                               true_values=['T', 't', 'True', 'true',
                                             'TRUE'],
-                               false_values=['0', 'F', 'f', 'False', 'false',
+                               false_values=['F', 'f', 'False', 'false',
                                              'FALSE'])
 
         # Now parse through all the other items
         for item in a.keys():
-            element = item.split('_')[0]
-            prop = item.split('_', maxsplit=1)[1]
+            element = item.split('.')[0]
+            prop = item.split('.', maxsplit=1)[1]
             data = _sp.array(a[item].dropna())
             if type(data[0]) is str:
                 N = _sp.shape(data)[0]
-                if '.' in data[0].split(' ')[0]:
+                if '.' in data[0].split(' ')[0]:  # Decimal means float
                     dtype = float
                 else:
                     dtype = int
@@ -531,6 +530,10 @@ class CSV():
 
 
 class YAML():
+    r"""
+    This format is meant specifcally for exchanging data with NetworkX, which
+    is a common tool for dealing with network structures.
+    """
 
     @staticmethod
     def save():
@@ -630,12 +633,12 @@ class YAML():
 
 def _update_network(network, net, overwrite):
     # Add newly read props to the network
-    if 'pore.coords' in net:
-        N = _sp.shape(net['pore.coords'])[0]
-        net.update({'pore.all': _sp.ones((N,), dtype=bool)})
-    if 'throat.conns' in net:
-        N = _sp.shape(net['throat.conns'])[0]
-        net.update({'throat.all': _sp.ones((N,), dtype=bool)})
+    Np = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith('pore')]
+    if Np and _sp.all(Np == Np[0]):
+        net.update({'pore.all': _sp.ones((Np[0],), dtype=bool)})
+    Nt = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith('throat')]
+    if Nt and _sp.all(Nt == Nt[0]):
+        net.update({'throat.all': _sp.ones((Nt[0],), dtype=bool)})
     for item in net.keys():
         if overwrite:
             network.update({item: net[item]})
