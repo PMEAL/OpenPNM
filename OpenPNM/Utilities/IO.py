@@ -203,8 +203,7 @@ class MAT():
     @staticmethod
     def save(network, filename='', phases=[]):
         r"""
-        Write Network to a Mat file for exporting to Matlab. This method will
-        be enhanced in a future update, and it's functionality may change!
+        Write Network to a Mat file for exporting to Matlab.
 
         Parameters
         ----------
@@ -266,14 +265,9 @@ class MAT():
         ``throat_surface_area`. In OpenPNM the first \'_\' will be replaced by
         a \'.\' to give \'pore.volume\' or \'throat.surface_area\'.
 
-        3. If pore data is included in the file, then ``pore_coords`` must be
-        present, and if throat data is present then ``throat_conns`` must be
-        present.
-
-        4. Boolean data represented as 1's and 0's will be converted to the
+        3. Boolean data represented as 1's and 0's will be converted to the
         Python boolean True and False.  These will become \'labels\' in
         OpenPNM.
-
 
         """
         if network == {}:
@@ -437,7 +431,7 @@ class CSV():
     @staticmethod
     def load(filename, network={}, overwrite=True):
         r"""
-        Accepts a file name, reads in the data, and adds it to the Network
+        Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
         Parameters
         ----------
@@ -515,7 +509,32 @@ class CSV():
 class YAML():
     r"""
     This format is meant specifcally for exchanging data with NetworkX, which
-    is a common tool for dealing with network structures.
+    is a common tool for dealing with network structures.  A network object
+    in NetworkX has a ``to_yaml`` method which produces the correct file format
+    for use here.
+
+    Notes
+    -----
+    1. Each node in a NetworkX object (i.e. ``net``) can be assigned properties
+    using syntax like ``net.node[n][\'diameter\'] = 0.5`` where ``n`` is the
+    node number.  There is no need to precede the property name with any
+    indication that it is pore data such as \'pore_\'.  OpenPNM will prepend
+    \'pore.\' to each property name.
+
+    2. Since \'pore.coords\' is so central to OpenPNM it should be specified
+    in the NetworkX object as \'coords\', and they [X, Y, Z] coordinates of
+    each node should be a 3x1 list.
+
+    3. Edges in a NetworkX object are accessed using the index numbers of the
+    two nodes it connects, such as ``net.edge[2][3][\'length\'] = 0.1``
+    indicating the edge that connects nodes 2 and 3.  There is no need to
+    precede the property name with any indication that it is throat data such
+    as \'throat_\'.  OpenPNM will prepend \'throat.\' to each property name.
+
+    4. The \'throat.conns\' property is essential to OpenPNM, but this does NOT
+    need to be specified explicitly as a property in NetworkX.  The
+    connectivity is embedded into the network representation in the 'yaml' file
+    and is extracted by OpenPNM.
     """
 
     @staticmethod
