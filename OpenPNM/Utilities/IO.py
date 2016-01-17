@@ -219,33 +219,16 @@ class MAT():
         """
         if filename == '':
             filename = network.name
-        filename = filename.split('.')[0] + '.mat'
+        filename = filename.rstrip('.mat') + '.mat'
         if phases:  # Ensure it's a list
             phases = list(phases)
 
-        pnMatlab = {}
-        new = []
-        old = []
-        for keys in list(network.keys()):
-            old.append(keys)
-            new.append(keys.replace('.', '_'))
+        pnMatlab = {i.replace('.', '_'): network[i] for i in network.keys()}
 
-        for i in range(len(network)):
-            pnMatlab[new[i]] = network[old[i]]
-
-        if type(phases) != list:
-            phases = [phases]
-        if len(phases) != 0:
-            for j in range(len(phases)):
-                new = []
-                old = []
-
-                for keys in list(phases[j].keys()):
-                    old.append(keys)
-                    new.append(phases[j].name+'_'+keys.replace('.', '_'))
-
-                for i in range(len(phases[j])):
-                    pnMatlab[new[i]] = phases[j][old[i]]
+        for phase in phases:
+            temp = {i.replace('.', '_')+'|'+phase.name: phase[i]
+                    for i in phase.keys()}
+            pnMatlab.update(temp)
 
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
