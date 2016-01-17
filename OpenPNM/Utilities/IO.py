@@ -632,22 +632,21 @@ class YAML():
 
 
 def _update_network(network, net, overwrite):
-    # Infer Np from length of pore.prop arrays
-    Np = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith('pore')]
-    if Np:
-        Np = _sp.array(Np)
-        if _sp.all(Np == Np[0]):
-            net.update({'pore.all': _sp.ones((Np[0],), dtype=bool)})
-        else:
-            logger.warning('Received pore data have inconsistent lengths')
-    # Infer Nt from length of throat.prop arrays
-    Nt = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith('throat')]
-    if Nt:
-        Nt = _sp.array(Nt)
-        if _sp.all(Nt == Nt[0]):
-            net.update({'throat.all': _sp.ones((Nt[0],), dtype=bool)})
-        else:
-            logger.warning('Received throat data have inconsistent lengths')
+    # Infer Np and Nt from length of given prop arrays in file
+    for element in ['pore', 'throat']:
+        N = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith(element)]
+        if N:
+            N = _sp.array(N)
+            if _sp.all(N == N[0]):
+                if (network._count(element) == N[0]) \
+                        or (network._count(element) == 0):
+                    net.update({'pore.all': _sp.ones((N[0],), dtype=bool)})
+                else:
+                    raise Exception('Length of '+element+' data in file does \
+                                     not match network')
+            else:
+                raise Exception(element+' data in file have inconsistent \
+                                lengths')
     # Add data on dummy net to actual network
     for item in net.keys():
         if overwrite:
