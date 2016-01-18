@@ -233,8 +233,8 @@ class MAT():
         if filename == '':
             filename = network.name
         filename = filename.replace('.mat', '') + '.mat'
-        if phases:  # Ensure it's a list
-            phases = list(phases)
+        if type(phases) is not list:  # Ensure it's a list
+            phases = [phases]
 
         pnMatlab = {i.replace('.', '_'): network[i] for i in network.keys()}
 
@@ -333,8 +333,8 @@ class Pandas():
         A dict containing 2 Pandas DataFrames with 'pore' and 'throat' data in
         each.
         """
-        if phases:  # Ensure it's a list
-            phases = list(phases)
+        if type(phases) is not list:  # Ensure it's a list
+            phases = [phases]
 
         # Initialize pore and throat data dictionary with conns and coords
         pdata = {}
@@ -444,8 +444,9 @@ class CSV():
             filename = network.name
         f = _write_file(filename=filename, ext='csv')
 
-        if phases:  # Ensure it's a list
-            phases = list(phases)
+        if type(phases) is not list:  # Ensure it's a list
+            phases = [phases]
+
         dataframes = Pandas.get_data_frames(network=network, phases=phases)
         dfp = dataframes['pore.DataFrame']
         dft = dataframes['throat.DataFrame']
