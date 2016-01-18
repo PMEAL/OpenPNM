@@ -57,7 +57,7 @@ class VoronoiTest:
     def test_make_fibre_image(self):
         del(self.geo_vox._fibre_image)
         self.geo_vox.make_fibre_image()
-        assert hasattr(self.geo_vox, '_fibre_image') == True
+        assert hasattr(self.geo_vox, '_fibre_image') is True
 
     def test_voronoi_vert(self):
         self.ctrl.purge_object(self.geo_vox)
