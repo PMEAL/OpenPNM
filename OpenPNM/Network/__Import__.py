@@ -38,7 +38,7 @@ class Import(GenericNetwork):
         super().__init__(**kwargs)
 
     def from_csv(self, filename, overwrite=True):
-        io.CSV.load(network=self, filename=filename, overwrite=overwrite)
+        io.CSV.load(network=self, filename=filename, mode='overwrite')
 
     from_csv.__doc__ = io.CSV.load.__doc__
 
@@ -46,9 +46,9 @@ class Import(GenericNetwork):
         io.VTK.load(filename=filename)
 
     def from_mat(self, filename, overwrite=True):
-        io.MAT.load(network=self, filename=filename, overwrite=overwrite)
+        io.MAT.load(network=self, filename=filename, mode='overwrite')
 
     from_mat.__doc__ = io.MAT.load.__doc__
 
     def from_yaml(self, filename, overwrite=True):
-        io.YAML.load(network=self, filename=filename, overwrite=overwrite)
+        io.YAML.load(network=self, filename=filename, mode='overwrite')

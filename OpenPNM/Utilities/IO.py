@@ -2,6 +2,7 @@ import scipy as _sp
 import numpy as _np
 import pandas as _pd
 import yaml as _yaml
+import os as _os
 import itertools as _itertools
 from xml.etree import ElementTree as _ET
 import OpenPNM
@@ -61,7 +62,6 @@ class VTK():
 
         if filename == '':
             filename = network.name
-        filename = filename.split('.')[0] + '.vtp'
 
         root = _ET.fromstring(VTK._TEMPLATE)
         objs = []
@@ -198,6 +198,20 @@ class VTK():
 class MAT():
     r"""
     Class for reading and writing OpenPNM data to a Matlab 'mat' file
+
+    Notes
+    -----
+    The 'mat' file must contain data formatted as follows:
+
+    1. The file can contain either or both pore and throat data.
+
+    2. The property names should be in the format of ``pore_volume`` or
+    ``throat_surface_area`. In OpenPNM the first \'_\' will be replaced by
+    a \'.\' to give \'pore.volume\' or \'throat.surface_area\'.
+
+    3. Boolean data represented as 1's and 0's will be converted to the
+    Python boolean True and False.  These will become \'labels\' in
+    OpenPNM.
     """
 
     @staticmethod
@@ -218,7 +232,7 @@ class MAT():
         """
         if filename == '':
             filename = network.name
-        filename = filename.rstrip('.mat') + '.mat'
+        filename = filename.replace('.mat', '') + '.mat'
         if phases:  # Ensure it's a list
             phases = list(phases)
 
@@ -232,7 +246,7 @@ class MAT():
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
     @staticmethod
-    def load(filename, network={}, overwrite=True):
+    def load(filename, network={}, mode='overwrite'):
         r"""
         Loads data onto the given network from an appropriately formatted
         'mat' file (i.e. MatLAB output).
@@ -254,20 +268,6 @@ class MAT():
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
-
-        Notes
-        -----
-        The 'mat' file must contain data formatted as follows:
-
-        1. The file can contain either or both pore and throat data.
-
-        2. The property names should be in the format of ``pore_volume`` or
-        ``throat_surface_area`. In OpenPNM the first \'_\' will be replaced by
-        a \'.\' to give \'pore.volume\' or \'throat.surface_area\'.
-
-        3. Boolean data represented as 1's and 0's will be converted to the
-        Python boolean True and False.  These will become \'labels\' in
-        OpenPNM.
 
         """
         if network == {}:
@@ -306,9 +306,7 @@ class MAT():
                 pass
             net[element+'.'+prop] = vals
 
-        network = _update_network(network=network,
-                                  net=net,
-                                  overwrite=overwrite)
+        network = _update_network(network=network,net=net, mode=mode)
         return network
 
 
@@ -392,6 +390,33 @@ class Pandas():
 
 
 class CSV():
+    r"""
+    This class is used for reading and writing CSV files containing pore and
+    throat property data.  This class uses Pandas for transferring data from
+    the OpenPNM format to CSV.
+
+    Notes
+    -----
+    There are a few rules governing how the data should be stored:
+
+    1. The first row of the file (column headers) must contain the
+    property names. The subsequent rows contain the data.
+
+    2. The property names should be in the usual OpenPNM format, such as
+    of *pore.volume* or *throat.surface_area*.
+
+    3. Each column represents a specific property.  For Np x 1 or Nt x 1
+    data such as *pore.volume* this is straightforward.  For Np x m or
+    Nt x m data, it must be entered in as a set of values NOT separated by
+    commas.  For instance, the *pore.coords* values should be X Y Z with
+    spaces, not commas between them.
+
+    4. The file can contain both or either pore and throat data.
+
+    5. Labels can be imported by placing the characters TRUE and FALSE
+    in a column corresponding to the label name (i.e. *pore.front*).  TRUE
+    indicates where the label applies and FALSE otherwise.
+    """
 
     @staticmethod
     def save(network, filename='', phases=[]):
@@ -418,18 +443,18 @@ class CSV():
         """
         if filename == '':
             filename = network.name
-        filename = filename.rstrip('.csv')
+        f = _write_file(filename=filename, ext='csv')
+
         if phases:  # Ensure it's a list
             phases = list(phases)
         dataframes = Pandas.get_data_frames(network=network, phases=phases)
         dfp = dataframes['pore.DataFrame']
         dft = dataframes['throat.DataFrame']
         b = dft.join(other=dfp, how='left')
-        with open(filename+'.csv', mode='x') as f:
-            b.to_csv(f, index=False)
+        b.to_csv(f, index=False)
 
     @staticmethod
-    def load(filename, network={}, overwrite=True):
+    def load(filename, network={}, mode='overwrite'):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -443,43 +468,21 @@ class CSV():
             Indicates whether existing data should be over written if a
             conflicting entry exists in the CSV file.
 
-        Notes
-        -----
-        There are a few rules governing how the data should be stored:
-
-        1. The first row of the file (column headers) must contain the
-        property names. The subsequent rows contain the data.
-
-        2. The property names should be in the usual OpenPNM format, such as
-        of *pore.volume* or *throat.surface_area*.
-
-        3. Each column represents a specific property.  For Np x 1 or Nt x 1
-        data such as *pore.volume* this is straightforward.  For Np x m or
-        Nt x m data, it must be entered in as a set of values NOT separated by
-        commas.  For instance, the *pore.coords* values should be X Y Z with
-        spaces, not commas between them.
-
-        4. The file can contain both or either pore and throat data.
-
-        5. Labels can be imported by placing the characters TRUE and FALSE
-        in a column corresponding to the label name (i.e. *pore.front*).  TRUE
-        indicates where the label applies and FALSE otherwise.
         """
         if network == {}:
             network = OpenPNM.Network.Import()
         # Instantiate new empty dict
         net = {}
 
-        filename = filename.rstrip('.csv') + '.csv'
-        with open(filename) as f:
-            a = _pd.read_table(filepath_or_buffer=f,
-                               sep=',',
-                               skipinitialspace=True,
-                               index_col=False,
-                               true_values=['T', 't', 'True', 'true',
-                                            'TRUE'],
-                               false_values=['F', 'f', 'False', 'false',
-                                             'FALSE'])
+        f = _read_file(filename=filename, ext='csv')
+        a = _pd.read_table(filepath_or_buffer=f,
+                           sep=',',
+                           skipinitialspace=True,
+                           index_col=False,
+                           true_values=['T', 't', 'True', 'true',
+                                        'TRUE'],
+                           false_values=['F', 'f', 'False', 'false',
+                                         'FALSE'])
 
         # Now parse through all the other items
         for item in a.keys():
@@ -500,9 +503,7 @@ class CSV():
                 dtype = type(data[0])
             net[element+'.'+prop] = data.astype(dtype)
 
-        network = _update_network(network=network,
-                                  net=net,
-                                  overwrite=overwrite)
+        network = _update_network(network=network, net=net, mode=mode)
         return network
 
 
@@ -543,7 +544,7 @@ class YAML():
         raise NotImplemented
 
     @staticmethod
-    def load(filename, network={}, overwrite=True):
+    def load(filename, network={}, mode='overwrite'):
         r"""
         Add data to an OpenPNM Network from a NetworkX generated YAML file.
 
@@ -568,13 +569,13 @@ class YAML():
         # Instantiate new empty dict
         net = {}
 
-        # Open file and read first line, to prevent networkx instantiation
-        with open(filename) as f:
-            line = f.readline()
-            if line.starts('!!python/object:networkx.classes.graph.Graph'):
-                a = _yaml.safe_load(f)
-            else:
-                raise ('Provided file does not appear to a NetworkX file')
+        # Open file and read first line, to prevent NetworkX instantiation
+        f = _read_file(filename=filename, ext='yaml')
+        line = f.readline()
+        if line.startswith('!!python/object:networkx.classes.graph.Graph'):
+            a = _yaml.safe_load(f)
+        else:
+            raise ('Provided file does not appear to be a NetworkX file')
 
         # Parsing node data
         Np = len(a['node'])
@@ -582,20 +583,22 @@ class YAML():
         for n in a['node'].keys():
             props = a['node'][n]
             for item in props.keys():
+                # Remove prepended pore. and pore_ if present
+                for b in ['pore.', 'pore_']:
+                    item = item.replace(b, '')
                 val = a['node'][n][item]
-                if 'pore.'+item not in net.keys():
-                    dtype = type(val)
-                    if dtype is list:
-                        dtype = type(val[0])
-                        cols = len(val)
-                        net['pore.'+item] = _sp.ndarray((Np, cols),
-                                                        dtype=dtype)
-                    else:
-                        net['pore.'+item] = _sp.ndarray((Np,), dtype=dtype)
+                dtype = type(val)
+                if dtype is list:
+                    dtype = type(val[0])
+                    cols = len(val)
+                    net['pore.'+item] = _sp.ndarray((Np, cols), dtype=dtype)
+                else:
+                    net['pore.'+item] = _sp.ndarray((Np,), dtype=dtype)
                 net['pore.'+item][n] = val
 
         # Parsing edge data
         # Deal with conns explicitly
+
         conns = []
         for n in a['edge'].keys():
             neighbors = a['edge'][n].keys()
@@ -613,27 +616,25 @@ class YAML():
         for t in conns:
             props = a['edge'][t[0]][t[1]]
             for item in props:
+                # Remove prepended throat. and throat_ if present
+                for b in ['throat.', 'throat_']:
+                    item = item.replace(b, '')
                 val = props[item]
-                if 'throat.'+item not in net.keys():
-                    dtype = type(val)
-                    if dtype is list:
-                        dtype = type(val[0])
-                        cols = len(val)
-                        net['throat.'+item] = _sp.ndarray((Nt, cols),
-                                                          dtype=dtype)
-                    else:
-                        net['throat.'+item] = _sp.ndarray((Nt,),
-                                                          dtype=dtype)
+                dtype = type(val)
+                if dtype is list:
+                    dtype = type(val[0])
+                    cols = len(val)
+                    net['throat.'+item] = _sp.ndarray((Nt, cols), dtype=dtype)
+                else:
+                    net['throat.'+item] = _sp.ndarray((Nt,), dtype=dtype)
                 net['throat.'+item][i] = val
             i += 1
 
-        network = _update_network(network=network,
-                                  net=net,
-                                  overwrite=overwrite)
+        network = _update_network(network=network, net=net, mode=mode)
         return network
 
 
-def _update_network(network, net, overwrite):
+def _update_network(network, net, mode):
     # Infer Np and Nt from length of given prop arrays in file
     for element in ['pore', 'throat']:
         N = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith(element)]
@@ -642,18 +643,43 @@ def _update_network(network, net, overwrite):
             if _sp.all(N == N[0]):
                 if (network._count(element) == N[0]) \
                         or (network._count(element) == 0):
-                    net.update({'pore.all': _sp.ones((N[0],), dtype=bool)})
+                    net.update({element+'.all': _sp.ones((N[0],), dtype=bool)})
                 else:
-                    raise Exception('Length of '+element+' data in file does \
-                                     not match network')
+                    raise Exception('Length of '+element+' data in file ' +
+                                    'does not match network')
             else:
-                raise Exception(element+' data in file have inconsistent \
-                                lengths')
+                raise Exception(element+' data in file have inconsistent ' +
+                                'lengths')
     # Add data on dummy net to actual network
     for item in net.keys():
-        if overwrite:
+        if mode == 'overwrite':
             network.update({item: net[item]})
         elif item not in network:
             network.update({item: net[item]})
         else:
             logger.warning('\''+item+'\' already present')
+
+
+def _write_file(filename, ext):
+    ext = ext.replace('.', '').lower()
+    if ext not in ['csv', 'yaml', 'mat', 'vtp']:
+        raise Exception(ext+' is not a supported file extension')
+    filename = filename.rstrip('.'+ext)
+    filename = filename+'.'+ext
+    try:
+        logger.warning(filename+' already exists, contents will be ' +
+                       'overwritten')
+        f = open(filename, mode='w')
+    except:
+        f = open(filename, mode='x')
+    return f
+
+
+def _read_file(filename, ext):
+    ext = ext.replace('.', '').lower()
+    if ext not in ['csv', 'yaml', 'mat', 'vtp']:
+        raise Exception(ext+' is not a supported file extension')
+    filename = filename.rstrip('.'+ext)
+    filename = filename+'.'+ext
+    f = open(filename, mode='r')
+    return f
