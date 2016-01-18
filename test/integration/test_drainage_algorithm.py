@@ -32,8 +32,8 @@ def test_basic():
     drainage.run()
     data = drainage.get_drainage_data()
 
-    assert sp.amin(data['nonwetting_phase_saturation']) == 0.0
-    assert sp.amax(data['nonwetting_phase_saturation']) == 1.0
+    assert sp.amin(data['invading_phase_saturation']) == 0.0
+    assert sp.amax(data['invading_phase_saturation']) == 1.0
 
 
 def test_residual():
@@ -45,8 +45,8 @@ def test_residual():
     drainage.run()
     data = drainage.get_drainage_data()
 
-    assert sp.amin(data['nonwetting_phase_saturation']) > 0
-    assert sp.amax(data['nonwetting_phase_saturation']) == 1.0
+    assert sp.amin(data['invading_phase_saturation']) > 0
+    assert sp.amax(data['invading_phase_saturation']) == 1.0
 
 
 def test_trapping():
@@ -56,8 +56,8 @@ def test_trapping():
     drainage.run()
     data = drainage.get_drainage_data()
 
-    assert sp.amin(data['nonwetting_phase_saturation']) == 0.0
-    assert sp.amax(data['nonwetting_phase_saturation']) < 1.0
+    assert sp.amin(data['invading_phase_saturation']) == 0.0
+    assert sp.amax(data['invading_phase_saturation']) < 1.0
 
 
 def test_late_pore_filling():
@@ -71,8 +71,8 @@ def test_late_pore_filling():
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.run()
     data = drainage.get_drainage_data(pore_filling='pore.fractional_filling')
-    assert sp.amin(data['nonwetting_phase_saturation']) == 0.0
-    assert sp.amax(data['nonwetting_phase_saturation']) < 1.0
+    assert sp.amin(data['invading_phase_saturation']) == 0.0
+    assert sp.amax(data['invading_phase_saturation']) < 1.0
 
     drainage.return_results(Pc=5000)
     assert 'pore.occupancy' in water.keys()
@@ -92,8 +92,8 @@ def test_late_throat_filling():
     drainage.run()
     data = drainage.get_drainage_data(throat_filling='throat.fractional_filling')
 
-    assert sp.amin(data['nonwetting_phase_saturation']) == 0.0
-    assert sp.amax(data['nonwetting_phase_saturation']) < 1.0
+    assert sp.amin(data['invading_phase_saturation']) == 0.0
+    assert sp.amax(data['invading_phase_saturation']) < 1.0
 
     drainage.return_results(Pc=5000)
     assert 'throat.occupancy' in water.keys()
@@ -118,8 +118,8 @@ def test_late_pore_and_throat_filling():
     drainage.run()
     data = drainage.get_drainage_data(pore_filling='pore.fractional_filling',
                                       throat_filling='throat.fractional_filling')
-    assert sp.amin(data['nonwetting_phase_saturation']) == 0.0
-    assert sp.amax(data['nonwetting_phase_saturation']) < 1.0
+    assert sp.amin(data['invading_phase_saturation']) == 0.0
+    assert sp.amax(data['invading_phase_saturation']) < 1.0
 
     drainage.return_results(Pc=5000)
     assert 'pore.occupancy' in water.keys()

@@ -198,7 +198,7 @@ class DrainageTest:
         self.alg.run()
         data = self.alg.get_drainage_data()
         assert 'capillary_pressure' in data.keys()
-        assert 'nonwetting_phase_saturation' in data.keys()
+        assert 'invading_phase_saturation' in data.keys()
 
     def test_run_w_residual_pores_and_throats(self):
         self.alg.setup(invading_phase=self.phase)
@@ -209,4 +209,4 @@ class DrainageTest:
         self.alg.run()
         data = self.alg.get_drainage_data()
         assert 'capillary_pressure' in data.keys()
-        assert 'nonwetting_phase_saturation' in data.keys()
+        assert 'invading_phase_saturation' in data.keys()
