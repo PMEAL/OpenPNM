@@ -338,12 +338,14 @@ class Pandas():
         tdata = {}
 
         # Gather list of prop names from network and geometries
-        pprops = set(network.props('pore') + network.labels('pore'))
+        pprops = set(network.props(element='pore') +
+                     network.labels(element='pore'))
         for item in network._geometries:
             pprops = pprops.union(set(item.props('pore')))
-        tprops = set(network.props('throat') + network.labels('throat'))
+        tprops = set(network.props(element='throat') +
+                     network.labels(element='throat'))
         for item in network._geometries:
-            tprops = tprops.union(set(item.props('throat')))
+            tprops = tprops.union(set(item.props(element='throat')))
 
         # Select data from network and geometries using keys
         for item in pprops:
@@ -354,12 +356,14 @@ class Pandas():
         # Gather list of prop names from phases and physics
         for phase in phases:
             # Gather list of prop names
-            pprops = set(phase.props('pore') + phase.labels('pore'))
+            pprops = set(phase.props(element='pore') +
+                         phase.labels(element='pore'))
             for item in phase._physics:
                 pprops = pprops.union(set(item.props('pore')))
-            tprops = set(phase.props('throat') + phase.labels('throat'))
+            tprops = set(phase.props(element='throat') +
+                         phase.labels(element='throat'))
             for item in phase._physics:
-                tprops = tprops.union(set(item.props('throat')))
+                tprops = tprops.union(set(item.props(element='throat')))
             # Add props to tdata and pdata
             for item in pprops:
                 pdata.update({item+'|'+phase.name: phase[item]})
