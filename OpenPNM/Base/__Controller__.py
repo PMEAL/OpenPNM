@@ -366,7 +366,7 @@ class Controller(dict):
         ----------
         network : OpenPNM Network Object
             This Network and all of its phases will be written to the specified
-            file.  If no Netowrk is given it will check to ensure that only one
+            file.  If no Network is given it will check to ensure that only one
             Network exists on the Controller and use that.  If there is more
             than one Network an error is thrown.
         filename : string, optional
@@ -376,25 +376,44 @@ class Controller(dict):
         fileformat : string
             The type of file to create.  Options are:
 
-            1. VTK: Suitable for visualizing in VTK capable software such as Paraview
-            2. MAT: Suitable for loading data into Matlab for post-processing
+            **'VTK'**: Suitable for visualizing in VTK capable software such
+            as Paraview
+
+            **'MAT'**: Suitable for loading data into Matlab for post-
+            processing
+
+            **'CSV'**: Suitable for analyzing data in a spreadsheet program
+            such as Excel.  This will save two files, one containing pore data
+            and one containing throat data.  These indicators are appended to
+            to file names.
 
         """
+        import OpenPNM.Utilities.IO as io
+
         if network is None:
             if len(self.networks()) == 1:
                 network = self.networks()[0]
             else:
                 raise Exception('Multiple Networks found, please specify \
                                 which to export')
-        import OpenPNM.Utilities.IO as io
-        if fileformat == 'VTK':
+        # Generate filename if necessary
+        if filename == '':
+            filename = network.name
+
+        fileformat = fileformat.lower()
+        if fileformat == 'vtk':
             phases = network._phases
             io.VTK.save(filename=filename, network=network, phases=phases)
             return
-        if fileformat == 'MAT':
+        elif fileformat == 'mat':
             phases = network._phases
             io.MAT.save(filename=filename, network=network, phases=phases)
             return
+        elif fileformat == 'csv':
+            phases = network._phases
+            io.CSV.save(network=network, filename=filename, phases=phases)
+        else:
+            raise ValueError(fileformat+' is not a valid format')
 
     def _script(self, filename, mode='read'):
         r"""
