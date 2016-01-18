@@ -451,9 +451,8 @@ class CSV():
         # Write to file
         if filename == '':
             filename = network.name
-        f = _write_file(filename=filename, ext='csv')
-        b.to_csv(f, index=False)
-        f.close()
+        with _write_file(filename=filename, ext='csv') as f:
+            b.to_csv(f, index=False)
 
     @staticmethod
     def load(filename, network={}, mode='overwrite'):
@@ -483,16 +482,15 @@ class CSV():
         # Instantiate new empty dict
         net = {}
 
-        f = _read_file(filename=filename, ext='csv')
-        a = _pd.read_table(filepath_or_buffer=f,
-                           sep=',',
-                           skipinitialspace=True,
-                           index_col=False,
-                           true_values=['T', 't', 'True', 'true',
-                                        'TRUE'],
-                           false_values=['F', 'f', 'False', 'false',
-                                         'FALSE'])
-        f.close()
+        with _read_file(filename=filename, ext='csv') as f:
+            a = _pd.read_table(filepath_or_buffer=f,
+                               sep=',',
+                               skipinitialspace=True,
+                               index_col=False,
+                               true_values=['T', 't', 'True', 'true',
+                                            'TRUE'],
+                               false_values=['F', 'f', 'False', 'false',
+                                             'FALSE'])
 
         # Now parse through all the other items
         for item in a.keys():
@@ -586,13 +584,12 @@ class YAML():
         net = {}
 
         # Open file and read first line, to prevent NetworkX instantiation
-        f = _read_file(filename=filename, ext='yaml')
-        line = f.readline()
-        if line.startswith('!!python/object:networkx.classes.graph.Graph'):
-            a = _yaml.safe_load(f)
-        else:
-            raise ('Provided file does not appear to be a NetworkX file')
-        f.close()
+        with _read_file(filename=filename, ext='yaml') as f:
+            line = f.readline()
+            if line.startswith('!!python/object:networkx.classes.graph.Graph'):
+                a = _yaml.safe_load(f)
+            else:
+                raise ('Provided file does not appear to be a NetworkX file')
 
         # Parsing node data
         Np = len(a['node'])
