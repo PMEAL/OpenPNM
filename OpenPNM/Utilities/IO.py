@@ -261,9 +261,12 @@ class MAT():
             The Network object onto which the data should be loaded.  If no
             Network is supplied than one will be created and returned.
 
-        overwrite : bool (default is True)
-            Indicates whether existing data should be over written if a
-            conflicting entry exists in the CSV file.
+        mode : string
+            Specifies how new data is added to the Network.  Options are:
+
+            **'overwrite'** : (Default) This means that any existing data on
+            the Network is over-written by data in the loaded file that has the
+            same property name.
 
         Returns
         -------
@@ -306,7 +309,7 @@ class MAT():
                 pass
             net[element+'.'+prop] = vals
 
-        network = _update_network(network=network,net=net, mode=mode)
+        network = _update_network(network=network, net=net, mode=mode)
         return network
 
 
@@ -338,14 +341,10 @@ class Pandas():
         tdata = {}
 
         # Gather list of prop names from network and geometries
-        pprops = set(network.props(element='pore') +
+        pprops = set(network.props(element='pore', mode=['all', 'deep']) +
                      network.labels(element='pore'))
-        for item in network._geometries:
-            pprops = pprops.union(set(item.props('pore')))
-        tprops = set(network.props(element='throat') +
+        tprops = set(network.props(element='throat', mode=['all', 'deep']) +
                      network.labels(element='throat'))
-        for item in network._geometries:
-            tprops = tprops.union(set(item.props(element='throat')))
 
         # Select data from network and geometries using keys
         for item in pprops:
@@ -356,14 +355,10 @@ class Pandas():
         # Gather list of prop names from phases and physics
         for phase in phases:
             # Gather list of prop names
-            pprops = set(phase.props(element='pore') +
+            pprops = set(phase.props(element='pore', mode=['all', 'deep']) +
                          phase.labels(element='pore'))
-            for item in phase._physics:
-                pprops = pprops.union(set(item.props('pore')))
-            tprops = set(phase.props(element='throat') +
+            tprops = set(phase.props(element='throat', mode=['all', 'deep']) +
                          phase.labels(element='throat'))
-            for item in phase._physics:
-                tprops = tprops.union(set(item.props(element='throat')))
             # Add props to tdata and pdata
             for item in pprops:
                 pdata.update({item+'|'+phase.name: phase[item]})
@@ -468,9 +463,16 @@ class CSV():
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
-        overwrite : bool (default is True)
-            Indicates whether existing data should be over written if a
-            conflicting entry exists in the CSV file.
+        mode : string
+            Specifies how new data is added to the Network.  Options are:
+
+            **'overwrite'** : (Default) This means that any existing data on
+            the Network is over-written by data in the loaded file that has the
+            same property name.
+
+        Returns
+        -------
+        If no Network object is supplied then one will be created and returned.
 
         """
         if network == {}:
@@ -513,7 +515,7 @@ class CSV():
 
 class YAML():
     r"""
-    This format is meant specifcally for exchanging data with NetworkX, which
+    This class is meant specifcally for exchanging data with NetworkX, which
     is a common tool for dealing with network structures.  A network object
     in NetworkX has a ``to_yaml`` method which produces the correct file format
     for use here.
@@ -521,9 +523,9 @@ class YAML():
     Notes
     -----
     1. Each node in a NetworkX object (i.e. ``net``) can be assigned properties
-    using syntax like ``net.node[n][\'diameter\'] = 0.5`` where ``n`` is the
+    using syntax like ``net.node[n]['diameter'] = 0.5`` where ``n`` is the
     node number.  There is no need to precede the property name with any
-    indication that it is pore data such as \'pore_\'.  OpenPNM will prepend
+    indication that it is pore data such as \'pore\_\'.  OpenPNM will prepend
     \'pore.\' to each property name.
 
     2. Since \'pore.coords\' is so central to OpenPNM it should be specified
@@ -531,10 +533,10 @@ class YAML():
     each node should be a 3x1 list.
 
     3. Edges in a NetworkX object are accessed using the index numbers of the
-    two nodes it connects, such as ``net.edge[2][3][\'length\'] = 0.1``
+    two nodes it connects, such as ``net.edge[2][3]['length'] = 0.1``
     indicating the edge that connects nodes 2 and 3.  There is no need to
     precede the property name with any indication that it is throat data such
-    as \'throat_\'.  OpenPNM will prepend \'throat.\' to each property name.
+    as \'throat\_\'.  OpenPNM will prepend \'throat.\' to each property name.
 
     4. The \'throat.conns\' property is essential to OpenPNM, but this does NOT
     need to be specified explicitly as a property in NetworkX.  The
@@ -562,10 +564,16 @@ class YAML():
             Network is supplied then an empty Import Network is created and
             returned.
 
-        overwite : boolean
-            A flag to indicate whether data existing on the Network should be
-            overwritten by data in the file or not.  This is useful when adding
-            data in a sequential manner from several different sources.
+        mode : string
+            Specifies how new data is added to the Network.  Options are:
+
+            **'overwrite'** : (Default) This means that any existing data on
+            the Network is over-written by data in the loaded file that has the
+            same property name.
+
+        Returns
+        -------
+        If no Network object is supplied then one will be created and returned.
 
         """
         if network == {}:
