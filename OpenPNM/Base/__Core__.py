@@ -1548,7 +1548,7 @@ class Core(dict):
         the locations, to avoid calling it multiple times.
         """
         if locations is None:
-            locations = []
+            locations = sp.array([], ndmin=1, dtype=int)
         locs = sp.array(locations, ndmin=1)
         if locs.dtype not in [bool, sp.float16, sp.float32, sp.float64,
                               sp.int8, sp.int16, sp.int32, sp.int64]:
