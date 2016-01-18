@@ -1,6 +1,7 @@
-from OpenPNM.Utilities import misc
+from OpenPNM.Utilities import misc as _misc
 import scipy as _sp
 import numpy as _np
+import pandas as _pd
 import os as _os
 import pickle as _pickle
 from xml.etree import ElementTree as _ET
@@ -45,11 +46,12 @@ class VTK():
             The Network containing the data to be written
 
         filename : string, optional
-            Filename to write data.  If no name is given the file is named after
-            ther network
+            Filename to write data.  If no name is given the file is named
+            after ther network
 
         phases : list, optional
-            A list contain OpenPNM Phase object(s) containing data to be written
+            A list contain OpenPNM Phase object(s) containing data to be
+            written
 
         Examples
         --------
@@ -59,8 +61,10 @@ class VTK():
         ...                                       pores=pn.pores(),
         ...                                       throats=pn.throats())
         >>> air = OpenPNM.Phases.Air(network=pn)
-        >>> phys = OpenPNM.Physics.Standard(network=pn, phase=air,
-        ...                                 pores=pn.pores(), throats=pn.throats())
+        >>> phys = OpenPNM.Physics.Standard(network=pn,
+        ...                                 phase=air,
+        ...                                 pores=pn.pores(),
+        ...                                 throats=pn.throats())
 
         >>> import OpenPNM.Utilities.IO as io
         >>> io.VTK.save(pn,'test_pn.vtp',[air])
@@ -81,7 +85,7 @@ class VTK():
         for phase in phases:
             objs.append(phase)
         objs.append(network)
-        am = misc.amalgamate_data(objs=objs)
+        am = _misc.amalgamate_data(objs=objs)
         key_list = list(sorted(am.keys()))
         points = network['pore.coords']
         pairs = network['throat.conns']
@@ -141,8 +145,8 @@ class VTK():
 
         Notes
         -----
-        This will NOT reproduce original simulation, since all models and object
-        relationships are lost.  Use IO.Save and IO.Load for that.
+        This will NOT reproduce original simulation, since all models and
+        object relationships are lost.
         """
         network = OpenPNM.Network.GenericNetwork()
         tree = _ET.parse(filename)
@@ -203,8 +207,8 @@ class MAT():
     @staticmethod
     def save(network, filename='', phases=[]):
         r"""
-        Write Network to a Mat file for exporting to Matlab. This method will be
-        enhanced in a future update, and it's functionality may change!
+        Write Network to a Mat file for exporting to Matlab. This method will
+        be enhanced in a future update, and it's functionality may change!
 
         Parameters
         ----------
@@ -269,3 +273,88 @@ class MAT():
         This method is not implemented yet.
         """
         raise NotImplemented()
+
+
+class Pandas():
+
+    @staticmethod
+    def get_data_frames(network, phases=[]):
+        r"""
+        Returns a dict containing 2 Pandas DataFrames with 'pore' and 'throat'
+        data in each.
+        """
+        # Initialize pore and throat data dictionary with conns and coords
+        pdata = {}
+        tdata = {}
+
+        # Gather list of prop names from network and geometries
+        pprops = set(network.props('pore'))
+        for item in network._geometries:
+            pprops = pprops.union(set(item.props('pore')))
+        tprops = set(network.props('throats'))
+        for item in network._geometries:
+            tprops = tprops.union(set(item.props('throat')))
+
+        # Select data from network and geometries using keys
+        for item in pprops:
+            key = 'pore_'+item.split('.')[1]
+            pdata.update({key: network[item]})
+        for item in tprops:
+            key = 'throat_'+item.split('.')[1]
+            tdata.update({key: network[item]})
+
+        # Gather list of prop names from phases and physics
+        for phase in phases:
+            # Gather list of prop names
+            pprops = set(phase.props('pore'))
+            for item in phase._physics:
+                pprops = pprops.union(set(item.props('pore')))
+            tprops = set(phase.props('throats'))
+            for item in phase._physics:
+                tprops = tprops.union(set(item.props('throat')))
+            # Add props to tdata and pdata
+            for item in pprops:
+                pdata.update({item+'_'+phase.name: phase[item]})
+            for item in tprops:
+                tdata.update({item+'_'+phase.name: phase[item]})
+
+        # Scan data and convert non-1d arrays to strings
+        for item in list(pdata.keys()):
+            if _sp.shape(pdata[item]) != (network.Np,):
+                array = pdata.pop(item)
+                temp = _sp.empty((_sp.shape(array)[0], ), dtype=object)
+                for row in range(temp.shape[0]):
+                    temp[row] = str(array[row, :]).strip('[]')
+                pdata.update({item: temp})
+
+        for item in list(tdata.keys()):
+            if _sp.shape(tdata[item]) != (network.Nt,):
+                array = tdata.pop(item)
+                temp = _sp.empty((_sp.shape(array)[0], ), dtype=object)
+                for row in range(temp.shape[0]):
+                    temp[row] = str(array[row, :]).strip('[]')
+                tdata.update({item: temp})
+
+        data = {'pore.DataFrame': _pd.DataFrame.from_dict(pdata),
+                'throat.DataFrame': _pd.DataFrame.from_dict(tdata)}
+
+        return data
+
+
+class CSV():
+
+    @staticmethod
+    def save(network, filename='', phases=[]):
+        if filename == '':
+            filename = network.name
+        if filename.endswith('.csv'):
+            filename = filename.rstrip('.csv')
+        dataframes = Pandas.get_data_frames(network=network, phases=phases)
+        dfp = dataframes['pore.DataFrame']
+        dft = dataframes['throat.DataFrame']
+        f = open(filename+'_pore.csv', mode='x')
+        dfp.to_csv(f, index=False)
+        f.close()
+        f = open(filename+'_throat.csv', mode='x')
+        dft.to_csv(f, index=False)
+        f.close()
