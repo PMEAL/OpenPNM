@@ -440,10 +440,6 @@ class CSV():
         Furthermore, the Physics data is added for each Phase object that is
         provided.
         """
-        if filename == '':
-            filename = network.name
-        f = _write_file(filename=filename, ext='csv')
-
         if type(phases) is not list:  # Ensure it's a list
             phases = [phases]
 
@@ -451,7 +447,13 @@ class CSV():
         dfp = dataframes['pore.DataFrame']
         dft = dataframes['throat.DataFrame']
         b = dft.join(other=dfp, how='left')
+
+        # Write to file
+        if filename == '':
+            filename = network.name
+        f = _write_file(filename=filename, ext='csv')
         b.to_csv(f, index=False)
+        f.close()
 
     @staticmethod
     def load(filename, network={}, mode='overwrite'):
@@ -490,6 +492,7 @@ class CSV():
                                         'TRUE'],
                            false_values=['F', 'f', 'False', 'false',
                                          'FALSE'])
+        f.close()
 
         # Now parse through all the other items
         for item in a.keys():
@@ -589,6 +592,7 @@ class YAML():
             a = _yaml.safe_load(f)
         else:
             raise ('Provided file does not appear to be a NetworkX file')
+        f.close()
 
         # Parsing node data
         Np = len(a['node'])
