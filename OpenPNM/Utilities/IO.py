@@ -62,6 +62,8 @@ class VTK():
 
         if filename == '':
             filename = network.name
+        if ~filename.endswith('.vtp'):
+            filename = filename+'.vtp'
 
         root = _ET.fromstring(VTK._TEMPLATE)
         objs = []

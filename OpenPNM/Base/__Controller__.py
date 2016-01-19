@@ -394,8 +394,8 @@ class Controller(dict):
             if len(self.networks()) == 1:
                 network = self.networks()[0]
             else:
-                raise Exception('Multiple Networks found, please specify \
-                                which to export')
+                raise Exception('Multiple Networks found, please specify' +
+                                'which to export')
         # Generate filename if necessary
         if filename == '':
             filename = network.name
