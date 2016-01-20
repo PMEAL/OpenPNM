@@ -34,21 +34,14 @@ class Import(GenericNetwork):
 
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def from_csv(self, filename, mode='overwrite'):
+        io.CSV.load(network=self, filename=filename, mode=mode)
 
-    def from_csv(self, filename, overwrite=True):
-        io.CSV.load(network=self, filename=filename, mode='overwrite')
+    def from_vtk(self, filename, mode='overwrite'):
+        io.VTK.load(network=self, filename=filename, mode=mode)
 
-    from_csv.__doc__ = io.CSV.load.__doc__
+    def from_mat(self, filename, mode='overwrite'):
+        io.MAT.load(network=self, filename=filename, mode=mode)
 
-    def from_vtk(self, filename):
-        io.VTK.load(filename=filename)
-
-    def from_mat(self, filename, overwrite=True):
-        io.MAT.load(network=self, filename=filename, mode='overwrite')
-
-    from_mat.__doc__ = io.MAT.load.__doc__
-
-    def from_yaml(self, filename, overwrite=True):
-        io.YAML.load(network=self, filename=filename, mode='overwrite')
+    def from_yaml(self, filename, mode='overwrite'):
+        io.YAML.load(network=self, filename=filename, mode=mode)

@@ -77,8 +77,8 @@ class VTK():
         points = network['pore.coords']
         pairs = network['throat.conns']
 
-        num_points = len(points)
-        num_throats = len(pairs)
+        num_points = _sp.shape(points)[0]
+        num_throats = _sp.shape(pairs)[0]
 
         piece_node = root.find('PolyData').find('Piece')
         piece_node.set("NumberOfPoints", str(num_points))
@@ -126,7 +126,7 @@ class VTK():
             f.write(string)
 
     @staticmethod
-    def load(filename, network=None):
+    def load(filename, network={}, mode='overwrite'):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -140,10 +140,9 @@ class VTK():
         This will NOT reproduce original simulation, since all models and
         object relationships are lost.
         """
-        return_flag = False
-        if network is None:
+        if network == {}:
             network = OpenPNM.Network.Import()
-            return_flag = True
+        net = {}
 
         filename = filename.rsplit('.', maxsplit=1)[0]
         tree = _ET.parse(filename+'.vtp')
@@ -152,17 +151,23 @@ class VTK():
         # Extract connectivity
         conn_element = piece_node.find('Lines').find('DataArray')
         array = VTK._element_to_array(conn_element, 2)
-        network['throat.conns'] = array.T
+        network.update({'throat.conns': array})
 
-        for element in piece_node.find('PointData').iter('DataArray'):
-            key = element.get('Name')
-            array = VTK._element_to_array(element)
-            netname = key.split('.')[0]
-            propname = key.strip(netname+'.')
-            network[propname] = array
+        for item in piece_node.find('PointData').iter('DataArray'):
+            key = item.get('Name')
+            element = key.split('.')[0]
+            array = VTK._element_to_array(item)
+            propname = key.split('.')[1]
+            net.update({element+'.'+propname: array})
+        for item in piece_node.find('CellData').iter('DataArray'):
+            key = item.get('Name')
+            element = key.split('.')[0]
+            array = VTK._element_to_array(item)
+            propname = key.split('.')[1]
+            net.update({element+'.'+propname: array})
 
-        if return_flag:
-            return network
+        network = _update_network(network=network, net=net, mode=mode)
+        return network
 
     @staticmethod
     def _array_to_element(name, array, n=1):
@@ -302,14 +307,7 @@ class MAT():
         for item in items:
             element = item.split('_')[0]
             prop = item.split('_', maxsplit=1)[1]
-            vals = _sp.squeeze(data[item].T)
-            # If data is not standard array, convert vals appropriately
-            if (_sp.sum(vals == 1) + _sp.sum(vals == 0)) \
-                    == _sp.shape(vals)[0]:  # If boolean
-                vals = vals.astype(bool)
-            else:  # If data is an array of lists
-                pass
-            net[element+'.'+prop] = vals
+            net[element+'.'+prop] = _sp.squeeze(data[item].T)
 
         network = _update_network(network=network, net=net, mode=mode)
         return network
@@ -666,14 +664,21 @@ def _update_network(network, net, mode):
             else:
                 raise Exception(element+' data in file have inconsistent ' +
                                 'lengths')
+
     # Add data on dummy net to actual network
     for item in net.keys():
+        # Try to infer array types and change if necessary
+        # Chcek for booleans disguised and 1's and 0's
+        if (_sp.sum(net[item] == 1) + _sp.sum(net[item] == 0)) \
+                    == _sp.shape(net[item])[0]:
+                net[item] = net[item].astype(bool)
         if mode == 'overwrite':
             network.update({item: net[item]})
         elif item not in network:
             network.update({item: net[item]})
         else:
             logger.warning('\''+item+'\' already present')
+    return network
 
 
 def _write_file(filename, ext):
