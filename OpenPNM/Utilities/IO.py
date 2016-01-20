@@ -83,7 +83,7 @@ class VTK():
         if legacy:
             am = _misc.amalgamate_data(objs=objs)
         else:
-            am = {i+'|'+network.name: network[i] for i in
+            am = {i: network[i] for i in
                   network.props(mode=['all', 'deep']) + network.labels()}
             for phase in phases:
                 dict_ = {i+'|'+phase.name: phase[i] for i in
@@ -705,8 +705,8 @@ def _update_network(network, net, mode):
         # Try to infer array types and change if necessary
         # Chcek for booleans disguised and 1's and 0's
         if (_sp.sum(net[item] == 1) + _sp.sum(net[item] == 0)) \
-                    == _sp.shape(net[item])[0]:
-                net[item] = net[item].astype(bool)
+                == _sp.shape(net[item])[0]:
+            net[item] = net[item].astype(bool)
         if mode == 'overwrite':
             network.update({item: net[item]})
         elif item not in network:
