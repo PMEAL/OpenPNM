@@ -55,7 +55,7 @@ class IOTest:
         assert sp.shape(net['pore.coords']) == (27, 3)
         assert sp.shape(net['throat.conns']) == (54, 2)
         assert 'pore.diameter' in net.keys()
-        assert 'pore.diameter'+'|'+net.name not in net.keys()
+        assert 'pore.diameter'+'|'+self.net.name not in net.keys()
         assert [item for item in net.keys() if '|'+self.phase.name in item]
 
     def test_save_and_load_csv_no_phases(self):
