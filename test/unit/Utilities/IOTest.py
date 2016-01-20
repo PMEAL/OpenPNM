@@ -35,7 +35,7 @@ class IOTest:
         assert net.Nt == 54
         assert sp.shape(net['pore.coords']) == (27, 3)
         assert sp.shape(net['throat.conns']) == (54, 2)
-        assert [True for item in net.keys() if 'diameter|'+self.net.name in item]
+        assert [False for item in net.keys() if '|' in item]
 
     def test_save_and_load_vtk_w_phases(self):
         fname = os.path.join(TEMP_DIR, 'test_save_vtk_2')
