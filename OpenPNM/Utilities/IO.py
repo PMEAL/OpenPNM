@@ -40,7 +40,7 @@ class VTK():
         super().__init__(**kwargs)
 
     @staticmethod
-    def save(network, filename='', phases=[], legacy=False):
+    def save(network, filename='', phases=[], legacy=True):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
