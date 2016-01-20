@@ -249,11 +249,13 @@ class MAT():
         if type(phases) is not list:  # Ensure it's a list
             phases = [phases]
 
-        pnMatlab = {i.replace('.', '_'): network[i] for i in network.keys()}
+        keys = network.props(mode=['all', 'deep']) + network.labels()
+        pnMatlab = {i.replace('.', '_'): network[i] for i in keys}
 
         for phase in phases:
+            keys = phase.props(mode=['all', 'deep']) + phase.labels()
             temp = {i.replace('.', '_')+'|'+phase.name: phase[i]
-                    for i in phase.keys()}
+                    for i in keys}
             pnMatlab.update(temp)
 
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
