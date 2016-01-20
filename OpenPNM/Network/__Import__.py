@@ -30,7 +30,7 @@ class Import(GenericNetwork):
     3. **YAML** : An output format of `NetworkX <https://networkx.github.io/>`_
 
     4. **VTK** : `Visualization Toolkit <http://www.vtk.org/>`_ files in the
-    legacy format.
+    *vtp* or unstructure grid format.
 
     """
 

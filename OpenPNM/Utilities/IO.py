@@ -152,13 +152,19 @@ class VTK():
         conn_element = piece_node.find('Lines').find('DataArray')
         array = VTK._element_to_array(conn_element, 2)
         network.update({'throat.conns': array})
+        # Extract coordinates
+        coord_element = piece_node.find('Points').find('DataArray')
+        array = VTK._element_to_array(coord_element, 3)
+        network.update({'pore.coords': array})
 
+        # Extract pore data
         for item in piece_node.find('PointData').iter('DataArray'):
             key = item.get('Name')
             element = key.split('.')[0]
             array = VTK._element_to_array(item)
             propname = key.split('.')[1]
             net.update({element+'.'+propname: array})
+        # Extract throat data
         for item in piece_node.find('CellData').iter('DataArray'):
             key = item.get('Name')
             element = key.split('.')[0]
