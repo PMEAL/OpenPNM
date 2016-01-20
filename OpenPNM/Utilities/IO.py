@@ -40,7 +40,7 @@ class VTK():
         super().__init__(**kwargs)
 
     @staticmethod
-    def save(network, filename='', phases=[]):
+    def save(network, filename='', phases=[], legacy=False):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
@@ -58,6 +58,14 @@ class VTK():
             A list contain OpenPNM Phase object(s) containing data to be
             written
 
+        legacy : boolean
+            If True (default) the property names will be of the format
+            \'pore.Cubic_asd43_diameter'\, while if False they will be
+            \'pore.diameter|Cubic_asd43\'.  The latter style is consistent
+            with all of the other IO methods, while the former is compatible
+            with existing code, such as Paraview State files.   Eventually,
+            this option will be derprecated and removed.
+
         """
 
         if filename == '':
@@ -72,7 +80,15 @@ class VTK():
         for phase in phases:
             objs.append(phase)
         objs.append(network)
-        am = _misc.amalgamate_data(objs=objs)
+        if legacy:
+            am = _misc.amalgamate_data(objs=objs)
+        else:
+            am = {i+'|'+network.name: network[i] for i in
+                  network.props(mode=['all', 'deep']) + network.labels()}
+            for phase in phases:
+                dict_ = {i+'|'+phase.name: phase[i] for i in
+                         phase.props(mode=['all', 'deep']) + phase.labels()}
+                am.update(dict_)
         key_list = list(sorted(am.keys()))
         points = network['pore.coords']
         pairs = network['throat.conns']
@@ -132,13 +148,24 @@ class VTK():
 
         Parameters
         ----------
-        filename : string
-            The name of the 'vtk' file to open.
+        filename : string (optional)
+            The name of the file containing the data to import.  The formatting
+            of this file is outlined below.
 
-        Notes
-        -----
-        This will NOT reproduce original simulation, since all models and
-        object relationships are lost.
+        network : OpenPNM Network Object
+            The Network object onto which the data should be loaded.  If no
+            Network is supplied than one will be created and returned.
+
+        mode : string
+            Specifies how new data is added to the Network.  Options are:
+
+            **'overwrite'** : (Default) This means that any existing data on
+            the Network is over-written by data in the loaded file that has the
+            same property name.
+
+        Returns
+        -------
+        If no Network object is supplied then one will be created and returned.
         """
         if network == {}:
             network = OpenPNM.Network.Import()

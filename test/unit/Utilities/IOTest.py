@@ -26,6 +26,17 @@ class IOTest:
         assert sp.shape(net['pore.coords']) == (27, 3)
         assert sp.shape(net['throat.conns']) == (54, 2)
 
+    def test_save_load_vtk_not_legacy(self):
+        fname = os.path.join(TEMP_DIR, 'test_save_vtk_1')
+        io.VTK.save(network=self.net, filename=fname, legacy=False)
+        assert os.path.isfile(fname+'.vtp')
+        net = io.VTK.load(fname+'.vtp')
+        assert net.Np == 27
+        assert net.Nt == 54
+        assert sp.shape(net['pore.coords']) == (27, 3)
+        assert sp.shape(net['throat.conns']) == (54, 2)
+        assert [True for item in net.keys() if 'diameter|'+self.net.name in item]
+
     def test_save_and_load_vtk_w_phases(self):
         fname = os.path.join(TEMP_DIR, 'test_save_vtk_2')
         io.VTK.save(network=self.net, filename=fname, phases=self.phase)
