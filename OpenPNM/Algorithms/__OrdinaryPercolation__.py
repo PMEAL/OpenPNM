@@ -149,10 +149,10 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         if 'inlets' in kwargs.keys():
-            print('Inlets recieved, passing to set_inlets')
+            logger.info('Inlets recieved, passing to set_inlets')
             self.set_inlets(pores=kwargs['inlets'])
         if 'outlets' in kwargs.keys():
-            print('Outlets recieved, passing to set_outlets')
+            logger.info('Outlets recieved, passing to set_outlets')
             self.set_outlets(pores=kwargs['outlets'])
         self._AL = access_limited
         if inv_points is None:

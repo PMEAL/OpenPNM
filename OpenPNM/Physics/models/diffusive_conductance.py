@@ -13,7 +13,8 @@ def bulk_diffusion(physics, phase, network, pore_molar_density='pore.molar_densi
                    pore_diffusivity='pore.diffusivity', pore_area='pore.area',
                    pore_diameter='pore.diameter', throat_area='throat.area',
                    throat_length='throat.length', throat_diameter='throat.diameter',
-                   calc_pore_len=True, shape_factor='throat.shape_factor', **kwargs):
+                   calc_pore_len=True, shape_factor='throat.shape_factor',
+                   throat_diffusivity = 'throat.diffusivity', **kwargs):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
@@ -47,7 +48,10 @@ def bulk_diffusion(physics, phase, network, pore_molar_density='pore.molar_densi
     cp = phase[pore_molar_density]
     ct = phase.interpolate_data(data=cp)
     DABp = phase[pore_diffusivity]
-    DABt = phase.interpolate_data(data=DABp)
+    try:
+        DABt = phase[throat_diffusivity]
+    except:
+        DABt = phase.interpolate_data(data=DABp)
     if calc_pore_len:
         lengths = misc.conduit_lengths(network, mode='centroid')
         plen1 = lengths[:, 0]
