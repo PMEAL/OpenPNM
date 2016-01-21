@@ -40,6 +40,15 @@ class VTK():
         super().__init__(**kwargs)
 
     @staticmethod
+
+
+
+
+
+
+
+
+
     def save(network, filename='', phases=[], legacy=True):
         r"""
         Save network and phase data to a single vtp file for visualizing in
@@ -735,7 +744,7 @@ def _read_file(filename, ext):
     ext = ext.replace('.', '').lower()
     if ext not in ['csv', 'yaml', 'mat', 'vtp']:
         raise Exception(ext+' is not a supported file extension')
-    filename = filename.rstrip('.'+ext)
-    filename = filename+'.'+ext
+    if not filename.endswith('.'+ext):
+        filename = filename+'.'+ext
     f = open(filename, mode='r')
     return f
