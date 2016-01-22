@@ -163,6 +163,9 @@ class VTK():
             the Network is over-written by data in the loaded file that has the
             same property name.
 
+            **'add'** : Only adds values to the network if they are not already
+            present.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
@@ -309,6 +312,9 @@ class MAT():
             **'overwrite'** : (Default) This means that any existing data on
             the Network is over-written by data in the loaded file that has the
             same property name.
+
+            **'add'** : Only adds values to the network if they are not already
+            present.
 
         Returns
         -------
@@ -506,6 +512,9 @@ class CSV():
             **'overwrite'** : (Default) This means that any existing data on
             the Network is over-written by data in the loaded file that has the
             same property name.
+
+            **'add'** : Only adds values to the network if they are not already
+            present.
 
         Returns
         -------
