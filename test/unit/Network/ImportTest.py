@@ -1,7 +1,6 @@
 import OpenPNM
 import scipy as sp
 from os.path import join
-FIXTURE_DIR = 'C:\\Users\\Jeff\\Dropbox\\Flash Sync\\Code\\Git\\OpenPNM\\test\\fixtures'
 
 
 class ImportTest:
