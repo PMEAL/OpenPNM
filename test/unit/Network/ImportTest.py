@@ -65,3 +65,14 @@ class ImportTest:
         del net['pore.seed']
         net.from_vtk(filename=fname, mode='add')
         assert sp.sum(net['pore.seed']) > 0
+
+    def test_from_yaml(self):
+        fname = join(FIXTURE_DIR, 'test_load_yaml.yaml')
+        net = OpenPNM.Network.Import()
+        assert sorted(net.keys()) == ['pore.all', 'throat.all']
+        net.from_yaml(filename=fname, mode='overwrite')
+        assert net.Np == 9
+        assert net.Np == 12
+        assert sp.shape(net['pore.coords']) == (9, 3)
+        assert sp.shape(net['throat.conns']) == (12, 2)
+        assert 'pore.diameter' in net.keys()
