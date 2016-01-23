@@ -13,8 +13,10 @@ logger = logging.getLogger(__name__)
 
 class Import(GenericNetwork):
     r"""
-    This method is used to import data resulting from some external network
-    extraction tools onto an OpenPNM Network object.
+    This class is useful for importing import data from some external network
+    extraction tools onto an OpenPNM Network object.  All of the methods here
+    are simply wrappers for classes defined in Utilites.IO.  Please refer to
+    those classes for more information on the formatting of the input data.
 
     Notes
     -----
