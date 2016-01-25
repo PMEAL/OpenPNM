@@ -409,6 +409,12 @@ class Core(dict):
             **'constants'** : Returns only properties that are set as constant
             values
 
+            **'deep'** : Returns all properties on the object and all sub-
+            objects.  For instance, all Geometry properties will be returned
+            along with all Network properties, and all Physics properties will
+            be returned with all Phase properties.  This mode has not effect
+            when this query is called from a Geometry or Phase object.
+
         Returns
         -------
         A an alphabetically sorted list containing the string name of all
@@ -431,7 +437,7 @@ class Core(dict):
         ['pore.coords', 'pore.index', 'throat.conns']
         """
         # Parse Inputs
-        allowed = ['all', 'models', 'constants']
+        allowed = ['all', 'models', 'constants', 'deep']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         element = self._parse_element(element=element)
         # Prepare lists of each type of array
@@ -440,6 +446,9 @@ class Core(dict):
         constants = [item for item in props if item not in models]
         # Execute desired array lookup
         vals = Tools.PrintableList()
+        if 'deep' in mode:
+            logger.warning('The \'deep\' mode only works when called from a ' +
+                           'Network or Phase object')
         if 'all' in mode:
             temp = [item for item in props if item.split('.')[0] in element]
             vals.extend(temp)
@@ -1795,11 +1804,17 @@ class Core(dict):
         props = self.props()
         props.sort()
         for i, item in enumerate(props):
-            if self[item].dtype != object:
-                prop = item
-                if len(prop) > 35:
-                    prop = prop[0:32] + '...'
-                required = self._count(item.split('.')[0])
+            prop = item
+            required = self._count(item.split('.')[0])
+            if len(prop) > 35:  # Trim overly long prop names
+                prop = prop[0:32] + '...'
+            if self[item].dtype == object:  # Print objects differently
+                defined = sp.size(self[item])
+                lines.append("{0:<5d} {1:<35s} {2:>5d} / {3:<5d}".format(i + 1,
+                                                                         prop,
+                                                                         defined,
+                                                                         required))
+            else:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
