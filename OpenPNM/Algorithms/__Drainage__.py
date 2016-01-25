@@ -54,7 +54,7 @@ class Drainage(GenericAlgorithm):
 
     >>> alg = op.Algorithms.Drainage(network=pn)
     >>> alg.setup(invading_phase=water)
-    >>> alg.set_inlets(pores=pn.pores('pn.boundary_top'))
+    >>> alg.set_inlets(pores=pn.pores('boundary_top'))
     >>> alg.run()
     >>> data = alg.get_drainage_data()
 
@@ -84,7 +84,11 @@ class Drainage(GenericAlgorithm):
     def setup(self,
               invading_phase,
               entry_pressure='throat.capillary_pressure',
-              trapping=False):
+              trapping=False,
+              pore_filling=None,
+              throat_filling=None,
+              pore_volume='pore.volume',
+              throat_volume='throat.volume'):
         r"""
         Used to specify necessary arguments to the simulation.  This method is
         useful for resetting the Algorithm or applying more explicit control.
@@ -105,6 +109,16 @@ class Drainage(GenericAlgorithm):
             not. The default is False.  Note that defending phase outlets can
             be specified using the ``set_outlets`` method.  Otherwise it is
             assumed the defending phase has no outlets.
+              
+        pore_filling and throat_filling: string (optional)
+            The dictionary key on the Physics object where the late pore or
+            throat filling model is located. The default is None, meaning that
+            a pore or throat is completely filled upon penetration.
+
+        pore_volume and throat_volume : string (optional)
+            The dictionary key on the Geometry object where the pore or throat
+            volume data is located.  The defaults is 'pore.volume' and
+            'throat.volume'.
 
         """
         self['throat.entry_pressure'] = invading_phase[entry_pressure]
@@ -118,6 +132,10 @@ class Drainage(GenericAlgorithm):
         self['throat.residual'] = False
         self._inv_phase = invading_phase
         self._trapping = trapping
+        self._pore_filling = pore_filling
+        self._throat_filling = throat_filling
+        self._throat_volume = 'throat.volume'
+        self._pore_volume = 'pore.volume'
 
     def set_inlets(self, pores=None, mode='add'):
         r"""
@@ -453,24 +471,13 @@ class Drainage(GenericAlgorithm):
         if sp.any(self['throat.residual']):
             self['throat.inv_Pc'][self['throat.residual']] = 0
 
-    def get_drainage_data(self, pore_volume='pore.volume',
-                          throat_volume='throat.volume',
-                          pore_filling=None,
-                          throat_filling=None):
+    def get_drainage_data(self):
         r"""
         Obtain the numerical values of the resultant capillary pressure curve.
 
         Parameters
         ----------
-        pore_volume and throat_volume : string (optional)
-            The dictionary key on the Geometry object where the pore or throat
-            volume data is located.  The defaults is 'pore.volume' and
-            'throat.volume'.
-
-        pore_filling and throat_filling: string (optional)
-            The dictionary key on the Physics object where the late pore or
-            throat filling model is located. The default is None, meaning that
-            a pore or throat is completely filled upon penetration.
+        None
 
         Returns
         -------
@@ -484,10 +491,6 @@ class Drainage(GenericAlgorithm):
         the keys 'pore.volume' and 'throat.volume'.  This cannot be customized
         at this time.
         """
-        self._throat_volume = 'throat.volume'
-        self._pore_volume = 'pore.volume'
-        self._pore_filling = pore_filling
-        self._throat_filling = throat_filling
         # Infer list of applied capillary pressures
         PcPoints = self._inv_points
         if PcPoints[-1] == sp.inf:  # Remove infinity from PcPoints if present
