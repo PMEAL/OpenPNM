@@ -109,7 +109,7 @@ class Drainage(GenericAlgorithm):
             not. The default is False.  Note that defending phase outlets can
             be specified using the ``set_outlets`` method.  Otherwise it is
             assumed the defending phase has no outlets.
-              
+
         pore_filling and throat_filling: string (optional)
             The dictionary key on the Physics object where the late pore or
             throat filling model is located. The default is None, meaning that
@@ -568,6 +568,9 @@ class Drainage(GenericAlgorithm):
             phys.models[key]['Pc'] = pressure
             # Regenerate Physics model and capture output locally
             Snwp[phys.Pnet] = phys.models[key].regenerate()
+            # Re-populate the residual element with the non-wetting phase
+            if sp.any(self[element+'.residual']):
+                Snwp[self[element+'.residual']] = 1.0
             phys.models[key]['Pc'] = temp_Pc  # Return old Pc
         V = self._net[vol]*Snwp
         return V

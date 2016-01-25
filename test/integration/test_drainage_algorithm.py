@@ -67,10 +67,11 @@ def test_late_pore_filling():
                     Swp_star=0.2,
                     eta=1)
     phys.regenerate()
-    drainage.setup(invading_phase=water)
+    drainage.setup(invading_phase=water,
+                   pore_filling='pore.fractional_filling')
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.run()
-    data = drainage.get_drainage_data(pore_filling='pore.fractional_filling')
+    data = drainage.get_drainage_data()
     assert sp.amin(data['invading_phase_saturation']) == 0.0
     assert sp.amax(data['invading_phase_saturation']) < 1.0
 
@@ -87,10 +88,11 @@ def test_late_throat_filling():
                     Swp_star=0.2,
                     eta=1)
     phys.regenerate()
-    drainage.setup(invading_phase=water)
+    drainage.setup(invading_phase=water,
+                   throat_filling='throat.fractional_filling')
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.run()
-    data = drainage.get_drainage_data(throat_filling='throat.fractional_filling')
+    data = drainage.get_drainage_data()
 
     assert sp.amin(data['invading_phase_saturation']) == 0.0
     assert sp.amax(data['invading_phase_saturation']) < 1.0
@@ -113,11 +115,12 @@ def test_late_pore_and_throat_filling():
                     Swp_star=0.2,
                     eta=1)
     phys.regenerate()
-    drainage.setup(invading_phase=water)
+    drainage.setup(invading_phase=water,
+                   pore_filling='pore.fractional_filling',
+                   throat_filling='throat.fractional_filling')
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.run()
-    data = drainage.get_drainage_data(pore_filling='pore.fractional_filling',
-                                      throat_filling='throat.fractional_filling')
+    data = drainage.get_drainage_data()
     assert sp.amin(data['invading_phase_saturation']) == 0.0
     assert sp.amax(data['invading_phase_saturation']) < 1.0
 
@@ -135,3 +138,31 @@ def test_ploting():
     data = drainage.get_drainage_data()
     a = drainage.plot_drainage_curve(data)
     assert isinstance(a, matplotlib.figure.Figure)
+
+
+def test_residual_and_lpf():
+    phys.models.add(propname='pore.fractional_filling',
+                    model=OpenPNM.Physics.models.multiphase.late_pore_filling,
+                    Pc=0,
+                    Swp_star=0.2,
+                    eta=1)
+    phys.models.add(propname='throat.fractional_filling',
+                    model=OpenPNM.Physics.models.multiphase.late_throat_filling,
+                    Pc=0,
+                    Swp_star=0.2,
+                    eta=1)
+    phys.regenerate()
+    drainage.setup(invading_phase=water,
+                   pore_filling='pore.fractional_filling',
+                   throat_filling='throat.fractional_filling')
+    drainage.set_inlets(pores=pn.pores('boundary_top'))
+    resPs = pn.pores('internal')[sp.random.random(len(pn.pores('internal')))<0.1]
+    resTs = pn.throats('internal')[sp.random.random(len(pn.throats('internal')))<0.1]
+    drainage.set_residual(pores=resPs, throats=resTs)
+    drainage.run()
+    drainage.return_results(Pc=5000)
+    data = drainage.get_drainage_data()
+    assert sp.all(water["pore.partial_occupancy"][resPs] == 1.0)
+    assert sp.all(water["throat.partial_occupancy"][resTs] == 1.0)
+    assert sp.amin(data['invading_phase_saturation']) > 0.0
+    assert sp.amax(data['invading_phase_saturation']) < 1.0
