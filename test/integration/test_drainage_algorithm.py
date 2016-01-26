@@ -19,6 +19,7 @@ boun = OpenPNM.Geometry.Boundary(network=pn,
                                  pores=pn.pores('internal', mode='not'),
                                  throats=pn.throats('internal', mode='not'))
 water = OpenPNM.Phases.Water(network=pn)
+air = OpenPNM.Phases.Air(network=pn)
 phys = OpenPNM.Physics.Standard(network=pn,
                                 phase=water,
                                 pores=pn.Ps,
@@ -27,7 +28,7 @@ drainage = OpenPNM.Algorithms.Drainage(network=pn)
 
 
 def test_basic():
-    drainage.setup(invading_phase=water)
+    drainage.setup(invading_phase=water, defending_phase=air)
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.run()
     data = drainage.get_drainage_data()
@@ -37,7 +38,7 @@ def test_basic():
 
 
 def test_residual():
-    drainage.setup(invading_phase=water)
+    drainage.setup(invading_phase=water, defending_phase=air)
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     Ps = sp.random.randint(0, pn.Np, 1000)
     Ts = sp.random.randint(0, pn.Nt, 1000)
@@ -50,7 +51,7 @@ def test_residual():
 
 
 def test_trapping():
-    drainage.setup(invading_phase=water, trapping=True)
+    drainage.setup(invading_phase=water, defending_phase=air, trapping=True)
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.set_outlets(pores=pn.pores('boundary_bottom')[0:300])
     drainage.run()
@@ -67,7 +68,7 @@ def test_late_pore_filling():
                     Swp_star=0.2,
                     eta=1)
     phys.regenerate()
-    drainage.setup(invading_phase=water,
+    drainage.setup(invading_phase=water, defending_phase=air,
                    pore_filling='pore.fractional_filling')
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.run()
@@ -88,7 +89,7 @@ def test_late_throat_filling():
                     Swp_star=0.2,
                     eta=1)
     phys.regenerate()
-    drainage.setup(invading_phase=water,
+    drainage.setup(invading_phase=water, defending_phase=air,
                    throat_filling='throat.fractional_filling')
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.run()
@@ -115,7 +116,7 @@ def test_late_pore_and_throat_filling():
                     Swp_star=0.2,
                     eta=1)
     phys.regenerate()
-    drainage.setup(invading_phase=water,
+    drainage.setup(invading_phase=water, defending_phase=air,
                    pore_filling='pore.fractional_filling',
                    throat_filling='throat.fractional_filling')
     drainage.set_inlets(pores=pn.pores('boundary_top'))
@@ -132,7 +133,7 @@ def test_late_pore_and_throat_filling():
 
 
 def test_ploting():
-    drainage.setup(invading_phase=water)
+    drainage.setup(invading_phase=water, defending_phase=air)
     drainage.set_inlets(pores=pn.pores('boundary_top'))
     drainage.run()
     data = drainage.get_drainage_data()
@@ -152,7 +153,7 @@ def test_residual_and_lpf():
                     Swp_star=0.2,
                     eta=1)
     phys.regenerate()
-    drainage.setup(invading_phase=water,
+    drainage.setup(invading_phase=water, defending_phase=air,
                    pore_filling='pore.fractional_filling',
                    throat_filling='throat.fractional_filling')
     drainage.set_inlets(pores=pn.pores('boundary_top'))
@@ -166,3 +167,9 @@ def test_residual_and_lpf():
     assert sp.all(water["throat.partial_occupancy"][resTs] == 1.0)
     assert sp.amin(data['invading_phase_saturation']) > 0.0
     assert sp.amax(data['invading_phase_saturation']) < 1.0
+    assert sp.all(water["pore.occupancy"]+air["pore.occupancy"] == 1.0)
+    total_pp = water["pore.partial_occupancy"]+air["pore.partial_occupancy"]
+    assert sp.all(total_pp == 1.0)
+    assert sp.all(water["throat.occupancy"]+air["throat.occupancy"] == 1.0)
+    total_pt = water["throat.partial_occupancy"]+air["throat.partial_occupancy"] 
+    assert sp.all(total_pt == 1.0)

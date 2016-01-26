@@ -47,13 +47,14 @@ class Drainage(GenericAlgorithm):
     ...                       apply_label='boundary_top')
     >>> geo = op.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps, throats=pn.Ts)
     >>> water = op.Phases.Water(network=pn)
+    >>> air = op.Phases.Air(network=pn)
     >>> phys = op.Physics.Standard(network=pn, phase=water, geometry=geo)
 
     Once the basic Core objects are setup, the Algorithm can be created and
     and run as follows:
 
     >>> alg = op.Algorithms.Drainage(network=pn)
-    >>> alg.setup(invading_phase=water)
+    >>> alg.setup(invading_phase=water, defending_phase=air)
     >>> alg.set_inlets(pores=pn.pores('boundary_top'))
     >>> alg.run()
     >>> data = alg.get_drainage_data()
@@ -83,6 +84,7 @@ class Drainage(GenericAlgorithm):
 
     def setup(self,
               invading_phase,
+              defending_phase,
               entry_pressure='throat.capillary_pressure',
               trapping=False,
               pore_filling=None,
@@ -97,6 +99,10 @@ class Drainage(GenericAlgorithm):
         ----------
         invading_phase : OpenPNM Phase object
             The Phase object containing the physical properties of the invading
+            fluid.
+
+        defending_phase : OpenPNM Phase object
+            The Phase object containing the physical properties of the defending
             fluid.
 
         entry_pressure : string (optional)
@@ -131,6 +137,7 @@ class Drainage(GenericAlgorithm):
         self['pore.residual'] = False
         self['throat.residual'] = False
         self._inv_phase = invading_phase
+        self._def_phase = defending_phase
         self._trapping = trapping
         self._pore_filling = pore_filling
         self._throat_filling = throat_filling
@@ -615,7 +622,8 @@ class Drainage(GenericAlgorithm):
         This method determines which pores and throats are filled with non-
         wetting phase at the specified capillary pressure, and creates or
         updates 'pore.occupancy' and 'throat.occupancy' arrays on the
-        associated Phase object.
+        associated Phase objects. Invasion pressure and sequence are also sent
+        to the invading phase.
 
         Parameters
         ----------
@@ -630,18 +638,35 @@ class Drainage(GenericAlgorithm):
         -----
         The Phase object that receives the updated occupancy arrays is the
         one that was specified as the 'invading_phase' when ``setup`` was
-        called.
+        called. The defending phase has the opposite occupancy values and
+        partial occupancy so that summing occupancy for both phases equals
+        1.0 for every pore.
         """
         Psatn = self['pore.inv_Pc'] <= Pc
         Tsatn = self['throat.inv_Pc'] <= Pc
-        phase = self._inv_phase
-        phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
-        phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
+        self._inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
+        self._inv_phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
+        self._def_phase['pore.occupancy'] = sp.array(~Psatn, dtype=float)
+        self._def_phase['throat.occupancy'] = sp.array(~Tsatn, dtype=float)
+        self._inv_phase['pore.inv_Pc'] = self['pore.inv_Pc']
+        self._inv_phase['pore.inv_seq'] = self['pore.inv_seq']
+        self._inv_phase['throat.inv_Pc'] = self['throat.inv_Pc']
+        self._inv_phase['throat.inv_seq'] = self['throat.inv_seq']
         if self._pore_filling:
             Vp = self._calc_fractional_filling(element='pore', pressure=Pc)
             Sp = Vp/self._net[self._pore_volume]
-            phase['pore.partial_occupancy'] = Sp
+            # For pores that have zero volume (i.e. boundary pores in some cases)
+            # fractional filling is meaningless so use the standard occupancy
+            zero_ps = self._net[self._pore_volume] == 0.0
+            Sp[zero_ps] = self._inv_phase['pore.occupancy'][zero_ps]
+            self._inv_phase['pore.partial_occupancy'] = Sp
+            self._def_phase['pore.partial_occupancy'] = 1 - Sp
         if self._throat_filling:
             Vt = self._calc_fractional_filling(element='throat', pressure=Pc)
             St = Vt/self._net[self._throat_volume]
-            phase['throat.partial_occupancy'] = St
+            # For throats that have zero volume (i.e. boundary throats in some cases)
+            # fractional filling is meaningless so use the standard occupancy
+            zero_ts = self._net[self._throat_volume] == 0.0
+            St[zero_ts] = self._inv_phase['throat.occupancy'][zero_ts]
+            self._inv_phase['throat.partial_occupancy'] = St
+            self._def_phase['throat.partial_occupancy'] = 1 - St
