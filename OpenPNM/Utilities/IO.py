@@ -238,6 +238,67 @@ class VTK():
         return array
 
 
+class STATOIL():
+    r"""
+    """
+    @staticmethod
+    def load(path, prefix, network={}, mode='overwrite'):
+        if network == {}:
+            network = OpenPNM.Network.Import()
+        net = {}
+
+        for item in ['link1']:
+            filename = path+'\\'+prefix+'_'+item+'.dat'
+            with _read_file(filename=filename, ext='dat') as f:
+                link1 = _pd.read_table(filepath_or_buffer=f,
+                                       header=None,
+                                       skiprows=1,
+                                       sep=' ',
+                                       skipinitialspace=True,
+                                       index_col=0)
+            link1.columns = ['throat.pore1', 'throat.pore2', 'throat.radius',
+                             'throat.shape_factor', 'throat.total_length']
+
+        for item in ['link2']:
+            filename = path+'\\'+prefix+'_'+item+'.dat'
+            with _read_file(filename=filename, ext='dat') as f:
+                link2 = _pd.read_table(filepath_or_buffer=f,
+                                       header=None,
+                                       sep=' ',
+                                       skipinitialspace=True,
+                                       index_col=0)
+            link2.columns = ['throat.pore1', 'throat.pore2',
+                             'throat.pore1_length', 'throat.pore2_length',
+                             'throat.length', 'throat.volume',
+                             'throat.clay_volume']
+
+        for item in ['node2']:
+            filename = path+'\\'+prefix+'_'+item+'.dat'
+            with _read_file(filename=filename, ext='dat') as f:
+                node2 = _pd.read_table(filepath_or_buffer=f,
+                                       header=None,
+                                       sep=' ',
+                                       skipinitialspace=True,
+                                       index_col=0)
+            node2.columns = ['pore.volume', 'pore.radius', 'pore.shape_factor',
+                             'pore.clay_volume']
+
+        for item in ['node1']:
+            filename = path+'\\'+prefix+'_'+item+'.dat'
+            with _read_file(filename=filename, ext='dat') as f:
+                num_lines = int(f.readline().split(' ')[0])
+                array = _sp.ndarray([num_lines, 6])
+                for i in range(num_lines):
+                    row = f.readline().split(' ')
+                    while '' in row:
+                        row.remove('')
+                    row.remove('\n')
+                    print(row)
+                    array[i, :] = row[0:6]
+            node1 = _pd.DataFrame(array[:, [1, 2, 3]])
+            node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord']
+
+
 class MAT():
     r"""
     Class for reading and writing OpenPNM data to a Matlab 'mat' file
@@ -727,7 +788,7 @@ def _update_network(network, net, mode):
 
 def _write_file(filename, ext):
     ext = ext.replace('.', '').lower()
-    if ext not in ['csv', 'yaml', 'mat', 'vtp']:
+    if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
         raise Exception(ext+' is not a supported file extension')
     filename = filename.rstrip('.'+ext)
     filename = filename+'.'+ext
@@ -742,7 +803,7 @@ def _write_file(filename, ext):
 
 def _read_file(filename, ext):
     ext = ext.replace('.', '').lower()
-    if ext not in ['csv', 'yaml', 'mat', 'vtp']:
+    if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
         raise Exception(ext+' is not a supported file extension')
     if not filename.endswith('.'+ext):
         filename = filename+'.'+ext
