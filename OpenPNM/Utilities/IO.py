@@ -238,11 +238,48 @@ class VTK():
         return array
 
 
-class STATOIL():
+class Statoil():
     r"""
+    This class is for loading data stored in the 'Statoil' file format.  More
+    specifically, this file format is used by the network extraction code of
+    Blunt's group at Imperial College London, so this class can be used to load
+    and work with those network.  Numerous datasets are available for download
+    from the group's `website <http://tinyurl.com/zurko4q>`_.
+
+    The so-called 'Statoil' format consists of 4 different files in a single
+    folder.  The data is stored in columns with each corresponding to a
+    specific property.  Headers are not provided in the files, so one must
+    refer to various theses and documents to interpret their meaning.
     """
     @staticmethod
     def load(path, prefix, network={}, mode='overwrite'):
+        r"""
+        Load data from the \'dat\' files located in specified folder.
+
+        Parameters
+        ----------
+        path : string
+            The full path to the folder containing the set of \'dat\' files.
+
+        prefix : string
+            The file name prefix on each file. The data files are stored
+            as \<prefix\>_node1.dat.
+
+        network : OpenPNM Network Object
+            If given then the data will be loaded on it and returned.  If not
+            given, a Network will be created and return.
+
+        mode : string
+            Specifies how new data is added to the Network.  Options are:
+
+            **'overwrite'** : (Default) This means that any existing data on
+            the Network is over-written by data in the loaded file that has the
+            same property name.
+
+            **'add'** : Only adds values to the network if they are not already
+            present.
+
+        """
         if network == {}:
             network = OpenPNM.Network.Import()
         net = {}
