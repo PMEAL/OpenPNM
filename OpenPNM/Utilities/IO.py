@@ -261,8 +261,9 @@ class STATOIL():
         link1.columns = ['throat.pore1', 'throat.pore2', 'throat.radius',
                          'throat.shape_factor', 'throat.total_length']
         # Add link1 props to net
-        net['throat.conns'] = _sp.vstack((link1['throat.pore1'],
-                                          link1['throat.pore2'])).T
+        net['throat.conns'] = _sp.vstack((link1['throat.pore1']-1,
+                                          link1['throat.pore2']-1)).T
+        net['throat.conns'] = _sp.sort(net['throat.conns'], axis=1)
         net['throat.radius'] = _sp.array(link1['throat.radius'])
         net['throat.shape_factor'] = _sp.array(link1['throat.shape_factor'])
         net['throat.total_length'] = _sp.array(link1['throat.total_length'])
@@ -297,8 +298,9 @@ class STATOIL():
                         row.remove('')
                     row.remove('\n')
                     array[i, :] = row[0:6]
-        node1 = _pd.DataFrame(array[:, [1, 2, 3]])
-        node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord']
+        node1 = _pd.DataFrame(array[:, [1, 2, 3, 4]])
+        node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord',
+                         'pore.coordination_number']
         # Add node1 props to net
         net['pore.coords'] = _sp.vstack((node1['pore.x_coord'],
                                          node1['pore.y_coord'],
@@ -322,6 +324,23 @@ class STATOIL():
         net['pore.clay_volume'] = _sp.array(node2['pore.clay_volume'])
 
         network = _update_network(network=network, net=net, mode=mode)
+
+        # Use OpenPNM Tools to clean up network
+        # Trim throats connected to 'inlet' or 'outlet' reservoirs
+        trim1 = _sp.where(_sp.any(net['throat.conns'] == -1, axis=1))[0]
+        # Apply 'outlet' label to these pores
+        outlets = network['throat.conns'][trim1, 1]
+        network['pore.outlets'] = False
+        network['pore.outlets'][outlets] = True
+        trim2 = _sp.where(_sp.any(net['throat.conns'] == -2, axis=1))[0]
+        # Apply 'inlet' label to these pores
+        inlets = network['throat.conns'][trim2, 1]
+        network['pore.inlets'] = False
+        network['pore.inlets'][inlets] = True
+        # Now trim the throats
+        trim = _sp.hstack([trim1, trim2])
+        network.trim(throats=trim)
+
         return network
 
 
