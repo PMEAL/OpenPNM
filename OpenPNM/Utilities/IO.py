@@ -327,13 +327,19 @@ class Statoil():
         for item in ['node1']:
             filename = path+'\\'+prefix+'_'+item+'.dat'
             with _read_file(filename=filename, ext='dat') as f:
-                num_lines = int(f.readline().split(' ')[0])
+                row_0 = f.readline().split(' ')
+                while '' in row_0:
+                    row_0.remove('')
+                num_lines = int(row_0[0])
                 array = _sp.ndarray([num_lines, 6])
                 for i in range(num_lines):
                     row = f.readline().split(' ')
                     while '' in row:
                         row.remove('')
-                    row.remove('\n')
+                    try:
+                        row.remove('\n')
+                    except:
+                        pass
                     array[i, :] = row[0:6]
         node1 = _pd.DataFrame(array[:, [1, 2, 3, 4]])
         node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord',
@@ -856,8 +862,9 @@ def _update_network(network, net, mode):
     for item in net.keys():
         # Try to infer array types and change if necessary
         # Chcek for booleans disguised and 1's and 0's
-        if (_sp.sum(net[item] == 1) + _sp.sum(net[item] == 0)) \
-                == _sp.shape(net[item])[0]:
+        num0s = _sp.sum(net[item] == 0)
+        num1s = _sp.sum(net[item] == 1)
+        if (num1s + num0s) == _sp.shape(net[item])[0]:
             net[item] = net[item].astype(bool)
         if mode == 'overwrite':
             network.update({item: net[item]})

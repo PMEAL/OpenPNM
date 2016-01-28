@@ -16,6 +16,24 @@ class IOTest:
                                            pores=self.net.Ps,
                                            throats=self.net.Ts)
 
+    def test_load_statoil(self):
+        path = os.path.join(FIXTURE_DIR, 'ICL-SandPack(F42A)')
+        net = io.Statoil.load(path=path, prefix='F42A')
+        assert net.Np == 1246
+        assert net.Nt == 2654
+        assert sp.shape(net['pore.coords']) == (1246, 3)
+        assert sp.shape(net['throat.conns']) == (2654, 2)
+        assert 'pore.radius' in net.keys()
+
+        path = os.path.join(FIXTURE_DIR, 'ICL-Sandstone(Berea)')
+        net = io.Statoil.load(path=path, prefix='Berea')
+        assert net.Np == 6928
+        assert net.Nt == 12098
+        assert sp.shape(net['pore.coords']) == (6928, 3)
+        assert sp.shape(net['throat.conns']) == (12098, 2)
+        assert 'pore.radius' in net.keys()
+        assert sp.all(net.find_neighbor_pores(pores=1000) == [ 221, 1214])
+
     def test_save_load_vtk_no_phases(self):
         fname = os.path.join(TEMP_DIR, 'test_save_vtk_1')
         io.VTK.save(network=self.net, filename=fname, legacy=True)
