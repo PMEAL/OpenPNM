@@ -287,7 +287,7 @@ class Statoil():
         # ---------------------------------------------------------------------
         # Parse the link1 file
         for item in ['link1']:
-            filename = path+'\\'+prefix+'_'+item+'.dat'
+            filename = _os.path.join(path, prefix+'_'+item+'.dat')
             with _read_file(filename=filename, ext='dat') as f:
                 link1 = _pd.read_table(filepath_or_buffer=f,
                                        header=None,

@@ -32,7 +32,7 @@ class IOTest:
         assert sp.shape(net['pore.coords']) == (6298, 3)
         assert sp.shape(net['throat.conns']) == (12098, 2)
         assert 'pore.radius' in net.keys()
-        assert sp.all(net.find_neighbor_pores(pores=1000) == [ 221, 1214])
+        assert sp.all(net.find_neighbor_pores(pores=1000) == [221, 1214])
 
     def test_save_load_vtk_no_phases(self):
         fname = os.path.join(TEMP_DIR, 'test_save_vtk_1')
