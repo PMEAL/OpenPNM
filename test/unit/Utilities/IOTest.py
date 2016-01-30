@@ -27,9 +27,9 @@ class IOTest:
 
         path = os.path.join(FIXTURE_DIR, 'ICL-Sandstone(Berea)')
         net = io.Statoil.load(path=path, prefix='Berea')
-        assert net.Np == 6928
+        assert net.Np == 6298
         assert net.Nt == 12098
-        assert sp.shape(net['pore.coords']) == (6928, 3)
+        assert sp.shape(net['pore.coords']) == (6298, 3)
         assert sp.shape(net['throat.conns']) == (12098, 2)
         assert 'pore.radius' in net.keys()
         assert sp.all(net.find_neighbor_pores(pores=1000) == [ 221, 1214])
