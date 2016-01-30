@@ -7,6 +7,7 @@ class UtilitiesMiscTest:
 
     def setup_class(self):
         self.net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
+        self.air = OpenPNM.Phases.Air(network=self.net)
 
     def test_find_path_single_pore_pair(self):
         a = misc.find_path(network=self.net,
@@ -31,3 +32,9 @@ class UtilitiesMiscTest:
                            weights=w)
         assert len(a['pores'][0]) > 2
         assert len(a['throats'][0]) > 1
+
+    def test_amalgamate_data(self):
+        dict_ = misc.amalgamate_data(objs=[self.net, self.air])
+        assert 'pore.'+self.air.name+'_molecular_weight' in dict_.keys()
+        dict_ = misc.amalgamate_data(objs=[self.net, self.air], delimiter='|')
+        assert 'pore.'+self.air.name+'|molecular_weight' in dict_.keys()
