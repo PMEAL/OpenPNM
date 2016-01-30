@@ -307,7 +307,7 @@ class Statoil():
         # ---------------------------------------------------------------------
         # Parse the link2 file
         for item in ['link2']:
-            filename = path+'\\'+prefix+'_'+item+'.dat'
+            filename = _os.path.join(path, prefix+'_'+item+'.dat')
             with _read_file(filename=filename, ext='dat') as f:
                 link2 = _pd.read_table(filepath_or_buffer=f,
                                        header=None,
@@ -325,7 +325,7 @@ class Statoil():
         # ---------------------------------------------------------------------
         # Parse the node1 file
         for item in ['node1']:
-            filename = path+'\\'+prefix+'_'+item+'.dat'
+            filename = _os.path.join(path, prefix+'_'+item+'.dat')
             with _read_file(filename=filename, ext='dat') as f:
                 row_0 = f.readline().split(' ')
                 while '' in row_0:
@@ -351,7 +351,7 @@ class Statoil():
         # ---------------------------------------------------------------------
         # Parse the node1 file
         for item in ['node2']:
-            filename = path+'\\'+prefix+'_'+item+'.dat'
+            filename = _os.path.join(path, prefix+'_'+item+'.dat')
             with _read_file(filename=filename, ext='dat') as f:
                 node2 = _pd.read_table(filepath_or_buffer=f,
                                        header=None,
