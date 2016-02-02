@@ -8,114 +8,88 @@ A Quick Guide to Getting Started with OpenPNM
 Building a Cubic Network
 ===============================================================================
 
-The first thing you must do is import the OpenPNM code so you have access to the functions and methods, so in a blank *.py* file or at the python command line, start by entering the following line:
+Start by generating a *Network*.  This is accomplished by choosing the desired network topology (e.g. cubic), then calling its respective method in OpenPNM with the desired parameters:
 
 .. code-block:: python
 
-	import OpenPNM
-	ctrl = OpenPNM.Base.Controller()
+	pn = OpenPNM.Network.Cubic(shape=[10, 10, 10], spacing=0.0001)
 
-The *Controller* object provides high-level oversight to all the simulations existing in memory at any given time.  Its main purpose is saving, loading and exporting data to files.
+This generates a topological network and stores it in variable ``pn``.  This network contains pores at the correct spatial positions and connections between the pores according the specified topology (but without boundary pores).  The ``shape`` argument specifies the number of pores in the [X, Y, Z] directions of the cube.  Networks in OpenPNM are alway 3D dimensional, meaning that a 2D or 'flat' network is still 1 layer of pores 'thick' so [X, Y, Z] = [20, 10, 1].  The ``spacing`` argument controls the center-to-center distance between pores.  Although OpenPNM does not currently have a dimensional units system, we *strongly* recommend using SI throughout.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Initialize the Network Topology
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-Next, it's time to generate a *Network*.  This is accomplished by choosing the desired network topology (e.g. cubic), then calling its respective method in OpenPNM with the desired parameters:
-
-.. code-block:: python
-
-	pn = OpenPNM.Network.Cubic(name='net', shape=[10,10,10])
-
-This generates a topological network called ``pn`` which contains pores at the correct spatial positions and connections between the pores according the desired topology, but without boundary pores.  The network can be queried for certain topological information such as:
+The network can be queried for a variety of common topological:
 
 .. code-block:: python
 
 	pn.num_pores()  # 1000
 	pn.num_throats()  # 2700
-	pn.find_neighbor_pores(pores=[1])  # [0,2,11,101]
-	pn.labels(pores=[1])  # ['all','bottom','left']
-	pn.pores(labels = 'bottom')
+	pn.find_neighbor_pores(pores=[1])  # [0, 2, 11, 101]
+	pn.labels(pores=[1])  # ['all', 'bottom', 'left']
+	pn.pores(labels='bottom')
 
-This data may also be stored in a variable:
+The data returned from these queries may also be stored in a variable for convenience:
 
 .. code-block:: python
 
 	Ps = pn.pores()
 	Ts = pn.throats()
 
-Networks are the chief objects in OpenPNM.  All subsequent objects are subjects of the Network.  Two Networks may exist in memory at the same time, but they are completely independent of each other.  In fact, because of thier chief status, the *Network* object define a simulation, so the term 'Network' and 'simulation' are sometimes used interchangably. The *Controller* object mentioned above keeps track of all the different *Networks* in memory.
-
 ===============================================================================
 Initialize and Build a Geometry Object
 ===============================================================================
 
-The *Network* does not contain any information about pore and throat sizes at this point.  The next step is to create a *Geometry* object to calculate the desired geometrical properties.
+The *Network* does not contain any information about pore and throat sizes at this point.  The next step, then, is to create a *Geometry* object to calculate the desired geometrical properties.
 
 .. code-block:: python
 
 	geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
 
-This statement contains three arguments.  The ``network`` tells the *Geometry* object which *Network* it is associated with.  ``pores`` and ``throats`` indicate which locations in the *Network* this *Geometry* object will apply to.  It's possible to have multiple *Geometry* Objects each applying to different regions of the domain, to create heterogeneous materials for instance.  *Geometry* objects cannot overlap, however, since it does not make sense for a single pore to have multiple sizes.
+This statement contains three arguments: ``network`` tells the *Geometry* object which *Network* it is associated with.  ``pores`` and ``throats`` indicate which locations in the *Network* where this *Geometry* object will apply.
+
+.. note::
+
+	OpenPNM was designed to allow multiple *Geometry* objects, with each applying to different regions of the *Network*.  This enables modeling of heterogeneous materials with much different geometrical properties in different regions; this is why the ``pores`` and ``throats`` arguments are required.  In this tutorial ``geom`` applies everywhere which is a common scenario.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Add Desired Properties to Geometry
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-This freshly instantiated *Geometry* object contains no geometric properties as yet.  For this example we will make a basic 'stick-and-ball' geometry, which as the name suggests treats the pores as spheres and the throats as cylinders.
+This freshly instantiated *Geometry* object contains no geometric properties as yet because we chose to use the *GenericGeometry* class.  There are several other 'pre-written' classes available in *Geometry* module, but for this example we will explicity make a 'stick-and-ball' geometry, which as the name suggests treats the pores as spheres and the throats as cylinders.
 
 -------------------------------------------------------------------------------
 Direct Assignment of Static Values
 -------------------------------------------------------------------------------
 
-Before diving into the 'pore-scale model' feature, let's assign a random seed to each pore.  These seed values will be subsequently used in the calculation of pore diameters using a statistical distribution.
+Let's start by assiging diameters to each pore from a random distribution, spanning 10 um to 100 um.  The upper limit is arise because the ``spacing`` of the *Network* was set to 100 [um], so pore diameters exceeding 100 um might overlap with neighbors.  The lower limit is merely to avoid vanishingly small pores.
 
 .. code-block:: python
 
-    geom['pore.seed'] = sp.rand([pn.Np,])
+    geom['pore.diameter'] = 0.00001 + sp.rand(pn.Np)*0.00099
 
-This creates a Numpy array of random numbers that is *Np* long, meaning each pore is assigned a unique random number. This is one of the the most basic ways to assign values to the Geomtry object.  The limitation of this approach is that the values are now completley static and can only be updated by re-assigning random values.  In some cases it may be of interest to have values *regenerate* upon request and this functionality is provided by the *models* feature to be described next.
+This creates a ND-array of random numbers (between 0.00001 and 0.0001) that is *Np* long, meaning each pore is assigned a unique random number.
 
--------------------------------------------------------------------------------
-Assigning Pore Scale Models to Calculate Properties
--------------------------------------------------------------------------------
-
-OpenPNM includes an array of prewritten pore-scale models which are found in the *models* folder under each submodule.  To access these models, the first step is to load the Geometry model library into a convenient namespace.
+For throat diameter, we want them to always be smaller than the two pores which it connects to maintain physical consistency. This requires explaining how OpenPNM stores network topology.
 
 .. code-block:: python
 
-	import OpenPNM.Geometry.models as gm
+	P12 = pn['throat.conns']  # An Nt x 2 list of pores on the end of each throat
+	D12 = geom['pore.diameter'][P12]  # An Nt x 2 list of pore diameters
+	Dt = sp.amin(D12, axis=1)  # An Nt x 1 list of the smaller pore from each pair
+	geom['throat.diameter'] = Dt
 
-The 'behind-the-scenes' behavior that occurs when adding a pore scale model to an object is outlined in it's own  :ref:`documentation page<models>`.  For the purpose of this guide these details will be skipped.  To add a model, you can either use to the ```object.models.add`` or ``object.add_models`` command.  For instance, OpenPNM comes with a model for assigning random values to pores, instead of the direct assignment above:
+Let's disect the above lines.  Firstly, P12 is a direct copy of the Network's \'throat.conns\' array, which contains the indices of the pore pair connected by each throat.  Next, this *Nt-by-2* array is used to index into the \'pore.diameter'\ array, resulting in another *Nt-by-2* array containing the diameters of the pores connected by each throat.  Finally, the Scipy function ``amin`` is used to find the minimum diameter of each pore pair by specifying the ``axis`` keyword as 1, and the resulting *Nt-by-1* array is assigned to ``geom['throat.diameter']``.
 
-.. code-block:: python
-
-    geom.add_model(propname='pore.seed', model=gm.pore_misc.random)
-
-The above line generates an *Np* long list of random numbers and insert them into the ``geom['pore.seed']`` exactly we did previously.  The difference is that when we call :code:`geom.regenerate()` the random numbers will be regenerated...and so will all the other values in ``geom`` that are calculated by a pore scale model!  This mechanism enables the changes in one property to cascade to all other relevant properties.
-
-Each pore scale model takes different arguments.  In the code block below, a Weibull distribution is assigned to the pore diameters, which will use the ``'pore.seed'`` values, the throat diameter is taken as the minimum of its two neighbors, and other geoemtric properties are calculated in the expected way.
+Finally, we must specify the remaining geometrical properties of the pores and throats. Since we're creating a 'stick-and-ball' geometry, the sizes are calculated from the geometrical equations for spheres and cylinders as follows:
 
 .. code-block:: python
 
-	geom.add_model(propname='pore.diameter',
-                 model=gm.pore_diameter.sphere,
-                 psd_name='weibull_min',
-                 psd_shape=2.77,
-                 psd_loc=6.9e-7,
-                 psd_scale=9.8e-6,
-                 psd_offset=10e-6)
-  geom.add_model(propname='throat.diameter',
-                 model=gm.throat_misc.neighbor,
-                 pore_prop='pore.diameter',
-                 mode='min')
-  geom.add_model(propname='pore.volume', model=gm.pore_volume.sphere)
-  geom.add_model(propname='pore.area', model=gm.pore_area.spherical)
-  geom.add_model(propname='throat.length', model=gm.throat_length.straight)
-  geom.add_model(propname='throat.volume', model=gm.throat_volume.cylinder)
-  geom.add_model(propname='throat.area', model=gm.throat_area.cylinder)
+	Rp = geom['pore.diameter']/2
+	geom['pore.volume'] = (4/3)*3.14159*(Rp)**3
+	geom['throat.length'] = ??
+	Rt = geom['throat.diameter']/2
+	Lt = geom['throat.length']
+	geom['throat.volume'] = 3.14159*(R)**2*L
 
-At this point, ``geom`` has been fully populated with the necessary geometric properties.  You can view these by typing ``print(geom)`` at the command line.
+The basic geometrical properties of the network are now defined.
 
 ===============================================================================
 Create Phases
