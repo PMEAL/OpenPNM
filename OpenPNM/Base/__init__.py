@@ -21,6 +21,7 @@ r"""
 """
 import logging as logging
 from .__Workspace__ import Workspace
+from .__Workspace__ import Controller
 from .__ModelsDict__ import ModelsDict
 from . import __Tools__ as Tools
 from .__Core__ import Core
