@@ -535,11 +535,3 @@ class Workspace(dict):
                 self[item.name] = item
         else:
             print('Duplicate name found in Workspace')
-
-
-class Controller(Workspace):
-    # This is a dummy class to provide the functionality of the Workspace class
-    # under the name Controller to provide backwards compatibility.
-    def __init__(self, **kwargs):
-        logger.warning('This class is deprecated, use Workspace instead')
-        super().__init__(**kwargs)
