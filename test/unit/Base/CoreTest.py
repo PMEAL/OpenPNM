@@ -1,8 +1,8 @@
 import OpenPNM
 import scipy as sp
 import pytest
-ctrl = OpenPNM.Base.Controller()
-ctrl.loglevel = 60
+mgr = OpenPNM.Base.Workspace()
+mgr.loglevel = 60
 
 
 class CoreTest:
@@ -441,10 +441,10 @@ class CoreTest:
         assert sp.all(a == b)
 
     def test_object_rename(self):
-        assert self.geo1 in ctrl.values()
+        assert self.geo1 in mgr.values()
         self.geo1.name = 'new_name'
         assert self.geo1.name == 'new_name'
-        assert self.geo1 in ctrl.values()
+        assert self.geo1 in mgr.values()
 
     def test_object_duplicate_name(self):
         temp = self.geo1.name
@@ -478,8 +478,8 @@ class CoreTest:
         geo.set_locations(throats=net.Ts)
         assert geo.Np == net.Np
         assert geo.Nt == net.Nt
-        del ctrl[net.name]
-        del ctrl[geo.name]
+        del mgr[net.name]
+        del mgr[geo.name]
 
     def test_set_locations_add_and_remove_on_empty_geometry(self):
         # 'empty' meaning assigned nowhere, with no models or props
@@ -490,8 +490,8 @@ class CoreTest:
         Np = geo.Np
         geo.set_locations(pores=0, mode='remove')
         assert Np > geo.Np
-        del ctrl[net.name]
-        del ctrl[geo.name]
+        del mgr[net.name]
+        del mgr[geo.name]
 
     def test_set_locations_overlapping_on_empty_geometry(self):
         # 'empty' meaning assigned nowhere, with no models or props
@@ -504,9 +504,9 @@ class CoreTest:
         except:
             pass
         assert geo2.Np == 0
-        del ctrl[net.name]
-        del ctrl[geo1.name]
-        del ctrl[geo2.name]
+        del mgr[net.name]
+        del mgr[geo1.name]
+        del mgr[geo2.name]
 
     def test_set_locations_add_successivly_on_empty_geometry(self):
         # 'empty' meaning assigned nowhere, with no models or props
@@ -520,8 +520,8 @@ class CoreTest:
         geo.set_locations(pores=net.pores('bottom'))
         assert geo.Np == 18
         assert geo.Nt == 0
-        del ctrl[net.name]
-        del ctrl[geo.name]
+        del mgr[net.name]
+        del mgr[geo.name]
 
     def test_set_locations_add_duplicates_on_empty_geometry(self):
         # 'empty' meaning assigned nowhere, with no models or props
@@ -538,8 +538,8 @@ class CoreTest:
             pass
         assert geo.Np == 9
         assert geo.Nt == 0
-        del ctrl[net.name]
-        del ctrl[geo.name]
+        del mgr[net.name]
+        del mgr[geo.name]
 
     def test_set_locations_remove_on_realistic_geometry(self):
         # 'realistic' meaning assigned to pores, and has models and props
@@ -561,8 +561,8 @@ class CoreTest:
         assert geo.Np == 26
         geo.set_locations(pores=1, mode='remove')
         assert geo.Np == 25
-        del ctrl[net.name]
-        del ctrl[geo.name]
+        del mgr[net.name]
+        del mgr[geo.name]
 
     def test_set_locations_add_on_realistic_geometry(self):
         # 'realistic' meaning assigned to pores, and has models and contants
@@ -584,8 +584,8 @@ class CoreTest:
         except:
             pass
         assert geo.Np == 9
-        del ctrl[net.name]
-        del ctrl[geo.name]
+        del mgr[net.name]
+        del mgr[geo.name]
 
     def test_set_locations_add_on_geometry_models_only(self):
         net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
@@ -599,8 +599,8 @@ class CoreTest:
         geo.set_locations(pores=net.pores('bottom'), mode='add')
         assert geo.Np == 18
         assert sp.size(geo['pore.regenerating_model']) == 18
-        del ctrl[net.name]
-        del ctrl[geo.name]
+        del mgr[net.name]
+        del mgr[geo.name]
 
     def test_find_all_physics(self):
         a = self.net1.physics()

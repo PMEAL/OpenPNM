@@ -1,7 +1,7 @@
 import scipy as sp
 import OpenPNM
-ctrl = OpenPNM.Base.Controller()
-ctrl.loglevel = 60
+mgr = OpenPNM.Base.Workspace()
+mgr.loglevel = 60
 
 
 class DrainageTest:

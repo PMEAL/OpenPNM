@@ -6,8 +6,8 @@ from os.path import join
 class ImportTest:
     def setup_class(self):
         self.net = OpenPNM.Network.Import()
-        ctrl = OpenPNM.Base.Controller()
-        ctrl.loglevel = 50
+        mgr = OpenPNM.Base.Workspace()
+        mgr.loglevel = 50
 
     def test_from_csv(self):
         fname = join(FIXTURE_DIR, 'test_load_csv_no_phases.csv')
