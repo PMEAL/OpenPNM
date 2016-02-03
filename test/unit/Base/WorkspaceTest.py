@@ -126,8 +126,8 @@ class WorkspaceTest:
                                             throats=net.Ts)
         # Test VTK option
         self.workspace.export(network=net,
-                               filename=fname,
-                               fileformat='VTK')
+                              filename=fname,
+                              fileformat='VTK')
         assert os.path.isfile(fname+'.vtp')
         os.remove(fname+'.vtp')
         # Test Matlab matfile option

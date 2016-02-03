@@ -21,9 +21,9 @@ boun = op.Geometry.Boundary(network=pn, pores=Ps, throats=Ts)
 # =============================================================================
 '''Build Phases'''
 # =============================================================================
-air = op.Phases.Air(network=pn, name='air')
+air = op.Phases.Air(network=pn)
 air['pore.Dac'] = 1e-7  # Add custom properties directly
-water = op.Phases.Water(network=pn, name='water')
+water = op.Phases.Water(network=pn)
 
 # =============================================================================
 '''Build Physics'''
