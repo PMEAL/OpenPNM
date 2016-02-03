@@ -5,13 +5,13 @@ Standard Bond Percolation Simulations
 ===============================================================================
 This examples illustrates how to set up an OpenPNM simulation to perform a typical bond and site percolation-type simulation.
 
-As usual, start by importing OpenPNM, the necessary model libraries and retrieving the controller object:
+As usual, start by importing OpenPNM, the necessary model libraries and retrieving the workspace object:
 
 .. code-block:: python
 
     import scipy as sp
     import OpenPNM
-    sim = OpenPNM.Base.Controller()
+    sim = OpenPNM.Base.Workspace()
 
 Next, generate a cubic Network of specified size that will contain the topological connections:
 

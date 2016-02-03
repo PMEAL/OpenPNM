@@ -35,14 +35,14 @@ We first import the OpenPNM code.
 
 To begin our simulation, we must first generate our random network and geometry.  This includes:
 
-1. Getting a handle to the OpenPNM Controller and setting the loglevel to display useful information
+1. Getting a handle to the Workspace and setting the loglevel to display useful information
 2. Creating a Delaunay network object and a Voronoi geometry object
 3. Assingning a 'Voronoi' geometry to the initial set of pores and a 'Boundary' geometry to the boundary pores
 
 .. code-block:: python
 
-	ctrl = OpenPNM.Base.Controller()
-	ctrl.loglevel = 20
+	mgr = OpenPNM.Base.Workspace()
+	mgr.loglevel = 20
 	pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[1e-4, 1e-4, 1e-4], name='net')
 	pn.add_boundaries()
 	# create geometry
@@ -231,7 +231,7 @@ To create the vtk file use the following command
 
 .. code-block:: python
 
-    ctrl.export(pn)
+    mgr.export(pn)
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 References
