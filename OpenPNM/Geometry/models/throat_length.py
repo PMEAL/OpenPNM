@@ -32,7 +32,7 @@ def straight(network, geometry, pore_diameter='pore.diameter',
     value = E-(D1+D2)/2.
     value = value[throats]
     if _sp.any(value < 0) and L_negative is not None:
-        logger.warn('Negative throat lengths are calculated. Arbitrary positive'+
+        logger.warn('Negative throat lengths are calculated. Arbitrary positive' +
                     ' length assigned: ' + str(L_negative))
         Ts = _sp.where(value < 0)[0]
         value[Ts] = L_negative

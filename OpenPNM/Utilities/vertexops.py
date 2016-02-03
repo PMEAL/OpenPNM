@@ -139,13 +139,13 @@ def _linear_scale_factor(points=None,
     if len(shape) == 1:
         combined_pos = np.ones([1])
         for i in range(3):
-            if linear_scaling[i] == True:
+            if linear_scaling[i] is True:
                 combined_pos *= pos_array[i]
         lin_scale = (scale_factor - 1)*combined_pos + 1
     else:
         combined_pos = np.ones([shape[0]])
         for i in range(3):
-            if linear_scaling[i] == True:
+            if linear_scaling[i] is True:
                 combined_pos *= pos_array[:, i]
         pos_array = np.vstack((combined_pos, combined_pos, combined_pos)).T
         lin_scale = (scale_factor - 1)*pos_array + 1

@@ -141,7 +141,7 @@ class Voronoi(GenericGeometry):
         mat_file : string
         Filename of Matlab file to save fibre image
         """
-        if hasattr(self, '_fibre_image') == False:
+        if hasattr(self, '_fibre_image') is False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
@@ -163,7 +163,7 @@ class Voronoi(GenericGeometry):
         index : array_like
         similar to plane but instead of the fraction an index of the image is used
         """
-        if hasattr(self, '_fibre_image') == False:
+        if hasattr(self, '_fibre_image') is False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return None
@@ -216,7 +216,7 @@ class Voronoi(GenericGeometry):
         index : array_like
         similar to plane but instead of the fraction an index of the image is used
         """
-        if hasattr(self, '_fibre_image') == False:
+        if hasattr(self, '_fibre_image') is False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
@@ -234,7 +234,7 @@ class Voronoi(GenericGeometry):
         Return a porosity profile in all orthogonal directions by summing
         the voxel volumes in consectutive slices.
         """
-        if hasattr(self, '_fibre_image') == False:
+        if hasattr(self, '_fibre_image') is False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return

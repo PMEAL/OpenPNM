@@ -57,10 +57,9 @@ class GenericPhysics(OpenPNM.Base.Core):
 
         # Associate with Phase
         if phase is None:
-            self._phases.append(GenericPhase())
-        else:
-            phase._physics.append(self)  # Register self with phase
-            self._phases.append(phase)  # Register phase with self
+            phase = GenericPhase(network=self._net)
+        phase._physics.append(self)  # Register self with phase
+        self._phases.append(phase)  # Register phase with self
 
         if geometry is not None:
             if (sp.size(pores) > 0) or (sp.size(throats) > 0):
@@ -89,6 +88,25 @@ class GenericPhysics(OpenPNM.Base.Core):
         else:  # ...Then check Network
             return self._phases[0][key][self._phases[0][element + '.' + self.name]]
 
+    def _set_phase(self, phase):
+        current_phase = self._phases[0]
+        # Remove labels of self from current phase
+        pore_label = current_phase.pop('pore.'+self.name)
+        throat_label = current_phase.pop('throat.'+self.name)
+        # Add labels of self to new phase
+        phase['pore.'+self.name] = pore_label
+        phase['throat.'+self.name] = throat_label
+        # Replace phase reference on self
+        self._phases[0] = phase
+        # Remove physics reference on current phase
+        current_phase._physics.remove(self)
+        phase._physics.append(self)
+
+    def _get_phase(self):
+        return self._phases[0]
+
+    parent_phase = property(fget=_get_phase, fset=_set_phase)
+
     def set_locations(self, pores=[], throats=[], mode='add'):
         r"""
         Set the pore and throat locations of the Physics object
@@ -102,8 +120,6 @@ class GenericPhysics(OpenPNM.Base.Core):
             from the object.  Options are 'add' (default) or 'remove'.
         """
         if sp.size(pores) > 0:
-            pores = sp.array(pores, ndmin=1)
             self._set_locations(element='pore', locations=pores, mode=mode)
         if sp.size(throats) > 0:
-            throats = sp.array(throats, ndmin=1)
             self._set_locations(element='throat', locations=throats, mode=mode)

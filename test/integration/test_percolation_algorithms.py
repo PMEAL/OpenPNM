@@ -2,6 +2,7 @@ import scipy as sp
 import matplotlib
 import OpenPNM
 import pytest
+from OpenPNM.Algorithms.__OrdinaryPercolation__ import OrdinaryPercolation
 ctrl = OpenPNM.Base.Controller()
 
 
@@ -51,8 +52,7 @@ def test_OP_old_approach():
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
     phys = OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
-    OP_1 = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,
-                                                  invading_phase=water)
+    OP_1 = OrdinaryPercolation(network=pn, invading_phase=water)
     Ps = pn.pores(labels=['left'])
     OP_1.run(inlets=Ps)
     OP_1.return_results(Pc=7000)
@@ -70,7 +70,7 @@ def test_OP_new_approach():
     water = OpenPNM.Phases.Water(network=pn)
     phys = OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
     inlets = pn.pores('left')
-    OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn)
+    OP = OrdinaryPercolation(network=pn)
     OP.setup(invading_phase=water)
     OP.set_inlets(pores=inlets)
     OP.run(npts=25)
@@ -97,9 +97,9 @@ def test_OP_trapping():
     phys.models.add(propname='throat.capillary_pressure',
                     model=f)
 
-    OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn,
-                                                invading_phase=water,
-                                                defending_phase=air)
+    OP = OrdinaryPercolation(network=pn,
+                             invading_phase=water,
+                             defending_phase=air)
     OP.run(inlets=pn.pores('left'), outlets=pn.pores('right'), trapping=True)
     V_inv = sp.sum(pn['pore.volume'][OP['pore.inv_Pc'] < sp.inf])
     V_tot = sp.sum(pn['pore.volume'])
@@ -114,7 +114,7 @@ def test_OP_plotting():
     water = OpenPNM.Phases.Water(network=pn)
     OpenPNM.Physics.Standard(network=pn, phase=water, geometry=geom)
     inlets = pn.pores('left')
-    OP = OpenPNM.Algorithms.OrdinaryPercolation(network=pn)
+    OP = OrdinaryPercolation(network=pn)
     OP.setup(invading_phase=water)
     OP.set_inlets(pores=inlets)
     OP.run(npts=25)
