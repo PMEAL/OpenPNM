@@ -5,7 +5,7 @@ ModelsDict:  Abstract Class for Containing Models
 """
 import inspect
 from collections import OrderedDict
-from OpenPNM.Base import logging, Controller
+from OpenPNM.Base import logging, Workspace
 logger = logging.getLogger()
 
 
@@ -77,13 +77,13 @@ class ModelWrapper(dict):
         return self['model'](**kwargs)
 
     def _find_master(self):
-        ctrl = Controller()
+        mgr = Workspace()
         master = []
-        for item in list(ctrl.keys()):
-            if ctrl[item].models is not None:
-                for model in list(ctrl[item].models.keys()):
-                    if ctrl[item].models[model] is self:
-                        master.append(ctrl[item])
+        for item in list(mgr.keys()):
+            if mgr[item].models is not None:
+                for model in list(mgr[item].models.keys()):
+                    if mgr[item].models[model] is self:
+                        master.append(mgr[item])
         if len(master) > 1:
             raise Exception('More than one master found! This model dictionary '
                             'has been associated with multiple objects. To use '
@@ -356,11 +356,11 @@ class ModelsDict(OrderedDict):
             self.move_to_end(item)
 
     def _find_master(self):
-        ctrl = Controller()
+        mgr = Workspace()
         master = []
-        for item in list(ctrl.keys()):
-            if ctrl[item].models is self:
-                master.append(ctrl[item])
+        for item in list(mgr.keys()):
+            if mgr[item].models is self:
+                master.append(mgr[item])
         if len(master) > 1:
             raise Exception('More than one master found! This model dictionary '
                             'has been associated with multiple objects. To use the '

@@ -3,7 +3,7 @@ r"""
 :mod:`OpenPNM.Base` -- Abstract Base Class, and Core Data Class
 ###############################################################################
 
-.. autoclass:: OpenPNM.Base.Controller
+.. autoclass:: OpenPNM.Base.Workspace
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,7 +20,7 @@ r"""
 
 """
 import logging as logging
-from .__Controller__ import Controller
+from .__Workspace__ import Workspace
 from .__ModelsDict__ import ModelsDict
 from . import __Tools__ as Tools
 from .__Core__ import Core

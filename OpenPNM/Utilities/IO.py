@@ -9,7 +9,7 @@ import OpenPNM
 from OpenPNM.Utilities import misc as _misc
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
-ctrl = OpenPNM.Base.Controller()
+mgr = OpenPNM.Base.Workspace()
 
 
 class VTK():

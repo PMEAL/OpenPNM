@@ -3,7 +3,7 @@
 Core:  Core Data Class
 ###############################################################################
 """
-from OpenPNM.Base import Controller
+from OpenPNM.Base import Workspace
 import string
 import random
 import scipy as sp
@@ -11,7 +11,7 @@ import scipy.constants
 from OpenPNM.Base import logging, Tools
 from OpenPNM.Base import ModelsDict
 logger = logging.getLogger()
-ctrl = Controller()
+mgr = Workspace()
 
 
 class Core(dict):
@@ -107,16 +107,16 @@ class Core(dict):
                 # TODO: This should probably raise the following exception
                 # raise Exception('Cannot write vector of the wrong length')
 
-    def _get_ctrl(self):
-        if self in ctrl.values():
-            return ctrl
+    def _get_mgr(self):
+        if self in mgr.values():
+            return mgr
         else:
             return {}
 
-    controller = property(_get_ctrl)
+    workspace = property(_get_mgr)
 
     def _set_name(self, name):
-        if name in ctrl.keys():
+        if name in mgr.keys():
             raise Exception('An object named '+name+' already exists')
         elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase +
@@ -126,7 +126,7 @@ class Core(dict):
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
-            if ctrl._validate_name(name):
+            if mgr._validate_name(name):
                 # Rename any label arrays
                 for item in self._simulation():
                     if 'pore.'+self.name in item.keys():
@@ -136,11 +136,11 @@ class Core(dict):
             else:
                 raise Exception('The provided name is already in use')
         # Remove reference to object under old name, if present
-        for item in list(ctrl.items()):
+        for item in list(mgr.items()):
             if item[1] is self:
-                ctrl.pop(item[0])
-        # Add object to controller under new name
-        ctrl.update({name: self})
+                mgr.pop(item[0])
+        # Add object to workspace under new name
+        mgr.update({name: self})
         self._name = name
 
     def _get_name(self):
@@ -256,19 +256,19 @@ class Core(dict):
         """
         if obj_name != '':
             obj = []
-            if obj_name in ctrl.keys():
-                obj = ctrl[obj_name]
+            if obj_name in mgr.keys():
+                obj = mgr[obj_name]
             return obj
         elif obj_type != '':
             if obj_type in ['Geometry', 'Geometries', 'geometry',
                             'geometries']:
-                objs = ctrl.geometries()
+                objs = mgr.geometries()
             elif obj_type in ['Phase', 'Phases', 'phase', 'phases']:
-                objs = ctrl.phases()
+                objs = mgr.phases()
             elif obj_type in ['Physics', 'physics']:
-                objs = ctrl.physics()
+                objs = mgr.physics()
             elif obj_type in ['Network', 'Networks', 'network', 'networks']:
-                objs = ctrl.networks()
+                objs = mgr.networks()
             return objs
 
     def physics(self, phys_name=[]):

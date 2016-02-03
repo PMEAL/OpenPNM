@@ -55,16 +55,16 @@ from . import Phases
 from . import Physics
 from . import Algorithms
 from . import Postprocessing
-from .Base import Controller as ctrl
+from .Base import Workspace as mgr
 
-_controller = ctrl()
-del ctrl
-save = _controller.save
-load = _controller.load
-export = _controller.export
-clear = _controller.clear
-purge_object = _controller.purge_object
+_workspace = mgr()
+del mgr
+save = _workspace.save
+load = _workspace.load
+export = _workspace.export
+clear = _workspace.clear
+purge_object = _workspace.purge_object
 
 
 def view():
-    print(_controller.__str__())
+    print(_workspace.__str__())

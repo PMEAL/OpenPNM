@@ -10,9 +10,9 @@ import numpy as _np
 import scipy.sparse as _sprs
 import scipy.spatial as _sptl
 from OpenPNM.Base import logging as _logging
-from OpenPNM.Base import Controller as _controller
+from OpenPNM.Base import Workspace as _workspace
 logger = _logging.getLogger(__name__)
-_ctrl = _controller()
+_mgr = _workspace()
 
 
 class topology(object):
@@ -138,8 +138,8 @@ class topology(object):
         296
 
         '''
-        ctrl = network.controller
-        for net in ctrl.networks():
+        mgr = network.workspace
+        for net in mgr.networks():
             if net._parent is network:
                 raise Exception('This Network has been cloned, cannot trim')
         if (_sp.size(pores) > 0) and (_sp.size(throats) > 0):
@@ -390,10 +390,10 @@ class topology(object):
         # Add the new stitch throats to the Network
         self.extend(network=network, throat_conns=conns, labels='stitched')
 
-        # Remove donor from Controller, if present
+        # Remove donor from Workspace, if present
         # This check allows for the reuse of a donor Network multiple times
-        if donor in _ctrl.values():
-            _ctrl.purge_object(donor)
+        if donor in _mgr.values():
+            _mgr.purge_object(donor)
 
     def connect_pores(self, network, pores1, pores2, labels=[]):
         r'''
