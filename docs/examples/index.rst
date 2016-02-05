@@ -15,6 +15,7 @@ Available Examples and Tutorials:
    mat_load.rst
    voronoi.rst
    percolation.rst
+   import_network.rst
    paraview.rst
 
 Examples from Older Versions of OpenPNM:
