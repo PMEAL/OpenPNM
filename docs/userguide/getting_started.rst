@@ -1,8 +1,12 @@
 .. _getting_started:
 
 ###############################################################################
-A Quick Guide to Getting Started with OpenPNM
+Tutorial 1: Getting Started with OpenPNM
 ###############################################################################
+
+As usual, start by importing the OpenPNM package:
+
+>>> import OpenPNM
 
 ===============================================================================
 Building a Cubic Network
@@ -10,19 +14,22 @@ Building a Cubic Network
 
 Start by generating a *Network*.  This is accomplished by choosing the desired network topology (e.g. cubic), then calling its respective method in OpenPNM with the desired parameters:
 
-.. code-block:: python
-
-	pn = OpenPNM.Network.Cubic(shape=[10, 10, 10], spacing=0.0001)
+>>> pn = OpenPNM.Network.Cubic(shape=[10, 10, 10], spacing=0.0001)
 
 This generates a topological network and stores it in variable ``pn``.  This network contains pores at the correct spatial positions and connections between the pores according the specified topology (but without boundary pores).  The ``shape`` argument specifies the number of pores in the [X, Y, Z] directions of the cube.  Networks in OpenPNM are alway 3D dimensional, meaning that a 2D or 'flat' network is still 1 layer of pores 'thick' so [X, Y, Z] = [20, 10, 1].  The ``spacing`` argument controls the center-to-center distance between pores.  Although OpenPNM does not currently have a dimensional units system, we *strongly* recommend using SI throughout.
 
-The network can be queried for a variety of common topological:
+The network can be queried for a variety of common topological properties:
 
->>> pn.num_pores()  # 1000
->>> pn.num_throats()  # 2700
->>> pn.find_neighbor_pores(pores=[1])  # [0, 2, 11, 101]
->>> pn.labels(pores=[1])  # ['all', 'bottom', 'left']
->>> pn.pores(labels='bottom')
+>>> pn.num_pores()
+1000
+>>> pn.num_throats()
+2700
+>>> pn.find_neighbor_pores(pores=[1])
+array([  0,   2,  11, 101])
+>>> pn.labels(pores=[1])
+['pore.all', 'pore.front', 'pore.internal', 'pore.left']
+>>> pn.pores(labels=pn.labels(pores=[1]), mode='intersection')
+array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
 The data returned from these queries may also be stored in a variable for convenience:
 
@@ -55,6 +62,7 @@ Direct Assignment of Static Values
 
 Let's start by assiging diameters to each pore from a random distribution, spanning 10 um to 100 um.  The upper limit is arise because the ``spacing`` of the *Network* was set to 100 [um], so pore diameters exceeding 100 um might overlap with neighbors.  The lower limit is merely to avoid vanishingly small pores.
 
+>>> import scipy as sp  # Import the Scipy package
 >>> geom['pore.diameter'] = 0.00001 + sp.rand(pn.Np)*0.00099
 
 This creates a ND-array of random numbers (between 0.00001 and 0.0001) that is *Np* long, meaning each pore is assigned a unique random number.
@@ -68,14 +76,24 @@ For throat diameter, we want them to always be smaller than the two pores which 
 
 Let's disect the above lines.  Firstly, P12 is a direct copy of the Network's \'throat.conns\' array, which contains the indices of the pore pair connected by each throat.  Next, this *Nt-by-2* array is used to index into the \'pore.diameter'\ array, resulting in another *Nt-by-2* array containing the diameters of the pores connected by each throat.  Finally, the Scipy function ``amin`` is used to find the minimum diameter of each pore pair by specifying the ``axis`` keyword as 1, and the resulting *Nt-by-1* array is assigned to ``geom['throat.diameter']``.
 
-Finally, we must specify the remaining geometrical properties of the pores and throats. Since we're creating a 'stick-and-ball' geometry, the sizes are calculated from the geometrical equations for spheres and cylinders as follows:
+Finally, we must specify the remaining geometrical properties of the pores and throats. Since we're creating a 'stick-and-ball' geometry, the sizes are calculated from the geometrical equations for spheres and cylinders.
+
+For pore volumes, assume a sphere:
 
 >>> Rp = geom['pore.diameter']/2
 >>> geom['pore.volume'] = (4/3)*3.14159*(Rp)**3
->>> geom['throat.length'] = ??
+
+The length of each throat is the center-to-center distance between pores, minus the radius of each of two neighbor pores.
+
+>>> C2C = 0.0001  # The center-to-center distance between pores
+>>> Rp12 = Rp[pn['throat.conns']]
+>>> geom['throat.length'] = C2C - sp.sum(Rp12, axis=1)
+
+The volume of each throat is found assuming a cylinder:
+
 >>> Rt = geom['throat.diameter']/2
 >>> Lt = geom['throat.length']
->>> geom['throat.volume'] = 3.14159*(R)**2*L
+>>> geom['throat.volume'] = 3.14159*(Rt)**2*Lt
 
 The basic geometrical properties of the network are now defined.
 
@@ -83,58 +101,39 @@ The basic geometrical properties of the network are now defined.
 Create Phases
 ===============================================================================
 
-The simulation is now topologically and geometrically complete.  It has pore coordinates, pore and throat sizes and so on.  In order to perform any simulations, however, it is necessary to build *Phase* objects that represent the fluids in the simulations.  This is done using the same composition technique used to build the *Geometry*.  Phases objects are instantiated as follows:
+The simulation is now topologically and geometrically complete.  It has pore coordinates, pore and throat sizes and so on.  In order to perform any simulations it is necessary to define *Phase* objects that represent the fluids in the simulations:
 
 >>> air = OpenPNM.Phases.GenericPhase(network=pn, name='air')
 >>> water = OpenPNM.Phases.GenericPhase(network=pn, name='water')
 
-Again, note ``pn`` is passed as an argument because this *Phase* must know to which *Network* it belongs.  Also, note that ``pores`` and ``throats`` are NOT specified; this is because *Phases* are assumed to exist everywhere in the domain.  For multiphase immiscible flow the presence or absence of a *Phase* in given locations is tracked using a ``'pore.occupancy'`` array.
+``pn`` is passed as an argument because *Phases* must know to which *Network* they belong.  Also, note that ``pores`` and ``throats`` are NOT specified; this is because *Phases* are mobile and can exist anywhere or everywhere in the domain, so providing specific locations does not make sense.  Algorithms for dynamically determining actual phase distributions are discussed later.
 
 .. note:: **Naming Objects**
 
-	The above two lines also include a ``name`` argument.  All objects in OpenPNM can be named in this way if desired, however, if no name is given one will be generated.  The point of the name is to allow easy identification of an object at the command line, using the ``name`` attribute (``air.name``).  Objects can be renamed, so if you wish to override a default name simply use ``air.name`` = 'air'.
+	The above two lines also include a ``name`` argument.  All objects in OpenPNM can be named in this way if desired, however, if no name is given one will be generated.  The point of the name is to allow easy identification of an object at the command line, using the ``name`` attribute (``air.name``).  Objects can be renamed, so if you wish to override a default name simply use ``air.name = 'air'``.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Add Desired Methods to Phases
+Add Desired Properties to Phases
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Now it is necessary to fill these two *Phase* objects with the desired thermophysical properties.  For instance, they may have very different viscosity and these must be calculated differently. It is possible to simply 'hard code' static property values, as follows:
+Now it is necessary to fill these two *Phase* objects with the desired thermophysical properties.  The most basic means is to simply assign static values as follows:
 
 >>> water['pore.temperature'] = 298.0
->>> water['pore.diffusivity'] = 1e-12
 >>> water['pore.viscosity'] = 0.001
->>> water['pore.molar_density'] = 44445.0
->>> water['pore.contact_angle'] = 110.0
->>> water['pore.surface_tension'] = 0.072
+>>> air['pore.temperature'] = 298.0
+>>> air['pore.viscosity'] = 0.0000173
 
-It should be reiterated here that these static property values are not updated when other properties change.  For instance, if the temperature of the simulation is changed to 353 K from 298 K, the viscosity must also change.  Using static values for properties means that viscosity must be recalculated and re-assigned manually.  The 'pore-scale model' approach addresses this.
+OpenPNM includes a framework for calculating these type of properties from models and correlations, but this is beyond the aim of the present introductory tutorial.
 
 .. note:: **Scalar to Vector Conversion During Assignment**
 
 	The above lines illustrate a feature of OpenPNM that is worth pointing out now.  All pores need to have a diffusivity value associated with them; however, we often want to assign the same value to every pore.  If you assign a scalar value to any property in OpenPNM it will automatically be converted to a vector of the appropriate length (either *Np* or *Nt* long).  This is explained in more detail :ref:`here<inner_workings>`.
 
-The code block below illustrate how to define a *Phase* object to represent Air using 'pore-scale models'. Some of the models require various input parameters.  For instance, consider the Fuller model, which requires the molecular mass and diffusion volume of the species in the mixture.  More importantly, the Fuller model also includes temperature, meaning that if temperature of the phase changes, then the model can be re-run to regenerate the diffusivity at the new temperature.  The Fuller model code assumes that the temperature for the *Phase* can be found in ``'pore.temperature'``.  It's possible to customize these default property names as outlined :ref:`here<customizing>`.  To use the available thermophysical property models that are included with OpenPNM, import the *Phase* models library.
-
->>> from OpenPNM.Phases import models as fm
->>> air.add_model(propname='pore.diffusivity',
-...                model=fm.diffusivity.fuller,
-...                MA=0.03199,
-...                MB=0.0291,
-...                vA=16.3,
-...                vB=19.7)
->>> air.add_model(propname='pore.viscosity',
-...               model=fm.viscosity.reynolds,
-...               uo=0.001,
-...               b=0.1)
->>> air.add_model(propname='pore.molar_density',
-...               model=fm.molar_density.ideal_gas,
-...               R=8.314)
-
 ===============================================================================
 Create Pore Scale Physics Objects
 ===============================================================================
 
-We are still not ready to perform any simulations.  The last step is to define the desired pore scale physics, which defines how the phase and geometrical properties interact.  A classic example of this is the Washburn equation which predicts the capillary pressure required to push a non-wetting fluid through a capillary of known size.  Because the *Physics* object defines the interaction of a *Phase* with the *Geometry*, it is necessary to build one *Physics* object for each intersection between *Geometry* and *Phase* objects:
+We are still not ready to perform any simulations.  The last step is to define the desired pore scale physics models, which dictates how the phase and geometrical properties interact.  A classic example of this is the Hagen-Poiseuille equation for fluid flow through a throat, which predicts the flow rate as a function of the pressure drop  The flow rate is proportional to the geometrical size of the throat (radius and length) as well as properties of the fluid (viscosity).  It follows that this calculation needs to be performed once for each phase of interest since each has a different visocity.  This is accomlished by define a *Physics* object for each *Phase*:
 
 >>> phys_water = OpenPNM.Physics.GenericPhysics(network=pn,
 ...                                             phase=water,
@@ -143,58 +142,60 @@ We are still not ready to perform any simulations.  The last step is to define t
 ...                                           phase=air,
 ...                                           geometry=geom)
 
-*Physics* objects do not require the specification of which ``pores`` and ``throats`` where they apply.  This assignment is implied by the passing of a ``geometry`` object, which has already been assigned to specific locations.
+*Physics* objects do not require the specification of which ``pores`` and ``throats`` where they apply, since this information is provided by the ``geometry`` argument which has already been assigned to specific locations.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Add Desired Methods to Physics Objects
+Specify Desired Pore-Scale Models
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-As with *Phase* and *Geometry* objects, the next steps are to load the model library from the *Physics* submodule and then to build-up the bare objects with the desired models:
+We need to calculate the numerical values representing our chosen pore-scale physics.  To continue with the Hagen-Poiseuille example lets calculte the hydraulic conductance of each throat in the network.  The throat radius and length are easily accessed as:
 
->>> from OpenPNM.Physics import models as pm
->>> phys_water.add_model(propname='throat.capillary_pressure',
-...                      model=pm.capillary_pressure.washburn)
->>> phys_water.add_model(propname='throat.hydraulic_conductance',
-...                      model=pm.hydraulic_conductance.hagen_poiseuille)
->>> phys_air.add_model(propname='throat.diffusive_conductance',
-...                    model=pm.diffusive_conductance.bulk_diffusion)
->>> phys_air.add_model(propname='throat.hydraulic_conductance',
-...                    model=pm.hydraulic_conductance.hagen_poiseuille)
+>>> R = geom['throat.diameter']/2
+>>> L = geom['throat.length']
+
+The viscosity of the *Phases* was only defined in the pores; however, the hydraulic conductance must be calculated for each throat.  There are several options: (1) use a scalar value, (2) assign \'throat.viscosity\' to each phase or (3) use interpolation to estimate throat viscosty as an average of the values in the neighboring pores.  The third option is suitable when there is a distribution of temperatures throughout the network and therefore visocity changes as well, and OpenPNM provides tools for this which are discussed later.  In the present case as simple scalar value is sufficient:
+
+>>> mu_w = 0.001
+>>> phys_water['throat.hydraulic_conductance'] = 3.14159*R**4/(8*mu_w*L)
+>>> mu_a = 0.0000173
+>>> phys_air['throat.hydraulic_conductance'] = 3.14159*R**4/(8*mu_a*L)
+
+Note that both of these calcualation use the same geometrical properties (R and L) but different phase properties (mu_w and mu_a).
 
 ===============================================================================
-Run some simulations
+Run Some Simulations
 ===============================================================================
 
-Finally, it is now possible to run some simulations.  The code below estimates the effective diffusivity through the network by applying a concentration gradient across and calculating the flux.  This starts by creating a FickianDiffusion *Algorithm*, which is pre-defined in OpenPNM:
+Finally, it is now possible to run some simulations.  The code below estimates the permeabilty through the network by applying a pressure gradient across and calculating the flux.  This starts by creating a StokesFlow *Algorithm*, which is pre-defined in OpenPNM:
 
->>> alg = OpenPNM.Algorithms.FickianDiffusion(network=pn,phase=air)
+>>> alg = OpenPNM.Algorithms.StokesFlow(network=pn, phase=air)
 
-Next the boundary conditions are applied using the ``set_boundary_conditions`` method.  In this case the boundary conditions are applied to the ``'left'`` and ``'right'`` of the cubic domain.
+Like all the above objects, algorithms must be assigned to a *Network* via the ``network`` argument.  This algorithm is also associated with a *Phase* object, in this case ``air``, which dictates which pore-scale *Physics* properties to use (recall that ``phys_air`` was associated with ``air``).
+
+Next the boundary conditions are applied using the ``set_boundary_conditions`` method on the *Algorithm* object.  Let's apply a 1 atm pressure gradient between the left and right sides of the domain:
 
 >>> BC1_pores = pn.pores('right')
->>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=BC1_pores)
+>>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=202650, pores=BC1_pores)
 >>> BC2_pores = pn.pores('left')
->>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=BC2_pores)
+>>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=101325, pores=BC2_pores)
 
 .. note:: **Pore and Throat Labels**
 
-	Note how the ``pores`` method was used to extract pore numbers based on the labels ``'left'`` and ``'right'``.  It's possible to add your own labels to the simulations to allow quick access to special sets of pores.  This is outlined :ref:`here<inner_workings>`.
+	Note how the ``pores`` method was used to extract pore numbers based on the labels 'left' and 'right'.  It's possible to add your own labels to simulations to allow quick access to special sets of pores.  This is outlined :ref:`here<inner_workings>`.
 
-To actually run the algorithm use the ``run`` method.  This builds the coefficient matrix from the existing values of diffusive conductance, and inverts the matrix to solve for concentration in each pores.
+To actually run the algorithm use the ``run`` method.  This builds the coefficient matrix from the existing values of hydraulic conductance, and inverts the matrix to solve for pressure in each pore, and stores the results within the *Algorithm's* dictionary under \'pore.pressure'\:
 
 >>> alg.run()
+
+The results ('pore.pressure') are held within the ``alg`` object and must be explicitly returned to the ``air`` object by the user if they wish to use these values in a subsequent calcualation.  The point of this data containment is to prevent unwanted overwriting of data.  Each algorithm has a method called ``return_results`` which places the pertinent values back onto the appropriate *Phase* object.
+
 >>> alg.return_results()
->>> Deff = alg.calc_eff_diffusivity()
 
 ===============================================================================
 Visualise the Results
 ===============================================================================
 We can now visualise our network and simulation results.  OpenPNM does not support native visualization, so data must be exported to a file for exploration in another program such as any of the several VTK front ends (i.e. Paraview).
 
-.. code-block:: python
-
-	ctrl.export(pn)
+>>> OpenPNM.export(network=pn, filename='net.vtp')
 
 This creates a *net.vtp* file in the active directory, which can be loaded from ParaView. For a quick tutorial on the use of Paraview with OpenPNM data, see :ref:`Using Paraview<paraview_example>`.
-
-To save an incomplete simulation for later work, the **Controller** object can be used to save the entire workspace (i.e. all simulations) using ``ctrl.save()``, or just the simulation of interest using ``ctrl.save_simulation(pn)``.
