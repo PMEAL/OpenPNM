@@ -1,56 +1,42 @@
-.. _getting_started:
+.. _intermediate_usage:
 
 ###############################################################################
-Tutorial 1: Getting Started with OpenPNM
+Tutorial 2: Digging Deeper with OpenPNM
 ###############################################################################
 
-As usual, start by importing the OpenPNM package:
+This tutorial will follow the same outline as the :ref:`getting started tutorial <getting_started>`, but will dig a little bit deeper at each step to reveal the more advanced features and usages of OpenPNM.  Be sure you've done and understood that tutorial before attempting this one.
+
+As usual, start by importing the OpenPNM package and the Scipy package which is always handy:
 
 >>> import OpenPNM
+>>> import scipy as sp
 
 ===============================================================================
 Building a Cubic Network
 ===============================================================================
 
-Start by generating a *Network*.  This is accomplished by choosing the desired network topology (e.g. cubic), then calling its respective method in OpenPNM with the desired parameters:
+Let's generate a cubic network but with a different connectivity:
 
->>> pn = OpenPNM.Network.Cubic(shape=[10, 10, 10], spacing=0.0001)
+>>> pn = OpenPNM.Network.Cubic(shape=[20, 20, 5],
+...                            spacing=0.0001,
+...                            connectivity=8)
 
-This generates a topological network and stores it in variable ``pn``.  This network contains pores at the correct spatial positions and connections between the pores according the specified topology (but without boundary pores).  The ``shape`` argument specifies the number of pores in the [X, Y, Z] directions of the cube.  Networks in OpenPNM are alway 3D dimensional, meaning that a 2D or 'flat' network is still 1 layer of pores 'thick' so [X, Y, Z] = [20, 10, 1].  The ``spacing`` argument controls the center-to-center distance between pores.  Although OpenPNM does not currently have a dimensional units system, we *strongly* recommend using SI throughout.
+This **Network** has pores distributed in a cubic lattice, but connected to diagonal neighbors due to the ``connectivity`` being set to 8 (the default is 6).  The various options are outlined in the *Cubic* class's documentation which can be viewed with the object inspector.
 
-The network can be queried for a variety of common topological properties:
-
->>> pn.num_pores()
-1000
->>> pn.num_throats()
-2700
->>> pn.find_neighbor_pores(pores=[1])
-array([  0,   2,  11, 101])
->>> pn.labels(pores=[1])
-['pore.all', 'pore.front', 'pore.internal', 'pore.left']
->>> pn.pores(labels=['front', 'left'], mode='intersection')
-array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-This last command has an unfamiliar argument ``mode``.  In this case it means the set logic to apply to the query (i.e. only return pores that are labeled both 'front' and 'left').  OpenPNM includes extensive help within the code that explains the use of each method, the meaning of each argument and option, and even examples.  Within the Spyder IDE these can be viewed easily in the *object inspector* by typing 'ctrl-i' while the cursor is on the method name (in either the editor or the console).  Importantly, Numpy, Scipy, Matplotlib, Pandas and most other scientific packages contain similar detailed documentation.  These are indispensible and even seasoned OpenPNM coders rely on this documentation.
-
-The data returned from these queries may also be stored in a variable for convenience:
-
->>> Ps = pn.pores()
->>> Ts = pn.throats()
+OpenPNM includes several other classes for generating networks including random topology based on Delaunay tessellations (**Delaunay**), and a class for importing networks from external code such as network extractions (**Import**).
 
 ===============================================================================
 Initialize and Build a Geometry Object
 ===============================================================================
 
-The *Network* does not contain any information about pore and throat sizes at this point.  The next step, then, is to create a *Geometry* object to calculate the desired geometrical properties.
+In this tutorial we will make materials that has different geometrical properties in different regions.  This will demonstrate the motivation behind separating the **Geometry** properties from the **Network** topology.  Let's say that the pores on the top and bottom surfaces are substantially smaller than the internal pores.  We need to create one **Geometry** object to manage the top and bottom pores, and a second to manage the remaining internal pores:
 
->>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
+>>> Ps = pn.pores(['top', 'bottom'])
+>>> geom1 = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps, name='surface')
+>>> Ps = pn.pores(['top', 'bottom'], mode='not')
+>>> geom2 = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps, name='core')
 
-This statement contains three arguments: ``network`` tells the *Geometry* object which *Network* it is associated with.  ``pores`` and ``throats`` indicate which locations in the *Network* where this *Geometry* object will apply.
-
-.. note::
-
-	OpenPNM was designed to allow multiple *Geometry* objects, with each applying to different regions of the *Network*.  This enables modeling of heterogeneous materials with much different geometrical properties in different regions; this is why the ``pores`` and ``throats`` arguments are required.  In this tutorial ``geom`` applies everywhere which is a common scenario.
+The above statements result in two distinct **Geometry** objects each applying to different regions of the full network domain.  As we shall see, this simplifies the data management in some important ways.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Add Desired Properties to Geometry

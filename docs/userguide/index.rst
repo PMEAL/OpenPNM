@@ -11,6 +11,7 @@ Contents:
 
    installation.rst
    getting_started.rst
+   intermediate_usage.rst
    general_overview.rst
    inner_workings.rst
    network.rst
