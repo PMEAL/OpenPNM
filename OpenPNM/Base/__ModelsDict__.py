@@ -222,7 +222,7 @@ class ModelsDict(OrderedDict):
         count = 0
         for item in props:
             if item in list(self.keys()):
-                master[item] = self[item].regenerate()
+                master[item] = self[item].run()
                 logger.info(str(count) + ' : ' + item)
                 count += 1
             else:
@@ -303,7 +303,7 @@ class ModelsDict(OrderedDict):
         self[propname] = f
         # Now generate data as necessary
         if regen_mode in ['normal', 'constant']:
-            master[propname] = self[propname].regenerate()
+            master[propname] = self[propname].run()
         if regen_mode in ['deferred', 'on_demand']:
             pass
 
