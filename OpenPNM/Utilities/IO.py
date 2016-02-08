@@ -801,7 +801,9 @@ def _update_network(network, net):
             if _sp.all(N == N[0]):
                 if (network._count(element) == N[0]) \
                         or (network._count(element) == 0):
-                    net.update({element+'.all': _sp.ones((N[0],), dtype=bool)})
+                    network.update({element+'.all': _sp.ones((N[0],),
+                                                             dtype=bool)})
+                    net.pop(element+'.all', None)
                 else:
                     raise Exception('Length of '+element+' data in file ' +
                                     'does not match network')

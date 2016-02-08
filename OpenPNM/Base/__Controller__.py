@@ -360,8 +360,7 @@ class Controller(dict):
 
     def export(self, network=None, filename='', fileformat='VTK'):
         logger.warning("This method is deprecated, use \'export_data\'.")
-        self.export_data(self,
-                         network=network,
+        self.export_data(network=network,
                          filename=filename,
                          fileformat=fileformat)
 
