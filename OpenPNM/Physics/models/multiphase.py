@@ -169,5 +169,7 @@ def late_pore_filling(physics, phase, network,
     Swp = sp.ones(physics.Np,)
     if Pc > 0:
         Swp = Swp_star*(physics[pc_star]/Pc)**eta
+    else:
+        Swp = Swp_star
     values = (1-Swp)*(physics[pc_star] <= Pc)
     return values

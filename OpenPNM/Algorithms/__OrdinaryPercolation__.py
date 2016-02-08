@@ -180,10 +180,10 @@ class OrdinaryPercolation(GenericAlgorithm):
         if self._AL:
             # Identify clusters connected to invasion sites
             inv_clusters = sp.unique(pclusters[self['pore.inlets']])
-            inv_clusters = inv_clusters[inv_clusters >= 0]
         else:
             # All clusters are invasion sites
             inv_clusters = pclusters
+        inv_clusters = inv_clusters[inv_clusters >= 0]
         # Find pores on the invading clusters
         pmask = np.in1d(pclusters, inv_clusters)
         # Store current applied pressure in newly invaded pores
