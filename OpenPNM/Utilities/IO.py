@@ -142,7 +142,7 @@ class VTK():
             f.write(string)
 
     @staticmethod
-    def load(filename, network={}, mode='overwrite'):
+    def load(filename, network=None):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -156,22 +156,10 @@ class VTK():
             The Network object onto which the data should be loaded.  If no
             Network is supplied than one will be created and returned.
 
-        mode : string
-            Specifies how new data is added to the Network.  Options are:
-
-            **'overwrite'** : (Default) This means that any existing data on
-            the Network is over-written by data in the loaded file that has the
-            same property name.
-
-            **'add'** : Only adds values to the network if they are not already
-            present.
-
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
         """
-        if network == {}:
-            network = OpenPNM.Network.Import()
         net = {}
 
         filename = filename.rsplit('.', maxsplit=1)[0]
@@ -202,7 +190,9 @@ class VTK():
             propname = key.split('.')[1]
             net.update({element+'.'+propname: array})
 
-        network = _update_network(network=network, net=net, mode=mode)
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
         return network
 
     @staticmethod
@@ -252,7 +242,7 @@ class Statoil():
     refer to various theses and documents to interpret their meaning.
     """
     @staticmethod
-    def load(path, prefix, network={}, mode='overwrite'):
+    def load(path, prefix, network=None):
         r"""
         Load data from the \'dat\' files located in specified folder.
 
@@ -269,19 +259,7 @@ class Statoil():
             If given then the data will be loaded on it and returned.  If not
             given, a Network will be created and return.
 
-        mode : string
-            Specifies how new data is added to the Network.  Options are:
-
-            **'overwrite'** : (Default) This means that any existing data on
-            the Network is over-written by data in the loaded file that has the
-            same property name.
-
-            **'add'** : Only adds values to the network if they are not already
-            present.
-
         """
-        if network == {}:
-            network = OpenPNM.Network.Import()
         net = {}
 
         # ---------------------------------------------------------------------
@@ -366,7 +344,9 @@ class Statoil():
         net['pore.shape_factor'] = _sp.array(node2['pore.shape_factor'])
         net['pore.clay_volume'] = _sp.array(node2['pore.clay_volume'])
 
-        network = _update_network(network=network, net=net, mode=mode)
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
 
         # Use OpenPNM Tools to clean up network
         # Trim throats connected to 'inlet' or 'outlet' reservoirs
@@ -440,7 +420,7 @@ class MAT():
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
     @staticmethod
-    def load(filename, network={}, mode='overwrite'):
+    def load(filename, network=None):
         r"""
         Loads data onto the given network from an appropriately formatted
         'mat' file (i.e. MatLAB output).
@@ -455,23 +435,11 @@ class MAT():
             The Network object onto which the data should be loaded.  If no
             Network is supplied than one will be created and returned.
 
-        mode : string
-            Specifies how new data is added to the Network.  Options are:
-
-            **'overwrite'** : (Default) This means that any existing data on
-            the Network is over-written by data in the loaded file that has the
-            same property name.
-
-            **'add'** : Only adds values to the network if they are not already
-            present.
-
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
 
         """
-        if network == {}:
-            network = OpenPNM.Network.Import()
         net = {}
 
         import scipy.io as _spio
@@ -499,7 +467,9 @@ class MAT():
             prop = item.split('_', maxsplit=1)[1]
             net[element+'.'+prop] = _sp.squeeze(data[item].T)
 
-        network = _update_network(network=network, net=net, mode=mode)
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
         return network
 
 
@@ -645,7 +615,7 @@ class CSV():
             b.to_csv(f, index=False)
 
     @staticmethod
-    def load(filename, network={}, mode='overwrite'):
+    def load(filename, network={}):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -655,24 +625,11 @@ class CSV():
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
-        mode : string
-            Specifies how new data is added to the Network.  Options are:
-
-            **'overwrite'** : (Default) This means that any existing data on
-            the Network is over-written by data in the loaded file that has the
-            same property name.
-
-            **'add'** : Only adds values to the network if they are not already
-            present.
-
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
 
         """
-        if network == {}:
-            network = OpenPNM.Network.Import()
-        # Instantiate new empty dict
         net = {}
 
         with _read_file(filename=filename, ext='csv') as f:
@@ -704,11 +661,13 @@ class CSV():
                 dtype = type(data[0])
             net[element+'.'+prop] = data.astype(dtype)
 
-        network = _update_network(network=network, net=net, mode=mode)
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
         return network
 
 
-class YAML():
+class NetworkX():
     r"""
     This class is meant specifcally for exchanging data with NetworkX, which
     is a common tool for dealing with network structures.  A network object
@@ -745,7 +704,7 @@ class YAML():
         raise NotImplemented
 
     @staticmethod
-    def load(filename, network={}, mode='overwrite'):
+    def load(filename, network=None)
         r"""
         Add data to an OpenPNM Network from a NetworkX generated YAML file.
 
@@ -759,21 +718,11 @@ class YAML():
             Network is supplied then an empty Import Network is created and
             returned.
 
-        mode : string
-            Specifies how new data is added to the Network.  Options are:
-
-            **'overwrite'** : (Default) This means that any existing data on
-            the Network is over-written by data in the loaded file that has the
-            same property name.
-
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
 
         """
-        if network == {}:
-            network = OpenPNM.Network.Import()
-        # Instantiate new empty dict
         net = {}
 
         # Open file and read first line, to prevent NetworkX instantiation
@@ -837,7 +786,9 @@ class YAML():
                 net['throat.'+item][i] = val
             i += 1
 
-        network = _update_network(network=network, net=net, mode=mode)
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
         return network
 
 
@@ -866,9 +817,8 @@ def _update_network(network, net, mode):
         num1s = _sp.sum(net[item] == 1)
         if (num1s + num0s) == _sp.shape(net[item])[0]:
             net[item] = net[item].astype(bool)
-        if mode == 'overwrite':
-            network.update({item: net[item]})
-        elif item not in network:
+        # Write data to network object
+        if item not in network:
             network.update({item: net[item]})
         else:
             logger.warning('\''+item+'\' already present')
