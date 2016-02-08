@@ -37,5 +37,4 @@ from .__Delaunay__ import Delaunay
 from .__DelaunayCubic__ import DelaunayCubic
 from .__MatFile__ import MatFile
 from .__TestNet__ import TestNet
-from .__Import__ import Import
 from . import models

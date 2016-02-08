@@ -615,7 +615,7 @@ class CSV():
             b.to_csv(f, index=False)
 
     @staticmethod
-    def load(filename, network={}):
+    def load(filename, network=None):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -704,7 +704,7 @@ class NetworkX():
         raise NotImplemented
 
     @staticmethod
-    def load(filename, network=None)
+    def load(filename, network=None):
         r"""
         Add data to an OpenPNM Network from a NetworkX generated YAML file.
 
@@ -792,7 +792,7 @@ class NetworkX():
         return network
 
 
-def _update_network(network, net, mode):
+def _update_network(network, net):
     # Infer Np and Nt from length of given prop arrays in file
     for element in ['pore', 'throat']:
         N = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith(element)]
