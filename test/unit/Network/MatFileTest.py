@@ -12,7 +12,7 @@ class MatFileTest:
         pn = OpenPNM.Network.MatFile(filename=fname)
         assert pn.Np == 105
         assert pn.Nt == 238
-        assert pn.props() == ['throat.conns', 'pore.coords']
+        assert sorted(pn.props()) == sorted(['throat.conns', 'pore.coords'])
 
     def test_extra_args(self):
         fname = os.path.join(FIXTURE_DIR, 'example_network.mat')
