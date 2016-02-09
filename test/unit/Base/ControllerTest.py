@@ -120,13 +120,13 @@ class ControllerTest:
 
     def test_import_data(self):
         path = FIXTURE_DIR
-        fname = os.path.join.path(path, 'test_load_csv_no_phases.csv')
+        fname = os.path.join(path, 'test_load_csv_no_phases.csv')
         pn = self.controller.import_data(filename=fname)
         assert pn.Np == 27
-        fname = os.path.join.path(path, 'test_load_mat_no_phases.mat')
+        fname = os.path.join(path, 'test_load_mat_no_phases.mat')
         pn = self.controller.import_data(filename=fname)
         assert pn.Np == 27
-        fname = os.path.join.path(path, 'test_load_vtk_no_phases.vtp')
+        fname = os.path.join(path, 'test_load_vtk_no_phases.vtp')
         pn = self.controller.import_data(filename=fname)
         assert pn.Np == 27
 
