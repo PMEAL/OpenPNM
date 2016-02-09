@@ -119,7 +119,7 @@ class ControllerTest:
         assert type(a) is list
 
     def test_import_data(self):
-        path = join(FIXTURE_DIR, 'test_v120.pnm')
+        path = FIXTURE_DIR
         file = 'test_load_csv_no_phases.csv'
         pn = self.controller.import_data(filename=path+'\\'+file)
         assert pn.Np == 27
