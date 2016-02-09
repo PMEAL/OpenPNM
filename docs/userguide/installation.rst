@@ -30,7 +30,7 @@ The above installation instructions assume that you have the Python SciPy Stack 
 -------------------------------------------------------------------------------
 Windows Instructions
 -------------------------------------------------------------------------------
-The simplest way to get Python and all the necessary Python packages for scientific computing in Windows is to download the `WinPython <http://code.google.com/p/winpython/>`_ package.  This package also comes with `Spyder <http://code.google.com/p/spyderlib/>`_, which provides an integrated development environment (IDE) that is very similar to Matlab, with an editor, command console, variable explorer and so on combined into the same window.  
+The simplest way to get Python and all the necessary Python packages for scientific computing in Windows is to download the `WinPython <http://winpython.github.io/>`_ package.  This package also comes with `Spyder <https://github.com/spyder-ide/spyder>`_, which provides an integrated development environment (IDE) that is very similar to Matlab, with an editor, command console, variable explorer and so on combined into the same window.  
 
 Once WinPython is installed, navigate to the directory where you chose to install it and open spyder.exe.  From the 'tools' method, select 'open command prompt'.  This will open a special version of the Window command prompt that is aware of the Python installation.  Here you will use ``pip install openpnm`` to have OpenPNM installed on your machine.  
 
