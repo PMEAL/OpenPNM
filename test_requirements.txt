@@ -4,5 +4,5 @@ pytest
 pytest-cache
 pytest-cov
 pytest-pep8
-codecov
 coveralls
+python-coveralls
