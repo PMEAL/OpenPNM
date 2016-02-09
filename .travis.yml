@@ -35,11 +35,9 @@ script:
 - ./bin/clean
 
 after_success:
-- codecov
 - coveralls
 
 after_failure:
-- codecov
 - coveralls
 
 deploy:
