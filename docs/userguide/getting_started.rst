@@ -18,25 +18,31 @@ Start by generating a *Network*.  This is accomplished by choosing the desired n
 
 This generates a topological network and stores it in variable ``pn``.  This network contains pores at the correct spatial positions and connections between the pores according the specified topology (but without boundary pores).  The ``shape`` argument specifies the number of pores in the [X, Y, Z] directions of the cube.  Networks in OpenPNM are alway 3D dimensional, meaning that a 2D or 'flat' network is still 1 layer of pores 'thick' so [X, Y, Z] = [20, 10, 1].  The ``spacing`` argument controls the center-to-center distance between pores.  Although OpenPNM does not currently have a dimensional units system, we *strongly* recommend using SI throughout.
 
-The network can be queried for a variety of common topological properties:
+The Network object has numerous methods that can be used to query the topological properties:
 
 >>> pn.num_pores()
 1000
 >>> pn.num_throats()
 2700
->>> pn.find_neighbor_pores(pores=[1])
+>>> pn.find_neighbor_pores(pores=[1])  # Find neighbors of pore 1
 array([  0,   2,  11, 101])
->>> pn.labels(pores=[1])
+>>> pn.find_neighbor_throats(pores=[1, 2])  # Find throats connected to pores 1 and 2
+array([   0,    1,    2,  901,  902, 1801, 1802])
+
+There are several more such topological query method available on the object such as ``find_nearby_pores`` and ``find_connecting_throat``.  A full list is given in the detailed documentation <HERE>, along with an explanation of each argument and some helpful examples.
+
+Another important feature is the use of *labels* on pores and throats.  Applying a label to a set of special pores allows for easy retrieve of these pores for later use.  For instance, during the generation of a Cubic network, the faces are automatically labeled.  The following illustrates how to use labels:
+
+>>> pn.labels(pores=[1])  # Find all labels applied to pore 1
 ['pore.all', 'pore.front', 'pore.internal', 'pore.left']
 >>> pn.pores(labels=['front', 'left'], mode='intersection')
 array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
-This last command has an unfamiliar argument ``mode``.  In this case it means the set logic to apply to the query (i.e. only return pores that are labeled both 'front' and 'left').  OpenPNM includes extensive help within the code that explains the use of each method, the meaning of each argument and option, and even examples.  Within the Spyder IDE these can be viewed easily in the *object inspector* by typing 'ctrl-i' while the cursor is on the method name (in either the editor or the console).  Importantly, Numpy, Scipy, Matplotlib, Pandas and most other scientific packages contain similar detailed documentation.  These are indispensible and even seasoned OpenPNM coders rely on this documentation.
+This last command has an argument ``mode``.  In this case it means the set logic to apply to the query (i.e. only return pores that are labeled both 'front' and 'left').
 
-The data returned from these queries may also be stored in a variable for convenience:
+.. note::
 
->>> Ps = pn.pores()
->>> Ts = pn.throats()
+	OpenPNM includes extensive help within the code that explains the use of each method, the meaning of each argument and option, and even gives examples.  Within the Spyder IDE these can be viewed in the *object inspector* by typing *ctrl-i* while the cursor is on the method name (in either the editor or the console).  Importantly, Numpy, Scipy, Matplotlib, Pandas and most other scientific packages contain similar detailed documentation.  These are indispensible and even seasoned OpenPNM coders rely on this documentation.
 
 ===============================================================================
 Initialize and Build a Geometry Object
@@ -180,10 +186,6 @@ Next the boundary conditions are applied using the ``set_boundary_conditions`` m
 >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=202650, pores=BC1_pores)
 >>> BC2_pores = pn.pores('left')
 >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=101325, pores=BC2_pores)
-
-.. note:: **Pore and Throat Labels**
-
-	Note how the ``pores`` method was used to extract pore numbers based on the labels 'left' and 'right'.  It's possible to add your own labels to simulations to allow quick access to special sets of pores.  This is outlined :ref:`here<inner_workings>`.
 
 To actually run the algorithm use the ``run`` method.  This builds the coefficient matrix from the existing values of hydraulic conductance, and inverts the matrix to solve for pressure in each pore, and stores the results within the *Algorithm's* dictionary under \'pore.pressure'\:
 
