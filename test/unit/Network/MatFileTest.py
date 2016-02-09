@@ -6,6 +6,8 @@ import os
 class MatFileTest:
     def setup_class(self):
         self.fname = os.path.join(FIXTURE_DIR, 'example_network.mat')
+
+    def test_loading(self):
         pn = OpenPNM.Network.MatFile(filename=self.fname)
         assert pn.Np == 105
         assert pn.Nt == 238
