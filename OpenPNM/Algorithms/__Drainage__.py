@@ -574,7 +574,7 @@ class Drainage(GenericAlgorithm):
             temp_Pc = phys.models[key]['Pc']  # Store old Pc
             phys.models[key]['Pc'] = pressure
             # Regenerate Physics model and capture output locally
-            Snwp[phys.Pnet] = phys.models[key].regenerate()
+            Snwp[phys.Pnet] = phys.models[key].run()
             # Re-populate the residual element with the non-wetting phase
             if sp.any(self[element+'.residual']):
                 Snwp[self[element+'.residual']] = 1.0

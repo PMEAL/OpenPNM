@@ -250,7 +250,7 @@ class GenericLinearTransport(GenericAlgorithm):
                         phys.models[source_name]['x'] = x0
                         phys.models[source_name]['return_rate'] = False
                         phys.models[source_name]['regen_mode'] = 'normal'
-                        s_regen = phys.models[source_name].regenerate()
+                        s_regen = phys.models[source_name].run()
                         phys.models[source_name]['x'] = x
                         phys.models[source_name]['return_rate'] = return_rate
                         phys.models[source_name]['regen_mode'] = regen_mode
