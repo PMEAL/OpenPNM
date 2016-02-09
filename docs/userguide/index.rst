@@ -7,7 +7,7 @@
 Contents:
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    installation.rst
    tutorials/index.rst

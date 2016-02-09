@@ -1,10 +1,10 @@
 .. _examples:
 
 ###############################################################################
-Examples and Tutorials
+Examples and Applications
 ###############################################################################
 
-Available Examples and Tutorials:
+Available Examples:
 
 .. toctree::
    :maxdepth: 1
