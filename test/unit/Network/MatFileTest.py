@@ -7,4 +7,6 @@ class MatFileTest:
     def setup_class(self):
         fname = join(FIXTURE_DIR, 'example_network.mat')
         self.net = OpenPNM.Network.MatFile(filename=fname)
+
+    def test_fail(self):
         assert self.net.Np == 0

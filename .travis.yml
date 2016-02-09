@@ -37,9 +37,11 @@ script:
 
 after_success:
 - codecov
+- coveralls
 
 after_failure:
 - codecov
+- coveralls
 
 deploy:
   provider: pypi
