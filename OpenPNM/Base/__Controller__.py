@@ -441,6 +441,12 @@ class Controller(dict):
 
             **'yaml'** : A NetworkX output format
 
+        Notes
+        -----
+        This is a wrapper or convenience method for the actual IO classes
+        located in OpenPNM.Utilities.IO. Refer to the doc strings for those
+        classes for information on the actual file format specifications.
+
         """
         import OpenPNM.Utilities.IO as io
         # Handle normal file types
