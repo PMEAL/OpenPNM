@@ -5,6 +5,7 @@ language: python
 python:
   - "3.3"
   - "3.4"
+  - "3.5"
 
 cache: apt
 
@@ -35,6 +36,9 @@ script:
 - ./bin/clean
 
 after_success:
+- codecov
+
+after_failure:
 - codecov
 
 deploy:
