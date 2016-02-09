@@ -10,15 +10,16 @@ class DrainageTest:
         self.geo = OpenPNM.Geometry.Toray090(network=self.net,
                                              pores=self.net.Ps,
                                              throats=self.net.Ts)
-        self.phase = OpenPNM.Phases.Water(network=self.net)
+        self.water = OpenPNM.Phases.Water(network=self.net)
+        self.air = OpenPNM.Phases.Air(network=self.net)
         self.phys = OpenPNM.Physics.Standard(network=self.net,
-                                             phase=self.phase,
+                                             phase=self.water,
                                              pores=self.net.Ps,
                                              throats=self.net.Ts)
         self.alg = OpenPNM.Algorithms.Drainage(network=self.net)
 
     def test_set_inlets_modes(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.water, defending_phase=self.air)
 
         self.alg.set_inlets(pores=self.net.pores('top'), mode='add')
         assert sp.sum(self.alg['pore.inlets']) == 25
@@ -37,7 +38,7 @@ class DrainageTest:
         assert sp.sum(self.alg['pore.inlets']) == 0
 
     def test_set_inlets_conflicting_with_outlets(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.water, defending_phase=self.air)
         self.alg['pore.outlets'][self.net.pores('top')] = True
         flag = False
         try:
@@ -47,7 +48,9 @@ class DrainageTest:
         assert flag
 
     def test_set_outlets_conflicting_with_inlets(self):
-        self.alg.setup(invading_phase=self.phase, trapping=True)
+        self.alg.setup(invading_phase=self.water,
+                       defending_phase=self.air,
+                       trapping=True)
         self.alg['pore.inlets'][self.net.pores('top')] = True
         flag = False
         try:
@@ -57,7 +60,8 @@ class DrainageTest:
         assert flag
 
     def test_set_outlets_without_trapping(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.water,
+                       defending_phase=self.air)
         flag = False
         try:
             self.alg.set_outlets(pores=self.net.pores('top'))
@@ -66,7 +70,9 @@ class DrainageTest:
         assert flag
 
     def test_set_outlets_modes(self):
-        self.alg.setup(invading_phase=self.phase, trapping=True)
+        self.alg.setup(invading_phase=self.water,
+                       defending_phase=self.air,
+                       trapping=True)
 
         self.alg.set_outlets(pores=self.net.pores('top'), mode='add')
         assert sp.sum(self.alg['pore.outlets']) == 25
@@ -85,7 +91,7 @@ class DrainageTest:
         assert sp.sum(self.alg['pore.outlets']) == 0
 
     def test_set_residual_modes(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.water, defending_phase=self.air)
 
         Ps = sp.random.randint(0, self.net.Np, 10)
         Ts = self.net.find_neighbor_pores(pores=Ps)
@@ -113,7 +119,9 @@ class DrainageTest:
         assert sp.sum(self.alg['pore.residual']) == 0
 
     def test_set_boundary_conditions_clear(self):
-        self.alg.setup(invading_phase=self.phase, trapping=True)
+        self.alg.setup(invading_phase=self.water,
+                       defending_phase=self.air,
+                       trapping=True)
 
         self.alg['pore.inlets'] = True
         self.alg['pore.outlets'] = True
@@ -127,7 +135,9 @@ class DrainageTest:
         assert sp.sum(self.alg['throat.residual']) == 0
 
     def test_set_boundary_conditions_bctypes(self):
-        self.alg.setup(invading_phase=self.phase, trapping=True)
+        self.alg.setup(invading_phase=self.water,
+                       defending_phase=self.air,
+                       trapping=True)
         Ps = sp.random.randint(0, self.net.Np, 10)
 
         self.alg.set_boundary_conditions(pores=Ps, bc_type='inlets')
@@ -157,20 +167,20 @@ class DrainageTest:
         assert flag
 
     def test_run_npts(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.water, defending_phase=self.air)
         Ps = sp.random.randint(0, self.net.Np, 10)
         self.alg.set_boundary_conditions(pores=Ps, bc_type='inlets')
         self.alg.run(npts=20)
 
     def test_run_inv_pressures(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.water, defending_phase=self.air)
         Ps = sp.random.randint(0, self.net.Np, 10)
         self.alg.set_boundary_conditions(pores=Ps, bc_type='inlets')
         self.alg.run(inv_pressures=range(0, 20000, 1000))
         assert sp.all(self.alg._inv_points == range(0, 20000, 1000))
 
     def test_run_no_inlets(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.water, defending_phase=self.air)
         flag = False
         try:
             self.alg.run()
@@ -179,7 +189,9 @@ class DrainageTest:
         assert flag
 
     def test_run_w_trapping_but_no_outlets(self):
-        self.alg.setup(invading_phase=self.phase, trapping=True)
+        self.alg.setup(invading_phase=self.water,
+                       defending_phase=self.air,
+                       trapping=True)
         Ps = sp.random.randint(0, self.net.Np, 10)
         self.alg.set_boundary_conditions(pores=Ps, bc_type='inlets')
         flag = False
@@ -190,7 +202,9 @@ class DrainageTest:
         assert flag
 
     def test_run_w_trapping(self):
-        self.alg.setup(invading_phase=self.phase, trapping=True)
+        self.alg.setup(invading_phase=self.water,
+                       defending_phase=self.air,
+                       trapping=True)
         self.alg.set_boundary_conditions(pores=self.net.pores('top'),
                                          bc_type='inlets')
         self.alg.set_boundary_conditions(pores=self.net.pores('bottom'),
@@ -201,7 +215,7 @@ class DrainageTest:
         assert 'invading_phase_saturation' in data.keys()
 
     def test_run_w_residual_pores_and_throats(self):
-        self.alg.setup(invading_phase=self.phase)
+        self.alg.setup(invading_phase=self.water, defending_phase=self.air)
         self.alg.set_boundary_conditions(pores=self.net.pores('top'),
                                          bc_type='inlets')
         self.alg.set_boundary_conditions(pores=self.net.pores('bottom'),

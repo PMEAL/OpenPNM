@@ -5,6 +5,8 @@ Submodule -- throat_length
 
 """
 import scipy as _sp
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 
 def straight(network, geometry, pore_diameter='pore.diameter',
@@ -31,8 +33,8 @@ def straight(network, geometry, pore_diameter='pore.diameter',
     value = E-(D1+D2)/2.
     value = value[throats]
     if _sp.any(value < 0) and L_negative is not None:
-        print('Negative throat lengths are calculated. Arbitrary positive \
-               length assigned: ' + str(L_negative))
+        logger.warn('Negative throat lengths are calculated. Arbitrary positive' +
+                    ' length assigned: ' + str(L_negative))
         Ts = _sp.where(value < 0)[0]
         value[Ts] = L_negative
     return value
