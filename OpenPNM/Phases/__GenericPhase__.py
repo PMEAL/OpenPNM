@@ -80,6 +80,19 @@ class GenericPhase(Core):
         else:
             return super().__getitem__(key)
 
+    def props(self, element=None, mode='all'):
+        prop_list = []
+        if 'deep' in mode:
+            mode.remove('deep')
+            for phys in self._physics:
+                prop_list.extend(phys.props(element=element, mode=mode))
+            # Get unique values
+            prop_list = Tools.PrintableList(set(prop_list))
+        prop_list.extend(super().props(element=element, mode=mode))
+        return prop_list
+
+    props.__doc__ = Core.props.__doc__
+
     def set_component(self, phase, mode='add'):
         r"""
         This method is used to add or remove a ficticious phase object to this

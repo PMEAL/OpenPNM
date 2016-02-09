@@ -120,16 +120,18 @@ class ControllerTest:
 
     def test_export_VTK_and_MAT(self):
         fname = os.path.join(TEMP_DIR, 'test')
-        self.controller.clear()
-        pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
+        geo = OpenPNM.Geometry.TestGeometry(network=net,
+                                            pores=net.Ps,
+                                            throats=net.Ts)
         # Test VTK option
-        self.controller.export(network=pn,
+        self.controller.export(network=net,
                                filename=fname,
                                fileformat='VTK')
         assert os.path.isfile(fname+'.vtp')
         os.remove(fname+'.vtp')
         # Test Matlab matfile option
-        self.controller.export(network=self.net,
+        self.controller.export(network=net,
                                filename=fname,
                                fileformat='MAT')
         assert os.path.isfile(fname+'.mat')
