@@ -54,9 +54,9 @@ class ModelWrapper(dict):
         return '\n'.join(lines)
 
     def regenerate(self):
-        self.run()
-        logger.warning("This method has been depracated, use \'run\' instead.")        
-        
+        return self.run()
+        logger.warning("This method has been depracated, use \'run\' instead.")
+
     def run(self):
         r"""
         Regenerate the model
