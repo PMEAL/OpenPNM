@@ -39,7 +39,7 @@ phys_air = op.Physics.Standard(network=pn, phase=air, pores=Ps, throats=Ts)
 '''Perform a Drainage Experiment (OrdinaryPercolation)'''
 # -----------------------------------------------------------------------------
 drainage = op.Algorithms.Drainage(network=pn)
-drainage.setup(invading_phase=water)
+drainage.setup(invading_phase=water, defending_phase=air)
 drainage.set_inlets(pores=pn.pores(labels=['bottom_boundary']))
 drainage.run()
 drainage.return_results(Pc=7000)

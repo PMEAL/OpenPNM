@@ -4,11 +4,11 @@ Controller:  A dummy class support backwards compatibility
 ###############################################################################
 """
 import OpenPNM
-from OpenPNM.Base import logging
+from OpenPNM.Base import logging, Workspace
 logger = logging.getLogger()
 
 
-class Controller(OpenPNM.Base.Workspace):
+class Controller(Workspace):
     # This is a dummy class to provide the functionality of the Workspace
     # class # under the name Controller to provide backwards compatibility.
     def __init__(self, **kwargs):
