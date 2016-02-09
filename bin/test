@@ -11,8 +11,7 @@ if 'pep8' in sys.argv:
 if 'cov' in sys.argv:
     args.extend(['--cov-report=term-missing',
                  '--cov=OpenPNM',
-                 '--cov-config=.coveragerc',
-                 '--no-cov-on-fail'])
+                 '--cov-config=.coveragerc'])
 
 exit_code = pytest.main(args)
 exit(exit_code)
