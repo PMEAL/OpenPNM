@@ -8,6 +8,7 @@ import scipy as _sp
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
+
 def straight(network, geometry, pore_diameter='pore.diameter',
              L_negative=1e-9, **kwargs):
     r"""

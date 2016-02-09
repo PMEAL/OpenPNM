@@ -174,21 +174,22 @@ def late_pore_filling(physics, phase, network,
     values = (1-Swp)*(physics[pc_star] <= Pc)
     return values
 
+
 def phase_conductance(physics, phase, network,
-           pore_viscosity='pore.viscosity',
-           throat_length='throat.length',
-           throat_diameter='throat.diameter',
-           shape_factor='throat.shape_factor',
-           contact_angle='pore.contact_angle',
-           throat_occupancy='throat.occupancy',
-           pore_surface_tension='pore.surface_tension',
-           throat_Pc='throat.capillary_pressure',
-           **kwargs):
+                      pore_viscosity='pore.viscosity',
+                      throat_length='throat.length',
+                      throat_diameter='throat.diameter',
+                      shape_factor='throat.shape_factor',
+                      contact_angle='pore.contact_angle',
+                      throat_occupancy='throat.occupancy',
+                      pore_surface_tension='pore.surface_tension',
+                      throat_Pc='throat.capillary_pressure',
+                      **kwargs):
     r"""
     Calculates the hydraulic conductivity of throat assuming cuboid
     geometry using the Mayer and Stowe approximation where both phases
     may be present at the same time
-    
+
     *** For now asssume that one phase is wetting and one-is non-wetting ***
     *** Mixed wettability may not work as saturation of wetting phase is ***
     *** Solved for in dynamic pressure solver                            ***
@@ -238,22 +239,23 @@ def phase_conductance(physics, phase, network,
     r_eff_mp = 0.5*(sp.sqrt((r**2 - (4-sp.pi)*r_c**2)/sp.pi)+r)
     if wetting_phase:
         # Throats  occupied by wetting phase completely
-        Ts = sp.array(phase[throat_occupancy]==1.0, dtype=bool)
+        Ts = sp.array(phase[throat_occupancy] == 1.0, dtype=bool)
         v1 = (sp.pi*r_eff_sp**4)/(8*mut*tlen)
         value[Ts] = v1[Ts]
         # Throats occupied by both phases
-        v2 = ((4 -sp.pi)*r_c**4)/(beta*mut*tlen)
+        v2 = ((4-sp.pi)*r_c**4)/(beta*mut*tlen)
         value[~Ts] = v2[~Ts]
     else:
         # Throats occupied by non-wetting phase to some extent
-        Ts = sp.array(phase[throat_occupancy]>0.0, dtype=bool)
+        Ts = sp.array(phase[throat_occupancy] > 0.0, dtype=bool)
         v1 = (sp.pi*r_eff_mp**4)/(8*mut*tlen)
         value[Ts] = v1[Ts]
-        # Throats occupied by wetting-phase completely have zero conduction 
+        # Throats occupied by wetting-phase completely have zero conduction
         # to non-wetting phase
 
     value = value[phase.throats(physics.name)]
     return value
+
 
 def lpf_cuboid(physics, phase, network, Pc,
                pore_diameter='pore.diameter',
