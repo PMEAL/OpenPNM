@@ -14,7 +14,7 @@ class VoronoiTest:
         scale = 1e-4
         p = (sp.random.random([len(bp), 3])-0.5)/10000
         bp += p
-        self.ctrl = OpenPNM.Base.Controller()
+        self.mgr = OpenPNM.Base.Workspace()
         self.net = OpenPNM.Network.Delaunay(domain_size=[scale, scale, scale],
                                             base_points=bp*scale)
         self.net.add_boundaries()
@@ -60,7 +60,7 @@ class VoronoiTest:
         assert hasattr(self.geo_vox, '_fibre_image') is True
 
     def test_voronoi_vert(self):
-        self.ctrl.purge_object(self.geo_vox)
+        self.mgr.purge_object(self.geo_vox)
         fibre_rad = 5e-6
         Ps = self.net.pores()
         Ts = self.net.throats()

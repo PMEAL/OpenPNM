@@ -61,10 +61,10 @@ class GenericPhysicsTest:
 
     def test_instantiation_with_no_geom_or_phase(self):
         phys = OpenPNM.Physics.GenericPhysics(network=self.net)
-        ctrl = phys.controller
-        assert phys in ctrl.values()
+        mgr = phys.workspace
+        assert phys in mgr.values()
         phase = phys._phases[0]
-        assert phase in ctrl.values()
+        assert phase in mgr.values()
         assert phys.name in phase.physics()
         assert phase.name in phys.phases()
 

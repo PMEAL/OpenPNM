@@ -7,8 +7,8 @@ class GenericNetworkTest:
         self.net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
 
     def teardown_class(self):
-        ctrl = OpenPNM.Base.Controller()
-        ctrl.clear()
+        mgr = OpenPNM.Base.Workspace()
+        mgr.clear()
 
     def test_find_connected_pores_numeric_not_flattend(self):
         a = self.net.find_connected_pores(throats=[0, 1])

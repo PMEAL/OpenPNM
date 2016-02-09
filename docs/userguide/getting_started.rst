@@ -13,9 +13,9 @@ The first thing you must do is import the OpenPNM code so you have access to the
 .. code-block:: python
 
 	import OpenPNM
-	ctrl = OpenPNM.Base.Controller()
+	mgr = OpenPNM.Base.Workspace()
 
-The *Controller* object provides high-level oversight to all the simulations existing in memory at any given time.  Its main purpose is saving, loading and exporting data to files.
+The *Workspace* object provides high-level oversight to all the simulations existing in memory at any given time.  Its main purpose is saving, loading and exporting data to files.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Initialize the Network Topology
@@ -44,7 +44,7 @@ This data may also be stored in a variable:
 	Ps = pn.pores()
 	Ts = pn.throats()
 
-Networks are the chief objects in OpenPNM.  All subsequent objects are subjects of the Network.  Two Networks may exist in memory at the same time, but they are completely independent of each other.  In fact, because of thier chief status, the *Network* object define a simulation, so the term 'Network' and 'simulation' are sometimes used interchangably. The *Controller* object mentioned above keeps track of all the different *Networks* in memory.
+Networks are the chief objects in OpenPNM.  All subsequent objects are subjects of the Network.  Two Networks may exist in memory at the same time, but they are completely independent of each other.  In fact, because of thier chief status, the *Network* object define a simulation, so the term 'Network' and 'simulation' are sometimes used interchangably. The *Workspace* object mentioned above keeps track of all the different *Networks* in memory.
 
 ===============================================================================
 Initialize and Build a Geometry Object
@@ -257,8 +257,8 @@ We can now visualise our network and simulation results.  OpenPNM does not suppo
 
 .. code-block:: python
 
-	ctrl.export(pn)
+	mgr.export(pn)
 
 This creates a *net.vtp* file in the active directory, which can be loaded from ParaView. For a quick tutorial on the use of Paraview with OpenPNM data, see :ref:`Using Paraview<paraview_example>`.
 
-To save an incomplete simulation for later work, the **Controller** object can be used to save the entire workspace (i.e. all simulations) using ``ctrl.save()``, or just the simulation of interest using ``ctrl.save_simulation(pn)``.
+To save an incomplete simulation for later work, the **Workspace** object can be used to save the entire workspace (i.e. all simulations) using ``mgr.save()``, or just the simulation of interest using ``mgr.save_simulation(pn)``.

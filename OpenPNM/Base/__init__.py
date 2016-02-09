@@ -1,9 +1,10 @@
 r"""
 ###############################################################################
-:mod:`OpenPNM.Base` -- Abstract Base Class, and Core Data Class
+:mod:`OpenPNM.Base` -- Module Containing Abstract Base Class, Core Data Class,
+and other backend classes used in OpenPNM
 ###############################################################################
 
-.. autoclass:: OpenPNM.Base.Controller
+.. autoclass:: OpenPNM.Base.Workspace
    :members:
    :undoc-members:
    :show-inheritance:
@@ -18,12 +19,19 @@ r"""
    :undoc-members:
    :show-inheritance:
 
+.. autoclass:: OpenPNM.Base.ModelsDict
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 """
 import logging as logging
+from .__Workspace__ import Workspace
 from .__Controller__ import Controller
 from .__ModelsDict__ import ModelsDict
 from . import __Tools__ as Tools
 from .__Core__ import Core
+
 
 # Set up logging to file - see previous section for more details
 log_format = \
