@@ -5,9 +5,83 @@ pore_diameter
 
 """
 import scipy as _sp
-import numpy as np
-
 from scipy.spatial import ConvexHull
+
+
+def weibull(geometry, shape, scale, loc, pore_seed='pore.seed', **kwargs):
+    r"""
+
+    Example
+    -------
+    >>> plt.hist(spst.weibull_min.ppf(q=sp.rand(10000), c=2, scale=.0001,
+    ...                               loc=0), bins=50)
+    """
+    value = _sp.stats.weibull_min.ppf(q=geometry[pore_seed],
+                                      c=shape,
+                                      scale=scale,
+                                      loc=loc)
+    return value
+
+
+def normal(geometry, scale, loc, pore_seed='pore.seed', **kwargs):
+    r"""
+
+    Examples
+    --------
+    >>> plt.hist(spst.norm.ppf(q=sp.rand(10000), scale=.0001, loc=0.001),
+    ...          bins=50)
+
+    """
+    value = _sp.stats.norm.ppf(q=geometry[pore_seed],
+                               scale=scale,
+                               loc=loc)
+    return value
+
+
+def gamma(geometry, shape, scale, loc, pore_seed='pore.seed', **kwargs):
+    r"""
+
+    Examples
+    --------
+    >>> plt.hist(spst.gamma.ppf(q=sp.rand(10000), a=2, scale=.0001, loc=0),
+    ...          bins=50)
+
+    """
+    value = _sp.stats.gamma.ppf(q=geometry[pore_seed],
+                                a=shape,
+                                scale=scale,
+                                loc=loc)
+    return value
+
+
+def lognormal(geometry, shape, scale, loc, pore_seed='pore.seed', **kwargs):
+    r"""
+
+    Examples
+    --------
+    >>> plt.hist(spst.lognorm.ppf(q=sp.rand(10000), s=0.5, scale=.0001, loc=0),
+    ...          bins=50)
+    """
+    value = _sp.stats.lognorm.ppf(q=geometry[pore_seed],
+                                  s=shape,
+                                  scale=scale,
+                                  loc=loc)
+    return value
+
+
+def generic(geometry, func, pore_seed='pore.seed', **kwargs):
+    r"""
+    Accepts an 'rv_frozen' object functon and returns values from the
+    distribution for the give pore seeds.
+
+    Example
+    -------
+    >>> import scipy
+    >>> func = scipy.stats.weibull_min.ppf(c=2, scale=.0001, loc=0)
+
+    """
+    value = func.ppf(geometry['pore.seed'])
+    return value
 
 
 def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
