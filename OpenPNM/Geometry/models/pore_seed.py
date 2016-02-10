@@ -6,32 +6,14 @@ statistical pore size distributions
 ===============================================================================
 
 """
+from . import misc
 import scipy as _sp
 
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
-    r"""
-    Assign random number to pores, for use in statistical distributions that
-    return pore size
-
-    Parameters
-    ----------
-    seed : int
-        The starting seed value to send to Scipy's random number generator.
-        The default is None, which means different distribution is returned
-        each time the model is run.
-
-    num_range : list
-        A two element list indicating the low and high end of the returned
-        numbers.
-
-    """
-    range_size = num_range[1]-num_range[0]
-    range_min = num_range[0]
-    _sp.random.seed(seed=seed)
-    value = _sp.random.rand(geometry.num_pores(),)
-    value = value*range_size + range_min
-    return value
+    return misc.random(geometry=geometry, element='pore', seed=seed,
+                       num_range=num_range)
+random.__doc__ = misc.random.__doc__
 
 
 def distance_from_inclusion(geometry, p, **kwargs):
@@ -55,14 +37,15 @@ def distance_from_inclusion(geometry, p, **kwargs):
     Notes
     -----
     - This method uses image analysis tools, so only works on Cubic networks
-    - At present the result contains edge artifacts since no inclusions are present
-      beyond the image boundary
+    - At present the result contains edge artifacts since no inclusions are
+    present beyond the image boundary
 
     Examples
     --------
     >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[50,50,50])
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
+    >>> pn = OpenPNM.Network.Cubic(shape=[50, 50, 50])
+    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=pn.Ps,
+    ...                                         throats=pn.Ts)
     >>> model = OpenPNM.Geometry.models.pore_seed.distance_from_inclusion
     >>> geom.add_model(propname='pore.seed', model=model, p=0.001)
     >>> im = pn.asarray(geom['pore.seed'])

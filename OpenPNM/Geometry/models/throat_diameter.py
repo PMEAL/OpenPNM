@@ -4,8 +4,25 @@ Submodule -- throat_diameter
 ===============================================================================
 
 """
+from . import misc
 import scipy as _sp
-import numpy as np
+
+
+def weibull(geometry, shape, scale, loc, throat_seed='throat.seed', **kwargs):
+    return misc.weibull(geometry=geometry, shape=shape, scale=scale, loc=loc,
+                        seeds=throat_seed)
+weibull.__doc__ = misc.weibull.__doc__
+
+
+def normal(geometry, scale, loc, throat_seed='throat.seed', **kwargs):
+    return misc.normal(geometry=geometry, scale=scale, loc=loc,
+                       seeds=throat_seed)
+normal.__doc__ = misc.normal.__doc__
+
+
+def generic(geometry, func, throat_seed='throat.seed', **kwargs):
+    return misc.generic(geometry=geometry, func=func, seeds=throat_seed)
+generic.__doc__ = misc.generic.__doc__
 
 
 def cylinder(geometry, tsd_name, tsd_shape, tsd_loc, tsd_scale,
