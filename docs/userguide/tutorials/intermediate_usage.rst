@@ -1,7 +1,7 @@
 .. _intermediate_usage:
 
 ###############################################################################
-Tutorial 2: Digging Deeper with OpenPNM
+Tutorial 2 of 3: Digging Deeper with OpenPNM
 ###############################################################################
 
 This tutorial will follow the same outline as the :ref:`getting started tutorial <getting_started>`, but will dig a little bit deeper at each step to reveal the more advanced features and usages of OpenPNM.  Be sure you've done and understood that tutorial before attempting this one.
@@ -54,4 +54,4 @@ For both **Geometry** objects, we will assign each pore a static random seed val
 >>> geom1['pore.seed'] = sp.rand(geom1.Np)
 >>> geom2['pore.seed'] = sp.rand(geom2.Np)
 
-It is crucial to note that the above lines each produced an array of different length, corresponding to the number of pores assigned to each **Geometry** object.  This is accomplished by the calls to ``geom1.Np`` and ``geom2.Np``, which of course return the number of pores on each.  Every Core object in OpenPNM inherits the same set of methods for mananging their data, such as counting the number of pore and throat values they represent; thus, ``pn.Np`` returns 1000 while ``geom1.Np`` and ``geom2.Np`` return 200 and 800 respectively.
+It is crucial to note that the above lines each produced an array of different length, corresponding to the number of pores assigned to each **Geometry** object.  This is accomplished by the calls to ``geom1.Np`` and ``geom2.Np``, which return the number of pores on each.  Every Core object in OpenPNM possesses the same set of methods for mananging their data, such as counting the number of pore and throat values they represent; thus, ``pn.Np`` returns 1000 while ``geom1.Np`` and ``geom2.Np`` return 200 and 800 respectively.  The segmentation of the data between separate Geometry objects is essential management of pore-scale models, as will be explained next:

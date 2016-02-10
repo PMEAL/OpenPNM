@@ -1,7 +1,7 @@
 .. _getting_started:
 
 ###############################################################################
-Tutorial 1: Getting Started with OpenPNM
+Tutorial 1 of 3: Getting Started with OpenPNM
 ###############################################################################
 
 As usual, start by importing the OpenPNM package:

@@ -1,7 +1,7 @@
-.. _ddvanced_tutorial:
+.. _advanced_tutorial:
 
 ###############################################################################
-Tutorial 3: Advaned Topics and Usage
+Tutorial 3 of 3: Advaned Topics and Usage
 ###############################################################################
 
 
