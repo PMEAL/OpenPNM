@@ -61,13 +61,3 @@ def c2c(network, geometry, **kwargs):
     for i in range(len(connections)):
         value[i] = _sp.linalg.norm(v1[i])+_sp.linalg.norm(v2[i])
     return value
-
-
-def constant(network, geometry, const, **kwargs):
-    r"""
-    Calculate throat length
-    """
-    # Initialize throat_property['length']
-    throats = network.throats(geometry.name)
-    value = _sp.ones(len(throats))*const
-    return value
