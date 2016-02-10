@@ -5,6 +5,7 @@ Submodule -- Miscillaneous functions
 
 """
 import scipy as _sp
+import scipy.stats as _spts
 
 
 def random(geometry, element, seed=None, num_range=[0, 1], **kwargs):
@@ -75,8 +76,8 @@ def weibull(geometry, shape, scale, loc, seeds, **kwargs):
         plt.hist(x, bins=50)
 
     """
-    value = _sp.stats.weibull_min.ppf(q=geometry[seeds], c=shape, scale=scale,
-                                      loc=loc)
+    value = _spts.weibull_min.ppf(q=geometry[seeds], c=shape, scale=scale,
+                                  loc=loc)
     return value
 
 
@@ -116,7 +117,7 @@ def normal(geometry, scale, loc, seeds, **kwargs):
         plt.hist(x, bins=50)
 
     """
-    value = _sp.stats.norm.ppf(q=geometry[seeds], scale=scale, loc=loc)
+    value = _spts.norm.ppf(q=geometry[seeds], scale=scale, loc=loc)
     return value
 
 
