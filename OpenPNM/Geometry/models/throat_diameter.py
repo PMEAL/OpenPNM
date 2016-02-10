@@ -55,6 +55,6 @@ def minpore(network, geometry, **kwargs):
     gTs = geometry.throats()
     nTs = geometry.map_throats(network, gTs)
     pDs = network["pore.diameter"][network["throat.conns"][nTs]]
-    value = _sp.min(pDs, axis=1)
-    value[value == 0.0] = _sp.max(pDs, axis=1)[value == 0.0]
+    value = _sp.amin(pDs, axis=1)
+    value[value == 0.0] = _sp.amax(pDs, axis=1)[value == 0.0]
     return value
