@@ -16,7 +16,8 @@ class Empty(GenericNetwork):
     Creates an empty Network but with a predefined number of pores and throats.
     This allows all of the data assignment to function properly, meaning that
     additional data can be added using the standard dictionary syntax
-    (e.g. ``net['pore.data']``).
+    (e.g. ``net['pore.data']``).  This class is intended for custom built
+    networks where data is added incrementally.
 
     """
 
