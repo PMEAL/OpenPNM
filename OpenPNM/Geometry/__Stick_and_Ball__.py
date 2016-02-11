@@ -5,7 +5,7 @@ Stick_and_Ball -- A standard 'stick & ball' geometrical model
 ===============================================================================
 
 """
-
+import scipy as _sp
 from OpenPNM.Geometry import models as gm
 from OpenPNM.Geometry import GenericGeometry
 
@@ -25,16 +25,26 @@ class Stick_and_Ball(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._generate()
 
-    def _generate(self):
         self.models.add(propname='pore.seed',
                         model=gm.pore_misc.random,
                         regen_mode='constant')
+        # Find Network spacing
+        P1 = self._net['throat.conns'][:, 0]
+        P2 = self._net['throat.conns'][:, 1]
+        C1 = self._net['pore.coords'][P1]
+        C2 = self._net['pore.coords'][P2]
+        E = _sp.sqrt(_sp.sum((C1-C2)**2, axis=1))  # Euclidean distance
+        Ps = self._net.pores(self.name)
+        Ts = self._net.find_neighbor_throats(pores=Ps, mode='intersection')
+        if _sp.allclose(E, E[0]):
+            spacing = E[Ts][0]
+        else:
+            raise Exception('A unique value of spacing could not be inferred')
         self.models.add(propname='pore.diameter',
                         model=gm.pore_diameter.normal,
-                        loc=self._net._spacing[0]/2,
-                        scale=self._net._spacing[0]/10)
+                        loc=spacing/2,
+                        scale=spacing/10)
         self.models.add(propname='pore.area',
                         model=gm.pore_area.spherical)
         self.models.add(propname='pore.volume',
