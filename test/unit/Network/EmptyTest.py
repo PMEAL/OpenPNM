@@ -1,7 +1,7 @@
 import OpenPNM
 
 
-class CubicTest:
+class EmptyTest:
     def setup_class(self):
         self.net = OpenPNM.Network.Empty(Np=100, Nt=200)
 
