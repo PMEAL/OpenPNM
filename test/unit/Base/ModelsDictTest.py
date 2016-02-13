@@ -14,7 +14,17 @@ class ModelsDictTest:
             assert expected_string == actual_string
 
         def test_find_master_with_more_than_one_master(self):
-            pass
+            pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+            geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=pn.Ps,
+                                                    throats=pn.Ts)
+            geom.models.add(propname='pore.seed',
+                            model=OpenPNM.Geometry.models.pore_misc.random)
+            pn2 = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+            geom2 = OpenPNM.Geometry.GenericGeometry(network=pn2, pores=pn.Ps,
+                                                     throats=pn.Ts)
+            geom2.models = geom.models
+            with pytest.raises(Exception):
+                geom2.models['pore.seed'].run()
 
     class ModelsDictTest:
         def setup_class(self):
@@ -29,9 +39,6 @@ class ModelsDictTest:
                 '------------------------------------------------------------'
             assert expected_string == actual_string
 
-        def test_str_with_models(self):
-            pass
-
         def test_keys(self):
             assert self.models_dict.keys() == []
             self.models_dict['test'] = {'model': 'test content'}
@@ -41,8 +48,21 @@ class ModelsDictTest:
             with pytest.raises(Exception):
                 self.models_dict.add('test model', {})
 
-        def test_add_with_more_than_one_master(self):
-            pass
+        def test_copy_modelsdict_to_new_object(self):
+            pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+            geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=pn.Ps,
+                                                    throats=pn.Ts)
+            geom.models.add(propname='pore.seed',
+                            model=OpenPNM.Geometry.models.pore_misc.random)
+            pn2 = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+            geom2 = OpenPNM.Geometry.GenericGeometry(network=pn2, pores=pn.Ps,
+                                                     throats=pn.Ts)
+            geom2.models = geom.models
+            with pytest.raises(Exception):
+                geom2.regenerate()
+            geom2.models = geom.models.copy()
+            geom2.regenerate()
+            assert 'pore.seed' in geom2
 
         def test_find_master_with_more_than_one_master(self):
             pass
