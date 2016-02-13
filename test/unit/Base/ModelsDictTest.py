@@ -110,7 +110,7 @@ class ModelsDictTest:
                             regen_mode='constant')
             assert 'pore.seed' in geom
             assert 'pore.seed' in geom.models
-            geom.remove('pore.seed')
+            geom.models.remove('pore.seed')
             assert 'pore.seed' not in geom
             assert 'pore.seed' not in geom.models
 
