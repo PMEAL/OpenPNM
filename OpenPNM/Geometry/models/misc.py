@@ -158,5 +158,5 @@ def generic(geometry, func, seeds, **kwargs):
 
     """
     seeds = geometry[seeds]
-    value = func.ppf(geometry[seeds])
+    value = func.ppf(seeds)
     return value
