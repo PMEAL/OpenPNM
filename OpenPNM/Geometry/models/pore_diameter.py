@@ -8,20 +8,26 @@ from . import misc
 import scipy as _sp
 
 
-def weibull(geometry, shape, scale, loc, pore_seed='pore.seed', **kwargs):
+def weibull(geometry, shape, scale, loc, seeds=None, **kwargs):
+    if seeds is None:
+        seeds = _sp.rand(geometry.Np,)
     return misc.weibull(geometry=geometry, shape=shape, scale=scale, loc=loc,
-                        seeds=pore_seed)
+                        seeds=seeds)
 weibull.__doc__ = misc.weibull.__doc__
 
 
-def normal(geometry, scale, loc, pore_seed='pore.seed', **kwargs):
+def normal(geometry, scale, loc, seeds=None, **kwargs):
+    if seeds is None:
+        seeds = _sp.rand(geometry.Np,)
     return misc.normal(geometry=geometry, scale=scale, loc=loc,
-                       seeds=pore_seed)
+                       seeds=seeds)
 normal.__doc__ = misc.normal.__doc__
 
 
-def generic(geometry, func, pore_seed='pore.seed', **kwargs):
-    return misc.generic(geometry=geometry, func=func, seeds=pore_seed)
+def generic(geometry, func, seeds=None, **kwargs):
+    if seeds is None:
+        seeds = _sp.rand(geometry.Np,)
+    return misc.generic(geometry=geometry, func=func, seeds=seeds)
 generic.__doc__ = misc.generic.__doc__
 
 

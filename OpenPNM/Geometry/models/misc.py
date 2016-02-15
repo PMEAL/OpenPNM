@@ -57,9 +57,10 @@ def weibull(geometry, shape, scale, loc, seeds, **kwargs):
         Applies an offset to the distribution such that the smallest values are
         above this number.
 
-    seeds : string
-        The dictionary key containing the seed values on the associated object.
-        This is typically 'pore.seed' or 'throat.seed'.
+    seeds : array, optional
+        The random seed values (between 0 and 1) to use in the statistical
+        distribution.  If no array is given, then an array of random numbers
+        will be automatically generated.
 
     Examples
     --------
@@ -76,8 +77,7 @@ def weibull(geometry, shape, scale, loc, seeds, **kwargs):
         plt.hist(x, bins=50)
 
     """
-    value = _spts.weibull_min.ppf(q=geometry[seeds], c=shape, scale=scale,
-                                  loc=loc)
+    value = _spts.weibull_min.ppf(q=seeds, c=shape, scale=scale, loc=loc)
     return value
 
 
@@ -99,9 +99,10 @@ def normal(geometry, scale, loc, seeds, **kwargs):
     loc : float
         This is the mean of the Normal distribution
 
-    seeds : string
-        The dictionary key containing the seed values on the associated object.
-        This is typically 'pore.seed' or 'throat.seed'.
+    seeds : array, optional
+        The random seed values (between 0 and 1) to use in the statistical
+        distribution.  If no array is given, then an array of random numbers
+        will be automatically generated.
 
     Examples
     --------
@@ -117,7 +118,7 @@ def normal(geometry, scale, loc, seeds, **kwargs):
         plt.hist(x, bins=50)
 
     """
-    value = _spts.norm.ppf(q=geometry[seeds], scale=scale, loc=loc)
+    value = _spts.norm.ppf(q=seeds, scale=scale, loc=loc)
     return value
 
 
@@ -125,6 +126,17 @@ def generic(geometry, func, seeds, **kwargs):
     r"""
     Accepts an 'rv_frozen' object from the Scipy.stats submodule and returns
     values from the distribution for the given seeds using the ``ppf`` method.
+
+    Parameters
+    ----------
+    func : object
+        An 'rv_frozen' object from the Scipy.stats library with all of the
+        parameters pre-specified.
+
+    seeds : array, optional
+        The random seed values (between 0 and 1) to use in the statistical
+        distribution.  If no array is given, then an array of random numbers
+        will be automatically generated.
 
     Examples
     --------
