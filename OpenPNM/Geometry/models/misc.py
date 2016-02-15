@@ -57,10 +57,11 @@ def weibull(geometry, shape, scale, loc, seeds, **kwargs):
         Applies an offset to the distribution such that the smallest values are
         above this number.
 
-    seeds : array, optional
-        The random seed values (between 0 and 1) to use in the statistical
-        distribution.  If no array is given, then an array of random numbers
-        will be automatically generated.
+    seeds : string, optional
+        The dictionary key on the Geometry object containing random seed values
+        (between 0 and 1) to use in the statistical distribution.  If none is
+        specified, then an array of random numbers will be automatically
+        generated and stored on teh Geometry object.
 
     Examples
     --------
@@ -99,10 +100,11 @@ def normal(geometry, scale, loc, seeds, **kwargs):
     loc : float
         This is the mean of the Normal distribution
 
-    seeds : array, optional
-        The random seed values (between 0 and 1) to use in the statistical
-        distribution.  If no array is given, then an array of random numbers
-        will be automatically generated.
+    seeds : string, optional
+        The dictionary key on the Geometry object containing random seed values
+        (between 0 and 1) to use in the statistical distribution.  If none is
+        specified, then an array of random numbers will be automatically
+        generated and stored on teh Geometry object.
 
     Examples
     --------
@@ -133,10 +135,11 @@ def generic(geometry, func, seeds, **kwargs):
         An 'rv_frozen' object from the Scipy.stats library with all of the
         parameters pre-specified.
 
-    seeds : array, optional
-        The random seed values (between 0 and 1) to use in the statistical
-        distribution.  If no array is given, then an array of random numbers
-        will be automatically generated.
+    seeds : string, optional
+        The dictionary key on the Geometry object containing random seed values
+        (between 0 and 1) to use in the statistical distribution.  If none is
+        specified, then an array of random numbers will be automatically
+        generated and stored on teh Geometry object.
 
     Examples
     --------

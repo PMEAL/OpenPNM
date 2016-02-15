@@ -9,24 +9,24 @@ import scipy as _sp
 
 
 def weibull(geometry, shape, scale, loc, seeds=None, **kwargs):
-    if seeds is None:
-        seeds = _sp.rand(geometry.Nt,)
+    if seeds not in geometry:
+        geometry['throat.seed'] = _sp.rand(geometry.Nt,)
     return misc.weibull(geometry=geometry, shape=shape, scale=scale, loc=loc,
                         seeds=seeds)
 weibull.__doc__ = misc.weibull.__doc__
 
 
 def normal(geometry, scale, loc, seeds=None, **kwargs):
-    if seeds is None:
-        seeds = _sp.rand(geometry.Nt,)
+    if seeds not in geometry:
+        geometry['throat.seed'] = _sp.rand(geometry.Nt,)
     return misc.normal(geometry=geometry, scale=scale, loc=loc,
                        seeds=seeds)
 normal.__doc__ = misc.normal.__doc__
 
 
 def generic(geometry, func, seeds=None, **kwargs):
-    if seeds is None:
-        seeds = _sp.rand(geometry.Nt,)
+    if seeds not in geometry:
+        geometry['throat.seed'] = _sp.rand(geometry.Nt,)
     return misc.generic(geometry=geometry, func=func, seeds=seeds)
 generic.__doc__ = misc.generic.__doc__
 
