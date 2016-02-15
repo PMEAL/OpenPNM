@@ -78,6 +78,7 @@ def weibull(geometry, shape, scale, loc, seeds, **kwargs):
         plt.hist(x, bins=50)
 
     """
+    seeds = geometry[seeds]
     value = _spts.weibull_min.ppf(q=seeds, c=shape, scale=scale, loc=loc)
     return value
 
@@ -120,6 +121,7 @@ def normal(geometry, scale, loc, seeds, **kwargs):
         plt.hist(x, bins=50)
 
     """
+    seeds = geometry[seeds]
     value = _spts.norm.ppf(q=seeds, scale=scale, loc=loc)
     return value
 
@@ -155,5 +157,6 @@ def generic(geometry, func, seeds, **kwargs):
         plt.hist(func.ppf(q=scipy.rand(1000), bins=50))
 
     """
+    seeds = geometry[seeds]
     value = func.ppf(geometry[seeds])
     return value
