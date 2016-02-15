@@ -35,7 +35,7 @@ class ThroatDiameterTest:
                             model=mods.normal,
                             scale=0.01,
                             loc=0.5,
-                            pore_seed='throat.seed')
+                            seeds='throat.seed')
         assert 0.45 < sp.mean(self.geo['throat.diameter']) < 0.55
         del self.geo['throat.diameter']
 
@@ -46,7 +46,7 @@ class ThroatDiameterTest:
                             shape=1.5,
                             scale=0.0001,
                             loc=0.001,
-                            pore_seed='throat.seed')
+                            seeds='throat.seed')
         assert sp.amin(self.geo['throat.diameter']) > 0.001
         del self.geo['throat.diameter']
 
@@ -56,6 +56,6 @@ class ThroatDiameterTest:
         self.geo.models.add(propname='throat.diameter',
                             model=mods.generic,
                             func=func,
-                            pore_seed='throat.seed')
+                            seeds='throat.seed')
         assert sp.amin(self.geo['throat.diameter']) > 0.001
         del self.geo['throat.diameter']

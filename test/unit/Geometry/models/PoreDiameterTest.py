@@ -17,7 +17,7 @@ class PoreDiameterTest:
                             model=mods.normal,
                             scale=0.01,
                             loc=0.5,
-                            pore_seed='pore.seed')
+                            seeds='pore.seed')
         assert 0.45 < sp.mean(self.geo['pore.diameter']) < 0.55
         del self.geo['pore.diameter']
 
@@ -28,7 +28,7 @@ class PoreDiameterTest:
                             shape=1.5,
                             scale=0.0001,
                             loc=0.001,
-                            pore_seed='pore.seed')
+                            seeds='pore.seed')
         assert sp.amin(self.geo['pore.diameter']) > 0.001
         del self.geo['pore.diameter']
 
@@ -38,6 +38,6 @@ class PoreDiameterTest:
         self.geo.models.add(propname='pore.diameter',
                             model=mods.generic,
                             func=func,
-                            pore_seed='pore.seed')
+                            seeds='pore.seed')
         assert sp.amin(self.geo['pore.diameter']) > 0.001
         del self.geo['pore.diameter']
