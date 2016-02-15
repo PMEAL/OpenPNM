@@ -37,15 +37,6 @@ class MatFile(GenericNetwork):
         xtra_throat_data = ['type', 'shape', 'material']
         any additional props to look for in the dictionary
 
-    Examples
-    ---------
-    >>> import OpenPNM, os
-    >>> fname = 'test_pn' # or 'test_pn.mat'
-    >>> longpath = os.path.abspath(__file__)
-    >>> path, file = os.path.split(longpath)
-    >>> pn = OpenPNM.Network.MatFile(filename=fname, path=path,
-    ...                              xtra_pore_data='type', xtra_throat_data='type')
-
     Notes
     ------
     Matfiles should include the following variables
@@ -67,7 +58,6 @@ class MatFile(GenericNetwork):
     +----------------+------------+----------------------------------+
     | ptype          | <Npx1>     | (optional) designates surfaces   |
     |                | int        | of pores in network.             |
-    |                |            | (more details below)             |
     +----------------+------------+----------------------------------+
     | tconnections   | <Ntx2>     | pore numbers of the two pores    |
     |                | int        | that each throat connects        |
@@ -78,9 +68,8 @@ class MatFile(GenericNetwork):
     | tnumbering     | <Ntx1>     | = 0:1:Nt-1                       |
     |                | int        |                                  |
     +----------------+------------+----------------------------------+
-    | ttype          | <Ntx1>     | (optional) designates surfaces   |
-    |                | int        | of throats in network.           |
-    |                |            | (more details below)             |
+    | ttype          | <Ntx1>     | (optional) designates surface    |
+    |                | int        | throats in network.              |
     +----------------+------------+----------------------------------+
     """
 

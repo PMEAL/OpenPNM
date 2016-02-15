@@ -359,6 +359,12 @@ class Controller(dict):
         self = _pickle.load(open(filename+'.pnm', 'rb'))
 
     def export(self, network=None, filename='', fileformat='VTK'):
+        logger.warning("This method is deprecated, use \'export_data\'.")
+        self.export_data(network=network,
+                         filename=filename,
+                         fileformat=fileformat)
+
+    def export_data(self, network=None, filename='', fileformat='VTK'):
         r"""
         Export data to the specified file format.
 
@@ -414,6 +420,48 @@ class Controller(dict):
             io.CSV.save(network=network, filename=filename, phases=phases)
         else:
             raise ValueError(fileformat+' is not a valid format')
+
+    def import_data(self, filename=None):
+        r"""
+        Import network data stored in an external file format.
+
+        Parameters
+        ----------
+        filename : string
+            The name of the file containing the data.  This should include the
+            file extension, which must be one of the following supported
+            formats:
+
+            **'csv'** : Comma-separated values as typically used in spreadsheet
+            type programs
+
+            **'mat'** : A Matlab \'mat-file\'
+
+            **'vtp'** : A VTK file format used by programs like Paraview
+
+            **'yaml'** : A NetworkX output format
+
+        Notes
+        -----
+        This is a wrapper or convenience method for the actual IO classes
+        located in OpenPNM.Utilities.IO. Refer to the doc strings for those
+        classes for information on the actual file format specifications.
+
+        """
+        import OpenPNM.Utilities.IO as io
+        # Handle normal file types
+        ext = filename.split('.')[-1]
+        if ext.lower() == 'csv':
+            network = io.CSV.load(filename=filename)
+        elif ext.lower() == 'mat':
+            network = io.MAT.load(filename=filename)
+        elif ext.lower() == 'yaml':
+            network = io.NetworkX.load(filename=filename)
+        elif ext.lower() == 'vtp':
+            network = io.VTK.load(filename=filename)
+        else:
+            raise Exception('Filename does not have suppored extension')
+        return network
 
     def _script(self, filename, mode='read'):
         r"""
