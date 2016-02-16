@@ -29,10 +29,24 @@ def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     return value
 
 
-def neighbor(network, geometry, throat_prop='', mode='min', **kwargs):
+def neighbor(geometry, throat_prop='throat.seed', mode='min', **kwargs):
     r"""
-    Adopt the minimum seed value from the neighboring throats
+    Adopt a value from the values found in neighboring throats
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry Object
+        The object containing the ``throat_prop`` to be used.
+
+    throat_prop : string
+        The dictionary key to the array containing the throat property to be
+        used in the calculation.  Default is 'throat.seed'.
+
+    mode : string
+        Controls how the pore property is calculated.  Options are 'min',
+        'max' and 'mean'.
     """
+    network = geometry._net
     Ps = geometry.pores()
     data = geometry[throat_prop]
     neighborTs = network.find_neighbor_throats(pores=Ps,

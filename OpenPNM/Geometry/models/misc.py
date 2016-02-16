@@ -8,13 +8,17 @@ import scipy as _sp
 import scipy.stats as _spts
 
 
-def random(geometry, element, seed=None, num_range=[0, 1], **kwargs):
+def random(N, seed=None, num_range=[0, 1], **kwargs):
     r"""
-    Assign random number to throats, for use in statistical distributions that
-    return pore or throat sizes
+    Create an array of random numbers of a specified size.
 
     Parameters
     ----------
+    N : int
+        The length of the random array to be generated.  This should correspond
+        to the number of pores or throats on the Geometry object.  For instance
+        N = geom.Nt or N = geom.Np.
+
     seed : int
         The starting seed value to send to Scipy's random number generator.
         The default is None, which means different distribution is returned
@@ -23,11 +27,12 @@ def random(geometry, element, seed=None, num_range=[0, 1], **kwargs):
     num_range : list
         A two element list indicating the low and high end of the returned
         numbers.
+
     """
     range_size = num_range[1] - num_range[0]
     range_min = num_range[0]
     _sp.random.seed(seed)
-    value = _sp.random.rand(geometry._count(element),)
+    value = _sp.random.rand(N,)
     value = value*range_size + range_min
     return value
 

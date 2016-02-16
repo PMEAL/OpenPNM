@@ -40,21 +40,32 @@ def straight(network, geometry, pore_diameter='pore.diameter',
     return value
 
 
-def c2c(network, geometry, **kwargs):
+def c2c(network, geometry, pore_centroid='pore.centroid',
+        throat_centroid='throat.centroid', **kwargs):
     r"""
-    Calculate the centre to centre distance from centroid of pore1 to centroid of
-    throat to centroid of pore2. This is tricky as connections are defined at
-    network level but centroids are stored on geometry. The pore and throat map
-    relates the geometry index to the network index but we must look up the index
-    of the map to go back to geometry index of the connected pores. This will
-    probably break down when a throat connects two different geometries.
+    Calculate the centre to centre distance from centroid of pore1 to centroid
+    of throat to centroid of pore2.
+
+    Parameters
+    ----------
+    pore_centroid and throat_centroid : string
+        The dictionary keys to the arrays containing the pore and throat
+        centroid coordinates.
+
+    Notes
+    -----
+    This is tricky as connections are defined at Network level but centroids
+    are stored on geometry. The pore and throat map relates the geometry index
+    to the network index but we must look up the index of the map to go back
+    to geometry index of the connected pores. This will probably break down
+    when a throat connects two different geometries.
     """
     throats = geometry.map_throats(network, geometry.throats())
     connections = network['throat.conns'][throats]
     net_pore1 = connections[:, 0]
     net_pore2 = connections[:, 1]
-    pore_centroids = network['pore.centroid']
-    throat_centroids = network['throat.centroid'][throats]
+    pore_centroids = network[pore_centroid]
+    throat_centroids = network[throat_centroid][throats]
     v1 = throat_centroids-pore_centroids[net_pore1]
     v2 = throat_centroids-pore_centroids[net_pore2]
     value = _sp.ndarray(len(connections))

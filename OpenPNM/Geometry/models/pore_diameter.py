@@ -31,6 +31,31 @@ def generic(geometry, func, seeds='pore.seed', **kwargs):
 generic.__doc__ = misc.generic.__doc__
 
 
+def random(geometry, seed=None, num_range=[0, 1], **kwargs):
+    r"""
+    Assign pore sizes from a random distribution
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        The Geometry object to which this model will apply.  This is necessary
+        to determine the length of the array to generate.
+
+    seed : int
+        The starting seed value to send to Scipy's random number generator.
+        The default is None, which means different distribution is returned
+        each time the model is run.
+
+    num_range : list
+        A two element list indicating the low and high end of the returned
+        numbers.  The default is [0, 1] but this can be adjusted to produce
+        pore sizes directly; for instance pores between 10 and 100 um can be
+        generated with ``num_range = [0.00001, 0.0001]``.
+    """
+    N = geometry.Np
+    return misc.random(N=N, seed=seed, num_range=num_range)
+
+
 def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
            pore_seed='pore.seed', psd_offset=0, **kwargs):
     r"""

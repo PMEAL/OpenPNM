@@ -75,7 +75,8 @@ def distance_from_inclusion(geometry, p, **kwargs):
     return values
 
 
-def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
+def spatially_correlated(geometry, network, weights=None, strel=None,
+                         **kwargs):
     r"""
     Generates pore seeds that are spatailly correlated with their neighbors.
 
@@ -112,9 +113,9 @@ def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
 
     References
     ----------
-    .. [2] J. Gostick et al, Pore network modeling of fibrous gas diffusion layers
-           for polymer electrolyte membrane fuel cells. J Power Sources 173 (2007)
-           277–290
+    .. [2] J. Gostick et al, Pore network modeling of fibrous gas diffusion
+           layers for polymer electrolyte membrane fuel cells. J Power Sources
+           v173, pp277–290 (2007)
 
     Examples
     --------
@@ -123,9 +124,10 @@ def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
     ...                                         pores=pn.Ps,
     ...                                         throats=pn.Ts)
+    >>> mod = OpenPNM.Geometry.models.pore_seed.spatially_correlated
     >>> geom.add_model(propname='pore.seed',
-    ...               model=OpenPNM.Geometry.models.pore_seed.spatially_correlated,
-    ...               weights=[2, 2, 2])
+    ...                model=mod,
+    ...                weights=[2, 2, 2])
     >>> im = pn.asarray(geom['pore.seed'])
 
     Visualizing the end result can be done with:
