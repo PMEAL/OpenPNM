@@ -9,8 +9,7 @@ import scipy as _sp
 
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
-    return misc.random(geometry=geometry, element='throat', seed=seed,
-                       num_range=num_range)
+    return misc.random(N=geometry.Nt, seed=seed, num_range=num_range)
 random.__doc__ = misc.random.__doc__
 
 

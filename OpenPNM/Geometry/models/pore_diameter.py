@@ -137,13 +137,25 @@ def equivalent_cube(geometry, pore_volume='pore.volume', **kwargs):
     return value
 
 
-def centroids(network, geometry, **kwargs):
+def centroids(geometry, throat_centroid='throat.centroid',
+              pore_centroid='pore.centroid', **kwargs):
     r"""
     Calculate the diameter representing an inclosed sphere. The maximum is very
     difficult to caluclate for irregular polygons with more than 4 faces so an
     average distance from the pore centroid to the throat centroid is an
-    approximation
+    approximation.
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        The Geometry object with which this model is associated.  This is
+        needed to access the pore and throat centroid values.
+
+    pore_centroid and throat_centroid : string
+        Dictionary keys to the arrays containing the pore and throat centroid
+        coordinates.
     """
+    network = geometry._net
     Np = geometry.num_pores()
     value = _sp.zeros(Np)
     pore_map = geometry.map_pores(target=network,
@@ -156,8 +168,8 @@ def centroids(network, geometry, **kwargs):
         geom_throats = geometry._net.map_throats(target=geometry,
                                                  throats=net_throats,
                                                  return_mapping=True)['target']
-        tcs = geometry["throat.centroid"][geom_throats]
-        pc = geometry["pore.centroid"][geom_pore]
+        tcs = geometry[throat_centroid][geom_throats]
+        pc = geometry[pore_centroid][geom_pore]
         value[geom_pore] = _sp.mean(_sp.sqrt(((tcs-pc)*(tcs-pc))[:, 0] +
                                              ((tcs-pc)*(tcs-pc))[:, 1] +
                                              ((tcs-pc)*(tcs-pc))[:, 2]))*2

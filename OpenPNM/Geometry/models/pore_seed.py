@@ -11,8 +11,7 @@ import scipy as _sp
 
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
-    return misc.random(geometry=geometry, element='pore', seed=seed,
-                       num_range=num_range)
+    return misc.random(N=geometry.Np, seed=seed, num_range=num_range)
 random.__doc__ = misc.random.__doc__
 
 
@@ -75,13 +74,16 @@ def distance_from_inclusion(geometry, p, **kwargs):
     return values
 
 
-def spatially_correlated(geometry, network, weights=None, strel=None,
-                         **kwargs):
+def spatially_correlated(geometry, weights=None, strel=None, **kwargs):
     r"""
     Generates pore seeds that are spatailly correlated with their neighbors.
 
     Parameters
     ----------
+    geometry : OpenPNM Geometry object
+        The Geometry object with which this model is associated.  This is
+        needed to determine the size of the array to create.
+
     weights : list of ints, optional
         The [Nx,Ny,Nz] distances (in number of pores) in each direction that
         should be correlated.
@@ -95,9 +97,9 @@ def spatially_correlated(geometry, network, weights=None, strel=None,
         and extent of correlations.  The following would achieve a basic
         correlation in the z-direction:
 
-        strel = sp.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],\
-                            [[0, 0, 0], [1, 1, 1], [0, 0, 0]],\
-                            [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        strel = sp.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]], \
+                          [[0, 0, 0], [1, 1, 1], [0, 0, 0]], \
+                          [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
 
     Notes
     -----
@@ -139,6 +141,7 @@ def spatially_correlated(geometry, network, weights=None, strel=None,
     """
     import scipy.ndimage as spim
     import scipy.stats as spst
+    network = geometry._net
     # The following will only work on Cubic networks
     x = network._shape[0]
     y = network._shape[1]
