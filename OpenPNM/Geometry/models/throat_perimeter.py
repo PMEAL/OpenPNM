@@ -9,9 +9,41 @@ import OpenPNM.Utilities.vertexops as vo
 from scipy.spatial import ConvexHull
 
 
+def cylinder(geometry, throat_diameter='throat.diameter', **kwargs):
+    r"""
+    Calcuate the throat perimeter assuming a circular cross-section
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        The Geometry object with which this model is associated.  This is
+        needed to access the ``throat_diameter`` values.
+
+    throat_diameter : string
+        The dictionary key of the array containing the throat diameter values
+    """
+    return geometry[throat_diameter]*_sp.constants.pi
+
+
+def cuboid(geometry, throat_diameter='throat.diameter', **kwargs):
+    r"""
+    Calcuate the throat perimeter assuming a square cross-section
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        The Geometry object with which this model is associated.  This is
+        needed to access the ``throat_diameter`` values.
+
+    throat_diameter : string
+        The dictionary key of the array containing the throat diameter values
+    """
+    return geometry[throat_diameter]*4
+
+
 def voronoi(geometry, **kwargs):
     r"""
-    Use the Voronoi verts and throat normals to work out the perimeter
+    Uses the Voronoi vertices and throat normals to work out the perimeter
     """
     Nt = geometry.num_throats()
     verts = geometry['throat.offset_vertices']

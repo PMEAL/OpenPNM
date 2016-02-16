@@ -61,7 +61,8 @@ _controller = ctrl()
 del ctrl
 save = _controller.save
 load = _controller.load
-export = _controller.export
+export_data = _controller.export_data
+import_data = _controller.import_data
 clear = _controller.clear
 purge_object = _controller.purge_object
 

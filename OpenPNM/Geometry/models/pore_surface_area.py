@@ -12,7 +12,7 @@ def sphere(geometry, network,
            throat_area='throat.area',
            **kwargs):
     r"""
-    Calculates internal surface area of pore bodies assuming they are spherical.
+    Calculates internal surface area of pore bodies assuming they are spherical
     then subtracts the area of the neighboring throats in a crude way, by
     simply considering the throat cross-sectional area, thus not accounting
     for the actual curvature of the intersection.

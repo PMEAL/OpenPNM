@@ -4,10 +4,56 @@ pore_diameter
 ===============================================================================
 
 """
+from . import misc
 import scipy as _sp
-import numpy as np
 
-from scipy.spatial import ConvexHull
+
+def weibull(geometry, shape, scale, loc, seeds='pore.seed', **kwargs):
+    if seeds not in geometry:
+        geometry['pore.seed'] = _sp.rand(geometry.Np,)
+    return misc.weibull(geometry=geometry, shape=shape, scale=scale, loc=loc,
+                        seeds=seeds)
+weibull.__doc__ = misc.weibull.__doc__
+
+
+def normal(geometry, scale, loc, seeds='pore.seed', **kwargs):
+    if seeds not in geometry:
+        geometry['pore.seed'] = _sp.rand(geometry.Np,)
+    return misc.normal(geometry=geometry, scale=scale, loc=loc,
+                       seeds=seeds)
+normal.__doc__ = misc.normal.__doc__
+
+
+def generic(geometry, func, seeds='pore.seed', **kwargs):
+    if seeds not in geometry:
+        geometry['pore.seed'] = _sp.rand(geometry.Np,)
+    return misc.generic(geometry=geometry, func=func, seeds=seeds)
+generic.__doc__ = misc.generic.__doc__
+
+
+def random(geometry, seed=None, num_range=[0, 1], **kwargs):
+    r"""
+    Assign pore sizes from a random distribution
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        The Geometry object to which this model will apply.  This is necessary
+        to determine the length of the array to generate.
+
+    seed : int
+        The starting seed value to send to Scipy's random number generator.
+        The default is None, which means different distribution is returned
+        each time the model is run.
+
+    num_range : list
+        A two element list indicating the low and high end of the returned
+        numbers.  The default is [0, 1] but this can be adjusted to produce
+        pore sizes directly; for instance pores between 10 and 100 um can be
+        generated with ``num_range = [0.00001, 0.0001]``.
+    """
+    N = geometry.Np
+    return misc.random(N=N, seed=seed, num_range=num_range)
 
 
 def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
@@ -36,6 +82,11 @@ def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
         Controls the minimum value in the pore size distribution by shifting
         the entire set of values by the given offset.  This is useful for
         avoiding pore sizes too close to zero.
+
+    Notes
+    -----
+    This pore-scale model is deprecated.  Use ``weibull``, ``normal`` or
+    ``generic`` to get produce pore sizes distributions.
 
     """
     import scipy.stats as spst
@@ -86,13 +137,25 @@ def equivalent_cube(geometry, pore_volume='pore.volume', **kwargs):
     return value
 
 
-def centroids(network, geometry, **kwargs):
+def centroids(geometry, throat_centroid='throat.centroid',
+              pore_centroid='pore.centroid', **kwargs):
     r"""
     Calculate the diameter representing an inclosed sphere. The maximum is very
     difficult to caluclate for irregular polygons with more than 4 faces so an
     average distance from the pore centroid to the throat centroid is an
-    approximation
+    approximation.
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        The Geometry object with which this model is associated.  This is
+        needed to access the pore and throat centroid values.
+
+    pore_centroid and throat_centroid : string
+        Dictionary keys to the arrays containing the pore and throat centroid
+        coordinates.
     """
+    network = geometry._net
     Np = geometry.num_pores()
     value = _sp.zeros(Np)
     pore_map = geometry.map_pores(target=network,
@@ -105,8 +168,8 @@ def centroids(network, geometry, **kwargs):
         geom_throats = geometry._net.map_throats(target=geometry,
                                                  throats=net_throats,
                                                  return_mapping=True)['target']
-        tcs = geometry["throat.centroid"][geom_throats]
-        pc = geometry["pore.centroid"][geom_pore]
+        tcs = geometry[throat_centroid][geom_throats]
+        pc = geometry[pore_centroid][geom_pore]
         value[geom_pore] = _sp.mean(_sp.sqrt(((tcs-pc)*(tcs-pc))[:, 0] +
                                              ((tcs-pc)*(tcs-pc))[:, 1] +
                                              ((tcs-pc)*(tcs-pc))[:, 2]))*2
