@@ -4,7 +4,7 @@
 Tutorial 2 of 3: Digging Deeper with OpenPNM
 ###############################################################################
 
-This tutorial will follow the same outline as the :ref:`getting started tutorial <getting_started>`, but will dig a little bit deeper at each step to reveal the more advanced features and usages of OpenPNM.  Be sure you've done and understood that tutorial before attempting this one.
+This tutorial will follow the same outline as the :ref:`getting started tutorial <getting_started>`, but will dig a little bit deeper at each step to reveal the more advanced features and usage of OpenPNM.  Be sure you've done and understood that tutorial before attempting this one.
 
 As usual, start by importing the OpenPNM package and the Scipy package which is always handy:
 
@@ -45,13 +45,21 @@ Add Desired Properties to Geometry
 
 In the :ref:`getting started tutorial <getting_started>` we only assigned static values to Geometry object, which we calculated explicitly.  In this tutorial we will use the pre-written *pore-scale models* that are provide with OpenPNM.
 
-.. note:: Pore Scale Models Explained - Level 1
-
-	Pore-scale models are mathematical functions that are applied to each pore (or throat) in the network to produce some local property or value.  Each of the modules in OpenPNM (Network, Geometry, Phase and Physics) have a "library" of pre-written models located under "models" (i.e. Geometry.models).  Below this level, the models are further categorized according to what property they calculate, and there are typical 2-3 models for each.  For instance, under ``Geometry.models.pore_seed`` you will see ``random`` and ``spatially_correlated``.  Each of these produces a random number for each pore, but the ``spatially_correlated`` model places numbers of similar size in neighboring pores (using a convolution filter) while the ``random`` model just places numbers (just using the ``scipy.rand`` function).
-
-For both **Geometry** objects, we will assign each pore a static random seed value between 0 and 1, and then will use these seed values in statistical distribution functions to generate actual pores diameters.  To create the small surface pores, we will  adjust the parameters used in the statistical distribution.  The need to maintain two distinct sets of parameters is the driving force for defining two **Geometries**.  To start, let's put random numbers into each Geometry's 'pore.seed' property:
+Before apply models, let's assign a static random seed value between 0 and 1 to each pore on both Geometry objects.  We will then use these seed values in pore-scale models to generate actual pores diameters from statistical distribution functions.  To create the small pores on the surface of the domain we will adjust the parameters used in the statistical distribution.  The need to maintain two distinct sets of parameters is the driving force for defining two **Geometries**.  To start, let's put random numbers into each Geometry's 'pore.seed' property:
 
 >>> geom1['pore.seed'] = sp.rand(geom1.Np)
 >>> geom2['pore.seed'] = sp.rand(geom2.Np)
 
-It is crucial to note that the above lines each produced an array of different length, corresponding to the number of pores assigned to each **Geometry** object.  This is accomplished by the calls to ``geom1.Np`` and ``geom2.Np``, which return the number of pores on each.  Every Core object in OpenPNM possesses the same set of methods for mananging their data, such as counting the number of pore and throat values they represent; thus, ``pn.Np`` returns 1000 while ``geom1.Np`` and ``geom2.Np`` return 200 and 800 respectively.  The segmentation of the data between separate Geometry objects is essential management of pore-scale models, as will be explained next:
+It is crucial to note that the above lines each produced an array of different length, corresponding to the number of pores assigned to each **Geometry** object.  This is accomplished by the calls to ``geom1.Np`` and ``geom2.Np``, which return the number of pores on each object.  Every Core object in OpenPNM possesses the same set of methods for mananging their data, such as counting the number of pore and throat values they represent; thus, ``pn.Np`` returns 1000 while ``geom1.Np`` and ``geom2.Np`` return 200 and 800 respectively.  The segmentation of the data between separate Geometry objects is essential to the management of pore-scale models, as will be explained next.
+
+-------------------------------------------------------------------------------
+Add Pore Size Distribution Models to Each Geometry
+-------------------------------------------------------------------------------
+
+Pore-scale models are mathematical functions that are applied to each pore (or throat) in the network to produce some local property or value.  Each of the modules in OpenPNM (Network, Geometry, Phase and Physics) have a "library" of pre-written models located under "models" (i.e. *Geometry.models*).  Below this level, the models are further categorized according to what property they calculate, and there are typical 2-3 models for each.  For instance, under ``Geometry.models.pore_seed`` you will see ``random`` and ``spatially_correlated``.  Each of these produces a random number for each pore, but the ``spatially_correlated`` model places numbers of similar size in neighboring pores (using a convolution filter) while the ``random`` model just places random numbers (just using the ``scipy.rand`` function).
+
+Pore size distributions are assigned to each Geometry object as follows:
+
+>>> geom1.models.add(propname='pore.diameter',
+...                  model=OpenPNM.Geometry.models.pore_diameter.weibull,
+...                  shape=1.2, scale=0)
