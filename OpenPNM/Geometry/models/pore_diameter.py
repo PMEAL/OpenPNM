@@ -58,6 +58,11 @@ def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
         the entire set of values by the given offset.  This is useful for
         avoiding pore sizes too close to zero.
 
+    Notes
+    -----
+    This pore-scale model is deprecated.  Use ``weibull``, ``normal`` or
+    ``generic`` to get produce pore sizes distributions.
+
     """
     import scipy.stats as spst
     prob_fn = getattr(spst, psd_name)

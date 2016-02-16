@@ -11,7 +11,7 @@ import scipy.stats as _spts
 def random(geometry, element, seed=None, num_range=[0, 1], **kwargs):
     r"""
     Assign random number to throats, for use in statistical distributions that
-    return pore size
+    return pore or throat sizes
 
     Parameters
     ----------
@@ -61,12 +61,12 @@ def weibull(geometry, shape, scale, loc, seeds, **kwargs):
         The dictionary key on the Geometry object containing random seed values
         (between 0 and 1) to use in the statistical distribution.  If none is
         specified, then an array of random numbers will be automatically
-        generated and stored on teh Geometry object.
+        generated and stored on the Geometry object.
 
     Examples
     --------
     The following code illustrates the inner workings of this function,
-    which uses the 'weibull_min' methods of the scipy.stats module.  This can
+    which uses the 'weibull_min' method of the scipy.stats module.  This can
     be used to find suitable values of 'shape', 'scale'` and 'loc'.  Note that
     'shape' is represented by 'c' in the actual function call.
 
@@ -96,10 +96,10 @@ def normal(geometry, scale, loc, seeds, **kwargs):
         (i.e. geom['pore.seed']).
 
     scale : float
-        This is the standard deviation of the Normal distribution
+        The standard deviation of the Normal distribution
 
     loc : float
-        This is the mean of the Normal distribution
+        The mean of the Normal distribution
 
     seeds : string, optional
         The dictionary key on the Geometry object containing random seed values
@@ -110,7 +110,7 @@ def normal(geometry, scale, loc, seeds, **kwargs):
     Examples
     --------
     The following code illustrates the inner workings of this function,
-    which uses the 'weibull_min' methods of the scipy.stats module.  This can
+    which uses the 'norm' method of the scipy.stats module.  This can
     be used to find suitable values of 'scale' and 'loc'.
 
     .. code-block::
@@ -145,7 +145,7 @@ def generic(geometry, func, seeds, **kwargs):
 
     Examples
     --------
-    The folling code illustrates the process of obtaining a 'frozen' Scipy
+    The following code illustrates the process of obtaining a 'frozen' Scipy
     stats object, and visualizes the corresponding distribution using a
     Matplotlib histogram:
 
