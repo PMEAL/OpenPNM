@@ -51,7 +51,8 @@ class GenericAlgorithm(Core):
         r"""
         Not implemented
         """
-        pass
+        raise NotImplementedError('This method must be implemeted by each ' +
+                                  'specific Algorithm class')
 
     def run(self, **params):
         r"""
@@ -82,10 +83,12 @@ class GenericAlgorithm(Core):
         r"""
         Executes one inner iteration
         """
-        pass
+        raise NotImplementedError('This method must be implemeted by each ' +
+                                  'specific Algorithm class')
 
     def return_results(self, **kwargs):
         r"""
         Not implemented
         """
-        pass
+        raise NotImplementedError('This method must be implemeted by each ' +
+                                  'specific Algorithm class')
