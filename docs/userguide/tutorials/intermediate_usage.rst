@@ -129,26 +129,21 @@ The first two lines assign new random numbers to each pore, and the final two li
 Initialize and Build Phase Objects
 ===============================================================================
 
-**Phase** objects are defined in similar manner to the **Geometry** objects outlined above.  For this tutorial, we will create two generic **Phase** objects for 'air' and 'water', and assign pore-scale models for calculating viscosity which is the only phyical property needed for permeability calculations.
+**Phase** objects are defined in similar manner to the **Geometry** objects outlined above.  For this tutorial, we will create a generic **Phase** object for 'water', and assign pore-scale models for calculating viscosity which is the only phyical property needed for permeability calculations.
 
->>> air = OpenPNM.Phases.GenericPhase(network=pn)
 >>> water = OpenPNM.Phases.GenericPhase(network=pn)
 
 A variety of pore-scale models are available for calculating **Phase** properties.  These models are generally taken from correlations in the literature:
 
->>> air.models.add(propname='pore.viscosity',
-...                model=OpenPNM.Phases.models.viscosity.chung)
 >>> water.models.add(propname='pore.viscosity',
 ...                  model=OpenPNM.Phases.models.viscosity.water)
 
 Note that all **Phase** objects are automatically assigned standard temperature and pressure conditions when created.  This can be adjusted:
 
->>> air['pore.temperature'] = 333  # K
 >>> water['pore.temperature'] = 353  # K
 
 Since viscosity is highly dependent on temperature, it is necessary to 'regeneate' the viscosity models:
 
->>> air.models.regenerate()
 >>> water.models.regenerate()
 
 ===============================================================================
