@@ -57,6 +57,7 @@ from . import Phases
 from . import Physics
 from . import Algorithms
 from . import Postprocessing
+from . import Shapes
 from .Base import Controller as ctrl
 
 _controller = ctrl()
