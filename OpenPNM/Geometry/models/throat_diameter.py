@@ -52,8 +52,7 @@ def random(geometry, seed=None, num_range=[0, 1], **kwargs):
         throat sizes directly; for instance pores between 10 and 100 um can be
         generated with ``num_range = [0.00001, 0.0001]``.
     """
-    N = geometry.Nt
-    return misc.random(N=N, seed=seed, num_range=num_range)
+    return _misc.random(N=geometry.Nt, seed=seed, num_range=num_range)
 
 
 def cylinder(geometry, tsd_name, tsd_shape, tsd_loc, tsd_scale,

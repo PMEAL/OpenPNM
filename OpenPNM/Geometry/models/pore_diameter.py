@@ -52,8 +52,7 @@ def random(geometry, seed=None, num_range=[0, 1], **kwargs):
         pore sizes directly; for instance pores between 10 and 100 um can be
         generated with ``num_range = [0.00001, 0.0001]``.
     """
-    N = geometry.Np
-    return misc.random(N=N, seed=seed, num_range=num_range)
+    return _misc.random(N=geometry.Np, seed=seed, num_range=num_range)
 
 
 def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
