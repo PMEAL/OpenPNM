@@ -166,7 +166,7 @@ The viscosity of the *Phases* was only defined in the pores; however, the hydrau
 Note that both of these calcualation use the same geometrical properties (R and L) but different phase properties (mu_w and mu_a).
 
 ===============================================================================
-Run Some Simulations
+Create an Algorithm Object for Performing a Permeability Simulation
 ===============================================================================
 
 Finally, it is now possible to run some simulations.  The code below estimates the permeabilty through the network by applying a pressure gradient across and calculating the flux.  This starts by creating a StokesFlow *Algorithm*, which is pre-defined in OpenPNM:
@@ -191,7 +191,7 @@ The results ('pore.pressure') are held within the ``alg`` object and must be exp
 >>> alg.return_results()
 
 ===============================================================================
-Visualise the Results
+Output the Results for Visualization in Paraview
 ===============================================================================
 We can now visualise our network and simulation results.  OpenPNM does not support native visualization, so data must be exported to a file for exploration in another program such as any of the several VTK front ends (i.e. Paraview).
 
