@@ -4,31 +4,31 @@ Submodule -- throat_diameter
 ===============================================================================
 
 """
-from . import misc
+from . import misc as _misc
 import scipy as _sp
 
 
 def weibull(geometry, shape, scale, loc, seeds=None, **kwargs):
     if seeds not in geometry:
         geometry['throat.seed'] = _sp.rand(geometry.Nt,)
-    return misc.weibull(geometry=geometry, shape=shape, scale=scale, loc=loc,
-                        seeds=seeds)
-weibull.__doc__ = misc.weibull.__doc__
+    return _misc.weibull(geometry=geometry, shape=shape, scale=scale, loc=loc,
+                         seeds=seeds)
+weibull.__doc__ = _misc.weibull.__doc__
 
 
 def normal(geometry, scale, loc, seeds=None, **kwargs):
     if seeds not in geometry:
         geometry['throat.seed'] = _sp.rand(geometry.Nt,)
-    return misc.normal(geometry=geometry, scale=scale, loc=loc,
-                       seeds=seeds)
-normal.__doc__ = misc.normal.__doc__
+    return _misc.normal(geometry=geometry, scale=scale, loc=loc,
+                        seeds=seeds)
+normal.__doc__ = _misc.normal.__doc__
 
 
 def generic(geometry, func, seeds=None, **kwargs):
     if seeds not in geometry:
         geometry['throat.seed'] = _sp.rand(geometry.Nt,)
-    return misc.generic(geometry=geometry, func=func, seeds=seeds)
-generic.__doc__ = misc.generic.__doc__
+    return _misc.generic(geometry=geometry, func=func, seeds=seeds)
+generic.__doc__ = _misc.generic.__doc__
 
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
