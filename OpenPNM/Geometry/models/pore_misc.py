@@ -4,6 +4,7 @@ pore_misc -- miscillaneous and generic functions to apply to pores
 ===============================================================================
 
 """
+from . import misc as _misc
 import scipy as _sp
 from OpenPNM.Base import logging as _logging
 _logger = _logging.getLogger(__name__)
@@ -40,15 +41,32 @@ def constant(geometry, value, **kwargs):
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     r"""
-    Assign random number to pore bodies
-    note: should this be called 'poisson'?
+    Generate an array of random numbers using the Scipy random number
+    generator.
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        This is required to determine the length of the array to generate
+
+    seed : int
+        The seed value to initialize the random number generator.  The default
+        is None which means different numbers will be produced each time this
+        function is run.
+
+    num_range : list
+        The min and max values of the returned random numbers.  The values will
+        be uniformly distributed over this range.
+
+    Notes
+    -----
+    This method seems trivial but it can be useful to add this as a pore-scale
+    model so that random number can be regenerated upon demand to create
+    new realization of the pore and throat size distributions (i.e. assuming
+    ``seed`` is not set to None).
     """
-    range_size = num_range[1]-num_range[0]
-    range_min = num_range[0]
-    _sp.random.seed(seed=seed)
-    value = _sp.random.rand(geometry.num_pores(),)
-    value = value*range_size + range_min
-    return value
+    values = _misc.random(N=geometry.Np, seed=seed, num_range=num_range)
+    return values
 
 
 def neighbor(geometry, throat_prop='throat.seed', mode='min', **kwargs):
