@@ -7,6 +7,7 @@ throat_misc --  Miscillaneous and generic functions to apply to throats
 import scipy as _sp
 from . import misc as _misc
 
+
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     r"""
     Generate an array of random numbers using the Scipy random number
