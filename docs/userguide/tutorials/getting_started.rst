@@ -4,20 +4,32 @@
 Tutorial 1 of 3: Getting Started with OpenPNM
 ###############################################################################
 
-As usual, start by importing the OpenPNM package, and the Scipy package:
+**Learning Objectives**
 
->>> import OpenPNM
->>> import scipy as sp
+1. Create a cubic network topolgy
+2. Explore some handy tools methods for working with networks
+3. Create a geometry object and assign geometrical properties
+4. Create a phase objecct and assign thermophysical properties
+5. Create a physics object and calculate pore-scale transport parameters
 
 ===============================================================================
 Building a Cubic Network
 ===============================================================================
 
-Start by generating a **Network**.  This is accomplished by choosing the desired network topology (e.g. cubic), then calling its respective method in OpenPNM with the desired parameters:
+Start by importing the OpenPNM package, and the Scipy package:
+
+>>> import OpenPNM
+>>> import scipy as sp
+
+Next, generate a **Network** by choosing the desired topology (e.g. cubic), then initialize it with the desired parameters:
 
 >>> pn = OpenPNM.Network.Cubic(shape=[10, 10, 10], spacing=0.0001)
 
-This generates a topological network and stores it in variable ``pn``.  This network contains pores at the correct spatial positions and connections between the pores according the specified topology (but without boundary pores).  The ``shape`` argument specifies the number of pores in the [X, Y, Z] directions of the cube.  Networks in OpenPNM are alway 3D dimensional, meaning that a 2D or 'flat' network is still 1 layer of pores 'thick' so [X, Y, Z] = [20, 10, 1].  The ``spacing`` argument controls the center-to-center distance between pores.  Although OpenPNM does not currently have a dimensional units system, we *strongly* recommend using SI throughout.
+This generates a topological network and stores it in variable ``pn``.  This network contains pores at the correct spatial positions and connections between the pores according the specified topology.  The 'shape' argument specifies the number of pores in the [X, Y, Z] directions of the cube.  Networks in OpenPNM are alway 3D dimensional, meaning that a 2D or "flat" network is still 1 layer of pores "thick" so [X, Y, Z] = [20, 10, 1].  The 'spacing' argument controls the center-to-center distance between pores.  Although OpenPNM does not currently have a dimensional units system, it is *strongly* recommend using SI throughout.
+
+-------------------------------------------------------------------------------
+Handy Tools for Working with Networks
+-------------------------------------------------------------------------------
 
 The Network object has numerous methods that can be used to query the topological properties:
 
@@ -30,9 +42,13 @@ array([  0,   2,  11, 101])
 >>> pn.find_neighbor_throats(pores=[1, 2])  # Find throats connected to pores 1 and 2
 array([   0,    1,    2,  901,  902, 1801, 1802])
 
-There are several more such topological query method available on the object such as ``find_nearby_pores`` and ``find_connecting_throat``.  A full list is given in the detailed documentation <HERE>, along with an explanation of each argument and some helpful examples.
+There are several more such topological query method available on the object such as ``find_nearby_pores``, ``find_connecting_throat`` and ``find_clusters``.
 
-Another important feature is the use of *labels* on pores and throats.  Applying a label to a set of special pores allows for easy retrieval of these pores for later use.  For instance, during the generation of a Cubic network, the faces are automatically labeled.  The following illustrates how to use labels:
+-------------------------------------------------------------------------------
+Labeling Pores and Throats
+-------------------------------------------------------------------------------
+
+Another important feature is the use of *labels* on pores and throats.  Applying a label to a set of special pores allows for easy retrieval of these pores for later use.  For instance, during the generation of a *Cubic* network, the faces are automatically labeled.  The following illustrates how to use *labels*:
 
 >>> pn.labels(pores=[1])  # Find all labels applied to pore 1
 ['pore.all', 'pore.front', 'pore.internal', 'pore.left']
@@ -41,9 +57,13 @@ array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
 This last command has an argument ``mode``.  In this case it means the set logic to apply to the query (i.e. only return pores that are labeled both 'front' and 'left').
 
-.. note::
+Adding custom labels is also straight-forward.  A label is simply a boolean array stored as 'pore.some_label' with True values where the label applies. For instance, if the 'front-left' edge of the network were of special importance and you would like to easily retrieve these pores in the future you could label them:
 
-	OpenPNM includes extensive help within the code that explains the use of each method, the meaning of each argument and option, and even gives examples.  Within the Spyder IDE these can be viewed in the *object inspector* by typing *ctrl-i* while the cursor is on the method name (in either the editor or the console).  Importantly, Numpy, Scipy, Matplotlib, Pandas and most other scientific packages contain similar detailed documentation.  These are indispensible and even seasoned OpenPNM coders rely on this documentation.
+>>> Ps = pn.pores(labels=['front', 'left'], mode='intersection')
+>>> pn['pore.front_left_edge'] = False
+>>> pn['pore.front_left_edge'][Ps] = True
+
+Note that we had to create an array for the label first (filled with False values) and then assign True values in the locations where the label 'front_left_edge' applies.
 
 ===============================================================================
 Initialize and Build a Geometry Object
@@ -53,18 +73,15 @@ The **Network** does not contain any information about pore and throat sizes at 
 
 >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
 
-This statement contains three arguments: ``network`` tells the **Geometry** object which **Network** it is associated with.  ``pores`` and ``throats`` indicate which locations in the **Network** where this **Geometry** object will apply.
+This statement contains three arguments: 'network' tells the **Geometry** object which **Network** it is associated with.  'pores' and 'throats' indicate which locations in the **Network** where this **Geometry** object will apply.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------------------------------------
 Add Desired Properties to Geometry
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-This freshly instantiated **Geometry** object contains no geometric properties as yet because we chose to use the *GenericGeometry* class.
--------------------------------------------------------------------------------
-Direct Assignment of Static Values
 -------------------------------------------------------------------------------
 
-Let's start by assiging diameters to each pore from a random distribution, spanning 10 um to 100 um.  The upper limit arises because the ``spacing`` of the *Network* was set to 100 [um], so pore diameters exceeding 100 um might overlap with neighbors.  The lower limit is to avoid vanishingly small pores.
+This freshly instantiated **Geometry** object contains no geometric properties as yet because we chose to use the *GenericGeometry* class.  For this tutorial we'll use the direct assignment of static values.
+
+Let's start by assiging diameters to each pore from a random distribution, spanning 10 um to 100 um.  The upper limit arises because the ``spacing`` of the **Network** was set to 100 [um], so pore diameters exceeding 100 um might overlap with neighbors.  The lower limit is to avoid vanishingly small pores.
 
 >>> geom['pore.diameter'] = 0.00001 + sp.rand(pn.Np)*0.00099
 
@@ -77,9 +94,9 @@ For throat diameter, we want them to always be smaller than the two pores which 
 >>> Dt = sp.amin(D12, axis=1)  # An Nt x 1 list of the smaller pore from each pair
 >>> geom['throat.diameter'] = Dt
 
-Let's disect the above lines.  Firstly, P12 is a direct copy of the **Network's** 'throat.conns' array, which contains the indices of the pore pair connected by each throat.  Next, this *Nt-by-2* array is used to index into the 'pore.diameter' array, resulting in another *Nt-by-2* array containing the diameters of the pores connected by each throat.  Finally, the Scipy function ``amin`` is used to find the minimum diameter of each pore pair by specifying the ``axis`` keyword as 1, and the resulting *Nt-by-1* array is assigned to ``geom['throat.diameter']``.
+Let's disect the above lines.  Firstly, ``P12`` is a direct copy of the **Network's** 'throat.conns' array, which contains the indices of the pore pair connected by each throat.  Next, this *Nt-by-2* array is used to index into the 'pore.diameter' array, resulting in another *Nt-by-2* array containing the diameters of the pores connected by each throat.  Finally, the Scipy function ``amin`` is used to find the minimum diameter of each pore pair by specifying the ``axis`` keyword as 1, and the resulting *Nt-by-1* array is assigned to ``geom['throat.diameter']``.
 
-Finally, we must specify the remaining geometrical properties of the pores and throats. Since we're creating a 'stick-and-ball' geometry, the sizes are calculated from the geometrical equations for spheres and cylinders.
+We must still specify the remaining geometrical properties of the pores and throats. Since we're creating a 'stick-and-ball' geometry, the sizes are calculated from the geometrical equations for spheres and cylinders.
 
 For pore volumes, assume a sphere:
 

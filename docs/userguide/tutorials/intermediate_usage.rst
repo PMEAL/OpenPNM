@@ -10,9 +10,9 @@ This tutorial will follow the same outline as the :ref:`getting started tutorial
 
 1.  Explore different network topologies
 2.  Create a 'heterogeneous' domain with different geometrical properties in different regions
-3.  Utilize pore-scale models for calculating properties
+3.  Utilize pore-scale models for calculating properties of all types
 4.  Propigate changing geometrical and thermophysical properties to all dependent properties
-5.
+5.  Calculate the permeability tensor for the stratified media
 
 ===============================================================================
 Building a Cubic Network
@@ -25,8 +25,7 @@ As usual, start by importing the OpenPNM and Scipy packages:
 
 Let's generate a cubic network again, but with a different connectivity:
 
->>> pn = OpenPNM.Network.Cubic(shape=[20, 20, 10],
-...                            spacing=0.0001,
+>>> pn = OpenPNM.Network.Cubic(shape=[20, 20, 10], spacing=0.0001,
 ...                            connectivity=8)
 
 This **Network** has pores distributed in a cubic lattice, but connected to diagonal neighbors due to the ``connectivity`` being set to 8 (the default is 6 which is othogonal neighbors).  The various options are outlined in the *Cubic* class's documentation which can be viewed with the Object Inspector in Spyder.  OpenPNM includes several other classes for generating networks including random topology based on Delaunay tessellations (**Delaunay**).  It is also possible to import networks from external code that extracts networks from tomographic images (see [refs]).
@@ -77,7 +76,7 @@ Pore size distribution models are assigned to each Geometry object as follows:
 ...                  seeds = 'pore.seed')
 >>> geom2.models.add(propname='pore.diameter',
 ...                  model=OpenPNM.Geometry.models.pore_diameter.weibull,
-...                  shape=1.2, scale=0.00005, loc=0.000001,
+...                  shape=1.2, scale=0.00004, loc=0.000001,
 ...                  seeds = 'pore.seed')
 
 Pore-scale models tend to be the most complex (i.e. confusing) aspects of OpenPNM, so it's worth dwelling on the important points of the above two commands:
@@ -112,26 +111,30 @@ Instead of using statistical distribution functions, the above lines use the ``n
 We'll also need throat length as well as the cross-sectional area of pores and throats, for calculating the hydraulic conductance model later.
 
 >>> geom1.models.add(propname='throat.length',
-...                  model=OpenPNM.Geometry.models.throat_misc.straight)
+...                  model=OpenPNM.Geometry.models.throat_length.straight)
 >>> geom2.models.add(propname='throat.length',
-...                  model=OpenPNM.Geometry.models.throat_misc.straight)
+...                  model=OpenPNM.Geometry.models.throat_length.straight)
 >>> geom1.models.add(propname='throat.area',
-...                  model=OpenPNM.Geometry.models.throat_misc.cylinder)
+...                  model=OpenPNM.Geometry.models.throat_area.cylinder)
 >>> geom2.models.add(propname='throat.area',
-...                  model=OpenPNM.Geometry.models.throat_misc.cylinder)
+...                  model=OpenPNM.Geometry.models.throat_area.cylinder)
 >>> geom1.models.add(propname='pore.area',
-...                  model=OpenPNM.Geometry.models.throat_misc.sphere)
+...                  model=OpenPNM.Geometry.models.pore_area.spherical)
 >>> geom2.models.add(propname='pore.area',
-...                  model=OpenPNM.Geometry.models.throat_misc.sphere)
+...                  model=OpenPNM.Geometry.models.pore_area.spherical)
 
-At this point you might ask "*why can't I just calculate pore and throat cross-sectional areas manually and assign them as in* :ref:`Tutorial #1 <getting_started>`"?  The answer is *"you can, but you shouldn't"*.  The reason is that pore-scale models can be 'recalculated' or 'regenerated', so changes in one property can be easily reflected in all dependent properies.  For instance, if you wish to perform a simulation on a new realization of the network, you only need to alter the random seed values assigned to ``geom1`` and ``geom2`` the 'regenerate' all the models as follows:
+The **GenericGeometry** class has a special ``plot_distributions`` function meant specifically for visualizing the distributions of the most important properties (pore diameter, throat diameter, throat length, and connectivity).
 
->>> geom1['pore.seed'] = sp.rand(geom1.Np)
->>> geom2['pore.seed'] = sp.rand(geom2.Np)
->>> geom1.models.regenerate()
->>> geom2.models.regenerate()
+.. note:: Pore-Scale Models: What's the Point?
 
-The first two lines assign new random numbers to each pore, and the final two lines cause all of the pore-scale models to be recalculated, using the same parameters specified above.  This means that all pore diameters change (but still following the same statistical distribution), thus so will the throat diameters which were taken as the minimum of the two neighboring pores, and so on.  Note that during the regeneration process all models are called in the order they were originally added.
+    At this point you might ask "*why can't I just calculate pore and throat cross-sectional areas manually and assign them as in* :ref:`tutorial #1 <getting_started>`"?  The answer is *"you can, but you shouldn't"*.  The reason is that pore-scale models can be 'recalculated' or 'regenerated', so changes in one property will be automatically reflected in all dependent properies.  For instance, if you wish to perform a simulation on a new realization of the network, you only need to alter the random seed values assigned to ``geom1`` and ``geom2``, then 'regenerate' all the models as follows:
+
+    >>> geom1['pore.seed'] = sp.rand(geom1.Np)
+    >>> geom2['pore.seed'] = sp.rand(geom2.Np)
+    >>> geom1.models.regenerate()
+    >>> geom2.models.regenerate()
+
+    The first two lines assign new random numbers to each pore, and the final two lines cause all of the pore-scale models to be recalculated, using the same parameters specified above.  This means that all pore diameters change (but still following the same statistical distribution), thus so will the throat diameters which were taken as the minimum of the two neighboring pores, and so on.  Note that during the regeneration process all models are called in the order they were originally added.
 
 ===============================================================================
 Initialize and Build Phase Objects
@@ -168,48 +171,44 @@ In the :ref:`getting started tutorial <getting_started>` we calculated the hydra
 Next add the Hagan-Poiseuille model to both:
 
 >>> mod = OpenPNM.Physics.models.hydraulic_conductance.hagen_poiseuille
->>> phys1.models.add(propname='throat.hydraulic_conductance',
-...                  model=mod)
->>> phys2.models.add(propname='throat.hydraulic_conductance',
-...                  model=mod)
+>>> phys1.models.add(propname='throat.hydraulic_conductance', model=mod)
+>>> phys2.models.add(propname='throat.hydraulic_conductance', model=mod)
 
-Let's examine these lines.  Firstly, the same function (``mod``) was passed as the argument to 'model' to both **Physics** objects.  This means that both objects will calculate the hydraulic conductance using the same function.  Secondly, a model *must* be assigned to both objects in order for the 'hydraulic_conductance' property be be defined everywhere in the domain since each **Physics** applies to a unique selection of pores and throats.
+The same function (``mod``) was passed as the 'model' argument to both **Physics** objects.  This means that both objects will calculate the hydraulic conductance using the same function.  A model *must* be assigned to both objects in order for the 'hydraulic_conductance' property be be defined everywhere in the domain since each **Physics** applies to a unique selection of pores and throats.
 
--------------------------------------------------------------------------------
-Pore-Scale Models - A Final Look
--------------------------------------------------------------------------------
+.. note:: Pore-Scale Models: A Final Look
 
-It is worth reiterating one last time why the OpenPNM pore-scale approach is so powerful.  First, let's inspect the current value of hydraulic conductance in thoat 1 on ``phys1`` and ``phys2``:
+    It is worth reiterating one last time why the OpenPNM pore-scale approach is so powerful.  First, let's inspect the current value of hydraulic conductance in thoat 1 on ``phys1`` and ``phys2``:
 
->>> g1 = phys['throat.hydraulic_conductance']  # Save this in g1 for later
->>> g2 = phys['throat.hydraulic_conductance']  # Save this in g2 for later
+    >>> g1 = phys1['throat.hydraulic_conductance']  # Save this for later
+    >>> g2 = phys2['throat.hydraulic_conductance']  # Save this for later
 
-Now, let's regenerate the **Geometry** objects' properties with new random seeds, and adjust the temperature of ``water``.
+    Now, let's regenerate the **Geometry** objects' properties with new random seeds, and adjust the temperature of ``water``.
 
->>> geom1['pore.seed'] = sp.rand(geom1.Np)
->>> geom2['pore.seed'] = sp.rand(geom2.Np)
->>> water['pore.temperature'] = 370  # K
+    >>> geom1['pore.seed'] = sp.rand(geom1.Np)
+    >>> geom2['pore.seed'] = sp.rand(geom2.Np)
+    >>> water['pore.temperature'] = 370  # K
 
-So far we have not run the ``regenerate`` command on any of these objects, which means that the changes have not yet been applied to all the dependent properties.  Let's do this and examine what occurs at each step:
+    So far we have not run the ``regenerate`` command on any of these objects, which means that the changes have not yet been applied to all the dependent properties.  Let's do this and examine what occurs at each step:
 
->>> geom1.models.regenerate()
->>> geom2.models.regenerate()
+    >>> geom1.models.regenerate()
+    >>> geom2.models.regenerate()
 
-These two lines trigger the re-calculation of all the size related models on each **Geometry** object.
+    These two lines trigger the re-calculation of all the size related models on each **Geometry** object.
 
->>> phase.models.regenerate()
+    >>> water.models.regenerate()
 
-This line causes the viscosity to be recalculated at the new temperature. Let's confirm that the hydraulic conductance has NOT yet changed:
+    This line causes the viscosity to be recalculated at the new temperature. Let's confirm that the hydraulic conductance has NOT yet changed:
 
->>> phys1['throat.hydraulic_conductance'] == g1  # g1 was saved above
->>> phys2['throat.hydraulic_conductance'] == g2  # g2 was saved above
+    >>> sp.all(phys1['throat.hydraulic_conductance'] == g1)  # g1 was saved above
+    >>> sp.all(phys2['throat.hydraulic_conductance'] == g2)  # g2 was saved above
 
-Finally, if we regenerate ``phys1`` and ``phys2`` we can see that the hydraulic conductance will be updated to reflect the new sizes and new temperature:
+    Finally, if we regenerate ``phys1`` and ``phys2`` we can see that the hydraulic conductance will be updated to reflect the new sizes and new temperature:
 
->>> phys1.models.regenerate()
->>> phys2.models.regenerate()
->>> phys1['throat.hydraulic_conductance'] != g1
->>> phys2['throat.hydraulic_conductance'] != g2
+    >>> phys1.models.regenerate()
+    >>> phys2.models.regenerate()
+    >>> sp.all(phys1['throat.hydraulic_conductance'] != g1)
+    >>> sp.all(phys2['throat.hydraulic_conductance'] != g2)
 
 ===============================================================================
 Create an Algorithm Object for Performing a Permeability Simulation
@@ -229,7 +228,7 @@ Set boundary conditions for flow in the X-direction:
 
 To determine the permeability coefficient we must determine the flow rate through the network according to Darcy's law.  The **StokesFlow** class (and all analogous transport algorithms) possess a ``rate`` method that calculates the net rate of transport through a given set of pores:
 
->>> Q = alg.rate(pores=pn.pores('right'))
+>>> Q = alg.rate(pores=pn.pores('left'))
 
 To find K, we need to solve Darcy's law: :math: `Q = KA/(\mu L) \Delta P`.  This requires knowing the viscosity and macroscopic network dimensions:
 
@@ -258,17 +257,20 @@ The first call to 'set_boundary_conditions' used the 'overwrite' mode, which rep
 
 A new value for the flow rate must be recalculated, but all other parameters are equal to the X-direction:
 
->>> Q = alg.rate(pores=pn.pores('front'))
+>>> Q = alg.rate(pores=pn.pores('back'))
 >>> Kyy = Q * mu * L / (A * 101325)
 
-And finally, for the Z-direction:
+The values of ``Kxx`` and ``Kyy`` should be nearly identical since both these two directions are parallel to the small surface pores.  For the Z-direction:
 
 >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=202650,
-...                             pores=pn.pores('top'))
+...                             pores=pn.pores('top'),
+...                             mode='overwrite')
 >>> alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=101325,
 ...                             pores=pn.pores('bottom'))
 >>> alg.run()
->>> Q = = alg.rate(pores=pn.pores('top'))
+>>> Q = alg.rate(pores=pn.pores('bottom'))
 >>> L = 10 * 0.0001
 >>> A = 20 * 20 * (0.0001**2)
 >>> Kzz = Q * mu * L / (A * 101325)
+
+The permeability in the Z-direction is about half that in the other two directions due to the constrictions caused by the small surface pores.
