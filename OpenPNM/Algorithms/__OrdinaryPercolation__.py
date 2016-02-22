@@ -68,7 +68,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         try:
             self['pore.entry_pressure'] = invading_phase[p_entry]
         except:
-            # Pore entry pressures have not been defined so we must perform 
+            # Pore entry pressures have not been defined so we must perform
             # bond percolation
             if percolation_type == 'site':
                 logger.warn('Percolation type defaults to "bond" when pore entry' +

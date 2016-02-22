@@ -81,19 +81,11 @@ class MultiPhaseTest:
         pass
 
     def test_late_pore_filling(self):
-
         self.phys1.models.add(propname='pore.late_p',
                               model=pm.multiphase.late_pore_filling,
-                              wetting_phase=True, Pc=5500)
+                              Pc=5500)
         self.phys2.models.add(propname='pore.late_p',
                               model=pm.multiphase.late_pore_filling,
-                              wetting_phase=True, Pc=5500)
-        self.phys1.models.add(propname='pore.late_p_n',
-                              model=pm.multiphase.late_pore_filling,
                               Pc=5500)
-        self.phys2.models.add(propname='pore.late_p_n',
-                              model=pm.multiphase.late_pore_filling,
-                              Pc=5500)
-        p = self.phase['pore.occupancy'] == 0
-        assert sp.allclose(self.phase['pore.late_p'][~p], 0.15026296)
-        assert sp.allclose(self.phase['pore.late_p_n'][p], 0.84973704)
+        p = self.phase['pore.occupancy'] > 0
+        assert sp.allclose(self.phase['pore.late_p'][p], 0.84973704)

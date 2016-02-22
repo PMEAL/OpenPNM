@@ -172,14 +172,33 @@ def unique_list(input_list):
     return output_list
 
 
-def amalgamate_data(objs=[]):
+def amalgamate_data(objs=[], delimiter='_'):
     r"""
     Returns a dictionary containing ALL pore data from all netowrk and/or
     phase objects received as arguments
+
+    Parameters
+    ----------
+    obj : list of OpenPNM objects
+        The network and Phase objects whose data should be amalgamated into a
+        single dict
+
+    delimiter : string
+        The delimiter to place between the prop name and the object name.  For
+        instance \'pore.air_molar_density\' or \'pore.air|molar_density'\.  The
+        use of underscores can be problematic for reloading the data since they
+        are also used in multiple word properties.  The default is '_' for
+        backwards compatibility, but the '|' option is preferred.
+
+    Returns
+    -------
+    A standard Python dict containing all the data from the supplied OpenPNM
+    objects
     """
     if type(objs) is not list:
         objs = list(objs)
     data_amalgamated = {}
+    dlim = delimiter
     exclusion_list = ['pore.centroid', 'pore.vertices', 'throat.centroid',
                       'throat.offset_vertices', 'throat.vertices', 'throat.normal',
                       'throat.perimeter', 'pore.vert_index', 'throat.vert_index']
@@ -210,7 +229,7 @@ def amalgamate_data(objs=[]):
                     if _sp.amax(item[key]) < _sp.inf:
                         element = key.split('.')[0]
                         propname = key.split('.')[1]
-                        dict_name = element + '.' + item.name + '_' + propname
+                        dict_name = element + '.' + item.name + dlim + propname
                         if key in ['pore.coords', 'throat.conns',
                                    'pore.all', 'throat.all']:
                             dict_name = key

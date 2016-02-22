@@ -139,13 +139,13 @@ def _linear_scale_factor(points=None,
     if len(shape) == 1:
         combined_pos = np.ones([1])
         for i in range(3):
-            if linear_scaling[i] == True:
+            if linear_scaling[i] is True:
                 combined_pos *= pos_array[i]
         lin_scale = (scale_factor - 1)*combined_pos + 1
     else:
         combined_pos = np.ones([shape[0]])
         for i in range(3):
-            if linear_scaling[i] == True:
+            if linear_scaling[i] is True:
                 combined_pos *= pos_array[:, i]
         pos_array = np.vstack((combined_pos, combined_pos, combined_pos)).T
         lin_scale = (scale_factor - 1)*pos_array + 1
@@ -262,10 +262,12 @@ def porosity(network):
     domain_vol = vertex_dimension(network, network.pores(), parm='volume')
     try:
         pore_vol = np.sum(network['pore.volume'])
+        throat_vol = np.sum(network['throat.volume'])
     except KeyError:
         print('Geometries must be assigned first')
         pore_vol = 0
-    porosity = np.around(pore_vol/domain_vol, 3)
+        throat_vol = 0
+    porosity = np.around((pore_vol+throat_vol)/domain_vol, 3)
     return porosity
 
 

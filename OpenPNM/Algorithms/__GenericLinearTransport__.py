@@ -250,7 +250,7 @@ class GenericLinearTransport(GenericAlgorithm):
                         phys.models[source_name]['x'] = x0
                         phys.models[source_name]['return_rate'] = False
                         phys.models[source_name]['regen_mode'] = 'normal'
-                        s_regen = phys.models[source_name].regenerate()
+                        s_regen = phys.models[source_name].run()
                         phys.models[source_name]['x'] = x
                         phys.models[source_name]['return_rate'] = return_rate
                         phys.models[source_name]['regen_mode'] = regen_mode
@@ -740,10 +740,10 @@ class GenericLinearTransport(GenericAlgorithm):
         # Analyze input and output pores
         if check_health:
             # Check for coplanarity
-            if self._net.iscoplanar(inlets) == False:
+            if self._net.iscoplanar(inlets) is False:
                 raise Exception('The inlet pores do not define a plane. ' +
                                 'Effective property will be approximation')
-            if self._net.iscoplanar(outlets) == False:
+            if self._net.iscoplanar(outlets) is False:
                 raise Exception('The outlet pores do not define a plane. ' +
                                 'Effective property will be approximation')
             # Ensure pores are on a face of domain

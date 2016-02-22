@@ -3,6 +3,7 @@
 import os
 import shutil
 import re
+import glob
 
 DIRECTORIES_TO_DELETE = [
     '.cache',
@@ -12,25 +13,30 @@ DIRECTORIES_TO_DELETE = [
 ]
 
 FILES_TO_DELETE = [
-    'nano.vtp',
-    '.coverage'
-    '*.net'
+    '*.vtp',
+    '.coverage',
+    '*.net',
+    '*.pnm',
+    '*.pyc'
 ]
 
 BYTE_CODE = '.+\.pyc'
 
 for f in FILES_TO_DELETE:
-    try:
-        os.remove(f)
-    except:
-        continue
+    root = os.getcwd()
+    for ext in FILES_TO_DELETE:
+        for f in glob.glob(os.path.join(root, ext)):
+            try:
+                os.remove(f)
+            except:
+                print('Could not delete:'+f)
 
 for root, dirs, files in os.walk('./'):
     dirs_to_delete = [d for d in dirs if d in DIRECTORIES_TO_DELETE]
     for d in dirs_to_delete:
         shutil.rmtree(os.path.join(root, d))
-    files_to_delete = [f for f in files if re.match(BYTE_CODE, f)]
-    for f in files_to_delete:
-        os.remove(os.path.join(root, f))
+    bytecode_to_delete = [b for b in files if re.match(BYTE_CODE, f)]
+    for b in bytecode_to_delete:
+        os.remove(os.path.join(root, b))
 
 print('Project cleaned.')
