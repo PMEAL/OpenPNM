@@ -5,6 +5,7 @@ language: python
 python:
   - "3.3"
   - "3.4"
+  - "3.5"
 
 cache: apt
 
@@ -31,13 +32,14 @@ install:
   - python setup.py install
 
 script:
-- ./bin/test pep8 cov
-- ./bin/clean
+  - ./bin/test pep8 cov
+  - ./bin/clean
 
 after_success:
-- codecov
+  - codecov
 
 deploy:
+  skip_cleanup: true
   provider: pypi
   user: jgostick
   password:
