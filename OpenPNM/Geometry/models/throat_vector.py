@@ -7,9 +7,14 @@ Submodule -- throat_vector
 import scipy as _sp
 
 
-def pore_to_pore(geometry, network, **kwargs):
+def pore_to_pore(geometry, **kwargs):
     r"""
     Calculates throat vector as straight path between connected pores.
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        The object containing the geometrical properties of the throats
 
     Notes
     -----
@@ -18,6 +23,7 @@ def pore_to_pore(geometry, network, **kwargs):
     This corresponds to the pores in the 1st and 2nd columns of the
     'throat.conns' array as stored on the etwork.
     """
+    network = geometry._net
     throats = network.throats(geometry.name)
     pores = network.find_connected_pores(throats, flatten=False)
     C0 = network['pore.coords'][pores, 0]

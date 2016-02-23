@@ -6,32 +6,13 @@ statistical pore size distributions
 ===============================================================================
 
 """
+from . import misc as _misc
 import scipy as _sp
 
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
-    r"""
-    Assign random number to pores, for use in statistical distributions that
-    return pore size
-
-    Parameters
-    ----------
-    seed : int
-        The starting seed value to send to Scipy's random number generator.
-        The default is None, which means different distribution is returned
-        each time the model is run.
-
-    num_range : list
-        A two element list indicating the low and high end of the returned
-        numbers.
-
-    """
-    range_size = num_range[1]-num_range[0]
-    range_min = num_range[0]
-    _sp.random.seed(seed=seed)
-    value = _sp.random.rand(geometry.num_pores(),)
-    value = value*range_size + range_min
-    return value
+    return _misc.random(N=geometry.Np, seed=seed, num_range=num_range)
+random.__doc__ = _misc.random.__doc__
 
 
 def distance_from_inclusion(geometry, p, **kwargs):
@@ -55,14 +36,15 @@ def distance_from_inclusion(geometry, p, **kwargs):
     Notes
     -----
     - This method uses image analysis tools, so only works on Cubic networks
-    - At present the result contains edge artifacts since no inclusions are present
-      beyond the image boundary
+    - At present the result contains edge artifacts since no inclusions are
+    present beyond the image boundary
 
     Examples
     --------
     >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[50,50,50])
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
+    >>> pn = OpenPNM.Network.Cubic(shape=[50, 50, 50])
+    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=pn.Ps,
+    ...                                         throats=pn.Ts)
     >>> model = OpenPNM.Geometry.models.pore_seed.distance_from_inclusion
     >>> geom.add_model(propname='pore.seed', model=model, p=0.001)
     >>> im = pn.asarray(geom['pore.seed'])
@@ -92,12 +74,16 @@ def distance_from_inclusion(geometry, p, **kwargs):
     return values
 
 
-def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
+def spatially_correlated(geometry, weights=None, strel=None, **kwargs):
     r"""
     Generates pore seeds that are spatailly correlated with their neighbors.
 
     Parameters
     ----------
+    geometry : OpenPNM Geometry object
+        The Geometry object with which this model is associated.  This is
+        needed to determine the size of the array to create.
+
     weights : list of ints, optional
         The [Nx,Ny,Nz] distances (in number of pores) in each direction that
         should be correlated.
@@ -111,9 +97,9 @@ def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
         and extent of correlations.  The following would achieve a basic
         correlation in the z-direction:
 
-        strel = sp.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],\
-                            [[0, 0, 0], [1, 1, 1], [0, 0, 0]],\
-                            [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        strel = sp.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]], \
+                          [[0, 0, 0], [1, 1, 1], [0, 0, 0]], \
+                          [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
 
     Notes
     -----
@@ -129,9 +115,9 @@ def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
 
     References
     ----------
-    .. [2] J. Gostick et al, Pore network modeling of fibrous gas diffusion layers
-           for polymer electrolyte membrane fuel cells. J Power Sources 173 (2007)
-           277–290
+    .. [2] J. Gostick et al, Pore network modeling of fibrous gas diffusion
+           layers for polymer electrolyte membrane fuel cells. J Power Sources
+           v173, pp277–290 (2007)
 
     Examples
     --------
@@ -140,9 +126,10 @@ def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
     >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
     ...                                         pores=pn.Ps,
     ...                                         throats=pn.Ts)
+    >>> mod = OpenPNM.Geometry.models.pore_seed.spatially_correlated
     >>> geom.add_model(propname='pore.seed',
-    ...               model=OpenPNM.Geometry.models.pore_seed.spatially_correlated,
-    ...               weights=[2, 2, 2])
+    ...                model=mod,
+    ...                weights=[2, 2, 2])
     >>> im = pn.asarray(geom['pore.seed'])
 
     Visualizing the end result can be done with:
@@ -154,6 +141,7 @@ def spatially_correlated(geometry, network, weights=None, strel=None, **kwargs):
     """
     import scipy.ndimage as spim
     import scipy.stats as spst
+    network = geometry._net
     # The following will only work on Cubic networks
     x = network._shape[0]
     y = network._shape[1]
