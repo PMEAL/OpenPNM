@@ -4,7 +4,7 @@ Submodule -- throat_seeds
 ===============================================================================
 
 """
-from . import _misc
+from . import misc as _misc
 import scipy as _sp
 
 
