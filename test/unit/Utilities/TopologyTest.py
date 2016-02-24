@@ -33,3 +33,19 @@ class TopologyTest:
         topo.merge_pores(network=net, pores=P, labels=['merged'])
         assert net.Np == 95
         assert net.Nt == 222
+
+    def test_template_sphere_shell(self):
+        from OpenPNM.Utilities import topology
+        spacing = sp.array([0.5])
+        r_o = [5, 5, 5]
+        r_in = [2, 2, 2]
+        img = topology.template_sphere_shell(outer_radius=r_o,
+                                             inner_radius=r_in)
+        pn_sphere = OpenPNM.Network.Cubic(template=img, spacing=spacing)
+        assert pn_sphere.Np == 452
+        img2 = topology.template_sphere_shell(outer_radius=r_o)
+        pn_sphere = OpenPNM.Network.Cubic(template=img2, spacing=spacing)
+        L1 = sp.amax(topology.find_pores_distance(network=pn_sphere,
+                                                  pores1=pn_sphere.Ps,
+                                                  pores2=pn_sphere.Ps))
+        assert L1 < sp.sqrt(3) * 8 * 0.5

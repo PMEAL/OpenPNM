@@ -37,6 +37,29 @@ def random(N, seed=None, num_range=[0, 1], **kwargs):
     return value
 
 
+def scaled(geometry, prop, factor, **kwargs):
+    r"""
+    Scales an existing value by a factor.  Useful for constricting some throat
+    property.
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry Object
+        The object with which this function as associated.  This argument
+        is required to (1) set number of values to generate (geom.Np or
+        geom.Nt) and (2) provide access to other necessary values
+        (i.e. geom['pore.seed']).
+
+    prop : string
+        The dictionary key of the array containing the values to be scaled.
+
+    factor : scalar
+        The factor by which the values should be scaled.
+    """
+    value = geometry[prop]*factor
+    return value
+
+
 def weibull(geometry, shape, scale, loc, seeds, **kwargs):
     r"""
     Produces values from a Weibull distribution given a set of random numbers.

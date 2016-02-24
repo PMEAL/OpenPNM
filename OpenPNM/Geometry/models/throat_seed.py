@@ -4,13 +4,13 @@ Submodule -- throat_seeds
 ===============================================================================
 
 """
-from . import misc
+from . import misc as _misc
 import scipy as _sp
 
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
-    return misc.random(N=geometry.Nt, seed=seed, num_range=num_range)
-random.__doc__ = misc.random.__doc__
+    return _misc.random(N=geometry.Nt, seed=seed, num_range=num_range)
+random.__doc__ = _misc.random.__doc__
 
 
 def neighbor(geometry, network, pore_prop='pore.seed', mode='min', **kwargs):

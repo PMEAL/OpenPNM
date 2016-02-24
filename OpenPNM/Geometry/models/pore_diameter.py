@@ -4,31 +4,31 @@ pore_diameter
 ===============================================================================
 
 """
-from . import misc
+from . import misc as _misc
 import scipy as _sp
 
 
 def weibull(geometry, shape, scale, loc, seeds='pore.seed', **kwargs):
     if seeds not in geometry:
         geometry['pore.seed'] = _sp.rand(geometry.Np,)
-    return misc.weibull(geometry=geometry, shape=shape, scale=scale, loc=loc,
-                        seeds=seeds)
-weibull.__doc__ = misc.weibull.__doc__
+    return _misc.weibull(geometry=geometry, shape=shape, scale=scale, loc=loc,
+                         seeds=seeds)
+weibull.__doc__ = _misc.weibull.__doc__
 
 
 def normal(geometry, scale, loc, seeds='pore.seed', **kwargs):
     if seeds not in geometry:
         geometry['pore.seed'] = _sp.rand(geometry.Np,)
-    return misc.normal(geometry=geometry, scale=scale, loc=loc,
-                       seeds=seeds)
-normal.__doc__ = misc.normal.__doc__
+    return _misc.normal(geometry=geometry, scale=scale, loc=loc,
+                        seeds=seeds)
+normal.__doc__ = _misc.normal.__doc__
 
 
 def generic(geometry, func, seeds='pore.seed', **kwargs):
     if seeds not in geometry:
         geometry['pore.seed'] = _sp.rand(geometry.Np,)
-    return misc.generic(geometry=geometry, func=func, seeds=seeds)
-generic.__doc__ = misc.generic.__doc__
+    return _misc.generic(geometry=geometry, func=func, seeds=seeds)
+generic.__doc__ = _misc.generic.__doc__
 
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
@@ -52,8 +52,7 @@ def random(geometry, seed=None, num_range=[0, 1], **kwargs):
         pore sizes directly; for instance pores between 10 and 100 um can be
         generated with ``num_range = [0.00001, 0.0001]``.
     """
-    N = geometry.Np
-    return misc.random(N=N, seed=seed, num_range=num_range)
+    return _misc.random(N=geometry.Np, seed=seed, num_range=num_range)
 
 
 def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,

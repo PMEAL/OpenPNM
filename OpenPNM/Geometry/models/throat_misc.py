@@ -5,20 +5,37 @@ throat_misc --  Miscillaneous and generic functions to apply to throats
 
 """
 import scipy as _sp
+from . import misc as _misc
 
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     r"""
-    Assign random number to throats
+    Generate an array of random numbers using the Scipy random number
+    generator.
 
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        This is required to determine the length of the array to generate
 
+    seed : int
+        The seed value to initialize the random number generator.  The default
+        is None which means different numbers will be produced each time this
+        function is run.
+
+    num_range : list
+        The min and max values of the returned random numbers.  The values will
+        be uniformly distributed over this range.
+
+    Notes
+    -----
+    This method seems trivial but it can be useful to add this as a pore-scale
+    model so that random number can be regenerated upon demand to create
+    new realization of the pore and throat size distributions (i.e. assuming
+    ``seed`` is not set to None).
     """
-    range_size = num_range[1] - num_range[0]
-    range_min = num_range[0]
-    _sp.random.seed(seed=seed)
-    value = _sp.random.rand(geometry.num_throats(),)
-    value = value*range_size + range_min
-    return value
+    values = _misc.random(N=geometry.Nt, seed=seed, num_range=num_range)
+    return values
 
 
 def neighbor(geometry, pore_prop='pore.seed', mode='min', **kwargs):
