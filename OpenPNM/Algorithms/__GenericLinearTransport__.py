@@ -686,8 +686,7 @@ class GenericLinearTransport(GenericAlgorithm):
             data = sp.append(data, data_main[loc2])
             A_dim = self.Np
             # Check for Neuman_group BCs and add superpores if necessary
-            try:
-                self.pores('Neumann_group')
+            if 'pore.Neumann_group' in self.labels():
                 self._extra_Neumann_size = len(getattr(self, '_pore' +
                                                        '_Neumann_group_' +
                                                        'location'))
@@ -720,8 +719,6 @@ class GenericLinearTransport(GenericAlgorithm):
                     col = sp.append(col, neu_tpore2)
                     data = sp.append(data, g_super)
                 A_dim = A_dim + self._extra_Neumann_size
-            except KeyError:
-                pass
             # Adding positions for diagonal
             diag = sp.arange(0, A_dim)
             try:
@@ -781,30 +778,24 @@ class GenericLinearTransport(GenericAlgorithm):
         if mode == 'overwrite':
             A_dim = self._coeff_dimension
             b = sp.zeros([A_dim, 1])
-            try:
+            if 'pore.Dirichlet' in self.labels():
                 Dir_pores = self.pores('Dirichlet')
                 Dir_pores_vals = self['pore.bcval_Dirichlet'][Dir_pores]
                 b[Dir_pores] = sp.reshape(Dir_pores_vals, [len(Dir_pores), 1])
-            except KeyError:
-                pass
-            logger.debug('Hello')
-            try:
+            if 'pore.Neumann' in self.labels():
                 ind_Neu_pores = self.pores('Neumann')
                 ind_Neu_pores_vals = self['pore.' +
                                           'bcval_' + 'Neumann'][ind_Neu_pores]
                 b[ind_Neu_pores] = sp.reshape(ind_Neu_pores_vals,
                                               [len(ind_Neu_pores), 1])
-            except KeyError:
-                pass
-            try:
-                self.pores('Neumann_group')
+
+            if 'pore.Neumann_group' in self.labels():
                 pnum = self._net.Np
                 NG_loc = sp.r_[pnum: (pnum + len(self._group_Neumann_vals))]
                 NG_l = len(self._group_Neumann_vals)
                 NG_arr = self._group_Neumann_vals[sp.r_[0:NG_l]]
                 b[NG_loc] = sp.reshape(NG_arr, [NG_l, 1])
-            except KeyError:
-                pass
+
         if mode == 'modify_RHS':
             b = sp.copy(self.b)
         if mode in ['overwrite', 'modify_RHS']:
