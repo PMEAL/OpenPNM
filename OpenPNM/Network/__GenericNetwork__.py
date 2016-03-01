@@ -343,7 +343,7 @@ class GenericNetwork(Core):
 
             **'intersection'** : Only neighbors shared by all input pores
 
-            **'not_intersection'* : Only neighbors not shared by any input pores
+            **'not_intersection'** : Only neighbors not shared by any input pores
 
         Returns
         -------
@@ -368,6 +368,8 @@ class GenericNetwork(Core):
         array([ 3,  5,  7, 25, 27])
         """
         pores = self._parse_locations(pores)
+        allowed_modes = ['union', 'intersection', 'not_intersection']
+        mode = self._parse_mode(mode, allowed=allowed_modes)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
         # Test for existence of incidence matrix
@@ -464,24 +466,29 @@ class GenericNetwork(Core):
             neighborTs = [sp.array(neighborTs[i]) for i in range(0, len(pores))]
             return sp.array(neighborTs, ndmin=1)
 
-    def num_neighbors(self, pores, flatten=False):
+    def num_neighbors(self, pores, flatten=False, mode='union'):
         r"""
-        Returns an ndarray containing the number of neigbhor pores for each
-        element in pores
+        Returns an array containing the number of neigbhor pores for each
+        given input pore
 
         Parameters
         ----------
         pores : array_like
             Pores whose neighbors are to be counted
+
         flatten : boolean (optional)
-            If False (default) the number pore neighbors for each input are
-            returned as an array.  If True the sum total number of unique
-            neighbors is counted, not including the input pores even if they
-            neighbor each other.
+            If ``False`` (default) the number of pores neighboring each input
+            pore as an array the same length as ``pores``.  If ``True`` the sum
+            total number of is counted.
+
+        mode : string
+            The logic to apply to the returned count of pores.  This argument
+            is ignored if the ``flatten`` is ``False``.
 
         Returns
         -------
-        num_neighbors : 1D array with number of neighbors in each element
+        If ``flatten`` is False, a 1D array with number of neighbors in each
+        element, otherwise an scalar value of the number of neighbors.
 
         Examples
         --------
@@ -499,7 +506,7 @@ class GenericNetwork(Core):
         if flatten:
             neighborPs = self.find_neighbor_pores(pores,
                                                   flatten=True,
-                                                  mode='union',
+                                                  mode=mode,
                                                   excl_self=True)
             num = sp.shape(neighborPs)[0]
         else:
