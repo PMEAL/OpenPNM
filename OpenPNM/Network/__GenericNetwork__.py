@@ -369,7 +369,7 @@ class GenericNetwork(Core):
         """
         pores = self._parse_locations(pores)
         allowed_modes = ['union', 'intersection', 'not_intersection']
-        mode = self._parse_mode(mode, allowed=allowed_modes)
+        mode = self._parse_mode(mode, allowed=allowed_modes, single=True)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
         # Test for existence of incidence matrix
@@ -481,14 +481,34 @@ class GenericNetwork(Core):
             pore as an array the same length as ``pores``.  If ``True`` the sum
             total number of is counted.
 
-        mode : string
-            The logic to apply to the returned count of pores.  This argument
-            is ignored if the ``flatten`` is ``False``.
+        mode : string (This is ignored if ``flatten`` is False)
+            The logic to apply to the returned count of pores.
+
+            **'union'** : (Default) The sum of all neighbors connected all
+            input pores.
+
+            **'intersection'** : The number of neighboring pores that are
+            shared by all input pores.
+
+            **'not_intersection'** : The number of neighboring pores that are
+            NOT shared by any input pores.
 
         Returns
         -------
         If ``flatten`` is False, a 1D array with number of neighbors in each
         element, otherwise an scalar value of the number of neighbors.
+
+        Notes
+        -----
+        This method literally just counts the number of elements in the array
+        returned by ``find_neighbor_pores`` and uses the same logic.  Explore
+        that method and its returned values if uncertain about the meaning of
+        the ``mode`` argument.
+
+        See Also
+        --------
+        find_neighbor_pores
+        find_neighbor_throats
 
         Examples
         --------
