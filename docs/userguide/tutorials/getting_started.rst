@@ -164,7 +164,7 @@ The simulation is now topologically and geometrically complete.  It has pore coo
 
 ``pn`` is passed as an argument because **Phases** must know to which **Network** they belong.  Also, note that ``pores`` and ``throats`` are NOT specified; this is because **Phases** are mobile and can exist anywhere or everywhere in the domain, so providing specific locations does not make sense.  Algorithms for dynamically determining actual phase distributions are discussed later.
 
-.. note::
+.. code-block::
 
     | **Naming Objects**: The above two lines also include a ``name`` argument. All objects in OpenPNM can be named in this way if desired; however, if no name is given one will be generated.  The point of the name is to allow easy identification of an object at the command line, using the ``name`` attribute  (``air.name``).  Objects can be renamed, so if you wish to override a default name simply use ``air.name = 'air'``.
 
@@ -183,9 +183,9 @@ Now it is necessary to fill these two **Phase** objects with the desired thermop
 
 OpenPNM includes a framework for calculating these type of properties from models and correlations, but this is beyond the aim of the present introductory tutorial.
 
-.. note::
+.. code-block::
 
-    | **Scalar to Vector Conversion During Assignment**: The above lines illustrate a feature of OpenPNM that is worth pointing out now.  All pores need to have a diffusivity value associated with them; however, we often want to assign the same value to every pore.  If you assign a scalar value to any property in OpenPNM it will automatically be converted to a vector of the appropriate length (either *Np* or *Nt* long).
+    **Scalar to Vector Conversion During Assignment**: The above lines illustrate a feature of OpenPNM that is worth pointing out now.  All pores need to have a diffusivity value associated with them; however, we often want to assign the same value to every pore.  If you assign a scalar value to any property in OpenPNM it will automatically be converted to a vector of the appropriate length (either *Np* or *Nt* long).
 
 ===============================================================================
 Create Physics Objects
