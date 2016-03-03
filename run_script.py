@@ -2,6 +2,7 @@ import OpenPNM as op
 import time
 st = time.time()
 from OpenPNM.Geometry import models as gm
+
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
@@ -92,6 +93,6 @@ except Exception as e:
 #------------------------------------------------------------------------------
 '''Export to VTK'''
 #------------------------------------------------------------------------------
-op.export()
+op.export_data()
 
 print("sim time:" + str(time.time()-st))

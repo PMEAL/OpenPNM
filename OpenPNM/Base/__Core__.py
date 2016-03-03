@@ -16,7 +16,7 @@ ctrl = Controller()
 
 class Core(dict):
     r"""
-    Contains OpenPNM specificmethods for working with the data in the dictionaries
+    Contains methods for working with the data in the OpenPNM dictionaries
     """
 
     def __new__(typ, *args, **kwargs):
@@ -55,7 +55,9 @@ class Core(dict):
         r"""
         This is a subclass of the default __setitem__ behavior.  The main aim
         is to limit what type and shape of data can be written to protect
-        the integrity of the network.
+        the integrity of the network.  Specifically, this means only Np or Nt
+        long arrays can be written, and they must be called 'pore.___' or
+        'throat.___'.  Also, any scalars are cast into full length vectors.
 
 
         Example
@@ -68,25 +70,22 @@ class Core(dict):
 
         """
         # Enforce correct dict naming
-        element = key.split('.')[0]
-        if (element != 'pore') and (element != 'throat'):
-            logger.error('Array name \''+key+'\' does not begin with \'pore\' or \'throat\'')
-            return
+        element = self._parse_element(key.split('.')[0], single=True)
         # Convert value to an ndarray
         value = sp.array(value, ndmin=1)
         # Skip checks for 'coords', 'conns'
-        if (key == 'pore.coords') or (key == 'throat.conns'):
+        if key in ['pore.coords', 'throat.conns']:
             super(Core, self).__setitem__(key, value)
             return
         # Skip checks for protected props, and prevent changes if defined
-        if key.split('.')[1] in ['all']:
+        protected_keys = ['all']
+        if key.split('.')[1] in protected_keys:
             if key in self.keys():
                 if sp.shape(self[key]) == (0,):
                     logger.debug(key+' is being defined.')
                     super(Core, self).__setitem__(key, value)
                 else:
                     logger.warning(key+' is already defined.')
-                    return
             else:
                 logger.debug(key+' is being defined.')
                 super(Core, self).__setitem__(key, value)
@@ -103,8 +102,10 @@ class Core(dict):
             if self._count(element) == 0:
                 self.update({key: value})
             else:
-                logger.warning('Cannot write vector with an array of the wrong length: '+key)
-                pass
+                logger.warning('Cannot write vector with an array of the ' +
+                               'wrong length: '+key)
+                # TODO: This should probably raise the following exception
+                # raise Exception('Cannot write vector of the wrong length')
 
     def _get_ctrl(self):
         if self in ctrl.values():
@@ -176,20 +177,20 @@ class Core(dict):
             **'models'** : Removes all pore scale models from the object's
             models dictionary (object.models)
 
-            **'complete'** : Removes all of the above AND sets the 'pore.all'
-            and 'throat.all' labels to zero length.  This also removes any pore
-            and throat locations that were previously set.  This mode should be
-            used carefully since it can break some subtle aspects of the
-            framework; it is meant for advanced users and developers.
+            **'complete'** : Removes all of the above AND sets the \'pore.all\'
+            and \'throat.all\' labels to zero length.  This also removes any
+            pore and throat locations that were previously set.  This mode
+            should be used carefully since it can break some subtle aspects
+            of the framework; it is meant for advanced users and developers.
 
         Notes
         -----
         The first three modes listed can be combined by sending a list
-        containing all desired modes.  The 'complete' mode essentially calls
+        containing all desired modes.  The \'complete\' mode essentially calls
         all three so need not be combined with any other modes.
         """
-        if type(mode) is str:
-            mode = [mode]
+        allowed = ['props', 'labels', 'models', 'complete']
+        mode = self._parse_mode(mode=mode, allowed=allowed)
         if 'complete' in mode:
             if self._isa('Geometry') or self._isa('Physics'):
                 self.set_locations(pores=self.Pnet,
@@ -259,7 +260,8 @@ class Core(dict):
                 obj = ctrl[obj_name]
             return obj
         elif obj_type != '':
-            if obj_type in ['Geometry', 'Geometries', 'geometry', 'geometries']:
+            if obj_type in ['Geometry', 'Geometries', 'geometry',
+                            'geometries']:
                 objs = ctrl.geometries()
             elif obj_type in ['Phase', 'Phases', 'phase', 'phases']:
                 objs = ctrl.phases()
@@ -277,11 +279,12 @@ class Core(dict):
         ----------
         name : string or list of strings, optional
             The name(s) of the Physics object to retrieve
+
         Returns
         -------
-            If name is NOT provided, then a list of Physics names is returned.
-            If a name or list of names IS provided, then the Physics object(s)
-            with those name(s) is returned.
+        If name is NOT provided, then a list of Physics names is returned.
+        If a name or list of names IS provided, then the Physics object(s)
+        with those name(s) is returned.
         """
         # If arg given as string, convert to list
         if type(phys_name) == str:
@@ -295,7 +298,7 @@ class Core(dict):
                     phys.append(item)
         return phys
 
-    def phases(self,phase_name=[]):
+    def phases(self, phase_name=[]):
         r"""
         Retrieves Phases associated with the object
 
@@ -303,11 +306,12 @@ class Core(dict):
         ----------
         name : string or list of strings, optional
             The name(s) of the Phase object(s) to retrieve.
+
         Returns
         -------
-            If name is NOT provided, then a list of phase names is returned. If
-            a name are provided, then a list containing the requested objects
-            is returned.
+        If name is NOT provided, then a list of phase names is returned. If
+        a name are provided, then a list containing the requested objects
+        is returned.
         """
         # If arg given as string, convert to list
         if type(phase_name) == str:
@@ -329,11 +333,12 @@ class Core(dict):
         ----------
         name : string or list of strings, optional
             The name(s) of the Geometry object to retrieve.
+
         Returns
         -------
-            If name is NOT provided, then a list of Geometry names is returned.
-            If a name IS provided, then the Geometry object of that name is
-            returned.
+        If name is NOT provided, then a list of Geometry names is returned.
+        If a name IS provided, then the Geometry object of that name is
+        returned.
         """
         # If arg given as string, convert to list
         if type(geom_name) == str:
@@ -363,7 +368,8 @@ class Core(dict):
 
         Notes
         -----
-        This doesn't quite work yet...we have to decide how to treat sub-nets first
+        This doesn't quite work yet...we have to decide how to treat sub-nets
+        first
         """
         if name == '':
             if self._net is None:
@@ -381,7 +387,7 @@ class Core(dict):
     # -------------------------------------------------------------------------
     """Data Query Methods"""
     # -------------------------------------------------------------------------
-    def props(self, element='', mode='all'):
+    def props(self, element=None, mode='all'):
         r"""
         Returns a list containing the names of all defined pore or throat
         properties.
@@ -395,9 +401,19 @@ class Core(dict):
         mode : string, optional
             Controls what type of properties are returned.  Options are:
 
-            - 'all' : Returns all properties on the object
-            - 'models' : Returns only properties that are associated with a model
-            - 'constants' : Returns only properties that are set as constant values
+            **'all'** : Returns all properties on the object
+
+            **'models'** : Returns only properties that are associated with a
+            model
+
+            **'constants'** : Returns only properties that are set as constant
+            values
+
+            **'deep'** : Returns all properties on the object and all sub-
+            objects.  For instance, all Geometry properties will be returned
+            along with all Network properties, and all Physics properties will
+            be returned with all Phase properties.  This mode has not effect
+            when this query is called from a Geometry or Phase object.
 
         Returns
         -------
@@ -417,93 +433,82 @@ class Core(dict):
         ['pore.coords']
         >>> pn.props('throat')
         ['throat.conns']
-        >>> #pn.props() # this lists both, but in random order, which breaks
-        >>> #           # our automatic document testing so it's commented here
+        >>> #pn.props()
+        ['pore.coords', 'pore.index', 'throat.conns']
         """
+        # Parse Inputs
+        allowed = ['all', 'models', 'constants', 'deep']
+        mode = self._parse_mode(mode=mode, allowed=allowed)
+        element = self._parse_element(element=element)
+        # Prepare lists of each type of array
+        props = [item for item in self.keys() if self[item].dtype != bool]
+        models = list(self.models.keys())
+        constants = [item for item in props if item not in models]
+        # Execute desired array lookup
+        vals = Tools.PrintableList()
+        if 'deep' in mode:
+            logger.warning('The \'deep\' mode only works when called from a ' +
+                           'Network or Phase object')
+        if 'all' in mode:
+            temp = [item for item in props if item.split('.')[0] in element]
+            vals.extend(temp)
+            return vals
+        if 'models' in mode:
+            temp = [item for item in models if item.split('.')[0] in element]
+            vals.extend(temp)
+        if 'constants' in mode:
+            temp = [item for item in constants
+                    if item.split('.')[0] in element]
+            vals.extend(temp)
+        return vals
 
-        props = []
-        for item in list(self.keys()):
-            if self[item].dtype != bool:
-                props.append(item)
-
-        all_models = list(self.models.keys())
-        constants = [item for item in props if item not in all_models]
-        models = [item for item in props if item in all_models]
-
-        if element in ['pore','pores']:
-            element = 'pore'
-        elif element in ['throat','throats']:
-            element = 'throat'
-
-        temp = []
-        if mode == 'all':
-            if element == '':
-                temp = props
-            else:
-                temp = [item for item in props if item.split('.')[0] == element]
-        elif mode == 'models':
-            if element == '':
-                temp = models
-            else: temp = [item for item in models if item.split('.')[0] == element]
-        elif mode == 'constants':
-            if element == '':
-                temp = constants
-            else: temp = [item for item in constants if item.split('.')[0] == element]
-        a = Tools.PrintableList(temp)
-        return a
-
-
-    def _get_labels(self,element='',locations=[],mode='union'):
+    def _get_labels(self, element, locations, mode):
         r"""
-        This is the actual label getter method, but it should not be called directly.
-        Wrapper methods have been created, use labels().
+        This is the actual label getter method, but it should not be called
+        directly.  Wrapper methods have been created, use ``labels``.
         """
+        # Parse inputs
+        locations = self._parse_locations(locations)
+        allowed = ['none', 'union', 'intersection', 'not', 'count', 'mask',
+                   'difference']
+        mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
+        element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
-        labels = []
-        for item in list(self.keys()):
-            if item.split('.')[0] == element:
-                if self[item].dtype in ['bool']:
-                    labels.append(item)
+        a = set([k for k in self.keys() if k.split('.')[0] == element[0]])
+        b = set([k for k in self.keys() if self[k].dtype == bool])
+        labels = list(a.intersection(b))
         labels.sort()
-        if sp.size(locations) == 0:
-            return Tools.PrintableList(labels)
+        labels = sp.array(labels)  # Convert to ND-array for following checks
+        arr = sp.zeros((sp.shape(locations)[0], len(labels)), dtype=bool)
+        col = 0
+        for item in labels:
+            arr[:, col] = self[item][locations]
+            col = col + 1
+        if mode in ['count']:
+            return sp.sum(arr, axis=1)
+        if mode in ['union']:
+            temp = labels[sp.sum(arr, axis=0) > 0]
+            temp.tolist()
+            return Tools.PrintableList(temp)
+        if mode in ['intersection']:
+            temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
+            temp.tolist()
+            return Tools.PrintableList(temp)
+        if mode in ['not', 'difference']:
+            temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
+            temp.tolist()
+            return Tools.PrintableList(temp)
+        if mode in ['mask']:
+            return arr
+        if mode in ['none']:
+            temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
+            for i in sp.arange(0, sp.shape(locations, )[0]):
+                temp[i] = list(labels[arr[i, :]])
+            return temp
         else:
-            labels = sp.array(labels)
-            locations = sp.array(locations, ndmin=1)
-            if locations.dtype in ['bool']:
-                locations = self._get_indices(element=element)[locations]
-            else:
-                locations = sp.array(locations, dtype=int)
-            arr = sp.zeros((sp.shape(locations)[0], len(labels)), dtype=bool)
-            col = 0
-            for item in labels:
-                arr[:, col] = self[item][locations]
-                col = col + 1
-            if mode == 'count':
-                return sp.sum(arr, axis=1)
-            if mode == 'union':
-                temp = labels[sp.sum(arr, axis=0) > 0]
-                temp.tolist()
-                return Tools.PrintableList(temp)
-            if mode == 'intersection':
-                temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
-                temp.tolist()
-                return Tools.PrintableList(temp)
-            if mode in ['difference', 'not']:
-                temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
-                temp.tolist()
-                return Tools.PrintableList(temp)
-            if mode == 'mask':
-                return arr
-            if mode == 'none':
-                temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
-                for i in sp.arange(0, sp.shape(locations, )[0]):
-                    temp[i] = list(labels[arr[i, :]])
-                return temp
-            else:
-                logger.error('unrecognized mode:'+mode)
+            logger.error('unrecognized mode:'+str(mode))
 
-    def labels(self,element='', pores=[], throats=[], mode='union'):
+    def labels(self, pores=[], throats=[], element=None, mode='union'):
         r"""
         Returns the labels applied to specified pore or throat locations
 
@@ -520,54 +525,65 @@ class Core(dict):
         mode : string, optional
             Controls how the query should be performed
 
-            * 'none' : An N x Li list of all labels applied to each input pore (or throats). Li can vary betwen pores (and throats)
+            **'none'** : An N x Li list of all labels applied to each input
+            pore (or throats). Li can vary betwen pores (and throats)
 
-            * 'union' : A list of labels applied to ANY of the given pores (or throats)
+            **'union'** : A list of labels applied to ANY of the given pores
+            (or throats)
 
-            * 'intersection' : Label applied to ALL of the given pores (or throats)
+            **'intersection'** : Label applied to ALL of the given pores
+            (or throats)
 
-            * 'not' : Labels NOT applied to ALL pores (or throats)
+            **'not'** : Labels NOT applied to ALL pores (or throats)
 
-            * 'count' : The number of labels on each pores (or throats)
+            **'count'** : The number of labels on each pores (or throats)
 
-            * 'mask' : returns an N x Lt array, where each row corresponds to a pore (or throat) location, and each column contains the truth value for the existance of labels as returned from labels(pores='all',mode='union')).
+            **'mask'**: returns an N x Lt array, where each row corresponds to
+            a pore (or throat) location, and each column contains the truth
+            value for the existance of labels as returned from
+            ``labels(element='pores')``.
+
+        Returns
+        -------
+        A list containing the dictionary keys on the object limited by the
+        specified \'mode\'.
 
         Examples
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.labels(pores=[0,1,5,6])
+        >>> pn.labels(pores=[0, 1, 5, 6])
         ['pore.all', 'pore.bottom', 'pore.front', 'pore.left']
-        >>> pn.labels(pores=[0,1,5,6],mode='intersection')
+        >>> pn.labels(pores=[0, 1, 5, 6], mode='intersection')
         ['pore.all', 'pore.bottom']
         """
+        labels = Tools.PrintableList()
+        # Short-circuit query when no pores or throats are given
         if (sp.size(pores) == 0) and (sp.size(throats) == 0):
-            if element == '':
-                temp = []
-                temp = self._get_labels(element='pore')
-                temp.extend(self._get_labels(element='throat'))
-            elif element in ['pore', 'pores']:
-                temp = self._get_labels(element='pore', locations=[], mode=mode)
-            elif element in ['throat', 'throats']:
-                temp = self._get_labels(element='throat', locations=[], mode=mode)
-            else:
-                logger.error('Unrecognized element')
-                return
-        elif sp.size(pores) != 0:
-            if pores is 'all':
-                pores = self.pores()
-            pores = sp.array(pores, ndmin=1)
-            temp = self._get_labels(element='pore', locations=pores, mode=mode)
-        elif sp.size(throats) != 0:
-            if throats is 'all':
-                throats = self.throats()
-            throats = sp.array(throats, ndmin=1)
-            temp = self._get_labels(element='throat', locations=throats, mode=mode)
-        return temp
+            element = self._parse_element(element=element)
+            for item in element:
+                a = set([key for key in self.keys()
+                         if key.split('.')[0] == item])
+                b = set([key for key in self.keys()
+                         if self[key].dtype == bool])
+                labels.extend(list(a.intersection(b)))
+        elif (sp.size(pores) > 0) and (sp.size(throats) > 0):
+            raise Exception('Cannot perform label query on pores and ' +
+                            'throats simultaneously')
+        elif sp.size(pores) > 0:
+            labels = self._get_labels(element='pore',
+                                      locations=pores,
+                                      mode=mode)
+        elif sp.size(throats) > 0:
+            labels = self._get_labels(element='throat',
+                                      locations=throats,
+                                      mode=mode)
+        return labels
 
-    def filter_by_label(self, pores=[], throats=[], labels='', mode='union'):
+    def filter_by_label(self, pores=[], throats=[], labels=None, mode='union'):
         r"""
-        Returns which of the supplied pores (or throats) has the specified label
+        Returns which of the supplied pores (or throats) has the specified
+        label
 
         Parameters
         ----------
@@ -580,18 +596,27 @@ class Core(dict):
         mode : string
             Controls how the filter is applied.  Options include:
 
-            * 'union' : (default) All locations with ANY of the given labels are kept.
+            **'union'** : (default) All locations with ANY of the given labels
+            are kept.
 
-            * 'intersection' : Only locations with ALL the given labels are kept.
+            **'intersection'** : Only locations with ALL the given labels are
+            kept.
 
-            * 'not_intersection' : Only locations with exactly one of the given labels are kept.
+            **'not_intersection'** : Only locations with exactly one of the
+            given labels are kept.
 
-            * 'not' : Only locations with none of the given labels are kept.
+            **'not'** : Only locations with none of the given labels are kept.
 
         See Also
         --------
         pores
         throats
+
+        Returns
+        -------
+        A list of pores (or throats) that have been filtered according the
+        given criteria.  The returned list is a subset of the received list of
+        pores (or throats).
 
         Examples
         --------
@@ -600,70 +625,61 @@ class Core(dict):
         >>> pn.filter_by_label(pores=[0,1,5,6], labels='left')
         array([0, 1])
         >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='union')
-        >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'], mode='intersection')
+        >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
+        ...                    mode='intersection')
         array([100, 105, 110, 115, 120])
         """
-        if labels == '':  # Handle empty labels
-            labels = 'all'
-        if type(labels) == str:  # Convert input to list
-            labels = [labels]
+        allowed = ['union', 'intersection', 'not_intersection', 'not']
+        mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         # Convert inputs to locations and element
+        if (sp.size(throats) > 0) and (sp.size(pores) > 0):
+            raise Exception('Can only filter either pores OR labels per call')
         if sp.size(pores) > 0:
             element = 'pore'
-            locations = sp.array(pores)
+            locations = self._parse_locations(pores)
         if sp.size(throats) > 0:
             element = 'throat'
-            locations = sp.array(throats)
+            locations = self._parse_locations(throats)
         # Do it
+        labels = self._parse_labels(labels=labels, element=element)
         labels = [element+'.'+item.split('.')[-1] for item in labels]
         all_locs = self._get_indices(element=element, labels=labels, mode=mode)
         mask = self._tomask(locations=all_locs, element=element)
         ind = mask[locations]
         return locations[ind]
 
-    def _get_indices(self, element, labels=['all'], mode='union'):
+    def _get_indices(self, element, labels='all', mode='union'):
         r"""
         This is the actual method for getting indices, but should not be called
         directly.  Use pores or throats instead.
         """
-        element = element.rstrip('s')  # Correct plural form of element keyword
+        # Parse and validate all input values
+        allowed = ['union', 'intersection', 'not_intersection', 'not',
+                   'difference']
+        mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
+        element = self._parse_element(element, single=True)
+        labels = self._parse_labels(labels=labels, element=element)
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
-        if type(labels) == str:  # Convert string to list, if necessary
-            labels = [labels]
-        for label in labels:  # Parse the labels list for wildcards "*"
-            if label.startswith('*'):
-                labels.remove(label)
-                temp = [item for item in self.labels()
-                        if item.split('.')[-1].endswith(label.strip('*'))]
-                if temp == []:
-                    temp = [label.strip('*')]
-                labels.extend(temp)
-            if label.endswith('*'):
-                labels.remove(label)
-                temp = [item for item in self.labels()
-                        if item.split('.')[-1].startswith(label.strip('*'))]
-                if temp == []:
-                    temp = [label.strip('*')]
-                labels.extend(temp)
+
         # Begin computing label array
-        if mode == 'union':
+        if mode in ['union']:
             union = sp.zeros_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
-                    union = union + self[element+'.'+item.split('.')[-1]]
+                union = union + self[element+'.'+item.split('.')[-1]]
             ind = union
-        elif mode == 'intersection':
+        elif mode in ['intersection']:
             intersect = sp.ones_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
-                    intersect = intersect*self[element+'.'+item.split('.')[-1]]
+                intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
-        elif mode == 'not_intersection':
+        elif mode in ['not_intersection']:
             not_intersect = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
-        elif mode in ['difference', 'not']:
+        elif mode in ['not', 'difference']:
             none = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
@@ -676,39 +692,49 @@ class Core(dict):
 
     def pores(self, labels='all', mode='union'):
         r"""
-        Returns pore locations where given labels exist.
+        Returns pore locations where given labels exist, according to the logic
+        specified by the mode argument.
 
         Parameters
         ----------
-        labels : list of strings, optional
-            The pore label(s) whose locations are requested.  If omitted, all
+        labels : string or list of strings
+            The label(s) whose pores locations are requested.  If omitted, all
             pore inidices are returned. This argument also accepts '*' for
             wildcard searches.
-        mode : string, optional
+
+        mode : string
             Specifies how the query should be performed.  The options are:
 
-            * 'union' : (default) All pores with ANY of the given labels are returned.
+            **'union'** : (default) All pores with ANY of the given labels are
+            returned.
 
-            * 'intersection' : Only pore with ALL the given labels are returned.
+            **'intersection'** : Only pore with ALL the given labels are
+            returned.
 
-            * 'not_intersection' : Only pores with exactly one of the given labels are returned.
+            **'not_intersection'** : Only pores with exactly one of the given
+            labels are returned.
 
-            * 'not' : Only pores with none of the given labels are returned.
+            **'not'** : Only pores with none of the given labels are returned.
+
+        Returns
+        -------
+        A Numpy array containing pore indices where the specified label(s)
+        exist.
 
         Examples
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pind = pn.pores(labels=['top','front'],mode='union')
-        >>> pind[[0,1,2,-3,-2,-1]]
+        >>> pind = pn.pores(labels=['top', 'front'], mode='union')
+        >>> pind[[0, 1, 2, -3, -2, -1]]
         array([  0,   5,  10, 122, 123, 124])
-        >>> pn.pores(labels=['top','front'],mode='intersection')
+        >>> pn.pores(labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
-        if labels == 'all':
+        if labels == 'all':  # Shortcut if ALL pores are requested
             Np = sp.shape(self['pore.all'])[0]
             ind = sp.arange(0, Np)
-        else:
+        else:  # Apply full logic otherwise
             ind = self._get_indices(element='pore', labels=labels, mode=mode)
         return ind
 
@@ -721,24 +747,35 @@ class Core(dict):
 
     def throats(self, labels='all', mode='union'):
         r"""
-        Returns throat locations where given labels exist.
+        Returns throat locations where given labels exist, according to the
+        logic specified by the mode argument.
 
         Parameters
         ----------
-        labels : list of strings, optional
+        labels : string or list of strings
             The throat label(s) whose locations are requested.  If omitted,
             'all' throat inidices are returned.  This argument also accepts
             '*' for wildcard searches.
-        mode : string, optional
+
+        mode : string
             Specifies how the query should be performed.  The options are:
 
-            * 'union' : (default) All throats with ANY of the given labels are returned.
+            **'union'** : (default) All throats with ANY of the given labels
+            are returned.
 
-            * 'intersection' : Only throats with ALL the given labels are counted.
+            **'intersection'** : Only throats with ALL the given labels are
+            counted.
 
-            * 'not_intersection' : Only throats with exactly one of the given labels are counted.
+            **'not_intersection'** : Only throats with exactly one of the
+            given labels are counted.
 
-            * 'not' : Only throats with none of the given labels are returned.
+            **'not'** : Only throats with none of the given labels are
+            returned.
+
+        Returns
+        -------
+        A Numpy array containing the throat indices where the specified
+        label(s) exist.
 
         Examples
         --------
@@ -751,9 +788,9 @@ class Core(dict):
         """
         if labels == 'all':
             Nt = sp.shape(self['throat.all'])[0]
-            ind = sp.arange(0,Nt)
+            ind = sp.arange(0, Nt)
         else:
-            ind = self._get_indices(element='throat',labels=labels,mode=mode)
+            ind = self._get_indices(element='throat', labels=labels, mode=mode)
         return ind
 
     @property
@@ -763,26 +800,20 @@ class Core(dict):
         """
         return self.throats()
 
-    def _tomask(self,locations,element):
+    def _tomask(self, locations, element):
         r"""
         This is a generalized version of tomask that accepts a string of
         'pore' or 'throat' for programmatic access.
         """
-        if sp.shape(locations)[0] == 0:
-            return sp.zeros_like(self._get_indices(element=element),dtype=bool)
-        if element in ['pore','pores']:
-            Np = sp.shape(self['pore.all'])[0]
-            pores = sp.array(locations,ndmin=1)
-            mask = sp.zeros((Np,),dtype=bool)
-            mask[pores] = True
-        if element in ['throat','throats']:
-            Nt = sp.shape(self['throat.all'])[0]
-            throats = sp.array(locations,ndmin=1)
-            mask = sp.zeros((Nt,),dtype=bool)
-            mask[throats] = True
+        element = self._parse_element(element, single=True)
+        locations = self._parse_locations(locations)
+        N = sp.shape(self[element + '.all'])[0]
+        ind = sp.array(locations, ndmin=1)
+        mask = sp.zeros((N, ), dtype=bool)
+        mask[ind] = True
         return mask
 
-    def tomask(self,pores=None,throats=None):
+    def tomask(self, pores=None, throats=None):
         r"""
         Convert a list of pore or throat indices into a boolean mask of the
         correct length
@@ -790,22 +821,38 @@ class Core(dict):
         Parameters
         ----------
         pores or throats : array_like
-            List of pore or throat indices
+            List of pore or throat indices.  Only one of these can be specified
+            at a time, and the returned result will be of the corresponding
+            length.
 
         Returns
         -------
-        mask : array_like
-            A boolean mask of length Np or Nt with True in the locations of
-            pores or throats received.
+        A boolean mask of length Np or Nt with True in the specified pore or
+        throat locations.
+
+        Examples
+        --------
+        >>> import OpenPNM as op
+        >>> pn = op.Network.Cubic(shape=[3, 3, 3])
+        >>> mask = pn.tomask(pores=[0, 10, 20])
+        >>> sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)
+        3
+        >>> len(mask)  # Mask size is equal to the number of pores in network
+        27
+        >>> mask = pn.tomask(throats=[0, 10, 20])
+        >>> len(mask)  # Mask is now equal to number of throats in network
+        54
 
         """
-        if pores is not None:
-            mask = self._tomask(element='pore',locations=pores)
-        if throats is not None:
-            mask = self._tomask(element='throat',locations=throats)
+        if (pores is not None) and (throats is None):
+            mask = self._tomask(element='pore', locations=pores)
+        elif (throats is not None) and (pores is None):
+            mask = self._tomask(element='throat', locations=throats)
+        else:
+            raise Exception('Cannot specify both pores and throats')
         return mask
 
-    def toindices(self,mask):
+    def toindices(self, mask):
         r"""
         Convert a boolean mask a list of pore or throat indices
 
@@ -818,30 +865,23 @@ class Core(dict):
 
         Returns
         -------
-        indices : array_like
-            A list of pore or throat indices corresponding the locations where
-            the received mask was True.
+        A list of pore or throat indices corresponding the locations where
+        the received mask was True.
 
         Notes
         -----
         This behavior could just as easily be accomplished by using the mask
-        in pn.pores()[mask] or pn.throats()[mask].  This method is just a thin
-        convenience function and is a compliment to tomask().
+        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is just
+        a thin convenience function and is a compliment to ``tomask``.
 
         """
-        mask = sp.array(mask,ndmin=1)
-        if sp.shape(mask)[0] == self.num_pores():
-            indices = self.pores()[mask]
-        elif sp.shape(mask)[0] == self.num_throats():
-            indices = self.throats()[mask]
-        else:
-            raise Exception('Mask received was neither Np nor Nt long')
+        indices = self._parse_locations(mask)
         return indices
 
-    def interpolate_data(self,data):
+    def interpolate_data(self, data):
         r"""
-        Determines a pore (or throat) property as the average of it's neighboring
-        throats (or pores)
+        Determines a pore (or throat) property as the average of it's
+        neighboring throats (or pores)
 
         Parameters
         ----------
@@ -855,7 +895,8 @@ class Core(dict):
 
         Notes
         -----
-        - This uses an unweighted average, without attempting to account for distances or sizes of pores and throats.
+        - This uses an unweighted average, without attempting to account for
+        distances or sizes of pores and throats.
         - Only one of pores, throats OR data are accepted
 
         """
@@ -876,29 +917,30 @@ class Core(dict):
             Ps = net.pores(self.name)
             label = self.name
         if sp.shape(data)[0] == self.Nt:
-            #Upcast data to full network size
+            # Upcast data to full network size
             temp = sp.ones((net.Nt,))*sp.nan
             temp[Ts] = data
             data = temp
             temp = sp.ones((net.Np,))*sp.nan
             for pore in Ps:
                 neighborTs = net.find_neighbor_throats(pore)
-                neighborTs = net.filter_by_label(throats=neighborTs,labels=label)
+                neighborTs = net.filter_by_label(throats=neighborTs,
+                                                 labels=label)
                 temp[pore] = sp.mean(data[neighborTs])
             values = temp[Ps]
         elif sp.shape(data)[0] == self.Np:
-            #Upcast data to full network size
-            temp = sp.ones((net.Np,))*sp.nan
+            # Upcast data to full network size
+            temp = sp.ones((net.Np, ))*sp.nan
             temp[Ps] = data
             data = temp
-            Ps12 = net.find_connected_pores(throats=Ts,flatten=False)
-            values = sp.mean(data[Ps12],axis=1)
+            Ps12 = net.find_connected_pores(throats=Ts, flatten=False)
+            values = sp.mean(data[Ps12], axis=1)
         else:
             logger.error('Received data was an ambiguous length')
             raise Exception()
         return values
 
-    def _interleave_data(self,prop,sources):
+    def _interleave_data(self, prop, sources):
         r"""
         Retrieves requested property from associated objects, to produce a full
         Np or Nt length array.
@@ -925,29 +967,35 @@ class Core(dict):
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
         >>> Ps = pn.pores('top',mode='not')
-        >>> Ts = pn.find_neighbor_throats(pores=Ps,mode='intersection',flatten=True)
-        >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,pores=Ps,throats=Ts)
+        >>> Ts = pn.find_neighbor_throats(pores=Ps,
+        ...                               mode='intersection',
+        ...                               flatten=True)
+        >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,
+        ...                                      pores=Ps,
+        ...                                      throats=Ts)
         >>> Ps = pn.pores('top')
-        >>> Ts = pn.find_neighbor_throats(pores=Ps,mode='not_intersection')
-        >>> boun = OpenPNM.Geometry.Boundary(network=pn,pores=Ps,throats=Ts)
+        >>> Ts = pn.find_neighbor_throats(pores=Ps,
+        ...                               mode='not_intersection')
+        >>> boun = OpenPNM.Geometry.Boundary(network=pn, pores=Ps, throats=Ts)
         >>> geom['pore.test_int'] = sp.random.randint(0, 100, geom.Np)
         >>> print(pn['pore.test_int'].dtype)
         float64
         >>> boun['pore.test_int'] = sp.ones(boun.Np).astype(int)
-        >>> boun['pore.test_int'] = sp.rand(boun.Np)<0.5
+        >>> boun['pore.test_int'] = sp.rand(boun.Np) < 0.5
         >>> print(pn['pore.test_int'].dtype)
         bool
-        >>> geom['pore.test_bool'] = sp.rand(geom.Np)<0.5
+        >>> geom['pore.test_bool'] = sp.rand(geom.Np) < 0.5
         >>> print(pn['pore.test_bool'].dtype)
         bool
         >>> boun['pore.test_bool'] = sp.ones(boun.Np).astype(int)
         >>> print(pn['pore.test_bool'].dtype)
         bool
-        >>> boun['pore.test_bool'] = sp.rand(boun.Np)<0.5
+        >>> boun['pore.test_bool'] = sp.rand(boun.Np) < 0.5
         >>> print(pn['pore.test_bool'].dtype)
         bool
         """
         element = prop.split('.')[0]
+        element = self._parse_element(element)
         temp = sp.ndarray((self._count(element)))
         nan_locs = sp.ndarray((self._count(element)), dtype='bool')
         nan_locs.fill(False)
@@ -955,63 +1003,79 @@ class Core(dict):
         bool_locs.fill(False)
         dtypes = []
         dtypenames = []
-        prop_found = False  #Flag to indicate if prop was found on a sub-object
-        values_dim=0
+        prop_found = False  # Flag to indicate if prop found on a sub-object
+        values_dim = 0
         for item in sources:
-            #Check if sources were given as list of objects OR names
-            try: item.name
-            except: item = self._find_object(obj_name=item)
-            locations = self._get_indices(element=element,labels=item.name,mode='union')
+            # Check if sources were given as list of objects OR names
+            try:
+                item.name
+            except:
+                item = self._find_object(obj_name=item)
+            locations = self._get_indices(element=element,
+                                          labels=item.name,
+                                          mode='union')
             if prop not in item.keys():
                 values = sp.ones_like(temp[locations])*sp.nan
                 dtypenames.append('nan')
                 dtypes.append(sp.dtype(bool))
-                nan_locs[locations]=True
+                nan_locs[locations] = True
             else:
                 prop_found = True
                 values = item[prop]
                 dtypenames.append(values.dtype.name)
                 dtypes.append(values.dtype)
                 if values.dtype == 'bool':
-                    bool_locs[locations]=True
-                try: values_dim = sp.shape(values)[1]
-                except: pass
+                    bool_locs[locations] = True
+                try:
+                    values_dim = sp.shape(values)[1]
+                except:
+                    pass
             if values_dim > 0:
                 try:
                     temp_dim = sp.shape(temp)[1]
                     if temp_dim != values_dim:
-                        logger.warning(prop+' data has different dimensions, consider revising data in object '+str(item.name))
+                        logger.warning(prop+' data has different dimensions,' +
+                                       'consider revising data in object ' +
+                                       str(item.name))
                 except:
-                    temp = sp.ndarray([self._count(element),values_dim])
+                    temp = sp.ndarray([self._count(element), values_dim])
             if values.dtype == 'object' and temp.dtype != 'object':
                 temp = temp.astype('object')
-            temp[locations] = values  #Assign values
-        #Check if requested prop was found on any sub-objects
-        if prop_found == False:
+            temp[locations] = values  # Assign values
+        # Check if requested prop was found on any sub-objects
+        if prop_found is False:
             raise KeyError(prop)
-        #Analyze and assign data type
-        if sp.all([t in ['bool','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
-            temp = sp.array(temp,dtype='bool')
-            if sp.sum(nan_locs)>0:
-                temp[nan_locs]=False
-        elif sp.all([t == dtypenames[0] for t in dtypenames]) :  # If all entries are same type
-            temp = sp.array(temp,dtype=dtypes[0])
-        elif sp.all([t in ['int','nan','float','int32','int64','float32','float64','bool'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+        # Analyze and assign data type
+        types_temp = ['int', 'nan', 'float', 'int32', 'int64', 'float32',
+                      'float64', 'bool']
+        if sp.all([t in ['bool', 'nan'] for t in dtypenames]):
+            # If all entries are 'bool' (or 'nan')
+            temp = sp.array(temp, dtype='bool')
+            if sp.sum(nan_locs) > 0:
+                temp[nan_locs] = False
+        elif sp.all([t == dtypenames[0] for t in dtypenames]):
+            # If all entries are same type
+            temp = sp.array(temp, dtype=dtypes[0])
+        elif sp.all([t in types_temp for t in dtypenames]):
+            # If all entries are 'bool' (or 'nan')
             if 'bool' in dtypenames:
-                temp = sp.array(temp,dtype='bool')
-                temp[~bool_locs]=False
-                logger.info(prop+' has been converted to bool, some data may be lost')
+                temp = sp.array(temp, dtype='bool')
+                temp[~bool_locs] = False
+                logger.info(prop+' has been converted to bool,' +
+                            ' some data may be lost')
             else:
-                temp = sp.array(temp,dtype='float')
+                temp = sp.array(temp, dtype='float')
                 logger.info(prop+' has been converted to float.')
-        elif sp.all([t in ['object','nan'] for t in dtypenames]):  # If all entries are 'bool' (or 'nan')
+        elif sp.all([t in ['object', 'nan'] for t in dtypenames]):
+            # If all entries are 'bool' (or 'nan')
             pass
         else:
-            temp = sp.array(temp,dtype=max(dtypes))
-            logger.info('Data type of '+prop+' differs between sub-objects...converting to larger data type')
+            temp = sp.array(temp, dtype=max(dtypes))
+            logger.info('Data type of '+prop+' differs between sub-objects' +
+                        '...converting to larger data type')
         return temp
 
-    def num_pores(self,labels='all',mode='union'):
+    def num_pores(self, labels='all', mode='union'):
         r"""
         Returns the number of pores of the specified labels
 
@@ -1020,18 +1084,24 @@ class Core(dict):
         labels : list of strings, optional
             The pore labels that should be included in the count.
             If not supplied, all pores are counted.
+
         labels : list of strings
             Label of pores to be returned
+
         mode : string, optional
             Specifies how the count should be performed.  The options are:
 
-            * 'union' : (default) All pores with ANY of the given labels are counted.
+            **'union'** : (default) All pores with ANY of the given labels are
+            counted.
 
-            * 'intersection' : Only pores with ALL the given labels are counted.
+            **'intersection'** : Only pores with ALL the given labels are
+            counted.
 
-            * 'not_intersection' : Only pores with exactly one of the given labels are counted.
+            **'not_intersection'** : Only pores with exactly one of the given
+            labels are counted.
 
-            * 'difference' : Only pores with none of the given labels are counted.
+            **'difference'** : Only pores with none of the given labels are
+            counted.
 
         Returns
         -------
@@ -1051,22 +1121,19 @@ class Core(dict):
         125
         >>> pn.num_pores(labels=['top'])
         25
-        >>> pn.num_pores(labels=['top','front'],mode='union') #'union' is default
+        >>> pn.num_pores(labels=['top', 'front'], mode='union')
         45
-        >>> pn.num_pores(labels=['top','front'],mode='intersection')
+        >>> pn.num_pores(labels=['top', 'front'], mode='intersection')
         5
-        >>> pn.num_pores(labels=['top','front'],mode='not_intersection')
+        >>> pn.num_pores(labels=['top', 'front'], mode='not_intersection')
         40
 
         """
         if labels == 'all':
             Np = sp.shape(self.get('pore.all'))[0]
         else:
-            #convert string to list, if necessary
-            if type(labels) == str:
-                labels = [labels]
-            #Count number of pores of specified type
-            Ps = self.pores(labels=labels,mode=mode)
+            # Count number of pores of specified type
+            Ps = self._get_indices(labels=labels, mode=mode, element='pore')
             Np = sp.shape(Ps)[0]
         return Np
 
@@ -1077,7 +1144,7 @@ class Core(dict):
         """
         return self.num_pores()
 
-    def num_throats(self,labels='all',mode='union'):
+    def num_throats(self, labels='all', mode='union'):
         r"""
         Return the number of throats of the specified labels
 
@@ -1086,16 +1153,21 @@ class Core(dict):
         labels : list of strings, optional
             The throat labels that should be included in the count.
             If not supplied, all throats are counted.
+
         mode : string, optional
             Specifies how the count should be performed.  The options are:
 
-            * 'union' : (default) All throats with ANY of the given labels are counted.
+            **'union'** : (default) All throats with ANY of the given labels
+            are counted.
 
-            * 'intersection' : Only throats with ALL the given labels are counted.
+            **'intersection'** : Only throats with ALL the given labels are
+            counted.
 
-            * 'not_intersection' : Only throats with exactly one of the given labels are counted.
+            **'not_intersection'** : Only throats with exactly one of the given
+            labels are counted.
 
-            * 'difference' : Only throats with none of the given labels are counted.
+            **'difference'** : Only throats with none of the given labels are
+            counted.
 
         Returns
         -------
@@ -1115,21 +1187,19 @@ class Core(dict):
         300
         >>> pn.num_throats(labels=['top'])
         40
-        >>> pn.num_throats(labels=['top','front'],mode='union') #'union' is default
+        >>> pn.num_throats(labels=['top', 'front'], mode='union')
         76
-        >>> pn.num_throats(labels=['top','front'],mode='intersection')
+        >>> pn.num_throats(labels=['top', 'front'], mode='intersection')
         4
-        >>> pn.num_throats(labels=['top','front'],mode='not_intersection')
+        >>> pn.num_throats(labels=['top', 'front'], mode='not_intersection')
         72
 
         """
         if labels == 'all':
             Nt = sp.shape(self.get('throat.all'))[0]
         else:
-            #convert string to list, if necessary
-            if type(labels) == str: labels = [labels]
-            #Count number of pores of specified type
-            Ts = self.throats(labels=labels,mode=mode)
+            # Count number of pores of specified type
+            Ts = self._get_indices(labels=labels, mode=mode, element='throat')
             Nt = sp.shape(Ts)[0]
         return Nt
 
@@ -1140,7 +1210,7 @@ class Core(dict):
         """
         return self.num_throats()
 
-    def _count(self,element=None):
+    def _count(self, element=None):
         r"""
         Returns a dictionary containing the number of pores and throats in
         the network, stored under the keys 'pore' or 'throat'
@@ -1177,17 +1247,14 @@ class Core(dict):
         >>> pn._count('throat')
         300
         """
-        if element in ['pore','pores']:
-            temp = self.num_pores()
-        elif element in ['throat','throats']:
-            temp = self.num_throats()
-        elif element is None:
-            temp = {}
-            temp['pore'] = self.num_pores()
-            temp['throat'] = self.num_throats()
+        element = self._parse_element(element=element)
+        temp = {elem: sp.size(self[elem+'.all']) for elem in element}
+        # TODO: In a future version this should always just return a dict
+        if len(temp) == 1:
+            temp = list(temp.values())[0]
         return temp
 
-    def _set_locations(self,element,locations,mode='add'):
+    def _set_locations(self, element, locations, mode='add'):
         r"""
         Private method used for assigning Geometry and Physics objects to
         specified locations
@@ -1196,10 +1263,12 @@ class Core(dict):
         ----------
         element : string
             Either 'pore' or 'throat' indicating which type of element is being
-            work upon
+            work upon.
+
         locations : array_like
             The pore or throat locations in terms of Network numbering to add
-            (or remove) from the object
+            (or remove) from the object.
+
         mode : string
             Either 'add' or 'remove', the default is add.
 
@@ -1209,7 +1278,9 @@ class Core(dict):
         >>> pn = OpenPNM.Network.TestNet()
         >>> pn.Np
         125
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=sp.arange(5,125),throats=pn.Ts)
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
+        ...                                         pores=sp.arange(5, 125),
+        ...                                         throats=pn.Ts)
         >>> [geom.Np, geom.Nt]
         [120, 300]
         >>> geom['pore.dummy'] = True
@@ -1218,12 +1289,16 @@ class Core(dict):
         >>> geom.set_locations(pores=pores)
         >>> [geom.Np, geom.Nt]
         [125, 300]
-        >>> geom.pores(labels='dummy',mode='not')  # Dummy as assigned BEFORE these pores were added
+
+        The label \'pore.dummy\' was assigned 'before' these pores were added
+        >>> geom.pores(labels='dummy', mode='not')
         array([0, 1, 2, 3, 4])
-        >>> geom.set_locations(pores=pores,mode='remove')
+        >>> geom.set_locations(pores=pores, mode='remove')
         >>> [geom.Np, geom.Nt]
         [120, 300]
-        >>> geom.num_pores(labels='dummy',mode='not')  # All pores without 'dummy' label are gone
+
+        # All pores without \'pore.dummy\' label are gone
+        >>> geom.num_pores(labels='dummy', mode='not')
         0
         """
         net = self._net
@@ -1234,14 +1309,18 @@ class Core(dict):
             boss_obj = self._phases[0]
             co_objs = boss_obj.physics()
         else:
-            raise Exception('Setting locations only applies to Geometry or Physics objects')
+            raise Exception('Setting locations only applies to Geometry or ' +
+                            'Physics objects')
+        locations = self._parse_locations(locations)
+        element = self._parse_element(element, single=True)
 
         if mode == 'add':
             # Check if any constant values exist on the object
             for item in self.props():
                 if (item not in self.models.keys()) or \
                    (self.models[item]['regen_mode'] == 'constant'):
-                    raise Exception('Constant properties found on object, cannot increase size')
+                    raise Exception('Constant properties found on object, ' +
+                                    'cannot increase size')
             # Ensure locations are not already assigned to another object
             temp = sp.zeros((net._count(element), ), dtype=bool)
             for key in co_objs:
@@ -1249,7 +1328,8 @@ class Core(dict):
             overlaps = sp.sum(temp*net._tomask(locations=locations,
                                                element=element))
             if overlaps > 0:
-                raise Exception('Some of the given '+element+'s are assigned to an existing object')
+                raise Exception('Some of the given '+element+'s are assigned' +
+                                ' to an existing object')
 
             # Store original Network indices for later use
             old_inds = sp.copy(net[element+'.'+self.name])
@@ -1296,7 +1376,7 @@ class Core(dict):
         r"""
         """
         # Initialize things
-        locations = sp.array(locations, ndmin=1)
+        locations = self._parse_locations(locations=locations)
         mapping = {}
 
         # Analyze input object's relationship
@@ -1373,15 +1453,15 @@ class Core(dict):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> Ps = pn.pores(labels=['top','left'],mode='intersection')
+        >>> Ps = pn.pores(labels=['top', 'left'], mode='intersection')
         >>> Ps
         array([100, 101, 102, 103, 104])
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=Ps)
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps)
         >>> geom.Ps
         array([0, 1, 2, 3, 4])
-        >>> geom.map_pores(target=pn,pores=geom.Ps)
+        >>> geom.map_pores(target=pn, pores=geom.Ps)
         array([100, 101, 102, 103, 104])
-        >>> pn.map_pores(target=geom,pores=Ps)
+        >>> pn.map_pores(target=geom, pores=Ps)
         array([0, 1, 2, 3, 4])
         """
         if pores is None:
@@ -1429,15 +1509,15 @@ class Core(dict):
         --------
         >>> import OpenPNM
         >>> pn = OpenPNM.Network.TestNet()
-        >>> Ts = pn.throats(labels=['top','left'],mode='intersection')
+        >>> Ts = pn.throats(labels=['top', 'left'], mode='intersection')
         >>> Ts
         array([260, 262, 264, 266])
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,throats=Ts)
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, throats=Ts)
         >>> geom.Ts
         array([0, 1, 2, 3])
-        >>> geom.map_throats(target=pn,throats=geom.Ts)
+        >>> geom.map_throats(target=pn, throats=geom.Ts)
         array([260, 262, 264, 266])
-        >>> pn.map_throats(target=geom,throats=Ts)
+        >>> pn.map_throats(target=geom, throats=Ts)
         array([0, 1, 2, 3])
         """
         if throats is None:
@@ -1457,17 +1537,173 @@ class Core(dict):
     Pnet = property(fget=map_pores)
 
     def _parse_locations(self, locations):
+        r"""
+        This private method accepts a list of pores or throats and returns a
+        properly structured Numpy array of indices.
+
+        Parameters
+        ----------
+        locations : multiple options
+            This argument can accept numerous different data types including
+            boolean masks, integers and arrays.
+
+        Returns
+        -------
+        A Numpy array of locations.
+
+        Notes
+        -----
+        This method should only be called by the method that is actually using
+        the locations, to avoid calling it multiple times.
+        """
         if locations is None:
-            locations = []
+            locations = sp.array([], ndmin=1, dtype=int)
         locs = sp.array(locations, ndmin=1)
+        if locs.dtype not in [bool, sp.float16, sp.float32, sp.float64,
+                              sp.int8, sp.int16, sp.int32, sp.int64]:
+            raise Exception('Invalid data type received as locations, ' +
+                            ' must be boolean or numeric')
         if locs.dtype == bool:
             if sp.size(locs) == self.Np:
                 locs = self.Ps[locs]
             elif sp.size(locs) == self.Nt:
                 locs = self.Ts[locs]
             else:
-                raise Exception('List of locations is neither Np nor Nt long')
+                raise Exception('Boolean list of locations must be either ' +
+                                'Np nor Nt long')
+        locs = locs.astype(dtype=int)
         return locs
+
+    def _parse_element(self, element, single=False):
+        r"""
+        This private method is used to parse the keyword \'element\' in many
+        of the above methods.
+
+        Parameters
+        ----------
+        element : string or list of strings
+            The element argument to check.  If is None is recieved, then a list
+            containing both \'pore\' and \'throat\' is returned.
+
+        single : boolean (default is False)
+            When set to True only a single element is allowed and it will also
+            return a string containing the element.
+
+        Returns
+        -------
+        When ``single`` is False (default) a list contain the element(s) is
+        returned.  When ``single`` is True a bare string containing the element
+        is returned.
+        """
+        if element is None:
+            element = ['pore', 'throat']
+        # Convert element to a list for subsequent processing
+        if type(element) is str:
+            element = [element]
+        element = [item.lower() for item in element]
+        element = [item.rsplit('s', maxsplit=1)[0] for item in element]
+        for item in element:
+            if item not in ['pore', 'throat']:
+                raise Exception('Invalid element received')
+        # Remove duplicates if any
+        [element.remove(L) for L in element if element.count(L) > 1]
+        if single:
+            if len(element) > 1:
+                raise Exception('Both elements recieved when single element ' +
+                                'allowed')
+            else:
+                element = element[0]
+        return element
+
+    def _parse_labels(self, labels, element):
+        r"""
+        This private method is used for converting \'labels\' to a proper
+        format, including dealing with wildcards (\*).
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The label or list of labels to be parsed. Note that the \* can be
+            used as a wildcard.
+
+        Returns
+        -------
+        A list of label strings, with all wildcard matches included if
+        applicable.
+        """
+        if labels is None:
+            raise Exception('Labels cannot be None')
+        if type(labels) is str:
+            labels = [labels]
+        # Parse the labels list
+        parsed_labels = []
+        for label in labels:
+            # Remove element from label, if present
+            if element in label:
+                label = label.split('.')[-1]
+            # Deal with wildcards
+            if '*' in label:
+                Ls = [L.split('.')[-1] for L in self.labels(element=element)]
+                if label.startswith('*'):
+                    temp = [L for L in Ls if L.endswith(label.strip('*'))]
+                if label.endswith('*'):
+                    temp = [L for L in Ls if L.startswith(label.strip('*'))]
+                temp = [element+'.'+L for L in temp]
+            elif element+'.'+label in self.keys():
+                temp = [element+'.'+label]
+            else:
+                # TODO: The following Error should/could be raised but it
+                # breaks the net-geom and phase-phys look-up logic
+                # raise KeyError('\''+element+'.'+label+'\''+' not found')
+                logger.warning('\''+element+'.'+label+'\''+' not found')
+                temp = [element+'.'+label]
+            parsed_labels.extend(temp)
+            # Remove duplicates if any
+            [parsed_labels.remove(L) for L in parsed_labels
+             if parsed_labels.count(L) > 1]
+        return parsed_labels
+
+    def _parse_mode(self, mode, allowed=None, single=None):
+        r"""
+        This private method is for checking the \'mode\' used in the calling
+        method.
+
+        Parameters
+        ----------
+        mode : string or list of strings
+            The mode(s) to be parsed
+
+        allowed : list of strings
+            A list containing the allowed modes.  This list is defined by the
+            calling method.  If any of the received modes are not in the
+            allowed list an exception is raised.
+
+        single : boolean (default is False)
+            Indicates if only a single mode is allowed.  If this argument is
+            True than a string is returned rather than a list of strings, which
+            makes it easier to work with in the caller method.
+
+        Returns
+        -------
+        A list containing the received modes as strings, checked to ensure they
+        are all within the allowed set (if provoided).  Also, if the ``single``
+        argument was True, then a string is returned.
+        """
+        if type(mode) is str:
+            mode = [mode]
+        for item in mode:
+            if (allowed is not None) and (item not in allowed):
+                raise Exception('\'mode\' must be one of the following: ' +
+                                allowed.__str__())
+        # Remove duplicates, if any
+        [mode.remove(L) for L in mode if mode.count(L) > 1]
+        if single:
+            if len(mode) > 1:
+                raise Exception('Multiple modes received when only one mode ' +
+                                'allowed')
+            else:
+                mode = mode[0]
+        return mode
 
     def _isa(self, keyword=None, obj=None):
         r"""
@@ -1511,7 +1747,7 @@ class Core(dict):
                     query = True
             return query
 
-    def check_data_health(self, props=[], element=''):
+    def check_data_health(self, props=[], element=None):
         r"""
         Check the health of pore and throat data arrays.
 
@@ -1520,6 +1756,7 @@ class Core(dict):
         element : string, optional
             Can be either 'pore' or 'throat', which will limit the checks to
             only those data arrays.
+
         props : list of pore (or throat) properties, optional
             If given, will limit the health checks to only the specfied
             properties.  Also useful for checking existance.
@@ -1567,14 +1804,20 @@ class Core(dict):
         props = self.props()
         props.sort()
         for i, item in enumerate(props):
-            if self[item].dtype != object:
-                prop = item
-                if len(prop) > 35:
-                    prop = prop[0:32] + '...'
-                required = self._count(item.split('.')[0])
+            prop = item
+            required = self._count(item.split('.')[0])
+            if len(prop) > 35:  # Trim overly long prop names
+                prop = prop[0:32] + '...'
+            if self[item].dtype == object:  # Print objects differently
+                defined = sp.size(self[item])
+                lines.append("{0:<5d} {1:<35s} {2:>5d} / {3:<5d}".format(i + 1,
+                                                                         prop,
+                                                                         defined,
+                                                                         required))
+            else:
                 a = sp.isnan(self[item])
-                defined = sp.shape(self[item])[0] - a.sum(axis=0,
-                                                          keepdims=(a.ndim-1)==0)[0]
+                defined = sp.shape(self[item])[0] \
+                    - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
                 lines.append("{0:<5d} {1:<35s} {2:>5d} / {3:<5d}".format(i + 1,
                                                                          prop,
                                                                          defined,

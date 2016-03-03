@@ -34,18 +34,18 @@ Import
 >>> import OpenPNM
 
 """
-import sys
-import scipy as sp
+import sys as _sys
+import scipy as _sp
 
 # Check Python version
-if sys.version_info < (3, 3):
+if _sys.version_info < (3, 3):
     raise Exception('OpenPNM requires Python 3.3 or greater to run')
 
-if sp.__version__ < '0.14.0':
+if _sp.__version__ < '0.14.0':
     raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
 
 __requires__ = ['scipy']
-__version__ = '1.3.0'
+__version__ = '1.4.0'
 
 from . import Base
 from . import Utilities
@@ -61,7 +61,8 @@ _controller = ctrl()
 del ctrl
 save = _controller.save
 load = _controller.load
-export = _controller.export
+export_data = _controller.export_data
+import_data = _controller.import_data
 clear = _controller.clear
 purge_object = _controller.purge_object
 

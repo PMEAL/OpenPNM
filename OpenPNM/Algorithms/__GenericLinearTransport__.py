@@ -37,6 +37,188 @@ class GenericLinearTransport(GenericAlgorithm):
                 raise Exception(comp.name + ' has different Np size than the' +
                                 ' algorithm ' + self.name)
 
+    def set_boundary_conditions(self, bctype='', bcvalue=None, pores=None,
+                                throats=None, mode='merge'):
+        r"""
+        Apply boundary conditions to specified pores or throats
+
+        Parameters
+        ----------
+        bctype : string
+            Specifies the type or the name of boundary condition to apply. \
+            The types can be one one of the followings:
+                 - 'Dirichlet' : Specify the quantity in each location
+                 - 'Neumann' : Specify the flow rate into each location
+                 - 'Neumann_group' : Specify the net flow rate into a group
+                   of pores/throats
+        component : OpenPNM Phase object
+            The Phase object to which this BC applies
+        bcvalue : array_like
+            The boundary value to apply, such as concentration or rate
+        pores : array_like
+            The pores where the boundary conditions should be applied
+        throats : array_like
+            The throats where the boundary conditions should be applied
+        mode : string, optional
+            Controls how the conditions are applied.  Options are:
+
+            - 'merge': Inserts the specified values, leaving existing values \
+              elsewhere
+            - 'overwrite': Inserts specified values, clearing all other \
+              values for that specific bctype
+            - 'remove': Removes boundary conditions from specified locations
+
+        Notes
+        -----
+        - It is not possible to have multiple boundary conditions for a
+          specified location in just one algorithm. So when new condition is
+          going to be applied to a specific location, any existing one should
+          be removed or overwritten.
+        - BCs for pores and for throats should be applied independently.
+        """
+        try:
+            self._existing_BC
+        except AttributeError:
+            self._existing_BC = []
+        if sp.size(self._phases) != 1:
+            raise Exception('In each use of set_boundary_conditions ' +
+                            'method, one component should be specified ' +
+                            'or attached to the algorithm.')
+        else:
+            component = self._phases[0]
+
+        if mode not in ['merge', 'overwrite', 'remove']:
+            raise Exception('The mode (' + mode + ') cannot be applied to ' +
+                            'the set_boundary_conditions!')
+
+        logger.debug('BC method applies to the component: ' + component.name)
+        # Validate bctype
+        if bctype == '':
+            raise Exception('bctype must be specified!')
+        # If mode is 'remove', also bypass checks
+        if mode == 'remove':
+            if pores is None and throats is None:
+                for item in self.labels():
+                    if bctype == item.split('.')[-1]:
+                        element = item.split('.')[0]
+                        try:
+                            del self[element + '.' + 'bcval_' + bctype]
+                        except KeyError:
+                            pass
+                        try:
+                            del self[element + '.' + bctype]
+                        except KeyError:
+                            pass
+                logger.debug('Removing ' + bctype + ' from all locations' +
+                             ' for ' + component.name + ' in ' +
+                             self.name)
+                self._existing_BC.remove(bctype)
+            else:
+                if pores is not None:
+                    prop_label = 'pore.' + 'bcval_' + bctype
+                    self[prop_label][pores] = sp.nan
+                    info_label = 'pore.' + bctype
+                    self[info_label][pores] = False
+                    logger.debug('Removing ' + bctype + ' from the ' +
+                                 'specified pores for ' + component.name +
+                                 ' in ' + self.name)
+                if throats is not None:
+                    prop_label = 'throat.' + 'bcval_' + bctype
+                    self[prop_label][throats] = sp.nan
+                    info_label = 'throat.' + bctype
+                    self[info_label][throats] = False
+                    logger.debug('Removing ' + bctype + ' from the ' +
+                                 'specified throats for ' +
+                                 component.name + ' in ' + self.name)
+            return
+        # Validate pores/throats
+        if pores is None and throats is None:
+            raise Exception('pores/throats must be specified')
+        elif pores is not None and throats is not None:
+            raise Exception('BC for pores and throats must be specified ' +
+                            'independently.')
+        elif throats is None:
+            element = 'pore'
+            loc = sp.array(pores, ndmin=1)
+            all_length = self.Np
+        elif pores is None:
+            element = 'throat'
+            loc = sp.array(throats, ndmin=1)
+            all_length = self.Nt
+        else:
+            raise Exception('Problem with the pore and/or throat list')
+        # Validate bcvalue
+        if bcvalue is not None:
+            # Check bcvalues are compatible with bctypes
+            if bctype == 'Neumann_group':  # Only scalars are acceptable
+                if sp.size(bcvalue) != 1:
+                    raise Exception('When specifying Neumann_group, bcval ' +
+                                    'should be a scalar')
+                else:
+                    bcvalue = sp.float64(bcvalue)
+                    if 'Neumann_group' not in self._existing_BC:
+                        setattr(self, '_' + element +
+                                '_Neumann_group_location', [])
+                    getattr(self, '_' + element +
+                            '_Neumann_group_location').append(loc)
+            else:  # Only scalars or Np/Nt-long are acceptable
+                if sp.size(bcvalue) == 1:
+                    bcvalue = sp.ones(sp.shape(loc)) * bcvalue
+                elif sp.size(bcvalue) != sp.size(loc):
+                    raise Exception('The pore/throat list and bcvalue list ' +
+                                    'are different lengths')
+        # Confirm that prop and label arrays exist
+        l_prop = element + '.' + 'bcval_' + bctype
+        if l_prop not in self.props():
+            self[l_prop] = sp.ones((all_length,), dtype=float) * sp.nan
+        l_label = element + '.' + bctype
+        if l_label not in self.labels():
+            self[l_label] = sp.zeros((all_length,), dtype=bool)
+        # Check all BC from specified locations, prior to setting new ones
+        for item in self.labels():
+            bcname = item.split('.')[-1]
+            if bcname in self._existing_BC and item.split('.')[0] == element:
+                if mode in ['merge', 'overwrite']:
+                    try:
+                        c1 = element
+                        c2 = 'bcval_' + bcname
+                        c1_label = c1 + c2
+                        self[c1_label][loc]
+                        condition1 = sp.isnan(self[c1_label][loc]).all()
+                        c2_label = c1 + '_' + bcname
+                        condition2 = sp.sum(self[c2_label][loc]) == 0
+                        if not (condition1 and condition2):
+                            if mode == 'merge':
+                                raise Exception('Because of the existing ' +
+                                                'BCs, the method cannot ' +
+                                                'apply new BC with the merge' +
+                                                ' mode to the specified pore' +
+                                                '/throat.')
+                            elif (mode == 'overwrite' and bcname != bctype):
+                                raise Exception('Because of the existing ' +
+                                                'BCs, the method cannot ' +
+                                                'apply new BC with overwrite' +
+                                                ' mode. This mode only ' +
+                                                'overwrites this bctype, ' +
+                                                'not the other ones.')
+                    except KeyError:
+                        pass
+        # Set boundary conditions based on supplied mode
+        if mode == 'merge':
+            if bcvalue is not None:
+                self[l_prop][loc] = bcvalue
+            self[l_label][loc] = True
+            if bctype not in self._existing_BC:
+                self._existing_BC.append(bctype)
+        elif mode == 'overwrite':
+            self[l_prop] = sp.ones((all_length,), dtype=float) * sp.nan
+            if bcvalue is not None:
+                self[l_prop][loc] = bcvalue
+            self[l_label] = sp.zeros((all_length,), dtype=bool)
+            self[l_label][loc] = True
+            if bctype not in self._existing_BC:
+                self._existing_BC.append(bctype)
+
     def setup(self, conductance, quantity, super_pore_conductance):
         r"""
         This setup provides the initial data for the solver from the provided
@@ -50,9 +232,8 @@ class GenericLinearTransport(GenericAlgorithm):
             self.super_pore_conductance = super_pore_conductance
         # Providing conductance values for the algorithm from the Physics name
         if sp.size(self._phase) == 1:
-            self._conductance = 'throat.'+conductance.split('.')[-1]
-            self._quantity = 'pore.' + self._phase.name + '_' + \
-                             quantity.split('.')[-1]
+            self._conductance = 'throat.' + conductance.split('.')[-1]
+            self._quantity = 'pore.' + quantity.split('.')[-1]
             # Check health of conductance vector
             if self._phase.check_data_health(props=self._conductance).health:
                 self['throat.conductance'] = self._phase[self._conductance]
@@ -250,7 +431,7 @@ class GenericLinearTransport(GenericAlgorithm):
                         phys.models[source_name]['x'] = x0
                         phys.models[source_name]['return_rate'] = False
                         phys.models[source_name]['regen_mode'] = 'normal'
-                        s_regen = phys.models[source_name].regenerate()
+                        s_regen = phys.models[source_name].run()
                         phys.models[source_name]['x'] = x
                         phys.models[source_name]['return_rate'] = return_rate
                         phys.models[source_name]['regen_mode'] = regen_mode
@@ -479,8 +660,7 @@ class GenericLinearTransport(GenericAlgorithm):
             tpore2 = self._net['throat.conns'][:, 1]
             # Identify Dirichlet pores
             try:
-                temp = self.pores(self._phase.name + '_Dirichlet',
-                                  mode='difference')
+                temp = self.pores('Dirichlet', mode='difference')
             except KeyError:
                 temp = self.Ps
                 logger.warning('No direct Dirichlet boundary condition has ' +
@@ -506,10 +686,8 @@ class GenericLinearTransport(GenericAlgorithm):
             data = sp.append(data, data_main[loc2])
             A_dim = self.Np
             # Check for Neuman_group BCs and add superpores if necessary
-            try:
-                self.pores(self._phase.name + '_Neumann_group')
-                self._extra_Neumann_size = len(getattr(self, '_pore_' +
-                                                       self._phase.name +
+            if 'pore.Neumann_group' in self.labels():
+                self._extra_Neumann_size = len(getattr(self, '_pore' +
                                                        '_Neumann_group_' +
                                                        'location'))
                 self._group_Neumann_vals = sp.zeros(self._extra_Neumann_size)
@@ -522,10 +700,9 @@ class GenericLinearTransport(GenericAlgorithm):
                     t = [sp.array(self.super_pore_conductance)]
                     self.super_pore_conductance = t * self._extra_Neumann_size
                 for N in sp.arange(0, self._extra_Neumann_size):
-                    neu_tpore2 = getattr(self, '_pore_' + self._phase.name +
-                                         '_Neumann_group_location')[N]
-                    Nval = self['pore.' + self._phase.name +
-                                '_bcval_Neumann_group']
+                    neu_tpore2 = getattr(self, '_pore_' +
+                                         'Neumann_group_location')[N]
+                    Nval = self['pore.bcval_Neumann_group']
                     self._group_Neumann_vals[N] = sp.unique(Nval[neu_tpore2])
                     nt = self._net.find_neighbor_throats(pores=neu_tpore2)
                     try:
@@ -542,12 +719,10 @@ class GenericLinearTransport(GenericAlgorithm):
                     col = sp.append(col, neu_tpore2)
                     data = sp.append(data, g_super)
                 A_dim = A_dim + self._extra_Neumann_size
-            except KeyError:
-                pass
             # Adding positions for diagonal
             diag = sp.arange(0, A_dim)
             try:
-                pores = self.pores(self._phase.name + '_Dirichlet')
+                pores = self.pores('Dirichlet')
                 row = sp.append(row, diag[pores])
                 col = sp.append(col, diag[pores])
                 data = sp.append(data, sp.ones_like(diag[pores]))
@@ -603,30 +778,24 @@ class GenericLinearTransport(GenericAlgorithm):
         if mode == 'overwrite':
             A_dim = self._coeff_dimension
             b = sp.zeros([A_dim, 1])
-            try:
-                Dir_pores = self.pores(self._phase.name + '_Dirichlet')
-                Dir_pores_vals = self['pore.' + self._phase.name +
-                                      '_bcval_Dirichlet'][Dir_pores]
+            if 'pore.Dirichlet' in self.labels():
+                Dir_pores = self.pores('Dirichlet')
+                Dir_pores_vals = self['pore.bcval_Dirichlet'][Dir_pores]
                 b[Dir_pores] = sp.reshape(Dir_pores_vals, [len(Dir_pores), 1])
-            except KeyError:
-                pass
-            try:
-                ind_Neu_pores = self.pores(self._phase.name + '_Neumann')
-                ind_Neu_pores_vals = self['pore.' + self._phase.name +
-                                          '_bcval_' + 'Neumann'][ind_Neu_pores]
+            if 'pore.Neumann' in self.labels():
+                ind_Neu_pores = self.pores('Neumann')
+                ind_Neu_pores_vals = self['pore.' +
+                                          'bcval_' + 'Neumann'][ind_Neu_pores]
                 b[ind_Neu_pores] = sp.reshape(ind_Neu_pores_vals,
                                               [len(ind_Neu_pores), 1])
-            except KeyError:
-                pass
-            try:
-                self.pores(self._phase.name + '_Neumann_group')
+
+            if 'pore.Neumann_group' in self.labels():
                 pnum = self._net.Np
                 NG_loc = sp.r_[pnum: (pnum + len(self._group_Neumann_vals))]
                 NG_l = len(self._group_Neumann_vals)
                 NG_arr = self._group_Neumann_vals[sp.r_[0:NG_l]]
                 b[NG_loc] = sp.reshape(NG_arr, [NG_l, 1])
-            except KeyError:
-                pass
+
         if mode == 'modify_RHS':
             b = sp.copy(self.b)
         if mode in ['overwrite', 'modify_RHS']:
@@ -726,24 +895,23 @@ class GenericLinearTransport(GenericAlgorithm):
             raise Exception('The algorithm has not been run yet. Cannot ' +
                             'calculate effective property.')
         # Determine boundary conditions by analyzing algorithm object
-        Ps = self.pores('pore.' + self._phase.name + '_Dirichlet')
-        BCs = sp.unique(self['pore.' + self._phase.name +
-                             '_bcval_Dirichlet'][Ps])
+        Ps = self.pores('pore.Dirichlet')
+        BCs = sp.unique(self['pore.bcval_Dirichlet'][Ps])
         if sp.shape(BCs)[0] != 2:
             raise Exception('The supplied algorithm did not have appropriate' +
                             ' BCs')
-        inlets = sp.where(self['pore.' + self._phase.name +
-                               '_bcval_Dirichlet'] == sp.amax(BCs))[0]
-        outlets = sp.where(self['pore.' + self._phase.name +
-                                '_bcval_Dirichlet'] == sp.amin(BCs))[0]
+        inlets = sp.where(self['pore.' +
+                               'bcval_Dirichlet'] == sp.amax(BCs))[0]
+        outlets = sp.where(self['pore.' +
+                                'bcval_Dirichlet'] == sp.amin(BCs))[0]
 
         # Analyze input and output pores
         if check_health:
             # Check for coplanarity
-            if self._net.iscoplanar(inlets) == False:
+            if self._net.iscoplanar(inlets) is False:
                 raise Exception('The inlet pores do not define a plane. ' +
                                 'Effective property will be approximation')
-            if self._net.iscoplanar(outlets) == False:
+            if self._net.iscoplanar(outlets) is False:
                 raise Exception('The outlet pores do not define a plane. ' +
                                 'Effective property will be approximation')
             # Ensure pores are on a face of domain

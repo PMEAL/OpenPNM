@@ -118,22 +118,42 @@ class ControllerTest:
         a = self.controller.phases()
         assert type(a) is list
 
-    def test_export_VTK_and_MAT(self):
+    def test_import_data(self):
+        path = FIXTURE_DIR
+        fname = os.path.join(path, 'test_load_csv_no_phases.csv')
+        pn = self.controller.import_data(filename=fname)
+        assert pn.Np == 27
+        fname = os.path.join(path, 'test_load_mat_no_phases.mat')
+        pn = self.controller.import_data(filename=fname)
+        assert pn.Np == 27
+        fname = os.path.join(path, 'test_load_vtk_no_phases.vtp')
+        pn = self.controller.import_data(filename=fname)
+        assert pn.Np == 27
+
+    def test_export_data(self):
         fname = os.path.join(TEMP_DIR, 'test')
-        self.controller.clear()
-        pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
+        geo = OpenPNM.Geometry.TestGeometry(network=net,
+                                            pores=net.Ps,
+                                            throats=net.Ts)
         # Test VTK option
-        self.controller.export(network=pn,
+        self.controller.export(network=net,
                                filename=fname,
                                fileformat='VTK')
         assert os.path.isfile(fname+'.vtp')
         os.remove(fname+'.vtp')
         # Test Matlab matfile option
-        self.controller.export(network=self.net,
+        self.controller.export(network=net,
                                filename=fname,
                                fileformat='MAT')
         assert os.path.isfile(fname+'.mat')
         os.remove(fname+'.mat')
+        # Test CSV option
+        self.controller.export(network=net,
+                               filename=fname,
+                               fileformat='csv')
+        assert os.path.isfile(fname+'.csv')
+        os.remove(fname+'.csv')
 
     def test_export_one_network_none_specified(self):
         fname = os.path.join(TEMP_DIR, 'test')

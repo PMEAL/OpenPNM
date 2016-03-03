@@ -4,31 +4,13 @@ Submodule -- throat_seeds
 ===============================================================================
 
 """
+from . import misc as _misc
 import scipy as _sp
 
 
 def random(geometry, seed=None, num_range=[0, 1], **kwargs):
-    r"""
-    Assign random number to throats, for use in statistical distributions that
-    return pore size
-
-    Parameters
-    ----------
-    seed : int
-        The starting seed value to send to Scipy's random number generator.
-        The default is None, which means different distribution is returned
-        each time the model is run.
-
-    num_range : list
-        A two element list indicating the low and high end of the returned
-        numbers.
-    """
-    range_size = num_range[1] - num_range[0]
-    range_min = num_range[0]
-    _sp.random.seed(seed)
-    value = _sp.random.rand(geometry.num_throats(),)
-    value = value*range_size + range_min
-    return value
+    return _misc.random(N=geometry.Nt, seed=seed, num_range=num_range)
+random.__doc__ = _misc.random.__doc__
 
 
 def neighbor(geometry, network, pore_prop='pore.seed', mode='min', **kwargs):

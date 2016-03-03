@@ -93,10 +93,8 @@ class Voronoi(GenericGeometry):
                         model=gm.pore_area.spherical)
         self.models.add(propname='throat.diameter',
                         model=gm.throat_diameter.equivalent_circle)
-        self.models.add(propname='throat.length',
-                        model=gm.throat_length.constant,
-                        const=self._fibre_rad*2)
         self['throat.volume'] = 0.0
+        self['throat.length'] = self._fibre_rad*2
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.extrusion)
         self.models.add(propname='throat.c2c',
@@ -141,7 +139,7 @@ class Voronoi(GenericGeometry):
         mat_file : string
         Filename of Matlab file to save fibre image
         """
-        if hasattr(self, '_fibre_image') == False:
+        if hasattr(self, '_fibre_image') is False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
@@ -163,7 +161,7 @@ class Voronoi(GenericGeometry):
         index : array_like
         similar to plane but instead of the fraction an index of the image is used
         """
-        if hasattr(self, '_fibre_image') == False:
+        if hasattr(self, '_fibre_image') is False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return None
@@ -216,7 +214,7 @@ class Voronoi(GenericGeometry):
         index : array_like
         similar to plane but instead of the fraction an index of the image is used
         """
-        if hasattr(self, '_fibre_image') == False:
+        if hasattr(self, '_fibre_image') is False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
@@ -234,7 +232,7 @@ class Voronoi(GenericGeometry):
         Return a porosity profile in all orthogonal directions by summing
         the voxel volumes in consectutive slices.
         """
-        if hasattr(self, '_fibre_image') == False:
+        if hasattr(self, '_fibre_image') is False:
             logger.warning('This method only works when a fibre image exists, ' +
                            'please run make_fibre_image')
             return
