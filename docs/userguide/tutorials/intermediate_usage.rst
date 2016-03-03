@@ -28,13 +28,13 @@ Let's generate a cubic network again, but with a different connectivity:
 >>> pn = OpenPNM.Network.Cubic(shape=[20, 20, 10], spacing=0.0001,
 ...                            connectivity=8)
 
-This **Network** has pores distributed in a cubic lattice, but connected to diagonal neighbors due to the ``connectivity`` being set to 8 (the default is 6 which is othogonal neighbors).  The various options are outlined in the *Cubic* class's documentation which can be viewed with the Object Inspector in Spyder.  OpenPNM includes several other classes for generating networks including random topology based on Delaunay tessellations (**Delaunay**).  It is also possible to import networks from external code that extracts networks from tomographic images (see [refs]).
+This **Network** has pores distributed in a cubic lattice, but connected to diagonal neighbors due to the ``connectivity`` being set to 8 (the default is 6 which is othogonal neighbors).  The various options are outlined in the **Cubic** class's documentation which can be viewed with the Object Inspector in Spyder.  OpenPNM includes several other classes for generating networks including random topology based on Delaunay tessellations (**Delaunay**).  It is also possible to import networks from external code that extracts networks from tomographic images.
 
 ===============================================================================
 Initialize and Build Geometry Objects
 ===============================================================================
 
-In this tutorial we will make a material that has different geometrical properties in different regions.  This will demonstrate the motivation behind separating the **Geometry** properties from the **Network** topology.  Let's say that the pores on the top and bottom surfaces are smaller than the internal pores.  We need to create one **Geometry** object to manage the top and bottom pores, and a second to manage the remaining internal pores:
+In this tutorial we will make a material that has different geometrical properties in two different regions.  This will demonstrate the motivation behind separating the **Geometry** properties from the **Network** topology.  Let's say that the pores on the top and bottom surfaces are smaller than the internal pores.  We need to create one **Geometry** object to manage the top and bottom pores, and a second to manage the remaining internal pores:
 
 >>> Ps1 = pn.pores(['top', 'bottom'])
 >>> Ts1 = pn.find_neighbor_throats(pores=Ps1, mode='union')
@@ -47,7 +47,7 @@ In this tutorial we will make a material that has different geometrical properti
 
 The above statements result in two distinct **Geometry** objects, each applying to different regions of the domain. ``geom1`` applies to only the pores on the top and bottom surfaces (atuomatically labeled 'top' and 'bottom' during the network generation step), while ``geom2`` applies to the pores 'not' on the top and bottom surfaces.
 
-The assignment of throats is more complicated and also illustrates the ``find_neighbor_throats`` method, which is one of the more useful topological query methods on the **Network** class.  In both of these calls, all throats connected to the given set of pores (``Ps1`` or ``Ps2``) are found; however, the ``mode`` argument alters which throats are returned.  The terms 'union' and 'intersection' are used in the *set theory* sense, such that 'union' returns *all* throats connected to the pores in the supplied list, while 'intersection' returns the throats that are *only* connected to the supplied pores.  More specifically, if pores 1 and 2 have throats [1, 2] and [2, 3] as neighbors, respectively, then the 'union' mode returns [1, 2, 3] and the 'intersection' mode returns [2].
+The assignment of throats is more complicated and also illustrates the ``find_neighbor_throats`` method, which is one of the more useful topological query methods on the **Network** class.  In both of these calls, all throats connected to the given set of pores (``Ps1`` or ``Ps2``) are found; however, the ``mode`` argument alters which throats are returned.  The terms ``'union'`` and ``'intersection'`` are used in the "set theory" sense, such that ``'union'`` returns *all* throats connected to the pores in the supplied list, while ``'intersection'`` returns the throats that are *only* connected to the supplied pores.  More specifically, if pores 1 and 2 have throats [1, 2] and [2, 3] as neighbors, respectively, then the ``'union'`` mode returns [1, 2, 3] and the ``'intersection'`` mode returns [2].
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Add Desired Properties to Geometry
@@ -73,23 +73,27 @@ Pore size distribution models are assigned to each Geometry object as follows:
 >>> geom1.models.add(propname='pore.diameter',
 ...                  model=OpenPNM.Geometry.models.pore_diameter.normal,
 ...                  scale=0.00002, loc=0.000001,
-...                  seeds = 'pore.seed')
+...                  seeds='pore.seed')
 >>> geom2.models.add(propname='pore.diameter',
 ...                  model=OpenPNM.Geometry.models.pore_diameter.weibull,
 ...                  shape=1.2, scale=0.00004, loc=0.000001,
-...                  seeds = 'pore.seed')
+...                  seeds='pore.seed')
 
 Pore-scale models tend to be the most complex (i.e. confusing) aspects of OpenPNM, so it's worth dwelling on the important points of the above two commands:
 
-(1) Both ``geom1`` and ``geom2`` have a ``models`` attribute where the parameters specified in the ``add`` command are stored for future use if/when needed.  The ``models`` attribute actually contains a **ModelsDict** object which is a customized dictionary for storing and managing this type of information.  Details of the **ModelsDict** class are outlined elsewhere [???].
+(1) Both ``geom1`` and ``geom2`` have a ``models`` attribute where the parameters specified in the ``add`` command are stored for future use if/when needed.  The ``models`` attribute actually contains a **ModelsDict** object which is a customized dictionary for storing and managing this type of information.
 
 (2) The ``propname`` argument specifies which property the model calculates.  This means that the numerical results of the model calculation will be saved in their respective **Geometry** objects as ``geom1['pore.diameter']`` and ``geom2['pore.diameter']``.
 
-(3) Each model stores it's result under the same ``propname`` but these values do not conflict since each **Geometry** object presides over a unique set of pores and throats.
+(3) Each model stores it's result under the same ``propname`` but these values do not conflict since each **Geometry** object presides over a unique subset of pores and throats.
 
 (4) The ``model`` argument contains a *handle* to the desired function, which is extracted from the *models* library of the relevant *Module* (**Geometry** in this case).  Each **Geometry** object has been assigned a different statistical model, *normal* and *weibull*.  This ability to apply different models to different regions of the domain is reason multiple **Geometry** objects are permitted.  The added complexity is well worth the added flexibility.
 
 (5) The remaining arguments are those required by the chosen *model*.  In the above cases, these are the parameters that define the statistical distribution.  Note that the mean pore size for ``geom1`` will be 20 um (set by ``scale``) while for ``geom2`` it will be 50 um, thus creating the smaller surface pores as intended.  The pore-scale models are well documented regarding what arguments are required and their meaning; as usual these can be viewed with Object Inspector in Spyder.
+
+Now that we've added pore diameter models the each **Geometry** we can visualize the network in Paraview to confirm that distinctly different pore sizes on the surface regions:
+
+.. image:: http://i.imgur.com/5F70ens.png
 
 -------------------------------------------------------------------------------
 Add Additional Pore-Scale Models to Each Geometry
@@ -106,7 +110,7 @@ In addition to pore diameter, there are several other geometrical properties nee
 ...                  pore_prop='pore.diameter',
 ...                  mode='min')
 
-Instead of using statistical distribution functions, the above lines use the ``neighbor`` model which assigns each throat the value of the specified 'pore_prop' from it's neighboring pores.  In this case, each throat is assigned the minimum pore diameter of it's two neighboring pores.  Other options for ``mode`` include 'max' and 'mean'.
+Instead of using statistical distribution functions, the above lines use the ``neighbor`` model which assigns each throat the value of the specified 'pore_prop' from it's neighboring pores.  In this case, each throat is assigned the minimum pore diameter of it's two neighboring pores.  Other options for ``mode`` include ``'max'`` and ``'mean'``.
 
 We'll also need throat length as well as the cross-sectional area of pores and throats, for calculating the hydraulic conductance model later.
 
@@ -127,7 +131,7 @@ The **GenericGeometry** class has a special ``plot_distributions`` function mean
 
 .. note:: Pore-Scale Models: What's the Point?
 
-    At this point you might ask "*why can't I just calculate pore and throat cross-sectional areas manually and assign them as in* :ref:`tutorial #1 <getting_started>`"?  The answer is *"you can, but you shouldn't"*.  The reason is that pore-scale models can be 'recalculated' or 'regenerated', so changes in one property will be automatically reflected in all dependent properies.  For instance, if you wish to perform a simulation on a new realization of the network, you only need to alter the random seed values assigned to ``geom1`` and ``geom2``, then 'regenerate' all the models as follows:
+    At this point you might ask "*why can't I just calculate pore and throat cross-sectional areas manually and assign them as in* :ref:`tutorial #1 <getting_started>`"?  The answer is "*you can, but you shouldn't*".  The reason is that pore-scale models can be "recalculated" or "regenerated", so changes in one property will be automatically reflected in all dependent properties.  For instance, if you wish to perform a simulation on a new realization of the network, you only need to alter the random seed values assigned to ``geom1`` and ``geom2``, then "regenerate" all the models as follows:
 
     >>> geom1['pore.seed'] = sp.rand(geom1.Np)
     >>> geom2['pore.seed'] = sp.rand(geom2.Np)
@@ -226,6 +230,10 @@ Set boundary conditions for flow in the X-direction:
 ...                             pores=pn.pores('left'))
 >>> alg.run()
 
+The resulting pressure field can be seen using Paraview:
+
+.. image:: http://i.imgur.com/ugX0LFG.png
+
 To determine the permeability coefficient we must determine the flow rate through the network according to Darcy's law.  The **StokesFlow** class (and all analogous transport algorithms) possess a ``rate`` method that calculates the net rate of transport through a given set of pores:
 
 >>> Q = alg.rate(pores=pn.pores('left'))
@@ -234,12 +242,12 @@ To find K, we need to solve Darcy's law: :math: `Q = KA/(\mu L) \Delta P`.  This
 
 >>> mu = sp.mean(water['pore.viscosity'])
 
-The dimensions of the network can be determined manually from the 'shape' and 'spacing' we specified during its generation:
+The dimensions of the network can be determined manually from the ``shape`` and ``spacing`` we specified during its generation:
 
 >>> L = 20 * 0.0001
 >>> A = 20 * 10 * (0.0001**2)
 
-The pressure drop was specified as 1 atm when setting boundary conditions, so Kxx can be found as:
+The pressure drop was specified as 1 atm when setting boundary conditions, so ``Kxx`` can be found as:
 
 >>> Kxx = Q * mu * L / (A * 101325)
 
@@ -253,7 +261,7 @@ We can either create 2 new **Algorithm** objects to perform the simulations in t
 ...                             mode='merge')
 >>> alg.run()
 
-The first call to 'set_boundary_conditions' used the 'overwrite' mode, which replaces all existing boundary conditions on the ``alg`` object with the specified values.  The second call uses the 'merge' mode which adds new boundary conditions to any already present, which is the default behavior.
+The first call to ``set_boundary_conditions`` used the ``overwrite`` mode, which replaces all existing boundary conditions on the ``alg`` object with the specified values.  The second call uses the ``merge`` mode which adds new boundary conditions to any already present, which is the default behavior.
 
 A new value for the flow rate must be recalculated, but all other parameters are equal to the X-direction:
 
