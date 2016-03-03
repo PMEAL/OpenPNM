@@ -142,9 +142,9 @@ The simulation is now topologically and geometrically complete.  It has pore coo
 
 	The above two lines also include a ``name`` argument.  All objects in OpenPNM can be named in this way if desired; however, if no name is given one will be generated.  The point of the name is to allow easy identification of an object at the command line, using the ``name`` attribute (``air.name``).  Objects can be renamed, so if you wish to override a default name simply use ``air.name = 'air'``.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------------------------------------
 Add Desired Thermophysical Properties
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------------------------------------
 
 Now it is necessary to fill these two **Phase** objects with the desired thermophysical properties.  The most basic means is to simply assign static values as follows:
 
@@ -174,9 +174,9 @@ We are still not ready to perform any simulations.  The last step is to define t
 
 **Physics** objects do not require the specification of which ``pores`` and ``throats`` where they apply, since this information is provided by the ``geometry`` argument which has already been assigned to specific locations.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------------------------------------
 Specify Desired Pore-Scale Physics Models
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------------------------------------
 
 We need to calculate the numerical values representing our chosen pore-scale physics.  To continue with the Hagen-Poiseuille example lets calculte the hydraulic conductance of each throat in the network.  The throat radius and length are easily accessed as:
 
