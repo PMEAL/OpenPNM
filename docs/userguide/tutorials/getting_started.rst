@@ -107,7 +107,7 @@ Let's start by assigning diameters to each pore from a random distribution, span
 
 .. code-block:: python
 
-		>>> geom['pore.diameter'] = 0.00001 + sp.rand(pn.Np)*0.00099
+		>>> geom['pore.diameter'] = 0.00001 + sp.rand(pn.Np)*0.000099
 
 This creates an array of random numbers (between 0.00001 and 0.0001) that is *Np-long*, meaning each pore is assigned a unique random number.
 
@@ -147,9 +147,9 @@ The volume of each throat is found assuming a cylinder:
     >>> Lt = geom['throat.length']
     >>> geom['throat.volume'] = 3.14159*(Rt)**2*Lt
 
-The basic geometrical properties of the network are now defined.  `Using Paraview for Visualization`_ gives the following result:
+The basic geometrical properties of the network are now defined.  The **Geometry** class possess a method called ``plot_histograms`` that produces a plot of the most pertinent geometrical properties.  The following figure doesn't look very good since our example network only has 12 pores, but the utility of the plot should be apparent.
 
-.. image:: http://i.imgur.com/SS9dEkL.png
+.. image:: http://i.imgur.com/xkK1TYf.png
 
 ===============================================================================
 Create Phases
