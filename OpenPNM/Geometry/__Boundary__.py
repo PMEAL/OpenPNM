@@ -47,10 +47,11 @@ class Boundary(GenericGeometry):
                         pore_prop='pore.diameter',
                         mode='max')
         self['pore.volume'] = 0.0
+        self['pore.seed'] = 1.0
+        self['throat.seed'] = 1.0
         self['throat.volume'] = 0.0
         self.models.add(propname='throat.length',
                         model=gm.throat_length.straight)
-        self['pore.area'] = 1.0
         if shape == 'spheres':
             self.models.add(propname='throat.area',
                             model=gm.throat_area.cylinder)
