@@ -251,14 +251,8 @@ class Cubic(GenericNetwork):
             return sp.array([], dtype=sp.int64)
         # Clone the specifed pores
         self.clone_pores(pores=Ps)
+        newPs = self.pores('pore.clone')
         del self['pore.clone']
-        # Find throat connections by finding nearby neighbors
-        temp = self.find_nearby_pores(pores=Ps,
-                                      distance=1e-10,
-                                      excl_self=False)
-        newPs = temp[:, 1]
-        # Assign new throat connections
-        self.extend(throat_conns=temp)
         # Offset the cloned pores
         self['pore.coords'][newPs] += offset
         # Apply labels to boundary pores (trim leading 'pores' if present)
