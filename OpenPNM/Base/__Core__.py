@@ -175,7 +175,10 @@ class Core(dict):
             **'labels'** : Removes all labels from the object dictionary
 
             **'models'** : Removes all pore scale models from the object's
-            models dictionary (object.models)
+            models dictionary
+
+            **'empty_labels'** : Removes all labels that are not applied to any
+            locations.
 
             **'complete'** : Removes all of the above AND sets the \'pore.all\'
             and \'throat.all\' labels to zero length.  This also removes any
@@ -186,10 +189,11 @@ class Core(dict):
         Notes
         -----
         The first three modes listed can be combined by sending a list
-        containing all desired modes.  The \'complete\' mode essentially calls
-        all three so need not be combined with any other modes.
+        containing all desired modes.  This results in a nicely 'cleaned'
+        object with only 'pore.all' and 'throat.all' remaining.  The 'complete'
+        method removes these two labels as well.
         """
-        allowed = ['props', 'labels', 'models', 'complete']
+        allowed = ['props', 'labels', 'models', 'complete', 'empty_labels']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         if 'complete' in mode:
             if self._isa('Geometry') or self._isa('Physics'):
@@ -200,6 +204,10 @@ class Core(dict):
             self.models.clear()
             self.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
             self.update({'pore.all': sp.array([], ndmin=1, dtype=bool)})
+        if 'empty_labels' in mode:
+            for item in self.labels():
+                if sp.sum(self[item]) == 0:
+                    del self[item]
         if 'props' in mode:
             for item in self.props():
                 del self[item]
