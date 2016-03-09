@@ -1,21 +1,90 @@
 .. _advanced_tutorial:
 
 ###############################################################################
-Tutorial 3 of 3: Advaned Topics and Usage
+Tutorial 3 of 3: Advanced Topics and Usage
 ###############################################################################
+
+In this final tutorial on the use of OpenPNM, simulate pressure drive gas flow through a porous medium that is partially invaded by a non-wetting fluid.  This is known as relative permeability and is one of the standard simulations performed with pore networks.  This
 
 **Learning Outcomes**
 
-1. Employ data exchange bewteen objects
-2. Combine multiple algorithms
-3. Define Physics with pores and throats instead of Geometry
-4. Explore the ModelsDict design
-5. Use the workspace manager to save and load
+1. Experiment with adding boundary pores
+2. Manipulate Network Topology
+3. Explore the ModelsDict design
+  - Advanced ways of using ``regenerate``
+  - Copying models between objects
+  - Changing model parameters
+4. Combine multiple algorithms
+5. Write a custom pore-scale model
+6. Use the workspace manager to save and load, clone and purge simulations
 
+===============================================================================
+Build Network Topology
+===============================================================================
 
->>> geom1.models.add(propname='pore.seed',
-...                  model=OpenPNM.Geometry.models.pore_seed.random,
-...                  seed=1,
-...                  num_range=[0, 1],
-...                  regen_mode='constant')
->>> geom2.models['pore.seed'] = geom1.models['pore.seed'].copy()
+For the present tutorial, we'll keep the topology simple to help keep the focus on other aspects of OpenPNM.
+
+.. code-block:: python
+
+    >>> import OpenPNM as op
+    >>> pn = op.Network.Cubic(shape=[10, 10, 10], spacing=0.00006)
+
+-------------------------------------------------------------------------------
+Adding Boundary Pores
+-------------------------------------------------------------------------------
+
+When performing transport simulations it is often useful to have 'boundary' pores attached to the surface(s) of the network where boundary conditions can be applied.  The **Cubic** class has two methods for doing this: ``add_boundaries`` and ``add_boundary_pores``.  The first method adds boundaries to ALL six faces of the network and offsets them from the network by 1/2 of the value provided as the network ``spacing``.  The second method provides total control over which boundaries are created and where they are positioned, but it more cumbersome to use.  Let's explore these options:
+
+.. code-block:: python
+
+    >>> Np = pn.Np  # Should be 1000
+    >>> Nt = pn.Nt  # Should be 2700
+    >>> pn.add_boundaries()
+    >>> Np2 = pn.Np  # Should be 1600 (10x10 pores per face)
+    >>> Nt2 = pn.Nt  # Should be 3300 (1 throat connecting each new pore)
+
+Let's remove all these newly created boundary pores.  When they are created these pores are all automatically labeled with a label such as ``'top_boundary'``, so we can select all boundary pores using:
+
+.. code-block:: python
+
+    >>> Ps = pn.pores('*boundary')  # Using the * wildcard
+
+We can then ``trim`` these pores from the network using:
+
+.. code-block:: python
+
+    >>> pn.trim(pores=Ps)
+    >>> Np = pn.Np  # Should be 1000 now
+    >>> Nt = pn.Nt  # Should be 2700
+
+Note that all throats connecting to the trimmed pores were automatically removed since OpenPNM does not allowe 'dangling' or 'headless' throats.
+
+Now that ``pn`` is back to its original size, let's explore the second approach to apply boundary pores.
+
+.. code-block:: python
+
+    >>> Ps = pn.pores('top')  # Select pores on top of network
+    >>> pn.add_boundary_pores(pores=Ps, offset=[0, 0, 0.00003],
+    ...                       apply_label='top_boundary')
+    >>> Ps = pn.pores('bottom')  # Select pores on bottom of network
+    >>> pn.add_boundary_pores(pores=Ps, offset=[0, 0, -0.00003],
+    ...                       apply_label='bottom_boundary')
+    >>> Np = pn.Np  # Should be 1200 (10x10 for two faces)
+    >>> Nt = pn.Nt  # Should be 2900
+
+This approach requires more typing than the ``add_boundaries`` method, but allows for much finer control over how boundaries are created.
+
+===============================================================================
+Define Geometry Objects
+===============================================================================
+
+Since we've added boundary pores to the network we need to the treat them a little bit differently.  Specically, they should have no volume or length (as they are not physically reprsentative of real pores).  To do this, we create two separate **Geometry** objects:
+
+.. code-block:: python
+
+    >>> Ps = pn.pores('*boundary', mode='not')
+    >>> Ts = pn.find_neighbor_throats(pores=Ps, mode='intersection')
+    >>> geom = op.Geometry.Stick_and_Ball(network=pn, pores=Ps, throats=Ts)
+    >>> Ps = pn.pores('*boundary')
+    >>> Ts = pn.find_neighbor_throats(pores=Ps)
+    >>> boun = op.Geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)

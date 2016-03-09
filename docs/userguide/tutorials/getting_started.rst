@@ -4,6 +4,8 @@
 Tutorial 1 of 3: Getting Started with OpenPNM
 ###############################################################################
 
+This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the useful and powerful features of the package.  So, if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial dilberately simplifies all steps to provide a more gentle introduction.  The second and third tutorials of this guide dive into the code more deeply, but those features are best appreciated once the basis are understood.  
+
 **Learning Objectives**
 
 1. Create a standard cubic network topology
