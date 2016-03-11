@@ -78,7 +78,7 @@ This approach requires more typing than the ``add_boundaries`` method, but allow
 Define Geometry Objects
 ===============================================================================
 
-Since we've added boundary pores to the network we need to the treat them a little bit differently.  Specically, they should have no volume or length (as they are not physically reprsentative of real pores).  To do this, we create two separate **Geometry** objects, one for internal pores and one for the boundaries:
+Since we've added boundary pores to the network we need to the treat them a little bit differently.  Specifically, they should have no volume or length (as they are not physically representative of real pores).  To do this, we create two separate **Geometry** objects, one for internal pores and one for the boundaries:
 
 .. code-block:: python
 
@@ -89,7 +89,7 @@ Since we've added boundary pores to the network we need to the treat them a litt
     >>> Ts = pn.find_neighbor_throats(pores=Ps)
     >>> boun = op.Geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
 
-The **Stick_and_Ball** class is preloaded with the necessary pore-scale models to calculate all the necessary size information (diameter, lengths, etc).  The **GenericGeometry** class is empty and requires our input.  Since boundary pores are ficticious we want them to have suitable properties:
+The **Stick_and_Ball** class is preloaded with the pore-scale models to calculate all the necessary size information (diameter, lengths, etc).  The **GenericGeometry** class used for the boundary pores and throats is empty and requires our input.  Since boundary pores are fictitious we want them to have suitable properties:
 
 .. code-block:: python
 
@@ -100,12 +100,14 @@ Boundary throats act as the link between the internal pores and the 'outside', a
 
 .. code-block:: python
 
-    >>> boun.models.add(propname='throat.length,
-    ...                 model=op.Geometry.models.throat_length.???)
+    >>> boun.models.add(propname='throat.length',
+    ...                 model=op.Geometry.models.throat_length.straight)
     >>> boun.models.add(propname='thoat.diameter',
-    ...                 models=op.Geometry.models.throat_misc.neighbor,
+    ...                 model=op.Geometry.models.throat_misc.neighbor,
     ...                 pore_prop='pore.diameter')  # More on this model below
     >>> boun.models.add(propname='throat.area',
-    ...                 models=op.Geometry.models.throat_area.cylindrical)
+    ...                 model=op.Geometry.models.throat_area.cylindrical)
     >>> boun.models.add(propname='throat.volume',
-    ...                 models=op.Geometry.models.throat_volume.cylinder)
+    ...                 model=op.Geometry.models.throat_volume.cylinder)
+
+These models are required for the Hagan-Poiseiulle model. Most of them are straight-forward geometry calculations, except for the model used for ``'throat.diameter'``.  In this case the model looks into the neighbor pores, retrieves the two ``'pore.diameter'`` and uses the ``'max'`` value.  Because we set the boundary pores to have 0 diameter, this will naturally find result in the throat being assigned the diameter of the internal pore.
