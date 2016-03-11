@@ -54,9 +54,9 @@ The above statements result in two distinct **Geometry** objects, each applying 
 
 The assignment of throats is more complicated and also illustrates the ``find_neighbor_throats`` method, which is one of the more useful topological query methods on the **Network** class.  In both of these calls, all throats connected to the given set of pores (``Ps1`` or ``Ps2``) are found; however, the ``mode`` argument alters which throats are returned.  The terms ``'union'`` and ``'intersection'`` are used in the "set theory" sense, such that ``'union'`` returns *all* throats connected to the pores in the supplied list, while ``'intersection'`` returns the throats that are *only* connected to the supplied pores.  More specifically, if pores 1 and 2 have throats [1, 2] and [2, 3] as neighbors, respectively, then the ``'union'`` mode returns [1, 2, 3] and the ``'intersection'`` mode returns [2].
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------------------------------------
 Add Desired Properties to Geometry
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------------------------------------
 
 In the :ref:`getting started tutorial <getting_started>` we only assigned static values to **Geometry** object, which we calculated explicitly.  In this tutorial we will use the *pore-scale models* that are provided with OpenPNM.
 

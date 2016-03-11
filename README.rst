@@ -13,7 +13,10 @@ OpenPNM
    :alt: Join the chat at https://gitter.im/PMEAL/OpenPNM
    :target: https://gitter.im/PMEAL/OpenPNM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
+.. image:: http://i.imgur.com/F1FkZr9.png
+
 .. contents::
+
 
 What is OpenPNM?
 ----------------
@@ -22,8 +25,9 @@ OpenPNM is an open-source framework for performing pore network modeling
 simulations of multiphase transport in porous materials.  It includes
 modules for generating various common network topologies, pore and
 throat geometry models, pore scale physics models, and fluid property
-estimation.  It also contains a growing set of algorithms for running various
-simulations such drainage curves, gas diffusion, permeability, and more.
+estimation.  It also contains a continually expanding set of algorithms for
+running various simulations such drainage curves, gas diffusion, permeability,
+and more.
 
 OpenPNM is written in Python making extensive use of Scipy. Python is a very
 flexible object oriented programming language that will be familiar to those
@@ -32,8 +36,9 @@ to structure the framework, but uses conventional numerical arrays to store data
 and perform calculations.  Our goal is to help other scientists and engineers
 harness the power and intuitive pore network modeling approach, so if you are
 interested in this package, please contact us through Github, or email one of
-the developer directly.
+the developers directly.
 
+.. image:: http://i.imgur.com/ugX0LFGl.png
 
 Installation
 ------------
@@ -80,12 +85,7 @@ The latest development version of OpenPNM sources are always available at:
 
     https://github.com/PMEAL/OpenPNM
 
-They can be downloaded as a zip file or using the Git client.  Alternatively,
-you can use ``pip`` to install straight from the Git repo using:
-
-.. code-block:: python
-
-    pip install https://github.com/pmeal/openpnm/archive/master.zip
+They can be downloaded as a zip file or using a Git client of your choice such as SourceTree of GitKraken.
 
 Bug reports
 -----------

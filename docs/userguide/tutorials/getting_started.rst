@@ -4,7 +4,7 @@
 Tutorial 1 of 3: Getting Started with OpenPNM
 ###############################################################################
 
-This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the useful and powerful features of the package.  So, if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial dilberately simplifies all steps to provide a more gentle introduction.  The second and third tutorials of this guide dive into the code more deeply, but those features are best appreciated once the basis are understood.  
+This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the useful and powerful features of the package.  So, if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial dilberately simplifies all steps to provide a more gentle introduction.  The second and third tutorials of this guide dive into the code more deeply, but those features are best appreciated once the basis are understood.
 
 **Learning Objectives**
 
@@ -105,11 +105,11 @@ Add Desired Size Information
 
 This freshly instantiated **Geometry** object ``geom`` contains no geometric properties as yet.  For this tutorial we'll use the direct assignment of static values (See the intermediate tutorial for more details).
 
-Let's start by assigning diameters to each pore from a random distribution, spanning 10 um to 100 um.  The upper limit arises because the ``spacing`` of the **Network** was set to 100 [um], so pore diameters exceeding 100 um might overlap with their neighbors.  The lower limit is to avoid vanishingly small pores.
+Let's start by assigning diameters to each pore from a random distribution, spanning 0 um to 100 um.  The upper limit arises because the ``spacing`` of the **Network** was set to 100 [um], so pore diameters exceeding 100 um might overlap with their neighbors.
 
 .. code-block:: python
 
-		>>> geom['pore.diameter'] = 0.00001 + sp.rand(pn.Np)*0.000099
+		>>> geom['pore.diameter'] = sp.rand(pn.Np)*0.0001
 
 This creates an array of random numbers (between 0.00001 and 0.0001) that is *Np-long*, meaning each pore is assigned a unique random number.
 
