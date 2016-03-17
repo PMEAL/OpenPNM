@@ -10,9 +10,10 @@ This tutorial will follow the same outline as the :ref:`getting started tutorial
 
 1.  Explore different network topologies
 2.  Create a 'heterogeneous' domain with different geometrical properties in different regions
-3.  Utilize pore-scale models for calculating properties of all types
-4.  Propagate changing geometrical and thermo-physical properties to all dependent properties
-5.  Calculate the permeability tensor for the stratified media
+3.  Learn about data exchange between objects
+4.  Utilize pore-scale models for calculating properties of all types
+5.  Propagate changing geometrical and thermo-physical properties to all dependent properties
+6.  Calculate the permeability tensor for the stratified media
 
 ===============================================================================
 Building a Cubic Network
@@ -67,7 +68,32 @@ Before applying models, however, let's assign a static random seed value between
     >>> geom1['pore.seed'] = sp.rand(geom1.Np)
     >>> geom2['pore.seed'] = sp.rand(geom2.Np)
 
-It is crucial to note that the above lines each produced an array of different length, corresponding to the number of pores assigned to each **Geometry** object.  This is accomplished by the calls to ``geom1.Np`` and ``geom2.Np``, which return the number of pores on each object.  Every Core object in OpenPNM possesses the same set of methods for managing their data, such as counting the number of pore and throat values they represent; thus, ``pn.Np`` returns 1000 while ``geom1.Np`` and ``geom2.Np`` return 200 and 800 respectively.  The segmentation of the data between separate Geometry objects is essential to the management of pore-scale models, as will be explained next.
+It is crucial to note that the above lines each produced an array of different length, corresponding to the number of pores assigned to each **Geometry** object.  This is accomplished by the calls to ``geom1.Np`` and ``geom2.Np``, which return the number of pores on each object.  Every Core object in OpenPNM possesses the same set of methods for managing their data, such as counting the number of pore and throat values they represent; thus, ``pn.Np`` returns 1000 while ``geom1.Np`` and ``geom2.Np`` return 200 and 800 respectively.
+
+-------------------------------------------------------------------------------
+Accessing Geometry Data via the Network
+-------------------------------------------------------------------------------
+
+This segmentation of the data between separate Geometry objects is essential to the management of pore-scale models, although it does create a complication: it's not easy to obtain a single array containing *all* the values of a given property for the whole network.  It is technically possible piece this data together manually since we know the locations where each **Geometry** object applies, but this is tedious so OpenPNM provides a shortcut.  First, let's illustrate the manual approach using the ```'pore.seed'``` values we have defined:
+
+.. code-block::
+
+    >>> # Create an array of the correct length, then use Numpy's fancy indexing
+    >>> # to populate it with values from geom1 and geom2
+    >>> seeds = sp.zeros_like(pn.Ps, dtype=float)
+    >>> seeds[pn.pores(geom1.name)] = geom1['pore.seeds']
+    >>> seeds[pn.pores(geom2.name)] = geom2['pore.seeds']
+    >>> assert sp.all(seeds > 0)  # Ensure all zeros are overwritten
+
+The following code illustrates the shortcut approach, which accomplish the same result as above in a single line:
+
+.. code-block::
+
+    >>> seeds = pn['pore.seeds']
+
+This shortcut works because the ```pn``` dictionary does not contain an array called ```'pore.seeds'```, so all associated **Geometry** objects are then checked for the requested array(s).  If it is found, then OpenPNM essentially performs the *interleaving* of the data as demonstrated by the manual approach and returns all the values together in a single full-size array.  If it is not found, then a standard *KeyError* message is received.
+
+This exchange of data between **Network** and **Geometry** makes sense if you consider that **Network** objects act as a sort of master object relative **Geometry** objects.  **Networks** apply to *all* pores and throats in the domain, while **Geometries**  apply to subsets of the domain, so if the **Network** needs some values from all pores it has direct access.
 
 -------------------------------------------------------------------------------
 Add Pore Size Distribution Models to Each Geometry
@@ -256,6 +282,18 @@ Finally, if we regenerate ``phys1`` and ``phys2`` we can see that the hydraulic 
     >>> phys2.models.regenerate()
     >>> sp.all(phys1['throat.hydraulic_conductance'] != g1)
     >>> sp.all(phys2['throat.hydraulic_conductance'] != g2)
+
+-------------------------------------------------------------------------------
+Accessing Physics Data from Phases
+-------------------------------------------------------------------------------
+
+Just as **Network** objects can retrieve data from separate **Geometries** as a single array with values in the correct locations, **Phase** objects can retrieve data fro **Physics objects as follows:
+
+.. code-block:: python
+
+    >>> gth = water['throat.hydraulic_conductance']
+
+Each **Physics** applies to the same subset for pores and throats as the **Geometries** so its values are distributed spatially, but each **Physics** is also associated with a single **Phase** object.  Consequently, a is logical that a **Phase** object be able to request all of the values within the domain pertaining to itself.  
 
 ===============================================================================
 Create an Algorithm Object for Performing a Permeability Simulation
