@@ -29,7 +29,7 @@ def equivalent_circle(geometry, throat_area='throat.area', **kwargs):
     return value
 
 
-def minpore(network, geometry, **kwargs):
+def minpore(network, geometry, factor=None, **kwargs):
     r"""
     Assign the throat diameter to be equal to the smallest connecting pore
     diameter. If zero (in case of boundaries) take it to be the maximum of
@@ -40,4 +40,21 @@ def minpore(network, geometry, **kwargs):
     pDs = network["pore.diameter"][network["throat.conns"][nTs]]
     value = np.min(pDs, axis=1)
     value[value == 0.0] = np.max(pDs, axis=1)[value == 0.0]
+    if factor is not None:
+        value *= factor
+    return value
+
+def meanpore(network, geometry, factor=None, **kwargs):
+    r"""
+    Assign the throat diameter to be equal to the mean of the connecting pore
+    diameters. If zero (in case of boundaries) take it to be the maximum of
+    the connecting pore diameters
+    """
+    gTs = geometry.throats()
+    nTs = geometry.map_throats(network, gTs)
+    pDs = network["pore.diameter"][network["throat.conns"][nTs]]
+    value = np.mean(pDs, axis=1)
+    value[value == 0.0] = np.max(pDs, axis=1)[value == 0.0]
+    if factor is not None:
+        value *= factor
     return value
