@@ -331,7 +331,7 @@ class GenericNetwork(Core):
             returned. If flatten is False the returned array contains arrays
             of neighboring pores for each input pore, in the order they were
             sent.
-        excl_self : bool, optional (Default is False)
+        excl_self : bool, optional (Default is True)
             If this is True then the input pores are not included in the
             returned list.  This option only applies when input pores
             are in fact neighbors to each other, otherwise they are not
