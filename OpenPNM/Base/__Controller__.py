@@ -352,8 +352,8 @@ class Controller(dict):
         """
         filename = filename.rsplit('.pnm', 1)[0]
         if self != {}:
-            print('Warning: Loading data onto non-empty controller object,' +
-                  'existing data will be lost')
+            logger.warn('Loading data onto non-empty controller object,' +
+                        ' existing data will be lost')
             self.clear()
 
         self = _pickle.load(open(filename+'.pnm', 'rb'))
@@ -492,10 +492,10 @@ class Controller(dict):
 
     def _get_comments(self):
         if hasattr(self, '_comments') is False:
-            print('No comments found')
+            logger.info('No comments found')
         else:
             for key in list(self._comments.keys()):
-                print(key, ': ', self._comments[key])
+                logger.info(key, ': ', self._comments[key])
 
     comments = property(fget=_get_comments, fset=_set_comments)
 
@@ -582,4 +582,4 @@ class Controller(dict):
             for item in network._simulation():
                 self[item.name] = item
         else:
-            print('Duplicate name found in Controller')
+            logger.warn('Duplicate name found in Controller')

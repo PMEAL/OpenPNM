@@ -61,6 +61,6 @@ def centre_of_mass(geometry, vertices='throat.offset_vertices', **kwargs):
                 else:
                     value[i] = COM_3D
             else:
-                print('Rotation Failed: ' + str(_sp.unique(facet[:, 2])))
+                logger.error('Rotation Failed: ' + str(_sp.unique(facet[:, 2])))
 
     return value

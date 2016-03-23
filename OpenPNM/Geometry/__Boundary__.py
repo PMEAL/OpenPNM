@@ -41,7 +41,7 @@ class Boundary(GenericGeometry):
 
     def __init__(self, shape='spheres', **kwargs):
         super().__init__(**kwargs)
-        self['pore.diameter'] = 0
+        self['pore.diameter'] = 0.0
         self.models.add(propname='throat.diameter',
                         model=gm.throat_misc.neighbor,
                         pore_prop='pore.diameter',

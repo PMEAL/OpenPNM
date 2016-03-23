@@ -300,7 +300,7 @@ def _get_hull_volume(points):
     try:
         tri = Delaunay(points, qhull_options='QJ Pp')
     except _sp.spatial.qhull.QhullError:
-        print(points)
+        logger.error("Volume suspect for points: " + str(points))
     # We only want points included in the convex hull to calculate the centroid
     hull_centroid = _sp.array([points[:, 0].mean(),
                                points[:, 1].mean(),
@@ -326,7 +326,7 @@ def _get_hull_volume(points):
         try:
             face_unit_normal = face_normal/_sp.linalg.norm(face_normal)
         except RuntimeWarning:
-            print('Pore Volume Error:' + str(vab) + ' ' + str(vac))
+            logger.error('Pore Volume Error:' + str(vab) + ' ' + str(vac))
         """
         As triangles are orientated randomly in 3D we could either transform
         co-ordinates to align with a plane and perform 2D operations to work
