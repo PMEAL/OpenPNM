@@ -4,7 +4,7 @@
 Tutorial 1 of 3: Getting Started with OpenPNM
 ###############################################################################
 
-This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the useful and powerful features of the package.  So, if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial dilberately simplifies all steps to provide a more gentle introduction.  The second and third tutorials of this guide dive into the code more deeply, but those features are best appreciated once the basis are understood.
+This tutorial is intended to show the basic outline of how OpenPNM works, and skips many of the useful and powerful features of the package.  So if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial deliberately simplifies some steps to provide a more gentle introduction.  The second and third tutorials of this guide dive into the code more deeply, but those features are best appreciated once the basics are understood.
 
 **Learning Objectives**
 
@@ -31,7 +31,7 @@ Next, generate a **Network** by choosing the desired topology (e.g. cubic), then
 
 		>>> pn = OpenPNM.Network.Cubic(shape=[4, 3, 1], spacing=0.0001)
 
-This generates a topological network and stores it in variable ``pn``.  This network contains pores at the correct spatial positions and connections between the pores according the specified topology.  The ``shape`` argument specifies the number of pores in the [X, Y, Z] directions of the cube.  Networks in OpenPNM are always 3D dimensional, meaning that a 2D or "flat" network is still 1 layer of pores "thick" so [X, Y, Z] = [20, 10, 1], so ``pn`` in this tutorial is 2D.  The ``spacing`` argument controls the center-to-center distance between pores.  Although OpenPNM does not currently have a dimensional units system, it is *strongly* recommend using SI throughout.  `Using Paraview for Visualization`_ gives the  resulting network as shown below:
+This generates a topological network and stores it in variable ``pn``.  This network contains pores at the correct spatial positions and connections between the pores according the specified topology.  The ``shape`` argument specifies the number of pores in the [X, Y, Z] directions of the cube.  Networks in OpenPNM are always 3D dimensional, meaning that a 2D or "flat" network is still 1 layer of pores "thick" so [X, Y, Z] = [20, 10, 1], thus ``pn`` in this tutorial is 2D.  The ``spacing`` argument controls the center-to-center distance between pores and it can be a scalar or vector (i.e [0.0001, 0.0002, 0.0003]).  Although OpenPNM does not currently have a dimensional units system, it is *strongly* recommend using SI throughout.  [Using Paraview for Visualization][1] gives the  resulting network as shown below:
 
 .. image:: http://i.imgur.com/ScdydO9.png
 
@@ -39,20 +39,16 @@ This generates a topological network and stores it in variable ``pn``.  This net
 Handy Tools for Working with Networks
 -------------------------------------------------------------------------------
 
-The **Network** object has numerous methods that can be used to query its topological properties:
+**Network** objects has numerous methods that can be used to query their topological properties:
 
 .. code-block:: python
 
-		>>> pn.num_pores()
-		12
-		>>> pn.num_throats()
-		17
 		>>> pn.find_neighbor_pores(pores=[1])  # Find neighbors of pore 1
 		array([0, 2, 4])
 		>>> pn.find_neighbor_throats(pores=[1, 2])  # Find throats connected to pores 1 and 2
 		array([ 0,  1,  9, 10])
 
-There are several more such topological query method available on the object such as ``find_nearby_pores``, ``find_connecting_throat`` and ``find_clusters``.
+There are several more such topological query method available on the object such as ``find_nearby_pores``, ``find_connecting_throat`` and ``find_clusters``.  For more information these tools see the :ref: `topology reference page <topology>`.
 
 -------------------------------------------------------------------------------
 Labelling Pores and Throats
@@ -82,7 +78,7 @@ Adding custom *labels* is also straight-forward.  A *label* is simply a Boolean 
 		>>> pn['pore.front_left_corner'] = False
 		>>> pn['pore.front_left_corner'][Ps] = True
 
-Note that we had to create an array for the label first filled with False values, and then assign True values in the locations where the label ``'front_left_corner'`` applies.  `Using Paraview for Visualization`_ pores labelled ``'front_left_corner'`` are colored in red:
+Note that we had to create an array for the label first filled with False values, and then assign True values in the locations where the label ``'front_left_corner'`` applies.  [Using Paraview for Visualization][1] pores labelled ``'front_left_corner'`` are colored in red:
 
 .. image:: http://i.imgur.com/RE5DjzS.png
 
@@ -190,7 +186,7 @@ OpenPNM includes a framework for calculating these type of properties from model
 Create Physics Objects
 ===============================================================================
 
-We are still not ready to perform any simulations.  The last step is to define the desired pore scale physics models, which dictates how the phase and geometrical properties interact.  A classic example of this is the Hagen-Poiseuille equation for fluid flow through a throat, which predicts the flow rate as a function of the pressure drop  The flow rate is proportional to the geometrical size of the throat (radius and length) as well as properties of the fluid (viscosity).  It follows that this calculation needs to be performed once for each phase of interest since each has a different viscocity.  This is accomplished by define a **Physics** object for each *Phase*:
+We are still not ready to perform any simulations.  The last step is to define the desired pore scale physics models, which dictates how the phase and geometrical properties interact.  A classic example of this is the Hagen-Poiseuille equation for fluid flow through a throat, which predicts the flow rate as a function of the pressure drop  The flow rate is proportional to the geometrical size of the throat (radius and length) as well as properties of the fluid (viscosity).  It follows that this calculation needs to be performed once for each phase of interest since each has a different viscosity.  This is accomplished by define a **Physics** object for each *Phase*:
 
 .. code-block:: python
 
@@ -262,17 +258,8 @@ The results ('pore.pressure') are held within the ``alg`` object and must be exp
 
 		>>> alg.return_results()
 
-`Using Paraview for Visualization`_ , the resulting pressure gradient across the network can be seen:
+[Using Paraview for Visualization][1], the resulting pressure gradient across the network can be seen:
 
 .. image:: http://i.imgur.com/8aVaH1S.png
 
-===============================================================================
-Using Paraview for Visualization
-===============================================================================
-We can now visualize our network and simulation results.  OpenPNM does not support native visualization, so data must be exported to a file for exploration in another program such as any of the several VTK front ends (i.e. Paraview).
-
-.. code-block:: python
-
-		>>> OpenPNM.export_data(network=pn, filename='2D_net')
-
-This creates a *net.vtp* file in the active directory, which can be loaded from ParaView. For a quick tutorial on the use of Paraview with OpenPNM data, see :ref:`Using Paraview<paraview_example>`.
+[1]: https://github.com/PMEAL/OpenPNM-Examples/blob/master/IO_and_Visualization/paraview.md
