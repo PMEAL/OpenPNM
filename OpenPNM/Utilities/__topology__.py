@@ -12,79 +12,93 @@ logger = _logging.getLogger(__name__)
 
 class topology(object):
 
-    def extend(self, **kwargs):
+    @staticmethod
+    def extend(network, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.extend(**kwargs)
+        tools.extend(network=network, **kwargs)
 
-    def trim(self, **kwargs):
+    @staticmethod
+    def trim(network, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.trim(**kwargs)
+        tools.trim(network=network, **kwargs)
 
-    def clone_pores(**kwargs):
+    @staticmethod
+    def clone_pores(network, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.clone_pores(**kwargs)
+        tools.clone_pores(network=network, **kwargs)
 
-    def stitch(self, **kwargs):
+    @staticmethod
+    def stitch(network, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.stitch(**kwargs)
+        tools.stitch(network=network, **kwargs)
 
-    def connect_pores(self, **kwargs):
+    @staticmethod
+    def connect_pores(network, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.connect_pores(**kwargs)
+        tools.connect_pores(network=network, **kwargs)
 
-    def find_centroid(**kwargs):
+    @staticmethod
+    def find_centroid(coords, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.find_centroid(**kwargs)
+        c = tools.find_centroid(coords, **kwargs)
+        return c
 
-    def find_pores_distance(**kwargs):
+    @staticmethod
+    def find_pores_distance(network, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.find_pores_distance(**kwargs)
+        dist = tools.find_pores_distance(network=network, **kwargs)
+        return dist
 
-    def subdivide(self, **kwargs):
+    @staticmethod
+    def subdivide(network, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.subdivide(**kwargs)
+        tools.subdivide(network=network, **kwargs)
 
-    def trim_occluded_throats(self, **kwargs):
+    @staticmethod
+    def trim_occluded_throats(network, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.trim_occluded_throats(**kwargs)
+        tools.trim_occluded_throats(network=network, **kwargs)
 
-    def merge_pores(self, **kwargs):
+    @staticmethod
+    def merge_pores(network, **kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.merge_pores(**kwargs)
+        tools.merge_pores(network=network, **kwargs)
 
+    @staticmethod
     def template_sphere_shell(**kwargs):
         r"""
         This function as been moved to ``Network.tools`` and remains here for
         backward compatibility.
         """
-        tools.template_sphere_shell(**kwargs)
+        img = tools.template_sphere_shell(**kwargs)
+        return img
