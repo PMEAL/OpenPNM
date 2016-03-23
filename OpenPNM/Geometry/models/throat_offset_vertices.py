@@ -84,7 +84,7 @@ def distance_transform(network, geometry, offset, **kwargs):
             # so use the order parameter
             z_plane = sp.unique(np.around(z, order+2))
             if len(z_plane) > 1:
-                print('Rotation for image analysis failed')
+                logger.error('Rotation for image analysis failed')
                 temp_arr = np.ones(1)
                 temp_arr.fill(np.mean(z_plane))
                 z_plane = temp_arr

@@ -5,6 +5,8 @@ pore_topology -- functions for monitoring and adjusting topology
 
 """
 import scipy as _sp
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 
 def get_subscripts(network, shape, **kwargs):
@@ -18,7 +20,7 @@ def get_subscripts(network, shape, **kwargs):
 
     """
     if network.num_pores('internal') != _sp.prod(shape):
-        print('Supplied shape does not match Network size, cannot proceed')
+        logger.error('Supplied shape does not match Network size, cannot proceed')
     else:
         template = _sp.atleast_3d(_sp.empty(shape))
         a = _sp.indices(_sp.shape(template))

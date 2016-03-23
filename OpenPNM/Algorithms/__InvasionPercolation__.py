@@ -93,7 +93,7 @@ class InvasionPercolation(GenericAlgorithm):
 
         queue = self.queue
         if len(queue) == 0:
-            print('queue is empty, this network is fully invaded')
+            logger.warn('queue is empty, this network is fully invaded')
             return
         t_sorted = self['throat.sorted']
         t_order = self['throat.order']
