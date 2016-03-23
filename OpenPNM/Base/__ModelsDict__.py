@@ -216,7 +216,7 @@ class ModelsDict(OrderedDict):
                 temp.remove(item)
             props = temp
         for item in list(self.keys()):
-            if self[item]['regen_mode'] == 'constant':
+            if self[item]['regen_mode'] == 'constant' and item in props:
                 props.remove(item)
         logger.info('Models are being recalculated in the following order: ')
         count = 0
