@@ -48,7 +48,7 @@ Handy Tools for Working with Networks
 		>>> pn.find_neighbor_throats(pores=[1, 2])  # Find throats connected to pores 1 and 2
 		array([ 0,  1,  9, 10])
 
-There are several more such topological query method available on the object such as ``find_nearby_pores``, ``find_connecting_throat`` and ``find_clusters``.  For more information these tools see the :ref: `topology reference page <topology>`.
+There are several more such topological query method available on the object such as ``find_nearby_pores``, ``find_connecting_throat`` and ``find_clusters``.  For more information these tools see the :ref: `Topology Reference page <topology>`.
 
 -------------------------------------------------------------------------------
 Labelling Pores and Throats
