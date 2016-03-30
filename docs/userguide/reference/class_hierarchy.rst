@@ -8,7 +8,7 @@ The design of OpenPNM is to separate different types of properties between diffe
 ===============================================================================
 Core
 ===============================================================================
-Using the Object Oriented Programming (OOP) approach, each of the above objects actually descends from a common class called **Core**.  The **Core** class defines the majority of the functionality, which is then enhanced and extended by each descendent.
+Using the Object Oriented Programming (OOP) paradigm, each of the above objects actually descends from a common class called **Core**.  The **Core** class defines the majority of the functionality, which is then enhanced and extended by each descendent.
 
 **Core** is a subclass of the Python Dictionary or ``dict``.  A ``dict`` is a very handy data structure that can store any piece of data by name, using the following:
 
@@ -25,7 +25,7 @@ Using the Object Oriented Programming (OOP) approach, each of the above objects 
     >>> foo['a_list']
     [1, 2, 3]
 
-They Python ``dict`` class comes with a variety of methods for adding, removing, and inspecting the data stored within.  The following command will generate a list of all these methods, which include things like ``pop`` for removing items from the dictionary, and ``keys`` for listing all the current dictionary entries.
+The Python ``dict`` class comes with a variety of methods for adding, removing, and inspecting the data stored within.  The following command will generate a list of all these methods, which include things like ``pop`` for removing items from the dictionary, and ``keys`` for listing all the current dictionary entries.
 
 .. code-block:: python
 
