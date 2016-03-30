@@ -1,8 +1,9 @@
 .. _data_storage:
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Data Storage
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+###############################################################################
+Data Storage Format in OpenPNM
+###############################################################################
+
 Each OpenPNM Core object is a Python *dictionary* which is similar to a structured variable or *struct* in other languages.  This allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.  All pore and throat data are stored as vectors or lists, of either *Np* or *Nt* length representing the number of pores and throats on the object, respectively.  This means that each pore (or throat) has a number, and all properties for that pore (or throat) are stored in the array corresponding to that number.  Thus, the diameter for pore 15 is stored in the ``'pore.diameter'`` array in element 15, and the length of throat 32 is stored in the ``'throat.length'`` array at element 32.
 
 This list-based approach is ideal when using the Numpy and Scipy libraries which are designed for elementwise, vectorized programming.  For instance, the volume of each throats can be found simultaneously using ``T_vol = 3.1415*(network['throat.radius']**2) * network['throat.length']``.  ``T_vol`` will be an *Nt*-long array of values, assuming ``'throat.length'`` and ``'throat.radius'`` were also *Nt*-long.
@@ -19,7 +20,7 @@ Properties and Labels
 OpenPNM differentiates between two types of data for pores and throats: *properties* and *labels*.  The only difference between these is that *labels* are Boolean arrays (True / False), while *properties* are numerical data types.
 
 -------------------------------------------------------------------------------
-Properties, aka Data
+Properties (aka Data)
 -------------------------------------------------------------------------------
 The physical details about pores and throats is referred to as *properties*, which includes information such as *pore volume* and *throat length*.  Properties are accessed using Python dictionary syntax to access the array of choice, then Numpy array indexing to access the pore or throat locations of choice:
 
@@ -94,7 +95,7 @@ Creating a new label array occurs automatically if a Boolean array is stored on 
 
     >>> pn['pore.dummy_1'] = sp.rand(27) < 0.5
 
-A complication arises if you have a list of pore numbers you wish to labels, such as [3, 4, 5].  You must first create the label array with all ``False`` values, *then* assign ``True`` to the desired locations:
+A complication arises if you have a list of pore numbers you wish to label, such as [3, 4, 5].  You must first create the label array with all ``False`` values, *then* assign ``True`` to the desired locations:
 
 .. code-block:: python
 
@@ -142,11 +143,13 @@ This results can also be viewed with ``print(pn.labels())``.
 -------------------------------------------------------------------------------
 Counts and Indices
 -------------------------------------------------------------------------------
-One of the most common questions about a network is "how many pores and throats does it have?"  This can be answered very easily with the ``num_pores`` and ``num_throats`` methods.  Because these methods are used so often, there are also shortcuts: ``Np`` and ``Nt``.
+One of the most common questions about a network is "*how many pores and throats does it have?*"  This can be answered  easily with the ``num_pores`` and ``num_throats`` methods.  Because these methods are used so often, there are also shortcuts: ``Np`` and ``Nt``.
 
 .. code-block:: python
 
     >>> pn.num_pores()
+    27
+    >>> pn.Np
     27
 
 It is also possible to *count* only pores that have a certain label:
