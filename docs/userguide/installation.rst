@@ -13,11 +13,6 @@ This will install OpenPNM into your Python environment.  To use OpenPNM, open a 
 
 >>> import OpenPNM
 
-You can check your version of OpenPNM with:
-
->>> OpenPNM.__version__
-'1.0.0'
-
 To upgrade your OpenPNM to a newer version, use ``pip install --upgrade openpnm``.
 
 It is also possible to download the source code directly from Github and work from that.  This is not recommended unless you are planning to do 'development' work on the framework.  The pip install approach places the source code in the Python directory and out of harms way.

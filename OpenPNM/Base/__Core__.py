@@ -1533,8 +1533,21 @@ class Core(dict):
                        return_mapping=return_mapping)
         return Ts
 
-    Tnet = property(fget=map_throats)
-    Pnet = property(fget=map_pores)
+    @property
+    def Tnet(self):
+        r"""
+        A shortcut to retrieve the mapping of the current object's throats onto
+        the network.
+        """
+        return self.map_throats()
+
+    @property
+    def Pnet(self):
+        r"""
+        A shortcut to retrieve the mapping of the current object's pores onto
+        the network.
+        """
+        return self.map_pores()
 
     def _parse_locations(self, locations):
         r"""
