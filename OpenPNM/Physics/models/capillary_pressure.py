@@ -338,3 +338,25 @@ def from_throat(physics, phase, network,
         value[i] = f(physics[capillary_pressure][ts])
 
     return value
+
+def kelvin(physics, phase, network, diameter='pore.diameter',
+           temperature='pore.temperature',
+           vapor_pressure='pore.vapor_pressure',
+           molecular_weight='pore.molecular_weight',
+           density='pore.density',
+           surface_tension='pore.surface_tension',
+           **kwargs):
+    r"""
+    Calculate the critical vapor pressure that causes droplets to condense or evaporate
+    inside a pore. Only works with site percolation
+    """
+    
+    T =  phase[temperature]
+    P0 = phase[vapor_pressure]
+    M = phase[molecular_weight]
+    rho = phase[density]
+    gamma = phase[surface_tension]
+    r = network[diameter]/2
+    R= 8.314
+    value = P0*np.exp((M*2*gamma)/(rho*R*T*r))
+    return value
