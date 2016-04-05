@@ -44,17 +44,16 @@ if _sys.version_info < (3, 3):
 if _sp.__version__ < '0.14.0':
     raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
 
-__requires__ = ['scipy']
-__version__ = '1.4.0'
+__version__ = '1.4.5'
 
 from . import Base
-from . import Utilities
 from . import Network
 from . import Geometry
 from . import Phases
 from . import Physics
 from . import Algorithms
 from . import Postprocessing
+from . import Utilities
 from .Base import Controller as ctrl
 
 _controller = ctrl()

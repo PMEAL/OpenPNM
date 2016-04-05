@@ -65,7 +65,7 @@ class Voronoi(GenericGeometry):
                         offset=self._fibre_rad,
                         set_dependent=True)
 
-        topo.trim_occluded_throats(self._net, self.name)
+        topo.trim_occluded_throats(network=self._net, mask=self.name)
 
         if self._voxel_vol:
             self.models.add(propname='pore.volume',
