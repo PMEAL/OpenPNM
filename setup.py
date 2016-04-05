@@ -2,19 +2,25 @@
 
 import os
 import sys
-import OpenPNM
-
-sys.path.append(os.getcwd())
-
+from distutils.util import convert_path
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
+    
+sys.path.append(os.getcwd())
+
+main_ = {}
+ver_path = convert_path('OpenPNM/__init__.py')
+with open(ver_path) as f:
+    for line in f:
+        if line.startswith('__version__'):
+            exec(line, main_)
 
 setup(
     name = 'OpenPNM',
     description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials.',
-    version = OpenPNM.__version__,
+    version = main_['__version__'],
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',

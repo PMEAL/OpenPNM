@@ -5,6 +5,7 @@ language: python
 python:
   - "3.3"
   - "3.4"
+  - "3.5"
 
 cache: apt
 
@@ -25,23 +26,13 @@ before_install:
   - conda update --yes conda
 
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib pandas
-  - pip install transforms3d
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib pandas scikit-image
   - pip install -r test_requirements.txt
   - python setup.py install
 
 script:
-- ./bin/test pep8 cov
-- ./bin/clean
+  - ./bin/test pep8 cov
+  - ./bin/clean
 
 after_success:
-- codecov
-
-deploy:
-  provider: pypi
-  user: jgostick
-  password:
-    secure: cCglX1NDCf/dkWeqmMZ0wYGi33FoGKYNSYBMVdS3LhpfsQ3+wCYzP/1uw8mM1KsHI9kAe+MOpQmxCe6ryt6/Y5DpFMqzbfMjaMI/PvYO7NhPDeJzYIJ4Mq1LCPGbFih8eMej7aLd/jLK4fiJtA3PUs1vRJCWOgRxHw5+DWhJBWw=
-  on:
-    tags: true
-    branch: master
+  - codecov

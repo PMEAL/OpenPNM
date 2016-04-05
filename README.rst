@@ -3,7 +3,7 @@ OpenPNM
 .. image:: https://badge.fury.io/py/openpnm.svg
    :target: http://badge.fury.io/py/openpnm
 
-.. image:: https://travis-ci.org/PMEAL/OpenPNM.svg
+.. image:: https://travis-ci.org/PMEAL/OpenPNM.svg?branch=master
    :target: https://travis-ci.org/PMEAL/OpenPNM
 
 .. image:: https://img.shields.io/codecov/c/github/PMEAL/OpenPNM.svg?style=flat

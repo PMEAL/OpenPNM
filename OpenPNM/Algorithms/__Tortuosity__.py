@@ -42,8 +42,8 @@ class Tortuosity(GenericAlgorithm):
         N = self._net.num_pores()
         k = sp.median(self._net.num_neighbors(pores=self._net.pores()))
         t_est = O * (N * (N * k + N * sp.log(N)))
-        print('Based on the network size and PC performance, this algorithm \
-              will require: ', t_est, ' seconds')
+        logger.info('Based on the network size and PC performance, ' +
+                    'this algorithm will require: ', t_est, ' seconds')
         return
 
     def run(self, phase=None, throats=None):

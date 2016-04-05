@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.spatial import ConvexHull
 from transforms3d import _gohlketransforms as tr
+from OpenPNM.Base import logging
+logger = logging.getLogger(__name__)
 
 
 def PolyArea2D(pts):
@@ -264,7 +266,7 @@ def porosity(network):
         pore_vol = np.sum(network['pore.volume'])
         throat_vol = np.sum(network['throat.volume'])
     except KeyError:
-        print('Geometries must be assigned first')
+        logger.error('Geometries must be assigned first')
         pore_vol = 0
         throat_vol = 0
     porosity = np.around((pore_vol+throat_vol)/domain_vol, 3)
@@ -311,7 +313,7 @@ def tortuosity(network=None):
                np.mean(theta_z_b[~np.isnan(theta_z_b)])) / 2
     tot_angle = (theta_x+theta_y+theta_z)*f
     if 180 < tot_angle:
-        print('Something is wrong: ' + str(tot_angle))
+        logger.error('Something is wrong: ' + str(tot_angle))
 
     return 1 / np.cos(np.array([theta_x, theta_y, theta_z]))
 
@@ -329,7 +331,7 @@ def plot_throat(geometry, throats, fig=None):
         if throat in range(geometry.num_throats()):
             throat_list.append(throat)
         else:
-            print('Throat: ' + str(throat) + ' not part of geometry')
+            logger.warn('Throat: ' + str(throat) + ' not part of geometry')
     if len(throat_list) > 0:
         verts = geometry['throat.vertices'][throat_list]
         offsets = geometry['throat.offset_vertices'][throat_list]
@@ -382,7 +384,7 @@ def plot_throat(geometry, throats, fig=None):
             ax.ticklabel_format(style='sci', scilimits=(0, 0))
 
     else:
-        print("Please provide throat indices")
+        logger.error("Please provide throat indices")
     return fig
 
 
@@ -457,7 +459,7 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None, include_points=False)
         else:
             plot_throat(geometry, throats, fig)
     else:
-        print('Please provide pore indices')
+        logger.error('Please provide pore indices')
     return fig
 
 
@@ -482,8 +484,8 @@ def rotate_and_chop(verts, normal, axis=[0, 0, 1]):
         try:
             facet = np.dot(verts, M[:3, :3].T)
         except ValueError:
-            print(verts)
-            print(M[:3, :3].T)
+            pass
+
     try:
         x = facet[:, 0]
         y = facet[:, 1]

@@ -65,7 +65,7 @@ class Voronoi(GenericGeometry):
                         offset=self._fibre_rad,
                         set_dependent=True)
 
-        topo.trim_occluded_throats(self._net, self.name)
+        topo.trim_occluded_throats(network=self._net, mask=self.name)
 
         if self._voxel_vol:
             self.models.add(propname='pore.volume',
@@ -93,10 +93,8 @@ class Voronoi(GenericGeometry):
                         model=gm.pore_area.spherical)
         self.models.add(propname='throat.diameter',
                         model=gm.throat_diameter.equivalent_circle)
-        self.models.add(propname='throat.length',
-                        model=gm.throat_length.constant,
-                        const=self._fibre_rad*2)
         self['throat.volume'] = 0.0
+        self['throat.length'] = self._fibre_rad*2
         self.models.add(propname='throat.surface_area',
                         model=gm.throat_surface_area.extrusion)
         self.models.add(propname='throat.c2c',

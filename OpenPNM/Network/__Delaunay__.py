@@ -206,7 +206,7 @@ class Delaunay(GenericNetwork):
                         dict(zip(self._vor.ridge_dict[(p2, p1)],
                                  self._vor.vertices[self._vor.ridge_dict[(p2, p1)]]))
                 except KeyError:
-                    print('Throat Pair Not Found in Voronoi Ridge Dictionary')
+                    logger.error('Throat Pair Not Found in Voronoi Ridge Dictionary')
 
         self['pore.vert_index'] = all_vert_index
         self['throat.vert_index'] = throat_verts

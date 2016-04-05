@@ -9,11 +9,10 @@ import numpy as np
 import scipy as sp
 import scipy.spatial as sptl
 import OpenPNM.Utilities.misc as misc
+from OpenPNM.Network import tools
 from OpenPNM.Network import GenericNetwork
-from OpenPNM.Utilities import topology
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
-topo = topology()
 
 
 class Cubic(GenericNetwork):
@@ -251,14 +250,8 @@ class Cubic(GenericNetwork):
             return sp.array([], dtype=sp.int64)
         # Clone the specifed pores
         self.clone_pores(pores=Ps)
+        newPs = self.pores('pore.clone')
         del self['pore.clone']
-        # Find throat connections by finding nearby neighbors
-        temp = self.find_nearby_pores(pores=Ps,
-                                      distance=1e-10,
-                                      excl_self=False)
-        newPs = temp[:, 1]
-        # Assign new throat connections
-        self.extend(throat_conns=temp)
         # Offset the cloned pores
         self['pore.coords'][newPs] += offset
         # Apply labels to boundary pores (trim leading 'pores' if present)
@@ -446,48 +439,5 @@ class Cubic(GenericNetwork):
         return A
 
     def subdivide(self, pores=[], shape=[], labels=[]):
-        topo.subdivide(network=self, pores=pores, shape=shape, labels=labels)
-    subdivide.__doc__ = topo.subdivide.__doc__
-
-    def template_sphere_shell(outer_radius=None, inner_radius=0):
-        r"""
-        This method generates an image array of a sphere shell for a cubic network.
-
-        Parameters
-        ----------
-        outer_radius : array_like
-        Number of the nodes in the outer radius of the shell
-
-        inner_radius : float
-        Number of the nodes in the inner radius of the shell
-
-        """
-
-        if outer_radius is None:
-            raise Exception('No outer radius has been sent!')
-        if inner_radius is None:
-            raise Exception('Number of nodes in the inner radius cannot be '
-                            'None!')
-        rmax = np.array(outer_radius, ndmin=1)
-        rmin = np.array(inner_radius, ndmin=1)
-        s_rmax = np.size(rmax)
-        s_rmin = np.size(rmin)
-        if not ((s_rmax in [1, 3]) and (s_rmin in [1, 3])):
-            raise Exception('In this method, each radius can be scalar or '
-                            'array with components along all xyz directions.')
-        s_u_rmax = np.size(np.unique(rmax))
-        s_u_rmin = np.size(np.unique(rmin))
-        if not ((s_u_rmax == 1) and (s_u_rmin == 1)):
-            raise Exception('In this method, all components of radius should '
-                            'be unique values along all xyz directions.')
-        pnum = 2 * np.ones(3) * rmax - 1
-        Rx, Ry, Rz = np.array(pnum, dtype=np.int32)
-        x, y, z = np.indices((Rx, Ry, Rz))
-        x = x - (Rx - 1)/2
-        y = y - (Ry - 1)/2
-        z = z - (Rz - 1)/2
-        img = x ** 2 + y ** 2 + z ** 2 < np.unique(rmax) ** 2
-        if not np.all(rmin == 0):
-            img_min = x ** 2 + y ** 2 + z ** 2 > np.unique(rmin) ** 2
-            img = img * img_min
-        return (img)
+        tools.subdivide(network=self, pores=pores, shape=shape, labels=labels)
+    subdivide.__doc__ = tools.subdivide.__doc__

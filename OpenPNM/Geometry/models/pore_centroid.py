@@ -7,10 +7,22 @@ pore_centroid
 import scipy as _sp
 
 
-def voronoi(network, geometry, vertices='throat.centroid', **kwargs):
+def voronoi(geometry, vertices='throat.centroid', **kwargs):
     r"""
     Calculate the centroid from the mean of the throat centroids
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry object
+        The Geometry object which this model is associated.  This is needed to
+        access the values of the ``vertices``.
+
+    vertices : string
+        The dictionary contain of the array containing the throat vertice
+        coordiantes.  The default is 'throat.centroid'
+
     """
+    network = geometry._net
     value = _sp.ndarray([geometry.num_pores(), 3])
     value.fill(0.0)
     pore_map = geometry.map_pores(target=network,

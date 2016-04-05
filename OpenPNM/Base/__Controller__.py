@@ -352,13 +352,19 @@ class Controller(dict):
         """
         filename = filename.rsplit('.pnm', 1)[0]
         if self != {}:
-            print('Warning: Loading data onto non-empty controller object,' +
-                  'existing data will be lost')
+            logger.warn('Loading data onto non-empty controller object,' +
+                        ' existing data will be lost')
             self.clear()
 
         self = _pickle.load(open(filename+'.pnm', 'rb'))
 
     def export(self, network=None, filename='', fileformat='VTK'):
+        logger.warning("This method is deprecated, use \'export_data\'.")
+        self.export_data(network=network,
+                         filename=filename,
+                         fileformat=fileformat)
+
+    def export_data(self, network=None, filename='', fileformat='VTK'):
         r"""
         Export data to the specified file format.
 
@@ -415,6 +421,48 @@ class Controller(dict):
         else:
             raise ValueError(fileformat+' is not a valid format')
 
+    def import_data(self, filename=None):
+        r"""
+        Import network data stored in an external file format.
+
+        Parameters
+        ----------
+        filename : string
+            The name of the file containing the data.  This should include the
+            file extension, which must be one of the following supported
+            formats:
+
+            **'csv'** : Comma-separated values as typically used in spreadsheet
+            type programs
+
+            **'mat'** : A Matlab \'mat-file\'
+
+            **'vtp'** : A VTK file format used by programs like Paraview
+
+            **'yaml'** : A NetworkX output format
+
+        Notes
+        -----
+        This is a wrapper or convenience method for the actual IO classes
+        located in OpenPNM.Utilities.IO. Refer to the doc strings for those
+        classes for information on the actual file format specifications.
+
+        """
+        import OpenPNM.Utilities.IO as io
+        # Handle normal file types
+        ext = filename.split('.')[-1]
+        if ext.lower() == 'csv':
+            network = io.CSV.load(filename=filename)
+        elif ext.lower() == 'mat':
+            network = io.MAT.load(filename=filename)
+        elif ext.lower() == 'yaml':
+            network = io.NetworkX.load(filename=filename)
+        elif ext.lower() == 'vtp':
+            network = io.VTK.load(filename=filename)
+        else:
+            raise Exception('Filename does not have suppored extension')
+        return network
+
     def _script(self, filename, mode='read'):
         r"""
         Save or reload the script files used for the modeling
@@ -444,10 +492,10 @@ class Controller(dict):
 
     def _get_comments(self):
         if hasattr(self, '_comments') is False:
-            print('No comments found')
+            logger.info('No comments found')
         else:
             for key in list(self._comments.keys()):
-                print(key, ': ', self._comments[key])
+                logger.info(key, ': ', self._comments[key])
 
     comments = property(fget=_get_comments, fset=_set_comments)
 
@@ -534,4 +582,4 @@ class Controller(dict):
             for item in network._simulation():
                 self[item.name] = item
         else:
-            print('Duplicate name found in Controller')
+            logger.warn('Duplicate name found in Controller')

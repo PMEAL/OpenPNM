@@ -142,7 +142,7 @@ class VTK():
             f.write(string)
 
     @staticmethod
-    def load(filename, network={}, mode='overwrite'):
+    def load(filename, network=None):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -156,22 +156,10 @@ class VTK():
             The Network object onto which the data should be loaded.  If no
             Network is supplied than one will be created and returned.
 
-        mode : string
-            Specifies how new data is added to the Network.  Options are:
-
-            **'overwrite'** : (Default) This means that any existing data on
-            the Network is over-written by data in the loaded file that has the
-            same property name.
-
-            **'add'** : Only adds values to the network if they are not already
-            present.
-
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
         """
-        if network == {}:
-            network = OpenPNM.Network.Import()
         net = {}
 
         filename = filename.rsplit('.', maxsplit=1)[0]
@@ -181,11 +169,11 @@ class VTK():
         # Extract connectivity
         conn_element = piece_node.find('Lines').find('DataArray')
         array = VTK._element_to_array(conn_element, 2)
-        network.update({'throat.conns': array})
+        net.update({'throat.conns': array})
         # Extract coordinates
         coord_element = piece_node.find('Points').find('DataArray')
         array = VTK._element_to_array(coord_element, 3)
-        network.update({'pore.coords': array})
+        net.update({'pore.coords': array})
 
         # Extract pore data
         for item in piece_node.find('PointData').iter('DataArray'):
@@ -202,7 +190,9 @@ class VTK():
             propname = key.split('.')[1]
             net.update({element+'.'+propname: array})
 
-        network = _update_network(network=network, net=net, mode=mode)
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
         return network
 
     @staticmethod
@@ -236,6 +226,145 @@ class VTK():
         if n is not 1:
             array = array.reshape(array.size//n, n)
         return array
+
+
+class Statoil():
+    r"""
+    This class is for loading data stored in the 'Statoil' file format.  More
+    specifically, this file format is used by the network extraction code of
+    Blunt's group at Imperial College London, so this class can be used to load
+    and work with those network.  Numerous datasets are available for download
+    from the group's `website <http://tinyurl.com/zurko4q>`_.
+
+    The so-called 'Statoil' format consists of 4 different files in a single
+    folder.  The data is stored in columns with each corresponding to a
+    specific property.  Headers are not provided in the files, so one must
+    refer to various theses and documents to interpret their meaning.
+    """
+    @staticmethod
+    def load(path, prefix, network=None):
+        r"""
+        Load data from the \'dat\' files located in specified folder.
+
+        Parameters
+        ----------
+        path : string
+            The full path to the folder containing the set of \'dat\' files.
+
+        prefix : string
+            The file name prefix on each file. The data files are stored
+            as \<prefix\>_node1.dat.
+
+        network : OpenPNM Network Object
+            If given then the data will be loaded on it and returned.  If not
+            given, a Network will be created and return.
+
+        """
+        net = {}
+
+        # ---------------------------------------------------------------------
+        # Parse the link1 file
+        for item in ['link1']:
+            filename = _os.path.join(path, prefix+'_'+item+'.dat')
+            with _read_file(filename=filename, ext='dat') as f:
+                link1 = _pd.read_table(filepath_or_buffer=f,
+                                       header=None,
+                                       skiprows=1,
+                                       sep=' ',
+                                       skipinitialspace=True,
+                                       index_col=0)
+        link1.columns = ['throat.pore1', 'throat.pore2', 'throat.radius',
+                         'throat.shape_factor', 'throat.total_length']
+        # Add link1 props to net
+        net['throat.conns'] = _sp.vstack((link1['throat.pore1']-1,
+                                          link1['throat.pore2']-1)).T
+        net['throat.conns'] = _sp.sort(net['throat.conns'], axis=1)
+        net['throat.radius'] = _sp.array(link1['throat.radius'])
+        net['throat.shape_factor'] = _sp.array(link1['throat.shape_factor'])
+        net['throat.total_length'] = _sp.array(link1['throat.total_length'])
+        # ---------------------------------------------------------------------
+        # Parse the link2 file
+        for item in ['link2']:
+            filename = _os.path.join(path, prefix+'_'+item+'.dat')
+            with _read_file(filename=filename, ext='dat') as f:
+                link2 = _pd.read_table(filepath_or_buffer=f,
+                                       header=None,
+                                       sep=' ',
+                                       skipinitialspace=True,
+                                       index_col=0)
+        link2.columns = ['throat.pore1', 'throat.pore2',
+                         'throat.pore1_length', 'throat.pore2_length',
+                         'throat.length', 'throat.volume',
+                         'throat.clay_volume']
+        # Add link2 props to net
+        net['throat.length'] = _sp.array(link2['throat.length'])
+        net['throat.volume'] = _sp.array(link2['throat.volume'])
+        net['throat.clay_volume'] = _sp.array(link2['throat.clay_volume'])
+        # ---------------------------------------------------------------------
+        # Parse the node1 file
+        for item in ['node1']:
+            filename = _os.path.join(path, prefix+'_'+item+'.dat')
+            with _read_file(filename=filename, ext='dat') as f:
+                row_0 = f.readline().split(' ')
+                while '' in row_0:
+                    row_0.remove('')
+                num_lines = int(row_0[0])
+                array = _sp.ndarray([num_lines, 6])
+                for i in range(num_lines):
+                    row = f.readline().split(' ')
+                    while '' in row:
+                        row.remove('')
+                    try:
+                        row.remove('\n')
+                    except:
+                        pass
+                    array[i, :] = row[0:6]
+        node1 = _pd.DataFrame(array[:, [1, 2, 3, 4]])
+        node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord',
+                         'pore.coordination_number']
+        # Add node1 props to net
+        net['pore.coords'] = _sp.vstack((node1['pore.x_coord'],
+                                         node1['pore.y_coord'],
+                                         node1['pore.z_coord'])).T
+        # ---------------------------------------------------------------------
+        # Parse the node1 file
+        for item in ['node2']:
+            filename = _os.path.join(path, prefix+'_'+item+'.dat')
+            with _read_file(filename=filename, ext='dat') as f:
+                node2 = _pd.read_table(filepath_or_buffer=f,
+                                       header=None,
+                                       sep=' ',
+                                       skipinitialspace=True,
+                                       index_col=0)
+        node2.columns = ['pore.volume', 'pore.radius', 'pore.shape_factor',
+                         'pore.clay_volume']
+        # Add node2 props to net
+        net['pore.volume'] = _sp.array(node2['pore.volume'])
+        net['pore.radius'] = _sp.array(node2['pore.radius'])
+        net['pore.shape_factor'] = _sp.array(node2['pore.shape_factor'])
+        net['pore.clay_volume'] = _sp.array(node2['pore.clay_volume'])
+
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
+
+        # Use OpenPNM Tools to clean up network
+        # Trim throats connected to 'inlet' or 'outlet' reservoirs
+        trim1 = _sp.where(_sp.any(net['throat.conns'] == -1, axis=1))[0]
+        # Apply 'outlet' label to these pores
+        outlets = network['throat.conns'][trim1, 1]
+        network['pore.outlets'] = False
+        network['pore.outlets'][outlets] = True
+        trim2 = _sp.where(_sp.any(net['throat.conns'] == -2, axis=1))[0]
+        # Apply 'inlet' label to these pores
+        inlets = network['throat.conns'][trim2, 1]
+        network['pore.inlets'] = False
+        network['pore.inlets'][inlets] = True
+        # Now trim the throats
+        trim = _sp.hstack([trim1, trim2])
+        network.trim(throats=trim)
+
+        return network
 
 
 class MAT():
@@ -291,7 +420,7 @@ class MAT():
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
     @staticmethod
-    def load(filename, network={}, mode='overwrite'):
+    def load(filename, network=None):
         r"""
         Loads data onto the given network from an appropriately formatted
         'mat' file (i.e. MatLAB output).
@@ -306,23 +435,11 @@ class MAT():
             The Network object onto which the data should be loaded.  If no
             Network is supplied than one will be created and returned.
 
-        mode : string
-            Specifies how new data is added to the Network.  Options are:
-
-            **'overwrite'** : (Default) This means that any existing data on
-            the Network is over-written by data in the loaded file that has the
-            same property name.
-
-            **'add'** : Only adds values to the network if they are not already
-            present.
-
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
 
         """
-        if network == {}:
-            network = OpenPNM.Network.Import()
         net = {}
 
         import scipy.io as _spio
@@ -350,7 +467,9 @@ class MAT():
             prop = item.split('_', maxsplit=1)[1]
             net[element+'.'+prop] = _sp.squeeze(data[item].T)
 
-        network = _update_network(network=network, net=net, mode=mode)
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
         return network
 
 
@@ -496,7 +615,7 @@ class CSV():
             b.to_csv(f, index=False)
 
     @staticmethod
-    def load(filename, network={}, mode='overwrite'):
+    def load(filename, network=None):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -506,24 +625,11 @@ class CSV():
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
-        mode : string
-            Specifies how new data is added to the Network.  Options are:
-
-            **'overwrite'** : (Default) This means that any existing data on
-            the Network is over-written by data in the loaded file that has the
-            same property name.
-
-            **'add'** : Only adds values to the network if they are not already
-            present.
-
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
 
         """
-        if network == {}:
-            network = OpenPNM.Network.Import()
-        # Instantiate new empty dict
         net = {}
 
         with _read_file(filename=filename, ext='csv') as f:
@@ -555,11 +661,13 @@ class CSV():
                 dtype = type(data[0])
             net[element+'.'+prop] = data.astype(dtype)
 
-        network = _update_network(network=network, net=net, mode=mode)
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
         return network
 
 
-class YAML():
+class NetworkX():
     r"""
     This class is meant specifcally for exchanging data with NetworkX, which
     is a common tool for dealing with network structures.  A network object
@@ -596,7 +704,7 @@ class YAML():
         raise NotImplemented
 
     @staticmethod
-    def load(filename, network={}, mode='overwrite'):
+    def load(filename, network=None):
         r"""
         Add data to an OpenPNM Network from a NetworkX generated YAML file.
 
@@ -610,21 +718,11 @@ class YAML():
             Network is supplied then an empty Import Network is created and
             returned.
 
-        mode : string
-            Specifies how new data is added to the Network.  Options are:
-
-            **'overwrite'** : (Default) This means that any existing data on
-            the Network is over-written by data in the loaded file that has the
-            same property name.
-
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
 
         """
-        if network == {}:
-            network = OpenPNM.Network.Import()
-        # Instantiate new empty dict
         net = {}
 
         # Open file and read first line, to prevent NetworkX instantiation
@@ -688,11 +786,13 @@ class YAML():
                 net['throat.'+item][i] = val
             i += 1
 
-        network = _update_network(network=network, net=net, mode=mode)
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
         return network
 
 
-def _update_network(network, net, mode):
+def _update_network(network, net):
     # Infer Np and Nt from length of given prop arrays in file
     for element in ['pore', 'throat']:
         N = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith(element)]
@@ -701,7 +801,9 @@ def _update_network(network, net, mode):
             if _sp.all(N == N[0]):
                 if (network._count(element) == N[0]) \
                         or (network._count(element) == 0):
-                    net.update({element+'.all': _sp.ones((N[0],), dtype=bool)})
+                    network.update({element+'.all': _sp.ones((N[0],),
+                                                             dtype=bool)})
+                    net.pop(element+'.all', None)
                 else:
                     raise Exception('Length of '+element+' data in file ' +
                                     'does not match network')
@@ -713,12 +815,12 @@ def _update_network(network, net, mode):
     for item in net.keys():
         # Try to infer array types and change if necessary
         # Chcek for booleans disguised and 1's and 0's
-        if (_sp.sum(net[item] == 1) + _sp.sum(net[item] == 0)) \
-                == _sp.shape(net[item])[0]:
+        num0s = _sp.sum(net[item] == 0)
+        num1s = _sp.sum(net[item] == 1)
+        if (num1s + num0s) == _sp.shape(net[item])[0]:
             net[item] = net[item].astype(bool)
-        if mode == 'overwrite':
-            network.update({item: net[item]})
-        elif item not in network:
+        # Write data to network object
+        if item not in network:
             network.update({item: net[item]})
         else:
             logger.warning('\''+item+'\' already present')
@@ -727,7 +829,7 @@ def _update_network(network, net, mode):
 
 def _write_file(filename, ext):
     ext = ext.replace('.', '').lower()
-    if ext not in ['csv', 'yaml', 'mat', 'vtp']:
+    if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
         raise Exception(ext+' is not a supported file extension')
     filename = filename.rstrip('.'+ext)
     filename = filename+'.'+ext
@@ -742,7 +844,7 @@ def _write_file(filename, ext):
 
 def _read_file(filename, ext):
     ext = ext.replace('.', '').lower()
-    if ext not in ['csv', 'yaml', 'mat', 'vtp']:
+    if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
         raise Exception(ext+' is not a supported file extension')
     if not filename.endswith('.'+ext):
         filename = filename+'.'+ext

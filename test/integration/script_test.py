@@ -55,15 +55,24 @@ def test_linear_solvers():
     alg_4.setup()
     alg_4.solve()
 
-    assert round(sp.absolute(alg_1.rate(BC1_pores))[0], 16) == round(sp.absolute(alg_1.rate(BC2_pores))[0], 16)
-    assert round(sp.absolute(alg_2.rate(BC2_pores))[0], 16) == round(sp.absolute(sp.unique(alg_2['pore.'+air.name+'_bcval_Neumann']))[0]*len(BC1_pores), 16)
-    assert round(sp.absolute(alg_3.rate(BC2_pores))[0], 16) == round(sp.absolute(sp.unique(alg_3['pore.'+air.name+'_bcval_Neumann_group']))[0], 16)
-    assert round(sp.absolute(alg_4.rate(BC2_pores))[0], 16) == round(sp.absolute(sp.unique(alg_4['pore.'+air.name+'_bcval_Neumann_group']))[0], 16)
+    assert round(sp.absolute(alg_1.rate(BC1_pores))[0], 16) ==\
+        round(sp.absolute(alg_1.rate(BC2_pores))[0], 16)
+    assert round(sp.absolute(alg_2.rate(BC2_pores))[0], 16) ==\
+        round(sp.absolute(sp.unique(alg_2['pore.bcval_Neumann']))[0] *
+              len(BC1_pores), 16)
+    assert round(sp.absolute(alg_3.rate(BC2_pores))[0], 16) ==\
+        round(sp.absolute(sp.unique(alg_3['pore.bcval_Neumann_group']))[0], 16)
+    assert round(sp.absolute(alg_4.rate(BC2_pores))[0], 16) ==\
+        round(sp.absolute(sp.unique(alg_4['pore.bcval_Neumann_group']))[0], 16)
 
-    assert round(sp.absolute(sp.sum(alg_1.rate(BC1_pores,mode='single'))),16) == round(sp.absolute(alg_1.rate(BC1_pores))[0],16)
-    assert round(sp.absolute(sp.sum(alg_2.rate(BC2_pores,mode='single'))),16) == round(sp.absolute(alg_2.rate(BC2_pores))[0],16)
-    assert round(sp.absolute(sp.sum(alg_3.rate(BC2_pores,mode='single'))),16) == round(sp.absolute(alg_3.rate(BC2_pores))[0],16)
-    assert round(sp.absolute(sp.sum(alg_4.rate(BC2_pores,mode='single'))),16) == round(sp.absolute(alg_4.rate(BC2_pores))[0],16)
+    assert round(sp.absolute(sp.sum(alg_1.rate(BC1_pores, mode='single'))), 16) ==\
+        round(sp.absolute(alg_1.rate(BC1_pores))[0], 16)
+    assert round(sp.absolute(sp.sum(alg_2.rate(BC2_pores, mode='single'))), 16) ==\
+        round(sp.absolute(alg_2.rate(BC2_pores))[0], 16)
+    assert round(sp.absolute(sp.sum(alg_3.rate(BC2_pores, mode='single'))), 16) ==\
+        round(sp.absolute(alg_3.rate(BC2_pores))[0], 16)
+    assert round(sp.absolute(sp.sum(alg_4.rate(BC2_pores, mode='single'))), 16) ==\
+        round(sp.absolute(alg_4.rate(BC2_pores))[0], 16)
 
 
 def test_add_boundary():
@@ -239,7 +248,7 @@ def test_Darcy_alg():
                                    pores=outlets)
     Darcy2.run()
     print('pore pressure for Darcy2 algorithm:')
-    print(Darcy2['pore.'+air.name+'_pressure'])
+    print(Darcy2['pore.pressure'])
     Q = -Darcy2.rate(inlets)
     K = Q*air['pore.viscosity'][0]*divs[2]*Lc/(divs[0]*divs[1]*Lc**2*(P_in-P_out))
     Vp = sp.sum(pn['pore.volume']) + sp.sum(pn['throat.volume'])
@@ -248,7 +257,7 @@ def test_Darcy_alg():
     print('Effective permeability: ', K, '- Porosity: ', e)
 
     a = round(sp.absolute(Darcy1.rate(outlets))[0], 16)
-    pore_prop = 'pore.'+air.name+'_bcval_Neumann_group'
+    pore_prop = 'pore.bcval_Neumann_group'
     b = round(sp.absolute(sp.unique(Darcy1[pore_prop]))[0], 16)
     assert a == b
 
