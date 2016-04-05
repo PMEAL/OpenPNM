@@ -157,8 +157,12 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._AL = access_limited
         if inv_points is None:
             logger.info('Generating list of invasion pressures')
-            min_p = sp.amin(self['throat.entry_pressure']) * 0.98  # nudge down
-            max_p = sp.amax(self['throat.entry_pressure']) * 1.02  # bump up
+            if self._percolation_type == 'bond':
+                min_p = sp.amin(self['throat.entry_pressure']) * 0.98  # nudge down
+                max_p = sp.amax(self['throat.entry_pressure']) * 1.02  # bump up
+            else:
+                min_p = sp.amin(self['pore.entry_pressure']) * 0.98  # nudge down
+                max_p = sp.amax(self['pore.entry_pressure']) * 1.02  # bump up
             inv_points = sp.logspace(sp.log10(min_p),
                                      sp.log10(max_p),
                                      npts)
