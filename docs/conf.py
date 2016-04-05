@@ -45,7 +45,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'OpenPNM'
+project = 'OpenPNM'
 
 year = datetime.datetime.now().year
 copyright = '%d OpenPNM Team' % year
@@ -106,20 +106,23 @@ html_theme_path = [alabaster.get_path()]
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-
+    'logo': 'logo.png',
+    'github_button': 'true',
+    'travis_button': 'true',
+    'codecov_button': 'true',
+    'github_user': 'PMEAL',
+    'github_repo': 'OpenPNM',
+    'show_related': 'true',
+    'font_family': 'verdana',
+    'head_font_family': 'verdana'
 }
-html_sidebars = {
-    '**': [
-        'about.html',
-        'navigation.html',
-        'searchbox.html',
-        'donate.html',
-    ]
-}
+html_sidebars = {'**': ['about.html',
+                        'navigation.html',
+                        'searchbox.html']}
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = "OpenPNM"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None

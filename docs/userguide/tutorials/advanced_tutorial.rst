@@ -8,15 +8,12 @@ In this final tutorial on the use of OpenPNM, simulate pressure drive gas flow t
 
 **Learning Outcomes**
 
-1. Experiment with adding boundary pores
-2. Manipulate Network Topology
-3. Explore the ModelsDict design
-  - Advanced ways of using ``regenerate``
-  - Copying models between objects
-  - Changing model parameters
-4. Combine multiple algorithms
-5. Write a custom pore-scale model
-6. Use the workspace manager to save and load, clone and purge simulations
+#. Experiment with adding boundary pores
+#. Manipulate Network Topology
+#. Explore the ModelsDict design, including copying models between objects, and changing model parameters
+#. Combine multiple algorithms to predict relative permeability
+#. Write a custom pore-scale model
+#. Use the workspace manager to save and load, clone and purge simulations
 
 ===============================================================================
 Build Network Topology

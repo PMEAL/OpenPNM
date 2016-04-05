@@ -4,20 +4,24 @@
 Tutorial 1 of 3: Getting Started with OpenPNM
 ###############################################################################
 
-This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the useful and powerful features of the package.  So if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial deliberately simplifies some steps to provide a more gentle introduction.  The second and third tutorials of this User-Guide dive into the code more deeply, but those features are best appreciated once the basics are understood.
+This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the more useful and powerful features of the package.  So if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial deliberately simplifies some steps to provide a more gentle introduction.  The second and third tutorials of this User-Guide dive into the package more deeply, but those features are best appreciated once the basics are understood.
 
-.. note:: Learn Python the Hard Way
+.. note::
 
-	If you're looking for an excellent online, interactive tutorial on the general use of Python, the `Learn Python the Hard Way <http://learnpythonthehardway.org/book/>`_ book and website are excellent.
+	OpenPNM is written in Python.  One of the best guides to learning Python is the  excellent interactive online tutorial called `Learn Python the Hard Way <http://learnpythonthehardway.org/book/>`_, which was originally a website and is now a book and video series.
+
+	For information on using Numpy, Scipy and generally doing scientific computing in Python checkout the `Scipy lecture notes <http://www.scipy-lectures.org/>`_.
+
+	For users more familiar with Matlab, there is a `Matlab-Numpy cheat sheet <http://mathesaurus.sourceforge.net/matlab-numpy.html>`_ that explains how to translate familiar Matlab commands to Numpy.
 
 
 **Learning Objectives**
 
 #. Grasp the main OpenPNM objects and their roles
 #. Generate a standard cubic **Network** topology
-#. Learn some handy tools for working with objects and networks in particular
+#. Learn some handy tools for working with objects, and networks in particular
 #. Calculate geometrical properties and assign to a **Geometry** object
-#. Perform the typical data read and write operations
+#. Work with the OpenPNM data storage scheme
 #. Use the network topology storage scheme to perform some calculations
 #. Calculate thermophysical properties and assign to a **Phase** object
 #. Define pore-scale physics, and assign transport parameters to a **Physics** object
@@ -304,6 +308,12 @@ To determine the permeability coefficient, we must invoke Darcy's law: Q = KA/uL
 	>>> L = 0.0001*4  # Length of flow path
 	>>> del_P = 101325  # Specified pressure gradient
 	>>> K = Q*mu_w*L/(A*del_P)
+
+The **StokesFlow** class was developed with permeability simulations in mind, so a specific method is available for determining the permeability coefficient that essentially applies to recipe from above.  This method could struggle with non-uniform geometries though, so use with caution:
+
+.. code-block:: python
+
+	>>> K = alg.calc_effective_perm()
 
 The results (``'pore.pressure'``) are held within the ``alg`` object and must be explicitly returned to the ``air`` object by the user if they wish to use these values in a subsequent calculation.  The point of this data containment is to prevent unintentional overwriting of data.  Each algorithm has a method called ``return_results`` which places the pertinent values back onto the appropriate **Phase** object.
 

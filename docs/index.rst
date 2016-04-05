@@ -2,7 +2,9 @@
 OpenPNM: Pore Network Modeling in Python
 ###############################################################################
 
-*OpenPNM* is an open source project aiming to provide the scientific and engineering community with a ready-made framework for performing pore network simulations.  Pore network models have been used for decades among porous media researchers as a way to efficiently model multiphase transport and capillary phenomena in porous media.  The *OpenPNM* framework supplies a means of storing network data, representing network connections, performing queries on the network, adding/removing pores and so on.  OpenPNM also provides a suite of algorithms for performing simulations on the network such as invasion percolation, capillary drainage, mass diffusion, permeability and so on.
+*OpenPNM* is an open source project aiming to provide the scientific and engineering community with a ready-made framework for performing pore network simulations.  Pore network models have been used for decades among porous media researchers as a way to efficiently model multiphase transport and capillary phenomena in porous media.  The *OpenPNM* framework supplies a means of representing network connections, storing geometrical data, c.  
+
+OpenPNM also provides a suite of algorithms for performing simulations on the network such as invasion percolation, capillary drainage, mass diffusion, permeability and so on.
 
 The following code block illustrates how to use OpenPNM to perform a mercury intrusion porosimetry simulation in just 10 lines:
 
@@ -21,20 +23,39 @@ The following code block illustrates how to use OpenPNM to perform a mercury int
     >>> MIP.set_inlets(pores=pn.pores(['top', 'bottom']))
     >>> MIP.run()
 
-The drainage curve can be visualized with ``MIP.plot_drainage_curve()``
+The network can be visualized in `Paraview <http://www.paraview.org>`_ giving the following:
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. image:: http://i.imgur.com/GbUNy0bm.png
+
+The drainage curve can be visualized with ``MIP.plot_drainage_curve()`` giving something like this:
+
+.. image:: http://i.imgur.com/ZxuCictm.png
+
+
+===============================================================================
+Documentation
+===============================================================================
+
+.. toctree::
+    :maxdepth: 2
+
+    userguide/index.rst
+    devguide/index.rst
+    docOpenPNM.rst
+    docExtraSidebar.rst
+
+===============================================================================
 Links
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+===============================================================================
 
   .. list-table::
 
       * - OpenPNM homepage
-	      - http://www.openpnm
+	      - http://www.openpnm.org
       * - Github is used to host the code
-          - http://www.github.com/PMEAL/OpenPNM
+          - https://www.github.com/PMEAL/OpenPNM
       * - Github is also used as the project's issue and bug tracker
-          - http://www.github.com/PMEAL/OpenPNM/issues
+          - https://www.github.com/PMEAL/OpenPNM/issues
       * - Spyder is the recommended IDE when working with OpenPNM
           - https://github.com/spyder-ide/spyder
       * - Paraview is suggested for visualizing OpenPNM data

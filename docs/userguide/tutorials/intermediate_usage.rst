@@ -8,12 +8,12 @@ This tutorial will follow the same outline as the :ref:`getting started tutorial
 
 **Learning Objectives**
 
-1.  Explore different network topologies
-2.  Create a 'heterogeneous' domain with different geometrical properties in different regions
-3.  Learn about data exchange between objects
-4.  Utilize pore-scale models for calculating properties of all types
-5.  Propagate changing geometrical and thermo-physical properties to all dependent properties
-6.  Calculate the permeability tensor for the stratified media
+#.  Explore different network topologies
+#.  Create a 'heterogeneous' domain with different geometrical properties in different regions
+#.  Learn about data exchange between objects
+#.  Utilize pore-scale models for calculating properties of all types
+#.  Propagate changing geometrical and thermo-physical properties to all dependent properties
+#.  Calculate the permeability tensor for the stratified media
 
 ===============================================================================
 Building a Cubic Network
@@ -293,7 +293,7 @@ Just as **Network** objects can retrieve data from separate **Geometries** as a 
 
     >>> gth = water['throat.hydraulic_conductance']
 
-Each **Physics** applies to the same subset for pores and throats as the **Geometries** so its values are distributed spatially, but each **Physics** is also associated with a single **Phase** object.  Consequently, a is logical that a **Phase** object be able to request all of the values within the domain pertaining to itself.  
+Each **Physics** applies to the same subset for pores and throats as the **Geometries** so its values are distributed spatially, but each **Physics** is also associated with a single **Phase** object.  Consequently, a is logical that a **Phase** object be able to request all of the values within the domain pertaining to itself.
 
 ===============================================================================
 Create an Algorithm Object for Performing a Permeability Simulation
