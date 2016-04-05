@@ -38,6 +38,8 @@ class OrdinaryPercolation(GenericAlgorithm):
               invading_phase,
               defending_phase=None,
               t_entry='throat.capillary_pressure',
+              p_entry='pore.capillary_pressure',
+              percolation_type='bond',
               **kwargs):
         r"""
         invading_phase : OpenPNM Phase Object
@@ -49,6 +51,10 @@ class OrdinaryPercolation(GenericAlgorithm):
             no access limitations apply to the invading phase, which is
             equivalent to performaing a standard bond ordinary percolation.
 
+        percolation_type : string
+            Accepted values are 'bond' which must be accompanied by a throat
+            entry pressure argument and 'site' which must be accompanied by a
+            pore entry pressure argument.
 
         Notes
         -----
@@ -58,6 +64,17 @@ class OrdinaryPercolation(GenericAlgorithm):
         pores that have zero-volume, and set these as the inlets.
         """
         self['throat.entry_pressure'] = invading_phase[t_entry]
+        self._percolation_type = percolation_type
+        try:
+            self['pore.entry_pressure'] = invading_phase[p_entry]
+        except:
+            # Pore entry pressures have not been defined so we must perform
+            # bond percolation
+            if percolation_type == 'site':
+                logger.warn('Percolation type defaults to "bond" when pore entry' +
+                            ' pressure is not defined')
+                self._percolation_type = 'bond'
+
         self['pore.inv_Pc'] = sp.inf
         self['throat.inv_Pc'] = sp.inf
         self['pore.inv_sat'] = sp.inf
@@ -140,8 +157,12 @@ class OrdinaryPercolation(GenericAlgorithm):
         self._AL = access_limited
         if inv_points is None:
             logger.info('Generating list of invasion pressures')
-            min_p = sp.amin(self['throat.entry_pressure']) * 0.98  # nudge down
-            max_p = sp.amax(self['throat.entry_pressure']) * 1.02  # bump up
+            if self._percolation_type == 'bond':
+                min_p = sp.amin(self['throat.entry_pressure']) * 0.98  # nudge down
+                max_p = sp.amax(self['throat.entry_pressure']) * 1.02  # bump up
+            else:
+                min_p = sp.amin(self['pore.entry_pressure']) * 0.98  # nudge down
+                max_p = sp.amax(self['pore.entry_pressure']) * 1.02  # bump up
             inv_points = sp.logspace(sp.log10(min_p),
                                      sp.log10(max_p),
                                      npts)
@@ -172,10 +193,13 @@ class OrdinaryPercolation(GenericAlgorithm):
         pressure.
 
         """
-        # Generate a tlist containing boolean values for throat state
-        Tinvaded = self['throat.entry_pressure'] <= inv_val
+        # Generate a list containing boolean values for bond or site state
+        if self._percolation_type == 'bond':
+            invaded = self['throat.entry_pressure'] <= inv_val
+        else:
+            invaded = self['pore.entry_pressure'] <= inv_val
         # Find all pores that can be invaded at specified pressure
-        [pclusters, tclusters] = self._net.find_clusters2(mask=Tinvaded,
+        [pclusters, tclusters] = self._net.find_clusters2(mask=invaded,
                                                           t_labels=True)
         if self._AL:
             # Identify clusters connected to invasion sites
@@ -253,8 +277,6 @@ class OrdinaryPercolation(GenericAlgorithm):
                 self['throat.trapped'][inds] = inv_val
                 inds = (self['throat.trapped'] == 0) * (Cstate == 2)
                 self['throat.trapped'][inds] = inv_val
-        self['pore.trapped'][self['pore.trapped'] > 0] = sp.inf
-        self['throat.trapped'][self['throat.trapped'] > 0] = sp.inf
         self['pore.inv_Pc'][self['pore.trapped'] > 0] = sp.inf
         self['throat.inv_Pc'][self['throat.trapped'] > 0] = sp.inf
 
@@ -338,7 +360,7 @@ class OrdinaryPercolation(GenericAlgorithm):
                 self._def_phase['throat.' + occupancy] = temp
 
     def plot_drainage_curve(self, pore_volume='volume', throat_volume='volume',
-                            pore_label='all', throat_label='all'):
+                            pore_label='all', throat_label='all', fig=None):
         r"""
         Plot drainage capillary pressure curve
         """
@@ -368,7 +390,8 @@ class OrdinaryPercolation(GenericAlgorithm):
             Snwp_t = 1 - Snwp_t
             Snwp_all = 1 - Snwp_all
             PcPoints *= -1
-        fig = plt.figure()
+        if fig is None:
+            fig = plt.figure()
         plt.plot(PcPoints, Snwp_all, 'g.-')
         plt.plot(PcPoints, Snwp_p, 'r.-')
         plt.plot(PcPoints, Snwp_t, 'b.-')

@@ -264,10 +264,12 @@ def porosity(network):
     domain_vol = vertex_dimension(network, network.pores(), parm='volume')
     try:
         pore_vol = np.sum(network['pore.volume'])
+        throat_vol = np.sum(network['throat.volume'])
     except KeyError:
         logger.error('Geometries must be assigned first')
         pore_vol = 0
-    porosity = np.around(pore_vol/domain_vol, 3)
+        throat_vol = 0
+    porosity = np.around((pore_vol+throat_vol)/domain_vol, 3)
     return porosity
 
 
