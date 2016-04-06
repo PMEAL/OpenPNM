@@ -1,6 +1,7 @@
 import OpenPNM
 import os
 from os.path import join
+import pytest
 
 
 class ControllerTest:
@@ -59,7 +60,7 @@ class ControllerTest:
         a = OpenPNM.Network.Cubic(shape=[10, 10, 10])
         self.controller.save_simulation(a, join(TEMP_DIR, 'test_simulation'))
         assert a in self.controller.values()
-        self.controller.purge_object(a, mode='complete')
+        self.controller.clear()
         assert a not in self.controller.values()
         self.controller.load_simulation(join(TEMP_DIR, 'test_simulation'))
         assert a.name in self.controller.keys()
@@ -69,6 +70,28 @@ class ControllerTest:
         self.controller.save_simulation(a)
         self.controller.clear()
         self.controller.load_simulation(a.name)
+
+    def test_load_simulation_duplicate_names(self):
+        a = OpenPNM.Network.Cubic(shape=[10, 10, 10], name='foo')
+        b = OpenPNM.Geometry.GenericGeometry(network=a, pores=a.Ps,
+                                             throats=a.Ts, name='boo')
+        self.controller.save_simulation(a)
+        self.controller.clear()
+        self.controller.load_simulation(a.name)
+        # Will fail since a.name is already present
+        with pytest.raises(Exception):
+            self.controller.load_simulation(a.name)
+        # Change name of a and it will still fail since name of b is present
+        a.name = 'bar'  # Changes name in controller but not file
+        with pytest.raises(Exception):
+            self.controller.load_simulation(a.name)
+        # Ensure old name not in contoller
+        assert 'foo' not in self.controller.keys()
+        # Change name of b and it will finally pass
+        b.name = 'baz'
+        self.controller.load_simulation(a.name)
+        assert 'foo' in self.controller.keys()
+        assert 'boo' in self.controller.keys()
 
     def test_ghost_object(self):
         a = self.controller.ghost_object(self.net)
