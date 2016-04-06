@@ -1,8 +1,32 @@
+.. _front_page:
+
+.. image:: https://badge.fury.io/py/openpnm.svg
+   :target: http://badge.fury.io/py/openpnm
+
+.. image:: https://travis-ci.org/PMEAL/OpenPNM.svg?branch=master
+   :target: https://travis-ci.org/PMEAL/OpenPNM
+
+.. image:: https://img.shields.io/codecov/c/github/PMEAL/OpenPNM.svg?style=flat
+   :target: https://codecov.io/github/PMEAL/OpenPNM
+
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/PMEAL/OpenPNM
+   :target: https://gitter.im/PMEAL/OpenPNM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 ###############################################################################
-OpenPNM: Pore Network Modeling in Python
+OpenPNM Documentation
 ###############################################################################
 
-*OpenPNM* is an open source project aiming to provide the scientific and engineering community with a ready-made framework for performing pore network simulations.  Pore network models have been used for decades among porous media researchers as a way to efficiently model multiphase transport and capillary phenomena in porous media.  The *OpenPNM* framework supplies a means of representing network connections, storing geometrical data, c.  
+.. toctree::
+    :maxdepth: 3
+
+    userguide/index.rst
+
+===============================================================================
+Overview of OpenPNM
+===============================================================================
+
+*OpenPNM* is an open source project aiming to provide the scientific and engineering community with a ready-made framework for performing pore network simulations.  Pore network models have been used for decades among porous media researchers as a way to efficiently model multiphase transport and capillary phenomena in porous media.  The *OpenPNM* framework supplies a means of representing network connections, storing geometrical data, c.
 
 OpenPNM also provides a suite of algorithms for performing simulations on the network such as invasion percolation, capillary drainage, mass diffusion, permeability and so on.
 
@@ -31,38 +55,27 @@ The drainage curve can be visualized with ``MIP.plot_drainage_curve()`` giving s
 
 .. image:: http://i.imgur.com/ZxuCictm.png
 
-
 ===============================================================================
-Documentation
-===============================================================================
-
-.. toctree::
-    :maxdepth: 2
-
-    userguide/index.rst
-    devguide/index.rst
-    docOpenPNM.rst
-    docExtraSidebar.rst
-
-===============================================================================
-Links
+Related Links
 ===============================================================================
 
-  .. list-table::
+.. list-table::
 
-      * - OpenPNM homepage
-	      - http://www.openpnm.org
-      * - Github is used to host the code
-          - https://www.github.com/PMEAL/OpenPNM
-      * - Github is also used as the project's issue and bug tracker
-          - https://www.github.com/PMEAL/OpenPNM/issues
-      * - Spyder is the recommended IDE when working with OpenPNM
-          - https://github.com/spyder-ide/spyder
-      * - Paraview is suggested for visualizing OpenPNM data
-          - http://www.paraview.org
-      * - Scipy is a major component of OpenPNM
-          - http://www.scipy.org
-      * - Anaconda is the recommended way to setup a numerical Python environment
-          - https://www.continuum.io/downloads
-      * - OpenPNM is offered under an MIT License
-          - http://opensource.org/licenses/MIT
+    * - OpenPNM Homepage
+        - http://openpnm.org
+    * - Github is used to host the code
+        - https://www.github.com/PMEAL/OpenPNM
+    * - Github is also used as the project's issue and bug tracker
+        - https://www.github.com/PMEAL/OpenPNM/issues
+    * - Spyder is the recommended IDE when working with OpenPNM
+        - https://github.com/spyder-ide/spyder
+    * - Paraview is suggested for visualizing OpenPNM data
+        - http://www.paraview.org
+    * - Scipy is a major component of OpenPNM
+        - http://www.scipy.org
+    * - Anaconda is the most general way to setup a numerical Python environment
+        - https://www.continuum.io/downloads
+    * - WinPython is a slightly easier way to use numerical Python on Windows
+        - https://github.com/winpython/winpython
+    * - OpenPNM is offered under an MIT License
+        - http://opensource.org/licenses/MIT

@@ -28,8 +28,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.inheritance_diagram',
               'sphinx.ext.graphviz',
               'numpydoc',
-              'alabaster']
-[extensions]
+              'sphinxjp.themes.basicstrap']
+
 todo_include_todos=True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -83,7 +83,7 @@ exclude_patterns = ['_build']
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+#pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -91,45 +91,30 @@ pygments_style = 'sphinx'
 
 # -- Options for HTML output ---------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#html_theme = "sphinx_rtd_theme"
-#html_theme = "sphinxdoc"
-#html_theme = "bootstrap"
-html_theme = "alabaster"
-#html_theme = "solar"
-
-# Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [alabaster.get_path()]
+# The theme to use for HTML and HTML Help pages.
+html_theme = 'basicstrap'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'logo': 'logo.png',
-    'github_button': 'true',
-    'travis_button': 'true',
-    'codecov_button': 'true',
-    'github_user': 'PMEAL',
-    'github_repo': 'OpenPNM',
-    'show_related': 'true',
-    'font_family': 'verdana',
-    'head_font_family': 'verdana'
+   'header_inverse': False,
+   'relbar_inverse': False,
+   'inner_theme': True,
+   'inner_theme_name': 'bootswatch-paper',
+   'sidebar_span': 3,
 }
-html_sidebars = {'**': ['about.html',
-                        'navigation.html',
-                        'searchbox.html']}
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 html_title = "OpenPNM"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+html_short_title = "OpenPNM: An open-source pore network modeling package"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = 'logosmall.png'
+html_logo = '_static/logo.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

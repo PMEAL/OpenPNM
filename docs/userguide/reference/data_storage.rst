@@ -1,7 +1,7 @@
 .. _data_storage:
 
 ###############################################################################
-Data Storage Format in OpenPNM
+Data Storage in OpenPNM
 ###############################################################################
 
 Each OpenPNM Core object is a Python *dictionary* which is similar to a structured variable or *struct* in other languages.  This allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.  All pore and throat data are stored as vectors or lists, of either *Np* or *Nt* length representing the number of pores and throats on the object, respectively.  This means that each pore (or throat) has a number, and all properties for that pore (or throat) are stored in the array corresponding to that number.  Thus, the diameter for pore 15 is stored in the ``'pore.diameter'`` array in element 15, and the length of throat 32 is stored in the ``'throat.length'`` array at element 32.
