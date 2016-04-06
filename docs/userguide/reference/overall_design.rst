@@ -1,7 +1,7 @@
-.. _class_hierarchy:
+.. _overall_design:
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Class Hierarchy in OpenPNM
+Overall Design of OpenPNM
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 The design of OpenPNM is to separate different types of properties between different objects.  There are 5 types: **Network**, **Geometry**, **Phase**, **Physics**, and **Algorithms**.  Each of these are described in more detail below, but their names clearly indicate what sort of data or calculations are assigned to each.
 

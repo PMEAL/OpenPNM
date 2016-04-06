@@ -7,7 +7,7 @@ OpenPNM has functions for importing and exporting data in various formats that a
 
 .. note::
 
-    Exporting data to these file formats is **NOT** the recommended way to save and load OpenPNM Simulations, as lots of key information is lost (only numerical values are exported or imported).  To save and load simulations, use the methods available on the **Workspace** as described in :ref: `workspace`.
+    Exporting data to these file formats is **NOT** the recommended way to save and load OpenPNM Simulations, as lots of key information is lost (only numerical values are exported or imported).  To save and load simulations, use the methods available on the **Workspace** as described in :ref:`workspace`.
 
 ===============================================================================
 Exporting Data

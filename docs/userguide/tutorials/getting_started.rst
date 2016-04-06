@@ -6,11 +6,13 @@ Tutorial 1 of 3: Getting Started with OpenPNM
 
 This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the more useful and powerful features of the package.  So if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial deliberately simplifies some features to provide a more gentle introduction.  The second and third tutorials of this User-Guide dive into the package more deeply, but those features are best appreciated once the basics are understood.
 
-* OpenPNM is written in Python.  One of the best guides to learning Python is the  excellent interactive online tutorial called `Learn Python the Hard Way <http://learnpythonthehardway.org/book/>`_, which was originally a website and is now a book and video series.
+.. hint:: Python and Numpy Tutorials
 
-* For information on using Numpy, Scipy and generally doing scientific computing in Python checkout the `Scipy lecture notes <http://www.scipy-lectures.org/>`_.
+	* OpenPNM is written in Python.  One of the best guides to learning Python is the  excellent interactive online tutorial called `Learn Python the Hard Way <http://learnpythonthehardway.org/book/>`_, which was originally a website and is now a book and video series.
 
-* For users more familiar with Matlab, there is a `Matlab-Numpy cheat sheet <http://mathesaurus.sourceforge.net/matlab-numpy.html>`_ that explains how to translate familiar Matlab commands to Numpy.
+	* For information on using Numpy, Scipy and generally doing scientific computing in Python checkout the `Scipy lecture notes <http://www.scipy-lectures.org/>`_.
+
+	* For users more familiar with Matlab, there is a `Matlab-Numpy cheat sheet <http://mathesaurus.sourceforge.net/matlab-numpy.html>`_ that explains how to translate familiar Matlab commands to Numpy.
 
 
 **Learning Objectives**
@@ -53,7 +55,7 @@ Each of the above objects is a *subclass* of the Python *dictionary* or *dict*, 
 	>>> sorted(foo.keys())  # Inspect all entries
 	['bar', 'baz']
 
-A more detailed tutorial on dictionaries `can be found here <http://learnpythonthehardway.org/book/ex39.html>`_.  The *dict* does not offer much functionality aside from this basic storage, and it is in fact meant to be extended.  OpenPNM extends the *dict* to have functionality specifically suited for dealing with OpenPNM data.  Awareness of these 5 main object types and a familiarity with the *dict* syntax is sufficient for this tutorial, but a more information can be found in the :ref:`class_hierarchy`.
+A more detailed tutorial on dictionaries `can be found here <http://learnpythonthehardway.org/book/ex39.html>`_.  The *dict* does not offer much functionality aside from this basic storage, and it is in fact meant to be extended.  OpenPNM extends the *dict* to have functionality specifically suited for dealing with OpenPNM data.  Awareness of these 5 main object types and a familiarity with the *dict* syntax is sufficient for this tutorial, but a more information can be found in the :ref:`overall_design`.
 
 ===============================================================================
 Build a Cubic Network
@@ -97,7 +99,7 @@ As mentioned above, each of the main objects in OpenPNM are Python *dicts* with 
 	>>> pn.props()
 	['pore.coords', 'pore.index', 'throat.conns']
 
-More information about these various functions is given in :ref:`class_hierarchy`.
+More information about these various functions is given in :ref:`overall_design`.
 
 -------------------------------------------------------------------------------
 Tools for Querying Network Topology
