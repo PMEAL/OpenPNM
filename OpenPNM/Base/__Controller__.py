@@ -295,6 +295,9 @@ class Controller(dict):
             self[net.name] = net
         else:
             raise Exception('Simulation with that name is already present')
+        for item in net._phases + net._physics + net._geometries:
+            if item.name not in self.keys():
+                self[item.name] = item
 
     def save(self, filename=''):
         r"""
