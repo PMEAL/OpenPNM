@@ -9,21 +9,7 @@ from OpenPNM.Network import GenericNetwork
 import OpenPNM.Phases.models
 from OpenPNM.Base import Core, Tools, logging
 import scipy as sp
-from collections import namedtuple
 logger = logging.getLogger(__name__)
-
-
-class PhysicalConstants:
-    r"""
-    A generic object contain the intrinsic properties of the Phase
-    """
-    molecular_weight = None
-    critical_pressure = None
-    critical_temperature = None
-    melting_point = None
-    freezing_point = None
-    antoines_coefficients = namedtuple('antoines_coefficients',
-                                       ('A', 'B', 'C'))
 
 
 class GenericPhase(Core):
@@ -173,5 +159,3 @@ class GenericPhase(Core):
         health['overlapping_throats'] = sp.where(Ttemp > 1)[0].tolist()
         health['undefined_throats'] = sp.where(Ttemp == 0)[0].tolist()
         return health
-
-    physical_constants = PhysicalConstants()
