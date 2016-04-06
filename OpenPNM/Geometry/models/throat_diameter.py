@@ -140,11 +140,12 @@ def meanpore(network, geometry, factor=None, **kwargs):
     diameters. If zero (in case of boundaries) take it to be the maximum of
     the connecting pore diameters
     """
+    import numpy as np
     gTs = geometry.throats()
     nTs = geometry.map_throats(network, gTs)
     pDs = network["pore.diameter"][network["throat.conns"][nTs]]
-    value = _sp.mean(pDs, axis=1)
-    value[value == 0.0] = _sp.max(pDs, axis=1)[value == 0.0]
+    value = np.mean(pDs, axis=1)
+    value[value == 0.0] = np.max(pDs, axis=1)[value == 0.0]
     if factor is not None:
         value *= factor
     return value
