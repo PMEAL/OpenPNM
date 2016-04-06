@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from collections import _namedtuple
+from collections import namedtuple as _namedtuple
 
 
 class PhysicalConstants:
