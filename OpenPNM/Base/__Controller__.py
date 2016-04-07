@@ -302,7 +302,8 @@ class Controller(dict):
             else:
                 raise Exception('An object with that name is already present')
         # If no exceptions, then transfer objects to self
-        self.update(temp_dict)
+        for item in temp_dict.values():
+            item.controller = self
 
     def save(self, filename=''):
         r"""

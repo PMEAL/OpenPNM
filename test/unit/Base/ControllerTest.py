@@ -74,24 +74,23 @@ class ControllerTest:
     def test_load_simulation_duplicate_names(self):
         a = OpenPNM.Network.Cubic(shape=[10, 10, 10], name='foo')
         b = OpenPNM.Geometry.GenericGeometry(network=a, pores=a.Ps,
-                                             throats=a.Ts, name='boo')
+                                             throats=a.Ts, name='bar')
         self.controller.save_simulation(a)
         self.controller.clear()
         self.controller.load_simulation(a.name)
         # Will fail since a.name is already present
         with pytest.raises(Exception):
             self.controller.load_simulation(a.name)
+        # Update a and b with newly loaded objects
+        a = self.controller['foo']
+        b = self.controller['bar']
         # Change name of a and it will still fail since name of b is present
-        a.name = 'bar'  # Changes name in controller but not file
+        a.name = 'boo'  # Changes name in controller but not file
         with pytest.raises(Exception):
             self.controller.load_simulation(a.name)
-        # Ensure old name not in contoller
-        assert 'foo' not in self.controller.keys()
         # Change name of b and it will finally pass
         b.name = 'baz'
-        self.controller.load_simulation(a.name)
-        assert 'foo' in self.controller.keys()
-        assert 'boo' in self.controller.keys()
+        self.controller.load_simulation('foo')
 
     def test_ghost_object(self):
         a = self.controller.ghost_object(self.net)
