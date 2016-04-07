@@ -7,7 +7,7 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-    
+
 sys.path.append(os.getcwd())
 
 main_ = {}
@@ -48,7 +48,9 @@ setup(
         'scipy>=0.14.0',
         'matplotlib',
         'scikit-image',
-        'transforms3d'
+        'transforms3d',
+        'dill',
+        'pandas',
     ],
     author = 'OpenPNM Team',
     author_email = 'jeff.gostick@mcgill.ca',

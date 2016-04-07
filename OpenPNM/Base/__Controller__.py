@@ -3,7 +3,7 @@
 Controller:  Overall controller class
 ###############################################################################
 """
-import pickle as _pickle
+import dill as _pickle
 import copy as _copy
 import time
 import random
