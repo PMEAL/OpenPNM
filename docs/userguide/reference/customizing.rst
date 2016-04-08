@@ -1,13 +1,13 @@
 .. _customizing:
 
 ===============================================================================
-Customizing OpenPNM
+Customizing
 ===============================================================================
 The OpenPNM framework was designed specifically with extensibility and customization in mind.  Every user will apply OpenPNM to a unique problem, and will therefore require unique pore scale models, phase properties, algorithms and so on.
 
 There are two ways to customize OpenPNM.  The first is to download the source code and *hack* it.  With this approach it is possible to create your own sub-classes, add pore-scale models, define new topology generators, and to add or change OpenPNM methods.  The other approach is to install OpenPNM in your Python PATH (using ``pip install openpnm``) as with any other package such as Scipy, and write custom functions in a separate 'working directory' rather than in the source code.  In this scenario, you can perform all of the same customizations as the first approach, with the exception of changing OpenPNM's native methods (in fact even this is possible, but that's another story).  The second approach is the recommended way for several reasons.  It avoids accidental changes to the framework, it allows users to keep their 'projects' compartmentalized, and it is much easier for users to contribute their work to OpenPNM project (which we highly encourage) since sections can be 'cut and pasted' or 'merged' into the framework cleanly.  The second approach will be explained in detail below.
 
-The following discussions assume that all custom files will be stored in a folder called ``my_pnm``, that will be the 'working directory'.  
+The following discussions assume that all custom files will be stored in a folder called ``my_pnm``, that will be the 'working directory'.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Creating Custom Models

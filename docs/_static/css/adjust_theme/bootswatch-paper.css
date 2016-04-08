@@ -1,49 +1,8 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Table
-   ---------------------------------------------------------*/
-
-table.docutils {
-  border-color: #dddddd;
-}
-table.docutils th,
-table.docutils td
-{
-  border-color: #dddddd;
-}
-table.docutils tbody + tbody {
-  border-color: #dddddd;
-}
-
-/* Table-bordered
-   ---------------------------------------------------------*/
-
-table.table-bordered {
-  border-color: #dddddd;
-}
-
 /* -- admonition -- */
 div.admonition {
-  color: #ffffff;
-  background-color: #f19842;
-  border-color: #f19842;
+    color: #c09853;
+    background-color: #fcf8e3;
+    border: 1px solid #fbeed5;
 }
 
 /* -- danger, error -- */
@@ -72,8 +31,8 @@ div.hint, div.tip {
 }
 
 div.topic {
-  background-color: ;
-  border-color: #dddddd;
+    background-color: ;
+    border-color: #dddddd;
 }
 
 h1, .h1 {

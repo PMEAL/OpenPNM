@@ -1,7 +1,7 @@
 .. _data_storage:
 
 ###############################################################################
-Data Storage in OpenPNM
+Data Storage
 ###############################################################################
 
 Each OpenPNM Core object is a Python *dictionary* which is similar to a structured variable or *struct* in other languages.  This allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.  All pore and throat data are stored as vectors or lists, of either *Np* or *Nt* length representing the number of pores and throats on the object, respectively.  This means that each pore (or throat) has a number, and all properties for that pore (or throat) are stored in the array corresponding to that number.  Thus, the diameter for pore 15 is stored in the ``'pore.diameter'`` array in element 15, and the length of throat 32 is stored in the ``'throat.length'`` array at element 32.
@@ -17,12 +17,12 @@ Several rules have been implemented to control the integrity of the data:
 ===============================================================================
 Properties and Labels
 ===============================================================================
-OpenPNM differentiates between two types of data for pores and throats: *properties* and *labels*.  The only difference between these is that *labels* are Boolean arrays (True / False), while *properties* are numerical data types.
+OpenPNM differentiates between two types of data for pores and throats: *properties* and *labels*.  The only difference between these is that *labels* are Boolean arrays (True / False), while *properties* are all other types, typically numerical data.
 
 -------------------------------------------------------------------------------
 Properties (aka Data)
 -------------------------------------------------------------------------------
-The physical details about pores and throats is referred to as *properties*, which includes information such as *pore volume* and *throat length*.  Properties are accessed using Python dictionary syntax to access the array of choice, then Numpy array indexing to access the pore or throat locations of choice:
+The physical details about pores and throats are referred to as *properties*, which includes information such as *pore volume* and *throat length*.  Properties are accessed using Python dictionary syntax to access the array of choice, then Numpy array indexing to access the pore or throat locations of choice:
 
 .. code-block:: python
 

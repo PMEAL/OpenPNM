@@ -102,7 +102,7 @@ html_theme_options = {
    'relbar_inverse': False,
    'inner_theme': True,
    'inner_theme_name': 'bootswatch-paper',
-   'sidebar_span': 3,
+   'sidebar_span': 2,
 }
 
 # The name for this set of Sphinx documents.  If None, it defaults to

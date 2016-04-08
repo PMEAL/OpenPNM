@@ -14,17 +14,16 @@ This tutorial is intended to show the basic outline of how OpenPNM works, and ne
 
 	* For users more familiar with Matlab, there is a `Matlab-Numpy cheat sheet <http://mathesaurus.sourceforge.net/matlab-numpy.html>`_ that explains how to translate familiar Matlab commands to Numpy.
 
-
 **Learning Objectives**
 
 #. Grasp the main OpenPNM objects and their roles
 #. Generate a standard cubic **Network** topology
 #. Learn some handy tools for working with objects, and networks in particular
-#. Calculate geometrical properties and assign to a **Geometry** object
-#. Work with the OpenPNM data storage scheme
+#. Calculate geometrical properties and assign them to a **Geometry** object
+#. Explore the way OpenPNM stores data
 #. Use the network topology storage scheme to perform some calculations
 #. Calculate thermophysical properties and assign to a **Phase** object
-#. Define pore-scale physics, and assign transport parameters to a **Physics** object
+#. Define pore-scale physics and assign transport parameters to a **Physics** object
 #. Run a permeability simulation using the pre-defined **Algorithm**
 
 ===============================================================================
@@ -36,11 +35,11 @@ OpenPNM employs 5 main objects which each store and manage a different type of d
 =============  ====
 Name           Role
 =============  ====
-**Network**    Manages the topological data such as pore locations and pore-to-pore connections
-**Geometry**   Manages the geometrical properties such as pore diameter and throat length
-**Phase**      Manages the thermophysical properties such as temperature and viscosity
-**Physics**    Manages the pore-scale transport parameters such as hydraulic conductance
-**Algorithm**  Contains the algorithms that use the data from other objects to perform simulations, such as diffusion or drainage
+**Network**    Manages topological data such as pore spatial locations and pore-to-pore connections
+**Geometry**   Manages geometrical properties such as pore diameter and throat length
+**Phase**      Manages thermophysical properties such as temperature and viscosity
+**Physics**    Manages pore-scale transport parameters such as hydraulic conductance
+**Algorithm**  Contains algorithms that use the data from other objects to perform simulations, such as diffusion or drainage
 =============  ====
 
 Each of the above objects is a *subclass* of the Python *dictionary* or *dict*, which is a very general storage container that allows values to be accessed by a name:
@@ -158,15 +157,13 @@ We'll start by assigning diameters to each pore from a random distribution, span
 
 	>>> geom['pore.diameter'] = sp.rand(pn.Np)*0.0001
 
-This line illustrates a key point about data storage rules in OpenPNM:  All dictionary entries must start with either ``'pore.'`` or ``'throat.'``.  The reason for this is that OpenPNM forces arrays to be of the appropriate length (either *Nt* or *Np* long), which it infers from the name of the array.  Attempts to write arrays of the wrong length are blocked:
+This line illustrates a key point about :ref:`data_storage` rules in OpenPNM:  All dictionary entries must start with either ``'pore.'`` or ``'throat.'``.  The reason for this is that OpenPNM forces arrays to be of the appropriate length (either *Nt* or *Np* long), which it infers from the name of the array.  Attempts to write arrays of the wrong length are blocked:
 
 .. code-block:: python
 
 	>>> geom['foo'] = sp.ones(pn.Np)  # Will result in an exception
 	>>> geom['pore.foo'] = sp.ones(pn.Np - 2)  # Will result in an error message
 	>>> geom['throat.foo'] = sp.one(pn.Np)  # Also gives an error message
-
-This is outlined in detail in :ref:`data_storage`.
 
 Returning to the definition of **Geometry** properties, we usually want the throat diameters to always be smaller than the two pores which it connects to maintain physical consistency. This requires understanding a little bit about how OpenPNM stores network topology.  Consider the following:
 
@@ -214,7 +211,7 @@ The volume of each throat is found assuming a cylinder:
 
 The basic geometrical properties of the network are now defined.  The **Geometry** class possesses a method called ``plot_histograms`` that produces a plot of the most pertinent geometrical properties.  The following figure doesn't look very good since the network in this example has only 12 pores, but the utility of the plot for quick inspection is apparent.
 
-.. image:: http://i.imgur.com/xkK1TYf.png
+.. image:: http://i.imgur.com/xkK1TYfm.png
 
 ===============================================================================
 Creating a Phase Object
@@ -241,7 +238,7 @@ Now it is necessary to fill this **Phase** object with the desired thermophysica
 		>>> water['pore.temperature'] = 298.0
 		>>> water['pore.viscosity'] = 0.001
 
-The above code block highlight another key feature of data storage in OpenPNM.  When a scalar value is written to an object it is extended to a vector of the appropriate length (either *Np* or *Nt*) depending on the name of the array.  Although this is slightly wasteful of memory, it vastly simplifies data access since all values are explicitly defined on every pore and throat:
+The above code block highlight another key feature of :ref:`data_storage` in OpenPNM.  When a scalar value is written to an object it is extended to a vector of the appropriate length (either *Np* or *Nt*) depending on the name of the array.  Although this is slightly wasteful of memory, it vastly simplifies data access since all values are explicitly defined on every pore and throat:
 
 .. code-block:: python
 
@@ -251,8 +248,6 @@ The above code block highlight another key feature of data storage in OpenPNM.  
 	12
 	>>> water['pore.temperature'][10]
 	298.0
-
-This behavior is outlined further in :ref:`data_storage`.
 
 ===============================================================================
 Creating a Physics Object
@@ -265,7 +260,7 @@ We are still not ready to perform any simulations.  The last step is to define t
 	>>> phys_water = OpenPNM.Physics.GenericPhysics(network=pn, phase=water, geometry=geom)
 
 
-* As with all objects, the network must be specified
+* As with all objects, the ``Network`` must be specified
 
 * **Physics** objects combine information from a **Phase** (i.e. viscosity) and a **Geometry** (i.e. throat diameter), so each of these must be specified.
 
@@ -289,7 +284,7 @@ The viscosity of the **Phases** was only defined in the pores; however, the hydr
 	>>> mu_w = 0.001
 	>>> phys_water['throat.hydraulic_conductance'] = 3.14159*R**4/(8*mu_w*L)
 
-* Numpy arrays can be manipulated using *vectorized* notation.  In the above line both ``L`` and ``R`` are arrays of *Nt*-length.  Their multiplication in this way results in another array that is also *Nt*-long.
+Numpy arrays can be manipulated using *vector* syntax.  In the above line both ``L`` and ``R`` are arrays of *Nt*-length.  Their multiplication in this way results in another array that is also *Nt*-long.
 
 ===============================================================================
 Create an Algorithm Object for Performing a Permeability Simulation

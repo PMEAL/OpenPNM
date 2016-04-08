@@ -1,14 +1,20 @@
 .. _overall_design:
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Overall Design of OpenPNM
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+###############################################################################
+Overall Design
+###############################################################################
+
 The design of OpenPNM is to separate different types of properties between different objects.  There are 5 types: **Network**, **Geometry**, **Phase**, **Physics**, and **Algorithms**.  Each of these are described in more detail below, but their names clearly indicate what sort of data or calculations are assigned to each.
+
+The image below outlines how each of the main objects in OpenPNM descend from the Python ``dict`` class.  Using the Object Oriented Programming (OOP) paradigm, each of the main OpenPNM objects actually descend from a common class called **Core**.  The **Core** class defines the majority of the functionality, which is then enhanced and extended by each descendent.  This extra functionality is explored in more detail for each main object in the sections below.
+
+.. image:: http://i.imgur.com/k4Far1W.png
+   :width: 800 px
+   :align: center
 
 ===============================================================================
 Core
 ===============================================================================
-Using the Object Oriented Programming (OOP) paradigm, each of the above objects actually descends from a common class called **Core**.  The **Core** class defines the majority of the functionality, which is then enhanced and extended by each descendent.
 
 **Core** is a subclass of the Python Dictionary or ``dict``.  A ``dict`` is a very handy data structure that can store any piece of data by name, using the following:
 
@@ -68,7 +74,7 @@ Returns a list of pore or throat indices.  Both optionally accept a list of labe
     ~OpenPNM.Base.Core.Ts
 
 -------------------------------------------------------------------------------
-4.  Converting Between Masks and Indicies
+4.  Converting Between Masks and Indices
 -------------------------------------------------------------------------------
 These methods allow the conversion between numeric indices and Boolean masks.
 
@@ -245,7 +251,7 @@ Inspects that all pores and throats have been assigned to a **Physics** object.
     ~OpenPNM.Phases.GenericPhase.check_physics_health
 
 -------------------------------------------------------------------------------
-2.  Check to Health of a Mixture Phase
+2.  Check the Health of a Mixture Phase
 -------------------------------------------------------------------------------
 Mixtures are not fully implemented yet, but this makes sure all mole fractions sum to 1.
 
@@ -282,11 +288,11 @@ Algorithms
 Depending on the **Algorithm** in question, the additional methods can vary.  Most have:
 
 -------------------------------------------------------------------------------
-1.  ``setup``
+1.  Specifying Setup Parameters
 -------------------------------------------------------------------------------
 This method is called to specify some of the optional parameters
 
 -------------------------------------------------------------------------------
-2.  ``set_boundary_conditions``
+2.  Setting Boundary Conditions
 -------------------------------------------------------------------------------
 Used to specify the boundary conditions of the simulation.  Some methods also include ``set_inlets`` and ``set_outlets``.

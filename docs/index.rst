@@ -1,3 +1,4 @@
+|
 .. _front_page:
 
 .. image:: https://badge.fury.io/py/openpnm.svg
@@ -14,8 +15,31 @@
    :target: https://gitter.im/PMEAL/OpenPNM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 ###############################################################################
-OpenPNM Documentation
+Overview of OpenPNM
 ###############################################################################
+
+*OpenPNM* is an open source project aiming to provide porous media researchers with a ready-made framework for performing a wide range of pore network simulations.
+
+.. list-table:: **Summary of key capabilities offered by OpenPNM**
+
+    * - **Defines a universal means of representing any network topology**
+      - Based on a sparse representation of the adjacency matrix using principles from graph theory
+    * - **Provides a set of tools for querying, inspecting, and manipulating topology**
+      - Including finding neighboring pores, labeling specific locations, adding or removing pores and throats, joining networks, subdividing and merging pores to create multiscale models, and much more
+    * - **Generate various network topologies**
+      - Includes network generators for creating cubic or random networks with arbitrary connectivity
+    * - **Stores pore and throat property data in vectorized format**
+      - Allows for fast calculations even on large networks, and support for the familiar and advanced array access features such as direct indexing, slicing, Boolean masking, etc.
+    * - **Includes a sophisticated mechanism for calculating the pore-scale properties**
+      - A wide assortment of pore-scale transport parameters, pore size calculations, and thermophysical property models are included, and new models can easily be created by users for their specific problem
+    * - **Ships with a suite of algorithms for performing network simulations**
+      - Includes invasion percolation, capillary drainage, mass diffusion, permeability and so on.
+    * - **Supports saving, loading, importing and exporting data in numerous formats**
+      - Allows importing networks generated or extracted by other code, and exporting data for post-processing and visualization, as well as a native format for saving and loading complete simulations for future analysis
+
+===============================================================================
+Documentation
+===============================================================================
 
 .. toctree::
     :maxdepth: 3
@@ -23,12 +47,8 @@ OpenPNM Documentation
     userguide/index.rst
 
 ===============================================================================
-Overview of OpenPNM
+Example Usage
 ===============================================================================
-
-*OpenPNM* is an open source project aiming to provide the scientific and engineering community with a ready-made framework for performing pore network simulations.  Pore network models have been used for decades among porous media researchers as a way to efficiently model multiphase transport and capillary phenomena in porous media.  The *OpenPNM* framework supplies a means of representing network connections, storing geometrical data, c.
-
-OpenPNM also provides a suite of algorithms for performing simulations on the network such as invasion percolation, capillary drainage, mass diffusion, permeability and so on.
 
 The following code block illustrates how to use OpenPNM to perform a mercury intrusion porosimetry simulation in just 10 lines:
 
@@ -49,11 +69,17 @@ The following code block illustrates how to use OpenPNM to perform a mercury int
 
 The network can be visualized in `Paraview <http://www.paraview.org>`_ giving the following:
 
-.. image:: http://i.imgur.com/GbUNy0bm.png
+.. image:: http://i.imgur.com/GbUNy0b.png
+   :width: 500 px
+   :align: center
 
 The drainage curve can be visualized with ``MIP.plot_drainage_curve()`` giving something like this:
 
-.. image:: http://i.imgur.com/ZxuCictm.png
+.. image:: http://i.imgur.com/ZxuCict.png
+   :width: 500 px
+   :align: center
+
+A collection of examples has been started as a new Github repository: `OpenPNM-Examples <https://www.github.com/PMEAL/OpenPNM-Examples>`_.
 
 ===============================================================================
 Related Links
@@ -62,20 +88,29 @@ Related Links
 .. list-table::
 
     * - OpenPNM Homepage
-        - http://openpnm.org
+      - http://openpnm.org
     * - Github is used to host the code
-        - https://www.github.com/PMEAL/OpenPNM
+      - https://www.github.com/PMEAL/OpenPNM
     * - Github is also used as the project's issue and bug tracker
-        - https://www.github.com/PMEAL/OpenPNM/issues
-    * - Spyder is the recommended IDE when working with OpenPNM
-        - https://github.com/spyder-ide/spyder
-    * - Paraview is suggested for visualizing OpenPNM data
-        - http://www.paraview.org
+      - https://www.github.com/PMEAL/OpenPNM/issues
+    * - A collection of examples using OpenPNM is available in a separate repository
+      - https://www.github.com/PMEAL/OpenPNM-Examples
     * - Scipy is a major component of OpenPNM
-        - http://www.scipy.org
+      - http://www.scipy.org
     * - Anaconda is the most general way to setup a numerical Python environment
-        - https://www.continuum.io/downloads
+      - https://www.continuum.io/downloads
     * - WinPython is a slightly easier way to use numerical Python on Windows
-        - https://github.com/winpython/winpython
+      - https://github.com/winpython/winpython
+    * - Spyder is the recommended IDE when working with OpenPNM
+      - https://github.com/spyder-ide/spyder
+    * - Paraview is suggested for visualizing OpenPNM data
+      - http://www.paraview.org
     * - OpenPNM is offered under an MIT License
-        - http://opensource.org/licenses/MIT
+      - http://opensource.org/licenses/MIT
+
+
+.. |network| image:: http://i.imgur.com/jgAGgOW.png
+   :width: 40 px
+
+.. |neighbors| image:: http://i.imgur.com/gjBYQPP.png
+   :width: 40 px

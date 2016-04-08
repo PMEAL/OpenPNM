@@ -78,6 +78,7 @@ Loading a simulation that was previously saved to a file is equally straightforw
 ===============================================================================
 Save and Load Individual Simulations
 ===============================================================================
+
 Instead of saving the entire workspace it is also possible to save individual simulations.  For instance, if multiple networks have been defined but only one of them is of interest, then that **Network** along with all the **Geometry**, **Phase**, and **Physics** objects which were associated with it can be saved using ``mgr.save_simulation``.
 
 .. code-block:: python
@@ -112,11 +113,13 @@ The ``save_simulation`` and ``load_simulation`` methods are ideal when running l
 ===============================================================================
 Import and Export Data
 ===============================================================================
+
 The **Workspace** manager has methods to ``import_data`` and ``export_data``.  These are wrapper methods for the actual methods found in ``Utilities.IO``.  These wrapper or helper methods accept several arguments that control which type of file is imported or exported.  The actual import and export is explained fully in :ref:`data_IO`.
 
 ===============================================================================
 Object Lookup
 ===============================================================================
+
 Each OpenPNM Core object that is created is either given or assigned a ``name``.  This name is used as the dictionary key when the object is saved on the **Workspace** manager, as outlined above.  In addition to looking up objects by name, it is also possible to look them up by type using ``networks``, ``geometry``, ``physics``, and ``phases``.  At present ``algorithms`` is offered but does not return any objects since **Algorithms** are not registered.  Each of these methods returns a *list* of objects of the specified type.  The objects in the list can be assigned to variables on the command line for easy access:
 
 .. code-block:: python
