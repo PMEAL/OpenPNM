@@ -18,10 +18,9 @@ This tutorial is intended to show the basic outline of how OpenPNM works, and ne
 
 #. Grasp the main OpenPNM objects and their roles
 #. Generate a standard cubic **Network** topology
-#. Learn some handy tools for working with objects, and networks in particular
+#. Learn some handy tools for working with objects and the data within
 #. Calculate geometrical properties and assign them to a **Geometry** object
-#. Explore the way OpenPNM stores data
-#. Use the network topology storage scheme to perform some calculations
+#. Explore the way OpenPNM stores data, include network topology
 #. Calculate thermophysical properties and assign to a **Phase** object
 #. Define pore-scale physics and assign transport parameters to a **Physics** object
 #. Run a permeability simulation using the pre-defined **Algorithm**
@@ -54,7 +53,7 @@ Each of the above objects is a *subclass* of the Python *dictionary* or *dict*, 
 	>>> sorted(foo.keys())  # Inspect all entries
 	['bar', 'baz']
 
-A more detailed tutorial on dictionaries `can be found here <http://learnpythonthehardway.org/book/ex39.html>`_.  The *dict* does not offer much functionality aside from this basic storage, and it is in fact meant to be extended.  OpenPNM extends the *dict* to have functionality specifically suited for dealing with OpenPNM data.  Awareness of these 5 main object types and a familiarity with the *dict* syntax is sufficient for this tutorial, but a more information can be found in the :ref:`overall_design`.
+A more detailed tutorial on dictionaries `can be found here <http://learnpythonthehardway.org/book/ex39.html>`_.  The *dict* does not offer much functionality aside from this basic storage, and it is meant to be extended.  OpenPNM extends the *dict* to have functionality specifically suited for dealing with OpenPNM data.  Awareness of these 5 main object types and a familiarity with the *dict* syntax is sufficient for this tutorial, but a more information can be found in the :ref:`overall_design`.
 
 ===============================================================================
 Build a Cubic Network
@@ -79,11 +78,17 @@ This generates a topological network using the *Cubic* class, and stores it in v
 
 * The ``spacing`` argument controls the center-to-center distance between pores and it can be a scalar or vector (i.e. [0.0001, 0.0002, 0.0003]).
 
+===============================================================================
+Working with the Main OpenPNM Objects
+===============================================================================
+
+Now that a **Network** object is defined, we can explore some of the various features of OpenPNM objects.
+
 -------------------------------------------------------------------------------
-Tools for Inspecting Object Properties
+Inspecting Object Properties
 -------------------------------------------------------------------------------
 
-As mentioned above, each of the main objects in OpenPNM are Python *dicts* with a variety of additional methods and functions that work specifically on OpenPNM data.  All of the main objects have methods for querying basic properties, like the number of pores or throats, which properties have been defined, and so on.
+Each of the main objects in OpenPNM are Python *dicts* with a variety of additional methods and functions that work specifically on OpenPNM data.  All of the main objects have methods for querying basic properties, like the number of pores or throats, which properties have been defined, and so on:
 
 .. code-block:: python
 
@@ -98,22 +103,37 @@ As mentioned above, each of the main objects in OpenPNM are Python *dicts* with 
 	>>> pn.props()
 	['pore.coords', 'pore.index', 'throat.conns']
 
-More information about these various functions is given in :ref:`overall_design`.
+More information about these various functions is given in :ref:`overall_design`.  It is also convenient to type ``print(pn)`` at the command line to view a nicely formatted table showing the current state of ``pn``.
 
 -------------------------------------------------------------------------------
-Tools for Querying Network Topology
+Accessing Pores and Throats
 -------------------------------------------------------------------------------
 
-In addition to the general methods for inspecting properties mentioned above, **Network** objects have additional functionality for performing queries on their topological data:
+One simple but important feature of OpenPNM is the ability to *label* pores and throats.  For instance, when a **Cubic** network is created, several labels are automatically created: specifically, the pores on each face are labeled 'left', 'right', etc.  These labels can be used as follows:
 
 .. code-block:: python
 
-	>>> pn.find_neighbor_pores(pores=[1])  # Find neighbors of pore 1
-	array([0, 2, 4])
-	>>> pn.find_neighbor_throats(pores=[1, 2])  # Find throats connected to pores 1 and 2
-	array([ 0,  1,  9, 10])
+	>>> pn.pores('left')
+	array([0, 3, 6, 9])
 
-There are several more such topological query methods available on **Network** objects such as ``find_nearby_pores``, ``find_connecting_throat`` and ``find_clusters``.  For more information on these tools see :ref:`topology`.
+The ability to retrieve pore indices is handy for querying pore properties, such as retrieving the pore coordinates  of all pores on the 'left' face:
+
+.. code-block:: python
+
+	>>> pn['pore.coords'][pn.pores('left')]
+	array([[  5.00000000e-05,   5.00000000e-05,   5.00000000e-05],
+	       [  1.50000000e-04,   5.00000000e-05,   5.00000000e-05],
+	       [  2.50000000e-04,   5.00000000e-05,   5.00000000e-05],
+	       [  3.50000000e-04,   5.00000000e-05,   5.00000000e-05]])
+
+A list of all labels currently assigned to the network can be obtained with:
+
+.. code-block:: python
+
+	>>> pn.labels()
+	['pore.all', 'pore.back', 'pore.bottom', 'pore.front', 'pore.internal', 'pore.left', 'pore.right', 'pore.top', 'throat.all']
+
+The existing labels are also listed when an object is printed using ``print(pn)``.
 
 -------------------------------------------------------------------------------
 Exporting Data for Visualization
@@ -127,7 +147,7 @@ OpenPNM does not offer it's own visualization tools, as there are already many e
 
 This creates a file called *test.vtp* in the current working directory.  Note that *VTK* stands for Visualization Toolkit, and is the general name for this type of file, but the file has a *vtp* extension which is a specific type of *VTK* file.  Opening this file in Paraview gives the result below.  For help using Paraview, see the `Example in the OpenPNM-Example collection <https://github.com/PMEAL/OpenPNM-Examples/blob/master/IO_and_Visualization/paraview.md>`_
 
-.. image:: http://i.imgur.com/ScdydO9.png
+.. image:: http://i.imgur.com/ScdydO9m.png
 
 ===============================================================================
 Initialize and Build a Geometry Object
@@ -157,13 +177,7 @@ We'll start by assigning diameters to each pore from a random distribution, span
 
 	>>> geom['pore.diameter'] = sp.rand(pn.Np)*0.0001
 
-This line illustrates a key point about :ref:`data_storage` rules in OpenPNM:  All dictionary entries must start with either ``'pore.'`` or ``'throat.'``.  The reason for this is that OpenPNM forces arrays to be of the appropriate length (either *Nt* or *Np* long), which it infers from the name of the array.  Attempts to write arrays of the wrong length are blocked:
-
-.. code-block:: python
-
-	>>> geom['foo'] = sp.ones(pn.Np)  # Will result in an exception
-	>>> geom['pore.foo'] = sp.ones(pn.Np - 2)  # Will result in an error message
-	>>> geom['throat.foo'] = sp.one(pn.Np)  # Also gives an error message
+This line illustrates a key point about :ref:`data_storage` rules in OpenPNM:  All dictionary entries must start with either ``'pore.'`` or ``'throat.'``.  The reason for this is that OpenPNM forces arrays to be of the appropriate length (either *Nt* or *Np* long), which it infers from the name of the array.  Attempts to write arrays of the wrong length are blocked, giving an error message.
 
 Returning to the definition of **Geometry** properties, we usually want the throat diameters to always be smaller than the two pores which it connects to maintain physical consistency. This requires understanding a little bit about how OpenPNM stores network topology.  Consider the following:
 
@@ -277,7 +291,7 @@ We need to calculate the numerical values representing our chosen pore-scale phy
 	>>> R = geom['throat.diameter']/2
 	>>> L = geom['throat.length']
 
-The viscosity of the **Phases** was only defined in the pores; however, the hydraulic conductance must be calculated for each throat.  There are several options, but without delving into the details, create a scalar value:
+The viscosity of the **Phases** was only defined in the pores; however, the hydraulic conductance must be calculated for each throat.  There are several options, but to keep this tutorial simple we'll create a scalar value:
 
 .. code-block:: python
 
@@ -323,7 +337,7 @@ To determine the permeability coefficient, we must invoke Darcy's law: Q = KA/uL
 
 .. code-block:: python
 
-	>>> Q = alg.rate(pores='top')
+	>>> Q = alg.rate(pores=pn.pores('top'))
 	>>> A = 0.0001*3*1  # Cross-sectional area for flow
 	>>> L = 0.0001*4  # Length of flow path
 	>>> del_P = 101325  # Specified pressure gradient
@@ -333,7 +347,7 @@ The **StokesFlow** class was developed with permeability simulations in mind, so
 
 .. code-block:: python
 
-	>>> K = alg.calc_effective_perm()
+	>>> K = alg.calc_eff_permeability()
 
 The results (``'pore.pressure'``) are held within the ``alg`` object and must be explicitly returned to the ``air`` object by the user if they wish to use these values in a subsequent calculation.  The point of this data containment is to prevent unintentional overwriting of data.  Each algorithm has a method called ``return_results`` which places the pertinent values back onto the appropriate **Phase** object.
 
@@ -343,4 +357,4 @@ The results (``'pore.pressure'``) are held within the ``alg`` object and must be
 
 Using Paraview for Visualization, the resulting pressure gradient across the network can be seen:
 
-.. image:: http://i.imgur.com/8aVaH1S.png
+.. image:: http://i.imgur.com/8aVaH1Sm.png

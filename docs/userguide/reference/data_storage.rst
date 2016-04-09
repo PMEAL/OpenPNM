@@ -4,24 +4,20 @@
 Data Storage
 ###############################################################################
 
-Each OpenPNM Core object is a Python *dictionary* which is similar to a structured variable or *struct* in other languages.  This allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.  All pore and throat data are stored as vectors or lists, of either *Np* or *Nt* length representing the number of pores and throats on the object, respectively.  This means that each pore (or throat) has a number, and all properties for that pore (or throat) are stored in the array corresponding to that number.  Thus, the diameter for pore 15 is stored in the ``'pore.diameter'`` array in element 15, and the length of throat 32 is stored in the ``'throat.length'`` array at element 32.
+Each OpenPNM Core object is a Python *dictionary* which is similar to a structured variable or *struct* in other languages.  This allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.   Inside each *dict* are stored numerous arrays containing pore or throat data corresponding to the *key* (i.e. ``'pore.diameter'`` values).  
 
-This list-based approach is ideal when using the Numpy and Scipy libraries which are designed for elementwise, vectorized programming.  For instance, the volume of each throats can be found simultaneously using ``T_vol = 3.1415*(network['throat.radius']**2) * network['throat.length']``.  ``T_vol`` will be an *Nt*-long array of values, assuming ``'throat.length'`` and ``'throat.radius'`` were also *Nt*-long.
+All pore and throat data are stored in arrays of either *Np* or *Nt* length representing the number of pores and throats on the object, respectively.  This means that each pore (or throat) has a number that is implicitly indicated by it's location in the arrays.  All properties for pore *i* or throat *j* are stored in the array at the element *i* or *j*.  Thus, the diameter for pore 15 is stored in the ``'pore.diameter'`` array in element 15, and the length of throat 32 is stored in the ``'throat.length'`` array at element 32.  This array-based approach is ideal when using the Numpy and Scipy libraries which are designed for elementwise, vectorized programming.  For instance, the volume of each throats can be found simultaneously using ``T_vol = 3.1415*(network['throat.radius']**2) * network['throat.length']``.  ``T_vol`` will be an *Nt*-long array of values, assuming ``'throat.length'`` and ``'throat.radius'`` were also *Nt*-long.
 
 Several rules have been implemented to control the integrity of the data:
 
-1. All array names must begin with either *'pore.'* or *'throat.'* which serves to identify the type of information they contain.
-2. For the sake of consistency only arrays of length *Np* or *Nt* are allowed in the dictionary. Assigning a scalar value to a dictionary results in the creation of a full length vector, either *Np* or *Nt* long, depending on the name of the array..  This effectively applies the scalar value to all locations in the network.
-3. Any Boolean data will be treated as a *label* while all other numerical data is treated as a *property*.  The difference between these is outlined below.
+#. All array names must begin with either *'pore.'* or *'throat.'* which serves to identify the type of information they contain.
+#. For the sake of consistency only arrays of length *Np* or *Nt* are allowed in the dictionary. Assigning a scalar value to a dictionary results in the creation of a full length vector, either *Np* or *Nt* long, depending on the name of the array..  This effectively applies the scalar value to all locations in the network.
+#. Any Boolean data will be treated as a *label* while all other numerical data is treated as a *property*.  The difference between these is outlined below.
 
 ===============================================================================
-Properties and Labels
-===============================================================================
-OpenPNM differentiates between two types of data for pores and throats: *properties* and *labels*.  The only difference between these is that *labels* are Boolean arrays (True / False), while *properties* are all other types, typically numerical data.
-
--------------------------------------------------------------------------------
 Properties (aka Data)
--------------------------------------------------------------------------------
+===============================================================================
+
 The physical details about pores and throats are referred to as *properties*, which includes information such as *pore volume* and *throat length*.  Properties are accessed using Python dictionary syntax to access the array of choice, then Numpy array indexing to access the pore or throat locations of choice:
 
 .. code-block:: python
@@ -68,11 +64,11 @@ To quickly see a complete list *properties* on an object use the ``props`` metho
     >>> pn.props('pore')
     ['pore.index', 'pore.coords']
 
-You can also view a nicer list of ``props`` with ``print(pn.props())``.
+You can also view a nicely formatted list of ``props`` with ``print(pn.props())``.
 
--------------------------------------------------------------------------------
+===============================================================================
 Labels
--------------------------------------------------------------------------------
+===============================================================================
 Labels are a means of dynamically creating groups of pores and throats so they can be quickly accessed by the user.  For instance, is helpful to know which pores are on the *'top'* surface.  This label is automatically added by the *Cubic* network generator, so a list of all pores on the *'top'* can be retrieved by simply querying which pores possess the label *'top'* using the ``pores`` method:
 
 .. code-block:: python
@@ -140,9 +136,9 @@ This results can also be viewed with ``print(pn.labels())``.
 
    All objects are instantiated with a ``'pore.all'`` and ``'throat.all'`` label.  These arrays are essential to the framework since they are used to define how long the 'pore' and 'throat' data arrays must be.  In other words, the ``__setitem__`` method checks to make sure that any 'pore' array it receives has the same length as ``'pore.all'``.
 
--------------------------------------------------------------------------------
+===============================================================================
 Counts and Indices
--------------------------------------------------------------------------------
+===============================================================================
 One of the most common questions about a network is "*how many pores and throats does it have?*"  This can be answered  easily with the ``num_pores`` and ``num_throats`` methods.  Because these methods are used so often, there are also shortcuts: ``Np`` and ``Nt``.
 
 .. code-block:: python
