@@ -546,7 +546,7 @@ class Core(dict):
         Returns
         -------
         A list containing the dictionary keys on the object limited by the
-        specified \'mode\'.
+        specified ``mode``.
 
         Examples
         --------
@@ -1676,7 +1676,7 @@ class Core(dict):
              if parsed_labels.count(L) > 1]
         return parsed_labels
 
-    def _parse_mode(self, mode, allowed=None, single=None):
+    def _parse_mode(self, mode, allowed=None, single=False):
         r"""
         This private method is for checking the \'mode\' used in the calling
         method.
