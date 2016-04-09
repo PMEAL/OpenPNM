@@ -73,7 +73,7 @@ class GenericNetwork(Core):
     _net = property(fset=_set_net, fget=_get_net)
 
     def props(self, element=None, mode='all'):
-        prop_list = []
+        prop_list = Tools.PrintableList()
         if 'deep' in mode:
             mode.remove('deep')
             for geom in self._geometries:
