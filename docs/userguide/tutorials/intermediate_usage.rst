@@ -8,13 +8,12 @@ This tutorial will follow the same outline as the :ref:`getting_started`, but wi
 
 **Learning Objectives**
 
-#.  Explore different network topologies
-#.  Create a 'heterogeneous' domain with different geometrical properties in different regions
-#   Utilize labels and apply new ones
-#.  Learn about data exchange between objects
-#.  Utilize pore-scale models for calculating properties of all types
-#.  Propagate changing geometrical and thermo-physical properties to all dependent properties
-#.  Calculate the permeability tensor for the stratified media
+#. Explore different network topologies, and learn some handy topological query methods
+#. Create a *heterogeneous* domain with different geometrical properties in different regions
+#. Learn about data exchange between objects
+#. Utilize pore-scale models for calculating properties of all types
+#. Propagate changing geometrical and thermo-physical properties to all dependent properties
+#. Calculate the permeability tensor for the stratified media
 
 ===============================================================================
 Building a Cubic Network
@@ -52,8 +51,6 @@ One of the main functionalities of OpenPNM is the ability to assign drastically 
     >>> Ts2 = pn.find_neighbor_throats(pores=Ps2, mode='intersection')
     >>> geom2 = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps2, throats=Ts2, name='core')
 
-The above lines illustrate several key points:
-
 * The above statements result in two distinct **Geometry** objects, each applying to different regions of the domain.  ``geom1`` applies to only the pores on the top and bottom surfaces (automatically labeled 'top' and 'bottom' during the network generation step), while ``geom2`` applies to the pores 'not' on the top and bottom surfaces.
 
 * The assignment of throats is more complicated and illustrates the ``find_neighbor_throats`` method, which is one of the more useful `topological query methods <topology>`_ on the **Network** class.  In both of these calls, all throats connected to the given set of pores (``Ps1`` or ``Ps2``) are found; however, the ``mode`` argument alters which throats are returned.  The terms ``'union'`` and ``'intersection'`` are used in the "set theory" sense, such that ``'union'`` returns *all* throats connected to the pores in the supplied list, while ``'intersection'`` returns the throats that are *only* connected to the supplied pores.  More specifically, if pores 1 and 2 have throats [1, 2] and [2, 3] as neighbors, respectively, then the ``'union'`` mode returns [1, 2, 3] and the ``'intersection'`` mode returns [2].  A detailed description of this behavior is given in :ref:`topology`.
@@ -69,7 +66,7 @@ Each of the **Geometry** objects was assigned a ``name`` during instantiation, a
     >>> geom1.name  # Inspect object's name
     'surface'
     >>> geom1.name = 'foobar'  # Change object's name
-    >>> gome1.name  # Ensure new name was set
+    >>> geom1.name  # Ensure new name was set
     'foobar'
     >>> geom1.name = 'surface'  # Replace original name
 
@@ -96,7 +93,9 @@ Before applying models, however, let's assign a static random seed value between
     >>> geom1['pore.seed'] = sp.rand(geom1.Np)
     >>> geom2['pore.seed'] = sp.rand(geom2.Np)
 
-It is crucial to note that the above lines each produced an array of different length, corresponding to the number of pores assigned to each **Geometry** object.  This is accomplished by the calls to ``geom1.Np`` and ``geom2.Np``, which return the number of pores on each object.  Every Core object in OpenPNM possesses the same set of methods for managing their data, such as counting the number of pore and throat values they represent; thus, ``pn.Np`` returns 1000 while ``geom1.Np`` and ``geom2.Np`` return 200 and 800 respectively.
+* Each of the above lines produced an array of different length, corresponding to the number of pores assigned to each **Geometry** object.  This is accomplished by the calls to ``geom1.Np`` and ``geom2.Np``, which return the number of pores on each object.
+
+* Every Core object in OpenPNM possesses the same set of methods for managing their data, such as counting the number of pore and throat values they represent; thus, ``pn.Np`` returns 1000 while ``geom1.Np`` and ``geom2.Np`` return 200 and 800 respectively.
 
 -------------------------------------------------------------------------------
 Accessing Geometry Data via the Network
@@ -109,19 +108,19 @@ This segmentation of the data between separate Geometry objects is essential to 
     >>> # Create an array of the correct length, then use Numpy's fancy indexing
     >>> # to populate it with values from geom1 and geom2
     >>> seeds = sp.zeros_like(pn.Ps, dtype=float)
-    >>> seeds[pn.pores(geom1.name)] = geom1['pore.seeds']
-    >>> seeds[pn.pores(geom2.name)] = geom2['pore.seeds']
+    >>> seeds[pn.pores(geom1.name)] = geom1['pore.seed']
+    >>> seeds[pn.pores(geom2.name)] = geom2['pore.seed']
     >>> assert sp.all(seeds > 0)  # Ensure all zeros are overwritten
 
-The following code illustrates the shortcut approach, which accomplish the same result as above in a single line:
+The following code illustrates the shortcut approach, which accomplishes the same result as above in a single line:
 
 .. code-block:: python
 
-    >>> seeds = pn['pore.seeds']
+    >>> seeds = pn['pore.seed']
 
-This shortcut works because the ``pn`` dictionary does not contain an array called ``'pore.seeds'``, so all associated **Geometry** objects are then checked for the requested array(s).  If it is found, then OpenPNM essentially performs the *interleaving* of the data as demonstrated by the manual approach and returns all the values together in a single full-size array.  If it is not found, then a standard *KeyError* message is received.
+* This shortcut works because the ``pn`` dictionary does not contain an array called ``'pore.seed'``, so all associated **Geometry** objects are then checked for the requested array(s).  If it is found, then OpenPNM essentially performs the *interleaving* of the data as demonstrated by the manual approach and returns all the values together in a single full-size array.  If it is not found, then a standard *KeyError* message is received.
 
-This exchange of data between **Network** and **Geometry** makes sense if you consider that **Network** objects act as a sort of master object relative **Geometry** objects.  **Networks** apply to *all* pores and throats in the domain, while **Geometries**  apply to subsets of the domain, so if the **Network** needs some values from all pores it has direct access.
+* This exchange of data between **Network** and **Geometry** makes sense if you consider that **Network** objects act as a sort of master object relative **Geometry** objects.  **Networks** apply to *all* pores and throats in the domain, while **Geometries**  apply to subsets of the domain, so if the **Network** needs some values from all pores it has direct access.
 
 -------------------------------------------------------------------------------
 Add Pore Size Distribution Models to Each Geometry
@@ -144,15 +143,15 @@ Pore size distribution models are assigned to each Geometry object as follows:
 
 Pore-scale models tend to be the most complex (i.e. confusing) aspects of OpenPNM, so it's worth dwelling on the important points of the above two commands:
 
-#. Both ``geom1`` and ``geom2`` have a ``models`` attribute where the parameters specified in the ``add`` command are stored for future use if/when needed.  The ``models`` attribute actually contains a **ModelsDict** object which is a customized dictionary for storing and managing this type of information.
+* Both ``geom1`` and ``geom2`` have a ``models`` attribute where the parameters specified in the ``add`` command are stored for future use if/when needed.  The ``models`` attribute actually contains a **ModelsDict** object which is a customized dictionary for storing and managing this type of information.
 
-#. The ``propname`` argument specifies which property the model calculates.  This means that the numerical results of the model calculation will be saved in their respective **Geometry** objects as ``geom1['pore.diameter']`` and ``geom2['pore.diameter']``.
+* The ``propname`` argument specifies which property the model calculates.  This means that the numerical results of the model calculation will be saved in their respective **Geometry** objects as ``geom1['pore.diameter']`` and ``geom2['pore.diameter']``.
 
-#. Each model stores it's result under the same ``propname`` but these values do not conflict since each **Geometry** object presides over a unique subset of pores and throats.
+* Each model stores it's result under the same ``propname`` but these values do not conflict since each **Geometry** object presides over a unique subset of pores and throats.
 
-#. The ``model`` argument contains a *handle* to the desired function, which is extracted from the *models* library of the relevant *Module* (**Geometry** in this case).  Each **Geometry** object has been assigned a different statistical model, *normal* and *weibull*.  This ability to apply different models to different regions of the domain is reason multiple **Geometry** objects are permitted.  The added complexity is well worth the added flexibility.
+* The ``model`` argument contains a *handle* to the desired function, which is extracted from the *models* library of the relevant *Module* (**Geometry** in this case).  Each **Geometry** object has been assigned a different statistical model, *normal* and *weibull*.  This ability to apply different models to different regions of the domain is reason multiple **Geometry** objects are permitted.  The added complexity is well worth the added flexibility.
 
-#. The remaining arguments are those required by the chosen *model*.  In the above cases, these are the parameters that define the statistical distribution.  Note that the mean pore size for ``geom1`` will be 20 um (set by ``scale``) while for ``geom2`` it will be 50 um, thus creating the smaller surface pores as intended.  The pore-scale models are well documented regarding what arguments are required and their meaning; as usual these can be viewed with Object Inspector in Spyder.
+* The remaining arguments are those required by the chosen *model*.  In the above cases, these are the parameters that define the statistical distribution.  Note that the mean pore size for ``geom1`` will be 20 um (set by ``scale``) while for ``geom2`` it will be 50 um, thus creating the smaller surface pores as intended.  The pore-scale models are well documented regarding what arguments are required and their meaning; as usual these can be viewed with Object Inspector in Spyder.
 
 Now that we've added pore diameter models the each **Geometry** we can visualize the network in Paraview to confirm that distinctly different pore sizes on the surface regions:
 
@@ -242,7 +241,10 @@ Since viscosity is highly dependent on temperature, it is necessary to "regenera
 Initialize and Build Physics Objects
 ===============================================================================
 
-In the :ref:`getting_started` we calculated the hydraulic conductance for the Hagan-Poiseuille model manually.  In this tutorial we will use the pre-written pore-scale models provided with OpenPNM.  Begin by creating two **Physics** objects:
+In this tutorial we will use the pre-written pore-scale models provided with OpenPNM.  The "pore-scale model" mechanism was specifically designed to allow for users to easily create their own custom models.  Creating custom models is outlined in :ref:`advanced_usage`.
+
+
+Begin by creating two **Physics** objects:
 
 .. code-block:: python
 
@@ -298,7 +300,9 @@ This line causes the viscosity to be recalculated at the new temperature. Let's 
 .. code-block:: python
 
     >>> sp.all(phys1['throat.hydraulic_conductance'] == g1)  # g1 was saved above
+    True
     >>> sp.all(phys2['throat.hydraulic_conductance'] == g2)  # g2 was saved above
+    True
 
 Finally, if we regenerate ``phys1`` and ``phys2`` we can see that the hydraulic conductance will be updated to reflect the new sizes *and* new temperature:
 
@@ -307,7 +311,9 @@ Finally, if we regenerate ``phys1`` and ``phys2`` we can see that the hydraulic 
     >>> phys1.models.regenerate()
     >>> phys2.models.regenerate()
     >>> sp.all(phys1['throat.hydraulic_conductance'] != g1)
+    True
     >>> sp.all(phys2['throat.hydraulic_conductance'] != g2)
+    True
 
 -------------------------------------------------------------------------------
 Accessing Physics Data from Phases

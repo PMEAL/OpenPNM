@@ -8,87 +8,148 @@ This tutorial is intended to show the basic outline of how OpenPNM works, and ne
 
 .. hint:: Python and Numpy Tutorials
 
-	* OpenPNM is written in Python.  One of the best guides to learning Python is the  excellent interactive online tutorial called `Learn Python the Hard Way <http://learnpythonthehardway.org/book/>`_, which was originally a website and is now a book and video series.
+	* OpenPNM is written in Python.  One of the best guides to learning Python is the  excellent interactive online tutorial called `Learn Python the Hard Way <http://learnpythonthehardway.org/book/>`_, which was originally a website and is now a book and video series.  The `Python Module of the Week <https://pymotw.com/3/>`_ website is another excellent resource with nice examples illustrating various features of Python standard library, and has also been published in a book.
 
-	* For information on using Numpy, Scipy and generally doing scientific computing in Python checkout the `Scipy lecture notes <http://www.scipy-lectures.org/>`_.
+	* For information on using Numpy, Scipy and generally doing scientific computing in Python checkout the `Scipy lecture notes <http://www.scipy-lectures.org/>`_.  The Scipy website also offers as solid introduction to `using Numpy arrays <https://docs.scipy.org/doc/numpy-dev/user/quickstart.html>`_.
+
+	* The `Stackoverflow <http://www.stackoverflow.com>`_ website is an incredible resource for all computing related questions, including simple usage of Python, Scipy and Numpy functions.
 
 	* For users more familiar with Matlab, there is a `Matlab-Numpy cheat sheet <http://mathesaurus.sourceforge.net/matlab-numpy.html>`_ that explains how to translate familiar Matlab commands to Numpy.
 
 **Learning Objectives**
 
-#. Grasp the main OpenPNM objects and their roles
+#. Introduce the main OpenPNM objects and their roles
+#. Explore the way OpenPNM stores data, including network topology
+#. Learn some handy tools for working with objects
 #. Generate a standard cubic **Network** topology
-#. Learn some handy tools for working with objects and the data within
 #. Calculate geometrical properties and assign them to a **Geometry** object
-#. Explore the way OpenPNM stores data, include network topology
 #. Calculate thermophysical properties and assign to a **Phase** object
 #. Define pore-scale physics and assign transport parameters to a **Physics** object
 #. Run a permeability simulation using the pre-defined **Algorithm**
+#. Use the package to calculate the permeability coefficient of a porous media
 
 ===============================================================================
-The Main OpenPNM Objects
+Overview of Data Storage in OpenPNM
 ===============================================================================
 
-OpenPNM employs 5 main objects which each store and manage a different type of data.  These are listed below:
+Before creating an OpenPNM simulation it is necessary to give a quick description of how data is stored in OpenPNM; after all, a significant part of OpenPNM is dedicated to data storage and handling.
 
-=============  ====
-Name           Role
-=============  ====
-**Network**    Manages topological data such as pore spatial locations and pore-to-pore connections
-**Geometry**   Manages geometrical properties such as pore diameter and throat length
-**Phase**      Manages thermophysical properties such as temperature and viscosity
-**Physics**    Manages pore-scale transport parameters such as hydraulic conductance
-**Algorithm**  Contains algorithms that use the data from other objects to perform simulations, such as diffusion or drainage
-=============  ====
+-------------------------------------------------------------------------------
+Python Dictionaries or *dicts*
+-------------------------------------------------------------------------------
 
-Each of the above objects is a *subclass* of the Python *dictionary* or *dict*, which is a very general storage container that allows values to be accessed by a name:
+OpenPNM employs 5 main objects which each store and manage a different type of information or data:
+
+#. **Network**: Manages topological data such as pore spatial locations and pore-to-pore connections
+#. **Geometry**: Manages geometrical properties such as pore diameter and throat length
+#. **Phase**: Manages thermophysical properties such as temperature and viscosity
+#. **Physics**: Manages pore-scale transport parameters such as hydraulic conductance
+#. **Algorithm**: Contains algorithms that use the data from other objects to perform simulations, such as diffusion or drainage
+
+We will encounter each of these objects in action before the end of this tutorial.
+
+Each of the above objects is a *subclass* of the Python *dictionary* or *dict*, which is a very general storage container that allows values to be accessed by a name using syntax like:
 
 .. code-block:: python
 
-	>>> foo = dict()  # Create empty dict
-	>>> foo['bar'] = 1  # Add new entry called 'bar'
-	>>> foo['baz'] = [1, 2, 3]
-	>>> foo['bar']  # Retrieve entries by name
+  	>>> foo = dict()  # Create an empty dict
+	>>> foo['bar'] = 1  # Store an integer under the key 'bar'
+	>>> foo['bar']  # Retrieve the integer stored in 'bar'
 	1
-	>>> sorted(foo.keys())  # Inspect all entries
-	['bar', 'baz']
 
-A more detailed tutorial on dictionaries `can be found here <http://learnpythonthehardway.org/book/ex39.html>`_.  The *dict* does not offer much functionality aside from this basic storage, and it is meant to be extended.  OpenPNM extends the *dict* to have functionality specifically suited for dealing with OpenPNM data.  Awareness of these 5 main object types and a familiarity with the *dict* syntax is sufficient for this tutorial, but a more information can be found in the :ref:`overall_design`.
+A detailed tutorial on dictionaries `can be found here <http://learnpythonthehardway.org/book/ex39.html>`_.  The *dict* does not offer much functionality aside from basic storage of arbitrary objects, and it is meant to be extended.  OpenPNM extends the *dict* to have functionality specifically suited for dealing with OpenPNM data.  More information about the functionality of OpenPNM's subclassed *dicts* can be found in the :ref:`overall_design`.
+
+-------------------------------------------------------------------------------
+*Numpy* Arrays of Pore and Throat Data
+-------------------------------------------------------------------------------
+
+All data are stored in arrays which can accessed using standard array syntax.  More details on the data storage scheme are given in :ref:`data_storage`, but the following gives a quick overview:
+
+#. All pore and throat properties are stored in `Numpy arrays <https://docs.scipy.org/doc/numpy-dev/user/quickstart.html>`_.  All data will be automatically converted to a *Numpy* array if necessary.
+
+#. The data for pore *i* (or throat *i*) can be found in element of *i* of an array.  This means that pores and throat have indices which are implied by their position in arrays.  When we speak of retrieving pore locations, it refers to the indices in the *Numpy* arrays.
+
+#. Arrays that store pore data are *Np*-long, while arrays that store throat data are *Nt*-long, where *Np* is the number of pores and *Nt* is the number of throats in the network.
+
+#. Each property is stored in it's own array, meaning that 'pore diameter' and 'throat volume' are each stored in a separate array.
+
+#.  Arrays can be any size in the other dimensions.  For instance, triplets of pore coordinates (i.e. [x, y, z]) can be stored for each pore creating an *Np-by-3* array.
+
+-------------------------------------------------------------------------------
+OpenPNM Objects: Combining *dicts* and *Numpy* Arrays
+-------------------------------------------------------------------------------
+
+OpenPNM objects combine the above two levels of data storage, meaning they are *dicts* that are filled with *Numpy* arrays.  OpenPNM enforces several rules to help maintain data consistency:
+
+#.  When storing arrays in an OpenPNM object, their name (or *dictionary key*) must be prefixed with ``'pore.'`` or ``'throat.'``.
+
+#.  OpenPNM uses the prefix of the *dictionary key* to infer how long the array must be.
+
+#.  The specific property that is stored in each array is indicated by the suffix such as ``'pore.diameter'`` or ``'throat.length'``.
+
+#.  Writing scalar values to OpenPNM objects automatically results in conversion to a full length array filled with the scalar value.
+
+#.  Arrays containing *Boolean* data are treated as *labels*, which are explained later in this tutorial.
+
+The following code snippets give examples of how all these pieces fit together using an **Empty** network as an example:
+
+.. code-block:: python
+
+	>>> import OpenPNM
+	>>> import scipy as sp
+	>>> net = OpenPNM.Network.Empty(Np=10, Nt=10)  # Instantiate an empty network object with 10 pores and 10 throats
+	>>> net['pore.foo'] = sp.ones([net.Np, ])  # Assign an Np-long array of ones
+	>>> net['pore.bar'] = range(0, net.Np)  # Assign an Np-long array of increasing ints
+	>>> type(net['pore.bar'])  # The Python range iterator is converted to a proper Numpy array
+	<class 'numpy.ndarray'>
+	>>> net['pore.foo'][4] = 44  # Overwrite values in the array
+	>>> net['pore.foo'][4]  # Retrieve values from the array
+	44
+	>>> net['pore.foo'][2:6]  # Extract a slice of the array
+	array([ 2,  3, 44,  5])
+	>>> net['pore.foo'][[2, 4, 6]]  # Extract specific locations
+	array([ 2, 44,  6])
+	>>> net['throat.foo'] = 2  # Assign a scalar
+	>>> len(net['throat.foo'])  # The scalar values is converted to an Nt-long array
+	10
+	>>> net['throat.foo'][4]  # The scalar value was placed into all locations
+	2
 
 ===============================================================================
 Build a Cubic Network
 ===============================================================================
 
-Start by importing OpenPNM and the Scipy package:
+Now that we have seen the rough outline of how OpenPNM objects store data, we can begin building a simulation.  Start by importing OpenPNM and the Scipy package:
 
 .. code-block:: python
 
 	>>> import OpenPNM
 	>>> import scipy as sp
 
-Next, generate a **Network** by choosing the desired topology (e.g. cubic), then create an *instance* with the desired parameters:
+Next, generate a **Network** by choosing the **Cubic** class, then create an *instance* with the desired parameters:
 
 .. code-block:: python
 
 	>>> pn = OpenPNM.Network.Cubic(shape=[4, 3, 1], spacing=0.0001)
 
-This generates a topological network using the *Cubic* class, and stores it in variable ``pn``.  This network contains pores at the correct spatial positions and connections between the pores according the cubic topology.
+The **Network** object stored in ``pn`` contains pores at the correct spatial positions and connections between the pores according the cubic topology.
 
 * The ``shape`` argument specifies the number of pores in the [X, Y, Z] directions of the cube.  Networks in OpenPNM are always 3D dimensional, meaning that a 2D or "flat" network is still 1 layer of pores "thick" so [X, Y, Z] = [20, 10, 1], thus ``pn`` in this tutorial is 2D which is easier for visualization.
 
 * The ``spacing`` argument controls the center-to-center distance between pores and it can be a scalar or vector (i.e. [0.0001, 0.0002, 0.0003]).
 
-===============================================================================
-Working with the Main OpenPNM Objects
-===============================================================================
+The resulting network looks like:
 
-Now that a **Network** object is defined, we can explore some of the various features of OpenPNM objects.
+.. image:: http://i.imgur.com/ScdydO9l.png
+   :align: center
+
+This image was creating using `Paraview <http://www.paraview.org>`_, using the instructions given here: `Example in the OpenPNM-Example collection <https://github.com/PMEAL/OpenPNM-Examples/blob/master/IO_and_Visualization/paraview.md>`_
 
 -------------------------------------------------------------------------------
 Inspecting Object Properties
 -------------------------------------------------------------------------------
 
-Each of the main objects in OpenPNM are Python *dicts* with a variety of additional methods and functions that work specifically on OpenPNM data.  All of the main objects have methods for querying basic properties, like the number of pores or throats, which properties have been defined, and so on:
+OpenPNM objects have additional methods for querying their relevant properties, like the number of pores or throats, which properties have been defined, and so on:
 
 .. code-block:: python
 
@@ -109,14 +170,14 @@ More information about these various functions is given in :ref:`overall_design`
 Accessing Pores and Throats
 -------------------------------------------------------------------------------
 
-One simple but important feature of OpenPNM is the ability to *label* pores and throats.  For instance, when a **Cubic** network is created, several labels are automatically created: specifically, the pores on each face are labeled 'left', 'right', etc.  These labels can be used as follows:
+One simple but important feature of OpenPNM is the ability to *label* pores and throats.  When a **Cubic** network is created, several labels are automatically created: the pores on each face are labeled 'left', 'right', etc.  These labels can be used as follows:
 
 .. code-block:: python
 
 	>>> pn.pores('left')
 	array([0, 3, 6, 9])
 
-The ability to retrieve pore indices is handy for querying pore properties, such as retrieving the pore coordinates  of all pores on the 'left' face:
+The ability to retrieve pore indices is handy for querying pore properties, such as retrieving the pore coordinates of all pores on the 'left' face:
 
 .. code-block:: python
 
@@ -133,21 +194,7 @@ A list of all labels currently assigned to the network can be obtained with:
 	>>> pn.labels()
 	['pore.all', 'pore.back', 'pore.bottom', 'pore.front', 'pore.internal', 'pore.left', 'pore.right', 'pore.top', 'throat.all']
 
-The existing labels are also listed when an object is printed using ``print(pn)``.
-
--------------------------------------------------------------------------------
-Exporting Data for Visualization
--------------------------------------------------------------------------------
-
-OpenPNM does not offer it's own visualization tools, as there are already many excellent options available.  The workflow for visualization is to output the simulation data to a standard file format for use in a program like `Paraview <http://www.paraview.org>`_.  The most convenient way to do this is using the ``export_data`` method in the main OpenPNM namespace:
-
-.. code-block:: python
-
-	>>> OpenPNM.export_data(network=pn, filename='test', fileformat='VTK')
-
-This creates a file called *test.vtp* in the current working directory.  Note that *VTK* stands for Visualization Toolkit, and is the general name for this type of file, but the file has a *vtp* extension which is a specific type of *VTK* file.  Opening this file in Paraview gives the result below.  For help using Paraview, see the `Example in the OpenPNM-Example collection <https://github.com/PMEAL/OpenPNM-Examples/blob/master/IO_and_Visualization/paraview.md>`_
-
-.. image:: http://i.imgur.com/ScdydO9m.png
+The existing labels are also listed when an object is printed using ``print(pn)``.  Detailed use of labels is given in :ref:`data_storage`.
 
 ===============================================================================
 Initialize and Build a Geometry Object
@@ -171,15 +218,13 @@ Add Desired Size Information
 
 This freshly instantiated **Geometry** object (``geom``) contains no geometric properties as yet.  For this tutorial we'll use the direct assignment of manually calculated values.
 
-We'll start by assigning diameters to each pore from a random distribution, spanning 0 um to 100 um.  The upper limit matches the ``spacing`` of the **Network** which was set to 100 [um], so pore diameters exceeding 100 um might overlap with their neighbors.  Using the Scipy ``rand`` function creates an array of random numbers between 0 and 0.0001 that is *Np*-long, meaning each pore is assigned a unique random number
+We'll start by assigning diameters to each pore from a random distribution, spanning 0 um to 100 um.  The upper limit matches the ``spacing`` of the **Network** which was set to 0.0001 m (i.e. 100 um), so pore diameters exceeding 100 um might overlap with their neighbors.  Using the Scipy ``rand`` function creates an array of random numbers between 0 and 0.0001 that is *Np*-long, meaning each pore is assigned a unique random number
 
 .. code-block:: python
 
-	>>> geom['pore.diameter'] = sp.rand(pn.Np)*0.0001
+	>>> geom['pore.diameter'] = sp.rand(pn.Np)*0.0001  # Units of meters
 
-This line illustrates a key point about :ref:`data_storage` rules in OpenPNM:  All dictionary entries must start with either ``'pore.'`` or ``'throat.'``.  The reason for this is that OpenPNM forces arrays to be of the appropriate length (either *Nt* or *Np* long), which it infers from the name of the array.  Attempts to write arrays of the wrong length are blocked, giving an error message.
-
-Returning to the definition of **Geometry** properties, we usually want the throat diameters to always be smaller than the two pores which it connects to maintain physical consistency. This requires understanding a little bit about how OpenPNM stores network topology.  Consider the following:
+We usually want the throat diameters to always be smaller than the two pores which it connects to maintain physical consistency. This requires understanding a little bit about how OpenPNM stores network topology.  Consider the following:
 
 .. code-block:: python
 
@@ -196,10 +241,9 @@ Let's dissect the above lines.
 
 * Finally, the Scipy function ``amin`` is used to find the minimum diameter of each pore-pair by specifying the ``axis`` argument as 1, and the resulting *Nt-by-1* array is assigned to ``geom['throat.diameter']``.
 
-This trick of using ``'throat.conns'`` to index into a pore property array is commonly used in OpenPNM and you should have a second look at the above code to understand it fully.  Refer to :ref:`topology` for a full discussion.
+* This trick of using ``'throat.conns'`` to index into a pore property array is commonly used in OpenPNM and you should have a second look at the above code to understand it fully.  Refer to :ref:`topology` for a full discussion.
 
 We must still specify the remaining geometrical properties of the pores and throats. Since we're creating a "Stick-and-Ball" geometry, the sizes are calculated from the geometrical equations for spheres and cylinders.
-
 For pore volumes, assume a sphere:
 
 .. code-block:: python
@@ -225,13 +269,14 @@ The volume of each throat is found assuming a cylinder:
 
 The basic geometrical properties of the network are now defined.  The **Geometry** class possesses a method called ``plot_histograms`` that produces a plot of the most pertinent geometrical properties.  The following figure doesn't look very good since the network in this example has only 12 pores, but the utility of the plot for quick inspection is apparent.
 
-.. image:: http://i.imgur.com/xkK1TYfm.png
+.. image:: http://i.imgur.com/xkK1TYfl.png
+   :align: center
 
 ===============================================================================
 Creating a Phase Object
 ===============================================================================
 
-The simulation is now topologically and geometrically defined.  It has pore coordinates, pore and throat sizes and so on.  In order to perform any simulations it is necessary to define **Phase** objects that represent the fluids in the simulation:
+The simulation is now topologically and geometrically defined.  It has pore coordinates, pore and throat sizes and so on.  In order to perform any simulations it is necessary to define a **Phase** object to manage all the thermophysical properties of the fluids in the simulation:
 
 .. code-block:: python
 
@@ -252,16 +297,7 @@ Now it is necessary to fill this **Phase** object with the desired thermophysica
 		>>> water['pore.temperature'] = 298.0
 		>>> water['pore.viscosity'] = 0.001
 
-The above code block highlight another key feature of :ref:`data_storage` in OpenPNM.  When a scalar value is written to an object it is extended to a vector of the appropriate length (either *Np* or *Nt*) depending on the name of the array.  Although this is slightly wasteful of memory, it vastly simplifies data access since all values are explicitly defined on every pore and throat:
-
-.. code-block:: python
-
-	>>> water.Np
-	12
-	>>> len(water['pore.temperature'])
-	12
-	>>> water['pore.temperature'][10]
-	298.0
+* The above lines utilize the fact that OpenPNM converts scalars to full length arrays, essentially setting the temperature in each pore to 298.0 K.
 
 ===============================================================================
 Creating a Physics Object
@@ -272,7 +308,6 @@ We are still not ready to perform any simulations.  The last step is to define t
 .. code-block:: python
 
 	>>> phys_water = OpenPNM.Physics.GenericPhysics(network=pn, phase=water, geometry=geom)
-
 
 * As with all objects, the ``Network`` must be specified
 
@@ -298,7 +333,7 @@ The viscosity of the **Phases** was only defined in the pores; however, the hydr
 	>>> mu_w = 0.001
 	>>> phys_water['throat.hydraulic_conductance'] = 3.14159*R**4/(8*mu_w*L)
 
-Numpy arrays can be manipulated using *vector* syntax.  In the above line both ``L`` and ``R`` are arrays of *Nt*-length.  Their multiplication in this way results in another array that is also *Nt*-long.
+Numpy arrays support *vectorization*, so since both ``L`` and ``R`` are arrays of *Nt*-length, their multiplication in this way results in another array that is also *Nt*-long.
 
 ===============================================================================
 Create an Algorithm Object for Performing a Permeability Simulation
@@ -357,4 +392,5 @@ The results (``'pore.pressure'``) are held within the ``alg`` object and must be
 
 Using Paraview for Visualization, the resulting pressure gradient across the network can be seen:
 
-.. image:: http://i.imgur.com/8aVaH1Sm.png
+.. image:: http://i.imgur.com/8aVaH1Sl.png
+   :align: center
