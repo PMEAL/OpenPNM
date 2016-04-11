@@ -113,7 +113,11 @@ class Core(dict):
         else:
             return {}
 
-    controller = property(_get_ctrl)
+    def _set_ctrl(self, ctrl):
+        if self not in ctrl.values():
+            ctrl.update({self.name: self})
+
+    controller = property(fget=_get_ctrl, fset=_set_ctrl)
 
     def _set_name(self, name):
         if name in ctrl.keys():

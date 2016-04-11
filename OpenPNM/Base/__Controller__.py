@@ -291,10 +291,19 @@ class Controller(dict):
         """
         filename = filename.rsplit('.net', 1)[0]
         net = _pickle.load(open(filename + '.net', 'rb'))
+        temp_dict = {}  # Store objects temporarily to ensure no exceptions
         if net.name not in self.keys():
-            self[net.name] = net
+            temp_dict[net.name] = net
         else:
-            raise Exception('Simulation with that name is already present')
+            raise Exception('A simulation with that name is already present')
+        for item in net._phases + net._physics + net._geometries:
+            if item.name not in self.keys():
+                temp_dict[item.name] = item
+            else:
+                raise Exception('An object with that name is already present')
+        # If no exceptions, then transfer objects to self
+        for item in temp_dict.values():
+            item.controller = self
 
     def save(self, filename=''):
         r"""
