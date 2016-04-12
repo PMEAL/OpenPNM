@@ -35,7 +35,7 @@ The Python ``dict`` class comes with a variety of methods for adding, removing, 
 
 .. code-block:: python
 
-    >>> methods = [item for item in dir(foo}) if not item.startswith('_')]
+    >>> methods = [item for item in dir(foo)) if not item.startswith('_')]
 
 The **Core** class possess all of these methods, plus another few dozen methods that were added by OpenPNM.  These additional methods also pertain to the manipulation of data, but are specific to the types of data used in OpenPNM.
 

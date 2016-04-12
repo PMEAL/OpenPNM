@@ -54,7 +54,7 @@ We can then ``trim`` these pores from the network using:
     >>> Np = pn.Np  # Should be 1000 now
     >>> Nt = pn.Nt  # Should be 2700
 
-Note that all throats connecting to the trimmed pores were automatically removed since OpenPNM does not allowe 'dangling' or 'headless' throats.
+Note that all throats connecting to the trimmed pores were automatically removed since OpenPNM does not allow 'dangling' or 'headless' throats.
 
 Now that ``pn`` is back to its original size, let's explore the second approach to apply boundary pores.
 
@@ -99,7 +99,7 @@ Boundary throats act as the link between the internal pores and the 'outside', a
 
     >>> boun.models.add(propname='throat.length',
     ...                 model=op.Geometry.models.throat_length.straight)
-    >>> boun.models.add(propname='thoat.diameter',
+    >>> boun.models.add(propname='throat.diameter',
     ...                 model=op.Geometry.models.throat_misc.neighbor,
     ...                 pore_prop='pore.diameter')  # More on this model below
     >>> boun.models.add(propname='throat.area',

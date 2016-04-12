@@ -102,9 +102,9 @@ The following code snippets give examples of how all these pieces fit together u
 	>>> net['pore.bar'] = range(0, net.Np)  # Assign an Np-long array of increasing ints
 	>>> type(net['pore.bar'])  # The Python range iterator is converted to a proper Numpy array
 	<class 'numpy.ndarray'>
-	>>> net['pore.foo'][4] = 44  # Overwrite values in the array
+	>>> net['pore.foo'][4] = 44.0  # Overwrite values in the array
 	>>> net['pore.foo'][4]  # Retrieve values from the array
-	44
+	44.0
 	>>> net['pore.foo'][2:6]  # Extract a slice of the array
 	array([ 2,  3, 44,  5])
 	>>> net['pore.foo'][[2, 4, 6]]  # Extract specific locations

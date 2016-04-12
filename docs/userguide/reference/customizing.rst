@@ -66,7 +66,7 @@ It was noted above that the ``add_model`` method sent in several extra arguments
 
 The print-out of 'geom 'reveals that indeed the model has been added:
 
->>> print(geom)
+print(geom)
 ------------------------------------------------------------
 OpenPNM.Geometry.GenericGeometry: 	GenericGeometry_4rhgW
 ------------------------------------------------------------
@@ -90,7 +90,7 @@ In the 'surface_roughness' example above, the function assumed that pore diamete
 
 .. code-block:: python
 
-	def surface_roughness(geometry,roughness_parameter,pore_diameter='pore.diameter',**kwargs):
+	def surface_roughness(geometry, roughness_parameter, pore_diameter='pore.diameter', **kwargs):
 		P_diam = geometry[pore_diameter]
 		projected_area = 4*3.14159*(P_diam/2)**2
 		rough_area = projected_area**roughness_parameter
