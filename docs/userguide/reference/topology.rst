@@ -4,6 +4,8 @@
 Representing Topology
 ###############################################################################
 
+.. contents:: Page Contents
+
 ===============================================================================
 Storage of Topological Connections
 ===============================================================================
@@ -30,6 +32,8 @@ Sparse Adjacency Matrices
 In OpenPNM network topology (or connectivity) is stored as an `adjacency matrix <http://en.wikipedia.org/wiki/Adjacency_matrix>`_.  An adjacency matrix is a *Np*-by-*Np* 2D matrix.  A non-zero value at location (*i*, *j*) indicates that pores *i* and *j* are connected.  Describing the network in this general fashion allows OpenPNM to be agnostic to the type of network it describes.  Another important feature of the adjacency matrix is that it is highly sparse and can be stored with a variety of sparse storage schemes.  OpenPNM stores the adjacency matrix in the 'COO' or 'IJV' format, which essentially stores the coordinates (I,J) and values (V) of the nonzero elements in three separate lists.  This approach results in a property which OpenPNM calls ``'throat.conns'``; it is an *Nt*-by-2 array that gives the ID number of the two pores on either end of a given throat.  The representation of an arbitrary network is shown in following figure. It has 5 pores and 7 throats, and the ``'throat.conns'`` array contains the (I,J,V) information to describes the adjacency matrix.
 
 .. image:: http://i.imgur.com/rMpezCc.png
+    :width: 500 px
+    :align: center
 
 -------------------------------------------------------------------------------
 Additional Thoughts on Topology Storage
@@ -49,8 +53,17 @@ Additional Thoughts on Topology Storage
 Performing Network Queries
 ===============================================================================
 
-
+Querying and inspecting the pores and throats in the **Network** is an important 
 
 ===============================================================================
 Manipulating and Altering Topology
 ===============================================================================
+
+
+
+
+
+
+
+
+blah

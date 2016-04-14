@@ -6,6 +6,8 @@ Tutorial 2 of 3: Digging Deeper with OpenPNM
 
 This tutorial will follow the same outline as the :ref:`getting_started`, but will dig a little bit deeper at each step to reveal the important features of OpenPNM that were glossed over previously.
 
+.. contents:: Topics Covered in this Tutorial
+
 **Learning Objectives**
 
 #. Explore different network topologies, and learn some handy topological query methods
@@ -72,9 +74,9 @@ Each of the **Geometry** objects was assigned a ``name`` during instantiation, a
 
 Naming objects in this way serves several purposes:
 
-#. It helps users keep track of which variable points to which object (i.e. ``geom1`` vs. ``geom2``).  This is useful when interacting with the objects at the command line.
+#. It helps users keep track of which variable points to which object (i.e. ``geom1`` vs. ``geom2``).  This is useful when interacting with the objects at the command line using ``geom1.name``, which will report ``'surface'``.
 
-#. When any core object is instantiated, a *label* is created in the **Network** based on the object's name, indicating which pores belong to which object.  It this case, the pores assigned to ``geom1`` can be quickly retrieved using ``pn.pores('surface')`` or ``pn.pores(geom1.name)``.  The use of *labels* is detailed in :ref:`data_storage`.
+#. When any core object is instantiated, a *label* is created in the **Network** based on the object's name, indicating which pores and throats belong to which object.  It this case, the pores assigned to ``geom1`` can be quickly retrieved using ``pn.pores('surface')`` or ``pn.pores(geom1.name)``.  The use of *labels* is detailed in :ref:`data_storage`.
 
 #. Because the *labels* are so integral to tracking which locations belong to which objects, all **Core** objects are automatically assigned a randomly generated name if none is specified during instantiation.
 
@@ -84,7 +86,7 @@ Naming objects in this way serves several purposes:
 Add Desired Properties to Each Geometry
 -------------------------------------------------------------------------------
 
-In :ref:`getting_started` we only assigned 'static' values to **Geometry** object, which we calculated explicitly.  In this tutorial we will use the *pore-scale models* that are provided with OpenPNM.
+In :ref:`getting_started` we only assigned 'static' values to the **Geometry** object, which we calculated explicitly.  In this tutorial we will use the *pore-scale models* that are provided with OpenPNM.
 
 Before applying models, however, let's assign a static random seed value between 0 and 1 to each pore on both **Geometry** objects.  We will then use these seed values in pore-scale models to generate actual pores diameters from statistical distribution functions.  To create the small pores on the surface of the domain we will adjust the parameters used in the statistical distribution.  The need to maintain two distinct sets of parameters is the driving force for defining two **Geometries**.  To start, let's put random numbers into each Geometry's ``'pore.seed'`` property:
 
@@ -193,21 +195,6 @@ We'll also need throat length as well as the cross-sectional area of pores and t
     >>> geom2.models.add(propname='pore.area',
     ...                  model=OpenPNM.Geometry.models.pore_area.spherical)
 
--------------------------------------------------------------------------------
-Pore-Scale Models: What's the Point?
--------------------------------------------------------------------------------
-
-At this point you might ask "*why can't I just calculate pore and throat cross-sectional areas manually and assign them as in* :ref:`tutorial #1 <getting_started>`"?  The answer is "*you can, but you shouldn't*".  The reason is that pore-scale models can be "recalculated" or "regenerated", so changes in one property will be automatically reflected in all dependent properties.  For instance, if you wish to perform a simulation on a new realization of the network, you only need to alter the random seed values assigned to ``geom1`` and ``geom2``, then "regenerate" all the models as follows:
-
-.. code-block:: python
-
-    >>> geom1['pore.seed'] = sp.rand(geom1.Np)
-    >>> geom2['pore.seed'] = sp.rand(geom2.Np)
-    >>> geom1.models.regenerate()
-    >>> geom2.models.regenerate()
-
-The first two lines assign new random numbers to each pore, and the final two lines cause all of the pore-scale models to be recalculated, using the same parameters specified above.  This means that all pore diameters change (but still following the same statistical distribution), thus so will the throat diameters which were taken as the minimum of the two neighboring pores, and so on.  Note that during the regeneration process all models are called in the order they were originally added.
-
 ===============================================================================
 Initialize and Build Phase Objects
 ===============================================================================
@@ -264,7 +251,7 @@ Next add the Hagan-Poiseuille model to both:
 The same function (``mod``) was passed as the ``model`` argument to both **Physics** objects.  This means that both objects will calculate the hydraulic conductance using the same function.  A model *must* be assigned to both objects in order for the ``'throat.hydraulic_conductance'`` property be defined everywhere in the domain since each **Physics** applies to a unique selection of pores and throats.
 
 -------------------------------------------------------------------------------
-Pore-Scale Models: A Final Look
+Pore-Scale Models: The Big Picture
 -------------------------------------------------------------------------------
 
 It is worth reiterating one last time why the OpenPNM pore-scale approach is so powerful.  First, let's inspect the current value of hydraulic conductance in throat 1 on ``phys1`` and ``phys2``:

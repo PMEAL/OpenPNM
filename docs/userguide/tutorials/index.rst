@@ -3,7 +3,7 @@
 **Tutorials**
 ###############################################################################
 
-Contents:
+The following 3 tutorials demonstrate the features and design of OpenPNM by example:
 
 .. toctree::
     :maxdepth: 2

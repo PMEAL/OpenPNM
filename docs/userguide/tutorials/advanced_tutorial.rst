@@ -6,6 +6,8 @@ Tutorial 3 of 3: Advanced Topics and Usage
 
 In this final tutorial on the use of OpenPNM, simulate pressure drive gas flow through a porous medium that is partially invaded by a non-wetting fluid.  This is known as relative permeability and is one of the standard simulations performed with pore networks.  This
 
+.. contents:: Topics Covered in this Tutorial
+
 **Learning Outcomes**
 
 #. Experiment with adding boundary pores
@@ -16,7 +18,7 @@ In this final tutorial on the use of OpenPNM, simulate pressure drive gas flow t
 #. Use the workspace manager to save and load, clone and purge simulations
 
 ===============================================================================
-Build Network Topology
+Build and Manipulate Network Topology
 ===============================================================================
 
 For the present tutorial, we'll keep the topology simple to help keep the focus on other aspects of OpenPNM.
@@ -71,6 +73,10 @@ Now that ``pn`` is back to its original size, let's explore the second approach 
 
 This approach requires more typing than the ``add_boundaries`` method, but allows for much finer control over how boundaries are created.
 
+-------------------------------------------------------------------------------
+Adding and Removing Pores and Throats
+-------------------------------------------------------------------------------
+
 ===============================================================================
 Define Geometry Objects
 ===============================================================================
@@ -107,4 +113,54 @@ Boundary throats act as the link between the internal pores and the 'outside', a
     >>> boun.models.add(propname='throat.volume',
     ...                 model=op.Geometry.models.throat_volume.cylinder)
 
-These models are required for the Hagan-Poiseiulle model. Most of them are straight-forward geometry calculations, except for the model used for ``'throat.diameter'``.  In this case the model looks into the neighbor pores, retrieves the two ``'pore.diameter'`` and uses the ``'max'`` value.  Because we set the boundary pores to have 0 diameter, this will naturally find result in the throat being assigned the diameter of the internal pore.
+These models are required for the Hagan-Poiseuille model. Most of them are straight-forward geometry calculations, except for the model used for ``'throat.diameter'``.  In this case the model looks into the neighbor pores, retrieves the two ``'pore.diameter'`` and uses the ``'max'`` value.  Because we set the boundary pores to have 0 diameter, this will naturally find result in the throat being assigned the diameter of the internal pore.
+
+-------------------------------------------------------------------------------
+Create a Custom Pore-Scale Geometry Model
+-------------------------------------------------------------------------------
+
+
+
+===============================================================================
+Define Multiple Phase Objects
+===============================================================================
+
+
+-------------------------------------------------------------------------------
+Create a Custom Phase Class
+-------------------------------------------------------------------------------
+
+
+
+
+
+===============================================================================
+Define Necessary Physics Objects
+===============================================================================
+
+
+-------------------------------------------------------------------------------
+Copy Models between Physics Objects
+-------------------------------------------------------------------------------
+
+
+
+===============================================================================
+Perform Multiphase Transport Simulations
+===============================================================================
+
+-------------------------------------------------------------------------------
+Use the Built-In Drainage Algorithm to Generate an Invading Phase Configuration
+-------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------
+Set Pores and Throats to Invaded
+-------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------
+Calculate Relative Permeability of Each Phase
+-------------------------------------------------------------------------------
+
+blah

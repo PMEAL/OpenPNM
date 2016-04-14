@@ -6,15 +6,7 @@ Tutorial 1 of 3: Getting Started with OpenPNM
 
 This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the more useful and powerful features of the package.  So if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial deliberately simplifies some features to provide a more gentle introduction.  The second and third tutorials of this User-Guide dive into the package more deeply, but those features are best appreciated once the basics are understood.
 
-.. hint:: Python and Numpy Tutorials
-
-	* OpenPNM is written in Python.  One of the best guides to learning Python is the  excellent interactive online tutorial called `Learn Python the Hard Way <http://learnpythonthehardway.org/book/>`_, which was originally a website and is now a book and video series.  The `Python Module of the Week <https://pymotw.com/3/>`_ website is another excellent resource with nice examples illustrating various features of Python standard library, and has also been published in a book.
-
-	* For information on using Numpy, Scipy and generally doing scientific computing in Python checkout the `Scipy lecture notes <http://www.scipy-lectures.org/>`_.  The Scipy website also offers as solid introduction to `using Numpy arrays <https://docs.scipy.org/doc/numpy-dev/user/quickstart.html>`_.
-
-	* The `Stackoverflow <http://www.stackoverflow.com>`_ website is an incredible resource for all computing related questions, including simple usage of Python, Scipy and Numpy functions.
-
-	* For users more familiar with Matlab, there is a `Matlab-Numpy cheat sheet <http://mathesaurus.sourceforge.net/matlab-numpy.html>`_ that explains how to translate familiar Matlab commands to Numpy.
+.. contents:: Topics Covered in this Tutorial
 
 **Learning Objectives**
 
@@ -27,6 +19,16 @@ This tutorial is intended to show the basic outline of how OpenPNM works, and ne
 #. Define pore-scale physics and assign transport parameters to a **Physics** object
 #. Run a permeability simulation using the pre-defined **Algorithm**
 #. Use the package to calculate the permeability coefficient of a porous media
+
+.. hint:: Python and Numpy Tutorials
+
+	* OpenPNM is written in Python.  One of the best guides to learning Python is the  excellent interactive online tutorial called `Learn Python the Hard Way <http://learnpythonthehardway.org/book/>`_, which was originally a website and is now a book and video series.  The `Python Module of the Week <https://pymotw.com/3/>`_ website is another excellent resource with nice examples illustrating various features of Python standard library, and has also been published in a book.
+
+	* For information on using Numpy, Scipy and generally doing scientific computing in Python checkout the `Scipy lecture notes <http://www.scipy-lectures.org/>`_.  The Scipy website also offers as solid introduction to `using Numpy arrays <https://docs.scipy.org/doc/numpy-dev/user/quickstart.html>`_.
+
+	* The `Stackoverflow <http://www.stackoverflow.com>`_ website is an incredible resource for all computing related questions, including simple usage of Python, Scipy and Numpy functions.
+
+	* For users more familiar with Matlab, there is a `Matlab-Numpy cheat sheet <http://mathesaurus.sourceforge.net/matlab-numpy.html>`_ that explains how to translate familiar Matlab commands to Numpy.
 
 ===============================================================================
 Overview of Data Storage in OpenPNM
