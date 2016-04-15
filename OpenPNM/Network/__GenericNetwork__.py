@@ -928,26 +928,18 @@ class GenericNetwork(Core):
                     health['trim_pores'].extend(temp[c[i]])
 
         # Check for duplicate throats
-        adjmat = self.create_adjacency_matrix(sprsfmt='coo')
-        incmat = self.create_incidence_matrix(sprsfmt='lil')
-        temp = adjmat.tolil()  # Convert to lil to combine duplicates
-        # Compile lists of which specfic throats are duplicates
-        # Be VERY careful here, as throats are not in order
+        am = self.create_adjacency_matrix(sprsfmt='lil')
         mergeTs = []
         for i in range(0, self.Np):
-            # If any row has an element more than 1 it means duplicates throats
-            if sp.any(sp.array(temp.data[i], dtype=int) > 1):
-                ind = sp.where(sp.array(temp.data[i]) > 1)[0]
-                Ps = sp.array(temp.rows[i])[ind]
-                Ts = []
-                a = set(incmat.rows[i])
-                for neighbor in Ps:
-                    b = set(incmat.rows[neighbor])
-                    Ts.extend(a.intersection(b))
-                mergeTs.append(list(Ts))
+            for j in sp.where(sp.array(am.data[i]) > 1)[0]:
+                k = am.rows[i][j]
+                mergeTs.extend(self.find_connecting_throat(i, k))
+        # Remove duplicates
+        mergeTs = [list(i) for i in set(tuple(i) for i in mergeTs)]
         health['duplicate_throats'] = mergeTs
 
         # Check for bidirectional throats
+        adjmat = self.create_adjacency_matrix(sprsfmt='coo')
         num_full = adjmat.sum()
         temp = sprs.triu(adjmat, k=1)
         num_upper = temp.sum()
