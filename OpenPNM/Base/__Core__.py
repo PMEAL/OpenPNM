@@ -215,6 +215,21 @@ class Core(dict):
         if 'models' in mode:
             self.models.clear()
 
+    def _find_object(self, obj_name='', obj_type=''):
+        all_dicts = {}
+        all_dicts.update(self.geometries)
+        all_dicts.update(self.physics)
+        all_dicts.update(self.phases)
+        all_dicts.update({self._net.name: self._net})
+        if obj_name != '':
+            return all_dicts.get(obj_name)
+        if obj_type != '':
+            objs = []
+            for item in all_dicts.values():
+                if item._isa(obj_type):
+                    objs.append(item.name)
+            return objs
+
     # -------------------------------------------------------------------------
     """Model Manipulation Methods"""
     # -------------------------------------------------------------------------
