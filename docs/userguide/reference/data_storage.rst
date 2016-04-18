@@ -167,3 +167,7 @@ Another highly used feature is to retrieve a list of pores or throats that have 
 The ``pores`` and ``throats`` methods both accept a *'mode'* argument that allows for *set-theory* logic to be applied to the query, such as returning 'unions' and 'intersections' of locations.
 
 Often, one wants a list of *all** pore or throat indices on an object, so there are shortcut methods for this: ``Ps`` and ``Ts``.
+
+===============================================================================
+Data Exchange Between Objects
+===============================================================================

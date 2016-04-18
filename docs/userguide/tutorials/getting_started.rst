@@ -77,6 +77,8 @@ All data are stored in arrays which can accessed using standard array syntax.  M
 
 #.  Arrays can be any size in the other dimensions.  For instance, triplets of pore coordinates (i.e. [x, y, z]) can be stored for each pore creating an *Np-by-3* array.
 
+#.  The storage of topological connections is also very nicely accomplished with this 'list-based' format, by creating an array (``'throat.conns'``) that stores which pore indices are found on either end of a throat.  This leads to an *Nt-by-2* array.  The implications and advantages of this storage scheme are discussed further in :ref:`topology`.
+
 -------------------------------------------------------------------------------
 OpenPNM Objects: Combining *dicts* and *Numpy* Arrays
 -------------------------------------------------------------------------------
@@ -118,7 +120,7 @@ The following code snippets give examples of how all these pieces fit together u
 	2
 
 ===============================================================================
-Build a Cubic Network
+Generate a Cubic Network
 ===============================================================================
 
 Now that we have seen the rough outline of how OpenPNM objects store data, we can begin building a simulation.  Start by importing OpenPNM and the Scipy package:
@@ -199,7 +201,7 @@ A list of all labels currently assigned to the network can be obtained with:
 The existing labels are also listed when an object is printed using ``print(pn)``.  Detailed use of labels is given in :ref:`data_storage`.
 
 ===============================================================================
-Initialize and Build a Geometry Object
+Create a Geometry Object and Assign Geometric Properties to Pores and Throats
 ===============================================================================
 
 The **Network** ``pn`` does not contain any information about pore and throat sizes at this point.  The next step is to create a **Geometry** object to manage the geometrical properties.
@@ -215,7 +217,7 @@ This statement contains three arguments:
 * ``pores`` and ``throats`` indicate the locations in the **Network** where this **Geometry** object will apply.  In this  tutorial ``geom`` applies to *all* pores and throats, but there are many cases where different regions of the network have different geometrical properties, so OpenPNM allows multiple **Geometry** objects to be created for managing the data in each region, but this is a subject for :ref:`intermediate_usage`.
 
 -------------------------------------------------------------------------------
-Add Desired Size Information
+Add Pore and Throat Size Information
 -------------------------------------------------------------------------------
 
 This freshly instantiated **Geometry** object (``geom``) contains no geometric properties as yet.  For this tutorial we'll use the direct assignment of manually calculated values.
@@ -275,7 +277,7 @@ The basic geometrical properties of the network are now defined.  The **Geometry
    :align: center
 
 ===============================================================================
-Creating a Phase Object
+Create a Phase Object
 ===============================================================================
 
 The simulation is now topologically and geometrically defined.  It has pore coordinates, pore and throat sizes and so on.  In order to perform any simulations it is necessary to define a **Phase** object to manage all the thermophysical properties of the fluids in the simulation:
@@ -289,7 +291,7 @@ The simulation is now topologically and geometrically defined.  It has pore coor
 * Note that ``pores`` and ``throats`` are *NOT* specified; this is because **Phases** are mobile and can exist anywhere or everywhere in the domain, so providing specific locations does not make sense.  Algorithms for dynamically determining actual phase distributions are discussed later.
 
 -------------------------------------------------------------------------------
-Add Desired Thermophysical Properties
+Add Thermophysical Properties
 -------------------------------------------------------------------------------
 
 Now it is necessary to fill this **Phase** object with the desired thermophysical properties.  OpenPNM includes a framework for calculating thermophysical properties from models and correlations, but this is covered in :ref:`intermediate_usage`.  For this tutorial, we'll use the basic approach of simply assigning static values as follows:
@@ -302,7 +304,7 @@ Now it is necessary to fill this **Phase** object with the desired thermophysica
 * The above lines utilize the fact that OpenPNM converts scalars to full length arrays, essentially setting the temperature in each pore to 298.0 K.
 
 ===============================================================================
-Creating a Physics Object
+Create a Physics Object
 ===============================================================================
 
 We are still not ready to perform any simulations.  The last step is to define the desired pore-scale physics models, which dictate how the phase and geometrical properties interact to give the *transport parameters*.  A classic example of this is the Hagen-Poiseuille equation for fluid flow through a throat to predict the flow rate as a function of the pressure drop.  The flow rate is proportional to the geometrical size of the throat (radius and length) as well as properties of the fluid (viscosity) and thus combines geometrical and thermophysical properties:
@@ -318,7 +320,7 @@ We are still not ready to perform any simulations.  The last step is to define t
 * **Physics** objects do not require the specification of which ``pores`` and ``throats`` where they apply, since this information is implied by the ``geometry`` argument which was already assigned to specific locations.
 
 -------------------------------------------------------------------------------
-Specify Desired Pore-Scale Physics Models
+Specify Desired Pore-Scale Transport Parameters
 -------------------------------------------------------------------------------
 
 We need to calculate the numerical values representing our chosen pore-scale physics.  To continue with the Hagen-Poiseuille example lets calculate the hydraulic conductance of each throat in the network.  The throat radius and length are easily accessed as:

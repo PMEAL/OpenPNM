@@ -7,26 +7,18 @@ sys.path.append(os.path.abspath('_extensions'))
 sys.path.append(os.path.abspath('../'))
 
 
-# -- General configuration -----------------------------------------------------
-
-# If your documentation needs a minimal Sphinx version, state it here.
-#needs_sphinx = '1.0'
+# General configuration ------------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',
               'sphinx.ext.doctest',
               'sphinx.ext.todo',
               'sphinx.ext.coverage',
-              'sphinx.ext.pngmath',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
-              'matplotlib.sphinxext.mathmpl',
-              'matplotlib.sphinxext.only_directives',
-              'matplotlib.sphinxext.plot_directive',
-              'sphinx.ext.inheritance_diagram',
-              'sphinx.ext.graphviz',
               'numpydoc',
               'sphinxjp.themes.basicstrap']
 
@@ -102,7 +94,7 @@ html_theme_options = {
    'relbar_inverse': False,
    'inner_theme': True,
    'inner_theme_name': 'bootswatch-paper',
-   'sidebar_span': 2,
+   'sidebar_span': 3,
 }
 
 # The name for this set of Sphinx documents.  If None, it defaults to
