@@ -25,9 +25,10 @@ class Core(dict):
         obj.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
         # Initialize phase, physics, and geometry tracking lists
         obj._name = None
-        obj._phases = []
-        obj._geometries = []
-        obj._physics = []
+        obj.phases = Tools.ObjectContainer()
+        obj.geometries = Tools.ObjectContainer()
+        obj.physics = Tools.ObjectContainer()
+        obj.network = Tools.ObjectContainer()
         obj._net = None
         obj._parent = None
         # Initialize ordered dict for storing property models
@@ -231,162 +232,6 @@ class Core(dict):
         self.models.regenerate(props=props, mode=mode)
 
     regenerate.__doc__ = ModelsDict.regenerate.__doc__
-
-    # -------------------------------------------------------------------------
-    'Object lookup methods'
-    # -------------------------------------------------------------------------
-
-    def _find_object(self, obj_name='', obj_type=''):
-        r"""
-        Find objects associated with a given network model by name or type
-
-        Parameters
-        ----------
-        obj_name : string
-           Name of sought object
-
-        obj_type : string
-            The type of object beign sought.  Options are:
-
-            1. 'Network' or 'Networks'
-            2. 'Geometry' or 'Geometries'
-            3. 'Phase' or 'Phases'
-            4. 'Physics'
-
-        Returns
-        -------
-        OpenPNM object or list of objects
-
-        """
-        if obj_name != '':
-            obj = []
-            if obj_name in ctrl.keys():
-                obj = ctrl[obj_name]
-            return obj
-        elif obj_type != '':
-            if obj_type in ['Geometry', 'Geometries', 'geometry',
-                            'geometries']:
-                objs = ctrl.geometries()
-            elif obj_type in ['Phase', 'Phases', 'phase', 'phases']:
-                objs = ctrl.phases()
-            elif obj_type in ['Physics', 'physics']:
-                objs = ctrl.physics()
-            elif obj_type in ['Network', 'Networks', 'network', 'networks']:
-                objs = ctrl.networks()
-            return objs
-
-    def physics(self, phys_name=[]):
-        r"""
-        Retrieves Physics associated with the object
-
-        Parameters
-        ----------
-        name : string or list of strings, optional
-            The name(s) of the Physics object to retrieve
-
-        Returns
-        -------
-        If name is NOT provided, then a list of Physics names is returned.
-        If a name or list of names IS provided, then the Physics object(s)
-        with those name(s) is returned.
-        """
-        # If arg given as string, convert to list
-        if type(phys_name) == str:
-            phys_name = [phys_name]
-        if phys_name == []:  # If default argument received
-            phys = [item.name for item in self._physics]
-        else:  # If list of names received
-            phys = []
-            for item in self._physics:
-                if item.name in phys_name:
-                    phys.append(item)
-        return phys
-
-    def phases(self, phase_name=[]):
-        r"""
-        Retrieves Phases associated with the object
-
-        Parameters
-        ----------
-        name : string or list of strings, optional
-            The name(s) of the Phase object(s) to retrieve.
-
-        Returns
-        -------
-        If name is NOT provided, then a list of phase names is returned. If
-        a name are provided, then a list containing the requested objects
-        is returned.
-        """
-        # If arg given as string, convert to list
-        if type(phase_name) == str:
-            phase_name = [phase_name]
-        if phase_name == []:  # If default argument received
-            phase = [item.name for item in self._phases]
-        else:  # If list of names received
-            phase = []
-            for item in self._phases:
-                if item.name in phase_name:
-                    phase.append(item)
-        return phase
-
-    def geometries(self, geom_name=[]):
-        r"""
-        Retrieves Geometry object(s) associated with the object
-
-        Parameters
-        ----------
-        name : string or list of strings, optional
-            The name(s) of the Geometry object to retrieve.
-
-        Returns
-        -------
-        If name is NOT provided, then a list of Geometry names is returned.
-        If a name IS provided, then the Geometry object of that name is
-        returned.
-        """
-        # If arg given as string, convert to list
-        if type(geom_name) == str:
-            geom_name = [geom_name]
-        if geom_name == []:  # If default argument received
-            geom = [item.name for item in self._geometries]
-        else:  # If list of names received
-            geom = []
-            for item in self._geometries:
-                if item.name in geom_name:
-                    geom.append(item)
-        return geom
-
-    def network(self, name=''):
-        r"""
-        Retrieves the network associated with the object.  If the object is
-        a network, then it returns a handle to itself.
-
-        Parameters
-        ----------
-        name : string, optional
-            The name of the Network object to retrieve.
-
-        Returns
-        -------
-            If a name IS provided, then the parent netowrk object is returned.
-
-        Notes
-        -----
-        This doesn't quite work yet...we have to decide how to treat sub-nets
-        first
-        """
-        if name == '':
-            if self._net is None:
-                net = [self]
-            else:
-                net = [self._net]
-        else:
-            net = []
-            temp = self._find_object(obj_name=name)
-            if hasattr(temp, '_isa'):
-                if temp._isa('Network'):
-                    net = temp
-        return net
 
     # -------------------------------------------------------------------------
     """Data Query Methods"""
