@@ -1592,22 +1592,22 @@ class Core(dict):
         if obj is None:
             query = False
             mro = [item.__name__ for item in self.__class__.__mro__]
-            if keyword in ['net', 'Network', 'GenericNetwork']:
+            if 'net' in keyword.lower():
                 if 'GenericNetwork' in mro:
                     query = True
-            elif keyword in ['geom', 'Geometry', 'GenericGeometry']:
+            elif 'geo' in keyword.lower():
                 if 'GenericGeometry' in mro:
                     query = True
-            elif keyword in ['phase', 'Phase', 'GenericPhase']:
+            elif 'phase' in keyword.lower():
                 if 'GenericPhase' in mro:
                     query = True
-            elif keyword in ['phys', 'Physics', 'GenericPhysics']:
+            elif 'phys' in keyword.lower():
                 if 'GenericPhysics' in mro:
                     query = True
-            elif keyword in ['alg', 'Algorithm', 'GenericAlgorithm']:
+            elif 'alg' in keyword.lower():
                 if 'GenericAlgorithm' in mro:
                     query = True
-            elif keyword in ['clone']:
+            elif 'clone' in keyword.lower():
                 if self._net is None:
                     if self._parent is not None:
                         query = True
