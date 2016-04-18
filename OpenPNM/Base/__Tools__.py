@@ -18,6 +18,32 @@ class PrintableList(list):
         return '\n'.join(lines)
 
 
+class ObjectContainer(dict):
+    r"""
+    This dict is a kludgy (but awesome!) fix for the current way object handles
+    are stored on other objects.  Currently ``net.geometries()`` returns a list
+    containing the names (i.e. strings) of all **Geometry** objects (OR if a
+    name is given it returns an actual handle to the object).  This behavior
+    must be maintained for backwards compatibility, but it's a pain since you
+    can't actually iterate over the list.  For instance, it would be nice if
+    you could do ``[item.regenerate() for item in pn.geometries]``; however,
+    the ``geometries`` attribute is a callable method and it returns a list of
+    strings, which is useless.  I've been wanting to replace this with a *dict*
+    for a while, but have finally figured out how to do it.  By making this
+    dict "callable" it can return the list of strings as it does now AND also
+    still be a regular dictionary. Eventually, we could remove the callable
+    aspect (i.e. in V2.0).
+    """
+    def __call__(self, name=None):
+        if name is None:
+            list_ = []
+            for item in self.keys():
+                list_.append(item)
+            return list_
+        else:
+            return self[name]
+
+
 class PrintableDict(_odict):
     def __init__(self, *args, **kwargs):
         self._header = 'value'
