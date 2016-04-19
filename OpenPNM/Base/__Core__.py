@@ -230,6 +230,18 @@ class Core(dict):
                     objs.append(item.name)
             return objs
 
+    @property
+    def _geometries(self):
+        return list(self.geometries.values())
+
+    @property
+    def _phases(self):
+        return list(self.phases.values())
+
+    @property
+    def _physics(self):
+        return list(self.physics.values())
+
     # -------------------------------------------------------------------------
     """Model Manipulation Methods"""
     # -------------------------------------------------------------------------
