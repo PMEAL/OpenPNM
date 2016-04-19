@@ -60,7 +60,7 @@ class GenericPhase(Core):
         if components != []:
             for comp in components:
                 self.set_component(phase=comp)
-        self._net._phases.append(self)  # Append this Phase to the Network
+        self._net.phases.update({self.name: self})  # Connect Phase to Network
 
     def __setitem__(self, prop, value):
         for phys in self._physics:
@@ -111,8 +111,8 @@ class GenericPhase(Core):
                 logger.error('Phase already present')
                 pass
             else:
-                self._phases.append(phase)  # Associate any sub-phases with self
-                phase._phases.append(self)  # Associate self with sub-phases
+                self.phases.update({phase.name: phase})  # Associate any sub-phases with self
+                phase.phases.update({self.name: self})  # Associate self with sub-phases
                 # Add models for components to inherit mixture T and P
                 phase.models.add(propname='pore.temperature',
                                  model=OpenPNM.Phases.models.misc.mixture_value)
@@ -122,8 +122,7 @@ class GenericPhase(Core):
                 phase.models.reorder({'pore.temperature': 0, 'pore.pressure': 1})
         elif mode == 'remove':
             if phase.name in self.phases():
-                self._phases.remove(phase)
-                phase._phases = []
+                self.phases.pop(phase.name)
             else:
                 logger.error('Phase not found')
                 pass

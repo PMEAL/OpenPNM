@@ -25,17 +25,17 @@ class GenericLinearTransport(GenericAlgorithm):
         super().__init__(**kwargs)
         if phase is None:
             self._phase = GenericPhase()
-            self._phases.append(self._phase)
+            self.phases.update({self._phase.name: self._phase})
         else:
             self._phase = phase  # Register phase with self
             if sp.size(phase) != 1:
-                self._phases = phase
+                raise Exception('The GenericLinearTransport class can only ' +
+                                'operate on a single phase')
             else:
-                self._phases.append(phase)
-        for comp in self._phases:
-            if comp.Np != self.Np:
-                raise Exception(comp.name + ' has different Np size than the' +
-                                ' algorithm ' + self.name)
+                self.phases.update({phase.name: phase})
+        if self._net is not phase._net:
+            raise Exception(phase.name + 'and this algorithm are associated' +
+                            ' with different networks.')
 
     def set_boundary_conditions(self, bctype='', bcvalue=None, pores=None,
                                 throats=None, mode='merge'):

@@ -50,7 +50,7 @@ class GenericGeometry(Core):
         else:
             self._net = network  # Attach network to self
             # Register self with network.geometries
-            self._net._geometries.append(self)
+            self._net.geometries.update({self.name: self})
 
         # Initialize a label dictionary in the associated network
         self._net['pore.'+self.name] = False
