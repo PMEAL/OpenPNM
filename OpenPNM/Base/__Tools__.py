@@ -42,7 +42,7 @@ class ObjectContainer(dict):
             if len(list_) > 0:
                 if self[list_[0]]._isa('network'):
                     return [self[list_[0]]]
-            return sorted(list_)
+            return list_
         else:
             if type(name) is not list:
                 name = [name]
