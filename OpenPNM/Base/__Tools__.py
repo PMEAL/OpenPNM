@@ -39,12 +39,18 @@ class ObjectContainer(dict):
             list_ = []
             for item in self.keys():
                 list_.append(item)
-            return list_
+            if len(list_) > 0:
+                if self[list_[0]]._isa('network'):
+                    return [self[list_[0]]]
+            return sorted(list_)
         else:
-            if self[name]._isa('network'):
-                return self[name]
+            if type(name) is not list:
+                name = [name]
+            objs = [self[item] for item in name]
+            if objs[0]._isa('network'):
+                return objs[0]
             else:
-                return [self[name]]
+                return objs
 
 
 class PrintableDict(_odict):
