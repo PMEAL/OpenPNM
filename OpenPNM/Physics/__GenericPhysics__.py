@@ -97,10 +97,11 @@ class GenericPhysics(OpenPNM.Base.Core):
         phase['pore.'+self.name] = pore_label
         phase['throat.'+self.name] = throat_label
         # Replace phase reference on self
-        self._phases[0] = phase
+        self.phases.clear()
+        self.phases.update({phase.name: phase})
         # Remove physics reference on current phase
-        current_phase._physics.remove(self)
-        phase._physics.append(self)
+        current_phase.physics.pop(self.name)
+        phase.physics.update({self.name: self})
 
     def _get_phase(self):
         return self._phases[0]
