@@ -41,7 +41,7 @@ class ObjectContainer(dict):
                 list_.append(item)
             return list_
         else:
-            return self[name]
+            return list(self[name])
 
 
 class PrintableDict(_odict):

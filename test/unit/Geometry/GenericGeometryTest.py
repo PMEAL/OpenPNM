@@ -1,5 +1,6 @@
 import OpenPNM
 import scipy as sp
+import pytest
 
 
 class GenericGeometryTest:
@@ -55,19 +56,14 @@ class GenericGeometryTest:
         assert sp.sum(a) == self.geo.Np
 
     def test_initialize_with_overlapping_locations(self):
-        flag = False
-        try:
-            OpenPNM.Geometry.GenericGeometry(network=self.net,
-                                             pores=[0])
-        except:
-            flag = True
-        assert flag
+        with pytest.raises(Exception):
+            OpenPNM.Geometry.GenericGeometry(network=self.net, pores=[0])
 
-    def test_plot_histogram(self):
-        self.geo['pore.diameter'] = 1
-        self.geo['throat.diameter'] = 1
-        self.geo['throat.length'] = 1
-        self.geo.plot_histograms()
+#    def test_plot_histogram(self):
+#        self.geo['pore.diameter'] = 1
+#        self.geo['throat.diameter'] = 1
+#        self.geo['throat.length'] = 1
+#        self.geo.plot_histograms()
 
     def test_clear(self):
         self.geo2.clear(mode='complete')
