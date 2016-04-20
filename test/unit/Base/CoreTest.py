@@ -618,8 +618,8 @@ class CoreTest:
         assert self.phys2 in a
 
     def test_find_all_phases(self):
-        a = self.net1.phases()
-        b = [self.phase1.name, self.phase2.name]
+        a = set(self.net1.phases())
+        b = {self.phase1.name, self.phase2.name}
         assert a == b
 
     def test_find_phases_by_name(self):
@@ -631,8 +631,8 @@ class CoreTest:
         assert self.phase2 in a
 
     def test_find_all_geometries(self):
-        a = self.net1.geometries()
-        b = [self.geo1.name]
+        a = set(self.net1.geometries())
+        b = {self.geo1.name}
         assert a == b
 
     def test_find_geometries_by_name(self):
