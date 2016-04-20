@@ -41,7 +41,10 @@ class ObjectContainer(dict):
                 list_.append(item)
             return list_
         else:
-            return list(self[name])
+            if self[name]._isa('network'):
+                return self[name]
+            else:
+                return [self[name]]
 
 
 class PrintableDict(_odict):

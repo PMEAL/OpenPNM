@@ -50,10 +50,9 @@ class GenericPhysics(OpenPNM.Base.Core):
 
         # Associate with Network
         if network is None:
-            self._net = GenericNetwork()
-        else:
-            self._net = network  # Attach network to self
-            self._net.physics.update({self.name: self})  # Register self with network
+            network = GenericNetwork()
+        self.network.update({network.name: network})  # Attach network to self
+        self._net.physics.update({self.name: self})  # Register self with network
 
         # Associate with Phase
         if phase is None:

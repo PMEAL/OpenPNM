@@ -29,7 +29,6 @@ class Core(dict):
         obj.geometries = Tools.ObjectContainer()
         obj.physics = Tools.ObjectContainer()
         obj.network = Tools.ObjectContainer()
-        obj._net = None
         obj._parent = None
         # Initialize ordered dict for storing property models
         obj.models = ModelsDict()
@@ -241,6 +240,10 @@ class Core(dict):
     @property
     def _physics(self):
         return list(self.physics.values())
+
+    @property
+    def _net(self):
+        return list(self.network.values())[0]
 
     # -------------------------------------------------------------------------
     """Model Manipulation Methods"""
