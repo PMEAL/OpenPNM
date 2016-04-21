@@ -107,19 +107,96 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     parent_phase = property(fget=_get_phase, fset=_set_phase)
 
-    def set_locations(self, pores=[], throats=[], mode='add'):
+    def set_locations(self, pores=None, throats=None, mode='add'):
         r"""
-        Set the pore and throat locations of the Physics object
+        Used for assigning Physics objects to specified locations
 
         Parameters
         ----------
-        pores and throats : array_like
-            The list of pores and/or throats where the object should be applied.
+        pores : array_like
+            The pore locations in the Network where this object is to apply
+
+        throats : array_like
+            The throat locations in the Network where this object is to apply
+
         mode : string
-            Indicates whether list of pores or throats is to be added or removed
-            from the object.  Options are 'add' (default) or 'remove'.
+            Either 'add' (default) or 'remove' the object from the specified
+            locations
         """
-        if sp.size(pores) > 0:
-            self._set_locations(element='pore', locations=pores, mode=mode)
-        if sp.size(throats) > 0:
-            self._set_locations(element='throat', locations=throats, mode=mode)
+        if mode == 'add':
+            # Check if any constant values exist on the object
+            for item in self.props():
+                if (item not in self.models.keys()) or \
+                   (self.models[item]['regen_mode'] == 'constant'):
+                    raise Exception('Constant properties found on object, ' +
+                                    'cannot increase size')
+            if pores is not None:
+                self._add_locations(element='pores', locations=pores)
+            if throats is not None:
+                self._add_locations(element='throats', locations=throats)
+        if mode == 'remove':
+            if pores is not None:
+                self._drop_locations(element='pores', locations=pores)
+            if throats is not None:
+                self._drop_locations(element='throats', locations=throats)
+        # Finally, regenerate models to correct the length of all arrays
+        self.models.regenerate()
+
+    def _drop_locations(self, element, locations):
+        net = self._net
+        phase = self.parent_phase
+        element = self._parse_element(element, single=True)
+        locations = self._parse_locations(locations)
+
+        self_inds = net._map(element=element,
+                             locations=locations,
+                             target=self)
+        keep = ~self._tomask(locations=self_inds, element=element)
+        for item in list(self.keys()):
+            if item.split('.')[0] == element:
+                temp = self[item][keep]
+                self.update({item: temp})
+        # Set locations in Network dictionary
+        net[element+'.'+self.name][locations] = False
+        phase[element+'.'+self.name][locations] = False
+
+    def _add_locations(self, element, locations):
+        net = self._net
+        phase = self.parent_phase
+        element = self._parse_element(element, single=True)
+        locations = self._parse_locations(locations)
+
+        # Ensure locations are not already assigned to another Geometry
+        temp = sp.zeros(net._count(element=element), dtype=int)
+        phys = phase._find_object(obj_type='physics')
+        for item in phys:
+            inds = phase._get_indices(element=element, labels=item)
+            temp[inds] += 1
+        temp[locations] += 1  # Increment proposed locations
+        if sp.any(temp[locations] > 1):
+            raise Exception('Some of the given '+element+' are already ' +
+                            'assigned to an existing object')
+
+        # Create new 'all' label for new size
+        new_len = self._count(element=element) + sp.size(locations)
+        self.update({element+'.all': sp.ones((new_len, ), dtype=bool)})
+
+        # Set locations in Network dictionary
+        inds_orig = phase._get_indices(element=element, labels=self.name)
+        if element+'.'+self.name not in net.keys():
+            net[element+'.'+self.name] = False
+        net[element+'.'+self.name][locations] = True
+        if element+'.'+self.name not in phase.keys():
+            phase[element+'.'+self.name] = False
+        phase[element+'.'+self.name][locations] = True
+        inds_new = net._get_indices(element=element, labels=self.name)
+
+        # Increase size of labels (add False at new locations)
+        labels = self.labels()
+        labels.remove(element+'.all')
+        for item in labels:
+            if item.split('.')[0] == element:
+                phase[element+'.'+'blank'] = False
+                phase[element+'.'+'blank'][inds_orig] = self[item]
+                self[item] = net[element+'.'+'blank'][inds_new]
+        phase.pop(element+'.'+'blank', None)
