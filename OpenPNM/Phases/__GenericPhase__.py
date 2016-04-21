@@ -110,8 +110,10 @@ class GenericPhase(Core):
                 logger.error('Phase already present')
                 pass
             else:
-                self.phases.update({phase.name: phase})  # Associate any sub-phases with self
-                phase.phases.update({self.name: self})  # Associate self with sub-phases
+                # Associate components with self
+                self.phases.update({phase.name: phase})
+                # Associate self with components
+                phase.phases.update({self.name: self})
                 # Add models for components to inherit mixture T and P
                 phase.models.add(propname='pore.temperature',
                                  model=OpenPNM.Phases.models.misc.mixture_value)
