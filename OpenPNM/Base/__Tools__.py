@@ -35,22 +35,19 @@ class ObjectContainer(dict):
     aspect (i.e. in V2.0).
     """
     def __call__(self, name=None):
+        if self == {}:
+            return []
         if name is None:
-            list_ = []
-            for item in self.keys():
-                list_.append(item)
-            if len(list_) > 0:
-                if self[list_[0]]._isa('network'):
-                    return [self[list_[0]]]
-            return list_
+            objs = [item for item in self.keys()]
+            if self[objs[0]]._isa('network'):
+                objs = [self[objs[0]]]
         else:
             if type(name) is not list:
                 name = [name]
             objs = [self[item] for item in name]
             if objs[0]._isa('network'):
-                return objs[0]
-            else:
-                return objs
+                objs = objs[0]
+        return objs
 
 
 class PrintableDict(_odict):
