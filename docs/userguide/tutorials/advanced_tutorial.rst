@@ -4,8 +4,6 @@
 Tutorial 3 of 3: Advanced Topics and Usage
 ###############################################################################
 
-In this final tutorial on the use of OpenPNM, the focus will be on creating custom pore-scale models and custom classes, and manipulating topology
-
 .. contents:: Topics Covered in this Tutorial
 
 **Learning Outcomes**
@@ -28,13 +26,13 @@ For the present tutorial, we'll keep the topology simple to help keep the focus 
 
     >>> import scipy as sp
     >>> import OpenPNM as op
-    >>> pn = op.Network.Cubic(shape=[10, 10, 10], spacing=0.00006)
+    >>> pn = op.Network.Cubic(shape=[10, 10, 10], spacing=0.00006, name='net')
 
 -------------------------------------------------------------------------------
 Adding Boundary Pores
 -------------------------------------------------------------------------------
 
-When performing transport simulations it is often useful to have 'boundary' pores attached to the surface(s) of the network where boundary conditions can be applied.  The **Cubic** class has two methods for doing this: ``add_boundaries`` and ``add_boundary_pores``.  The first method adds boundaries to ALL six faces of the network and offsets them from the network by 1/2 of the value provided as the network ``spacing``.  The second method provides total control over which boundaries are created and where they are positioned, but it more cumbersome to use.  Let's explore these two options:
+When performing transport simulations it is often useful to have 'boundary' pores attached to the surface(s) of the network where boundary conditions can be applied.  The **Cubic** class has two methods for doing this: ``add_boundaries`` and ``add_boundary_pores``.  The first method automatically adds boundary to ALL six faces of the network and offsets them from the network by 1/2 of the value provided as the network ``spacing``.  The second method provides total control over which boundary pores are created and where they are positioned, but it more cumbersome to use.  Let's explore these two options:
 
 .. code-block:: python
 
@@ -48,7 +46,7 @@ When performing transport simulations it is often useful to have 'boundary' pore
     >>> pn.Nt
     3300
 
-Let's remove all these newly created boundary pores.  When they are created these pores are all automatically labeled with a label such as ``'top_boundary'``, so we can select all boundary pores using:
+Let's remove all these newly created boundary pores.  When they are created these pores are all automatically labeled with a label such as ``'top_boundary'``, so we can select all boundary pores by using the 'wildcard' feature in the ``pores`` look-up method to find all pores with a label containing the word ``boundary``.
 
 .. code-block:: python
 
@@ -91,7 +89,7 @@ OpenPNM uses a `list-based data storage scheme <topology>`_ for all properties, 
 
 .. code-block:: python
 
-    >>> Ts = sp.rand(pn.Nt) < 0.2  # Create a mask with ~20% of throats labeled True
+    >>> Ts = sp.rand(pn.Nt) < 0.1  # Create a mask with ~20% of throats labeled True
     >>> pn.trim(throats=Ts)  # Use mask to indicate which throats to trim
 
 When the ``trim`` function is called, it automatically checks the health of the network afterwards, so logger messages might appear on the command line if problems were found.  **Networks** have a ``check_network_health`` method that performs the same checks, and returns a **HealthDict** containing the results of the checks:
@@ -107,14 +105,15 @@ The **HealthDict** contains several lists including things like duplicate throat
 Define Geometry Objects
 ===============================================================================
 
-Since we've added boundary pores to the network we need to the treat them a little bit differently.  Specifically, they should have no volume or length (as they are not physically representative of real pores).  To do this, we create two separate **Geometry** objects, one for internal pores and one for the boundaries:
+The boundary pores we've added to the network should be treated a little bit differently.  Specifically, they should have no volume or length (as they are not physically representative of real pores).  To do this, we create two separate **Geometry** objects, one for internal pores and one for the boundaries:
 
 .. code-block:: python
 
     >>> Ps = pn.pores('*boundary', mode='not')
-    >>> geom = op.Geometry.Stick_and_Ball(network=pn, pores=Ps, throats=pn.Ts)
+    >>> geom = op.Geometry.Stick_and_Ball(network=pn, pores=Ps, throats=pn.Ts,
+    ...                                   name='internal')
     >>> Ps = pn.pores('*boundary')
-    >>> boun = op.Geometry.GenericGeometry(network=pn, pores=Ps)
+    >>> boun = op.Geometry.GenericGeometry(network=pn, pores=Ps, name='boundary')
 
 The **Stick_and_Ball** class is preloaded with the pore-scale models to calculate all the necessary size information (pore diameter, throat lengths, etc).  The **GenericGeometry** class used for the boundary pores is empty and requires work:
 
@@ -133,8 +132,8 @@ In order to simulate relative permeability of air through a partially water-fill
 
 .. code-block:: python
 
-    >>> water = OpenPNM.Phases.Water(network=pn)
-    >>> air = OpenPNM.Phases.Air(network=pn)
+    >>> water = OpenPNM.Phases.Water(network=pn, name='water')
+    >>> air = OpenPNM.Phases.Air(network=pn, name='water')
 
 -------------------------------------------------------------------------------
 Aside: Creating a Custom Phase Class
@@ -188,7 +187,7 @@ In the `previous tutorial <intermediate_usage>`_ we created two **Physics** obje
 Create a Custom Pore-Scale Physics Model
 -------------------------------------------------------------------------------
 
-Perhaps the most distinguishing feature between pore-network modeling papers is the pore-scale physics models employed.  OpenPNM was designed to allow for easy customization in this regard, so that you can create your own models to augment or replace the ones included in the OpenPNM *models* libraries.  For demonstration, let's implement the capillary pressure model proposed by `Mason and Morrow in 1994 <http://dx.doi.org/10.1006/jcis.1994.1402>`_.  They studied the entry pressure of non-wetting fluid into a throat formed by spheres, and found that the converging-diverging geometry increased the capillary pressure required to penetrate the throat.  As a simple approximation they proposed :math:`P_c = -2 \sigma \cdot cos(2/3 \theta) / R_t`.
+Perhaps the most distinguishing feature between pore-network modeling papers is the pore-scale physics models employed.  Accordingly, OpenPNM was designed to allow for easy customization in this regard, so that you can create your own models to augment or replace the ones included in the OpenPNM *models* libraries.  For demonstration, let's implement the capillary pressure model proposed by `Mason and Morrow in 1994 <http://dx.doi.org/10.1006/jcis.1994.1402>`_.  They studied the entry pressure of non-wetting fluid into a throat formed by spheres, and found that the converging-diverging geometry increased the capillary pressure required to penetrate the throat.  As a simple approximation they proposed :math:`P_c = -2 \sigma \cdot cos(2/3 \theta) / R_t`.
 
 Pore-scale models are written as basic function definitions:
 
@@ -209,11 +208,11 @@ Pore-scale models are written as basic function definitions:
 
 Let's examine the components of above code:
 
-* The function receives ``network``, ``phase`` objects as arguments.  Each of these provide access to the properties necessary for the calculation.  The ``'pore.diameter'`` values are retrieved via the ``network``, and the thermophysical properties are retrieved directly from the ``phase``.
+* The function receives ``network``, ``phase`` objects as arguments.  Each of these provide access to the properties necessary for the calculation: ``'pore.diameter'`` values are retrieved via the ``network``, and the thermophysical properties are retrieved directly from the ``phase``.
 
 * Note the ``pore.diameter`` is actually a **Geometry** property, but it is retrieved via the network using the data exchange rules outlined in the second tutorial, and explained fully in :ref:`data_storage`.
 
-* All of the calculations are done for every throat in the network, but this pore-scale model is meant to be assigned to a single **Physics** object.  As such, the last line extracts value from the ``Pc`` array for the location of ``physics`` and returns just the subset.
+* All of the calculations are done for every throat in the network, but this pore-scale model is meant to be assigned to a single **Physics** object.  As such, the last line extracts values from the ``Pc`` array for the location of ``physics`` and returns just the subset.
 
 * The actual values of the contact angle, surface tension, and throat diameter are NOT sent in as numerical arrays, but rather as dictionary keys to the arrays.  There is one very important reason for this: if arrays had been sent, then re-running the model would use the same arrays and hence not use any updated values.  By having access to dictionary keys, the model actually looks up the current values in each of the arrays whenever it is run.
 
@@ -224,7 +223,7 @@ Assuming this function is saved in a file called 'my_models.py' in the current w
     from my_models import mason_model
 
 -------------------------------------------------------------------------------
-Copy Models between Physics Objects
+Copy Models Between Physics Objects
 -------------------------------------------------------------------------------
 
 As mentioned above, the need to specify a separate **Physics** object for each **Geometry** and **Phase** can become tedious.  It is possible to *copy* the pore-scale models assigned to one object onto another object.  First, let's assign the models we need to ``phys_water_internal``:
@@ -245,16 +244,34 @@ Now we can make a copy of the ``models`` on ``phys_water_internal`` and apply it
     >>> phys_air_internal.models = mods
     >>> phys_air_internal.models = mods
 
--------------------------------------------------------------------------------
-Access Objects of a Certain Type via the Network
--------------------------------------------------------------------------------
-
-The only 'gotcha' with the above approach is that each of the **Physics** objects must be *regenerated* in order to place numerical values for all the properties into the data arrays.  It would be possible to add several new lines to your run script that calls the ``regenerate`` method for each new object.  A more efficient approach is to utilize the fact that when every object is created, it is 'registered' with the **Network**.  Any object can be looked-up by it's type using ``pn.geometries()``, ``pn.phases()``, or ``pn.physics()``.
+The only 'gotcha' with this approach is that each of the **Physics** objects must be *regenerated* in order to place numerical values for all the properties into the data arrays.  It would be possible to add several new lines to your run script that calls the ``regenerate`` method for each **Physics** object:
 
 .. code-block:: python
 
-    >>> temp = [item.regenerate for item in pn.physics()]
+    >>> phys_water_boundary.models.regenerate()
+    >>> phys_air_internal.models.regenerate()
+    >>> phys_air_internal.models.regenerate()
 
+-------------------------------------------------------------------------------
+Access Other Objects via the Network
+-------------------------------------------------------------------------------
+
+A more efficient approach is to utilize the fact that when every object is created, it is 'registered' with the **Network**.  Any object can be looked-up by it's type using ``pn.geometries``, ``pn.phases``, or ``pn.physics``, which return a *dict* containing {key: value} pairs of {object.name: object}:
+
+.. code-block:: python
+
+    >>> pn.geometries
+    {'internal': <OpenPNM.Geometry.__Stick_and_Ball__.Stick_and_Ball object at 0x7ef4e58>, 'boundary': <OpenPNM.Geometry.__GenericGeometry__.GenericGeometry object at 0x47734f8>}
+    >>> pn.geometries.keys()  # Or obtain a list of object names using keys
+    ['internal', 'boundary']
+
+One handy use of this list is that is can be iterated over to perform an action on all objects in one line.  In this case running the ``regenerate`` method on all **Physics** objects can be accomplished with:
+
+.. code-block:: python
+
+    >>> temp = [item.regenerate for item in pn.physics.values()]
+
+*dict*'s  have the ``values`` method to returns a list of the objects stored under each key.
 
 -------------------------------------------------------------------------------
 Adjust Pore-Scale Model Parameters
