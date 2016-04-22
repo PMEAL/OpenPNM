@@ -8,7 +8,7 @@ GenericGeometry -- Base class to manage pore scale geometry
 import scipy as sp
 from OpenPNM.Base import Core
 from OpenPNM.Postprocessing import Plots
-from OpenPNM.Base import logging
+from OpenPNM.Base import logging, Tools
 from OpenPNM.Network import GenericNetwork
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class GenericGeometry(Core):
     ...                                         throats=Ts)
     """
 
-    def __init__(self, network=None, pores=[], throats=[], **kwargs):
+    def __init__(self, network=None, pores=None, throats=None, **kwargs):
         super().__init__(**kwargs)
         logger.name = self.name
 
@@ -85,15 +85,15 @@ class GenericGeometry(Core):
 
     def set_locations(self, pores=None, throats=None, mode='add'):
         r"""
-        Used for assigning Geometry objects to specified locations
+        Assign or unassign a Geometry object to specified locations
 
         Parameters
         ----------
         pores : array_like
-            The pore locations in the Network where this object is to apply
+            The pore locations in the Network where this Geometry is to apply
 
         throats : array_like
-            The throat locations in the Network where this object is to apply
+            The throat locations in the Network where this Geometry is to apply
 
         mode : string
             Either 'add' (default) or 'remove' the object from the specified
@@ -136,69 +136,20 @@ class GenericGeometry(Core):
                     raise Exception('Constant properties found on object, ' +
                                     'cannot increase size')
             if pores is not None:
-                self._add_locations(element='pores', locations=pores)
+                Tools.set_locations.add(obj=self, element='pore',
+                                        locations=pores)
             if throats is not None:
-                self._add_locations(element='throats', locations=throats)
+                Tools.set_locations.add(obj=self, element='throat',
+                                        locations=throats)
         if mode == 'remove':
             if pores is not None:
-                self._drop_locations(element='pores', locations=pores)
+                Tools.set_locations.drop(obj=self, element='pore',
+                                         locations=pores)
             if throats is not None:
-                self._drop_locations(element='throats', locations=throats)
+                Tools._set_locations.drop(obj=self, element='throat',
+                                          locations=throats)
         # Finally, regenerate models to correct the length of all arrays
         self.models.regenerate()
-
-    def _drop_locations(self, element, locations):
-        net = self._net
-        element = self._parse_element(element, single=True)
-        locations = self._parse_locations(locations)
-
-        self_inds = net._map(element=element,
-                             locations=locations,
-                             target=self)
-        keep = ~self._tomask(locations=self_inds, element=element)
-        for item in list(self.keys()):
-            if item.split('.')[0] == element:
-                temp = self[item][keep]
-                self.update({item: temp})
-        # Set locations in Network dictionary
-        net[element+'.'+self.name][locations] = False
-
-    def _add_locations(self, element, locations):
-        net = self._net
-        element = self._parse_element(element, single=True)
-        locations = self._parse_locations(locations)
-
-        # Ensure locations are not already assigned to another Geometry
-        temp = sp.zeros(net._count(element=element), dtype=int)
-        geoms = net._find_object(obj_type='geometry')
-        for item in geoms:
-            inds = net._get_indices(element=element, labels=item)
-            temp[inds] += 1
-        temp[locations] += 1  # Increment proposed locations
-        if sp.any(temp[locations] > 1):
-            raise Exception('Some of the given '+element+' are already ' +
-                            'assigned to an existing object')
-
-        # Create new 'all' label for new size
-        new_len = self._count(element=element) + sp.size(locations)
-        self.update({element+'.all': sp.ones((new_len, ), dtype=bool)})
-
-        # Set locations in Network dictionary
-        inds_orig = net._get_indices(element=element, labels=self.name)
-        if element+'.'+self.name not in net.keys():
-            net[element+'.'+self.name] = False
-        net[element+'.'+self.name][locations] = True
-        inds_new = net._get_indices(element=element, labels=self.name)
-
-        # Increase size of labels (add False at new locations)
-        labels = self.labels()
-        labels.remove(element+'.all')
-        for item in labels:
-            if item.split('.')[0] == element:
-                net[element+'.'+'blank'] = False
-                net[element+'.'+'blank'][inds_orig] = self[item]
-                self[item] = net[element+'.'+'blank'][inds_new]
-        net.pop(element+'.'+'blank', None)
 
     def plot_histograms(self,
                         throat_diameter='throat.diameter',
