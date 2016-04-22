@@ -146,7 +146,7 @@ class GenericGeometry(Core):
                 Tools.set_locations.drop(obj=self, element='pore',
                                          locations=pores)
             if sp.size(throats) > 0:
-                Tools._set_locations.drop(obj=self, element='throat',
+                Tools.set_locations.drop(obj=self, element='throat',
                                           locations=throats)
         # Finally, regenerate models to correct the length of all arrays
         self.models.regenerate()

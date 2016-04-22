@@ -146,7 +146,7 @@ class GenericPhysics(OpenPNM.Base.Core):
                 Tools.set_locations.drop(obj=self, element='pore',
                                          locations=pores)
             if throats is not None:
-                Tools._set_locations.drop(obj=self, element='throat',
+                Tools.set_locations.drop(obj=self, element='throat',
                                           locations=throats)
         # Finally, regenerate models to correct the length of all arrays
         self.models.regenerate()
