@@ -43,8 +43,8 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     """
 
-    def __init__(self, network=None, phase=None, geometry=None, pores=None,
-                 throats=None, **kwargs):
+    def __init__(self, network=None, phase=None, geometry=None, pores=[],
+                 throats=[], **kwargs):
         super().__init__(**kwargs)
         logger.name = self.name
 
@@ -107,7 +107,7 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     parent_phase = property(fget=_get_phase, fset=_set_phase)
 
-    def set_locations(self, pores=None, throats=None, mode='add'):
+    def set_locations(self, pores=[], throats=[], mode='add'):
         r"""
         Assign or unassign a Physics object to specified locations
 
@@ -135,14 +135,14 @@ class GenericPhysics(OpenPNM.Base.Core):
                    (self.models[item]['regen_mode'] == 'constant'):
                     raise Exception('Constant properties found on object, ' +
                                     'cannot increase size')
-            if pores is not None:
+            if sp.size(pores) > 0:
                 Tools.set_locations.add(obj=self, element='pore',
                                         locations=pores)
-            if throats is not None:
+            if sp.size(throats) > 0:
                 Tools.set_locations.add(obj=self, element='throat',
                                         locations=throats)
         if mode == 'remove':
-            if pores is not None:
+            if sp.size(pores) > 0:
                 Tools.set_locations.drop(obj=self, element='pore',
                                          locations=pores)
             if throats is not None:

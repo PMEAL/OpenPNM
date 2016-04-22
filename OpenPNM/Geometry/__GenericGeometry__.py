@@ -41,7 +41,7 @@ class GenericGeometry(Core):
     ...                                         throats=Ts)
     """
 
-    def __init__(self, network=None, pores=None, throats=None, **kwargs):
+    def __init__(self, network=None, pores=[], throats=[], **kwargs):
         super().__init__(**kwargs)
         logger.name = self.name
 
@@ -83,7 +83,7 @@ class GenericGeometry(Core):
         else:  # ...Then check Network
             return self._net[key][self._net[element+'.'+self.name]]
 
-    def set_locations(self, pores=None, throats=None, mode='add'):
+    def set_locations(self, pores=[], throats=[], mode='add'):
         r"""
         Assign or unassign a Geometry object to specified locations
 
@@ -135,17 +135,17 @@ class GenericGeometry(Core):
                    (self.models[item]['regen_mode'] == 'constant'):
                     raise Exception('Constant properties found on object, ' +
                                     'cannot increase size')
-            if pores is not None:
+            if sp.size(pores) > 0:
                 Tools.set_locations.add(obj=self, element='pore',
                                         locations=pores)
-            if throats is not None:
+            if sp.size(throats) > 0:
                 Tools.set_locations.add(obj=self, element='throat',
                                         locations=throats)
         if mode == 'remove':
-            if pores is not None:
+            if sp.size(pores) > 0:
                 Tools.set_locations.drop(obj=self, element='pore',
                                          locations=pores)
-            if throats is not None:
+            if sp.size(throats) > 0:
                 Tools._set_locations.drop(obj=self, element='throat',
                                           locations=throats)
         # Finally, regenerate models to correct the length of all arrays
