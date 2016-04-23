@@ -36,9 +36,6 @@ class VTK():
     </VTKFile>
     '''.strip()
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
     @staticmethod
     def save(network, filename='', phases=[], legacy=True):
         r"""
