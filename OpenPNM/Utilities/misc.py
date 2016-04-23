@@ -111,7 +111,7 @@ def iscoplanar(coords):
     n = _sp.cross(n1, n2)
     r = _sp.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
 
-    n_dot = _sp.dot(n,r)
+    n_dot = _sp.dot(n, r)
 
     if _sp.sum(n_dot) == 0:
         return True
