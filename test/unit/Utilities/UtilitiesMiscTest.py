@@ -38,3 +38,11 @@ class UtilitiesMiscTest:
         assert 'pore.'+self.air.name+'_molecular_weight' in dict_.keys()
         dict_ = misc.amalgamate_data(objs=[self.net, self.air], delimiter='|')
         assert 'pore.'+self.air.name+'|molecular_weight' in dict_.keys()
+
+    def test_tic_toc(self):
+        t = misc.tic()
+        assert t is None
+        t = misc.toc(quiet=False)
+        assert t is None
+        t = misc.toc(quiet=True)
+        assert t > 0
