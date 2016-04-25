@@ -89,17 +89,17 @@ OpenPNM uses a `list-based data storage scheme <topology>`_ for all properties, 
 
 .. code-block:: python
 
-    >>> Ts = sp.rand(pn.Nt) < 0.1  # Create a mask with ~20% of throats labeled True
+    >>> Ts = sp.rand(pn.Nt) < 0.1  # Create a mask with ~10% of throats labeled True
     >>> pn.trim(throats=Ts)  # Use mask to indicate which throats to trim
 
-When the ``trim`` function is called, it automatically checks the health of the network afterwards, so logger messages might appear on the command line if problems were found.  **Networks** have a ``check_network_health`` method that performs the same checks, and returns a **HealthDict** containing the results of the checks:
+When the ``trim`` function is called, it automatically checks the health of the network afterwards, so logger messages might appear on the command line if problems were found such as isolated clusters of pores or pores with no throats.  This health check is performed by calling the **Network**'s' ``check_network_health`` method which returns a **HealthDict** containing the results of the checks:
 
 .. code-block:: python
 
     >>> a = pn.check_network_health()
     >>> pn.trim(pores=a['trim_pores'])
 
-The **HealthDict** contains several lists including things like duplicate throats and isolated pores, but also a suggestion of which pores to trim to return the network to a healthy state.
+The **HealthDict** contains several lists including things like duplicate throats and isolated pores, but also a suggestion of which pores to trim to return the network to a healthy state.  Also, the **HealthDict** has a ``health`` attribute that is ``False``` is any checks fail.  
 
 ===============================================================================
 Define Geometry Objects
@@ -196,6 +196,7 @@ Pore-scale models are written as basic function definitions:
     :caption: **Example of a Pore-Scale Model Definition**
 
     def mason_model(network, phase, physics,
+                    f=2/3,
                     contact_angle='throat.contact_angle',
                     surface_tension='throat.surface_tension',
                     diameter='throat.diameter',
@@ -203,12 +204,14 @@ Pore-scale models are written as basic function definitions:
         Dt = network[diameter]
         theta=phase[contact_angle]
         sigma=phase[surface_tension]
-        Pc = -4*sigma*sp.cos(2/3*sp.deg2rad(theta))/Dt
+        Pc = -4*sigma*sp.cos(f*sp.deg2rad(theta))/Dt
         return Pc[network.throats(physics.name)]
 
 Let's examine the components of above code:
 
 * The function receives ``network``, ``phase`` objects as arguments.  Each of these provide access to the properties necessary for the calculation: ``'pore.diameter'`` values are retrieved via the ``network``, and the thermophysical properties are retrieved directly from the ``phase``.
+
+* The ``f`` value is a scale factor that is applied to the contact angle.  Mason and Morrow suggested a value of 2/3 as a decent fit to the data, but we'll make this an adjustable parameter with 2/3 as the default.
 
 * Note the ``pore.diameter`` is actually a **Geometry** property, but it is retrieved via the network using the data exchange rules outlined in the second tutorial, and explained fully in :ref:`data_storage`.
 
@@ -235,7 +238,7 @@ As mentioned above, the need to specify a separate **Physics** object for each *
     >>> phys_water_internal(propname='throat.hydraulic_conductance',
     ...                     model=OpenPNM.Physics.hydraulic_conductance.hagan_poisseuille)
 
-Now we can make a copy of the ``models`` on ``phys_water_internal`` and apply it all the other **Physics** objects:
+Now make a copy of the ``models`` on ``phys_water_internal`` and apply it all the other **Physics** objects:
 
 .. code-block:: python
 
@@ -244,7 +247,7 @@ Now we can make a copy of the ``models`` on ``phys_water_internal`` and apply it
     >>> phys_air_internal.models = mods
     >>> phys_air_internal.models = mods
 
-The only 'gotcha' with this approach is that each of the **Physics** objects must be *regenerated* in order to place numerical values for all the properties into the data arrays.  It would be possible to add several new lines to your run script that calls the ``regenerate`` method for each **Physics** object:
+The only 'gotcha' with this approach is that each of the **Physics** objects must be *regenerated* in order to place numerical values for all the properties into the data arrays:
 
 .. code-block:: python
 
@@ -256,7 +259,7 @@ The only 'gotcha' with this approach is that each of the **Physics** objects mus
 Access Other Objects via the Network
 -------------------------------------------------------------------------------
 
-A more efficient approach is to utilize the fact that when every object is created, it is 'registered' with the **Network**.  Any object can be looked-up by it's type using ``pn.geometries``, ``pn.phases``, or ``pn.physics``, which return a *dict* containing {key: value} pairs of {object.name: object}:
+The above code used 3 lines to explicitly regenerate each **Physics** object, but an alternative and more efficient approach is possible.  When every object is created, it is 'registered' with the **Network** which is a required argument in the instantiation of every other object.  Any object can be looked-up by it's type using ``pn.geometries``, ``pn.phases``, or ``pn.physics``, which return a *dict* containing *key-value* pair of ``{object.name: object}``:
 
 .. code-block:: python
 
@@ -271,14 +274,23 @@ One handy use of this list is that is can be iterated over to perform an action 
 
     >>> temp = [item.regenerate for item in pn.physics.values()]
 
-*dict*'s  have the ``values`` method to returns a list of the objects stored under each key.
+The ``values`` method of the *dict* class returns a list of the objects stored under each key.
 
 -------------------------------------------------------------------------------
 Adjust Pore-Scale Model Parameters
 -------------------------------------------------------------------------------
 
+The pore-scale models are stored in a **ModelsDict** object that is itself stored under the ``models`` attribute of each object.  This arrangement is somewhat convoluted, but it enables integrated storage of models on the object's wo which they apply.  The models on an object can be inspected with ``print(phys_water)``, which shows a list of all the pore-scale properties that are computed by a model, and some information about the model's *regeneration* mode.
 
+Each model in the **ModelsDict** can be individually inspected by accessing it using the dictionary key corresponding to *pore-property* that it calculates, i.e. ``print(phys_water)['throat.capillary_pressure'])``.  This shows a list of all the parameters associated with that model.  It is possible to edit these parameters directly:
 
+.. code-block:: python
+
+    >>> phys_water.models['throat.capillary_pressure']['f']  # Inspect present value
+    0.6666666666666666
+    >>> phys_water.models['throat.capillary_pressure']['f'] = 0.70  # Change value
+
+More details about the **ModelsDict** and **ModelWrapper** class can be found in :ref:`models`.
 
 ===============================================================================
 Perform Multiphase Transport Simulations

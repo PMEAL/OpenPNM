@@ -204,24 +204,18 @@ For this tutorial, we will create a generic **Phase** object for water, then ass
     >>> water = OpenPNM.Phases.GenericPhase(network=pn)
     >>> air = OpenPNM.Phases.GenericPhase(network=pn)
 
-A variety of pore-scale models are available for calculating **Phase** properties, generally taken from correlations in the literature.  An empirical correlation specifically for the viscosity of water is available:
-
-.. code-block:: python
-
-    >>> water.models.add(propname='pore.viscosity',
-    ...                  model=OpenPNM.Phases.models.viscosity.water)
-
 Note that all **Phase** objects are automatically assigned standard temperature and pressure conditions when created.  This can be adjusted:
 
 .. code-block:: python
 
     >>> water['pore.temperature'] = 353  # K
 
-Since viscosity is highly dependent on temperature, it is necessary to "regenerate" the viscosity values by running the model again:
+A variety of pore-scale models are available for calculating **Phase** properties, generally taken from correlations in the literature.  An empirical correlation specifically for the viscosity of water is available:
 
 .. code-block:: python
 
-    >>> water.models.regenerate()
+    >>> water.models.add(propname='pore.viscosity',
+    ...                  model=OpenPNM.Phases.models.viscosity.water)
 
 ===============================================================================
 Create Physics Objects for Each Geometry
