@@ -99,7 +99,7 @@ When the ``trim`` function is called, it automatically checks the health of the 
     >>> a = pn.check_network_health()
     >>> pn.trim(pores=a['trim_pores'])
 
-The **HealthDict** contains several lists including things like duplicate throats and isolated pores, but also a suggestion of which pores to trim to return the network to a healthy state.  Also, the **HealthDict** has a ``health`` attribute that is ``False``` is any checks fail.  
+The **HealthDict** contains several lists including things like duplicate throats and isolated pores, but also a suggestion of which pores to trim to return the network to a healthy state.  Also, the **HealthDict** has a ``health`` attribute that is ``False``` is any checks fail.
 
 ===============================================================================
 Define Geometry Objects
@@ -132,8 +132,8 @@ In order to simulate relative permeability of air through a partially water-fill
 
 .. code-block:: python
 
-    >>> water = OpenPNM.Phases.Water(network=pn, name='water')
-    >>> air = OpenPNM.Phases.Air(network=pn, name='water')
+    >>> water = op.Phases.Water(network=pn, name='water')
+    >>> air = op.Phases.Air(network=pn, name='water')
 
 -------------------------------------------------------------------------------
 Aside: Creating a Custom Phase Class
@@ -176,10 +176,10 @@ In the `previous tutorial <intermediate_usage>`_ we created two **Physics** obje
 
 .. code-block:: python
 
-    >>> phys_water_internal = OpenPNM.Physics.GenericPhysics(network=pn, phase=water, geometry=geom)
-    >>> phys_air_internal = OpenPNM.Physics.GenericPhysics(network=pn, phase=air, geometry=geom)
-    >>> phys_water_boundary = OpenPNM.Physics.GenericPhysics(network=pn, phase=water, geometry=boun)
-    >>> phys_air_boundary = OpenPNM.Physics.GenericPhysics(network=pn, phase=air, geometry=boun)
+    >>> phys_water_internal = op.Physics.GenericPhysics(network=pn, phase=water, geometry=geom)
+    >>> phys_air_internal = op.Physics.GenericPhysics(network=pn, phase=air, geometry=geom)
+    >>> phys_water_boundary = op.Physics.GenericPhysics(network=pn, phase=water, geometry=boun)
+    >>> phys_air_boundary = op.Physics.GenericPhysics(network=pn, phase=air, geometry=boun)
 
 * To reiterate, *one* **Physics** object is required for each **Geometry** *AND* each **Phase**, so the number can grow to become annoying very quickly  Some useful tips for easing this situation are given below.
 
@@ -290,7 +290,7 @@ Each model in the **ModelsDict** can be individually inspected by accessing it u
     0.6666666666666666
     >>> phys_water.models['throat.capillary_pressure']['f'] = 0.70  # Change value
 
-More details about the **ModelsDict** and **ModelWrapper** class can be found in :ref:`models`.
+More details about the **ModelsDict** and **ModelWrapper** classes can be found in :ref:`models`.
 
 ===============================================================================
 Perform Multiphase Transport Simulations
@@ -302,16 +302,55 @@ Perform Multiphase Transport Simulations
 Use the Built-In Drainage Algorithm to Generate an Invading Phase Configuration
 -------------------------------------------------------------------------------
 
+.. code-block:: python
 
+    >>> mip = op.Algorithms.Drainage(network=pn)
+    >>> mip.setup(invading_phase=water, defending_phase=air)
+    >>> mip.set_inlets(pores=pn.pores('top', 'bottom'))
+    >>> mip.run()
+
+* The inlet pores were set to both ``'top'`` and ``'bottom'`` using the ``pn.pores`` method.  The algorithm applies to the entire network so the mapping of network pores to the algorithm pores is 1-to-1.
+
+* The ``run`` method automatically generates a list of 25 capillary pressure points to test, but you can also specify more pores, or which specific points to tests.  See the methods documentation for the details.
+
+* Once the algorithm has been run, the resulting capillary pressure curve can be viewed with ``plot_drainage_curve``.  If you'd prefer a table of data for plotting in your software of choice you can use ``get_drainage_data`` which prints a table in the console.
 
 -------------------------------------------------------------------------------
 Set Pores and Throats to Invaded
 -------------------------------------------------------------------------------
 
+After running, the ``mip`` object possesses an array containing the pressure at which each pore and throat was invaded, stored as ``'pore.inv_Pc'`` and ``'throat.inv_Pc'``.  These arrays can be used to obtain a list of which pores and throats are invaded using Boolean logic:
 
+.. code-block:: python
+
+    >>> Pi = mip['pore.inv_Pc'] < 10000
+    >>> Ti = mip['throat.inv_Pc'] < 10000
+
+The resulting Boolean masks can be used to manually adjust the hydraulic conductivity of pores and throats based on their phase occupancy.  The following lines set the water filled throats to near-zero air conductivity and vice-versa.
+
+.. code-block:: python
+
+    >>> phys_water['throat.hydraulic_conductance'][~Ti] = 1e-20
+    >>> phys_air['throat.hydraulic_conductance'][Ti] = 1e-20
+
+* The logic of these statements implicitly assumes that transport between two pores is only blocked if the throat is filled with the other phase, meaning that both pores could be filled and transport is still permitted.  Another option would be to set the transport to near-zero if *either* or *both* of the pores are filled as well.
+
+* The above approach can get complicated if there are several **Geometry** objects, and it is also a bit laborious.  There is a pore-scale model for this under **Physics.models.multiphase** called ``conduit_conductance``.  The term conduit refers to the path between two pores that includes 1/2 of each pores plus the connecting throat.
 
 -------------------------------------------------------------------------------
 Calculate Relative Permeability of Each Phase
 -------------------------------------------------------------------------------
 
-blah
+We are now ready to calculate the relative permeability of the domain under partially flooded conditions.  Instantiate an **StokesFlow** object:
+
+.. code-block:: python
+
+    >>> water_flow = op.Algorithms.StokesFlow(network=pn, phase=water)
+    >>> water_flow.set_boundary_conditions(pores=pn.pores('left'), bcvalue=200000, bctype='Dirichlet')
+    >>> water_flow.set_boundary_conditions(pores=pn.pores('rigt'), bcvalue=100000, bctype='Dirichlet')
+
+===============================================================================
+Save the Simulation in a *PNM* File for Later Use
+===============================================================================
+
+OpenPNM includes a **Workspace** class that provides the type of functionality found on the *menu-bar* of a typical application GUI. Specifically, this enables *saving* and *loading* of all active networks, or individual objects.
