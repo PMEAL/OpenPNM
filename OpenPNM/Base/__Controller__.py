@@ -363,6 +363,17 @@ class Controller(dict):
             self.clear()
 
         self = _pickle.load(open(filename+'.pnm', 'rb'))
+        for item in self._comments.values():
+            if 'Using OpenPNM' in item:
+                version = item.lstrip('Using OpenPNM ')
+                if version < OpenPNM.__version__:
+                    logger.warning('File was created with an early version of '
+                                   + 'OpenPNM: \n'
+                                   + '--> File saved with version: '
+                                   + str(version)
+                                   + '\n'
+                                   + '--> Current version: '
+                                   + str(OpenPNM.__version__))
 
     def export(self, network=None, filename='', fileformat='VTK'):
         logger.warning("This method is deprecated, use \'export_data\'.")
@@ -478,8 +489,10 @@ class Controller(dict):
         if hasattr(self, '_comments') is False:
             logger.info('No comments found')
         else:
+            if logger.level > 20:
+                logger.error('To view comments set the loglevel to 20 or less')
             for key in list(self._comments.keys()):
-                logger.info(key, ': ', self._comments[key])
+                logger.info(key + ': ' + self._comments[key])
 
     comments = property(fget=_get_comments, fset=_set_comments)
 
