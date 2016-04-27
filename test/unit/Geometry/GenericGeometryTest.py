@@ -76,11 +76,11 @@ class GenericGeometryTest:
         self.geo.set_locations(pores=Ps, mode='add')
         assert self.geo.num_pores('label') == 30
 
-    def test_plot_histogram(self):
-        self.geo['pore.diameter'] = 1
-        self.geo['throat.diameter'] = 1
-        self.geo['throat.length'] = 1
-        self.geo.plot_histograms()
+#    def test_plot_histogram(self):
+#        self.geo['pore.diameter'] = 1
+#        self.geo['throat.diameter'] = 1
+#        self.geo['throat.length'] = 1
+#        self.geo.plot_histograms()
 
     def test_clear(self):
         self.geo2.clear(mode='complete')

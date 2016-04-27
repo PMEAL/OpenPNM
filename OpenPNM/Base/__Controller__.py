@@ -174,8 +174,8 @@ class Controller(dict):
             else:
                 net = obj._net
             for item in net.geometries() + net.phases() + net.physics():
-                blank = self.pop(item, None)
-            del self[net.name]
+                self.pop(item, None)
+            self.pop(net.name, None)
         elif mode == 'single':
             name = obj.name
             for item in list(self.keys()):
@@ -183,14 +183,11 @@ class Controller(dict):
                 self[item].pop('pore.' + name, None)
                 self[item].pop('throat.' + name, None)
                 # Remove associations on other objects
-                self[item]._geometries[:] = \
-                    [x for x in self[item]._geometries if x is not obj]
-                self[item]._phases[:] = \
-                    [x for x in self[item]._phases if x is not obj]
-                self[item]._physics[:] = \
-                    [x for x in self[item]._physics if x is not obj]
+                self[item].geometries.pop(name, None)
+                self[item].physics.pop(name, None)
+                self[item].phases.pop(name, None)
             # Remove object from Controller dict
-            del self[name]
+            self.pop(name, None)
 
     def ghost_object(self, obj):
         r"""
@@ -472,28 +469,6 @@ class Controller(dict):
             raise Exception('Filename does not have suppored extension')
         return network
 
-    def _script(self, filename, mode='read'):
-        r"""
-        Save or reload the script files used for the modeling
-
-        Parameters
-        ----------
-        filename : string
-            The name of the file to read or write
-        mode : string
-            Whether to 'archive' the given script file on the object or to
-            'retrieve' it from the object and create a new file with it.  The
-            default is 'archive'.
-        """
-        filename = filename.split('.')[0]+'.py'
-        if mode == 'archive':
-            with open(filename, 'rb') as read_file:
-                contents = read_file.read()
-            self._script = contents
-        if mode == 'retrieve':
-            with open(filename, 'wb') as write_file:
-                write_file.write(self._script)
-
     def _set_comments(self, string):
         if hasattr(self, '_comments') is False:
             self._comments = {}
@@ -581,14 +556,3 @@ class Controller(dict):
                 if name == array_name.split('.')[-1]:
                     return False
         return valid_name
-
-    def _insert_simulation(self, network):
-        for item in network._simulation():
-            if item.name in self.keys():
-                raise Exception('An object named '+item.name+' is already present')
-        if network.name not in self.keys():
-            self[network.name] = network
-            for item in network._simulation():
-                self[item.name] = item
-        else:
-            logger.warn('Duplicate name found in Controller')
