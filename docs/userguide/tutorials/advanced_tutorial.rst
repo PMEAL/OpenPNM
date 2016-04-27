@@ -133,7 +133,7 @@ In order to simulate relative permeability of air through a partially water-fill
 .. code-block:: python
 
     >>> water = op.Phases.Water(network=pn, name='water')
-    >>> air = op.Phases.Air(network=pn, name='water')
+    >>> air = op.Phases.Air(network=pn, name='air')
 
 -------------------------------------------------------------------------------
 Aside: Creating a Custom Phase Class
