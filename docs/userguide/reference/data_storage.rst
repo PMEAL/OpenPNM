@@ -81,7 +81,7 @@ The only distinction between *labels* and *properties* is that *labels* are Bool
 .. code-block:: python
 
     >>> pn['pore.top'][2] = False
-    >>> pn['pore.top']
+    >>> sp.where(pn['pore.top'])[0]
     array([ 5,  8, 11, 14, 17, 20, 23, 26])
     >>> pn['pore.top'][2] = True  # Re-apply label to pore 2
 
