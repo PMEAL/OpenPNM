@@ -90,3 +90,83 @@ class HealthDict(PrintableDict):
         return health
 
     health = property(fget=_get_health)
+
+
+class SetLocations():
+
+    @staticmethod
+    def add(obj, element, locations):
+        net = obj._net
+        element = obj._parse_element(element, single=True)
+        locations = obj._parse_locations(locations)
+
+        # Adapt the method depending on type of object received
+        if obj._isa('Physics'):
+            boss = obj.parent_phase
+            objs = boss._physics
+        elif obj._isa('Geometry'):
+            boss = obj._net
+            objs = net._geometries
+        else:
+            raise Exception('Setting locations does not apply to received object')
+
+        # Ensure locations are not already assigned to another object
+        temp = _sp.zeros(net._count(element=element), dtype=int)
+        for item in objs:
+            inds = boss._get_indices(element=element, labels=item.name)
+            temp[inds] += 1
+        temp[locations] += 1  # Increment proposed locations
+        if _sp.any(temp[locations] > 1):
+            raise Exception('Some of the given '+element+' are already ' +
+                            'assigned to an existing object')
+
+        # Create new 'all' label for new size
+        new_len = obj._count(element=element) + _sp.size(locations)
+        obj.update({element+'.all': _sp.ones((new_len, ), dtype=bool)})
+
+        # Set locations in Network dictionary
+        inds_orig = net._get_indices(element=element, labels=obj.name)
+        if element+'.'+obj.name not in net.keys():
+            net[element+'.'+obj.name] = False
+        net[element+'.'+obj.name][locations] = True
+        inds_new = net._get_indices(element=element, labels=obj.name)
+
+        # Set locations in Phase dictionary (if obj is a Physics object)
+        if obj._isa('Physics'):
+            phase = obj.parent_phase
+            if element+'.'+obj.name not in phase.keys():
+                phase[element+'.'+obj.name] = False
+            phase[element+'.'+obj.name][locations] = True
+
+        # Increase size of labels (add False at new locations)
+        labels = obj.labels()
+        labels.remove(element+'.all')
+        for item in labels:
+            if item.split('.')[0] == element:
+                net[element+'.'+'blank'] = False
+                net[element+'.'+'blank'][inds_orig] = obj[item]
+                obj[item] = net[element+'.'+'blank'][inds_new]
+        net.pop(element+'.'+'blank', None)
+
+    @staticmethod
+    def drop(obj, element, locations):
+        net = obj._net
+        element = obj._parse_element(element, single=True)
+        locations = obj._parse_locations(locations)
+
+        obj_inds = net._map(element=element,
+                            locations=locations,
+                            target=obj)
+        keep = ~obj._tomask(locations=obj_inds, element=element)
+        for item in list(obj.keys()):
+            if item.split('.')[0] == element:
+                temp = obj[item][keep]
+                obj.update({item: temp})
+
+        # Drop locations from Network dictionary
+        net[element+'.'+obj.name][locations] = False
+
+        # Drop locations from Phase dictionary (if obj is a Physics)
+        if obj._isa('Physics'):
+            phase = obj.parent_phase
+            phase[element+'.'+obj.name][locations] = False

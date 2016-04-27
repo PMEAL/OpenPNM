@@ -5,7 +5,7 @@ module __Physics__: Base class for mananging pore-scale Physics properties
 ===============================================================================
 
 """
-from OpenPNM.Base import logging
+from OpenPNM.Base import logging, Tools
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Phases import GenericPhase
 import OpenPNM.Physics.models
@@ -43,8 +43,8 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     """
 
-    def __init__(self, network=None, phase=None, geometry=None,
-                 pores=[], throats=[], **kwargs):
+    def __init__(self, network=None, phase=None, geometry=None, pores=[],
+                 throats=[], **kwargs):
         super().__init__(**kwargs)
         logger.name = self.name
 
@@ -109,17 +109,44 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     def set_locations(self, pores=[], throats=[], mode='add'):
         r"""
-        Set the pore and throat locations of the Physics object
+        Assign or unassign a Physics object to specified locations
 
         Parameters
         ----------
-        pores and throats : array_like
-            The list of pores and/or throats where the object should be applied.
+        pores : array_like
+            The pore locations in the Network where this Physics is to apply
+
+        throats : array_like
+            The throat locations in the Network where this Physics is to apply
+
         mode : string
-            Indicates whether list of pores or throats is to be added or removed
-            from the object.  Options are 'add' (default) or 'remove'.
+            Either 'add' (default) or 'remove' the object from the specified
+            locations
+
+        Examples
+        --------
+        >>> import OpenPNM
+
         """
-        if sp.size(pores) > 0:
-            self._set_locations(element='pore', locations=pores, mode=mode)
-        if sp.size(throats) > 0:
-            self._set_locations(element='throat', locations=throats, mode=mode)
+        if mode == 'add':
+            # Check if any constant values exist on the object
+            for item in self.props():
+                if (item not in self.models.keys()) or \
+                   (self.models[item]['regen_mode'] == 'constant'):
+                    raise Exception('Constant properties found on object, ' +
+                                    'cannot increase size')
+            if sp.size(pores) > 0:
+                Tools.SetLocations.add(obj=self, element='pore',
+                                       locations=pores)
+            if sp.size(throats) > 0:
+                Tools.SetLocations.add(obj=self, element='throat',
+                                       locations=throats)
+        if mode == 'remove':
+            if sp.size(pores) > 0:
+                Tools.SetLocations.drop(obj=self, element='pore',
+                                        locations=pores)
+            if throats is not None:
+                Tools.SetLocations.drop(obj=self, element='throat',
+                                        locations=throats)
+        # Finally, regenerate models to correct the length of all arrays
+        self.models.regenerate()

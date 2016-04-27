@@ -59,6 +59,23 @@ class GenericGeometryTest:
         with pytest.raises(Exception):
             OpenPNM.Geometry.GenericGeometry(network=self.net, pores=[0])
 
+    def test_add_and_remove_pores(self):
+        Ps = self.geo.Pnet[:50]
+        self.geo.set_locations(pores=Ps, mode='remove')
+        assert self.geo.Np == 50
+        self.geo.set_locations(pores=Ps, mode='add')
+        assert self.geo.Np == 100
+
+    def test_add_and_remove_pores_with_labels(self):
+        self.geo['pore.label'] = False
+        self.geo['pore.label'][40:80] = True
+        assert self.geo.num_pores('label') == 40
+        Ps = self.geo.Pnet[:50]
+        self.geo.set_locations(pores=Ps, mode='remove')
+        assert self.geo.num_pores('label') == 30
+        self.geo.set_locations(pores=Ps, mode='add')
+        assert self.geo.num_pores('label') == 30
+
 #    def test_plot_histogram(self):
 #        self.geo['pore.diameter'] = 1
 #        self.geo['throat.diameter'] = 1
