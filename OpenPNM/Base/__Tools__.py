@@ -60,7 +60,7 @@ class HealthDict(PrintableDict):
     health = property(fget=_get_health)
 
 
-class set_locations():
+class SetLocations():
 
     @staticmethod
     def add(obj, element, locations):

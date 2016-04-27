@@ -136,18 +136,18 @@ class GenericGeometry(Core):
                     raise Exception('Constant properties found on object, ' +
                                     'cannot increase size')
             if sp.size(pores) > 0:
-                Tools.set_locations.add(obj=self, element='pore',
-                                        locations=pores)
+                Tools.SetLocations.add(obj=self, element='pore',
+                                       locations=pores)
             if sp.size(throats) > 0:
-                Tools.set_locations.add(obj=self, element='throat',
-                                        locations=throats)
+                Tools.SetLocations.add(obj=self, element='throat',
+                                       locations=throats)
         if mode == 'remove':
             if sp.size(pores) > 0:
-                Tools.set_locations.drop(obj=self, element='pore',
-                                         locations=pores)
+                Tools.SetLocations.drop(obj=self, element='pore',
+                                        locations=pores)
             if sp.size(throats) > 0:
-                Tools.set_locations.drop(obj=self, element='throat',
-                                         locations=throats)
+                Tools.SetLocations.drop(obj=self, element='throat',
+                                        locations=throats)
         # Finally, regenerate models to correct the length of all arrays
         self.models.regenerate()
 
