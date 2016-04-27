@@ -108,8 +108,7 @@ class GenericPhase(Core):
         """
         if mode == 'add':
             if phase.name in self.phases():
-                logger.error('Phase already present')
-                pass
+                raise Exception('Phase already present')
             else:
                 self._phases.append(phase)  # Associate any sub-phases with self
                 phase._phases.append(self)  # Associate self with sub-phases
@@ -125,8 +124,7 @@ class GenericPhase(Core):
                 self._phases.remove(phase)
                 phase._phases = []
             else:
-                logger.error('Phase not found')
-                pass
+                raise Exception('Phase not found')
 
     def check_mixture_health(self):
         r"""
