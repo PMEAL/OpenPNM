@@ -174,8 +174,8 @@ class Controller(dict):
             else:
                 net = obj._net
             for item in net.geometries() + net.phases() + net.physics():
-                blank = self.pop(item, None)
-            del self[net.name]
+                self.pop(item, None)
+            self.pop(net.name, None)
         elif mode == 'single':
             name = obj.name
             for item in list(self.keys()):
@@ -183,14 +183,11 @@ class Controller(dict):
                 self[item].pop('pore.' + name, None)
                 self[item].pop('throat.' + name, None)
                 # Remove associations on other objects
-                self[item]._geometries[:] = \
-                    [x for x in self[item]._geometries if x is not obj]
-                self[item]._phases[:] = \
-                    [x for x in self[item]._phases if x is not obj]
-                self[item]._physics[:] = \
-                    [x for x in self[item]._physics if x is not obj]
+                self[item].geometries.pop(name, None)
+                self[item].physics.pop(name, None)
+                self[item].phases.pop(name, None)
             # Remove object from Controller dict
-            del self[name]
+            self.pop(name, None)
 
     def ghost_object(self, obj):
         r"""

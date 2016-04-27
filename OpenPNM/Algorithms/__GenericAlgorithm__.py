@@ -39,9 +39,8 @@ class GenericAlgorithm(Core):
         logger.name = self.name
 
         if network is None:
-            self._net = GenericNetwork()
-        else:
-            self._net = network
+            network = GenericNetwork()
+        self.network.update({network.name: network})
 
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = self._net['pore.all']

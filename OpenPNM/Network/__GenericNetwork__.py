@@ -30,6 +30,7 @@ class GenericNetwork(Core):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         logger.name = self.name
+        self.network.update({self.name: self})
 
         # Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}

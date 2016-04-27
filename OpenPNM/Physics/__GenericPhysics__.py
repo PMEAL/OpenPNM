@@ -50,16 +50,15 @@ class GenericPhysics(OpenPNM.Base.Core):
 
         # Associate with Network
         if network is None:
-            self._net = GenericNetwork()
-        else:
-            self._net = network  # Attach network to self
-            self._net._physics.append(self)  # Register self with network
+            network = GenericNetwork()
+        self.network.update({network.name: network})  # Attach network to self
+        self._net.physics.update({self.name: self})  # Register self with network
 
         # Associate with Phase
         if phase is None:
             phase = GenericPhase(network=self._net)
-        phase._physics.append(self)  # Register self with phase
-        self._phases.append(phase)  # Register phase with self
+        phase.physics.update({self.name: self})  # Register self with phase
+        self.phases.update({phase.name: phase})  # Register phase with self
 
         if geometry is not None:
             if (sp.size(pores) > 0) or (sp.size(throats) > 0):
@@ -97,10 +96,11 @@ class GenericPhysics(OpenPNM.Base.Core):
         phase['pore.'+self.name] = pore_label
         phase['throat.'+self.name] = throat_label
         # Replace phase reference on self
-        self._phases[0] = phase
+        self.phases.clear()
+        self.phases.update({phase.name: phase})
         # Remove physics reference on current phase
-        current_phase._physics.remove(self)
-        phase._physics.append(self)
+        current_phase.physics.pop(self.name)
+        phase.physics.update({self.name: self})
 
     def _get_phase(self):
         return self._phases[0]
