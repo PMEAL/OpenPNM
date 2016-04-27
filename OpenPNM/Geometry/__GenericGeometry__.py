@@ -8,7 +8,7 @@ GenericGeometry -- Base class to manage pore scale geometry
 import scipy as sp
 from OpenPNM.Base import Core
 from OpenPNM.Postprocessing import Plots
-from OpenPNM.Base import logging
+from OpenPNM.Base import logging, Tools
 from OpenPNM.Network import GenericNetwork
 logger = logging.getLogger(__name__)
 
@@ -46,11 +46,10 @@ class GenericGeometry(Core):
         logger.name = self.name
 
         if network is None:
-            self._net = GenericNetwork()
-        else:
-            self._net = network  # Attach network to self
-            # Register self with network.geometries
-            self._net._geometries.append(self)
+            network = GenericNetwork()
+        self.network.update({network.name: network})  # Attach network to self
+        # Register self with network.geometries
+        self._net.geometries.update({self.name: self})
 
         # Initialize a label dictionary in the associated network
         self._net['pore.'+self.name] = False
@@ -85,22 +84,71 @@ class GenericGeometry(Core):
 
     def set_locations(self, pores=[], throats=[], mode='add'):
         r"""
-        Set the pore and throat locations of the Geometry object
+        Assign or unassign a Geometry object to specified locations
 
         Parameters
         ----------
-        pores and throats : array_like
-            The list of pores and/or throats in the Network where the object
-            should be applied
-        mode : string
-            Indicates whether list of pores or throats is to be added or
-            removed from the object.  Options are 'add' (default) or 'remove'.
+        pores : array_like
+            The pore locations in the Network where this Geometry is to apply
 
+        throats : array_like
+            The throat locations in the Network where this Geometry is to apply
+
+        mode : string
+            Either 'add' (default) or 'remove' the object from the specified
+            locations
+
+        Examples
+        --------
+        >>> import OpenPNM
+        >>> pn = OpenPNM.Network.TestNet()
+        >>> pn.Np
+        125
+        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
+        ...                                         pores=sp.arange(5, 125),
+        ...                                         throats=pn.Ts)
+        >>> [geom.Np, geom.Nt]
+        [120, 300]
+        >>> geom['pore.dummy'] = True
+        >>> health = pn.check_geometry_health()
+        >>> pores = health['undefined_pores']
+        >>> geom.set_locations(pores=pores)
+        >>> [geom.Np, geom.Nt]
+        [125, 300]
+
+        The label 'pore.dummy' was assigned 'before' these pores were added
+        >>> geom.pores(labels='dummy', mode='not')
+        array([0, 1, 2, 3, 4])
+        >>> geom.set_locations(pores=pores, mode='remove')
+        >>> [geom.Np, geom.Nt]
+        [120, 300]
+
+        # All pores without 'pore.dummy' label are gone
+        >>> geom.num_pores(labels='dummy', mode='not')
+        0
         """
-        if sp.size(pores) > 0:
-            self._set_locations(element='pore', locations=pores, mode=mode)
-        if sp.size(throats) > 0:
-            self._set_locations(element='throat', locations=throats, mode=mode)
+        if mode == 'add':
+            # Check if any constant values exist on the object
+            for item in self.props():
+                if (item not in self.models.keys()) or \
+                   (self.models[item]['regen_mode'] == 'constant'):
+                    raise Exception('Constant properties found on object, ' +
+                                    'cannot increase size')
+            if sp.size(pores) > 0:
+                Tools.SetLocations.add(obj=self, element='pore',
+                                       locations=pores)
+            if sp.size(throats) > 0:
+                Tools.SetLocations.add(obj=self, element='throat',
+                                       locations=throats)
+        if mode == 'remove':
+            if sp.size(pores) > 0:
+                Tools.SetLocations.drop(obj=self, element='pore',
+                                        locations=pores)
+            if sp.size(throats) > 0:
+                Tools.SetLocations.drop(obj=self, element='throat',
+                                        locations=throats)
+        # Finally, regenerate models to correct the length of all arrays
+        self.models.regenerate()
 
     def plot_histograms(self,
                         throat_diameter='throat.diameter',

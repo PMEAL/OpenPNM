@@ -30,6 +30,7 @@ class GenericNetwork(Core):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         logger.name = self.name
+        self.network.update({self.name: self})
 
         # Initialize adjacency and incidence matrix dictionaries
         self._incidence_matrix = {}
@@ -928,23 +929,18 @@ class GenericNetwork(Core):
                     health['trim_pores'].extend(temp[c[i]])
 
         # Check for duplicate throats
-        i = self['throat.conns'][:, 0]
-        j = self['throat.conns'][:, 1]
-        v = sp.array(self['throat.all'], dtype=int)
-        adjmat = sprs.coo_matrix((v, (i, j)), [self.Np, self.Np])
-        temp = adjmat.tolil()  # Convert to lil to combine duplicates
-        # Compile lists of which specfic throats are duplicates
-        # Be VERY careful here, as throats are not in order
+        am = self.create_adjacency_matrix(sprsfmt='lil')
         mergeTs = []
         for i in range(0, self.Np):
-            if sp.any(sp.array(temp.data[i]) > 1):
-                ind = sp.where(sp.array(temp.data[i]) > 1)[0]
-                P = sp.array(temp.rows[i])[ind]
-                Ts = self.find_connecting_throat(P1=i, P2=P)[0]
-                mergeTs.append(Ts)
+            for j in sp.where(sp.array(am.data[i]) > 1)[0]:
+                k = am.rows[i][j]
+                mergeTs.extend(self.find_connecting_throat(i, k))
+        # Remove duplicates
+        mergeTs = [list(i) for i in set(tuple(i) for i in mergeTs)]
         health['duplicate_throats'] = mergeTs
 
         # Check for bidirectional throats
+        adjmat = self.create_adjacency_matrix(sprsfmt='coo')
         num_full = adjmat.sum()
         temp = sprs.triu(adjmat, k=1)
         num_upper = temp.sum()
