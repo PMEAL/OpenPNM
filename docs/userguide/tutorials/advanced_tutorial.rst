@@ -234,18 +234,16 @@ As mentioned above, the need to specify a separate **Physics** object for each *
 
     >>> phys_water_internal.models.add(propname='throat.capillary_pressure',
     ...                                model=mason_model)
-    >>> mod = OpenPNM.Physics.hydraulic_conductance.hagan_poisseuille
+    >>> mod = op.Physics.models.hydraulic_conductance.hagen_poiseuille
     >>> phys_water_internal.models.add(propname='throat.hydraulic_conductance',
     ...                                model=mod)
 
-Now make a copy of the ``models`` on ``phys_water_internal`` and apply it all the other **Physics** objects:
+Now make a copy of the ``models`` on ``phys_water_internal`` and apply it all the other water **Physics** objects:
 
 .. code-block:: python
 
     >>> mods = phys_water_internal.models.copy()
-    >>> phys_water_boundary.models = mods
-    >>> phys_air_internal.models = mods
-    >>> phys_air_internal.models = mods
+    >>> phys_water_boundary.models = mods.copy()
 
 The only 'gotcha' with this approach is that each of the **Physics** objects must be *regenerated* in order to place numerical values for all the properties into the data arrays:
 
@@ -259,14 +257,12 @@ The only 'gotcha' with this approach is that each of the **Physics** objects mus
 Access Other Objects via the Network
 -------------------------------------------------------------------------------
 
-The above code used 3 lines to explicitly regenerate each **Physics** object, but an alternative and more efficient approach is possible.  When every object is created, it is 'registered' with the **Network** which is a required argument in the instantiation of every other object.  Any object can be looked-up by it's type using ``pn.geometries``, ``pn.phases``, or ``pn.physics``, which return a *dict* containing *key-value* pair of ``{object.name: object}``:
+The above code used 3 lines to explicitly regenerate each **Physics** object, but an alternative and more efficient approach is possible.  When every object is created, it is 'registered' with the **Network** which is a required argument in the instantiation of every other object.  Any object can be looked-up by it's type using ``pn.geometries``, ``pn.phases``, or ``pn.physics``, which return a *dict* containing *key-value* pair of ``{object.name: object}``. The *dict* also has a ```keys``` method that lists the names of the stored objects:
 
 .. code-block:: python
 
-    >>> pn.geometries
-    {'internal': <OpenPNM.Geometry.__Stick_and_Ball__.Stick_and_Ball object at 0x7ef4e58>, 'boundary': <OpenPNM.Geometry.__GenericGeometry__.GenericGeometry object at 0x47734f8>}
     >>> pn.geometries.keys()  # Or obtain a list of object names using keys
-    ['internal', 'boundary']
+    dict_keys(['internal', 'boundary'])
 
 One handy use of this list is that is can be iterated over to perform an action on all objects in one line.  In this case running the ``regenerate`` method on all **Physics** objects can be accomplished with:
 

@@ -82,7 +82,7 @@ The only distinction between *labels* and *properties* is that *labels* are Bool
 
     >>> pn['pore.top'][2] = False
     >>> sp.where(pn['pore.top'])[0]
-    array([ 5,  8, 11, 14, 17, 20, 23, 26])
+    array([ 5,  8, 11, 14, 17, 20, 23, 26], dtype=int64)
     >>> pn['pore.top'][2] = True  # Re-apply label to pore 2
 
 Creating a new label array occurs automatically if a Boolean array is stored on an object:
