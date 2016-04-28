@@ -196,11 +196,11 @@ Pore-scale models are written as basic function definitions:
     :caption: **Example of a Pore-Scale Model Definition**
 
     >>> def mason_model(network, phase, physics,
-    ...                 f=0.6667,
-    ...                 contact_angle='throat.contact_angle',
-    ...                 surface_tension='throat.surface_tension',
-    ...                 diameter='throat.diameter',
-    ...                 **kwargs):
+    ...                f=2/3,
+    ...                contact_angle='throat.contact_angle',
+    ...                surface_tension='throat.surface_tension',
+    ...                diameter='throat.diameter',
+    ...                **kwargs):
     >>>     Dt = network[diameter]
     >>>     theta=phase[contact_angle]
     >>>     sigma=phase[surface_tension]
@@ -219,8 +219,11 @@ Let's examine the components of above code:
 
 * The actual values of the contact angle, surface tension, and throat diameter are NOT sent in as numerical arrays, but rather as dictionary keys to the arrays.  There is one very important reason for this: if arrays had been sent, then re-running the model would use the same arrays and hence not use any updated values.  By having access to dictionary keys, the model actually looks up the current values in each of the arrays whenever it is run.
 
-Assuming this function is saved in a file called 'my_models.py' in the "current working directory", this model can be used by importing it with ```from my_models import mason_model```.
+Assuming this function is saved in a file called 'my_models.py' in the current working directory, this model can be used as:
 
+.. code-block:: python
+
+    from my_models import mason_model
 
 -------------------------------------------------------------------------------
 Copy Models Between Physics Objects
