@@ -11,9 +11,9 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Utilities import topology
-from OpenPNM.Base import Core, Controller, Tools, logging
+from OpenPNM.Base import Core, Workspace, Tools, logging
 logger = logging.getLogger(__name__)
-ctrl = Controller()
+mgr = Workspace()
 topo = topology()
 
 

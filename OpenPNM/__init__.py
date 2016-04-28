@@ -54,10 +54,10 @@ from . import Physics
 from . import Algorithms
 from . import Postprocessing
 from . import Utilities
-from .Base import Controller as ctrl
+from .Base import Workspace as mgr
 
-_workspace = ctrl()
-del ctrl
+_workspace = mgr()
+del mgr
 save = _workspace.save
 load = _workspace.load
 export_data = _workspace.export_data

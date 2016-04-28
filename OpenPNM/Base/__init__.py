@@ -3,7 +3,7 @@ r"""
 :mod:`OpenPNM.Base` -- Abstract Base Class, and Core Data Class
 ###############################################################################
 
-.. autoclass:: OpenPNM.Base.Controller
+.. autoclass:: OpenPNM.Base.Workspace
    :members:
    :undoc-members:
    :show-inheritance:

@@ -15,7 +15,7 @@ logger = logging.getLogger()
 
 class Workspace(dict):
     # The following __instance__ class variable and subclassed __new__ method
-    # makes the Controller class a 'Singleton'.  This way, any instantiation
+    # makes the Workspace class a 'Singleton'.  This way, any instantiation
     # of a workspace object anywhere in the code will return the same object.
     __instance__ = None
 
@@ -48,7 +48,7 @@ class Workspace(dict):
                 else:
                     lines.append(str.format('ERROR: ',
                                             geom.name,
-                                            'Object Not in Controller'))
+                                            'Object Not in Workspace'))
             for phase in net._phases:
                 if len(phase._phases) == 0:
                     str = '+ {0:<13} {1:<20} ({2})'
@@ -75,7 +75,7 @@ class Workspace(dict):
                     else:
                         lines.append(str.format('ERROR: ',
                                                 phys.name,
-                                                'Object Not in Controller'))
+                                                'Object Not in Workspace'))
         return '\n'.join(lines)
 
     def _setloglevel(self, level):
@@ -149,7 +149,7 @@ class Workspace(dict):
         Examples
         --------
         >>> import OpenPNM
-        >>> ctrl = OpenPNM.Base.Controller()
+        >>> mgr = OpenPNM.Base.Workspace()
         >>> pn = OpenPNM.Network.TestNet()
         >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
         ...                                         pores=pn.Ps,
@@ -158,10 +158,10 @@ class Workspace(dict):
         # Label entries are added to the Network where geom is defined
         >>> 'pore.'+geom.name in pn.keys()
         True
-        >>> ctrl.purge_object(geom)
+        >>> mgr.purge_object(geom)
 
-        # geom is removed from Controller object
-        >>> geom.name in ctrl.keys()
+        # geom is removed from Workspace object
+        >>> geom.name in mgr.keys()
         False
 
         # geom's labels are removed from the Network too
@@ -186,7 +186,7 @@ class Workspace(dict):
                 self[item].geometries.pop(name, None)
                 self[item].physics.pop(name, None)
                 self[item].phases.pop(name, None)
-            # Remove object from Controller dict
+            # Remove object from Workspace dict
             self.pop(name, None)
 
     def ghost_object(self, obj):
@@ -210,14 +210,14 @@ class Workspace(dict):
         Examples
         --------
         >>> import OpenPNM
-        >>> ctrl = OpenPNM.Base.Controller()
+        >>> mgr = OpenPNM.Base.Workspace()
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn2 = ctrl.ghost_object(pn)
+        >>> pn2 = mgr.ghost_object(pn)
         >>> pn is pn2  # A copy of pn is created
         False
         >>> pn2.keys() == pn.keys()  # They have otherwise identical data
         True
-        >>> pn2 in ctrl.values() # pn2 is not associated with existing Controller
+        >>> pn2 in mgr.values() # pn2 is not associated with existing Workspace
         False
 
         It can also be used to create ghosts of other object types:
@@ -225,7 +225,7 @@ class Workspace(dict):
         >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,
         ...                                      pores=pn.Ps,
         ...                                      throats=pn.Ts)
-        >>> geo2 = ctrl.ghost_object(geom)
+        >>> geo2 = mgr.ghost_object(geom)
         >>> geom is geo2
         False
 
@@ -234,11 +234,11 @@ class Workspace(dict):
         True
 
         # But they are not the same object
-        >>> geo2 is ctrl[geo2.name]
+        >>> geo2 is mgr[geo2.name]
         False
 
-        # The ghost is not registered with the Controller
-        >>> geo2 in ctrl.values()
+        # The ghost is not registered with the Workspace
+        >>> geo2 in mgr.values()
         False
 
         # The following comparisons look at some 'behind the scenes' information
@@ -279,7 +279,7 @@ class Workspace(dict):
     def load_simulation(self, filename):
         r"""
         Loads a Network simulation fromt the specified 'net' file and adds it
-        to the Controller
+        to the Workspace
 
         Parameters
         ----------
@@ -304,7 +304,7 @@ class Workspace(dict):
 
     def save(self, filename=''):
         r"""
-        Save the entire state of the Controller to a 'pnm' file.
+        Save the entire state of the Workspace to a 'pnm' file.
 
         Parameters
         ----------
@@ -318,17 +318,17 @@ class Workspace(dict):
         .. code-block:: python
 
             import OpenPNM
-            ctrl = OpenPNM.Base.Controller()
-            ctrl.clear()  # Ensure no previous objects are present
+            mgr = OpenPNM.Base.Workspace()
+            mgr.clear()  # Ensure no previous objects are present
             pn = OpenPNM.Network.TestNet()
-            ctrl.save('test.pnm')
-            pn.name in ctrl.keys()
+            mgr.save('test.pnm')
+            pn.name in mgr.keys()
             #=> True
-            ctrl.clear()
-            ctrl.keys()
+            mgr.clear()
+            mgr.keys()
             dict_keys([])
-            ctrl.load('test.pnm')
-            pn.name in ctrl.keys()
+            mgr.load('test.pnm')
+            pn.name in mgr.keys()
             #=> True
 
         """
@@ -344,16 +344,16 @@ class Workspace(dict):
 
     def load(self, filename):
         r"""
-        Load an entire Controller from a 'pnm' file.
+        Load an entire Workspace from a 'pnm' file.
 
         Parameters
         ----------
         filename : string
-            The file name of the Controller to load.
+            The file name of the Workspace to load.
 
         Notes
         -----
-        This calls the ``clear`` method of the Controller object, so it will
+        This calls the ``clear`` method of the Workspace object, so it will
         remove all existing objects in the current workspace.
         """
         filename = filename.rsplit('.pnm', 1)[0]
@@ -379,7 +379,7 @@ class Workspace(dict):
         network : OpenPNM Network Object
             This Network and all of its phases will be written to the specified
             file.  If no Network is given it will check to ensure that only one
-            Network exists on the Controller and use that.  If there is more
+            Network exists on the Workspace and use that.  If there is more
             than one Network an error is thrown.
         filename : string, optional
             The file name to save as.  If no name is given then the name of
@@ -487,7 +487,7 @@ class Workspace(dict):
         r"""
         Accepts a Network object and creates a complete clone including all
         associated objects.  All objects in the cloned simulation are
-        registered with the Controller object and are fully functional.
+        registered with the Workspace object and are fully functional.
 
         Parameters
         ----------
@@ -517,9 +517,9 @@ class Workspace(dict):
         Examples
         --------
         >>> import OpenPNM
-        >>> ctrl = OpenPNM.Base.Controller()
+        >>> mgr = OpenPNM.Base.Workspace()
         >>> pn = OpenPNM.Network.TestNet()
-        >>> pn2 = ctrl.clone_simulation(pn, name='cloned')
+        >>> pn2 = mgr.clone_simulation(pn, name='cloned')
         >>> pn2 is pn
         False
         """
