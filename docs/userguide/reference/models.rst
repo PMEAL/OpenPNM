@@ -19,24 +19,28 @@ Adding a model to an object is done as follows:
 (1) A handle to the desired model is retrieved, either from the included OpenPNM model libraries, or from a file containing the users custom models.
 (2) The model is attached to the target object using ``add_model``.
 
-This process is demonstrated by added a random pore seed model to a **Geometry** object:
+This process is demonstrated by adding a random pore seed model to a **Geometry** object:
 
->>> import OpenPNM
->>> pn = OpenPNM.Network.TestNet()
->>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
->>> mod = OpenPNM.Geometry.models.pore_misc.random  # Get a handle to the desired model
->>> geom.add_model(propname='pore.seed', model=mod, seed=0)
+.. code-block:: Python
+
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
+    >>> mod = OpenPNM.Geometry.models.pore_misc.random  # Get a handle to the desired model
+    >>> geom.add_model(propname='pore.seed', model=mod, seed=0)
 
 The *'propname'* and *'model'* arguments are required by the ``add_model`` method, and all other arguments such *'seed'* are passed on the model (In this case it specifies the initialization value for the random number generator).
 
 One can inspect all of the models stored on a given **Core** object by printing it on the command line:
 
->>> print(geom.models)
-------------------------------------------------------------
-#     Property Name                  Regeneration Mode
-------------------------------------------------------------
-1     pore.seed                      normal
-------------------------------------------------------------
+.. code-block::  Python
+
+    >>> print(geom.models)
+    ------------------------------------------------------------
+    #     Property Name                  Regeneration Mode
+    ------------------------------------------------------------
+    1     pore.seed                      normal
+    ------------------------------------------------------------
 
 By default, the ``add_model`` method runs the model and places the data in the Core object's dictionary under the given *'propname'*. It also wraps the handle to the model and all the given parameters into a **ModelWrapper** dictionary (described below), then saves it in the **ModelsDict** under the same *'propname'*.  There are several opions for the *regeneration mode* such as *'deferred'* and *'on_demand'*.  Each of these is described in the docstring for the ``add_model`` method.
 
@@ -49,15 +53,17 @@ Each of the models that are added to the **ModelsDict** are first wrapped inside
 
 When the ``add_model`` method of the **Core** object is called, it collects all of the arguments that it receives and stores them in a new instance of a **ModelWrapper** under the appropriate argument name (i.e. *'seed'* is stored under ``ModelWrapper['seed']``).  It is possible to alter any of these values directly, and these changes will be permanent.  One can inspect all the arguments and their current values stored in a **ModelWrapper* by *printing* it at the command line.
 
->>> print(geom.models['pore.seed'])
-------------------------------------------------------------
-OpenPNM.Geometry.models.pore_misc.random
-------------------------------------------------------------
-Argument Name        Value / (Default)
-------------------------------------------------------------
-num_range            [0, 1] / ([0, 1])
-regen_mode           normal / (---)
-seed                 0 / (None)
-------------------------------------------------------------
+.. code-block:: Python
+
+    >>> print(geom.models['pore.seed'])
+    ------------------------------------------------------------
+    OpenPNM.Geometry.models.pore_misc.random
+    ------------------------------------------------------------
+    Argument Name        Value / (Default)
+    ------------------------------------------------------------
+    num_range            [0, 1] / ([0, 1])
+    regen_mode           normal / (---)
+    seed                 0 / (None)
+    ------------------------------------------------------------
 
 Once creation of the **ModelWrapper** is complete, its stored in the **ModelsDict** under the specified *'propname'*.  When ``regenerate`` is called, each of the models stored in the **ModelsDict** is run, in order.  When the ``run`` method on the **ModelWrapper** is called, the handle to the model is retrieved from *'models'*, and it is then called with ALL other entries in the **ModelWrapper** sent as keyword arguments.

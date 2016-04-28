@@ -35,13 +35,13 @@ The **Workspace** object also tracks the relationships between the OpenPNM Core 
     ------------------------------------------------------------
     Object:         Name                 (Class)
     ------------------------------------------------------------
-    Network:        foobar               (Cubic)
-    ++ Geometry:    geom_on_foo          (GenericGeometry)
+    Network:        bar                  (Cubic)
+    ++ Geometry:    geom_on_bar          (GenericGeometry)
     ------------------------------------------------------------
     Object:         Name                 (Class)
     ------------------------------------------------------------
-    Network:        bar                  (Cubic)
-    ++ Geometry:    geom_on_bar          (GenericGeometry)
+    Network:        foo                  (Cubic)
+    ++ Geometry:    geom_on_foo          (GenericGeometry)
 
 A list of all the methods available on the **Workspace** object can be obtained with:
 
