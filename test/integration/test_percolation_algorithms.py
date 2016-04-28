@@ -3,11 +3,11 @@ import matplotlib
 import OpenPNM
 import pytest
 from OpenPNM.Algorithms.__OrdinaryPercolation__ import OrdinaryPercolation
-ctrl = OpenPNM.Base.Controller()
+mgr = OpenPNM.Base.Workspace()
 
 
 def test_IP_old_approach():
-    ctrl.clear()
+    mgr.clear()
     pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
@@ -22,11 +22,11 @@ def test_IP_old_approach():
     IP_1.return_results()
     assert 'throat.invasion_sequence' in water.keys()
     assert 'pore.invasion_sequence' in water.keys()
-    ctrl.clear()
+    mgr.clear()
 
 
 def test_IP_new_approach():
-    ctrl.clear()
+    mgr.clear()
     pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
@@ -43,11 +43,11 @@ def test_IP_new_approach():
     IP_1.return_results()
     assert 'throat.invasion_sequence' in water.keys()
     assert 'pore.invasion_sequence' in water.keys()
-    ctrl.clear()
+    mgr.clear()
 
 
 def test_OP_old_approach():
-    ctrl.clear()
+    mgr.clear()
     pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
@@ -60,11 +60,11 @@ def test_OP_old_approach():
          'pore.inv_seq', 'throat.all', 'throat.entry_pressure',
          'throat.inv_Pc', 'throat.inv_sat', 'throat.inv_seq']
     assert sorted(list(OP_1.keys())) == a
-    ctrl.clear()
+    mgr.clear()
 
 
 def test_OP_new_approach():
-    ctrl.clear()
+    mgr.clear()
     pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
@@ -81,11 +81,11 @@ def test_OP_new_approach():
     V_inv = sp.sum(pn['pore.volume'][OP['pore.inv_Pc'] < sp.inf])
     V_tot = sp.sum(pn['pore.volume'])
     assert V_inv/V_tot == 1.0
-    ctrl.clear()
+    mgr.clear()
 
 
 def test_OP_trapping():
-    ctrl.clear()
+    mgr.clear()
     pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
@@ -104,11 +104,11 @@ def test_OP_trapping():
     V_inv = sp.sum(pn['pore.volume'][OP['pore.inv_Pc'] < sp.inf])
     V_tot = sp.sum(pn['pore.volume'])
     assert V_inv/V_tot < 1.0
-    ctrl.clear()
+    mgr.clear()
 
 
 def test_OP_plotting():
-    ctrl.clear()
+    mgr.clear()
     pn = OpenPNM.Network.Cubic(shape=[30, 30, 1], spacing=0.01)
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = OpenPNM.Phases.Water(network=pn)
