@@ -112,7 +112,7 @@ The following code snippets give examples of how all these pieces fit together u
 	>>> net['pore.foo'][2:6]  # Extract a slice of the array
 	array([  1.,   1.,  44.,   1.])
 	>>> net['pore.foo'][[2, 4, 6]]  # Extract specific locations
-	array([  1.,  44.,  1.])
+	array([  1.,  44.,   1.])
 	>>> net['throat.foo'] = 2  # Assign a scalar
 	>>> len(net['throat.foo'])  # The scalar values is converted to an Nt-long array
 	10

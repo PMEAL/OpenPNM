@@ -2,7 +2,6 @@
 
 import sys
 import os
-import alabaster
 import datetime
 
 sys.path.insert(0, os.path.abspath('.'))
