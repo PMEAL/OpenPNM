@@ -232,10 +232,11 @@ As mentioned above, the need to specify a separate **Physics** object for each *
 
 .. code-block:: python
 
-    >>> phys_water_internal(propname='throat.capillary_pressure',
-    ...                     model=mason_model)
-    >>> phys_water_internal(propname='throat.hydraulic_conductance',
-    ...                     model=OpenPNM.Physics.hydraulic_conductance.hagan_poisseuille)
+    >>> phys_water_internal.models.add(propname='throat.capillary_pressure',
+    ...                                model=mason_model)
+    >>> mod = OpenPNM.Physics.hydraulic_conductance.hagan_poisseuille
+    >>> phys_water_internal.models.add(propname='throat.hydraulic_conductance',
+    ...                                model=mod)
 
 Now make a copy of the ``models`` on ``phys_water_internal`` and apply it all the other **Physics** objects:
 
@@ -287,7 +288,7 @@ Each model in the **ModelsDict** can be individually inspected by accessing it u
 
     >>> phys_water.models['throat.capillary_pressure']['f']  # Inspect present value
     0.6666666666666666
-    >>> phys_water.models['throat.capillary_pressure']['f'] = 0.70  # Change value
+    >>> phys_water.models['throat.capillary_pressure']['f'] = 0.75  # Change value
 
 More details about the **ModelsDict** and **ModelWrapper** classes can be found in :ref:`models`.
 
