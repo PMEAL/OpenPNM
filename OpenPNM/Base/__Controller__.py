@@ -367,13 +367,13 @@ class Controller(dict):
             if 'Using OpenPNM' in item:
                 version = item.lstrip('Using OpenPNM ')
                 if version < OpenPNM.__version__:
-                    logger.warning('File was created with an early version of '
-                                   + 'OpenPNM: \n'
-                                   + '--> File saved with version: '
-                                   + str(version)
-                                   + '\n'
-                                   + '--> Current version: '
-                                   + str(OpenPNM.__version__))
+                    logger.warning('File was created with an earlier version ' +
+                                   'OpenPNM: \n' +
+                                   '--> File saved with version: ' +
+                                   str(version) +
+                                   '\n' +
+                                   '--> Current version: ' +
+                                   str(OpenPNM.__version__))
 
     def export(self, network=None, filename='', fileformat='VTK'):
         logger.warning("This method is deprecated, use \'export_data\'.")
