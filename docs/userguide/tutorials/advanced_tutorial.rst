@@ -11,8 +11,8 @@ Tutorial 3 of 3: Advanced Topics and Usage
 #. Use different methods to add boundary pores to a network
 #. Manipulate network topology by adding and removing pores and throats
 #. Explore the ModelsDict design, including copying models between objects, and changing model parameters
-#. Write a custom pore-scale model
-#. Retrieve objects of a certain type associated with the current network
+#. Write a custom pore-scale model and a custom Phase
+#. Access and manipulate objects associated with the network
 #. Combine multiple algorithms to predict relative permeability
 #. Use the workspace manager to save and load, clone and purge simulations
 
@@ -304,10 +304,10 @@ Use the Built-In Drainage Algorithm to Generate an Invading Phase Configuration
 
 .. code-block:: python
 
-    >>> mip = op.Algorithms.Drainage(network=pn)
-    >>> mip.setup(invading_phase=water, defending_phase=air)
-    >>> mip.set_inlets(pores=pn.pores('top', 'bottom'))
-    >>> mip.run()
+    >>> inv = op.Algorithms.Drainage(network=pn)
+    >>> inv.setup(invading_phase=water, defending_phase=air)
+    >>> inv.set_inlets(pores=pn.pores('top', 'bottom'))
+    >>> inv.run()
 
 * The inlet pores were set to both ``'top'`` and ``'bottom'`` using the ``pn.pores`` method.  The algorithm applies to the entire network so the mapping of network pores to the algorithm pores is 1-to-1.
 
@@ -319,12 +319,12 @@ Use the Built-In Drainage Algorithm to Generate an Invading Phase Configuration
 Set Pores and Throats to Invaded
 -------------------------------------------------------------------------------
 
-After running, the ``mip`` object possesses an array containing the pressure at which each pore and throat was invaded, stored as ``'pore.inv_Pc'`` and ``'throat.inv_Pc'``.  These arrays can be used to obtain a list of which pores and throats are invaded using Boolean logic:
+After running, the ``mip`` object possesses an array containing the pressure at which each pore and throat was invaded, stored as ``'pore.inv_Pc'`` and ``'throat.inv_Pc'``.  These arrays can be used to obtain a list of which pores and throats are invaded by water, using Boolean logic:
 
 .. code-block:: python
 
-    >>> Pi = mip['pore.inv_Pc'] < 10000
-    >>> Ti = mip['throat.inv_Pc'] < 10000
+    >>> Pi = inv['pore.inv_Pc'] < 10000
+    >>> Ti = inv['throat.inv_Pc'] < 10000
 
 The resulting Boolean masks can be used to manually adjust the hydraulic conductivity of pores and throats based on their phase occupancy.  The following lines set the water filled throats to near-zero air conductivity and vice-versa.
 
@@ -347,10 +347,40 @@ We are now ready to calculate the relative permeability of the domain under part
 
     >>> water_flow = op.Algorithms.StokesFlow(network=pn, phase=water)
     >>> water_flow.set_boundary_conditions(pores=pn.pores('left'), bcvalue=200000, bctype='Dirichlet')
-    >>> water_flow.set_boundary_conditions(pores=pn.pores('rigt'), bcvalue=100000, bctype='Dirichlet')
+    >>> water_flow.set_boundary_conditions(pores=pn.pores('right'), bcvalue=100000, bctype='Dirichlet')
+    >>> water_flow.run()
+    >>> Q_partial = water_flow.rate(pores=pn.pores('right'))
+
+The *relative* permeability is the ratio of the water flow through the partially water saturated media versus through fully water saturated media; hence we need to find the absolute permeability of water.  This can be accomplished by *regenerating* the ``phys_water`` object, which will recalculate the ``'throat.hydraulic_conductance'`` values and overwrite our manually entered near-zero values from the ``inv`` simulation using ``phys_water.models.regenerate()``.  We can then re-use the ``water_flow`` algorithm:
+
+.. code-block:: python
+
+    >>> water_flow.run()
+    >>> Q_full = water_flow.rate(pores=pn.pores('right'))
+
+And finally, the relative permeability can be found from:
+
+.. code-block:: python
+
+    >>> K_rel = Q_partial/Q_full
+
+* The ratio of the flow rates gives the normalized relative permeability since all the domain size, viscosity and pressure differential terms cancel each other.
+
+* To generate a full relative permeability curve the above logic would be placed inside a for loop, with each loop increasing the pressure threshold used to obtain the list of invaded throats (``Ti``).
+
+* The saturation at each capillary pressure can be found be summing the pore and throat volume of all the invaded pores and throats using ``Vp = geom['pore.volume'][Pi]`` and ``Vt = geom['throat.volume'][Ti]``.
 
 ===============================================================================
 Save the Simulation in a *PNM* File for Later Use
 ===============================================================================
 
 OpenPNM includes a **Workspace** class that provides the type of functionality found on the *menu-bar* of a typical application GUI. Specifically, this enables *saving* and *loading* of all active networks, or individual objects.
+
+To use these feature it is necessary to instantiate an instance:
+
+.. code-block:: python
+
+    >>> mgr = op.Base.Workspace()
+    >>> mgr.save('filename.pnm')
+
+Some of the more common functions of the **Workspace** are available via short-cuts under the main package, such that ``op.save`` is equivalent to calling ``mgr.save``.
