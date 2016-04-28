@@ -31,11 +31,10 @@ This process is demonstrated by adding a random pore seed model to a **Geometry*
 
 The *'propname'* and *'model'* arguments are required by the ``add_model`` method, and all other arguments such *'seed'* are passed on the model (In this case it specifies the initialization value for the random number generator).
 
-One can inspect all of the models stored on a given **Core** object by printing it on the command line:
+One can inspect all of the models stored on a given **Core** object by typing ```print(geom.models)``` at the command line:
 
 .. code-block::  Python
 
-    print(geom.models)
     ------------------------------------------------------------
     #     Property Name                  Regeneration Mode
     ------------------------------------------------------------
@@ -51,11 +50,10 @@ ModelWrapper: The Home for Each Individual Model
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Each of the models that are added to the **ModelsDict** are first wrapped inside a **ModelWrapper**, which is a subclass of Python's *dictionary* type.  Most users will not need to interact with the **ModelWrapper** directly, since most applications only use the ``add_model`` and ``regenerate`` methods of the **Core** object.  There are a few cases where it is required, such as changing any of the initially set arguments.
 
-When the ``add_model`` method of the **Core** object is called, it collects all of the arguments that it receives and stores them in a new instance of a **ModelWrapper** under the appropriate argument name (i.e. *'seed'* is stored under ``ModelWrapper['seed']``).  It is possible to alter any of these values directly, and these changes will be permanent.  One can inspect all the arguments and their current values stored in a **ModelWrapper* by *printing* it at the command line.
+When the ``add_model`` method of the **Core** object is called, it collects all of the arguments that it receives and stores them in a new instance of a **ModelWrapper** under the appropriate argument name (i.e. *'seed'* is stored under ``ModelWrapper['seed']``).  It is possible to alter any of these values directly, and these changes will be permanent.  One can inspect all the arguments and their current values stored in a **ModelWrapper* by entering ```print(geom.models['pore.seed'])``` at the command line.
 
 .. code-block:: Python
 
-    >>> print(geom.models['pore.seed'])
     ------------------------------------------------------------
     OpenPNM.Geometry.models.pore_misc.random
     ------------------------------------------------------------
