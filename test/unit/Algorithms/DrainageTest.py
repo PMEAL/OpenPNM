@@ -7,15 +7,9 @@ mgr.loglevel = 60
 class DrainageTest:
     def setup_class(self):
         self.net = OpenPNM.Network.Cubic(shape=[5, 5, 5])
-        self.net.add_boundaries()
-        Ps = self.net.pores('internal')
-        Ts = self.net.throats('internal')
-        self.geom = OpenPNM.Geometry.Toray090(network=self.net, pores=Ps,
-                                              throats=Ts)
-        Ps = self.net.pores('internal', mode='not')
-        Ts = self.net.throats('internal', mode='not')
-        self.boun = OpenPNM.Geometry.Boundary(network=self.net,
-                                              pores=Ps, throats=Ts)
+        self.geo = OpenPNM.Geometry.Toray090(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
         self.water = OpenPNM.Phases.Water(network=self.net)
         self.air = OpenPNM.Phases.Air(network=self.net)
         self.phys = OpenPNM.Physics.Standard(network=self.net,
