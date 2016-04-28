@@ -35,7 +35,7 @@ One can inspect all of the models stored on a given **Core** object by printing 
 
 .. code-block::  Python
 
-    >>> print(geom.models)
+    print(geom.models)
     ------------------------------------------------------------
     #     Property Name                  Regeneration Mode
     ------------------------------------------------------------

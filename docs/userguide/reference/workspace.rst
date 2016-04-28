@@ -31,7 +31,10 @@ The **Workspace** object also tracks the relationships between the OpenPNM Core 
 
     >>> geom = op.Geometry.GenericGeometry(network=pn, name='geom_on_foo')
     >>> geom2 = op.Geometry.GenericGeometry(network=pn2, name='geom_on_bar')
-    >>> print(mgr)
+
+.. code-block:: python
+
+    print(mgr)
     ------------------------------------------------------------
     Object:         Name                 (Class)
     ------------------------------------------------------------
