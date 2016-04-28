@@ -107,17 +107,17 @@ class Core(dict):
                 # TODO: This should probably raise the following exception
                 # raise Exception('Cannot write vector of the wrong length')
 
-    def _get_ctrl(self):
+    def _get_mgr(self):
         if self in ctrl.values():
             return ctrl
         else:
             return {}
 
-    def _set_ctrl(self, ctrl):
+    def _set_mgr(self, ctrl):
         if self not in ctrl.values():
             ctrl.update({self.name: self})
 
-    controller = property(fget=_get_ctrl, fset=_set_ctrl)
+    workspace= property(fget=_get_mgr, fset=_set_mgr)
 
     def _set_name(self, name):
         if name in ctrl.keys():
@@ -143,7 +143,7 @@ class Core(dict):
         for item in list(ctrl.items()):
             if item[1] is self:
                 ctrl.pop(item[0])
-        # Add object to controller under new name
+        # Add object to workspace under new name
         ctrl.update({name: self})
         self._name = name
 

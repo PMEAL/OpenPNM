@@ -16,7 +16,7 @@ logger = logging.getLogger()
 class Workspace(dict):
     # The following __instance__ class variable and subclassed __new__ method
     # makes the Controller class a 'Singleton'.  This way, any instantiation
-    # of a controller object anywhere in the code will return the same object.
+    # of a workspace object anywhere in the code will return the same object.
     __instance__ = None
 
     def __new__(cls, *args, **kwargs):
@@ -300,7 +300,7 @@ class Workspace(dict):
                 raise Exception('An object with that name is already present')
         # If no exceptions, then transfer objects to self
         for item in temp_dict.values():
-            item.controller = self
+            item.workspace = self
 
     def save(self, filename=''):
         r"""
@@ -358,7 +358,7 @@ class Workspace(dict):
         """
         filename = filename.rsplit('.pnm', 1)[0]
         if self != {}:
-            logger.warn('Loading data onto non-empty controller object,' +
+            logger.warn('Loading data onto non-empty workspace object,' +
                         ' existing data will be lost')
             self.clear()
 

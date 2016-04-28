@@ -8,9 +8,9 @@ Network.tools.topology: Assorted topological manipulation methods
 import scipy as _sp
 import numpy as _np
 from OpenPNM.Base import logging as _logging
-from OpenPNM.Base import Controller as _controller
+from OpenPNM.Base import Workspace as _workspace
 logger = _logging.getLogger(__name__)
-_ctrl = _controller()
+_mgr = _workspace()
 
 
 def extend(network, pore_coords=[], throat_conns=[], labels=[]):
@@ -135,7 +135,7 @@ def trim(network, pores=[], throats=[]):
     296
 
     '''
-    ctrl = network.controller
+    ctrl = network.workspace
     for net in ctrl.networks():
         if net._parent is network:
             raise Exception('This Network has been cloned, cannot trim')

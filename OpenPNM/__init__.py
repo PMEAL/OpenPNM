@@ -56,15 +56,15 @@ from . import Postprocessing
 from . import Utilities
 from .Base import Controller as ctrl
 
-_controller = ctrl()
+_workspace = ctrl()
 del ctrl
-save = _controller.save
-load = _controller.load
-export_data = _controller.export_data
-import_data = _controller.import_data
-clear = _controller.clear
-purge_object = _controller.purge_object
+save = _workspace.save
+load = _workspace.load
+export_data = _workspace.export_data
+import_data = _workspace.import_data
+clear = _workspace.clear
+purge_object = _workspace.purge_object
 
 
 def view():
-    print(_controller.__str__())
+    print(_workspace.__str__())
