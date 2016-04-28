@@ -117,7 +117,7 @@ class Core(dict):
         if self not in mgr.values():
             mgr.update({self.name: self})
 
-    workspace= property(fget=_get_mgr, fset=_set_mgr)
+    workspace = property(fget=_get_mgr, fset=_set_mgr)
 
     def _set_name(self, name):
         if name in mgr.keys():
