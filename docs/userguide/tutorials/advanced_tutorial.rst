@@ -132,8 +132,10 @@ In order to simulate relative permeability of air through a partially water-fill
 
 .. code-block:: python
 
-    >>> water = op.Phases.Water(network=pn)
     >>> air = op.Phases.Air(network=pn)
+    >>> water = op.Phases.Water(network=pn)
+    >>> water['throat.contact_angle'] = 110
+    >>> water['throat.surface_tension'] = 0.072
 
 -------------------------------------------------------------------------------
 Aside: Creating a Custom Phase Class
@@ -195,17 +197,12 @@ Pore-scale models are written as basic function definitions:
     :linenos:
     :caption: **Example of a Pore-Scale Model Definition**
 
-    >>> def mason_model(network, phase, physics,
-    ...                 f=0.6667,
-    ...                 contact_angle='throat.contact_angle',
-    ...                 surface_tension='throat.surface_tension',
-    ...                 diameter='throat.diameter',
-    ...                 **kwargs):
-    >>> Dt = network[diameter]
-    >>> theta=phase[contact_angle]
-    >>> sigma=phase[surface_tension]
-    >>> Pc = -4*sigma*sp.cos(f*sp.deg2rad(theta))/Dt
-    >>> return Pc[network.throats(physics.name)]
+    >>> def mason_model(network, phase, physics, f=0.6667, **kwargs):
+    ...     Dt = network['throat.diameter']]
+    ...     theta=phase['throat.contact_angle']
+    ...     sigma=phase['throat.surface_tension']
+    ...     Pc = -4*sigma*sp.cos(f*sp.deg2rad(theta))/Dt
+    ...     return Pc[network.throats(physics.name)]
 
 Let's examine the components of above code:
 
@@ -218,6 +215,8 @@ Let's examine the components of above code:
 * All of the calculations are done for every throat in the network, but this pore-scale model is meant to be assigned to a single **Physics** object.  As such, the last line extracts values from the ``Pc`` array for the location of ``physics`` and returns just the subset.
 
 * The actual values of the contact angle, surface tension, and throat diameter are NOT sent in as numerical arrays, but rather as dictionary keys to the arrays.  There is one very important reason for this: if arrays had been sent, then re-running the model would use the same arrays and hence not use any updated values.  By having access to dictionary keys, the model actually looks up the current values in each of the arrays whenever it is run.
+
+* It would be a better practice to include the dictionary keys as arguments, such as ```contact_angle = 'throat.contact_angle'```.  This way the user could control where the contact angle could be stored on the **Phase** object.
 
 Assuming this function is saved in a file called 'my_models.py' in the current working directory, this model can be used as:
 
