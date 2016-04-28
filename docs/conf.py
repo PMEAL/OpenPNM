@@ -18,8 +18,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
               'sphinx.ext.coverage',
               'sphinx.ext.ifconfig',
-              'sphinx.ext.viewcode',
-              'sphinxjp.themes.basicstrap']
+              'sphinx.ext.viewcode']
 
 todo_include_todos = True
 
@@ -80,16 +79,12 @@ exclude_patterns = ['_build']
 # -- Options for HTML output --------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.
-html_theme = 'basicstrap'
+html_theme = 'bootstrap'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {'header_inverse': False,
-                      'relbar_inverse': False,
-                      'inner_theme': True,
-                      'inner_theme_name': 'bootswatch-paper',
-                      'sidebar_span': 3}
+html_theme_options = {}
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -196,7 +191,7 @@ htmlhelp_basename = 'OpenPNMhelp'
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [('index', 'OpenPNM', u'OpenPNM Documentation',
-            [u'McGill, UofT, AFCC'], 1)]
+             [u'McGill, UofT, AFCC'], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False

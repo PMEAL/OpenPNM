@@ -11,6 +11,9 @@
    :alt: Join the chat at https://gitter.im/PMEAL/OpenPNM
    :target: https://gitter.im/PMEAL/OpenPNM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
+.. image:: https://readthedocs.org/projects/openpnm/badge/?version=latest
+   :target: http://openpnm.readthedocs.org/
+
 ###############################################################################
 Overview of OpenPNM
 ###############################################################################
@@ -108,6 +111,8 @@ Related Links
         - https://www.github.com/PMEAL/OpenPNM/issues
     * - A collection of examples using OpenPNM is available in a separate repository
         - https://www.github.com/PMEAL/OpenPNM-Examples
+    * - The documentation is hosted on ReadTheDocs
+        - http://openpnm.readthedocs.org/
     * - Gitter is used to help users with questions about using the code
         - https://gitter.im/PMEAL/OpenPNM
     * - Scipy is a major component of OpenPNM
@@ -116,7 +121,7 @@ Related Links
         - https://www.continuum.io/downloads
     * - WinPython is a slightly easier way to use numerical Python on Windows
         - https://github.com/winpython/winpython
-    * - Spyder is the recommended IDE when working with OpenPNM
+    * - Spyder is the recommended IDE when working with OpenPNM, it is included in Ananconda and WinPython
         - https://github.com/spyder-ide/spyder
     * - Paraview is suggested for visualizing OpenPNM data
         - http://www.paraview.org
