@@ -1,11 +1,11 @@
 .. image:: https://badge.fury.io/py/openpnm.svg
-   :target: http://badge.fury.io/py/openpnm
+   :target: https://pypi.python.org/pypi/openpnm
 
 .. image:: https://travis-ci.org/PMEAL/OpenPNM.svg?branch=master
    :target: https://travis-ci.org/PMEAL/OpenPNM
 
-.. image:: https://img.shields.io/codecov/c/github/PMEAL/OpenPNM.svg?style=flat
-   :target: https://codecov.io/github/PMEAL/OpenPNM
+.. image:: https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/PMEAL/OpenPNM
 
 .. image:: https://badges.gitter.im/Join%20Chat.svg
    :alt: Join the chat at https://gitter.im/PMEAL/OpenPNM

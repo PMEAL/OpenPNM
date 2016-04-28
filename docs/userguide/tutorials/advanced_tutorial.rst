@@ -195,17 +195,17 @@ Pore-scale models are written as basic function definitions:
     :linenos:
     :caption: **Example of a Pore-Scale Model Definition**
 
-    def mason_model(network, phase, physics,
-                    f=2/3,
-                    contact_angle='throat.contact_angle',
-                    surface_tension='throat.surface_tension',
-                    diameter='throat.diameter',
-                    **kwargs):
-        Dt = network[diameter]
-        theta=phase[contact_angle]
-        sigma=phase[surface_tension]
-        Pc = -4*sigma*sp.cos(f*sp.deg2rad(theta))/Dt
-        return Pc[network.throats(physics.name)]
+    >>> def mason_model(network, phase, physics,
+    ...                f=2/3,
+    ...                contact_angle='throat.contact_angle',
+    ...                surface_tension='throat.surface_tension',
+    ...                diameter='throat.diameter',
+    ...                **kwargs):
+    >>> Dt = network[diameter]
+    >>> theta=phase[contact_angle]
+    >>> sigma=phase[surface_tension]
+    >>> Pc = -4*sigma*sp.cos(f*sp.deg2rad(theta))/Dt
+    >>> return Pc[network.throats(physics.name)]
 
 Let's examine the components of above code:
 
@@ -295,8 +295,6 @@ More details about the **ModelsDict** and **ModelWrapper** classes can be found 
 ===============================================================================
 Perform Multiphase Transport Simulations
 ===============================================================================
-
-
 
 -------------------------------------------------------------------------------
 Use the Built-In Drainage Algorithm to Generate an Invading Phase Configuration

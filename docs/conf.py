@@ -85,13 +85,11 @@ html_theme = 'basicstrap'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-   'header_inverse': False,
-   'relbar_inverse': False,
-   'inner_theme': True,
-   'inner_theme_name': 'bootswatch-paper',
-   'sidebar_span': 3,
-}
+html_theme_options = {'header_inverse': False,
+                      'relbar_inverse': False,
+                      'inner_theme': True,
+                      'inner_theme_name': 'bootswatch-paper',
+                      'sidebar_span': 3}
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -197,10 +195,8 @@ htmlhelp_basename = 'OpenPNMhelp'
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'OpenPNM', u'OpenPNM Documentation',
-     [u'McGill, UofT, AFCC'], 1)
-]
+man_pages = [('index', 'OpenPNM', u'OpenPNM Documentation',
+            [u'McGill, UofT, AFCC'], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -211,11 +207,8 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-  ('index', 'OpenPNM', u'OpenPNM Documentation',
-   u'EDSL, AFCC', 'OpenPNM',
-   'Miscellaneous'),
-]
+texinfo_documents = [('index', 'OpenPNM', u'OpenPNM Documentation',
+                     u'EDSL, AFCC', 'OpenPNM', 'Miscellaneous')]
 
 # Documents to append as an appendix to all manuals.
 # texinfo_appendices = []
