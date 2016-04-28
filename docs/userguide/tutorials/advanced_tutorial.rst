@@ -145,16 +145,16 @@ In many cases you will want to create your own fluid, such as an oil or brine, w
     :linenos:
     :caption: **Example of a Subclassed Phase**
 
-    from OpenPNM.Phases import GenericPhase, models
-
-    class Oil(GenericPhase):
-        def __init__(self, **kwargs):
-            super().__init__(**kwargs)
-            self.models.add(propname='pore.viscosity',
-                            model=models.misc.polynomial,
-                            poreprop='pore.temperature',
-                            a=[1.82082e-2, 6.51E-04, -3.48E-7, 1.11E-10])
-            self['pore.molecular_weight'] = 116  # g/mol
+    >>> from OpenPNM.Phases import GenericPhase, models
+    >>>
+    >>> class Oil(GenericPhase):
+    >>>     def __init__(self, **kwargs):
+    >>>         super().__init__(**kwargs)
+    >>>         self.models.add(propname='pore.viscosity',
+    ...                         model=models.misc.polynomial,
+    ...                         poreprop='pore.temperature',
+    ...                         a=[1.82082e-2, 6.51E-04, -3.48E-7, 1.11E-10])
+    >>>         self['pore.molecular_weight'] = 116  # g/mol
 
 * Creating a **Phase** class basically involves placing a series of ``self.models.add`` commands within the ``__init__`` section of the class definition.  This means that when the class is instantiated, all the models are added to *itself* (i.e. ``self``).
 
@@ -201,11 +201,11 @@ Pore-scale models are written as basic function definitions:
     ...                surface_tension='throat.surface_tension',
     ...                diameter='throat.diameter',
     ...                **kwargs):
-    >>> Dt = network[diameter]
-    >>> theta=phase[contact_angle]
-    >>> sigma=phase[surface_tension]
-    >>> Pc = -4*sigma*sp.cos(f*sp.deg2rad(theta))/Dt
-    >>> return Pc[network.throats(physics.name)]
+    >>>     Dt = network[diameter]
+    >>>     theta=phase[contact_angle]
+    >>>     sigma=phase[surface_tension]
+    >>>     Pc = -4*sigma*sp.cos(f*sp.deg2rad(theta))/Dt
+    >>>     return Pc[network.throats(physics.name)]
 
 Let's examine the components of above code:
 

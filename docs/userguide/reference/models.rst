@@ -35,7 +35,7 @@ One can inspect all of the models stored on a given **Core** object by printing 
 ------------------------------------------------------------
 #     Property Name                  Regeneration Mode
 ------------------------------------------------------------
-1     pore.seed                      normal            
+1     pore.seed                      normal
 ------------------------------------------------------------
 
 By default, the ``add_model`` method runs the model and places the data in the Core object's dictionary under the given *'propname'*. It also wraps the handle to the model and all the given parameters into a **ModelWrapper** dictionary (described below), then saves it in the **ModelsDict** under the same *'propname'*.  There are several opions for the *regeneration mode* such as *'deferred'* and *'on_demand'*.  Each of these is described in the docstring for the ``add_model`` method.
