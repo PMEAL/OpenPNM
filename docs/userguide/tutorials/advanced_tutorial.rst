@@ -145,16 +145,16 @@ In many cases you will want to create your own fluid, such as an oil or brine, w
     :linenos:
     :caption: **Example of a Subclassed Phase**
 
-    >>> from OpenPNM.Phases import GenericPhase, models
-    >>>
-    >>> class Oil(GenericPhase):
-    >>>     def __init__(self, **kwargs):
-    >>>         super().__init__(**kwargs)
-    >>>         self.models.add(propname='pore.viscosity',
-    ...                         model=models.misc.polynomial,
-    ...                         poreprop='pore.temperature',
-    ...                         a=[1.82082e-2, 6.51E-04, -3.48E-7, 1.11E-10])
-    >>>         self['pore.molecular_weight'] = 116  # g/mol
+    from OpenPNM.Phases import GenericPhase, models
+
+    class Oil(GenericPhase):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.models.add(propname='pore.viscosity',
+                            model=models.misc.polynomial,
+                            poreprop='pore.temperature',
+                            a=[1.82082e-2, 6.51E-04, -3.48E-7, 1.11E-10])
+            self['pore.molecular_weight'] = 116  # g/mol
 
 * Creating a **Phase** class basically involves placing a series of ``self.models.add`` commands within the ``__init__`` section of the class definition.  This means that when the class is instantiated, all the models are added to *itself* (i.e. ``self``).
 
@@ -174,7 +174,7 @@ Define Physics Objects for Each Geometry and Each Phase
 
 In the `previous tutorial <intermediate_usage>`_ we created two **Physics** object, one for each of the two **Geometry** objects used to handle the stratified layers.  In this tutorial, the internal pores and the boundary pores each have their own **Geometry**, but there are two **Phases**, which also each require a unique **Physics**:
 
-.. code-block:: python
+.. code-block:: Python
 
     >>> phys_water_internal = op.Physics.GenericPhysics(network=pn, phase=water, geometry=geom)
     >>> phys_air_internal = op.Physics.GenericPhysics(network=pn, phase=air, geometry=geom)
@@ -191,7 +191,7 @@ Perhaps the most distinguishing feature between pore-network modeling papers is 
 
 Pore-scale models are written as basic function definitions:
 
-.. code-block:: python
+.. code-block:: Python
     :linenos:
     :caption: **Example of a Pore-Scale Model Definition**
 

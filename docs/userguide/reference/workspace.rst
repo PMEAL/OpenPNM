@@ -5,7 +5,7 @@ Workspace Manager
 ##############################################################################
 OpenPNM includes a **Workspace** class that performs many of the functions found in the *menu bar* of a typical application's GUI, such as saving and loading sessions.
 
-The **Workspace** class is a `Singleton <https://en.wikipedia.org/wiki/Singleton_pattern>`_ in Object Oriented Programming Jargon, meaning that only ONE instance can exist at any given time.  This behavior is handy since it means you can instantiate the **Workspace** at any time, from anywhere in your workflow, and you'll have access to the one and only object.
+The **Workspace** class is a `Singleton <https://en.wikipedia.org/wiki/Singleton_pattern>`_ in Object Oriented Programming Jargon, meaning that only ONE instance can exist at any given time, and moreover, each time a Singleton is instantiated it returns the already existing object if one already exists.  This behavior is handy since it means you can instantiate the **Workspace** at any time, from anywhere in your workflow, and you'll have access to the one and only object.
 
 All OpenPNM objects register themselves with this single **Workspace** when they are created, so you can access any existing object via the workspace.  Like so many custom classes in Python, the **Workspace** is a *dictionary* and each OpenPNM object is stored by name.  For example:
 
@@ -13,6 +13,7 @@ All OpenPNM objects register themselves with this single **Workspace** when they
 
     >>> import OpenPNM as op
     >>> mgr = op.Base.Workspace()
+    >>> mgr.clear()  # Clear workspace of any pre-existing objects
     >>> mgr.keys()
     dict_keys([])
     >>> pn = op.Network.Cubic(shape=[5, 5, 5], name='foo')

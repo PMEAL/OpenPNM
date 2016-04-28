@@ -20,35 +20,48 @@ Overview of OpenPNM
 
 *OpenPNM* is an open source project aiming to provide porous media researchers with a ready-made framework for performing a wide range of pore network simulations.  The main features and capabilities of OpenPNM are:
 
+.. list-table::
+
     * Defines a universal means of representing any network topology based on a sparse representation of the adjacency matrix
+
+      - Includes network generators for creating cubic or random networks with arbitrary connectivity
+
+.. list-table::
 
     * Provides a set of tools for querying, inspecting, and manipulating topology
 
-      * Including finding neighboring pores, labeling specific locations, adding or removing pores and throats, joining networks, subdividing and merging pores to create multiscale models, and much more
+      - Including finding neighboring pores, labeling specific locations, adding or removing pores and throats, joining networks, subdividing and merging pores to create multiscale models, and much more
 
-    * Includes network generators for creating cubic or random networks with arbitrary connectivity
+
+.. list-table::
 
     * Stores pore and throat property data in vectorized format
 
-      * Allows for fast calculations even on large networks
+      - Allows for fast calculations even on large networks
 
-      * Supports the familiar and advanced array access features such as direct indexing, slicing, Boolean masking, etc.
+      - Supports the familiar and advanced array access features such as direct indexing, slicing, Boolean masking, etc.
+
+.. list-table::
 
     * A sophisticated mechanism for calculating the pore-scale properties that define the geometrical (i.e. pore radius), thermophysical (i.e. viscosity), and physics (i.e. hydraulic conductance) properties of the simulation
 
-      * The interdependence of some properties on other properties is naturally included so values can be regenerated when changes occur (i.e. viscosity can be updated when temperature changed)
+      - The interdependence of some properties on other properties is naturally included so values can be regenerated when changes occur (i.e. viscosity can be updated when temperature changed)
 
-      * This mechanism was designed to allow users to easily create new customized pore-scale models suitable for their specific domain
+      - This mechanism was designed to allow users to easily create new customized pore-scale models suitable for their specific domain
 
-      * A wide assortment of pore-scale transport parameter, pore size calculations, and thermophysical property models are included
+      - A wide assortment of pore-scale transport parameter, pore size calculations, and thermophysical property models are included
 
-    * A suite of algorithms for performing network simulations such as invasion percolation, capillary drainage, mass diffusion, permeability and so on.
+.. list-table::
+
+    * A suite of algorithms for performing network simulations
+
+      - Including invasion percolation, capillary drainage, mass diffusion, permeability and so on.
 
     * Supports saving, loading, importing and exporting data in numerous formats
 
-      *  Allows importing networks generated or extracted by other code, as well as exporting data for post-processing and visualization
+      -  Allows importing networks generated or extracted by other code, as well as exporting data for post-processing and visualization
 
-      * Saving and loading of simulations allows for batch processing of simulations to be analyzed at a later point
+      - Saving and loading of simulations allows for batch processing of simulations to be analyzed at a later point
 
 ===============================================================================
 Installation
