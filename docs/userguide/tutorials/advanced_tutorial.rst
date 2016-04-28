@@ -261,8 +261,8 @@ The above code used 3 lines to explicitly regenerate each **Physics** object, bu
 
 .. code-block:: python
 
-    >>> pn.geometries.keys()  # Or obtain a list of object names using keys
-    dict_keys(['internal', 'boundary'])
+    >>> sorted(list(pn.geometries.keys()))  # Convert to list and sort
+    ['boundary', 'internal']
 
 One handy use of this list is that is can be iterated over to perform an action on all objects in one line.  In this case running the ``regenerate`` method on all **Physics** objects can be accomplished with:
 
