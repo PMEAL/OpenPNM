@@ -112,6 +112,7 @@ def test_open_air_diffusivity():
                                      pores=Ps,
                                      throats=Ts,
                                      shape='cubes')
+#    boun['pore.area'] = 1
     air = OpenPNM.Phases.Air(network=pn)
     Ps = pn.pores()
     Ts = pn.throats()

@@ -276,15 +276,15 @@ The ``values`` method of the *dict* class returns a list of the objects stored u
 Adjust Pore-Scale Model Parameters
 -------------------------------------------------------------------------------
 
-The pore-scale models are stored in a **ModelsDict** object that is itself stored under the ``models`` attribute of each object.  This arrangement is somewhat convoluted, but it enables integrated storage of models on the object's wo which they apply.  The models on an object can be inspected with ``print(phys_water)``, which shows a list of all the pore-scale properties that are computed by a model, and some information about the model's *regeneration* mode.
+The pore-scale models are stored in a **ModelsDict** object that is itself stored under the ``models`` attribute of each object.  This arrangement is somewhat convoluted, but it enables integrated storage of models on the object's wo which they apply.  The models on an object can be inspected with ``print(phys_water_internal)``, which shows a list of all the pore-scale properties that are computed by a model, and some information about the model's *regeneration* mode.
 
-Each model in the **ModelsDict** can be individually inspected by accessing it using the dictionary key corresponding to *pore-property* that it calculates, i.e. ``print(phys_water)['throat.capillary_pressure'])``.  This shows a list of all the parameters associated with that model.  It is possible to edit these parameters directly:
+Each model in the **ModelsDict** can be individually inspected by accessing it using the dictionary key corresponding to *pore-property* that it calculates, i.e. ``print(phys_water_internal)['throat.capillary_pressure'])``.  This shows a list of all the parameters associated with that model.  It is possible to edit these parameters directly:
 
 .. code-block:: python
 
-    >>> phys_water.models['throat.capillary_pressure']['f']  # Inspect present value
-    0.6666666666666666
-    >>> phys_water.models['throat.capillary_pressure']['f'] = 0.75  # Change value
+    >>> phys_water_internal.models['throat.capillary_pressure']['f']  # Inspect present value
+    0.6667
+    >>> phys_water_internal.models['throat.capillary_pressure']['f'] = 0.75  # Change value
 
 More details about the **ModelsDict** and **ModelWrapper** classes can be found in :ref:`models`.
 
@@ -324,8 +324,8 @@ The resulting Boolean masks can be used to manually adjust the hydraulic conduct
 
 .. code-block:: python
 
-    >>> phys_water['throat.hydraulic_conductance'][~Ti] = 1e-20
-    >>> phys_air['throat.hydraulic_conductance'][Ti] = 1e-20
+    >>> phys_water_internal['throat.hydraulic_conductance'][~Ti] = 1e-20
+    >>> phys_air_internal['throat.hydraulic_conductance'][Ti] = 1e-20
 
 * The logic of these statements implicitly assumes that transport between two pores is only blocked if the throat is filled with the other phase, meaning that both pores could be filled and transport is still permitted.  Another option would be to set the transport to near-zero if *either* or *both* of the pores are filled as well.
 
@@ -345,7 +345,7 @@ We are now ready to calculate the relative permeability of the domain under part
     >>> water_flow.run()
     >>> Q_partial = water_flow.rate(pores=pn.pores('right'))
 
-The *relative* permeability is the ratio of the water flow through the partially water saturated media versus through fully water saturated media; hence we need to find the absolute permeability of water.  This can be accomplished by *regenerating* the ``phys_water`` object, which will recalculate the ``'throat.hydraulic_conductance'`` values and overwrite our manually entered near-zero values from the ``inv`` simulation using ``phys_water.models.regenerate()``.  We can then re-use the ``water_flow`` algorithm:
+The *relative* permeability is the ratio of the water flow through the partially water saturated media versus through fully water saturated media; hence we need to find the absolute permeability of water.  This can be accomplished by *regenerating* the ``phys_water_internal`` object, which will recalculate the ``'throat.hydraulic_conductance'`` values and overwrite our manually entered near-zero values from the ``inv`` simulation using ``phys_water_internal.models.regenerate()``.  We can then re-use the ``water_flow`` algorithm:
 
 .. code-block:: python
 
