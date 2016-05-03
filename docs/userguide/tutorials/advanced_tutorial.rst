@@ -321,12 +321,11 @@ After running, the ``mip`` object possesses an array containing the pressure at 
     >>> Pi = inv['pore.inv_Pc'] < 10000
     >>> Ti = inv['throat.inv_Pc'] < 10000
 
-The resulting Boolean masks can be used to manually adjust the hydraulic conductivity of pores and throats based on their phase occupancy.  The following lines set the water filled throats to near-zero air conductivity and vice-versa.
+The resulting Boolean masks can be used to manually adjust the hydraulic conductivity of pores and throats based on their phase occupancy.  The following lines set the water filled throats to near-zero conductivity for air flow:
 
 .. code-block:: python
 
     >>> phys_water_internal['throat.hydraulic_conductance'][~Ti] = 1e-20
-    >>> phys_air_internal['throat.hydraulic_conductance'][Ti] = 1e-20
 
 * The logic of these statements implicitly assumes that transport between two pores is only blocked if the throat is filled with the other phase, meaning that both pores could be filled and transport is still permitted.  Another option would be to set the transport to near-zero if *either* or *both* of the pores are filled as well.
 
