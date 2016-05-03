@@ -285,6 +285,7 @@ Each model in the **ModelsDict** can be individually inspected by accessing it u
     >>> phys_water_internal.models['throat.capillary_pressure']['f']  # Inspect present value
     0.6667
     >>> phys_water_internal.models['throat.capillary_pressure']['f'] = 0.75  # Change value
+    >>> phys_water_internal.models.regenerate()  # Regenerate model with new 'f' value
 
 More details about the **ModelsDict** and **ModelWrapper** classes can be found in :ref:`models`.
 
@@ -300,7 +301,7 @@ Use the Built-In Drainage Algorithm to Generate an Invading Phase Configuration
 
     >>> inv = op.Algorithms.Drainage(network=pn)
     >>> inv.setup(invading_phase=water, defending_phase=air)
-    >>> inv.set_inlets(pores=pn.pores('top', 'bottom'))
+    >>> inv.set_inlets(pores=pn.pores(['top', 'bottom']))
     >>> inv.run()
 
 * The inlet pores were set to both ``'top'`` and ``'bottom'`` using the ``pn.pores`` method.  The algorithm applies to the entire network so the mapping of network pores to the algorithm pores is 1-to-1.

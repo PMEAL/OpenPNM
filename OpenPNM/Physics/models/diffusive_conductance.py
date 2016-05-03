@@ -52,8 +52,6 @@ def bulk_diffusion(physics, phase, network, pore_molar_density='pore.molar_densi
         lengths = misc.conduit_lengths(network, mode='centroid')
         plen1 = lengths[:, 0]
         plen2 = lengths[:, 2]
-        Ts = network.find_neighbor_throats(pores=network.pores('*boundary'))
-        print(lengths[Ts,:])
     else:
         plen1 = (0.5*pdia[Ps[:, 0]])
         plen2 = (0.5*pdia[Ps[:, 1]])
