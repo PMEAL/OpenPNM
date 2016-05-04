@@ -14,7 +14,6 @@ Tutorial 3 of 3: Advanced Topics and Usage
 #. Write a custom pore-scale model and a custom Phase
 #. Access and manipulate objects associated with the network
 #. Combine multiple algorithms to predict relative permeability
-#. Use the workspace manager to save and load, clone and purge simulations
 
 ===============================================================================
 Build and Manipulate Network Topology
@@ -199,8 +198,8 @@ Pore-scale models are written as basic function definitions:
 
     >>> def mason_model(network, phase, physics, f=0.6667, **kwargs):
     ...     Dt = network['throat.diameter']
-    ...     theta=phase['throat.contact_angle']
-    ...     sigma=phase['throat.surface_tension']
+    ...     theta = phase['throat.contact_angle']
+    ...     sigma = phase['throat.surface_tension']
     ...     Pc = -4*sigma*sp.cos(f*sp.deg2rad(theta))/Dt
     ...     return Pc[network.throats(physics.name)]
 
@@ -363,18 +362,3 @@ And finally, the relative permeability can be found from:
 * To generate a full relative permeability curve the above logic would be placed inside a for loop, with each loop increasing the pressure threshold used to obtain the list of invaded throats (``Ti``).
 
 * The saturation at each capillary pressure can be found be summing the pore and throat volume of all the invaded pores and throats using ``Vp = geom['pore.volume'][Pi]`` and ``Vt = geom['throat.volume'][Ti]``.
-
-===============================================================================
-Save the Simulation in a *PNM* File for Later Use
-===============================================================================
-
-OpenPNM includes a **Workspace** class that provides the type of functionality found on the *menu-bar* of a typical application GUI. Specifically, this enables *saving* and *loading* of all active networks, or individual objects.
-
-To use these feature it is necessary to instantiate an instance:
-
-.. code-block:: python
-
-    >>> mgr = op.Base.Workspace()
-    >>> mgr.save('filename.pnm')
-
-Some of the more common functions of the **Workspace** are available via short-cuts under the main package, such that ``op.save`` is equivalent to calling ``mgr.save``.
