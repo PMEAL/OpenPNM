@@ -16,6 +16,7 @@ This tutorial will follow the same outline as the :ref:`getting_started`, but wi
 #. Utilize pore-scale models for calculating properties of all types
 #. Propagate changing geometrical and thermo-physical properties to all dependent properties
 #. Calculate the permeability tensor for the stratified media
+#. Use the Workspace Manager to save and load a simulation
 
 ===============================================================================
 Building a Cubic Network
@@ -392,3 +393,27 @@ The values of ``Kxx`` and ``Kyy`` should be nearly identical since both these tw
     >>> Kzz = Q * mu * L / (A * 101325)
 
 The permeability in the Z-direction is about half that in the other two directions due to the constrictions caused by the small surface pores.
+
+================================================================================
+Using the Workspace Manager to Save (and reload) the simulation
+================================================================================
+
+OpenPNM includes a **Workspace** manager that provides the type of functionality found on the *menu-bar* of a typical GUI-based application Specifically, this enables *saving* and *loading* of all active networks, or individual objects.
+
+To use these feature it is necessary to instantiate an instance:
+
+.. code-block:: python
+
+    >>> mgr = op.Base.Workspace()
+    >>> mgr.save('filename.pnm')
+
+Some of the more common functions of the **Workspace** are available via short-cuts under the main package, such that ``op.save`` is equivalent to calling ``mgr.save``.
+
+The **Workspace** also offers a few other functions, such as ``purge_object``` which removes an object from the simulation, including all traces of its labels and references on other objects.  It is also possible to ```clear``` the entire workspace, which is useful for *clearing the slate* when importing a new network.  Of course, there is also a ```load``` function to load saved *pnm* files:
+
+.. code-block:: python
+
+    >>> mgr.clear()
+    >>> pn in mgr
+    False
+    >>> mgr.load('filename.pnm')
