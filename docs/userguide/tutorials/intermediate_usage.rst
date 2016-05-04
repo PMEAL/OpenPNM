@@ -404,8 +404,8 @@ To use these feature it is necessary to instantiate an instance:
 
 .. code-block:: python
 
-    >>> mgr = OpenPNM.Base.Workspace()
-    >>> mgr.save('filename.pnm')
+    mgr = OpenPNM.Base.Workspace()
+    mgr.save('filename.pnm')
 
 Some of the more common functions of the **Workspace** are available via short-cuts under the main package, such that ``op.save`` is equivalent to calling ``mgr.save``.
 
@@ -413,7 +413,5 @@ The **Workspace** also offers a few other functions, such as ``purge_object``` w
 
 .. code-block:: python
 
-    >>> mgr.clear()
-    >>> pn in mgr
-    False
-    >>> mgr.load('filename.pnm')
+    mgr.clear()
+    mgr.load('filename.pnm')
