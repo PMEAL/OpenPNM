@@ -404,7 +404,7 @@ To use these feature it is necessary to instantiate an instance:
 
 .. code-block:: python
 
-    >>> mgr = op.Base.Workspace()
+    >>> mgr = OpenPNM.Base.Workspace()
     >>> mgr.save('filename.pnm')
 
 Some of the more common functions of the **Workspace** are available via short-cuts under the main package, such that ``op.save`` is equivalent to calling ``mgr.save``.
