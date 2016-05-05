@@ -90,8 +90,8 @@ class GenericGeometryTest:
         assert self.net.num_pores(self.geo2.name) == 0
         assert self.net.num_throats(self.geo2.name) == 0
         # Repair geo2 for use in other tests?
-        ctrl = self.net.controller
-        ctrl.purge_object(self.geo2)
+        mgr = self.net.workspace
+        mgr.purge_object(self.geo2)
         P = self.net.pores('top')
         T = self.net.find_neighbor_throats(pores=P, mode='intersection')
         self.geo2 = OpenPNM.Geometry.GenericGeometry(network=self.net,
