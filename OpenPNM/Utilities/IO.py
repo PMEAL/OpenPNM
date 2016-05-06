@@ -10,6 +10,9 @@ from OpenPNM.Utilities import misc as _misc
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 mgr = OpenPNM.Base.Workspace()
+#
+# temporary
+import scipy.sparse
 
 
 class VTK():
@@ -795,8 +798,6 @@ class iMorph():
     throats_cellsThroatsGraph_Nodes.txt - stores nodes shape and type information
     throats_cellsThroatsGraph.txt - stores node connectivity
     """
-    #
-    #
 
     @staticmethod
     def save():
@@ -805,8 +806,7 @@ class iMorph():
         the image making it impossible to truely save a network in this format.
         """
         raise NotImplementedError('Not a valid output format')
-    #
-    #
+
     @staticmethod
     def load(node_file=None, graph_file=None, network=None, voxel_size=None):
         r"""
@@ -841,7 +841,8 @@ class iMorph():
         #
         # parsing the nodes file
         with open(node_file, 'r') as file:
-            Np = _sp.fromstring(file.readline().rsplit('=')[1], sep='\t', dtype=int)[0]
+            Np = _sp.fromstring(file.readline().rsplit('=')[1], sep='\t',
+                                dtype=int)[0]
             vox_size = _sp.fromstring(file.readline().rsplit(')')[1], sep='\t',)[0]
             # Create an empty network
             network = OpenPNM.Network.Empty(Np=Np, Nt=0)
@@ -858,10 +859,10 @@ class iMorph():
                 network['pore.'+vals[2]][int(vals[0])] = True
         #
         if voxel_size is None:
-            voxel_size = vox_size * 1.0E-6  #file stores value in microns
+            voxel_size = vox_size * 1.0E-6  # file stores value in microns
 
         if voxel_size < 0:
-            raise(Exception('Error - Voxel size must be specfied in '+
+            raise(Exception('Error - Voxel size must be specfied in ' +
                             'the Nodes file or as a keyword argument.'))
         #
         # parsing the graph file
@@ -885,12 +886,12 @@ class iMorph():
                 xmax = vals[1] if vals[1] > xmax else xmax
                 ymax = vals[2] if vals[2] > ymax else ymax
                 zmax = vals[3] if vals[3] > zmax else zmax
-                network['pore.coords'][vals[0], :] = vals[1:4]
-                network['pore.types'][vals[0]] = vals[4]
-                network['pore.color'][vals[0]] = vals[5]
-                network['pore.radius'][vals[0]] = vals[6]
-                network['pore.dmax'][vals[0]] = vals[7]
-                network['pore.node_number'][vals[0]] = node_num
+                network['pore.coords'][int(vals[0]), :] = vals[1:4]
+                network['pore.types'][int(vals[0])] = vals[4]
+                network['pore.color'][int(vals[0])] = vals[5]
+                network['pore.radius'][int(vals[0])] = vals[6]
+                network['pore.dmax'][int(vals[0])] = vals[7]
+                network['pore.node_number'][int(vals[0])] = node_num
                 node_num += 1
                 line = file.readline()
             # Scan file to get to connectivity data
@@ -899,7 +900,7 @@ class iMorph():
             lil = _sp.sparse.lil_matrix((Np, Np), dtype=int)
             while True:
                 vals = _sp.fromstring(file.readline(), sep='\t', dtype=int)
-                if len(vals) == 1:
+                if len(vals) <= 1:
                     break
                 lil.rows[vals[0]] = vals[2:]
                 lil.data[vals[0]] = _sp.ones(vals[1])
@@ -922,7 +923,8 @@ class iMorph():
         for item in network.props('pore'):
             item = item.split('.')[1]
             network['throat.'+item] = _sp.nan
-            network['throat.'+item][network.throats('new_conns')] = network['pore.'+item][Ts]
+            network['throat.'+item][network.throats('new_conns')] = \
+                    network['pore.'+item][Ts]
         network.trim(pores=Ts)
         #
         # setting up boundary pores
@@ -934,7 +936,8 @@ class iMorph():
         network['pore.bottom_boundary'] = _sp.ravel(z_coord == 0)
         network['pore.top_boundary'] = _sp.ravel(z_coord == zmax)
         #
-        # removing any pores that got classified as a boundary pore that weren't a border_cell_face
+        # removing any pores that got classified as a boundary pore but
+        # weren't labled a border_cell_face
         ps = _sp.where(~_sp.in1d(network.pores('*_boundary'),
                                  network.pores('border_cell_face')))[0]
         ps = network.pores('*_boundary')[ps]
@@ -954,7 +957,7 @@ class iMorph():
         network['pore.volume'][faces] = 0.0
         #
         # applying unit conversions
-        #TODO: Determine if radius and dmax are indeed microns and not voxels
+        # TODO: Determine if radius and dmax are indeed microns and not voxels
         network['pore.coords'] = network['pore.coords'] * 1e-6
         network['pore.radius'] = network['pore.radius'] * 1e-6
         network['pore.dmax'] = network['pore.dmax'] * 1e-6
