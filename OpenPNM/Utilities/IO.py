@@ -794,13 +794,6 @@ class iMorph():
     Combines two output files from the iMorph program to build a pore network.
     throats_cellsThroatsGraph_Nodes.txt - stores nodes shape and type information
     throats_cellsThroatsGraph.txt - stores node connectivity
-
-    Node type is used to determine the location of boundary pores.
-
-    ! Future ideas to possibly attempt:
-    ! 1. Use additional data to better calculate throat length
-    ! 2. Use the additional data to better calculate diameters and adjust volumes
-
     """
     #
     #
@@ -875,6 +868,7 @@ class iMorph():
             network['pore.color'] = _sp.nan
             network['pore.radius'] = _sp.nan
             network['pore.dmax'] = _sp.nan
+            network['pore.node_number'] = _sp.nan
             # Scan file to get pore coordinate data
             scrap_lines = [f.readline() for line in range(3)]
             line = f.readline()
@@ -892,7 +886,7 @@ class iMorph():
                 network['pore.color'][vals[0]] = vals[5]
                 network['pore.radius'][vals[0]] = vals[6]
                 network['pore.dmax'][vals[0]] = vals[7]
-                network['pore.node_number'] = n
+                network['pore.node_number'][vals[0]] = n
                 n += 1
                 line = f.readline()
             # Scan file to get to connectivity data
