@@ -10,9 +10,6 @@ from OpenPNM.Utilities import misc as _misc
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 mgr = OpenPNM.Base.Workspace()
-#
-# temporary
-import scipy.sparse
 
 
 class VTK():
@@ -924,7 +921,7 @@ class iMorph():
             item = item.split('.')[1]
             network['throat.'+item] = _sp.nan
             network['throat.'+item][network.throats('new_conns')] = \
-                    network['pore.'+item][Ts]
+                network['pore.'+item][Ts]
         network.trim(pores=Ts)
         #
         # setting up boundary pores
