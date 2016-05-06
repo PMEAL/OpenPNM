@@ -1,10 +1,10 @@
+import os as _os
+import itertools as _itertools
+from xml.etree import ElementTree as _ET
 import scipy as _sp
 import numpy as _np
 import pandas as _pd
 import yaml as _yaml
-import os as _os
-import itertools as _itertools
-from xml.etree import ElementTree as _ET
 import OpenPNM
 from OpenPNM.Utilities import misc as _misc
 from OpenPNM.Base import logging
@@ -698,7 +698,7 @@ class NetworkX():
     @staticmethod
     def save():
         # TODO: This would be a great place for a new developer to contribute
-        raise NotImplemented
+        raise NotImplementedError
 
     @staticmethod
     def load(filename, network=None):
@@ -800,6 +800,10 @@ class iMorph():
 
     @staticmethod
     def save():
+        r"""
+        iMorph requires several additional files generation from processing
+        the image making it impossible to truely save a network in this format.
+        """
         raise NotImplementedError('Not a valid output format')
     #
     #
@@ -830,22 +834,22 @@ class iMorph():
         """
         #
         if node_file is None:
-            raise(Exception('Error - no nodes file'))
+            raise Exception('Error - no nodes file')
         #
         if graph_file is None:
-            raise(Exception('Error - no connectivity file'))
+            raise Exception('Error - no connectivity file')
         #
         # parsing the nodes file
-        with open(node_file, 'r') as f:
-            Np = _sp.fromstring(f.readline().rsplit('=')[1], sep='\t', dtype=int)[0]
-            vox_size = _sp.fromstring(f.readline().rsplit(')')[1], sep='\t',)[0]
+        with open(node_file, 'r') as file:
+            Np = _sp.fromstring(file.readline().rsplit('=')[1], sep='\t', dtype=int)[0]
+            vox_size = _sp.fromstring(file.readline().rsplit(')')[1], sep='\t',)[0]
             # Create an empty network
             network = OpenPNM.Network.Empty(Np=Np, Nt=0)
             # Define expected properies
             network['pore.volume'] = _sp.nan
-            scrap_lines = [f.readline() for line in range(4)]
+            scrap_lines = [file.readline() for line in range(4)]
             while True:
-                vals = f.readline().split('\t')
+                vals = file.readline().split('\t')
                 if len(vals) == 1:
                     break
                 network['pore.volume'][int(vals[0])] = float(vals[3])
@@ -853,15 +857,15 @@ class iMorph():
                     network['pore.'+vals[2]] = False
                 network['pore.'+vals[2]][int(vals[0])] = True
         #
-        if (voxel_size is None):
-            voxel_size = vox_size * 1.0E-6 #file stores value in microns
-        
-        if (voxel_size < 0):
+        if voxel_size is None:
+            voxel_size = vox_size * 1.0E-6  #file stores value in microns
+
+        if voxel_size < 0:
             raise(Exception('Error - Voxel size must be specfied in '+
                             'the Nodes file or as a keyword argument.'))
         #
         # parsing the graph file
-        with open(graph_file, 'r') as f:
+        with open(graph_file, 'r') as file:
             # Define expected properties
             network['pore.coords'] = _sp.zeros((Np, 3))*_sp.nan
             network['pore.types'] = _sp.nan
@@ -870,12 +874,12 @@ class iMorph():
             network['pore.dmax'] = _sp.nan
             network['pore.node_number'] = _sp.nan
             # Scan file to get pore coordinate data
-            scrap_lines = [f.readline() for line in range(3)]
-            line = f.readline()
+            scrap_lines = [file.readline() for line in range(3)]
+            line = file.readline()
             xmax = 0.0
             ymax = 0.0
             zmax = 0.0
-            n = 0
+            node_num = 0
             while line != 'connectivity table\n':
                 vals = _sp.fromstring(line, sep='\t')
                 xmax = vals[1] if vals[1] > xmax else xmax
@@ -886,15 +890,15 @@ class iMorph():
                 network['pore.color'][vals[0]] = vals[5]
                 network['pore.radius'][vals[0]] = vals[6]
                 network['pore.dmax'][vals[0]] = vals[7]
-                network['pore.node_number'][vals[0]] = n
-                n += 1
-                line = f.readline()
+                network['pore.node_number'][vals[0]] = node_num
+                node_num += 1
+                line = file.readline()
             # Scan file to get to connectivity data
-            scrap_lines.append(f.readline())  # Skip line
+            scrap_lines.append(file.readline())  # Skip line
             # Create sparse lil array for incremental constrution of adjacency matrix
             lil = _sp.sparse.lil_matrix((Np, Np), dtype=int)
             while True:
-                vals = _sp.fromstring(f.readline(), sep='\t', dtype=int)
+                vals = _sp.fromstring(file.readline(), sep='\t', dtype=int)
                 if len(vals) == 1:
                     break
                 lil.rows[vals[0]] = vals[2:]
@@ -922,35 +926,35 @@ class iMorph():
         network.trim(pores=Ts)
         #
         # setting up boundary pores
-        x,y,z = _sp.hsplit(network['pore.coords'],3)
-        network['pore.front_boundary'] = _sp.ravel(x == 0)
-        network['pore.back_boundary'] = _sp.ravel(x == xmax)
-        network['pore.left_boundary'] = _sp.ravel(y == 0)
-        network['pore.right_boundary'] = _sp.ravel(y == ymax)
-        network['pore.bottom_boundary'] = _sp.ravel(z == 0)
-        network['pore.top_boundary'] = _sp.ravel(z == zmax)
+        x_coord, y_coord, z_coord = _sp.hsplit(network['pore.coords'], 3)
+        network['pore.front_boundary'] = _sp.ravel(x_coord == 0)
+        network['pore.back_boundary'] = _sp.ravel(x_coord == xmax)
+        network['pore.left_boundary'] = _sp.ravel(y_coord == 0)
+        network['pore.right_boundary'] = _sp.ravel(y_coord == ymax)
+        network['pore.bottom_boundary'] = _sp.ravel(z_coord == 0)
+        network['pore.top_boundary'] = _sp.ravel(z_coord == zmax)
         #
         # removing any pores that got classified as a boundary pore that weren't a border_cell_face
         ps = _sp.where(~_sp.in1d(network.pores('*_boundary'),
                                  network.pores('border_cell_face')))[0]
         ps = network.pores('*_boundary')[ps]
-        for side in ['front','back','left','right','top','bottom']:
-            network['pore.'+side+'_boundary'][ps] = False            
+        for side in ['front', 'back', 'left', 'right', 'top', 'bottom']:
+            network['pore.'+side+'_boundary'][ps] = False
         # setting internal label
         network['pore.internal'] = False
-        network['pore.internal'][network.pores('*_boundary',mode='not')] = True 
+        network['pore.internal'][network.pores('*_boundary', mode='not')] = True
         #
         # adding props to border cell face throats and from pores
-        Ts = _sp.where(network['throat.conns'][:,1] >
+        Ts = _sp.where(network['throat.conns'][:, 1] >
                        network.pores('border_cell_face')[0] - 1)[0]
-        faces = network['throat.conns'][Ts,1]
+        faces = network['throat.conns'][Ts, 1]
         for item in network.props('pore'):
             item = item.split('.')[1]
-            network['throat.'+item][Ts] = network['pore.'+item][faces]  
+            network['throat.'+item][Ts] = network['pore.'+item][faces]
         network['pore.volume'][faces] = 0.0
         #
-        # applying unit conversions 
-        #TODO: Determine if radius and dmax are indeed microns and not voxels 
+        # applying unit conversions
+        #TODO: Determine if radius and dmax are indeed microns and not voxels
         network['pore.coords'] = network['pore.coords'] * 1e-6
         network['pore.radius'] = network['pore.radius'] * 1e-6
         network['pore.dmax'] = network['pore.dmax'] * 1e-6
