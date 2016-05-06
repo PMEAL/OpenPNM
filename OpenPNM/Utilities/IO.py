@@ -881,6 +881,7 @@ class iMorph():
             xmax = 0.0
             ymax = 0.0
             zmax = 0.0
+            n = 0
             while line != 'connectivity table\n':
                 vals = _sp.fromstring(line, sep='\t')
                 xmax = vals[1] if vals[1] > xmax else xmax
@@ -891,12 +892,9 @@ class iMorph():
                 network['pore.color'][vals[0]] = vals[5]
                 network['pore.radius'][vals[0]] = vals[6]
                 network['pore.dmax'][vals[0]] = vals[7]
+                network['pore.node_number'] = n
+                n += 1
                 line = f.readline()
-            #
-            # fixing any negative volumes or distances so they are 1 voxel/micron
-            network['pore.volume'][_sp.where(network['pore.volume'] < 0)[0]] = 1.0
-            network['pore.radius'][_sp.where(network['pore.radius'] < 0)[0]] = 1.0
-            network['pore.dmax'][_sp.where(network['pore.dmax'] < 0)[0]] = 1.0
             # Scan file to get to connectivity data
             scrap_lines.append(f.readline())  # Skip line
             # Create sparse lil array for incremental constrution of adjacency matrix
@@ -907,53 +905,71 @@ class iMorph():
                     break
                 lil.rows[vals[0]] = vals[2:]
                 lil.data[vals[0]] = _sp.ones(vals[1])
-            #
-            # Add adjacency matrix to OpenPNM network
-            conns = _sp.sparse.triu(lil, k=1, format='coo')
-            network.update({'throat.all': _sp.ones(len(conns.col), dtype=bool)})
-            network['throat.conns'] = _sp.vstack([conns.row, conns.col]).T
-            #
-            network['pore.to_trim'] = False
-            network['pore.to_trim'][network.pores('*throat')] = True
-            Ts = network.pores('to_trim')
-            new_conns = network.find_neighbor_pores(pores=Ts, flatten=False)
-            network.extend(throat_conns=new_conns, labels='new_conns')
-            for item in network.props('pore'):
-                item = item.split('.')[1]
-                network['throat.'+item] = _sp.nan
-                network['throat.'+item][network.throats('new_conns')] = network['pore.'+item][Ts]
-            network.trim(pores=Ts)
-            #
-            # setting up boundary pores
-            x,y,z = _sp.hsplit(network['pore.coords'],3)
-            network['pore.front_boundary'] = _sp.ravel(x == 0)
-            network['pore.back_boundary'] = _sp.ravel(x == xmax)
-            network['pore.left_boundary'] = _sp.ravel(y == 0)
-            network['pore.right_boundary'] = _sp.ravel(y == ymax)
-            network['pore.bottom_boundary'] = _sp.ravel(z == 0)
-            network['pore.top_boundary'] = _sp.ravel(z == zmax)
-            #
-            # removing any pores that got classified as a boundary pore that weren't a border_cell_face
-            ps = _sp.where(~_sp.in1d(network.pores('*_boundary'),network.pores('border_cell_face')))[0]
-            ps = network.pores('*_boundary')[ps]
-            for side in ['front','back','left','right','top','bottom']:
-                network['pore.'+side+'_boundary'][ps] = False            
-            # setting internal label
-            network['pore.internal'] = False
-            network['pore.internal'][network.pores('*_boundary',mode='not')] = True 
-            #
-            # adding props to border cell face throats and from pores
-            Ts = _sp.where(network['throat.conns'][:,1] > network.pores('border_cell_face')[0] - 1)[0]
-            faces = network['throat.conns'][Ts,1]
-            for item in network.props('pore'):
-                item = item.split('.')[1]
-                network['throat.'+item][Ts] = network['pore.'+item][faces]  
-            network['pore.volume'][faces] = 0.0
-            #
-            # checking network health to generate warnings for the user
-            network.health_dict = network.check_network_health()
-            logger.info('Network health stored as network.health_dict')
-            return network
+        #
+        # fixing any negative volumes or distances so they are 1 voxel/micron
+        network['pore.volume'][_sp.where(network['pore.volume'] < 0)[0]] = 1.0
+        network['pore.radius'][_sp.where(network['pore.radius'] < 0)[0]] = 1.0
+        network['pore.dmax'][_sp.where(network['pore.dmax'] < 0)[0]] = 1.0
+        #
+        # Add adjacency matrix to OpenPNM network
+        conns = _sp.sparse.triu(lil, k=1, format='coo')
+        network.update({'throat.all': _sp.ones(len(conns.col), dtype=bool)})
+        network['throat.conns'] = _sp.vstack([conns.row, conns.col]).T
+        #
+        network['pore.to_trim'] = False
+        network['pore.to_trim'][network.pores('*throat')] = True
+        Ts = network.pores('to_trim')
+        new_conns = network.find_neighbor_pores(pores=Ts, flatten=False)
+        network.extend(throat_conns=new_conns, labels='new_conns')
+        for item in network.props('pore'):
+            item = item.split('.')[1]
+            network['throat.'+item] = _sp.nan
+            network['throat.'+item][network.throats('new_conns')] = network['pore.'+item][Ts]
+        network.trim(pores=Ts)
+        #
+        # setting up boundary pores
+        x,y,z = _sp.hsplit(network['pore.coords'],3)
+        network['pore.front_boundary'] = _sp.ravel(x == 0)
+        network['pore.back_boundary'] = _sp.ravel(x == xmax)
+        network['pore.left_boundary'] = _sp.ravel(y == 0)
+        network['pore.right_boundary'] = _sp.ravel(y == ymax)
+        network['pore.bottom_boundary'] = _sp.ravel(z == 0)
+        network['pore.top_boundary'] = _sp.ravel(z == zmax)
+        #
+        # removing any pores that got classified as a boundary pore that weren't a border_cell_face
+        ps = _sp.where(~_sp.in1d(network.pores('*_boundary'),
+                                 network.pores('border_cell_face')))[0]
+        ps = network.pores('*_boundary')[ps]
+        for side in ['front','back','left','right','top','bottom']:
+            network['pore.'+side+'_boundary'][ps] = False            
+        # setting internal label
+        network['pore.internal'] = False
+        network['pore.internal'][network.pores('*_boundary',mode='not')] = True 
+        #
+        # adding props to border cell face throats and from pores
+        Ts = _sp.where(network['throat.conns'][:,1] >
+                       network.pores('border_cell_face')[0] - 1)[0]
+        faces = network['throat.conns'][Ts,1]
+        for item in network.props('pore'):
+            item = item.split('.')[1]
+            network['throat.'+item][Ts] = network['pore.'+item][faces]  
+        network['pore.volume'][faces] = 0.0
+        #
+        # applying unit conversions 
+        #TODO: Determine if radius and dmax are indeed microns and not voxels 
+        network['pore.coords'] = network['pore.coords'] * 1e-6
+        network['pore.radius'] = network['pore.radius'] * 1e-6
+        network['pore.dmax'] = network['pore.dmax'] * 1e-6
+        network['pore.volume'] = network['pore.volume'] * voxel_size**3
+        network['throat.coords'] = network['throat.coords'] * 1e-6
+        network['throat.radius'] = network['throat.radius'] * 1e-6
+        network['throat.dmax'] = network['throat.dmax'] * 1e-6
+        network['throat.volume'] = network['throat.volume'] * voxel_size**3
+        #
+        # checking network health to generate warnings for the user
+        network.health_dict = network.check_network_health()
+        logger.info('Network health stored as network.health_dict')
+        return network
 
 
 def _update_network(network, net):
