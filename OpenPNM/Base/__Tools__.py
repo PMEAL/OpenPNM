@@ -17,6 +17,10 @@ class PrintableList(list):
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
+    def __repr__(self):
+        self.sort()
+        return super().__repr__()
+
 
 class ObjectContainer(dict):
     r"""

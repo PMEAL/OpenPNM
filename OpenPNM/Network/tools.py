@@ -8,9 +8,9 @@ Network.tools.topology: Assorted topological manipulation methods
 import scipy as _sp
 import numpy as _np
 from OpenPNM.Base import logging as _logging
-from OpenPNM.Base import Controller as _controller
+from OpenPNM.Base import Workspace as _workspace
 logger = _logging.getLogger(__name__)
-_ctrl = _controller()
+_mgr = _workspace()
 
 
 def extend(network, pore_coords=[], throat_conns=[], labels=[]):
@@ -135,8 +135,8 @@ def trim(network, pores=[], throats=[]):
     296
 
     '''
-    ctrl = network.controller
-    for net in ctrl.networks():
+    mgr = network.workspace
+    for net in mgr.networks():
         if net._parent is network:
             raise Exception('This Network has been cloned, cannot trim')
     if (_sp.size(pores) > 0) and (_sp.size(throats) > 0):
@@ -389,10 +389,10 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     # Add the new stitch throats to the Network
     extend(network=network, throat_conns=conns, labels='stitched')
 
-    # Remove donor from Controller, if present
+    # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times
-    if donor in _ctrl.values():
-        _ctrl.purge_object(donor)
+    if donor in _mgr.values():
+        _mgr.purge_object(donor)
 
 
 def connect_pores(network, pores1, pores2, labels=[]):

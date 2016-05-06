@@ -2,7 +2,7 @@ import OpenPNM
 from os.path import join
 import scipy as sp
 from OpenPNM.Utilities import topology
-ctrl = OpenPNM.Base.Controller()
+mgr = OpenPNM.Base.Workspace()
 topo = topology()
 
 
@@ -17,13 +17,13 @@ def test_subdivide():
     assert pn.Nt == (300+(4*144)-16+15*16+16)
 
 def test_clone_and_trim():
-    ctrl.clear()
+    mgr.clear()
     pn = OpenPNM.Network.Cubic(shape=[5, 5, 5], name='net')
     geom = OpenPNM.Geometry.GenericGeometry(network=pn, name='geo1')
     geom.set_locations(pores=pn.Ps, throats=pn.Ts)
-    assert sorted(list(ctrl.keys())) == ['geo1', 'net']
-    pn2 = ctrl.clone_simulation(pn, name='clone')
-    assert sorted(list(ctrl.keys())) == ['geo1', 'geo1_clone', 'net',
+    assert sorted(list(mgr.keys())) == ['geo1', 'net']
+    pn2 = mgr.clone_simulation(pn, name='clone')
+    assert sorted(list(mgr.keys())) == ['geo1', 'geo1_clone', 'net',
                                          'net_clone']
     topo.trim(network=pn2, pores=pn2.pores('top'))
 
@@ -41,7 +41,7 @@ def test_trim_extend():
 
 
 def test_stitch():
-    ctrl = OpenPNM.Base.Controller()
+    mgr = OpenPNM.Base.Workspace()
     [Nx, Ny, Nz] = [10, 10, 10]
     pn = OpenPNM.Network.Cubic(shape=[Nx, Ny, Nz])
     pn2 = OpenPNM.Network.Cubic(shape=[Nx, Ny, Nz])
@@ -53,7 +53,7 @@ def test_stitch():
               method='nearest')
     assert pn.Np == 2*pn2.Np  # Ensure number of pores doubled
     assert pn.Nt == (2*pn2.Nt + Nx*Ny)  # Ensure correct number of new throats
-    assert pn2 not in ctrl.values()  # Donor Network is removed from Controller
+    assert pn2 not in mgr.values()  # Donor Network is removed from Workspace
     # Reuse the donor Network in another stitch
     pn2['pore.coords'][:, 2] -= 2*Nz
     pn.stitch(donor=pn2,
@@ -63,7 +63,7 @@ def test_stitch():
               method='nearest')
     assert pn.Np == 3*pn2.Np  # Ensure number of pores increased again
     assert pn.Nt == (3*pn2.Nt + 2*Nx*Ny)  # Ensure correct num of new throats
-    ctrl.clear()
+    mgr.clear()
 
 
 def test_distance_center():

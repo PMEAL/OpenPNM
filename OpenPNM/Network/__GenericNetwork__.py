@@ -11,9 +11,9 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Utilities import topology
-from OpenPNM.Base import Core, Controller, Tools, logging
+from OpenPNM.Base import Core, Workspace, Tools, logging
 logger = logging.getLogger(__name__)
-ctrl = Controller()
+mgr = Workspace()
 topo = topology()
 
 
@@ -74,7 +74,7 @@ class GenericNetwork(Core):
     _net = property(fset=_set_net, fget=_get_net)
 
     def props(self, element=None, mode='all'):
-        prop_list = []
+        prop_list = Tools.PrintableList()
         if 'deep' in mode:
             mode.remove('deep')
             for geom in self._geometries:
@@ -332,7 +332,7 @@ class GenericNetwork(Core):
             returned. If flatten is False the returned array contains arrays
             of neighboring pores for each input pore, in the order they were
             sent.
-        excl_self : bool, optional (Default is False)
+        excl_self : bool, optional (Default is True)
             If this is True then the input pores are not included in the
             returned list.  This option only applies when input pores
             are in fact neighbors to each other, otherwise they are not

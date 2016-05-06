@@ -9,23 +9,19 @@ Function Reference
 -------------------------------------------------------------------------------
 Base
 -------------------------------------------------------------------------------
-   
+
 .. automodule:: OpenPNM.Base
    :members:
-   :undoc-members:
-   :show-inheritance:
-   
+
 .. _network_ref:
 
 -------------------------------------------------------------------------------
 Network
 -------------------------------------------------------------------------------
-   
+
 .. automodule:: OpenPNM.Network
    :members:
-   :undoc-members:
-   :show-inheritance:
-   
+
 .. _geometry_ref:
 
 -------------------------------------------------------------------------------
@@ -34,9 +30,7 @@ Geometry
 
 .. automodule:: OpenPNM.Geometry
    :members:
-   :undoc-members:
-   :show-inheritance:
-   
+
 .. _phases_ref:
 
 -------------------------------------------------------------------------------
@@ -45,8 +39,6 @@ Phases
 
 .. automodule:: OpenPNM.Phases
    :members:
-   :undoc-members:
-   :show-inheritance:
 
 .. _physics_ref:
 
@@ -57,8 +49,7 @@ Physics
 .. automodule:: OpenPNM.Physics
    :members:
    :undoc-members:
-   :show-inheritance:
-   
+
 .. _algorithms_ref:
 
 -------------------------------------------------------------------------------
@@ -67,17 +58,12 @@ Algorithms
 
 .. automodule:: OpenPNM.Algorithms
    :members:
-   :undoc-members:
-   :show-inheritance:
 
 .. _utilities_ref:
-   
+
 -------------------------------------------------------------------------------
 Utilities
 -------------------------------------------------------------------------------
 
 .. automodule:: OpenPNM.Utilities
    :members:
-   :undoc-members:
-   :show-inheritance:
-   
