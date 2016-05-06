@@ -787,7 +787,37 @@ class NetworkX():
             network = OpenPNM.Network.GenericNetwork()
         network = _update_network(network=network, net=net)
         return network
+        
+        
+class iMorph():
+    r"""
+    Combines two output files from the iMorph program to build a pore network.
+    throats_cellsThroatsGraph_Nodes.txt - stores nodes shape and type information
+    throats_cellsThroatsGraph.txt - stores node connectivity
+    
+    Each file is parsed into a dictionary and then the required 
+    aspects to build the network are pulled from the data. Pore diameter
+    is estimated from the volume. Throat diameter is estimated using
+    throat volume.
+    
+    Node type is used to determine the location of boundary pores.     
+    
+    ! Future ideas to possibly attempt:
+    ! 1. Use additional data to better calculate throat length
+    ! 2. Use the additional data to better calculate diameters and adjust volumes
+    
+    """
+    #
+    #
 
+    @staticmethod
+    def save():
+        raise NotImplementedError('Not a valid output format')
+    #
+    #
+    @staticmethod
+    def load(node_file=None, graph_file=None, network=None, voxel_size=None):
+        pass
 
 def _update_network(network, net):
     # Infer Np and Nt from length of given prop arrays in file
