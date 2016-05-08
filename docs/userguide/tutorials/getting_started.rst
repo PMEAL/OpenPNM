@@ -1,8 +1,7 @@
 .. _getting_started:
 
 .. sectnum::
-	
-	prefix: "Tutorial #1."
+   :prefix: "Tutorial #1."
 
 ###############################################################################
  Getting Started with OpenPNM (1 of 3)

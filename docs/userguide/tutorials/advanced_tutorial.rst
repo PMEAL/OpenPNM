@@ -1,8 +1,7 @@
 .. _advanced_tutorial3
 
 .. sectnum::
-	
-	prefix: "Tutorial #3."
+   :prefix: "Tutorial #3."
 
 ###############################################################################
 Advanced Topics and Usage (3 of 3)

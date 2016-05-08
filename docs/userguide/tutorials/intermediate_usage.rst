@@ -1,8 +1,7 @@
 .. _intermediate_usage:
 
 .. sectnum::
-	
-	prefix: "Tutorial #2."
+   :prefix: "Tutorial #2."
 
 ###############################################################################
 Digging Deeper into OpenPNM (2 of 3)
