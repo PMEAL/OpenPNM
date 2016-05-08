@@ -23,7 +23,16 @@ There are several ways to import and export data.  All the import and export cla
 -------------------------------------------------------------------------------
 Comma Separated Variables
 -------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Comma Separated Variables
+-------------------------------------------------------------------------------
 CSV files are the recommended format in OpenPNM due to their simplicity and wide interoperability with virtually all other software.  The list-type data storage scheme used in OpenPNM also fits very well in the CSV column-based format.
+
+Exporting data is accomplished by:
+
+.. code-block:: python
+
 
 Exporting data is accomplished by:
 
@@ -38,7 +47,11 @@ The resulting *csv* file contains all the data on the network ``pn``, but also f
 
 
 -------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
 Mat-File
+-------------------------------------------------------------------------------
+
 -------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------

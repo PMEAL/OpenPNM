@@ -102,7 +102,7 @@ class SetLocations():
     def add(obj, element, locations):
         net = obj._net
         element = obj._parse_element(element, single=True)
-        locations = obj._parse_locations(locations)
+        locations = net._parse_locations(locations)
 
         # Adapt the method depending on type of object received
         if obj._isa('Physics'):
