@@ -1,7 +1,10 @@
 .. _advanced_tutorial3
 
+.. sectnum::
+	prefix: "Tutorial #3."
+
 ###############################################################################
-Tutorial 3 of 3: Advanced Topics and Usage
+Advanced Topics and Usage (3 of 3)
 ###############################################################################
 
 .. contents:: Topics Covered in this Tutorial

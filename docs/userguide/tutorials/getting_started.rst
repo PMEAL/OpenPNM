@@ -1,7 +1,10 @@
 .. _getting_started:
 
+.. sectnum::
+	prefix: "Tutorial #1."
+
 ###############################################################################
-Tutorial 1 of 3: Getting Started with OpenPNM
+ Getting Started with OpenPNM (1 of 3)
 ###############################################################################
 
 This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the more useful and powerful features of the package.  So if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial deliberately simplifies some features to provide a more gentle introduction.  The second and third tutorials of this User-Guide dive into the package more deeply, but those features are best appreciated once the basics are understood.
