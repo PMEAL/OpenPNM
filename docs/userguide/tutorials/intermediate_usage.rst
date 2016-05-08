@@ -1,10 +1,10 @@
 .. _intermediate_usage:
 
 .. sectnum::
-   :prefix: "Tutorial #2."
+   :start: 2
 
 ###############################################################################
-Digging Deeper into OpenPNM (2 of 3)
+Tutorial 2 of 3: Digging Deeper into OpenPNM
 ###############################################################################
 
 This tutorial will follow the same outline as the :ref:`getting_started`, but will dig a little bit deeper at each step to reveal the important features of OpenPNM that were glossed over previously.
