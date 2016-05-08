@@ -133,15 +133,15 @@ class IOTest:
     def test_load_imorph(self):
         path = os.path.join(FIXTURE_DIR, 'iMorph-Sandstone')
         path += '/'
-        net = io.iMorph.load(node_file=path+'throats_cellsThroatsGraph_Nodes.txt',
-                             graph_file=path+'throats_cellsThroatsGraph.txt')
+        net = io.iMorph.load(node_file=path + 'throats_cellsThroatsGraph_Nodes.txt',
+                             graph_file=path + 'throats_cellsThroatsGraph.txt')
         assert net.Np == 1518
         assert net.Nt == 2424
         assert sp.shape(net['pore.coords']) == (1518, 3)
         assert sp.shape(net['throat.conns']) == (2424, 2)
         a = {'pore.volume', 'pore.types', 'throat.volume', 'throat.types'}
         assert a.issubset(net.props())
-        a = {'pore.internal','pore.top_boundary','pore.bottom_boundary',
-             'pore.front_boundary','pore.back_boundary','pore.left_boundary',
+        a = {'pore.internal', 'pore.top_boundary', 'pore.bottom_boundary',
+             'pore.front_boundary', 'pore.back_boundary', 'pore.left_boundary',
              'pore.right_boundary'}
         assert a.issubset(net.labels())
