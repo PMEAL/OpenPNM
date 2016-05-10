@@ -3,7 +3,7 @@
 Controller:  Overall controller class
 ###############################################################################
 """
-import dill as _pickle
+from OpenPNM.Base import Workspace
 
 
 class Controller(Workspace):
