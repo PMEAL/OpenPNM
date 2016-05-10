@@ -3,7 +3,7 @@
 Core:  Core Data Class
 ###############################################################################
 """
-from OpenPNM.Base import Controller
+from OpenPNM.Base import Workspace
 import string
 import random
 import scipy as sp
@@ -11,7 +11,7 @@ import scipy.constants
 from OpenPNM.Base import logging, Tools
 from OpenPNM.Base import ModelsDict
 logger = logging.getLogger()
-ctrl = Controller()
+mgr = Workspace()
 
 
 class Core(dict):
@@ -107,20 +107,20 @@ class Core(dict):
                 # TODO: This should probably raise the following exception
                 # raise Exception('Cannot write vector of the wrong length')
 
-    def _get_ctrl(self):
-        if self in ctrl.values():
-            return ctrl
+    def _get_mgr(self):
+        if self in mgr.values():
+            return mgr
         else:
             return {}
 
-    def _set_ctrl(self, ctrl):
-        if self not in ctrl.values():
-            ctrl.update({self.name: self})
+    def _set_mgr(self, mgr):
+        if self not in mgr.values():
+            mgr.update({self.name: self})
 
-    controller = property(fget=_get_ctrl, fset=_set_ctrl)
+    workspace = property(fget=_get_mgr, fset=_set_mgr)
 
     def _set_name(self, name):
-        if name in ctrl.keys():
+        if name in mgr.keys():
             raise Exception('An object named '+name+' already exists')
         elif name is None:
             name = ''.join(random.choice(string.ascii_uppercase +
@@ -130,7 +130,7 @@ class Core(dict):
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
-            if ctrl._validate_name(name):
+            if mgr._validate_name(name):
                 # Rename any label arrays
                 for item in self._simulation():
                     if 'pore.'+self.name in item.keys():
@@ -140,11 +140,11 @@ class Core(dict):
             else:
                 raise Exception('The provided name is already in use')
         # Remove reference to object under old name, if present
-        for item in list(ctrl.items()):
+        for item in list(mgr.items()):
             if item[1] is self:
-                ctrl.pop(item[0])
-        # Add object to controller under new name
-        ctrl.update({name: self})
+                mgr.pop(item[0])
+        # Add object to workspace under new name
+        mgr.update({name: self})
         self._name = name
 
     def _get_name(self):
@@ -425,7 +425,7 @@ class Core(dict):
         Returns
         -------
         A list containing the dictionary keys on the object limited by the
-        specified \'mode\'.
+        specified ``mode``.
 
         Examples
         --------
@@ -1294,8 +1294,21 @@ class Core(dict):
                        return_mapping=return_mapping)
         return Ts
 
-    Tnet = property(fget=map_throats)
-    Pnet = property(fget=map_pores)
+    @property
+    def Tnet(self):
+        r"""
+        A shortcut to retrieve the mapping of the current object's throats onto
+        the network.
+        """
+        return self.map_throats()
+
+    @property
+    def Pnet(self):
+        r"""
+        A shortcut to retrieve the mapping of the current object's pores onto
+        the network.
+        """
+        return self.map_pores()
 
     def _parse_locations(self, locations):
         r"""
@@ -1424,7 +1437,7 @@ class Core(dict):
              if parsed_labels.count(L) > 1]
         return parsed_labels
 
-    def _parse_mode(self, mode, allowed=None, single=None):
+    def _parse_mode(self, mode, allowed=None, single=False):
         r"""
         This private method is for checking the \'mode\' used in the calling
         method.

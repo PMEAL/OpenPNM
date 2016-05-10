@@ -13,7 +13,7 @@ class DelaunayTest:
         self.scale = scale
         p = (sp.random.random([len(bp), 3])-0.5)/10000
         bp += p
-        self.ctrl = OpenPNM.Base.Controller()
+        self.mgr = OpenPNM.Base.Workspace()
         self.net = OpenPNM.Network.Delaunay(domain_size=[scale, scale, scale],
                                             base_points=bp*scale)
         self.net.add_boundaries()
