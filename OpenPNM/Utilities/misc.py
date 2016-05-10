@@ -87,7 +87,7 @@ def iscoplanar(coords):
 
     Returns
     -------
-    A boolean value of whether given points are colplanar (True) or not (False)
+    A boolean value of whether given points are coplanar (True) or not (False)
     '''
     coords = _sp.array(coords, ndmin=1)
     if _sp.shape(coords)[0] < 3:
@@ -106,13 +106,14 @@ def iscoplanar(coords):
         return True
 
     # Perform rigorous check using vector algebra
-    n = _sp.array((Px - Px[0], Py - Py[0], Pz - Pz[0])).T
-    n0 = _sp.array((Px[-1] - Px[0], Py[-1] - Py[0], Pz[-1] - Pz[0])).T
+    n1 = _sp.array((Px[1] - Px[0], Py[1] - Py[0], Pz[1] - Pz[0])).T
+    n2 = _sp.array((Px[2] - Px[1], Py[2] - Py[1], Pz[2] - Pz[1])).T
+    n = _sp.cross(n1, n2)
+    r = _sp.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
 
-    n_cross = _sp.cross(n0, n)
-    n_dot = _sp.multiply(n0, n_cross)
+    n_dot = _sp.dot(n, r)
 
-    if _sp.sum(_sp.absolute(n_dot)) == 0:
+    if _sp.sum(n_dot) == 0:
         return True
     else:
         return False

@@ -119,3 +119,13 @@ class IOTest:
         assert sp.shape(net['throat.conns']) == (54, 2)
         assert [True for item in net.keys() if 'temperature' in item]
         assert [True for item in net.keys() if 'diffusive_conductance' in item]
+
+    def test_load_networkx(self):
+        fname = os.path.join(FIXTURE_DIR, 'test_load_yaml.yaml')
+        net = io.NetworkX.load(filename=fname)
+        assert net.Np == 9
+        assert net.Nt == 12
+        assert sp.shape(net['pore.coords']) == (9, 3)
+        assert sp.shape(net['throat.conns']) == (12, 2)
+        a = {'pore.area', 'pore.diameter', 'throat.length', 'throat.perimeter'}
+        assert a.issubset(net.props())

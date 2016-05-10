@@ -5,7 +5,7 @@ module __Physics__: Base class for mananging pore-scale Physics properties
 ===============================================================================
 
 """
-from OpenPNM.Base import logging
+from OpenPNM.Base import logging, Tools
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Phases import GenericPhase
 import OpenPNM.Physics.models
@@ -43,23 +43,22 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     """
 
-    def __init__(self, network=None, phase=None, geometry=None,
-                 pores=[], throats=[], **kwargs):
+    def __init__(self, network=None, phase=None, geometry=None, pores=[],
+                 throats=[], **kwargs):
         super().__init__(**kwargs)
         logger.name = self.name
 
         # Associate with Network
         if network is None:
-            self._net = GenericNetwork()
-        else:
-            self._net = network  # Attach network to self
-            self._net._physics.append(self)  # Register self with network
+            network = GenericNetwork()
+        self.network.update({network.name: network})  # Attach network to self
+        self._net.physics.update({self.name: self})  # Register self with network
 
         # Associate with Phase
         if phase is None:
             phase = GenericPhase(network=self._net)
-        phase._physics.append(self)  # Register self with phase
-        self._phases.append(phase)  # Register phase with self
+        phase.physics.update({self.name: self})  # Register self with phase
+        self.phases.update({phase.name: phase})  # Register phase with self
 
         if geometry is not None:
             if (sp.size(pores) > 0) or (sp.size(throats) > 0):
@@ -75,7 +74,7 @@ class GenericPhysics(OpenPNM.Base.Core):
         try:
             self.set_locations(pores=pores, throats=throats)
         except:
-            self.controller.purge_object(self)
+            self.workspace.purge_object(self)
             raise Exception('Provided locations are in use, instantiation cancelled')
 
     def __getitem__(self, key):
@@ -97,10 +96,11 @@ class GenericPhysics(OpenPNM.Base.Core):
         phase['pore.'+self.name] = pore_label
         phase['throat.'+self.name] = throat_label
         # Replace phase reference on self
-        self._phases[0] = phase
+        self.phases.clear()
+        self.phases.update({phase.name: phase})
         # Remove physics reference on current phase
-        current_phase._physics.remove(self)
-        phase._physics.append(self)
+        current_phase.physics.pop(self.name)
+        phase.physics.update({self.name: self})
 
     def _get_phase(self):
         return self._phases[0]
@@ -109,17 +109,44 @@ class GenericPhysics(OpenPNM.Base.Core):
 
     def set_locations(self, pores=[], throats=[], mode='add'):
         r"""
-        Set the pore and throat locations of the Physics object
+        Assign or unassign a Physics object to specified locations
 
         Parameters
         ----------
-        pores and throats : array_like
-            The list of pores and/or throats where the object should be applied.
+        pores : array_like
+            The pore locations in the Network where this Physics is to apply
+
+        throats : array_like
+            The throat locations in the Network where this Physics is to apply
+
         mode : string
-            Indicates whether list of pores or throats is to be added or removed
-            from the object.  Options are 'add' (default) or 'remove'.
+            Either 'add' (default) or 'remove' the object from the specified
+            locations
+
+        Examples
+        --------
+        >>> import OpenPNM
+
         """
-        if sp.size(pores) > 0:
-            self._set_locations(element='pore', locations=pores, mode=mode)
-        if sp.size(throats) > 0:
-            self._set_locations(element='throat', locations=throats, mode=mode)
+        if mode == 'add':
+            # Check if any constant values exist on the object
+            for item in self.props():
+                if (item not in self.models.keys()) or \
+                   (self.models[item]['regen_mode'] == 'constant'):
+                    raise Exception('Constant properties found on object, ' +
+                                    'cannot increase size')
+            if sp.size(pores) > 0:
+                Tools.SetLocations.add(obj=self, element='pore',
+                                       locations=pores)
+            if sp.size(throats) > 0:
+                Tools.SetLocations.add(obj=self, element='throat',
+                                       locations=throats)
+        if mode == 'remove':
+            if sp.size(pores) > 0:
+                Tools.SetLocations.drop(obj=self, element='pore',
+                                        locations=pores)
+            if throats is not None:
+                Tools.SetLocations.drop(obj=self, element='throat',
+                                        locations=throats)
+        # Finally, regenerate models to correct the length of all arrays
+        self.models.regenerate()
