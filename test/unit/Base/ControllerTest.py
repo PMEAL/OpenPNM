@@ -97,10 +97,10 @@ class WorkspaceTest:
             return a + b
         net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
         net.add_model(propname='pore.blah', model=foo, a=net.Ps, b=10)
-        self.controller.save_simulation(network=net, filename='blah')
-        self.controller.clear()
-        self.controller.load_simulation('blah')
-        net2 = self.controller[net.name]
+        self.workspace.save_simulation(network=net, filename='blah')
+        self.workspace.clear()
+        self.workspace.load_simulation('blah')
+        net2 = self.workspace[net.name]
         assert 'pore.blah' in net2.keys()
 
     def test_ghost_object(self):
