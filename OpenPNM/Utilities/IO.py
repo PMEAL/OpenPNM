@@ -843,8 +843,10 @@ class iMorph():
             Np = _sp.fromstring(file.readline().rsplit('=')[1], sep='\t',
                                 dtype=int)[0]
             vox_size = _sp.fromstring(file.readline().rsplit(')')[1], sep='\t',)[0]
-            # Create an empty network
-            network = OpenPNM.Network.Empty(Np=Np, Nt=0)
+            #
+            if network is None:
+                network = OpenPNM.Network.Empty(Np=Np, Nt=0)
+            #
             # Define expected properies
             network['pore.volume'] = _sp.nan
             scrap_lines = [file.readline() for line in range(4)]
