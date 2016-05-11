@@ -132,9 +132,7 @@ class IOTest:
 
     def test_load_imorph(self):
         path = os.path.join(FIXTURE_DIR, 'iMorph-Sandstone')
-        node_file = os.path.join(path, 'throats_cellsThroatsGraph_Nodes.txt')
-        graph_file = os.path.join(path, 'throats_cellsThroatsGraph.txt')
-        net = io.iMorph.load(node_file=node_file, graph_file=graph_file)
+        net = io.iMorph.load(path)
         assert net.Np == 1518
         assert net.Nt == 2424
         assert sp.shape(net['pore.coords']) == (1518, 3)

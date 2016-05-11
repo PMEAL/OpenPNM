@@ -805,12 +805,18 @@ class iMorph():
         raise NotImplementedError('Not a valid output format')
 
     @staticmethod
-    def load(node_file=None, graph_file=None, network=None, voxel_size=None):
+    def load(path,
+             node_file="throats_cellsThroatsGraph_Nodes.txt",
+             graph_file="throats_cellsThroatsGraph.txt",
+             network=None,
+             voxel_size=None):
         r"""
         Loads network data from an iMorph processed image stack
 
         Parameters
         ----------
+        path : string
+            The path of the folder where the subfiles are held
         node_file : string
             The file that describes the pores and throats, the
             default iMorph name is: throats_cellsThroatsGraph_Nodes.txt
@@ -830,12 +836,8 @@ class iMorph():
         If no Network object is supplied then one will be created and returned.
         """
         #
-        if node_file is None:
-            raise Exception('Error - no nodes file')
-        #
-        if graph_file is None:
-            raise Exception('Error - no connectivity file')
-        #
+        node_file = _os.path.join(path, node_file)
+        graph_file = _os.path.join(path, graph_file)
         # parsing the nodes file
         with open(node_file, 'r') as file:
             Np = _sp.fromstring(file.readline().rsplit('=')[1], sep='\t',
