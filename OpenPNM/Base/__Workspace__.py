@@ -3,7 +3,7 @@
 Workspace:  A class for managing the workspace of all objects
 ###############################################################################
 """
-import pickle as _pickle
+import dill as _pickle
 import copy as _copy
 import time
 import random
