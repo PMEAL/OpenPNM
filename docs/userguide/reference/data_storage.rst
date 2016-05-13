@@ -100,7 +100,7 @@ A complication arises if you have a list of pore numbers you wish to label, such
     >>> pn.pores('dummy_2')
     array([3, 4, 5])
 
-The *label* functionality basically works by using Scipy's ``where`` method to return a list of locations where the array is ``True``:
+The *label* functionality uses Scipy's ``where`` method to return a list of locations where the array is ``True``:
 
 .. code-block:: python
 
@@ -167,6 +167,18 @@ Another highly used feature is to retrieve a list of pores or throats that have 
 The ``pores`` and ``throats`` methods both accept a *'mode'* argument that allows for *set-theory* logic to be applied to the query, such as returning 'unions' and 'intersections' of locations.
 
 Often, one wants a list of *all** pore or throat indices on an object, so there are shortcut methods for this: ``Ps`` and ``Ts``.
+
+It is also possible to filter a list of pores or throats according to their labels using ``filter_by_label``:
+
+.. code-block:: python
+
+    >>> Ps = pn.pores('top')
+    >>> Ps
+    array([ 2,  5,  8, 11, 14, 17, 20, 23, 26])
+    >>> pn.filter_by_label(pores=Ps, label='left')
+    array([ 2, 11, 20])
+
+The ``filter_by_label`` method also accepts a ``mode`` argument that applies additional filtering to the returned list using *set-theory*-type logic.  In this case, the method will find sets of pores or throats that satisfies each given label, then determines the *union*, *intersection*, or *difference* of the given sets.
 
 ===============================================================================
 Data Exchange Between Objects
