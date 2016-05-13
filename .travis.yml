@@ -32,7 +32,6 @@ install:
 
 script:
   - ./bin/test pep8 cov
-  - ./bin/clean
 
 after_success:
   - codecov

@@ -7,8 +7,8 @@ class GenericNetworkTest:
         self.net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
 
     def teardown_class(self):
-        ctrl = OpenPNM.Base.Controller()
-        ctrl.clear()
+        mgr = OpenPNM.Base.Workspace()
+        mgr.clear()
 
     def test_find_connected_pores_numeric_not_flattend(self):
         a = self.net.find_connected_pores(throats=[0, 1])
@@ -157,6 +157,7 @@ class GenericNetworkTest:
         P12 = net['throat.conns'][0]
         net.extend(throat_conns=[P12])
         a = net.check_network_health()
+        assert len(a['duplicate_throats']) == 1
         assert len(a['duplicate_throats'][0]) == 2
 
     def test_check_network_health_triplicate_throats(self):
@@ -165,6 +166,7 @@ class GenericNetworkTest:
         net.extend(throat_conns=[P12])
         net.extend(throat_conns=[P12])
         a = net.check_network_health()
+        assert len(a['duplicate_throats']) == 1
         assert len(a['duplicate_throats'][0]) == 3
 
     def test_check_network_health_multiple_duplicate_throats(self):
@@ -174,6 +176,7 @@ class GenericNetworkTest:
         P12 = net['throat.conns'][1]
         net.extend(throat_conns=[P12])
         a = net.check_network_health()
+        assert len(a['duplicate_throats']) == 2
         assert len(a['duplicate_throats'][1]) == 2
 
     def test_check_network_health_bidirectional_throats(self):

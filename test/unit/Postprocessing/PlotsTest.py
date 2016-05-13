@@ -4,8 +4,8 @@ import matplotlib as mpl
 
 class PlotsTest:
     def setup_class(self):
-        ctrl = OpenPNM.Base.Controller()
-        ctrl.clear()
+        mgr = OpenPNM.Base.Workspace()
+        mgr.clear()
         self.net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
         self.geo = OpenPNM.Geometry.Toray090(network=self.net,
                                              pores=self.net.Ps,
