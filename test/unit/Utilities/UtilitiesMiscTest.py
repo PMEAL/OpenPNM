@@ -1,6 +1,7 @@
 import OpenPNM
 import OpenPNM.Utilities.misc as misc
 import scipy as sp
+from time import sleep
 
 
 class UtilitiesMiscTest:
@@ -41,6 +42,7 @@ class UtilitiesMiscTest:
         assert t is None
         t = misc.toc(quiet=False)
         assert t is None
+        sleep(0.001)
         t = misc.toc(quiet=True)
         assert t > 0
 

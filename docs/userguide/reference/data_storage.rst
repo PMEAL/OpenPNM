@@ -81,8 +81,8 @@ The only distinction between *labels* and *properties* is that *labels* are Bool
 .. code-block:: python
 
     >>> pn['pore.top'][2] = False
-    >>> sp.where(pn['pore.top'])[0]
-    array([ 5,  8, 11, 14, 17, 20, 23, 26])
+    >>> list(sp.where(pn['pore.top'])[0])
+    [5, 8, 11, 14, 17, 20, 23, 26]
     >>> pn['pore.top'][2] = True  # Re-apply label to pore 2
 
 Creating a new label array occurs automatically if a Boolean array is stored on an object:
@@ -97,15 +97,15 @@ A complication arises if you have a list of pore numbers you wish to label, such
 
     >>> pn['pore.dummy_2'] = False  # Automatically assigns False to every pore
     >>> pn['pore.dummy_2'][[3, 4, 5]] = True
-    >>> pn.pores('dummy_2')
-    array([3, 4, 5])
+    >>> list(pn.pores('dummy_2'))
+    [3, 4, 5]
 
 The *label* functionality basically works by using Scipy's ``where`` method to return a list of locations where the array is ``True``:
 
 .. code-block:: python
 
-    >>> sp.where(pn['pore.dummy_2'])[0]
-    array([3, 4, 5])
+    >>> list(sp.where(pn['pore.dummy_2'])[0])
+    [3, 4, 5]
 
 The ``pores`` and ``throats`` methods offer several useful enhancements to this approach.  For instance, several labels can be queried at once:
 
