@@ -204,7 +204,8 @@ class ViscousDrainage(GenericLinearTransport):
                                        bcvalue=self._inj_rate,
                                        pores=inlets)
         #
-        for i in range(1000):
+        self._i = 0
+        while True:
             self._modify_conductance()
             self._update_RHS_pcap_data()
             self.A = self._build_coefficient_matrix()
@@ -213,18 +214,20 @@ class ViscousDrainage(GenericLinearTransport):
             self.solve(iterative_solver='cg')
             dt = self._calculate_dt()
             #
-            self._message('Time Step: ',i,' size: {:0.3E} '.format(dt))
+            self._message('Time Step: ',self._i,' size: {:0.3E} '.format(dt))
             pres = ['{:0.3f}'.format(p) for p in self['pore.pressure']]
             self._message('Pore Pressures: {}'.format(','.join(pres)))
             #
             self._advance_interface(dt)
             self._total_time += dt
-            self._print_step_stats(i,dt)
+            self._print_step_stats(self._i,dt)
             #
             test = sp.where(self._pore_inv_frac[outlets] > 1-self._sat_tol)[0]
             if (sp.size(test) > 0):
-                self._message('Total Simulation Time Until Break Through: ',self._total_time,' Steps:',i)
+                self._message('Total Simulation Time Until Break Through: ',self._total_time,' Steps:',self._i)
                 break
+            #
+            self._i += 1
         #
         # checking overall mass balance
         q_inj = self._total_time * self._inj_rate
