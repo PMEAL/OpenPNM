@@ -204,7 +204,7 @@ class ViscousDrainage(GenericLinearTransport):
                                        bcvalue=self._inj_rate,
                                        pores=inlets)
         #
-        for i in range(100):
+        for i in range(45):
             self._modify_conductance()
             self._update_RHS_pcap_data()
             self.A = self._build_coefficient_matrix()
@@ -219,7 +219,7 @@ class ViscousDrainage(GenericLinearTransport):
             #
             self._advance_interface(dt)
             self._total_time += dt
-            self._print_step_stats()
+            self._print_step_stats(i,dt)
             #
             test = sp.where(self._pore_inv_frac[outlets] > 1-self._sat_tol)[0]
             if (sp.size(test) > 0):
@@ -311,23 +311,32 @@ class ViscousDrainage(GenericLinearTransport):
             con_ps = con_ps[con_ps != p]
             con_ts_sf = self._get_supply_facts(con_ts,p)
             #
-            # test calculation for phase balance in pores 
+            # test calculation for phase balance in pores
             out_str = ''
             qsum = 0.0
+            ph_bal = [0.0,0.0]
             for i in range(len(con_ts)):
                 th = con_ts[i]
                 p1,p2 = self._net['throat.conns'][th]
                 pr1,pr2 = self['pore.pressure'][[p1,p2]]
                 g = self['throat.conductance'][th]
-                fpc = self._sum_fpcap(th,p1)  
+                fpc = self._sum_fpcap(th,p1)
                 sf = con_ts_sf[i]
                 self._message(' p1:',p1,'th: ',th,' p2:',p2)
                 q = -g * (pr1 - pr2 + fpc) # neg value is flowing out of pore 1
+                self._q[th] = q
                 if (p == p2):
                     q = -1.0 * q #reversing sign b/c we're looking at pore 2
+                #
+                # phase balance testing
+                if ( con_ts_sf[i] > 0):
+                    ph_bal[0] += q
+                else:
+                    ph_bal[1] += q
                 qsum += q
                 out_str += '[th:{:0d} sf:{:0.0f} q:{:0.6e} ]'.format(th,sf,q)
             self._message(p,':  ',out_str,' net flow',qsum)
+            self._message('pore',p,'full phase balance qsum: ',ph_bal)
             #
             # throats supplying invading phase
             qsum = 0.0
@@ -336,13 +345,14 @@ class ViscousDrainage(GenericLinearTransport):
                 p1,p2 = self._net['throat.conns'][th]
                 pr1,pr2 = self['pore.pressure'][[p1,p2]]
                 g = self['throat.conductance'][th]
-                fpc = self._sum_fpcap(th,p1)  
+                fpc = self._sum_fpcap(th,p1)
                 sf = con_ts_sf[i]
                 q = -g * (pr1 - pr2 + fpc) # neg value is flowing out of pore 1
                 if (p == p2):
                     q = -1.0 * q #reversing sign b/c we're looking at pore 2
                 qsum += q
             #
+            print('invading-phase qsum: ',qsum)
             self._pore_qsum[p] = qsum
             dv_max = self._set_dv_max(p,qsum)
             if (qsum == 0.0):
@@ -415,7 +425,8 @@ class ViscousDrainage(GenericLinearTransport):
                 self._pore_inv_frac[p] += dt*qsum/self._net['pore.volume'][p]
             #
             #
-            self._message('Pore ',p,' filled to: ',self._pore_inv_frac[p])
+            fmt_str = 'Pore {0:2d} filled to: {1:10.6f}, ph frac change: {2:10.6f}'
+            self._message(fmt_str.format(p,self._pore_inv_frac[p],dt*qsum/self._net['pore.volume'][p]))
             if (self._pore_inv_frac[p] > (1 - self._sat_tol)):
                 if (qsum >= 0):
                     self._fill_pore(p)
@@ -423,7 +434,7 @@ class ViscousDrainage(GenericLinearTransport):
                 if (qsum <= 0):
                     self._fill_pore(p)
 
-    def _print_step_stats(self):
+    def _print_step_stats(self,*args):
         q_inj = self._total_time * self._inj_rate
         vp = sp.multiply(self._net['pore.volume'],self._pore_inv_frac)
         vt = sp.multiply(self._net['throat.volume'],self._throat_inv_frac)
@@ -432,7 +443,7 @@ class ViscousDrainage(GenericLinearTransport):
         fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff %: {:0.15F}'
         #
         #
-        print((q_inj - tot_vol)/self._net_vol*100)
+        #print(args[0],'  diff: ',(q_inj - tot_vol)/self._net_vol*100, ' dt: ',args[1])
         self._message(fmt_str.format(tot_sat,(q_inj - tot_vol)/self._net_vol*100))
         self._message('-'*25)
         self._message('')
@@ -446,13 +457,23 @@ class ViscousDrainage(GenericLinearTransport):
         Sums the capillary forces from minisci alternating the sign with
         the fluid type.
         """
+        # determining loop order
+        p1,p2 = self._net['throat.conns'][th]
+        step = 1
+        if (ref_pore == p2):
+            step = -1
+        # initializing capillary factor
         fpc = 0.0
-        f = -1.0 # initial assumption of invading phase
-        if not self._pore_invaded[ref_pore]:
-            f = 1.0
-        for x in self._menisci[th]:
+        f = -1.0*self._get_supply_facts([th],ref_pore)[0]# needs reversed b/c 1.0 is invading phase
+        for x in self._menisci[th][::step]:
             fpc += f * self._pc_func(x)*self._max_pc[th]
             f = f * -1.0
+        #f = -1.0 # initial assumption of invading phase
+        #if not self._pore_invaded[ref_pore]:
+            #f = 1.0
+        #for x in self._menisci[th]: #maybe reverse this if ref_pore is p2
+            #fpc += f * self._pc_func(x)*self._max_pc[th]
+            #f = f * -1.0
         #
         return(fpc)
 
@@ -504,7 +525,7 @@ class ViscousDrainage(GenericLinearTransport):
 
     def _advance_zero_vol_throat(self,th):
         r"""
-        Always fills zero volume throat with matching pore fluid to 
+        Always fills zero volume throat with matching pore fluid to
         prevent program from hanging
         """
         m = self._menisci[th][-1]
@@ -559,7 +580,7 @@ class ViscousDrainage(GenericLinearTransport):
             fmt_str = 'Throat {:2d}: Added mensici from pore {:2d}, current positions: {}'
             self._message(fmt_str.format(th,base_pore,', '.join(mens)))
 
-            
+
 
 
     def rate(self, pores=None, network=None, conductance=None, X_value=None,
