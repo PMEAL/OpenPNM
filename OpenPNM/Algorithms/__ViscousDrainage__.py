@@ -150,6 +150,7 @@ class ViscousDrainage(GenericLinearTransport):
                                                     mode='not_intersection')
         self._throat_contested[interface] = True
         self._message('Setting menisci for throats on the inlet pores')
+        self._q = sp.zeros(self.Nt)
         for th in interface:
             pore1,pore2 = self._net['throat.conns'][th]
             if (self._pore_invaded[pore1]):
@@ -157,7 +158,6 @@ class ViscousDrainage(GenericLinearTransport):
             else:
                 self._set_menisci(pore2,[th])
         self._message('')
-
 
     def set_outlets(self, pores=None, mode='add'):
         _drainage.set_outlets(self,pores=pores,mode=mode)
@@ -230,7 +230,7 @@ class ViscousDrainage(GenericLinearTransport):
             if (sp.size(test) > 0 and break_through_time < 0):
                 break_through_time = self._total_time
                 break_through_steps = self._i
-                break
+                #break
             #
             if (self._i > self._max_steps):
                 break
@@ -291,8 +291,8 @@ class ViscousDrainage(GenericLinearTransport):
         # calculating q for contested throats
         for th in sp.where(self._throat_contested)[0]:
             if (self._net['throat.volume'][th] == 0.0):
-                #if zero vol throats exist, dt must be 0.0 to maintain
-                #proper mass balance, otherise injected fluid is 'lost'
+                # if zero vol throats exist, dt must be 0.0 to maintain
+                # proper mass balance, otherise injected fluid is 'lost'
                 dt = 0.0
             #
             p1,p2 = self._net['throat.conns'][th]
@@ -300,7 +300,8 @@ class ViscousDrainage(GenericLinearTransport):
             g = self['throat.conductance'][th]
             fpc = self._sum_fpcap(th,p1)
             #
-            self._q[th] = -g * (pr1 - pr2 + fpc) #negative dir is moving away from lower index pore
+            # negative dir is moving away from lower index pore
+            self._q[th] = -g * (pr1 - pr2 + fpc)
         #
         # setting dt values based on maximum allowed throat travel distance
         for th in sp.where(self._throat_contested)[0]:
@@ -321,18 +322,21 @@ class ViscousDrainage(GenericLinearTransport):
             con_ps = con_ps[con_ps != p]
             con_ts_sf = self._get_supply_facts(con_ts,p)
             #
-            # throats supplying invading phase
+            # throats supplying pore
             qsum = 0.0
-            for i in sp.where(con_ts_sf > 0)[0]: #TODO: keep testing the phase balance here
+            for i in range(len(con_ts)):
                 th = con_ts[i]
                 p1,p2 = self._net['throat.conns'][th]
                 pr1,pr2 = self['pore.pressure'][[p1,p2]]
                 g = self['throat.conductance'][th]
                 fpc = self._sum_fpcap(th,p1)
                 q = -g * (pr1 - pr2 + fpc) # neg value is flowing out of pore 1
+                self._q[th] = q
                 if (p == p2):
                     q = -1.0 * q #reversing sign b/c we're looking at pore 2
-                qsum += q
+                # only accounting for the invading phase
+                if (con_ts_sf[i] > 0):
+                    qsum += q
             #
             self._pore_qsum[p] = qsum
             dv_max = self._set_dv_max(p,qsum)
@@ -538,7 +542,6 @@ class ViscousDrainage(GenericLinearTransport):
         """
         #
         self._pore_inv_frac[pore] = round(self._pore_inv_frac[pore])
-        self._pore_contested[pore] = False
         if (int(self._pore_inv_frac[pore]) == 1.0):
             self._pore_invaded[pore] = True
             sf = -1
@@ -550,95 +553,29 @@ class ViscousDrainage(GenericLinearTransport):
         # the pores previous status
         Ts = self._net.find_neighbor_throats(pore)
         Ts_sf = self._get_supply_facts(Ts,pore)
-        new_Ts = Ts[Ts_sf == sf]
-        self._set_menisci(pore,new_Ts)
+        self._set_menisci(pore,Ts[Ts_sf == sf])
+        #
+        Ts_sf = self._get_supply_facts(Ts,pore)
+        self._pore_contested[pore] = not sp.all(Ts_sf == Ts_sf[0])
 
     def _set_menisci(self,base_pore,Ts):
         for th in Ts:
-            pores = list(self._net['throat.conns'][th])
-            index = pores.index(base_pore)
-            if (index == 1):
+            p1,p2 = list(self._net['throat.conns'][th])
+            if (base_pore == p2):
+                # checking if flow in throat is moving away from the pore
+                # - Q means flow from p1 into p2
+                if (self._q[th] < 0.0):
+                    continue
                 self._menisci[th].append(1.0)
             else:
+                # checking if flow in throat is moving away from the pore
+                if (self._q[th] > 0.0):
+                    continue
                 self._menisci[th].insert(0,0.0)
                 # needs flipped because fluid supplying throat changed
                 self._throat_sup_fact[th] *= -1.0
             #
             self._throat_contested[th] = True
-
-
-
-
-    def rate(self, pores=None, network=None, conductance=None, X_value=None,
-             mode='group'):
-        r"""
-        Send a list of pores and receive the net rate
-        of material moving into them.
-
-        Parameters
-        ----------
-        pores : array_like
-            The pores where the net rate will be calculated
-        network : OpenPNM Network Object
-            The network object to which this algorithm will apply.
-            If no network is sent, the rate will apply to the network which is
-            attached to the algorithm.
-        conductance : array_like
-            The conductance which this algorithm will use to calculate the
-            rate.
-            If no conductance is sent, the rate will use the
-            'throat.conductance' which is attached to the algorithm.
-        X_value : array_like
-            The values of the quantity (temperature, mole_fraction,
-            voltage, ...), which this algorithm will use to calculate the rate.
-            If no X_value is sent, the rate will look at the '_quantity',
-            which is attached to the algorithm.
-        mode : string, optional
-            Controls how to return the rate.  Options are:
-            - 'group'(default): It returns the cumulative rate moving into them
-            - 'single': It calculates the rate for each pore individually.
-        """
-
-        if network is None:
-            network = self._net
-        if conductance is None:
-            conductance = self['throat.conductance']
-        if X_value is None:
-            X_value = self[self._quantity]
-        pores = sp.array(pores, ndmin=1)
-        R = []
-        if mode == 'group':
-            t = network.find_neighbor_throats(pores, flatten=True,
-                                              mode='not_intersection')
-            throat_group_num = 1
-        elif mode == 'single':
-            t = network.find_neighbor_throats(pores, flatten=False,
-                                              mode='not_intersection')
-            throat_group_num = sp.size(t)
-        for i in sp.r_[0: throat_group_num]:
-            if mode == 'group':
-                throats = t
-                P = pores
-            elif mode == 'single':
-                throats = t[i]
-                P = pores[i]
-            p1 = network.find_connected_pores(throats)[:, 0]
-            p2 = network.find_connected_pores(throats)[:, 1]
-            pores1 = sp.copy(p1)
-            pores2 = sp.copy(p2)
-            # Changes to pores1 and pores2 to make them as inner/outer pores
-            pores1[~sp.in1d(p1, P)] = p2[~sp.in1d(p1, P)]
-            pores2[~sp.in1d(p1, P)] = p1[~sp.in1d(p1, P)]
-            X1 = X_value[pores1]
-            X2 = X_value[pores2]
-            g = conductance[throats]
-            R.append(sp.sum(sp.multiply(g, (X2 - X1))))
-        return(sp.array(R, ndmin=1))
-
-
-
-
-
 
 
     def _message(self,*args):
