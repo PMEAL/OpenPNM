@@ -182,8 +182,10 @@ class ViscousDrainage(GenericLinearTransport):
         self._message('Initial Saturation of Invading Phase: ',tot_sat)
         self._message('')
         #
-        # begining simulation
+        # beginning simulation
         self._gdef = sp.copy(self['throat.conductance'])
+        self._total_inv_out = 0.0
+        self._total_def_out = 0.0
         self._do_outer_iteration_stage(**kwargs)
         #
         self._log_file.close()
@@ -224,6 +226,7 @@ class ViscousDrainage(GenericLinearTransport):
             #
             self._advance_interface(dt)
             self._total_time += dt
+            self._calc_fluid_out(dt)
             self._print_step_stats(self._i,dt)
             #
             test = sp.where(self._pore_inv_frac[self._outlets] > 1-self._sat_tol)[0]
@@ -242,12 +245,14 @@ class ViscousDrainage(GenericLinearTransport):
         tot_vol = sp.sum(sp.multiply(self._net['pore.volume'],self._pore_inv_frac))
         tot_vol += sp.sum(sp.multiply(self._net['throat.volume'],self._throat_inv_frac))
         tot_sat = tot_vol/self._net_vol
+        mass_bal = (q_inj - tot_vol - self._total_inv_out)/self._net_vol
         #
         self._message('Total Simulation Time Until Break Through: ',break_through_time,' Steps:',break_through_steps)
         self._message('Total Volume: ',tot_vol)
+        self._message('Total Inv Fluid Out: ',self._total_inv_out)
         self._message('Total saturation: ',tot_sat)
         self._message('Total injection: ',q_inj)
-        self._message('Mass Difference / Total Vol: ',(q_inj - tot_vol)/self._net_vol)
+        self._message('Mass Difference / Total Vol: {:15.9e}'.format(mass_bal))
 
     def _modify_conductance(self):
         r"""
@@ -426,6 +431,41 @@ class ViscousDrainage(GenericLinearTransport):
                 if (qsum <= 0):
                     self._fill_pore(p)
 
+    def _calc_fluid_out(self,dt):
+        r"""
+        Calculates the total amount of each phase leaving the network.
+        """
+        self._def_out_rate = 0.0
+        self._inv_out_rate = 0.0
+        self._def_out = 0.0
+        self._inv_out = 0.0
+        #
+        for p in self._outlets:
+            con_ts = self._net.find_neighbor_throats(p)
+            con_ps = self._net.find_connected_pores(con_ts)
+            con_ps = con_ps[con_ps != p]
+            #
+            # throats supplying pore
+            for i in range(len(con_ts)):
+                th = con_ts[i]
+                p1,p2 = self._net['throat.conns'][th]
+                pr1,pr2 = self['pore.pressure'][[p1,p2]]
+                g = self['throat.conductance'][th]
+                fpc = self._sum_fpcap(th,p1)
+                q = -g * (pr1 - pr2 + fpc) # neg value is flowing out of pore 1
+                self._q[th] = q
+                if (p == p2):
+                    q = -1.0 * q #reversing sign b/c we're looking at pore 2
+                # only accounting for the invading phase
+                if self._pore_invaded[p]:
+                    self._inv_out_rate += q
+                else:
+                    self._def_out_rate += q
+        self._inv_out = self._inv_out_rate * dt
+        self._def_out = self._def_out_rate * dt
+        self._total_inv_out += self._inv_out_rate * dt
+        self._total_def_out += self._def_out_rate * dt
+
     def _print_step_stats(self,*args):
         #
         # getting average pressure drop (outlet is set to 0)
@@ -436,12 +476,17 @@ class ViscousDrainage(GenericLinearTransport):
         vt = sp.multiply(self._net['throat.volume'],self._throat_inv_frac)
         tot_vol  = sp.sum(vp) + sp.sum(vt)
         tot_sat = tot_vol/self._net_vol
+        mass_bal = (q_inj - tot_vol - self._total_inv_out)/self._net_vol
         fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff: {:0.15F}'
         #
         #
         #print(args[0],'  diff: {:15.9e}'.format((q_inj - tot_vol)/self._net_vol), ' dt: ',args[1])
+        self._message('Net Def Fluid Out: {:10.6e}'.format(self._def_out))
+        self._message('Net Inv Fluid Out: {:10.6e}'.format(self._inv_out))
+        self._message('Net Fluid In: {:10.6e}'.format(self._inj_rate*args[1]))
+        self._message('Net Fluid Out: {:10.6e}'.format(self._def_out+self._inv_out))
         self._message('Average Pressure Drop: {:10.4f}'.format(inlet_p))
-        self._message(fmt_str.format(tot_sat,(q_inj - tot_vol)/self._net_vol))
+        self._message(fmt_str.format(tot_sat,mass_bal))
         self._message('-'*25)
         self._message('')
 
