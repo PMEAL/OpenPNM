@@ -41,7 +41,8 @@ class ViscousDrainage(GenericLinearTransport):
               pore_volume='pore.volume',
               throat_volume='throat.volume',
               super_pore_conductance=None,
-              sat_tol=1.0E-6, **params):
+              sat_tol=1.0E-6,
+              max_steps=1E5, **params):
         r"""
         This setup provides the initial requirements for the solver setup
         and additional parameters for the drainage simulation.
@@ -98,6 +99,7 @@ class ViscousDrainage(GenericLinearTransport):
         self._throat_volume = throat_volume
         self._pore_volume = pore_volume
         self._sat_tol = sat_tol
+        self._max_steps = max_steps
         # initializing simulation variables
         self._net_vol  = sp.sum(self._net['pore.volume'])
         self._net_vol += sp.sum(self._net['throat.volume'])
@@ -192,18 +194,20 @@ class ViscousDrainage(GenericLinearTransport):
         Handles the tracking and movement of phases throat the network.
         """
         #
-        inlets = sp.where(self['pore.inlets'])[0]
-        outlets = sp.where(self['pore.outlets'])[0]
+        self._inlets = sp.where(self['pore.inlets'])[0]
+        self._outlets = sp.where(self['pore.outlets'])[0]
         #
         self.set_boundary_conditions(bctype='Dirichlet',
                                        mode='overwrite',
                                        bcvalue=0.0,
-                                       pores=outlets)
+                                       pores=self._outlets)
         self.set_boundary_conditions(bctype='Neumann_group',
                                        mode='merge',
                                        bcvalue=self._inj_rate,
-                                       pores=inlets)
+                                       pores=self._inlets)
         #
+        break_through_time = -1
+        break_through_steps = 0
         self._i = 0
         while True:
             self._modify_conductance()
@@ -215,16 +219,20 @@ class ViscousDrainage(GenericLinearTransport):
             dt = self._calculate_dt()
             #
             self._message('Time Step: ',self._i,' size: {:0.3E} '.format(dt))
-            pres = ['{:0.3f}'.format(p) for p in self['pore.pressure']]
-            self._message('Pore Pressures: {}'.format(','.join(pres)))
+            #pres = ['{:0.3f}'.format(p) for p in self['pore.pressure']]
+            #self._message('Pore Pressures: {}'.format(','.join(pres)))
             #
             self._advance_interface(dt)
             self._total_time += dt
             self._print_step_stats(self._i,dt)
             #
-            test = sp.where(self._pore_inv_frac[outlets] > 1-self._sat_tol)[0]
-            if (sp.size(test) > 0):
-                self._message('Total Simulation Time Until Break Through: ',self._total_time,' Steps:',self._i)
+            test = sp.where(self._pore_inv_frac[self._outlets] > 1-self._sat_tol)[0]
+            if (sp.size(test) > 0 and break_through_time < 0):
+                break_through_time = self._total_time
+                break_through_steps = self._i
+                #break
+            #
+            if (self._i > self._max_steps):
                 break
             #
             self._i += 1
@@ -235,12 +243,11 @@ class ViscousDrainage(GenericLinearTransport):
         tot_vol += sp.sum(sp.multiply(self._net['throat.volume'],self._throat_inv_frac))
         tot_sat = tot_vol/self._net_vol
         #
-        self._message('Injection Rate: ',self._inj_rate)
+        self._message('Total Simulation Time Until Break Through: ',break_through_time,' Steps:',break_through_steps)
         self._message('Total Volume: ',tot_vol)
         self._message('Total saturation: ',tot_sat)
         self._message('Total injection: ',q_inj)
         self._message('Mass Difference / Total Vol: ',(q_inj - tot_vol)/self._net_vol)
-        self._message('Expected Time: ',(tot_sat*tot_vol)/self._inj_rate)
 
     def _modify_conductance(self):
         r"""
@@ -314,33 +321,6 @@ class ViscousDrainage(GenericLinearTransport):
             con_ps = con_ps[con_ps != p]
             con_ts_sf = self._get_supply_facts(con_ts,p)
             #
-            # test calculation for phase balance in pores
-            out_str = ''
-            qsum = 0.0
-            ph_bal = [0.0,0.0]
-            for i in range(len(con_ts)):
-                th = con_ts[i]
-                p1,p2 = self._net['throat.conns'][th]
-                pr1,pr2 = self['pore.pressure'][[p1,p2]]
-                g = self['throat.conductance'][th]
-                fpc = self._sum_fpcap(th,p1)
-                sf = con_ts_sf[i]
-                self._message(' p1:',p1,'th: ',th,' p2:',p2)
-                q = -g * (pr1 - pr2 + fpc) # neg value is flowing out of pore 1
-                self._q[th] = q
-                if (p == p2):
-                    q = -1.0 * q #reversing sign b/c we're looking at pore 2
-                #
-                # phase balance testing
-                if ( con_ts_sf[i] > 0):
-                    ph_bal[0] += q
-                else:
-                    ph_bal[1] += q
-                qsum += q
-                out_str += '[th:{:0d} sf:{:0.0f} q:{:0.6e} ]'.format(th,sf,q)
-            self._message(p,':  ',out_str,' net flow',qsum)
-            self._message('pore',p,'full phase balance qsum: ',ph_bal)
-            #
             # throats supplying invading phase
             qsum = 0.0
             for i in sp.where(con_ts_sf > 0)[0]: #TODO: keep testing the phase balance here
@@ -349,7 +329,6 @@ class ViscousDrainage(GenericLinearTransport):
                 pr1,pr2 = self['pore.pressure'][[p1,p2]]
                 g = self['throat.conductance'][th]
                 fpc = self._sum_fpcap(th,p1)
-                sf = con_ts_sf[i]
                 q = -g * (pr1 - pr2 + fpc) # neg value is flowing out of pore 1
                 if (p == p2):
                     q = -1.0 * q #reversing sign b/c we're looking at pore 2
@@ -391,8 +370,8 @@ class ViscousDrainage(GenericLinearTransport):
                 v = -dx
             #
             mens = ['{:0.5f}'.format(m) for m in self._menisci[th]]
-            fmt_str = 'Throat {:2d}: inv_frac: {:0.5f} menisci advanced by {:0.5f} new positions: {} overall change {:10.9f}'
-            self._message(fmt_str.format(th,self._throat_inv_frac[th],dx,', '.join(mens),dx*self._throat_sup_fact[th]*self._net['throat.volume'][th]/self._net_vol))
+            fmt_str = 'Throat {:2d}: inv_frac: {:0.5f} menisci advanced by {:0.5f} new positions: {}'
+            #self._message(fmt_str.format(th,self._throat_inv_frac[th],dx,', '.join(mens)))
             sat_adj = 0.0
             pore = -1
             if ((self._menisci[th][-1] > (1.0 - self._sat_tol)) and (v < 0.0)): #mensicus being pushed away
@@ -413,7 +392,7 @@ class ViscousDrainage(GenericLinearTransport):
                 #negative b/c it's the fluid opposite the meniscus
                 self._pore_inv_frac[pore] += -sat_adj
                 self._pore_contested[pore] = True
-                self._message('New contested pore: ',pore)
+                #self._message('New contested pore: ',pore)
             #
             # removing contested flag if no mensici exist in throat
             if (len(self._menisci[th]) == 0):
@@ -433,7 +412,7 @@ class ViscousDrainage(GenericLinearTransport):
             #
             frac = dt*qsum
             fmt_str = 'Pore {0:2d} filled to: {1:10.6f}, ph frac change: {2:10.6f}, overall change: {3:10.9f}'
-            self._message(fmt_str.format(p,self._pore_inv_frac[p],frac/self._net['pore.volume'][p],frac/self._net_vol))
+            #self._message(fmt_str.format(p,self._pore_inv_frac[p],frac/self._net['pore.volume'][p],frac/self._net_vol))
             if (self._pore_inv_frac[p] > (1 - self._sat_tol)):
                 if (qsum >= 0):
                     self._fill_pore(p)
@@ -442,6 +421,10 @@ class ViscousDrainage(GenericLinearTransport):
                     self._fill_pore(p)
 
     def _print_step_stats(self,*args):
+        #
+        # getting average pressure drop (outlet is set to 0)
+        inlet_p = sp.average(self['pore.pressure'][self._inlets])
+        #
         q_inj = self._total_time * self._inj_rate
         vp = sp.multiply(self._net['pore.volume'],self._pore_inv_frac)
         vt = sp.multiply(self._net['throat.volume'],self._throat_inv_frac)
@@ -450,7 +433,8 @@ class ViscousDrainage(GenericLinearTransport):
         fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff: {:0.15F}'
         #
         #
-        print(args[0],'  diff: {:15.9e}'.format((q_inj - tot_vol)/self._net_vol), ' dt: ',args[1])
+        #print(args[0],'  diff: {:15.9e}'.format((q_inj - tot_vol)/self._net_vol), ' dt: ',args[1])
+        self._message('Average Pressure Drop: {:10.4f}'.format(inlet_p))
         self._message(fmt_str.format(tot_sat,(q_inj - tot_vol)/self._net_vol))
         self._message('-'*25)
         self._message('')
@@ -502,10 +486,14 @@ class ViscousDrainage(GenericLinearTransport):
         #
         if (q < 0.0) and (x > 0.50): #pushing meniscus away from pore past halfway point (0.51 ->1)
             dx_max = 0.30
+            if (self._menisci[th][0] < 0.50):
+                dx_max = 0.03
             if (dx_max > 1.0-x):
                 dx_max = 1.0 - x
         elif (q > 0.0) and (x < 0.50): #pulling meniscus towards from pore past halfway point (0 -> 0.49)
             dx_max = 0.30
+            if (self._menisci[th][-1] > 0.50):
+                dx_max = 0.03
             if (dx_max > x):
                 dx_max =  x
         #
@@ -577,9 +565,6 @@ class ViscousDrainage(GenericLinearTransport):
                 self._throat_sup_fact[th] *= -1.0
             #
             self._throat_contested[th] = True
-            mens = ['{:0.5f}'.format(m) for m in self._menisci[th]]
-            fmt_str = 'Throat {:2d}: Added mensici from pore {:2d}, current positions: {}'
-            self._message(fmt_str.format(th,base_pore,', '.join(mens)))
 
 
 
@@ -660,7 +645,7 @@ class ViscousDrainage(GenericLinearTransport):
         #
         string = [str(a) for a in args]
         string = ' '.join(string)
-        #print(string)
+        print(string)
         self._log_file.write(string+'\n')
 
 
