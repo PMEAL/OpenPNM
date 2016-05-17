@@ -230,7 +230,7 @@ class ViscousDrainage(GenericLinearTransport):
             if (sp.size(test) > 0 and break_through_time < 0):
                 break_through_time = self._total_time
                 break_through_steps = self._i
-                #break
+                break
             #
             if (self._i > self._max_steps):
                 break
@@ -371,7 +371,7 @@ class ViscousDrainage(GenericLinearTransport):
             #
             mens = ['{:0.5f}'.format(m) for m in self._menisci[th]]
             fmt_str = 'Throat {:2d}: inv_frac: {:0.5f} menisci advanced by {:0.5f} new positions: {}'
-            #self._message(fmt_str.format(th,self._throat_inv_frac[th],dx,', '.join(mens)))
+            self._message(fmt_str.format(th,self._throat_inv_frac[th],dx,', '.join(mens)))
             sat_adj = 0.0
             pore = -1
             if ((self._menisci[th][-1] > (1.0 - self._sat_tol)) and (v < 0.0)): #mensicus being pushed away
@@ -392,7 +392,7 @@ class ViscousDrainage(GenericLinearTransport):
                 #negative b/c it's the fluid opposite the meniscus
                 self._pore_inv_frac[pore] += -sat_adj
                 self._pore_contested[pore] = True
-                #self._message('New contested pore: ',pore)
+                self._message('New contested pore: ',pore)
             #
             # removing contested flag if no mensici exist in throat
             if (len(self._menisci[th]) == 0):
@@ -401,18 +401,20 @@ class ViscousDrainage(GenericLinearTransport):
         # updating contested pores phase fraction
         for p in contested_pores:
             # qsum is always in terms of invading phase
+            qsum = self._pore_qsum[p]
             if (self._net['pore.volume'][p] == 0.0):
-                self._pore_inv_frac[p] = 1.0
-                self._pore_contested[p] = False
-                qsum = 0.0
+                print('zero vol pore qsum: ',self._pore_qsum[p])
+                if (qsum > 0):
+                    self._pore_inv_frac[p] = 1.0
+                else:
+                    self._pore_inv_frac[p] = 0.0
             else:
-                qsum = self._pore_qsum[p]
                 self._pore_inv_frac[p] += dt*qsum/self._net['pore.volume'][p]
             #
             #
             frac = dt*qsum
             fmt_str = 'Pore {0:2d} filled to: {1:10.6f}, ph frac change: {2:10.6f}, overall change: {3:10.9f}'
-            #self._message(fmt_str.format(p,self._pore_inv_frac[p],frac/self._net['pore.volume'][p],frac/self._net_vol))
+            self._message(fmt_str.format(p,self._pore_inv_frac[p],frac/self._net['pore.volume'][p],frac/self._net_vol))
             if (self._pore_inv_frac[p] > (1 - self._sat_tol)):
                 if (qsum >= 0):
                     self._fill_pore(p)
@@ -511,26 +513,24 @@ class ViscousDrainage(GenericLinearTransport):
         #
         return(dv_max)
 
-
     def _advance_zero_vol_throat(self,th):
         r"""
-        Always fills zero volume throat with matching pore fluid to
-        prevent program from hanging
+        Fills the throat with matching pore fluid based on the flow
+        through it.
         """
-        m = self._menisci[th][-1]
         p1,p2 = self._net['throat.conns'][th];
         phase = 1.0
-        if (m == 1.0): #case if pore that started mensicus is higer index, i.e. throats on inlet
-            if not (self._pore_invaded[p2]):
-                phase = 0.0
-            m = 0.0
-        else: #default to assume the source pore is lower index
+        # fluid flowing from p1 into p2
+        if (self._q[th] < 0.0):
             if not (self._pore_invaded[p1]):
                 phase = 0.0
-            m = 1.0
-        #
+            self._menisci[th] = [1.0]
+        # fluid flowing from p2 into p1
+        else:
+            if not (self._pore_invaded[p2]):
+                phase = 0.0
+            self._menisci[th] = [0.0]
         self._throat_inv_frac[th] = phase
-        self._menisci[th] = [m]
 
     def _fill_pore(self,pore):
         r"""
