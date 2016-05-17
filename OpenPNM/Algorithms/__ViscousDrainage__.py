@@ -555,6 +555,7 @@ class ViscousDrainage(GenericLinearTransport):
         Ts_sf = self._get_supply_facts(Ts,pore)
         self._set_menisci(pore,Ts[Ts_sf == sf])
         #
+        # testing if all throats have the same sf, if so then contested is false
         Ts_sf = self._get_supply_facts(Ts,pore)
         self._pore_contested[pore] = not sp.all(Ts_sf == Ts_sf[0])
 
