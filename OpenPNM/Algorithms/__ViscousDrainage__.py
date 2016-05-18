@@ -486,7 +486,7 @@ class ViscousDrainage(GenericLinearTransport):
         fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff: {:0.15F}'
         #
         self._sat_log.append(tot_sat)
-        slope,intercept = sp.polyfit(range(len(self._sat_log)),self._slope_log,1)
+        slope,intercept = sp.polyfit(range(len(self._sat_log)),self._sat_log,1)
         self._slope_log.append(abs(slope))
         print('STEP: {:3d}: TOT SAT: {:0.9f} MAX SLOPE: {:0.9E}'.format(self._i,tot_sat,sp.amax(self._slope_log)))
         #
