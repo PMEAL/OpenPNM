@@ -5,6 +5,7 @@ module __ViscousDrainage__: Viscous fluid flow with capillary pressure
 ===============================================================================
 
 """
+from collections import deque
 import scipy as sp
 from OpenPNM.Algorithms import GenericLinearTransport
 from OpenPNM.Algorithms import Drainage as _drainage
@@ -210,6 +211,9 @@ class ViscousDrainage(GenericLinearTransport):
         #
         break_through_time = -1
         break_through_steps = 0
+        # if the saturation is approximately equal for a number of steps exits loop
+        self._sat_log = deque(sp.zeros(self.Np),self.Np)
+        self._dev_log = deque(sp.ones(self.Np),self.Np)
         self._i = 0
         while True:
             self._modify_conductance()
@@ -234,6 +238,9 @@ class ViscousDrainage(GenericLinearTransport):
                 break_through_time = self._total_time
                 break_through_steps = self._i
                 #break
+            #
+            if (sp.amax(self._dev_log) < self._sat_tol**2):
+                break
             #
             if (self._i > self._max_steps):
                 break
@@ -380,7 +387,7 @@ class ViscousDrainage(GenericLinearTransport):
             #
             mens = ['{:0.5f}'.format(m) for m in self._menisci[th]]
             fmt_str = 'Throat {:2d}: inv_frac: {:0.5f} menisci advanced by {:0.5f} new positions: {}'
-            self._message(fmt_str.format(th,self._throat_inv_frac[th],dx,', '.join(mens)))
+            #self._message(fmt_str.format(th,self._throat_inv_frac[th],dx,', '.join(mens)))
             sat_adj = 0.0
             pore = -1
             if ((self._menisci[th][-1] > (1.0 - self._sat_tol)) and (v < 0.0)): #mensicus being pushed away
@@ -401,7 +408,7 @@ class ViscousDrainage(GenericLinearTransport):
                 #negative b/c it's the fluid opposite the meniscus
                 self._pore_inv_frac[pore] += -sat_adj
                 self._pore_contested[pore] = True
-                self._message('New contested pore: ',pore)
+                #self._message('New contested pore: ',pore)
             #
             # removing contested flag if no mensici exist in throat
             if (len(self._menisci[th]) == 0):
@@ -412,7 +419,6 @@ class ViscousDrainage(GenericLinearTransport):
             # qsum is always in terms of invading phase
             qsum = self._pore_qsum[p]
             if (self._net['pore.volume'][p] == 0.0):
-                print('zero vol pore qsum: ',self._pore_qsum[p])
                 if (qsum > 0):
                     self._pore_inv_frac[p] = 1.0
                 else:
@@ -423,7 +429,7 @@ class ViscousDrainage(GenericLinearTransport):
             #
             frac = dt*qsum
             fmt_str = 'Pore {0:2d} filled to: {1:10.6f}, ph frac change: {2:10.6f}, overall change: {3:10.9f}'
-            self._message(fmt_str.format(p,self._pore_inv_frac[p],frac/self._net['pore.volume'][p],frac/self._net_vol))
+            #self._message(fmt_str.format(p,self._pore_inv_frac[p],frac/self._net['pore.volume'][p],frac/self._net_vol))
             if (self._pore_inv_frac[p] > (1 - self._sat_tol)):
                 if (qsum >= 0):
                     self._fill_pore(p)
@@ -479,8 +485,14 @@ class ViscousDrainage(GenericLinearTransport):
         mass_bal = (q_inj - tot_vol - self._total_inv_out)/self._net_vol
         fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff: {:0.15F}'
         #
+        self._sat_log.append(tot_sat)
+        std_dev = sp.std(self._sat_log)
+        self._dev_log.append(std_dev)
+        print('STEP: {:3d}: TOT SAT: {:0.9f} STD DEV: {:0.9E}  MAX DEV: {:0.9E}'.format(self._i,tot_sat,std_dev,sp.amax(self._dev_log)))
+        #
         #
         #print(args[0],'  diff: {:15.9e}'.format((q_inj - tot_vol)/self._net_vol), ' dt: ',args[1])
+        self._message('Step: {:3d} STD DEV: {:0.9E} MAX DEV: {:0.9E}'.format(self._i,std_dev,sp.amax(self._dev_log)))
         self._message('Net Def Fluid Out: {:10.6e}'.format(self._def_out))
         self._message('Net Inv Fluid Out: {:10.6e}'.format(self._inv_out))
         self._message('Net Fluid In: {:10.6e}'.format(self._inj_rate*args[1]))
@@ -628,7 +640,7 @@ class ViscousDrainage(GenericLinearTransport):
         #
         string = [str(a) for a in args]
         string = ' '.join(string)
-        print(string)
+        #print(string)
         self._log_file.write(string+'\n')
 
 
