@@ -983,7 +983,7 @@ class MARock():
         raise NotImplemented()
 
     @staticmethod
-    def load(path, network=None, res=1):
+    def load(path, network=None, vox_size=1):
         r"""
         Load data from a 3DMA-Rock extracted network.  This format consists of
         two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
@@ -1001,11 +1001,11 @@ class MARock():
             it but NOT overwrite anything that already exists.  This can be
             used to append data from different sources.
 
-        res : scalar
-            The resolution of the image on which 3DMA-Rock was run.  This is
-            used to scale the voxel counts to actual dimension.  It is
-            recommended that this value be in SI units [m] to work well with
-            OpenPNM.
+        vox_size : scalar
+            The resolution of the image on which 3DMA-Rock was run.
+            The default is 1.  This is used to scale the voxel counts to actual
+            dimension.  It is recommended that this value be in SI units [m] to
+            work well with OpenPNM.
 
         Notes
         -----
@@ -1022,20 +1022,28 @@ class MARock():
         Special thanks to Masa Prodanovic for input and assistance in creating
         this import class.
         """
+
         net = {}
 
         for file in _os.listdir(path):
             if file.endswith(".np2th"):
                 np2th_file = _os.path.join(path, file)
+            elif file.endswith(".th2np"):
+                th2np_file = _os.path.join(path, file)
+
         with open(np2th_file, mode='rb') as f:
             [Np, Nt] = _sp.fromfile(file=f, count=2, dtype='u4')
             net['pore.boundary_type'] = _sp.ndarray([Np, ], int)
             net['throat.conns'] = _sp.ones([Nt, 2], int)*(-1)
+            net['pore.coordination'] = _sp.ndarray([Np, ], int)
+            net['pore.ID_number'] = _sp.ndarray([Np, ], int)
             for i in range(0, Np):
                 ID = _sp.fromfile(file=f, count=1, dtype='u4')
+                net['pore.ID_number'][i] = ID
                 net['pore.boundary_type'][i] = _sp.fromfile(file=f, count=1,
                                                             dtype='u1')
                 z = _sp.fromfile(file=f, count=1, dtype='u4')
+                net['pore.coordination'][i] = z
                 att_pores = _sp.fromfile(file=f, count=z, dtype='u4')
                 att_throats = _sp.fromfile(file=f, count=z, dtype='u4')
                 for j in range(0, len(att_throats)):
@@ -1053,9 +1061,6 @@ class MARock():
             nk = _sp.floor(_sp.floor(pos/nx)/ny)
             net['pore.coords'] = _sp.array([ni, nj, nk]).T
 
-        for file in _os.listdir(path):
-            if file.endswith(".th2np"):
-                th2np_file = _os.path.join(path, file)
         with open(th2np_file, mode='rb') as f:
             Nt = _sp.fromfile(file=f, count=1, dtype='u4')
             net['throat.area'] = _sp.ones([Nt, ], dtype=int)*(-1)
@@ -1075,9 +1080,18 @@ class MARock():
             net['throat.coords'] = _sp.array([ni, nj, nk]).T
             net['pore.internal'] = net['pore.boundary_type'] == 0
 
+        # Convert voxel area and volume to actual dimensions
+        net['throat.area'] = (vox_size**2)*net['throat.area']
+        net['pore.volume'] = (vox_size**3)*net['pore.volume']
+
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
         network = _update_network(network=network, net=net)
+
+        # Trim headless throats before returning
+        ind = _sp.where(network['throat.conns'][:, 0] == -1)[0]
+        network.trim(throats=ind)
+
         return network
 
 
