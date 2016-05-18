@@ -187,6 +187,10 @@ class ViscousDrainage(GenericLinearTransport):
         self._gdef = sp.copy(self['throat.conductance'])
         self._total_inv_out = 0.0
         self._total_def_out = 0.0
+        #
+        self.break_through_time = -1
+        self.break_through_steps = 0
+        self._i = 0
         self._do_outer_iteration_stage(**kwargs)
         #
         self._log_file.close()
@@ -208,13 +212,9 @@ class ViscousDrainage(GenericLinearTransport):
                                        mode='merge',
                                        bcvalue=self._inj_rate,
                                        pores=self._inlets)
-        #
-        break_through_time = -1
-        break_through_steps = 0
         # if the saturation is approximately equal for a number of steps exits loop
         self._sat_log = deque(sp.zeros(self.Np),self.Np)
         self._slope_log = deque(sp.ones(self.Np),self.Np)
-        self._i = 0
         while True:
             self._modify_conductance()
             self._update_RHS_pcap_data()
@@ -234,12 +234,12 @@ class ViscousDrainage(GenericLinearTransport):
             self._print_step_stats(self._i,dt)
             #
             test = sp.where(self._pore_inv_frac[self._outlets] > 1-self._sat_tol)[0]
-            if (sp.size(test) > 0 and break_through_time < 0):
-                break_through_time = self._total_time
-                break_through_steps = self._i
+            if (sp.size(test) > 0 and self.break_through_time < 0):
+                self.break_through_time = self._total_time
+                self.break_through_steps = self._i
                 #break
             #
-            if (sp.amax(self._slope_log) < 1e-8  and break_through_time > 0):
+            if (sp.amax(self._slope_log) < 1e-8  and self.break_through_time > 0):
                 break
             #
             if (self._i > self._max_steps):
@@ -254,7 +254,7 @@ class ViscousDrainage(GenericLinearTransport):
         tot_sat = tot_vol/self._net_vol
         mass_bal = (q_inj - tot_vol - self._total_inv_out)/self._net_vol
         #
-        self._message('Total Simulation Time Until Break Through: ',break_through_time,' Steps:',break_through_steps)
+        self._message('Total Simulation Time Until Break Through: ',self.break_through_time,' Steps:',self.break_through_steps)
         self._message('Total Volume: ',tot_vol)
         self._message('Total Inv Fluid Out: ',self._total_inv_out)
         self._message('Total saturation: ',tot_sat)
