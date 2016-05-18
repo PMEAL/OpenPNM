@@ -789,6 +789,68 @@ class NetworkX():
         return network
 
 
+class MARock():
+    @staticmethod
+    def save():
+        pass
+
+    @staticmethod
+    def load(path):
+        np2th_file = r'C:\Users\Jeff\Downloads\Example_3DMA_Network\castle_cln.np2th'
+        th2np_file = r'C:\Users\Jeff\Downloads\Example_3DMA_Network\castle_cln.th2np'
+        for file in _os.listdir(path):
+            if file.endswith(".np2th"):
+                np2th_file = _os.path.join(path, file)
+        with open(np2th_file, mode='rb') as f:
+            [Np, Nt] = _sp.fromfile(file=f, count=2, dtype='u4')
+            net = OpenPNM.Network.Empty(Np=Np, Nt=Nt, name='3DMA')
+            net['pore.boundary_type'] = _sp.ndarray([Np, ], int)
+            net['throat.conns'] = _sp.ones([Nt, 2], int)*(-1)
+            for i in range(0, Np):
+                ID = _sp.fromfile(file=f, count=1, dtype='u4')
+                net['pore.boundary_type'][i] = _sp.fromfile(file=f, count=1,
+                                                            dtype='u1')
+                z = _sp.fromfile(file=f, count=1, dtype='u4')
+                att_pores = _sp.fromfile(file=f, count=z, dtype='u4')
+                att_throats = _sp.fromfile(file=f, count=z, dtype='u4')
+                for j in range(0, len(att_throats)):
+                    t = att_throats[j] - 1
+                    p = att_pores[j] - 1
+                    net['throat.conns'][t] = [i, p]
+            net['throat.conns'] = _sp.sort(net['throat.conns'], axis=1)
+            net['pore.volume'] = _sp.fromfile(file=f, count=Np, dtype='u4')
+            nx = _sp.fromfile(file=f, count=1, dtype='u4')
+            nxy = _sp.fromfile(file=f, count=1, dtype='u4')
+            pos = _sp.fromfile(file=f, count=Np, dtype='u4')
+            ny = nxy/nx
+            ni = _sp.mod(pos, nx)
+            nj = _sp.mod(_sp.floor(pos/nx), ny)
+            nk = _sp.floor(_sp.floor(pos/nx)/ny)
+            net['pore.coords'] = _sp.array([ni, nj, nk]).T
+
+        for file in _os.listdir(path):
+            if file.endswith(".th2np"):
+                th2np_file = _os.path.join(path, file)
+        with open(th2np_file, mode='rb') as f:
+            Nt = _sp.fromfile(file=f, count=1, dtype='u4')
+            net['throat.area'] = _sp.ones([Nt, ], dtype=int)*(-1)
+            for i in range(0, Nt):
+                ID = _sp.fromfile(file=f, count=1, dtype='u4')
+                net['throat.area'][i] = _sp.fromfile(file=f, count=1,
+                                                     dtype='f4')
+                numvox = _sp.fromfile(file=f, count=1, dtype='u4')
+                att_pores = _sp.fromfile(file=f, count=2, dtype='u4')
+            nx = _sp.fromfile(file=f, count=1, dtype='u4')
+            nxy = _sp.fromfile(file=f, count=1, dtype='u4')
+            pos = _sp.fromfile(file=f, count=Nt, dtype='u4')
+            ny = nxy/nx
+            ni = _sp.mod(pos, nx)
+            nj = _sp.mod(_sp.floor(pos/nx), ny)
+            nk = _sp.floor(_sp.floor(pos/nx)/ny)
+            net['throat.coords'] = _sp.array([ni, nj, nk]).T
+        return net
+
+
 def _update_network(network, net):
     # Infer Np and Nt from length of given prop arrays in file
     for element in ['pore', 'throat']:
