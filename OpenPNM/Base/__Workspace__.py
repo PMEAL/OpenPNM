@@ -3,7 +3,7 @@
 Workspace:  A class for managing the workspace of all objects
 ###############################################################################
 """
-import pickle as _pickle
+import dill as _pickle
 import copy as _copy
 import time
 import random
@@ -363,6 +363,17 @@ class Workspace(dict):
             self.clear()
 
         self = _pickle.load(open(filename+'.pnm', 'rb'))
+        for item in self._comments.values():
+            if 'Using OpenPNM' in item:
+                version = item.lstrip('Using OpenPNM ')
+                if version < OpenPNM.__version__:
+                    logger.warning('File was created with an earlier version ' +
+                                   'OpenPNM: \n' +
+                                   '--> File saved with version: ' +
+                                   str(version) +
+                                   '\n' +
+                                   '--> Current version: ' +
+                                   str(OpenPNM.__version__))
 
     def export(self, network=None, filename='', fileformat='VTK'):
         logger.warning("This method is deprecated, use \'export_data\'.")
