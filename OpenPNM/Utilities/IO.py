@@ -792,18 +792,58 @@ class NetworkX():
 class MARock():
     @staticmethod
     def save():
-        pass
+        r"""
+        TODO: This might be useful for code that uses 3DMA-Rock files
+        """
+        raise NotImplemented()
 
     @staticmethod
-    def load(path):
-        np2th_file = r'C:\Users\Jeff\Downloads\Example_3DMA_Network\castle_cln.np2th'
-        th2np_file = r'C:\Users\Jeff\Downloads\Example_3DMA_Network\castle_cln.th2np'
+    def load(path, network=None, res=1):
+        r"""
+        Load data from a 3DMA-Rock extracted network.  This format consists of
+        two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
+        stored together in a folder which is referred to by the path argument.
+        These files are binary and therefore not human readable.
+
+        Parameters
+        ----------
+        path : string
+            The location of the 'np2th' and 'th2np' files. This can be an
+            absolute path or relative to the current working directory.
+
+        network : OpenPNM Network Object
+            If an Network object is recieved, this method will add new data to
+            it but NOT overwrite anything that already exists.  This can be
+            used to append data from different sources.
+
+        res : scalar
+            The resolution of the image on which 3DMA-Rock was run.  This is
+            used to scale the voxel counts to actual dimension.  It is
+            recommended that this value be in SI units [m] to work well with
+            OpenPNM.
+
+        Notes
+        -----
+        3DMA-Rock is a network extraction algorithm developed by Brent
+        Lindquist and his group [1].  It uses Medial Axis thinning to find the
+        skeleton of the pore space, then extract geometrical features such as
+        pore volume and throat cross-sectional area.
+
+        [1] Lindquist, W. Brent, S. M. Lee, W. Oh, A. B. Venkatarangan,
+        H. Shin, and M. Prodanovic. "3DMA-Rock: A software package for
+        automated analysis of rock pore structure in 3-D computed
+        microtomography images." SUNY Stony Brook (2005).
+
+        Special thanks to Masa Prodanovic for input and assistance in creating
+        this import class.
+        """
+        net = {}
+
         for file in _os.listdir(path):
             if file.endswith(".np2th"):
                 np2th_file = _os.path.join(path, file)
         with open(np2th_file, mode='rb') as f:
             [Np, Nt] = _sp.fromfile(file=f, count=2, dtype='u4')
-            net = OpenPNM.Network.Empty(Np=Np, Nt=Nt, name='3DMA')
             net['pore.boundary_type'] = _sp.ndarray([Np, ], int)
             net['throat.conns'] = _sp.ones([Nt, 2], int)*(-1)
             for i in range(0, Np):
@@ -848,7 +888,12 @@ class MARock():
             nj = _sp.mod(_sp.floor(pos/nx), ny)
             nk = _sp.floor(_sp.floor(pos/nx)/ny)
             net['throat.coords'] = _sp.array([ni, nj, nk]).T
-        return net
+            net['pore.internal'] = net['pore.boundary_type'] == 0
+
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = _update_network(network=network, net=net)
+        return network
 
 
 def _update_network(network, net):
