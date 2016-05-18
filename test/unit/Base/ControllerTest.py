@@ -92,6 +92,17 @@ class WorkspaceTest:
         b.name = 'baz'
         self.workspace.load_simulation('foo')
 
+    def test_save_and_load_simulation_with_custom_model(self):
+        def foo(a, b, **kwargs):
+            return a + b
+        net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
+        net.add_model(propname='pore.blah', model=foo, a=net.Ps, b=10)
+        self.workspace.save_simulation(network=net, filename='blah')
+        self.workspace.clear()
+        self.workspace.load_simulation('blah')
+        net2 = self.workspace[net.name]
+        assert 'pore.blah' in net2.keys()
+
     def test_ghost_object(self):
         a = self.workspace.ghost_object(self.net)
         # Different objects...
