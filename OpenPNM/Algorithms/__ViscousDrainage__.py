@@ -213,7 +213,7 @@ class ViscousDrainage(GenericLinearTransport):
         break_through_steps = 0
         # if the saturation is approximately equal for a number of steps exits loop
         self._sat_log = deque(sp.zeros(self.Np),self.Np)
-        self._dev_log = deque(sp.ones(self.Np),self.Np)
+        self._slope_log = deque(sp.ones(self.Np),self.Np)
         self._i = 0
         while True:
             self._modify_conductance()
@@ -239,7 +239,7 @@ class ViscousDrainage(GenericLinearTransport):
                 break_through_steps = self._i
                 #break
             #
-            if (sp.amax(self._dev_log) < self._sat_tol**2):
+            if (sp.amax(self._slope_log) < 1e-8  and break_through_time > 0):
                 break
             #
             if (self._i > self._max_steps):
@@ -486,13 +486,13 @@ class ViscousDrainage(GenericLinearTransport):
         fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff: {:0.15F}'
         #
         self._sat_log.append(tot_sat)
-        std_dev = sp.std(self._sat_log)
-        self._dev_log.append(std_dev)
-        print('STEP: {:3d}: TOT SAT: {:0.9f} STD DEV: {:0.9E}  MAX DEV: {:0.9E}'.format(self._i,tot_sat,std_dev,sp.amax(self._dev_log)))
+        slope,intercept = sp.polyfit(range(len(self._sat_log)),self._slope_log,1)
+        self._slope_log.append(abs(slope))
+        print('STEP: {:3d}: TOT SAT: {:0.9f} MAX SLOPE: {:0.9E}'.format(self._i,tot_sat,sp.amax(self._slope_log)))
         #
         #
         #print(args[0],'  diff: {:15.9e}'.format((q_inj - tot_vol)/self._net_vol), ' dt: ',args[1])
-        self._message('Step: {:3d} STD DEV: {:0.9E} MAX DEV: {:0.9E}'.format(self._i,std_dev,sp.amax(self._dev_log)))
+        self._message('STEP: {:3d}: TOT SAT: {:0.9f} MAX SLOPE: {:0.9E}'.format(self._i,tot_sat,sp.amax(self._slope_log)))
         self._message('Net Def Fluid Out: {:10.6e}'.format(self._def_out))
         self._message('Net Inv Fluid Out: {:10.6e}'.format(self._inv_out))
         self._message('Net Fluid In: {:10.6e}'.format(self._inj_rate*args[1]))
