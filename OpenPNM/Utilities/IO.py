@@ -975,6 +975,17 @@ class iMorph():
 
 
 class MARock():
+    r"""
+    3DMA-Rock is a network extraction algorithm developed by Brent Lindquist
+    and his group [1].  It uses Medial Axis thinning to find the skeleton of
+    the pore space, then extracts geometrical features such as pore volume and
+    throat cross-sectional area.
+
+    [1] Lindquist, W. Brent, S. M. Lee, W. Oh, A. B. Venkatarangan, H. Shin,
+    and M. Prodanovic. "3DMA-Rock: A software package for automated analysis
+    of rock pore structure in 3-D computed microtomography images." SUNY Stony
+    Brook (2005).
+    """
     @staticmethod
     def save():
         r"""
@@ -983,7 +994,7 @@ class MARock():
         raise NotImplemented()
 
     @staticmethod
-    def load(path, network=None, vox_size=1):
+    def load(path, network=None, voxel_size=1):
         r"""
         Load data from a 3DMA-Rock extracted network.  This format consists of
         two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
@@ -1001,26 +1012,12 @@ class MARock():
             it but NOT overwrite anything that already exists.  This can be
             used to append data from different sources.
 
-        vox_size : scalar
-            The resolution of the image on which 3DMA-Rock was run.
-            The default is 1.  This is used to scale the voxel counts to actual
-            dimension.  It is recommended that this value be in SI units [m] to
-            work well with OpenPNM.
+        voxel_size : scalar
+            The resolution of the image on which 3DMA-Rock was run, in terms of
+            the linear length of eac voxel. The default is 1.  This is used to
+            scale the voxel counts to actual dimension. It is recommended that
+            this value be in SI units [m] to work well with OpenPNM.
 
-        Notes
-        -----
-        3DMA-Rock is a network extraction algorithm developed by Brent
-        Lindquist and his group [1].  It uses Medial Axis thinning to find the
-        skeleton of the pore space, then extract geometrical features such as
-        pore volume and throat cross-sectional area.
-
-        [1] Lindquist, W. Brent, S. M. Lee, W. Oh, A. B. Venkatarangan,
-        H. Shin, and M. Prodanovic. "3DMA-Rock: A software package for
-        automated analysis of rock pore structure in 3-D computed
-        microtomography images." SUNY Stony Brook (2005).
-
-        Special thanks to Masa Prodanovic for input and assistance in creating
-        this import class.
         """
 
         net = {}
@@ -1081,8 +1078,8 @@ class MARock():
             net['pore.internal'] = net['pore.boundary_type'] == 0
 
         # Convert voxel area and volume to actual dimensions
-        net['throat.area'] = (vox_size**2)*net['throat.area']
-        net['pore.volume'] = (vox_size**3)*net['pore.volume']
+        net['throat.area'] = (voxel_size**2)*net['throat.area']
+        net['pore.volume'] = (voxel_size**3)*net['pore.volume']
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
