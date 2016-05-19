@@ -9,6 +9,9 @@ sys.path.append(os.path.abspath('_extensions'))
 sys.path.append(os.path.abspath('../'))
 
 
+def setup(app):
+    app.add_javascript('copybutton.js')
+
 # General configuration ------------------------------------------------------
 
 extensions = ['sphinx.ext.autodoc',
@@ -79,7 +82,7 @@ exclude_patterns = ['_build']
 # -- Options for HTML output --------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.
-# html_theme = 'rtd'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
