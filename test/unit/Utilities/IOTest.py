@@ -146,7 +146,7 @@ class IOTest:
 
     def test_load_MARock(self):
         path = os.path.join(FIXTURE_DIR, '3DMA-Castlegate')
-        net = io.MARock.oad(path=path)
+        net = io.MARock.load(path=path)
         assert net.Np == 9915
         assert net.Nt == 21805
         a = {'pore.ID_number', 'pore.boundary_type', 'pore.coordination',
