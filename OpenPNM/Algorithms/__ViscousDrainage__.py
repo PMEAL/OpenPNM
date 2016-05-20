@@ -34,6 +34,7 @@ class ViscousDrainage(GenericLinearTransport):
 
     def setup(self,
               invading_phase,
+              defending_phase=None,
               injection_rate=None,
               conductance='hydraulic_conductance',
               entry_pressure='throat.capillary_pressure',
