@@ -33,8 +33,7 @@ class ViscousDrainage(GenericLinearTransport):
         logger.info('Create ' + self.__class__.__name__ + ' Object')
 
     def setup(self,
-              wetting_phase,
-              nonwetting_phase,
+              invading_phase,
               injection_rate=None,
               conductance='hydraulic_conductance',
               entry_pressure='throat.capillary_pressure',
@@ -49,11 +48,11 @@ class ViscousDrainage(GenericLinearTransport):
 
         Parameters
         ----------
-        nonwetting_phase : OpenPNM Phase object
+        invading_phase : OpenPNM Phase object
             The Phase object containing the physical properties of the invading
             fluid.
 
-        wetting_phase : OpenPNM Phase object
+        defending_phase : OpenPNM Phase object
             The Phase object containing the physical properties of the defending
             fluid.
 
@@ -87,26 +86,26 @@ class ViscousDrainage(GenericLinearTransport):
         if injection_rate is None:
             raise Exception('Error - injection rate must be specified')
         #
-        if nonwetting_phase is None:
-            raise Exception('Error - Non-wetting phase must be specified')
+        if invading_phase is None:
+            raise Exception('Error - Invading phase phase must be specified')
         #
-        if wetting_phase is None:
-            raise Exception('Error - Wetting phase must be specified')
+        if defending_phase is None:
+            defending_phase = self._phase
         #
         self['pore.inlets'] = False
         self['pore.outlets'] = False
-        self['throat.entry_pressure'] = nonwetting_phase[entry_pressure]
+        self['throat.entry_pressure'] = invading_phase[entry_pressure]
         self['pore.inv_frac'] = sp.zeros(self.Np, dtype=float)
         self['throat.inv_frac'] = sp.zeros(self.Nt, dtype=float)
         self['pore.contested'] = sp.zeros(self.Np, dtype=bool)
         self['throat.contested'] = sp.zeros(self.Nt, dtype=bool)
         self['pore.invaded'] = sp.zeros(self.Np, dtype=bool)
-        self._inv_phase = nonwetting_phase
-        self._def_phase = wetting_phase
+        self._inv_phase = invading_phase
+        self._def_phase = defending_phase
         self._inj_rate = injection_rate
         self._th_q = sp.zeros(self.Nt)
         self._pore_qsum = sp.zeros(self.Np)
-        self._max_pc = nonwetting_phase[entry_pressure]
+        self._max_pc = invading_phase[entry_pressure]
         self._menisci = [[] for i in range(self.Nt)]
         self._throat_volume = throat_volume
         self._pore_volume = pore_volume
@@ -128,7 +127,7 @@ class ViscousDrainage(GenericLinearTransport):
         # function to scale capillary pressure based on miniscus location
         self._pc_func = lambda x: sp.sin(sp.pi * x)
         #
-        self._log_fname = 'VD-Log-2.txt'
+        self._log_fname = 'VD-Log-3.txt'
         super().setup(conductance=conductance, quantity='pressure',
                       super_pore_conductance=super_pore_conductance)
 
@@ -157,7 +156,7 @@ class ViscousDrainage(GenericLinearTransport):
         self['pore.invaded'][inlets] = True
         self.set_boundary_conditions(bctype='Neumann_group',
                                      mode='merge',
-                                     bcvalue=self._inj_rate,
+                                     bcvalue=-self._inj_rate,
                                      pores=inlets)
         logger.debug('Inlet pores set as invaded and Nuemann BC defined')
         #
@@ -341,10 +340,10 @@ class ViscousDrainage(GenericLinearTransport):
                 g = self['throat.conductance'][th]
                 fpc = self._sum_fpcap(th, pore)
                 #negative because cap fact is subtracted over to RHS
-                rhs_pcap_data[pore] += -g * fpc
+                rhs_pcap_data[pore] += g * fpc
         #
         b = self._build_RHS_matrix(self._net.pores(), rhs_pcap_data)
-        return sp.negative(b)
+        return b#sp.negative(b)
 
     def _calculate_dt(self):
         r"""
