@@ -498,9 +498,9 @@ class GenericNetwork(Core):
         Notes
         -----
         This method literally just counts the number of elements in the array
-        returned by ``find_neighbor_pores`` and uses the same logic.  Explore
-        that method and its returned values if uncertain about the meaning of
-        the ``mode`` argument.
+        returned by ``find_neighbor_pores`` or ``find_neighbor_throats`` and
+        uses the same logic.  Explore those methods if uncertain about the
+        meaning of the ``mode`` argument here.
 
         See Also
         --------
@@ -520,17 +520,15 @@ class GenericNetwork(Core):
         """
         pores = self._parse_locations(pores)
         # Count number of neighbors
+        neighbors = self._find_neighbors(pores, element=element,
+                                         flatten=flatten, mode=mode,
+                                         excl_self=True)
         if flatten:
-            neighborPs = self.find_neighbor_pores(pores,
-                                                  flatten=True,
-                                                  mode=mode,
-                                                  excl_self=True)
-            num = sp.shape(neighborPs)[0]
+            num = sp.shape(neighbors)[0]
         else:
-            neighborPs = self.find_neighbor_pores(pores, flatten=False)
-            num = sp.zeros(sp.shape(neighborPs)[0], dtype=int)
+            num = sp.zeros(sp.shape(neighbors)[0], dtype=int)
             for i in range(0, sp.shape(num)[0]):
-                num[i] = sp.size(neighborPs[i])
+                num[i] = sp.size(neighbors[i])
         return num
 
     def find_interface_throats(self, labels=[]):
