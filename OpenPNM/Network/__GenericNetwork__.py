@@ -413,7 +413,7 @@ class GenericNetwork(Core):
         """
         neighbors = self._find_neighbors(pores=pores, mode=mode,
                                          element='throat', flatten=flatten,
-                                         excl_self=True)
+                                         excl_self=False)
         return neighbors
 
     def _find_neighbors(self, pores, element, mode, flatten, excl_self):
@@ -454,7 +454,7 @@ class GenericNetwork(Core):
                 neighbors = sp.unique(neighbors)
             elif mode == 'intersection':
                 neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-            if excl_self is True:
+            if excl_self is True and element == 'pores':
                 neighbors = neighbors[~sp.in1d(neighbors, pores)]
             return sp.array(neighbors, ndmin=1, dtype=int)
         else:
@@ -530,10 +530,8 @@ class GenericNetwork(Core):
                                    mode=mode, excl_self=True)
         num = sp.array([sp.size(i) for i in num], dtype=int)
         if flatten:
-#            num = sp.array([sp.size(i) for i in num], dtype=int)
             num = sp.sum(num)
-        else:
-            pass
+            num = int(num)
         return num
 
     def find_interface_throats(self, labels=[]):
