@@ -231,12 +231,10 @@ class ViscousDrainage(GenericLinearTransport):
         Restarts a simulation to run until an exit condition is met
         """
         #
+        raise NotImplementedError
+        #
         self._max_steps = max_steps
         logger.debug('Simulation restarted')
-        #
-        # beginning simulation
-        with open(self._log_fname, 'a') as self._log_file:
-            self._do_outer_iteration_stage(**kwargs)
 
     def _do_outer_iteration_stage(self, **kwargs):
         r"""
@@ -326,17 +324,18 @@ class ViscousDrainage(GenericLinearTransport):
         Adds f * g * pcap to RHS for pores containing menisci
         """
         #
-        rhs_pcap_data = sp.zeros(self.Np, dtype=float)
-        for th in sp.where(self['throat.contested'])[0]:
-            #
-            g = self['throat.conductance'][th]
-            for pore in self._net['throat.conns'][th]:
-                fpc = self._sum_fpcap([th], [pore])[0]
-                #print(pore,'{:13.8f}'.format(fpc))
-                rhs_pcap_data[pore] -=  g * fpc
+        Ts = sp.where(self['throat.contested'])[0]
+        Ps = sp.ravel(self._net['throat.conns'][Ts], order='F')
+        Ts = sp.append(Ts,Ts)
+        g = self['throat.conductance'][Ts]
+        fpc = self._sum_fpcap(Ts,Ps)
+        fpc = sp.multiply(g,fpc)
         #
-        b = self._build_RHS_matrix(self._net.pores(), rhs_pcap_data)
-        return b
+        rhs_pcap_data = sp.zeros(self.Np, dtype=float)
+        for p,f in zip(Ps,fpc):
+            rhs_pcap_data[p] -= f
+        #
+        return self._build_RHS_matrix(self._net.pores(), rhs_pcap_data)
 
     def _calculate_dt(self):
         r"""
@@ -344,25 +343,36 @@ class ViscousDrainage(GenericLinearTransport):
         out of a throat or overfill a pore
         """
         #
-        # initial time step is time to fill 1% of the total network volume
+        # initial time step is the time to fill 1% of the total network volume
         dt = self._net_vol/self._inj_rate*0.01
         self._th_q = sp.zeros(self.Nt)
         self._pore_qsum = sp.zeros(self.Np)
         #
         # calculating q for contested throats
-        for th in sp.where(self['throat.contested'])[0]:
-            if self._net[self._throat_volume][th] == 0.0:
-                # if zero vol throats exist, dt must be 0.0 to maintain
-                # proper mass balance, otherise injected fluid is 'lost'
-                dt = 0.0
-            #
-            p1, p2 = self._net['throat.conns'][th]
-            pr1, pr2 = self['pore.pressure'][[p1, p2]]
-            g = self['throat.conductance'][th]
-            fpc = self._sum_fpcap([th], [p1])[0]
-            #
-            # negative dir is moving away from lower index pore
-            self._th_q[th] = -g * (pr1 - pr2 - fpc)
+        Ts = sp.where(self['throat.contested'])[0]
+        if sp.size(sp.where(self._net[self._throat_volume][Ts] == 0.0)[0]):
+            dt = 0.0
+        else:
+            Ps = self._net['throat.conns'][Ts]
+            Ps_pr = self['pore.pressure'][Ps]
+            g = self['throat.conductance'][Ts]
+            fpc = self._sum_fpcap(Ts, Ps[:,0])
+            self._th_q[Ts] = -sp.multiply(g,(Ps_pr[:,0] - Ps_pr[:,1] - fpc))
+#==============================================================================
+#         for th in sp.where(self['throat.contested'])[0]:
+#             if self._net[self._throat_volume][th] == 0.0:
+#                 # if zero vol throats exist, dt must be 0.0 to maintain
+#                 # proper mass balance, otherise injected fluid is 'lost'
+#                 dt = 0.0
+#             #
+#             p1, p2 = self._net['throat.conns'][th]
+#             pr1, pr2 = self['pore.pressure'][[p1, p2]]
+#             g = self['throat.conductance'][th]
+#             fpc = self._sum_fpcap([th], [p1])[0]
+#             #
+#             # negative dir is moving away from lower index pore
+#             self._th_q[th] = -g * (pr1 - pr2 - fpc)
+#==============================================================================
         #
         # setting dt values based on maximum allowed throat travel distance
         for th in sp.where(self['throat.contested'])[0]:
@@ -373,6 +383,7 @@ class ViscousDrainage(GenericLinearTransport):
             dt_new = dx_max * self._net['throat.length'][th]/abs(v)
             if dt_new < dt:
                 dt = dt_new
+        print('throat dt',dt)
         #
         # estimating dt for either phase to reach dv_max
         for p in sp.where(self['pore.contested'])[0]:
@@ -545,7 +556,7 @@ class ViscousDrainage(GenericLinearTransport):
         strg = 'inv fluid out: {:15.6e}, normed value: {:15.6e}'.format(self._inv_out_rate,
                                                                         chk_val)
         #
-        print(args[0], strg, 'num zero steps: ', self._zero_dt)
+        #print(args[0], strg, 'num zero steps: ', self._zero_dt)
         self._message(strg, 'num zero steps: ', self._zero_dt)
         self._message('Net Def Fluid Out: {:10.6e}'.format(self._def_out))
         self._message('Net Inv Fluid Out: {:10.6e}'.format(self._inv_out))
