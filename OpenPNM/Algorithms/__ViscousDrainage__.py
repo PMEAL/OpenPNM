@@ -101,6 +101,7 @@ class ViscousDrainage(GenericLinearTransport):
         self['pore.contested'] = sp.zeros(self.Np, dtype=bool)
         self['throat.contested'] = sp.zeros(self.Nt, dtype=bool)
         self['pore.invaded'] = sp.zeros(self.Np, dtype=bool)
+        self['pore.pressure'] = sp.zeros(self.Np)
         self._inv_phase = invading_phase
         self._def_phase = defending_phase
         self._inj_rate = injection_rate
@@ -128,7 +129,7 @@ class ViscousDrainage(GenericLinearTransport):
         # function to scale capillary pressure based on miniscus location
         self._pc_func = lambda x: sp.sin(sp.pi * x)
         #
-        self._log_fname = 'VD-Log-3.txt'
+        self._log_fname = 'VD-Log-2.txt'
         super().setup(conductance=conductance, quantity='pressure',
                       super_pore_conductance=super_pore_conductance)
 
@@ -251,6 +252,8 @@ class ViscousDrainage(GenericLinearTransport):
         """
         #
         # if the saturation is approximately equal for a number of steps exits loop
+        #self['pore.pressure'] = 10000
+        #self['pore.pressure'][self._outlets] = 0.0
         self._zero_dt = 0
         while True:
             A = self._update_coefficient_matrix()
@@ -340,11 +343,20 @@ class ViscousDrainage(GenericLinearTransport):
             for pore in self._net['throat.conns'][th]:
                 g = self['throat.conductance'][th]
                 fpc = self._sum_fpcap(th, pore)
-                #negative because cap fact is subtracted over to RHS
-                rhs_pcap_data[pore] += g * fpc
+                rhs_pcap_data[pore] +=  g*fpc
+        #
+        p_neighbors = self._net.find_neighbor_pores(pores=self._net.pores('internal'),
+                                                    flatten=False)
+        for pore,nbs in enumerate(p_neighbors):
+            con_ts = self._net.find_connecting_throat(nbs,[pore]*len(nbs))
+            con_ts = sp.ravel(con_ts)
+            val = -sum(sp.multiply(self['throat.conductance'][con_ts],
+                                   self['pore.pressure'][nbs]))
+            #print(val,nbs)
+            #rhs_pcap_data[pore] += val
         #
         b = self._build_RHS_matrix(self._net.pores(), rhs_pcap_data)
-        return b#sp.negative(b)
+        return b
 
     def _calculate_dt(self):
         r"""
