@@ -526,12 +526,14 @@ class GenericNetwork(Core):
         """
         pores = self._parse_locations(pores)
         # Count number of neighbors
-        neighbors = self._find_neighbors(pores, element=element,
-                                         flatten=False, mode=mode,
-                                         excl_self=True)
-        num = sp.array([sp.size(i) for i in neighbors], dtype=int)
+        num = self._find_neighbors(pores, element=element, flatten=flatten,
+                                   mode=mode, excl_self=True)
+        num = sp.array([sp.size(i) for i in num], dtype=int)
         if flatten:
+#            num = sp.array([sp.size(i) for i in num], dtype=int)
             num = sp.sum(num)
+        else:
+            pass
         return num
 
     def find_interface_throats(self, labels=[]):
