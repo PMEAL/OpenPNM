@@ -418,6 +418,43 @@ class GenericNetwork(Core):
 
     def _find_neighbors(self, pores, element, mode, flatten, excl_self):
         r"""
+        Private method for finding the neighboring pores or throats connected
+        directly to given set of pores.
+
+        Parameters
+        ----------
+        pores : array_like
+            The list of pores whose neighbors are sought
+        element : string, either 'pore' or 'throat'
+            Whether to find neighboring pores or throats
+        mode : string
+            Controls how the neighbors are filtered.  Options are:
+
+            **'union'** : All neighbors of the input pores
+
+            **'intersection'** : Only neighbors shared by all input pores
+
+            **'not_intersection'** : Only neighbors not shared by any input
+            pores
+
+        flatten : boolean
+            If flatten is True (default) a 1D array of unique neighbors is
+            returned. If flatten is False the returned array contains arrays
+            of neighboring throat ID numbers for each input pore, in the order
+            they were sent.
+        excl_self : bool
+            When True the input pores are not included in the returned list of
+            neighboring pores.  This option only applies when input pores are
+            in fact neighbors to each other, otherwise they are not part of the
+            returned list anyway.  This is ignored with the element is
+            'throats'.
+
+        See Also
+        --------
+        find_neighbor_pores
+        find_neighbor_throats
+        num_neighors
+
         """
         element = self._parse_element(element=element, single=True)
         pores = self._parse_locations(pores)
@@ -522,6 +559,7 @@ class GenericNetwork(Core):
         6
         >>> pn.num_neighbors(pores=[0, 1], element='throat', mode='union',
         ...                  flatten=True)
+        6
         """
         pores = self._parse_locations(pores)
         # Count number of neighbors
