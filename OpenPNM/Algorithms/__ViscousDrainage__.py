@@ -247,7 +247,6 @@ class ViscousDrainage(GenericLinearTransport):
         self._zero_dt = 0
         while True:
             A = self._update_coefficient_matrix()
-            print(A)
             b = self._update_rhs()
             self.solve(A, b)
             dt = self._calculate_dt()
