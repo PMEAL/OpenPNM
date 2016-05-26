@@ -357,33 +357,22 @@ class ViscousDrainage(GenericLinearTransport):
             Ps_pr = self['pore.pressure'][Ps]
             g = self['throat.conductance'][Ts]
             fpc = self._sum_fpcap(Ts, Ps[:,0])
+            # negative q is flowing away from lower index pore
             self._th_q[Ts] = -sp.multiply(g,(Ps_pr[:,0] - Ps_pr[:,1] - fpc))
-#==============================================================================
-#         for th in sp.where(self['throat.contested'])[0]:
-#             if self._net[self._throat_volume][th] == 0.0:
-#                 # if zero vol throats exist, dt must be 0.0 to maintain
-#                 # proper mass balance, otherise injected fluid is 'lost'
-#                 dt = 0.0
-#             #
-#             p1, p2 = self._net['throat.conns'][th]
-#             pr1, pr2 = self['pore.pressure'][[p1, p2]]
-#             g = self['throat.conductance'][th]
-#             fpc = self._sum_fpcap([th], [p1])[0]
-#             #
-#             # negative dir is moving away from lower index pore
-#             self._th_q[th] = -g * (pr1 - pr2 - fpc)
-#==============================================================================
         #
-        # setting dt values based on maximum allowed throat travel distance
-        for th in sp.where(self['throat.contested'])[0]:
-            dx_max = self._set_dx_max(th)
-            v = self._th_q[th]/self._net['throat.area'][th]
-            if v == 0.0:
-                continue
-            dt_new = dx_max * self._net['throat.length'][th]/abs(v)
+        # setting dt based on maximum allowed throat travel distance
+        dx_max = self._set_dx_max(Ts)
+        v = sp.divide(self._th_q[Ts],self._net['throat.area'][Ts])
+        v = sp.absolute(v)
+        locs = sp.where(v > 0.0)[0]
+        if sp.size(locs):
+            Ts = Ts[locs]
+            dx_max = dx_max[locs]
+            v = v[locs]
+            dt_new = sp.multiply(dx_max,sp.divide(self._net['throat.length'][Ts],v))
+            dt_new = sp.amin(dt_new)
             if dt_new < dt:
                 dt = dt_new
-        print('throat dt',dt)
         #
         # estimating dt for either phase to reach dv_max
         for p in sp.where(self['pore.contested'])[0]:
@@ -418,6 +407,7 @@ class ViscousDrainage(GenericLinearTransport):
             dt_new = dv_max * self._net[self._pore_volume][p]/abs(qsum)
             if dt_new < dt:
                 dt = dt_new
+        print('final dt',dt)
         return dt
 
     def _advance_interface(self, dt):
@@ -608,30 +598,37 @@ class ViscousDrainage(GenericLinearTransport):
         #
         return Ts_sf
 
-    def _set_dx_max(self, th):
-        q = self._th_q[th]
-        if q < 0.0:
-            x = self._menisci[th][-1]
-        else:
-            x = self._menisci[th][0]
-        dx_max = 0.03
+    def _set_dx_max(self, throats):
+        r"""
+        Calculates maximum mensicus travel distance for an array of throats
+        """
         #
-        #pushing meniscus away from pore past halfway point (0.51 ->1)
-        if (q < 0.0) and (x > 0.50):
-            dx_max = 0.30
-            if self._menisci[th][0] < 0.50:
-                dx_max = 0.03
-            if (dx_max > 1.0 - x):
-                dx_max = 1.0 - x
-        #pulling meniscus towards from pore past halfway point (0 -> 0.49)
-        elif (q > 0.0) and (x < 0.50):
-            dx_max = 0.30
-            if self._menisci[th][-1] > 0.50:
-                dx_max = 0.03
-            if dx_max > x:
-                dx_max = x
-        #
-        return dx_max
+        dists = []
+        for th in throats:
+            q = self._th_q[th]
+            if q < 0.0:
+                x = self._menisci[th][-1]
+            else:
+                x = self._menisci[th][0]
+            dx_max = 0.03
+            #
+            #pushing meniscus away from pore past halfway point (0.51 ->1)
+            if (q < 0.0) and (x > 0.50):
+                dx_max = 0.30
+                if self._menisci[th][0] < 0.50:
+                    dx_max = 0.03
+                if (dx_max > 1.0 - x):
+                    dx_max = 1.0 - x
+            #pulling meniscus towards from pore past halfway point (0 -> 0.49)
+            elif (q > 0.0) and (x < 0.50):
+                dx_max = 0.30
+                if self._menisci[th][-1] > 0.50:
+                    dx_max = 0.03
+                if dx_max > x:
+                    dx_max = x
+            dists.append(dx_max)
+            #
+        return sp.array(dists)
 
     def _set_dv_max(self, pore, q):
         #
