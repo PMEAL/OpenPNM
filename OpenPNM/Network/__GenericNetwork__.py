@@ -443,8 +443,7 @@ class GenericNetwork(Core):
         if flatten:
             # Convert rows of lil into single flat list
             neighbors = itertools.chain.from_iterable(neighbors)
-            # Add input pores to list
-            if element == 'pore':
+            if element == 'pore':  # Add input pores to list
                 neighbors = itertools.chain.from_iterable([neighbors, pores])
             # Convert list to numpy array
             neighbors = sp.fromiter(neighbors, dtype=int)
@@ -454,7 +453,7 @@ class GenericNetwork(Core):
                 neighbors = sp.unique(neighbors)
             elif mode == 'intersection':
                 neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-            if excl_self is True and element == 'pores':
+            if excl_self and element == 'pore':  # Remove input pores from list
                 neighbors = neighbors[~sp.in1d(neighbors, pores)]
             return sp.array(neighbors, ndmin=1, dtype=int)
         else:
