@@ -332,11 +332,11 @@ class GenericNetwork(Core):
             returned. If flatten is False the returned array contains arrays
             of neighboring pores for each input pore, in the order they were
             sent.
-        excl_self : bool, optional (Default is True)
-            If this is True then the input pores are not included in the
-            returned list.  This option only applies when input pores
-            are in fact neighbors to each other, otherwise they are not
-            part of the returned list anyway.
+        excl_self : bool
+            If this is True (default) then the input pores are not included in
+            the returned list.  This option only applies when input pores are
+            in fact neighbors to each other, otherwise they are not part of the
+            returned list anyway.
         mode : string, optional
             Specifies which neighbors should be returned.  The options are:
 
@@ -344,7 +344,8 @@ class GenericNetwork(Core):
 
             **'intersection'** : Only neighbors shared by all input pores
 
-            **'not_intersection'** : Only neighbors not shared by any input pores
+            **'not_intersection'** : Only neighbors not shared by any input
+            pores
 
         Returns
         -------
@@ -442,6 +443,9 @@ class GenericNetwork(Core):
         if flatten:
             # Convert rows of lil into single flat list
             neighbors = itertools.chain.from_iterable(neighbors)
+            # Add input pores to list
+            if element == 'pore':
+                neighbors = itertools.chain.from_iterable([neighbors, pores])
             # Convert list to numpy array
             neighbors = sp.fromiter(neighbors, dtype=int)
             if mode == 'not_intersection':
@@ -450,15 +454,15 @@ class GenericNetwork(Core):
                 neighbors = sp.unique(neighbors)
             elif mode == 'intersection':
                 neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-            if excl_self is False:
-                neighbors = itertools.chain.from_iterable([neighbors, pores])
+            if excl_self is True:
+                neighbors = neighbors[~sp.in1d(neighbors, pores)]
             return sp.array(neighbors, ndmin=1, dtype=int)
         else:
             # Convert lists in array to numpy arrays
             neighbors = [sp.array(neighbors[i]) for i in range(0, len(pores))]
             return sp.array(neighbors, ndmin=1)
 
-    def num_neighbors(self, pores, element='pores', flatten=False,
+    def num_neighbors(self, pores, element='pore', flatten=False,
                       mode='union'):
         r"""
         Returns an array containing the number of neigbhoring pores or throats
@@ -493,7 +497,7 @@ class GenericNetwork(Core):
         Returns
         -------
         If ``flatten`` is False, a 1D array with number of neighbors in each
-        element, otherwise an scalar value of the number of neighbors.
+        element, otherwise a scalar value of the number of neighbors.
 
         Notes
         -----
@@ -517,18 +521,17 @@ class GenericNetwork(Core):
         5
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
+        >>> pn.num_neighbors(pores=[0, 1], element='throat', mode='union',
+        ...                  flatten=True)
         """
         pores = self._parse_locations(pores)
         # Count number of neighbors
         neighbors = self._find_neighbors(pores, element=element,
-                                         flatten=flatten, mode=mode,
+                                         flatten=False, mode=mode,
                                          excl_self=True)
+        num = sp.array([sp.size(i) for i in neighbors], dtype=int)
         if flatten:
-            num = sp.shape(neighbors)[0]
-        else:
-            num = sp.zeros(sp.shape(neighbors)[0], dtype=int)
-            for i in range(0, sp.shape(num)[0]):
-                num[i] = sp.size(neighbors[i])
+            num = sp.sum(num)
         return num
 
     def find_interface_throats(self, labels=[]):
