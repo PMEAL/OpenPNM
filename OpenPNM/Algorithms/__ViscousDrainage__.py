@@ -154,7 +154,7 @@ class ViscousDrainage(GenericLinearTransport):
         self['pore.invaded'][inlets] = True
         self.set_boundary_conditions(bctype='Neumann_group',
                                      mode='merge',
-                                     bcvalue=self._inj_rate,
+                                     bcvalue=-self._inj_rate,
                                      pores=inlets)
         logger.debug('Inlet pores set as invaded and Nuemann BC defined')
         #
@@ -245,13 +245,9 @@ class ViscousDrainage(GenericLinearTransport):
         """
         #
         self._zero_dt = 0
-        A = super()._build_coefficient_matrix()
-        b = super()._build_RHS_matrix()
-        b = sp.negative(b)
-        self.solve(A, b)
-        print(self.X)
         while True:
             A = self._update_coefficient_matrix()
+            print(A)
             b = self._update_rhs()
             self.solve(A, b)
             dt = self._calculate_dt()
@@ -315,34 +311,32 @@ class ViscousDrainage(GenericLinearTransport):
         and the fractional occupancy of the throats.
         """
         #
-        for th in self._net.throats():
-            pores = self._net['throat.conns'][th]
-            dvisc = sp.average(self._def_phase['pore.viscosity'][pores])
-            ivisc = sp.average(self._inv_phase['pore.viscosity'][pores])
-            M = dvisc/ivisc
-            frac = self['throat.inv_frac'][th]
-            #
-            frac = 1 - frac + frac*M
-            self['throat.conductance'][th] = frac * self._gdef[th]
-        A = self._build_coefficient_matrix()
+        conns = self._net['throat.conns']
+        dvisc = sp.average(self._def_phase['pore.viscosity'][conns],axis=1)
+        ivisc = sp.average(self._inv_phase['pore.viscosity'][conns],axis=1)
+        M = sp.divide(dvisc,ivisc)
         #
-        return A
+        fact = 1.0 - self['throat.inv_frac']
+        fact += sp.multiply(self['throat.inv_frac'],M)
+        self['throat.conductance'] = sp.multiply(fact,self._gdef)
+        #
+        return self._build_coefficient_matrix()
 
     def _update_rhs(self):
         r"""
         Adds f * g * pcap to RHS for pores containing menisci
         """
-        rhs_pcap_data = sp.zeros(self.Np, dtype=float)
         #
+        rhs_pcap_data = sp.zeros(self.Np, dtype=float)
         for th in sp.where(self['throat.contested'])[0]:
             #
+            g = self['throat.conductance'][th]
             for pore in self._net['throat.conns'][th]:
-                g = self['throat.conductance'][th]
                 fpc = self._sum_fpcap([th], [pore])[0]
-                rhs_pcap_data[pore] +=  g*fpc
+                #print(pore,'{:13.8f}'.format(fpc))
+                rhs_pcap_data[pore] -=  g * fpc
         #
         b = self._build_RHS_matrix(self._net.pores(), rhs_pcap_data)
-        b = sp.negative(b) #negative b/c my equations assume postive diag
         return b
 
     def _calculate_dt(self):
@@ -402,7 +396,7 @@ class ViscousDrainage(GenericLinearTransport):
                 q = -g * (pr1 - pr2 - fpc)
                 self._th_q[th] = q
                 if p == p2:
-                    q = -1.0 * q # reversing sign b/c we're looking at p2
+                    q = -q # reversing sign b/c we're looking at p2
                 # only accounting for the invading phase entering/leaving
                 if con_ts_sf[i] > 0:
                     qsum += q
@@ -580,7 +574,7 @@ class ViscousDrainage(GenericLinearTransport):
             if ref_pore == ps[1]:
                 step = -1
             # needs reversed b/c 1.0 is invading phase
-            f = 1.0*self._get_supply_facts([th], ref_pore)[0]
+            f = self._get_supply_facts([th], ref_pore)[0]
             for x in self._menisci[th][::step]:
                 fpc[i] += f * abs(sp.sin(sp.pi*x)) * self['throat.entry_pressure'][th]
                 f = f * -1.0
