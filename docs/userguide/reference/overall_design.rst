@@ -45,9 +45,10 @@ The **Core** class possess all of these methods, plus another few dozen methods 
 Returns a list of which properties or labels exist in the dictionary.  These methods are basically the same as the ``keys`` method, but return a subset of the entries.  Any arrays of Boolean type are considered labels, while all other are properties.  The returned list outputs a nicely formatted table to the command line when it is printed.
 
 .. autosummary::
+    :toctree: generated/
 
-    ~OpenPNM.Base.Core.props
-    ~OpenPNM.Base.Core.labels
+    OpenPNM.Base.Core.props
+    OpenPNM.Base.Core.labels
 
 -------------------------------------------------------------------------------
 2. Counting Pores and Throats
