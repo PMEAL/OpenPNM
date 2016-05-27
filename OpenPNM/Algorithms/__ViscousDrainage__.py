@@ -772,7 +772,6 @@ class ViscousDrainage(GenericLinearTransport):
             g = conductance[throats]
             fpc = self._sum_fpcap(throats,pores1)
             throat_q = -sp.multiply(g, (X1 - X2 - fpc))
-            print(throats,pores1,pores2,throat_q)
             #
             # adding flow into the throat q array
             # needs flipped here b/c throats always assume flow direction
@@ -784,6 +783,7 @@ class ViscousDrainage(GenericLinearTransport):
             # where positive is increasing volume and negative decreasing
             throat_q[flip_q] = sp.negative(throat_q[flip_q])
             throat_q = sp.negative(throat_q)
+            print(throats,pores1,pores2,throat_q)
             #
             # determining if a speific phase was requested
             if phase == 'invading':
