@@ -242,10 +242,19 @@ def amalgamate_data(objs=[], delimiter='_'):
 
 def conduit_lengths(network, throats=None, mode='pore'):
     r"""
-    Return the respective lengths of the conduit components defined by the throat
-    conns P1 T P2
-    mode = 'pore' - uses pore coordinates
-    mode = 'centroid' uses pore and throat centroids
+    Return the respective lengths of the conduit components including part of
+    pore A, part of pore B, and the throat connecting pores Aand B.
+
+    Parameters
+    ----------
+    throats : array_like
+        The list of throats for who's conduit lengths are sought
+    mode : string
+        Controls how the pore length is determined.  Options are:
+
+        **'pore'**: Uses pore coordinates
+        **'centroid'**: Uses pore and throat centroids
+
     """
     if throats is None:
         throats = network.throats()
