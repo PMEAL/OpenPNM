@@ -242,19 +242,10 @@ def amalgamate_data(objs=[], delimiter='_'):
 
 def conduit_lengths(network, throats=None, mode='pore'):
     r"""
-    Return the respective lengths of the conduit components including part of
-    pore A, part of pore B, and the throat connecting pores Aand B.
-
-    Parameters
-    ----------
-    throats : array_like
-        The list of throats for who's conduit lengths are sought
-    mode : string
-        Controls how the pore length is determined.  Options are:
-
-        **'pore'**: Uses pore coordinates
-        **'centroid'**: Uses pore and throat centroids
-
+    Return the respective lengths of the conduit components defined by the throat
+    conns P1 T P2
+    mode = 'pore' - uses pore coordinates
+    mode = 'centroid' uses pore and throat centroids
     """
     if throats is None:
         throats = network.throats()
@@ -280,13 +271,13 @@ def conduit_lengths(network, throats=None, mode='pore'):
         # Find the pore-to-pore distance, minus the throat length
         lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:, 0]] -
                                    pcoords[Ps[:, 1]]), 1)) - network['throat.length']
-        lengths[lengths <= 0.0] = 2e-9
+        lengths[lengths < 0.0] = 2e-9
         # Calculate the fraction of that distance from the first pore
         try:
             fractions = pdia[Ps[:, 0]]/(pdia[Ps[:, 0]] + pdia[Ps[:, 1]])
             # Don't allow zero lengths
-            fractions[fractions == 0.0] = 0.5
-            fractions[fractions == 1.0] = 0.5
+#            fractions[fractions == 0.0] = 0.5
+#            fractions[fractions == 1.0] = 0.5
         except:
             fractions = 0.5
         plen1 = lengths*fractions
