@@ -24,6 +24,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode']
 
 todo_include_todos = True
+autosummary_generate=True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
