@@ -716,7 +716,74 @@ class ViscousDrainage(GenericLinearTransport):
         #print(string)
         self._log_file.write(string+'\n')
 
+    def rate(self, pores=None, network=None, conductance=None, X_value=None,
+             mode='group'):
+        r"""
+        Send a list of pores and receive the net rate
+        of material moving into them.
 
+        Parameters
+        ----------
+        pores : array_like
+            The pores where the net rate will be calculated
+        network : OpenPNM Network Object
+            The network object to which this algorithm will apply.
+            If no network is sent, the rate will apply to the network which is
+            attached to the algorithm.
+        conductance : array_like
+            The conductance which this algorithm will use to calculate the
+            rate.
+            If no conductance is sent, the rate will use the
+            'throat.conductance' which is attached to the algorithm.
+        X_value : array_like
+            The values of the quantity (temperature, mole_fraction,
+            voltage, ...), which this algorithm will use to calculate the rate.
+            If no X_value is sent, the rate will look at the '_quantity',
+            which is attached to the algorithm.
+        mode : string, optional
+            Controls how to return the rate.  Options are:
+            - 'group'(default): It returns the cumulative rate moving into them
+            - 'single': It calculates the rate for each pore individually.
+        """
+
+        if network is None:
+            network = self._net
+        if conductance is None:
+            conductance = self['throat.conductance']
+        if X_value is None:
+            X_value = self[self._quantity]
+        pores = sp.array(pores, ndmin=1)
+        R = []
+        if mode == 'group':
+            t = network.find_neighbor_throats(pores, flatten=True,
+                                              mode='not_intersection')
+            throat_group_num = 1
+        elif mode == 'single':
+            t = network.find_neighbor_throats(pores, flatten=False,
+                                              mode='not_intersection')
+            print(t)
+            throat_group_num = sp.size(t)
+            print(throat_group_num)
+        for i in sp.r_[0: throat_group_num]:
+            if mode == 'group':
+                throats = t
+                P = pores
+            elif mode == 'single':
+                throats = t[i]
+                P = pores[i]
+            p1 = network.find_connected_pores(throats)[:, 0]
+            p2 = network.find_connected_pores(throats)[:, 1]
+            pores1 = sp.copy(p1)
+            pores2 = sp.copy(p2)
+            # Changes to pores1 and pores2 to make them as inner/outer pores
+            pores1[~sp.in1d(p1, P)] = p2[~sp.in1d(p1, P)]
+            pores2[~sp.in1d(p1, P)] = p1[~sp.in1d(p1, P)]
+            X1 = X_value[pores1]
+            X2 = X_value[pores2]
+            g = conductance[throats]
+            fpc = self._sum_fpcap(throats,pores2)
+            R.append(sp.sum(sp.multiply(g, (X2 - X1 - fpc))))
+        return(sp.array(R, ndmin=1))
 
     def return_results(self, **kwargs):
         #
