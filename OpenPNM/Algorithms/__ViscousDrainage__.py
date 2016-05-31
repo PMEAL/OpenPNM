@@ -114,16 +114,10 @@ class ViscousDrainage(GenericLinearTransport):
         #
         self._sat_tol = sat_tol
         self._max_steps = max_steps
-        self._ts_num = 0
         self._total_time = 0.0
-        self.break_through_time = -1
-        self.break_through_steps = 0
         self._net_vol = sp.sum(self._net[pore_volume])
         self._net_vol += sp.sum(self._net[throat_volume])
-        self._total_def_out = 0.0
         self._total_inv_out = 0.0
-        self._def_out_rate = 0.0
-        self._inv_out_rate = 0.0
         #
         self._log_fname = 'VD-Log-2.txt'
         super().setup(conductance=conductance, quantity='pressure',
@@ -226,7 +220,7 @@ class ViscousDrainage(GenericLinearTransport):
         with open(self._log_fname, 'w') as self._log_file:
             self._do_outer_iteration_stage(**kwargs)
 
-    def restart_simulation(self, max_steps=2e5, **kwargs):
+    def restart_simulation(self, max_steps=2e5):
         r"""
         Restarts a simulation to run until an exit condition is met
         """
@@ -242,20 +236,25 @@ class ViscousDrainage(GenericLinearTransport):
         Handles the tracking and movement of phases throat the network.
         """
         #
+        ts_num = 0
         self._zero_dt = 0
+        break_through_time = 0.0
+        break_through_steps = -1
         while True:
             A = self._update_coefficient_matrix()
             b = self._update_rhs()
             self.solve(A, b)
+            def_out_rate = self.rate(pores=self._outlets, phase='defending')[0]
+            inv_out_rate = self.rate(pores=self._outlets, phase='invading')[0]
             dt = self._calculate_dt()
             #
-            if self._ts_num % 10000 == 0:
-                suf = str(self._ts_num)[0]
+            if ts_num % 10000 == 0:
+                suf = str(ts_num)[0]
                 self.return_results()
                 phases = [self._inv_phase, self._def_phase]
                 fname = 'temp_files/'+self._net.name+'-vd-temp-file-'+suf
                 io.VTK.save(self._net, fname, phases)
-            elif self._ts_num % 2000 == 0:
+            elif ts_num % 2000 == 0:
                 self.return_results()
                 phases = [self._inv_phase, self._def_phase]
                 fname = 'temp_files/'+self._net.name+'-vd-temp-file'
@@ -265,26 +264,22 @@ class ViscousDrainage(GenericLinearTransport):
                 self._zero_dt += 1
             #
             test = sp.where(self['pore.inv_frac'][self._outlets] > 1-self._sat_tol)[0]
-            if sp.size(test) > 0 and self.break_through_time < 0:
-                self.break_through_time = self._total_time
-                self.break_through_steps = self._ts_num
+            if sp.size(test) > 0 and break_through_time < 0:
+                break_through_time = self._total_time
+                break_through_steps = ts_num
                 #break
             #
-            if (abs(self._inv_out_rate - self._inj_rate)/self._inj_rate < 1e-9):
+            if (abs(inv_out_rate - self._inj_rate)/self._inj_rate < 1e-9):
                 break
             #
-            if self._ts_num > self._max_steps:
+            if ts_num > self._max_steps:
                 logger.info('Maximum step exit condition triggered')
                 break
             #
-            #
-            self._message('Time Step: ', self._ts_num, ' size: {:0.3E} '.format(dt))
-            #
             self._advance_interface(dt)
             self._total_time += dt
-            self._calc_fluid_out(dt)
-            self._print_step_stats(self._ts_num, dt)
-            self._ts_num += 1
+            self._print_step_stats(ts_num, def_out_rate, inv_out_rate, dt)
+            ts_num += 1
         #
         # checking overall mass balance
         q_inj = self._total_time * self._inj_rate
@@ -294,8 +289,8 @@ class ViscousDrainage(GenericLinearTransport):
         mass_bal = (q_inj - tot_vol - self._total_inv_out)/self._net_vol
         #
         self._message('Total Simulation Time Until Break Through: ',
-                      self.break_through_time, ' Steps:', self.break_through_steps)
-        self._message('Total Simulation Time: ', self._total_time, ' Steps:', self._ts_num)
+                      break_through_time, ' Steps:', break_through_steps)
+        self._message('Total Simulation Time: ', self._total_time, ' Steps:', ts_num)
         self._message('Total Volume: ', tot_vol)
         self._message('Total Inv Fluid Out: ', self._total_inv_out)
         self._message('Total saturation: ', tot_sat)
@@ -309,13 +304,13 @@ class ViscousDrainage(GenericLinearTransport):
         """
         #
         conns = self._net['throat.conns']
-        dvisc = sp.average(self._def_phase['pore.viscosity'][conns],axis=1)
-        ivisc = sp.average(self._inv_phase['pore.viscosity'][conns],axis=1)
-        M = sp.divide(dvisc,ivisc)
+        dvisc = sp.average(self._def_phase['pore.viscosity'][conns], axis=1)
+        ivisc = sp.average(self._inv_phase['pore.viscosity'][conns], axis=1)
+        M = sp.divide(dvisc, ivisc)
         #
         fact = 1.0 - self['throat.inv_frac']
-        fact += sp.multiply(self['throat.inv_frac'],M)
-        self['throat.conductance'] = sp.multiply(fact,self._gdef)
+        fact += sp.multiply(self['throat.inv_frac'], M)
+        self['throat.conductance'] = sp.multiply(fact, self._gdef)
         #
         return self._build_coefficient_matrix()
 
@@ -326,24 +321,23 @@ class ViscousDrainage(GenericLinearTransport):
         #
         Ts = sp.where(self['throat.contested'])[0]
         Ps = sp.ravel(self._net['throat.conns'][Ts], order='F')
-        Ts = sp.append(Ts,Ts)
+        Ts = sp.append(Ts, Ts)
         g = self['throat.conductance'][Ts]
-        fpc = self._sum_fpcap(Ts,Ps)
-        fpc = sp.multiply(g,fpc)
+        fpc = self._sum_fpcap(Ts, Ps)
+        fpc = sp.multiply(g, fpc)
         #
         rhs_pcap_data = sp.zeros(self.Np, dtype=float)
-        for p,f in zip(Ps,fpc):
+        for p, f in zip(Ps, fpc):
             rhs_pcap_data[p] -= f
         #
         # just tried adding this term for kicks, I don't believe it actually should exist
-        #rhs_pcap_data -= self.rate(self._net.pores(),mode='single')
+        #rhs_pcap_data -= self.rate(self._net.pores(), mode='single')
         #
         return self._build_RHS_matrix(self._net.pores(), rhs_pcap_data)
 
     def _calculate_dt(self):
         r"""
-        Calculates the maximum timestep that would not advance a meniscus
-        out of a throat or overfill a pore
+        Calculates the maximum allowed timestep
         """
         #
         # initial time step is the time to fill 1% of the total network volume
@@ -359,20 +353,20 @@ class ViscousDrainage(GenericLinearTransport):
             Ps = self._net['throat.conns'][Ts]
             Ps_pr = self['pore.pressure'][Ps]
             g = self['throat.conductance'][Ts]
-            fpc = self._sum_fpcap(Ts, Ps[:,0])
+            fpc = self._sum_fpcap(Ts, Ps[:, 0])
             # negative q is flowing away from lower index pore
-            self._th_q[Ts] = -sp.multiply(g,(Ps_pr[:,0] - Ps_pr[:,1] - fpc))
+            self._th_q[Ts] = -sp.multiply(g, (Ps_pr[:, 0] - Ps_pr[:, 1] - fpc))
         #
         # setting dt based on maximum allowed meniscus travel distance
         dx_max = self._set_dx_max(Ts)
-        v = sp.divide(self._th_q[Ts],self._net['throat.area'][Ts])
+        v = sp.divide(self._th_q[Ts], self._net['throat.area'][Ts])
         v = sp.absolute(v)
         locs = sp.where(v > 0.0)[0]
         if sp.size(locs):
             Ts = Ts[locs]
             dx_max = dx_max[locs]
             v = v[locs]
-            dt_new = sp.multiply(dx_max,(self._net['throat.length'][Ts]/v))
+            dt_new = sp.multiply(dx_max, (self._net['throat.length'][Ts]/v))
             dt_new = sp.amin(dt_new)
             if dt_new < dt:
                 dt = dt_new
@@ -382,7 +376,7 @@ class ViscousDrainage(GenericLinearTransport):
         if sp.size(sp.where(self._net[self._pore_volume][Ps] == 0.0)[0]):
             dt = 0.0
         else:
-            self._pore_qsum[Ps] = self.rate(Ps,mode='single',phase='invading')
+            self._pore_qsum[Ps] = self.rate(Ps, mode='single', phase='invading')
         #
         # setting dt based on maximum allowed pore volume change
         dv_max = self._set_dv_max(Ps, self._pore_qsum[Ps])
@@ -392,7 +386,7 @@ class ViscousDrainage(GenericLinearTransport):
             Ps = Ps[locs]
             dv_max = dv_max[locs]
             qsum = qsum[locs]
-            dt_new = sp.multiply(dv_max,(self._net[self._pore_volume][Ps]/qsum))
+            dt_new = sp.multiply(dv_max, (self._net[self._pore_volume][Ps]/qsum))
             dt_new = sp.amin(dt_new)
             if dt_new < dt:
                 dt = dt_new
@@ -404,10 +398,10 @@ class ViscousDrainage(GenericLinearTransport):
         Updates simulation based on the chosen time step
         """
         #
-        contested_pores = sp.where(self['pore.contested'])[0]
+        contested_pores = self.pores('contested')
         #
         # moving mensici and setting up a new contested pore if necessary
-        for th in sp.where(self['throat.contested'])[0]:
+        for th in self.throats('contested'):
             # neg v is moving away from lowest index pore
             v = self._th_q[th]/self._net['throat.area'][th]
             # positive dx is moving away from lower index pore
@@ -426,25 +420,24 @@ class ViscousDrainage(GenericLinearTransport):
                 dx = self._menisci[th][0] - m
                 v = -dx
             #
-            #mens = ['{:0.5f}'.format(m) for m in self._menisci[th]]
-            #fmt_str = 'Throat {:2d}: inv_frac: {:0.5f} menisci '
-            #fmt_str += 'advanced by {:0.5f} new positions: {}'
-            #self._message(fmt_str.format(th, self['throat.inv_frac'][th], dx, ', '.join(mens)))
+            mens = ['{:0.5f}'.format(m) for m in self._menisci[th]]
+            fmt_str = 'Throat {:2d}: inv_frac: {:0.5f} menisci '
+            fmt_str += 'advanced by {:0.5f} new positions: {}'
+            self._message(fmt_str.format(th, self['throat.inv_frac'][th], dx, ', '.join(mens)))
             sat_adj = 0.0
             pore = -1
-             #mensicus being pushed away from p1
+            # mensicus being pushed away from p1
             if ((self._menisci[th][-1] > (1.0 - self._sat_tol)) and (v < 0.0)):
                 pore = self._net['throat.conns'][th][1] #pore meniscus moved into
-                sat_adj = (1.0-self._menisci[th][-1])*self._throat_sup_fact[th]
+                sat_adj = (1.0 - self._menisci[th][-1])*self._throat_sup_fact[th]
                 del self._menisci[th][-1] # menisci are ordered 0 -> 1
-            #meniscus being pulled towards p1
+            # meniscus being pulled towards p1
             elif ((self._menisci[th][0] < self._sat_tol) and (v > 0.0)):
                 pore = self._net['throat.conns'][th][0]
                 sat_adj = self._menisci[th][0]*self._throat_sup_fact[th]
                 del self._menisci[th][0]
                 # needs flipped because fluid supplying throat changed as miniscus moves into p1
                 self._throat_sup_fact[th] *= -1.0
-            #
             # updating saturations if rounding was performed
             if pore > -1:
                 # changing throat saturation based on rounding to pore
@@ -453,7 +446,6 @@ class ViscousDrainage(GenericLinearTransport):
                 self['pore.inv_frac'][pore] += -sat_adj
                 self['pore.contested'][pore] = True
                 #self._message('New contested pore: ', pore)
-            #
             # removing contested flag if no mensici exist in throat
             if len(self._menisci[th]) == 0:
                 self['throat.contested'][th] = False
@@ -471,12 +463,12 @@ class ViscousDrainage(GenericLinearTransport):
                 self['pore.inv_frac'][p] += dt*qsum/self._net[self._pore_volume][p]
             #
             #
-            #frac = dt*qsum
-            #fmt_str = 'Pore {0:2d} filled to: {1:10.6f}, ph frac change: '
-            #fmt_str +='{2:10.6f}, overall change: {3:10.9f}'
-            #self._message(fmt_str.format(p, self['pore.inv_frac'][p],
-            #                             frac/self._net[self._pore_volume][p],
-            #                             frac/self._net_vol))
+            frac = dt*qsum
+            fmt_str = 'Pore {0:2d} filled to: {1:10.6f}, ph frac change: '
+            fmt_str +='{2:10.6f}, overall change: {3:10.9f}'
+            self._message(fmt_str.format(p, self['pore.inv_frac'][p],
+                                         frac/self._net[self._pore_volume][p],
+                                         frac/self._net_vol))
             if (self['pore.inv_frac'][p] > (1 - self._sat_tol)):
                 if qsum >= 0:
                     self._fill_pore(p)
@@ -484,46 +476,35 @@ class ViscousDrainage(GenericLinearTransport):
                 if qsum <= 0:
                     self._fill_pore(p)
 
-    def _calc_fluid_out(self, dt):
-        r"""
-        Calculates the total amount of each phase leaving the network.
-        """
-        def_out_rate = self.rate(pores=self._outlets, phase='defending')[0]
-        self._inv_out_rate = self.rate(pores=self._outlets, phase='invading')[0]
-        self._inv_out = self._inv_out_rate * dt
-        self._def_out = def_out_rate * dt
-        self._total_inv_out += self._inv_out_rate * dt
-        self._total_def_out += def_out_rate * dt
-
-    def _print_step_stats(self, *args):
+    def _print_step_stats(self, ts_num, def_out_rate, inv_out_rate, dt):
         #
         # getting average pressure drop (outlet is set to 0)
         inlets = sp.where(self['pore.inlets'])[0]
         inlet_p = sp.average(self['pore.pressure'][inlets])
         #
+        inv_out = inv_out_rate * dt
+        def_out = def_out_rate * dt
+        self._total_inv_out += inv_out_rate * dt
         q_inj = self._total_time * self._inj_rate
-        pore_vol = sp.multiply(self._net[self._pore_volume], self['pore.inv_frac'])
-        throat_vol = sp.multiply(self._net[self._throat_volume], self['throat.inv_frac'])
-        tot_vol = sp.sum(pore_vol) + sp.sum(throat_vol)
-        tot_sat = tot_vol/self._net_vol
+        tot_vol = sp.sum(self._net[self._pore_volume] * self['pore.inv_frac'])
+        tot_vol += sp.sum(self._net[self._throat_volume] * self['throat.inv_frac'])
         mass_bal = (q_inj - tot_vol - self._total_inv_out)/self._net_vol
-        fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff: {:0.15F}'
         #
-        chk_val = abs(self._inv_out_rate - self._inj_rate)/self._inj_rate
-        strg = 'inv fluid out: {:15.6e}, normed value: {:15.6e}'.format(self._inv_out_rate,
+        chk_val = abs(inv_out_rate - self._inj_rate)/self._inj_rate
+        strg = 'inv fluid out: {:15.6e}, normed value: {:15.6e}'.format(inv_out_rate,
                                                                         chk_val)
         #
-        #print(args[0], strg, 'num zero steps: ', self._zero_dt)
+        fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff: {:0.15F}'
+        self._message('Time Step: ', ts_num, ' size: {:0.3E} '.format(dt))
         self._message(strg, 'num zero steps: ', self._zero_dt)
-        self._message('Net Def Fluid Out: {:10.6e}'.format(self._def_out))
-        self._message('Net Inv Fluid Out: {:10.6e}'.format(self._inv_out))
-        self._message('Net Fluid In: {:10.6e}'.format(self._inj_rate*args[1]))
-        self._message('Net Fluid Out: {:10.6e}'.format(self._def_out+self._inv_out))
+        self._message('Net Def Fluid Out: {:10.6e}'.format(def_out))
+        self._message('Net Inv Fluid Out: {:10.6e}'.format(inv_out))
+        self._message('Net Fluid In: {:10.6e}'.format(self._inj_rate*dt))
+        self._message('Net Fluid Out: {:10.6e}'.format(def_out+inv_out))
         self._message('Average Pressure Drop: {:10.4f}'.format(inlet_p))
-        self._message(fmt_str.format(tot_sat, mass_bal))
+        self._message(fmt_str.format(tot_vol/self._net_vol, mass_bal))
         self._message('-'*25)
         self._message('')
-
 #
 # Helper functions below here
 #
@@ -534,7 +515,7 @@ class ViscousDrainage(GenericLinearTransport):
         """
         #
         fpc = sp.zeros(sp.size(throats))
-        for i,(th,ref_pore) in enumerate(zip(throats,ref_pores)):
+        for i, (th, ref_pore) in enumerate(zip(throats, ref_pores)):
             # determining loop order
             ps = self._net['throat.conns'][th]
             step = 1
@@ -553,10 +534,10 @@ class ViscousDrainage(GenericLinearTransport):
         Handles calculation of supply factors
         """
         sup_facts = []
-        for throats,ref_pore in zip(throat_list,ref_pores):
+        for throats, ref_pore in zip(throat_list, ref_pores):
             #
             Ts_sf = sp.zeros(sp.size(throats))
-            for i,th in enumerate(throats):
+            for i, th in enumerate(throats):
                 ps = self._net['throat.conns'][th]
                 if ref_pore == ps[1]:
                     # sup facts are based on lower indexed pore, needs flipped
@@ -566,7 +547,7 @@ class ViscousDrainage(GenericLinearTransport):
                     Ts_sf[i] = self._throat_sup_fact[th]
             sup_facts.append(Ts_sf)
         #
-        return sp.array(sup_facts,ndmin=2)
+        return sp.array(sup_facts, ndmin=2)
 
     def _set_dx_max(self, throats):
         r"""
@@ -603,7 +584,7 @@ class ViscousDrainage(GenericLinearTransport):
     def _set_dv_max(self, pores, qs):
         #
         vols = []
-        for pore,q in zip(pores,qs):
+        for pore, q in zip(pores, qs):
             dv_max = 0.25
             #filling pore
             if ((q > 0) and ((1 - self['pore.inv_frac'][pore]) < dv_max)):
@@ -711,7 +692,6 @@ class ViscousDrainage(GenericLinearTransport):
         """
         network = self._net
         conductance = self['throat.conductance']
-        X_value = self[self._quantity]
         pores = sp.array(pores, ndmin=1)
         R = []
         if mode == 'group':
@@ -722,7 +702,7 @@ class ViscousDrainage(GenericLinearTransport):
             t = network.find_neighbor_throats(pores, flatten=False,
                                               mode='not_intersection')
             #fixes odd scipy error where I get 2-D array instead of an array of arrays
-            throat_group_num = sp.size(t,0)
+            throat_group_num = sp.size(t, 0)
         for i in sp.r_[0: throat_group_num]:
             if mode == 'group':
                 throats = t
@@ -738,10 +718,10 @@ class ViscousDrainage(GenericLinearTransport):
             # Changes to pores1 and pores2 to make them as inner/outer pores
             pores1[~sp.in1d(p1, P)] = p2[~sp.in1d(p1, P)]
             pores2[~sp.in1d(p1, P)] = p1[~sp.in1d(p1, P)]
-            X1 = X_value[pores1]
-            X2 = X_value[pores2]
+            X1 = self[self._quantity][pores1]
+            X2 = self[self._quantity][pores2]
             g = conductance[throats]
-            fpc = self._sum_fpcap(throats,pores1)
+            fpc = self._sum_fpcap(throats, pores1)
             throat_q = -sp.multiply(g, (X1 - X2 - fpc))
             #
             # adding flow into the throat q array
@@ -755,19 +735,17 @@ class ViscousDrainage(GenericLinearTransport):
             #
             # determining if a speific phase was requested
             if phase == 'invading':
-                Ts_sf = self._get_supply_facts(sp.array(throats,ndmin=2).T,pores1)
+                Ts_sf = self._get_supply_facts(sp.array(throats, ndmin=2).T, pores1)
                 Ts_sf = sp.ravel(Ts_sf)
                 throat_q = throat_q[sp.where(Ts_sf > 0)[0]]
             elif (phase == 'defending'):
-                Ts_sf = self._get_supply_facts(sp.array(throats,ndmin=2).T,pores1)
+                Ts_sf = self._get_supply_facts(sp.array(throats, ndmin=2).T, pores1)
                 Ts_sf = sp.ravel(Ts_sf)
                 throat_q = throat_q[sp.where(Ts_sf < 0)[0]]
-            else:
-                raise Exception('Unsupported phase use "invading" or "defending"')
             #
             # summing throats for overall pore rate
             R.append(sp.sum(throat_q))
-        return(sp.array(R, ndmin=1))
+        return sp.array(R, ndmin=1)
 
     def return_results(self, **kwargs):
         #
@@ -780,10 +758,3 @@ class ViscousDrainage(GenericLinearTransport):
         self._net['pore.invaded'] = self['pore.invaded']
         self._net['throat.menisci'] = [len(men) for men in self._menisci]
         super().return_results(**kwargs)
-
-
-
-
-
-
-
