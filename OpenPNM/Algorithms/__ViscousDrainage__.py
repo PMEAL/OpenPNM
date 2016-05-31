@@ -41,7 +41,8 @@ class ViscousDrainage(GenericLinearTransport):
               throat_volume='throat.volume',
               super_pore_conductance=None,
               sat_tol=1.0E-6,
-              max_steps=1E5):
+              max_steps=1E5,
+              exit_on_breakthough=True):
         r"""
         This setup provides the initial requirements for the solver setup
         and additional parameters for the drainage simulation.
@@ -80,6 +81,9 @@ class ViscousDrainage(GenericLinearTransport):
         max_steps : int (optional)
             Sets the overall hard limit on number of time steps to perform
             during the simulation if other exit criteria are not met.
+        exit_on_breakthough : bool (optional)
+            Tells the program to end on breakthrough or proceed until
+            a different exit criteria is satisfied.
         """
         logger.info('Setup ' + self.__class__.__name__)
         #
@@ -114,6 +118,7 @@ class ViscousDrainage(GenericLinearTransport):
         #
         self._sat_tol = sat_tol
         self._max_steps = max_steps
+        self._exit_on_breakthough = exit_on_breakthough
         self._total_time = 0.0
         self._net_vol = sp.sum(self._net[pore_volume])
         self._net_vol += sp.sum(self._net[throat_volume])
@@ -238,7 +243,7 @@ class ViscousDrainage(GenericLinearTransport):
         #
         ts_num = 0
         self._zero_dt = 0
-        break_through_time = 0.0
+        break_through_time = -1
         break_through_steps = -1
         while True:
             A = self._update_coefficient_matrix()
@@ -267,7 +272,8 @@ class ViscousDrainage(GenericLinearTransport):
             if sp.size(test) > 0 and break_through_time < 0:
                 break_through_time = self._total_time
                 break_through_steps = ts_num
-                #break
+                if self._exit_on_breakthough:
+                    break
             #
             if (abs(inv_out_rate - self._inj_rate)/self._inj_rate < 1e-9):
                 break
@@ -276,6 +282,7 @@ class ViscousDrainage(GenericLinearTransport):
                 logger.info('Maximum step exit condition triggered')
                 break
             #
+            self._message('Time Step: ', ts_num, ' size: {:0.3E} '.format(dt))
             self._advance_interface(dt)
             self._total_time += dt
             self._print_step_stats(ts_num, def_out_rate, inv_out_rate, dt)
@@ -330,14 +337,11 @@ class ViscousDrainage(GenericLinearTransport):
         for p, f in zip(Ps, fpc):
             rhs_pcap_data[p] -= f
         #
-        # just tried adding this term for kicks, I don't believe it actually should exist
-        #rhs_pcap_data -= self.rate(self._net.pores(), mode='single')
-        #
         return self._build_RHS_matrix(self._net.pores(), rhs_pcap_data)
 
     def _calculate_dt(self):
         r"""
-        Calculates the maximum allowed timestep
+        Calculates the maximum allowed time step
         """
         #
         # initial time step is the time to fill 1% of the total network volume
@@ -349,13 +353,13 @@ class ViscousDrainage(GenericLinearTransport):
         Ts = sp.where(self['throat.contested'])[0]
         if sp.size(sp.where(self._net[self._throat_volume][Ts] == 0.0)[0]):
             dt = 0.0
-        else:
-            Ps = self._net['throat.conns'][Ts]
-            Ps_pr = self['pore.pressure'][Ps]
-            g = self['throat.conductance'][Ts]
-            fpc = self._sum_fpcap(Ts, Ps[:, 0])
-            # negative q is flowing away from lower index pore
-            self._th_q[Ts] = -sp.multiply(g, (Ps_pr[:, 0] - Ps_pr[:, 1] - fpc))
+        #
+        Ps = self._net['throat.conns'][Ts]
+        Ps_pr = self['pore.pressure'][Ps]
+        g = self['throat.conductance'][Ts]
+        fpc = self._sum_fpcap(Ts, Ps[:, 0])
+        # negative q is flowing away from lower index pore
+        self._th_q[Ts] = -sp.multiply(g, (Ps_pr[:, 0] - Ps_pr[:, 1] - fpc))
         #
         # setting dt based on maximum allowed meniscus travel distance
         dx_max = self._set_dx_max(Ts)
@@ -375,8 +379,8 @@ class ViscousDrainage(GenericLinearTransport):
         Ps = self.pores('contested')
         if sp.size(sp.where(self._net[self._pore_volume][Ps] == 0.0)[0]):
             dt = 0.0
-        else:
-            self._pore_qsum[Ps] = self.rate(Ps, mode='single', phase='invading')
+        #
+        self._pore_qsum[Ps] = self.rate(Ps, mode='single', phase='invading')
         #
         # setting dt based on maximum allowed pore volume change
         dv_max = self._set_dv_max(Ps, self._pore_qsum[Ps])
@@ -445,7 +449,7 @@ class ViscousDrainage(GenericLinearTransport):
                 #negative b/c it's the fluid opposite the meniscus
                 self['pore.inv_frac'][pore] += -sat_adj
                 self['pore.contested'][pore] = True
-                #self._message('New contested pore: ', pore)
+                self._message('New contested pore: ', pore)
             # removing contested flag if no mensici exist in throat
             if len(self._menisci[th]) == 0:
                 self['throat.contested'][th] = False
@@ -495,7 +499,6 @@ class ViscousDrainage(GenericLinearTransport):
                                                                         chk_val)
         #
         fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff: {:0.15F}'
-        self._message('Time Step: ', ts_num, ' size: {:0.3E} '.format(dt))
         self._message(strg, 'num zero steps: ', self._zero_dt)
         self._message('Net Def Fluid Out: {:10.6e}'.format(def_out))
         self._message('Net Inv Fluid Out: {:10.6e}'.format(inv_out))
