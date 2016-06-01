@@ -143,3 +143,13 @@ class IOTest:
              'pore.front_boundary', 'pore.back_boundary', 'pore.left_boundary',
              'pore.right_boundary'}
         assert a.issubset(net.labels())
+
+    def test_load_MARock(self):
+        path = os.path.join(FIXTURE_DIR, '3DMA-Castlegate')
+        net = io.MARock.load(path=path)
+        assert net.Np == 9915
+        assert net.Nt == 21805
+        a = {'pore.ID_number', 'pore.boundary_type', 'pore.coordination',
+             'pore.coords', 'pore.volume', 'throat.area', 'throat.conns',
+             'throat.coords'}
+        assert a.issubset(net.props())
