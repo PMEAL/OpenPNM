@@ -416,6 +416,7 @@ class ViscousDrainage(GenericLinearTransport):
         contested_pores = self.pores('contested')
         #
         # moving mensici and adding new contested pores if necessary
+        tvol_chng = 0.0
         for th in self.throats('contested'):
             # neg v is moving away from lowest index pore
             v = self._th_q[th]/self._net['throat.area'][th]
@@ -434,11 +435,13 @@ class ViscousDrainage(GenericLinearTransport):
                 self._advance_zero_vol_throat(th)
                 dx = self._menisci[th][0] - m
                 v = -dx
+            ph_frac = ph_frac*self._net['throat.volume'][th]
+            tvol_chng += ph_frac
             #
             mens = ['{:0.5f}'.format(m) for m in self._menisci[th]]
-            fmt_str = 'Throat {:2d}: inv_frac: {:0.5f} menisci '
+            fmt_str = 'Throat {:2d}: inv_frac: {:0.5f} overall sat change: {:0.5g} menisci '
             fmt_str += 'advanced by {:0.5f} new positions: {}'
-            self._message(fmt_str.format(th, self['throat.inv_frac'][th], dx, ', '.join(mens)))
+            self._message(fmt_str.format(th, self['throat.inv_frac'][th], ph_frac/self._net_vol, dx, ', '.join(mens)))
             sat_adj = 0.0
             pore = -1
             # mensicus being pushed away from p1 into p2
@@ -457,15 +460,17 @@ class ViscousDrainage(GenericLinearTransport):
             if pore > -1:
                 # changing throat saturation based on rounding to pore
                 self['throat.inv_frac'][th] += sat_adj
-                #negative b/c it's the fluid opposite the meniscus
+                # negative b/c it's the fluid opposite the meniscus
                 self['pore.inv_frac'][pore] += -sat_adj
                 self['pore.contested'][pore] = True
                 self._message('New contested pore: ', pore)
             # removing contested flag if no mensici exist in throat
             if len(self._menisci[th]) == 0:
                 self['throat.contested'][th] = False
+        print('tvol change',tvol_chng)
         #
         # updating contested pores phase fraction
+        pvol_chng = 0.0
         for p in contested_pores:
             # qsum is always in terms of invading phase change
             qsum = self._pore_qsum[p]
@@ -479,6 +484,7 @@ class ViscousDrainage(GenericLinearTransport):
             #
             #
             frac = dt*qsum
+            pvol_chng += frac
             fmt_str = 'Pore {0:2d} filled to: {1:10.6f}, ph frac change: '
             fmt_str +='{2:10.6f}, overall change: {3:10.9f}'
             self._message(fmt_str.format(p, self['pore.inv_frac'][p],
@@ -491,6 +497,7 @@ class ViscousDrainage(GenericLinearTransport):
             elif self['pore.inv_frac'][p] < self._sat_tol:
                 if qsum <= 0:
                     self._fill_pore(p)
+        print('pvol change',pvol_chng)
 
     def _print_step_stats(self, ts_num, def_out_rate, inv_out_rate, dt):
         #
@@ -505,20 +512,20 @@ class ViscousDrainage(GenericLinearTransport):
         q_inj = self._total_time * self._inj_rate
         tot_vol = sp.sum(self._net[self._pore_volume] * self['pore.inv_frac'])
         tot_vol += sp.sum(self._net[self._throat_volume] * self['throat.inv_frac'])
-        mass_bal = (q_inj - tot_vol - self._total_inv_out)/self._net_vol
+        mass_bal = (q_inj - tot_vol - self._total_inv_out)
         #
         chk_val = abs(inv_out_rate - self._inj_rate)/self._inj_rate
         strg = 'inv fluid out: {:15.6e}, normed value: {:15.6e}'.format(inv_out_rate,
                                                                         chk_val)
         #
-        fmt_str = 'Tot Sat Frac: {:0.5f}, Norm Mass Diff: {:0.15F}'
+        fmt_str = 'Tot Sat Frac: {:0.5f}, Mass Diff Normed by Tot Inj: {:0.15F} Mass Diff Normed by Net Vol: {:0.15F}'
         self._message(strg, 'num zero steps: ', self._zero_dt)
         self._message('Net Def Fluid Out: {:10.6e}'.format(def_out))
         self._message('Net Inv Fluid Out: {:10.6e}'.format(inv_out))
         self._message('Net Fluid In: {:10.6e}'.format(self._inj_rate*dt))
         self._message('Net Fluid Out: {:10.6e}'.format(def_out+inv_out))
         self._message('Average Pressure Drop: {:10.4f}'.format(inlet_p))
-        self._message(fmt_str.format(tot_vol/self._net_vol, mass_bal))
+        self._message(fmt_str.format(tot_vol/self._net_vol, mass_bal/q_inj,mass_bal/self._net_vol))
         self._message('-'*25)
         self._message('')
 #
