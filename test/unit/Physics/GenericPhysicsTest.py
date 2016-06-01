@@ -1,5 +1,6 @@
 import OpenPNM
 import scipy as sp
+import pytest
 
 
 class GenericPhysicsTest:
@@ -23,35 +24,23 @@ class GenericPhysicsTest:
                                                     geometry=self.geo1)
 
     def test_specify_pores_and_geometry(self):
-        flag = False
-        try:
+        with pytest.raises(Exception):
             OpenPNM.Physics.GenericPhysics(network=self.net,
                                            phase=self.phase1,
                                            geometry=self.geo1,
                                            pores=[0])
-        except:
-            flag = True
-        assert flag
 
     def test_specify_overlapping_pores(self):
-        flag = False
-        try:
+        with pytest.raises(Exception):
             OpenPNM.Physics.GenericPhysics(network=self.net,
                                            phase=self.phase1,
                                            pores=[0])
-        except:
-            flag = True
-        assert flag
 
     def test_specify_overlapping_geometry(self):
-        flag = False
-        try:
+        with pytest.raises(Exception):
             OpenPNM.Physics.GenericPhysics(network=self.net,
                                            phase=self.phase1,
                                            geometry=self.geo1)
-        except:
-            flag = True
-        assert flag
 
     def test_get_item_self_name(self):
         a = self.phys1.get('pore.'+self.phys1.name)
@@ -119,8 +108,15 @@ class GenericPhysicsTest:
                                               geometry=geo1)
         phys.models.add(propname='throat.hydraulic_conductance',
                         model=physmods.hydraulic_conductance.hagen_poiseuille)
-        assert sp.allclose(phys['throat.hydraulic_conductance'], 0.02454369)
+        # Get value of hydraulic_conductance in current phys
+        a = phys['throat.hydraulic_conductance'][0]
+        # Make sure they're all the same
+        assert sp.allclose(phys['throat.hydraulic_conductance'], a)
+        # Assign phys to a different phase with 10x higher viscoity
         phys.parent_phase = phase2
-        assert sp.allclose(phys['throat.hydraulic_conductance'], 0.02454369)
+        # Verify that hydraulic_conductance has NOT yet changed
+        assert sp.allclose(phys['throat.hydraulic_conductance'], a)
+        # Re-run models
         phys.models.regenerate()
-        assert sp.allclose(phys['throat.hydraulic_conductance'], 0.00245437)
+        # Confirm hydraulic_conductance is 10x lower
+        assert sp.allclose(phys['throat.hydraulic_conductance'], a/10)
