@@ -47,8 +47,8 @@ Returns a list of which properties or labels exist in the dictionary.  These met
 .. autosummary::
     :toctree: generated/
 
-    OpenPNM.Base.Core.props
-    OpenPNM.Base.Core.labels
+    ~OpenPNM.Base.Core.props()
+    ~OpenPNM.Base.Core.labels()
 
 -------------------------------------------------------------------------------
 2. Counting Pores and Throats
@@ -57,8 +57,8 @@ Returns the number of pores or throats that the object controls.  Both optionall
 
 .. autosummary::
 
-    ~OpenPNM.Base.Core.num_pores
-    ~OpenPNM.Base.Core.num_throats
+    ~OpenPNM.Base.Core.num_pores()
+    ~OpenPNM.Base.Core.num_throats()
     ~OpenPNM.Base.Core.Np
     ~OpenPNM.Base.Core.Nt
 
@@ -69,8 +69,8 @@ Returns a list of pore or throat indices.  Both optionally accept a list of labe
 
 .. autosummary::
 
-    ~OpenPNM.Base.Core.pores
-    ~OpenPNM.Base.Core.throats
+    ~OpenPNM.Base.Core.pores()
+    ~OpenPNM.Base.Core.throats()
     ~OpenPNM.Base.Core.Ps
     ~OpenPNM.Base.Core.Ts
 
@@ -81,8 +81,8 @@ These methods allow the conversion between numeric indices and Boolean masks.
 
 .. autosummary::
 
-    ~OpenPNM.Base.Core.tomask
-    ~OpenPNM.Base.Core.toindices
+    ~OpenPNM.Base.Core.tomask()
+    ~OpenPNM.Base.Core.toindices()
 
 -------------------------------------------------------------------------------
 5.  Mapping Pore and Throat Indices Between Objects
@@ -91,8 +91,8 @@ Each **Core** object has it's own internal numbering scheme, so these methods ar
 
 .. autosummary::
 
-    ~OpenPNM.Base.Core.map_pores
-    ~OpenPNM.Base.Core.map_throats
+    ~OpenPNM.Base.Core.map_pores()
+    ~OpenPNM.Base.Core.map_throats()
     ~OpenPNM.Base.Core.Pnet
     ~OpenPNM.Base.Core.Tnet
 
@@ -115,7 +115,7 @@ Data is often calculated or assigned to pores or throats only.  This method enab
 
 .. autosummary::
 
-    ~OpenPNM.Base.Core.interpolate_data
+    ~OpenPNM.Base.Core.interpolate_data()
 
 -------------------------------------------------------------------------------
 8.  Check the Health of all Data Arrays
@@ -124,7 +124,7 @@ Checks whether any data on the object is not well formed, such as containing NaN
 
 .. autosummary::
 
-    ~OpenPNM.Base.Core.check_data_health
+    ~OpenPNM.Base.Core.check_data_health()
 
 -------------------------------------------------------------------------------
 9.  Using Pore-Scale Models
@@ -133,8 +133,8 @@ The ``models`` attribute actually contains a nested dictionary which stores all 
 
 .. autosummary::
 
-    ~OpenPNM.Base.Core.add_model
-    ~OpenPNM.Base.Core.regenerate
+    ~OpenPNM.Base.Core.add_model()
+    ~OpenPNM.Base.Core.regenerate()
 
 -------------------------------------------------------------------------------
 10.  Find and Set the Object's Name
@@ -156,16 +156,16 @@ Inspects that all pores and throats have been assigned to a **Geometry** object.
 
 .. autosummary::
 
-    ~OpenPNM.Network.GenericNetwork.check_geometry_health
+    ~OpenPNM.Network.GenericNetwork.check_geometry_health()
 
 -------------------------------------------------------------------------------
-2.  Check the Health of the Netowrk Topology
+2.  Check the Health of the Network Topology
 -------------------------------------------------------------------------------
 Performs a suite of topological checks for ill conditioned networks (disconnected pores, duplicate throats, etc.)
 
 .. autosummary::
 
-    ~OpenPNM.Network.GenericNetwork.check_network_health
+    ~OpenPNM.Network.GenericNetwork.check_network_health()
 
 -------------------------------------------------------------------------------
 3.  Manipulate Pore Topology
@@ -174,11 +174,11 @@ These are topological manipulation methods that are used to add or remove pores 
 
 .. autosummary::
 
-    ~OpenPNM.Network.GenericNetwork.clone_pores
-    ~OpenPNM.Network.GenericNetwork.connect_pores
-    ~OpenPNM.Network.GenericNetwork.extend
-    ~OpenPNM.Network.GenericNetwork.stitch
-    ~OpenPNM.Network.GenericNetwork.trim
+    ~OpenPNM.Network.GenericNetwork.clone_pores()
+    ~OpenPNM.Network.GenericNetwork.connect_pores()
+    ~OpenPNM.Network.GenericNetwork.extend()
+    ~OpenPNM.Network.GenericNetwork.stitch()
+    ~OpenPNM.Network.GenericNetwork.trim()
 
 -------------------------------------------------------------------------------
 4.  Query Neighborhood
@@ -187,11 +187,11 @@ These methods can be used to query the neighborhood around a given set of pores.
 
 .. autosummary::
 
-    ~OpenPNM.Network.GenericNetwork.find_neighbor_pores
-    ~OpenPNM.Network.GenericNetwork.find_neighbor_throats
-    ~OpenPNM.Network.GenericNetwork.find_nearby_pores
-    ~OpenPNM.Network.GenericNetwork.find_connected_pores
-    ~OpenPNM.Network.GenericNetwork.find_connecting_throat
+    ~OpenPNM.Network.GenericNetwork.find_neighbor_pores()
+    ~OpenPNM.Network.GenericNetwork.find_neighbor_throats()
+    ~OpenPNM.Network.GenericNetwork.find_nearby_pores()
+    ~OpenPNM.Network.GenericNetwork.find_connected_pores()
+    ~OpenPNM.Network.GenericNetwork.find_connecting_throat()
 
 -------------------------------------------------------------------------------
 5.  Adjacency and Incidence Matrices
@@ -200,8 +200,8 @@ Returns a *Scipy Sparse* array describing the topology of the network.
 
 .. autosummary::
 
-    ~OpenPNM.Network.GenericNetwork.create_adjacency_matrix
-    ~OpenPNM.Network.GenericNetwork.create_incidence_matrix
+    ~OpenPNM.Network.GenericNetwork.create_adjacency_matrix()
+    ~OpenPNM.Network.GenericNetwork.create_incidence_matrix()
 
 -------------------------------------------------------------------------------
 6.  Search for Clusters of Pores
@@ -210,8 +210,8 @@ Finds connected clusters of pores based on a given list of Boolean values.  The 
 
 .. autosummary::
 
-    ~OpenPNM.Network.GenericNetwork.find_clusters
-    ~OpenPNM.Network.GenericNetwork.find_clusters2
+    ~OpenPNM.Network.GenericNetwork.find_clusters()
+    ~OpenPNM.Network.GenericNetwork.find_clusters2()
 
 -------------------------------------------------------------------------------
 7.  Query the Domain Size
@@ -220,10 +220,10 @@ These calculate the bulk dimensions of the domain.
 
 .. autosummary::
 
-    ~OpenPNM.Network.GenericNetwork.domain_area
-    ~OpenPNM.Network.GenericNetwork.domain_length
-    ~OpenPNM.Network.GenericNetwork.domain_bulk_volume
-    ~OpenPNM.Network.GenericNetwork.domain_pore_volume
+    ~OpenPNM.Network.GenericNetwork.domain_area()
+    ~OpenPNM.Network.GenericNetwork.domain_length()
+    ~OpenPNM.Network.GenericNetwork.domain_bulk_volume()
+    ~OpenPNM.Network.GenericNetwork.domain_pore_volume()
 
 ===============================================================================
 Geometry
@@ -236,7 +236,7 @@ When instantiating a **Geometry** object it is normal to specify which pores and
 
 .. autosummary::
 
-    ~OpenPNM.Geometry.GenericGeometry.set_locations
+    ~OpenPNM.Geometry.GenericGeometry.set_locations()
 
 ===============================================================================
 Phase
@@ -249,7 +249,7 @@ Inspects that all pores and throats have been assigned to a **Physics** object.
 
 .. autosummary::
 
-    ~OpenPNM.Phases.GenericPhase.check_physics_health
+    ~OpenPNM.Phases.GenericPhase.check_physics_health()
 
 -------------------------------------------------------------------------------
 2.  Check the Health of a Mixture Phase
@@ -258,7 +258,7 @@ Mixtures are not fully implemented yet, but this makes sure all mole fractions s
 
 .. autosummary::
 
-    ~OpenPNM.Phases.GenericPhase.check_mixture_health
+    ~OpenPNM.Phases.GenericPhase.check_mixture_health()
 
 ===============================================================================
 Physics
@@ -271,7 +271,7 @@ When instantiating a **Physics** object it is normal to specify which pores and 
 
 .. autosummary::
 
-    ~OpenPNM.Physics.GenericPhysics.set_locations
+    ~OpenPNM.Physics.GenericPhysics.set_locations()
 
 -------------------------------------------------------------------------------
 2.  Lookup the Parent Phase
@@ -280,7 +280,7 @@ The ``phases`` method of the **Core** class gives the ability to find a list of 
 
 .. autosummary::
 
-    ~OpenPNM.Physics.GenericPhysics.parent_phase
+    ~OpenPNM.Physics.GenericPhysics.parent_phase()
 
 ===============================================================================
 Algorithms

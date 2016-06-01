@@ -3,25 +3,24 @@
 import sys
 import os
 import datetime
+import easydev
 
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.append(os.path.abspath('_extensions'))
 sys.path.append(os.path.abspath('../'))
-
 
 def setup(app):
     app.add_javascript('/static/js/copybutton.js')
 
 # General configuration ------------------------------------------------------
-
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',
-              'sphinx.ext.doctest',
               'sphinx.ext.todo',
-              'sphinx.ext.coverage',
               'sphinx.ext.ifconfig',
-              'sphinx.ext.viewcode']
+              'sphinx.ext.viewcode',
+              'easydev.copybutton']
+
+jscopybutton_path = easydev.copybutton.get_copybutton_path()
 
 todo_include_todos = True
 autosummary_generate=True
