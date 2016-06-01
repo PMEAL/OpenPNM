@@ -249,6 +249,7 @@ class ViscousDrainage(GenericLinearTransport):
             A = self._update_coefficient_matrix()
             b = self._update_rhs()
             self.solve(A, b)
+            print(ts_num,sp.amin(self['pore.pressure']))
             def_out_rate = self.rate(pores=self._outlets, phase='defending')[0]
             inv_out_rate = self.rate(pores=self._outlets, phase='invading')[0]
             dt = self._calculate_dt()
