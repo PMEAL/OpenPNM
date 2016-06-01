@@ -69,13 +69,14 @@ q = 1.0E-3 / 1.0E6 / 60.0 #convertong 1ml/min to m^3/sec
 # setting up a stable displacement simulation
 VD = ViscousDrainage(network=pn, phase=air)
 VD.setup(invading_phase=water,defending_phase=air,injection_rate=q,
-         max_steps=3)
+         max_steps=1000)
 #
 VD.set_inlets(pores=pn.pores('front_boundary'))
 VD.set_outlets(pores=pn.pores('back_boundary'))
 VD.run()
 VD.return_results()
-VD.rate([0,1],mode='single')
+#print(VD.rate(pn.pores(),mode='single',phase='invading'))
+#print(VD._th_q)
 #
 pn['pore.number'] = sp.arange(0,pn.Np)
 pn['throat.number'] = sp.arange(0,pn.Nt)
