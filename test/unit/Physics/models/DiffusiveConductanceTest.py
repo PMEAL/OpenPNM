@@ -2,6 +2,7 @@ import OpenPNM
 import pytest
 import scipy as sp
 
+
 class DiffusiveConductanceTest:
     def setup_class(self):
         self.net = OpenPNM.Network.Cubic(shape=[5, 5, 5], spacing=1.0)
