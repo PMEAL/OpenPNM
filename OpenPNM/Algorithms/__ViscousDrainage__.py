@@ -518,12 +518,12 @@ class ViscousDrainage(GenericLinearTransport):
         strg = 'inv fluid out: {:15.6e}, normed value: {:15.6e}'.format(inv_out_rate,
                                                                         chk_val)
         #
-        fmt_str = 'Tot Sat Frac: {:0.5f}, Mass Diff Normed by Tot Inj: {:0.15F} Mass Diff Normed by Net Vol: {:0.15F}'
+        fmt_str = 'Tot Sat Frac: {:7.5F}, Mass Diff Normed by Tot Inj: {:17.9E}  Mass Diff Normed by Net Vol: {:17.9E}'
         self._message(strg, 'num zero steps: ', self._zero_dt)
         self._message('Net Def Fluid Out: {:10.6e}'.format(def_out))
         self._message('Net Inv Fluid Out: {:10.6e}'.format(inv_out))
-        self._message('Net Fluid In: {:10.6e}'.format(self._inj_rate*dt))
-        self._message('Net Fluid Out: {:10.6e}'.format(def_out+inv_out))
+        self._message('Net Fluid In: {:19.12e}'.format(self._inj_rate*dt))
+        self._message('Net Fluid Out: {:18.12e}'.format(def_out+inv_out))
         self._message('Average Pressure Drop: {:10.4f}'.format(inlet_p))
         self._message(fmt_str.format(tot_vol/self._net_vol, mass_bal/q_inj,mass_bal/self._net_vol))
         self._message('-'*25)
