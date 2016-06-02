@@ -20,11 +20,11 @@ class HydraulicConductanceTest:
         mod = OpenPNM.Physics.models.hydraulic_conductance.hagen_poiseuille
         self.phys.models.add(propname='throat.conductance1',
                              model=mod)
-        assert sp.allclose(a = self.phys['throat.conductance1'][0],
-                           b = 1330.68207684)
+        assert sp.allclose(a=self.phys['throat.conductance1'][0],
+                           b=1330.68207684)
 
         self.phys.models.add(propname='throat.conductance2',
                              model=mod,
                              calc_pore_len=True)
-        assert sp.allclose(a = self.phys['throat.conductance2'][0],
-                           b = 1330.68207684)
+        assert sp.allclose(a=self.phys['throat.conductance2'][0],
+                           b=1330.68207684)

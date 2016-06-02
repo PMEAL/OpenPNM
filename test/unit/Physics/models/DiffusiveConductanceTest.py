@@ -22,11 +22,11 @@ class DiffusiveConductanceTest:
         mod = OpenPNM.Physics.models.diffusive_conductance.bulk_diffusion
         self.phys.models.add(propname='throat.conductance1',
                              model=mod)
-        assert sp.allclose(a = self.phys['throat.conductance1'][0],
-                           b = 0.00084552)
+        assert sp.allclose(a=self.phys['throat.conductance1'][0],
+                           b=0.00084552)
 
         self.phys.models.add(propname='throat.conductance2',
                              model=mod,
                              calc_pore_len=True)
-        assert sp.allclose(a = self.phys['throat.conductance2'][0],
-                           b = 0.00084552)
+        assert sp.allclose(a=self.phys['throat.conductance2'][0],
+                           b=0.00084552)
