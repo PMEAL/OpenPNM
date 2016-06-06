@@ -59,6 +59,54 @@ class GenericLinearTransportTest:
         label = 'pore.Neumann'
         assert (label not in self.alg.labels())
 
+    def test_set_BC_modes_with_boolean_masks(self):
+        BC1_pores = np.zeros(self.alg.Np, dtype='bool')
+        BC1_pores[np.arange(25, 35)] = True
+        self.alg.set_boundary_conditions(bctype='Dirichlet',
+                                         bcvalue=0.8,
+                                         pores=BC1_pores)
+        ptest = self.alg.pores('pore.Dirichlet')
+        assert np.all(ptest == self.alg._parse_locations(BC1_pores))
+        BC2_pores = np.zeros(self.alg.Np, dtype='bool')
+        BC2_pores[np.arange(43, 50)] = True
+        self.alg.set_boundary_conditions(bctype='Dirichlet',
+                                         bcvalue=0.8,
+                                         pores=BC2_pores,
+                                         mode='merge')
+        ptest = self.alg.pores('pore.Dirichlet')
+        B1 = self.alg._parse_locations(BC1_pores)
+        B2 = self.alg._parse_locations(BC2_pores)
+        assert np.all(ptest == np.concatenate((B1, B2)))
+        BC3_pores = np.zeros(self.alg.Np, dtype='bool')
+        BC3_pores[np.arange(4, 9)] = True
+        self.alg.set_boundary_conditions(bctype='Dirichlet',
+                                         bcvalue=0.8,
+                                         pores=BC3_pores,
+                                         mode='overwrite')
+        ptest = self.alg.pores('pore.Dirichlet')
+        assert np.all(ptest == self.alg._parse_locations(BC3_pores))
+        BC4_pores = np.zeros(self.alg.Np, dtype='bool')
+        BC4_pores[[11, 90]] = True
+        self.alg.set_boundary_conditions(bctype='Neumann',
+                                         bcvalue=0.5,
+                                         pores=BC4_pores,
+                                         mode='overwrite')
+        ptest = self.alg.pores('pore.Neumann')
+        assert np.all(ptest == self.alg._parse_locations(BC4_pores))
+        self.alg.set_boundary_conditions(bctype='Dirichlet',
+                                         pores=BC1_pores,
+                                         bcvalue=0.3)
+        ptest = self.alg.pores('pore.Dirichlet')
+        self.alg.set_boundary_conditions(bctype='Dirichlet',
+                                         pores=self.alg.Ps,
+                                         mode='remove')
+        Dp = np.sum(self.alg['pore.Dirichlet'])
+        assert Dp == 0
+        self.alg.set_boundary_conditions(bctype='Neumann',
+                                         mode='remove')
+        label = 'pore.Neumann'
+        assert (label not in self.alg.labels())
+    
     def test_super_pore_conductance(self):
         g_super = []
         BC1_pores = np.arange(20, 30)

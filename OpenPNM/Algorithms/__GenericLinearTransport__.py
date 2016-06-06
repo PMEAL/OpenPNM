@@ -95,6 +95,11 @@ class GenericLinearTransport(GenericAlgorithm):
         # Validate bctype
         if bctype == '':
             raise Exception('bctype must be specified!')
+        # Handling masks
+        if pores is not None:
+            pores = self._parse_locations(pores)
+        if throats is not None:
+            throats = self._parse_locations(throats)        
         # If mode is 'remove', also bypass checks
         if mode == 'remove':
             if pores is None and throats is None:
@@ -139,11 +144,11 @@ class GenericLinearTransport(GenericAlgorithm):
                             'independently.')
         elif throats is None:
             element = 'pore'
-            loc = sp.array(pores, ndmin=1)
+            loc = pores
             all_length = self.Np
         elif pores is None:
             element = 'throat'
-            loc = sp.array(throats, ndmin=1)
+            loc = throats
             all_length = self.Nt
         else:
             raise Exception('Problem with the pore and/or throat list')
