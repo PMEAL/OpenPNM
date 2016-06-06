@@ -9,4 +9,4 @@ dist/
 *.net
 *.pnm
 *.vtp
-*~
+*.py~
