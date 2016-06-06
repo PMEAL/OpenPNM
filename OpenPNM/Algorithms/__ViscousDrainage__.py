@@ -524,8 +524,6 @@ class ViscousDrainage(GenericLinearTransport):
         if (len(Ts) == 0):
             return
         #
-        print('advancing Ts: ',Ts)
-        print('init mens',self._menisci[Ts])
         num_mens = sp.array([len(mset) for mset in self._menisci[Ts]])
         # neg v is moving away from lowest index pore
         v = self._th_q[Ts]/self._net['throat.area'][Ts]
@@ -549,40 +547,36 @@ class ViscousDrainage(GenericLinearTransport):
         last_men = sp.array([mset[-1] for mset in self._menisci[Ts]])
         first_men = sp.array([mset[0] for mset in self._menisci[Ts]])
         men_index = sp.zeros(len(Ts))
-        print('vel',v)
         #
         # adjusting sats for menisci moving into pores
         inds = sp.where((last_men > (1.0 - self._sat_tol)) & (v < 0.0))[0]
-        throats = Ts[inds]
-        pores = self._net['throat.conns'][throats][:,1]
-        sat_adj = (1.0 - last_men[inds])*self._throat_sup_fact[throats]
+        throats = inds
+        pores = self._net['throat.conns'][Ts[inds]][:,1]
+        sat_adj = (1.0 - last_men[inds])*self._throat_sup_fact[Ts[inds]]
         men_index[inds] = -1
         #
         inds = sp.where((first_men < self._sat_tol) & (v > 0.0))[0]
-        throats = sp.append(throats,Ts[inds])
+        throats = sp.append(throats,inds)
         pores = sp.append(pores,self._net['throat.conns'][Ts[inds]][:,0])
         sat_adj = sp.append(sat_adj,last_men[inds]*self._throat_sup_fact[Ts[inds]])
         men_index[inds] = 0
         self._throat_sup_fact[Ts[inds]] *= -1
         #
-        ratio = self._net['throat.volume'][throats]/self._net['pore.volume'][pores]
+        ratio = self._net['throat.volume'][Ts[throats]]/self._net['pore.volume'][pores]
         ratio[sp.isnan(ratio)] = 1.0
-        self['throat.inv_frac'][throats] += sat_adj
+        self['throat.inv_frac'][Ts[throats]] += sat_adj
         # negative b/c it's the fluid opposite the meniscus
         self['pore.inv_frac'][pores] += -sat_adj * ratio
         self['pore.contested'][pores] = True
         # adjusting total time
-        vol = sp.sum(sat_adj*self._net['throat.volume'][throats])
+        vol = sp.sum(sat_adj*self._net['throat.volume'][Ts[throats]])
         self._total_time += vol/self._inj_rate
         #
-        for i,th in enumerate(throats):
-            del self._menisci[th][int(men_index[i])]
-            num_mens[i] -= 1
+        for th in throats:
+            del self._menisci[Ts[th]][int(men_index[th])]
+            num_mens[th] -= 1
         # removing contested flag if no mensici exist in throat
         self['throat.contested'][Ts[sp.where(num_mens == 0)]] = False
-        print('final mens',self._menisci[Ts])
-        print('num mens',num_mens)
-        print('contested',self['throat.contested'][Ts])
 
     def _advance_pore_saturations(self,Ps,dt):
         #
@@ -590,8 +584,6 @@ class ViscousDrainage(GenericLinearTransport):
             return
         #
         # handling any zero volume pores
-        print('advancing Ps',Ps)
-        print(self['pore.inv_frac'][Ps])
         pores = Ps[self._net[self._pore_volume][Ps] == 0.0]
         pore_vol_frac = self['pore.inv_frac'][pores]
         pore_vol_frac[sp.where(self._pore_qsum[pores] > 0.0)[0]] = 1.0
@@ -613,7 +605,6 @@ class ViscousDrainage(GenericLinearTransport):
         pores = Ps[self['pore.inv_frac'][Ps] < self._sat_tol]
         pores = pores[self._pore_qsum[pores] <= 0]
         self._fill_pores(pores)
-        print(self['pore.inv_frac'][Ps])
 
     def _sum_fpcap(self, throats, ref_pores):
         r"""
