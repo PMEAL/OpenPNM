@@ -229,12 +229,11 @@ class ViscousDrainage(GenericLinearTransport):
             with open('vd-time-testing.txt', 'w') as self.benchmark_file:
                 self._do_outer_iteration_stage(**kwargs)
 
-    def restart_simulation(self, max_steps=2e5):
+    def restart_simulation(self, max_steps=0):
         r"""
         Restarts a simulation to run until an exit condition is met
         """
         #
-        self._max_steps = max_steps
         logger.debug('Simulation restarted')
         #
         raise NotImplementedError
@@ -260,7 +259,9 @@ class ViscousDrainage(GenericLinearTransport):
             b = self._update_rhs()
             self.solve(A, b)
             solv_time += (time.time() - st)
-            print('\n Step: ',ts_num,' Min Pore Pressure: ',sp.amin(self['pore.pressure']))
+            print('\n Step: ',ts_num,' Min Pore Pressure: {:9.3f}'.format(sp.amin(self['pore.pressure'])),
+                  ' Max frac {:8.5f} {:8.5f}'.format(sp.amax(self['throat.inv_frac']),sp.amax(self['pore.inv_frac'])),
+                  ' Min frac {:8.5f} {:8.5f}'.format(sp.amin(self['throat.inv_frac']),sp.amin(self['pore.inv_frac'])))
             st = time.time()
             def_out_rate = self.rate(pores=self._outlets, phase='defending')[0]
             inv_out_rate = self.rate(pores=self._outlets, phase='invading')[0]
@@ -484,7 +485,6 @@ class ViscousDrainage(GenericLinearTransport):
         ps_time = ps_time/tot_time * 100
         fmt_str = 'tot_time: {:15.8E}, th_time: {:15.8E}, ps_time: {:15.8E}, numTs: {}, numPs: {}'
         out_str = fmt_str.format(tot_time,th_time,ps_time,len(contested_throats),len(contested_pores))
-        print(out_str)
         self.benchmark_file.write(out_str+'\n')
 
     def _print_step_stats(self, ts_num, def_out_rate, inv_out_rate, dt):
@@ -558,12 +558,13 @@ class ViscousDrainage(GenericLinearTransport):
         inds = sp.where((first_men < self._sat_tol) & (v > 0.0))[0]
         throats = sp.append(throats,inds)
         pores = sp.append(pores,self._net['throat.conns'][Ts[inds]][:,0])
-        sat_adj = sp.append(sat_adj,last_men[inds]*self._throat_sup_fact[Ts[inds]])
+        sat_adj = sp.append(sat_adj,first_men[inds]*self._throat_sup_fact[Ts[inds]])
         men_index[inds] = 0
         self._throat_sup_fact[Ts[inds]] *= -1
         #
         ratio = self._net['throat.volume'][Ts[throats]]/self._net['pore.volume'][pores]
         ratio[sp.isnan(ratio)] = 1.0
+        ratio[sp.isinf(ratio)] = 1.0
         self['throat.inv_frac'][Ts[throats]] += sat_adj
         # negative b/c it's the fluid opposite the meniscus
         self['pore.inv_frac'][pores] += -sat_adj * ratio
