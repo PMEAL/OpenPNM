@@ -111,9 +111,7 @@ class ViscousDrainage(GenericLinearTransport):
         self._inj_rate = injection_rate
         self._th_q = sp.zeros(self.Nt)
         self._pore_qsum = sp.zeros(self.Np)
-        self._menisci = sp.zeros(self.Nt,dtype=object)
-        for i in range(len(self._menisci)):
-           self._menisci[i] = list()
+        self._menisci = [[] for i in range(self.Nt)]
         self._throat_volume = throat_volume
         self._pore_volume = pore_volume
         # used in advance interface to specify how to change saturation fraction
@@ -290,7 +288,6 @@ class ViscousDrainage(GenericLinearTransport):
             # testing if invading fluid has reached an outlet pore
             test = sp.where(self['pore.inv_frac'][self._outlets] > 1-self._sat_tol)[0]
             if sp.size(test) > 0 and break_through_time < 0:
-                print('Reached Breakthrough')
                 break_through_time = self._total_time
                 break_through_steps = ts_num
                 if self._exit_on_breakthough:
@@ -298,12 +295,11 @@ class ViscousDrainage(GenericLinearTransport):
             #
             # breaking if current fluid configuration can support full injection rate
             if (abs(inv_out_rate - self._inj_rate)/self._inj_rate < 1e-9):
-                print('Exited on injection rate condition')
                 break
             #
             # breaking if maximum number of time steps have been performed
             if ts_num > self._max_steps:
-                print('Maximum step exit condition triggered')
+                logger.info('Maximum step exit condition triggered')
                 break
             test_cond_time += (time.time() - st)
             #
@@ -470,7 +466,61 @@ class ViscousDrainage(GenericLinearTransport):
         #
         # moving mensici and adding new contested pores if necessary
         th_time = time.time()
-        self._advance_throat_saturations(contested_throats,dt)
+        tvol_chng = 0.0
+        for th in contested_throats:
+            # neg v is moving away from lowest index pore
+            v = self._th_q[th]/self._net['throat.area'][th]
+            # positive dx is moving away from lower index pore
+            dx = (-v * dt)/self._net['throat.length'][th]
+            self._menisci[th] = [m + dx for m in self._menisci[th]]
+            ph_frac = dx * self._throat_sup_fact[th]
+            # if even number of mensici then phase is same on both ends of throat
+            if (len(self._menisci[th]) % 2 == 0):
+                ph_frac = 0.0
+            self['throat.inv_frac'][th] += ph_frac
+            #
+            # checking if throat has zero-volume
+            if self._net[self._throat_volume][th] == 0.0:
+                m = self._menisci[th][0]
+                self._advance_zero_vol_throat(th)
+                dx = self._menisci[th][0] - m
+                v = -dx
+            ph_frac = ph_frac*self._net['throat.volume'][th]
+            tvol_chng += ph_frac
+            #
+            mens = ['{:0.5f}'.format(m) for m in self._menisci[th]]
+            fmt_str = 'Throat {:2d}: inv_frac: {:0.5f} overall sat change: {:0.5g} menisci '
+            fmt_str += 'advanced by {:0.5f} new positions: {}'
+            self._message(fmt_str.format(th, self['throat.inv_frac'][th], ph_frac/self._net_vol, dx, ', '.join(mens)))
+            sat_adj = 0.0
+            pore = -1
+            # mensicus being pushed away from p1 into p2
+            if ((self._menisci[th][-1] > (1.0 - self._sat_tol)) and (v < 0.0)):
+                pore = self._net['throat.conns'][th][1] #pore meniscus moved into
+                sat_adj = (1.0 - self._menisci[th][-1])*self._throat_sup_fact[th]
+                del self._menisci[th][-1] # menisci are ordered 0 -> 1
+            # meniscus being pulled into p1 from p2
+            elif ((self._menisci[th][0] < self._sat_tol) and (v > 0.0)):
+                pore = self._net['throat.conns'][th][0]
+                sat_adj = self._menisci[th][0]*self._throat_sup_fact[th]
+                del self._menisci[th][0]
+                # needs flipped because fluid supplying throat changed as miniscus moves into p1
+                self._throat_sup_fact[th] *= -1.0
+            # updating saturations if rounding was performed
+            if pore > -1:
+                # changing throat saturation based on rounding to pore
+                self['throat.inv_frac'][th] += sat_adj
+                # negative b/c it's the fluid opposite the meniscus
+                ratio = self._net['throat.volume'][th]/self._net['pore.volume'][pore]
+                ratio = 1.0 if ratio != ratio else ratio
+                self['pore.inv_frac'][pore] += -sat_adj * ratio
+                self._total_time += sat_adj*self._net['throat.volume'][th]/self._inj_rate
+                self['pore.contested'][pore] = True
+                self._message('New contested pore: ', pore)
+            # removing contested flag if no mensici exist in throat
+            if len(self._menisci[th]) == 0:
+                self['throat.contested'][th] = False
+        #print('tvol change',tvol_chng)
         th_time = time.time() - th_time
         #
         # updating contested pores phase fraction
@@ -519,79 +569,12 @@ class ViscousDrainage(GenericLinearTransport):
 #
 # Helper functions below here
 #
-    def _advance_throat_saturations(self,Ts,dt):
-        #
-        if (len(Ts) == 0):
-            return
-        #
-        print('advancing Ts: ',Ts)
-        print('init mens',self._menisci[Ts])
-        num_mens = sp.array([len(mset) for mset in self._menisci[Ts]])
-        # neg v is moving away from lowest index pore
-        v = self._th_q[Ts]/self._net['throat.area'][Ts]
-        # positive dx is moving away from lower index pore
-        dx = (-v * dt)/self._net['throat.length'][Ts]
-        ph_frac = dx * self._throat_sup_fact[Ts]
-        # if even number of mensici then phase is same on both ends of throat
-        ph_frac[num_mens % 2 == 0] = 0.0
-        self['throat.inv_frac'][Ts] += ph_frac
-        #
-        # handling zero volume throats
-        throats = Ts[self._net[self._throat_volume][Ts] == 0.0]
-        for th in throats:
-            self._advance_zero_vol_throat(th)
-        #
-        # moving menisci
-        for i,th in enumerate(Ts):
-            self._menisci[th] = [m + dx[i] for m in self._menisci[th]]
-        #
-        # getting first and last mensici locations
-        last_men = sp.array([mset[-1] for mset in self._menisci[Ts]])
-        first_men = sp.array([mset[0] for mset in self._menisci[Ts]])
-        men_index = sp.zeros(len(Ts))
-        print('vel',v)
-        #
-        # adjusting sats for menisci moving into pores
-        inds = sp.where((last_men > (1.0 - self._sat_tol)) & (v < 0.0))[0]
-        throats = Ts[inds]
-        pores = self._net['throat.conns'][throats][:,1]
-        sat_adj = (1.0 - last_men[inds])*self._throat_sup_fact[throats]
-        men_index[inds] = -1
-        #
-        inds = sp.where((first_men < self._sat_tol) & (v > 0.0))[0]
-        throats = sp.append(throats,Ts[inds])
-        pores = sp.append(pores,self._net['throat.conns'][Ts[inds]][:,0])
-        sat_adj = sp.append(sat_adj,last_men[inds]*self._throat_sup_fact[Ts[inds]])
-        men_index[inds] = 0
-        self._throat_sup_fact[Ts[inds]] *= -1
-        #
-        ratio = self._net['throat.volume'][throats]/self._net['pore.volume'][pores]
-        ratio[sp.isnan(ratio)] = 1.0
-        self['throat.inv_frac'][throats] += sat_adj
-        # negative b/c it's the fluid opposite the meniscus
-        self['pore.inv_frac'][pores] += -sat_adj * ratio
-        self['pore.contested'][pores] = True
-        # adjusting total time
-        vol = sp.sum(sat_adj*self._net['throat.volume'][throats])
-        self._total_time += vol/self._inj_rate
-        #
-        for i,th in enumerate(throats):
-            del self._menisci[th][int(men_index[i])]
-            num_mens[i] -= 1
-        # removing contested flag if no mensici exist in throat
-        self['throat.contested'][Ts[sp.where(num_mens == 0)]] = False
-        print('final mens',self._menisci[Ts])
-        print('num mens',num_mens)
-        print('contested',self['throat.contested'][Ts])
-
     def _advance_pore_saturations(self,Ps,dt):
         #
         if (len(Ps) == 0):
             return
         #
         # handling any zero volume pores
-        print('advancing Ps',Ps)
-        print(self['pore.inv_frac'][Ps])
         pores = Ps[self._net[self._pore_volume][Ps] == 0.0]
         pore_vol_frac = self['pore.inv_frac'][pores]
         pore_vol_frac[sp.where(self._pore_qsum[pores] > 0.0)[0]] = 1.0
@@ -613,7 +596,6 @@ class ViscousDrainage(GenericLinearTransport):
         pores = Ps[self['pore.inv_frac'][Ps] < self._sat_tol]
         pores = pores[self._pore_qsum[pores] <= 0]
         self._fill_pores(pores)
-        print(self['pore.inv_frac'][Ps])
 
     def _sum_fpcap(self, throats, ref_pores):
         r"""
@@ -757,18 +739,18 @@ class ViscousDrainage(GenericLinearTransport):
         for i, base_pore in enumerate(pores):
             Ts = throats[i]
             for th in Ts:
-                ps = self._net['throat.conns'][th]
+                ps = list(self._net['throat.conns'][th])
                 if base_pore == ps[1]:
                     # checking if flow in throat is moving away from the pore
                     # - Q means flow from ps[0] into ps[1] so a meniscus shouldn't be created
                     if self._th_q[th] < 0.0:
                         continue
-                    self._menisci[th].append(1.0)
+                    self._menisci[th].append(1.0) #TODO switch to sp.append
                 else:
                     # checking if flow in throat is moving away from the pore
                     if self._th_q[th] > 0.0:
                         continue
-                    self._menisci[th].insert(0, 0.0)
+                    self._menisci[th].insert(0, 0.0) #TODO switch to sp.insert
                     # needs flipped because fluid supplying throat changed
                     self._throat_sup_fact[th] *= -1.0
                 #
