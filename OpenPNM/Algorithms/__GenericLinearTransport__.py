@@ -99,7 +99,7 @@ class GenericLinearTransport(GenericAlgorithm):
         if pores is not None:
             pores = self._parse_locations(pores)
         if throats is not None:
-            throats = self._parse_locations(throats)        
+            throats = self._parse_locations(throats)
         # If mode is 'remove', also bypass checks
         if mode == 'remove':
             if pores is None and throats is None:

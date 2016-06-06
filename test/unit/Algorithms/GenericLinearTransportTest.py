@@ -106,7 +106,7 @@ class GenericLinearTransportTest:
                                          mode='remove')
         label = 'pore.Neumann'
         assert (label not in self.alg.labels())
-    
+
     def test_super_pore_conductance(self):
         g_super = []
         BC1_pores = np.arange(20, 30)
