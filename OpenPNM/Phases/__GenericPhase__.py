@@ -79,12 +79,13 @@ class GenericPhase(Core):
         else:
             return super().__getitem__(key)
 
-    def props(self, element=None, mode='all'):
+    def props(self, element=None, mode='all', deep=False):
         modes = ['all', 'deep', 'models', 'constants']
         mode = self._parse_mode(mode=mode, allowed=modes, single=False)
         prop_list = []
-        if 'deep' in mode:
-            mode.remove('deep')
+        if ('deep' in mode) or (deep is True):
+            if mode.count('deep') > 0:
+                mode.remove('deep')
             for phys in self._physics:
                 prop_list.extend(phys.props(element=element, mode=mode))
             # Get unique values

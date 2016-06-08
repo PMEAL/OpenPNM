@@ -73,12 +73,12 @@ class GenericNetwork(Core):
         return self
     _net = property(fset=_set_net, fget=_get_net)
 
-    def props(self, element=None, mode='all'):
+    def props(self, element=None, mode='all', deep=False):
         modes = ['all', 'deep', 'models', 'constants']
         mode = self._parse_mode(mode=mode, allowed=modes, single=False)
         prop_list = Tools.PrintableList()
-        if 'deep' in mode:
-            mode.remove('deep')
+            if mode.count('deep') > 0:
+                mode.remove('deep')
             for geom in self._geometries:
                 prop_list.extend(geom.props(element=element, mode=mode))
             # Get unique values
