@@ -288,10 +288,11 @@ class Core(dict):
             **'constants'** : Returns only properties that are set as constant
             values
 
-            **'deep'** : Returns all properties on the object and all sub-
-            objects.  For instance, all Geometry properties will be returned
+        deep : Boolean (default if False)
+            If True, all properties on the object and all sub-objects are
+            returned. For instance, all Geometry properties will be returned
             along with all Network properties, and all Physics properties will
-            be returned with all Phase properties.  This mode has not effect
+            be returned with all Phase properties.  This arg has no effect
             when this query is called from a Geometry or Phase object.
 
         Returns

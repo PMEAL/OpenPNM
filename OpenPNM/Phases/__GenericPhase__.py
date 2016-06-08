@@ -80,6 +80,8 @@ class GenericPhase(Core):
             return super().__getitem__(key)
 
     def props(self, element=None, mode='all', deep=False):
+        # TODO: The mode 'deep' is deprecated in favor of the deep argument
+        # and should be removed in a future version
         modes = ['all', 'deep', 'models', 'constants']
         mode = self._parse_mode(mode=mode, allowed=modes, single=False)
         prop_list = []
