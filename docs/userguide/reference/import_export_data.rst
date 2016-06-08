@@ -21,11 +21,7 @@ OpenPNM allows for exporting the data to several formats:
 There are several ways to import and export data.  All the import and export classes are stored under ``OpenPNM.Utilities.IO``, but there is also ``import_data`` and ``export_data`` methods available in the top level of the project's namespace for convenience (i.e. ``OpenPNM.export_data``). The **Workspace** object also possess ``import_data`` and ``export_data`` methods.  All these approaches utilize the classes stored in the **Utilities.IO** module.
 
 -------------------------------------------------------------------------------
-Comma Separated Variables
--------------------------------------------------------------------------------
-
--------------------------------------------------------------------------------
-Comma Separated Variables
+Comma Separated Variables (or is it Values?)
 -------------------------------------------------------------------------------
 CSV files are the recommended format in OpenPNM due to their simplicity and wide interoperability with virtually all other software.  The list-type data storage scheme used in OpenPNM also fits very well in the CSV column-based format.
 
