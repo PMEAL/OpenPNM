@@ -80,6 +80,8 @@ class GenericPhase(Core):
             return super().__getitem__(key)
 
     def props(self, element=None, mode='all'):
+        modes = ['all', 'deep', 'models', 'constants']
+        mode = self._parse_mode(mode=mode, allowed=modes, single=False)
         prop_list = []
         if 'deep' in mode:
             mode.remove('deep')

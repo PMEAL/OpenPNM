@@ -74,6 +74,8 @@ class GenericNetwork(Core):
     _net = property(fset=_set_net, fget=_get_net)
 
     def props(self, element=None, mode='all'):
+        modes = ['all', 'deep', 'models', 'constants']
+        mode = self._parse_mode(mode=mode, allowed=modes, single=False)
         prop_list = Tools.PrintableList()
         if 'deep' in mode:
             mode.remove('deep')
