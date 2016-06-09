@@ -224,6 +224,9 @@ class ViscousDrainage(GenericLinearTransport):
         logger.info('Initial Saturation of Invading Phase: '+str(tot_sat))
         #
         # beginning simulation
+        self._zero_dt = 0
+        self.net_inlet_pressure = []
+        self.net_inv_saturation = []
         with open(self._log_fname, 'w') as self._log_file:
             self._do_outer_iteration_stage(**kwargs)
 
@@ -233,9 +236,11 @@ class ViscousDrainage(GenericLinearTransport):
         """
         #
         self._max_steps += max_steps
+        self._exit_on_breakthough = False
         logger.debug('Simulation restarted')
         #
-        raise NotImplementedError
+        with open(self._log_fname, 'a') as self._log_file:
+            self._do_outer_iteration_stage()
 
     def _do_outer_iteration_stage(self, **kwargs):
         r"""
@@ -244,7 +249,6 @@ class ViscousDrainage(GenericLinearTransport):
         """
         #
         ts_num = 0
-        self._zero_dt = 0
         break_through_time = -1.0
         break_through_steps = -1
         while True:
@@ -448,6 +452,9 @@ class ViscousDrainage(GenericLinearTransport):
         chk_val = abs(inv_out_rate - self._inj_rate)/self._inj_rate
         strg = 'inv fluid out: {:15.6e}, normed value: {:15.6e}'.format(inv_out_rate,
                                                                         chk_val)
+        #
+        self.net_inlet_pressure.append(inlet_p)
+        self.net_inv_saturation.append(tot_vol/self._net_vol)
         #
         fmt_str = 'Tot Sat Frac: {:7.5F}, Mass Diff Normed by Tot Inj: {:17.9E}  '
         fmt_str += 'Mass Diff Normed by Net Vol: {:17.9E}'
