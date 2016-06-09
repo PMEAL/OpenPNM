@@ -800,20 +800,3 @@ def find_surface_pores(network, im_max=1e7):
     surface = _sp.unique(labels[inds])-1
     network['pore.surface'] = False
     network['pore.surface'][surface] = True
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
