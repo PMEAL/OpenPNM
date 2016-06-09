@@ -734,7 +734,16 @@ def template_sphere_shell(outer_radius=None, inner_radius=0):
 def find_surface_pores(network):
     import scipy.ndimage as spim
     from skimage.morphology import watershed
-    im = _sp.zeros([50, 50, 50], dtype=_sp.uint16)
+    P1 = network['throat.conns'][:, 0]
+    P2 = network['throat.conns'][:, 1]
+    C1 = network['pore.coords'][P1]
+    C2 = network['pore.coords'][P2]
+    E = _sp.sqrt(_sp.sum((C1-C2)**2, axis=1))  # Distance between pores
+    dmin = _sp.amin(network['pore.coords'], axis=0)
+    dmax = _sp.amax(network['pore.coords'], axis=0)
+    spacing = _sp.amin(E)
+    shape = 5*(dmax - dmin)/spacing
+    im = _sp.zeros(shape, dtype=_sp.uint16)
     pts = _sp.array(network['pore.coords']*8, dtype=_sp.uint16)
     val = 1
     for row in pts:
