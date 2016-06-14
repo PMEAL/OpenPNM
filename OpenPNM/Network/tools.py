@@ -609,6 +609,7 @@ def subdivide(network, pores, shape, labels=[]):
     for l in main_labels:
         del network['pore.surface_'+l]
     trim(network=network, pores=pores)
+    _mgr.purge_object(obj=new_net, mode='complete')
 
 
 def trim_occluded_throats(network, mask='all'):
