@@ -729,3 +729,74 @@ def template_sphere_shell(outer_radius=None, inner_radius=0):
         img_min = x ** 2 + y ** 2 + z ** 2 > _np.unique(rmin) ** 2
         img = img * img_min
     return (img)
+
+
+def find_surface_pores(network, im_max=1e7):
+    r"""
+    Find the pores on the surface of the domain and labels them as
+    'pore.surface'.
+
+    Parameters
+    ----------
+    network: OpenPNM Network Object
+        The network for which the surface pores are to be found
+
+    im_max: scalar
+        The maximum size of the image to be generated for the watershed test.
+        This limit is in place to prevent unreasonable large images from being
+        created.  If you are using a powerful computer this limit can be
+        increased.
+
+    Notes
+    -----
+    This function creates a 3D image with points placed for each pore center,
+    then performs a watershed segmentation of the distance transform.  Any
+    pores lying in watershed basins that connect with the edges of the image
+    are considered to be surface pores.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> net = op.Network.Cubic(shape=[5, 5, 5])
+    >>> op.Network.tools.find_surface_pores(network=net)
+    >>> net.num_pores('surface')
+    98
+
+    When cubic networks are created, the surfaces are already labeled:
+
+    >>> net.num_pores(['top','bottom', 'left', 'right', 'front','back'])
+    98
+
+    This function is mostly useful for unique networks such as spheres, random
+    topology, or networks that have been subdivied.
+
+    """
+    import scipy.ndimage as spim
+    from skimage.morphology import watershed
+    P1 = network['throat.conns'][:, 0]
+    P2 = network['throat.conns'][:, 1]
+    C1 = network['pore.coords'][P1]
+    C2 = network['pore.coords'][P2]
+    E = _sp.sqrt(_sp.sum((C1-C2)**2, axis=1))  # Distance between pores
+    dmin = _sp.amin(network['pore.coords'], axis=0)
+    dmax = _sp.amax(network['pore.coords'], axis=0)
+    spacing = _sp.amin(E)
+    shape = 4*(dmax - dmin)/spacing
+    if _sp.prod(shape) > im_max:
+        raise Exception('The image size required to perform this query is ' +
+                        str(shape) + ' which is too large')
+    im = _sp.zeros(shape, dtype=_sp.uint16)
+    f = 2/spacing
+    pts = _sp.array(network['pore.coords']*f, dtype=_sp.uint16)
+    val = 1
+    for row in pts:
+        im[row[0], row[1], row[2]] = val
+        val += 1
+    distance = spim.distance_transform_edt(im == 0)
+    labels = watershed(distance, im)
+    box = -_sp.ones(_sp.array(_sp.shape(im))-2)
+    box = _sp.pad(box, pad_width=1, mode='constant', constant_values=1)
+    inds = _sp.where((labels*box) > 0)
+    surface = _sp.unique(labels[inds])-1
+    network['pore.surface'] = False
+    network['pore.surface'][surface] = True
