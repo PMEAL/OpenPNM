@@ -57,14 +57,35 @@ def random(geometry, seed=None, num_range=[0, 1], **kwargs):
 
 def largest_sphere(geometry, network, **kwargs):
     r"""
-    """
+    Find the maximum diameter pore that can be place in each location that
+    does not overlap with any neighbors.
 
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry Object
+        The Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    network : OpenPNM Network Object
+        The Netowrk object is required to lookup the connectivty of each pore
+        to find the neighbors and subsequently their separation distance.
+
+    """
+    D = _sp.zeros([network.Np, ], dtype=float)
     C1 = network['pore.coords'][network['throat.conns'][:, 0]]
     C2 = network['pore.coords'][network['throat.conns'][:, 1]]
-    D = _sp.sqrt(_sp.sum((C1 - C2)**2, axis=1))*0.99  # Shorten slightly
-    am = network.create_adjacency_matrix(data=D, sprsfmt='lil')
-    R = _sp.array([_sp.amin(row) for row in am.data])
-    return R[network.pores(geometry.name)]
+    L = _sp.sqrt(_sp.sum((C1 - C2)**2, axis=1))
+    iters = 0  # It seems this only needs to iterate once to complete...
+    while iters >= 0:
+        iters -= 1
+        Lt = L - _sp.sum(D[network['throat.conns']], axis=1)/2
+        inds = Lt > 0
+        L[inds] = L[inds]
+        am = network.create_adjacency_matrix(data=L, sprsfmt='lil')
+        D = _sp.array([_sp.amin(row) for row in am.data])
+
+    return D[network.pores(geometry.name)]
 
 
 def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
