@@ -62,57 +62,40 @@ class Voronoi(GenericNetwork):
 
         """
         super().__init__(**kwargs)
+
+        # Reflect base points about domain to make flat faces up tessellation
         domain_size = sp.array(domain_size, ndmin=1)
         base_points = sp.rand(num_cells, 3)
         base_points = base_points*domain_size
-        orig_points = base_points
-        base_points = sp.vstack((base_points, [-1, 1, 1]*orig_points +
-                                              [2, 0, 0]))
-        base_points = sp.vstack((base_points, [1, -1, 1]*orig_points +
-                                              [0, 2, 0]))
-        base_points = sp.vstack((base_points, [1, 1, -1]*orig_points +
-                                              [0, 0, 2]))
-        base_points = sp.vstack((base_points, [-1, 1, 1]*orig_points))
-        base_points = sp.vstack((base_points, [1, -1, 1]*orig_points))
-        base_points = sp.vstack((base_points, [1, 1, -1]*orig_points))
-        self.vor = sptl.Voronoi(points=base_points)
-        # Extract pore coordinates from Voronoi vertices
-        a = []
-        [a.extend(self.vor.regions[i]) for i in self.vor.point_region[0:300]]
-        inds = sp.unique(a)
-        self.update({'pore.all': sp.ones_like(inds, dtype=bool)})
-        self['pore.coords'] = self.vor.vertices[inds]
-        # Extract throat connections from ridges
-        am = sp.sparse.lil_matrix((self.Np, self.Np), dtype=int)
-        region_mask = sp.zeros(len(self.vor.point_region) + 1, dtype=bool)
-        inds = self.vor.point_region[0:300]
-        region_mask[inds] = True
-        i = 0
-        for ridge in self.vor.ridge_vertices:
-            if sp.all(region_mask[self.vor.ridge_points[i]]):
-                ridge.append(ridge[0])
-                conns = sp.vstack((ridge[0:-1], ridge[1:])).T
-                am[conns[:, 0], conns[:, 1]] = 1
+        if face_type == 'reflected':
+            orig_points = base_points
+            Nx, Ny, Nz = domain_size
+            base_points = sp.vstack((base_points, [-Nx, Ny, Nz]*orig_points +
+                                                  [2*Nx, 0, 0]))
+            base_points = sp.vstack((base_points, [Nx, -Ny, Nz]*orig_points +
+                                                  [0, 2*Ny, 0]))
+            base_points = sp.vstack((base_points, [Nx, Ny, -Nz]*orig_points +
+                                                  [0, 0, 2*Nz]))
+            base_points = sp.vstack((base_points, [-Nx, Ny, Nz]*orig_points))
+            base_points = sp.vstack((base_points, [Nx, -Ny, Nz]*orig_points))
+            base_points = sp.vstack((base_points, [Nx, Ny, -Nz]*orig_points))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        vor = sptl.Voronoi(points=base_points)
+        internal_vertices = sp.zeros(vor.vertices.shape[0], dtype=bool)
+        N = vor.vertices.shape[0]
+        am = sp.sparse.lil_matrix((N, N), dtype=int)
+        for item in vor.ridge_dict.keys():
+            if sp.all(vor.vertices[vor.ridge_dict[item]] >= [0, 0, 0]) and \
+               sp.all(vor.vertices[vor.ridge_dict[item]] <= domain_size):
+                internal_vertices[vor.ridge_dict[item]] = True
+                hull = [vor.ridge_dict[item][0:-1], vor.ridge_dict[item][1:]]
+                hull = sp.sort(sp.vstack(hull).T, axis=1)
+                am[hull[:, 0], hull[:, 1]] = 1
+        am = am[internal_vertices, :][:, internal_vertices]
+        Nt = am.nnz
+        Np = sp.sum(internal_vertices)
+        am = am.tocoo()
+        self.update({'pore.all': sp.ones((Np, ), dtype=bool)})
+        self['pore.coords'] = vor.vertices[internal_vertices]
+        self.update({'throat.all': sp.ones((Nt, ), dtype=bool)})
+        self['throat.conns'] = sp.vstack([am.row, am.col]).T
