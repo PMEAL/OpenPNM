@@ -48,7 +48,8 @@ class Voronoi(GenericNetwork):
                 domain are dropped from the network, leaving a rough exposed
                 surface.
 
-                **'intersected'** : All Voronoi edges that lie outside the
+                **'intersected'** : (Not implemented yet!)
+                All Voronoi edges that lie outside the
                 domain are cut-off at the intersection with the domain face,
                 and new Voronoi vertices are created at the domain face.  These
                 new vertices are NOT connected to each other so no vertices
@@ -65,12 +66,17 @@ class Voronoi(GenericNetwork):
 
         # Reflect base points about domain to make flat faces up tessellation
         domain_size = sp.array(domain_size, ndmin=1)
-        base_points = sp.rand(num_cells, 3)
-        base_points = base_points*domain_size
-        self.base_points = base_points
+
         if face_type == 'rough':
-            pass
+            base_points = sp.rand(num_cells*(1.5**3), 3)
+            base_points = base_points*(1.5*domain_size) - 0.25*domain_size
+            inds = sp.all(base_points > [0, 0, 0], axis=1)
+            inds = inds*sp.all(base_points < domain_size, axis=1)
+            self.base_points = base_points[inds, :]
         elif face_type == 'reflected':
+            base_points = sp.rand(num_cells, 3)
+            base_points = base_points*domain_size
+            self.base_points = base_points
             orig_points = base_points
             Nx, Ny, Nz = domain_size
             base_points = sp.vstack((base_points, [-1, 1, 1]*orig_points +
