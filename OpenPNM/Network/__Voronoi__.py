@@ -32,8 +32,8 @@ class Voronoi(GenericNetwork):
             be known a priori (I think think)
 
         domain_size : array_like (3 x 1)
-            The cubic domain where the base points lie.  Note that many of the
-            Voronoi vertices will lie outside this domain, but these are
+            The cubic domain in which the base points lie.  Note that many of
+            the Voronoi vertices will lie outside this domain, but these are
             trimmed based on the ``face_type`` argument.
 
         face_type : string
@@ -67,27 +67,33 @@ class Voronoi(GenericNetwork):
         domain_size = sp.array(domain_size, ndmin=1)
         base_points = sp.rand(num_cells, 3)
         base_points = base_points*domain_size
-        if face_type == 'reflected':
+        self.base_points = base_points
+        if face_type == 'rough':
+            pass
+        elif face_type == 'reflected':
             orig_points = base_points
             Nx, Ny, Nz = domain_size
-            base_points = sp.vstack((base_points, [-Nx, Ny, Nz]*orig_points +
+            base_points = sp.vstack((base_points, [-1, 1, 1]*orig_points +
                                                   [2*Nx, 0, 0]))
-            base_points = sp.vstack((base_points, [Nx, -Ny, Nz]*orig_points +
+            base_points = sp.vstack((base_points, [1, -1, 1]*orig_points +
                                                   [0, 2*Ny, 0]))
-            base_points = sp.vstack((base_points, [Nx, Ny, -Nz]*orig_points +
+            base_points = sp.vstack((base_points, [1, 1, -1]*orig_points +
                                                   [0, 0, 2*Nz]))
-            base_points = sp.vstack((base_points, [-Nx, Ny, Nz]*orig_points))
-            base_points = sp.vstack((base_points, [Nx, -Ny, Nz]*orig_points))
-            base_points = sp.vstack((base_points, [Nx, Ny, -Nz]*orig_points))
+            base_points = sp.vstack((base_points, [-1, 1, 1]*orig_points))
+            base_points = sp.vstack((base_points, [1, -1, 1]*orig_points))
+            base_points = sp.vstack((base_points, [1, 1, -1]*orig_points))
+        else:
+            raise Exception('Unrecognized face_type: ' + face_type)
 
         vor = sptl.Voronoi(points=base_points)
         internal_vertices = sp.zeros(vor.vertices.shape[0], dtype=bool)
         N = vor.vertices.shape[0]
         am = sp.sparse.lil_matrix((N, N), dtype=int)
         for item in vor.ridge_dict.keys():
-            if sp.all(vor.vertices[vor.ridge_dict[item]] >= [0, 0, 0]) and \
+            if sp.all(vor.vertices[vor.ridge_dict[item]] >= -0.1) and \
                sp.all(vor.vertices[vor.ridge_dict[item]] <= domain_size):
                 internal_vertices[vor.ridge_dict[item]] = True
+                vor.ridge_dict[item].append(vor.ridge_dict[item][0])
                 hull = [vor.ridge_dict[item][0:-1], vor.ridge_dict[item][1:]]
                 hull = sp.sort(sp.vstack(hull).T, axis=1)
                 am[hull[:, 0], hull[:, 1]] = 1
