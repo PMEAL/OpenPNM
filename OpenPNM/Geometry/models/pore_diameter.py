@@ -55,6 +55,18 @@ def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     return _misc.random(N=geometry.Np, seed=seed, num_range=num_range)
 
 
+def largest_sphere(geometry, network, **kwargs):
+    r"""
+    """
+
+    C1 = network['pore.coords'][network['throat.conns'][:, 0]]
+    C2 = network['pore.coords'][network['throat.conns'][:, 1]]
+    D = _sp.sqrt(_sp.sum((C1 - C2)**2, axis=1))*0.99  # Shorten slightly
+    am = network.create_adjacency_matrix(data=D, sprsfmt='lil')
+    R = _sp.array([_sp.amin(row) for row in am.data])
+    return R[network.pores(geometry.name)]
+
+
 def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,
            pore_seed='pore.seed', psd_offset=0, **kwargs):
     r"""
