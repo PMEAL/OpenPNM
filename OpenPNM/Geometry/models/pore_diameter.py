@@ -55,9 +55,9 @@ def random(geometry, seed=None, num_range=[0, 1], **kwargs):
     return _misc.random(N=geometry.Np, seed=seed, num_range=num_range)
 
 
-def largest_sphere(geometry, network, **kwargs):
+def largest_sphere(geometry, network, iters=10, **kwargs):
     r"""
-    Find the maximum diameter pore that can be place in each location that
+    Finds the maximum diameter pore that can be place in each location that
     does not overlap with any neighbors.
 
     Parameters
@@ -71,20 +71,24 @@ def largest_sphere(geometry, network, **kwargs):
         The Netowrk object is required to lookup the connectivty of each pore
         to find the neighbors and subsequently their separation distance.
 
+    iters : integer
+        The number of iterations to perform when searching for maximum
+        diameter.  This function iteratively grows pores until they touch
+        their nearest neighbor, which is also growing, so this parameter limits
+        the maximum number of iterations.  The default is 10, but 5 is usally
+        enough.
+
     """
     D = _sp.zeros([network.Np, ], dtype=float)
     C1 = network['pore.coords'][network['throat.conns'][:, 0]]
     C2 = network['pore.coords'][network['throat.conns'][:, 1]]
     L = _sp.sqrt(_sp.sum((C1 - C2)**2, axis=1))
-    iters = 0  # It seems this only needs to iterate once to complete...
     while iters >= 0:
         iters -= 1
         Lt = L - _sp.sum(D[network['throat.conns']], axis=1)/2
-        inds = Lt > 0
-        L[inds] = L[inds]
-        am = network.create_adjacency_matrix(data=L, sprsfmt='lil')
-        D = _sp.array([_sp.amin(row) for row in am.data])
-
+        am = network.create_adjacency_matrix(data=Lt, sprsfmt='lil',
+                                             dropzeros=False)
+        D = D + _sp.array([_sp.amin(row) for row in am.data])*0.95
     return D[network.pores(geometry.name)]
 
 
