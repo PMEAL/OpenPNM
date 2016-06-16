@@ -4,6 +4,8 @@ pore_diameter
 ===============================================================================
 
 """
+from OpenPNM.Base import logging
+_logger = logging.getLogger()
 from . import misc as _misc
 import scipy as _sp
 
@@ -105,6 +107,9 @@ def largest_sphere(geometry, network, iters=10, **kwargs):
         am = network.create_adjacency_matrix(data=Lt, sprsfmt='lil',
                                              dropzeros=False)
         D[Ps] = D[Ps] + _sp.array([_sp.amin(row) for row in am.data])[Ps]*0.95
+    if _sp.any(D < 0):
+        _logger.warning('Negative pore diameters found!  Neighboring pores' +
+                        ' must be larger than the pore spacing.')
     return D[network.pores(geometry.name)]
 
 
