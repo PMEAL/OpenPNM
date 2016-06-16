@@ -39,4 +39,5 @@ from .__DelaunayCubic__ import DelaunayCubic
 from .__MatFile__ import MatFile
 from .__TestNet__ import TestNet
 from .__Empty__ import Empty
+from .__Voronoi__ import Voronoi
 from . import models
