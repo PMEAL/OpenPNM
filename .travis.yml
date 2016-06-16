@@ -7,16 +7,6 @@ python:
   - "3.4"
   - "3.5"
 
-cache: apt
-
-addons:
-  apt:
-    packages:
-    - libatlas-dev
-    - libatlas-base-dev
-    - liblapack-dev
-    - gfortran
-
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
