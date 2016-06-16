@@ -77,9 +77,25 @@ def largest_sphere(geometry, network, iters=10, **kwargs):
         their nearest neighbor, which is also growing, so this parameter limits
         the maximum number of iterations.  The default is 10, but 5 is usally
         enough.
+        
+    Notes
+    -----
+    This model looks into all pores in the network when finding the diameter.
+    This means that when multiple Geometry objects are defined, it will 
+    consider the diameter of pores on adjacent Geometries. If no diameters 
+    have been assigned to these neighboring pores it will assume 0.  If 
+    diameter value are assigned to the neighboring pores AFTER this model is
+    run, the pores will overlap.  This can be remedied by running this model
+    again.
 
     """
-    D = _sp.zeros([network.Np, ], dtype=float)
+    try:
+        D = network['pore.diameter']
+        nans = _sp.isnan(D)
+        D[nans] = 0.0
+    except:
+        D = _sp.zeros([network.Np, ], dtype=float)
+    Ps = network.pores(geometry.name)
     C1 = network['pore.coords'][network['throat.conns'][:, 0]]
     C2 = network['pore.coords'][network['throat.conns'][:, 1]]
     L = _sp.sqrt(_sp.sum((C1 - C2)**2, axis=1))
@@ -88,7 +104,7 @@ def largest_sphere(geometry, network, iters=10, **kwargs):
         Lt = L - _sp.sum(D[network['throat.conns']], axis=1)/2
         am = network.create_adjacency_matrix(data=Lt, sprsfmt='lil',
                                              dropzeros=False)
-        D = D + _sp.array([_sp.amin(row) for row in am.data])*0.95
+        D[Ps] = D[Ps] + _sp.array([_sp.amin(row) for row in am.data])[Ps]*0.95
     return D[network.pores(geometry.name)]
 
 
