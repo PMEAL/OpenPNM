@@ -9,6 +9,7 @@ from . import misc as _misc
 import scipy as _sp
 _logger = logging.getLogger()
 
+
 def weibull(geometry, shape, scale, loc, seeds='pore.seed', **kwargs):
     if seeds not in geometry:
         geometry['pore.seed'] = _sp.rand(geometry.Np,)
