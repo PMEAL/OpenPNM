@@ -17,8 +17,9 @@ class ToolsTest:
 
         def test_hidden_items(self):
             list_ = Tools.PrintableList(['pore.first', 'pore._second'])
-            assert 'first' in list_.__str__()
-            assert 'pore._second' not in list_.__str__()
+            s = list_.__str__()
+            assert 'pore.first' in s
+            assert 'pore._second' not in s
 
     class PrintableDictTest:
         def setup_class(self):
