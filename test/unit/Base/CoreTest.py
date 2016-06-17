@@ -127,7 +127,7 @@ class CoreTest:
     def test_props_hidden_keys(self):
         self.net['pore._blah'] = 1.0
         assert 'pore._blah' not in self.net.__str__()
-        assert 'pore._blah' in self.keys()
+        assert 'pore._blah' in self.net.keys()
 
     def test_labels(self):
         a = self.net.labels()

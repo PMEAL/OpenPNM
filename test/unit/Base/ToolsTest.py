@@ -16,9 +16,9 @@ class ToolsTest:
             assert actual_string == expected_string
 
         def test_hidden_items(self):
-            list_ = Tools.PrintableList(['first', '_second'])
+            list_ = Tools.PrintableList(['pore.first', 'pore._second'])
             assert 'first' in list_.__str__()
-            assert '_second' not in list_.__str__()
+            assert 'pore._second' not in list_.__str__()
 
     class PrintableDictTest:
         def setup_class(self):
