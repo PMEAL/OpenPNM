@@ -55,7 +55,7 @@ class PoreDiameterTest:
 
     def test_largest_sphere_multiple_geometries(self):
         net = OpenPNM.Network.Cubic(shape=[10, 10, 10], spacing=[5, 5, 5])
-        net['pore.coords'][net.pores('top')] += [0 , 0, -3]
+        net['pore.coords'][net.pores('top')] += [0, 0, -3]
         geom2 = OpenPNM.Geometry.GenericGeometry(network=net,
                                                  pores=net.pores('top'))
         geom2['pore.diameter'] = 1.0

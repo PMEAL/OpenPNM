@@ -5,10 +5,9 @@ pore_diameter
 
 """
 from OpenPNM.Base import logging
-_logger = logging.getLogger()
 from . import misc as _misc
 import scipy as _sp
-
+_logger = logging.getLogger()
 
 def weibull(geometry, shape, scale, loc, seeds='pore.seed', **kwargs):
     if seeds not in geometry:
