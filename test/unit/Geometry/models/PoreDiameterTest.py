@@ -52,18 +52,18 @@ class PoreDiameterTest:
         geo.models['pore.diameter']['iters'] = 5
         geo.regenerate()
         assert dmin < sp.amin(geo['pore.diameter'])
-    
+
     def test_largest_sphere_multiple_geometries(self):
         net = OpenPNM.Network.Cubic(shape=[10, 10, 10], spacing=[5, 5, 5])
         net['pore.coords'][net.pores('top')] += [0 , 0, -3]
-        geom2 = OpenPNM.Geometry.GenericGeometry(network=net, 
+        geom2 = OpenPNM.Geometry.GenericGeometry(network=net,
                                                  pores=net.pores('top'))
         geom2['pore.diameter'] = 1.0
         Ps = net.pores('top', mode='not')
-        geom1 = OpenPNM.Geometry.GenericGeometry(network=net, 
-                                                 pores=Ps, 
+        geom1 = OpenPNM.Geometry.GenericGeometry(network=net,
+                                                 pores=Ps,
                                                  throats=net.Ts)
-        mod = OpenPNM.Geometry.models.pore_diameter.largest_sphere        
+        mod = OpenPNM.Geometry.models.pore_diameter.largest_sphere
         geom1.models.add(propname='pore.diameter',
                          model=mod,
                          iters=15)
