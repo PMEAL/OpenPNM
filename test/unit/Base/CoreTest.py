@@ -124,6 +124,11 @@ class CoreTest:
         b = ['pore.diameter']
         assert sorted(a) == sorted(b)
 
+    def test_props_hidden_keys(self):
+        self.net['pore._blah'] = 1.0
+        assert 'pore._blah' not in self.net.__str__()
+        assert 'pore._blah' in self.keys()
+
     def test_labels(self):
         a = self.net.labels()
         assert 'pore.top' in a
@@ -208,6 +213,11 @@ class CoreTest:
     def test_labels_pores_mode_foo(self):
         with pytest.raises(Exception):
             self.net.labels(pores=[0, 1], mode='foo')
+
+    def test_labels_hidden_key(self):
+        self.net['pore._foo'] = True
+        assert 'pore._foo' not in self.net.__str__()
+        assert 'pore._foo' in self.net.keys()
 
     def test_pores(self):
         a = self.net.pores()
