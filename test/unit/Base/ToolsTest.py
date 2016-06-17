@@ -1,7 +1,6 @@
 from OpenPNM.Base import Tools
 
 
-
 class PrintableListTest:
     def setup_class(self):
         self.list = Tools.PrintableList(['first', 'second'])
@@ -20,6 +19,7 @@ class PrintableListTest:
         s = list_.__str__()
         assert 'pore.first' in s
         assert 'pore._second' not in s
+
 
 class PrintableDictTest:
     def setup_class(self):
