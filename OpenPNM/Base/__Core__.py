@@ -1589,7 +1589,9 @@ class Core(dict):
                                                                          prop,
                                                                          defined,
                                                                          required))
-            elif ~prop.startswith('pore._') or ~prop.startswith('throat._'):
+            elif prop.startswith('pore._') or prop.startswith('throat._'):
+                pass
+            else:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
@@ -1608,7 +1610,9 @@ class Core(dict):
             prop = item
             if len(prop) > 35:
                 prop = prop[0:32] + '...'
-            if ~prop.startswith('pore._') or ~prop.startswith('throat._'):
+            if prop.startswith('pore._') or prop.startswith('throat._'):
+                pass
+            else:
                 lines.append("{0:<5d} {1:<35s} {2:<10d}".format(i + 1,
                                                                 prop,
                                                                 sp.sum(self[item])))
