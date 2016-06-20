@@ -180,8 +180,21 @@ class Cubic(GenericNetwork):
         self['pore.bottom'][z <= z.min()] = True
         self['pore.top'][z >= z.max()] = True
 
-    def add_boundaries(self):
+    def add_boundaries(self, labels=['top', 'bottom', 'front', 'back', 'left',
+                       'right']):
         r"""
+        Add pores to the faces of the network for use as boundary pores.  Pores
+        are offset from the faces by 1/2 a lattice spacing such that they lie
+        directly on the boundaries.
+
+        Parameters
+        ----------
+        labels : list of strings
+            Controls which faces the boundary pores are added to.  Options
+            include 'top', 'bottom', 'left', 'right', 'front', and 'back'.
+
+        Notes
+        -----
         This method uses ``clone_pores`` to clone the surface pores (labeled
         'left','right', etc), then shifts them to the periphery of the domain,
         and gives them the label 'right_face', 'left_face', etc.
@@ -200,9 +213,10 @@ class Cubic(GenericNetwork):
         scale['left'] = scale['right'] = [1, 0, 1]
         scale['bottom'] = scale['top'] = [1, 1, 0]
 
-        for label in ['front', 'back', 'left', 'right', 'bottom', 'top']:
+        for label in labels:
             ps = self.pores(label)
-            self.clone_pores(pores=ps, apply_label=[label+'_boundary', 'boundary'])
+            self.clone_pores(pores=ps, apply_label=[label+'_boundary',
+                                                    'boundary'])
             # Translate cloned pores
             ind = self.pores(label+'_boundary')
             coords = self['pore.coords'][ind]
