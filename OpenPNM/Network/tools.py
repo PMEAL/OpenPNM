@@ -792,8 +792,7 @@ def find_surface_pores(network, markers=None, label='surface'):
                    [xave, ymin - yave, zave],
                    [xave, yave, zmax + zave],
                    [xave, yave, zmin - zave]]
-    else:
-        markers = _sp.atleast_3d(markers)
+    markers = _sp.atleast_3d(markers)
     for row in range(0, markers.shape[0]):
         tri = sptl.Delaunay(network['pore.coords'], incremental=True)
         tri.add_points(markers[row].T)
