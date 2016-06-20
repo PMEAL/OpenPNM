@@ -20,7 +20,7 @@ class PrintableListTest:
         assert 'pore.first' in s
         assert 'pore._second' not in s
 
-
+.
 class PrintableDictTest:
     def setup_class(self):
         self.dict = Tools.PrintableDict()
