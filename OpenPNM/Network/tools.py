@@ -731,28 +731,36 @@ def template_sphere_shell(outer_radius=None, inner_radius=0):
     return (img)
 
 
-def find_surface_pores(network, im_max=1e7):
+def find_surface_pores(network, markers=None, label='surface'):
     r"""
-    Find the pores on the surface of the domain and labels them as
-    'pore.surface'.
+    Find the pores on the surface of the domain by performing a Delaunay
+    triangulation between the network pores and some external ``markers``. All
+    pores connected to these external marker points are considered surface
+    pores.
 
     Parameters
     ----------
     network: OpenPNM Network Object
         The network for which the surface pores are to be found
 
-    im_max: scalar
-        The maximum size of the image to be generated for the watershed test.
-        This limit is in place to prevent unreasonable large images from being
-        created.  If you are using a powerful computer this limit can be
-        increased.
+    markers: array_like
+        3 x N array of the marker coordiantes to use in the triangulation.  The
+        labeling is performed N distinct times, meaning that the triangulation
+        with each marker is performed independently.  By default, this function
+        will automatically generate 6 points outside each axis of the network
+        domain.
+
+        Users may wish to specify a single external marker point then
+        domainand provide an appropriate label.  For instance, the marker may
+        be *above* the domain, and the label might be 'top_surface'.
+
+    label : string
+        The label to apply to the pores.  The default is 'surface'.
 
     Notes
     -----
-    This function creates a 3D image with points placed for each pore center,
-    then performs a watershed segmentation of the distance transform.  Any
-    pores lying in watershed basins that connect with the edges of the image
-    are considered to be surface pores.
+    This function does not check whether the given markers actually lie outside
+    the domain, allowing the labeling of *internal* sufaces.
 
     Examples
     --------
@@ -771,32 +779,27 @@ def find_surface_pores(network, im_max=1e7):
     topology, or networks that have been subdivied.
 
     """
-    import scipy.ndimage as spim
-    from skimage.morphology import watershed
-    P1 = network['throat.conns'][:, 0]
-    P2 = network['throat.conns'][:, 1]
-    C1 = network['pore.coords'][P1]
-    C2 = network['pore.coords'][P2]
-    E = _sp.sqrt(_sp.sum((C1-C2)**2, axis=1))  # Distance between pores
-    dmin = _sp.amin(network['pore.coords'], axis=0)
-    dmax = _sp.amax(network['pore.coords'], axis=0)
-    spacing = _sp.amin(E)
-    shape = 4*(dmax - dmin)/spacing
-    if _sp.prod(shape) > im_max:
-        raise Exception('The image size required to perform this query is ' +
-                        str(shape) + ' which is too large')
-    im = _sp.zeros(shape, dtype=_sp.uint16)
-    f = 2/spacing
-    pts = _sp.array(network['pore.coords']*f, dtype=_sp.uint16)
-    val = 1
-    for row in pts:
-        im[row[0], row[1], row[2]] = val
-        val += 1
-    distance = spim.distance_transform_edt(im == 0)
-    labels = watershed(distance, im)
-    box = -_sp.ones(_sp.array(_sp.shape(im))-2)
-    box = _sp.pad(box, pad_width=1, mode='constant', constant_values=1)
-    inds = _sp.where((labels*box) > 0)
-    surface = _sp.unique(labels[inds])-1
-    network['pore.surface'] = False
-    network['pore.surface'][surface] = True
+    import scipy.spatial as sptl
+    if markers is None:
+        (xmax, ymax, zmax) = _sp.amax(network['pore.coords'], axis=0)
+        (xmin, ymin, zmin) = _sp.amin(network['pore.coords'], axis=0)
+        xave = (xmin+xmax)/2
+        yave = (ymin+ymax)/2
+        zave = (zmin+zmax)/2
+        markers = [[xmax + xave, yave, zave],
+                   [xmin - xave, yave, zave],
+                   [xave, ymax + yave, zave],
+                   [xave, ymin - yave, zave],
+                   [xave, yave, zmax + zave],
+                   [xave, yave, zmin - zave]]
+    else:
+        markers = _sp.atleast_3d(markers)
+    for row in range(0, markers.shape[0]):
+        tri = sptl.Delaunay(network['pore.coords'], incremental=True)
+        tri.add_points(markers[row].T)
+        (indices, indptr) = tri.vertex_neighbor_vertices
+        k = tri.npoints - 1
+        neighbors = indptr[indices[k]:indices[k+1]]
+        if 'pore.'+label not in network.keys():
+            network['pore.'+label] = False
+        network['pore.'+label][neighbors] = True
