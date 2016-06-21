@@ -13,9 +13,7 @@ class PrintableList(list):
         lines = [horizontal_rule]
         self.sort()
         for i, item in enumerate(self):
-            if '._' in item:
-                tmp = 0  # dummy assignment
-            else:
+            if '._' not in item:
                 lines.append('{0}\t: {1}'.format(i + 1, item))
         lines.append(horizontal_rule)
         return '\n'.join(lines)

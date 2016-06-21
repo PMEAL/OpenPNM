@@ -1589,9 +1589,7 @@ class Core(dict):
                                                                          prop,
                                                                          defined,
                                                                          required))
-            elif '._' in prop:
-                tmp = 0  # dummy assignment
-            else:
+            elif '._' not in prop:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
@@ -1610,9 +1608,7 @@ class Core(dict):
             prop = item
             if len(prop) > 35:
                 prop = prop[0:32] + '...'
-            if '._' in prop:
-                tmp = 0  # dummy assignment
-            else:
+            if '._' not in prop:
                 lines.append("{0:<5d} {1:<35s} {2:<10d}".format(i + 1,
                                                                 prop,
                                                                 sp.sum(self[item])))
