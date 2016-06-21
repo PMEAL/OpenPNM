@@ -13,8 +13,8 @@ class PrintableList(list):
         lines = [horizontal_rule]
         self.sort()
         for i, item in enumerate(self):
-            if item.startswith('pore._') or item.startswith('throat._'):
-                pass
+            if '._' in item:
+                tmp = 0  # dummy assignment
             else:
                 lines.append('{0}\t: {1}'.format(i + 1, item))
         lines.append(horizontal_rule)

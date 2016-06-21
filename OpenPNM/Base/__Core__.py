@@ -126,7 +126,7 @@ class Core(dict):
             name = ''.join(random.choice(string.ascii_uppercase +
                                          string.ascii_lowercase +
                                          string.digits) for _ in range(5))
-            name = self.__class__.__name__ + '_' + name
+            name = '_' + self.__class__.__name__ + '_' + name
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
@@ -1589,8 +1589,8 @@ class Core(dict):
                                                                          prop,
                                                                          defined,
                                                                          required))
-            elif prop.startswith('pore._') or prop.startswith('throat._'):
-                pass
+            elif '._' in prop:
+                tmp = 0  # dummy assignment
             else:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
@@ -1610,8 +1610,8 @@ class Core(dict):
             prop = item
             if len(prop) > 35:
                 prop = prop[0:32] + '...'
-            if prop.startswith('pore._') or prop.startswith('throat._'):
-                pass
+            if '._' in prop:
+                tmp = 0  # dummy assignment
             else:
                 lines.append("{0:<5d} {1:<35s} {2:<10d}".format(i + 1,
                                                                 prop,
