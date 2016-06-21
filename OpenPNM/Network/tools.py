@@ -746,14 +746,15 @@ def find_surface_pores(network, markers=None, label='surface'):
 
     markers: array_like
         3 x N array of the marker coordiantes to use in the triangulation.  The
-        labeling is performed N distinct times, meaning that the triangulation
-        with each marker is performed independently.  By default, this function
-        will automatically generate 6 points outside each axis of the network
-        domain.
+        labeling is performed in one step, so all points are added, and then
+        any pores connected to at least one marker is given the provided label.
+        By default, this function will automatically generate 6 points outside
+        each axis of the network domain.
 
-        Users may wish to specify a single external marker point then
-        domainand provide an appropriate label.  For instance, the marker may
-        be *above* the domain, and the label might be 'top_surface'.
+        Users may wish to specify a single external marker point and provide an
+        appropriate label in order to identify specific faces.  For instance,
+        the marker may be *above* the domain, and the label might be
+        'top_surface'.
 
     label : string
         The label to apply to the pores.  The default is 'surface'.
@@ -793,13 +794,14 @@ def find_surface_pores(network, markers=None, label='surface'):
                    [xave, ymin - yave, zave],
                    [xave, yave, zmax + zave],
                    [xave, yave, zmin - zave]]
-    markers = _sp.atleast_3d(markers)
-    for row in range(0, markers.shape[0]):
-        tri = sptl.Delaunay(network['pore.coords'], incremental=True)
-        tri.add_points(markers[row].T)
-        (indices, indptr) = tri.vertex_neighbor_vertices
-        k = tri.npoints - 1
+    markers = _sp.atleast_2d(markers)
+    tri = sptl.Delaunay(network['pore.coords'], incremental=True)
+    tri.add_points(markers)
+    (indices, indptr) = tri.vertex_neighbor_vertices
+    for k in range(network.Np, tri.npoints):
         neighbors = indptr[indices[k]:indices[k+1]]
+        inds = _sp.where(neighbors < network.Np)
+        neighbors = neighbors[inds]
         if 'pore.'+label not in network.keys():
             network['pore.'+label] = False
         network['pore.'+label][neighbors] = True
