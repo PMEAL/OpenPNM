@@ -126,7 +126,7 @@ class Core(dict):
             name = ''.join(random.choice(string.ascii_uppercase +
                                          string.ascii_lowercase +
                                          string.digits) for _ in range(5))
-            name = '_' + self.__class__.__name__ + '_' + name
+            name = self.__class__.__name__ + '_' + name
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
