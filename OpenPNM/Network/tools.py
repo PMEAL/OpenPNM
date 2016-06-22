@@ -730,3 +730,78 @@ def template_sphere_shell(outer_radius=None, inner_radius=0):
         img_min = x ** 2 + y ** 2 + z ** 2 > _np.unique(rmin) ** 2
         img = img * img_min
     return (img)
+
+
+def find_surface_pores(network, markers=None, label='surface'):
+    r"""
+    Find the pores on the surface of the domain by performing a Delaunay
+    triangulation between the network pores and some external ``markers``. All
+    pores connected to these external marker points are considered surface
+    pores.
+
+    Parameters
+    ----------
+    network: OpenPNM Network Object
+        The network for which the surface pores are to be found
+
+    markers: array_like
+        3 x N array of the marker coordiantes to use in the triangulation.  The
+        labeling is performed in one step, so all points are added, and then
+        any pores connected to at least one marker is given the provided label.
+        By default, this function will automatically generate 6 points outside
+        each axis of the network domain.
+
+        Users may wish to specify a single external marker point and provide an
+        appropriate label in order to identify specific faces.  For instance,
+        the marker may be *above* the domain, and the label might be
+        'top_surface'.
+
+    label : string
+        The label to apply to the pores.  The default is 'surface'.
+
+    Notes
+    -----
+    This function does not check whether the given markers actually lie outside
+    the domain, allowing the labeling of *internal* sufaces.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> net = op.Network.Cubic(shape=[5, 5, 5])
+    >>> op.Network.tools.find_surface_pores(network=net)
+    >>> net.num_pores('surface')
+    98
+
+    When cubic networks are created, the surfaces are already labeled:
+
+    >>> net.num_pores(['top','bottom', 'left', 'right', 'front','back'])
+    98
+
+    This function is mostly useful for unique networks such as spheres, random
+    topology, or networks that have been subdivied.
+
+    """
+    import scipy.spatial as sptl
+    if markers is None:
+        (xmax, ymax, zmax) = _sp.amax(network['pore.coords'], axis=0)
+        (xmin, ymin, zmin) = _sp.amin(network['pore.coords'], axis=0)
+        xave = (xmin+xmax)/2
+        yave = (ymin+ymax)/2
+        zave = (zmin+zmax)/2
+        markers = [[xmax + xave, yave, zave],
+                   [xmin - xave, yave, zave],
+                   [xave, ymax + yave, zave],
+                   [xave, ymin - yave, zave],
+                   [xave, yave, zmax + zave],
+                   [xave, yave, zmin - zave]]
+    markers = _sp.atleast_2d(markers)
+    tri = sptl.Delaunay(network['pore.coords'], incremental=True)
+    tri.add_points(markers)
+    (indices, indptr) = tri.vertex_neighbor_vertices
+    for k in range(network.Np, tri.npoints):
+        neighbors = indptr[indices[k]:indices[k+1]]
+        inds = _sp.where(neighbors < network.Np)
+        neighbors = neighbors[inds]
+        if 'pore.'+label not in network.keys():
+            network['pore.'+label] = False
+        network['pore.'+label][neighbors] = True
