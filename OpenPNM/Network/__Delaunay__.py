@@ -53,12 +53,6 @@ class Delaunay(GenericNetwork):
         Create Delauny network object
         """
         super().__init__(**kwargs)
-        self.generate(num_pores, domain_size, prob, base_points)
-
-    def generate(self, num_pores, domain_size, prob, base_points):
-        r"""
-        Method to trigger the generation of the network
-        """
         logger.info('Start of network topology generation')
         self._generate_setup(num_pores, domain_size, base_points)
         if base_points is not None:
