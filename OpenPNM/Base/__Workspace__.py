@@ -302,7 +302,7 @@ class Workspace(dict):
         for item in temp_dict.values():
             item.workspace = self
 
-    def save(self, filename=''):
+    def save_workspace(self, filename=''):
         r"""
         Save the entire state of the Workspace to a 'pnm' file.
 
@@ -342,7 +342,14 @@ class Workspace(dict):
         # Save nested dictionary pickle
         _pickle.dump(self, open(filename + '.pnm', 'wb'))
 
-    def load(self, filename):
+    def save(self, **kwargs):
+        r"""
+        This method is deprecated, use ``save_workspace`` instead.
+        """
+        logger.warning("This method is deprecated, use \'save_workspace\'.")
+        self.save_workspace(**kwargs)
+
+    def load_workspace(self, filename):
         r"""
         Load an entire Workspace from a 'pnm' file.
 
@@ -374,6 +381,13 @@ class Workspace(dict):
                                    '\n' +
                                    '--> Current version: ' +
                                    str(OpenPNM.__version__))
+
+    def load(self, **kwargs):
+        r"""
+        This method is deprecated, use ``load_workspace`` instead.
+        """
+        logger.warning("This method is deprecated, use \'load_workspace\'.")
+        self.load_workspace(**kwargs)
 
     def export(self, network=None, filename='', fileformat='VTK'):
         logger.warning("This method is deprecated, use \'export_data\'.")
