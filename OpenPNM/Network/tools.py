@@ -805,3 +805,44 @@ def find_surface_pores(network, markers=None, label='surface'):
         if 'pore.'+label not in network.keys():
             network['pore.'+label] = False
         network['pore.'+label][neighbors] = True
+
+
+def plot_network(network):
+    r"""
+    Produces a 3D plot of the network pores and connecting throats for quick
+    visualization without having to export data to veiw in Paraview.
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # Create crazy indexing to plot lines between pores using vectorized code
+    am = network.create_adjacency_matrix(sprsfmt='coo')
+    Ts = _sp.vstack((am.row, am.col)).T
+    ind = _sp.argsort(Ts, axis=0)
+    Ts = Ts[ind[:, 0], :]
+    Nn = _sp.cumsum(network.num_neighbors(pores=network.Ps))
+    i = _sp.ndarray((network.Nt*4,), dtype=int)
+    i[0::2] = Ts[:, 0]
+    i[1::2] = Ts[:, 1]
+    i[Nn[:-1]*2] = -1
+    # -1 was added to i, which should point to inf in coords when plotted
+    coo = _sp.vstack([network['pore.coords'], [_sp.inf, _sp.inf, _sp.inf]])
+
+    # Messing around to create non-scaled axes
+    ax = Axes3D(plt.figure())
+    X = network['pore.coords'][:, 0]
+    Y = network['pore.coords'][:, 1]
+    Z = network['pore.coords'][:, 2]
+    max_range = _sp.array([X.max()-X.min(), Y.max()-Y.min(),
+                           Z.max()-Z.min()]).max() / 2.0
+    mid_x = (X.max()+X.min()) * 0.5
+    mid_y = (Y.max()+Y.min()) * 0.5
+    mid_z = (Z.max()+Z.min()) * 0.5
+    ax.set_xlim(mid_x - max_range, mid_x + max_range)
+    ax.set_ylim(mid_y - max_range, mid_y + max_range)
+    ax.set_zlim(mid_z - max_range, mid_z + max_range)
+
+    ax.plot(xs=coo[i, 0], ys=coo[i, 1], zs=coo[i, 2], color='black', alpha=0.5)
+
+    # Add pores to plot as circular dots
+    ax.scatter(xs=X, ys=Y, zs=Z, s=(_sp.rand(network.Np,)*max_range)**2)
