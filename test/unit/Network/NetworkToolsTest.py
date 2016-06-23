@@ -3,7 +3,7 @@ import scipy as sp
 import matplotlib as mpl
 
 
-class TooltsTest:
+class NetworkToolsTest:
     def setup_class(self):
         self.net = op.Network.Cubic(shape=[5, 5, 5], spacing=1)
         self.net['pore.diameter'] = sp.rand(self.net.Np)

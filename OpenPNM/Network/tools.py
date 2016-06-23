@@ -829,7 +829,9 @@ def plot_network(network):
     coo = _sp.vstack([network['pore.coords'], [_sp.inf, _sp.inf, _sp.inf]])
 
     # Messing around to create non-scaled axes
-    ax = Axes3D(plt.figure())
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
     X = network['pore.coords'][:, 0]
     Y = network['pore.coords'][:, 1]
     Z = network['pore.coords'][:, 2]
@@ -846,4 +848,4 @@ def plot_network(network):
 
     # Add pores to plot as circular dots
     ax.scatter(xs=X, ys=Y, zs=Z, s=(_sp.rand(network.Np,)*max_range)**2)
-    return ax
+    return fig
