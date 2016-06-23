@@ -844,8 +844,8 @@ def plot_network(network):
     ax.set_ylim(mid_y - max_range, mid_y + max_range)
     ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
-    ax.plot(xs=coo[i, 0], ys=coo[i, 1], zs=coo[i, 2], color='black', alpha=0.5)
+    ax.plot(xs=coo[i, 0], ys=coo[i, 1], zs=coo[i, 2], c='black')
 
     # Add pores to plot as circular dots
-    ax.scatter(xs=X, ys=Y, zs=Z, s=(_sp.rand(network.Np,)*max_range)**2)
+    ax.scatter(xs=X, ys=Y, zs=Z, s=20, c='red')
     return fig
