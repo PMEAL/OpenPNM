@@ -846,3 +846,4 @@ def plot_network(network):
 
     # Add pores to plot as circular dots
     ax.scatter(xs=X, ys=Y, zs=Z, s=(_sp.rand(network.Np,)*max_range)**2)
+    return ax
