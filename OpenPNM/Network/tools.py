@@ -807,26 +807,43 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
-def plot_topology(network):
+def plot_topology(network, throats=None):
     r"""
     Produces a 3D plot of the network topology showing how throats connect
     for quick visualization without having to export data to veiw in Paraview.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network whose topological connections to plot
+
+    throats : array_like (optional)
+        The list of throats to plot if only a sub-sample is desired.  This is
+        useful for inspecting a small region of the network.  If no throats are
+        specified then all throats are shown.
     """
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
 
+    if throats is None:
+        Ts = network.Ts
+    else:
+        Ts = network._parse_locations(locations=throats)
+
     # Create dummy indexing to sp.inf
-    i = -1*_sp.ones((network.Nt*3, ), dtype=int)
-    i[0::3] = network['throat.conns'][:,0]
-    i[1::3] = network['throat.conns'][:,1]
+    i = -1*_sp.ones((_sp.size(Ts)*3, ), dtype=int)
+    i[0::3] = network['throat.conns'][Ts, 0]
+    i[1::3] = network['throat.conns'][Ts, 1]
 
     # Messing around to create non-scaled axes
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    X = network['pore.coords'][:, 0]
-    Y = network['pore.coords'][:, 1]
-    Z = network['pore.coords'][:, 2]
+    Ps = _sp.unique(network['throat.conns'][Ts])
+
+    X = network['pore.coords'][Ps, 0]
+    Y = network['pore.coords'][Ps, 1]
+    Z = network['pore.coords'][Ps, 2]
     max_range = _sp.array([X.max()-X.min(), Y.max()-Y.min(),
                            Z.max()-Z.min()]).max() / 2.0
     mid_x = (X.max()+X.min()) * 0.5
@@ -837,9 +854,9 @@ def plot_topology(network):
     ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
     inf = _sp.array((_sp.inf,))
-    X = _sp.hstack([X, inf])
-    Y = _sp.hstack([Y, inf])
-    Z = _sp.hstack([Z, inf])
+    X = _sp.hstack([network['pore.coords'][:, 0], inf])
+    Y = _sp.hstack([network['pore.coords'][:, 1], inf])
+    Z = _sp.hstack([network['pore.coords'][:, 2], inf])
     ax.plot(xs=X[i], ys=Y[i], zs=Z[i], c='black')
 
     return fig
