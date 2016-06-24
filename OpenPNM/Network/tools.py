@@ -815,18 +815,10 @@ def plot_topology(network):
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
 
-    # Create crazy indexing to plot lines between pores using vectorized code
-    am = network.create_adjacency_matrix(sprsfmt='coo')
-    Ts = _sp.vstack((am.row, am.col)).T
-    ind = _sp.argsort(Ts, axis=0)
-    Ts = Ts[ind[:, 0], :]
-    Nn = _sp.cumsum(network.num_neighbors(pores=network.Ps))
-    i = _sp.ndarray((network.Nt*4,), dtype=int)
-    i[0::2] = Ts[:, 0]
-    i[1::2] = Ts[:, 1]
-    i[Nn[:-1]*2] = -1
-    # -1 was added to i, which should point to inf in coords when plotted
-    coo = _sp.vstack([network['pore.coords'], [_sp.inf, _sp.inf, _sp.inf]])
+    # Create dummy indexing to sp.inf
+    i = -1*_sp.ones((network.Nt*3, ), dtype=int)
+    i[0::3] = network['throat.conns'][:,0]
+    i[1::3] = network['throat.conns'][:,1]
 
     # Messing around to create non-scaled axes
     fig = plt.figure()
@@ -844,6 +836,10 @@ def plot_topology(network):
     ax.set_ylim(mid_y - max_range, mid_y + max_range)
     ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
-    ax.plot(xs=coo[i, 0], ys=coo[i, 1], zs=coo[i, 2], c='black')
+    inf = _sp.array((_sp.inf,))
+    X = _sp.hstack([X, inf])
+    Y = _sp.hstack([Y, inf])
+    Z = _sp.hstack([Z, inf])
+    ax.plot(xs=X[i], ys=Y[i], zs=Z[i], c='black')
 
     return fig
