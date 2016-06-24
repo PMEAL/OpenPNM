@@ -149,6 +149,7 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         # Generate Voronoi diagram
         vor = sptl.Voronoi(points=pts)
+        self._vor = vor
         internal_vertices = sp.zeros(vor.vertices.shape[0], dtype=bool)
         N = vor.vertices.shape[0]
         am = sp.sparse.lil_matrix((N, N), dtype=int)
@@ -164,6 +165,19 @@ class DelaunayVoronoiDual(GenericNetwork):
         V_conns = sp.vstack([am.row, am.col]).T
         self.update({'pore.coords': sp.vstack((D_coords, V_coords))})
         self.update({'throat.conns': sp.vstack((D_conns, V_conns + Np))})
+        self.update({'pore.all': sp.ones(sp.shape(self['pore.coords'])[0],
+                                         dtype=bool)})
+        self.update({'throat.all': sp.ones(sp.shape(self['throat.conns'])[0],
+                                           dtype=bool)})
+        self['throat.delaunay'] = False
+        self['throat.delaunay'][0:sp.shape(D_conns)[0]] = True
+        self['throat.voronoi'] = False
+        self['throat.voronoi'][0:sp.shape(V_conns)[0]] = True
+        trim = sp.any(self['pore.coords'] < -0.10, axis=1)
+        self.trim(pores=trim)
+        trim = sp.any(self['pore.coords'] > [self._Lx, self._Ly, self._Lz],
+                      axis=1)
+        self.trim(pores=trim)
         logger.debug(sys._getframe().f_code.co_name + ': End of method')
 
     def add_boundaries(self):
