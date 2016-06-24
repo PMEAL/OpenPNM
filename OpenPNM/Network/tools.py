@@ -807,10 +807,10 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
-def plot_network(network):
+def plot_topology(network):
     r"""
-    Produces a 3D plot of the network pores and connecting throats for quick
-    visualization without having to export data to veiw in Paraview.
+    Produces a 3D plot of the network topology showing how throats connect
+    for quick visualization without having to export data to veiw in Paraview.
     """
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
@@ -846,6 +846,4 @@ def plot_network(network):
 
     ax.plot(xs=coo[i, 0], ys=coo[i, 1], zs=coo[i, 2], c='black')
 
-    # Add pores to plot as circular dots
-    ax.scatter(xs=X, ys=Y, zs=Z, s=20, c='red')
     return fig

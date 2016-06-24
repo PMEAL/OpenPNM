@@ -9,5 +9,5 @@ class NetworkToolsTest:
         self.net['pore.diameter'] = sp.rand(self.net.Np)
 
     def test_plot_network(self):
-        a = op.Network.tools.plot_network(self.net)
+        a = op.Network.tools.plot_topology(self.net)
         assert isinstance(a, mpl.figure.Figure)
