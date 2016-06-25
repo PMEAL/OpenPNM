@@ -807,7 +807,7 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
-def plot_topology(network, throats=None):
+def plot_topology(network, throats=None, fig=None, **kwargs):
     r"""
     Produces a 3D plot of the network topology showing how throats connect
     for quick visualization without having to export data to veiw in Paraview.
@@ -821,6 +821,26 @@ def plot_topology(network, throats=None):
         The list of throats to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no throats are
         specified then all throats are shown.
+
+    fig and **kwargs: Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid.  By also
+        passing in different line properties such as ``color`` and limiting
+        which ``throats`` are plots, this makes it possible to plot different
+        types of throats on the same plot.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> pn = op.Network.Cubic(shape=[10, 10, 3])
+    >>> pn.add_boundaries()
+    >>> Ts = pn.throats('*boundary', mode='not')
+    >>> # Create figure showing boundary throats
+    >>> fig = op.Network.tools.plot_topology(network=pn, throats=Ts)
+    >>> Ts = pn.throats('*boundary')
+    >>> # Pass existing fig back into function to plot additional throats
+    >>> op.Network.tools.plot_topology(network=pn, throats=Ts, fig=fig,
+    ...                                color='r')
+
     """
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
@@ -830,17 +850,19 @@ def plot_topology(network, throats=None):
     else:
         Ts = network._parse_locations(locations=throats)
 
+    if fig is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        ax = fig.get_axes()[0]
+
     # Create dummy indexing to sp.inf
     i = -1*_sp.ones((_sp.size(Ts)*3, ), dtype=int)
     i[0::3] = network['throat.conns'][Ts, 0]
     i[1::3] = network['throat.conns'][Ts, 1]
 
     # Messing around to create non-scaled axes
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
     Ps = _sp.unique(network['throat.conns'][Ts])
-
     X = network['pore.coords'][Ps, 0]
     Y = network['pore.coords'][Ps, 1]
     Z = network['pore.coords'][Ps, 2]
@@ -853,10 +875,11 @@ def plot_topology(network, throats=None):
     ax.set_ylim(mid_y - max_range, mid_y + max_range)
     ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
+    # Add sp.inf to the last element of pore.coords (i.e. -1)
     inf = _sp.array((_sp.inf,))
     X = _sp.hstack([network['pore.coords'][:, 0], inf])
     Y = _sp.hstack([network['pore.coords'][:, 1], inf])
     Z = _sp.hstack([network['pore.coords'][:, 2], inf])
-    ax.plot(xs=X[i], ys=Y[i], zs=Z[i], c='black')
+    ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
 
     return fig
