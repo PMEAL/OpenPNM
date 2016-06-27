@@ -900,9 +900,9 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
 
     fig and **kwargs: Matplotlib figure handle and line property arguments
         If a ``fig`` is supplied, then the topology will be overlaid.  By also
-        passing in different maker properties such as ``size`` and limiting
-        which ``pores`` are plotted, this makes it possible to plot different
-        types of pores on the same plot.
+        passing in different marker properties such as size (``s``) and
+        limiting which ``pores`` are plotted, this makes it possible to plot
+        different types of pores on the same plot.
 
     Notes
     -----
@@ -917,12 +917,10 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     >>> pn.add_boundaries()
     >>> Ps = pn.pores('internal')
     >>> # Create figure showing internal pores
-    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps,
-    ...                                         color='b')
+    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, c='b')
     >>> Ps = pn.pores('*boundary')
     >>> # Pass existing fig back into function to plot boundary pores
-    >>> op.Network.tools.plot_coordinates(network=pn, pores=Ps, fig=fig,
-    ...                                   color='r')
+    >>> op.Network.tools.plot_coordinates(network=pn, pores=Ps, fig=fig, c='r')
 
     """
     import matplotlib.pyplot as plt
