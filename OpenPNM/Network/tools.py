@@ -883,3 +883,47 @@ def plot_topology(network, throats=None, fig=None, **kwargs):
     ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
 
     return fig
+
+
+def plot_coords(network, pores=None, fig=None, **kwargs):
+    r"""
+    Produces a 3D plot showing pore coordinates as markers, scaled according to
+    the specified pore property.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network whose topological connections to plot
+
+    pores : array_like (optional)
+        The list of pores to plot if only a sub-sample is desired.  This is
+        useful for inspecting a small region of the network.  If no pores are
+        specified then all are shown.
+
+    fig and **kwargs: Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid.  By also
+        passing in different line properties such as ``color`` and limiting
+        which ``throats`` are plots, this makes it possible to plot different
+        types of throats on the same plot.
+
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    if pores is None:
+        Ps = network.Ps
+    else:
+        Ps = network._parse_locations(locations=pores)
+
+    if fig is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        ax = fig.get_axes()[0]
+
+    # Collect specified coordinates
+    X = network['pore.coords'][Ps, 0]
+    Y = network['pore.coords'][Ps, 1]
+    Z = network['pore.coords'][Ps, 2]
+    ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)
+    return fig
