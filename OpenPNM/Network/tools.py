@@ -849,8 +849,8 @@ def plot_topology(network, throats=None, fig=None, **kwargs):
     >>> fig = op.Network.tools.plot_topology(network=pn, throats=Ts)
     >>> Ts = pn.throats('*boundary')
     >>> # Pass existing fig back into function to plot additional throats
-    >>> op.Network.tools.plot_topology(network=pn, throats=Ts, fig=fig,
-    ...                                color='r')
+    >>> fig = op.Network.tools.plot_topology(network=pn, throats=Ts, fig=fig,
+    ...                                      color='r')
 
     """
     import matplotlib.pyplot as plt
@@ -930,7 +930,8 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, c='b')
     >>> Ps = pn.pores('*boundary')
     >>> # Pass existing fig back into function to plot boundary pores
-    >>> op.Network.tools.plot_coordinates(network=pn, pores=Ps, fig=fig, c='r')
+    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, fig=fig,
+    ...                                         c='r')
 
     """
     import matplotlib.pyplot as plt
