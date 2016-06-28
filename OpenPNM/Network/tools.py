@@ -828,6 +828,11 @@ def plot_topology(network, throats=None, fig=None, **kwargs):
         which ``throats`` are plots, this makes it possible to plot different
         types of throats on the same plot.
 
+        For information on available line style options, visit the Matplotlib
+        documentation at:
+
+        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+
     Notes
     -----
     The figure handle returned by this method can be passed into
@@ -903,6 +908,11 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
         passing in different marker properties such as size (``s``) and
         limiting which ``pores`` are plotted, this makes it possible to plot
         different types of pores on the same plot.
+
+        For information on available marker style options, visit the Matplotlib
+        documentation at:
+
+        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
 
     Notes
     -----
