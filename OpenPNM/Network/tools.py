@@ -846,11 +846,11 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     >>> pn.add_boundaries()
     >>> Ts = pn.throats('*boundary', mode='not')
     >>> # Create figure showing boundary throats
-    >>> fig = op.Network.tools.plot_topology(network=pn, throats=Ts)
+    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts)
     >>> Ts = pn.throats('*boundary')
     >>> # Pass existing fig back into function to plot additional throats
-    >>> fig = op.Network.tools.plot_topology(network=pn, throats=Ts, fig=fig,
-    ...                                      color='r')
+    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts,
+    ...                                         fig=fig, color='r')
 
     """
     import matplotlib.pyplot as plt

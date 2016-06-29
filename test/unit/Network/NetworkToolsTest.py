@@ -14,7 +14,7 @@ class NetworkToolsTest:
         b = op.Network.tools.plot_connections(network=self.net, fig=a, c='r')
         assert b is a
         c = op.Network.tools.plot_connections(network=self.net, fig=b,
-                                           throats=[1, 2, 3], c='b')
+                                              throats=[1, 2, 3], c='b')
         assert c is b
 
     def test_plot_coordinates(self):
