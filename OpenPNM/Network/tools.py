@@ -807,7 +807,7 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
-def plot_topology(network, throats=None, fig=None, **kwargs):
+def plot_connections(network, throats=None, fig=None, **kwargs):
     r"""
     Produces a 3D plot of the network topology showing how throats connect
     for quick visualization without having to export data to veiw in Paraview.

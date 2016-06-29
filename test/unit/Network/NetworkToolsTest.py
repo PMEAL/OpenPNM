@@ -8,12 +8,12 @@ class NetworkToolsTest:
         self.net = op.Network.Cubic(shape=[5, 5, 5], spacing=1)
         self.net['pore.diameter'] = sp.rand(self.net.Np)
 
-    def test_plot_topology(self):
-        a = op.Network.tools.plot_topology(self.net)
+    def test_plot_connections(self):
+        a = op.Network.tools.plot_connections(self.net)
         assert isinstance(a, mpl.figure.Figure)
-        b = op.Network.tools.plot_topology(network=self.net, fig=a, c='r')
+        b = op.Network.tools.plot_connections(network=self.net, fig=a, c='r')
         assert b is a
-        c = op.Network.tools.plot_topology(network=self.net, fig=b,
+        c = op.Network.tools.plot_connections(network=self.net, fig=b,
                                            throats=[1, 2, 3], c='b')
         assert c is b
 
