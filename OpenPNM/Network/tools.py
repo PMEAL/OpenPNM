@@ -805,3 +805,169 @@ def find_surface_pores(network, markers=None, label='surface'):
         if 'pore.'+label not in network.keys():
             network['pore.'+label] = False
         network['pore.'+label][neighbors] = True
+
+
+def plot_connections(network, throats=None, fig=None, **kwargs):
+    r"""
+    Produces a 3D plot of the network topology showing how throats connect
+    for quick visualization without having to export data to veiw in Paraview.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network whose topological connections to plot
+
+    throats : array_like (optional)
+        The list of throats to plot if only a sub-sample is desired.  This is
+        useful for inspecting a small region of the network.  If no throats are
+        specified then all throats are shown.
+
+    fig and **kwargs: Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid.  By also
+        passing in different line properties such as ``color`` and limiting
+        which ``throats`` are plots, this makes it possible to plot different
+        types of throats on the same plot.
+
+        For information on available line style options, visit the Matplotlib
+        documentation at:
+
+        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+
+    Notes
+    -----
+    The figure handle returned by this method can be passed into
+    ``plot_coordinates`` to create a plot that combines pore coordinates and
+    throat connections, and vice versa.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> pn = op.Network.Cubic(shape=[10, 10, 3])
+    >>> pn.add_boundaries()
+    >>> Ts = pn.throats('*boundary', mode='not')
+    >>> # Create figure showing boundary throats
+    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts)
+    >>> Ts = pn.throats('*boundary')
+    >>> # Pass existing fig back into function to plot additional throats
+    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts,
+    ...                                         fig=fig, color='r')
+
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    if throats is None:
+        Ts = network.Ts
+    else:
+        Ts = network._parse_locations(locations=throats)
+
+    if fig is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        ax = fig.get_axes()[0]
+
+    # Create dummy indexing to sp.inf
+    i = -1*_sp.ones((_sp.size(Ts)*3, ), dtype=int)
+    i[0::3] = network['throat.conns'][Ts, 0]
+    i[1::3] = network['throat.conns'][Ts, 1]
+
+    # Collect coordinates and scale axes to fit
+    Ps = _sp.unique(network['throat.conns'][Ts])
+    X = network['pore.coords'][Ps, 0]
+    Y = network['pore.coords'][Ps, 1]
+    Z = network['pore.coords'][Ps, 2]
+    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+
+    # Add sp.inf to the last element of pore.coords (i.e. -1)
+    inf = _sp.array((_sp.inf,))
+    X = _sp.hstack([network['pore.coords'][:, 0], inf])
+    Y = _sp.hstack([network['pore.coords'][:, 1], inf])
+    Z = _sp.hstack([network['pore.coords'][:, 2], inf])
+    ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
+
+    return fig
+
+
+def plot_coordinates(network, pores=None, fig=None, **kwargs):
+    r"""
+    Produces a 3D plot showing specified pore coordinates as markers
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network whose topological connections to plot
+
+    pores : array_like (optional)
+        The list of pores to plot if only a sub-sample is desired.  This is
+        useful for inspecting a small region of the network.  If no pores are
+        specified then all are shown.
+
+    fig and **kwargs: Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid.  By also
+        passing in different marker properties such as size (``s``) and
+        limiting which ``pores`` are plotted, this makes it possible to plot
+        different types of pores on the same plot.
+
+        For information on available marker style options, visit the Matplotlib
+        documentation at:
+
+        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+
+    Notes
+    -----
+    The figure handle returned by this method can be passed into
+    ``plot_topology`` to create a plot that combines pore coordinates and
+    throat connections, and vice versa.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> pn = op.Network.Cubic(shape=[10, 10, 3])
+    >>> pn.add_boundaries()
+    >>> Ps = pn.pores('internal')
+    >>> # Create figure showing internal pores
+    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, c='b')
+    >>> Ps = pn.pores('*boundary')
+    >>> # Pass existing fig back into function to plot boundary pores
+    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, fig=fig,
+    ...                                         c='r')
+
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    if pores is None:
+        Ps = network.Ps
+    else:
+        Ps = network._parse_locations(locations=pores)
+
+    if fig is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        ax = fig.get_axes()[0]
+
+    # Collect specified coordinates
+    X = network['pore.coords'][Ps, 0]
+    Y = network['pore.coords'][Ps, 1]
+    Z = network['pore.coords'][Ps, 2]
+    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+
+    ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)
+    return fig
+
+
+def _scale_3d_axes(ax, X, Y, Z):
+    if hasattr(ax, '_scaled'):
+        logger.warning('Axes is already scaled to previously plotted data')
+    else:
+        ax._scaled = True
+        max_range = _sp.array([X.max()-X.min(), Y.max()-Y.min(),
+                               Z.max()-Z.min()]).max() / 2.0
+        mid_x = (X.max()+X.min()) * 0.5
+        mid_y = (Y.max()+Y.min()) * 0.5
+        mid_z = (Z.max()+Z.min()) * 0.5
+        ax.set_xlim(mid_x - max_range, mid_x + max_range)
+        ax.set_ylim(mid_y - max_range, mid_y + max_range)
+        ax.set_zlim(mid_z - max_range, mid_z + max_range)
