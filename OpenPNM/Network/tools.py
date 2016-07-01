@@ -1007,7 +1007,7 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
             z = _sp.hstack([z, -z, 2-z])
         X = r*_sp.cos(theta)
         Y = r*_sp.sin(theta)
-        Z = z
+        Z = z*domain_size[1]
         base_pts = _sp.vstack([X, Y, Z]).T
     elif len(domain_size) == 3:  # Rectilinear
         domain_size = _sp.array(domain_size)
