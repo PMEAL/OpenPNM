@@ -517,9 +517,11 @@ class Core(dict):
         if sp.size(pores) > 0:
             element = 'pore'
             locations = self._parse_locations(pores)
-        if sp.size(throats) > 0:
+        elif sp.size(throats) > 0:
             element = 'throat'
             locations = self._parse_locations(throats)
+        else:
+            return(sp.array([], dtype=int))
         # Do it
         labels = self._parse_labels(labels=labels, element=element)
         labels = [element+'.'+item.split('.')[-1] for item in labels]
