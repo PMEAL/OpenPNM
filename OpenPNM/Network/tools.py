@@ -971,3 +971,66 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.set_xlim(mid_x - max_range, mid_x + max_range)
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
         ax.set_zlim(mid_z - max_range, mid_z + max_range)
+
+
+def generate_base_points(num_points, domain_size, surface='reflected'):
+    r"""
+    """
+    if len(domain_size) == 1:  # Spherical
+        domain_size = _sp.array(domain_size)
+        spherical_coords = _sp.rand(num_points, 3)
+        r = spherical_coords[:, 0]*domain_size
+        theta = spherical_coords[:, 1]*(2*_sp.pi)
+        phi = spherical_coords[:, 2]*(2*_sp.pi)
+        if surface == 'reflected':
+            new_r = 2*domain_size - r
+            r = _sp.hstack([r, new_r])
+            theta = _sp.hstack([theta, theta])
+            phi = _sp.hstack([phi, phi])
+        X = r*_sp.cos(theta)*_sp.sin(phi)
+        Y = r*_sp.sin(theta)*_sp.sin(phi)
+        Z = r*_sp.cos(phi)
+        base_pts = _sp.vstack([X, Y, Z]).T
+    elif len(domain_size) == 2:  # Cylindrical
+        domain_size = _sp.array(domain_size)
+        cylindrical_coords = _sp.rand(num_points, 3)
+        r = cylindrical_coords[:, 0]*domain_size[0]
+        theta = cylindrical_coords[:, 1]*(2*_sp.pi)
+        z = cylindrical_coords[:, 2]
+        if surface == 'reflected':
+            new_r = 2*domain_size[0] - r
+            r = _sp.hstack([r, new_r])
+            theta = _sp.hstack([theta, theta])
+            z = _sp.hstack([z, z])
+            r = _sp.hstack([r, r, r])
+            theta = _sp.hstack([theta, theta, theta])
+            z = _sp.hstack([z, -z, 2-z])
+        X = r*_sp.cos(theta)
+        Y = r*_sp.sin(theta)
+        Z = z
+        base_pts = _sp.vstack([X, Y, Z]).T
+    elif len(domain_size) == 3:  # Rectilinear
+        domain_size = _sp.array(domain_size)
+        Nx, Ny, Nz = domain_size
+        base_pts = _sp.rand(num_points, 3)
+        base_pts = base_pts*domain_size
+        if surface == 'reflected':
+            orig_pts = base_pts
+            base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
+                                             [2.0*Nx, 0, 0]))
+            base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts +
+                                             [0, 2.0*Ny, 0]))
+            base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts +
+                                             [0, 0, 2.0*Nz]))
+            base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
+            base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts))
+            base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+    return base_pts
+
+
+
+
+
+
+
+

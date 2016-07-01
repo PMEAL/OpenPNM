@@ -5,7 +5,7 @@ Voronoi networks, including connectings between them
 ===============================================================================
 
 """
-
+import OpenPNM as op
 import scipy as sp
 import scipy.spatial as sptl
 from OpenPNM.Network import GenericNetwork
@@ -62,66 +62,84 @@ class DelaunayVoronoiDual(GenericNetwork):
         Nt = sp.size(conns, axis=0)
         self.update({'pore.all': sp.ones((Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones((Nt, ), dtype=bool)})
-
-        # Apply labels to pores
         self['pore.coords'] = coords
         self['throat.conns'] = conns
-
-        # Initialize pore and throat labels
-        self['pore.delaunay'] = False
-        self['throat.delaunay'] = False
-        self['pore.voronoi'] = False
-        self['throat.voronoi'] = False
-        self['throat.interconnect'] = False
-        self['pore.internal'] = False
-        self['throat.internal'] = False
-        self['pore.external'] = False
-        self['throat.external'] = False
-        self['pore.surface'] = False
-        self['throat.surface'] = False
-        self['pore.boundary'] = False
-        self['throat.boundary'] = False
+        self['pore.coords'] = sp.around(self['pore.coords'], decimals=10)
 
         # Label all pores and throats by type
+        self['pore.delaunay'] = False
         self['pore.delaunay'][0:Npts] = True
+        self['pore.voronoi'] = False
         self['pore.voronoi'][Npts:] = True
         # Label throats between Delaunay pores
+        self['throat.delaunay'] = False
         Ts = sp.all(self['throat.conns'] < Npts, axis=1)
         self['throat.delaunay'][Ts] = True
         # Label throats between Voronoi pores
+        self['throat.voronoi'] = False
         Ts = sp.all(self['throat.conns'] >= Npts, axis=1)
         self['throat.voronoi'][Ts] = True
         # Label throats connecting a Delaunay and a Voronoi pore
+        self['throat.interconnect'] = False
         Ts = self.throats(labels=['delaunay', 'voronoi'], mode='not')
         self['throat.interconnect'][Ts] = True
+        # Note num neighbors for later
+        self['pore._num_neighbors'] = self.num_neighbors(pores=self.Ps)
 
-        # Label Delaunay pores as internal or external
-        Ps = self.tomask(pores=self.pores('delaunay'))
-        self['pore.external'][Ps*sp.any(self['pore.coords'] > domain_size, axis=1)] = True
-        self['pore.external'][Ps*sp.any(self['pore.coords'] < [0, 0, 0], axis=1)] = True
-        self['pore.internal'][~self['pore.external']*self['pore.delaunay']] = True
-        # Label Delaunay boundary pores
-        Ps = self.pores(['delaunay', 'internal'], mode='intersection')
-        Ps = self.find_neighbor_pores(pores=Ps, mode='union')
-        Ps = self.filter_by_label(pores=Ps, labels='delaunay')
-        self['pore.boundary'][Ps] = True
-        self['pore.external'][Ps] = False
-        # Label internal Voronoi pores
-        Ps = self.pores(['delaunay', 'internal'], mode='intersection')
-        Ps = self.find_neighbor_pores(pores=Ps, mode='union')
-        Ps = self.filter_by_label(pores=Ps, labels='voronoi')
-        self['pore.internal'][Ps] = True
-        self.trim(pores=self.pores(['internal', 'boundary'], mode='not'))
+    def trim_domain(self, domain_size=None):
+        r"""
+        """
+        if len(domain_size) == 1:  # Spherical
+            # Trim external Delaunay pores
+            r = sp.sqrt(sp.sum(self['pore.coords']**2, axis=1))
+            Ps = (r > domain_size)*self['pore.delaunay']
+            self.trim(pores=Ps)
 
-        # Label Voronoi surface pores and throats
-        Ps = self.pores('boundary')
-        Ps = self.find_neighbor_pores(pores=Ps)
-        Ps = self.filter_by_label(pores=Ps, labels=['voronoi'])
-        self['pore.surface'][Ps] = True
-        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
-        self['throat.surface'][Ts] = True
+            # Trim external Voronoi pores
+            Ps = self.find_neighbor_pores(pores=self['pore.delaunay'])
+            Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
+            self.trim(pores=Ps)
+        elif len(domain_size) == 2:  # Cylindrical
+            # Trim external Delaunay pores
+            r = sp.sqrt(sp.sum(self['pore.coords'][:,[0,1]]**2, axis=1))
+            Ps = (r > domain_size[1])*self['pore.delaunay']
+            self.trim(pores=Ps)
+            Ps1 = self['pore.coords'][:, 2] > domain_size[1]
+            Ps2 = self['pore.coords'][:, 2] < 0
+            Ps = self['pore.delaunay']*(Ps1 + Ps2)
+            self.trim(pores=Ps)
 
-        # Label Boundardy throats
-        Ps = self.pores('internal')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='not_intersection')
-        self['throat.boundary'][Ts] = True
+            # Trim external Voronoi pores
+            Ps = self.find_neighbor_pores(pores=self['pore.delaunay'])
+            Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
+            self.trim(pores=Ps)
+        elif len(domain_size) == 3:  # Rectilinear
+            # Trim external Delaunay pores
+            Ps1 = sp.any(self['pore.coords'] > domain_size, axis=1)
+            Ps2 = sp.any(self['pore.coords'] < [0, 0, 0], axis=1)
+            Ps = self['pore.delaunay']*(Ps1 + Ps2)
+            self.trim(pores=Ps)
+
+            # Trim external Voronoi pores
+            Ps = self.find_neighbor_pores(pores=self['pore.delaunay'])
+            Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
+            self.trim(pores=Ps)
+
+            # Label Voronoi surface pores and throats
+            Nn = self['pore._num_neighbors'] != self.num_neighbors(pores=self.Ps)
+            self['pore.surface'] = Nn*self['pore.voronoi']
+            Ps = self.pores('surface')
+            Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+            self['throat.surface'] = self.tomask(throats=Ts)
+
+            # Find boundary Delaunay pores
+            Ps = self.pores('surface')
+            Ps = self.find_neighbor_pores(pores=Ps)
+            self['pore.boundary'] = self.tomask(pores=Ps)
+
+            # Label all remaining pores and throats as internal
+            self['pore.internal'] = True
+            self['throat.internal'] = True
+
+        # Cleanup
+        del self['pore._num_neighbors']
