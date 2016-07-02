@@ -975,6 +975,34 @@ def _scale_3d_axes(ax, X, Y, Z):
 
 def generate_base_points(num_points, domain_size, surface='reflected'):
     r"""
+    Generates a set of base points for passing into the DelaunayVoronoiDual
+    class.  The points can be distributed in spherical, cylindrical, or
+    rectilinear patterns.
+
+    Parameters
+    ----------
+    num_points : scalar
+        The number of base points that lie within the domain.  Note that the
+        actual number of points returned will be larger, with the extra points
+        lying outside the domain.
+
+    domain_size : list or array
+        Controls the size and shape of the domain, as follows:
+
+        **sphere** : If a single value is received, its treated as the radius
+        [r] of a sphere centered on [0, 0, 0].
+
+        **cylinder** : If a two-element list is received it's treated as the
+        radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
+        extending in the positive z-direction.
+
+        **rectangle** : If a three element list is received, it's treated
+        as the outer corner of rectangle [x, y, z] whose opposite corner lies
+        at [0, 0, 0].
+
+    surface : string
+        Specifies the way the surface of domain is treated.
+
     """
     if len(domain_size) == 1:  # Spherical
         domain_size = _sp.array(domain_size)

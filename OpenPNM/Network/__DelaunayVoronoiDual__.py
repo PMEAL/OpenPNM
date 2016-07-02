@@ -86,6 +86,24 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     def trim_domain(self, domain_size=None):
         r"""
+        Trims pores the lie outside the domain.
+
+        Parameters
+        ----------
+        domain_size : array_like
+            The size and shape of the domain beyond which points should be
+            trimmed. The argument is treated as follows:
+
+            **sphere** : If a single value is received, its treated as the
+            radius [r] of a sphere centered on [0, 0, 0].
+
+            **cylinder** : If a two-element list is received it's treated as
+            the radius and height of a cylinder [r, z] positioned at [0, 0, 0]
+            and extending in the positive z-direction.
+
+            **rectangle** : If a three element list is received, it's treated
+            as the outer corner of rectangle [x, y, z] whose opposite corner
+            lies at [0, 0, 0].
         """
         # Note num neighbors for later
         self['pore._num_neighbors'] = self.num_neighbors(pores=self.Ps)
