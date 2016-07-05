@@ -288,10 +288,11 @@ class Core(dict):
             **'constants'** : Returns only properties that are set as constant
             values
 
-            **'deep'** : Returns all properties on the object and all sub-
-            objects.  For instance, all Geometry properties will be returned
+        deep : Boolean (default if False)
+            If True, all properties on the object and all sub-objects are
+            returned. For instance, all Geometry properties will be returned
             along with all Network properties, and all Physics properties will
-            be returned with all Phase properties.  This mode has not effect
+            be returned with all Phase properties.  This arg has no effect
             when this query is called from a Geometry or Phase object.
 
         Returns
@@ -1588,7 +1589,7 @@ class Core(dict):
                                                                          prop,
                                                                          defined,
                                                                          required))
-            else:
+            elif '._' not in prop:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
@@ -1607,8 +1608,9 @@ class Core(dict):
             prop = item
             if len(prop) > 35:
                 prop = prop[0:32] + '...'
-            lines.append("{0:<5d} {1:<35s} {2:<10d}".format(i + 1,
-                                                            prop,
-                                                            sp.sum(self[item])))
+            if '._' not in prop:
+                lines.append("{0:<5d} {1:<35s} {2:<10d}".format(i + 1,
+                                                                prop,
+                                                                sp.sum(self[item])))
         lines.append(horizonal_rule)
         return '\n'.join(lines)
