@@ -7,23 +7,12 @@ python:
   - "3.4"
   - "3.5"
 
-cache: apt
-
-addons:
-  apt:
-    packages:
-    - libatlas-dev
-    - libatlas-base-dev
-    - liblapack-dev
-    - gfortran
-
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - wget http://repo.continuum.io/miniconda/Miniconda3-4.0.5-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
-  - conda update --yes conda
 
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION --file requirements.txt
@@ -35,3 +24,6 @@ script:
 
 after_success:
   - codecov
+
+notifications:
+  email: false
