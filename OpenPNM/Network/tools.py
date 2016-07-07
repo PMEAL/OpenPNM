@@ -1007,7 +1007,7 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
     if len(domain_size) == 1:  # Spherical
         domain_size = _sp.array(domain_size)
         spherical_coords = _sp.rand(num_points, 3)
-        r = (spherical_coords[:, 0]**0.5)*domain_size
+        r = (spherical_coords[:, 0]**0.333)*domain_size
         theta = spherical_coords[:, 1]*(2*_sp.pi)
         phi = spherical_coords[:, 2]*(2*_sp.pi)
         if surface == 'reflected':
@@ -1054,11 +1054,3 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
             base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts))
             base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
     return base_pts
-
-
-
-
-
-
-
-
