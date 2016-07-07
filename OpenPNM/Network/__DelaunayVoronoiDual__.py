@@ -5,7 +5,6 @@ Voronoi networks, including connectings between them
 ===============================================================================
 
 """
-import OpenPNM as op
 import scipy as sp
 import scipy.spatial as sptl
 from OpenPNM.Network import GenericNetwork
@@ -19,7 +18,7 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     """
 
-    def __init__(self, points, domain_size=[1, 1, 1], **kwargs):
+    def __init__(self, points, domain_size, **kwargs):
         super().__init__(**kwargs)
 
         # Perform tessellation
@@ -62,9 +61,8 @@ class DelaunayVoronoiDual(GenericNetwork):
         Nt = sp.size(conns, axis=0)
         self.update({'pore.all': sp.ones((Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones((Nt, ), dtype=bool)})
-        self['pore.coords'] = coords
         self['throat.conns'] = conns
-        self['pore.coords'] = sp.around(self['pore.coords'], decimals=10)
+        self['pore.coords'] = sp.around(coords, decimals=10)
 
         # Label all pores and throats by type
         self['pore.delaunay'] = False
@@ -84,9 +82,11 @@ class DelaunayVoronoiDual(GenericNetwork):
         Ts = self.throats(labels=['delaunay', 'voronoi'], mode='not')
         self['throat.interconnect'][Ts] = True
 
-    def trim_domain(self, domain_size=None):
+        self._trim_domain(domain_size=domain_size)
+
+    def _trim_domain(self, domain_size=None):
         r"""
-        Trims pores the lie outside the domain.
+        Trims pores that lie outside the specified domain.
 
         Parameters
         ----------
@@ -94,68 +94,122 @@ class DelaunayVoronoiDual(GenericNetwork):
             The size and shape of the domain beyond which points should be
             trimmed. The argument is treated as follows:
 
-            **sphere** : If a single value is received, its treated as the
-            radius [r] of a sphere centered on [0, 0, 0].
+            **sphere** : If a scalar or single element list is received, it's
+            treated as the radius [r] of a sphere centered on [0, 0, 0].
 
             **cylinder** : If a two-element list is received it's treated as
-            the radius and height of a cylinder [r, z] positioned at [0, 0, 0]
-            and extending in the positive z-direction.
+            the radius and height of a cylinder [r, z] whose central axis
+            starts at [0, 0, 0] and extends in the positive z-direction.
 
             **rectangle** : If a three element list is received, it's treated
             as the outer corner of rectangle [x, y, z] whose opposite corner
             lies at [0, 0, 0].
+
+        Notes
+        -----
+        This function assumes that some Delaunay nodes exist outside the
+        given ``domain_size``.  These points can either be the result of
+        reflecting the base points or simply creating points beyond the
+        domain.  Without these extra points the Voronoi network would contain
+        points at inf.
         """
-        # Note num neighbors for later
-        self['pore._num_neighbors'] = self.num_neighbors(pores=self.Ps)
+        # Label external pores for trimming below
+        self['pore.external'] = False
         if len(domain_size) == 1:  # Spherical
             # Trim external Delaunay pores
             r = sp.sqrt(sp.sum(self['pore.coords']**2, axis=1))
             Ps = (r > domain_size)*self['pore.delaunay']
-            self.trim(pores=Ps)
+            self['pore.external'][Ps] = True
             # Trim external Voronoi pores
-            Ps = self.find_neighbor_pores(pores=self['pore.delaunay'])
+            Ps = ~self['pore.external']*self['pore.delaunay']
+            Ps = self.find_neighbor_pores(pores=Ps)
             Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
-            self.trim(pores=Ps)
+            self['pore.external'][Ps] = True
         elif len(domain_size) == 2:  # Cylindrical
             # Trim external Delaunay pores outside radius
             r = sp.sqrt(sp.sum(self['pore.coords'][:, [0, 1]]**2, axis=1))
             Ps = (r > domain_size[0])*self['pore.delaunay']
-            self.trim(pores=Ps)
+            self['pore.external'][Ps] = True
             # Trim external Delaunay pores above and below cylinder
             Ps1 = self['pore.coords'][:, 2] > domain_size[1]
             Ps2 = self['pore.coords'][:, 2] < 0
             Ps = self['pore.delaunay']*(Ps1 + Ps2)
-            self.trim(pores=Ps)
+            self['pore.external'][Ps] = True
             # Trim external Voronoi pores
-            Ps = self.find_neighbor_pores(pores=self['pore.delaunay'])
+            Ps = ~self['pore.external']*self['pore.delaunay']
+            Ps = self.find_neighbor_pores(pores=Ps)
             Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
-            self.trim(pores=Ps)
+            self['pore.external'][Ps] = True
         elif len(domain_size) == 3:  # Rectilinear
             # Trim external Delaunay pores
             Ps1 = sp.any(self['pore.coords'] > domain_size, axis=1)
             Ps2 = sp.any(self['pore.coords'] < [0, 0, 0], axis=1)
             Ps = self['pore.delaunay']*(Ps1 + Ps2)
-            self.trim(pores=Ps)
+            self['pore.external'][Ps] = True
             # Trim external Voronoi pores
-            Ps = self.find_neighbor_pores(pores=self['pore.delaunay'])
+            Ps = ~self['pore.external']*self['pore.delaunay']
+            Ps = self.find_neighbor_pores(pores=Ps)
             Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
-            self.trim(pores=Ps)
+            self['pore.external'][Ps] = True
+
+        # Label the internal pores & throats
+        self['pore.internal'] = ~self['pore.external']
+        Ps = self.pores('internal')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+        self['throat.internal'] = self.tomask(throats=Ts)
+
+        # Label boundary pores and throats
+        Ps = self.find_neighbor_pores(pores=self.pores('internal'))
+        Ps = self.filter_by_label(pores=Ps, labels='delaunay')
+        self['pore.boundary'] = self.tomask(pores=Ps)
+        self['pore.external'][Ps] = False
+        Ts = self.find_neighbor_throats(pores=Ps)
+        self['throat.boundary'] = self.tomask(throats=Ts)
+
+        # Trim external pores
+        Ps = self.pores('external')
+        self.trim(pores=Ps)
+        # Trim throats between boundary pores
+        Ps = self.pores('boundary')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+        self.trim(throats=Ts)
+
+        # Move boundary pores to centroid of Voronoi facet
+        for P in self.pores('boundary'):
+            Ns = self.find_neighbor_pores(pores=P)
+            Ns = self.filter_by_label(pores=Ns, labels='voronoi')
+            coords = sp.mean(self['pore.coords'][Ns], axis=0)
+            self['pore.coords'][P] = coords
 
         # Label Voronoi surface pores and throats
-        Nn = self['pore._num_neighbors'] != self.num_neighbors(pores=self.Ps)
-        self['pore.surface'] = Nn*self['pore.voronoi']
+        Ps = self.pores('boundary')
+        Ps = self.find_neighbor_pores(pores=Ps)
+        Ps = self.filter_by_label(pores=Ps, labels='voronoi')
+        self['pore.surface'] = self.tomask(pores=Ps)
         Ps = self.pores('surface')
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
         self['throat.surface'] = self.tomask(throats=Ts)
 
-        # Find boundary Delaunay pores
-        Ps = self.pores('surface')
-        Ps = self.find_neighbor_pores(pores=Ps)
-        self['pore.boundary'] = self.tomask(pores=Ps)
+        # Clean-up
+        del self['pore.external']
 
-        # Label all remaining pores and throats as internal
-        self['pore.internal'] = True
-        self['throat.internal'] = True
 
-        # Cleanup
-        del self['pore._num_neighbors']
+    def _find_facets(self):
+        r"""
+        """
+        # Find boundary Delaunay pores using hidden info from trim_domain
+        Ps = self.find_neighbor_pores(pores=self.pores('surface'))
+        Ps = self.filter_by_label(pores=Ps, labels='delaunay')
+        for pore in Ps:
+            Ns = self.find_neighbor_pores(pores=pore)
+            Ns = self.filter_by_label(pores=Ns, labels='surface')
+            pts = self['pore.coords'][Ns]
+            # Convert points to vectors
+            vs = pts[0] - pts
+            # Perform single value decomposition
+            vs = vs - sp.mean(vs, axis=0)
+            s = sp.linalg.svd(a=vs, overwrite_a=True, compute_uv=False)
+            print(pore, s, sp.any(s < 1e-10))
+
+
+
