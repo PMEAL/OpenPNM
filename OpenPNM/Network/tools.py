@@ -1000,9 +1000,15 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
         as the outer corner of rectangle [x, y, z] whose opposite corner lies
         at [0, 0, 0].
 
-    surface : string
-        Specifies the way the surface of domain is treated.
+    Notes
+    -----
+    This method places the given number of points within the specified domain,
+    but then reflects these points across each domain boundary.  This results
+    in smooth flat faces at the boundaries once these excess pores are trimmed.
 
+    If rough faces are desired, it is necessary to define a larger than desired
+    domain then trim to the desired size.  This will discard the reflected
+    points plus some of the original points.
     """
     if len(domain_size) == 1:  # Spherical
         domain_size = _sp.array(domain_size)
@@ -1010,11 +1016,12 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
         r = (spherical_coords[:, 0]**0.333)*domain_size
         theta = spherical_coords[:, 1]*(2*_sp.pi)
         phi = spherical_coords[:, 2]*(2*_sp.pi)
-        if surface == 'reflected':
-            new_r = 2*domain_size - r
-            r = _sp.hstack([r, new_r])
-            theta = _sp.hstack([theta, theta])
-            phi = _sp.hstack([phi, phi])
+        # Reflect base points across perimeter
+        new_r = 2*domain_size - r
+        r = _sp.hstack([r, new_r])
+        theta = _sp.hstack([theta, theta])
+        phi = _sp.hstack([phi, phi])
+        # Convert to Cartesean coordinates
         X = r*_sp.cos(theta)*_sp.sin(phi)
         Y = r*_sp.sin(theta)*_sp.sin(phi)
         Z = r*_sp.cos(phi)
@@ -1025,14 +1032,15 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
         r = (cylindrical_coords[:, 0]**0.5)*domain_size[0]
         theta = cylindrical_coords[:, 1]*(2*_sp.pi)
         z = cylindrical_coords[:, 2]
-        if surface == 'reflected':
-            new_r = 2*domain_size[0] - r
-            r = _sp.hstack([r, new_r])
-            theta = _sp.hstack([theta, theta])
-            z = _sp.hstack([z, z])
-            r = _sp.hstack([r, r, r])
-            theta = _sp.hstack([theta, theta, theta])
-            z = _sp.hstack([z, -z, 2-z])
+        # Reflect base points about faces and perimeter
+        new_r = 2*domain_size[0] - r
+        r = _sp.hstack([r, new_r])
+        theta = _sp.hstack([theta, theta])
+        z = _sp.hstack([z, z])
+        r = _sp.hstack([r, r, r])
+        theta = _sp.hstack([theta, theta, theta])
+        z = _sp.hstack([z, -z, 2-z])
+        # Convert to Cartesean coordinates
         X = r*_sp.cos(theta)
         Y = r*_sp.sin(theta)
         Z = z*domain_size[1]
@@ -1042,15 +1050,15 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
         Nx, Ny, Nz = domain_size
         base_pts = _sp.rand(num_points, 3)
         base_pts = base_pts*domain_size
-        if surface == 'reflected':
-            orig_pts = base_pts
-            base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
-                                             [2.0*Nx, 0, 0]))
-            base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts +
-                                             [0, 2.0*Ny, 0]))
-            base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts +
-                                             [0, 0, 2.0*Nz]))
-            base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
-            base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts))
-            base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+        # Reflect base points about all 6 faces
+        orig_pts = base_pts
+        base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
+                                         [2.0*Nx, 0, 0]))
+        base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts +
+                                         [0, 2.0*Ny, 0]))
+        base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts +
+                                         [0, 0, 2.0*Nz]))
+        base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
+        base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts))
+        base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
     return base_pts

@@ -82,6 +82,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         Ts = self.throats(labels=['delaunay', 'voronoi'], mode='not')
         self['throat.interconnect'][Ts] = True
 
+        # Trim all pores that lie outside of the specified domain
         self._trim_domain(domain_size=domain_size)
 
     def _trim_domain(self, domain_size=None):
@@ -193,7 +194,6 @@ class DelaunayVoronoiDual(GenericNetwork):
         # Clean-up
         del self['pore.external']
 
-
     def _find_facets(self):
         r"""
         """
@@ -210,6 +210,3 @@ class DelaunayVoronoiDual(GenericNetwork):
             vs = vs - sp.mean(vs, axis=0)
             s = sp.linalg.svd(a=vs, overwrite_a=True, compute_uv=False)
             print(pore, s, sp.any(s < 1e-10))
-
-
-
