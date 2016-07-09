@@ -7,6 +7,7 @@ Network.tools.topology: Assorted topological manipulation methods
 """
 import scipy as _sp
 import numpy as _np
+import scipy.ndimage as _spim
 from OpenPNM.Base import logging as _logging
 from OpenPNM.Base import Workspace as _workspace
 logger = _logging.getLogger(__name__)
@@ -973,7 +974,7 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
 
-def generate_base_points(num_points, domain_size, surface='reflected'):
+def generate_base_points(num_points, domain_size, prob=None):
     r"""
     Generates a set of base points for passing into the DelaunayVoronoiDual
     class.  The points can be distributed in spherical, cylindrical, or
@@ -1012,10 +1013,16 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
     """
     if len(domain_size) == 1:  # Spherical
         domain_size = _sp.array(domain_size)
-        spherical_coords = _sp.rand(num_points, 3)
-        r = (spherical_coords[:, 0]**0.333)*domain_size
-        theta = spherical_coords[:, 1]*(2*_sp.pi)
-        phi = spherical_coords[:, 2]*(2*_sp.pi)
+        if prob is None:
+            prob = _sp.ones([41, 41, 41])
+            prob[20, 20, 20] = 0
+            prob = _spim.distance_transform_bf(prob) <= 20
+        base_pts = _try_points(num_points, prob)
+        # Convert to spherica coordinates
+        [X, Y, Z] = _sp.array(base_pts - [0.5, 0.5, 0.5]).T  # Center at origin
+        r = 2*_sp.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
+        theta = 2*_sp.arctan(Y/X)
+        phi = 2*_sp.arctan(_sp.sqrt(X**2 + Y**2)/Z)
         # Reflect base points across perimeter
         new_r = 2*domain_size - r
         r = _sp.hstack([r, new_r])
@@ -1028,10 +1035,16 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
         base_pts = _sp.vstack([X, Y, Z]).T
     elif len(domain_size) == 2:  # Cylindrical
         domain_size = _sp.array(domain_size)
-        cylindrical_coords = _sp.rand(num_points, 3)
-        r = (cylindrical_coords[:, 0]**0.5)*domain_size[0]
-        theta = cylindrical_coords[:, 1]*(2*_sp.pi)
-        z = cylindrical_coords[:, 2]
+        if prob is None:
+            prob = _sp.ones([41, 41, 41])
+            prob[20, 20, :] = 0
+            prob = _spim.distance_transform_bf(prob) <= 20
+        base_pts = _try_points(num_points, prob)
+        # Convert to cylindrical coordinates
+        [X, Y, Z] = _sp.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
+        r = 2*_sp.sqrt(X**2 + Y**2)*domain_size[0]
+        theta = 2*_sp.arctan(Y/X)
+        z = Z*domain_size[1]
         # Reflect base points about faces and perimeter
         new_r = 2*domain_size[0] - r
         r = _sp.hstack([r, new_r])
@@ -1043,12 +1056,14 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
         # Convert to Cartesean coordinates
         X = r*_sp.cos(theta)
         Y = r*_sp.sin(theta)
-        Z = z*domain_size[1]
+        Z = z
         base_pts = _sp.vstack([X, Y, Z]).T
     elif len(domain_size) == 3:  # Rectilinear
         domain_size = _sp.array(domain_size)
         Nx, Ny, Nz = domain_size
-        base_pts = _sp.rand(num_points, 3)
+        if prob is None:
+            prob = _sp.ones([10, 10, 10], dtype=float)
+        base_pts = _try_points(num_points, prob)
         base_pts = base_pts*domain_size
         # Reflect base points about all 6 faces
         orig_pts = base_pts
@@ -1061,4 +1076,18 @@ def generate_base_points(num_points, domain_size, surface='reflected'):
         base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
         base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts))
         base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+    return base_pts
+
+
+def _try_points(num_points, prob):
+    base_pts = []
+    N = 0
+    while N < num_points:
+        pt = _sp.random.rand(3)  # Generate a point
+        # Test whether to keep it or not
+        [indx, indy, indz] = _sp.floor(pt*_sp.shape(prob)).astype(int)
+        if _sp.random.rand(1) <= prob[indx][indy][indz]:
+            base_pts.append(pt)
+            N += 1
+    base_pts = _sp.array(base_pts)
     return base_pts
