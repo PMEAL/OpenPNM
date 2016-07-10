@@ -1001,16 +1001,37 @@ def generate_base_points(num_points, domain_size, prob=None):
         as the outer corner of rectangle [x, y, z] whose opposite corner lies
         at [0, 0, 0].
 
+    prop : 3D array, optional
+        A 3D array that contains fractional (0-1) values indicating the
+        liklihood that a point in that region should be kept.  If not specified,
+        an array containing 1's in the shape of a sphere, cylinder, or cube
+        depnending on the give ``domain_size`` and zeros outside.  When
+        specifying a custom probabiliy map is it recommended to also set values
+        outside the given domain to zero.  If not, then the correct shape is
+        returned, but with too few points in it.
+
     Notes
     -----
     This method places the given number of points within the specified domain,
-    but then reflects these points across each domain boundary.  This results
-    in smooth flat faces at the boundaries once these excess pores are trimmed.
+    then reflects these points across each domain boundary.  This results in
+    smooth flat faces at the boundaries once these excess pores are trimmed.
 
-    If rough faces are desired, it is necessary to define a larger than desired
-    domain then trim to the desired size.  This will discard the reflected
-    points plus some of the original points.
+    For rough faces, it is necessary to define a larger than desired domain
+    then trim to the desired size.  This will discard the reflected points
+    plus some of the original points.
     """
+    def _try_points(num_points, prob):
+        base_pts = []
+        N = 0
+        while N < num_points:
+            pt = _sp.random.rand(3)  # Generate a point
+            # Test whether to keep it or not
+            [indx, indy, indz] = _sp.floor(pt*_sp.shape(prob)).astype(int)
+            if _sp.random.rand(1) <= prob[indx][indy][indz]:
+                base_pts.append(pt)
+                N += 1
+        base_pts = _sp.array(base_pts)
+        return base_pts
     if len(domain_size) == 1:  # Spherical
         domain_size = _sp.array(domain_size)
         if prob is None:
@@ -1018,11 +1039,14 @@ def generate_base_points(num_points, domain_size, prob=None):
             prob[20, 20, 20] = 0
             prob = _spim.distance_transform_bf(prob) <= 20
         base_pts = _try_points(num_points, prob)
-        # Convert to spherica coordinates
+        # Convert to spherical coordinates
         [X, Y, Z] = _sp.array(base_pts - [0.5, 0.5, 0.5]).T  # Center at origin
         r = 2*_sp.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
         theta = 2*_sp.arctan(Y/X)
         phi = 2*_sp.arctan(_sp.sqrt(X**2 + Y**2)/Z)
+        # Trim points outside the domain (from improper prob images)
+        inds = r <= domain_size[0]
+        [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
         # Reflect base points across perimeter
         new_r = 2*domain_size - r
         r = _sp.hstack([r, new_r])
@@ -1045,6 +1069,11 @@ def generate_base_points(num_points, domain_size, prob=None):
         r = 2*_sp.sqrt(X**2 + Y**2)*domain_size[0]
         theta = 2*_sp.arctan(Y/X)
         z = Z*domain_size[1]
+        # Trim points outside the domain (from improper prob images)
+        inds = r <= domain_size[0]
+        [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
+        inds = ~((z > domain_size[1]) + (z < 0))
+        [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
         # Reflect base points about faces and perimeter
         new_r = 2*domain_size[0] - r
         r = _sp.hstack([r, new_r])
@@ -1076,18 +1105,4 @@ def generate_base_points(num_points, domain_size, prob=None):
         base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
         base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts))
         base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
-    return base_pts
-
-
-def _try_points(num_points, prob):
-    base_pts = []
-    N = 0
-    while N < num_points:
-        pt = _sp.random.rand(3)  # Generate a point
-        # Test whether to keep it or not
-        [indx, indy, indz] = _sp.floor(pt*_sp.shape(prob)).astype(int)
-        if _sp.random.rand(1) <= prob[indx][indy][indz]:
-            base_pts.append(pt)
-            N += 1
-    base_pts = _sp.array(base_pts)
     return base_pts
