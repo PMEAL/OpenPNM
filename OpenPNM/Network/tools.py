@@ -1001,14 +1001,14 @@ def generate_base_points(num_points, domain_size, prob=None):
         as the outer corner of rectangle [x, y, z] whose opposite corner lies
         at [0, 0, 0].
 
-    prop : 3D array, optional
+    prob : 3D array, optional
         A 3D array that contains fractional (0-1) values indicating the
-        liklihood that a point in that region should be kept.  If not specified,
-        an array containing 1's in the shape of a sphere, cylinder, or cube
-        depnending on the give ``domain_size`` and zeros outside.  When
-        specifying a custom probabiliy map is it recommended to also set values
-        outside the given domain to zero.  If not, then the correct shape is
-        returned, but with too few points in it.
+        liklihood that a point in that region should be kept.  If not specified
+        an array containing 1's in the shape of a sphere, cylinder, or cube is
+        generated, depnending on the give ``domain_size`` with zeros outside.
+        When specifying a custom probabiliy map is it recommended to also set
+        values outside the given domain to zero.  If not, then the correct
+        shape will still be returned, but with too few points in it.
 
     Notes
     -----
@@ -1016,11 +1016,38 @@ def generate_base_points(num_points, domain_size, prob=None):
     then reflects these points across each domain boundary.  This results in
     smooth flat faces at the boundaries once these excess pores are trimmed.
 
+    The reflection approach tends to create larger pores near the surfaces, so
+    it might be necessary to use the ``prob`` argument to specify a slightly
+    higher density of points near the surfaces.
+
     For rough faces, it is necessary to define a larger than desired domain
     then trim to the desired size.  This will discard the reflected points
     plus some of the original points.
+
+    Examples
+    --------
+    The following generates a spherical array with higher values near the core.
+    It uses a distance transform to create a sphere of radius 10, then a
+    second distance transform to create larger values in the center away from
+    the sphere surface.  These distance values could be further skewed by
+    applying a power, with values higher than 1 resulting in higher values in
+    the core, and fractional values smoothinging them out a bit.
+
+    >>> import OpenPNM as op
+    >>> import scipy as sp
+    >>> import scipy.ndimage as spim
+    >>> im = sp.ones([21, 21, 21], dtype=int)
+    >>> im[10, 10, 10] = 0
+    >>> im = spim.distance_transform_edt(im) <= 20  # Create sphere of 1's
+    >>> prob = spim.distance_transform_edt(im)
+    >>> prob = prob / sp.amax(prob)  # Normalize between 0 and 1
+    >>> pts = op.Network.tools.generate_base_points(num_points=50,
+    ...                                             domain_size=[2],
+    ...                                             prob=prob)
+    >>> net = op.Network.DelaunayVoronoiDual(pts=pts, domain_size=[2])
     """
     def _try_points(num_points, prob):
+        prob = _sp.array(prob)/_sp.amax(prob)  # Ensure prob is normalized
         base_pts = []
         N = 0
         while N < num_points:
