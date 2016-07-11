@@ -794,6 +794,9 @@ def find_surface_pores(network, markers=None, label='surface'):
     This function does not check whether the given markers actually lie outside
     the domain, allowing the labeling of *internal* sufaces.
 
+    If this method fails to mark some surface pores, consider sending more
+    markers on each face.
+
     Examples
     --------
     >>> import OpenPNM as op
