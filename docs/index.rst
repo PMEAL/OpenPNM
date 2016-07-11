@@ -45,6 +45,7 @@ Documentation
     :maxdepth: 3
 
     userguide/index.rst
+    examples.rst
     docOpenPNM.rst
 
 ===============================================================================
