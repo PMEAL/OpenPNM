@@ -395,13 +395,14 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
         _mgr.purge_object(donor)
 
 
-def connect_pores(network, pores1, pores2, labels=[]):
+def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     r'''
-    Returns the possible connections between two group of pores.
+    Returns the possible connections between two group of pores, and optionally
+    makes the connections.
 
     Parameters
     ----------
-    networK : OpenPNM Network Object
+    network : OpenPNM Network Object
 
     pores1 : array_like
         The first group of pores on the network
@@ -409,11 +410,20 @@ def connect_pores(network, pores1, pores2, labels=[]):
     pores2 : array_like
         The second group of pores on the network
 
+    labels : list of strings
+        The labels to apply to the new throats.  This argument is only needed
+        if ``add_conns`` is True.
+
+    add_conns : bool
+        Indicates whether the connections should be added to the supplied
+        network (default is True).  Otherwise, the connections are returned
+        as an Nt x 2 array that can be passed directly to ``extend``.
+
     Notes
     -----
     It creates the connections in a format which is acceptable by
-    the default OpenPNM connection key ('throat.conns') and adds them to
-    the network.
+    the default OpenPNM connection ('throat.conns') and either adds them to
+    the network or returns them.
 
     Examples
     --------
@@ -438,7 +448,10 @@ def connect_pores(network, pores1, pores2, labels=[]):
     array1 = _sp.repeat(pores1, size2)
     array2 = _sp.tile(pores2, size1)
     conns = _sp.vstack([array1, array2]).T
-    extend(network=network, throat_conns=conns, labels=labels)
+    if add_conns:
+        extend(network=network, throat_conns=conns, labels=labels)
+    else:
+        return conns
 
 
 def find_centroid(coords=None):
