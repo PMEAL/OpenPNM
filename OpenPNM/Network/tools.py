@@ -713,22 +713,27 @@ def merge_pores(network, pores, labels=['merged']):
     trim(network=network, pores=pores)
 
 
-def template_sphere_shell(outer_radius=None, inner_radius=0):
+def template_sphere_shell(outer_radius, inner_radius=0):
     r"""
-    This method generates an image array of a sphere shell for a cubic network.
+    This method generates an image array of a sphere-shell.  It is useful for
+    passing to Cubic networks as a ``template`` to make spherical shaped
+    networks.  It can also be used generate a sphere template for
 
     Parameters
     ----------
     outer_radius : array_like
-    Number of the nodes in the outer radius of the shell
+        Number of the nodes in the outer radius of the shell
 
     inner_radius : float
-    Number of the nodes in the inner radius of the shell
+        Number of the nodes in the inner radius of the shell
+
+    Returns
+    -------
+    A Numpy array containing 1's to demarcate the sphere-shell, and 0's
+    elsewhere.
 
     """
 
-    if outer_radius is None:
-        raise Exception('No outer radius has been sent!')
     if inner_radius is None:
         raise Exception('Number of nodes in the inner radius cannot be '
                         'None!')
