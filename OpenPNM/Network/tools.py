@@ -454,16 +454,28 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
         return conns
 
 
-def find_centroid(coords=None):
+def find_centroid(coords=None, mode='geometric'):
     r'''
-    It finds the coordinates of the centroid of the sent pores.
+    Finds the coordinates of the centroid of the specified pores.
+
+    Parameters
+    ----------
+    coords : array_like
+        An Np x 3 list of [x, y, z] coordinates for the pores of which the
+        centroid is sought
+
+    mode : string
+        Controls how the centroid is calculated.  Options are:
+
+        **'geometric'** : (default) Simply calcuates the average [X, Y, Z] of
+        the given coordinates using scipy.mean(coords, axis=0)
+
+        **'center_of_mass'** : not implemented yet
+
+        **'inscribed_sphere'** : not implemented yet
     '''
-    l = _np.float64(len(coords))
-    x, y, z = coords.T
-    sx = _np.sum(x)
-    sy = _np.sum(y)
-    sz = _np.sum(z)
-    c = _np.array([sx/l, sy/l, sz/l], ndmin=1)
+    if mode == 'geometric':
+        c = _sp.mean(coords, axis=0)
     return c
 
 
