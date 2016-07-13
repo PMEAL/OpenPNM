@@ -1586,7 +1586,8 @@ class Core(dict):
             if len(prop) > 35:  # Trim overly long prop names
                 prop = prop[0:32] + '...'
             if self[item].dtype == object:  # Print objects differently
-                defined = sp.size(self[item])
+                invalid = [i for i in self[item] if i is None]
+                defined = sp.size(self[item]) - len(invalid)
                 lines.append("{0:<5d} {1:<35s} {2:>5d} / {3:<5d}".format(i + 1,
                                                                          prop,
                                                                          defined,
