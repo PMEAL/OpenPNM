@@ -281,3 +281,65 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         # Clean-up
         del self['pore.external']
+
+    def find_throat_facets(self, throats=None):
+        r"""
+        Finds the coordinates of the Voronoi pores that define the facet or
+        ridge between the pore-pairs associated with the given throat.
+
+        Parameters
+        ----------
+        throats : array_like
+            The throats whose facets are sought.  The given throats should be
+            from the 'delaunay' network. If no throats are specified, all
+            'delaunay' throats are assumed.
+
+        Notes
+        -----
+        The method is not well optimized as it scans through each given throat
+        inside a for-loop, so it could be slow for large networks.
+
+        """
+        if throats is None:
+            throats = self.throats('delaunay')
+        else:
+            throats = self.filter_by_label(throats, labels='delaunay')
+        if 'throat.facet_coords' not in self.keys():
+            self['throat.facet_coords'] = sp.ndarray((self.Nt, ), dtype=object)
+        tvals = self['throat.interconnect'].astype(int)
+        am = self.create_adjacency_matrix(data=tvals, sprsfmt='lil')
+        for t in throats:
+            P12 = self['throat.conns'][t]
+            Ps = list(set(am.rows[P12][0]).intersection(am.rows[P12][1]))
+            if sp.size(Ps) > 0:
+                self['throat.facet_coords'][t] = self['pore.coords'][Ps]
+
+    def find_pore_hulls(self, pores=None):
+        r"""
+        Finds the coordinates of the Voronoi pores that define the convex hull
+        around the given pores.
+
+        Parameters
+        ----------
+        pores : array_like
+            The pores whose convex hull are sought.  The given pores should be
+            from the 'delaunay' network.  If no pores are given, then the hull
+            is found for all 'delaunay' pores.
+
+        Notes
+        -----
+        This metod is not fully optimized as it scans through each pore in a
+        for-loop, so could be slow for large networks.
+        """
+        if pores is None:
+            pores = self.pores('delaunay')
+        else:
+            pores = self.filter_by_label(pores, labels='delaunay')
+        if 'pore.hull_coords' not in self.keys():
+            self['pore.hull_coords'] = sp.ndarray((self.Np, ), dtype=object)
+        tvals = self['throat.interconnect'].astype(int)
+        am = self.create_adjacency_matrix(data=tvals, sprsfmt='lil')
+        for p in pores:
+            Ps = am.rows[p]
+            if sp.size(Ps) > 0:
+                self['pore.hull_coords'][p] = self['pore.coords'][Ps]
