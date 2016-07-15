@@ -23,8 +23,8 @@ extensions = ['sphinx.ext.autodoc',
 jscopybutton_path = easydev.copybutton.get_copybutton_path()
 
 todo_include_todos = True
-autosummary_generate=True
-modindex_common_prefix=['OpenPNM.']
+autosummary_generate = True
+modindex_common_prefix = ['OpenPNM.']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['templates']
