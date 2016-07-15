@@ -175,7 +175,7 @@ It is also possible to filter a list of pores or throats according to their labe
     >>> Ps = pn.pores('top')
     >>> Ps
     array([ 2,  5,  8, 11, 14, 17, 20, 23, 26])
-    >>> pn.filter_by_label(pores=Ps, label='left')
+    >>> pn.filter_by_label(pores=Ps, labels='left')
     array([ 2, 11, 20])
 
 The ``filter_by_label`` method also accepts a ``mode`` argument that applies additional filtering to the returned list using *set-theory*-type logic.  In this case, the method will find sets of pores or throats that satisfies each given label, then determines the *union*, *intersection*, or *difference* of the given sets.

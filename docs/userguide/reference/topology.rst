@@ -89,7 +89,8 @@ The ```mode``` argument limits the returned results using *set-theory* type logi
 .. code-block:: python
 
     >>> pn.find_neighbor_throats(pores=2)
-    array([   1,    2,  902, 1802]) pn.find_neighbor_throats(pores=3)
+    array([   1,    2,  902, 1802])
+    >>> pn.find_neighbor_throats(pores=3)
     array([   2,    3,  903, 1803])
 
 The *union* is a single set of unique values obtained by combining the two sets, while the *intersection* of these two sets includes only the values present in both (i.e. *2*)  The *difference* of these sets is all the values except those found common to both initial sets.  It's possible to specify as many pores as desired, and the *set-logic* is bit less obvious.  More generally:
