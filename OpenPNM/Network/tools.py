@@ -609,6 +609,7 @@ def subdivide(network, pores, shape, labels=[]):
     for l in main_labels:
         del network['pore.surface_'+l]
     trim(network=network, pores=pores)
+    _mgr.purge_object(obj=new_net, mode='complete')
 
 
 def trim_occluded_throats(network, mask='all'):
@@ -729,3 +730,244 @@ def template_sphere_shell(outer_radius=None, inner_radius=0):
         img_min = x ** 2 + y ** 2 + z ** 2 > _np.unique(rmin) ** 2
         img = img * img_min
     return (img)
+
+
+def find_surface_pores(network, markers=None, label='surface'):
+    r"""
+    Find the pores on the surface of the domain by performing a Delaunay
+    triangulation between the network pores and some external ``markers``. All
+    pores connected to these external marker points are considered surface
+    pores.
+
+    Parameters
+    ----------
+    network: OpenPNM Network Object
+        The network for which the surface pores are to be found
+
+    markers: array_like
+        3 x N array of the marker coordiantes to use in the triangulation.  The
+        labeling is performed in one step, so all points are added, and then
+        any pores connected to at least one marker is given the provided label.
+        By default, this function will automatically generate 6 points outside
+        each axis of the network domain.
+
+        Users may wish to specify a single external marker point and provide an
+        appropriate label in order to identify specific faces.  For instance,
+        the marker may be *above* the domain, and the label might be
+        'top_surface'.
+
+    label : string
+        The label to apply to the pores.  The default is 'surface'.
+
+    Notes
+    -----
+    This function does not check whether the given markers actually lie outside
+    the domain, allowing the labeling of *internal* sufaces.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> net = op.Network.Cubic(shape=[5, 5, 5])
+    >>> op.Network.tools.find_surface_pores(network=net)
+    >>> net.num_pores('surface')
+    98
+
+    When cubic networks are created, the surfaces are already labeled:
+
+    >>> net.num_pores(['top','bottom', 'left', 'right', 'front','back'])
+    98
+
+    This function is mostly useful for unique networks such as spheres, random
+    topology, or networks that have been subdivied.
+
+    """
+    import scipy.spatial as sptl
+    if markers is None:
+        (xmax, ymax, zmax) = _sp.amax(network['pore.coords'], axis=0)
+        (xmin, ymin, zmin) = _sp.amin(network['pore.coords'], axis=0)
+        xave = (xmin+xmax)/2
+        yave = (ymin+ymax)/2
+        zave = (zmin+zmax)/2
+        markers = [[xmax + xave, yave, zave],
+                   [xmin - xave, yave, zave],
+                   [xave, ymax + yave, zave],
+                   [xave, ymin - yave, zave],
+                   [xave, yave, zmax + zave],
+                   [xave, yave, zmin - zave]]
+    markers = _sp.atleast_2d(markers)
+    tri = sptl.Delaunay(network['pore.coords'], incremental=True)
+    tri.add_points(markers)
+    (indices, indptr) = tri.vertex_neighbor_vertices
+    for k in range(network.Np, tri.npoints):
+        neighbors = indptr[indices[k]:indices[k+1]]
+        inds = _sp.where(neighbors < network.Np)
+        neighbors = neighbors[inds]
+        if 'pore.'+label not in network.keys():
+            network['pore.'+label] = False
+        network['pore.'+label][neighbors] = True
+
+
+def plot_connections(network, throats=None, fig=None, **kwargs):
+    r"""
+    Produces a 3D plot of the network topology showing how throats connect
+    for quick visualization without having to export data to veiw in Paraview.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network whose topological connections to plot
+
+    throats : array_like (optional)
+        The list of throats to plot if only a sub-sample is desired.  This is
+        useful for inspecting a small region of the network.  If no throats are
+        specified then all throats are shown.
+
+    fig and **kwargs: Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid.  By also
+        passing in different line properties such as ``color`` and limiting
+        which ``throats`` are plots, this makes it possible to plot different
+        types of throats on the same plot.
+
+        For information on available line style options, visit the Matplotlib
+        documentation at:
+
+        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+
+    Notes
+    -----
+    The figure handle returned by this method can be passed into
+    ``plot_coordinates`` to create a plot that combines pore coordinates and
+    throat connections, and vice versa.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> pn = op.Network.Cubic(shape=[10, 10, 3])
+    >>> pn.add_boundaries()
+    >>> Ts = pn.throats('*boundary', mode='not')
+    >>> # Create figure showing boundary throats
+    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts)
+    >>> Ts = pn.throats('*boundary')
+    >>> # Pass existing fig back into function to plot additional throats
+    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts,
+    ...                                         fig=fig, color='r')
+
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    if throats is None:
+        Ts = network.Ts
+    else:
+        Ts = network._parse_locations(locations=throats)
+
+    if fig is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        ax = fig.get_axes()[0]
+
+    # Create dummy indexing to sp.inf
+    i = -1*_sp.ones((_sp.size(Ts)*3, ), dtype=int)
+    i[0::3] = network['throat.conns'][Ts, 0]
+    i[1::3] = network['throat.conns'][Ts, 1]
+
+    # Collect coordinates and scale axes to fit
+    Ps = _sp.unique(network['throat.conns'][Ts])
+    X = network['pore.coords'][Ps, 0]
+    Y = network['pore.coords'][Ps, 1]
+    Z = network['pore.coords'][Ps, 2]
+    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+
+    # Add sp.inf to the last element of pore.coords (i.e. -1)
+    inf = _sp.array((_sp.inf,))
+    X = _sp.hstack([network['pore.coords'][:, 0], inf])
+    Y = _sp.hstack([network['pore.coords'][:, 1], inf])
+    Z = _sp.hstack([network['pore.coords'][:, 2], inf])
+    ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
+
+    return fig
+
+
+def plot_coordinates(network, pores=None, fig=None, **kwargs):
+    r"""
+    Produces a 3D plot showing specified pore coordinates as markers
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network whose topological connections to plot
+
+    pores : array_like (optional)
+        The list of pores to plot if only a sub-sample is desired.  This is
+        useful for inspecting a small region of the network.  If no pores are
+        specified then all are shown.
+
+    fig and **kwargs: Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid.  By also
+        passing in different marker properties such as size (``s``) and
+        limiting which ``pores`` are plotted, this makes it possible to plot
+        different types of pores on the same plot.
+
+        For information on available marker style options, visit the Matplotlib
+        documentation at:
+
+        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+
+    Notes
+    -----
+    The figure handle returned by this method can be passed into
+    ``plot_topology`` to create a plot that combines pore coordinates and
+    throat connections, and vice versa.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> pn = op.Network.Cubic(shape=[10, 10, 3])
+    >>> pn.add_boundaries()
+    >>> Ps = pn.pores('internal')
+    >>> # Create figure showing internal pores
+    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, c='b')
+    >>> Ps = pn.pores('*boundary')
+    >>> # Pass existing fig back into function to plot boundary pores
+    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, fig=fig,
+    ...                                         c='r')
+
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    if pores is None:
+        Ps = network.Ps
+    else:
+        Ps = network._parse_locations(locations=pores)
+
+    if fig is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        ax = fig.get_axes()[0]
+
+    # Collect specified coordinates
+    X = network['pore.coords'][Ps, 0]
+    Y = network['pore.coords'][Ps, 1]
+    Z = network['pore.coords'][Ps, 2]
+    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+
+    ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)
+    return fig
+
+
+def _scale_3d_axes(ax, X, Y, Z):
+    if hasattr(ax, '_scaled'):
+        logger.warning('Axes is already scaled to previously plotted data')
+    else:
+        ax._scaled = True
+        max_range = _sp.array([X.max()-X.min(), Y.max()-Y.min(),
+                               Z.max()-Z.min()]).max() / 2.0
+        mid_x = (X.max()+X.min()) * 0.5
+        mid_y = (Y.max()+Y.min()) * 0.5
+        mid_z = (Z.max()+Z.min()) * 0.5
+        ax.set_xlim(mid_x - max_range, mid_x + max_range)
+        ax.set_ylim(mid_y - max_range, mid_y + max_range)
+        ax.set_zlim(mid_z - max_range, mid_z + max_range)

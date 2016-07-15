@@ -161,11 +161,9 @@ def spatially_correlated(geometry, weights=None, strel=None, **kwargs):
     im = spim.convolve(im, strel)
     # Convolution is no longer randomly distributed, so fit a gaussian
     # and find it's seeds
-    temp = im.flatten()
-    x_mean = _sp.mean(temp)
-    x_sigma = _sp.sqrt(1/(temp.size-1)*_sp.sum((temp - x_mean)**2))
-    fn1 = spst.norm(loc=x_mean, scale=x_sigma)
-    values = fn1.cdf(temp)
+    im = (im - _sp.mean(im))/_sp.std(im)
+    im = 1/2*_sp.special.erfc(-im/_sp.sqrt(2))
+    values = im.flatten()
     values = values[geometry.map_pores(target=network, pores=geometry.Ps)]
     return values
 

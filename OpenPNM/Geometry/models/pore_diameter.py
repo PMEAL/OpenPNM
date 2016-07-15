@@ -4,8 +4,10 @@ pore_diameter
 ===============================================================================
 
 """
+from OpenPNM.Base import logging
 from . import misc as _misc
 import scipy as _sp
+_logger = logging.getLogger()
 
 
 def weibull(geometry, shape, scale, loc, seeds='pore.seed', **kwargs):
@@ -53,6 +55,62 @@ def random(geometry, seed=None, num_range=[0, 1], **kwargs):
         generated with ``num_range = [0.00001, 0.0001]``.
     """
     return _misc.random(N=geometry.Np, seed=seed, num_range=num_range)
+
+
+def largest_sphere(geometry, network, iters=10, **kwargs):
+    r"""
+    Finds the maximum diameter pore that can be place in each location that
+    does not overlap with any neighbors.
+
+    Parameters
+    ----------
+    geometry : OpenPNM Geometry Object
+        The Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    network : OpenPNM Network Object
+        The Netowrk object is required to lookup the connectivty of each pore
+        to find the neighbors and subsequently their separation distance.
+
+    iters : integer
+        The number of iterations to perform when searching for maximum
+        diameter.  This function iteratively grows pores until they touch
+        their nearest neighbor, which is also growing, so this parameter limits
+        the maximum number of iterations.  The default is 10, but 5 is usally
+        enough.
+
+    Notes
+    -----
+    This model looks into all pores in the network when finding the diameter.
+    This means that when multiple Geometry objects are defined, it will
+    consider the diameter of pores on adjacent Geometries. If no diameters
+    have been assigned to these neighboring pores it will assume 0.  If
+    diameter value are assigned to the neighboring pores AFTER this model is
+    run, the pores will overlap.  This can be remedied by running this model
+    again.
+
+    """
+    try:
+        D = network['pore.diameter']
+        nans = _sp.isnan(D)
+        D[nans] = 0.0
+    except:
+        D = _sp.zeros([network.Np, ], dtype=float)
+    Ps = network.pores(geometry.name)
+    C1 = network['pore.coords'][network['throat.conns'][:, 0]]
+    C2 = network['pore.coords'][network['throat.conns'][:, 1]]
+    L = _sp.sqrt(_sp.sum((C1 - C2)**2, axis=1))
+    while iters >= 0:
+        iters -= 1
+        Lt = L - _sp.sum(D[network['throat.conns']], axis=1)/2
+        am = network.create_adjacency_matrix(data=Lt, sprsfmt='lil',
+                                             dropzeros=False)
+        D[Ps] = D[Ps] + _sp.array([_sp.amin(row) for row in am.data])[Ps]*0.95
+    if _sp.any(D < 0):
+        _logger.warning('Negative pore diameters found!  Neighboring pores' +
+                        ' must be larger than the pore spacing.')
+    return D[network.pores(geometry.name)]
 
 
 def sphere(geometry, psd_name, psd_shape, psd_loc, psd_scale,

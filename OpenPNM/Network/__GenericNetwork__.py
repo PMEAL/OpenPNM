@@ -73,10 +73,15 @@ class GenericNetwork(Core):
         return self
     _net = property(fset=_set_net, fget=_get_net)
 
-    def props(self, element=None, mode='all'):
+    def props(self, element=None, mode='all', deep=False):
+        # TODO: The mode 'deep' is deprecated in favor of the deep argument
+        # and should be removed in a future version
+        modes = ['all', 'deep', 'models', 'constants']
+        mode = self._parse_mode(mode=mode, allowed=modes, single=False)
         prop_list = Tools.PrintableList()
-        if 'deep' in mode:
-            mode.remove('deep')
+        if ('deep' in mode) or (deep is True):
+            if mode.count('deep') > 0:
+                mode.remove('deep')
             for geom in self._geometries:
                 prop_list.extend(geom.props(element=element, mode=mode))
             # Get unique values
@@ -332,11 +337,11 @@ class GenericNetwork(Core):
             returned. If flatten is False the returned array contains arrays
             of neighboring pores for each input pore, in the order they were
             sent.
-        excl_self : bool, optional (Default is True)
-            If this is True then the input pores are not included in the
-            returned list.  This option only applies when input pores
-            are in fact neighbors to each other, otherwise they are not
-            part of the returned list anyway.
+        excl_self : bool
+            If this is True (default) then the input pores are not included in
+            the returned list.  This option only applies when input pores are
+            in fact neighbors to each other, otherwise they are not part of the
+            returned list anyway.
         mode : string, optional
             Specifies which neighbors should be returned.  The options are:
 
@@ -344,7 +349,8 @@ class GenericNetwork(Core):
 
             **'intersection'** : Only neighbors shared by all input pores
 
-            **'not_intersection'** : Only neighbors not shared by any input pores
+            **'not_intersection'** : Only neighbors not shared by any input
+            pores
 
         Returns
         -------
@@ -368,41 +374,10 @@ class GenericNetwork(Core):
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='not_intersection')
         array([ 3,  5,  7, 25, 27])
         """
-        pores = self._parse_locations(pores)
-        allowed_modes = ['union', 'intersection', 'not_intersection']
-        mode = self._parse_mode(mode, allowed=allowed_modes, single=True)
-        if sp.size(pores) == 0:
-            return sp.array([], ndmin=1, dtype=int)
-        # Test for existence of incidence matrix
-        try:
-            neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
-        except:
-            temp = self.create_adjacency_matrix(sprsfmt='lil')
-            self._adjacency_matrix['lil'] = temp
-            neighborPs = self._adjacency_matrix['lil'].rows[[pores]]
-        if flatten:
-            # Convert rows of lil into single flat list
-            neighborPs = itertools.chain.from_iterable(neighborPs)
-            # Add input pores to list
-            neighborPs = itertools.chain.from_iterable([neighborPs, pores])
-            # Convert list to numpy array
-            neighborPs = sp.fromiter(neighborPs, dtype=int)
-            # Apply logic to include/exclude items of the set
-            if mode == 'not_intersection':
-                temp = sp.where(sp.bincount(neighborPs) == 1)[0]
-                neighborPs = sp.unique(temp)
-            elif mode == 'union':
-                neighborPs = sp.unique(neighborPs)
-            elif mode == 'intersection':
-                temp = sp.where(sp.bincount(neighborPs) > 1)[0]
-                neighborPs = sp.unique(temp)
-            if excl_self:
-                neighborPs = neighborPs[~sp.in1d(neighborPs, pores)]
-            return sp.array(neighborPs, ndmin=1, dtype=int)
-        else:
-            # Convert lists in array to numpy arrays
-            neighborPs = [sp.array(neighborPs[i]) for i in range(0, len(pores))]
-            return sp.array(neighborPs, ndmin=1)
+        neighbors = self._find_neighbors(pores=pores, element='pore',
+                                         mode=mode, flatten=flatten,
+                                         excl_self=excl_self)
+        return neighbors
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
         r"""
@@ -424,7 +399,8 @@ class GenericNetwork(Core):
 
             **'intersection'** : Only neighbors shared by all input pores
 
-            **'not_intersection'** : Only neighbors not shared by any input pores
+            **'not_intersection'** : Only neighbors not shared by any input
+            pores
 
         Returns
         -------
@@ -440,48 +416,113 @@ class GenericNetwork(Core):
         >>> pn.find_neighbor_throats(pores=[0, 1],flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
+        neighbors = self._find_neighbors(pores=pores, mode=mode,
+                                         element='throat', flatten=flatten,
+                                         excl_self=False)
+        return neighbors
+
+    def _find_neighbors(self, pores, element, mode, flatten, excl_self):
+        r"""
+        Private method for finding the neighboring pores or throats connected
+        directly to given set of pores.
+
+        Parameters
+        ----------
+        pores : array_like
+            The list of pores whose neighbors are sought
+        element : string, either 'pore' or 'throat'
+            Whether to find neighboring pores or throats
+        mode : string
+            Controls how the neighbors are filtered.  Options are:
+
+            **'union'** : All neighbors of the input pores
+
+            **'intersection'** : Only neighbors shared by all input pores
+
+            **'not_intersection'** : Only neighbors not shared by any input
+            pores
+
+        flatten : boolean
+            If flatten is True (default) a 1D array of unique neighbors is
+            returned. If flatten is False the returned array contains arrays
+            of neighboring throat ID numbers for each input pore, in the order
+            they were sent.
+        excl_self : bool
+            When True the input pores are not included in the returned list of
+            neighboring pores.  This option only applies when input pores are
+            in fact neighbors to each other, otherwise they are not part of the
+            returned list anyway.  This is ignored with the element is
+            'throats'.
+
+        See Also
+        --------
+        find_neighbor_pores
+        find_neighbor_throats
+        num_neighors
+
+        """
+        element = self._parse_element(element=element, single=True)
         pores = self._parse_locations(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
-        # Test for existence of incidence matrix
-        try:
-            neighborTs = self._incidence_matrix['lil'].rows[[pores]]
-        except:
-            temp = self.create_incidence_matrix(sprsfmt='lil')
-            self._incidence_matrix['lil'] = temp
-            neighborTs = self._incidence_matrix['lil'].rows[[pores]]
+
+        # Test for existence of incidence or adjacency matrix
+        if element == 'pore':
+            try:
+                neighbors = self._adjacency_matrix['lil'].rows[[pores]]
+            except:
+                temp = self.create_adjacency_matrix(sprsfmt='lil')
+                self._adjacency_matrix['lil'] = temp
+                neighbors = self._adjacency_matrix['lil'].rows[[pores]]
+        elif element == 'throat':
+            try:
+                neighbors = self._incidence_matrix['lil'].rows[[pores]]
+            except:
+                temp = self.create_incidence_matrix(sprsfmt='lil')
+                self._incidence_matrix['lil'] = temp
+                neighbors = self._incidence_matrix['lil'].rows[[pores]]
+
         if flatten:
             # Convert rows of lil into single flat list
-            neighborTs = itertools.chain.from_iterable(neighborTs)
+            neighbors = itertools.chain.from_iterable(neighbors)
+            if element == 'pore':  # Add input pores to list
+                neighbors = itertools.chain.from_iterable([neighbors, pores])
             # Convert list to numpy array
-            neighborTs = sp.fromiter(neighborTs, dtype=int)
+            neighbors = sp.fromiter(neighbors, dtype=int)
             if mode == 'not_intersection':
-                neighborTs = sp.unique(sp.where(sp.bincount(neighborTs) == 1)[0])
+                neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
             elif mode == 'union':
-                neighborTs = sp.unique(neighborTs)
+                neighbors = sp.unique(neighbors)
             elif mode == 'intersection':
-                neighborTs = sp.unique(sp.where(sp.bincount(neighborTs) > 1)[0])
-            return sp.array(neighborTs, ndmin=1, dtype=int)
+                neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+            if excl_self and element == 'pore':  # Remove input pores from list
+                neighbors = neighbors[~sp.in1d(neighbors, pores)]
+            return sp.array(neighbors, ndmin=1, dtype=int)
         else:
             # Convert lists in array to numpy arrays
-            neighborTs = [sp.array(neighborTs[i]) for i in range(0, len(pores))]
-            return sp.array(neighborTs, ndmin=1)
+            neighbors = [sp.array(neighbors[i]) for i in range(0, len(pores))]
+            return sp.array(neighbors, ndmin=1)
 
-    def num_neighbors(self, pores, flatten=False, mode='union'):
+    def num_neighbors(self, pores, element='pore', flatten=False,
+                      mode='union'):
         r"""
-        Returns an array containing the number of neigbhor pores for each
-        given input pore
+        Returns an array containing the number of neigbhoring pores or throats
+        for each given input pore
 
         Parameters
         ----------
         pores : array_like
             Pores whose neighbors are to be counted
-
         flatten : boolean (optional)
             If ``False`` (default) the number of pores neighboring each input
             pore as an array the same length as ``pores``.  If ``True`` the sum
             total number of is counted.
-
+        element : string
+            Indicates whether to count number of neighboring pores or throats.
+            For some complex networks, such as extracted networks, several
+            throats may exist between two pores, so this query will return
+            different results depending on whether 'pores' (default) or
+            'throats' is specified.
         mode : string (This is ignored if ``flatten`` is False)
             The logic to apply to the returned count of pores.
 
@@ -497,14 +538,14 @@ class GenericNetwork(Core):
         Returns
         -------
         If ``flatten`` is False, a 1D array with number of neighbors in each
-        element, otherwise an scalar value of the number of neighbors.
+        element, otherwise a scalar value of the number of neighbors.
 
         Notes
         -----
         This method literally just counts the number of elements in the array
-        returned by ``find_neighbor_pores`` and uses the same logic.  Explore
-        that method and its returned values if uncertain about the meaning of
-        the ``mode`` argument.
+        returned by ``find_neighbor_pores`` or ``find_neighbor_throats`` and
+        uses the same logic.  Explore those methods if uncertain about the
+        meaning of the ``mode`` argument here.
 
         See Also
         --------
@@ -521,20 +562,18 @@ class GenericNetwork(Core):
         5
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
+        >>> pn.num_neighbors(pores=[0, 1], element='throat', mode='union',
+        ...                  flatten=True)
+        6
         """
         pores = self._parse_locations(pores)
         # Count number of neighbors
+        num = self._find_neighbors(pores, element=element, flatten=flatten,
+                                   mode=mode, excl_self=True)
+        num = sp.array([sp.size(i) for i in num], dtype=int)
         if flatten:
-            neighborPs = self.find_neighbor_pores(pores,
-                                                  flatten=True,
-                                                  mode=mode,
-                                                  excl_self=True)
-            num = sp.shape(neighborPs)[0]
-        else:
-            neighborPs = self.find_neighbor_pores(pores, flatten=False)
-            num = sp.zeros(sp.shape(neighborPs)[0], dtype=int)
-            for i in range(0, sp.shape(num)[0]):
-                num[i] = sp.size(neighborPs[i])
+            num = sp.sum(num)
+            num = int(num)
         return num
 
     def find_interface_throats(self, labels=[]):
