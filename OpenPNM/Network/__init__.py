@@ -34,6 +34,7 @@ Classes
 from . import tools
 from .__GenericNetwork__ import GenericNetwork
 from .__Cubic__ import Cubic
+from .__CubicDual__ import CubicDual
 from .__Delaunay__ import Delaunay
 from .__DelaunayCubic__ import DelaunayCubic
 from .__MatFile__ import MatFile
