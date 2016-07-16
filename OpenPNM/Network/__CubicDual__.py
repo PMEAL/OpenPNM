@@ -51,16 +51,27 @@ class CubicDual(GenericNetwork):
         op.Network.tools.stitch(net, dual, P_network=net.Ps,
                                 P_donor=dual.Ps, len_max=1)
         net['throat.interconnect'] = net['throat.stitched']
+        del net['throat.stitched']
+        net['pore.surface'] = False
+        net['throat.surface'] = False
         # Create center pores on each surface
         offset = {'back': [0.5, 0, 0], 'front': [-0.5, 0, 0],
                   'right': [0, 0.5, 0], 'left': [0, -0.5, 0],
                   'top': [0, 0, 0.5], 'bottom': [0, 0, -0.5]}
-        for item in ['top', 'bottom', 'left', 'right', 'front', 'back']:
+        surface_labels = ['top', 'bottom', 'left', 'right', 'front', 'back']
+        for item in surface_labels:
+            # Clone 'center' pores and shift to surface
             Ps = net.pores(labels=[item, 'center'], mode='intersection')
-            net.clone_pores(pores=Ps, apply_label=['surface', item])
+            net.clone_pores(pores=Ps, apply_label=['center', 'surface', item])
             Ps = net.pores(labels=['surface', item], mode='intersection')
             net['pore.coords'][Ps] += offset[item]
-        del net['throat.stitched']
+            Ts = net.find_neighbor_throats(pores=Ps)
+            # Label pores and throats
+            net['pore.surface'][Ps] = True
+            net['throat.center'][Ts] = True
+        Ps = net.pores(labels=surface_labels)
+        net['pore.surface'][Ps] = True
+
         net['pore.coords'] *= spacing
         [self.update({item: net[item]}) for item in net]
         del self.workspace[net.name]
