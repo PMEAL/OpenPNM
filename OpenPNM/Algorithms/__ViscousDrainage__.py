@@ -505,6 +505,9 @@ class ViscousDrainage(GenericLinearTransport):
         self._message('')
 
     def _advance_throat_saturations(self, Ts, dt):
+        r"""
+        Controls the advancing of menisci in the throats
+        """
         #
         if len(Ts) == 0:
             return
@@ -567,10 +570,12 @@ class ViscousDrainage(GenericLinearTransport):
         self['throat.contested'][Ts[sp.where(num_mens == 0)]] = False
 
     def _advance_pore_saturations(self, Ps, dt):
+        r"""
+        Controls filling and emptying of pores
+        """
         #
         if len(Ps) == 0:
             return
-        #
         #
         # handling any zero volume pores
         pores = Ps[self._net[self._pore_volume][Ps] == 0.0]
@@ -662,6 +667,9 @@ class ViscousDrainage(GenericLinearTransport):
         return sp.array(dists)
 
     def _set_dv_max(self, pores, qs):
+        r"""
+        Calculates maximum saturation change for an array of pores
+        """
         #
         vols = []
         for pore, q in zip(pores, qs):
