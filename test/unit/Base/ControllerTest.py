@@ -21,25 +21,25 @@ class WorkspaceTest:
         assert self.workspace.loglevel == 'Log level is currently set to: 50'
 
     def test_save_and_load(self):
-        self.workspace.save(join(TEMP_DIR, 'test_workspace'))
+        self.workspace.save_workspace(filename=join(TEMP_DIR, 'test_workspace'))
         self.workspace.clear()
         assert self.workspace == {}
-        self.workspace.load(join(TEMP_DIR, 'test_workspace'))
+        self.workspace.load_workspace(filename=join(TEMP_DIR, 'test_workspace'))
         assert self.net.name in self.workspace.keys()
 
     def test_load_overwrite_existing(self):
         temp = self.workspace.copy()
-        self.workspace.save(join(TEMP_DIR, 'test_workspace'))
-        self.workspace.load(join(TEMP_DIR, 'test_workspace'))
+        self.workspace.save_workspace(filename=join(TEMP_DIR, 'test_workspace'))
+        self.workspace.load_workspace(filename=join(TEMP_DIR, 'test_workspace'))
         flag = [i for i in temp.keys() if i not in self.workspace.keys()]
 
     def test_save_no_name(self):
-        self.workspace.save()
+        self.workspace.save_workspace()
 
     def test_load_v120_pnm(self):
         temp = self.workspace.copy()
         self.workspace.clear()
-        self.workspace.load(join(FIXTURE_DIR, 'test_v120.pnm'))
+        self.workspace.load_workspace(filename=join(FIXTURE_DIR, 'test_v120.pnm'))
         a = [
             'Boundary_hy4Ey',
             'FickianDiffusion_LjxxQ',
