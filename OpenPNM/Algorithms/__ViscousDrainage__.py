@@ -54,8 +54,8 @@ class ViscousDrainage(GenericLinearTransport):
             fluid.
 
         defending_phase : OpenPNM Phase object
-            The Phase object containing the physical properties of the defending
-            fluid.
+            The Phase object containing the physical properties of the
+            defending fluid.
 
         injection_rate : float
             The bulk rate in m^3/sec the invading phase is injected into the
@@ -63,8 +63,8 @@ class ViscousDrainage(GenericLinearTransport):
             for the inlet.
 
         conductance : string (optional)
-            The dictionary key on the Physics object where the throat conductance
-            values are found.  The default is 'hydraulic_conductance'.
+            The dictionary key on the Physics object where the throat
+            conductance values are found. The default is 'hydraulic_conductance'
 
         entry_pressure : string (optional)
             The dictionary key on the Phase object where the throat entry
@@ -78,6 +78,7 @@ class ViscousDrainage(GenericLinearTransport):
         sat_tol : float (optional)
             Sets the maximum or minimum saturation value for a pore or
             throat to be rounded up to 1.0 or down to 0.0 during the simulation.
+
         max_steps : int (optional)
             Sets the overall hard limit on number of time steps to perform
             during the simulation if other exit criteria are not met.
@@ -115,13 +116,12 @@ class ViscousDrainage(GenericLinearTransport):
             self._menisci[i] = list()
         self._throat_volume = throat_volume
         self._pore_volume = pore_volume
-        # used in advance interface to specify how to change saturation fraction
-        self._throat_sup_fact = sp.array([[-1, -1]]*self.Nt, ndmin=2, dtype=float)
+        # used in advance interface to specify how to change sat fraction
+        self._throat_sup_fact = sp.array([[-1.0, -1.0]]*self.Nt, ndmin=2)
         #
         self._sat_tol = sat_tol
         self._max_steps = max_steps
         self._exit_on_breakthough = exit_on_breakthough
-        self._total_time = 0.0
         self._net_vol = sp.sum(self._net[pore_volume])
         self._net_vol += sp.sum(self._net[throat_volume])
         self._total_inv_out = 0.0
@@ -234,7 +234,10 @@ class ViscousDrainage(GenericLinearTransport):
             'step_inlet_pressure': [],
             'step_invading_sat': [],
             'break_through_time': -1.0,
-            'break_through_step': -1
+            'break_through_step': -1,
+            'def_out_rate': 0.0,
+            'inv_out_rate': 0.0
+
         }
         #
         # beginning simulation
@@ -263,72 +266,90 @@ class ViscousDrainage(GenericLinearTransport):
             A = self._update_coefficient_matrix()
             b = self._update_rhs()
             self.solve(A, b)
-            print('\n Step: ', self.sim_stats['step_number'],
-                  ' Min Pore Pressure: {:9.3f}'.format(sp.amin(self['pore.pressure'])),
-                  ' Max Pore Pressure: {:9.3f}'.format(sp.amax(self['pore.pressure'])))
-            def_out_rate = self.rate(pores=self._outlets, phase='defending')[0]
-            inv_out_rate = self.rate(pores=self._outlets, phase='invading')[0]
+            self.sim_stats['def_out_rate'] = self.rate(pores=self._outlets,
+                                                       phase='defending')[0]
+            self.sim_stats['inv_out_rate'] = self.rate(pores=self._outlets,
+                                                       phase='invading')[0]
             dt = self._calculate_dt()
-            #
-            # outputting some temp files for inspection
-#==============================================================================
-#             if ts_num % 10000 == 0:
-#                 suf = str(ts_num)[0]
-#                 self.return_results()
-#                 phases = [self._inv_phase, self._def_phase]
-#                 fname = 'temp_files/'+self._net.name+'-vd-temp-file-'+suf
-#                 io.VTK.save(self._net, fname, phases)
-#             elif ts_num % 2000 == 0:
-#                 self.return_results()
-#                 phases = [self._inv_phase, self._def_phase]
-#                 fname = 'temp_files/'+self._net.name+'-vd-temp-file'
-#                 io.VTK.save(self._net, fname, phases)
-#==============================================================================
             #
             # counting zero timesteps for debugging
             if dt == 0.0:
                 self.sim_stats['zero_dt_steps'] += 1
             #
-            # testing if invading fluid has reached an outlet pore
-            test = sp.where(self['pore.inv_frac'][self._outlets] > 1-self._sat_tol)[0]
-            if sp.size(test) > 0 and  self.sim_stats['break_through_time'] < 0:
-                print('Reached Breakthrough')
-                self.sim_stats['break_through_time'] = self.sim_stats['total_time']
-                self.sim_stats['break_through_step'] = self.sim_stats['step_number']
-                if self._exit_on_breakthough:
-                    break
-            #
-            # breaking if current fluid configuration can support full injection rate
-            if (abs(inv_out_rate - self._inj_rate)/self._inj_rate < 1e-9):
-                print('Exited on injection rate condition')
-                break
-            #
-            # breaking if maximum number of time steps have been performed
-            if self.sim_stats['step_number'] > self._max_steps:
-                print('Maximum step exit condition triggered')
-                break
-            #
             self._advance_interface(dt)
+            if self._test_exit_criteria():
+                break
+            #
             self.sim_stats['total_time'] += dt
-            self._print_step_stats(-1, def_out_rate, inv_out_rate, dt)
             self.sim_stats['step_number'] += 1
+            #
+            self._print_step_stats(dt)
+
+    def _test_exit_criteria(self):
+        r"""
+        Handles testing of various exit criteria to see if the simulation has
+        been completed.
+        """
+        exit_sim = False
+        #
+        # outputting some temp files for inspection
+        if self.sim_stats['step_number'] % 10000 == 0:
+            suf = str(self.sim_stats['step_number'])[0]
+            self.return_results()
+            phases = [self._inv_phase, self._def_phase]
+            fname = 'temp_files/'+self._net.name+'-vd-temp-file-'+suf
+            io.VTK.save(self._net, fname, phases)
+        elif self.sim_stats['step_number'] % 2000 == 0:
+            self.return_results()
+            phases = [self._inv_phase, self._def_phase]
+            fname = 'temp_files/'+self._net.name+'-vd-temp-file'
+            io.VTK.save(self._net, fname, phases)
+        #
+        # testing if invading fluid has reached an outlet pore
+        test = sp.where(self['pore.inv_frac'][self._outlets] > 1-self._sat_tol)[0]
+        if sp.size(test) > 0 and  self.sim_stats['break_through_time'] < 0:
+            print('Reached Breakthrough')
+            self.sim_stats['break_through_time'] = self.sim_stats['total_time']
+            self.sim_stats['break_through_step'] = self.sim_stats['step_number']
+            if self._exit_on_breakthough:
+                exit_sim = True
+        #
+        # breaking if current fluid configuration can support full inj rate
+        net_inv_out = abs(self.sim_stats['inv_out_rate'] - self._inj_rate)
+        if (net_inv_out/self._inj_rate < 1e-9):
+            print('Exited on injection rate condition')
+            exit_sim = True
+        #
+        # breaking if maximum number of time steps have been performed
+        if self.sim_stats['step_number'] > self._max_steps:
+            print('Maximum step exit condition triggered')
+            exit_sim = True
+        #
+        if not exit_sim:
+            return exit_sim
         #
         # checking overall mass balance
         q_inj = self.sim_stats['total_time'] * self._inj_rate
-        tot_vol = sp.sum(sp.multiply(self._net[self._pore_volume], self['pore.inv_frac']))
-        tot_vol += sp.sum(sp.multiply(self._net[self._throat_volume], self['throat.inv_frac']))
+        tot_vol = sp.sum(sp.multiply(self._net[self._pore_volume],
+                                     self['pore.inv_frac']))
+        tot_vol += sp.sum(sp.multiply(self._net[self._throat_volume],
+                                      self['throat.inv_frac']))
         tot_sat = tot_vol/self._net_vol
         mass_bal = (q_inj - tot_vol - self._total_inv_out)/self._net_vol
         #
         # outputting overall simulation stats
         self._message('Total Simulation Time Until Break Through: ',
-                      self.sim_stats['break_through_time'], ' Steps:', self.sim_stats['break_through_step'])
-        self._message('Total Simulation Time: ', self.sim_stats['total_time'], ' Steps:', self.sim_stats['step_number'])
+                      self.sim_stats['break_through_time'], ' Steps:',
+                      self.sim_stats['break_through_step'])
+        self._message('Total Simulation Time: ', self.sim_stats['total_time'],
+                      ' Steps:', self.sim_stats['step_number'])
         self._message('Total Volume: ', tot_vol)
         self._message('Total Inv Fluid Out: ', self._total_inv_out)
         self._message('Total saturation: ', tot_sat)
         self._message('Total injection: ', q_inj)
         self._message('Mass Difference / Total Vol: {:15.9e}'.format(mass_bal))
+        #
+        return exit_sim
 
     def _update_coefficient_matrix(self):
         r"""
@@ -421,7 +442,7 @@ class ViscousDrainage(GenericLinearTransport):
             Ps = Ps[locs]
             dv_max = dv_max[locs]
             qsum = qsum[locs]
-            dt_new = sp.multiply(dv_max, (self._net[self._pore_volume][Ps]/qsum))
+            dt_new = dv_max * (self._net[self._pore_volume][Ps]/qsum)
             dt_new = sp.amin(dt_new)
             if dt_new < dt:
                 dt = dt_new
@@ -442,43 +463,47 @@ class ViscousDrainage(GenericLinearTransport):
         # updating contested pores phase fraction
         self._advance_pore_saturations(contested_pores, dt)
 
-    def _print_step_stats(self, ts_num, def_out_rate, inv_out_rate, dt):
+    def _print_step_stats(self, dt):
         #
         # getting average pressure drop (outlet is set to 0)
         inlets = sp.where(self['pore.inlets'])[0]
         inlet_p = sp.average(self['pore.pressure'][inlets])
         #
         # calculating bulk flow rates and phase changes
-        inv_out = inv_out_rate * dt
-        def_out = def_out_rate * dt
-        self._total_inv_out += inv_out_rate * dt
+        inv_out = self.sim_stats['inv_out_rate'] * dt
+        def_out = self.sim_stats['def_out_rate'] * dt
+        self._total_inv_out += self.sim_stats['inv_out_rate'] * dt
         q_inj = self.sim_stats['total_time'] * self._inj_rate
         tot_vol = sp.sum(self._net[self._pore_volume] * self['pore.inv_frac'])
         tot_vol += sp.sum(self._net[self._throat_volume] * self['throat.inv_frac'])
         mass_bal = (q_inj - tot_vol - self._total_inv_out)
         #
-        chk_val = abs(inv_out_rate - self._inj_rate)/self._inj_rate
-        strg = 'inv fluid out: {:15.6e}, normed value: {:15.6e}'.format(inv_out_rate,
-                                                                        chk_val)
+        chk_val = (self.sim_stats['inv_out_rate'] - self._inj_rate)
+        chk_val = abs(chk_val)/self._inj_rate
         #
         self.sim_stats['step_inlet_pressure'].append(inlet_p)
         self.sim_stats['step_invading_sat'].append(tot_vol/self._net_vol)
         #
-        fmt_str = 'Tot Sat Frac: {:7.5F}, Mass Diff Normed by Tot Inj: {:17.9E}  '
-        fmt_str += 'Mass Diff Normed by Net Vol: {:17.9E}'
-        self._message('Time Step: ', self.sim_stats['step_number'], ' size: {:0.3E} '.format(dt))
-        self._message(strg, 'num zero steps: ', self.sim_stats['zero_dt_steps'])
+        # time step messages
+        fmt_str = 'Time Step: {} size: {:0.3E}'
+        self._message(fmt_str.format(self.sim_stats['step_number'], dt))
+        self._message('Num Zero Time steps: ', self.sim_stats['zero_dt_steps'])
+        #
+        # fluid flow messages
         self._message('Net Def Fluid Out: {:10.6e}'.format(def_out))
         self._message('Net Inv Fluid Out: {:10.6e}'.format(inv_out))
         self._message('Net Fluid In: {:19.12e}'.format(self._inj_rate*dt))
         self._message('Net Fluid Out: {:18.12e}'.format(def_out+inv_out))
         self._message('Average Pressure Drop: {:10.4f}'.format(inlet_p))
-        self._message(fmt_str.format(tot_vol/self._net_vol, mass_bal/q_inj, mass_bal/self._net_vol))
+        #
+        # mass balance message
+        fmt_str = 'Tot Sat Frac: {:7.5F}\n'.format(tot_vol/self._net_vol)
+        fmt_str += 'Mass Diff Normed by Tot Inj: {:17.9E}\n'
+        fmt_str += 'Mass Diff Normed by Net Vol: {:17.9E}'
+        self._message(fmt_str.format(mass_bal/q_inj, mass_bal/self._net_vol))
         self._message('-'*25)
         self._message('')
-#
-# Helper functions below here
-#
+
     def _advance_throat_saturations(self, Ts, dt):
         #
         if len(Ts) == 0:
@@ -518,20 +543,22 @@ class ViscousDrainage(GenericLinearTransport):
         inds = sp.where((first_men < self._sat_tol) & (v > 0.0))[0]
         throats = sp.append(throats, inds)
         pores = sp.append(pores, self._net['throat.conns'][Ts[inds]][:, 0])
-        sat_adj = sp.append(sat_adj, first_men[inds]*self._throat_sup_fact[Ts[inds], 0])
+        mens_adj = first_men[inds]*self._throat_sup_fact[Ts[inds], 0]
+        sat_adj = sp.append(sat_adj, mens_adj)
         men_index[inds] = 0
         self._throat_sup_fact[Ts[inds], 0] *= -1.0
         #
-        ratio = self._net['throat.volume'][Ts[throats]]/self._net['pore.volume'][pores]
+        ratio = self._net['throat.volume'][Ts[throats]]
+        ratio = ratio/self._net['pore.volume'][pores]
         ratio[sp.isnan(ratio)] = 1.0
         ratio[sp.isinf(ratio)] = 1.0
         self['throat.inv_frac'][Ts[throats]] += sat_adj
         # negative b/c it's the fluid opposite the meniscus
-        self['pore.inv_frac'][pores] += -sat_adj * ratio #TODO: determine if this is always the case
+        self['pore.inv_frac'][pores] += -sat_adj * ratio
         self['pore.contested'][pores] = True
         # adjusting total time
         vol = sp.sum(sat_adj*self._net['throat.volume'][Ts[throats]])
-        self._total_time += vol/self._inj_rate
+        self.sim_stats['total_time'] += vol/self._inj_rate
         #
         for th in throats:
             del self._menisci[Ts[th]][int(men_index[th])]
@@ -554,8 +581,8 @@ class ViscousDrainage(GenericLinearTransport):
         #
         # handling regular pores
         pores = Ps[sp.where(~sp.in1d(Ps, pores))]
-        pore_vol_frac = self['pore.inv_frac'][pores]
-        pore_vol_frac = dt*self._pore_qsum[pores]/self._net[self._pore_volume][pores]
+        pore_vol_frac = dt*self._pore_qsum[pores]
+        pore_vol_frac = pore_vol_frac/self._net[self._pore_volume][pores]
         self['pore.inv_frac'][pores] += pore_vol_frac
         #
         # filling pores
@@ -578,8 +605,9 @@ class ViscousDrainage(GenericLinearTransport):
         fpc = sp.zeros(sp.size(throats))
         sf = self._get_supply_facts(throats, ref_pores)
         #
+        inds = sp.where(ref_pores == self._net['throat.conns'][throats, 1])[0]
         step = sp.ones(sp.size(throats), dtype=int)
-        step[sp.where(ref_pores == self._net['throat.conns'][throats, 1])[0]] = -1
+        step[inds] = -1
         #
         for i, th in enumerate(throats):
             f = sf[i]
@@ -683,18 +711,16 @@ class ViscousDrainage(GenericLinearTransport):
                 self['pore.invaded'][pore] = False
                 sf = 1
             #
-            # creating a meniscus in all throats that have a supply factor matching
-            # the pores previous status
+            # creating a meniscus in all throats that have a supply factor
+            # matching the pores previous status
             Ts = self._net.find_neighbor_throats(pore)
             Ts_sf = self._get_supply_facts(Ts, [pore]*len(Ts))
             self._set_menisci([pore], [Ts[Ts_sf == sf]])
             #
-            # testing if all throats have the same sf, if so then contested is false
+            # testing if all throats have the same sf
+            # if so then contested is false
             Ts_sf = self._get_supply_facts(Ts, [pore]*len(Ts))
             self['pore.contested'][pore] = not sp.all(Ts_sf == Ts_sf[0])
-            self._message('Filled pore: ', pore, ' sat: ',
-                          self['pore.inv_frac'][pore], ' contested: ',
-                          self['pore.contested'][pore])
 
     def _set_menisci(self, pores, throats):
         r"""
@@ -706,7 +732,8 @@ class ViscousDrainage(GenericLinearTransport):
                 ps = self._net['throat.conns'][th]
                 if base_pore == ps[1]:
                     # checking if flow in throat is moving away from the pore
-                    # - Q means flow from ps[0] into ps[1] so a meniscus shouldn't be created
+                    # - Q means flow from ps[0] into ps[1]
+                    # so a meniscus shouldn't be created
                     if self._th_q[th] < 0.0:
                         continue
                     self._menisci[th].append(1.0)
@@ -721,7 +748,6 @@ class ViscousDrainage(GenericLinearTransport):
                 #
                 self['throat.contested'][th] = True
 
-
     def _message(self, *args):
         r"""
         Temp function I am using for easy logging to file
@@ -729,7 +755,7 @@ class ViscousDrainage(GenericLinearTransport):
         #
         string = [str(a) for a in args]
         string = ' '.join(string)
-        #print(string)
+        print(string)
         self._log_file.write(string+'\n')
 
     def rate(self, pores=None, mode='group', phase='both'):
@@ -744,12 +770,12 @@ class ViscousDrainage(GenericLinearTransport):
         mode : string, optional
             Controls how to return the rate.  Options are:
             - 'group'(default): It returns the cumulative rate moving into them
-            - 'single': It calculates the rate for each pore individually.
+            - 'single': It calculates the rate for each pore individually
         phase : string, optional
             Specifies a specific phase to calculate rates for.  Options are:
             - 'both'(default): It returns the cumulative rate of both phases
-            - 'defending': Calculates the cumlative rate of only defending phase.
-            - 'invading': Calculates the cumlative rate of only invading phase.
+            - 'defending': Calculates the cumlative rate of the defending phase
+            - 'invading': Calculates the cumlative rate of the invading phase
         """
         network = self._net
         conductance = self['throat.conductance']
@@ -785,7 +811,7 @@ class ViscousDrainage(GenericLinearTransport):
             fpc = self._sum_fpcap(throats, pores1)
             throat_q = -sp.multiply(g, (X1 - X2 - fpc))
             #
-            # adding flow into the throat q array because other functions need it
+            # adding flow into the throat q array because I already have it
             # needs flipped here b/c throats always assume flow direction
             # from lower index to higher
             flip_q = sp.where(pores1 > pores2)[0]
