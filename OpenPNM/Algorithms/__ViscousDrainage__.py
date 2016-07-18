@@ -126,6 +126,8 @@ class ViscousDrainage(GenericLinearTransport):
         self._net_vol += sp.sum(self._net[throat_volume])
         self._total_inv_out = 0.0
         #
+        self.sim_stats = {}
+        #
         self._log_fname = 'VD-Log-2.txt'
         super().setup(conductance=conductance, quantity='pressure',
                       super_pore_conductance=super_pore_conductance)
@@ -220,22 +222,31 @@ class ViscousDrainage(GenericLinearTransport):
         tot_vol += sp.sum(sp.multiply(self._net[self._throat_volume],
                                       self['throat.inv_frac']))
         tot_sat = tot_vol/self._net_vol
-        self._total_time = tot_vol/self._inj_rate
+        total_time = tot_vol/self._inj_rate
         logger.info('Initial Saturation of Invading Phase: '+str(tot_sat))
         #
+        # initializing simulation stats dictionary
+        self.sim_stats = {
+            'step_number': 0,
+            'total_time': total_time,
+            'total_sat': tot_sat,
+            'zero_dt_steps': 0,
+            'step_inlet_pressure': [],
+            'step_invading_sat': [],
+            'break_through_time': -1.0,
+            'break_through_step': -1
+        }
+        #
         # beginning simulation
-        self._zero_dt = 0
-        self.net_inlet_pressure = []
-        self.net_inv_saturation = []
         with open(self._log_fname, 'w') as self._log_file:
             self._do_outer_iteration_stage(**kwargs)
 
-    def restart_simulation(self, max_steps=0):
+    def restart_simulation(self, max_steps):
         r"""
         Restarts a simulation to run until an exit condition is met
         """
         #
-        self._max_steps += max_steps
+        self._max_steps = max_steps
         self._exit_on_breakthough = False
         logger.debug('Simulation restarted')
         #
@@ -248,14 +259,11 @@ class ViscousDrainage(GenericLinearTransport):
         Handles the tracking and movement of phases throat the network.
         """
         #
-        ts_num = 0
-        break_through_time = -1.0
-        break_through_steps = -1
         while True:
             A = self._update_coefficient_matrix()
             b = self._update_rhs()
             self.solve(A, b)
-            print('\n Step: ', ts_num,
+            print('\n Step: ', self.sim_stats['step_number'],
                   ' Min Pore Pressure: {:9.3f}'.format(sp.amin(self['pore.pressure'])),
                   ' Max Pore Pressure: {:9.3f}'.format(sp.amax(self['pore.pressure'])))
             def_out_rate = self.rate(pores=self._outlets, phase='defending')[0]
@@ -279,14 +287,14 @@ class ViscousDrainage(GenericLinearTransport):
             #
             # counting zero timesteps for debugging
             if dt == 0.0:
-                self._zero_dt += 1
+                self.sim_stats['zero_dt_steps'] += 1
             #
             # testing if invading fluid has reached an outlet pore
             test = sp.where(self['pore.inv_frac'][self._outlets] > 1-self._sat_tol)[0]
-            if sp.size(test) > 0 and break_through_time < 0:
+            if sp.size(test) > 0 and  self.sim_stats['break_through_time'] < 0:
                 print('Reached Breakthrough')
-                break_through_time = self._total_time
-                break_through_steps = ts_num
+                self.sim_stats['break_through_time'] = self.sim_stats['total_time']
+                self.sim_stats['break_through_step'] = self.sim_stats['step_number']
                 if self._exit_on_breakthough:
                     break
             #
@@ -296,17 +304,17 @@ class ViscousDrainage(GenericLinearTransport):
                 break
             #
             # breaking if maximum number of time steps have been performed
-            if ts_num > self._max_steps:
+            if self.sim_stats['step_number'] > self._max_steps:
                 print('Maximum step exit condition triggered')
                 break
             #
             self._advance_interface(dt)
-            self._total_time += dt
-            self._print_step_stats(ts_num, def_out_rate, inv_out_rate, dt)
-            ts_num += 1
+            self.sim_stats['total_time'] += dt
+            self._print_step_stats(-1, def_out_rate, inv_out_rate, dt)
+            self.sim_stats['step_number'] += 1
         #
         # checking overall mass balance
-        q_inj = self._total_time * self._inj_rate
+        q_inj = self.sim_stats['total_time'] * self._inj_rate
         tot_vol = sp.sum(sp.multiply(self._net[self._pore_volume], self['pore.inv_frac']))
         tot_vol += sp.sum(sp.multiply(self._net[self._throat_volume], self['throat.inv_frac']))
         tot_sat = tot_vol/self._net_vol
@@ -314,8 +322,8 @@ class ViscousDrainage(GenericLinearTransport):
         #
         # outputting overall simulation stats
         self._message('Total Simulation Time Until Break Through: ',
-                      break_through_time, ' Steps:', break_through_steps)
-        self._message('Total Simulation Time: ', self._total_time, ' Steps:', ts_num)
+                      self.sim_stats['break_through_time'], ' Steps:', self.sim_stats['break_through_step'])
+        self._message('Total Simulation Time: ', self.sim_stats['total_time'], ' Steps:', self.sim_stats['step_number'])
         self._message('Total Volume: ', tot_vol)
         self._message('Total Inv Fluid Out: ', self._total_inv_out)
         self._message('Total saturation: ', tot_sat)
@@ -444,7 +452,7 @@ class ViscousDrainage(GenericLinearTransport):
         inv_out = inv_out_rate * dt
         def_out = def_out_rate * dt
         self._total_inv_out += inv_out_rate * dt
-        q_inj = self._total_time * self._inj_rate
+        q_inj = self.sim_stats['total_time'] * self._inj_rate
         tot_vol = sp.sum(self._net[self._pore_volume] * self['pore.inv_frac'])
         tot_vol += sp.sum(self._net[self._throat_volume] * self['throat.inv_frac'])
         mass_bal = (q_inj - tot_vol - self._total_inv_out)
@@ -453,13 +461,13 @@ class ViscousDrainage(GenericLinearTransport):
         strg = 'inv fluid out: {:15.6e}, normed value: {:15.6e}'.format(inv_out_rate,
                                                                         chk_val)
         #
-        self.net_inlet_pressure.append(inlet_p)
-        self.net_inv_saturation.append(tot_vol/self._net_vol)
+        self.sim_stats['step_inlet_pressure'].append(inlet_p)
+        self.sim_stats['step_invading_sat'].append(tot_vol/self._net_vol)
         #
         fmt_str = 'Tot Sat Frac: {:7.5F}, Mass Diff Normed by Tot Inj: {:17.9E}  '
         fmt_str += 'Mass Diff Normed by Net Vol: {:17.9E}'
-        self._message('Time Step: ', ts_num, ' size: {:0.3E} '.format(dt))
-        self._message(strg, 'num zero steps: ', self._zero_dt)
+        self._message('Time Step: ', self.sim_stats['step_number'], ' size: {:0.3E} '.format(dt))
+        self._message(strg, 'num zero steps: ', self.sim_stats['zero_dt_steps'])
         self._message('Net Def Fluid Out: {:10.6e}'.format(def_out))
         self._message('Net Inv Fluid Out: {:10.6e}'.format(inv_out))
         self._message('Net Fluid In: {:19.12e}'.format(self._inj_rate*dt))
