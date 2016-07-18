@@ -58,8 +58,8 @@ from .Base import Workspace as mgr
 
 _workspace = mgr()
 del mgr
-save = _workspace.save
-load = _workspace.load
+save_workspace = _workspace.save_workspace
+load_workspace = _workspace.load_workspace
 export_data = _workspace.export_data
 import_data = _workspace.import_data
 clear = _workspace.clear
