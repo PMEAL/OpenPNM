@@ -307,7 +307,7 @@ class ViscousDrainage(GenericLinearTransport):
         #
         # testing if invading fluid has reached an outlet pore
         test = sp.where(self['pore.inv_frac'][self._outlets] > 1-self._sat_tol)[0]
-        if sp.size(test) > 0 and  self.sim_stats['break_through_time'] < 0:
+        if sp.size(test) > 0 and self.sim_stats['break_through_time'] < 0:
             print('Reached Breakthrough')
             self.sim_stats['break_through_time'] = self.sim_stats['total_time']
             self.sim_stats['break_through_step'] = self.sim_stats['step_number']
