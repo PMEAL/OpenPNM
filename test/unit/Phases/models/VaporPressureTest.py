@@ -25,7 +25,7 @@ class VaporPressureTest:
                               model=f,
                               pore_temperature='pore.temperature',
                               pore_salinity='pore.salinity')
-        assert sp.allclose(self.phase['pore.test'], 3607.850875)
+        assert sp.allclose(self.phase['pore.test'], 3536.01)
 
     def test_water_no_salinity(self):
         f = OpenPNM.Phases.models.vapor_pressure.water
