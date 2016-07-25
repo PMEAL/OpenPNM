@@ -14,9 +14,10 @@ class VaporPressureTest:
         self.phase.models.add(propname='pore.test',
                               model=f,
                               pore_temperature='pore.temperature',
-                              A=8.088,
-                              B=1750.71,
-                              C=236.191)
+                              A=8.07131,
+                              B=1730.63,
+                              C=233.426)
+        assert sp.allclose(self.phase['pore.test'], 3523.72641773)
 
     def test_water(self):
         f = OpenPNM.Phases.models.vapor_pressure.water
