@@ -32,7 +32,6 @@ def antoine(phase, A, B, C, pore_temperature='pore.temperature', **kwargs):
 
     """
     T = phase[pore_temperature] - 273.15
-    value = (10**(A-B/(C+T)))/760*101325
     return value
 
 
