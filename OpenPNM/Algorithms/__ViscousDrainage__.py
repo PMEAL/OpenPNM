@@ -128,7 +128,7 @@ class ViscousDrainage(GenericLinearTransport):
         #
         self.sim_stats = {}
         #
-        self._log_fname = 'VD-Log-2.txt'
+        # self._log_fname = 'VD-Log-2.txt'
         super().setup(conductance=conductance, quantity='pressure',
                       super_pore_conductance=super_pore_conductance)
 
@@ -241,8 +241,8 @@ class ViscousDrainage(GenericLinearTransport):
         }
         #
         # beginning simulation
-        with open(self._log_fname, 'w') as self._log_file:
-            self._do_outer_iteration_stage(**kwargs)
+        # with open(self._log_fname, 'w') as self._log_file:
+        self._do_outer_iteration_stage(**kwargs)
 
     def restart_simulation(self, max_steps):
         r"""
@@ -253,8 +253,8 @@ class ViscousDrainage(GenericLinearTransport):
         self._exit_on_breakthough = False
         logger.debug('Simulation restarted')
         #
-        with open(self._log_fname, 'a') as self._log_file:
-            self._do_outer_iteration_stage()
+        # with open(self._log_fname, 'a') as self._log_file:
+        self._do_outer_iteration_stage()
 
     def _do_outer_iteration_stage(self, **kwargs):
         r"""
@@ -298,12 +298,12 @@ class ViscousDrainage(GenericLinearTransport):
             self.return_results()
             phases = [self._inv_phase, self._def_phase]
             fname = 'temp_files/'+self._net.name+'-vd-temp-file-'+suf
-            io.VTK.save(self._net, fname, phases)
+            # io.VTK.save(self._net, fname, phases)
         elif self.sim_stats['step_number'] % 2000 == 0:
             self.return_results()
             phases = [self._inv_phase, self._def_phase]
             fname = 'temp_files/'+self._net.name+'-vd-temp-file'
-            io.VTK.save(self._net, fname, phases)
+            # io.VTK.save(self._net, fname, phases)
         #
         # testing if invading fluid has reached an outlet pore
         test = sp.where(self['pore.inv_frac'][self._outlets] > 1-self._sat_tol)[0]
@@ -764,7 +764,7 @@ class ViscousDrainage(GenericLinearTransport):
         string = [str(a) for a in args]
         string = ' '.join(string)
         print(string)
-        self._log_file.write(string+'\n')
+        # self._log_file.write(string+'\n')
 
     def rate(self, pores=None, mode='group', phase='both'):
         r"""
