@@ -105,6 +105,8 @@ class DelaunayVoronoiDual(GenericNetwork):
         super().__init__(**kwargs)
 
         if points is None:
+            if num_points if None:
+                raise Exception('Must specify either "points" or "num_points"')
             points = tools.generate_base_points(num_points=num_points,
                                                 domain_size=domain_size)
 

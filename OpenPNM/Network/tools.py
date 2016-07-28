@@ -1044,7 +1044,7 @@ def generate_base_points(num_points, domain_size, prob=None):
     >>> pts = op.Network.tools.generate_base_points(num_points=50,
     ...                                             domain_size=[2],
     ...                                             prob=prob)
-    >>> net = op.Network.DelaunayVoronoiDual(pts=pts, domain_size=[2])
+    >>> net = op.Network.DelaunayVoronoiDual(points=pts, domain_size=[2])
     """
     def _try_points(num_points, prob):
         prob = _sp.array(prob)/_sp.amax(prob)  # Ensure prob is normalized
