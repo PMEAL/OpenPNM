@@ -25,28 +25,35 @@ class CubicDual(GenericNetwork):
         A unique name for the network
 
     shape : list of ints
-        The size and shape of the network in terms of the number of pores in
-        each principal direction.  Solid nodes will be added at the center of
-        of each cube defined by 8 pores.
+        The size and shape of the principal cubic network in terms of the
+        number of pores in each direction.  Secondary nodes will be added at
+        the center of each unit cell defined by a cube 8 pores in the primary
+        network.
 
     spacing : list of floats
         The distance between pores in each of the principal directions
+
+    label_1 and label_2 : strings
+        The labels to apply to the main cubic lattice and the interpenetrating
+        cubic lattice (i.e. the dual network).  The defaults are 'corners' and
+        'centers', which refers to the position on the unit cell.
 
     Examples
     --------
     >>>
     """
-    def __init__(self, shape=None, spacing=[1, 1, 1], **kwargs):
+    def __init__(self, shape=None, spacing=[1, 1, 1], label_1='corners',
+                 label_2='centers', **kwargs):
         super().__init__(**kwargs)
         import OpenPNM as op
         spacing = sp.array(spacing)
         shape = sp.array(shape)
         net = op.Network.Cubic(shape=shape, spacing=[1, 1, 1])
-        net['throat.cubic'] = True
-        net['pore.cubic'] = True
+        net['throat.'+label_1] = True
+        net['pore.'+label_1] = True
         dual = op.Network.Cubic(shape=shape-1)
-        dual['pore.center'] = True
-        dual['throat.center'] = True
+        dual['pore.'+label_2] = True
+        dual['throat.'+label_2] = True
         dual['pore.coords'] += 0.5
         op.Network.tools.stitch(net, dual, P_network=net.Ps,
                                 P_donor=dual.Ps, len_max=1)
@@ -61,14 +68,14 @@ class CubicDual(GenericNetwork):
         surface_labels = ['top', 'bottom', 'left', 'right', 'front', 'back']
         for item in surface_labels:
             # Clone 'center' pores and shift to surface
-            Ps = net.pores(labels=[item, 'center'], mode='intersection')
-            net.clone_pores(pores=Ps, apply_label=['center', 'surface', item])
+            Ps = net.pores(labels=[item, label_2], mode='intersection')
+            net.clone_pores(pores=Ps, apply_label=[label_2, 'surface', item])
             Ps = net.pores(labels=['surface', item], mode='intersection')
             net['pore.coords'][Ps] += offset[item]
             Ts = net.find_neighbor_throats(pores=Ps)
             # Label pores and throats
             net['pore.surface'][Ps] = True
-            net['throat.center'][Ts] = True
+            net['throat.'+label_2][Ts] = True
         Ps = net.pores(labels=surface_labels)
         net['pore.surface'][Ps] = True
 
