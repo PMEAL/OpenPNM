@@ -10,7 +10,7 @@ class CubicDualTest:
         assert net.Np == 285
         assert net.Nt == 1052
         assert net.num_pores('primary') == 125
-        assert net.num_pores('secondary') == 125
+        assert net.num_pores('secondary') == 160
         assert net.num_pores('surface') == 250
         assert net.num_throats('primary') == 300
         assert net.num_throats('secondary') == 240
@@ -24,4 +24,4 @@ class CubicDualTest:
         net.add_boundary_pores(pores=Ps, offset=[0, 0, -0.5])
         Ps2 = net.pores(labels=['boundary'], mode='intersection')
         assert Ps.size == Ps2.size
-        assert sp.any(sp.in1d(Ps, Ps2)) == False
+        assert ~sp.any(sp.in1d(Ps, Ps2))
