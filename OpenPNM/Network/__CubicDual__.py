@@ -5,11 +5,8 @@ CubicDUal: Generate lattice-like networks with a
 ===============================================================================
 
 """
-import numpy as np
 import scipy as sp
-import scipy.spatial as sptl
 import OpenPNM.Utilities.misc as misc
-from OpenPNM.Network import tools
 from OpenPNM.Network import GenericNetwork
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
