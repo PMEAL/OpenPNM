@@ -1098,9 +1098,9 @@ def generate_base_points(num_points, domain_size, prob=None):
         z = Z*domain_size[1]
         # Trim points outside the domain (from improper prob images)
         inds = r <= domain_size[0]
-        [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
+        [r, theta, z] = [r[inds], theta[inds], z[inds]]
         inds = ~((z > domain_size[1]) + (z < 0))
-        [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
+        [r, theta, z] = [r[inds], theta[inds], z[inds]]
         # Reflect base points about faces and perimeter
         new_r = 2*domain_size[0] - r
         r = _sp.hstack([r, new_r])
