@@ -7,6 +7,7 @@ Network.tools.topology: Assorted topological manipulation methods
 """
 import scipy as _sp
 import numpy as _np
+import scipy.ndimage as _spim
 from OpenPNM.Base import logging as _logging
 from OpenPNM.Base import Workspace as _workspace
 logger = _logging.getLogger(__name__)
@@ -971,3 +972,164 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.set_xlim(mid_x - max_range, mid_x + max_range)
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
         ax.set_zlim(mid_z - max_range, mid_z + max_range)
+
+
+def generate_base_points(num_points, domain_size, prob=None):
+    r"""
+    Generates a set of base points for passing into the DelaunayVoronoiDual
+    class.  The points can be distributed in spherical, cylindrical, or
+    rectilinear patterns.
+
+    Parameters
+    ----------
+    num_points : scalar
+        The number of base points that lie within the domain.  Note that the
+        actual number of points returned will be larger, with the extra points
+        lying outside the domain.
+
+    domain_size : list or array
+        Controls the size and shape of the domain, as follows:
+
+        **sphere** : If a single value is received, its treated as the radius
+        [r] of a sphere centered on [0, 0, 0].
+
+        **cylinder** : If a two-element list is received it's treated as the
+        radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
+        extending in the positive z-direction.
+
+        **rectangle** : If a three element list is received, it's treated
+        as the outer corner of rectangle [x, y, z] whose opposite corner lies
+        at [0, 0, 0].
+
+    prob : 3D array, optional
+        A 3D array that contains fractional (0-1) values indicating the
+        liklihood that a point in that region should be kept.  If not specified
+        an array containing 1's in the shape of a sphere, cylinder, or cube is
+        generated, depnending on the give ``domain_size`` with zeros outside.
+        When specifying a custom probabiliy map is it recommended to also set
+        values outside the given domain to zero.  If not, then the correct
+        shape will still be returned, but with too few points in it.
+
+    Notes
+    -----
+    This method places the given number of points within the specified domain,
+    then reflects these points across each domain boundary.  This results in
+    smooth flat faces at the boundaries once these excess pores are trimmed.
+
+    The reflection approach tends to create larger pores near the surfaces, so
+    it might be necessary to use the ``prob`` argument to specify a slightly
+    higher density of points near the surfaces.
+
+    For rough faces, it is necessary to define a larger than desired domain
+    then trim to the desired size.  This will discard the reflected points
+    plus some of the original points.
+
+    Examples
+    --------
+    The following generates a spherical array with higher values near the core.
+    It uses a distance transform to create a sphere of radius 10, then a
+    second distance transform to create larger values in the center away from
+    the sphere surface.  These distance values could be further skewed by
+    applying a power, with values higher than 1 resulting in higher values in
+    the core, and fractional values smoothinging them out a bit.
+
+    >>> import OpenPNM as op
+    >>> import scipy as sp
+    >>> import scipy.ndimage as spim
+    >>> im = sp.ones([21, 21, 21], dtype=int)
+    >>> im[10, 10, 10] = 0
+    >>> im = spim.distance_transform_edt(im) <= 20  # Create sphere of 1's
+    >>> prob = spim.distance_transform_edt(im)
+    >>> prob = prob / sp.amax(prob)  # Normalize between 0 and 1
+    >>> pts = op.Network.tools.generate_base_points(num_points=50,
+    ...                                             domain_size=[2],
+    ...                                             prob=prob)
+    >>> net = op.Network.DelaunayVoronoiDual(points=pts, domain_size=[2])
+    """
+    def _try_points(num_points, prob):
+        prob = _sp.array(prob)/_sp.amax(prob)  # Ensure prob is normalized
+        base_pts = []
+        N = 0
+        while N < num_points:
+            pt = _sp.random.rand(3)  # Generate a point
+            # Test whether to keep it or not
+            [indx, indy, indz] = _sp.floor(pt*_sp.shape(prob)).astype(int)
+            if _sp.random.rand(1) <= prob[indx][indy][indz]:
+                base_pts.append(pt)
+                N += 1
+        base_pts = _sp.array(base_pts)
+        return base_pts
+    if len(domain_size) == 1:  # Spherical
+        domain_size = _sp.array(domain_size)
+        if prob is None:
+            prob = _sp.ones([41, 41, 41])
+            prob[20, 20, 20] = 0
+            prob = _spim.distance_transform_bf(prob) <= 20
+        base_pts = _try_points(num_points, prob)
+        # Convert to spherical coordinates
+        [X, Y, Z] = _sp.array(base_pts - [0.5, 0.5, 0.5]).T  # Center at origin
+        r = 2*_sp.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
+        theta = 2*_sp.arctan(Y/X)
+        phi = 2*_sp.arctan(_sp.sqrt(X**2 + Y**2)/Z)
+        # Trim points outside the domain (from improper prob images)
+        inds = r <= domain_size[0]
+        [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
+        # Reflect base points across perimeter
+        new_r = 2*domain_size - r
+        r = _sp.hstack([r, new_r])
+        theta = _sp.hstack([theta, theta])
+        phi = _sp.hstack([phi, phi])
+        # Convert to Cartesean coordinates
+        X = r*_sp.cos(theta)*_sp.sin(phi)
+        Y = r*_sp.sin(theta)*_sp.sin(phi)
+        Z = r*_sp.cos(phi)
+        base_pts = _sp.vstack([X, Y, Z]).T
+    elif len(domain_size) == 2:  # Cylindrical
+        domain_size = _sp.array(domain_size)
+        if prob is None:
+            prob = _sp.ones([41, 41, 41])
+            prob[20, 20, :] = 0
+            prob = _spim.distance_transform_bf(prob) <= 20
+        base_pts = _try_points(num_points, prob)
+        # Convert to cylindrical coordinates
+        [X, Y, Z] = _sp.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
+        r = 2*_sp.sqrt(X**2 + Y**2)*domain_size[0]
+        theta = 2*_sp.arctan(Y/X)
+        z = Z*domain_size[1]
+        # Trim points outside the domain (from improper prob images)
+        inds = r <= domain_size[0]
+        [r, theta, z] = [r[inds], theta[inds], z[inds]]
+        inds = ~((z > domain_size[1]) + (z < 0))
+        [r, theta, z] = [r[inds], theta[inds], z[inds]]
+        # Reflect base points about faces and perimeter
+        new_r = 2*domain_size[0] - r
+        r = _sp.hstack([r, new_r])
+        theta = _sp.hstack([theta, theta])
+        z = _sp.hstack([z, z])
+        r = _sp.hstack([r, r, r])
+        theta = _sp.hstack([theta, theta, theta])
+        z = _sp.hstack([z, -z, 2-z])
+        # Convert to Cartesean coordinates
+        X = r*_sp.cos(theta)
+        Y = r*_sp.sin(theta)
+        Z = z
+        base_pts = _sp.vstack([X, Y, Z]).T
+    elif len(domain_size) == 3:  # Rectilinear
+        domain_size = _sp.array(domain_size)
+        Nx, Ny, Nz = domain_size
+        if prob is None:
+            prob = _sp.ones([10, 10, 10], dtype=float)
+        base_pts = _try_points(num_points, prob)
+        base_pts = base_pts*domain_size
+        # Reflect base points about all 6 faces
+        orig_pts = base_pts
+        base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
+                                         [2.0*Nx, 0, 0]))
+        base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts +
+                                         [0, 2.0*Ny, 0]))
+        base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts +
+                                         [0, 0, 2.0*Nz]))
+        base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
+        base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts))
+        base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+    return base_pts
