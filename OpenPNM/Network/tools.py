@@ -396,13 +396,14 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
         _mgr.purge_object(donor)
 
 
-def connect_pores(network, pores1, pores2, labels=[]):
+def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     r'''
-    Returns the possible connections between two group of pores.
+    Returns the possible connections between two group of pores, and optionally
+    makes the connections.
 
     Parameters
     ----------
-    networK : OpenPNM Network Object
+    network : OpenPNM Network Object
 
     pores1 : array_like
         The first group of pores on the network
@@ -410,11 +411,20 @@ def connect_pores(network, pores1, pores2, labels=[]):
     pores2 : array_like
         The second group of pores on the network
 
+    labels : list of strings
+        The labels to apply to the new throats.  This argument is only needed
+        if ``add_conns`` is True.
+
+    add_conns : bool
+        Indicates whether the connections should be added to the supplied
+        network (default is True).  Otherwise, the connections are returned
+        as an Nt x 2 array that can be passed directly to ``extend``.
+
     Notes
     -----
     It creates the connections in a format which is acceptable by
-    the default OpenPNM connection key ('throat.conns') and adds them to
-    the network.
+    the default OpenPNM connection ('throat.conns') and either adds them to
+    the network or returns them.
 
     Examples
     --------
@@ -439,19 +449,34 @@ def connect_pores(network, pores1, pores2, labels=[]):
     array1 = _sp.repeat(pores1, size2)
     array2 = _sp.tile(pores2, size1)
     conns = _sp.vstack([array1, array2]).T
-    extend(network=network, throat_conns=conns, labels=labels)
+    if add_conns:
+        extend(network=network, throat_conns=conns, labels=labels)
+    else:
+        return conns
 
 
-def find_centroid(coords=None):
+def find_centroid(coords=None, mode='geometric'):
     r'''
-    It finds the coordinates of the centroid of the sent pores.
+    Finds the coordinates of the centroid of the specified pores.
+
+    Parameters
+    ----------
+    coords : array_like
+        An Np x 3 list of [x, y, z] coordinates for the pores of which the
+        centroid is sought
+
+    mode : string
+        Controls how the centroid is calculated.  Options are:
+
+        **'geometric'** : (default) Simply calcuates the average [X, Y, Z] of
+        the given coordinates using scipy.mean(coords, axis=0)
+
+        **'center_of_mass'** : not implemented yet
+
+        **'inscribed_sphere'** : not implemented yet
     '''
-    l = _np.float64(len(coords))
-    x, y, z = coords.T
-    sx = _np.sum(x)
-    sy = _np.sum(y)
-    sz = _np.sum(z)
-    c = _np.array([sx/l, sy/l, sz/l], ndmin=1)
+    if mode == 'geometric':
+        c = _sp.mean(coords, axis=0)
     return c
 
 
@@ -689,22 +714,27 @@ def merge_pores(network, pores, labels=['merged']):
     trim(network=network, pores=pores)
 
 
-def template_sphere_shell(outer_radius=None, inner_radius=0):
+def template_sphere_shell(outer_radius, inner_radius=0):
     r"""
-    This method generates an image array of a sphere shell for a cubic network.
+    This method generates an image array of a sphere-shell.  It is useful for
+    passing to Cubic networks as a ``template`` to make spherical shaped
+    networks.  It can also be used generate a sphere template for
 
     Parameters
     ----------
     outer_radius : array_like
-    Number of the nodes in the outer radius of the shell
+        Number of the nodes in the outer radius of the shell
 
     inner_radius : float
-    Number of the nodes in the inner radius of the shell
+        Number of the nodes in the inner radius of the shell
+
+    Returns
+    -------
+    A Numpy array containing 1's to demarcate the sphere-shell, and 0's
+    elsewhere.
 
     """
 
-    if outer_radius is None:
-        raise Exception('No outer radius has been sent!')
     if inner_radius is None:
         raise Exception('Number of nodes in the inner radius cannot be '
                         'None!')
@@ -764,6 +794,9 @@ def find_surface_pores(network, markers=None, label='surface'):
     -----
     This function does not check whether the given markers actually lie outside
     the domain, allowing the labeling of *internal* sufaces.
+
+    If this method fails to mark some surface pores, consider sending more
+    markers on each face.
 
     Examples
     --------
