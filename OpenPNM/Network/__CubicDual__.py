@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ===============================================================================
-CubicDUal: Generate lattice-like networks with a
+CubicDual: Generate a cubic lattice with an interpentrating dual network
 ===============================================================================
 
 """
@@ -14,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 class CubicDual(GenericNetwork):
     r"""
-    Generates a cubic network of the specified size and shape.
+    Generates a cubic network of the specified size and shape, then inserts
+    as second cubic network in the interstitial regions.  These two networks
+    are further connected by throats that allows material to be exchanged
+    between them.
 
     Parameters
     ----------
@@ -73,6 +76,16 @@ class CubicDual(GenericNetwork):
             # Label pores and throats
             net['pore.surface'][Ps] = True
             net['throat.'+label_2][Ts] = True
+        # Connect surface pores of both networks to each other
+        for item in surface_labels:
+            Ps1 = net.pores(labels=['surface', item], mode='intersection')
+            Ps2 = net.find_nearby_pores(pores=Ps1, distance=0.7072)
+            for row in range(len(Ps1)):
+                Ps3 = net.filter_by_label(pores=Ps2[row], labels=[item])
+                if Ps3.size:
+                    conns = sp.array([list([Ps1[row]])*Ps3.size, Ps3]).T
+                    net.extend(throat_conns=conns, labels='surface')
+
         Ps = net.pores(labels=surface_labels)
         net['pore.surface'][Ps] = True
 
