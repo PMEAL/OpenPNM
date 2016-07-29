@@ -80,8 +80,6 @@ class CubicDual(GenericNetwork):
             net['pore.surface'][Ps] = True
             net['pore.'+item][Ps] = True
             net['throat.'+label_2][Ts] = True
-        del net['pore._clone']
-        del net['throat._clone']
         # Connect surface pores of both networks to each other
         for item in surface_labels:
             Ps1 = net.pores(labels=['surface', item], mode='intersection')
@@ -93,10 +91,16 @@ class CubicDual(GenericNetwork):
                     net.extend(throat_conns=conns,
                                labels=['surface', 'interconnect'])
 
+        # Clean-ups
+        net['pore.coords'] *= spacing
         Ps = net.pores(labels=surface_labels)
         net['pore.surface'][Ps] = True
-
-        net['pore.coords'] *= spacing
+        net['pore.internal'] = ~net['pore.surface']
+        Ts = net.find_neighbor_throats(pores=net['pore.internal'])
+        net['throat.internal'] = False
+        net['throat.internal'][Ts] = True
+        del net['pore._clone']
+        del net['throat._clone']
         [self.update({item: net[item]}) for item in net]
         del self.workspace[net.name]
 
