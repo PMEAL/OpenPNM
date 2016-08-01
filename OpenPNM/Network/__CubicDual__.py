@@ -64,35 +64,7 @@ class CubicDual(GenericNetwork):
         del net['throat.stitched']
         net['pore.surface'] = False
         net['throat.surface'] = False
-        # Create center pores on each surface
-        offset = {'back': [0.5, 0, 0], 'front': [-0.5, 0, 0],
-                  'right': [0, 0.5, 0], 'left': [0, -0.5, 0],
-                  'top': [0, 0, 0.5], 'bottom': [0, 0, -0.5]}
-        surface_labels = ['top', 'bottom', 'left', 'right', 'front', 'back']
-        for item in surface_labels:
-            # Clone 'center' pores and shift to surface
-            Ps = net.pores(labels=[item, label_2], mode='intersection')
-            net['pore.'+item][Ps] = False
-            net['pore._clone'] = False
-            net['throat._clone'] = False
-            net.clone_pores(pores=Ps, apply_label=[label_2, '_clone'])
-            Ps = net.pores(labels=['_clone'])
-            net['pore.coords'][Ps] += offset[item]
-            Ts = net.find_neighbor_throats(pores=Ps)
-            # Label pores and throats
-            net['pore.surface'][Ps] = True
-            net['pore.'+item][Ps] = True
-            net['throat.'+label_2][Ts] = True
-        # Connect surface pores of both networks to each other
-        for item in surface_labels:
-            Ps1 = net.pores(labels=['surface', item], mode='intersection')
-            Ps2 = net.find_nearby_pores(pores=Ps1, distance=0.7072)
-            for row in range(len(Ps1)):
-                Ps3 = net.filter_by_label(pores=Ps2[row], labels=[item])
-                if Ps3.size:
-                    conns = sp.array([list([Ps1[row]])*Ps3.size, Ps3]).T
-                    net.extend(throat_conns=conns,
-                               labels=['surface', 'interconnect'])
+
 
         # Clean-ups
         net['pore.coords'] *= spacing
