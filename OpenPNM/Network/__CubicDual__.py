@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 class CubicDual(GenericNetwork):
     r"""
     Generates a cubic network of the specified size and shape, then inserts
-    as second cubic network in the interstitial regions.  These two networks
-    are further connected by throats that allows material to be exchanged
-    between them.
+    as second cubic network to the corners of its lattice cells.  These two
+    networks are further connected by throats enabling material to be
+    exchanged between them.
 
     Parameters
     ----------
@@ -25,18 +25,18 @@ class CubicDual(GenericNetwork):
         A unique name for the network
 
     shape : list of ints
-        The size and shape of the principal cubic network in terms of the
+        The size and shape of the primary cubic network in terms of the
         number of pores in each direction.  Secondary nodes will be added at
-        the center of each unit cell defined by a cube 8 pores in the primary
-        network.
+        corners of each unit cell so the dual network will generaly have a
+        size of ''shape'' + 1.
 
     spacing : list of floats
-        The distance between pores in each of the principal directions
+        The distance between pores of the primary network in each of the
+        principal directions
 
     label_1 and label_2 : strings
-        The labels to apply to the main cubic lattice and the interpenetrating
-        cubic lattice (i.e. the dual network).  The defaults are 'corners' and
-        'centers', which refers to the position on the unit cell.
+        The labels to apply to the primary and secondary cubic lattices, which
+        defaults to 'primary' and 'secondary' respectively.
 
     Examples
     --------
@@ -46,15 +46,18 @@ class CubicDual(GenericNetwork):
                  label_2='centers', **kwargs):
         super().__init__(**kwargs)
         import OpenPNM as op
-        spacing = sp.array(spacing)
-        shape = sp.array(shape)
+        spacing = sp.array(1)
+        shape = sp.array([5, 5, 5])
+        label_1 = 'primary'
+        label_2 = 'secondary'
         net = op.Network.Cubic(shape=shape, spacing=[1, 1, 1])
+        net.add_boundaries()
         net['throat.'+label_1] = True
         net['pore.'+label_1] = True
-        dual = op.Network.Cubic(shape=shape-1)
+        dual = op.Network.Cubic(shape=shape+1)
         dual['pore.'+label_2] = True
         dual['throat.'+label_2] = True
-        dual['pore.coords'] += 0.5
+        dual['pore.coords'] -= 0.5
         op.Network.tools.stitch(net, dual, P_network=net.Ps,
                                 P_donor=dual.Ps, len_max=1)
         net['throat.interconnect'] = net['throat.stitched']
