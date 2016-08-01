@@ -16,6 +16,39 @@ def test_subdivide():
     assert pn.Np == (125+4*64-4)
     assert pn.Nt == (300+(4*144)-16+15*16+16)
 
+
+def test_subdivide_boundary():
+    pn = OpenPNM.Network.Cubic(shape=[5, 5, 5],
+                               spacing=0.001)
+    pn.add_boundaries()
+    pn['pore.micro'] = True
+    nano_pores = [2, 13, 126, 15]
+    try:
+        pn.subdivide(pores=nano_pores, shape=[4, 4, 4], labels='nano')
+    except Exception:
+        pass
+    nano_pores = [2, 13, 14, 15]
+    pn.subdivide(pores=nano_pores, shape=[4, 4, 4], labels='nano')
+    assert pn.Np == (275+4*64-4)
+    assert pn.Nt == (450+(4*144)-16+24*16-16-(2+3+2))
+
+
+def test_subdivide_consecutive():
+    pn = OpenPNM.Network.Cubic(shape=[5, 5, 5],
+                               spacing=0.001)
+    pn['pore.micro'] = True
+    nano_pores = [2, 13, 14, 15]
+    pn.subdivide(pores=nano_pores, shape=[4, 4, 4], labels='nano')
+    assert pn.Np == (125+4*64-4)
+    assert pn.Nt == (300+(4*144)-16+15*16+16)
+    nano_pores = [7, 11]
+    try:
+        pn.subdivide(pores=nano_pores, shape=[4, 4, 4], labels='nano')
+    except Exception:
+        pass
+    assert (pn._subdivide_flag)
+
+
 def test_clone_and_trim():
     mgr.clear()
     pn = OpenPNM.Network.Cubic(shape=[5, 5, 5], name='net')

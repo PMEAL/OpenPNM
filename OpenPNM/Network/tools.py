@@ -529,13 +529,14 @@ def subdivide(network, pores, shape, labels=[]):
     pores = _sp.array(pores, ndmin=1)
 
     # Checks to find boundary pores in the selected pores
-    try:
-        b = network.pores('boundary')
-        if (_sp.in1d(pores, b)).any():
+    if 'pore.boundary' in network.labels():
+        if (_sp.in1d(pores, network.pores('boundary'))).any():
             raise Exception('boundary pores cannot be subdivided!')
-    except KeyError:
-        pass
-
+    if not hasattr(network, '_subdivide_flag'):
+        network._subdivide_flag = True
+    else:
+        raise Exception('The network has subdivided pores, so the method ' +
+                        'does not support another subdivision.')
     # Assigning right shape and division
     if _sp.size(shape) != 2 and _sp.size(shape) != 3:
         raise Exception('Subdivide not implemented for Networks other than 2D \
