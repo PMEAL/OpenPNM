@@ -7,8 +7,8 @@ class CubicDualTest:
     def test_generation(self):
         net = op.Network.CubicDual(shape=[5, 5, 5], label_1='primary',
                                    label_2='secondary')
-        assert net.Np == 285
-        assert net.Nt == 1436
+        assert net.Np == 491
+        assert net.Nt == 2590
         assert net.num_pores('all') == 491
         assert net.num_pores('back') == 61
         assert net.num_pores('bottom') == 61
