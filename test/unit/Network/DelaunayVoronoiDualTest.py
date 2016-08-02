@@ -82,7 +82,7 @@ class DelaunayVoronoiDualTest:
         assert net.num_throats('voronoi') == 759
         assert net.num_throats('delaunay') == 411
         assert net.num_throats('interconnect') == 1596
-        assert net.num_throats('surface') ==255
+        assert net.num_throats('surface') == 255
         assert net.num_throats('internal') == 2511
         Np_int = net.num_pores('internal')
         Np_surf = net.num_pores('surface')
