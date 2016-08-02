@@ -42,14 +42,16 @@ class CubicDual(GenericNetwork):
     --------
     >>>
     """
-    def __init__(self, shape=None, spacing=[1, 1, 1], label_1='corners',
-                 label_2='centers', **kwargs):
+    def __init__(self, shape=None, spacing=[1, 1, 1], label_1='primary',
+                 label_2='secondary', **kwargs):
         super().__init__(**kwargs)
         import OpenPNM as op
         spacing = sp.array(1)
         shape = sp.array([5, 5, 5])
         label_1 = 'primary'
         label_2 = 'secondary'
+        spacing = sp.array(spacing)
+        shape = sp.array(shape)
         net = op.Network.Cubic(shape=shape, spacing=[1, 1, 1])
         net.add_boundaries()
         net['throat.'+label_1] = True
@@ -58,24 +60,37 @@ class CubicDual(GenericNetwork):
         dual['pore.'+label_2] = True
         dual['throat.'+label_2] = True
         dual['pore.coords'] -= 0.5
-        op.Network.tools.stitch(net, dual, P_network=net.Ps,
-                                P_donor=dual.Ps, len_max=1)
+        op.Network.tools.stitch(net, dual, P_network=net.Ps, P_donor=dual.Ps,
+                                len_max=1)
         net['throat.interconnect'] = net['throat.stitched']
-        del net['throat.stitched']
+        net['pore.coords'] *= spacing
+
+        # Clean-up
         net['pore.surface'] = False
         net['throat.surface'] = False
+        surface_labels = ['top', 'bottom', 'front', 'back', 'left', 'right']
+        for face in surface_labels:
+            Ps = net.pores(labels=[face, label_1], mode='intersection')
+            net['pore.'+face][Ps] = False
+            Ps = net.pores(labels=[face+'_boundary'])
+            net['pore.surface'][Ps] = True
+            net['pore.'+face][Ps] = True
 
-
-        # Clean-ups
-        net['pore.coords'] *= spacing
+        [net.pop(item) for item in list(net.keys()) if 'boundary' in item]
+        # Label all remaining 'face' pores as 'surface'
         Ps = net.pores(labels=surface_labels)
         net['pore.surface'][Ps] = True
+        Ts = net.find_neighbor_throats(pores=net.pores('surface'),
+                                       mode='intersection')
+        net['throat.surface'][Ts] = True
+        # Label non-surface pores and throats as internal
         net['pore.internal'] = ~net['pore.surface']
         Ts = net.find_neighbor_throats(pores=net['pore.internal'])
         net['throat.internal'] = False
         net['throat.internal'][Ts] = True
-        del net['pore._clone']
-        del net['throat._clone']
+        # Remove unused labels
+        del net['throat.stitched']
+        # Transfer all dictionary items from 'net' to 'self'
         [self.update({item: net[item]}) for item in net]
         del self.workspace[net.name]
 
