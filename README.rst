@@ -116,7 +116,7 @@ Release Management and Versioning
 
 OpenPNM uses `Semantic Versioning <http://semver.org>`_ (i.e. X.Y.Z) to label releases.  All major and minor versions (X.Y.z) are available on `PyPI <https://pypi.python.org/pypi>`_, but bugfixes (x.y.Z) updates are not generally pushed unless the bug is particularly egregious.
 
-OpenPNM uses the `Github Flow <http://scottchacon.com/2011/08/31/github-flow.html>`_ system of Git branching, which basically means there is a master branch that is always up-to-date and deployable, and any code added to master is done via Pull Requests (PRs).  When new PRs are merged into the master branch, they are generally *not* given a new version number. Once enough new features have been added, or a sufficient amount of time has passed, the minor release number (x.Y.z) will be incremented.  Although this is somewhat arbitrary, it allows the OpenPNM developer team flexibility.
+OpenPNM uses the `Github Flow <http://scottchacon.com/2011/08/31/github-flow.html>`_ system of Git branching. Any code added to master is done via Pull Requests (PRs).  When new PRs are merged into the master branch, they are generally *not* given a new version number. Once enough new features have been added, or a sufficient amount of time has passed, the minor release number (x.Y.z) will be incremented. Any code added to the Master branch *between* incrementing the version number is subject to change, but once a version number has been tagged to code can be considered up-to-date and stable.
 
 OpenPNM depends on several other packages widely known as the `Scipy Stack <https://www.scipy.org/stackspec.html>`_.  It is our policy to always support the latest version of all these packages and their dependencies.
 
