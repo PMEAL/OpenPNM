@@ -302,19 +302,12 @@ class Statoil():
         for item in ['node1']:
             filename = _os.path.join(path, prefix+'_'+item+'.dat')
             with _read_file(filename=filename, ext='dat') as f:
-                row_0 = f.readline().split(' ')
-                while '' in row_0:
-                    row_0.remove('')
+                row_0 = f.readline().split()
                 num_lines = int(row_0[0])
                 array = _sp.ndarray([num_lines, 6])
                 for i in range(num_lines):
-                    row = f.readline().split(' ')
-                    while '' in row:
-                        row.remove('')
-                    try:
-                        row.remove('\n')
-                    except:
-                        pass
+                    row = f.readline()\
+                           .replace('\t',' ').replace('\n',' ').split()
                     array[i, :] = row[0:6]
         node1 = _pd.DataFrame(array[:, [1, 2, 3, 4]])
         node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord',
