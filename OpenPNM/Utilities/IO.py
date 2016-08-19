@@ -307,7 +307,7 @@ class Statoil():
                 array = _sp.ndarray([num_lines, 6])
                 for i in range(num_lines):
                     row = f.readline()\
-                           .replace('\t',' ').replace('\n',' ').split()
+                           .replace('\t', ' ').replace('\n', ' ').split()
                     array[i, :] = row[0:6]
         node1 = _pd.DataFrame(array[:, [1, 2, 3, 4]])
         node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord',
