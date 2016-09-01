@@ -311,7 +311,7 @@ class GenericNetworkTest:
         assert 'pore.test2' in net.labels()
 
     def test_add_boundary_pores_cubicdual(self):
-        net = OpenPNM.Network.CubicDual(shape=[5, 5, 5], 
+        net = OpenPNM.Network.CubicDual(shape=[5, 5, 5],
                                         label_1='primary',
                                         label_2='secondary')
         Ps = net.pores(labels=['surface', 'bottom'], mode='intersection')
