@@ -93,4 +93,3 @@ class CubicDual(GenericNetwork):
         # Transfer all dictionary items from 'net' to 'self'
         [self.update({item: net[item]}) for item in net]
         del self.workspace[net.name]
-
