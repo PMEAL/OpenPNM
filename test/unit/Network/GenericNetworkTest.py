@@ -310,8 +310,17 @@ class GenericNetworkTest:
                                apply_label='test2')
         assert 'pore.test2' in net.labels()
 
+    def test_add_boundary_pores_cubicdual(self):
+        net = OpenPNM.Network.CubicDual(shape=[5, 5, 5], label_1='primary',
+                                   label_2='secondary')
+        Ps = net.pores(labels=['surface', 'bottom'], mode='intersection')
+        net.add_boundary_pores(pores=Ps, offset=[0, 0, -0.5])
+        Ps2 = net.pores(labels=['boundary'], mode='intersection')
+        assert Ps.size == Ps2.size
+        assert ~sp.any(sp.in1d(Ps, Ps2))
+
     def test_add_boundary_pores_delaunay(self):
-        net = op.Network.Delaunay(num_pores=30, domain_size=[1,1,1])
+        net = OpenPNM.Network.Delaunay(num_pores=30, domain_size=[1,1,1])
         throats = net.Nt
         pores = sp.random.randint(30, size=5)
         net.add_boundary_pores(pores=pores, offset=[0, 0, 1])
@@ -319,7 +328,7 @@ class GenericNetworkTest:
         assert net.Nt == throats + 5
 
     def test_add_boundary_pores_delaunaycubic(self):
-        net = op.Network.DelaunayCubic(shape=[3, 3, 3], spacing=1)
+        net = OpenPNM.Network.DelaunayCubic(shape=[3, 3, 3], spacing=1)
         throats = net.Nt
         pores = sp.random.randint(27, size=5)
         net.add_boundary_pores(pores=pores, offset=[0, 0, 1])
