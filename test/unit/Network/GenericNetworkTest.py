@@ -311,8 +311,7 @@ class GenericNetworkTest:
         assert 'pore.test2' in net.labels()
 
     def test_add_boundary_pores_cubicdual(self):
-        net = OpenPNM.Network.CubicDual(shape=[5, 5, 5], label_1='primary',
-                                   label_2='secondary')
+        net = OpenPNM.Network.CubicDual(shape=[5, 5, 5], label_1='primary', label_2='secondary')
         Ps = net.pores(labels=['surface', 'bottom'], mode='intersection')
         net.add_boundary_pores(pores=Ps, offset=[0, 0, -0.5])
         Ps2 = net.pores(labels=['boundary'], mode='intersection')
@@ -320,7 +319,7 @@ class GenericNetworkTest:
         assert ~sp.any(sp.in1d(Ps, Ps2))
 
     def test_add_boundary_pores_delaunay(self):
-        net = OpenPNM.Network.Delaunay(num_pores=30, domain_size=[1,1,1])
+        net = OpenPNM.Network.Delaunay(num_pores=30, domain_size=[1, 1, 1])
         throats = net.Nt
         pores = sp.random.randint(30, size=5)
         net.add_boundary_pores(pores=pores, offset=[0, 0, 1])
