@@ -38,8 +38,8 @@ import sys as _sys
 import scipy as _sp
 
 # Check Python version
-if _sys.version_info < (3, 3):
-    raise Exception('OpenPNM requires Python 3.3 or greater to run')
+if _sys.version_info < (3, 4):
+    raise Exception('OpenPNM requires Python 3.4 or greater to run')
 
 if _sp.__version__ < '0.14.0':
     raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
