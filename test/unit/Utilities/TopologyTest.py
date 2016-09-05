@@ -35,17 +35,22 @@ class TopologyTest:
         assert net.Nt == 222
 
     def test_template_sphere_shell(self):
-        from OpenPNM.Utilities import topology
+        from OpenPNM.Network import tools
         spacing = sp.array([0.5])
-        r_o = [5, 5, 5]
-        r_in = [2, 2, 2]
-        img = topology.template_sphere_shell(outer_radius=r_o,
-                                             inner_radius=r_in)
+        r_o = 5
+        r_in = 2
+        img = tools.template_sphere_shell(outer_radius=r_o,
+                                          inner_radius=r_in)
         pn_sphere = OpenPNM.Network.Cubic(template=img, spacing=spacing)
         assert pn_sphere.Np == 452
-        img2 = topology.template_sphere_shell(outer_radius=r_o)
+        img1 = tools.template_circle_ring(outer_radius=r_o,
+                                          inner_radius=r_in)
+        pn_circle = OpenPNM.Network.Cubic(template=img1, spacing=spacing)
+        assert pn_circle.Np == 56
+        img2 = tools.template_sphere_shell(outer_radius=r_o)
         pn_sphere = OpenPNM.Network.Cubic(template=img2, spacing=spacing)
         L1 = sp.amax(topology.find_pores_distance(network=pn_sphere,
                                                   pores1=pn_sphere.Ps,
                                                   pores2=pn_sphere.Ps))
-        assert L1 < sp.sqrt(3) * 8 * 0.5
+        L2 = ((8 * 0.5) ** 2 + (4 * 0.5) ** 2 + (4 * 0.5) ** 2) ** 0.5 + 1e-15
+        assert L1 < L2
