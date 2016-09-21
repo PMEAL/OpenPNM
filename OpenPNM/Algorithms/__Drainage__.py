@@ -479,7 +479,7 @@ class Drainage(GenericAlgorithm):
             self['pore.inv_Pc'][self['pore.residual']] = 0
         if sp.any(self['throat.residual']):
             self['throat.inv_Pc'][self['throat.residual']] = 0
-            
+
         # Store total network saturation
         tsat = sp.sum(self._net['throat.volume'][self['throat.inv_Pc'] <= inv_val])
         psat = sp.sum(self._net['pore.volume'][self['pore.inv_Pc'] <= inv_val])
