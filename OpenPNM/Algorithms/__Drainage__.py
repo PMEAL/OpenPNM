@@ -130,6 +130,8 @@ class Drainage(GenericAlgorithm):
         self['throat.entry_pressure'] = invading_phase[entry_pressure]
         self['pore.inv_Pc'] = sp.inf
         self['throat.inv_Pc'] = sp.inf
+        self['pore.inv_sat'] = sp.inf
+        self['throat.inv_sat'] = sp.inf
         self['pore.trapped'] = sp.inf
         self['throat.trapped'] = sp.inf
         self['pore.inlets'] = False
@@ -477,6 +479,13 @@ class Drainage(GenericAlgorithm):
             self['pore.inv_Pc'][self['pore.residual']] = 0
         if sp.any(self['throat.residual']):
             self['throat.inv_Pc'][self['throat.residual']] = 0
+            
+        # Store total network saturation
+        tsat = sp.sum(self._net['throat.volume'][self['throat.inv_Pc'] <= inv_val])
+        psat = sp.sum(self._net['pore.volume'][self['pore.inv_Pc'] <= inv_val])
+        total = sp.sum(self._net['throat.volume']) + sp.sum(self._net['pore.volume'])
+        self['pore.inv_sat'][pinds] = (tsat + psat)/total
+        self['throat.inv_sat'][tinds] = (tsat + psat)/total
 
     def get_drainage_data(self):
         r"""
