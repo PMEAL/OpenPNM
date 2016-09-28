@@ -34,7 +34,7 @@ For the present tutorial, we'll keep the topology simple to help keep the focus 
 Adding Boundary Pores
 -------------------------------------------------------------------------------
 
-When performing transport simulations it is often useful to have 'boundary' pores attached to the surface(s) of the network where boundary conditions can be applied.  The **Cubic** class has two methods for doing this: ``add_boundaries`` and ``add_boundary_pores``.  The first method automatically adds boundary to ALL six faces of the network and offsets them from the network by 1/2 of the value provided as the network ``spacing``.  The second method provides total control over which boundary pores are created and where they are positioned, but it more cumbersome to use.  Let's explore these two options:
+When performing transport simulations it is often useful to have 'boundary' pores attached to the surface(s) of the network where boundary conditions can be applied.  When using the **Cubic** class, two methods are available for doing this: ``add_boundaries``, which is specific for the **Cubic** class, and ``add_boundary_pores``, which is a generic method that can also be used on other network types and which is inherited from **GenericNetwork**.  The first method automatically adds boundaries to ALL six faces of the network and offsets them from the network by 1/2 of the value provided as the network ``spacing``.  The second method provides total control over which boundary pores are created and where they are positioned, but requires the user to specify to which pores the boundary pores should be attached to.  Let's explore these two options:
 
 .. code-block:: python
 

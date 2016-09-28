@@ -321,6 +321,10 @@ class CoreTest:
         b = [9, 12, 15, 18, 21, 24]
         assert sp.all(a == b)
 
+    def test_filter_by_label_empty_locations(self):
+        a = self.net.filter_by_label(pores=[], labels='top')
+        assert sp.size(a) == 0
+
     def test_tomask_pores(self):
         a = self.net.tomask(pores=self.net.pores('top'))
         assert sp.sum(a) == 9
