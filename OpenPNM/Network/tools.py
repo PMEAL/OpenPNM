@@ -715,18 +715,62 @@ def merge_pores(network, pores, labels=['merged']):
     trim(network=network, pores=pores)
 
 
-def template_sphere_shell(outer_radius, inner_radius=0):
+def _template_sphere_disc(dim, outer_radius, inner_radius):
     r"""
-    This method generates an image array of a sphere-shell.  It is useful for
-    passing to Cubic networks as a ``template`` to make spherical shaped
-    networks.  It can also be used generate a sphere template for
+    This private method generates an image array of a sphere/shell-disc/ring.
+    It is useful for passing to Cubic networks as a ``template`` to make
+    networks with desired shapes.
 
     Parameters
     ----------
-    outer_radius : array_like
+    dim : int
+        Network dimension
+
+    outer_radius : int
+        Number of the nodes in the outer radius of the network
+
+    inner_radius : int
+        Number of the nodes in the inner radius of the network
+
+    Returns
+    -------
+    A Numpy array containing 1's to demarcate the desired shape, and 0's
+    elsewhere.
+
+    """
+    rmax = _np.array(outer_radius, ndmin=1)
+    rmin = _np.array(inner_radius, ndmin=1)
+    ind = 2 * rmax - 1
+    coord = _np.indices((ind * _np.ones(dim)))
+    coord = coord - (ind - 1)/2
+    x = coord[0, :]
+    y = coord[1, :]
+    if dim == 2:
+        img = (x ** 2 + y ** 2) < rmax ** 2
+    elif dim == 3:
+        z = coord[2, :]
+        img = (x ** 2 + y ** 2 + z ** 2) < rmax ** 2
+    if rmin[0] != 0:
+        if dim == 2:
+            img_min = (x ** 2 + y ** 2) > rmin ** 2
+        elif dim == 3:
+            img_min = (x ** 2 + y ** 2 + z ** 2) > rmin ** 2
+        img = img * img_min
+    return (img)
+
+
+def template_sphere_shell(outer_radius, inner_radius=0):
+    r"""
+    This method generates an image array of a sphere-shell. It is useful for
+    passing to Cubic networks as a ``template`` to make spherical shaped
+    networks.
+
+    Parameters
+    ----------
+    outer_radius : int
         Number of the nodes in the outer radius of the shell
 
-    inner_radius : float
+    inner_radius : int
         Number of the nodes in the inner radius of the shell
 
     Returns
@@ -735,33 +779,35 @@ def template_sphere_shell(outer_radius, inner_radius=0):
     elsewhere.
 
     """
+    img = _template_sphere_disc(dim=3, outer_radius=outer_radius,
+                                inner_radius=inner_radius)
+    return(img)
 
-    if inner_radius is None:
-        raise Exception('Number of nodes in the inner radius cannot be '
-                        'None!')
-    rmax = _np.array(outer_radius, ndmin=1)
-    rmin = _np.array(inner_radius, ndmin=1)
-    s_rmax = _np.size(rmax)
-    s_rmin = _np.size(rmin)
-    if not ((s_rmax in [1, 3]) and (s_rmin in [1, 3])):
-        raise Exception('In this method, each radius can be scalar or '
-                        'array with components along all xyz directions.')
-    s_u_rmax = _np.size(_np.unique(rmax))
-    s_u_rmin = _np.size(_np.unique(rmin))
-    if not ((s_u_rmax == 1) and (s_u_rmin == 1)):
-        raise Exception('In this method, all components of radius should '
-                        'be unique values along all xyz directions.')
-    pnum = 2 * _np.ones(3) * rmax - 1
-    Rx, Ry, Rz = _np.array(pnum, dtype=_np.int32)
-    x, y, z = _np.indices((Rx, Ry, Rz))
-    x = x - (Rx - 1)/2
-    y = y - (Ry - 1)/2
-    z = z - (Rz - 1)/2
-    img = x ** 2 + y ** 2 + z ** 2 < _np.unique(rmax) ** 2
-    if not _np.all(rmin == 0):
-        img_min = x ** 2 + y ** 2 + z ** 2 > _np.unique(rmin) ** 2
-        img = img * img_min
-    return (img)
+
+def template_disc_ring(outer_radius, inner_radius=0):
+    r"""
+    This method generates an image array of a disc-ring.  It is useful for
+    passing to Cubic networks as a ``template`` to make circular-shaped 2D
+    networks.
+
+    Parameters
+    ----------
+    outer_radius : int
+        Number of the nodes in the outer radius of the disc
+
+    inner_radius : int
+        Number of the nodes in the inner radius of the disc
+
+    Returns
+    -------
+    A Numpy array containing 1's to demarcate the disc-ring, and 0's
+    elsewhere.
+
+    """
+
+    img = _template_sphere_disc(dim=2, outer_radius=outer_radius,
+                                inner_radius=inner_radius)
+    return(img)
 
 
 def find_surface_pores(network, markers=None, label='surface'):
