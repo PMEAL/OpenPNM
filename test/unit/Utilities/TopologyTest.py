@@ -43,10 +43,10 @@ class TopologyTest:
                                           inner_radius=r_in)
         pn_sphere = OpenPNM.Network.Cubic(template=img, spacing=spacing)
         assert pn_sphere.Np == 452
-        img1 = tools.template_circle_ring(outer_radius=r_o,
-                                          inner_radius=r_in)
-        pn_circle = OpenPNM.Network.Cubic(template=img1, spacing=spacing)
-        assert pn_circle.Np == 56
+        img1 = tools.template_disc_ring(outer_radius=r_o,
+                                        inner_radius=r_in)
+        pn_disc = OpenPNM.Network.Cubic(template=img1, spacing=spacing)
+        assert pn_disc.Np == 56
         img2 = tools.template_sphere_shell(outer_radius=r_o)
         pn_sphere = OpenPNM.Network.Cubic(template=img2, spacing=spacing)
         L1 = sp.amax(topology.find_pores_distance(network=pn_sphere,

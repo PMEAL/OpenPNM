@@ -715,9 +715,9 @@ def merge_pores(network, pores, labels=['merged']):
     trim(network=network, pores=pores)
 
 
-def _template_sphere_circle(dim, outer_radius, inner_radius):
+def _template_sphere_disc(dim, outer_radius, inner_radius):
     r"""
-    This private method generates an image array of a sphere/shell-circle/ring.
+    This private method generates an image array of a sphere/shell-disc/ring.
     It is useful for passing to Cubic networks as a ``template`` to make
     networks with desired shapes.
 
@@ -779,34 +779,34 @@ def template_sphere_shell(outer_radius, inner_radius=0):
     elsewhere.
 
     """
-    img = _template_sphere_circle(dim=3, outer_radius=outer_radius,
-                                  inner_radius=inner_radius)
+    img = _template_sphere_disc(dim=3, outer_radius=outer_radius,
+                                inner_radius=inner_radius)
     return(img)
 
 
-def template_circle_ring(outer_radius, inner_radius=0):
+def template_disc_ring(outer_radius, inner_radius=0):
     r"""
-    This method generates an image array of a circle-ring.  It is useful for
+    This method generates an image array of a disc-ring.  It is useful for
     passing to Cubic networks as a ``template`` to make circular-shaped 2D
     networks.
 
     Parameters
     ----------
     outer_radius : int
-        Number of the nodes in the outer radius of the circle
+        Number of the nodes in the outer radius of the disc
 
     inner_radius : int
-        Number of the nodes in the inner radius of the circle
+        Number of the nodes in the inner radius of the disc
 
     Returns
     -------
-    A Numpy array containing 1's to demarcate the circle-ring, and 0's
+    A Numpy array containing 1's to demarcate the disc-ring, and 0's
     elsewhere.
 
     """
 
-    img = _template_sphere_circle(dim=2, outer_radius=outer_radius,
-                                  inner_radius=inner_radius)
+    img = _template_sphere_disc(dim=2, outer_radius=outer_radius,
+                                inner_radius=inner_radius)
     return(img)
 
 
