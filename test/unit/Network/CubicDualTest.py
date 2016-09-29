@@ -10,9 +10,9 @@ class CubicDualTest:
         assert net.Np == 285
         assert net.Nt == 1436
         assert net.num_pores('all') == 285
-        assert net.num_pores('back') == 21
-        assert net.num_pores('bottom') == 21
-        assert net.num_pores('front') == 21
+        assert net.num_pores('back') == 41
+        assert net.num_pores('bottom') == 41
+        assert net.num_pores('front') == 41
         assert net.num_pores('internal') == 91
         assert net.num_pores('left') == 41
         assert net.num_pores('primary') == 125
