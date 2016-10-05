@@ -47,6 +47,8 @@ class CubicDual(GenericNetwork):
         super().__init__(**kwargs)
         spacing = sp.array(spacing)
         shape = sp.array(shape)
+        # Deal with non-3D shape arguments
+        shape = sp.pad(shape, [0, 3-shape.size], mode='constant', constant_values=1)
         net = Cubic(shape=shape, spacing=[1, 1, 1])
         net['throat.'+label_1] = True
         net['pore.'+label_1] = True

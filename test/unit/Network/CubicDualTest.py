@@ -33,7 +33,7 @@ class CubicDualTest:
         assert net.num_throats('front') == 104
         assert net.num_throats('back') == 104
 
-    def test_generation_2D(self):
+    def test_generation_2D_XY(self):
         net = op.Network.CubicDual(shape=[5, 5, 1], label_1='primary',
                                    label_2='secondary')
         assert net.Np == 57
@@ -46,6 +46,7 @@ class CubicDualTest:
         assert net.num_pores('bottom') == 41
         net.num_throats('interconnect') == 96
 
+    def test_generation_2D_XZ(self):
         net = op.Network.CubicDual(shape=[5, 1, 5], label_1='primary',
                                    label_2='secondary')
         assert net.Np == 57
@@ -58,6 +59,7 @@ class CubicDualTest:
         assert net.num_pores('bottom') == 9
         net.num_throats('interconnect') == 96
 
+    def test_generation_2D_YZ(self):
         net = op.Network.CubicDual(shape=[1, 5, 5], label_1='primary',
                                    label_2='secondary')
         assert net.Np == 57
@@ -68,4 +70,17 @@ class CubicDualTest:
         assert net.num_pores('back') == 41
         assert net.num_pores('top') == 9
         assert net.num_pores('bottom') == 9
+        net.num_throats('interconnect') == 96
+
+    def test_generation_2D_2_dims(self):
+        net = op.Network.CubicDual(shape=[5, 5], label_1='primary',
+                                   label_2='secondary')
+        assert net.Np == 57
+        assert net.Nt == 176
+        assert net.num_pores('left') == 9
+        assert net.num_pores('right') == 9
+        assert net.num_pores('front') == 9
+        assert net.num_pores('back') == 9
+        assert net.num_pores('top') == 41
+        assert net.num_pores('bottom') == 41
         net.num_throats('interconnect') == 96
