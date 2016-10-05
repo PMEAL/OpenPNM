@@ -50,13 +50,18 @@ class CubicDual(GenericNetwork):
         net = Cubic(shape=shape, spacing=[1, 1, 1])
         net['throat.'+label_1] = True
         net['pore.'+label_1] = True
+        single_dim = shape == 1
+        shape[single_dim] = 2
         dual = Cubic(shape=shape-1, spacing=[1, 1, 1])
-        dual.add_boundaries()
+        faces = [['front', 'back'], ['left', 'right'], ['top', 'bottom']]
+        faces = [faces[i] for i in sp.where(~single_dim)[0]]
+        faces = sp.array(faces).flatten().tolist()
+        dual.add_boundaries(faces)
         # Add secondary network name as a label
         dual['pore.'+label_2] = True
         dual['throat.'+label_2] = True
         # Shift coordinates prior to stitching
-        dual['pore.coords'] += 0.5
+        dual['pore.coords'] += 0.5*(~single_dim)
         stitch(net, dual, P_network=net.Ps, P_donor=dual.Ps, len_max=1)
         net['throat.interconnect'] = net['throat.stitched']
         del net['throat.stitched']
@@ -64,8 +69,7 @@ class CubicDual(GenericNetwork):
         # Clean-up labels
         net['pore.surface'] = False
         net['throat.surface'] = False
-        surface_labels = ['top', 'bottom', 'front', 'back', 'left', 'right']
-        for face in surface_labels:
+        for face in faces:
             # Remove face label from secondary network since it's internal now
             Ps = net.pores(labels=[face, label_2], mode='intersection')
             net['pore.'+face][Ps] = False
