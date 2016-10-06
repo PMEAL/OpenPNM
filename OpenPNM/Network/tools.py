@@ -345,6 +345,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     # Ensure Networks have no associated objects yet
     if (len(network._simulation()) > 1) or (len(donor._simulation()) > 1):
         raise Exception('Cannot stitch a Network with active sibling objects')
+    network['throat.stitched'] = False
     # Get the initial number of pores and throats
     N_init = {}
     N_init['pore'] = network.Np
