@@ -62,11 +62,11 @@ The following code block illustrates how to use OpenPNM to perform a mercury int
 
 The network can be visualized in `Paraview <http://www.paraview.org>`_ giving the following:
 
-.. image:: http://i.imgur.com/GbUNy0bm.png
+.. image:: https://i.imgur.com/mSDrIBOm.png
 
 The drainage curve can be visualized with ``MIP.plot_drainage_curve()`` giving something like this:
 
-.. image:: http://i.imgur.com/ZxuCictm.png
+.. image:: https://i.imgur.com/1C2uXt9m.png
 
 A collection of examples is available as a separate Github repository: `OpenPNM-Examples <https://www.github.com/PMEAL/OpenPNM-Examples>`_.
 
