@@ -185,12 +185,12 @@ class GenericLinearTransport(GenericAlgorithm):
             if bcname in self._existing_BC and item.split('.')[0] == element:
                 if mode in ['merge', 'overwrite']:
                     try:
-                        c1 = element
+                        c1 = element + '.'
                         c2 = 'bcval_' + bcname
                         c1_label = c1 + c2
                         self[c1_label][loc]
                         condition1 = sp.isnan(self[c1_label][loc]).all()
-                        c2_label = c1 + '_' + bcname
+                        c2_label = c1 + bcname
                         condition2 = sp.sum(self[c2_label][loc]) == 0
                         if not (condition1 and condition2):
                             if mode == 'merge':
