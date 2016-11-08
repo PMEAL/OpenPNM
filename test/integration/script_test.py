@@ -73,6 +73,11 @@ def test_linear_solvers():
         round(sp.absolute(alg_3.rate(BC2_pores))[0], 14)
     assert round(sp.absolute(sp.sum(alg_4.rate(BC2_pores, mode='single'))), 14) ==\
         round(sp.absolute(alg_4.rate(BC2_pores))[0], 14)
+    BC5_pores = [37,57]
+    assert round(sp.absolute(sp.sum(alg_3.rate(BC5_pores, mode='single'))), 14) ==\
+        round(sp.absolute(alg_3.rate(BC5_pores))[0], 14)
+    assert round(sp.absolute(sp.sum(alg_4.rate(BC5_pores, mode='single'))), 14) ==\
+        round(sp.absolute(alg_4.rate(BC5_pores))[0], 14)
 
 
 def test_add_boundary():
