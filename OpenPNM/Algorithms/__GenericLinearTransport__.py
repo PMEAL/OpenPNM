@@ -861,7 +861,7 @@ class GenericLinearTransport(GenericAlgorithm):
         elif mode == 'single':
             t = network.find_neighbor_throats(pores, flatten=False,
                                               mode='not_intersection')
-            throat_group_num = sp.size(t)
+            throat_group_num = sp.shape(t)[0]
         for i in sp.r_[0: throat_group_num]:
             if mode == 'group':
                 throats = t
