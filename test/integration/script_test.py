@@ -79,6 +79,7 @@ def test_linear_solvers():
     assert round(sp.absolute(sp.sum(alg_4.rate(BC5_pores, mode='single'))), 14) ==\
         round(sp.absolute(alg_4.rate(BC5_pores))[0], 14)
 
+
 def test_add_boundary():
     pn = OpenPNM.Network.Cubic(shape=[5, 5, 5])
     pn.add_boundaries()
