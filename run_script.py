@@ -2,6 +2,7 @@ import OpenPNM as op
 import time
 st = time.time()
 from OpenPNM.Geometry import models as gm
+
 #==============================================================================
 '''Build Topological Network'''
 #==============================================================================
