@@ -1,7 +1,8 @@
-atlas 
-numpy 
-scipy 
-matplotlib 
-pandas 
-scikit-image 
+atlas
+numpy
+scipy
+matplotlib
+pandas
+scikit-image
 dill
+pyyaml

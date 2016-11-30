@@ -55,24 +55,29 @@ def test_linear_solvers():
     alg_4.setup()
     alg_4.solve()
 
-    assert round(sp.absolute(alg_1.rate(BC1_pores))[0], 16) ==\
-        round(sp.absolute(alg_1.rate(BC2_pores))[0], 16)
-    assert round(sp.absolute(alg_2.rate(BC2_pores))[0], 16) ==\
+    assert round(sp.absolute(alg_1.rate(BC1_pores))[0], 14) ==\
+        round(sp.absolute(alg_1.rate(BC2_pores))[0], 14)
+    assert round(sp.absolute(alg_2.rate(BC2_pores))[0], 14) ==\
         round(sp.absolute(sp.unique(alg_2['pore.bcval_Neumann']))[0] *
-              len(BC1_pores), 16)
-    assert round(sp.absolute(alg_3.rate(BC2_pores))[0], 16) ==\
-        round(sp.absolute(sp.unique(alg_3['pore.bcval_Neumann_group']))[0], 16)
-    assert round(sp.absolute(alg_4.rate(BC2_pores))[0], 16) ==\
-        round(sp.absolute(sp.unique(alg_4['pore.bcval_Neumann_group']))[0], 16)
+              len(BC1_pores), 14)
+    assert round(sp.absolute(alg_3.rate(BC2_pores))[0], 14) ==\
+        round(sp.absolute(sp.unique(alg_3['pore.bcval_Neumann_group']))[0], 14)
+    assert round(sp.absolute(alg_4.rate(BC2_pores))[0], 14) ==\
+        round(sp.absolute(sp.unique(alg_4['pore.bcval_Neumann_group']))[0], 14)
 
-    assert round(sp.absolute(sp.sum(alg_1.rate(BC1_pores, mode='single'))), 16) ==\
-        round(sp.absolute(alg_1.rate(BC1_pores))[0], 16)
-    assert round(sp.absolute(sp.sum(alg_2.rate(BC2_pores, mode='single'))), 16) ==\
-        round(sp.absolute(alg_2.rate(BC2_pores))[0], 16)
-    assert round(sp.absolute(sp.sum(alg_3.rate(BC2_pores, mode='single'))), 16) ==\
-        round(sp.absolute(alg_3.rate(BC2_pores))[0], 16)
-    assert round(sp.absolute(sp.sum(alg_4.rate(BC2_pores, mode='single'))), 16) ==\
-        round(sp.absolute(alg_4.rate(BC2_pores))[0], 16)
+    assert round(sp.absolute(sp.sum(alg_1.rate(BC1_pores, mode='single'))), 14) ==\
+        round(sp.absolute(alg_1.rate(BC1_pores))[0], 14)
+    assert round(sp.absolute(sp.sum(alg_2.rate(BC2_pores, mode='single'))), 14) ==\
+        round(sp.absolute(alg_2.rate(BC2_pores))[0], 14)
+    assert round(sp.absolute(sp.sum(alg_3.rate(BC2_pores, mode='single'))), 14) ==\
+        round(sp.absolute(alg_3.rate(BC2_pores))[0], 14)
+    assert round(sp.absolute(sp.sum(alg_4.rate(BC2_pores, mode='single'))), 14) ==\
+        round(sp.absolute(alg_4.rate(BC2_pores))[0], 14)
+    BC5_pores = [37,57]
+    assert round(sp.absolute(sp.sum(alg_3.rate(BC5_pores, mode='single'))), 14) ==\
+        round(sp.absolute(alg_3.rate(BC5_pores))[0], 14)
+    assert round(sp.absolute(sp.sum(alg_4.rate(BC5_pores, mode='single'))), 14) ==\
+        round(sp.absolute(alg_4.rate(BC5_pores))[0], 14)
 
 
 def test_add_boundary():
