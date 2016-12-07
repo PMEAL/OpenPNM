@@ -824,6 +824,68 @@ class Core(dict):
 
     def _interleave_data(self, prop, sources):
         r"""
+        """
+        element = self._parse_element(prop.split('.')[0], single=True)
+        N = self._net._count(element)
+
+        # Make sure sources contains objects, not just names of objects
+        temp_sources = []
+        for item in sources:
+            # Check if sources were given as list of objects OR names
+            try:
+                item.name
+            except:
+                item = self._find_object(obj_name=item)
+            temp_sources.append(item)
+        sources = temp_sources
+
+        # Attempt to fetch the requested prop array from each object
+        arrs = [item.get(prop) for item in sources]
+        locs = [item._net._get_indices(element, item.name) for item in sources]
+        if all([item is None for item in arrs]):  # prop not found anywhere
+            raise KeyError(prop)
+        if None in arrs:  # prop found on some objects but not others
+            logger.warning('\''+prop+'\' not found on at least one object')
+
+        # Check the general type of each array
+        atype = []
+        for a in arrs:
+            if a is not None:
+                t = a.dtype.name
+                if t.startswith('int') or t.startswith('float'):
+                    atype.append('numeric')
+                elif t.startswith('bool'):
+                    atype.append('boolean')
+                else:
+                    atype.append('other')
+        if not all(atype):
+            raise Exception('The array types are not compatible')
+        else:
+            dummy_val = {'numeric': sp.nan, 'bool': False, 'other': []}
+
+        # Create an empty array of the right type and shape
+        for item in arrs:
+            if item is not None:
+                if len(item.shape) == 1:
+                    temp_arr = sp.zeros((N, ), dtype=item.dtype)
+                else:
+                    temp_arr = sp.zeros((N, item.shape[1]), dtype=item.dtype)
+                break
+        # Convrert arrat to float IF NaNs are expected
+        if temp_arr.dtype.name.startswith('int') and (None in arrs):
+            temp_arr = temp_arr.astype(float)
+
+        # Fill new array with values in the corresponding locations
+        for vals, inds in zip(arrs, locs):
+            if vals is not None:
+                temp_arr[inds] = vals
+            else:
+                temp_arr[inds] = dummy_val[atype[0]]
+        return temp_arr
+
+
+    def _interleave_data2(self, prop, sources):
+        r"""
         Retrieves requested property from associated objects, to produce a full
         Np or Nt length array.
 
