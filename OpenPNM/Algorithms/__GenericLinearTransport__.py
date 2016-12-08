@@ -227,8 +227,28 @@ class GenericLinearTransport(GenericAlgorithm):
     def setup(self, conductance, quantity, super_pore_conductance):
         r"""
         This setup provides the initial data for the solver from the provided
-        properties.
-        It also creates the matrices A and b.
+        properties.  It also creates the matrices A and b.
+
+        Parameters
+        ----------
+        conductance : string
+            The dictionary key containing the calculated pore-scale
+            conductances.  For example, for StokesFlow this is
+            'throat.hydraulic_conductance' by default.
+
+        quantity : string
+            The dictionary key where the values computed by this algorithm are
+            stored.  For exaple, for StokesFLow this is 'pore.pressure' by
+            default.
+
+        super_pore_conductance : scalar
+            This parameter is used when a Neumann_group bounday condition is
+            applied.  When applied this means that a fictitious pore is added
+            to the network and connected to all the given boundary pores. The
+            solver then ensures the flux leaving this 'super' pore thus
+            satisfying the specified boundary conditions.  This parameter
+            controls the conductance assigned to the throats connecting
+            to the fictitious super pore.
         """
         # Assigning super_pore conductance for Neumann_group BC
         if super_pore_conductance is None:
@@ -293,28 +313,39 @@ class GenericLinearTransport(GenericAlgorithm):
         Parameters
         ----------
         source_name : string
-          Specifies the name of source term from a Physics object to apply.
+          The dictionary key of the source term.  Source terms are pore-scale
+          models assigned to Physics objects.  They contain the terms of the
+          linearized source term function which are used in an internal
+          iterative solution technique.
+
         pores : array_like
-          The pores where the boundary conditions should be applied
+          The pores where the source term is to be applied
+
         x0 : array_like, optional
-          By sending guess values for the quantity, the method calculates the
-          source terms and stores them in the algorithm
+            By sending guess values for the quantity, the method calculates the
+            source terms and stores them in the algorithm
+
         tol : float, optional
-          Tolerance for the iterative method. (if maxiter>0)
+            Tolerance for the iterative method. (if maxiter>0)
+
         maxiter : integer, optional
-          Maximum number of iterations for this source term. Iteration will
-          stop after maxiter steps.
+            Maximum number of iterations for this source term. Iteration will
+            stop after maxiter steps.
+
         mode : string, optional
-          Controls how the source terms should be applied.
-          Options are:
-                - 'merge': Inserts specified values, leaving existing values \
-                  elsewhere.
-                - 'overwrite': Inserts specified values, clearing all other \
-                  values.
-                - 'remove': Removes boundary conditions from specified \
-                  locations.
-                - 'update': Allows to insert specified values to new \
-                  locations, updating existing ones.
+            Controls how the source terms should be applied. Options are:
+
+            **'merge'* : Inserts specified values, leaving existing values
+            elsewhere.
+
+            **'overwrite'** : Inserts specified values, clearing all other
+            values.
+
+            **'remove'** : Removes boundary conditions from specified
+            locations.
+
+            **'update'**: Allows to insert specified values to new locations,
+            updating existing ones.
 
         Notes
         -----
@@ -494,11 +525,14 @@ class GenericLinearTransport(GenericAlgorithm):
         ----------
         A : sparse matrix
             2D Coefficient matrix
+
         b : dense matrix
             1D RHS vector
+
         iterative_sovler : string
             Name of solver to use.  If not solve is specified, sp.solve is used
             which is a direct solver (SuperLU on default Scipy installation)
+
         kwargs : list of keyword arguments
             These arguments and values are sent to the sparse solver, so read
             the specific documentation for the solver chosen
@@ -819,31 +853,36 @@ class GenericLinearTransport(GenericAlgorithm):
     def rate(self, pores=None, network=None, conductance=None, X_value=None,
              mode='group'):
         r"""
-        Send a list of pores and receive the net rate
-        of material moving into them.
+        Calculates the net rate of material moving into a given set of pores.
 
         Parameters
         ----------
         pores : array_like
-            The pores where the net rate will be calculated
+            The pores for which the net rate should be calculated
+
         network : OpenPNM Network Object
-            The network object to which this algorithm will apply.
-            If no network is sent, the rate will apply to the network which is
+            The network object to which this algorithm will apply.  If no
+            network is sent, the rate will apply to the network which is
             attached to the algorithm.
+
         conductance : array_like
             The conductance which this algorithm will use to calculate the
-            rate.
-            If no conductance is sent, the rate will use the
+            rate.  If no conductance is sent, the rate will use the
             'throat.conductance' which is attached to the algorithm.
+
         X_value : array_like
             The values of the quantity (temperature, mole_fraction,
             voltage, ...), which this algorithm will use to calculate the rate.
             If no X_value is sent, the rate will look at the '_quantity',
             which is attached to the algorithm.
+
         mode : string, optional
             Controls how to return the rate.  Options are:
-            - 'group'(default): It returns the cumulative rate moving into them
-            - 'single': It calculates the rate for each pore individually.
+
+            **'group'**: (default) It returns the cumulative rate moving into
+            them
+
+            **'single'** : It calculates the rate for each pore individually.
         """
 
         if network is None:
@@ -885,12 +924,12 @@ class GenericLinearTransport(GenericAlgorithm):
     def _calc_eff_prop(self, check_health=False):
         r"""
         This returns the main parameters for calculating the effective
-        property in a linear transport equation.
-        It also checks for the proper boundary conditions, inlets and outlets.
+        property in a linear transport equation.  It also checks for the
+        proper boundary conditions, inlets and outlets.
 
         Parameters
         ----------
-        check_health : boolean(optional)
+        check_health : boolean (optional)
             It analyzes the inlet and outlet pores to check their spatial
             positions
         """
