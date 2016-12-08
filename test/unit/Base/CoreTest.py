@@ -972,7 +972,7 @@ class CoreTest:
         geom1 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
         Ps = net.pores('bottom')
         geom2 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
-        geom1['pore.blah'] = [[1, 2], [1,2,3], [1,2,3,4], [1]]
+        geom1['pore.blah'] = [[1, 2], [1, 2, 3], [1, 2, 3, 4], [1]]
         assert 'object' in net['pore.blah'].dtype.name
         # Ensure missing elements are None
         assert sum([True for item in net['pore.blah'] if item is None]) == 4
