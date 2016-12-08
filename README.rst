@@ -7,12 +7,11 @@
 .. image:: https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/PMEAL/OpenPNM
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-   :alt: Join the chat at https://gitter.im/PMEAL/OpenPNM
-   :target: https://gitter.im/PMEAL/OpenPNM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
 .. image:: https://readthedocs.org/projects/openpnm/badge/?version=latest
    :target: http://openpnm.readthedocs.org/
+
+.. image:: https://img.shields.io/badge/Need%20help%3F-Visit%20Q&A%20Site-blue.svg?style=social
+   :target: http://openpnm.org/questions/
 
 ###############################################################################
 Overview of OpenPNM
@@ -111,6 +110,18 @@ The drainage curve can be visualized with ``MIP.plot_drainage_curve()`` giving s
 A collection of examples is available as a separate Github repository: `OpenPNM-Examples <https://www.github.com/PMEAL/OpenPNM-Examples>`_.
 
 ===============================================================================
+Citing OpenPNM and Licensing
+===============================================================================
+
+OpenPNM is completely free to use, but we would appreciate if you would cite the following paper in any publications.
+
+.. code-block::
+
+    Gostick et al. OpenPNM: A pore network modeling package. Computing in Science & Engineering. 18(4), p60-74.
+
+OpenPNM is offered under the MIT license to allow unencumbered use and adoption of the work.
+
+===============================================================================
 Release Management and Versioning
 ===============================================================================
 
@@ -138,8 +149,8 @@ Related Links
         - https://www.github.com/PMEAL/OpenPNM-Examples
     * - The documentation is hosted on ReadTheDocs
         - http://openpnm.readthedocs.org/
-    * - Gitter is used to help users with questions about using the code
-        - https://gitter.im/PMEAL/OpenPNM
+    * - A Question & Answer forum is available on the OpenPNM website for help
+        - https://openpnm.org/questions
     * - Scipy is a major component of OpenPNM
         - http://www.scipy.org
     * - Anaconda is the most general way to setup a numerical Python environment
