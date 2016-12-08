@@ -858,10 +858,10 @@ class Core(dict):
                     atype.append('boolean')
                 else:
                     atype.append('other')
-        if not all(atype):
+        if not all([item == atype[0] for item in atype]):
             raise Exception('The array types are not compatible')
         else:
-            dummy_val = {'numeric': sp.nan, 'bool': False, 'other': []}
+            dummy_val = {'numeric': sp.nan, 'boolean': False, 'other': None}
 
         # Create an empty array of the right type and shape
         for item in arrs:
@@ -871,7 +871,8 @@ class Core(dict):
                 else:
                     temp_arr = sp.zeros((N, item.shape[1]), dtype=item.dtype)
                 break
-        # Convrert arrat to float IF NaNs are expected
+
+        # Convrert int arrays to float IF NaNs are expected
         if temp_arr.dtype.name.startswith('int') and (None in arrs):
             temp_arr = temp_arr.astype(float)
 
@@ -882,7 +883,6 @@ class Core(dict):
             else:
                 temp_arr[inds] = dummy_val[atype[0]]
         return temp_arr
-
 
     def _interleave_data2(self, prop, sources):
         r"""
