@@ -822,7 +822,7 @@ class Core(dict):
             raise Exception()
         return values
 
-    def _interleave_data(self, prop, sources):
+    def _interleave_data_jeff(self, prop, sources):
         r"""
         """
         element = self._parse_element(prop.split('.')[0], single=True)
@@ -884,7 +884,7 @@ class Core(dict):
                 temp_arr[inds] = dummy_val[atype[0]]
         return temp_arr
 
-    def _interleave_data2(self, prop, sources):
+    def _interleave_data(self, prop, sources):
         r"""
         Retrieves requested property from associated objects, to produce a full
         Np or Nt length array.
@@ -949,6 +949,7 @@ class Core(dict):
         dtypenames = []
         prop_found = False  # Flag to indicate if prop found on a sub-object
         values_dim = 0
+        temp.fill(sp.nan)
         for item in sources:
             # Check if sources were given as list of objects OR names
             try:

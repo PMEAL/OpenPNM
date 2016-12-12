@@ -975,9 +975,9 @@ class CoreTest:
         geom1['pore.blah'] = [[1, 2], [1, 2, 3], [1, 2, 3, 4], [1]]
         assert 'object' in net['pore.blah'].dtype.name
         # Ensure missing elements are None
-        assert sum([True for item in net['pore.blah'] if item is None]) == 4
+        assert sp.sum([sp.all(sp.isnan(item)) for item in net['pore.blah']]) == 4
 
-    def test_interleave_data_bool_int(self):
+    def test_interleave_data_bool_float(self):
         net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
         Ps = net.pores('top')
         geom1 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
@@ -985,5 +985,5 @@ class CoreTest:
         geom2 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
         geom1['pore.blah'] = 1.0
         geom2['pore.blah'] = False
-        with pytest.raises(Exception):
-            net['pore.blah']  # Mismatched types raises Exception
+        #non-bool data converted to False
+        assert sp.sum(net['pore.blah']) == 0
