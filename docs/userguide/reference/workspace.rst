@@ -133,3 +133,7 @@ Each OpenPNM Core object that is created is either given or assigned a ``name``.
 ===============================================================================
 Object Manipulation (Purging, Cloning, etc)
 ===============================================================================
+
+::
+
+    Documentation not finished yet

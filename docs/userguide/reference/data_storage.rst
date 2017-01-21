@@ -186,6 +186,6 @@ Data Exchange Between Objects
 
 One of the features in OpenPNM is the ability to model heterogeneous materials by apply different pore-scale models to different regions.  This is done by (a) creating a unique **Geometry** object for each region (i.e. small pores vs big pores) and (b) creating unique **Physics** object for each region as well (i.e. Knudsen diffusion vs Fickian diffusion).  One consequence of this segregation of properties is that a *single* array containing values for all locations in the domain cannot be directly obtained.  It is possible to manually piece together values from different regions, but this is cumbersome.  OpenPNM offers a shortcut for this, by making it possible to query **Geometry** properties via the **Network** object, and **Physics** properties from the associated **Phase** object:
 
-.. code-block:: Python
+::
 
-    >>> pn['pore.diameter']
+    Documentation not finished yet
