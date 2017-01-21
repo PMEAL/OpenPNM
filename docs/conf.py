@@ -3,7 +3,6 @@
 import sys
 import os
 import datetime
-import easydev
 
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.append(os.path.abspath('../'))
@@ -17,10 +16,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'sphinx.ext.todo',
               'sphinx.ext.ifconfig',
-              'sphinx.ext.viewcode',
-              'easydev.copybutton']
-
-jscopybutton_path = easydev.copybutton.get_copybutton_path()
+              'sphinx.ext.viewcode']
 
 todo_include_todos = True
 autosummary_generate = True
