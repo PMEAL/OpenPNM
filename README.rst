@@ -7,10 +7,6 @@
 .. image:: https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/PMEAL/OpenPNM
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-   :alt: Join the chat at https://gitter.im/PMEAL/OpenPNM
-   :target: https://gitter.im/PMEAL/OpenPNM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
 .. image:: https://readthedocs.org/projects/openpnm/badge/?version=latest
    :target: http://openpnm.readthedocs.org/
 
@@ -150,5 +146,17 @@ Related Links
         - https://github.com/spyder-ide/spyder
     * - Paraview is suggested for visualizing OpenPNM data
         - http://www.paraview.org
-    * - OpenPNM is offered under an MIT License
-        - http://opensource.org/licenses/MIT
+
+===============================================================================
+Licence and Citation
+===============================================================================
+
+OpenPNM is completely free to use and is offered under the permissive `MIT License <http://opensource.org/licenses/MIT>`_.
+
+If you do use OpenPNM in an academic work the developers ask that you cite the following paper, which outlines the design principles and general uses of OpenPNM:
+
+::
+
+    Gostick et al. OpenPNM: A pore network modeling package. Computing in Science & Engineering. 18(4), p60-74.
+
+A link to this article can be found `here <http://doi.org/10.1109/MCSE.2016.49>`_.
