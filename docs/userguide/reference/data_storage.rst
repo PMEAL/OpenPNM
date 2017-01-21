@@ -100,7 +100,7 @@ A complication arises if you have a list of pore numbers you wish to label, such
     >>> pn.pores('dummy_2')
     array([3, 4, 5])
 
-The *label* functionality basically works by using Scipy's ``where`` method to return a list of locations where the array is ``True``:
+The *label* functionality uses Scipy's ``where`` method to return a list of locations where the array is ``True``:
 
 .. code-block:: python
 
@@ -168,6 +168,24 @@ The ``pores`` and ``throats`` methods both accept a *'mode'* argument that allow
 
 Often, one wants a list of *all** pore or throat indices on an object, so there are shortcut methods for this: ``Ps`` and ``Ts``.
 
+It is also possible to filter a list of pores or throats according to their labels using ``filter_by_label``:
+
+.. code-block:: python
+
+    >>> Ps = pn.pores('top')
+    >>> Ps
+    array([ 2,  5,  8, 11, 14, 17, 20, 23, 26])
+    >>> pn.filter_by_label(pores=Ps, labels='left')
+    array([ 2, 11, 20])
+
+The ``filter_by_label`` method also accepts a ``mode`` argument that applies additional filtering to the returned list using *set-theory*-type logic.  In this case, the method will find sets of pores or throats that satisfies each given label, then determines the *union*, *intersection*, or *difference* of the given sets.
+
 ===============================================================================
 Data Exchange Between Objects
 ===============================================================================
+
+One of the features in OpenPNM is the ability to model heterogeneous materials by apply different pore-scale models to different regions.  This is done by (a) creating a unique **Geometry** object for each region (i.e. small pores vs big pores) and (b) creating unique **Physics** object for each region as well (i.e. Knudsen diffusion vs Fickian diffusion).  One consequence of this segregation of properties is that a *single* array containing values for all locations in the domain cannot be directly obtained.  It is possible to manually piece together values from different regions, but this is cumbersome.  OpenPNM offers a shortcut for this, by making it possible to query **Geometry** properties via the **Network** object, and **Physics** properties from the associated **Phase** object:
+
+::
+
+    Documentation not finished yet
