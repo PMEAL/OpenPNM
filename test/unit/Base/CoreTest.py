@@ -436,7 +436,6 @@ class CoreTest:
     def test_object_name_array_conflict(self):
         with pytest.raises(Exception):
             self.geo.name = 'coords'
-
         Np = self.geo.Np
         Nt = self.geo.Nt
         assert self.geo.Np == Np
@@ -762,6 +761,10 @@ class CoreTest:
         with pytest.raises(Exception):
             self.net._parse_element(element=['pore', 'throat'], single=True)
         a = self.net._parse_element(element=['pore'], single=True)
+        assert a == 'pore'
+
+    def test_parse_element_props(self):
+        a = self.net._parse_element(element=['pore.diameter'], single=True)
         assert a == 'pore'
 
     def test_parse_labels_none(self):
