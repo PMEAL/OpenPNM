@@ -14,13 +14,15 @@ mgr = OpenPNM.Base.Workspace()
 
 class GenericIO():
 
-    def save(self):
+    @classmethod
+    def save(cls):
         raise NotImplemented()
 
-    def load(self):
+    @classmethod
+    def load(cls):
         raise NotImplemented()
 
-    def _update_network(self, network, net):
+    def _update_network(cls, network, net):
         # Infer Np and Nt from length of given prop arrays in file
         for element in ['pore', 'throat']:
             N = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith(element)]
@@ -53,7 +55,8 @@ class GenericIO():
                 logger.warning('\''+item+'\' already present')
         return network
 
-    def _write_file(self, filename, ext):
+    @classmethod
+    def _write_file(cls, filename, ext):
         ext = ext.replace('.', '').lower()
         if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
             raise Exception(ext+' is not a supported file extension')
@@ -67,7 +70,8 @@ class GenericIO():
             f = open(filename, mode='x')
         return f
 
-    def _read_file(self, filename, ext):
+    @classmethod
+    def _read_file(cls, filename, ext):
         ext = ext.replace('.', '').lower()
         if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
             raise Exception(ext+' is not a supported file extension')
@@ -77,7 +81,7 @@ class GenericIO():
         return f
 
 
-class VTK(GenericIO):
+class VTK():
     r"""
     Class for writing a Vtp file to be read by ParaView
 
@@ -101,7 +105,8 @@ class VTK(GenericIO):
     </VTKFile>
     '''.strip()
 
-    def save(self, network, filename='', phases=[], legacy=True):
+    @classmethod
+    def save(cls, network, filename='', phases=[], legacy=True):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
@@ -202,7 +207,8 @@ class VTK(GenericIO):
             # consider adding header: '<?xml version="1.0"?>\n'+
             f.write(string)
 
-    def load(self, filename, network=None):
+    @classmethod
+    def load(cls, filename, network=None):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -252,7 +258,7 @@ class VTK(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = self._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net)
         return network
 
     @staticmethod
@@ -302,7 +308,8 @@ class Statoil(GenericIO):
     refer to various theses and documents to interpret their meaning.
     """
 
-    def load(self, path, prefix, network=None):
+    @classmethod
+    def load(cls, path, prefix, network=None):
         r"""
         Load data from the \'dat\' files located in specified folder.
 
@@ -326,7 +333,7 @@ class Statoil(GenericIO):
         # Parse the link1 file
         for item in ['link1']:
             filename = _os.path.join(path, prefix+'_'+item+'.dat')
-            with self._read_file(filename=filename, ext='dat') as f:
+            with cls._read_file(filename=filename, ext='dat') as f:
                 link1 = _pd.read_table(filepath_or_buffer=f,
                                        header=None,
                                        skiprows=1,
@@ -346,7 +353,7 @@ class Statoil(GenericIO):
         # Parse the link2 file
         for item in ['link2']:
             filename = _os.path.join(path, prefix+'_'+item+'.dat')
-            with self._read_file(filename=filename, ext='dat') as f:
+            with cls._read_file(filename=filename, ext='dat') as f:
                 link2 = _pd.read_table(filepath_or_buffer=f,
                                        header=None,
                                        sep=' ',
@@ -364,7 +371,7 @@ class Statoil(GenericIO):
         # Parse the node1 file
         for item in ['node1']:
             filename = _os.path.join(path, prefix+'_'+item+'.dat')
-            with self._read_file(filename=filename, ext='dat') as f:
+            with cls._read_file(filename=filename, ext='dat') as f:
                 row_0 = f.readline().split()
                 num_lines = int(row_0[0])
                 array = _sp.ndarray([num_lines, 6])
@@ -383,7 +390,7 @@ class Statoil(GenericIO):
         # Parse the node1 file
         for item in ['node2']:
             filename = _os.path.join(path, prefix+'_'+item+'.dat')
-            with self._read_file(filename=filename, ext='dat') as f:
+            with cls._read_file(filename=filename, ext='dat') as f:
                 node2 = _pd.read_table(filepath_or_buffer=f,
                                        header=None,
                                        sep=' ',
@@ -399,7 +406,7 @@ class Statoil(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = self._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net)
 
         # Use OpenPNM Tools to clean up network
         # Trim throats connected to 'inlet' or 'outlet' reservoirs
@@ -439,7 +446,8 @@ class MAT(GenericIO):
     OpenPNM.
     """
 
-    def save(self, network, filename='', phases=[]):
+    @classmethod
+    def save(cls, network, filename='', phases=[]):
         r"""
         Write Network to a Mat file for exporting to Matlab.
 
@@ -471,7 +479,8 @@ class MAT(GenericIO):
 
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
-    def load(self, filename, network=None):
+    @classmethod
+    def load(cls, filename, network=None):
         r"""
         Loads data onto the given network from an appropriately formatted
         'mat' file (i.e. MatLAB output).
@@ -520,7 +529,7 @@ class MAT(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = self._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net)
         return network
 
 
@@ -628,7 +637,8 @@ class CSV(GenericIO):
     indicates where the label applies and FALSE otherwise.
     """
 
-    def save(self, network, filename='', phases=[]):
+    @classmethod
+    def save(cls, network, filename='', phases=[]):
         r"""
         Save all the pore and throat property data on the Network (and
         optionally on any Phases objects) to CSV files.
@@ -661,10 +671,11 @@ class CSV(GenericIO):
         # Write to file
         if filename == '':
             filename = network.name
-        with self._write_file(filename=filename, ext='csv') as f:
+        with cls._write_file(filename=filename, ext='csv') as f:
             b.to_csv(f, index=False)
 
-    def load(self, filename, network=None):
+    @classmethod
+    def load(cls, filename, network=None):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -681,7 +692,7 @@ class CSV(GenericIO):
         """
         net = {}
 
-        with self._read_file(filename=filename, ext='csv') as f:
+        with cls._read_file(filename=filename, ext='csv') as f:
             a = _pd.read_table(filepath_or_buffer=f,
                                sep=',',
                                skipinitialspace=True,
@@ -712,7 +723,7 @@ class CSV(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = self._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net)
         return network
 
 
@@ -747,7 +758,8 @@ class NetworkX(GenericIO):
     and is extracted by OpenPNM.
     """
 
-    def load(self, filename, network=None):
+    @classmethod
+    def load(cls, filename, network=None):
         r"""
         Add data to an OpenPNM Network from a NetworkX generated YAML file.
 
@@ -769,7 +781,7 @@ class NetworkX(GenericIO):
         net = {}
 
         # Open file and read first line, to prevent NetworkX instantiation
-        with self._read_file(filename=filename, ext='yaml') as f:
+        with cls._read_file(filename=filename, ext='yaml') as f:
             line = f.readline()
             if line.startswith('!!python/object:networkx.classes.graph.Graph'):
                 a = _yaml.safe_load(f)
@@ -831,7 +843,7 @@ class NetworkX(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = self._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net)
         return network
 
 
@@ -842,7 +854,8 @@ class iMorph(GenericIO):
     throats_cellsThroatsGraph.txt - stores node connectivity
     """
 
-    def load(self, path,
+    @classmethod
+    def load(cls, path,
              node_file="throats_cellsThroatsGraph_Nodes.txt",
              graph_file="throats_cellsThroatsGraph.txt",
              network=None,
@@ -1024,7 +1037,8 @@ class MARock(GenericIO):
     Brook (2005).
     """
 
-    def load(self, path, network=None, voxel_size=1):
+    @classmethod
+    def load(cls, path, network=None, voxel_size=1):
         r"""
         Load data from a 3DMA-Rock extracted network.  This format consists of
         two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
@@ -1113,7 +1127,7 @@ class MARock(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = self._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net)
 
         # Trim headless throats before returning
         ind = _sp.where(network['throat.conns'][:, 0] == -1)[0]
