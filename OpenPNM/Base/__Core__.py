@@ -1440,7 +1440,11 @@ class Core(dict):
         # Convert element to a list for subsequent processing
         if type(element) is str:
             element = [element]
+        # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
+        element = [item.split('.')[0] for item in element]
+        # Make sure all are lowercase
         element = [item.lower() for item in element]
+        # Deal with an plurals
         element = [item.rsplit('s', maxsplit=1)[0] for item in element]
         for item in element:
             if item not in ['pore', 'throat']:

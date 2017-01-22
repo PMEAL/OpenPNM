@@ -11,7 +11,6 @@ Base
 -------------------------------------------------------------------------------
 
 .. automodule:: OpenPNM.Base
-   :members:
 
 .. _network_ref:
 
@@ -20,7 +19,6 @@ Network
 -------------------------------------------------------------------------------
 
 .. automodule:: OpenPNM.Network
-   :members:
 
 .. _geometry_ref:
 
@@ -29,7 +27,6 @@ Geometry
 -------------------------------------------------------------------------------
 
 .. automodule:: OpenPNM.Geometry
-   :members:
 
 .. _phases_ref:
 
@@ -38,7 +35,6 @@ Phases
 -------------------------------------------------------------------------------
 
 .. automodule:: OpenPNM.Phases
-   :members:
 
 .. _physics_ref:
 
@@ -47,8 +43,6 @@ Physics
 -------------------------------------------------------------------------------
 
 .. automodule:: OpenPNM.Physics
-   :members:
-   :undoc-members:
 
 .. _algorithms_ref:
 
@@ -57,7 +51,6 @@ Algorithms
 -------------------------------------------------------------------------------
 
 .. automodule:: OpenPNM.Algorithms
-   :members:
 
 .. _utilities_ref:
 
@@ -66,4 +59,3 @@ Utilities
 -------------------------------------------------------------------------------
 
 .. automodule:: OpenPNM.Utilities
-   :members:
