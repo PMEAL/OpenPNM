@@ -82,7 +82,7 @@ class GenericIO():
         return f
 
 
-class VTK():
+class VTK(GenericIO):
     r"""
     Class for writing a Vtp file to be read by ParaView
 
