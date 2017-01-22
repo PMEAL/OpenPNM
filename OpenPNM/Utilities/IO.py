@@ -22,6 +22,7 @@ class GenericIO():
     def load(cls):
         raise NotImplemented()
 
+    @classmethod
     def _update_network(cls, network, net):
         # Infer Np and Nt from length of given prop arrays in file
         for element in ['pore', 'throat']:
