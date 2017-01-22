@@ -988,5 +988,5 @@ class CoreTest:
         geom2 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
         geom1['pore.blah'] = 1.0
         geom2['pore.blah'] = False
-        #non-bool data converted to False
+        # non-bool data converted to False
         assert sp.sum(net['pore.blah']) == 0

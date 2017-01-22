@@ -3,6 +3,7 @@ import OpenPNM.Utilities.misc as misc
 import scipy as sp
 import time
 
+
 class UtilitiesMiscTest:
 
     def setup_class(self):
