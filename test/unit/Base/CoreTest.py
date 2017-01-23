@@ -990,3 +990,21 @@ class CoreTest:
         geom2['pore.blah'] = False
         # non-bool data converted to False
         assert sp.sum(net['pore.blah']) == 0
+
+    def test_interleave_data_float_missing_geometry(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        geom = OpenPNM.Geometry.GenericGeometry(network=net, pores=[0, 1, 2])
+        geom['pore.blah'] = 1.0
+        assert sp.any(sp.isnan(net['pore.blah']))
+
+    def test_interleave_data_int_missing_geometry(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        geom = OpenPNM.Geometry.GenericGeometry(network=net, pores=[0, 1, 2])
+        geom['pore.blah'] = 1
+        assert sp.any(sp.isnan(net['pore.blah']))
+
+    def test_interleave_data_bool_missing_geometry(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        geom = OpenPNM.Geometry.GenericGeometry(network=net, pores=[0, 1, 2])
+        geom['pore.blah'] = True
+        assert sp.sum(net['pore.blah']) == geom.Np
