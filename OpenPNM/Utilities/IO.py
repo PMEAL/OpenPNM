@@ -16,11 +16,23 @@ class GenericIO():
 
     @classmethod
     def save(cls):
-        raise NotImplemented()
+        raise NotImplementedError("The \'save\' method for this class " +
+                                  "does not exist yet")
 
     @classmethod
     def load(cls):
-        raise NotImplemented()
+        raise NotImplementedError("The \'load\' method for this class " +
+                                  "does not exist yet")
+
+    @staticmethod
+    def fetch_geometry(network):
+        geom = OpenPNM.Geometry.GenericGeometry(network=network,
+                                                pores=network.Ps,
+                                                throats=network.Ts)
+        for item in network.props():
+            if item not in ['pore.coords', 'throat.conns']:
+                geom.update({item: network.pop(item)})
+        return geom
 
     @classmethod
     def _update_network(cls, network, net):
