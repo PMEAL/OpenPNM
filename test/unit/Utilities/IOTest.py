@@ -26,7 +26,7 @@ class IOTest:
             op.Utilities.IO.GenericIO.save()
 
     def test_generic_fetch_geometry(self):
-        fname = os.path.join(TEMP_DIR, 'test_load_csv_no_phases')
+        fname = os.path.join(FIXTURE_DIR, 'test_load_csv_no_phases')
         net = io.CSV.load(fname+'.csv')
         Nprops = len(net.props())
         geom = io.CSV.fetch_geometry(network=net)
