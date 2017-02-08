@@ -1,4 +1,3 @@
-atlas
 numpy
 scipy
 matplotlib
