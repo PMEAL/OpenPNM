@@ -15,8 +15,8 @@ before_install:
   - export PATH="$HOME/miniconda/bin:$PATH"
 
 install:
+  - conda config --add channels conda-forge
   - conda install --yes python=$TRAVIS_PYTHON_VERSION --file requirements.txt
-  - conda install -y -c conda-forge pyamg
   - pip install -r test_requirements.txt
   - python setup.py install
 
