@@ -601,10 +601,13 @@ class GenericLinearTransport(GenericAlgorithm):
                 tol = 1e-20
             params['tol'] = tol
             if self._iterative_solver == 'cg':
+                logger.info('Using Scipy\'s Conjugate Gradient solver')
                 result = sprslin.cg(A, b, **params)
             elif self._iterative_solver == 'gmres':
+                logger.info('Using Scipy\'s GMRES solver')
                 result = sprslin.gmres(A, b, **params)
             elif self._iterative_solver == 'rs':
+                logger.info('Using PyAMG\'s Ruge-Stuben solver')
                 try:
                     import pyamg
                 except:
