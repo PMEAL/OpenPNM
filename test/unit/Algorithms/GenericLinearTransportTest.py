@@ -284,13 +284,13 @@ class GenericLinearTransportTest:
         assert ('pore.source_A' not in self.alg.labels())
 
     def test_iterative_solver_pyamg(self):
-        pn = op.Network.Cubic(shape=[20, 20, 20])
-        geom = op.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
-                                          throats=pn.Ts)
-        water = op.Phases.Water(network=pn)
-        phys = op.Physics.Standard(network=pn, phase=water, pores=pn.Ps,
-                                   throats=pn.Ts)
-        fickian = op.Algorithms.FickianDiffusion(network=pn, phase=water)
+        pn = OpenPNM.Network.Cubic(shape=[20, 20, 20])
+        geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
+                                               throats=pn.Ts)
+        water = OpenPNM.Phases.Water(network=pn)
+        phys = OpenPNM.Physics.Standard(network=pn, phase=water, pores=pn.Ps,
+                                        throats=pn.Ts)
+        fickian = OpenPNM.Algorithms.FickianDiffusion(network=pn, phase=water)
         Ps_bc1 = pn.pores('right')
         fickian.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6,
                                         pores=Ps_bc1)
