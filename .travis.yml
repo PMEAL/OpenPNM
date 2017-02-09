@@ -5,6 +5,7 @@ language: python
 python:
   - "3.4"
   - "3.5"
+  - "3.6"
 
 before_install:
   - export DISPLAY=:99.0
@@ -15,6 +16,7 @@ before_install:
 
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION --file requirements.txt
+  - conda install -y -c conda-forge pyamg
   - pip install -r test_requirements.txt
   - python setup.py install
 
