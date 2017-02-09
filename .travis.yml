@@ -16,7 +16,7 @@ before_install:
 
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION --file requirements.txt
-  - conda install -c conda-forge pyamg
+  - conda install -y -c conda-forge pyamg
   - pip install -r test_requirements.txt
   - python setup.py install
 
