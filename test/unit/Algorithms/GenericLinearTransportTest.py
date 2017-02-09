@@ -1,4 +1,5 @@
 import OpenPNM
+import pytest
 import numpy as np
 import OpenPNM.Physics.models as pm
 
@@ -282,6 +283,24 @@ class GenericLinearTransportTest:
                                  mode='remove')
         assert ('pore.source_B' not in self.alg.labels())
         assert ('pore.source_A' not in self.alg.labels())
+
+    def test_iterative_solver_wrong_arg(self):
+        pn = OpenPNM.Network.Cubic(shape=[4, 4, 4])
+        geom = OpenPNM.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
+                                               throats=pn.Ts)
+        water = OpenPNM.Phases.Water(network=pn)
+        phys = OpenPNM.Physics.Standard(network=pn, phase=water, pores=pn.Ps,
+                                        throats=pn.Ts)
+        fickian = OpenPNM.Algorithms.FickianDiffusion(network=pn, phase=water)
+        Ps_bc1 = pn.pores('right')
+        fickian.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6,
+                                        pores=Ps_bc1)
+        Ps_bc2 = pn.pores('left')
+        fickian.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4,
+                                        pores=Ps_bc2)
+        fickian.setup()
+        with pytest.raises(Exception):
+            fickian.solve(iterative_solver='blah')
 
     def test_iterative_solver_pyamg(self):
         pn = OpenPNM.Network.Cubic(shape=[20, 20, 20])
