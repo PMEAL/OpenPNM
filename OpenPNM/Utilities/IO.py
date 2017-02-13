@@ -729,17 +729,19 @@ class NetworkX():
         for n in a['node'].keys():
             props = a['node'][n]
             for item in props.keys():
+                val = a['node'][n][item]
+                dtype = type(val)
                 # Remove prepended pore. and pore_ if present
                 for b in ['pore.', 'pore_']:
                     item = item.replace(b, '')
-                val = a['node'][n][item]
-                dtype = type(val)
-                if dtype is list:
-                    dtype = type(val[0])
-                    cols = len(val)
-                    net['pore.'+item] = _sp.ndarray((Np, cols), dtype=dtype)
-                else:
-                    net['pore.'+item] = _sp.ndarray((Np,), dtype=dtype)
+                # Create arrays for subsequent indexing, if not present already
+                if 'pore.'+item not in net.keys():
+                    if dtype is list:
+                        dtype = type(val[0])
+                        cols = len(val)
+                        net['pore.'+item] = _sp.ndarray((Np, cols), dtype=dtype)
+                    else:
+                        net['pore.'+item] = _sp.ndarray((Np,), dtype=dtype)
                 net['pore.'+item][n] = val
 
         # Parsing edge data
@@ -762,17 +764,19 @@ class NetworkX():
         for t in conns:
             props = a['edge'][t[0]][t[1]]
             for item in props:
+                val = props[item]
+                dtype = type(val)
                 # Remove prepended throat. and throat_ if present
                 for b in ['throat.', 'throat_']:
                     item = item.replace(b, '')
-                val = props[item]
-                dtype = type(val)
-                if dtype is list:
-                    dtype = type(val[0])
-                    cols = len(val)
-                    net['throat.'+item] = _sp.ndarray((Nt, cols), dtype=dtype)
-                else:
-                    net['throat.'+item] = _sp.ndarray((Nt,), dtype=dtype)
+                # Create arrays for subsequent indexing, if not present already
+                if 'throat.'+item not in net.keys():
+                    if dtype is list:
+                        dtype = type(val[0])
+                        cols = len(val)
+                        net['throat.'+item] = _sp.ndarray((Nt, cols), dtype=dtype)
+                    else:
+                        net['throat.'+item] = _sp.ndarray((Nt,), dtype=dtype)
                 net['throat.'+item][i] = val
             i += 1
 
