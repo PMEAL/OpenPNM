@@ -613,11 +613,7 @@ class Core(dict):
         >>> pn.pores(labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
-        if labels == 'all':  # Shortcut if ALL pores are requested
-            Np = sp.shape(self['pore.all'])[0]
-            ind = sp.arange(0, Np)
-        else:  # Apply full logic otherwise
-            ind = self._get_indices(element='pore', labels=labels, mode=mode)
+        ind = self._get_indices(element='pore', labels=labels, mode=mode)
         return ind
 
     @property
@@ -625,7 +621,7 @@ class Core(dict):
         r"""
         A shortcut to get a list of all pores on the object
         """
-        return self.pores()
+        return sp.arange(0, self.Np)
 
     def throats(self, labels='all', mode='union'):
         r"""
@@ -668,11 +664,7 @@ class Core(dict):
         array([0, 1, 2, 3, 4])
 
         """
-        if labels == 'all':
-            Nt = sp.shape(self['throat.all'])[0]
-            ind = sp.arange(0, Nt)
-        else:
-            ind = self._get_indices(element='throat', labels=labels, mode=mode)
+        ind = self._get_indices(element='throat', labels=labels, mode=mode)
         return ind
 
     @property
@@ -680,7 +672,7 @@ class Core(dict):
         r"""
         A shortcut to get a list of all throats on the object
         """
-        return self.throats()
+        return sp.arange(0, self.Nt)
 
     def _tomask(self, locations, element):
         r"""
@@ -1012,12 +1004,9 @@ class Core(dict):
         40
 
         """
-        if labels == 'all':
-            Np = sp.shape(self.get('pore.all'))[0]
-        else:
-            # Count number of pores of specified type
-            Ps = self._get_indices(labels=labels, mode=mode, element='pore')
-            Np = sp.shape(Ps)[0]
+        # Count number of pores of specified type
+        Ps = self._get_indices(labels=labels, mode=mode, element='pore')
+        Np = sp.shape(Ps)[0]
         return Np
 
     @property
@@ -1025,7 +1014,7 @@ class Core(dict):
         r"""
         A shortcut to query the total number of pores on the object'
         """
-        return self.num_pores()
+        return sp.shape(self.get('pore.all'))[0]
 
     def num_throats(self, labels='all', mode='union'):
         r"""
@@ -1078,12 +1067,9 @@ class Core(dict):
         72
 
         """
-        if labels == 'all':
-            Nt = sp.shape(self.get('throat.all'))[0]
-        else:
-            # Count number of pores of specified type
-            Ts = self._get_indices(labels=labels, mode=mode, element='throat')
-            Nt = sp.shape(Ts)[0]
+        # Count number of pores of specified type
+        Ts = self._get_indices(labels=labels, mode=mode, element='throat')
+        Nt = sp.shape(Ts)[0]
         return Nt
 
     @property
@@ -1091,7 +1077,7 @@ class Core(dict):
         r"""
         A shortcut to query the total number of throats on the object'
         """
-        return self.num_throats()
+        return sp.shape(self.get('throat.all'))[0]
 
     def _count(self, element=None):
         r"""
