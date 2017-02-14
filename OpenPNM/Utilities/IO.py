@@ -1036,7 +1036,7 @@ class MARock():
                 net['pore.ID_number'][i] = ID
                 net['pore.boundary_type'][i] = _sp.fromfile(file=f, count=1,
                                                             dtype='u1')
-                z = _sp.fromfile(file=f, count=1, dtype='u4')
+                z = int(_sp.fromfile(file=f, count=1, dtype='u4'))
                 net['pore.coordination'][i] = z
                 att_pores = _sp.fromfile(file=f, count=z, dtype='u4')
                 att_throats = _sp.fromfile(file=f, count=z, dtype='u4')
