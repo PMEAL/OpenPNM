@@ -317,7 +317,6 @@ def generate_voxel_image(network, maxdim=200, pshape='sphere', tshape='cylinder'
     """
     from skimage.morphology import ball
     import scipy.ndimage as spim
-    import porespy as ps
     b = _sp.amin(network['pore.coords'], axis=0)
     t = _sp.amax(network['pore.coords'], axis=0)
     l = t - b + 1
@@ -343,7 +342,7 @@ def generate_voxel_image(network, maxdim=200, pshape='sphere', tshape='cylinder'
         R = _sp.around(network['throat.diameter'][T]/2/res).astype(int)
         P12 = network['throat.conns'][T]
         crds = network['pore.coords'][P12]/res
-        line = ps.generators.line_segment(X0=crds[0], X1=crds[1])
+        line = line_segment(X0=crds[0], X1=crds[1])
         im_temp[line] = 1
         b = _sp.amin(line, axis=1) - R - 1
         t = _sp.amax(line, axis=1) + R + 1
@@ -357,3 +356,28 @@ def generate_voxel_image(network, maxdim=200, pshape='sphere', tshape='cylinder'
             im_throats[inds] = 1
     im = _sp.array(im_pores + im_throats) > 0
     return im
+
+
+def line_segment(X0, X1):
+    r"""
+    Calculate the voxel coordinates of a straight line between the two given
+    end points
+
+    Parameters
+    ----------
+    X0 and X1 : array_like
+        The [x, y, z] coordinates of the start and end points of the line.
+
+    Returns
+    -------
+        A list of lists containing the X, Y, and Z coordinates of all voxels
+        that should be drawn between the start and end points to create a solid
+        line.
+    """
+    X0 = _sp.around(X0)
+    X1 = _sp.around(X1)
+    L = _sp.amax(_sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
+    x = _sp.rint(_sp.linspace(X0[0], X1[0], L)).astype(int)
+    y = _sp.rint(_sp.linspace(X0[1], X1[1], L)).astype(int)
+    z = _sp.rint(_sp.linspace(X0[2], X1[2], L)).astype(int)
+    return [x, y, z]
