@@ -304,11 +304,13 @@ def generate_voxel_image(network, maxdim=200, pshape='sphere', tshape='cylinder'
         more convenient and safer to specify.  The default is 200, and anything
         larger will require a computer with a decent amount of RAM.
 
-    pshape : string {'sphere' (default), 'cube'}
-        The shape of the pore bodies.
+    pshape : string {'sphere' (default), 'cube', 'none'}
+        The shape of the pore bodies.  Use \'none'\ to prevent the addtion of
+        pores to the image
 
-    tshape : string {'cylinder' (default), 'cuboid'}
-        The cross-sectional shape of the throats.
+    tshape : string {'cylinder' (default), 'cuboid', 'none'}
+        The cross-sectional shape of the throats.  Use \'none\' to prevent the
+        addition of throats to the image.
 
     Returns
     -------
@@ -317,44 +319,49 @@ def generate_voxel_image(network, maxdim=200, pshape='sphere', tshape='cylinder'
     """
     from skimage.morphology import ball
     import scipy.ndimage as spim
+    Rmax = _sp.amax(network['pore.diameter'])/2
     b = _sp.amin(network['pore.coords'], axis=0)
-    t = _sp.amax(network['pore.coords'], axis=0)
+    t = _sp.amax(network['pore.coords'] + 2*Rmax, axis=0)
     l = t - b + 1
     res = _sp.amax(l/maxdim)
-    im_pores = _sp.zeros(shape=_sp.array(l/res, dtype=int),
-                         dtype=int)
-    for P in network.Ps:
-        R = _sp.around(network['pore.diameter'][P]/2/res).astype(int)
-        pore = ball(radius=R)
-        b = _sp.array(network['pore.coords'][P]/res - R, dtype=int)
-        t = b + 2*R + 1
-        inds = _sp.meshgrid(_sp.arange(b[0], t[0]),
-                            _sp.arange(b[1], t[1]),
-                            _sp.arange(b[2], t[2]))
-        if pshape.startswith('sph'):
-            im_pores[inds] = pore
-        else:
-            im_pores[inds] = 1
+    im_pores = _sp.zeros(shape=_sp.array(l/res, dtype=int), dtype=int)
+    if pshape != 'none':
+        for P in network.Ps:
+            R = _sp.around(network['pore.diameter'][P]/2/res).astype(int)
+            pore = ball(radius=R)
+            b = _sp.array((network['pore.coords'][P]+Rmax)/res-R, dtype=int)
+            t = b + 2*R + 1
+            inds = _sp.meshgrid(_sp.arange(b[0], t[0]),
+                                _sp.arange(b[1], t[1]),
+                                _sp.arange(b[2], t[2]))
+            if pshape.startswith('sph'):
+                im_pores[inds] += pore
+            else:
+                im_pores[inds] += 1
+        im_pores = im_pores > 0
 
-    im_throats = _sp.zeros_like(im_pores)
-    im_temp = _sp.zeros_like(im_pores)
-    for T in network.Ts:
-        R = _sp.around(network['throat.diameter'][T]/2/res).astype(int)
-        P12 = network['throat.conns'][T]
-        crds = network['pore.coords'][P12]/res
-        line = line_segment(X0=crds[0], X1=crds[1])
-        im_temp[line] = 1
-        b = _sp.amin(line, axis=1) - R - 1
-        t = _sp.amax(line, axis=1) + R + 1
-        inds = _sp.meshgrid(_sp.arange(b[0], t[0]),
-                            _sp.arange(b[1], t[1]),
-                            _sp.arange(b[2], t[2]))
-        if tshape.startswith('cyl'):
-            sub_im = spim.distance_transform_edt(im_temp[inds] == 0) < R
-            im_throats[inds] = _sp.array(sub_im, dtype=int)
-        else:
-            im_throats[inds] = 1
-    im = _sp.array(im_pores + im_throats) > 0
+    im_throats = _sp.zeros_like(im_pores, dtype=int)
+    im_temp = _sp.zeros_like(im_throats)
+    if tshape != 'none':
+        for T in network.Ts:
+            R = _sp.around(network['throat.diameter'][T]/2/res).astype(int)
+            P12 = network['throat.conns'][T]
+            crds = (network['pore.coords'][P12]+Rmax)/res
+            line = line_segment(X0=crds[0], X1=crds[1])
+            im_temp[line] = 1
+            b = _sp.amin(line, axis=1) - R - 1
+            t = _sp.amax(line, axis=1) + R + 1
+            inds = _sp.meshgrid(_sp.arange(b[0], t[0]),
+                                _sp.arange(b[1], t[1]),
+                                _sp.arange(b[2], t[2]))
+            if tshape.startswith('cyl'):
+                sub_im = spim.distance_transform_edt(im_temp[inds] == 0) < R
+                im_throats[inds] += _sp.array(sub_im, dtype=int)
+            else:
+                im_throats[inds] += 1
+            im_temp[inds] = 0
+    im_throats = (im_throats > 0)*(im_pores == 0)
+    im = _sp.array(2.0*im_pores + 1.0*im_throats)
     return im
 
 
