@@ -833,8 +833,11 @@ class Core(dict):
         Notes
         -----
         This makes an effort to maintain the data 'type' when possible; however
-        when data is missing this can be tricky.  Float and boolean data is
-        fine, but missing ints are converted to float when nans are inserted.
+        when data is missing this can be tricky.  Data can be missing in two
+        different ways: A set of pores is not assisgned to a geometry or the
+        network contains multiple geometries and data does not exist on all.
+        Float and boolean data is fine, but missing ints are converted to float
+        when nans are inserted.
 
         Examples
         --------
@@ -890,7 +893,7 @@ class Core(dict):
         sizes = [sp.size(a) for a in arrs]
         if all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
-        if sp.any([i is None for i in arrs]):  # prop found on some objects but not others
+        if sp.any([i is None for i in arrs]):  # prop not found everywhere
             logger.warning('\''+prop+'\' not found on at least one object')
 
         # Check the general type of each array
@@ -919,10 +922,9 @@ class Core(dict):
                 temp_arr.fill(dummy_val[atype[0]])
 
         # Convrert int arrays to float IF NaNs are expected
-        if (temp_arr.dtype.name.startswith('int') and 
+        if (temp_arr.dtype.name.startswith('int') and
             (sp.any([i is None for i in arrs]) or
-             sp.sum(sizes) != N)
-            ):
+             sp.sum(sizes) != N)):
             temp_arr = temp_arr.astype(float)
             temp_arr.fill(sp.nan)
 
