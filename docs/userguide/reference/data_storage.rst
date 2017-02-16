@@ -81,8 +81,8 @@ The only distinction between *labels* and *properties* is that *labels* are Bool
 .. code-block:: python
 
     >>> pn['pore.top'][2] = False
-    >>> sp.where(pn['pore.top'])[0]
-    array([ 5,  8, 11, 14, 17, 20, 23, 26])
+    >>> list(sp.where(pn['pore.top'])[0])
+    [5, 8, 11, 14, 17, 20, 23, 26]
     >>> pn['pore.top'][2] = True  # Re-apply label to pore 2
 
 Creating a new label array occurs automatically if a Boolean array is stored on an object:
@@ -104,22 +104,22 @@ The *label* functionality uses Scipy's ``where`` method to return a list of loca
 
 .. code-block:: python
 
-    >>> sp.where(pn['pore.dummy_2'])[0]
-    array([3, 4, 5])
+    >>> list(sp.where(pn['pore.dummy_2'])[0])
+    [3, 4, 5]
 
 The ``pores`` and ``throats`` methods offer several useful enhancements to this approach.  For instance, several labels can be queried at once:
 
 .. code-block:: python
 
-    >>> pn.pores(['top', 'dummy_2'])
-    array([ 2,  3,  4,  5,  8, 11, 14, 17, 20, 23, 26])
+    >>> list(pn.pores(['top', 'dummy_2']))
+    [2, 3, 4, 5, 8, 11, 14, 17, 20, 23, 26]
 
 And there is also a ``mode`` argument which can be used to apply *set theory* logic to the returned list:
 
 .. code-block:: python
 
-    >>> pn.pores(['top', 'dummy_2'], mode='intersection')
-    array([5])
+    >>> list(pn.pores(['top', 'dummy_2'], mode='intersection'))
+    [5]
 
 This *set* logic basically retrieves a list of all pores with the label ``'top'`` and a second list of pores with the label ``dummy_2``, and returns the ``'intersection'`` of these lists, or only pores that appear in both lists.
 
@@ -161,8 +161,8 @@ Another highly used feature is to retrieve a list of pores or throats that have 
 
 .. code-block:: python
 
-    >>> pn.pores('top')
-    array([ 2,  5,  8, 11, 14, 17, 20, 23, 26])
+    >>> list(pn.pores('top'))
+    [2, 5, 8, 11, 14, 17, 20, 23, 26]
 
 The ``pores`` and ``throats`` methods both accept a *'mode'* argument that allows for *set-theory* logic to be applied to the query, such as returning 'unions' and 'intersections' of locations.
 
@@ -173,10 +173,10 @@ It is also possible to filter a list of pores or throats according to their labe
 .. code-block:: python
 
     >>> Ps = pn.pores('top')
-    >>> Ps
-    array([ 2,  5,  8, 11, 14, 17, 20, 23, 26])
-    >>> pn.filter_by_label(pores=Ps, labels='left')
-    array([ 2, 11, 20])
+    >>> list(Ps)
+    [2, 5, 8, 11, 14, 17, 20, 23, 26]
+    >>> list(pn.filter_by_label(pores=Ps, labels='left'))
+    [2, 11, 20]
 
 The ``filter_by_label`` method also accepts a ``mode`` argument that applies additional filtering to the returned list using *set-theory*-type logic.  In this case, the method will find sets of pores or throats that satisfies each given label, then determines the *union*, *intersection*, or *difference* of the given sets.
 

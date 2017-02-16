@@ -1229,7 +1229,7 @@ class MARock(GenericIO):
                 net['pore.ID_number'][i] = ID
                 net['pore.boundary_type'][i] = _sp.fromfile(file=f, count=1,
                                                             dtype='u1')
-                z = int(_sp.fromfile(file=f, count=1, dtype='u4'))
+                z = _sp.fromfile(file=f, count=1, dtype='u4')[0]
                 net['pore.coordination'][i] = z
                 att_pores = _sp.fromfile(file=f, count=z, dtype='u4')
                 att_throats = _sp.fromfile(file=f, count=z, dtype='u4')
@@ -1249,7 +1249,7 @@ class MARock(GenericIO):
             net['pore.coords'] = _sp.array([ni, nj, nk]).T
 
         with open(th2np_file, mode='rb') as f:
-            [Nt] = _sp.fromfile(file=f, count=1, dtype='u4')
+            Nt = _sp.fromfile(file=f, count=1, dtype='u4')[0]
             net['throat.area'] = _sp.ones([Nt, ], dtype=int)*(-1)
             for i in range(0, Nt):
                 ID = _sp.fromfile(file=f, count=1, dtype='u4')
