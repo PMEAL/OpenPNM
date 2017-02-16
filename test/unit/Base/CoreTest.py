@@ -124,6 +124,11 @@ class CoreTest:
         b = ['pore.diameter']
         assert sorted(a) == sorted(b)
 
+    def test_props_hidden_keys(self):
+        self.net['pore._blah'] = 1.0
+        assert 'pore._blah' not in self.net.__str__()
+        assert 'pore._blah' in self.net.keys()
+
     def test_labels(self):
         a = self.net.labels()
         assert 'pore.top' in a
@@ -208,6 +213,11 @@ class CoreTest:
     def test_labels_pores_mode_foo(self):
         with pytest.raises(Exception):
             self.net.labels(pores=[0, 1], mode='foo')
+
+    def test_labels_hidden_key(self):
+        self.net['pore._foo'] = True
+        assert 'pore._foo' not in self.net.__str__()
+        assert 'pore._foo' in self.net.keys()
 
     def test_pores(self):
         a = self.net.pores()
@@ -310,6 +320,10 @@ class CoreTest:
                                      mode='not')
         b = [9, 12, 15, 18, 21, 24]
         assert sp.all(a == b)
+
+    def test_filter_by_label_empty_locations(self):
+        a = self.net.filter_by_label(pores=[], labels='top')
+        assert sp.size(a) == 0
 
     def test_tomask_pores(self):
         a = self.net.tomask(pores=self.net.pores('top'))
@@ -422,7 +436,6 @@ class CoreTest:
     def test_object_name_array_conflict(self):
         with pytest.raises(Exception):
             self.geo.name = 'coords'
-
         Np = self.geo.Np
         Nt = self.geo.Nt
         assert self.geo.Np == Np
@@ -750,6 +763,10 @@ class CoreTest:
         a = self.net._parse_element(element=['pore'], single=True)
         assert a == 'pore'
 
+    def test_parse_element_props(self):
+        a = self.net._parse_element(element=['pore.diameter'], single=True)
+        assert a == 'pore'
+
     def test_parse_labels_none(self):
         with pytest.raises(Exception):
             self.net._parse_labels(labels=None, element='pore')
@@ -891,3 +908,92 @@ class CoreTest:
         assert not a.health
         assert a['pore.data_test'] == 'Has NaNs'
         del self.net['pore.data_test']
+
+    def test_interleave_data_key_error(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        with pytest.raises(KeyError):
+            net['pore.blah']
+        with pytest.raises(KeyError):
+            geom1['pore.blah']
+        with pytest.raises(KeyError):
+            geom2['pore.blah']
+
+    def test_interleave_data_bool(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        # Ensure Falses return in missing places
+        geom1['pore.blah'] = True
+        assert sp.all(~geom2['pore.blah'])
+        assert sp.sum(net['pore.blah']) == 4
+        # Ensure all Trues returned now
+        geom2['pore.blah'] = True
+        assert sp.all(geom2['pore.blah'])
+        assert sp.sum(net['pore.blah']) == 8
+
+    def test_interleave_data_int(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        geom1['pore.blah'] = 1
+        # Ensure ints are returned geom1
+        assert 'int' in geom1['pore.blah'].dtype.name
+        # Ensure nans are returned on geom2
+        assert sp.all(sp.isnan(geom2['pore.blah']))
+        # Ensure interleaved array is float with nans
+        assert 'float' in net['pore.blah'].dtype.name
+        # Ensure missing values are floats
+        assert sp.sum(sp.isnan(net['pore.blah'])) == 4
+
+    def test_interleave_data_float(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        geom1['pore.blah'] = 1.0
+        # Ensure flaots are returned geom1
+        assert 'float' in geom1['pore.blah'].dtype.name
+        # Ensure nans are returned on geom2
+        assert sp.all(sp.isnan(geom2['pore.blah']))
+        # Ensure interleaved array is float with nans
+        assert 'float' in net['pore.blah'].dtype.name
+        # Ensure missing values are floats
+        assert sp.sum(sp.isnan(net['pore.blah'])) == 4
+
+    def test_interleave_data_object(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = OpenPNM.Geometry.GenericGeometry(network=net, pores=Ps)
+        geom1['pore.blah'] = [[1, 2], [1, 2, 3], [1, 2, 3, 4], [1]]
+        assert 'object' in net['pore.blah'].dtype.name
+        # Ensure missing elements are None
+        assert sp.sum([item is None for item in net['pore.blah']]) == 4
+
+    def test_interleave_data_float_missing_geometry(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        geom = OpenPNM.Geometry.GenericGeometry(network=net, pores=[0, 1, 2])
+        geom['pore.blah'] = 1.0
+        assert sp.any(sp.isnan(net['pore.blah']))
+
+    def test_interleave_data_int_missing_geometry(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        geom = OpenPNM.Geometry.GenericGeometry(network=net, pores=[0, 1, 2])
+        geom['pore.blah'] = 1
+        assert sp.any(sp.isnan(net['pore.blah']))
+
+    def test_interleave_data_bool_missing_geometry(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 2, 2])
+        geom = OpenPNM.Geometry.GenericGeometry(network=net, pores=[0, 1, 2])
+        geom['pore.blah'] = True
+        assert sp.sum(net['pore.blah']) == geom.Np

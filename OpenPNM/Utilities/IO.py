@@ -1,10 +1,10 @@
+import os as _os
+import itertools as _itertools
+from xml.etree import ElementTree as _ET
 import scipy as _sp
 import numpy as _np
 import pandas as _pd
 import yaml as _yaml
-import os as _os
-import itertools as _itertools
-from xml.etree import ElementTree as _ET
 import OpenPNM
 from OpenPNM.Utilities import misc as _misc
 from OpenPNM.Base import logging
@@ -12,7 +12,110 @@ logger = logging.getLogger(__name__)
 mgr = OpenPNM.Base.Workspace()
 
 
-class VTK():
+class GenericIO():
+
+    @classmethod
+    def save(cls):
+        raise NotImplementedError("The \'save\' method for this class " +
+                                  "does not exist yet")
+
+    @classmethod
+    def load(cls):
+        raise NotImplementedError("The \'load\' method for this class " +
+                                  "does not exist yet")
+
+    @staticmethod
+    def split_geometry(network):
+        r"""
+        This method accepts an OpenPNM Network object and removes all geometry
+        related pore and throat properties, (basically all values other than
+        ```'pore.coords'``` and ```throat.conns```), and places them on a
+        GenericGeometry object.  Any labels on the Network are left intact.
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The Network that possesses the geometrical values
+
+        Returns
+        -------
+        geometry : OpenPNM Geometry Object
+            The new GenericGeometry object that was created to contain the
+            geometrical pore and throat properties.
+
+        """
+        geom = OpenPNM.Geometry.GenericGeometry(network=network,
+                                                pores=network.Ps,
+                                                throats=network.Ts)
+        for item in network.props():
+            if item not in ['pore.coords', 'throat.conns']:
+                geom.update({item: network.pop(item)})
+        return geom
+
+    @classmethod
+    def _update_network(cls, network, net, return_geometry=False):
+        # Infer Np and Nt from length of given prop arrays in file
+        for element in ['pore', 'throat']:
+            N = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith(element)]
+            if N:
+                N = _sp.array(N)
+                if _sp.all(N == N[0]):
+                    if (network._count(element) == N[0]) \
+                            or (network._count(element) == 0):
+                        network.update({element+'.all': _sp.ones((N[0],),
+                                                                 dtype=bool)})
+                        net.pop(element+'.all', None)
+                    else:
+                        raise Exception('Length of '+element+' data in file' +
+                                        ' does not match network')
+                else:
+                    raise Exception(element+' data in file have inconsistent' +
+                                    ' lengths')
+        # Add data on dummy net to actual network
+        for item in net.keys():
+            # Try to infer array types and change if necessary
+            # Chcek for booleans disguised and 1's and 0's
+            num0s = _sp.sum(net[item] == 0)
+            num1s = _sp.sum(net[item] == 1)
+            if (num1s + num0s) == _sp.shape(net[item])[0]:
+                net[item] = net[item].astype(bool)
+            # Write data to network object
+            if item not in network:
+                network.update({item: net[item]})
+            else:
+                logger.warning('\''+item+'\' already present')
+        if return_geometry:
+            geometry = cls.split_geometry(network)
+            network = (network, geometry)
+        return network
+
+    @classmethod
+    def _write_file(cls, filename, ext):
+        ext = ext.replace('.', '').lower()
+        if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
+            raise Exception(ext+' is not a supported file extension')
+        filename = filename.rstrip('.'+ext)
+        filename = filename+'.'+ext
+        try:
+            logger.warning(filename+' already exists, contents will be ' +
+                           'overwritten')
+            f = open(filename, mode='w')
+        except:
+            f = open(filename, mode='x')
+        return f
+
+    @classmethod
+    def _read_file(cls, filename, ext):
+        ext = ext.replace('.', '').lower()
+        if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
+            raise Exception(ext+' is not a supported file extension')
+        if not filename.endswith('.'+ext):
+            filename = filename+'.'+ext
+        f = open(filename, mode='r')
+        return f
+
+
+class VTK(GenericIO):
     r"""
     Class for writing a Vtp file to be read by ParaView
 
@@ -36,8 +139,8 @@ class VTK():
     </VTKFile>
     '''.strip()
 
-    @staticmethod
-    def save(network, filename='', phases=[], legacy=True):
+    @classmethod
+    def save(cls, network, filename='', phases=[], legacy=True):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
@@ -138,8 +241,8 @@ class VTK():
             # consider adding header: '<?xml version="1.0"?>\n'+
             f.write(string)
 
-    @staticmethod
-    def load(filename, network=None):
+    @classmethod
+    def load(cls, filename, network=None, return_geometry=False):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -153,9 +256,21 @@ class VTK():
             The Network object onto which the data should be loaded.  If no
             Network is supplied than one will be created and returned.
 
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
         """
         net = {}
 
@@ -189,7 +304,8 @@ class VTK():
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = _update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
         return network
 
     @staticmethod
@@ -225,7 +341,7 @@ class VTK():
         return array
 
 
-class Statoil():
+class Statoil(GenericIO):
     r"""
     This class is for loading data stored in the 'Statoil' file format.  More
     specifically, this file format is used by the network extraction code of
@@ -238,8 +354,9 @@ class Statoil():
     specific property.  Headers are not provided in the files, so one must
     refer to various theses and documents to interpret their meaning.
     """
-    @staticmethod
-    def load(path, prefix, network=None):
+
+    @classmethod
+    def load(cls, path, prefix, network=None, return_geometry=False):
         r"""
         Load data from the \'dat\' files located in specified folder.
 
@@ -256,6 +373,22 @@ class Statoil():
             If given then the data will be loaded on it and returned.  If not
             given, a Network will be created and return.
 
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
+        Returns
+        -------
+        If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
+
         """
         net = {}
 
@@ -263,7 +396,7 @@ class Statoil():
         # Parse the link1 file
         for item in ['link1']:
             filename = _os.path.join(path, prefix+'_'+item+'.dat')
-            with _read_file(filename=filename, ext='dat') as f:
+            with cls._read_file(filename=filename, ext='dat') as f:
                 link1 = _pd.read_table(filepath_or_buffer=f,
                                        header=None,
                                        skiprows=1,
@@ -283,7 +416,7 @@ class Statoil():
         # Parse the link2 file
         for item in ['link2']:
             filename = _os.path.join(path, prefix+'_'+item+'.dat')
-            with _read_file(filename=filename, ext='dat') as f:
+            with cls._read_file(filename=filename, ext='dat') as f:
                 link2 = _pd.read_table(filepath_or_buffer=f,
                                        header=None,
                                        sep=' ',
@@ -301,20 +434,13 @@ class Statoil():
         # Parse the node1 file
         for item in ['node1']:
             filename = _os.path.join(path, prefix+'_'+item+'.dat')
-            with _read_file(filename=filename, ext='dat') as f:
-                row_0 = f.readline().split(' ')
-                while '' in row_0:
-                    row_0.remove('')
+            with cls._read_file(filename=filename, ext='dat') as f:
+                row_0 = f.readline().split()
                 num_lines = int(row_0[0])
                 array = _sp.ndarray([num_lines, 6])
                 for i in range(num_lines):
-                    row = f.readline().split(' ')
-                    while '' in row:
-                        row.remove('')
-                    try:
-                        row.remove('\n')
-                    except:
-                        pass
+                    row = f.readline()\
+                           .replace('\t', ' ').replace('\n', ' ').split()
                     array[i, :] = row[0:6]
         node1 = _pd.DataFrame(array[:, [1, 2, 3, 4]])
         node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord',
@@ -327,7 +453,7 @@ class Statoil():
         # Parse the node1 file
         for item in ['node2']:
             filename = _os.path.join(path, prefix+'_'+item+'.dat')
-            with _read_file(filename=filename, ext='dat') as f:
+            with cls._read_file(filename=filename, ext='dat') as f:
                 node2 = _pd.read_table(filepath_or_buffer=f,
                                        header=None,
                                        sep=' ',
@@ -343,7 +469,8 @@ class Statoil():
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = _update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
 
         # Use OpenPNM Tools to clean up network
         # Trim throats connected to 'inlet' or 'outlet' reservoirs
@@ -364,7 +491,7 @@ class Statoil():
         return network
 
 
-class MAT():
+class MAT(GenericIO):
     r"""
     Class for reading and writing OpenPNM data to a Matlab 'mat' file
 
@@ -383,8 +510,8 @@ class MAT():
     OpenPNM.
     """
 
-    @staticmethod
-    def save(network, filename='', phases=[]):
+    @classmethod
+    def save(cls, network, filename='', phases=[]):
         r"""
         Write Network to a Mat file for exporting to Matlab.
 
@@ -416,8 +543,8 @@ class MAT():
 
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
-    @staticmethod
-    def load(filename, network=None):
+    @classmethod
+    def load(cls, filename, network=None, return_geometry=False):
         r"""
         Loads data onto the given network from an appropriately formatted
         'mat' file (i.e. MatLAB output).
@@ -432,9 +559,21 @@ class MAT():
             The Network object onto which the data should be loaded.  If no
             Network is supplied than one will be created and returned.
 
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
 
         """
         net = {}
@@ -466,7 +605,8 @@ class MAT():
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = _update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
         return network
 
 
@@ -545,7 +685,7 @@ class Pandas():
         return data
 
 
-class CSV():
+class CSV(GenericIO):
     r"""
     This class is used for reading and writing CSV files containing pore and
     throat property data.  This class uses Pandas for transferring data from
@@ -574,8 +714,8 @@ class CSV():
     indicates where the label applies and FALSE otherwise.
     """
 
-    @staticmethod
-    def save(network, filename='', phases=[]):
+    @classmethod
+    def save(cls, network, filename='', phases=[]):
         r"""
         Save all the pore and throat property data on the Network (and
         optionally on any Phases objects) to CSV files.
@@ -608,11 +748,11 @@ class CSV():
         # Write to file
         if filename == '':
             filename = network.name
-        with _write_file(filename=filename, ext='csv') as f:
+        with cls._write_file(filename=filename, ext='csv') as f:
             b.to_csv(f, index=False)
 
-    @staticmethod
-    def load(filename, network=None):
+    @classmethod
+    def load(cls, filename, network=None, return_geometry=False):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -622,14 +762,31 @@ class CSV():
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
+        network : OpenPNM Network Object
+            The Network object onto which the data should be loaded.  If no
+            Network is supplied than one will be created and returned.
+
+
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
 
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
+
         """
         net = {}
 
-        with _read_file(filename=filename, ext='csv') as f:
+        with cls._read_file(filename=filename, ext='csv') as f:
             a = _pd.read_table(filepath_or_buffer=f,
                                sep=',',
                                skipinitialspace=True,
@@ -660,11 +817,12 @@ class CSV():
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = _update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
         return network
 
 
-class NetworkX():
+class NetworkX(GenericIO):
     r"""
     This class is meant specifcally for exchanging data with NetworkX, which
     is a common tool for dealing with network structures.  A network object
@@ -680,7 +838,7 @@ class NetworkX():
     \'pore.\' to each property name.
 
     2. Since \'pore.coords\' is so central to OpenPNM it should be specified
-    in the NetworkX object as \'coords\', and they [X, Y, Z] coordinates of
+    in the NetworkX object as \'coords\', and the [X, Y, Z] coordinates of
     each node should be a 3x1 list.
 
     3. Edges in a NetworkX object are accessed using the index numbers of the
@@ -695,13 +853,8 @@ class NetworkX():
     and is extracted by OpenPNM.
     """
 
-    @staticmethod
-    def save():
-        # TODO: This would be a great place for a new developer to contribute
-        raise NotImplemented
-
-    @staticmethod
-    def load(filename, network=None):
+    @classmethod
+    def load(cls, filename, network=None, return_geometry=False):
         r"""
         Add data to an OpenPNM Network from a NetworkX generated YAML file.
 
@@ -715,15 +868,27 @@ class NetworkX():
             Network is supplied then an empty Import Network is created and
             returned.
 
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
 
         """
         net = {}
 
         # Open file and read first line, to prevent NetworkX instantiation
-        with _read_file(filename=filename, ext='yaml') as f:
+        with cls._read_file(filename=filename, ext='yaml') as f:
             line = f.readline()
             if line.startswith('!!python/object:networkx.classes.graph.Graph'):
                 a = _yaml.safe_load(f)
@@ -736,17 +901,19 @@ class NetworkX():
         for n in a['node'].keys():
             props = a['node'][n]
             for item in props.keys():
+                val = a['node'][n][item]
+                dtype = type(val)
                 # Remove prepended pore. and pore_ if present
                 for b in ['pore.', 'pore_']:
                     item = item.replace(b, '')
-                val = a['node'][n][item]
-                dtype = type(val)
-                if dtype is list:
-                    dtype = type(val[0])
-                    cols = len(val)
-                    net['pore.'+item] = _sp.ndarray((Np, cols), dtype=dtype)
-                else:
-                    net['pore.'+item] = _sp.ndarray((Np,), dtype=dtype)
+                # Create arrays for subsequent indexing, if not present already
+                if 'pore.'+item not in net.keys():
+                    if dtype is list:
+                        dtype = type(val[0])
+                        cols = len(val)
+                        net['pore.'+item] = _sp.ndarray((Np, cols), dtype=dtype)
+                    else:
+                        net['pore.'+item] = _sp.ndarray((Np,), dtype=dtype)
                 net['pore.'+item][n] = val
 
         # Parsing edge data
@@ -769,81 +936,348 @@ class NetworkX():
         for t in conns:
             props = a['edge'][t[0]][t[1]]
             for item in props:
+                val = props[item]
+                dtype = type(val)
                 # Remove prepended throat. and throat_ if present
                 for b in ['throat.', 'throat_']:
                     item = item.replace(b, '')
-                val = props[item]
-                dtype = type(val)
-                if dtype is list:
-                    dtype = type(val[0])
-                    cols = len(val)
-                    net['throat.'+item] = _sp.ndarray((Nt, cols), dtype=dtype)
-                else:
-                    net['throat.'+item] = _sp.ndarray((Nt,), dtype=dtype)
+                # Create arrays for subsequent indexing, if not present already
+                if 'throat.'+item not in net.keys():
+                    if dtype is list:
+                        dtype = type(val[0])
+                        cols = len(val)
+                        net['throat.'+item] = _sp.ndarray((Nt, cols), dtype=dtype)
+                    else:
+                        net['throat.'+item] = _sp.ndarray((Nt,), dtype=dtype)
                 net['throat.'+item][i] = val
             i += 1
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = _update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
         return network
 
 
-def _update_network(network, net):
-    # Infer Np and Nt from length of given prop arrays in file
-    for element in ['pore', 'throat']:
-        N = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith(element)]
-        if N:
-            N = _sp.array(N)
-            if _sp.all(N == N[0]):
-                if (network._count(element) == N[0]) \
-                        or (network._count(element) == 0):
-                    network.update({element+'.all': _sp.ones((N[0],),
-                                                             dtype=bool)})
-                    net.pop(element+'.all', None)
-                else:
-                    raise Exception('Length of '+element+' data in file ' +
-                                    'does not match network')
-            else:
-                raise Exception(element+' data in file have inconsistent ' +
-                                'lengths')
+class iMorph(GenericIO):
+    r"""
+    Combines two output files from the iMorph program to build a pore network.
+    throats_cellsThroatsGraph_Nodes.txt - stores node shape and type information
+    throats_cellsThroatsGraph.txt - stores node connectivity
+    """
 
-    # Add data on dummy net to actual network
-    for item in net.keys():
-        # Try to infer array types and change if necessary
-        # Chcek for booleans disguised and 1's and 0's
-        num0s = _sp.sum(net[item] == 0)
-        num1s = _sp.sum(net[item] == 1)
-        if (num1s + num0s) == _sp.shape(net[item])[0]:
-            net[item] = net[item].astype(bool)
-        # Write data to network object
-        if item not in network:
-            network.update({item: net[item]})
-        else:
-            logger.warning('\''+item+'\' already present')
-    return network
+    @classmethod
+    def load(cls, path,
+             node_file="throats_cellsThroatsGraph_Nodes.txt",
+             graph_file="throats_cellsThroatsGraph.txt",
+             network=None, voxel_size=None, return_geometry=False):
+        r"""
+        Loads network data from an iMorph processed image stack
+
+        Parameters
+        ----------
+        path : string
+            The path of the folder where the subfiles are held
+
+        node_file : string
+            The file that describes the pores and throats, the
+            default iMorph name is: throats_cellsThroatsGraph_Nodes.txt
+
+        graph_file : string
+            The file that describes the connectivity of the network, the
+            default iMorph name is: throats_cellsThroatsGraph.txt
+
+        network : OpenPNM Network Object
+            The OpenPNM Network onto which the data should be loaded.  If no
+            network is supplied then an empty import network is created and
+            returned.
+
+        voxel_size : float
+            Allows the user to define a voxel size different than what is
+            contained in the node_file. The value must be in meters.
+
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
+        Returns
+        -------
+        If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
+        """
+        #
+        node_file = _os.path.join(path, node_file)
+        graph_file = _os.path.join(path, graph_file)
+        # parsing the nodes file
+        with open(node_file, 'r') as file:
+            Np = _sp.fromstring(file.readline().rsplit('=')[1], sep='\t',
+                                dtype=int)[0]
+            vox_size = _sp.fromstring(file.readline().rsplit(')')[1], sep='\t',)[0]
+            #
+            # network always recreated to prevent errors
+            network = OpenPNM.Network.Empty(Np=Np, Nt=0)
+            #
+            # Define expected properies
+            network['pore.volume'] = _sp.nan
+            scrap_lines = [file.readline() for line in range(4)]
+            while True:
+                vals = file.readline().split('\t')
+                if len(vals) == 1:
+                    break
+                network['pore.volume'][int(vals[0])] = float(vals[3])
+                if 'pore.'+vals[2] not in network.labels():
+                    network['pore.'+vals[2]] = False
+                network['pore.'+vals[2]][int(vals[0])] = True
+
+        if voxel_size is None:
+            voxel_size = vox_size * 1.0E-6  # file stores value in microns
+
+        if voxel_size < 0:
+            raise(Exception('Error - Voxel size must be specfied in ' +
+                            'the Nodes file or as a keyword argument.'))
+
+        # parsing the graph file
+        with open(graph_file, 'r') as file:
+            # Define expected properties
+            network['pore.coords'] = _sp.zeros((Np, 3))*_sp.nan
+            network['pore.types'] = _sp.nan
+            network['pore.color'] = _sp.nan
+            network['pore.radius'] = _sp.nan
+            network['pore.dmax'] = _sp.nan
+            network['pore.node_number'] = _sp.nan
+            # Scan file to get pore coordinate data
+            scrap_lines = [file.readline() for line in range(3)]
+            line = file.readline()
+            xmax = 0.0
+            ymax = 0.0
+            zmax = 0.0
+            node_num = 0
+            while line != 'connectivity table\n':
+                vals = _sp.fromstring(line, sep='\t')
+                xmax = vals[1] if vals[1] > xmax else xmax
+                ymax = vals[2] if vals[2] > ymax else ymax
+                zmax = vals[3] if vals[3] > zmax else zmax
+                network['pore.coords'][int(vals[0]), :] = vals[1:4]
+                network['pore.types'][int(vals[0])] = vals[4]
+                network['pore.color'][int(vals[0])] = vals[5]
+                network['pore.radius'][int(vals[0])] = vals[6]
+                network['pore.dmax'][int(vals[0])] = vals[7]
+                network['pore.node_number'][int(vals[0])] = node_num
+                node_num += 1
+                line = file.readline()
+            # Scan file to get to connectivity data
+            scrap_lines.append(file.readline())  # Skip line
+            # Create sparse lil array incrementally build adjacency matrix
+            lil = _sp.sparse.lil_matrix((Np, Np), dtype=int)
+            while True:
+                vals = _sp.fromstring(file.readline(), sep='\t', dtype=int)
+                if len(vals) <= 1:
+                    break
+                lil.rows[vals[0]] = vals[2:]
+                lil.data[vals[0]] = _sp.ones(vals[1])
+
+        # fixing any negative volumes or distances so they are 1 voxel/micron
+        network['pore.volume'][_sp.where(network['pore.volume'] < 0)[0]] = 1.0
+        network['pore.radius'][_sp.where(network['pore.radius'] < 0)[0]] = 1.0
+        network['pore.dmax'][_sp.where(network['pore.dmax'] < 0)[0]] = 1.0
+
+        # Add adjacency matrix to OpenPNM network
+        conns = _sp.sparse.triu(lil, k=1, format='coo')
+        network.update({'throat.all': _sp.ones(len(conns.col), dtype=bool)})
+        network['throat.conns'] = _sp.vstack([conns.row, conns.col]).T
+
+        network['pore.to_trim'] = False
+        network['pore.to_trim'][network.pores('*throat')] = True
+        Ts = network.pores('to_trim')
+        new_conns = network.find_neighbor_pores(pores=Ts, flatten=False)
+        network.extend(throat_conns=new_conns, labels='new_conns')
+        for item in network.props('pore'):
+            item = item.split('.')[1]
+            network['throat.'+item] = _sp.nan
+            network['throat.'+item][network.throats('new_conns')] = \
+                network['pore.'+item][Ts]
+        network.trim(pores=Ts)
+
+        # setting up boundary pores
+        x_coord, y_coord, z_coord = _sp.hsplit(network['pore.coords'], 3)
+        network['pore.front_boundary'] = _sp.ravel(x_coord == 0)
+        network['pore.back_boundary'] = _sp.ravel(x_coord == xmax)
+        network['pore.left_boundary'] = _sp.ravel(y_coord == 0)
+        network['pore.right_boundary'] = _sp.ravel(y_coord == ymax)
+        network['pore.bottom_boundary'] = _sp.ravel(z_coord == 0)
+        network['pore.top_boundary'] = _sp.ravel(z_coord == zmax)
+
+        # removing any pores that got classified as a boundary pore but
+        # weren't labled a border_cell_face
+        ps = _sp.where(~_sp.in1d(network.pores('*_boundary'),
+                                 network.pores('border_cell_face')))[0]
+        ps = network.pores('*_boundary')[ps]
+        for side in ['front', 'back', 'left', 'right', 'top', 'bottom']:
+            network['pore.'+side+'_boundary'][ps] = False
+        # setting internal label
+        network['pore.internal'] = False
+        network['pore.internal'][network.pores('*_boundary', mode='not')] = True
+
+        # adding props to border cell face throats and from pores
+        Ts = _sp.where(network['throat.conns'][:, 1] >
+                       network.pores('border_cell_face')[0] - 1)[0]
+        faces = network['throat.conns'][Ts, 1]
+        for item in network.props('pore'):
+            item = item.split('.')[1]
+            network['throat.'+item][Ts] = network['pore.'+item][faces]
+        network['pore.volume'][faces] = 0.0
+
+        # applying unit conversions
+        # TODO: Determine if radius and dmax are indeed microns and not voxels
+        network['pore.coords'] = network['pore.coords'] * 1e-6
+        network['pore.radius'] = network['pore.radius'] * 1e-6
+        network['pore.dmax'] = network['pore.dmax'] * 1e-6
+        network['pore.volume'] = network['pore.volume'] * voxel_size**3
+        network['throat.coords'] = network['throat.coords'] * 1e-6
+        network['throat.radius'] = network['throat.radius'] * 1e-6
+        network['throat.dmax'] = network['throat.dmax'] * 1e-6
+        network['throat.volume'] = network['throat.volume'] * voxel_size**3
+        #
+        # checking network health to generate warnings for the user
+        network.health_dict = network.check_network_health()
+        logger.info('Network health stored as network.health_dict')
+        if return_geometry:
+            geometry = cls.fetch_geometry(network)
+            network = (network, geometry)
+        return network
 
 
-def _write_file(filename, ext):
-    ext = ext.replace('.', '').lower()
-    if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
-        raise Exception(ext+' is not a supported file extension')
-    filename = filename.rstrip('.'+ext)
-    filename = filename+'.'+ext
-    try:
-        logger.warning(filename+' already exists, contents will be ' +
-                       'overwritten')
-        f = open(filename, mode='w')
-    except:
-        f = open(filename, mode='x')
-    return f
+class MARock(GenericIO):
+    r"""
+    3DMA-Rock is a network extraction algorithm developed by Brent Lindquist
+    and his group [1].  It uses Medial Axis thinning to find the skeleton of
+    the pore space, then extracts geometrical features such as pore volume and
+    throat cross-sectional area.
 
+    [1] Lindquist, W. Brent, S. M. Lee, W. Oh, A. B. Venkatarangan, H. Shin,
+    and M. Prodanovic. "3DMA-Rock: A software package for automated analysis
+    of rock pore structure in 3-D computed microtomography images." SUNY Stony
+    Brook (2005).
+    """
 
-def _read_file(filename, ext):
-    ext = ext.replace('.', '').lower()
-    if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
-        raise Exception(ext+' is not a supported file extension')
-    if not filename.endswith('.'+ext):
-        filename = filename+'.'+ext
-    f = open(filename, mode='r')
-    return f
+    @classmethod
+    def load(cls, path, network=None, voxel_size=1, return_geometry=False):
+        r"""
+        Load data from a 3DMA-Rock extracted network.  This format consists of
+        two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
+        stored together in a folder which is referred to by the path argument.
+        These files are binary and therefore not human readable.
+
+        Parameters
+        ----------
+        path : string
+            The location of the 'np2th' and 'th2np' files. This can be an
+            absolute path or relative to the current working directory.
+
+        network : OpenPNM Network Object
+            If an Network object is recieved, this method will add new data to
+            it but NOT overwrite anything that already exists.  This can be
+            used to append data from different sources.
+
+        voxel_size : scalar
+            The resolution of the image on which 3DMA-Rock was run, in terms of
+            the linear length of eac voxel. The default is 1.  This is used to
+            scale the voxel counts to actual dimension. It is recommended that
+            this value be in SI units [m] to work well with OpenPNM.
+
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
+        Returns
+        -------
+        If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
+
+        """
+
+        net = {}
+
+        for file in _os.listdir(path):
+            if file.endswith(".np2th"):
+                np2th_file = _os.path.join(path, file)
+            elif file.endswith(".th2np"):
+                th2np_file = _os.path.join(path, file)
+
+        with open(np2th_file, mode='rb') as f:
+            [Np, Nt] = _sp.fromfile(file=f, count=2, dtype='u4')
+            net['pore.boundary_type'] = _sp.ndarray([Np, ], int)
+            net['throat.conns'] = _sp.ones([Nt, 2], int)*(-1)
+            net['pore.coordination'] = _sp.ndarray([Np, ], int)
+            net['pore.ID_number'] = _sp.ndarray([Np, ], int)
+            for i in range(0, Np):
+                ID = _sp.fromfile(file=f, count=1, dtype='u4')
+                net['pore.ID_number'][i] = ID
+                net['pore.boundary_type'][i] = _sp.fromfile(file=f, count=1,
+                                                            dtype='u1')
+                z = _sp.fromfile(file=f, count=1, dtype='u4')[0]
+                net['pore.coordination'][i] = z
+                att_pores = _sp.fromfile(file=f, count=z, dtype='u4')
+                att_throats = _sp.fromfile(file=f, count=z, dtype='u4')
+                for j in range(0, len(att_throats)):
+                    t = att_throats[j] - 1
+                    p = att_pores[j] - 1
+                    net['throat.conns'][t] = [i, p]
+            net['throat.conns'] = _sp.sort(net['throat.conns'], axis=1)
+            net['pore.volume'] = _sp.fromfile(file=f, count=Np, dtype='u4')
+            nx = _sp.fromfile(file=f, count=1, dtype='u4')
+            nxy = _sp.fromfile(file=f, count=1, dtype='u4')
+            pos = _sp.fromfile(file=f, count=Np, dtype='u4')
+            ny = nxy/nx
+            ni = _sp.mod(pos, nx)
+            nj = _sp.mod(_sp.floor(pos/nx), ny)
+            nk = _sp.floor(_sp.floor(pos/nx)/ny)
+            net['pore.coords'] = _sp.array([ni, nj, nk]).T
+
+        with open(th2np_file, mode='rb') as f:
+            Nt = _sp.fromfile(file=f, count=1, dtype='u4')[0]
+            net['throat.area'] = _sp.ones([Nt, ], dtype=int)*(-1)
+            for i in range(0, Nt):
+                ID = _sp.fromfile(file=f, count=1, dtype='u4')
+                net['throat.area'][i] = _sp.fromfile(file=f, count=1,
+                                                     dtype='f4')
+                numvox = _sp.fromfile(file=f, count=1, dtype='u4')
+                att_pores = _sp.fromfile(file=f, count=2, dtype='u4')
+            nx = _sp.fromfile(file=f, count=1, dtype='u4')
+            nxy = _sp.fromfile(file=f, count=1, dtype='u4')
+            pos = _sp.fromfile(file=f, count=Nt, dtype='u4')
+            ny = nxy/nx
+            ni = _sp.mod(pos, nx)
+            nj = _sp.mod(_sp.floor(pos/nx), ny)
+            nk = _sp.floor(_sp.floor(pos/nx)/ny)
+            net['throat.coords'] = _sp.array([ni, nj, nk]).T
+            net['pore.internal'] = net['pore.boundary_type'] == 0
+
+        # Convert voxel area and volume to actual dimensions
+        net['throat.area'] = (voxel_size**2)*net['throat.area']
+        net['pore.volume'] = (voxel_size**3)*net['pore.volume']
+
+        if network is None:
+            network = OpenPNM.Network.GenericNetwork()
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
+
+        # Trim headless throats before returning
+        ind = _sp.where(network['throat.conns'][:, 0] == -1)[0]
+        network.trim(throats=ind)
+
+        return network

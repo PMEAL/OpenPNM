@@ -5,25 +5,26 @@ import os
 import datetime
 
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.append(os.path.abspath('_extensions'))
 sys.path.append(os.path.abspath('../'))
 
 
-# General configuration ------------------------------------------------------
+def setup(app):
+    app.add_javascript('/static/js/copybutton.js')
 
+# General configuration ------------------------------------------------------
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',
-              'sphinx.ext.doctest',
               'sphinx.ext.todo',
-              'sphinx.ext.coverage',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode']
 
 todo_include_todos = True
+autosummary_generate = True
+modindex_common_prefix = ['OpenPNM.']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -79,7 +80,7 @@ exclude_patterns = ['_build']
 # -- Options for HTML output --------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.
-# html_theme = 'rtd'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -95,7 +96,7 @@ html_short_title = "OpenPNM: An open-source pore network modeling package"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '_static/logo.png'
+html_logo = 'static/logo.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -105,7 +106,7 @@ html_logo = '_static/logo.png'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ['static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.

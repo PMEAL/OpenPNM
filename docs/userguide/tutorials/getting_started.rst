@@ -1,7 +1,10 @@
 .. _getting_started:
 
+.. sectnum::
+   :start: 1
+
 ###############################################################################
-Tutorial 1 of 3: Getting Started with OpenPNM
+ Tutorial 1 of 3: Getting Started with OpenPNM
 ###############################################################################
 
 This tutorial is intended to show the basic outline of how OpenPNM works, and necessarily skips many of the more useful and powerful features of the package.  So if you find yourself asking "why is this step so labor intensive" it's probably because this tutorial deliberately simplifies some features to provide a more gentle introduction.  The second and third tutorials of this User-Guide dive into the package more deeply, but those features are best appreciated once the basics are understood.
@@ -22,7 +25,7 @@ This tutorial is intended to show the basic outline of how OpenPNM works, and ne
 
 .. hint:: Python and Numpy Tutorials
 
-	* OpenPNM is written in Python.  One of the best guides to learning Python is the  excellent interactive online tutorial called `Learn Python the Hard Way <http://learnpythonthehardway.org/book/>`_, which was originally a website and is now a book and video series.  The `Python Module of the Week <https://pymotw.com/3/>`_ website is another excellent resource with nice examples illustrating various features of Python standard library, and has also been published in a book.
+	* OpenPNM is written in Python.  One of the best guides to learning Python is the set of Tutorials available on the `official Python website <https://docs.python.org/3.5/tutorial>`_). The web is literally overrun with excellent Python tutorials owing to the popularity and importance of the language.  The official Python website also provides `an long list of resources <https://www.python.org/about/gettingstarted/>`_
 
 	* For information on using Numpy, Scipy and generally doing scientific computing in Python checkout the `Scipy lecture notes <http://www.scipy-lectures.org/>`_.  The Scipy website also offers as solid introduction to `using Numpy arrays <https://docs.scipy.org/doc/numpy-dev/user/quickstart.html>`_.
 
@@ -71,9 +74,9 @@ All data are stored in arrays which can accessed using standard array syntax.  M
 
 #. The data for pore *i* (or throat *i*) can be found in element of *i* of an array.  This means that pores and throat have indices which are implied by their position in arrays.  When we speak of retrieving pore locations, it refers to the indices in the *Numpy* arrays.
 
-#. Arrays that store pore data are *Np*-long, while arrays that store throat data are *Nt*-long, where *Np* is the number of pores and *Nt* is the number of throats in the network.
-
 #. Each property is stored in it's own array, meaning that 'pore diameter' and 'throat volume' are each stored in a separate array.
+
+#. Arrays that store pore data are *Np*-long, while arrays that store throat data are *Nt*-long, where *Np* is the number of pores and *Nt* is the number of throats in the network.
 
 #.  Arrays can be any size in the other dimensions.  For instance, triplets of pore coordinates (i.e. [x, y, z]) can be stored for each pore creating an *Np-by-3* array.
 
@@ -382,7 +385,7 @@ To determine the permeability coefficient, we must invoke Darcy's law: Q = KA/uL
 	>>> del_P = 101325  # Specified pressure gradient
 	>>> K = Q*mu_w*L/(A*del_P)
 
-The **StokesFlow** class was developed with permeability simulations in mind, so a specific method is available for determining the permeability coefficient that essentially applies to recipe from above.  This method could struggle with non-uniform geometries though, so use with caution:
+The **StokesFlow** class was developed with permeability simulations in mind, so a specific method is available for determining the permeability coefficient that essentially applies the recipe from above.  This method could struggle with non-uniform geometries though, so use with caution:
 
 .. code-block:: python
 

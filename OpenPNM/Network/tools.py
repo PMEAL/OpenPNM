@@ -7,6 +7,7 @@ Network.tools.topology: Assorted topological manipulation methods
 """
 import scipy as _sp
 import numpy as _np
+import scipy.ndimage as _spim
 from OpenPNM.Base import logging as _logging
 from OpenPNM.Base import Workspace as _workspace
 logger = _logging.getLogger(__name__)
@@ -344,6 +345,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     # Ensure Networks have no associated objects yet
     if (len(network._simulation()) > 1) or (len(donor._simulation()) > 1):
         raise Exception('Cannot stitch a Network with active sibling objects')
+    network['throat.stitched'] = False
     # Get the initial number of pores and throats
     N_init = {}
     N_init['pore'] = network.Np
@@ -395,13 +397,14 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
         _mgr.purge_object(donor)
 
 
-def connect_pores(network, pores1, pores2, labels=[]):
+def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     r'''
-    Returns the possible connections between two group of pores.
+    Returns the possible connections between two group of pores, and optionally
+    makes the connections.
 
     Parameters
     ----------
-    networK : OpenPNM Network Object
+    network : OpenPNM Network Object
 
     pores1 : array_like
         The first group of pores on the network
@@ -409,11 +412,20 @@ def connect_pores(network, pores1, pores2, labels=[]):
     pores2 : array_like
         The second group of pores on the network
 
+    labels : list of strings
+        The labels to apply to the new throats.  This argument is only needed
+        if ``add_conns`` is True.
+
+    add_conns : bool
+        Indicates whether the connections should be added to the supplied
+        network (default is True).  Otherwise, the connections are returned
+        as an Nt x 2 array that can be passed directly to ``extend``.
+
     Notes
     -----
     It creates the connections in a format which is acceptable by
-    the default OpenPNM connection key ('throat.conns') and adds them to
-    the network.
+    the default OpenPNM connection ('throat.conns') and either adds them to
+    the network or returns them.
 
     Examples
     --------
@@ -438,19 +450,34 @@ def connect_pores(network, pores1, pores2, labels=[]):
     array1 = _sp.repeat(pores1, size2)
     array2 = _sp.tile(pores2, size1)
     conns = _sp.vstack([array1, array2]).T
-    extend(network=network, throat_conns=conns, labels=labels)
+    if add_conns:
+        extend(network=network, throat_conns=conns, labels=labels)
+    else:
+        return conns
 
 
-def find_centroid(coords=None):
+def find_centroid(coords=None, mode='geometric'):
     r'''
-    It finds the coordinates of the centroid of the sent pores.
+    Finds the coordinates of the centroid of the specified pores.
+
+    Parameters
+    ----------
+    coords : array_like
+        An Np x 3 list of [x, y, z] coordinates for the pores of which the
+        centroid is sought
+
+    mode : string
+        Controls how the centroid is calculated.  Options are:
+
+        **'geometric'** : (default) Simply calcuates the average [X, Y, Z] of
+        the given coordinates using scipy.mean(coords, axis=0)
+
+        **'center_of_mass'** : not implemented yet
+
+        **'inscribed_sphere'** : not implemented yet
     '''
-    l = _np.float64(len(coords))
-    x, y, z = coords.T
-    sx = _np.sum(x)
-    sy = _np.sum(y)
-    sz = _np.sum(z)
-    c = _np.array([sx/l, sy/l, sz/l], ndmin=1)
+    if mode == 'geometric':
+        c = _sp.mean(coords, axis=0)
     return c
 
 
@@ -503,13 +530,14 @@ def subdivide(network, pores, shape, labels=[]):
     pores = _sp.array(pores, ndmin=1)
 
     # Checks to find boundary pores in the selected pores
-    try:
-        b = network.pores('boundary')
-        if (_sp.in1d(pores, b)).any():
+    if 'pore.boundary' in network.labels():
+        if (_sp.in1d(pores, network.pores('boundary'))).any():
             raise Exception('boundary pores cannot be subdivided!')
-    except KeyError:
-        pass
-
+    if not hasattr(network, '_subdivide_flag'):
+        network._subdivide_flag = True
+    else:
+        raise Exception('The network has subdivided pores, so the method ' +
+                        'does not support another subdivision.')
     # Assigning right shape and division
     if _sp.size(shape) != 2 and _sp.size(shape) != 3:
         raise Exception('Subdivide not implemented for Networks other than 2D \
@@ -609,6 +637,7 @@ def subdivide(network, pores, shape, labels=[]):
     for l in main_labels:
         del network['pore.surface_'+l]
     trim(network=network, pores=pores)
+    _mgr.purge_object(obj=new_net, mode='complete')
 
 
 def trim_occluded_throats(network, mask='all'):
@@ -687,45 +716,501 @@ def merge_pores(network, pores, labels=['merged']):
     trim(network=network, pores=pores)
 
 
-def template_sphere_shell(outer_radius=None, inner_radius=0):
+def _template_sphere_disc(dim, outer_radius, inner_radius):
     r"""
-    This method generates an image array of a sphere shell for a cubic network.
+    This private method generates an image array of a sphere/shell-disc/ring.
+    It is useful for passing to Cubic networks as a ``template`` to make
+    networks with desired shapes.
 
     Parameters
     ----------
-    outer_radius : array_like
-    Number of the nodes in the outer radius of the shell
+    dim : int
+        Network dimension
 
-    inner_radius : float
-    Number of the nodes in the inner radius of the shell
+    outer_radius : int
+        Number of the nodes in the outer radius of the network
+
+    inner_radius : int
+        Number of the nodes in the inner radius of the network
+
+    Returns
+    -------
+    A Numpy array containing 1's to demarcate the desired shape, and 0's
+    elsewhere.
+
+    """
+    rmax = _np.array(outer_radius, ndmin=1)
+    rmin = _np.array(inner_radius, ndmin=1)
+    ind = 2 * rmax - 1
+    coord = _np.indices((ind * _np.ones(dim, dtype=int)))
+    coord = coord - (ind - 1)/2
+    x = coord[0, :]
+    y = coord[1, :]
+    if dim == 2:
+        img = (x ** 2 + y ** 2) < rmax ** 2
+    elif dim == 3:
+        z = coord[2, :]
+        img = (x ** 2 + y ** 2 + z ** 2) < rmax ** 2
+    if rmin[0] != 0:
+        if dim == 2:
+            img_min = (x ** 2 + y ** 2) > rmin ** 2
+        elif dim == 3:
+            img_min = (x ** 2 + y ** 2 + z ** 2) > rmin ** 2
+        img = img * img_min
+    return (img)
+
+
+def template_sphere_shell(outer_radius, inner_radius=0):
+    r"""
+    This method generates an image array of a sphere-shell. It is useful for
+    passing to Cubic networks as a ``template`` to make spherical shaped
+    networks.
+
+    Parameters
+    ----------
+    outer_radius : int
+        Number of the nodes in the outer radius of the shell
+
+    inner_radius : int
+        Number of the nodes in the inner radius of the shell
+
+    Returns
+    -------
+    A Numpy array containing 1's to demarcate the sphere-shell, and 0's
+    elsewhere.
+
+    """
+    img = _template_sphere_disc(dim=3, outer_radius=outer_radius,
+                                inner_radius=inner_radius)
+    return(img)
+
+
+def template_disc_ring(outer_radius, inner_radius=0):
+    r"""
+    This method generates an image array of a disc-ring.  It is useful for
+    passing to Cubic networks as a ``template`` to make circular-shaped 2D
+    networks.
+
+    Parameters
+    ----------
+    outer_radius : int
+        Number of the nodes in the outer radius of the disc
+
+    inner_radius : int
+        Number of the nodes in the inner radius of the disc
+
+    Returns
+    -------
+    A Numpy array containing 1's to demarcate the disc-ring, and 0's
+    elsewhere.
 
     """
 
-    if outer_radius is None:
-        raise Exception('No outer radius has been sent!')
-    if inner_radius is None:
-        raise Exception('Number of nodes in the inner radius cannot be '
-                        'None!')
-    rmax = _np.array(outer_radius, ndmin=1)
-    rmin = _np.array(inner_radius, ndmin=1)
-    s_rmax = _np.size(rmax)
-    s_rmin = _np.size(rmin)
-    if not ((s_rmax in [1, 3]) and (s_rmin in [1, 3])):
-        raise Exception('In this method, each radius can be scalar or '
-                        'array with components along all xyz directions.')
-    s_u_rmax = _np.size(_np.unique(rmax))
-    s_u_rmin = _np.size(_np.unique(rmin))
-    if not ((s_u_rmax == 1) and (s_u_rmin == 1)):
-        raise Exception('In this method, all components of radius should '
-                        'be unique values along all xyz directions.')
-    pnum = 2 * _np.ones(3) * rmax - 1
-    Rx, Ry, Rz = _np.array(pnum, dtype=_np.int32)
-    x, y, z = _np.indices((Rx, Ry, Rz))
-    x = x - (Rx - 1)/2
-    y = y - (Ry - 1)/2
-    z = z - (Rz - 1)/2
-    img = x ** 2 + y ** 2 + z ** 2 < _np.unique(rmax) ** 2
-    if not _np.all(rmin == 0):
-        img_min = x ** 2 + y ** 2 + z ** 2 > _np.unique(rmin) ** 2
-        img = img * img_min
-    return (img)
+    img = _template_sphere_disc(dim=2, outer_radius=outer_radius,
+                                inner_radius=inner_radius)
+    return(img)
+
+
+def find_surface_pores(network, markers=None, label='surface'):
+    r"""
+    Find the pores on the surface of the domain by performing a Delaunay
+    triangulation between the network pores and some external ``markers``. All
+    pores connected to these external marker points are considered surface
+    pores.
+
+    Parameters
+    ----------
+    network: OpenPNM Network Object
+        The network for which the surface pores are to be found
+
+    markers: array_like
+        3 x N array of the marker coordiantes to use in the triangulation.  The
+        labeling is performed in one step, so all points are added, and then
+        any pores connected to at least one marker is given the provided label.
+        By default, this function will automatically generate 6 points outside
+        each axis of the network domain.
+
+        Users may wish to specify a single external marker point and provide an
+        appropriate label in order to identify specific faces.  For instance,
+        the marker may be *above* the domain, and the label might be
+        'top_surface'.
+
+    label : string
+        The label to apply to the pores.  The default is 'surface'.
+
+    Notes
+    -----
+    This function does not check whether the given markers actually lie outside
+    the domain, allowing the labeling of *internal* sufaces.
+
+    If this method fails to mark some surface pores, consider sending more
+    markers on each face.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> net = op.Network.Cubic(shape=[5, 5, 5])
+    >>> op.Network.tools.find_surface_pores(network=net)
+    >>> net.num_pores('surface')
+    98
+
+    When cubic networks are created, the surfaces are already labeled:
+
+    >>> net.num_pores(['top','bottom', 'left', 'right', 'front','back'])
+    98
+
+    This function is mostly useful for unique networks such as spheres, random
+    topology, or networks that have been subdivied.
+
+    """
+    import scipy.spatial as sptl
+    if markers is None:
+        (xmax, ymax, zmax) = _sp.amax(network['pore.coords'], axis=0)
+        (xmin, ymin, zmin) = _sp.amin(network['pore.coords'], axis=0)
+        xave = (xmin+xmax)/2
+        yave = (ymin+ymax)/2
+        zave = (zmin+zmax)/2
+        markers = [[xmax + xave, yave, zave],
+                   [xmin - xave, yave, zave],
+                   [xave, ymax + yave, zave],
+                   [xave, ymin - yave, zave],
+                   [xave, yave, zmax + zave],
+                   [xave, yave, zmin - zave]]
+    markers = _sp.atleast_2d(markers)
+    tri = sptl.Delaunay(network['pore.coords'], incremental=True)
+    tri.add_points(markers)
+    (indices, indptr) = tri.vertex_neighbor_vertices
+    for k in range(network.Np, tri.npoints):
+        neighbors = indptr[indices[k]:indices[k+1]]
+        inds = _sp.where(neighbors < network.Np)
+        neighbors = neighbors[inds]
+        if 'pore.'+label not in network.keys():
+            network['pore.'+label] = False
+        network['pore.'+label][neighbors] = True
+
+
+def plot_connections(network, throats=None, fig=None, **kwargs):
+    r"""
+    Produces a 3D plot of the network topology showing how throats connect
+    for quick visualization without having to export data to veiw in Paraview.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network whose topological connections to plot
+
+    throats : array_like (optional)
+        The list of throats to plot if only a sub-sample is desired.  This is
+        useful for inspecting a small region of the network.  If no throats are
+        specified then all throats are shown.
+
+    fig and **kwargs: Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid.  By also
+        passing in different line properties such as ``color`` and limiting
+        which ``throats`` are plots, this makes it possible to plot different
+        types of throats on the same plot.
+
+        For information on available line style options, visit the Matplotlib
+        documentation at:
+
+        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+
+    Notes
+    -----
+    The figure handle returned by this method can be passed into
+    ``plot_coordinates`` to create a plot that combines pore coordinates and
+    throat connections, and vice versa.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> pn = op.Network.Cubic(shape=[10, 10, 3])
+    >>> pn.add_boundaries()
+    >>> Ts = pn.throats('*boundary', mode='not')
+    >>> # Create figure showing boundary throats
+    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts)
+    >>> Ts = pn.throats('*boundary')
+    >>> # Pass existing fig back into function to plot additional throats
+    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts,
+    ...                                         fig=fig, color='r')
+
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    if throats is None:
+        Ts = network.Ts
+    else:
+        Ts = network._parse_locations(locations=throats)
+
+    if fig is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        ax = fig.get_axes()[0]
+
+    # Create dummy indexing to sp.inf
+    i = -1*_sp.ones((_sp.size(Ts)*3, ), dtype=int)
+    i[0::3] = network['throat.conns'][Ts, 0]
+    i[1::3] = network['throat.conns'][Ts, 1]
+
+    # Collect coordinates and scale axes to fit
+    Ps = _sp.unique(network['throat.conns'][Ts])
+    X = network['pore.coords'][Ps, 0]
+    Y = network['pore.coords'][Ps, 1]
+    Z = network['pore.coords'][Ps, 2]
+    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+
+    # Add sp.inf to the last element of pore.coords (i.e. -1)
+    inf = _sp.array((_sp.inf,))
+    X = _sp.hstack([network['pore.coords'][:, 0], inf])
+    Y = _sp.hstack([network['pore.coords'][:, 1], inf])
+    Z = _sp.hstack([network['pore.coords'][:, 2], inf])
+    ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
+
+    return fig
+
+
+def plot_coordinates(network, pores=None, fig=None, **kwargs):
+    r"""
+    Produces a 3D plot showing specified pore coordinates as markers
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network whose topological connections to plot
+
+    pores : array_like (optional)
+        The list of pores to plot if only a sub-sample is desired.  This is
+        useful for inspecting a small region of the network.  If no pores are
+        specified then all are shown.
+
+    fig and **kwargs: Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid.  By also
+        passing in different marker properties such as size (``s``) and
+        limiting which ``pores`` are plotted, this makes it possible to plot
+        different types of pores on the same plot.
+
+        For information on available marker style options, visit the Matplotlib
+        documentation at:
+
+        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+
+    Notes
+    -----
+    The figure handle returned by this method can be passed into
+    ``plot_topology`` to create a plot that combines pore coordinates and
+    throat connections, and vice versa.
+
+    Examples
+    --------
+    >>> import OpenPNM as op
+    >>> pn = op.Network.Cubic(shape=[10, 10, 3])
+    >>> pn.add_boundaries()
+    >>> Ps = pn.pores('internal')
+    >>> # Create figure showing internal pores
+    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, c='b')
+    >>> Ps = pn.pores('*boundary')
+    >>> # Pass existing fig back into function to plot boundary pores
+    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, fig=fig,
+    ...                                         c='r')
+
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    if pores is None:
+        Ps = network.Ps
+    else:
+        Ps = network._parse_locations(locations=pores)
+
+    if fig is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        ax = fig.get_axes()[0]
+
+    # Collect specified coordinates
+    X = network['pore.coords'][Ps, 0]
+    Y = network['pore.coords'][Ps, 1]
+    Z = network['pore.coords'][Ps, 2]
+    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+
+    ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)
+    return fig
+
+
+def _scale_3d_axes(ax, X, Y, Z):
+    if hasattr(ax, '_scaled'):
+        logger.warning('Axes is already scaled to previously plotted data')
+    else:
+        ax._scaled = True
+        max_range = _sp.array([X.max()-X.min(), Y.max()-Y.min(),
+                               Z.max()-Z.min()]).max() / 2.0
+        mid_x = (X.max()+X.min()) * 0.5
+        mid_y = (Y.max()+Y.min()) * 0.5
+        mid_z = (Z.max()+Z.min()) * 0.5
+        ax.set_xlim(mid_x - max_range, mid_x + max_range)
+        ax.set_ylim(mid_y - max_range, mid_y + max_range)
+        ax.set_zlim(mid_z - max_range, mid_z + max_range)
+
+
+def generate_base_points(num_points, domain_size, prob=None):
+    r"""
+    Generates a set of base points for passing into the DelaunayVoronoiDual
+    class.  The points can be distributed in spherical, cylindrical, or
+    rectilinear patterns.
+
+    Parameters
+    ----------
+    num_points : scalar
+        The number of base points that lie within the domain.  Note that the
+        actual number of points returned will be larger, with the extra points
+        lying outside the domain.
+
+    domain_size : list or array
+        Controls the size and shape of the domain, as follows:
+
+        **sphere** : If a single value is received, its treated as the radius
+        [r] of a sphere centered on [0, 0, 0].
+
+        **cylinder** : If a two-element list is received it's treated as the
+        radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
+        extending in the positive z-direction.
+
+        **rectangle** : If a three element list is received, it's treated
+        as the outer corner of rectangle [x, y, z] whose opposite corner lies
+        at [0, 0, 0].
+
+    prob : 3D array, optional
+        A 3D array that contains fractional (0-1) values indicating the
+        liklihood that a point in that region should be kept.  If not specified
+        an array containing 1's in the shape of a sphere, cylinder, or cube is
+        generated, depnending on the give ``domain_size`` with zeros outside.
+        When specifying a custom probabiliy map is it recommended to also set
+        values outside the given domain to zero.  If not, then the correct
+        shape will still be returned, but with too few points in it.
+
+    Notes
+    -----
+    This method places the given number of points within the specified domain,
+    then reflects these points across each domain boundary.  This results in
+    smooth flat faces at the boundaries once these excess pores are trimmed.
+
+    The reflection approach tends to create larger pores near the surfaces, so
+    it might be necessary to use the ``prob`` argument to specify a slightly
+    higher density of points near the surfaces.
+
+    For rough faces, it is necessary to define a larger than desired domain
+    then trim to the desired size.  This will discard the reflected points
+    plus some of the original points.
+
+    Examples
+    --------
+    The following generates a spherical array with higher values near the core.
+    It uses a distance transform to create a sphere of radius 10, then a
+    second distance transform to create larger values in the center away from
+    the sphere surface.  These distance values could be further skewed by
+    applying a power, with values higher than 1 resulting in higher values in
+    the core, and fractional values smoothinging them out a bit.
+
+    >>> import OpenPNM as op
+    >>> import scipy as sp
+    >>> import scipy.ndimage as spim
+    >>> im = sp.ones([21, 21, 21], dtype=int)
+    >>> im[10, 10, 10] = 0
+    >>> im = spim.distance_transform_edt(im) <= 20  # Create sphere of 1's
+    >>> prob = spim.distance_transform_edt(im)
+    >>> prob = prob / sp.amax(prob)  # Normalize between 0 and 1
+    >>> pts = op.Network.tools.generate_base_points(num_points=50,
+    ...                                             domain_size=[2],
+    ...                                             prob=prob)
+    >>> net = op.Network.DelaunayVoronoiDual(points=pts, domain_size=[2])
+    """
+    def _try_points(num_points, prob):
+        prob = _sp.array(prob)/_sp.amax(prob)  # Ensure prob is normalized
+        base_pts = []
+        N = 0
+        while N < num_points:
+            pt = _sp.random.rand(3)  # Generate a point
+            # Test whether to keep it or not
+            [indx, indy, indz] = _sp.floor(pt*_sp.shape(prob)).astype(int)
+            if _sp.random.rand(1) <= prob[indx][indy][indz]:
+                base_pts.append(pt)
+                N += 1
+        base_pts = _sp.array(base_pts)
+        return base_pts
+    if len(domain_size) == 1:  # Spherical
+        domain_size = _sp.array(domain_size)
+        if prob is None:
+            prob = _sp.ones([41, 41, 41])
+            prob[20, 20, 20] = 0
+            prob = _spim.distance_transform_bf(prob) <= 20
+        base_pts = _try_points(num_points, prob)
+        # Convert to spherical coordinates
+        [X, Y, Z] = _sp.array(base_pts - [0.5, 0.5, 0.5]).T  # Center at origin
+        r = 2*_sp.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
+        theta = 2*_sp.arctan(Y/X)
+        phi = 2*_sp.arctan(_sp.sqrt(X**2 + Y**2)/Z)
+        # Trim points outside the domain (from improper prob images)
+        inds = r <= domain_size[0]
+        [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
+        # Reflect base points across perimeter
+        new_r = 2*domain_size - r
+        r = _sp.hstack([r, new_r])
+        theta = _sp.hstack([theta, theta])
+        phi = _sp.hstack([phi, phi])
+        # Convert to Cartesean coordinates
+        X = r*_sp.cos(theta)*_sp.sin(phi)
+        Y = r*_sp.sin(theta)*_sp.sin(phi)
+        Z = r*_sp.cos(phi)
+        base_pts = _sp.vstack([X, Y, Z]).T
+    elif len(domain_size) == 2:  # Cylindrical
+        domain_size = _sp.array(domain_size)
+        if prob is None:
+            prob = _sp.ones([41, 41, 41])
+            prob[20, 20, :] = 0
+            prob = _spim.distance_transform_bf(prob) <= 20
+        base_pts = _try_points(num_points, prob)
+        # Convert to cylindrical coordinates
+        [X, Y, Z] = _sp.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
+        r = 2*_sp.sqrt(X**2 + Y**2)*domain_size[0]
+        theta = 2*_sp.arctan(Y/X)
+        z = Z*domain_size[1]
+        # Trim points outside the domain (from improper prob images)
+        inds = r <= domain_size[0]
+        [r, theta, z] = [r[inds], theta[inds], z[inds]]
+        inds = ~((z > domain_size[1]) + (z < 0))
+        [r, theta, z] = [r[inds], theta[inds], z[inds]]
+        # Reflect base points about faces and perimeter
+        new_r = 2*domain_size[0] - r
+        r = _sp.hstack([r, new_r])
+        theta = _sp.hstack([theta, theta])
+        z = _sp.hstack([z, z])
+        r = _sp.hstack([r, r, r])
+        theta = _sp.hstack([theta, theta, theta])
+        z = _sp.hstack([z, -z, 2-z])
+        # Convert to Cartesean coordinates
+        X = r*_sp.cos(theta)
+        Y = r*_sp.sin(theta)
+        Z = z
+        base_pts = _sp.vstack([X, Y, Z]).T
+    elif len(domain_size) == 3:  # Rectilinear
+        domain_size = _sp.array(domain_size)
+        Nx, Ny, Nz = domain_size
+        if prob is None:
+            prob = _sp.ones([10, 10, 10], dtype=float)
+        base_pts = _try_points(num_points, prob)
+        base_pts = base_pts*domain_size
+        # Reflect base points about all 6 faces
+        orig_pts = base_pts
+        base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
+                                         [2.0*Nx, 0, 0]))
+        base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts +
+                                         [0, 2.0*Ny, 0]))
+        base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts +
+                                         [0, 0, 2.0*Nz]))
+        base_pts = _sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
+        base_pts = _sp.vstack((base_pts, [1, -1, 1]*orig_pts))
+        base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+    return base_pts

@@ -1,0 +1,8 @@
+atlas
+numpy
+scipy
+matplotlib
+pandas
+scikit-image
+dill
+pyyaml

@@ -21,25 +21,25 @@ class WorkspaceTest:
         assert self.workspace.loglevel == 'Log level is currently set to: 50'
 
     def test_save_and_load(self):
-        self.workspace.save(join(TEMP_DIR, 'test_workspace'))
+        self.workspace.save_workspace(filename=join(TEMP_DIR, 'test_workspace'))
         self.workspace.clear()
         assert self.workspace == {}
-        self.workspace.load(join(TEMP_DIR, 'test_workspace'))
+        self.workspace.load_workspace(filename=join(TEMP_DIR, 'test_workspace'))
         assert self.net.name in self.workspace.keys()
 
     def test_load_overwrite_existing(self):
         temp = self.workspace.copy()
-        self.workspace.save(join(TEMP_DIR, 'test_workspace'))
-        self.workspace.load(join(TEMP_DIR, 'test_workspace'))
+        self.workspace.save_workspace(filename=join(TEMP_DIR, 'test_workspace'))
+        self.workspace.load_workspace(filename=join(TEMP_DIR, 'test_workspace'))
         flag = [i for i in temp.keys() if i not in self.workspace.keys()]
 
     def test_save_no_name(self):
-        self.workspace.save()
+        self.workspace.save_workspace()
 
     def test_load_v120_pnm(self):
         temp = self.workspace.copy()
         self.workspace.clear()
-        self.workspace.load(join(FIXTURE_DIR, 'test_v120.pnm'))
+        self.workspace.load_workspace(filename=join(FIXTURE_DIR, 'test_v120.pnm'))
         a = [
             'Boundary_hy4Ey',
             'FickianDiffusion_LjxxQ',
@@ -91,6 +91,17 @@ class WorkspaceTest:
         # Change name of b and it will finally pass
         b.name = 'baz'
         self.workspace.load_simulation('foo')
+
+    def test_save_and_load_simulation_with_custom_model(self):
+        def foo(a, b, **kwargs):
+            return a + b
+        net = OpenPNM.Network.Cubic(shape=[10, 10, 10])
+        net.add_model(propname='pore.blah', model=foo, a=net.Ps, b=10)
+        self.workspace.save_simulation(network=net, filename='blah')
+        self.workspace.clear()
+        self.workspace.load_simulation('blah')
+        net2 = self.workspace[net.name]
+        assert 'pore.blah' in net2.keys()
 
     def test_ghost_object(self):
         a = self.workspace.ghost_object(self.net)

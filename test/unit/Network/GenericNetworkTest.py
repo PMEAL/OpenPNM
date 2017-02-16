@@ -95,28 +95,80 @@ class GenericNetworkTest:
         assert sp.all(a == [0, 1, 2, 900, 902, 1800, 1802])
 
     def test_num_neighbors_empty(self):
-        a = self.net.num_neighbors(pores=[])
+        a = self.net.num_neighbors(pores=[], element='pores')
+        assert sp.size(a) == 0
+        a = self.net.num_neighbors(pores=[], element='throats')
         assert sp.size(a) == 0
 
-    def test_num_neighbors_boolean(self):
-        Pind = sp.zeros((self.net.Np,), dtype=bool)
-        Pind[0] = True
-        a = self.net.num_neighbors(pores=Pind)
+    def test_num_neighbors_pores_flattened(self):
+        a = self.net.num_neighbors(pores=0, element='pores', flatten=True)
         assert a == 3
-
-    def test_num_neighbors_numeric_flattened(self):
-        a = self.net.num_neighbors(pores=[0, 2], flatten=True)
+        assert isinstance(a, int)
+        a = self.net.num_neighbors(pores=[0, 2], element='pores', flatten=True)
         assert a == 6
         assert isinstance(a, int)
 
-    def test_num_neighbors_numeric_notflattened(self):
+    def test_num_neighbors_pores_with_modes(self):
+        a = self.net.num_neighbors(pores=[0, 2], element='pores', mode='union',
+                                   flatten=True)
+        assert a == 6
+        a = self.net.num_neighbors(pores=[0, 2], element='pores',
+                                   mode='intersection', flatten=True)
+        assert a == 1
+        a = self.net.num_neighbors(pores=[0, 2], element='pores',
+                                   mode='not_intersection', flatten=True)
+        assert a == 5
+
+    def test_num_neighbors_pores_notflattened(self):
         a = self.net.num_neighbors(pores=[0, 2], flatten=False)
         assert sp.all(a == [3, 4])
-
-    def test_num_neighbors_single_pore_notflattened(self):
         a = self.net.num_neighbors(pores=0, flatten=False)
         assert sp.all(a == [3])
         assert isinstance(a, sp.ndarray)
+
+    def test_num_neighbors_throats_flattened(self):
+        a = self.net.num_neighbors(pores=0, element='throats', flatten=True)
+        assert a == 3
+        a = self.net.num_neighbors(pores=[0, 1], element='throats',
+                                   flatten=True)
+        assert a == 6
+        self.net.extend(throat_conns=[[0, 1], [0, 2]])
+        a = self.net.num_neighbors(pores=0, element='throats', flatten=True)
+        assert a == 5
+        a = self.net.num_neighbors(pores=[0, 1], element='throats',
+                                   flatten=True)
+        assert a == 8
+        self.net.trim(throats=self.net.Ts[-2:])
+
+    def test_num_neighbors_throats_with_modes(self):
+        a = self.net.num_neighbors(pores=[0, 1], element='throats',
+                                   mode='union', flatten=True)
+        assert a == 6
+        self.net.extend(throat_conns=[[0, 1], [0, 2]])
+        a = self.net.num_neighbors(pores=[0, 1], element='throats',
+                                   mode='union', flatten=True)
+        assert a == 8
+        a = self.net.num_neighbors(pores=[0, 1], element='throats',
+                                   mode='intersection', flatten=True)
+        assert a == 2
+        a = self.net.num_neighbors(pores=[0, 1], element='throats',
+                                   mode='not_intersection', flatten=True)
+        assert a == 6
+        self.net.trim(throats=self.net.Ts[-2:])
+
+    def test_num_neighbors_throats_not_flattened(self):
+        a = self.net.num_neighbors(pores=0, element='throats', flatten=False)
+        assert sp.all(a == [3])
+        a = self.net.num_neighbors(pores=[0, 1, 2, 3], element='throats',
+                                   flatten=False)
+        assert sp.all(a == [3, 4, 4, 4])
+        self.net.extend(throat_conns=[[0, 1], [0, 2]])
+        a = self.net.num_neighbors(pores=0, element='throats', flatten=False)
+        assert sp.all(a == [5])
+        a = self.net.num_neighbors(pores=[0, 1, 2, 3], element='throats',
+                                   flatten=False)
+        assert sp.all(a == [5, 5, 5, 4])
+        self.net.trim(throats=self.net.Ts[-2:])
 
     def test_find_interface_throats(self):
         self.net['pore.domain1'] = False
@@ -228,3 +280,58 @@ class GenericNetworkTest:
                                        excl_self=False)
         assert sp.size(a) == 17
         assert sp.all(sp.in1d([0, 1], a))
+
+    def test_add_boundary_pores_cubic(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
+        net.add_boundary_pores(pores=net.pores('top'), offset=[0, 0, 1])
+        assert net.Np == 36
+        assert net.Nt == 63
+
+    def test_add_boundary_pores_cubic_2D(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 1], spacing=1)
+        Ps = net.Ps
+        net.add_boundary_pores(pores=Ps, offset=[0, 0, 1])
+        assert net.Np == 18
+        assert net.Nt == 21
+        net.add_boundary_pores(pores=Ps, offset=[0, 0, -1])
+        assert net.Np == 27
+        assert net.Nt == 30
+
+    def test_add_boundary_pores_cubic_custom_label(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3], spacing=1)
+        Ps = net.pores('top')
+        net.add_boundary_pores(pores=Ps,
+                               offset=[0, 0, 1],
+                               apply_label='pore.test')
+        assert 'pore.test' in net.labels()
+        Ps = net.pores('bottom')
+        net.add_boundary_pores(pores=Ps,
+                               offset=[0, 0, -1],
+                               apply_label='test2')
+        assert 'pore.test2' in net.labels()
+
+    def test_add_boundary_pores_cubicdual(self):
+        net = OpenPNM.Network.CubicDual(shape=[5, 5, 5],
+                                        label_1='primary',
+                                        label_2='secondary')
+        Ps = net.pores(labels=['surface', 'bottom'], mode='intersection')
+        net.add_boundary_pores(pores=Ps, offset=[0, 0, -0.5])
+        Ps2 = net.pores(labels=['boundary'], mode='intersection')
+        assert Ps.size == Ps2.size
+        assert ~sp.any(sp.in1d(Ps, Ps2))
+
+    def test_add_boundary_pores_delaunay(self):
+        net = OpenPNM.Network.Delaunay(num_pores=30, domain_size=[1, 1, 1])
+        throats = net.Nt
+        pores = sp.random.randint(30, size=5)
+        net.add_boundary_pores(pores=pores, offset=[0, 0, 1])
+        assert net.Np == 35
+        assert net.Nt == throats + 5
+
+    def test_add_boundary_pores_delaunaycubic(self):
+        net = OpenPNM.Network.DelaunayCubic(shape=[3, 3, 3], spacing=1)
+        throats = net.Nt
+        pores = sp.random.randint(27, size=5)
+        net.add_boundary_pores(pores=pores, offset=[0, 0, 1])
+        assert net.Np == 32
+        assert net.Nt == throats + 5

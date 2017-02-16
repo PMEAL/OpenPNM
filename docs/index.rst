@@ -45,6 +45,8 @@ Documentation
     :maxdepth: 3
 
     userguide/index.rst
+    examples.rst
+    docOpenPNM.rst
 
 ===============================================================================
 Example Usage
@@ -105,10 +107,3 @@ Related Links
       - http://www.paraview.org
     * - OpenPNM is offered under an MIT License
       - http://opensource.org/licenses/MIT
-
-
-.. |network| image:: http://i.imgur.com/jgAGgOW.png
-   :width: 40 px
-
-.. |neighbors| image:: http://i.imgur.com/gjBYQPP.png
-   :width: 40 px

@@ -288,10 +288,11 @@ class Core(dict):
             **'constants'** : Returns only properties that are set as constant
             values
 
-            **'deep'** : Returns all properties on the object and all sub-
-            objects.  For instance, all Geometry properties will be returned
+        deep : Boolean (default if False)
+            If True, all properties on the object and all sub-objects are
+            returned. For instance, all Geometry properties will be returned
             along with all Network properties, and all Physics properties will
-            be returned with all Phase properties.  This mode has not effect
+            be returned with all Phase properties.  This arg has no effect
             when this query is called from a Geometry or Phase object.
 
         Returns
@@ -516,9 +517,11 @@ class Core(dict):
         if sp.size(pores) > 0:
             element = 'pore'
             locations = self._parse_locations(pores)
-        if sp.size(throats) > 0:
+        elif sp.size(throats) > 0:
             element = 'throat'
             locations = self._parse_locations(throats)
+        else:
+            return(sp.array([], dtype=int))
         # Do it
         labels = self._parse_labels(labels=labels, element=element)
         labels = [element+'.'+item.split('.')[-1] for item in labels]
@@ -610,11 +613,7 @@ class Core(dict):
         >>> pn.pores(labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
-        if labels == 'all':  # Shortcut if ALL pores are requested
-            Np = sp.shape(self['pore.all'])[0]
-            ind = sp.arange(0, Np)
-        else:  # Apply full logic otherwise
-            ind = self._get_indices(element='pore', labels=labels, mode=mode)
+        ind = self._get_indices(element='pore', labels=labels, mode=mode)
         return ind
 
     @property
@@ -622,7 +621,7 @@ class Core(dict):
         r"""
         A shortcut to get a list of all pores on the object
         """
-        return self.pores()
+        return sp.arange(0, self.Np)
 
     def throats(self, labels='all', mode='union'):
         r"""
@@ -665,11 +664,7 @@ class Core(dict):
         array([0, 1, 2, 3, 4])
 
         """
-        if labels == 'all':
-            Nt = sp.shape(self['throat.all'])[0]
-            ind = sp.arange(0, Nt)
-        else:
-            ind = self._get_indices(element='throat', labels=labels, mode=mode)
+        ind = self._get_indices(element='throat', labels=labels, mode=mode)
         return ind
 
     @property
@@ -677,7 +672,7 @@ class Core(dict):
         r"""
         A shortcut to get a list of all throats on the object
         """
-        return self.throats()
+        return sp.arange(0, self.Nt)
 
     def _tomask(self, locations, element):
         r"""
@@ -838,8 +833,11 @@ class Core(dict):
         Notes
         -----
         This makes an effort to maintain the data 'type' when possible; however
-        when data is missing this can be tricky.  Float and boolean data is
-        fine, but missing ints are converted to float when nans are inserted.
+        when data is missing this can be tricky.  Data can be missing in two
+        different ways: A set of pores is not assisgned to a geometry or the
+        network contains multiple geometries and data does not exist on all.
+        Float and boolean data is fine, but missing ints are converted to float
+        when nans are inserted.
 
         Examples
         --------
@@ -856,103 +854,87 @@ class Core(dict):
         >>> Ts = pn.find_neighbor_throats(pores=Ps,
         ...                               mode='not_intersection')
         >>> boun = OpenPNM.Geometry.Boundary(network=pn, pores=Ps, throats=Ts)
+        >>> geom['pore.test_float'] = sp.random.random(geom.Np)
+        >>> print(sp.sum(~sp.isnan(pn['pore.test_float'])) == geom.Np)
+        True
+        >>> boun['pore.test_float'] = sp.random.random(boun.Np)
+        >>> print(sp.sum(~sp.isnan(pn['pore.test_float'])) == pn.Np)
+        True
         >>> geom['pore.test_int'] = sp.random.randint(0, 100, geom.Np)
-        >>> print(pn['pore.test_int'].dtype)
-        float64
+        >>> print(pn['pore.test_int'].dtype.name.startswith('float'))
+        True
         >>> boun['pore.test_int'] = sp.ones(boun.Np).astype(int)
-        >>> boun['pore.test_int'] = sp.rand(boun.Np) < 0.5
-        >>> print(pn['pore.test_int'].dtype)
-        bool
-        >>> geom['pore.test_bool'] = sp.rand(geom.Np) < 0.5
-        >>> print(pn['pore.test_bool'].dtype)
-        bool
-        >>> boun['pore.test_bool'] = sp.ones(boun.Np).astype(int)
-        >>> print(pn['pore.test_bool'].dtype)
-        bool
-        >>> boun['pore.test_bool'] = sp.rand(boun.Np) < 0.5
-        >>> print(pn['pore.test_bool'].dtype)
-        bool
+        >>> print(pn['pore.test_int'].dtype.name.startswith('int'))
+        True
+        >>> geom['pore.test_bool'] = True
+        >>> print(sp.sum(pn['pore.test_bool']) == geom.Np)
+        True
+        >>> boun['pore.test_bool'] = True
+        >>> print(sp.sum(pn['pore.test_bool']) == pn.Np)
+        True
         """
-        element = prop.split('.')[0]
-        element = self._parse_element(element)
-        temp = sp.ndarray((self._count(element)))
-        nan_locs = sp.ndarray((self._count(element)), dtype='bool')
-        nan_locs.fill(False)
-        bool_locs = sp.ndarray((self._count(element)), dtype='bool')
-        bool_locs.fill(False)
-        dtypes = []
-        dtypenames = []
-        prop_found = False  # Flag to indicate if prop found on a sub-object
-        values_dim = 0
+        element = self._parse_element(prop.split('.')[0], single=True)
+        N = self._net._count(element)
+
+        # Make sure sources contains objects, not just names of objects
+        temp_sources = []
         for item in sources:
             # Check if sources were given as list of objects OR names
             try:
                 item.name
             except:
                 item = self._find_object(obj_name=item)
-            locations = self._get_indices(element=element,
-                                          labels=item.name,
-                                          mode='union')
-            if prop not in item.keys():
-                values = sp.ones_like(temp[locations])*sp.nan
-                dtypenames.append('nan')
-                dtypes.append(sp.dtype(bool))
-                nan_locs[locations] = True
-            else:
-                prop_found = True
-                values = item[prop]
-                dtypenames.append(values.dtype.name)
-                dtypes.append(values.dtype)
-                if values.dtype == 'bool':
-                    bool_locs[locations] = True
-                try:
-                    values_dim = sp.shape(values)[1]
-                except:
-                    pass
-            if values_dim > 0:
-                try:
-                    temp_dim = sp.shape(temp)[1]
-                    if temp_dim != values_dim:
-                        logger.warning(prop+' data has different dimensions,' +
-                                       'consider revising data in object ' +
-                                       str(item.name))
-                except:
-                    temp = sp.ndarray([self._count(element), values_dim])
-            if values.dtype == 'object' and temp.dtype != 'object':
-                temp = temp.astype('object')
-            temp[locations] = values  # Assign values
-        # Check if requested prop was found on any sub-objects
-        if prop_found is False:
+            temp_sources.append(item)
+        sources = temp_sources
+
+        # Attempt to fetch the requested prop array from each object
+        arrs = [item.get(prop) for item in sources]
+        locs = [item._net._get_indices(element, item.name) for item in sources]
+        sizes = [sp.size(a) for a in arrs]
+        if all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
-        # Analyze and assign data type
-        types_temp = ['int', 'nan', 'float', 'int32', 'int64', 'float32',
-                      'float64', 'bool']
-        if sp.all([t in ['bool', 'nan'] for t in dtypenames]):
-            # If all entries are 'bool' (or 'nan')
-            temp = sp.array(temp, dtype='bool')
-            if sp.sum(nan_locs) > 0:
-                temp[nan_locs] = False
-        elif sp.all([t == dtypenames[0] for t in dtypenames]):
-            # If all entries are same type
-            temp = sp.array(temp, dtype=dtypes[0])
-        elif sp.all([t in types_temp for t in dtypenames]):
-            # If all entries are 'bool' (or 'nan')
-            if 'bool' in dtypenames:
-                temp = sp.array(temp, dtype='bool')
-                temp[~bool_locs] = False
-                logger.info(prop+' has been converted to bool,' +
-                            ' some data may be lost')
-            else:
-                temp = sp.array(temp, dtype='float')
-                logger.info(prop+' has been converted to float.')
-        elif sp.all([t in ['object', 'nan'] for t in dtypenames]):
-            # If all entries are 'bool' (or 'nan')
-            pass
+        if sp.any([i is None for i in arrs]):  # prop not found everywhere
+            logger.warning('\''+prop+'\' not found on at least one object')
+
+        # Check the general type of each array
+        atype = []
+        for a in arrs:
+            if a is not None:
+                t = a.dtype.name
+                if t.startswith('int') or t.startswith('float'):
+                    atype.append('numeric')
+                elif t.startswith('bool'):
+                    atype.append('boolean')
+                else:
+                    atype.append('other')
+        if not all([item == atype[0] for item in atype]):
+            raise Exception('The array types are not compatible')
         else:
-            temp = sp.array(temp, dtype=max(dtypes))
-            logger.info('Data type of '+prop+' differs between sub-objects' +
-                        '...converting to larger data type')
-        return temp
+            dummy_val = {'numeric': sp.nan, 'boolean': False, 'other': None}
+
+        # Create an empty array of the right type and shape
+        for item in arrs:
+            if item is not None:
+                if len(item.shape) == 1:
+                    temp_arr = sp.zeros((N, ), dtype=item.dtype)
+                else:
+                    temp_arr = sp.zeros((N, item.shape[1]), dtype=item.dtype)
+                temp_arr.fill(dummy_val[atype[0]])
+
+        # Convrert int arrays to float IF NaNs are expected
+        if (temp_arr.dtype.name.startswith('int') and
+            (sp.any([i is None for i in arrs]) or
+             sp.sum(sizes) != N)):
+            temp_arr = temp_arr.astype(float)
+            temp_arr.fill(sp.nan)
+
+        # Fill new array with values in the corresponding locations
+        for vals, inds in zip(arrs, locs):
+            if vals is not None:
+                temp_arr[inds] = vals
+            else:
+                temp_arr[inds] = dummy_val[atype[0]]
+        return temp_arr
 
     def num_pores(self, labels='all', mode='union'):
         r"""
@@ -1008,12 +990,9 @@ class Core(dict):
         40
 
         """
-        if labels == 'all':
-            Np = sp.shape(self.get('pore.all'))[0]
-        else:
-            # Count number of pores of specified type
-            Ps = self._get_indices(labels=labels, mode=mode, element='pore')
-            Np = sp.shape(Ps)[0]
+        # Count number of pores of specified type
+        Ps = self._get_indices(labels=labels, mode=mode, element='pore')
+        Np = sp.shape(Ps)[0]
         return Np
 
     @property
@@ -1021,7 +1000,7 @@ class Core(dict):
         r"""
         A shortcut to query the total number of pores on the object'
         """
-        return self.num_pores()
+        return sp.shape(self.get('pore.all'))[0]
 
     def num_throats(self, labels='all', mode='union'):
         r"""
@@ -1074,12 +1053,9 @@ class Core(dict):
         72
 
         """
-        if labels == 'all':
-            Nt = sp.shape(self.get('throat.all'))[0]
-        else:
-            # Count number of pores of specified type
-            Ts = self._get_indices(labels=labels, mode=mode, element='throat')
-            Nt = sp.shape(Ts)[0]
+        # Count number of pores of specified type
+        Ts = self._get_indices(labels=labels, mode=mode, element='throat')
+        Nt = sp.shape(Ts)[0]
         return Nt
 
     @property
@@ -1087,7 +1063,7 @@ class Core(dict):
         r"""
         A shortcut to query the total number of throats on the object'
         """
-        return self.num_throats()
+        return sp.shape(self.get('throat.all'))[0]
 
     def _count(self, element=None):
         r"""
@@ -1374,7 +1350,11 @@ class Core(dict):
         # Convert element to a list for subsequent processing
         if type(element) is str:
             element = [element]
+        # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
+        element = [item.split('.')[0] for item in element]
+        # Make sure all are lowercase
         element = [item.lower() for item in element]
+        # Deal with an plurals
         element = [item.rsplit('s', maxsplit=1)[0] for item in element]
         for item in element:
             if item not in ['pore', 'throat']:
@@ -1583,12 +1563,13 @@ class Core(dict):
             if len(prop) > 35:  # Trim overly long prop names
                 prop = prop[0:32] + '...'
             if self[item].dtype == object:  # Print objects differently
-                defined = sp.size(self[item])
+                invalid = [i for i in self[item] if i is None]
+                defined = sp.size(self[item]) - len(invalid)
                 lines.append("{0:<5d} {1:<35s} {2:>5d} / {3:<5d}".format(i + 1,
                                                                          prop,
                                                                          defined,
                                                                          required))
-            else:
+            elif '._' not in prop:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
@@ -1607,8 +1588,9 @@ class Core(dict):
             prop = item
             if len(prop) > 35:
                 prop = prop[0:32] + '...'
-            lines.append("{0:<5d} {1:<35s} {2:<10d}".format(i + 1,
-                                                            prop,
-                                                            sp.sum(self[item])))
+            if '._' not in prop:
+                lines.append("{0:<5d} {1:<35s} {2:<10d}".format(i + 1,
+                                                                prop,
+                                                                sp.sum(self[item])))
         lines.append(horizonal_rule)
         return '\n'.join(lines)

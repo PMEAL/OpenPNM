@@ -38,13 +38,13 @@ import sys as _sys
 import scipy as _sp
 
 # Check Python version
-if _sys.version_info < (3, 3):
-    raise Exception('OpenPNM requires Python 3.3 or greater to run')
+if _sys.version_info < (3, 4):
+    raise Exception('OpenPNM requires Python 3.4 or greater to run')
 
 if _sp.__version__ < '0.14.0':
     raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
 
-__version__ = '1.4.6'
+__version__ = '1.5'
 
 from . import Base
 from . import Network
@@ -58,8 +58,8 @@ from .Base import Workspace as mgr
 
 _workspace = mgr()
 del mgr
-save = _workspace.save
-load = _workspace.load
+save_workspace = _workspace.save_workspace
+load_workspace = _workspace.load_workspace
 export_data = _workspace.export_data
 import_data = _workspace.import_data
 clear = _workspace.clear

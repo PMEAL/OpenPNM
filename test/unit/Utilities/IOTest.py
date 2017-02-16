@@ -2,6 +2,7 @@ import OpenPNM as op
 import scipy as sp
 import os
 import OpenPNM.Utilities.IO as io
+import pytest
 
 
 class IOTest:
@@ -15,6 +16,28 @@ class IOTest:
                                            phase=self.phase,
                                            pores=self.net.Ps,
                                            throats=self.net.Ts)
+
+    def test_generic_load(self):
+        with pytest.raises(NotImplementedError):
+            op.Utilities.IO.GenericIO.load()
+
+    def test_generic_save(self):
+        with pytest.raises(NotImplementedError):
+            op.Utilities.IO.GenericIO.save()
+
+    def test_generic_split_geometry(self):
+        fname = os.path.join(FIXTURE_DIR, 'test_load_csv_no_phases')
+        net = io.CSV.load(fname+'.csv')
+        Nprops = len(net.props())
+        geom = io.CSV.split_geometry(network=net)
+        assert len(net.props()) == 2
+        assert len(geom.props()) == (Nprops - 2)
+
+    def test_generic_return_geometry(self):
+        fname = os.path.join(FIXTURE_DIR, 'test_load_csv_no_phases')
+        net = io.CSV.load(fname+'.csv', return_geometry=True)
+        assert len(net) == 2
+        assert type(net) == tuple
 
     def test_load_statoil(self):
         path = os.path.join(FIXTURE_DIR, 'ICL-SandPack(F42A)')
@@ -128,4 +151,28 @@ class IOTest:
         assert sp.shape(net['pore.coords']) == (9, 3)
         assert sp.shape(net['throat.conns']) == (12, 2)
         a = {'pore.area', 'pore.diameter', 'throat.length', 'throat.perimeter'}
+        assert a.issubset(net.props())
+
+    def test_load_imorph(self):
+        path = os.path.join(FIXTURE_DIR, 'iMorph-Sandstone')
+        net = io.iMorph.load(path)
+        assert net.Np == 1518
+        assert net.Nt == 2424
+        assert sp.shape(net['pore.coords']) == (1518, 3)
+        assert sp.shape(net['throat.conns']) == (2424, 2)
+        a = {'pore.volume', 'pore.types', 'throat.volume', 'throat.types'}
+        assert a.issubset(net.props())
+        a = {'pore.internal', 'pore.top_boundary', 'pore.bottom_boundary',
+             'pore.front_boundary', 'pore.back_boundary', 'pore.left_boundary',
+             'pore.right_boundary'}
+        assert a.issubset(net.labels())
+
+    def test_load_MARock(self):
+        path = os.path.join(FIXTURE_DIR, '3DMA-Castlegate')
+        net = io.MARock.load(path=path)
+        assert net.Np == 9915
+        assert net.Nt == 21805
+        a = {'pore.ID_number', 'pore.boundary_type', 'pore.coordination',
+             'pore.coords', 'pore.volume', 'throat.area', 'throat.conns',
+             'throat.coords'}
         assert a.issubset(net.props())

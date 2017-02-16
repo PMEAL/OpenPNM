@@ -353,7 +353,7 @@ class ModelsDict(OrderedDict):
             order.remove(item)
         # Add models back to list in new order
         inv_dict = {v: k for k, v in new_order.items()}
-        for item in inv_dict:
+        for item in sorted(inv_dict):
             order.insert(item, inv_dict[item])
         # Now rebuild models OrderedDict in new order
         for item in order:
