@@ -742,7 +742,7 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
     rmax = _np.array(outer_radius, ndmin=1)
     rmin = _np.array(inner_radius, ndmin=1)
     ind = 2 * rmax - 1
-    coord = _np.indices((ind * _np.ones(dim)))
+    coord = _np.indices((ind * _np.ones(dim, dtype=int)))
     coord = coord - (ind - 1)/2
     x = coord[0, :]
     y = coord[1, :]

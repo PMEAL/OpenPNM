@@ -2,6 +2,7 @@ import OpenPNM as op
 import scipy as sp
 import os
 import OpenPNM.Utilities.IO as io
+import pytest
 
 
 class IOTest:
@@ -15,6 +16,28 @@ class IOTest:
                                            phase=self.phase,
                                            pores=self.net.Ps,
                                            throats=self.net.Ts)
+
+    def test_generic_load(self):
+        with pytest.raises(NotImplementedError):
+            op.Utilities.IO.GenericIO.load()
+
+    def test_generic_save(self):
+        with pytest.raises(NotImplementedError):
+            op.Utilities.IO.GenericIO.save()
+
+    def test_generic_split_geometry(self):
+        fname = os.path.join(FIXTURE_DIR, 'test_load_csv_no_phases')
+        net = io.CSV.load(fname+'.csv')
+        Nprops = len(net.props())
+        geom = io.CSV.split_geometry(network=net)
+        assert len(net.props()) == 2
+        assert len(geom.props()) == (Nprops - 2)
+
+    def test_generic_return_geometry(self):
+        fname = os.path.join(FIXTURE_DIR, 'test_load_csv_no_phases')
+        net = io.CSV.load(fname+'.csv', return_geometry=True)
+        assert len(net) == 2
+        assert type(net) == tuple
 
     def test_load_statoil(self):
         path = os.path.join(FIXTURE_DIR, 'ICL-SandPack(F42A)')

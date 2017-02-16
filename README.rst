@@ -7,10 +7,6 @@
 .. image:: https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/PMEAL/OpenPNM
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-   :alt: Join the chat at https://gitter.im/PMEAL/OpenPNM
-   :target: https://gitter.im/PMEAL/OpenPNM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
 .. image:: https://readthedocs.org/projects/openpnm/badge/?version=latest
    :target: http://openpnm.readthedocs.org/
 
@@ -22,62 +18,22 @@ Overview of OpenPNM
 
 .. list-table::
 
-    * Defines a universal means of representing any network topology based on a sparse representation of the adjacency matrix
-
-      - Includes network generators for creating cubic or random networks with arbitrary connectivity
-
-.. list-table::
-
-    * Provides a set of tools for querying, inspecting, and manipulating topology
-
-      - Including finding neighboring pores, labeling specific locations, adding or removing pores and throats, joining networks, subdividing and merging pores to create multiscale models, and much more
-
-
-.. list-table::
-
-    * Stores pore and throat property data in vectorized format
-
-      - Allows for fast calculations even on large networks
-
-      - Supports the familiar and advanced array access features such as direct indexing, slicing, Boolean masking, etc.
-
-.. list-table::
-
-    * A sophisticated mechanism for calculating the pore-scale properties that define the geometrical (i.e. pore radius), thermophysical (i.e. viscosity), and physics (i.e. hydraulic conductance) properties of the simulation
-
-      - The interdependence of some properties on other properties is naturally included so values can be regenerated when changes occur (i.e. viscosity can be updated when temperature changed)
-
-      - This mechanism was designed to allow users to easily create new customized pore-scale models suitable for their specific domain
-
-      - A wide assortment of pore-scale transport parameter, pore size calculations, and thermophysical property models are included
-
-.. list-table::
-
-    * A suite of algorithms for performing network simulations
-
-      - Including invasion percolation, capillary drainage, mass diffusion, permeability and so on.
-
-    * Supports saving, loading, importing and exporting data in numerous formats
-
-      -  Allows importing networks generated or extracted by other code, as well as exporting data for post-processing and visualization
-
-      - Saving and loading of simulations allows for batch processing of simulations to be analyzed at a later point
-
-===============================================================================
-Installation
-===============================================================================
-
-OpenPNM can be install from the Python Package index using:
-
-.. code-block::
-
-   pip install openpnm
-
-Or the source code can be downloaded from `Github <https://github.com/pmeal/OpenPNM/>`_ and installed by running:
-
-.. code-block::
-
-   python setup.py
+    * - **Defines a universal means of representing any network topology based on a sparse representation of the adjacency matrix**
+        - Includes network generators for creating cubic or random networks with arbitrary connectivity
+    * - **Provides a set of tools for querying, inspecting, and manipulating topology**
+        - Including finding neighboring pores, labeling specific locations, adding or removing pores and throats, joining networks, subdividing and merging pores to create multiscale models, and much more
+    * - **Stores pore and throat property data in vectorized format**
+        - Allows for fast calculations even on large networks
+        - Supports the familiar and advanced array access features such as direct indexing, slicing, Boolean masking, etc.
+    * - **A mechanism for calculating the pore-scale properties that define the geometrical (i.e. pore radius), thermophysical (i.e. viscosity), and physics (i.e. hydraulic conductance) properties of the simulation**
+        - The interdependence of some properties on other properties is naturally included so values can be regenerated when changes occur (i.e. viscosity can be updated when temperature changed)
+        - This mechanism was designed to allow users to easily create new customized pore-scale models suitable for their specific domain
+        - A wide assortment of pore-scale transport parameter, pore size calculations, and thermophysical property models are included
+    * - **A suite of algorithms for performing network simulations**
+        - Including invasion percolation, capillary drainage, mass diffusion, permeability and so on.
+    * - **Supports saving, loading, importing and exporting data in numerous formats**
+        -  Allows importing networks generated or extracted by other code, as well as exporting data for post-processing and visualization
+        - Saving and loading of simulations allows for batch processing of simulations to be analyzed at a later point
 
 ===============================================================================
 Example Usage
@@ -102,13 +58,29 @@ The following code block illustrates how to use OpenPNM to perform a mercury int
 
 The network can be visualized in `Paraview <http://www.paraview.org>`_ giving the following:
 
-.. image:: http://i.imgur.com/GbUNy0bm.png
+.. image:: https://i.imgur.com/mSDrIBOm.png
 
 The drainage curve can be visualized with ``MIP.plot_drainage_curve()`` giving something like this:
 
-.. image:: http://i.imgur.com/ZxuCictm.png
+.. image:: https://i.imgur.com/1C2uXt9m.png
 
 A collection of examples is available as a separate Github repository: `OpenPNM-Examples <https://www.github.com/PMEAL/OpenPNM-Examples>`_.
+
+===============================================================================
+Installation
+===============================================================================
+
+OpenPNM can be installed from the Python Package index using:
+
+.. code-block::
+
+   pip install openpnm
+
+Or the source code can be downloaded from `Github <https://github.com/pmeal/OpenPNM/>`_ and installed by running:
+
+.. code-block::
+
+   python setup.py
 
 ===============================================================================
 Release Management and Versioning
@@ -150,5 +122,17 @@ Related Links
         - https://github.com/spyder-ide/spyder
     * - Paraview is suggested for visualizing OpenPNM data
         - http://www.paraview.org
-    * - OpenPNM is offered under an MIT License
-        - http://opensource.org/licenses/MIT
+
+===============================================================================
+Licence and Citation
+===============================================================================
+
+OpenPNM is completely free to use and is offered under the permissive `MIT License <http://opensource.org/licenses/MIT>`_.
+
+If you do use OpenPNM in an academic work the developers ask that you cite the following paper, which outlines the design principles and general uses of OpenPNM:
+
+::
+
+    Gostick et al. OpenPNM: A pore network modeling package. Computing in Science & Engineering. 18(4), p60-74.
+
+A link to this article can be found `here <http://doi.org/10.1109/MCSE.2016.49>`_.
