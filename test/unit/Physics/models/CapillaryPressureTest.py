@@ -10,6 +10,7 @@ class CapillaryPressureTest:
                                                     pores=self.net.Ps,
                                                     throats=self.net.Ts)
         self.geo['throat.diameter'] = 1
+        self.geo['pore.diameter'] = 1
         self.water = OpenPNM.Phases.GenericPhase(network=self.net)
         self.phys = OpenPNM.Physics.GenericPhysics(network=self.net,
                                                    geometry=self.geo,
@@ -19,16 +20,14 @@ class CapillaryPressureTest:
         self.water['pore.surface_tension'] = 0.072
         self.water['pore.contact_angle'] = 120
         f = OpenPNM.Physics.models.capillary_pressure.washburn
-        self.phys.models.add(propname='throat.capillary_pressure',
+        self.phys.models.add(propname='pore.capillary_pressure',
                              model=f,
                              surface_tension='pore.surface_tension',
                              contact_angle='pore.contact_angle',
-                             throat_diameter='throat.diameter')
+                             diameter='pore.diameter')
         a = 0.14399999999999993
-        assert sp.allclose(self.water['throat.capillary_pressure'][0], a)
-        self.phys.models.remove('throat.capillary_pressure')
-        del self.water['pore.surface_tension']
-        del self.water['pore.contact_angle']
+        assert sp.allclose(self.water['pore.capillary_pressure'][0], a)
+        self.phys.models.remove('pore.capillary_pressure')
 
     def test_washburn_throat_values(self):
         self.water['throat.surface_tension'] = 0.072
@@ -38,28 +37,24 @@ class CapillaryPressureTest:
                              model=f,
                              surface_tension='throat.surface_tension',
                              contact_angle='throat.contact_angle',
-                             throat_diameter='throat.diameter')
+                             diameter='throat.diameter')
         a = 0.14399999999999993
         assert sp.allclose(self.water['throat.capillary_pressure'][0], a)
         self.phys.models.remove('throat.capillary_pressure')
-        del self.water['throat.surface_tension']
-        del self.water['throat.contact_angle']
 
     def test_purcell_pore_values(self):
         self.water['pore.surface_tension'] = 0.072
         self.water['pore.contact_angle'] = 120
         f = OpenPNM.Physics.models.capillary_pressure.purcell
-        self.phys.models.add(propname='throat.capillary_pressure',
+        self.phys.models.add(propname='pore.capillary_pressure',
                              model=f,
                              r_toroid=0.1,
                              surface_tension='pore.surface_tension',
                              contact_angle='pore.contact_angle',
-                             throat_diameter='throat.diameter')
+                             diameter='pore.diameter')
         a = 0.26206427646507374
-        assert sp.allclose(self.water['throat.capillary_pressure'][0], a)
-        self.phys.models.remove('throat.capillary_pressure')
-        del self.water['pore.surface_tension']
-        del self.water['pore.contact_angle']
+        assert sp.allclose(self.water['pore.capillary_pressure'][0], a)
+        self.phys.models.remove('pore.capillary_pressure')
 
     def test_purcell_throat_values(self):
         self.water['throat.surface_tension'] = 0.072
@@ -70,12 +65,10 @@ class CapillaryPressureTest:
                              r_toroid=0.1,
                              surface_tension='throat.surface_tension',
                              contact_angle='throat.contact_angle',
-                             throat_diameter='throat.diameter')
+                             diameter='throat.diameter')
         a = 0.26206427646507374
         assert sp.allclose(self.water['throat.capillary_pressure'][0], a)
         self.phys.models.remove('throat.capillary_pressure')
-        del self.water['throat.surface_tension']
-        del self.water['throat.contact_angle']
 
     def test_static_pressure(self):
         self.water['pore.density'] = 1000
