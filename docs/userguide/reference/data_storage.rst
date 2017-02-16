@@ -97,8 +97,8 @@ A complication arises if you have a list of pore numbers you wish to label, such
 
     >>> pn['pore.dummy_2'] = False  # Automatically assigns False to every pore
     >>> pn['pore.dummy_2'][[3, 4, 5]] = True
-    >>> pn.pores('dummy_2')
-    array([3, 4, 5])
+    >>> list(pn.pores('dummy_2'))
+    [3, 4, 5]
 
 The *label* functionality uses Scipy's ``where`` method to return a list of locations where the array is ``True``:
 
