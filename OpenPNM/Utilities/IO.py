@@ -35,7 +35,7 @@ class GenericIO():
         return geom
 
     @classmethod
-    def _update_network(cls, network, net):
+    def _update_network(cls, network, net, return_geometry=False):
         # Infer Np and Nt from length of given prop arrays in file
         for element in ['pore', 'throat']:
             N = [_sp.shape(net[i])[0] for i in net.keys() if i.startswith(element)]
@@ -66,6 +66,9 @@ class GenericIO():
                 network.update({item: net[item]})
             else:
                 logger.warning('\''+item+'\' already present')
+        if return_geometry:
+            geometry = cls.fetch_geometry(network)
+            network = (network, geometry)
         return network
 
     @classmethod
@@ -221,7 +224,7 @@ class VTK(GenericIO):
             f.write(string)
 
     @classmethod
-    def load(cls, filename, network=None):
+    def load(cls, filename, network=None, return_geometry=False):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -271,7 +274,8 @@ class VTK(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = cls._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
         return network
 
     @staticmethod
@@ -322,7 +326,7 @@ class Statoil(GenericIO):
     """
 
     @classmethod
-    def load(cls, path, prefix, network=None):
+    def load(cls, path, prefix, network=None, return_geometry=False):
         r"""
         Load data from the \'dat\' files located in specified folder.
 
@@ -419,7 +423,8 @@ class Statoil(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = cls._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
 
         # Use OpenPNM Tools to clean up network
         # Trim throats connected to 'inlet' or 'outlet' reservoirs
@@ -493,7 +498,7 @@ class MAT(GenericIO):
         _sp.io.savemat(file_name=filename, mdict=pnMatlab)
 
     @classmethod
-    def load(cls, filename, network=None):
+    def load(cls, filename, network=None, return_geometry=False):
         r"""
         Loads data onto the given network from an appropriately formatted
         'mat' file (i.e. MatLAB output).
@@ -542,7 +547,8 @@ class MAT(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = cls._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
         return network
 
 
@@ -688,7 +694,7 @@ class CSV(GenericIO):
             b.to_csv(f, index=False)
 
     @classmethod
-    def load(cls, filename, network=None):
+    def load(cls, filename, network=None, return_geometry=False):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -736,7 +742,8 @@ class CSV(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = cls._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
         return network
 
 
@@ -772,7 +779,7 @@ class NetworkX(GenericIO):
     """
 
     @classmethod
-    def load(cls, filename, network=None):
+    def load(cls, filename, network=None, return_geometry=False):
         r"""
         Add data to an OpenPNM Network from a NetworkX generated YAML file.
 
@@ -856,7 +863,8 @@ class NetworkX(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = cls._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
         return network
 
 
@@ -871,8 +879,7 @@ class iMorph(GenericIO):
     def load(cls, path,
              node_file="throats_cellsThroatsGraph_Nodes.txt",
              graph_file="throats_cellsThroatsGraph.txt",
-             network=None,
-             voxel_size=None):
+             network=None, voxel_size=None, return_geometry=False):
         r"""
         Loads network data from an iMorph processed image stack
 
@@ -1034,6 +1041,9 @@ class iMorph(GenericIO):
         # checking network health to generate warnings for the user
         network.health_dict = network.check_network_health()
         logger.info('Network health stored as network.health_dict')
+        if return_geometry:
+            geometry = cls.fetch_geometry(network)
+            network = (network, geometry)
         return network
 
 
@@ -1051,7 +1061,7 @@ class MARock(GenericIO):
     """
 
     @classmethod
-    def load(cls, path, network=None, voxel_size=1):
+    def load(cls, path, network=None, voxel_size=1, return_geometry=False):
         r"""
         Load data from a 3DMA-Rock extracted network.  This format consists of
         two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
@@ -1140,7 +1150,8 @@ class MARock(GenericIO):
 
         if network is None:
             network = OpenPNM.Network.GenericNetwork()
-        network = cls._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=net,
+                                      return_geometry=return_geometry)
 
         # Trim headless throats before returning
         ind = _sp.where(network['throat.conns'][:, 0] == -1)[0]
