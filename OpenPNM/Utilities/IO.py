@@ -1057,7 +1057,7 @@ class MARock():
 
         with open(th2np_file, mode='rb') as f:
             Nt = _sp.fromfile(file=f, count=1, dtype='u4')
-            net['throat.area'] = _sp.ones([Nt, ], dtype=int)*(-1)
+            net['throat.area'] = _sp.ones([int(Nt), ], dtype=int)*(-1)
             for i in range(0, Nt):
                 ID = _sp.fromfile(file=f, count=1, dtype='u4')
                 net['throat.area'][i] = _sp.fromfile(file=f, count=1,
