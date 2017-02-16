@@ -1056,8 +1056,8 @@ class MARock():
             net['pore.coords'] = _sp.array([ni, nj, nk]).T
 
         with open(th2np_file, mode='rb') as f:
-            Nt = _sp.fromfile(file=f, count=1, dtype='u4')
-            net['throat.area'] = _sp.ones([int(Nt), ], dtype=int)*(-1)
+            Nt = _sp.fromfile(file=f, count=1, dtype='u4').astype(int)
+            net['throat.area'] = _sp.ones([Nt, ], dtype=int)*(-1)
             for i in range(0, Nt):
                 ID = _sp.fromfile(file=f, count=1, dtype='u4')
                 net['throat.area'][i] = _sp.fromfile(file=f, count=1,
