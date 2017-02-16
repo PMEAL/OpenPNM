@@ -25,7 +25,25 @@ class GenericIO():
                                   "does not exist yet")
 
     @staticmethod
-    def fetch_geometry(network):
+    def split_geometry(network):
+        r"""
+        This method accepts an OpenPNM Network object and removes all geometry
+        related pore and throat properties, (basically all values other than
+        ```'pore.coords'``` and ```throat.conns```), and places them on a
+        GenericGeometry object.  Any labels on the Network are left intact.
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The Network that possesses the geometrical values
+
+        Returns
+        -------
+        geometry : OpenPNM Geometry Object
+            The new GenericGeometry object that was created to contain the
+            geometrical pore and throat properties.
+
+        """
         geom = OpenPNM.Geometry.GenericGeometry(network=network,
                                                 pores=network.Ps,
                                                 throats=network.Ts)
@@ -67,7 +85,7 @@ class GenericIO():
             else:
                 logger.warning('\''+item+'\' already present')
         if return_geometry:
-            geometry = cls.fetch_geometry(network)
+            geometry = cls.split_geometry(network)
             network = (network, geometry)
         return network
 
