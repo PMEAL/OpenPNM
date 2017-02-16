@@ -25,13 +25,19 @@ class IOTest:
         with pytest.raises(NotImplementedError):
             op.Utilities.IO.GenericIO.save()
 
-    def test_generic_fetch_geometry(self):
+    def test_generic_split_geometry(self):
         fname = os.path.join(FIXTURE_DIR, 'test_load_csv_no_phases')
         net = io.CSV.load(fname+'.csv')
         Nprops = len(net.props())
-        geom = io.CSV.fetch_geometry(network=net)
+        geom = io.CSV.split_geometry(network=net)
         assert len(net.props()) == 2
         assert len(geom.props()) == (Nprops - 2)
+
+    def test_generic_return_geometry(self):
+        fname = os.path.join(FIXTURE_DIR, 'test_load_csv_no_phases')
+        net = io.CSV.load(fname+'.csv', return_geometry=True)
+        assert len(net) == 2
+        assert type(net) == tuple
 
     def test_load_statoil(self):
         path = os.path.join(FIXTURE_DIR, 'ICL-SandPack(F42A)')
