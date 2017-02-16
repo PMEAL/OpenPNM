@@ -256,9 +256,21 @@ class VTK(GenericIO):
             The Network object onto which the data should be loaded.  If no
             Network is supplied than one will be created and returned.
 
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
         """
         net = {}
 
@@ -360,6 +372,22 @@ class Statoil(GenericIO):
         network : OpenPNM Network Object
             If given then the data will be loaded on it and returned.  If not
             given, a Network will be created and return.
+
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
+        Returns
+        -------
+        If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
 
         """
         net = {}
@@ -531,9 +559,21 @@ class MAT(GenericIO):
             The Network object onto which the data should be loaded.  If no
             Network is supplied than one will be created and returned.
 
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
 
         """
         net = {}
@@ -722,9 +762,26 @@ class CSV(GenericIO):
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
+        network : OpenPNM Network Object
+            The Network object onto which the data should be loaded.  If no
+            Network is supplied than one will be created and returned.
+
+
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
 
         """
         net = {}
@@ -811,9 +868,21 @@ class NetworkX(GenericIO):
             Network is supplied then an empty Import Network is created and
             returned.
 
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
 
         """
         net = {}
@@ -905,23 +974,39 @@ class iMorph(GenericIO):
         ----------
         path : string
             The path of the folder where the subfiles are held
+
         node_file : string
             The file that describes the pores and throats, the
             default iMorph name is: throats_cellsThroatsGraph_Nodes.txt
+
         graph_file : string
             The file that describes the connectivity of the network, the
             default iMorph name is: throats_cellsThroatsGraph.txt
+
         network : OpenPNM Network Object
             The OpenPNM Network onto which the data should be loaded.  If no
             network is supplied then an empty import network is created and
             returned.
+
         voxel_size : float
             Allows the user to define a voxel size different than what is
             contained in the node_file. The value must be in meters.
 
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
         Returns
         -------
         If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
         """
         #
         node_file = _os.path.join(path, node_file)
@@ -1102,6 +1187,22 @@ class MARock(GenericIO):
             the linear length of eac voxel. The default is 1.  This is used to
             scale the voxel counts to actual dimension. It is recommended that
             this value be in SI units [m] to work well with OpenPNM.
+
+        return_geometry : Boolean
+            If True, then all geometrical related properties are removed from
+            the Network object and added to a GenericGeometry object.  In this
+            case the method returns a tuple containing (network, geometry). If
+            False (default) then the returned Network will contain all
+            properties that were in the original file.  In this case, the user
+            can call the ```split_geometry``` method explicitly to perform the
+            separation.
+
+        Returns
+        -------
+        If no Network object is supplied then one will be created and returned.
+
+        If return_geometry is True, then a tuple is returned containing both
+        the network and a geometry object.
 
         """
 
