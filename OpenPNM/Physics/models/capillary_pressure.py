@@ -11,6 +11,32 @@ from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
 
 
+def _get_key_props(phase=None, diameter='throat.diameter',
+                   surface_tension='pore.surface_tension',
+                   contact_angle='pore.contact_angle'):
+    r"""
+    Many of the methods are generic to pores and throats. Some information may
+    be stored on either the pore or throat and needs to be interpolated.
+    This is a helper method to return the properties in the correct format.
+    To do:
+        Check for method to convert throat to pore data
+    """
+    entity = diameter.split('.')[0]
+    if (surface_tension.split('.')[0] == 'pore' and
+       diameter.split('.')[0] == 'throat'):
+        sigma = phase[surface_tension]
+        sigma = phase.interpolate_data(data=sigma)
+    else:
+        sigma = phase[surface_tension]
+    if (contact_angle.split('.')[0] == 'pore' and
+       diameter.split('.')[0] == 'throat'):
+        theta = phase[contact_angle]
+        theta = phase.interpolate_data(data=theta)
+    else:
+        theta = phase[contact_angle]
+    return entity, sigma, theta
+
+
 def washburn(physics, phase, network, surface_tension='pore.surface_tension',
              contact_angle='pore.contact_angle', diameter='throat.diameter',
              **kwargs):
@@ -44,21 +70,13 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
     suitable for highly non-wetting invading phases in most materials.
 
     """
-    if (surface_tension.split('.')[0] == 'pore' and
-       diameter.split('.')[0] == 'throat'):
-        sigma = phase[surface_tension]
-        sigma = phase.interpolate_data(data=sigma)
-    else:
-        sigma = phase[surface_tension]
-    if (contact_angle.split('.')[0] == 'pore' and
-       diameter.split('.')[0] == 'throat'):
-        theta = phase[contact_angle]
-        theta = phase.interpolate_data(data=theta)
-    else:
-        theta = phase[contact_angle]
+    entity, sigma, theta = _get_key_props(phase=phase,
+                                          diameter=diameter,
+                                          surface_tension=surface_tension,
+                                          contact_angle=contact_angle)
     r = network[diameter]/2
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
-    if diameter.split('.')[0] == 'throat':
+    if entity == 'throat':
         value = value[phase.throats(physics.name)]
     else:
         value = value[phase.pores(physics.name)]
@@ -110,18 +128,11 @@ def purcell(physics, phase, network, r_toroid,
 
     TODO: Triple check the accuracy of this equation
     """
-    entity = diameter.split('.')[0]
-    if surface_tension.split('.')[0] == 'pore' and entity == 'throat':
-        sigma = phase[surface_tension]
-        sigma = phase.interpolate_data(data=sigma)
-    else:
-        sigma = phase[surface_tension]
-    if contact_angle.split('.')[0] == 'pore' and entity == 'throat':
-        theta = phase[contact_angle]
-        theta = phase.interpolate_data(data=theta)
-    else:
-        theta = phase[contact_angle]
 
+    entity, sigma, theta = _get_key_props(phase=phase,
+                                          diameter=diameter,
+                                          surface_tension=surface_tension,
+                                          contact_angle=contact_angle)
     r = network[diameter]/2
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
@@ -239,7 +250,7 @@ def static_pressure(network,
 def cuboid(physics, phase, network,
            surface_tension='pore.surface_tension',
            contact_angle='pore.contact_angle',
-           throat_diameter='throat.diameter', **kwargs):
+           diameter='throat.diameter', **kwargs):
     r"""
     Computes the capillary entry pressure assuming the throat in a cube tube.
 
@@ -256,8 +267,8 @@ def cuboid(physics, phase, network,
     theta : dict key (string)
         The dictionary key containing the contact angle values to be used. If
         a pore property is given, it is interpolated to a throat list.
-    throat_diameter : dict key (string)
-        The dictionary key containing the throat diameter values to be used.
+    diameter : dict key (string)
+        The dictionary key containing the element diameter values to be used.
 
     Notes
     -----
@@ -265,25 +276,19 @@ def cuboid(physics, phase, network,
     interfacial area in two-phase flow: dynamic pore-network modelling
 
     """
-    if surface_tension.split('.')[0] == 'pore':
-        sigma = phase[surface_tension]
-        sigma = phase.interpolate_data(data=sigma)
-    else:
-        sigma = phase[surface_tension]
-    if contact_angle.split('.')[0] == 'pore':
-        theta = phase[contact_angle]
-        theta = phase.interpolate_data(data=theta)
-    else:
-        theta = phase[contact_angle]
+    entity, sigma, theta = _get_key_props(phase=phase,
+                                          diameter=diameter,
+                                          surface_tension=surface_tension,
+                                          contact_angle=contact_angle)
     # Convert theta to rad
     theta *= 2*_sp.pi/360
-    rad = network[throat_diameter]/2
+    rad = network[diameter]/2
 
     Theta = ((theta+_sp.cos(theta)**2-_sp.pi/4-_sp.sin(theta)*_sp.cos(theta)) /
              (_sp.cos(theta)-_sp.sqrt(_sp.pi/4-theta+_sp.sin(theta) *
               _sp.cos(theta))))
     value = (sigma/rad)*Theta
-    if throat_diameter.split('.')[0] == 'throat':
+    if entity == 'throat':
         value = value[phase.throats(physics.name)]
     else:
         value = value[phase.pores(physics.name)]
@@ -312,30 +317,15 @@ def from_throat(physics, phase, network,
         Accepted values are min, max, mean
     """
     value = np.zeros(network.Np)
-    if operator == 'min':
-
-        def f(x):
-            np.min(x)
-
-    elif operator == 'max':
-
-        def f(x):
-            np.max(x)
-
-    elif operator == 'mean':
-
-        def f(x):
-            np.mean(x)
-
-    else:
-        logger.warn("Operator "+operator+" not valid, min applied")
-
-        def f(x):
-            np.min(x)
+    functions = {'min': np.min,
+                 'max': np.max,
+                 'mean': np.mean}
+    if operator not in functions.keys():
+        operator = 'mean'
 
     for i in range(network.Np):
         ts = network.find_neighbor_throats(pores=i)
-        value[i] = f(physics[capillary_pressure][ts])
+        value[i] = functions[operator](physics[capillary_pressure][ts])
 
     return value
 
