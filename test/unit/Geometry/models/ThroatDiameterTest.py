@@ -59,3 +59,15 @@ class ThroatDiameterTest:
                             seeds='throat.seed')
         assert sp.amin(self.geo['throat.diameter']) > 0.001
         del self.geo['throat.diameter']
+
+    def test_mean_pore(self):
+        self.geo['pore.diameter'] = 2.0
+        self.boun['pore.diameter'] = 1.0
+        self.geo.models.add(propname='throat.diameter',
+                            model=gm.throat_diameter.meanpore)
+        self.boun.models.add(propname='throat.diameter',
+                             model=gm.throat_diameter.meanpore)
+        BTs = self.net.throats('boundary')
+        NBTs = self.net.throats('boundary', mode='not')
+        assert sp.all(self.net['throat.diameter'][BTs] == 1.5)
+        assert sp.all(self.net['throat.diameter'][NBTs] == 2.0)
