@@ -41,10 +41,7 @@ import scipy as _sp
 if _sys.version_info < (3, 4):
     raise Exception('OpenPNM requires Python 3.4 or greater to run')
 
-if _sp.__version__ < '0.14.0':
-    raise Exception('OpenPNM requires SciPy version 0.14.0 or greater')
-
-__version__ = '1.5'
+__version__ = '1.6'
 
 from . import Base
 from . import Network
