@@ -242,11 +242,11 @@ class GenericLinearTransport(GenericAlgorithm):
             default.
 
         super_pore_conductance : scalar
-            This parameter is used when a Neumann_group bounday condition is
-            applied.  When applied this means that a fictitious pore is added
-            to the network and connected to all the given boundary pores. The
-            solver then ensures the flux leaving this 'super' pore thus
-            satisfying the specified boundary conditions.  This parameter
+            This parameter is used when a ``Neumann_group`` boundary condition
+            is applied.  When applied this means that a fictitious pore is
+            added to the network and connected to all the given boundary pores.
+            The solver then ensures the flux leaving this 'super' pore
+            satisfies the specified boundary conditions.  This parameter
             controls the conductance assigned to the throats connecting
             to the fictitious super pore.
         """
@@ -499,10 +499,13 @@ class GenericLinearTransport(GenericAlgorithm):
 
     def run(self, **kwargs):
         r"""
-        This calls the setup method in the algorithm and then runs the outer
-        iteration stage.
-        All of the arguments used in setup and solve methods, can be sent here
-        as kwargs.
+        This shortcut method calls ``setup`` and ``solve`` together with a set
+        of default arguments.
+
+        Notes
+        -----
+        All of the arguments used in ``setup`` and ``solve`` methods, can be
+        sent here as keyword arguments (i.e. kwargs)
         """
         logger.info("Setup " + self.__class__.__name__)
         self.setup(**kwargs)
@@ -510,7 +513,7 @@ class GenericLinearTransport(GenericAlgorithm):
 
     def _do_outer_iteration_stage(self, **kwargs):
         r"""
-        This calls the solve method in the algorithm.
+        This calls the ``solve`` method in the algorithm.
         Many other outer loops can be added here as well, before or after
         calling solve method.
         """
@@ -530,12 +533,33 @@ class GenericLinearTransport(GenericAlgorithm):
             1D RHS vector
 
         iterative_sovler : string
-            Name of solver to use.  If not solve is specified, sp.solve is used
-            which is a direct solver (SuperLU on default Scipy installation)
+            Name of iterative solver to use.  Options are:
+
+            * 'cg' : Conjugate Gradient, as implemented in
+            ``scipy.sparse.linalg.cg``
+
+            * 'gmres' : Generalized Minimal Residual, as implemented in
+            ``scipy.sparse.linalg.gmres``
+
+            * `rs` : Ruge-Stuben solver as implemented in the PyAMG package.
+            This solver is **vastly** better than any other option.  To use it
+            you must install the PyAMG package using either ``pip`` or
+            ``conda``.
+
+            If not solver is given, then the default Scipy solver is used.
+            See Notes for more infomation.
 
         kwargs : list of keyword arguments
             These arguments and values are sent to the sparse solver, so read
             the specific documentation for the solver chosen
+
+        Notes
+        -----
+        If no solver is specified, sp.solve is used which is a direct solver
+        (SuperLU on default Scipy installation).  This solver is quite slow
+        and memory intensive.  In general, you should install
+        ``scikit-umfpack`` which is a much better default solver (for less
+        than about 0.5 million pores).
         """
         self._iterative_solver = iterative_solver
 
@@ -565,7 +589,7 @@ class GenericLinearTransport(GenericAlgorithm):
         if self._iterative_solver is None:
             X = sprslin.spsolve(A, b)
         else:
-            if self._iterative_solver not in ['cg', 'gmres']:
+            if self._iterative_solver not in ['cg', 'gmres', 'rs']:
                 raise Exception('GenericLinearTransport does not support the' +
                                 ' requested iterative solver!')
             params = kwargs.copy()
@@ -577,9 +601,19 @@ class GenericLinearTransport(GenericAlgorithm):
                 tol = 1e-20
             params['tol'] = tol
             if self._iterative_solver == 'cg':
+                logger.info('Using Scipy\'s Conjugate Gradient solver')
                 result = sprslin.cg(A, b, **params)
             elif self._iterative_solver == 'gmres':
+                logger.info('Using Scipy\'s GMRES solver')
                 result = sprslin.gmres(A, b, **params)
+            elif self._iterative_solver == 'rs':
+                logger.info('Using PyAMG\'s Ruge-Stuben solver')
+                try:
+                    import pyamg
+                except:
+                    raise Exception('PyAMG not found! Get it from conda-forge')
+                ml = pyamg.ruge_stuben_solver(A)
+                result = tuple([ml.solve(b, **params), None])
             X = result[0]
             self._iterative_solver_info = result[1]
         return X
