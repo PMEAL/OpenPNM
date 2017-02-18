@@ -33,6 +33,19 @@ Import
 ------
 >>> import OpenPNM
 
+Example
+-------
+The following few lines setup all the necessary objects for performing
+simulations:
+
+>>> import OpenPNM as op
+>>> net = op.Network.Cubic(shape=[5, 5, 5], spacing=0.001)
+>>> geo = op.Geometry.Stick_and_Ball(network=net, pores=net.Ps, throats=net.Ts)
+>>> air = op.Phases.Air(network=net)
+>>> water = op.Phases.Water(network=net)
+>>> phys_air = op.Physics.Standard(network=net, geometry=geo, phase=air)
+>>> phys_wat = op.Physics.Standard(network=net, geometry=geo, phase=water)
+
 """
 import sys as _sys
 import scipy as _sp
@@ -41,7 +54,7 @@ import scipy as _sp
 if _sys.version_info < (3, 4):
     raise Exception('OpenPNM requires Python 3.4 or greater to run')
 
-__version__ = '1.6'
+__version__ = '1.6.1'
 
 from . import Base
 from . import Network
