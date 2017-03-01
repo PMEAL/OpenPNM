@@ -61,7 +61,7 @@ class UtilitiesMiscTest:
                                                throats=net.Ts)
         im1 = OpenPNM.Utilities.misc.generate_voxel_image(network=net,
                                                           maxdim=100)
-        assert im1.shape == (50, 75, 100)
+        assert max(im1.shape) == 100
         im2 = OpenPNM.Utilities.misc.generate_voxel_image(network=net,
                                                           maxdim=100,
                                                           pshape='cube',
