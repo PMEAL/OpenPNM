@@ -314,7 +314,8 @@ def generate_voxel_image(network, maxdim=200, pshape='sphere', tshape='cylinder'
 
     Returns
     -------
-    A 3D image with 1\'s indicating the pores and throats, and 0\'s elsewhere.
+    A 3D image with 2\'s indicating the pores, 1\'s for throats, and 0\'s
+    elsewhere.
 
     """
     from skimage.morphology import ball
@@ -361,7 +362,7 @@ def generate_voxel_image(network, maxdim=200, pshape='sphere', tshape='cylinder'
                 im_throats[inds] += 1
             im_temp[inds] = 0
     im_throats = (im_throats > 0)*(im_pores == 0)
-    im = _sp.array(2.0*im_pores + 1.0*im_throats)
+    im = _sp.array(2.0*im_pores + 1.0*im_throats).astype(int)
     return im
 
 
