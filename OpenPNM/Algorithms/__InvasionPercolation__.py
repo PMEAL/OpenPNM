@@ -7,6 +7,7 @@ InvasionPercolationBasic: Simple IP
 """
 import heapq as hq
 import scipy as sp
+import numpy as np
 from OpenPNM.Algorithms import GenericAlgorithm
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
@@ -192,3 +193,73 @@ class InvasionPercolation(GenericAlgorithm):
         t = sp.zeros((self.Nt,))
         t[b] = e  # Convert back to original order
         self._phase['throat.invasion_time'] = t
+
+    def set_occupancy(self, sequence):
+        self._phase['throat.occupancy'] = self['throat.invasion_sequence'] <= sequence
+        self._phase['pore.occupancy'] = self['pore.invasion_sequence'] <= sequence
+    
+    
+    def apply_trapping(self, outlets):
+        """
+        Apply trapping based on algorithm described by Y. Masson [1].
+        It is applied as a post-process and runs the percolation algorithm in 
+        reverse assessing the occupancy of un-invaded pore neighbors.
+        3 situations can happen:
+            The number of clusters stays the same
+            A new cluster of size one is created
+            Multiple clusters are merged together
+        Ref:
+        [1] Masson, Y., 2016. A fast two-step algorithm for invasion
+        percolation with trapping. Computers & Geosciences, 90, pp.41-48
+        """
+        #First assess sequence at which break-through was acheived
+        bt_seq = np.min(self['pore.invasion_sequence'][outlets])
+        print("Break-through Sequence: ",bt_seq)
+        #Set occupancy
+        self.set_occupancy(bt_seq)
+        #Put defending phase into clusters
+        clusters = self._net.find_clusters2(~self._phase['pore.occupancy'])
+        #Identify clusters that are connected to an outlet and set to -2
+        #-1 is the invaded fluid
+        #-2 is the defender fluid able to escape
+        #All others now trapped clusters which grow as invasion is reversed
+        out_clusters = sp.unique(clusters[outlets])
+        for c in out_clusters:
+            if c >=0:
+                clusters[clusters==c] = -2
+        inv_list = list(self['pore.invasion_sequence'])
+        next_cluster_num = np.max(clusters)+1
+        #For all the steps after the inlets are set up to break-through
+        #Reverse the sequence and assess the neighbors cluster state
+        for uninvasion_sequence in np.arange(1, bt_seq)[::-1]:
+            try:
+                pore = inv_list.index(uninvasion_sequence)
+                neighbors = self._net.find_neighbor_pores(pore)
+                if np.all(clusters[neighbors]) == -1:
+                    #This is the start of a new trapped cluster
+                    clusters[pore] = next_cluster_num
+                    next_cluster_num +=1
+                elif np.all(clusters[neighbors] == clusters[neighbors][0]):
+                    #This means pore belongs to this cluster
+                    clusters[pore] = clusters[neighbors][0]
+                else:
+                    #There are a mixture of neighboring clusters so merge them
+                    new_num = None
+                    for c in np.unique(clusters[neighbors]):
+                        if c >= 0:
+                            if new_num == None:
+                                new_num = c
+                            else:
+                                clusters[clusters == c] = new_num
+                #Now check whether a neighbor is connected to a sink
+                if -2 in clusters[neighbors]:
+                    #Whoopie we found an outlet so can escape
+                    clusters[clusters == clusters[pore]] = -2
+            except:
+                #some pore sequences are missing
+                pass
+                
+        #And now return clusters
+        self['pore.clusters']=clusters
+        logger.info("Number of trapped clusters",
+                    np.sum(np.unique(clusters)>=0))
