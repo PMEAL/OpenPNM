@@ -231,17 +231,21 @@ class InvasionPercolation(GenericAlgorithm):
         next_cluster_num = np.max(clusters)+1
         #For all the steps after the inlets are set up to break-through
         #Reverse the sequence and assess the neighbors cluster state
-        for uninvasion_sequence in np.arange(1, bt_seq)[::-1]:
+        for uninvasion_sequence in np.arange(1, bt_seq+1)[::-1]:
             try:
                 pore = inv_list.index(uninvasion_sequence)
                 neighbors = self._net.find_neighbor_pores(pore)
-                if np.all(clusters[neighbors]) == -1:
+                if np.all(clusters[neighbors] == -1) :
                     #This is the start of a new trapped cluster
                     clusters[pore] = next_cluster_num
                     next_cluster_num +=1
+                    logger.info("C: 1, P: "+str(pore)+
+                                " new cluster number: "+str(clusters[pore]))
                 elif np.all(clusters[neighbors] == clusters[neighbors][0]):
                     #This means pore belongs to this cluster
                     clusters[pore] = clusters[neighbors][0]
+                    logger.info("C: 2, P: "+str(pore)+
+                                " joins cluster number: "+str(clusters[pore]))
                 else:
                     #There are a mixture of neighboring clusters so merge them
                     new_num = None
@@ -251,10 +255,14 @@ class InvasionPercolation(GenericAlgorithm):
                                 new_num = c
                             else:
                                 clusters[clusters == c] = new_num
+                                logger.info("C: 3, P:"+str(pore)+
+                                            " merge clusters: "+str(c)+" into "+
+                                            str(new_num))
                 #Now check whether a neighbor is connected to a sink
                 if -2 in clusters[neighbors]:
                     #Whoopie we found an outlet so can escape
-                    clusters[clusters == clusters[pore]] = -2
+                    logger.info("C: 4, P: "+str(pore)+ "can escape")
+                    clusters[pore] = -2
             except:
                 #some pore sequences are missing
                 pass
