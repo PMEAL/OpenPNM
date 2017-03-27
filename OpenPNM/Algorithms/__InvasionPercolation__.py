@@ -352,6 +352,10 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.trapped'][trapped_ts] = True
         
     def trapping_slow(self, outlets):
+        r"""
+        Temporary implementation of the standard OP trapping logic for every
+        invasion step to benchmark speed
+        """
         st = time.time()
         self['pore.trapped_slow'] = sp.ones([self.Np, ], dtype=float)*-1
         for seq in np.sort(self['pore.invasion_sequence']):
