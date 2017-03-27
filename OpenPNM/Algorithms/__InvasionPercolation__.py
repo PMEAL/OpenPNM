@@ -11,7 +11,7 @@ import numpy as np
 from OpenPNM.Algorithms import GenericAlgorithm
 from OpenPNM.Base import logging
 logger = logging.getLogger(__name__)
-
+import time
 
 class InvasionPercolation(GenericAlgorithm):
     r"""
@@ -204,14 +204,48 @@ class InvasionPercolation(GenericAlgorithm):
         Apply trapping based on algorithm described by Y. Masson [1].
         It is applied as a post-process and runs the percolation algorithm in 
         reverse assessing the occupancy of un-invaded pore neighbors.
-        3 situations can happen:
-            The number of clusters stays the same
-            A new cluster of size one is created
-            Multiple clusters are merged together
+        3 situations can happen on invasion without trapping:
+            The number of defending clusters stays the same and clusters can shrink
+            A cluster of size one is suppressed
+            A cluster is split into multiple clusters
+        In reverse the following situations can happen:
+            The number of defending clusters stays the same and clusters can grow
+            A cluster of size one is created
+            Mutliple clusters merge into one cluster
+        With trapping the reversed rules are adjusted so that:
+            Only clusters that do not connect to a sink can grow and merge
+            At the point that a neighbor connected to a sink is touched the
+            trapped cluster stops growing as this is the point of trapping in
+            forward invasion time.
+        
+        Logger info displays the invasion Sequence and pore index and a message
+        with condition number based on the modified trapping rules and the
+        assignment of the pore to a given cluster
+        Stopped clusters are also logged as info
+        
+        Initially all invaded pores are given cluster label -1
+        Outlets / Sinks are given -2
+        New clusters that grow into fully trapped clusters are either 
+        identified at the point of breakthrough or grow from nothing if the 
+        full invasion sequence is run, they are assigned numbers from 0 up
+            
         Ref:
         [1] Masson, Y., 2016. A fast two-step algorithm for invasion
         percolation with trapping. Computers & Geosciences, 90, pp.41-48
+        
+        Parameters
+        ----------
+        outlets : list or array of pore indices for defending fluid to escape
+        through
+
+        Returns
+        -------
+        Creates a throat array called 'pore.clusters' in the Algorithm
+        dictionary. Any positive number is a trapped cluster
+        
+        Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
         """
+        st = time.time()
         if bt:
             #Go from breakthrough
             #First assess sequence at which break-through was acheived
@@ -231,53 +265,105 @@ class InvasionPercolation(GenericAlgorithm):
                     clusters[clusters==c] = -2
         else:
             #Go from end
-            clusters = np.ones(self._net.Np)*-1
+            clusters = np.ones(self._net.Np, dtype=int)*-1
             clusters[outlets] = -2
             bt_seq = np.max(self['pore.invasion_sequence'])
-
-        inv_list = list(self['pore.invasion_sequence'])
         
+        #turn into a list for indexing
+        inv_list = list(self['pore.invasion_sequence'])
         next_cluster_num = np.max(clusters)+1
         #For all the steps after the inlets are set up to break-through
         #Reverse the sequence and assess the neighbors cluster state
-        for uninvasion_sequence in np.arange(1, bt_seq+1)[::-1]:
-            if uninvasion_sequence in inv_list:
-                pore = inv_list.index(uninvasion_sequence)
-                neighbors = self._net.find_neighbor_pores(pore)
-                if np.all(clusters[neighbors] == -1) :
-                    #This is the start of a new trapped cluster
-                    clusters[pore] = next_cluster_num
-                    next_cluster_num +=1
-                    logger.info("C: 1, P: "+str(pore)+
-                                " new cluster number: "+str(clusters[pore]))
-                elif (np.all(clusters[neighbors] == clusters[neighbors][0]) and
-                             clusters[neighbors][0] > -1):
-                    #This means pore belongs to this cluster
-                    clusters[pore] = clusters[neighbors][0]
-                    logger.info("C: 2, P: "+str(pore)+
-                                " joins cluster number: "+str(clusters[pore]))
-                else:
-                    #There are a mixture of neighboring clusters so merge them
-                    new_num = None
-                    nc = np.unique(clusters[neighbors])
-                    for c in nc:
-                        if c >= 0:
-                            if new_num == None:
-                                new_num = c
-                            else:
-                                clusters[clusters == c] = new_num
-                                logger.info("C: 3, P: "+str(pore)+
-                                            " merge clusters: "+str(c)+" into "+
-                                            str(new_num))
-                            clusters[pore] = new_num
-                #Now check whether a neighbor is connected to a sink
-                if -2 in clusters[neighbors]:
-                    #Whoopie we found an outlet so can escape
-                    logger.info("C: 4, P: "+str(pore)+ " can escape")
-                    clusters[pore] = -2
+        stopped_clusters = []
+        for un_seq in np.arange(0, bt_seq+1,dtype=int)[::-1]:
+            if un_seq in inv_list: #Some invasion numbers correspond to throats
+                pore = inv_list.index(un_seq) #get the pore to uninvade
+                if pore not in outlets: #Don't bother with outlets
+                    neighbors = self._net.find_neighbor_pores(pore)
+                    nc = clusters[neighbors] #neighboring clusters
+                    unique_ns = np.unique(nc[nc != -1]) #unique un-invaded clusters
+                    sink_n = -2 in unique_ns #a sink neighbor is met
+                    seq_pore = "S:"+str(un_seq)+" P:"+str(pore)
+                    if np.all(nc == -1) :
+                        #This is the start of a new trapped cluster
+                        clusters[pore] = next_cluster_num
+                        next_cluster_num +=1
+                        msg = (seq_pore+" C:1 new cluster number: "+
+                               str(clusters[pore]))
+                        logger.info(msg)
+                    elif len(unique_ns) == 1:
+                        #Grow the only connected neighboring cluster
+                        if unique_ns[0] not in stopped_clusters:
+                            clusters[pore] = unique_ns[0]
+                            msg = (seq_pore+" C:2 joins cluster number: "
+                                   +str(clusters[pore]))
+                            logger.info(msg)
+                        else:
+                            clusters[pore] = -2
+                    elif sink_n:
+                        #We have reached a sink neighbor, stop growing cluster
+                        msg = (seq_pore+" C:3 joins sink cluster cluster")
+                        logger.info(msg)
+                        clusters[pore] = -2
+                        #stop growth and merging
+                        for c in unique_ns[unique_ns > -1]:
+                            stopped_clusters.append(c)
+                            msg = (seq_pore+" stops growth of cluster "+str(c))
+                            logger.info(msg)
+                        stopped_clusters = list(np.unique(stopped_clusters))
+                    else:
+                        #We might be able to do some merging
+                        #Check if any stopped clusters are neighbors
+                        any_stopped = False
+                        for c in unique_ns:
+                            if c in stopped_clusters:
+                                any_stopped = True
+                        if any_stopped:
+                            msg = (seq_pore+" C:4 joins sink cluster")
+                            logger.info(msg)
+                            clusters[pore] = -2
+                            #Stop growing all neighboring clusters
+                            for c in unique_ns:
+                                stopped_clusters.append(c)
+                                msg = (seq_pore+" stops growth of cluster "
+                                +str(c))
+                                logger.info(msg)
+                                stopped_clusters = list(np.unique(stopped_clusters))
+                        else:
+                            #Merge multiple un-stopped trapped clusters
+                            new_num = None
+                            for c in unique_ns:
+                                if new_num == None:
+                                    new_num = c
+                                    clusters[pore] = new_num
+                                else:
+                                    clusters[clusters == c] = new_num
+                                    msg =(seq_pore+" C:5 merge clusters: "
+                                          +str(c)+" into "+str(new_num))
+                                    logger.info(msg)
 
-                
         #And now return clusters
         self['pore.clusters']=clusters
-        logger.info("Number of trapped clusters",
-                    np.sum(np.unique(clusters)>=0))
+        logger.info("Number of trapped clusters"+str(np.sum(np.unique(clusters)>=0)))
+        logger.info("Fast Trapping Time: "+str(time.time()-st))
+        self['pore.trapped'] = self['pore.clusters'] > -1
+        trapped_ts = self._net.find_neighbor_throats(self['pore.trapped'])
+        self['throat.trapped'] = np.ones([self._net.Nt], dtype=bool)
+        self['throat.trapped'][trapped_ts] = True
+        
+    def trapping_slow(self, outlets):
+        st = time.time()
+        self['pore.trapped_slow'] = sp.ones([self.Np, ], dtype=float)*-1
+        for seq in np.sort(self['pore.invasion_sequence']):
+            invader = self['pore.invasion_sequence']<= seq
+            defender = ~invader.copy()
+            clusters = self._net.find_clusters2(defender)
+            out_clusters = sp.unique(clusters[outlets])
+            trapped_pores = ~sp.in1d(clusters, out_clusters)
+            trapped_pores[invader] = False
+            if sp.sum(trapped_pores) > 0:
+                inds = (self['pore.trapped_slow'] == -1) * trapped_pores
+                if sp.sum(inds) > 0:
+                    self['pore.trapped_slow'][inds] = seq
+                    print("S: ",seq," Trapped Pores: ",sp.sum(inds))
+        print("Slow Trapping Time: ",time.time()-st)
