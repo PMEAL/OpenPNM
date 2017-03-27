@@ -199,7 +199,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._phase['pore.occupancy'] = self['pore.invasion_sequence'] <= sequence
     
     
-    def apply_trapping(self, outlets):
+    def apply_trapping(self, outlets, bt=False):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
         It is applied as a post-process and runs the percolation algorithm in 
@@ -212,27 +212,36 @@ class InvasionPercolation(GenericAlgorithm):
         [1] Masson, Y., 2016. A fast two-step algorithm for invasion
         percolation with trapping. Computers & Geosciences, 90, pp.41-48
         """
-        #First assess sequence at which break-through was acheived
-        bt_seq = np.min(self['pore.invasion_sequence'][outlets])
-        print("Break-through Sequence: ",bt_seq)
-        #Set occupancy
-        self.set_occupancy(bt_seq)
-        #Put defending phase into clusters
-        clusters = self._net.find_clusters2(~self._phase['pore.occupancy'])
-        #Identify clusters that are connected to an outlet and set to -2
-        #-1 is the invaded fluid
-        #-2 is the defender fluid able to escape
-        #All others now trapped clusters which grow as invasion is reversed
-        out_clusters = sp.unique(clusters[outlets])
-        for c in out_clusters:
-            if c >=0:
-                clusters[clusters==c] = -2
+        if bt:
+            #Go from breakthrough
+            #First assess sequence at which break-through was acheived
+            bt_seq = np.min(self['pore.invasion_sequence'][outlets])
+            print("Break-through Sequence: ",bt_seq)
+            #Set occupancy
+            self.set_occupancy(bt_seq)
+            #Put defending phase into clusters
+            clusters = self._net.find_clusters2(~self._phase['pore.occupancy'])
+            #Identify clusters that are connected to an outlet and set to -2
+            #-1 is the invaded fluid
+            #-2 is the defender fluid able to escape
+            #All others now trapped clusters which grow as invasion is reversed
+            out_clusters = sp.unique(clusters[outlets])
+            for c in out_clusters:
+                if c >=0:
+                    clusters[clusters==c] = -2
+        else:
+            #Go from end
+            clusters = np.ones(self._net.Np)*-1
+            clusters[outlets] = -2
+            bt_seq = np.max(self['pore.invasion_sequence'])
+
         inv_list = list(self['pore.invasion_sequence'])
+        
         next_cluster_num = np.max(clusters)+1
         #For all the steps after the inlets are set up to break-through
         #Reverse the sequence and assess the neighbors cluster state
         for uninvasion_sequence in np.arange(1, bt_seq+1)[::-1]:
-            try:
+            if uninvasion_sequence in inv_list:
                 pore = inv_list.index(uninvasion_sequence)
                 neighbors = self._net.find_neighbor_pores(pore)
                 if np.all(clusters[neighbors] == -1) :
@@ -241,7 +250,8 @@ class InvasionPercolation(GenericAlgorithm):
                     next_cluster_num +=1
                     logger.info("C: 1, P: "+str(pore)+
                                 " new cluster number: "+str(clusters[pore]))
-                elif np.all(clusters[neighbors] == clusters[neighbors][0]):
+                elif (np.all(clusters[neighbors] == clusters[neighbors][0]) and
+                             clusters[neighbors][0] > -1):
                     #This means pore belongs to this cluster
                     clusters[pore] = clusters[neighbors][0]
                     logger.info("C: 2, P: "+str(pore)+
@@ -249,23 +259,23 @@ class InvasionPercolation(GenericAlgorithm):
                 else:
                     #There are a mixture of neighboring clusters so merge them
                     new_num = None
-                    for c in np.unique(clusters[neighbors]):
+                    nc = np.unique(clusters[neighbors])
+                    for c in nc:
                         if c >= 0:
                             if new_num == None:
                                 new_num = c
                             else:
                                 clusters[clusters == c] = new_num
-                                logger.info("C: 3, P:"+str(pore)+
+                                logger.info("C: 3, P: "+str(pore)+
                                             " merge clusters: "+str(c)+" into "+
                                             str(new_num))
+                            clusters[pore] = new_num
                 #Now check whether a neighbor is connected to a sink
                 if -2 in clusters[neighbors]:
                     #Whoopie we found an outlet so can escape
-                    logger.info("C: 4, P: "+str(pore)+ "can escape")
+                    logger.info("C: 4, P: "+str(pore)+ " can escape")
                     clusters[pore] = -2
-            except:
-                #some pore sequences are missing
-                pass
+
                 
         #And now return clusters
         self['pore.clusters']=clusters
