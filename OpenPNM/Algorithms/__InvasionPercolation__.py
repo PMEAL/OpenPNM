@@ -277,74 +277,56 @@ class InvasionPercolation(GenericAlgorithm):
         next_cluster_num = np.max(clusters)+1
         # For all the steps after the inlets are set up to break-through
         # Reverse the sequence and assess the neighbors cluster state
-        stopped_clusters = []
-        for un_seq in np.arange(0, bt_seq+1, dtype=int)[::-1]:
-            if un_seq in inv_list:  # Some invasion numbers correspond to throats
-                pore = inv_list.index(un_seq)  # Get the pore to uninvade
-                if pore not in outlets:  # Don't bother with outlets
-                    neighbors = self._net.find_neighbor_pores(pore)
-                    nc = clusters[neighbors]  # Neighboring clusters
-                    unique_ns = np.unique(nc[nc != -1])  # Unique Neighbors
-                    sink_n = -2 in unique_ns  # A sink neighbor is met
-                    seq_pore = "S:"+str(un_seq)+" P:"+str(pore)
-                    if np.all(nc == -1):
-                        # This is the start of a new trapped cluster
-                        clusters[pore] = next_cluster_num
-                        next_cluster_num += 1
-                        msg = (seq_pore+" C:1 new cluster number: " +
+        stopped_clusters = np.zeros(self._net.Np, dtype=bool)
+        all_neighbors = self._net.find_neighbor_pores(self._net.pores(),
+                                                      flatten=False)
+        for un_seq in np.sort(self['pore.invasion_sequence'])[::-1]:
+            pore = inv_list.index(un_seq)  # Get the pore to uninvade
+            if pore not in outlets:  # Don't bother with outlets
+                nc = clusters[all_neighbors[pore]]  # Neighboring clusters
+                unique_ns = np.unique(nc[nc != -1])  # Unique Neighbors
+                seq_pore = "S:"+str(un_seq)+" P:"+str(pore)
+                if np.all(nc == -1):
+                    # This is the start of a new trapped cluster
+                    clusters[pore] = next_cluster_num
+                    next_cluster_num += 1
+                    msg = (seq_pore+" C:1 new cluster number: " +
+                           str(clusters[pore]))
+                    logger.info(msg)
+                elif len(unique_ns) == 1:
+                    # Grow the only connected neighboring cluster
+                    if not stopped_clusters[unique_ns[0]]:
+                        clusters[pore] = unique_ns[0]
+                        msg = (seq_pore+" C:2 joins cluster number: " +
                                str(clusters[pore]))
                         logger.info(msg)
-                    elif len(unique_ns) == 1:
-                        # Grow the only connected neighboring cluster
-                        if unique_ns[0] not in stopped_clusters:
-                            clusters[pore] = unique_ns[0]
-                            msg = (seq_pore+" C:2 joins cluster number: " +
-                                   str(clusters[pore]))
-                            logger.info(msg)
-                        else:
-                            clusters[pore] = -2
-                    elif sink_n:
-                        # We have reached a sink neighbor, stop growing cluster
-                        msg = (seq_pore+" C:3 joins sink cluster cluster")
+                    else:
+                        clusters[pore] = -2
+                elif -2 in unique_ns:
+                    # We have reached a sink neighbor, stop growing cluster
+                    msg = (seq_pore+" C:3 joins sink cluster cluster")
+                    logger.info(msg)
+                    clusters[pore] = -2
+                    # Stop growth and merging
+                    stopped_clusters[unique_ns[unique_ns > -1]] = True
+                else:
+                    # We might be able to do some merging
+                    # Check if any stopped clusters are neighbors
+                    if np.any(stopped_clusters[unique_ns]):
+                        msg = (seq_pore+" C:4 joins sink cluster")
                         logger.info(msg)
                         clusters[pore] = -2
-                        # Stop growth and merging
-                        for c in unique_ns[unique_ns > -1]:
-                            stopped_clusters.append(c)
-                            msg = (seq_pore+" stops growth of cluster " +
-                                   str(c))
-                            logger.info(msg)
-                        stopped_clusters = list(np.unique(stopped_clusters))
+                        # Stop growing all neighboring clusters
+                        stopped_clusters[unique_ns] = True
                     else:
-                        # We might be able to do some merging
-                        # Check if any stopped clusters are neighbors
-                        any_stopped = False
+                        # Merge multiple un-stopped trapped clusters
+                        new_num = unique_ns[0]
+                        clusters[pore] = new_num
                         for c in unique_ns:
-                            if c in stopped_clusters:
-                                any_stopped = True
-                        if any_stopped:
-                            msg = (seq_pore+" C:4 joins sink cluster")
+                            clusters[clusters == c] = new_num
+                            msg = (seq_pore + " C:5 merge clusters: " +
+                                   str(c) + " into "+str(new_num))
                             logger.info(msg)
-                            clusters[pore] = -2
-                            # Stop growing all neighboring clusters
-                            for c in unique_ns:
-                                stopped_clusters.append(c)
-                                msg = (seq_pore + " stops growth of cluster " +
-                                       str(c))
-                                logger.info(msg)
-                                stopped_clusters = list(np.unique(stopped_clusters))
-                        else:
-                            # Merge multiple un-stopped trapped clusters
-                            new_num = None
-                            for c in unique_ns:
-                                if new_num is None:
-                                    new_num = c
-                                    clusters[pore] = new_num
-                                else:
-                                    clusters[clusters == c] = new_num
-                                    msg = (seq_pore + " C:5 merge clusters: " +
-                                           str(c) + " into "+str(new_num))
-                                    logger.info(msg)
 
         # And now return clusters
         self['pore.clusters'] = clusters
@@ -372,5 +354,5 @@ class InvasionPercolation(GenericAlgorithm):
                 inds = (self['pore.trapped_slow'] == -1) * trapped_pores
                 if sp.sum(inds) > 0:
                     self['pore.trapped_slow'][inds] = seq
-                    logger.info("S: " + str(seq) + "Trapped Pores: " +
+                    logger.info("S: " + str(seq) + " Trapped Pores: " +
                                 str(sp.sum(inds)))
