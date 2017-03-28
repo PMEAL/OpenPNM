@@ -195,6 +195,19 @@ class InvasionPercolation(GenericAlgorithm):
         self._phase['throat.invasion_time'] = t
 
     def set_occupancy(self, sequence):
+        r"""
+        Sets the phase occupancy based on the invasion sequence
+
+        Parameters
+        ----------
+        sequence : float
+            The cut-off sequence for invasion
+
+        Returns
+        -------
+        Creates 2 boolean arrays Np and Nt long called '<element>.occupancy'
+        and saves them in the phase associated with the algorithm
+        """
         self._phase['throat.occupancy'] = (self['throat.invasion_sequence'] <=
                                            sequence)
         self._phase['pore.occupancy'] = (self['pore.invasion_sequence'] <=
@@ -204,7 +217,7 @@ class InvasionPercolation(GenericAlgorithm):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
         It is applied as a post-process and runs the percolation algorithm in
-        reverse assessing the occupancy of un-invaded pore neighbors.
+        reverse assessing the occupancy of pore neighbors.
         3 situations can happen on invasion without trapping:
             The number of defending clusters stays the same and clusters can
             shrink
@@ -216,21 +229,20 @@ class InvasionPercolation(GenericAlgorithm):
             A cluster of size one is created
             Mutliple clusters merge into one cluster
         With trapping the reversed rules are adjusted so that:
-            Only clusters that do not connect to a sink can grow and merge
+            Only clusters that do not connect to a sink can grow and merge.
             At the point that a neighbor connected to a sink is touched the
             trapped cluster stops growing as this is the point of trapping in
             forward invasion time.
 
         Logger info displays the invasion Sequence and pore index and a message
         with condition number based on the modified trapping rules and the
-        assignment of the pore to a given cluster
-        Stopped clusters are also logged as info
+        assignment of the pore to a given cluster.
 
         Initially all invaded pores are given cluster label -1
         Outlets / Sinks are given -2
         New clusters that grow into fully trapped clusters are either
         identified at the point of breakthrough or grow from nothing if the
-        full invasion sequence is run, they are assigned numbers from 0 up
+        full invasion sequence is run, they are assigned numbers from 0 up.
 
         Ref:
         [1] Masson, Y., 2016. A fast two-step algorithm for invasion
@@ -273,15 +285,17 @@ class InvasionPercolation(GenericAlgorithm):
             bt_seq = np.max(self['pore.invasion_sequence'])
 
         # Turn into a list for indexing
-        inv_list = list(self['pore.invasion_sequence'])
+        inv_seq = np.vstack((self['pore.invasion_sequence'].astype(int),
+                             np.arange(0, self._net.Np, dtype=int))).T
+        # Reverse sort list
+        inv_seq = inv_seq[inv_seq[:, 0].argsort()][::-1]
         next_cluster_num = np.max(clusters)+1
         # For all the steps after the inlets are set up to break-through
         # Reverse the sequence and assess the neighbors cluster state
         stopped_clusters = np.zeros(self._net.Np, dtype=bool)
         all_neighbors = self._net.find_neighbor_pores(self._net.pores(),
                                                       flatten=False)
-        for un_seq in np.sort(self['pore.invasion_sequence'])[::-1]:
-            pore = inv_list.index(un_seq)  # Get the pore to uninvade
+        for un_seq, pore in inv_seq:
             if pore not in outlets:  # Don't bother with outlets
                 nc = clusters[all_neighbors[pore]]  # Neighboring clusters
                 unique_ns = np.unique(nc[nc != -1])  # Unique Neighbors
@@ -334,7 +348,7 @@ class InvasionPercolation(GenericAlgorithm):
                     str(np.sum(np.unique(clusters) >= 0)))
         self['pore.trapped'] = self['pore.clusters'] > -1
         trapped_ts = self._net.find_neighbor_throats(self['pore.trapped'])
-        self['throat.trapped'] = np.ones([self._net.Nt], dtype=bool)
+        self['throat.trapped'] = np.zeros([self._net.Nt], dtype=bool)
         self['throat.trapped'][trapped_ts] = True
 
     def trapping_slow(self, outlets):
