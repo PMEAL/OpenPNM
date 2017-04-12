@@ -848,8 +848,8 @@ class GenericNetwork(Core):
                 Pn = sp.array([sp.array([]) for i in range(0, len(pores))])
             return Pn.astype(sp.int64)
         # Create kdTree objects
-        kd = sptl.cKDTree(self['pore.coords'])
-        kd_pores = sptl.cKDTree(self['pore.coords'][pores])
+        kd = sptl.cKDTree(self['pore.coords'], balanced_tree=False, compact_nodes=False)
+        kd_pores = sptl.cKDTree(self['pore.coords'][pores], balanced_tree=False, compact_nodes=False)
         # Perform search
         Pn = kd_pores.query_ball_tree(kd, r=distance)
         # Sort the indices in each list
