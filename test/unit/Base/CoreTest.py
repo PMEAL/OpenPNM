@@ -94,6 +94,13 @@ class CoreTest:
         geo.models.regenerate()
         assert len(geo.props()) == 0
 
+    def test_clear_empty_labels(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+        net['pore.label'] = False
+        assert 'pore.label' in net
+        net.clear('empty_labels')
+        assert 'pore.label' not in net
+
     def test_props_all(self):
         a = self.geo.props()
         assert sorted(a) == ['pore.diameter', 'pore.volume',
