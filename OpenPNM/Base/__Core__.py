@@ -126,7 +126,7 @@ class Core(dict):
             num = list('0000')
             temp = list(str(len(mgr.keys())))
             num[-len(temp):] = temp
-            name = ''.join(num) + '_' + self.__class__.__name__
+            name =  self.__class__.__name__ + '_' + ''.join(num)
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
