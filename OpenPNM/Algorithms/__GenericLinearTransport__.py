@@ -626,8 +626,8 @@ class GenericLinearTransport(GenericAlgorithm):
         returns the result.
         """
         # Updating the source terms
-        s1 = sp.zeros(self._coeff_dimension-1)
-        s2 = sp.zeros(self._coeff_dimension-1)
+        s1 = sp.zeros(self._coeff_dimension)
+        s2 = sp.zeros(self._coeff_dimension)
         for label in self.labels():
             if 'pore.source_' in label:
                 source_name = label.replace('pore.source_', '')
