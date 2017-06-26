@@ -626,8 +626,8 @@ class GenericLinearTransport(GenericAlgorithm):
         returns the result.
         """
         # Updating the source terms
-        s1 = sp.zeros(self._coeff_dimension)
-        s2 = sp.zeros(self._coeff_dimension)
+        s1 = sp.zeros(self._coeff_dimension-1)
+        s2 = sp.zeros(self._coeff_dimension-1)
         for label in self.labels():
             if 'pore.source_' in label:
                 source_name = label.replace('pore.source_', '')
@@ -641,10 +641,10 @@ class GenericLinearTransport(GenericAlgorithm):
                                          mode='update')
                     prop1 = 'pore.source_nonlinear_s1_' + source_name
                     mask1 = ~sp.isnan(self[prop1])
-                    s1[~sp.isnan(self[prop1])] = s1[mask1] + self[prop1][mask1]
+                    s1[mask1] = s1[mask1] + self[prop1][mask1]
                     prop2 = 'pore.source_nonlinear_s2_' + source_name
                     mask2 = ~sp.isnan(self[prop2])
-                    s2[~sp.isnan(self[prop2])] = s2[mask2] + self[prop2][mask2]
+                    s2[mask2] = s2[mask2] + self[prop2][mask2]
         self.s1 = s1
         self.s2 = s2
         # Modifying A and b
