@@ -48,7 +48,6 @@ class Boundary(GenericGeometry):
                         mode='max')
         self['pore.volume'] = 0.0
         self['pore.seed'] = 1.0
-        self['throat.seed'] = 1.0
         self['throat.volume'] = 0.0
         self.models.add(propname='throat.length',
                         model=gm.throat_length.straight)
@@ -62,3 +61,7 @@ class Boundary(GenericGeometry):
                             model=gm.throat_area.cuboid)
             self.models.add(propname='throat.surface_area',
                             model=gm.throat_surface_area.cuboid)
+        self.models.add(propname='pore.area',
+                        model=gm.pore_misc.neighbor,
+                        throat_prop='throat.area',
+                        mode='max')
