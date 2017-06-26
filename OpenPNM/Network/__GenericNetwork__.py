@@ -848,8 +848,12 @@ class GenericNetwork(Core):
                 Pn = sp.array([sp.array([]) for i in range(0, len(pores))])
             return Pn.astype(sp.int64)
         # Create kdTree objects
-        kd = sptl.cKDTree(self['pore.coords'])
-        kd_pores = sptl.cKDTree(self['pore.coords'][pores])
+        kd = sptl.cKDTree(self['pore.coords'],
+                          balanced_tree=False,
+                          compact_nodes=False)
+        kd_pores = sptl.cKDTree(self['pore.coords'][pores],
+                                balanced_tree=False,
+                                compact_nodes=False)
         # Perform search
         Pn = kd_pores.query_ball_tree(kd, r=distance)
         # Sort the indices in each list
@@ -1040,16 +1044,12 @@ class GenericNetwork(Core):
         if mode == 'regenerate':
             self._adjacency_matrix['coo'] = \
                 self.create_adjacency_matrix(sprsfmt='coo')
-            self._adjacency_matrix['csr'] = \
-                self.create_adjacency_matrix(sprsfmt='csr')
-            self._adjacency_matrix['lil'] = \
-                self.create_adjacency_matrix(sprsfmt='lil')
+            self._adjacency_matrix['csr'] = self._adjacency_matrix['coo'].tocsr()
+            self._adjacency_matrix['lil'] = self._adjacency_matrix['coo'].tolil()
             self._incidence_matrix['coo'] = \
                 self.create_incidence_matrix(sprsfmt='coo')
-            self._incidence_matrix['csr'] = \
-                self.create_incidence_matrix(sprsfmt='csr')
-            self._incidence_matrix['lil'] = \
-                self.create_incidence_matrix(sprsfmt='lil')
+            self._incidence_matrix['csr'] = self._incidence_matrix['coo'].tocsr()
+            self._incidence_matrix['lil'] = self._incidence_matrix['coo'].tolil()
 
     def domain_bulk_volume(self):
         raise NotImplementedError()
