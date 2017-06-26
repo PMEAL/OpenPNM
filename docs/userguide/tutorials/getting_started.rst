@@ -150,7 +150,7 @@ The resulting network looks like:
 .. image:: http://i.imgur.com/ScdydO9l.png
    :align: center
 
-This image was creating using `Paraview <http://www.paraview.org>`_, using the instructions given here: `Example in the OpenPNM-Example collection <https://github.com/PMEAL/OpenPNM-Examples/blob/master/IO_and_Visualization/paraview.md>`_
+This image was creating using `Paraview <http://www.paraview.org>`_, using the instructions given here: `Example in the OpenPNM-Example collection <https://github.com/PMEAL/OpenPNM-Examples/blob/master/IO_and_Visualization/view_vtp_in_paraview.md>`_
 
 -------------------------------------------------------------------------------
 Inspecting Object Properties
