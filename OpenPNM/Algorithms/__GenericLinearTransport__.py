@@ -641,10 +641,16 @@ class GenericLinearTransport(GenericAlgorithm):
                                          mode='update')
                     prop1 = 'pore.source_nonlinear_s1_' + source_name
                     mask1 = ~sp.isnan(self[prop1])
-                    s1[mask1] = s1[mask1] + self[prop1][mask1]
+                    s1_temp_1 = s1[:self.Np][mask1]
+                    s1_temp_2 = self[prop1][mask1]
+                    mask_temp_1 = self.Ps[~sp.isnan(self[prop1])]
+                    s1[mask_temp_1] = s1_temp_1 + s1_temp_2
                     prop2 = 'pore.source_nonlinear_s2_' + source_name
                     mask2 = ~sp.isnan(self[prop2])
-                    s2[mask2] = s2[mask2] + self[prop2][mask2]
+                    s2_temp_1 = s2[:self.Np][mask2]
+                    s2_temp_2 = self[prop2][mask2]
+                    mask_temp_2 = self.Ps[~sp.isnan(self[prop2])]
+                    s2[mask_temp_2] = s2_temp_1 + s2_temp_2
         self.s1 = s1
         self.s2 = s2
         # Modifying A and b

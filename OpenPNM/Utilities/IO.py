@@ -1100,7 +1100,9 @@ class iMorph(GenericIO):
         network.extend(throat_conns=new_conns, labels='new_conns')
         for item in network.props('pore'):
             item = item.split('.')[1]
-            network['throat.'+item] = _sp.nan
+            arr = _sp.ones_like(network['pore.'+item])[0]
+            arr = _sp.tile(A=arr, reps=[network.Nt, 1])*_sp.nan
+            network['throat.'+item] = _sp.squeeze(arr)
             network['throat.'+item][network.throats('new_conns')] = \
                 network['pore.'+item][Ts]
         network.trim(pores=Ts)
