@@ -169,7 +169,7 @@ class Cubic(GenericNetwork):
             if 'pore.'+label not in self.keys():
                 self['pore.'+label] = False
         if 'pore.boundary' in self.keys():
-            internal = -self['pore.boundary']
+            internal = ~self['pore.boundary']
         else:
             internal = self['pore.all']
         self['pore.internal'] = internal
