@@ -213,7 +213,7 @@ class InvasionPercolation(GenericAlgorithm):
         self._phase['pore.occupancy'] = (self['pore.invasion_sequence'] <=
                                          sequence)
 
-    def apply_trapping(self, outlets, bt=False):
+    def apply_trapping(self, outlets):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
         It is applied as a post-process and runs the percolation algorithm in
@@ -260,16 +260,11 @@ class InvasionPercolation(GenericAlgorithm):
 
         Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
         """
-
-        if bt:
-            # Go from breakthrough
-            # First assess sequence at which break-through was acheived
-            bt_seq = np.min(self['pore.invasion_sequence'][outlets])
-            logger.info("Break-through Sequence: ", bt_seq)
-            # Set occupancy
-            self.set_occupancy(bt_seq)
+        # First see if network is fully invaded
+        invaded_ps = self['pore.invasion_sequence'] > -1
+        if ~np.all(invaded_ps):
             # Put defending phase into clusters
-            clusters = self._net.find_clusters2(~self._phase['pore.occupancy'])
+            clusters = self._net.find_clusters2(~invaded_ps)
             # Identify clusters that are connected to an outlet and set to -2
             # -1 is the invaded fluid
             # -2 is the defender fluid able to escape
@@ -282,7 +277,6 @@ class InvasionPercolation(GenericAlgorithm):
             # Go from end
             clusters = np.ones(self._net.Np, dtype=int)*-1
             clusters[outlets] = -2
-            bt_seq = np.max(self['pore.invasion_sequence'])
 
         # Turn into a list for indexing
         inv_seq = np.vstack((self['pore.invasion_sequence'].astype(int),
@@ -318,7 +312,7 @@ class InvasionPercolation(GenericAlgorithm):
                         clusters[pore] = -2
                 elif -2 in unique_ns:
                     # We have reached a sink neighbor, stop growing cluster
-                    msg = (seq_pore+" C:3 joins sink cluster cluster")
+                    msg = (seq_pore+" C:3 joins sink cluster")
                     logger.info(msg)
                     clusters[pore] = -2
                     # Stop growth and merging
@@ -350,6 +344,8 @@ class InvasionPercolation(GenericAlgorithm):
         trapped_ts = self._net.find_neighbor_throats(self['pore.trapped'])
         self['throat.trapped'] = np.zeros([self._net.Nt], dtype=bool)
         self['throat.trapped'][trapped_ts] = True
+        self['pore.invasion_sequence'][self['pore.trapped']] = np.inf
+        self['throat.invasion_sequence'][self['throat.trapped']] = np.inf
 
     def trapping_slow(self, outlets):
         r"""
