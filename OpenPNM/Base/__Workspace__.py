@@ -511,11 +511,11 @@ class Workspace(dict):
 
     def recreate_object_handles(self):
         r"""
-        This function assignes every object in the Workspce to a handle
-        accessible from the command line, using the object's name (and hence
-        the dictionary key of the object in the Workspace object) as the
-        handle name.  This is useful when loading a saved Workspace and you
-        want to interact with the objects.
+        This function assigns every object in the Workspce to a handle
+        accessible from the command line, using the object's name (i.e. the
+        dictionary key of the object in the Workspace object) as the handle
+        name.  This is useful when loading a saved Workspace and you want
+        to interact with the objects.
 
         Notes
         -----
