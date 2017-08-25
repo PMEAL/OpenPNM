@@ -194,36 +194,18 @@ class InvasionPercolation(GenericAlgorithm):
         t[b] = e  # Convert back to original order
         self._phase['throat.invasion_time'] = t
 
-    def set_occupancy(self, sequence):
-        r"""
-        Sets the phase occupancy based on the invasion sequence
-
-        Parameters
-        ----------
-        sequence : float
-            The cut-off sequence for invasion
-
-        Returns
-        -------
-        Creates 2 boolean arrays Np and Nt long called '<element>.occupancy'
-        and saves them in the phase associated with the algorithm
-        """
-        self._phase['throat.occupancy'] = (self['throat.invasion_sequence'] <=
-                                           sequence)
-        self._phase['pore.occupancy'] = (self['pore.invasion_sequence'] <=
-                                         sequence)
-
     def apply_trapping(self, outlets):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
         It is applied as a post-process and runs the percolation algorithm in
-        reverse assessing the occupancy of pore neighbors.
-        3 situations can happen on invasion without trapping:
+        reverse assessing the occupancy of pore neighbors. Consider the
+        following scenario when running standard IP without trapping,
+        3 situations can happen after each invasion step:
             The number of defending clusters stays the same and clusters can
             shrink
             A cluster of size one is suppressed
             A cluster is split into multiple clusters
-        In reverse the following situations can happen:
+        In reverse the following opposite situations can happen:
             The number of defending clusters stays the same and clusters can
             grow
             A cluster of size one is created
@@ -234,7 +216,7 @@ class InvasionPercolation(GenericAlgorithm):
             trapped cluster stops growing as this is the point of trapping in
             forward invasion time.
 
-        Logger info displays the invasion Sequence and pore index and a message
+        Logger info displays the invasion sequence and pore index and a message
         with condition number based on the modified trapping rules and the
         assignment of the pore to a given cluster.
 
