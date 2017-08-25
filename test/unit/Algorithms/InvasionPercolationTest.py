@@ -59,7 +59,7 @@ class InvasionPercolationTest:
                 inds = (alg['pore.trapped_slow'] == -1) * trapped_pores
                 if np.sum(inds) > 0:
                     alg['pore.trapped_slow'][inds] = seq
-                    
+
     def test_apply_trapping(self):
         import time
         t1 = time.time()

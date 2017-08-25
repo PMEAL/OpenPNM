@@ -346,4 +346,3 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.trapped'][trapped_ts] = True
         self['pore.invasion_sequence'][self['pore.trapped']] = np.inf
         self['throat.invasion_sequence'][self['throat.trapped']] = np.inf
-
