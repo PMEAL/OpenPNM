@@ -347,22 +347,3 @@ class InvasionPercolation(GenericAlgorithm):
         self['pore.invasion_sequence'][self['pore.trapped']] = np.inf
         self['throat.invasion_sequence'][self['throat.trapped']] = np.inf
 
-    def trapping_slow(self, outlets):
-        r"""
-        Temporary implementation of the standard OP trapping logic for every
-        invasion step to benchmark speed
-        """
-        self['pore.trapped_slow'] = sp.ones([self.Np, ], dtype=float)*-1
-        for seq in np.sort(self['pore.invasion_sequence']):
-            invader = self['pore.invasion_sequence'] <= seq
-            defender = ~invader.copy()
-            clusters = self._net.find_clusters2(defender)
-            out_clusters = sp.unique(clusters[outlets])
-            trapped_pores = ~sp.in1d(clusters, out_clusters)
-            trapped_pores[invader] = False
-            if sp.sum(trapped_pores) > 0:
-                inds = (self['pore.trapped_slow'] == -1) * trapped_pores
-                if sp.sum(inds) > 0:
-                    self['pore.trapped_slow'][inds] = seq
-                    logger.info("S: " + str(seq) + " Trapped Pores: " +
-                                str(sp.sum(inds)))

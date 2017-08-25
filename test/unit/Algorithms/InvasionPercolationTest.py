@@ -41,6 +41,25 @@ class InvasionPercolationTest:
         self.alg.run(phase=self.phase, inlets=ip_inlets)
         self.alg.return_results()
 
+    def _trapping_slow(self, outlets):
+        r"""
+        Implementation of the standard OP trapping logic for every
+        invasion step to benchmark speed
+        """
+        alg = self.alg
+        alg['pore.trapped_slow'] = np.ones([alg.Np, ], dtype=float)*-1
+        for seq in np.sort(alg['pore.invasion_sequence']):
+            invader = alg['pore.invasion_sequence'] <= seq
+            defender = ~invader.copy()
+            clusters = alg._net.find_clusters2(defender)
+            out_clusters = np.unique(clusters[outlets])
+            trapped_pores = ~np.in1d(clusters, out_clusters)
+            trapped_pores[invader] = False
+            if np.sum(trapped_pores) > 0:
+                inds = (alg['pore.trapped_slow'] == -1) * trapped_pores
+                if np.sum(inds) > 0:
+                    alg['pore.trapped_slow'][inds] = seq
+                    
     def test_apply_trapping(self):
         import time
         t1 = time.time()
@@ -49,7 +68,7 @@ class InvasionPercolationTest:
                                   'right_boundary'])
         self.alg.apply_trapping(outlets)
         t2 = time.time()
-        self.alg.trapping_slow(outlets)
+        self._trapping_slow(outlets)
         t3 = time.time()
         assert (t2-t1) < (t3-t2)
         bulk = self.net.pores('boundary', mode='not')
