@@ -286,36 +286,6 @@ def pore2centroid(network):
                     geometry['pore.centroid'][geom_pores[i]]
 
 
-def tortuosity(network=None):
-    r"""
-    Calculate the tortuosity from the angle between throat vectors and principle axes
-    """
-    conns = network['throat.conns']
-    va = network['throat.centroid'] - network['pore.centroid'][conns[:, 0]]
-    vb = network['throat.centroid'] - network['pore.centroid'][conns[:, 1]]
-    x = [1, 0, 0]
-    y = [0, 1, 0]
-    z = [0, 0, 1]
-    f = 180 / np.pi
-    theta_x_a = tr.angle_between_vectors(va, x, directed=False, axis=1)
-    theta_x_b = tr.angle_between_vectors(vb, x, directed=False, axis=1)
-    theta_x = (np.mean(theta_x_a[~np.isnan(theta_x_a)]) +
-               np.mean(theta_x_b[~np.isnan(theta_x_b)])) / 2
-    theta_y_a = tr.angle_between_vectors(va, y, directed=False, axis=1)
-    theta_y_b = tr.angle_between_vectors(vb, y, directed=False, axis=1)
-    theta_y = (np.mean(theta_y_a[~np.isnan(theta_y_a)]) +
-               np.mean(theta_y_b[~np.isnan(theta_y_b)])) / 2
-    theta_z_a = tr.angle_between_vectors(va, z, directed=False, axis=1)
-    theta_z_b = tr.angle_between_vectors(vb, z, directed=False, axis=1)
-    theta_z = (np.mean(theta_z_a[~np.isnan(theta_z_a)]) +
-               np.mean(theta_z_b[~np.isnan(theta_z_b)])) / 2
-    tot_angle = (theta_x+theta_y+theta_z)*f
-    if 180 < tot_angle:
-        logger.error('Something is wrong: ' + str(tot_angle))
-
-    return 1 / np.cos(np.array([theta_x, theta_y, theta_z]))
-
-
 def plot_throat(geometry, throats, fig=None):
     r"""
     Print a given throat or list of throats accepted as [1, 2, 3, ..., n]
