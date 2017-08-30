@@ -13,6 +13,7 @@ def setup(app):
 
 # General configuration ------------------------------------------------------
 extensions = ['sphinx.ext.autodoc',
+              'numpydoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',
               'sphinx.ext.todo',
