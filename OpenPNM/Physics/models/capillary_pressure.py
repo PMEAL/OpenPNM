@@ -41,7 +41,7 @@ def _handle_zeros(array, mode='max', value=None):
     r"""
     Convert zeros in an array to either the max, min or specified value
     Useful for handling pores or throats with zero diameter i.e. boundaries
-    
+
     Parameters
     ----------
     mode : Determines what value to replace zeros with, uses non-zero values.
