@@ -284,3 +284,108 @@ def conduit_lengths(network, throats=None, mode='pore'):
         plen2 = lengths*(1-fractions)
 
     return _sp.vstack((plen1, network['throat.length'], plen2)).T[throats]
+
+
+def generate_voxel_image(network, maxdim=200, pshape='sphere', tshape='cylinder'):
+    r"""
+    Creates a voxelized image of a pore network suitable for performing direct
+    numerical simulations or just visualization.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network object containing the pore coordinates and throat
+        connections.  Note that this should be associated with a Geometry
+        object so that pore and throat diameter values can be found.
+
+    maxdim : scalar
+        The size in voxels of the longest axis of the resultant image.  This
+        value is used to calculate the resolution of the image, but it\'s
+        more convenient and safer to specify.  The default is 200, and anything
+        larger will require a computer with a decent amount of RAM.
+
+    pshape : string {'sphere' (default), 'cube', 'none'}
+        The shape of the pore bodies.  Use \'none'\ to prevent the addtion of
+        pores to the image
+
+    tshape : string {'cylinder' (default), 'cuboid', 'none'}
+        The cross-sectional shape of the throats.  Use \'none\' to prevent the
+        addition of throats to the image.
+
+    Returns
+    -------
+    A 3D image with 2\'s indicating the pores, 1\'s for throats, and 0\'s
+    elsewhere.
+
+    """
+    from skimage.morphology import ball
+    import scipy.ndimage as spim
+    Rmax = _sp.amax(network['pore.diameter'])/2
+    b = _sp.amin(network['pore.coords'], axis=0)
+    t = _sp.amax(network['pore.coords'] + 2*Rmax, axis=0)
+    l = t - b + 1
+    res = _sp.amax(l/maxdim)
+    im_pores = _sp.zeros(shape=_sp.array(l/res, dtype=int), dtype=int)
+    if pshape != 'none':
+        for P in network.Ps:
+            R = _sp.around(network['pore.diameter'][P]/2/res).astype(int)
+            pore = ball(radius=R)
+            b = _sp.array((network['pore.coords'][P]+Rmax)/res-R, dtype=int)
+            t = b + 2*R + 1
+            inds = _sp.meshgrid(_sp.arange(b[0], t[0]),
+                                _sp.arange(b[1], t[1]),
+                                _sp.arange(b[2], t[2]))
+            if pshape.startswith('sph'):
+                im_pores[inds] += pore
+            else:
+                im_pores[inds] += 1
+        im_pores = im_pores > 0
+
+    im_throats = _sp.zeros_like(im_pores, dtype=int)
+    im_temp = _sp.zeros_like(im_throats)
+    if tshape != 'none':
+        for T in network.Ts:
+            R = _sp.around(network['throat.diameter'][T]/2/res).astype(int)
+            P12 = network['throat.conns'][T]
+            crds = (network['pore.coords'][P12]+Rmax)/res
+            line = line_segment(X0=crds[0], X1=crds[1])
+            im_temp[line] = 1
+            b = _sp.amin(line, axis=1) - R - 1
+            t = _sp.amax(line, axis=1) + R + 1
+            inds = _sp.meshgrid(_sp.arange(b[0], t[0]),
+                                _sp.arange(b[1], t[1]),
+                                _sp.arange(b[2], t[2]))
+            if tshape.startswith('cyl'):
+                sub_im = spim.distance_transform_edt(im_temp[inds] == 0) < R
+                im_throats[inds] += _sp.array(sub_im, dtype=int)
+            else:
+                im_throats[inds] += 1
+            im_temp[inds] = 0
+    im_throats = (im_throats > 0)*(im_pores == 0)
+    im = _sp.array(2.0*im_pores + 1.0*im_throats).astype(int)
+    return im
+
+
+def line_segment(X0, X1):
+    r"""
+    Calculate the voxel coordinates of a straight line between the two given
+    end points
+
+    Parameters
+    ----------
+    X0 and X1 : array_like
+        The [x, y, z] coordinates of the start and end points of the line.
+
+    Returns
+    -------
+        A list of lists containing the X, Y, and Z coordinates of all voxels
+        that should be drawn between the start and end points to create a solid
+        line.
+    """
+    X0 = _sp.around(X0)
+    X1 = _sp.around(X1)
+    L = _sp.amax(_sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
+    x = _sp.rint(_sp.linspace(X0[0], X1[0], L)).astype(int)
+    y = _sp.rint(_sp.linspace(X0[1], X1[1], L)).astype(int)
+    z = _sp.rint(_sp.linspace(X0[2], X1[2], L)).astype(int)
+    return [x, y, z]

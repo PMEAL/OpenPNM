@@ -53,3 +53,17 @@ class UtilitiesMiscTest:
         pts = sp.hstack([pts1, pts2])
         check = misc.iscoplanar(coords=net['pore.coords'][pts])
         assert check
+
+    def test_generate_voxel_image(self):
+        net = OpenPNM.Network.Cubic(shape=[2, 3, 4])
+        geom = OpenPNM.Geometry.Stick_and_Ball(network=net,
+                                               pores=net.Ps,
+                                               throats=net.Ts)
+        im1 = OpenPNM.Utilities.misc.generate_voxel_image(network=net,
+                                                          maxdim=100)
+        assert max(im1.shape) == 100
+        im2 = OpenPNM.Utilities.misc.generate_voxel_image(network=net,
+                                                          maxdim=100,
+                                                          pshape='cube',
+                                                          tshape='cuboid')
+        assert im1.sum() < im2.sum()
