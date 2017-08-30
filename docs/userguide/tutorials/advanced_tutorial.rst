@@ -112,17 +112,22 @@ The boundary pores we've added to the network should be treated a little bit dif
 .. code-block:: python
 
     >>> Ps = pn.pores('*boundary', mode='not')
-    >>> geom = op.Geometry.Stick_and_Ball(network=pn, pores=Ps, throats=pn.Ts,
+    >>> Ts = pn.throats('boundary', mode='not')
+    >>> geom = op.Geometry.Stick_and_Ball(network=pn, pores=Ps, throats=Ts,
     ...                                   name='internal')
     >>> Ps = pn.pores('*boundary')
-    >>> boun = op.Geometry.GenericGeometry(network=pn, pores=Ps, name='boundary')
+    >>> Ts = pn.throats('boundary')
+    >>> boun = op.Geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts, name='boundary')
 
-The **Stick_and_Ball** class is preloaded with the pore-scale models to calculate all the necessary size information (pore diameter, throat lengths, etc).  The **GenericGeometry** class used for the boundary pores is empty and requires work:
+The **Stick_and_Ball** class is preloaded with the pore-scale models to calculate all the necessary size information (pore diameter, pore.volume, throat lengths, throat.diameter, etc).  The **GenericGeometry** class used for the boundary pores is empty and requires work. Moreover, as throat properties like length and diameter are used in OpenPNM's algorithms (e.g., drainage) so a small value (0.001 nm) has been set to all of them. Furthermore, the volume of throats as cylinderical objects has been calculated from their length and diameter.
 
 .. code-block:: python
 
     >>> boun['pore.diameter'] = 0
     >>> boun['pore.volume'] = 0
+    >>> boun['throat.diameter'] = 1e-12
+    >>> boun['throat.length'] = 1e-12
+    >>> boun['throat.volume'] = sp.pi*boun['throat.diameter']**2/4*boun['throat.length']
 
 These models are required for the Hagan-Poiseuille model. Most of them are straight-forward geometry calculations, except for the model used for ``'throat.diameter'``.  In this case the model looks into the neighbor pores, retrieves the two ``'pore.diameter'`` and uses the ``'max'`` value.  Because we set the boundary pores to have 0 diameter, this will naturally find result in the throat being assigned the diameter of the internal pore.
 
