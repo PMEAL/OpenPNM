@@ -37,6 +37,27 @@ def _get_key_props(phase=None, diameter='throat.diameter',
     return entity, sigma, theta
 
 
+def _handle_zeros(array, mode='max', value=None):
+    r"""
+    Convert zeros in an array to either the max, min or specified value
+    Useful for handling pores or throats with zero diameter i.e. boundaries
+    
+    Parameters
+    ----------
+    mode : Determines what value to replace zeros with, uses non-zero values.
+    options are max, min , mean
+    """
+    if value is None:
+        if mode == 'max':
+            value = array.max()
+        elif mode == 'min':
+            value = array[~array == 0.0].min()
+        elif mode == 'mean':
+            value = array[~array == 0.0].mean()
+    array[array == 0.0] = value
+    return array
+
+
 def washburn(physics, phase, network, surface_tension='pore.surface_tension',
              contact_angle='pore.contact_angle', diameter='throat.diameter',
              **kwargs):
@@ -75,6 +96,8 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
                                           surface_tension=surface_tension,
                                           contact_angle=contact_angle)
     r = network[diameter]/2
+    # Take care of any zeros - Boundary pores should be invaded with ease
+    r = _handle_zeros(r, mode='max')
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
     if entity == 'throat':
         value = value[phase.throats(physics.name)]
@@ -134,6 +157,8 @@ def purcell(physics, phase, network, r_toroid,
                                           surface_tension=surface_tension,
                                           contact_angle=contact_angle)
     r = network[diameter]/2
+    # Take care of any zeros - Boundary pores should be invaded with ease
+    r = _handle_zeros(r, mode='max')
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
     value = (-2*sigma/r) * \
@@ -283,7 +308,8 @@ def cuboid(physics, phase, network,
     # Convert theta to rad
     theta *= 2*_sp.pi/360
     rad = network[diameter]/2
-
+    # Take care of any zeros - Boundary pores should be invaded with ease
+    rad = _handle_zeros(rad, mode='max')
     Theta = ((theta+_sp.cos(theta)**2-_sp.pi/4-_sp.sin(theta)*_sp.cos(theta)) /
              (_sp.cos(theta)-_sp.sqrt(_sp.pi/4-theta+_sp.sin(theta) *
               _sp.cos(theta))))
@@ -348,6 +374,8 @@ def kelvin(physics, phase, network, diameter='pore.diameter',
     rho = phase[density]
     gamma = phase[surface_tension]
     r = network[diameter]/2
+    # Take care of any zeros - Boundary pores should be invaded with ease
+    r = _handle_zeros(r, mode='max')
     R = 8.314
     value = P0*np.exp((M*2*gamma)/(rho*R*T*r))
     return value
