@@ -889,6 +889,29 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
+def label_faces(network):
+    r"""
+    Finds pores on the surface of the network and labels them according to
+    whether they are on the *top*, *bottom*, etc.  This function assumes the
+    network is cubic in shape (i.e. with six flat sides)
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network to apply the labels
+
+    """
+    find_surface_pores(network)
+    Ps = network['pore.surface']
+    crds = network['pore.coords']
+    network['pore.top'] = (crds[:, 2] > 0.9*_sp.amax(crds[:, 2])) * Ps
+    network['pore.bottom'] = (crds[:, 2] < 0.1*_sp.amax(crds[:, 2])) * Ps
+    network['pore.right'] = (crds[:, 1] > 0.9*_sp.amax(crds[:, 1])) * Ps
+    network['pore.left'] = (crds[:, 1] < 0.1*_sp.amax(crds[:, 1])) * Ps
+    network['pore.back'] = (crds[:, 0] > 0.9*_sp.amax(crds[:, 0])) * Ps
+    network['pore.front'] = (crds[:, 0] < 0.1*_sp.amax(crds[:, 0])) * Ps
+
+
 def plot_connections(network, throats=None, fig=None, **kwargs):
     r"""
     Produces a 3D plot of the network topology showing how throats connect

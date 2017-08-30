@@ -29,7 +29,9 @@ def straight(network, geometry, pore_diameter='pore.diameter',
     C2 = network['pore.coords'][pore2]
     E = _sp.sqrt(_sp.sum((C1-C2)**2, axis=1))  # Euclidean distance between pores
     D1 = network[pore_diameter][pore1]
+    D1[_sp.isnan(D1)] = 0.0
     D2 = network[pore_diameter][pore2]
+    D2[_sp.isnan(D2)] = 0.0
     value = E-(D1+D2)/2.
     value = value[throats]
     if _sp.any(value < 0) and L_negative is not None:
