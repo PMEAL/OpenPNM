@@ -36,10 +36,6 @@ class VertexOpsTest:
         por = vo.porosity(self.net)
         assert por < 1.0
 
-    def test_tortuosity(self):
-        tor = vo.tortuosity(self.net)
-        assert sp.all(tor > 1.0)
-
     def test_pore2centroid(self):
         temp_coords = self.net['pore.coords']
         self.geo['pore.centroid'] = sp.ones([self.geo.num_pores(), 3])
@@ -48,12 +44,6 @@ class VertexOpsTest:
                       sp.ones([self.geo.num_pores(), 3])) == 0.0
         self.net['pore.coords'] = temp_coords
 
-    # def test_plot_pore(self):
-    #    vo.plot_pore(self.geo, self.geo.pores())
-
-    # def test_plot_throat(self):
-    #    vo.plot_throat(self.geo, [1, 2, 3, 4])
-
     def test_rotate_and_chop(self):
         throat_verts = self.geo["throat.vertices"][0]
         throat_normal = self.geo["throat.normal"][0]
@@ -61,3 +51,7 @@ class VertexOpsTest:
         r, c = sp.shape(test)
         assert r == len(throat_verts)
         assert c == 2
+
+if __name__ == '__main__':
+    a = VertexOpsTest()
+    a.setup_class()
