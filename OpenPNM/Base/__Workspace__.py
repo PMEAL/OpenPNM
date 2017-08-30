@@ -3,6 +3,7 @@
 Workspace:  A class for managing the workspace of all objects
 ###############################################################################
 """
+import sys
 import dill as _pickle
 import copy as _copy
 import time
@@ -507,6 +508,24 @@ class Workspace(dict):
                 logger.info(key, ': ', self._comments[key])
 
     comments = property(fget=_get_comments, fset=_set_comments)
+
+    def recreate_object_handles(self):
+        r"""
+        This function assigns every object in the Workspce to a handle
+        accessible from the command line, using the object's name (i.e. the
+        dictionary key of the object in the Workspace object) as the handle
+        name.  This is useful when loading a saved Workspace and you want
+        to interact with the objects.
+
+        Notes
+        -----
+        For this to work really well, you should provide a ``name`` for each
+        object that is the same as the handle you use or want to use.  If
+        you don't provide a name, then an arbitrary name is created which
+        defeats the purpose.
+        """
+        for item in self.keys():
+            sys.modules['__main__'].__setattr__(item, self[item])
 
     def clone_simulation(self, network, name=None):
         r"""

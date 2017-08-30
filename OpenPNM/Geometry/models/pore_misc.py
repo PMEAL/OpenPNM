@@ -87,8 +87,8 @@ def neighbor(geometry, throat_prop='throat.seed', mode='min', **kwargs):
         'max' and 'mean'.
     """
     network = geometry._net
-    Ps = geometry.pores()
-    data = geometry[throat_prop]
+    Ps = network.pores()
+    data = network[throat_prop]
     neighborTs = network.find_neighbor_throats(pores=Ps,
                                                flatten=False,
                                                mode='intersection')
@@ -102,4 +102,4 @@ def neighbor(geometry, throat_prop='throat.seed', mode='min', **kwargs):
     if mode == 'mean':
         for pore in Ps:
             values[pore] = _sp.mean(data[neighborTs[pore]])
-    return values
+    return values[network.pores(geometry.name)]

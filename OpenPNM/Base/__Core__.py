@@ -123,10 +123,10 @@ class Core(dict):
         if name in mgr.keys():
             raise Exception('An object named '+name+' already exists')
         elif name is None:
-            name = ''.join(random.choice(string.ascii_uppercase +
-                                         string.ascii_lowercase +
-                                         string.digits) for _ in range(5))
-            name = self.__class__.__name__ + '_' + name
+            num = list('0000')
+            temp = list(str(len(mgr.keys())))
+            num[-len(temp):] = temp
+            name = self.__class__.__name__ + '_' + ''.join(num)
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
