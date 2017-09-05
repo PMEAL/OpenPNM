@@ -7,6 +7,7 @@ from OpenPNM.Base import Workspace
 import string
 import random
 import scipy as sp
+import numpy as np
 import scipy.constants
 from OpenPNM.Base import logging, Tools
 from OpenPNM.Base import ModelsDict
@@ -752,7 +753,7 @@ class Core(dict):
         indices = self._parse_locations(mask)
         return indices
 
-    def interpolate_data(self, data):
+    def interpolate_data(self, data, operator='mean'):
         r"""
         Determines a pore (or throat) property as the average of it's
         neighboring throats (or pores)
@@ -763,6 +764,9 @@ class Core(dict):
             A list of specific values to be interpolated.  List MUST be either
             Np or Nt long
 
+        operator : string
+            options are mean, min or max, and will determine which function to
+            apply when interpolating data from neighbors, default is mean.
         Returns
         -------
         An array containing interpolated pore (or throat) data
@@ -775,6 +779,12 @@ class Core(dict):
 
         """
         mro = [module.__name__ for module in self.__class__.__mro__]
+        functions = {'min': np.min,
+                     'max': np.max,
+                     'mean': np.mean}
+        if operator not in functions.keys():
+            operator = 'mean'
+        func = functions[operator]
         if 'GenericNetwork' in mro:
             net = self
             Ts = net.throats()
@@ -800,7 +810,7 @@ class Core(dict):
                 neighborTs = net.find_neighbor_throats(pore)
                 neighborTs = net.filter_by_label(throats=neighborTs,
                                                  labels=label)
-                temp[pore] = sp.mean(data[neighborTs])
+                temp[pore] = func(data[neighborTs])
             values = temp[Ps]
         elif sp.shape(data)[0] == self.Np:
             # Upcast data to full network size
@@ -808,7 +818,7 @@ class Core(dict):
             temp[Ps] = data
             data = temp
             Ps12 = net.find_connected_pores(throats=Ts, flatten=False)
-            values = sp.mean(data[Ps12], axis=1)
+            values = func(data[Ps12], axis=1)
         else:
             logger.error('Received data was an ambiguous length')
             raise Exception()

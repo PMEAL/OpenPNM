@@ -997,3 +997,15 @@ class CoreTest:
         geom = OpenPNM.Geometry.GenericGeometry(network=net, pores=[0, 1, 2])
         geom['pore.blah'] = True
         assert sp.sum(net['pore.blah']) == geom.Np
+
+    def test_interpolate(self):
+        net = OpenPNM.Network.Cubic(shape=[3, 1, 1])
+        net['pore.blah'] = [1, 2, 3]
+        interp_mean = net.interpolate_data(data=net['pore.blah'])
+        interp_min = net.interpolate_data(data=net['pore.blah'],
+                                          operator='min')
+        interp_max = net.interpolate_data(data=net['pore.blah'],
+                                          operator='max')
+        assert (1.5 in interp_mean) and (2.5 in interp_mean)
+        assert (1 in interp_min) and (3 not in interp_min)
+        assert (3 in interp_max) and (1 not in interp_max)
